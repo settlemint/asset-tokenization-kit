@@ -74,6 +74,9 @@ export enum ClaimTopic {
 
   // General
   contractIdentity = "contractIdentity",
+
+  // Custom (claim that is not part of the default SMART/ATK topics)
+  custom = "custom",
 }
 
 /**
@@ -91,7 +94,34 @@ export type ClaimInfo =
   | IssuerLicensedClaim
   | IssuerProspectusExemptClaim
   | IssuerProspectusFiledClaim
-  | IssuerReportingCompliantClaim;
+  | IssuerReportingCompliantClaim
+  | CustomClaim;
+
+/**
+ * Map of claim topics to their corresponding signatures.
+ */
+const CLAIM_SIGNATURES: Record<ClaimTopic, string> = {
+  [ClaimTopic.custom]: "custom",
+  [ClaimTopic.kyc]: "string claim",
+  [ClaimTopic.aml]: "string claim",
+  [ClaimTopic.qii]: "string claim",
+  [ClaimTopic.professionalInvestor]: "string claim",
+  [ClaimTopic.accreditedInvestor]: "string claim",
+  [ClaimTopic.accreditedInvestorVerified]: "string claim",
+  [ClaimTopic.regS]: "string claim",
+  [ClaimTopic.issuerProspectusFiled]: "string prospectusReference",
+  [ClaimTopic.issuerProspectusExempt]: "string exemptionReference",
+  [ClaimTopic.issuerLicensed]:
+    "string licenseType, string licenseNumber, string jurisdiction, uint256 validUntil",
+  [ClaimTopic.issuerReportingCompliant]: "bool compliant, uint256 lastUpdated",
+  [ClaimTopic.issuerJurisdiction]: "string jurisdiction",
+  [ClaimTopic.collateral]: "uint256 amount, uint256 expiryTimestamp",
+  [ClaimTopic.isin]: "string isin",
+  [ClaimTopic.assetClassification]: "string class, string category",
+  [ClaimTopic.basePrice]: "uint256 amount, string currencyCode, uint8 decimals",
+  [ClaimTopic.assetIssuer]: "address issuerAddress",
+  [ClaimTopic.contractIdentity]: "address contractAddress",
+};
 
 /**
  * Asset classification claim structure.
@@ -228,6 +258,13 @@ export interface IssuerReportingCompliantClaim {
   };
 }
 
+export interface CustomClaim {
+  topic: ClaimTopic.custom;
+  topicName: string; // Actual topic name
+  signature: string;
+  data: unknown[];
+}
+
 /**
  * Generates a signed claim for a user and identity.
  *
@@ -241,7 +278,14 @@ export async function createClaim({
   identity,
   claim,
 }: CreateClaimInput) {
-  const topicId = BigInt(keccak256(encodePacked(["string"], [claim.topic])));
+  const topicId = BigInt(
+    keccak256(
+      encodePacked(
+        ["string"],
+        [claim.topic === ClaimTopic.custom ? claim.topicName : claim.topic]
+      )
+    )
+  );
   const verificationId = getVerificationId(
     user,
     walletVerification.verificationType
@@ -293,108 +337,23 @@ export async function createClaim({
  * @throws {Error} If the claim topic is invalid or unsupported.
  */
 function encodeClaimData(claim: ClaimInfo) {
-  if (
-    claim.topic === ClaimTopic.accreditedInvestor ||
-    claim.topic === ClaimTopic.accreditedInvestorVerified ||
-    claim.topic === ClaimTopic.aml ||
-    claim.topic === ClaimTopic.kyc ||
-    claim.topic === ClaimTopic.professionalInvestor ||
-    claim.topic === ClaimTopic.qii ||
-    claim.topic === ClaimTopic.regS
-  ) {
-    return encodeAbiParameters(
-      [{ type: "string", name: "claim" }],
-      [claim.data.claim]
-    );
+  if (claim.topic === ClaimTopic.custom) {
+    const abiParams = parseAbiParameters(claim.signature);
+    return encodeAbiParameters(abiParams, claim.data);
   }
-  if (claim.topic === ClaimTopic.assetClassification) {
-    return encodeAbiParameters(
-      [
-        { type: "string", name: "class" },
-        { type: "string", name: "category" },
-      ],
-      [claim.data.class, claim.data.category]
-    );
+  const signature = CLAIM_SIGNATURES[claim.topic];
+  if (!signature) {
+    throw new Error(`Invalid claim topic ${claim.topic}`);
   }
-  if (claim.topic === ClaimTopic.assetIssuer) {
-    return encodeAbiParameters(
-      [{ type: "address", name: "issuerAddress" }],
-      [claim.data.issuerAddress]
-    );
-  }
-  if (claim.topic === ClaimTopic.basePrice) {
-    return encodeAbiParameters(
-      [
-        { type: "uint256", name: "amount" },
-        { type: "string", name: "currencyCode" },
-        { type: "uint8", name: "decimals" },
-      ],
-      [claim.data.amount, claim.data.currencyCode, claim.data.decimals]
-    );
-  }
-  if (claim.topic === ClaimTopic.collateral) {
-    return encodeAbiParameters(
-      [
-        { type: "uint256", name: "amount" },
-        { type: "uint256", name: "expiryTimestamp" },
-      ],
-      [claim.data.amount, claim.data.expiryTimestamp]
-    );
-  }
-  if (claim.topic === ClaimTopic.contractIdentity) {
-    return encodeAbiParameters(
-      [{ type: "address", name: "contractAddress" }],
-      [claim.data.contractAddress]
-    );
-  }
-  if (claim.topic === ClaimTopic.isin) {
-    return encodeAbiParameters(
-      [{ type: "string", name: "isin" }],
-      [claim.data.isin]
-    );
-  }
-  if (claim.topic === ClaimTopic.issuerJurisdiction) {
-    return encodeAbiParameters(
-      [{ type: "string", name: "jurisdiction" }],
-      [claim.data.jurisdiction]
-    );
-  }
-  if (claim.topic === ClaimTopic.issuerLicensed) {
-    return encodeAbiParameters(
-      [
-        { type: "string", name: "licenseType" },
-        { type: "string", name: "licenseNumber" },
-        { type: "string", name: "jurisdiction" },
-        { type: "uint256", name: "validUntil" },
-      ],
-      [
-        claim.data.licenseType,
-        claim.data.licenseNumber,
-        claim.data.jurisdiction,
-        claim.data.validUntil,
-      ]
-    );
-  }
-  if (claim.topic === ClaimTopic.issuerProspectusExempt) {
-    return encodeAbiParameters(
-      [{ type: "string", name: "exemptionReference" }],
-      [claim.data.exemptionReference]
-    );
-  }
-  if (claim.topic === ClaimTopic.issuerProspectusFiled) {
-    return encodeAbiParameters(
-      [{ type: "string", name: "prospectusReference" }],
-      [claim.data.prospectusReference]
-    );
-  }
-  if (claim.topic === ClaimTopic.issuerReportingCompliant) {
-    return encodeAbiParameters(
-      [
-        { type: "bool", name: "compliant" },
-        { type: "uint256", name: "lastUpdated" },
-      ],
-      [claim.data.compliant, claim.data.lastUpdated]
-    );
-  }
-  throw new Error("Invalid claim topic");
+  const abiParams = parseAbiParameters(signature);
+  // Extract values from the data object in the order defined by the signature's parameters.
+  const sortedDataValues = abiParams.map((param) => {
+    if (!param.name) {
+      throw new Error(
+        `ABI parameter in signature is missing a name: "${signature}"`
+      );
+    }
+    return claim.data[param.name as keyof typeof claim.data];
+  });
+  return encodeAbiParameters(abiParams, sortedDataValues);
 }

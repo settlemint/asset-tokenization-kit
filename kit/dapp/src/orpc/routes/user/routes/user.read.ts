@@ -1,20 +1,15 @@
 import { kycProfiles, user } from "@/lib/db/schema";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import {
-  filterClaimsForUser,
-  identityPermissionsMiddleware,
-} from "@/orpc/middlewares/auth/identity-permissions.middleware";
-import { trustedIssuerMiddleware } from "@/orpc/middlewares/auth/trusted-issuer.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
-import type { User } from "@/orpc/routes/user/routes/user.me.schema";
-import { getUserRole } from "@atk/zod/user-roles";
-import { call, ORPCError } from "@orpc/server";
+import { fetchUserIdentity } from "@/orpc/routes/user/utils/identity.util";
+import {
+  buildUserWithIdentity,
+  buildUserWithoutWallet,
+} from "@/orpc/routes/user/utils/user-response.util";
 import { eq } from "drizzle-orm";
-import { UserReadInputSchema } from "./user.read.schema";
 
 /**
  * User read route handler.
@@ -66,13 +61,6 @@ export const read = authRouter.user.read
       },
     })
   )
-  .use(trustedIssuerMiddleware)
-  .use(
-    identityPermissionsMiddleware<typeof UserReadInputSchema>({
-      getTargetUserId: ({ input }) =>
-        "userId" in input ? input.userId : undefined,
-    })
-  )
   .use(databaseMiddleware)
   .handler(async ({ context, input, errors }) => {
     // Build the query condition based on input type
@@ -119,64 +107,24 @@ export const read = authRouter.user.read
 
     // Handle users without wallets gracefully
     if (!userData.wallet) {
-      return {
-        id: userData.id,
-        name:
-          kyc?.firstName && kyc.lastName
-            ? `${kyc.firstName} ${kyc.lastName}`
-            : userData.name,
-        email: userData.email,
-        role: getUserRole(userData.role),
-        wallet: userData.wallet, // null
-        firstName: kyc?.firstName,
-        lastName: kyc?.lastName,
-        identity: undefined,
-        claims: [],
-        isRegistered: false,
-        createdAt: userData.createdAt?.toISOString(),
-        lastLoginAt: userData.lastLoginAt?.toISOString(),
-      } as User;
+      return buildUserWithoutWallet({
+        userData,
+        kyc,
+      });
     }
 
     // Fetch identity data from TheGraph for this specific user
-    const accountData = await call(
-      readAccount,
-      { wallet: userData.wallet },
-      { context }
-    ).catch((error: unknown) => {
-      if (error instanceof ORPCError && error.status === 404) {
-        return null;
-      }
-      throw error;
+    const identityResult = await fetchUserIdentity({
+      wallet: userData.wallet,
+      context,
     });
 
-    const identity = accountData?.identity;
-
-    // Get all claims for this user
-    const allClaims = accountData?.claims ?? [];
-
-    // Filter claims based on user's permissions
-    const filteredClaims = filterClaimsForUser(
-      allClaims,
-      context.identityPermissions
-    );
-
     // Transform result to include human-readable role and identity data
-    return {
-      id: userData.id,
-      name:
-        kyc?.firstName && kyc.lastName
-          ? `${kyc.firstName} ${kyc.lastName}`
-          : userData.name,
-      email: userData.email,
-      role: getUserRole(userData.role),
-      wallet: userData.wallet,
-      firstName: kyc?.firstName,
-      lastName: kyc?.lastName,
-      identity: identity,
-      claims: filteredClaims,
-      isRegistered: !!identity,
-      createdAt: userData.createdAt?.toISOString(),
-      lastLoginAt: userData.lastLoginAt?.toISOString(),
-    } as User;
+    return buildUserWithIdentity({
+      userData,
+      kyc,
+      identity: identityResult.identity,
+      claims: identityResult.claims,
+      isRegistered: identityResult.isRegistered,
+    });
   });

@@ -99,3 +99,31 @@ export function createDaysParameterTests(
 export async function waitForGraphIndexing(delayMs = 2000): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, delayMs));
 }
+
+/**
+ * Polls an async getter until a condition is met or a timeout elapses.
+ * Useful for waiting on TheGraph indexing or eventual consistency.
+ */
+export async function waitUntil<T>(options: {
+  get: () => Promise<T>;
+  until: (value: T) => boolean;
+  timeoutMs?: number;
+  intervalMs?: number;
+}): Promise<T> {
+  const timeoutMs = options.timeoutMs ?? TEST_CONSTANTS.DEFAULT_TIMEOUT;
+  const intervalMs = options.intervalMs ?? 1000;
+  const start = Date.now();
+  let last: T | undefined;
+  while (true) {
+    last = await options.get();
+    if (options.until(last)) return last;
+    if (Date.now() - start >= timeoutMs) {
+      throw new Error(
+        `waitUntil: condition not met within ${timeoutMs}ms. Last value: ${
+          typeof last === "object" ? JSON.stringify(last) : String(last)
+        }`
+      );
+    }
+    await new Promise((r) => setTimeout(r, intervalMs));
+  }
+}

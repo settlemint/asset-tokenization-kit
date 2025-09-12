@@ -329,7 +329,7 @@ describe("User list", () => {
   });
 
   describe("Identity permissions middleware", () => {
-    it("forbids users without identity manager role or trusted issuer status", async () => {
+    it("forbids users without identity manager or trusted issuer role", async () => {
       // Regular users without any special permissions cannot see user data
       const headers = await signInWithUser(unauthorizedUser.user);
       const client = getOrpcClient(headers);
@@ -375,9 +375,11 @@ describe("User list", () => {
 
         // Identity manager sees ALL claims (whatever TheGraph returns)
         if (user.identity && user.claims.length > 0) {
-          user.claims.forEach((claim: string) => {
-            expect(typeof claim).toBe("string");
-            expect(claim.length).toBeGreaterThan(0);
+          user.claims.forEach((claim) => {
+            expect(claim.name).toBeDefined();
+            expect(claim.revoked).toBeDefined();
+            expect(claim.issuer).toBeDefined();
+            expect(claim.values).toBeDefined();
           });
         }
       });
