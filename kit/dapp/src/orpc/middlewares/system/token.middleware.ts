@@ -165,7 +165,8 @@ export const tokenMiddleware = baseRouter.middleware<
           denominationAssetNeeded:
             token.bond.faceValue && token.totalSupply
               ? ([
-                  BigInt(token.bond.faceValue) * BigInt(token.totalSupply),
+                  BigInt(String(token.bond.faceValue)) *
+                    BigInt(String(token.totalSupply)),
                   0,
                 ] as const)
               : ([0n, 0] as const),
