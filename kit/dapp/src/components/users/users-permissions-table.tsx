@@ -60,20 +60,12 @@ export function UsersPermissionsTable() {
 
   // Fetch users data using ORPC with server-side pagination
   const { data, isLoading, error } = useQuery(
-    orpc.user.list.queryOptions({
-      input: {
-        orderBy: "createdAt",
-        orderDirection: "desc",
-        filters: {
-          hasSystemRole: true,
-        },
-      },
-    })
+    orpc.user.adminList.queryOptions()
   );
 
   // Extract users and total from the paginated response
   const users =
-    data?.items.map(
+    data?.map(
       (user): User => ({
         ...user,
         roles: Object.entries(user.roles)
@@ -216,9 +208,11 @@ export function UsersPermissionsTable() {
         }}
         initialPageSize={20}
         customEmptyState={{
-          title: t("permissions.table.emptyState.title"),
-          description: isLoading
+          title: isLoading
             ? t("permissions.table.emptyState.loading")
+            : t("permissions.table.emptyState.title"),
+          description: isLoading
+            ? ""
             : t("permissions.table.emptyState.description"),
           icon: Users,
         }}

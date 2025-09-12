@@ -14,10 +14,6 @@ export const UserListInputSchema = ListSchema.extend({
   filters: z
     .object({
       search: z.string().optional().describe("Search query"),
-      hasSystemRole: z
-        .boolean()
-        .optional()
-        .describe("Whether the user has at least one system role"),
     })
     .optional(),
 });

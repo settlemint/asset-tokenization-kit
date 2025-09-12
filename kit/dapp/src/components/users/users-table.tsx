@@ -180,9 +180,11 @@ export function UsersTable() {
           },
         ]}
         customEmptyState={{
-          title: t("management.table.emptyState.title"),
-          description: isLoading
+          title: isLoading
             ? t("management.table.emptyState.loading")
+            : t("management.table.emptyState.title"),
+          description: isLoading
+            ? ""
             : t("management.table.emptyState.description"),
           icon: Users,
         }}
