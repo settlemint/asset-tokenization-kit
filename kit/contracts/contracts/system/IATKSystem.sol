@@ -31,6 +31,7 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
         address tokenFactoryRegistryImplementation;
         address complianceModuleRegistryImplementation;
         address addonRegistryImplementation;
+        address identityVerificationComplianceModule;
     }
 
     // --- Events ---

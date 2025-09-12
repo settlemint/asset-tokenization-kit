@@ -16,6 +16,7 @@ import { ATKPeopleRoles } from "../ATKPeopleRoles.sol";
 import { ATKSystemAccessManaged } from "../access-manager/ATKSystemAccessManaged.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { IATKSystemAccessManaged } from "../access-manager/IATKSystemAccessManaged.sol";
+import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
 /// @title ATKComplianceModuleRegistryImplementation
 /// @author SettleMint
@@ -58,7 +59,7 @@ contract ATKComplianceModuleRegistryImplementation is
         external
         override
         nonReentrant
-        onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
+        onlySystemRoles2(ATKPeopleRoles.SYSTEM_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
     {
         if (moduleAddress == address(0)) revert InvalidComplianceModuleAddress();
         _checkInterface(moduleAddress, _ISMART_COMPLIANCE_MODULE_ID);

@@ -19,7 +19,8 @@ import {
     AddonRegistryImplementationNotSet,
     TokenFactoryRegistryImplementationNotSet,
     SystemAccessManagerImplementationNotSet,
-    InvalidSystemImplementation
+    InvalidSystemImplementation,
+    InvalidComplianceModuleAddress
 } from "./ATKSystemErrors.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
@@ -108,6 +109,9 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// @dev This address will be passed to newly created `ATKSystem` instances as the initial token factory
     /// registry implementation.
     address public immutable DEFAULT_TOKEN_FACTORY_REGISTRY_IMPLEMENTATION;
+    /// @notice The default identity verification compliance module to register globally on each system at bootstrap.
+    /// @dev This is a module (not an implementation), expected to implement ISMARTComplianceModule.
+    address public immutable DEFAULT_IDENTITY_VERIFICATION_COMPLIANCE_MODULE;
 
     /// @notice An array storing the addresses of all `ATKSystem` instances that have been created by this factory.
     /// @dev This allows for easy tracking and retrieval of deployed systems.
@@ -130,6 +134,7 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         address complianceModuleRegistryImplementation;
         address addonRegistryImplementation;
         address systemAccessManagerImplementation;
+        address identityVerificationComplianceModule;
     }
 
     // --- Constructor ---
@@ -182,6 +187,9 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         if (implementations.trustedIssuersMetaRegistryImplementation == address(0)) {
             revert TrustedIssuersMetaRegistryImplementationNotSet();
         }
+        if (implementations.identityVerificationComplianceModule == address(0)) {
+            revert InvalidComplianceModuleAddress();
+        }
 
         // Set the immutable state variables with the provided addresses.
         ATK_SYSTEM_IMPLEMENTATION = implementations.atkSystemImplementation;
@@ -201,6 +209,8 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         DEFAULT_COMPLIANCE_MODULE_REGISTRY_IMPLEMENTATION = implementations.complianceModuleRegistryImplementation;
         DEFAULT_ADDON_REGISTRY_IMPLEMENTATION = implementations.addonRegistryImplementation;
         DEFAULT_TRUSTED_ISSUERS_META_REGISTRY_IMPLEMENTATION = implementations.trustedIssuersMetaRegistryImplementation;
+        DEFAULT_IDENTITY_VERIFICATION_COMPLIANCE_MODULE =
+            implementations.identityVerificationComplianceModule;
 
         FACTORY_FORWARDER = forwarder_; // Store the forwarder address for use by this factory and new systems.
     }
@@ -248,7 +258,8 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
             tokenAccessManagerImplementation: DEFAULT_TOKEN_ACCESS_MANAGER_IMPLEMENTATION,
             tokenFactoryRegistryImplementation: DEFAULT_TOKEN_FACTORY_REGISTRY_IMPLEMENTATION,
             complianceModuleRegistryImplementation: DEFAULT_COMPLIANCE_MODULE_REGISTRY_IMPLEMENTATION,
-            addonRegistryImplementation: DEFAULT_ADDON_REGISTRY_IMPLEMENTATION
+            addonRegistryImplementation: DEFAULT_ADDON_REGISTRY_IMPLEMENTATION,
+            identityVerificationComplianceModule: DEFAULT_IDENTITY_VERIFICATION_COMPLIANCE_MODULE
         });
 
         bytes memory systemCallData = abi.encodeWithSelector(
@@ -367,5 +378,11 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// @return The address of the factory forwarder
     function factoryForwarder() external view returns (address) {
         return FACTORY_FORWARDER;
+    }
+
+    /// @notice Returns the default identity verification compliance module address
+    /// @return The address of the default identity verification compliance module
+    function defaultIdentityVerificationComplianceModule() external view returns (address) {
+        return DEFAULT_IDENTITY_VERIFICATION_COMPLIANCE_MODULE;
     }
 }

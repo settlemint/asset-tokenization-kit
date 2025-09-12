@@ -27,7 +27,8 @@ import {
     AddonRegistryImplementationNotSet,
     TokenFactoryRegistryImplementationNotSet,
     IssuerIdentityNotInitialized,
-    InvalidTargetIdentity
+    InvalidTargetIdentity,
+    InvalidComplianceModuleAddress
 } from "./ATKSystemErrors.sol";
 import { ATKTypedImplementationProxy } from "./ATKTypedImplementationProxy.sol";
 
@@ -168,6 +169,9 @@ contract ATKSystemImplementation is
 
     /// @dev Stores the address of the organisation identity contract.
     address private _organisationIdentity;
+
+    /// @dev Stores the default identity verification compliance module to register globally at bootstrap
+    address private _defaultIdentityVerificationComplianceModule;
 
     // --- Internal Helper for Interface Check ---
     /// @notice Internal helper function to check if a given contract address supports a specific interface
@@ -321,6 +325,12 @@ contract ATKSystemImplementation is
             // ISMARTTokenFactoryRegistry
         _implementations[TOKEN_FACTORY_REGISTRY] = impls.tokenFactoryRegistryImplementation;
         emit TokenFactoryRegistryImplementationUpdated(initialAdmin_, impls.tokenFactoryRegistryImplementation);
+
+        // Validate identity verification compliance module address (module, not implementation)
+        if (impls.identityVerificationComplianceModule == address(0)) revert InvalidComplianceModuleAddress();
+        _checkInterface(impls.identityVerificationComplianceModule, _COMPLIANCE_MODULE_ID);
+        _defaultIdentityVerificationComplianceModule = impls.identityVerificationComplianceModule;
+
     }
 
     /// @notice Deploys and initializes the proxy contracts for all core ATK modules.
@@ -486,6 +496,12 @@ contract ATKSystemImplementation is
         IATKIdentityRegistryStorage(localIdentityRegistryStorageProxy).bindIdentityRegistry(
             localIdentityRegistryProxy // Using the local variable, or _identityRegistryProxy which is now correctly
                 // set.
+        );
+
+        // Register default identity verification compliance module globally with empty params
+        IATKCompliance(localComplianceProxy).addGlobalComplianceModule(
+            _defaultIdentityVerificationComplianceModule,
+            ""
         );
 
         // Register the topic schemes.

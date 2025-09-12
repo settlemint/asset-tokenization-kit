@@ -520,6 +520,7 @@ class ContractDeployer {
           CONTRACT_ADDRESSES.ATKComplianceModuleRegistryImplementation,
           CONTRACT_ADDRESSES.ATKSystemAddonRegistryImplementation,
           CONTRACT_ADDRESSES.ATKSystemAccessManagerImplementation,
+          CONTRACT_ADDRESSES.SMARTIdentityVerificationComplianceModule,
         ].join(",")})`;
         return [implementationsTuple, forwarderAddress];
       }

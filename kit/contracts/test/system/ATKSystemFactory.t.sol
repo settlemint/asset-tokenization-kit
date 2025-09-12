@@ -103,7 +103,8 @@ contract ATKSystemFactoryTest is Test {
             tokenFactoryRegistryImplementation: tokenFactoryRegistryImpl,
             complianceModuleRegistryImplementation: complianceModuleRegistryImpl,
             addonRegistryImplementation: addonRegistryImpl,
-            systemAccessManagerImplementation: systemAccessManagerImpl
+            systemAccessManagerImplementation: systemAccessManagerImpl,
+            identityVerificationComplianceModule: identityVerificationModule
         });
     }
 
@@ -147,6 +148,7 @@ contract ATKSystemFactoryTest is Test {
         assertEq(factory.defaultContractIdentityImplementation(), contractIdentityImpl);
         assertEq(factory.defaultTokenAccessManagerImplementation(), tokenAccessManagerImpl);
         assertEq(factory.factoryForwarder(), forwarder);
+        assertEq(factory.defaultIdentityVerificationComplianceModule(), identityVerificationModule);
         assertEq(factory.getSystemCount(), 0);
     }
 
@@ -362,7 +364,7 @@ contract ATKSystemFactoryTest is Test {
         assertEq(factory.defaultIdentityImplementation(), identityImpl);
         assertEq(factory.defaultContractIdentityImplementation(), contractIdentityImpl);
         assertEq(factory.defaultTokenAccessManagerImplementation(), tokenAccessManagerImpl);
-        // Note: defaultIdentityVerificationModule() removed as functionality moved to compliance module registry
+        assertEq(factory.defaultIdentityVerificationComplianceModule(), identityVerificationModule);
         assertEq(factory.factoryForwarder(), forwarder);
     }
 
