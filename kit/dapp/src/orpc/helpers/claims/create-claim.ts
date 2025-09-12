@@ -343,17 +343,17 @@ function encodeClaimData(claim: ClaimInfo) {
   }
   const signature = CLAIM_SIGNATURES[claim.topic];
   if (!signature) {
-    throw new Error("Invalid claim topic");
+    throw new Error(`Invalid claim topic ${claim.topic}`);
   }
   const abiParams = parseAbiParameters(signature);
-  // Take keys from claim.data and sort them by the order of the abiParams
-  const sortedData = Object.keys(claim.data).toSorted((a, b) => {
-    const indexA = abiParams.findIndex((param) => param.name === a);
-    const indexB = abiParams.findIndex((param) => param.name === b);
-    return indexA - indexB;
+  // Extract values from the data object in the order defined by the signature's parameters.
+  const sortedDataValues = abiParams.map((param) => {
+    if (!param.name) {
+      throw new Error(
+        `ABI parameter in signature is missing a name: "${signature}"`
+      );
+    }
+    return claim.data[param.name as keyof typeof claim.data];
   });
-  const sortedDataValues = sortedData.map(
-    (key) => claim.data[key as keyof typeof claim.data]
-  );
   return encodeAbiParameters(abiParams, sortedDataValues);
 }
