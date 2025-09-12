@@ -171,7 +171,7 @@ export const trustedIssuerMiddleware = <TInput>(options: {
       : undefined;
 
     if (!userIssuerIdentity) {
-      throw errors.UNAUTHORIZED({
+      throw errors.FORBIDDEN({
         message: "User does not have an issuer identity",
       });
     }

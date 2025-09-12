@@ -76,6 +76,7 @@ export interface IssueClaimInput {
 /**
  * Issues a claim to an identity contract.
  * @param params - The input parameters for issuing a claim.
+ * @returns The transaction hash of the claim issuance.
  */
 export async function issueClaim({
   user,
@@ -84,7 +85,7 @@ export async function issueClaim({
   identity,
   claim,
   portalClient,
-}: IssueClaimInput) {
+}: IssueClaimInput): Promise<string> {
   // USER-ISSUED CLAIM SIGNATURE: Create signature for user-issued claim
   // The user issues the claim to the identity contract
   const { signature, topicId, claimData } = await createClaim({
@@ -94,7 +95,7 @@ export async function issueClaim({
     claim,
   });
   // ISSUE CLAIM: Add claim to the identity contract
-  await portalClient.mutate(
+  const txHash = await portalClient.mutate(
     ADD_CLAIM_MUTATION,
     {
       address: identity,
@@ -112,4 +113,6 @@ export async function issueClaim({
       type: walletVerification.verificationType,
     }
   );
+  
+  return txHash;
 }

@@ -77,8 +77,9 @@ describe("Claims issue (integration)", () => {
     expect(result.success).toBe(true);
     expect(result.claimTopic).toBe("collateral");
     expect(result.targetWallet).toBe(targetIdentityAddress);
-    // transactionHash is optional and may be undefined depending on helper behavior
-    // expect(result.transactionHash).toBeDefined();
+    // Transaction hash should be returned from the helper
+    expect(result.transactionHash).toBeDefined();
+    expect(typeof result.transactionHash).toBe("string");
   });
 
   it("should fail when user lacks claimIssuer role", async () => {
