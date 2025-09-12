@@ -147,8 +147,7 @@ export function TopicsTable() {
           cell: ({ row }) => {
             const topic = row.original;
             const isSystem = isSystemTopic(topic);
-            const hasClaimPolicyManagerRole =
-              user?.userSystemPermissions?.roles?.claimPolicyManager;
+            const hasClaimPolicyManagerRole = user?.roles?.claimPolicyManager;
 
             if (isSystem || !hasClaimPolicyManagerRole) {
               return <span className="text-muted-foreground text-sm" />;

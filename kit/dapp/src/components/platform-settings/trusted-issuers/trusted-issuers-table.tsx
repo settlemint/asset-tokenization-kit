@@ -121,8 +121,7 @@ export function TrustedIssuersTable() {
           },
           cell: ({ row }) => {
             const issuer = row.original;
-            const hasClaimPolicyManagerRole =
-              user?.userSystemPermissions?.roles?.claimPolicyManager;
+            const hasClaimPolicyManagerRole = user?.roles?.claimPolicyManager;
 
             if (!hasClaimPolicyManagerRole) {
               return <span className="text-muted-foreground text-sm" />;

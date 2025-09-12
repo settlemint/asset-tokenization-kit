@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 interface BaseActionSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  asset: Token;
+  asset?: Token;
   title: string;
   description: string;
   submit: ReactNode;
@@ -129,7 +129,7 @@ export function BaseActionSheet({
         <div className="flex-1 overflow-y-auto px-6 py-6">
           <div className="space-y-6">
             {/* Asset Details Card - shown by default */}
-            {showAssetDetails && (
+            {showAssetDetails && asset && (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">

@@ -1,12 +1,12 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
-import { GrantRoleForm } from "@/components/platform-settings/role-management/grant-role-form";
-import { ViewUserRoles } from "@/components/platform-settings/role-management/view-user-roles";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { UsersPermissionsTable } from "@/components/users/users-permissions-table";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Shield } from "lucide-react";
+import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
@@ -19,7 +19,7 @@ export const Route = createFileRoute(
         createI18nBreadcrumbMetadata("platformSettings", {
           href: "/admin/platform-settings/permissions",
         }),
-        createI18nBreadcrumbMetadata("settings.permissions"),
+        createI18nBreadcrumbMetadata("settings.permissions.title"),
       ],
     };
   },
@@ -38,11 +38,12 @@ function PermissionsPage() {
       <div className="mb-8 mt-4">
         <div className="flex items-center gap-2 mb-2">
           <Shield className="h-8 w-8 text-primary" />
-          <h1 className="text-3xl font-bold">{t("settings.permissions")}</h1>
+          <h1 className="text-3xl font-bold">
+            {t("settings.permissions.title")}
+          </h1>
         </div>
         <p className="text-muted-foreground">
-          Manage user permissions and blockchain roles for the Asset
-          Tokenization Kit
+          {t("settings.permissions.description")}
         </p>
       </div>
 
@@ -51,26 +52,26 @@ function PermissionsPage() {
         {user?.role !== "admin" && (
           <Alert variant="destructive">
             <Shield className="h-4 w-4" />
-            <AlertTitle>Admin Access Required</AlertTitle>
+            <AlertTitle>
+              {t("settings.permissions.adminRequired.title")}
+            </AlertTitle>
             <AlertDescription>
-              You need administrator privileges to manage permissions and roles.
-              Please contact your system administrator for access.
+              {t("settings.permissions.adminRequired.description")}
             </AlertDescription>
           </Alert>
         )}
 
-        {/* Role Management Form - Show only if user is admin */}
-        {user?.role === "admin" && (
-          <>
-            <GrantRoleForm />
-            <ViewUserRoles />
-
-            {/* Future sections can be added here */}
-            <div className="text-sm text-muted-foreground mt-8">
-              More permission management features coming soon...
+        <Suspense
+          fallback={
+            <div className="rounded-lg border bg-card p-6">
+              <p className="text-muted-foreground">
+                {t("management.table.emptyState.loading", { ns: "user" })}
+              </p>
             </div>
-          </>
-        )}
+          }
+        >
+          <UsersPermissionsTable />
+        </Suspense>
       </div>
     </div>
   );

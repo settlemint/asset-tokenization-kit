@@ -7,7 +7,6 @@ import { ChangeRolesSheet } from "./change-roles-sheet";
 
 // Import the mocked modules
 import { useAppForm } from "@/hooks/use-app-form";
-import { orpc } from "@/orpc/orpc-client";
 
 // Mock dependencies
 vi.mock("react-i18next", () => ({
@@ -37,24 +36,7 @@ vi.mock("sonner", () => ({
   },
 }));
 
-vi.mock("@/orpc/orpc-client", () => ({
-  orpc: {
-    token: {
-      grantRole: {
-        mutationOptions: vi.fn(() => ({})),
-      },
-      revokeRole: {
-        mutationOptions: vi.fn(() => ({})),
-      },
-      read: {
-        queryOptions: vi.fn(() => ({ queryKey: ["token", "read"] })),
-        queryKey: vi.fn(() => ["token", "read"]),
-      },
-    },
-  },
-}));
-
-vi.mock("../core/action-form-sheet", () => ({
+vi.mock("../../core/action-form-sheet", () => ({
   ActionFormSheet: ({
     children,
     title,
@@ -177,6 +159,9 @@ const mockToken = {
   stats: null,
 } satisfies Parameters<typeof ChangeRolesSheet>[0]["asset"];
 
+const mockRevokeRole = vi.fn();
+const mockGrantRole = vi.fn();
+
 describe("ChangeRolesSheet", () => {
   const user = userEvent.setup();
   let queryClient: QueryClient;
@@ -206,6 +191,9 @@ describe("ChangeRolesSheet", () => {
           open
           onOpenChange={mockOnOpenChange}
           asset={mockToken}
+          accessControl={mockToken.accessControl}
+          revokeRole={mockRevokeRole}
+          grantRole={mockGrantRole}
         />
       );
 
@@ -222,6 +210,9 @@ describe("ChangeRolesSheet", () => {
           open
           onOpenChange={mockOnOpenChange}
           asset={mockToken}
+          accessControl={mockToken.accessControl}
+          revokeRole={mockRevokeRole}
+          grantRole={mockGrantRole}
         />
       );
 
@@ -267,6 +258,9 @@ describe("ChangeRolesSheet", () => {
           presetAccount={
             "0x1111111111111111111111111111111111111111" as `0x${string}`
           }
+          accessControl={mockToken.accessControl}
+          revokeRole={mockRevokeRole}
+          grantRole={mockGrantRole}
         />
       );
 
@@ -283,6 +277,9 @@ describe("ChangeRolesSheet", () => {
           presetAccount={
             "0x1111111111111111111111111111111111111111" as `0x${string}`
           }
+          accessControl={mockToken.accessControl}
+          revokeRole={mockRevokeRole}
+          grantRole={mockGrantRole}
         />
       );
 
@@ -328,6 +325,9 @@ describe("ChangeRolesSheet", () => {
           presetAccount={
             "0x2222222222222222222222222222222222222222" as `0x${string}`
           }
+          accessControl={mockToken.accessControl}
+          revokeRole={mockRevokeRole}
+          grantRole={mockGrantRole}
         />
       );
 
@@ -341,14 +341,6 @@ describe("ChangeRolesSheet", () => {
       const mockGrantRole = vi.fn().mockResolvedValue({});
       const mockRevokeRole = vi.fn().mockResolvedValue({});
 
-      vi.mocked(orpc.token.grantRole.mutationOptions).mockReturnValue({
-        mutationFn: mockGrantRole,
-      } as ReturnType<typeof orpc.token.grantRole.mutationOptions>);
-
-      vi.mocked(orpc.token.revokeRole.mutationOptions).mockReturnValue({
-        mutationFn: mockRevokeRole,
-      } as ReturnType<typeof orpc.token.revokeRole.mutationOptions>);
-
       renderWithProviders(
         <ChangeRolesSheet
           open
@@ -357,6 +349,9 @@ describe("ChangeRolesSheet", () => {
           presetAccount={
             "0x1111111111111111111111111111111111111111" as `0x${string}`
           }
+          accessControl={mockToken.accessControl}
+          revokeRole={mockRevokeRole}
+          grantRole={mockGrantRole}
         />
       );
 

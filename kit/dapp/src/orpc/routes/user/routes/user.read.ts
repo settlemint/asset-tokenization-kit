@@ -110,6 +110,7 @@ export const read = authRouter.user.read
       return buildUserWithoutWallet({
         userData,
         kyc,
+        context,
       });
     }
 
@@ -126,5 +127,6 @@ export const read = authRouter.user.read
       identity: identityResult.identity,
       claims: identityResult.claims,
       isRegistered: identityResult.isRegistered,
+      context,
     });
   });

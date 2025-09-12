@@ -210,20 +210,22 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
 
   // First, set the Better Auth role to 'issuer' to grant off-chain permissions
   // This is required for the { account: ["read"] } permission in offchain-permissions.middleware.ts
-  const authClient = getAuthClient();
-  const adminHeaders = await signInWithUser(DEFAULT_ADMIN);
-  await authClient.admin.setRole(
-    {
-      userId: issuerMe.id,
-      role: "issuer",
-    },
-    {
-      headers: {
-        ...Object.fromEntries(adminHeaders.entries()),
+  if (issuerMe.role !== "issuer") {
+    const authClient = getAuthClient();
+    const adminHeaders = await signInWithUser(DEFAULT_ADMIN);
+    await authClient.admin.setRole(
+      {
+        userId: issuerMe.id,
+        role: "issuer",
       },
-    }
-  );
-  logger.info("Set Better Auth role for issuer to 'issuer'");
+      {
+        headers: {
+          ...Object.fromEntries(adminHeaders.entries()),
+        },
+      }
+    );
+    logger.info("Set Better Auth role for issuer to 'issuer'");
+  }
 
   // Issuer needs both token management roles and the claimIssuer role
   const issuerRequiredRoles: AccessControlRoles[] = [
@@ -232,7 +234,7 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
   ];
 
   const rolesToGrant = issuerRequiredRoles.filter(
-    (role) => issuerMe.userSystemPermissions.roles[role] !== true
+    (role) => issuerMe.roles[role] !== true
   );
 
   if (rolesToGrant.length > 0) {
@@ -257,9 +259,7 @@ export async function setupDefaultAdminRoles(orpClient: OrpcClient) {
       ...TOKEN_MANAGEMENT_REQUIRED_ROLES,
     ])
   );
-  const rolesToGrant = allRoles.filter(
-    (role) => adminMe.userSystemPermissions.roles[role] !== true
-  );
+  const rolesToGrant = allRoles.filter((role) => adminMe.roles[role] !== true);
 
   if (rolesToGrant.length > 0) {
     logger.info("Granting roles to admin", { roles: rolesToGrant });

@@ -24,10 +24,16 @@ export interface FormatValueOptions {
 
   emptyValue?: React.ReactNode;
   showPrettyName?: boolean;
-  includeTime?: boolean;
+
+  dateOptions?: FormatDateOptions;
 }
 
 export interface FormatValueProps {
   value: unknown;
   options: FormatValueOptions;
+}
+
+export interface FormatDateOptions {
+  includeTime?: boolean;
+  relative?: boolean;
 }
