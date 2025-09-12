@@ -1,4 +1,4 @@
-import { type BrowserContext, test } from "@playwright/test";
+import { type BrowserContext, test, type Page } from "@playwright/test";
 import { CreateAssetForm } from "../pages/create-asset-form";
 import { Pages } from "../pages/pages";
 import { stablecoinData } from "../test-data/asset-data";
@@ -9,7 +9,7 @@ test.describe.serial("Stablecoin Creation Validation", () => {
   let adminContext: BrowserContext;
   let adminPages: ReturnType<typeof Pages>;
   let createAssetForm: CreateAssetForm;
-  let adminPage: any;
+  let adminPage: Page;
 
   test.beforeAll(async ({ browser }) => {
     const setupUser = getSetupUser();
