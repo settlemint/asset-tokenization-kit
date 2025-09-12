@@ -5,7 +5,7 @@ import type { UserVerification } from "@/orpc/routes/common/schemas/user-verific
 import { handleWalletVerificationChallenge } from "@settlemint/sdk-portal";
 import { isHex } from "viem";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ClaimTopic, createClaim, type CreateClaimInput } from "./create-claim";
+import { createClaim, type CreateClaimInput } from "./create-claim";
 
 // Mocks
 vi.mock("@/orpc/helpers/get-verification-id", () => ({
@@ -57,7 +57,8 @@ describe("createClaim", () => {
     });
 
     const claim: CreateClaimInput["claim"] = {
-      topic: ClaimTopic.kyc,
+      topicName: "knowYourCustomer",
+      signature: "string claim",
       data: { claim: "KYC-APPROVED" },
     };
 
@@ -83,7 +84,8 @@ describe("createClaim", () => {
     getVerificationMock.mockReturnValue(undefined);
 
     const claim: CreateClaimInput["claim"] = {
-      topic: ClaimTopic.kyc,
+      topicName: "knowYourCustomer",
+      signature: "string claim",
       data: { claim: "KYC-APPROVED" },
     };
 
@@ -108,7 +110,8 @@ describe("createClaim", () => {
     });
 
     const claim: CreateClaimInput["claim"] = {
-      topic: ClaimTopic.kyc,
+      topicName: "knowYourCustomer",
+      signature: "string claim",
       data: { claim: "KYC-APPROVED" },
     };
 
@@ -133,7 +136,8 @@ describe("createClaim", () => {
     });
 
     const claim: CreateClaimInput["claim"] = {
-      topic: ClaimTopic.assetClassification,
+      topicName: "assetClassification",
+      signature: "string class, string category",
       data: { class: "Bond", category: "Debt" },
     };
 
@@ -159,7 +163,8 @@ describe("createClaim", () => {
     });
 
     const claim: CreateClaimInput["claim"] = {
-      topic: ClaimTopic.kyc,
+      topicName: "knowYourCustomer",
+      signature: "string claim",
       data: { claim: "KYC-APPROVED" },
     };
 

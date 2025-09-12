@@ -65,7 +65,7 @@ describe("Claims revoke (integration)", () => {
     const issueResult = await issuerClient.system.identity.claims.issue({
       targetIdentityAddress,
       claim: {
-        topic: "collateral",
+        topicName: "collateral",
         data: {
           amount: "1000000000000000000",
           expiryTimestamp: "1735689600",
@@ -123,7 +123,7 @@ describe("Claims revoke (integration)", () => {
     await adminClient.system.identity.claims.issue({
       targetIdentityAddress,
       claim: {
-        topic: "knowYourCustomer",
+        topicName: "knowYourCustomer",
         data: {
           claim: "kyc-verified",
         },
