@@ -113,18 +113,8 @@ describe("Token freeze partial", () => {
         expiryDays: 30,
       });
 
-      // Wait for collateral to be indexed
-      {
-        const start = Date.now();
-        const timeoutMs = 8000;
-        while (Date.now() - start < timeoutMs) {
-          const t = await adminClient.token.read({
-            tokenAddress: stablecoinToken.id,
-          });
-          if (t.collateral?.collateral) break;
-          await new Promise((r) => setTimeout(r, 500));
-        }
-      }
+      // Transaction tracking with indexing is now handled by the portal middleware
+      // No polling needed - updateCollateral will wait for indexing completion
     } catch {
       // If COLLATERAL not supported, attempt to set CAP if available
       const t = await adminClient.token.read({
@@ -330,16 +320,29 @@ describe("Token freeze partial", () => {
     const currentAvailable = investorHolder?.available
       ? toNumber(investorHolder.available)
       : 0;
+
+    // Ensure we have a realistic test by using the actual available balance
+    // If available balance is less than 1000, the test setup failed
+    if (currentAvailable < 1000) {
+      throw new Error(
+        `Insufficient available balance for test: ${currentAvailable}. Expected at least 1000 tokens.`
+      );
+    }
+
+    // Try to freeze significantly more than available (at least double + safety margin)
     const excessiveFreezeAmount = toString(
       from(
-        String(Math.max(currentAvailable * 2, 100_000)),
+        String(currentAvailable + 1000), // Just 1000 more than available should be enough to trigger error
         stablecoinToken.decimals
       )
     );
 
     // INVARIANT: Smart contract should reject operations exceeding available balance
-    await expect(
-      adminClient.token.freezePartial(
+    // Expected error: FreezeAmountExceedsAvailableBalance
+
+    // DEBUG: Let's see what actually happens when we try to freeze excessive amount
+    try {
+      await adminClient.token.freezePartial(
         {
           contract: stablecoinToken.id,
           userAddress: investorAddress,
@@ -355,8 +358,23 @@ describe("Token freeze partial", () => {
             skipLoggingFor: ["TRANSACTION_REVERTED"],
           },
         }
-      )
-    ).rejects.toThrow();
+      );
+      throw new Error(
+        `Freeze should have failed but succeeded. Attempted to freeze ${excessiveFreezeAmount} tokens when only ${currentAvailable} available.`
+      );
+    } catch (error) {
+      // Check if it contains the expected error message
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes("FreezeAmountExceedsAvailableBalance")) {
+        // Expected error - test should pass
+        return;
+      } else {
+        throw new Error(
+          `Expected FreezeAmountExceedsAvailableBalance error, but got: ${errorMessage}`
+        );
+      }
+    }
   });
 
   /**

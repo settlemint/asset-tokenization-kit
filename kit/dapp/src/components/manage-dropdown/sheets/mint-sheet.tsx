@@ -121,7 +121,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
     id:
       // SECURITY: Prefer crypto.randomUUID() for better entropy when available
       typeof crypto !== "undefined" && "randomUUID" in crypto
-        ? (crypto.randomUUID())
+        ? crypto.randomUUID()
         : Math.random().toString(36).slice(2),
   });
 

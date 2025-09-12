@@ -94,6 +94,7 @@ export async function issueClaim({
     claim,
   });
   // ISSUE CLAIM: Add claim to the identity contract
+  // Using the validated portal client ensures transaction tracking and indexing waiting
   await portalClient.mutate(
     ADD_CLAIM_MUTATION,
     {

@@ -114,18 +114,8 @@ describe("Token unfreeze partial", () => {
         expiryDays: 30,
       });
 
-      // Wait for collateral to be indexed
-      {
-        const start = Date.now();
-        const timeoutMs = 8000;
-        while (Date.now() - start < timeoutMs) {
-          const t = await adminClient.token.read({
-            tokenAddress: stablecoinToken.id,
-          });
-          if (t.collateral?.collateral) break;
-          await new Promise((r) => setTimeout(r, 500));
-        }
-      }
+      // Transaction tracking with indexing is now handled by the portal middleware
+      // No polling needed - updateCollateral will wait for indexing completion
     } catch {
       const t = await adminClient.token.read({
         tokenAddress: stablecoinToken.id,
@@ -159,8 +149,8 @@ describe("Token unfreeze partial", () => {
           });
           lastError = undefined;
           break;
-        } catch (err) {
-          lastError = err;
+        } catch (error) {
+          lastError = error;
           await new Promise((r) => setTimeout(r, 750));
         }
       }
