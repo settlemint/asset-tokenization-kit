@@ -107,6 +107,12 @@
   "sortAscending": "فرز تصاعدي",
   "sortDescending": "فرز تنازلي",
   "standard": "قياسي",
+  "table": {
+    "emptyState": {
+      "title": "لا توجد بيانات متاحة",
+      "description": "لا توجد عناصر للعرض في الوقت الحالي"
+    }
+  },
   "toggleColumns": "تبديل الأعمدة",
   "tryAdjustingFilters": "حاول ضبط الفلاتر الخاصة بك للعثور على ما تبحث عنه",
   "view": "عرض",

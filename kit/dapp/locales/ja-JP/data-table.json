@@ -107,6 +107,12 @@
   "sortAscending": "昇順にソート",
   "sortDescending": "降順にソート",
   "standard": "標準",
+  "table": {
+    "emptyState": {
+      "title": "データがありません",
+      "description": "現在表示する項目がありません"
+    }
+  },
   "toggleColumns": "列を切り替え",
   "tryAdjustingFilters": "探しているものを見つけるためにフィルターを調整してみてください",
   "view": "表示",

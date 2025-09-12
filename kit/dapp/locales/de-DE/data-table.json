@@ -107,6 +107,12 @@
   "sortAscending": "Aufsteigend sortieren",
   "sortDescending": "Absteigend sortieren",
   "standard": "Standard",
+  "table": {
+    "emptyState": {
+      "title": "Keine Daten verfügbar",
+      "description": "Es sind momentan keine Elemente anzuzeigen"
+    }
+  },
   "toggleColumns": "Spalten umschalten",
   "tryAdjustingFilters": "Versuchen Sie, Ihre Filter anzupassen, um das zu finden, wonach Sie suchen",
   "view": "Ansicht",
