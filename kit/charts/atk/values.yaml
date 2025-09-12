@@ -58,7 +58,7 @@ besu-network:
       checkConnection:
         image:
           repository: docker.io/curlimages/curl
-          tag: "8.15.0"
+          tag: "8.16.0"
           pullPolicy: IfNotPresent
   besu-validator-1:
     enabled: true
@@ -648,7 +648,7 @@ dapp:
       image:
         registry: docker.io
         repository: curlimages/curl
-        tag: "8.15.0"
+        tag: "8.16.0"
         pullPolicy: IfNotPresent
       # Target GraphQL endpoint URL (where POST requests are sent)
       url: "http://graph-node-combined:8000/subgraphs/name/kit"

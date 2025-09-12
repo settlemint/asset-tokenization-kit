@@ -214,7 +214,7 @@ initContainers:
     image:
       registry: docker.io
       repository: curlimages/curl
-      tag: 8.15.0
+      tag: 8.16.0
       pullPolicy: IfNotPresent
 
 imagePullSecrets: []
