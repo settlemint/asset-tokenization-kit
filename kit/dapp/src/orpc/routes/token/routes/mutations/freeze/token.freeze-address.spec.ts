@@ -81,6 +81,7 @@ describe("Token freeze address", () => {
     };
 
     // SETUP: Configure token with necessary permissions for comprehensive freeze testing
+    // Including custodian role for address freeze operations
     stablecoinToken = await createToken(
       adminClient,
       {
@@ -92,7 +93,7 @@ describe("Token freeze address", () => {
         countryCode: "056",
       },
       {
-        grantRole: ["supplyManagement", "governance"],
+        grantRole: ["supplyManagement", "governance", "custodian"],
         unpause: true,
       }
     );
@@ -169,37 +170,13 @@ describe("Token freeze address", () => {
    * - Court-ordered asset freezes
    * - AML compliance for flagged addresses
    *
-   * SECURITY: Verifies custodian role enforcement before allowing freeze operations.
-   * Auto-grants role if missing to simulate proper custodian setup.
+   * SECURITY: Relies on custodian role granted during token setup for freeze authority.
    *
    * ARCHITECTURE: Uses boolean freeze parameter for idempotent freeze/unfreeze operations.
    */
   test("admin can freeze an address", async () => {
-    const adminUser = await adminClient.user.me();
-    const adminAddress = adminUser.wallet as Address;
-
-    // SECURITY: Verify custodian role is properly configured for freeze authority
-    const tokenDetails = await adminClient.token.read({
-      tokenAddress: stablecoinToken.id,
-    });
-
-    const hasFreezerRole =
-      tokenDetails.userPermissions?.roles?.custodian ?? false;
-
-    if (!hasFreezerRole) {
-      // SETUP: Grant custodian role to enable freeze operations in test environment
-      await adminClient.token.grantRole({
-        contract: stablecoinToken.id,
-        accounts: [adminAddress],
-        role: "custodian",
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
-        },
-      });
-    }
-
     // OPERATION: Complete address freeze blocks all token operations for the address
+    // Admin already has custodian role from token setup
     const result = await adminClient.token.freezeAddress({
       contract: stablecoinToken.id,
       userAddress: investorAddress,
@@ -213,12 +190,22 @@ describe("Token freeze address", () => {
     expect(result).toBeDefined();
     expect(result.id).toBe(stablecoinToken.id);
 
-    // VERIFICATION: Confirm freeze status is reflected in token state
-    const investorBalance = await investorClient.token.read({
+    // VERIFICATION: Confirm freeze status is reflected in token balance
+    const holderData = await investorClient.token.holder({
       tokenAddress: stablecoinToken.id,
+      holderAddress: investorAddress,
     });
 
-    expect(investorBalance).toBeDefined();
+    expect(holderData.holder).toBeDefined();
+    expect(holderData.holder?.isFrozen).toBe(true);
+    // Address-level freezing sets the isFrozen flag but doesn't move balance to frozen amount
+    // The frozen amount remains 0 while the address is blocked from all operations
+    // This differs from partial freezing which moves specific amounts to frozen
+    // Note: When address is frozen, subgraph returns balances with decimal 0
+    expect(holderData.holder?.frozen).toEqual([0n, 0]);
+    expect(holderData.holder?.available).toEqual([0n, 0]);
+    // Total value also uses decimal 0 when address is frozen
+    expect(holderData.holder?.value).toEqual([10_000n, 0]);
   }, 100_000);
 
   /**
@@ -249,11 +236,18 @@ describe("Token freeze address", () => {
     expect(result.id).toBe(stablecoinToken.id);
 
     // VERIFICATION: Confirm address can resume normal token operations
-    const investorBalance = await investorClient.token.read({
+    const holderData = await investorClient.token.holder({
       tokenAddress: stablecoinToken.id,
+      holderAddress: investorAddress,
     });
 
-    expect(investorBalance).toBeDefined();
+    expect(holderData.holder).toBeDefined();
+    expect(holderData.holder?.isFrozen).toBe(false);
+    // When address is unfrozen, balance should be available again
+    // Note: After unfreeze, subgraph returns raw values with decimal 0
+    expect(holderData.holder?.frozen).toEqual([0n, 0]);
+    expect(holderData.holder?.available).toEqual([10_000n, 0]);
+    expect(holderData.holder?.value).toEqual([10_000n, 0]);
   }, 100_000);
 
   /**
@@ -329,6 +323,15 @@ describe("Token freeze address", () => {
 
     expect(firstFreeze).toBeDefined();
 
+    // Verify first freeze worked
+    const afterFirstFreeze = await adminClient.token.holder({
+      tokenAddress: stablecoinToken.id,
+      holderAddress: investorAddress,
+    });
+    expect(afterFirstFreeze.holder?.isFrozen).toBe(true);
+    // Address freeze doesn't move balance to frozen, just sets flag
+    expect(afterFirstFreeze.holder?.frozen).toEqual([0n, 0]);
+
     // IDEMPOTENCY: Second freeze on already-frozen address should not fail
     const secondFreeze = await adminClient.token.freezeAddress({
       contract: stablecoinToken.id,
@@ -342,6 +345,16 @@ describe("Token freeze address", () => {
 
     expect(secondFreeze).toBeDefined();
     expect(secondFreeze.id).toBe(stablecoinToken.id);
+
+    // Verify state remains the same after second freeze
+    const afterSecondFreeze = await adminClient.token.holder({
+      tokenAddress: stablecoinToken.id,
+      holderAddress: investorAddress,
+    });
+    expect(afterSecondFreeze.holder?.isFrozen).toBe(true);
+    // Address freeze maintains balance in available but blocks operations
+    expect(afterSecondFreeze.holder?.frozen).toEqual([0n, 0]);
+    expect(afterSecondFreeze.holder?.available).toEqual([0n, 0]);
 
     // CLEANUP: Reset address state to prevent test interference
     await adminClient.token.freezeAddress({
@@ -381,6 +394,16 @@ describe("Token freeze address", () => {
       },
     });
 
+    // Verify freeze worked
+    const afterFreeze = await adminClient.token.holder({
+      tokenAddress: stablecoinToken.id,
+      holderAddress: investorAddress,
+    });
+    expect(afterFreeze.holder?.isFrozen).toBe(true);
+    // Address freeze sets flag but doesn't move balance amounts
+    expect(afterFreeze.holder?.frozen).toEqual([0n, 0]);
+    expect(afterFreeze.holder?.available).toEqual([0n, 0]);
+
     // OPERATION: Initial unfreeze should restore address functionality
     const firstUnfreeze = await adminClient.token.freezeAddress({
       contract: stablecoinToken.id,
@@ -393,6 +416,15 @@ describe("Token freeze address", () => {
     });
 
     expect(firstUnfreeze).toBeDefined();
+
+    // Verify first unfreeze worked
+    const afterFirstUnfreeze = await adminClient.token.holder({
+      tokenAddress: stablecoinToken.id,
+      holderAddress: investorAddress,
+    });
+    expect(afterFirstUnfreeze.holder?.isFrozen).toBe(false);
+    expect(afterFirstUnfreeze.holder?.frozen).toEqual([0n, 0]);
+    expect(afterFirstUnfreeze.holder?.available).toEqual([10_000n, 0]);
 
     // IDEMPOTENCY: Second unfreeze on already-unfrozen address should not fail
     const secondUnfreeze = await adminClient.token.freezeAddress({
@@ -407,5 +439,15 @@ describe("Token freeze address", () => {
 
     expect(secondUnfreeze).toBeDefined();
     expect(secondUnfreeze.id).toBe(stablecoinToken.id);
+
+    // Verify state remains the same after second unfreeze
+    const afterSecondUnfreeze = await adminClient.token.holder({
+      tokenAddress: stablecoinToken.id,
+      holderAddress: investorAddress,
+    });
+    expect(afterSecondUnfreeze.holder?.isFrozen).toBe(false);
+    expect(afterSecondUnfreeze.holder?.frozen).toEqual([0n, 0]);
+    expect(afterSecondUnfreeze.holder?.available).toEqual([10_000n, 0]);
+    expect(afterSecondUnfreeze.holder?.value).toEqual([10_000n, 0]);
   }, 100_000);
 });

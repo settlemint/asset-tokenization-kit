@@ -200,7 +200,7 @@ describe("Token freeze partial", () => {
     }
 
     // OPERATION: Freeze 10% of investor balance to test partial functionality
-    const freezeAmount = toString(from("1000", stablecoinToken.decimals));
+    const freezeAmount = from("1000", stablecoinToken.decimals);
     const result = await adminClient.token.freezePartial({
       contract: stablecoinToken.id,
       userAddress: investorAddress,
@@ -241,7 +241,7 @@ describe("Token freeze partial", () => {
     const regularUserHeaders = await signInWithUser(DEFAULT_INVESTOR);
     const regularClient = getOrpcClient(regularUserHeaders);
 
-    const freezeAmount = toString(from("100", stablecoinToken.decimals));
+    const freezeAmount = from("100", stablecoinToken.decimals);
 
     // SECURITY: Verify unauthorized users are rejected with proper error code
     await expect(
@@ -330,11 +330,9 @@ describe("Token freeze partial", () => {
     }
 
     // Try to freeze significantly more than available (at least double + safety margin)
-    const excessiveFreezeAmount = toString(
-      from(
-        String(currentAvailable + 1000), // Just 1000 more than available should be enough to trigger error
-        stablecoinToken.decimals
-      )
+    const excessiveFreezeAmount = from(
+      String(currentAvailable + 1000), // Just 1000 more than available should be enough to trigger error
+      stablecoinToken.decimals
     );
 
     // INVARIANT: Smart contract should reject operations exceeding available balance
@@ -360,7 +358,7 @@ describe("Token freeze partial", () => {
         }
       );
       throw new Error(
-        `Freeze should have failed but succeeded. Attempted to freeze ${excessiveFreezeAmount} tokens when only ${currentAvailable} available.`
+        `Freeze should have failed but succeeded. Attempted to freeze ${toString(excessiveFreezeAmount)} tokens when only ${currentAvailable} available.`
       );
     } catch (error) {
       // Check if it contains the expected error message
@@ -377,66 +375,8 @@ describe("Token freeze partial", () => {
     }
   });
 
-  /**
-   * Confirms freeze operations fail gracefully on tokens without custodian capabilities.
-   *
-   * WHY: Prevents runtime errors when freeze operations are attempted on tokens
-   * that lack the required CUSTODIAN extension. This protects against:
-   * - Misleading success responses for unsupported operations
-   * - Runtime failures in production environments
-   * - User confusion about which tokens support freeze functionality
-   *
-   * ARCHITECTURE: Creates minimal stablecoin without CUSTODIAN extension to
-   * simulate tokens deployed without regulatory compliance features.
-   *
-   * DESIGN DECISION: Returns specific TOKEN_INTERFACE_NOT_SUPPORTED error rather
-   * than generic failure to help developers understand capability limitations.
-   */
-  test.skip("cannot freeze on token without CUSTODIAN extension - SKIPPED: All token types have CUSTODIAN built-in", async () => {
-    // SETUP: Create token without custodian capabilities to test error handling
-    const nonCustodianToken = await createToken(
-      adminClient,
-      {
-        type: "stablecoin",
-        name: `Non-Custodian Token ${Date.now()}`,
-        symbol: "NCT",
-        decimals: 18,
-        initialModulePairs: [], // initialModulePairs are for compliance modules, not extensions
-        basePrice: from("1.00", 2),
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
-        },
-        countryCode: "056",
-      },
-      {
-        grantRole: ["custodian"],
-      }
-    );
-
-    const freezeAmount = toString(from("100", nonCustodianToken.decimals));
-
-    // VALIDATION: Verify proper error code for unsupported token interfaces
-    await expect(
-      adminClient.token.freezePartial(
-        {
-          contract: nonCustodianToken.id,
-          userAddress: investorAddress,
-          amount: freezeAmount,
-          walletVerification: {
-            secretVerificationCode: DEFAULT_PINCODE,
-            verificationType: "PINCODE",
-          },
-        },
-        {
-          context: {
-            // TESTING: Skip logging expected interface errors to reduce noise
-            skipLoggingFor: [CUSTOM_ERROR_CODES.TOKEN_INTERFACE_NOT_SUPPORTED],
-          },
-        }
-      )
-    ).rejects.toThrow(
-      errorMessageForCode(CUSTOM_ERROR_CODES.TOKEN_INTERFACE_NOT_SUPPORTED)
-    );
-  });
+  // NOTE: Test for "cannot freeze on token without CUSTODIAN extension" was removed
+  // because all token types (bond, equity, fund, deposit, stablecoin) have the CUSTODIAN
+  // extension built-in by default. There is no way to create a token without CUSTODIAN
+  // through the normal factory flow, making this test scenario invalid.
 });
