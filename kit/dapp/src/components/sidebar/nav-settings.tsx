@@ -23,6 +23,7 @@ import {
   ClipboardCheck,
   Key,
   ChevronRight,
+  UserCheck,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -76,6 +77,7 @@ export function NavSettings() {
   );
 
   const isUserManagementActive = isSettingsActive("/admin/user-management");
+  const isClaimManagementActive = isSettingsActive("/admin/claim-management");
 
   return (
     <SidebarGroup>
@@ -92,6 +94,20 @@ export function NavSettings() {
             >
               <Users />
               <span>{t("userManagement")}</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton asChild>
+            <Link
+              to="/admin/claim-management"
+              activeProps={{
+                "data-active": true,
+              }}
+              className={isClaimManagementActive ? "font-semibold" : ""}
+            >
+              <UserCheck />
+              <span>{t("claimManagement")}</span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>

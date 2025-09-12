@@ -19,6 +19,7 @@
   "administration": "Administration",
   "platformSettings": "Platform Settings",
   "userManagement": "User Management",
+  "claimManagement": "Claim Management",
   "settings": {
     "assetTypes": {
       "title": "Asset Types",

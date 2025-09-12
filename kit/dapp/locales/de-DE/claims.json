@@ -1,0 +1,55 @@
+{
+  "status": {
+    "pending": "Ausstehend",
+    "verified": "Verifiziert",
+    "rejected": "Abgelehnt",
+    "expired": "Abgelaufen"
+  },
+  "table": {
+    "columns": {
+      "user": "Benutzer",
+      "claimType": "Anspruchstyp",
+      "topic": "Thema",
+      "status": "Status",
+      "issuer": "Aussteller",
+      "issuedAt": "Ausgestellt am",
+      "expiresAt": "Läuft ab am",
+      "verifiedAt": "Verifiziert am"
+    },
+    "search": {
+      "placeholder": "Ansprüche suchen..."
+    },
+    "emptyState": {
+      "title": "Keine Ansprüche gefunden",
+      "description": "Es wurden noch keine Identitätsansprüche ausgestellt.",
+      "loading": "Lade Ansprüche..."
+    },
+    "errors": {
+      "loadFailed": "Fehler beim Laden der Ansprüche. Bitte versuchen Sie es erneut.",
+      "navigationFailed": "Fehler beim Navigieren zu den Anspruchsdetails"
+    },
+    "fallback": {
+      "noExpiry": "Kein Ablaufdatum",
+      "notVerified": "Nicht verifiziert"
+    }
+  },
+  "page": {
+    "description": "Identitätsansprüche, Verifizierungsstatus und Compliance für Benutzer verwalten.",
+    "loading": "Ansprüche werden geladen..."
+  },
+  "details": {
+    "title": "Konto-Ansprüche",
+    "summary": {
+      "total": "Ansprüche gesamt",
+      "verified": "Verifiziert",
+      "pending": "Ausstehend",
+      "rejectedExpired": "Abgelehnt/Abgelaufen"
+    },
+    "claimId": "Anspruchs-ID",
+    "noClaimsTitle": "Keine Ansprüche gefunden",
+    "noClaimsDescription": "Diesem Konto wurden noch keine Identitätsansprüche zugewiesen."
+  },
+  "tabs": {
+    "details": "Details"
+  }
+}

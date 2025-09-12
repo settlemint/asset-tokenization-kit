@@ -34,6 +34,7 @@ import type enAssetsTranslations from "@/locales/en-US/assets.json";
 import type enAuthTranslations from "@/locales/en-US/auth.json";
 import type enBlockchainTranslations from "@/locales/en-US/blockchain.json";
 import type enClaimTopicsIssuersTranslations from "@/locales/en-US/claim-topics-issuers.json";
+import type enClaimsTranslations from "@/locales/en-US/claims.json";
 import type enCommonTranslations from "@/locales/en-US/common.json";
 import type enComplianceModulesTranslations from "@/locales/en-US/compliance-modules.json";
 import type enComponentsTranslations from "@/locales/en-US/components.json";
@@ -95,6 +96,7 @@ declare module "i18next" {
       auth: typeof enAuthTranslations;
       blockchain: typeof enBlockchainTranslations;
       "claim-topics-issuers": typeof enClaimTopicsIssuersTranslations;
+      claims: typeof enClaimsTranslations;
       "compliance-modules": typeof enComplianceModulesTranslations;
       common: typeof enCommonTranslations;
       "country-multiselect": typeof enCountryMultiselectTranslations;

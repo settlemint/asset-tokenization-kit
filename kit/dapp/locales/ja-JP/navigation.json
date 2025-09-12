@@ -15,5 +15,26 @@
     "exchange": "交換",
     "custody": "保管",
     "income": "収入"
+  },
+  "administration": "管理",
+  "platformSettings": "プラットフォーム設定",
+  "userManagement": "ユーザー管理",
+  "claimManagement": "クレーム管理",
+  "settings": {
+    "assetTypes": {
+      "title": "資産タイプ",
+      "description": "プラットフォームで利用可能な異なる資産タイプを設定し有効化します。一度有効化された資産タイプは無効化できません。",
+      "allEnabled": "利用可能なすべての資産タイプが有効化されました。",
+      "enabledTitle": "有効な資産タイプ",
+      "enabledDescription": "これらの資産タイプは現在アクティブでプラットフォームで利用可能です。",
+      "enable": "有効化",
+      "enabled": "有効",
+      "confirmEnableTitle": "{{assetType}}を有効化しますか？",
+      "confirmEnableDescription": "この操作は取り消すことができません。一度有効化されると、この資産タイプはプラットフォームで永続的に利用可能になります。"
+    },
+    "compliance": "コンプライアンス",
+    "addons": "アドオン",
+    "claimTopicsIssuers": "クレームトピック＆発行者",
+    "permissions": "権限"
   }
 }

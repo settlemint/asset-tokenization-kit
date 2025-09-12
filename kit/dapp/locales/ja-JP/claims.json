@@ -1,0 +1,55 @@
+{
+  "status": {
+    "pending": "保留中",
+    "verified": "検証済み",
+    "rejected": "拒否済み",
+    "expired": "期限切れ"
+  },
+  "table": {
+    "columns": {
+      "user": "ユーザー",
+      "claimType": "クレームタイプ",
+      "topic": "トピック",
+      "status": "ステータス",
+      "issuer": "発行者",
+      "issuedAt": "発行日",
+      "expiresAt": "有効期限",
+      "verifiedAt": "検証日"
+    },
+    "search": {
+      "placeholder": "クレームを検索..."
+    },
+    "emptyState": {
+      "title": "クレームが見つかりません",
+      "description": "まだアイデンティティクレームが発行されていません。",
+      "loading": "クレームを読み込み中..."
+    },
+    "errors": {
+      "loadFailed": "クレームの読み込みに失敗しました。もう一度お試しください。",
+      "navigationFailed": "クレーム詳細への遷移に失敗しました"
+    },
+    "fallback": {
+      "noExpiry": "有効期限なし",
+      "notVerified": "未検証"
+    }
+  },
+  "page": {
+    "description": "ユーザーのアイデンティティクレーム、検証ステータス、コンプライアンスを管理します。",
+    "loading": "クレームを読み込み中..."
+  },
+  "details": {
+    "title": "アカウントクレーム",
+    "summary": {
+      "total": "総クレーム数",
+      "verified": "検証済み",
+      "pending": "保留中",
+      "rejectedExpired": "拒否済み/期限切れ"
+    },
+    "claimId": "クレームID",
+    "noClaimsTitle": "クレームが見つかりません",
+    "noClaimsDescription": "このアカウントにはまだアイデンティティクレームが割り当てられていません。"
+  },
+  "tabs": {
+    "details": "詳細"
+  }
+}
