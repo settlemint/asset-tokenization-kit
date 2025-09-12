@@ -1,5 +1,4 @@
 import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboard";
-import { DateCell } from "@/components/data-table/cells/date-cell";
 import { DetailGrid } from "@/components/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
@@ -87,20 +86,17 @@ function RouteComponent() {
         <DetailGridItem
           label={t("user:fields.accountCreated")}
           info={t("user:fields.accountCreatedInfo")}
-        >
-          <DateCell value={user.createdAt} />
-        </DetailGridItem>
+          value={user.createdAt}
+          type="date"
+        />
 
         <DetailGridItem
           label={t("user:fields.lastLogin")}
           info={t("user:fields.lastLoginInfo")}
-        >
-          <DateCell
-            value={user.lastLoginAt}
-            fallback={t("user:fields.neverLoggedIn")}
-            relative
-          />
-        </DetailGridItem>
+          value={user.lastLoginAt}
+          type="date"
+          dateOptions={{ relative: true }}
+        />
 
         <DetailGridItem
           label={t("user:fields.walletAddress")}

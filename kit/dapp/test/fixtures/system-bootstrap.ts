@@ -232,7 +232,7 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
   ];
 
   const rolesToGrant = issuerRequiredRoles.filter(
-    (role) => issuerMe.userSystemPermissions.roles[role] !== true
+    (role) => issuerMe.roles[role] !== true
   );
 
   if (rolesToGrant.length > 0) {
@@ -257,9 +257,7 @@ export async function setupDefaultAdminRoles(orpClient: OrpcClient) {
       ...TOKEN_MANAGEMENT_REQUIRED_ROLES,
     ])
   );
-  const rolesToGrant = allRoles.filter(
-    (role) => adminMe.userSystemPermissions.roles[role] !== true
-  );
+  const rolesToGrant = allRoles.filter((role) => adminMe.roles[role] !== true);
 
   if (rolesToGrant.length > 0) {
     logger.info("Granting roles to admin", { roles: rolesToGrant });

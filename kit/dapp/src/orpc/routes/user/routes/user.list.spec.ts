@@ -278,7 +278,7 @@ describe("User list", () => {
       if (usersByEmail.items.length > 1) {
         for (let i = 1; i < usersByEmail.items.length; i++) {
           expect(
-            usersByEmail.items[i]?.email.localeCompare(
+            (usersByEmail.items[i]?.email ?? "").localeCompare(
               usersByEmail.items[i - 1]?.email ?? ""
             )
           ).toBeGreaterThanOrEqual(0);

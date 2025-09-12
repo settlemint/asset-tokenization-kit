@@ -40,8 +40,7 @@ export function AddonsManagement() {
   const { data: user } = useQuery(orpc.user.me.queryOptions());
 
   // Check if user has system manager role for enabling addons
-  const hasSystemManagerRole =
-    user?.userSystemPermissions?.roles?.systemManager;
+  const hasSystemManagerRole = user?.roles?.systemManager;
 
   // Check if bond factory is deployed
   const hasBondFactory = useMemo(

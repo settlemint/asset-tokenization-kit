@@ -37,7 +37,7 @@ export interface DetailGridItemProps extends PropsWithChildren {
   /** Whether to show pretty name for addresses (only applies when type="address") */
   showPrettyName?: boolean;
   /** Whether to include time in the date formatting */
-  includeTime?: boolean;
+  dateOptions?: FormatValueOptions["dateOptions"];
 }
 
 /**
@@ -61,7 +61,7 @@ export function DetailGridItem({
   currency,
   emptyValue,
   showPrettyName,
-  includeTime,
+  dateOptions,
 }: DetailGridItemProps) {
   const { t } = useTranslation("detail-grid");
 
@@ -75,7 +75,7 @@ export function DetailGridItem({
           currency,
           emptyValue,
           showPrettyName,
-          includeTime,
+          dateOptions,
         })
       : safeToString(value ?? ""));
 
