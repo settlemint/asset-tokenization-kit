@@ -63,7 +63,6 @@ const AccountsResponseSchema = z.object({
 // Type for database query result rows
 type QueryResultRow = {
   user: typeof user.$inferSelect;
-  name: string;
   kyc: {
     firstName: string | null;
     lastName: string | null;
@@ -123,15 +122,12 @@ export const adminList = authRouter.user.adminList
 
     // Transform results to include human-readable roles, onboarding state, and identity data
     const items = queryResult.map((row: QueryResultRow) => {
-      const { user: u, kyc, name } = row;
+      const { user: u, kyc } = row;
 
       // Handle users without wallets gracefully
       if (!u.wallet) {
         return buildUserWithoutWallet({
-          userData: {
-            ...u,
-            name,
-          },
+          userData: u,
           kyc,
           context,
         });
@@ -142,10 +138,7 @@ export const adminList = authRouter.user.adminList
       const identity = account?.identity;
 
       return buildUserWithIdentity({
-        userData: {
-          ...u,
-          name,
-        },
+        userData: u,
         kyc,
         identity: identity?.id,
         claims: identity?.claims ?? [],
@@ -188,13 +181,7 @@ async function getUsersForAccounts({
       (user) => user.user.wallet?.toLowerCase() === account.id.toLowerCase()
     );
     if (user) {
-      return {
-        ...user,
-        name:
-          user.kyc?.firstName && user.kyc.lastName
-            ? `${user.kyc.firstName} ${user.kyc.lastName}`
-            : user.user.name,
-      };
+      return user;
     }
     return {
       user: {
@@ -202,7 +189,6 @@ async function getUsersForAccounts({
         wallet: account.id,
         name: account.id,
       },
-      name: account.id,
       kyc: null,
     } as QueryResultRow;
   });
