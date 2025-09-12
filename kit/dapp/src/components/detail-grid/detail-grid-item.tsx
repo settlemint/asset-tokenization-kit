@@ -36,7 +36,7 @@ export interface DetailGridItemProps extends PropsWithChildren {
   emptyValue?: React.ReactNode;
   /** Whether to show pretty name for addresses (only applies when type="address") */
   showPrettyName?: boolean;
-  /** Whether to include time in the date formatting */
+  /** Options for date formatting */
   dateOptions?: FormatValueOptions["dateOptions"];
 }
 
