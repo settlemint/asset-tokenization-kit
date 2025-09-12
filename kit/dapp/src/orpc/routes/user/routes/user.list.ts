@@ -254,15 +254,12 @@ export const list = authRouter.user.list
 
     // Transform results to include human-readable roles, onboarding state, and identity data
     const items = queryResult.map((row: QueryResultRow) => {
-      const { user: u, kyc, name } = row;
+      const { user: u, kyc } = row;
 
       // Handle users without wallets gracefully
       if (!u.wallet) {
         return buildUserWithoutWallet({
-          userData: {
-            ...u,
-            name,
-          },
+          userData: u,
           kyc,
           context,
         });
@@ -273,10 +270,7 @@ export const list = authRouter.user.list
       const identity = account?.identity;
 
       return buildUserWithIdentity({
-        userData: {
-          ...u,
-          name,
-        },
+        userData: u,
         kyc,
         identity: identity?.id,
         claims: identity?.claims ?? [],

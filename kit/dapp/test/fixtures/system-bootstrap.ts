@@ -210,20 +210,22 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
 
   // First, set the Better Auth role to 'issuer' to grant off-chain permissions
   // This is required for the { account: ["read"] } permission in offchain-permissions.middleware.ts
-  const authClient = getAuthClient();
-  const adminHeaders = await signInWithUser(DEFAULT_ADMIN);
-  await authClient.admin.setRole(
-    {
-      userId: issuerMe.id,
-      role: "issuer",
-    },
-    {
-      headers: {
-        ...Object.fromEntries(adminHeaders.entries()),
+  if (issuerMe.role !== "issuer") {
+    const authClient = getAuthClient();
+    const adminHeaders = await signInWithUser(DEFAULT_ADMIN);
+    await authClient.admin.setRole(
+      {
+        userId: issuerMe.id,
+        role: "issuer",
       },
-    }
-  );
-  logger.info("Set Better Auth role for issuer to 'issuer'");
+      {
+        headers: {
+          ...Object.fromEntries(adminHeaders.entries()),
+        },
+      }
+    );
+    logger.info("Set Better Auth role for issuer to 'issuer'");
+  }
 
   // Issuer needs both token management roles and the claimIssuer role
   const issuerRequiredRoles: AccessControlRoles[] = [
