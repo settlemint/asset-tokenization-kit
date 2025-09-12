@@ -1,7 +1,5 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
-import { GrantRoleForm } from "@/components/platform-settings/role-management/grant-role-form";
-import { ViewUserRoles } from "@/components/platform-settings/role-management/view-user-roles";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { UsersPermissionsTable } from "@/components/users/users-permissions-table";
 import { orpc } from "@/orpc/orpc-client";
@@ -74,14 +72,6 @@ function PermissionsPage() {
         >
           <UsersPermissionsTable />
         </Suspense>
-
-        {/* Role Management Form - Show only if user is admin */}
-        {user?.role === "admin" && (
-          <>
-            <GrantRoleForm />
-            <ViewUserRoles />
-          </>
-        )}
       </div>
     </div>
   );

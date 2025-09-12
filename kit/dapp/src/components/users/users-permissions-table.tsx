@@ -2,16 +2,26 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Users } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import {
+  ActionItem,
+  ActionsCell,
+} from "@/components/data-table/cells/actions-cell";
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { ChangeSystemRolesSheet } from "@/components/manage-dropdown/sheets/change-role/change-system-roles-sheet";
+import { Button } from "@/components/ui/button";
 import { orpc } from "@/orpc/orpc-client";
-import type { User as UserMe } from "@/orpc/routes/user/routes/user.me.schema";
+import {
+  CurrentUser,
+  User as UserMe,
+} from "@/orpc/routes/user/routes/user.me.schema";
+import { EthereumAddress } from "@atk/zod/ethereum-address";
 import { toast } from "sonner";
 
 interface User extends Omit<UserMe, "roles"> {
@@ -33,6 +43,20 @@ function toLabel(role: string) {
 export function UsersPermissionsTable() {
   const { t } = useTranslation("user");
   const router = useRouter();
+  const [openChangeRoles, setOpenChangeRoles] = useState(false);
+  const [presetAccount, setPresetAccount] = useState<
+    EthereumAddress | undefined
+  >(undefined);
+
+  const { data: me } = useQuery(orpc.user.me.queryOptions());
+  const canGrant = me?.userSystemPermissions?.actions.grantRole ?? false;
+  const { data: system } = useQuery(
+    orpc.system.read.queryOptions({
+      input: {
+        id: "default",
+      },
+    })
+  );
 
   // Fetch users data using ORPC with server-side pagination
   const { data, isLoading, error } = useQuery(
@@ -126,8 +150,23 @@ export function UsersPermissionsTable() {
             },
           },
         }),
+        columnHelper.display({
+          id: "actions",
+          header: "",
+          cell: ({ row }) => (
+            <RowActions
+              me={me}
+              row={row.original}
+              onOpenChangeRoles={(account: EthereumAddress) => {
+                setPresetAccount(account);
+                setOpenChangeRoles(true);
+              }}
+            />
+          ),
+          meta: { type: "none", enableCsvExport: false },
+        }),
       ] as ColumnDef<User>[]),
-    [t]
+    [t, me]
   );
 
   // Handle loading and error states
@@ -158,6 +197,18 @@ export function UsersPermissionsTable() {
           enableFilters: true,
           enableExport: true,
           enableViewOptions: true,
+          customActions: (
+            <Button
+              size="sm"
+              onClick={() => {
+                setPresetAccount(undefined);
+                setOpenChangeRoles(true);
+              }}
+              disabled={!canGrant}
+            >
+              {t("permissions.table.actions.changeRoles")}
+            </Button>
+          ),
           placeholder: t("permissions.table.search.placeholder"),
         }}
         pagination={{
@@ -173,6 +224,41 @@ export function UsersPermissionsTable() {
         }}
         onRowClick={handleRowClick}
       />
+      <ChangeSystemRolesSheet
+        open={openChangeRoles}
+        onOpenChange={setOpenChangeRoles}
+        accessControl={system?.accessControl ?? undefined}
+        presetAccount={presetAccount}
+      />
     </ComponentErrorBoundary>
   );
+}
+
+function RowActions({
+  me,
+  row,
+  onOpenChangeRoles,
+}: {
+  me?: CurrentUser;
+  row: User;
+  onOpenChangeRoles: (account: EthereumAddress) => void;
+}) {
+  const { t } = useTranslation("user");
+  const canGrantRole = me?.userSystemPermissions?.actions.grantRole ?? false;
+  const canRevokeRole = me?.userSystemPermissions?.actions.revokeRole ?? false;
+  const canChangeRoles = canGrantRole || canRevokeRole; // Can do either action
+
+  const actions: ActionItem[] = [
+    {
+      label: t("permissions.table.actions.changeRoles"),
+      onClick: () => {
+        if (row.wallet) {
+          onOpenChangeRoles(row.wallet);
+        }
+      },
+      disabled: !row.wallet || !canChangeRoles,
+    },
+  ];
+
+  return <ActionsCell actions={actions} />;
 }

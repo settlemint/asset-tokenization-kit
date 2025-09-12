@@ -12,7 +12,7 @@ import {
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
-import { ChangeRolesSheet } from "@/components/manage-dropdown/sheets/change-roles-sheet";
+import { ChangeTokenRolesSheet } from "@/components/manage-dropdown/sheets/change-role/change-token-roles-sheet";
 import { Button } from "@/components/ui/button";
 import { getAccessControlEntries } from "@/orpc/helpers/access-control-helpers";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
@@ -154,7 +154,7 @@ export function TokenPermissionsTable({ token }: { token: Token }) {
           description: t("tokens:permissions.empty.description"),
         }}
       />
-      <ChangeRolesSheet
+      <ChangeTokenRolesSheet
         open={openChangeRoles}
         onOpenChange={setOpenChangeRoles}
         asset={token}

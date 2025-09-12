@@ -74,6 +74,9 @@
         "title": "No users found",
         "description": "No users have been registered yet.",
         "loading": "Loading users..."
+      },
+      "actions": {
+        "changeRoles": "Change roles"
       }
     }
   },
