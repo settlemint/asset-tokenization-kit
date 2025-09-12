@@ -307,7 +307,7 @@ describe("User list", () => {
           {},
           {
             context: {
-              skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
             },
           }
         )
@@ -339,7 +339,7 @@ describe("User list", () => {
           {},
           {
             context: {
-              skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
             },
           }
         )

@@ -415,7 +415,12 @@ export const fundData = {
   isin: generateValidISIN("EG"),
   decimals: "3",
   country: "Egypt",
+  basePrice: "100",
   managementFee: "2",
+  price: "100",
+  fundCategory: "Growth",
+  fundClass: "Institutional",
+  initialSupply: "0",
   pincode: pincode,
   sidebarAssetTypes: "Funds",
 };

@@ -220,7 +220,6 @@ export class AdminPage extends BasePage {
       await this.page.waitForTimeout(500);
       return true;
     } catch (error) {
-      console.log(`Error during search: ${error}`);
       return false;
     }
   }

@@ -16,9 +16,9 @@ import { ComponentErrorBoundary } from "@/components/error/component-error-bound
 import { ChangeRolesSheet } from "@/components/manage-dropdown/sheets/change-roles-sheet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { getAccessControlEntries } from "@/orpc/helpers/access-control-helpers";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 
 type PermissionRow = {
   id: string;

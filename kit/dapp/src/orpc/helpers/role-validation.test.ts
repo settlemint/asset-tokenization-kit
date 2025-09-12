@@ -2,11 +2,13 @@
  * @vitest-environment node
  */
 
-import type {
-  AccessControl,
-  AccessControlRoles,
-} from "@/lib/fragments/the-graph/access-control-fragment";
+import {
+  roles,
+  type AccessControl,
+  type AccessControlRoles,
+} from "@atk/zod/access-control-roles";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
+import { zeroAddress } from "viem";
 import { describe, expect, test } from "vitest";
 import { mapUserRoles } from "./role-validation";
 
@@ -264,60 +266,28 @@ describe("role-validation", () => {
 
     test("should handle all possible roles from AccessControlRoles type", () => {
       // Test that all roles defined in the initial state are handled
-      const allRoles: AccessControlRoles[] = [
-        "addonManager",
-        "addonModule",
-        "addonRegistryModule",
-        "admin",
-        "auditor",
-        "burner",
-        "capManagement",
-        "claimPolicyManager",
-        "claimIssuer",
-        "complianceAdmin",
-        "complianceManager",
-        "custodian",
-        "emergency",
-        "forcedTransfer",
-        "freezer",
-        "fundsManager",
-        "globalListManager",
-        "governance",
-        "identityManager",
-        "identityRegistryModule",
-        "minter",
-        "organisationIdentityManager",
-        "pauser",
-        "recovery",
-        "saleAdmin",
-        "signer",
-        "supplyManagement",
-        "systemManager",
-        "systemModule",
-        "tokenAdmin",
-        "tokenFactoryModule",
-        "tokenFactoryRegistryModule",
-        "tokenManager",
-        "trustedIssuersMetaRegistryModule",
-        "verificationAdmin",
-      ];
 
-      // Create accessControl with user having all roles
-      const accessControl = allRoles.reduce(
-        (acc, role) => {
-          acc[role] = [{ id: mockWallet, isContract: false }];
-          return acc;
-        },
-        { id: "access-manager-address" } as Record<
-          AccessControlRoles,
-          { id: EthereumAddress; isContract: boolean }[]
-        > & { id: string }
-      );
+      const rolesData: Record<
+        AccessControlRoles,
+        { id: EthereumAddress; isContract: boolean }[]
+      > = {} as Record<
+        AccessControlRoles,
+        { id: EthereumAddress; isContract: boolean }[]
+      >;
+      roles.map((role: AccessControlRoles) => {
+        rolesData[role] = [{ id: mockWallet, isContract: false }];
+      });
+
+      // Create a valid AccessControl object with all roles containing the mock wallet
+      const accessControl: AccessControl = {
+        id: zeroAddress,
+        ...rolesData,
+      };
 
       const result = mapUserRoles(mockWallet, accessControl);
 
       // All roles should be true
-      allRoles.forEach((role) => {
+      roles.forEach((role: AccessControlRoles) => {
         expect(result[role]).toBe(true);
       });
     });
