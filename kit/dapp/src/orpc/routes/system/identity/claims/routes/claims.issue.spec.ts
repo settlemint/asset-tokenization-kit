@@ -120,7 +120,9 @@ describe("Claims issue (integration)", () => {
           secretVerificationCode: "123456",
         },
       })
-    ).rejects.toThrow("You are not authorized to issue claims for topic");
+    ).rejects.toThrow(
+      "You are not a trusted issuer for topic: knowYourCustomer"
+    );
   });
 
   it("should fail with invalid target address format", async () => {
