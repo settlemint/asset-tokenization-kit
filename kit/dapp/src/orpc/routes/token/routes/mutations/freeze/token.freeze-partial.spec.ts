@@ -375,6 +375,103 @@ describe("Token freeze partial", () => {
     }
   });
 
+  /**
+   * Validates that zero amounts are rejected to prevent pointless operations.
+   *
+   * WHY: Zero freeze operations waste gas and create meaningless audit trails.
+   * They could be used to spam the blockchain with useless transactions.
+   *
+   * SECURITY: Input validation prevents potential protocol abuse through
+   * malformed requests that could bypass business logic constraints.
+   */
+  test("cannot freeze zero amount", async () => {
+    const adminUser = await adminClient.user.me();
+    const adminAddress = adminUser.wallet as Address;
+
+    const tokenDetails = await adminClient.token.read({
+      tokenAddress: stablecoinToken.id,
+    });
+
+    const hasCustodianRole =
+      tokenDetails.userPermissions?.roles?.custodian ?? false;
+
+    if (!hasCustodianRole) {
+      await adminClient.token.grantRole({
+        contract: stablecoinToken.id,
+        accounts: [adminAddress],
+        role: "custodian",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+      });
+    }
+
+    // VALIDATION: Zero amount should be rejected at schema level
+    const zeroAmount = from("0", stablecoinToken.decimals);
+
+    await expect(
+      adminClient.token.freezePartial({
+        contract: stablecoinToken.id,
+        userAddress: investorAddress,
+        amount: zeroAmount,
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+      })
+    ).rejects.toThrow("Freeze amount must be positive");
+  });
+
+  /**
+   * Validates that negative amounts are rejected to prevent protocol confusion.
+   *
+   * WHY: Negative amounts could theoretically be interpreted as unfreezing
+   * operations, which would bypass proper authorization controls.
+   *
+   * SECURITY: Prevents potential confusion between freeze/unfreeze operations
+   * that could lead to unintended state changes.
+   */
+  test("cannot freeze negative amount", async () => {
+    const adminUser = await adminClient.user.me();
+    const adminAddress = adminUser.wallet as Address;
+
+    const tokenDetails = await adminClient.token.read({
+      tokenAddress: stablecoinToken.id,
+    });
+
+    const hasCustodianRole =
+      tokenDetails.userPermissions?.roles?.custodian ?? false;
+
+    if (!hasCustodianRole) {
+      await adminClient.token.grantRole({
+        contract: stablecoinToken.id,
+        accounts: [adminAddress],
+        role: "custodian",
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+      });
+    }
+
+    // VALIDATION: Negative amount should be rejected at schema level
+    // Note: BigInt(-1000) creates a negative value for testing
+    const negativeAmount = [BigInt(-1000), stablecoinToken.decimals] as const;
+
+    await expect(
+      adminClient.token.freezePartial({
+        contract: stablecoinToken.id,
+        userAddress: investorAddress,
+        amount: negativeAmount,
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+      })
+    ).rejects.toThrow("Freeze amount must be positive");
+  });
+
   // NOTE: Test for "cannot freeze on token without CUSTODIAN extension" was removed
   // because all token types (bond, equity, fund, deposit, stablecoin) have the CUSTODIAN
   // extension built-in by default. There is no way to create a token without CUSTODIAN

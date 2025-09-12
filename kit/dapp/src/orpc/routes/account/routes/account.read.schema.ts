@@ -1,5 +1,6 @@
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { isoCountryCode } from "@atk/zod/iso-country-code";
+import { identityClaim } from "@atk/zod/claim";
 import { z } from "zod";
 
 export const AccountReadSchema = z.object({
@@ -39,9 +40,9 @@ export const AccountSchema = z.object({
 
   /**
    * User's identity claims.
-   * Only returns the names of the claims
+   * Returns both claim names and IDs for revocation operations
    */
-  claims: z.array(z.string()).optional(),
+  claims: z.array(identityClaim).optional(),
 });
 
 // Define response schema for type-safe GraphQL validation
@@ -55,11 +56,7 @@ export const AccountResponseSchema = z.object({
       identity: z
         .object({
           id: ethereumAddress,
-          claims: z.array(
-            z.object({
-              name: z.string(),
-            })
-          ),
+          claims: z.array(identityClaim),
         })
         .nullable()
         .optional(),

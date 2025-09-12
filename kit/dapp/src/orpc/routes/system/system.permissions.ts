@@ -61,6 +61,9 @@ export const SYSTEM_PERMISSIONS = {
   topicCreate: { any: ["claimPolicyManager", "systemModule"] },
   topicUpdate: { any: ["claimPolicyManager", "systemModule"] },
   topicDelete: { any: ["claimPolicyManager", "systemModule"] },
+  claimCreate: { any: ["claimIssuer", "systemModule"] },
+  claimList: { any: ["identityManager", "claimIssuer"] },
+  claimRevoke: { any: ["claimIssuer", "systemModule"] },
 } as const satisfies Record<string, RoleRequirement>;
 
 // Use the validation type to ensure it's not stripped

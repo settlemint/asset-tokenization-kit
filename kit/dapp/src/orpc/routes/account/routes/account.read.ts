@@ -15,7 +15,16 @@ const READ_ACCOUNT_QUERY = theGraphGraphql(`
       identity {
         id
         claims {
+          id
           name
+          revoked
+          issuer {
+            id
+          }
+          values {
+            key
+            value
+          }
         }
       }
     }
@@ -61,6 +70,13 @@ export const read = authRouter.account.read
         ? countries.numericToAlpha2(result.account.country)
         : undefined,
       identity: result.account.identity?.id,
-      claims: result.account.identity?.claims.map((claim) => claim.name) ?? [],
+      claims:
+        result.account.identity?.claims.map((claim) => ({
+          id: claim.id,
+          name: claim.name,
+          revoked: claim.revoked,
+          issuer: claim.issuer,
+          values: claim.values,
+        })) ?? [],
     };
   });

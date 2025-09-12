@@ -6,9 +6,11 @@ import { z } from "zod";
 export const TokenFreezePartialInputSchema =
   MutationInputSchemaWithContract.extend({
     userAddress: ethereumAddress.describe("The address to freeze tokens for"),
-    amount: apiBigInt.describe(
-      "The amount of tokens to freeze (supports dnum format)"
-    ),
+    amount: apiBigInt
+      .refine((val) => val > 0n, {
+        message: "Freeze amount must be positive",
+      })
+      .describe("The amount of tokens to freeze (supports dnum format)"),
   });
 
 export type TokenFreezePartialInput = z.infer<

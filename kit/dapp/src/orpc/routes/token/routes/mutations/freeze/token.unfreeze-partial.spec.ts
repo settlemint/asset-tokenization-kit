@@ -353,4 +353,57 @@ describe("Token unfreeze partial", () => {
 
     expect(finalBalance).toBeDefined();
   }, 100_000);
+
+  /**
+   * Validates that zero amounts are rejected to prevent meaningless operations.
+   *
+   * WHY: Zero unfreeze operations waste gas and create audit trail noise.
+   * They provide no business value and could be used for protocol spam.
+   *
+   * SECURITY: Input validation prevents potential abuse of unfreeze endpoints
+   * through malformed requests that bypass business logic checks.
+   */
+  test("cannot unfreeze zero amount", async () => {
+    // VALIDATION: Zero amount should be rejected at schema level
+    const zeroAmount = from("0", stablecoinToken.decimals);
+
+    await expect(
+      adminClient.token.unfreezePartial({
+        contract: stablecoinToken.id,
+        userAddress: investorAddress,
+        amount: zeroAmount,
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+      })
+    ).rejects.toThrow("Unfreeze amount must be positive");
+  });
+
+  /**
+   * Validates that negative amounts are rejected to prevent protocol confusion.
+   *
+   * WHY: Negative unfreeze amounts could theoretically be interpreted as
+   * freeze operations, bypassing proper authorization and audit controls.
+   *
+   * SECURITY: Prevents potential confusion between freeze/unfreeze operations
+   * that could lead to unintended balance modifications.
+   */
+  test("cannot unfreeze negative amount", async () => {
+    // VALIDATION: Negative amount should be rejected at schema level
+    // Note: BigInt(-1000) creates a negative value for testing
+    const negativeAmount = [BigInt(-1000), stablecoinToken.decimals] as const;
+
+    await expect(
+      adminClient.token.unfreezePartial({
+        contract: stablecoinToken.id,
+        userAddress: investorAddress,
+        amount: negativeAmount,
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+      })
+    ).rejects.toThrow("Unfreeze amount must be positive");
+  });
 });

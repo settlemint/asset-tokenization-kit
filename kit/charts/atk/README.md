@@ -192,7 +192,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | global.artifacts.image.pullPolicy | string | `"IfNotPresent"` |  |
 | global.artifacts.image.registry | string | `"ghcr.io"` |  |
 | global.artifacts.image.repository | string | `"settlemint/asset-tokenization-kit-artifacts"` |  |
-| global.artifacts.image.tag | string | `"2.0.1"` |  |
+| global.artifacts.image.tag | string | `"2.0.0-main.91391"` |  |
 | global.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | global.networkPolicy.enabled | bool | `false` |  |
 | graph-node.enabled | bool | `true` |  |
@@ -252,7 +252,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.loki.gateway.image.tag | string | `"1.29-alpine"` |  |
 | observability.loki.loki.image.registry | string | `"docker.io"` | The Docker registry |
 | observability.loki.loki.image.repository | string | `"grafana/loki"` | Docker image repository |
-| observability.loki.loki.image.tag | string | `"3.5.4"` | Overrides the image tag whose default is the chart's appVersion |
+| observability.loki.loki.image.tag | string | `"3.5.5"` | Overrides the image tag whose default is the chart's appVersion |
 | observability.loki.memcached.enabled | bool | `true` | Enable the built in memcached server provided by the chart |
 | observability.loki.memcached.image.repository | string | `"docker.io/memcached"` | Memcached Docker image repository |
 | observability.loki.memcached.image.tag | string | `"1.6.39-alpine"` | Memcached Docker image tag |
