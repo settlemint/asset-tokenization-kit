@@ -1,6 +1,8 @@
-import type { AccessControl } from "@/lib/fragments/the-graph/access-control-fragment";
 import type { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { accessControlRoles } from "@atk/zod/access-control-roles";
+import {
+  accessControlRoles,
+  type AccessControl,
+} from "@atk/zod/access-control-roles";
 import { assetExtensionArray } from "@atk/zod/asset-extensions";
 import { assetSymbol } from "@atk/zod/asset-symbol";
 import { assetType } from "@atk/zod/asset-types";

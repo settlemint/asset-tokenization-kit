@@ -1,5 +1,5 @@
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { baseRouter } from "@/orpc/procedures/base.router";
+import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import type { AssetExtension } from "@atk/zod/asset-extensions";
 import type { RoleRequirement } from "@atk/zod/role-requirement";
 import { satisfiesRoleRequirement } from "@atk/zod/role-requirement";

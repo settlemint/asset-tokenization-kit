@@ -404,6 +404,7 @@ export const stablecoinData = {
   isin: generateValidISIN("US"),
   decimals: "16",
   country: "United States of America",
+  basePrice: "100",
   pincode: pincode,
   sidebarAssetTypes: "Stablecoins",
 };
@@ -430,8 +431,9 @@ export const equityData = {
   name: generateEquityName(),
   symbol: generateSymbol(generateEquityName()),
   isin: generateValidISIN("RS"),
-  decimals: "12",
+  decimals: "3",
   country: "Serbia",
+  basePrice: "100",
   pincode: pincode,
   sidebarAssetTypes: "Equities",
 };
@@ -443,6 +445,7 @@ export const depositData = {
   isin: generateValidISIN("AW"),
   decimals: "14",
   country: "Aruba",
+  basePrice: "100",
   pincode: pincode,
   sidebarAssetTypes: "Deposits",
 };

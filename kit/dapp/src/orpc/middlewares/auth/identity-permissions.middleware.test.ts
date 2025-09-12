@@ -1,5 +1,7 @@
 import type { SessionUser } from "@/lib/auth/index";
-import type { AccessControl } from "@/lib/fragments/the-graph/access-control-fragment";
+import type { AccessControl } from "@atk/zod/access-control-roles";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
+import { zeroAddress } from "viem";
 import { describe, expect, it } from "vitest";
 import {
   canReadClaims,
@@ -22,9 +24,9 @@ describe("Identity permissions middleware", () => {
     const createMockAccessControl = (
       identityManagers: string[] = []
     ): AccessControl => ({
-      id: "test-access-control",
+      id: zeroAddress,
       identityManager: identityManagers.map((id) => ({
-        id,
+        id: id as EthereumAddress,
         isContract: false,
       })),
       // Mock all required fields with empty arrays

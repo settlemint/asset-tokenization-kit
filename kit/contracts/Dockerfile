@@ -1,6 +1,9 @@
 # Dockerfile for Asset Tokenization Kit Artifacts
 # Contains ABIs and Genesis files for deployment as init container
-FROM busybox:1.37
+FROM alpine:3.22
+
+# Install jq for JSON processing
+RUN apk add --no-cache jq
 
 # Create directories for artifacts
 RUN mkdir -p /artifacts/abis /artifacts/genesis
@@ -9,7 +12,7 @@ RUN mkdir -p /artifacts/abis /artifacts/genesis
 COPY .generated/portal/ /artifacts/abis/
 
 # Copy genesis file only (no allocations file)
-COPY .generated/genesis.json /artifacts/genesis/
+COPY .generated/genesis* /artifacts/genesis/
 
 # Set proper permissions: 755 for directories, 644 for files
 RUN find /artifacts -type d -exec chmod 755 {} + && find /artifacts -type f -exec chmod 644 {} +

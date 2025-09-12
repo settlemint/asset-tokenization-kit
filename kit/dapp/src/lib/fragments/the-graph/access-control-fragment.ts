@@ -1,18 +1,4 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import type { FragmentOf, ResultOf } from "@settlemint/sdk-thegraph";
-
-/**
- * The roles of the access control system
- */
-export type AccessControlRoles = Exclude<
-  keyof NonNullable<NonNullable<ResultOf<typeof AccessControlFragment>>>,
-  "id"
->;
-
-/**
- * The access control data from The Graph
- */
-export type AccessControl = FragmentOf<typeof AccessControlFragment>;
 
 /**
  * GraphQL fragment for access control data from The Graph
