@@ -21,7 +21,7 @@ export const Route = createFileRoute(
         createI18nBreadcrumbMetadata("platformSettings", {
           href: "/admin/platform-settings/permissions",
         }),
-        createI18nBreadcrumbMetadata("settings.permissions"),
+        createI18nBreadcrumbMetadata("settings.permissions.title"),
       ],
     };
   },

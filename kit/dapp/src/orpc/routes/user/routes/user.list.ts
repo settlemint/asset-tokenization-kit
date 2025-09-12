@@ -23,6 +23,7 @@ import {
   ilike,
   inArray,
   or,
+  sql,
   type AnyColumn,
 } from "drizzle-orm";
 import { z } from "zod";
@@ -67,6 +68,7 @@ const AccountsResponseSchema = z.object({
 // Type for database query result rows
 type QueryResultRow = {
   user: typeof user.$inferSelect;
+  name: string;
   kyc: {
     firstName: string | null;
     lastName: string | null;
@@ -182,9 +184,25 @@ export const list = authRouter.user.list
       const order = orderDirection === "desc" ? desc : asc;
 
       // Safely access the order column, defaulting to createdAt if invalid
+      const nameSelect = sql<string>`
+        COALESCE(
+          COALESCE(${kycProfiles.firstName}, '') || ' ' || COALESCE(${kycProfiles.lastName}, ''),
+          ${user.name}
+        )
+      `;
+      // Sorting is done case insensitive
+      const nameSort = sql<string>`
+        LOWER(
+          COALESCE(${kycProfiles.firstName}, '') ||
+          COALESCE(${kycProfiles.lastName}, '') ||
+          COALESCE(${user.name}, '')
+        )
+      `;
       const orderColumn =
-        (user[orderBy as keyof typeof user] as AnyColumn | undefined) ??
-        user.createdAt;
+        orderBy === "wallet"
+          ? nameSort
+          : ((user[orderBy as keyof typeof user] as AnyColumn | undefined) ??
+            user.createdAt);
 
       // Get total count first
       const totalResult = await context.db
@@ -194,9 +212,11 @@ export const list = authRouter.user.list
       total = totalResult[0]?.count ?? 0;
 
       // Execute paginated query with sorting and KYC data
+
       queryResult = await context.db
         .select({
           user: user,
+          name: nameSelect.as("name"),
           kyc: {
             firstName: kycProfiles.firstName,
             lastName: kycProfiles.lastName,
@@ -204,15 +224,9 @@ export const list = authRouter.user.list
         })
         .from(user)
         .leftJoin(kycProfiles, eq(kycProfiles.userId, user.id))
-        .orderBy(
-          ...(orderBy === "wallet"
-            ? [order(kycProfiles.firstName), order(kycProfiles.lastName)]
-            : [order(orderColumn)])
-        )
+        .orderBy(order(orderColumn))
         .where(
           or(
-            ilike(kycProfiles.firstName, `%${filters?.search ?? ""}%`),
-            ilike(kycProfiles.lastName, `%${filters?.search ?? ""}%`),
             ilike(user.email, `%${filters?.search ?? ""}%`),
             ilike(user.wallet, `%${filters?.search ?? ""}%`)
           )
@@ -257,7 +271,7 @@ export const list = authRouter.user.list
 
     // Transform results to include human-readable roles, onboarding state, and identity data
     const items = queryResult.map((row: QueryResultRow) => {
-      const { user: u, kyc } = row;
+      const { user: u, kyc, name } = row;
 
       // User roles from the access control system
       const roles = mapUserRoles(
@@ -269,10 +283,7 @@ export const list = authRouter.user.list
       if (!u.wallet) {
         return {
           id: u.id,
-          name:
-            kyc?.firstName && kyc.lastName
-              ? `${kyc.firstName} ${kyc.lastName}`
-              : u.name,
+          name,
           email: u.email,
           role: getUserRole(u.role),
           roles,
@@ -372,7 +383,13 @@ async function getUsersForAccounts({
         (user) => user.user.wallet?.toLowerCase() === account.id.toLowerCase()
       );
       if (user) {
-        return user;
+        return {
+          ...user,
+          name:
+            user.kyc?.firstName && user.kyc.lastName
+              ? `${user.kyc.firstName} ${user.kyc.lastName}`
+              : user.user.name,
+        };
       }
       return {
         user: {
@@ -380,6 +397,7 @@ async function getUsersForAccounts({
           wallet: account.id,
           name: account.id,
         },
+        name: account.id,
         kyc: null,
       } as QueryResultRow;
     }),
