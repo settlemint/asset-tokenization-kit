@@ -166,34 +166,55 @@ spec:
               ls -la "$GENESIS_FILE"
               
               # Optionally merge contract alloc data from artifacts if needed
+              ARTIFACTS_ALLOC_FILE="/contracts/genesis/genesis-allocations.json"
               ARTIFACTS_GENESIS_FILE="/contracts/genesis/genesis.json"
-              if [ -f "$ARTIFACTS_GENESIS_FILE" ]; then
-                echo "Artifacts genesis file found, extracting alloc data..."
+              
+              # First try to use dedicated allocations file, fall back to extracting from genesis.json
+              if [ -f "$ARTIFACTS_ALLOC_FILE" ]; then
+                echo "Found genesis-allocations.json file, using it for allocations..."
+                
+                # Read the allocation file directly
+                ARTIFACTS_ALLOC=$(cat "$ARTIFACTS_ALLOC_FILE" 2>/dev/null || echo '{}')
+                
+                # Validate it's valid JSON
+                if echo "$ARTIFACTS_ALLOC" | jq -e . >/dev/null 2>&1; then
+                  echo "Valid allocations file found"
+                else
+                  echo "Error: genesis-allocations.json is not valid JSON"
+                  ARTIFACTS_ALLOC='{}'
+                fi
+                
+              elif [ -f "$ARTIFACTS_GENESIS_FILE" ]; then
+                echo "No genesis-allocations.json found, falling back to extracting from genesis.json..."
                 
                 # Extract only the alloc section from artifacts (contract deployments)
                 ARTIFACTS_ALLOC=$(jq -r '.alloc // {}' "$ARTIFACTS_GENESIS_FILE" 2>/dev/null || echo '{}')
                 
-                # Only merge if there are actual allocations in artifacts
-                if [ "$ARTIFACTS_ALLOC" != "{}" ] && [ "$ARTIFACTS_ALLOC" != "null" ]; then
-                  echo "Merging contract allocations from artifacts..."
-                  
-                  # Merge artifacts alloc into generated genesis
-                  jq --argjson artifacts_alloc "$ARTIFACTS_ALLOC" \
-                     '.alloc = (.alloc + $artifacts_alloc)' \
-                     "$GENESIS_FILE" > "${GENESIS_FILE}.merged"
-                  
-                  if [ -s "${GENESIS_FILE}.merged" ]; then
-                    mv "${GENESIS_FILE}.merged" "$GENESIS_FILE"
-                    echo "Successfully merged contract allocations"
-                  else
-                    echo "Error: Merged file is empty, keeping original"
-                    rm -f "${GENESIS_FILE}.merged"
-                  fi
+              else
+                echo "No allocation data found in artifacts"
+                ARTIFACTS_ALLOC='{}'
+              fi
+              
+              # Only merge if there are actual allocations
+              if [ "$ARTIFACTS_ALLOC" != "{}" ] && [ "$ARTIFACTS_ALLOC" != "null" ]; then
+                echo "Merging contract allocations into genesis..."
+                
+                # Write allocation to temp file to avoid command line length issues
+                echo "$ARTIFACTS_ALLOC" > /tmp/artifacts_alloc.json
+                
+                # Merge artifacts alloc into generated genesis using file
+                jq '.alloc = (.alloc + input)' \
+                   "$GENESIS_FILE" /tmp/artifacts_alloc.json > "${GENESIS_FILE}.merged"
+                
+                if [ -s "${GENESIS_FILE}.merged" ]; then
+                  mv "${GENESIS_FILE}.merged" "$GENESIS_FILE"
+                  echo "Successfully merged contract allocations"
                 else
-                  echo "No contract allocations found in artifacts"
+                  echo "Error: Merged file is empty, keeping original"
+                  rm -f "${GENESIS_FILE}.merged"
                 fi
               else
-                echo "No artifacts genesis file found, using generated genesis as-is"
+                echo "No allocations to merge, using generated genesis as-is"
               fi
               
               echo "Final genesis file info:"

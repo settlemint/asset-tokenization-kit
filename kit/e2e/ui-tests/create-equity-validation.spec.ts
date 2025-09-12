@@ -1,4 +1,4 @@
-import { type BrowserContext, test } from "@playwright/test";
+import { type BrowserContext, test, type Page } from "@playwright/test";
 import { CreateAssetForm } from "../pages/create-asset-form";
 import { Pages } from "../pages/pages";
 import { equityData } from "../test-data/asset-data";
@@ -9,11 +9,12 @@ test.describe.serial("Equity Creation Validation", () => {
   let adminContext: BrowserContext;
   let adminPages: ReturnType<typeof Pages>;
   let createAssetForm: CreateAssetForm;
+  let adminPage: Page;
 
   test.beforeAll(async ({ browser }) => {
     const setupUser = getSetupUser();
     adminContext = await browser.newContext();
-    const adminPage = await adminContext.newPage();
+    adminPage = await adminContext.newPage();
     adminPages = Pages(adminPage);
     createAssetForm = new CreateAssetForm(adminPage);
     await adminPages.signInPage.goto();
@@ -190,17 +191,25 @@ test.describe.serial("Equity Creation Validation", () => {
     };
     test("Create Equity asset", async () => {
       const setupUser = getSetupUser();
-      await createAssetForm.fillAssetFields({
+      await adminPage.goto("/");
+      await createAssetForm.openAssetDesigner();
+      await createAssetForm.selectAssetClass("Flexible Income");
+      await createAssetForm.selectAssetTypeFromDialog("Equity");
+      await createAssetForm.fillAssetDetails({
         name: equityData.name,
         symbol: equityData.symbol,
         decimals: equityData.decimals,
         isin: equityData.isin,
+        basePrice: equityData.basePrice,
         country: equityData.country,
-        pincode: setupUser.pincode,
       });
+
       testData.name = equityData.name;
       testData.symbol = equityData.symbol;
       testData.decimals = equityData.decimals;
+
+      await createAssetForm.completeAssetCreation(setupUser.pincode, "equity");
+
       await createAssetForm.verifyAssetCreated({
         name: testData.name,
         symbol: testData.symbol,
