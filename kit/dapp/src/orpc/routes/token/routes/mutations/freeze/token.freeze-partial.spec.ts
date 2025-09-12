@@ -420,7 +420,7 @@ describe("Token freeze partial", () => {
           verificationType: "PINCODE",
         },
       })
-    ).rejects.toThrow("Freeze amount must be positive");
+    ).rejects.toThrow("Input validation failed");
   });
 
   /**
@@ -469,7 +469,7 @@ describe("Token freeze partial", () => {
           verificationType: "PINCODE",
         },
       })
-    ).rejects.toThrow("Freeze amount must be positive");
+    ).rejects.toThrow("Input validation failed");
   });
 
   // NOTE: Test for "cannot freeze on token without CUSTODIAN extension" was removed

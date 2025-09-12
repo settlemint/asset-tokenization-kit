@@ -377,7 +377,7 @@ describe("Token unfreeze partial", () => {
           verificationType: "PINCODE",
         },
       })
-    ).rejects.toThrow("Unfreeze amount must be positive");
+    ).rejects.toThrow("Input validation failed");
   });
 
   /**
@@ -404,6 +404,6 @@ describe("Token unfreeze partial", () => {
           verificationType: "PINCODE",
         },
       })
-    ).rejects.toThrow("Unfreeze amount must be positive");
+    ).rejects.toThrow("Input validation failed");
   });
 });

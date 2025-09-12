@@ -75,4 +75,3 @@ export async function revokeClaim({
 
   return txHash;
 }
-
