@@ -183,6 +183,8 @@ export const list = authRouter.user.list
         COALESCE(${user.name}, '')
       )
     `;
+    // Note: Sorting by 'wallet' uses nameSort, which sorts by a concatenation of firstName, lastName, and user.name.
+    // This does NOT sort by wallet address, but by user name.
     const orderColumn =
       orderBy === "wallet"
         ? nameSort

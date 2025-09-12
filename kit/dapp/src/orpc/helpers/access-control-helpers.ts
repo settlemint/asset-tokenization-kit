@@ -121,25 +121,27 @@ export function getAccountsWithRoles(
   accessControl: AccessControl | null | undefined,
   excludeContracts: boolean = false
 ): Array<{ id: EthereumAddress; roles: AccessControlRoles[] }> {
-  const accountsWithRoles: Array<{
-    id: EthereumAddress;
-    roles: AccessControlRoles[];
-  }> = [];
+  // Use a Map to track accounts and their roles as Sets for uniqueness
+  const accountsMap: Map<EthereumAddress, Set<AccessControlRoles>> = new Map();
   for (const [role, accounts] of getAccessControlEntries(accessControl)) {
     for (const account of accounts) {
       if (excludeContracts && account.isContract) {
         continue;
       }
       const accountId = getEthereumAddress(account.id);
-      const existingAccount = accountsWithRoles.find(
-        (existing) => existing.id === accountId
-      );
-      if (existingAccount) {
-        existingAccount.roles.push(role);
-      } else {
-        accountsWithRoles.push({ id: accountId, roles: [role] });
+      if (!accountsMap.has(accountId)) {
+        accountsMap.set(accountId, new Set());
       }
+      accountsMap.get(accountId)?.add(role);
     }
+  }
+  // Convert the Map to the required output format
+  const accountsWithRoles: Array<{
+    id: EthereumAddress;
+    roles: AccessControlRoles[];
+  }> = [];
+  for (const [id, rolesSet] of accountsMap.entries()) {
+    accountsWithRoles.push({ id, roles: [...rolesSet] });
   }
   return accountsWithRoles;
 }

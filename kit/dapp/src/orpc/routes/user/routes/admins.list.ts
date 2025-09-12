@@ -176,20 +176,15 @@ async function getUsersForAccounts({
     .leftJoin(kycProfiles, eq(kycProfiles.userId, user.id))
     .where(inArray(user.wallet, accountIds));
 
-  return accounts.map((account) => {
-    const user = result.find(
-      (user) => user.user.wallet?.toLowerCase() === account.id.toLowerCase()
-    );
-    if (user) {
-      return user;
-    }
-    return {
-      user: {
-        id: account.id,
-        wallet: account.id,
-        name: account.id,
-      },
-      kyc: null,
-    } as QueryResultRow;
-  });
+  return accounts
+    .map((account) => {
+      const user = result.find(
+        (user) => user.user.wallet?.toLowerCase() === account.id.toLowerCase()
+      );
+      if (user) {
+        return user;
+      }
+      return null;
+    })
+    .filter((user) => user !== null);
 }

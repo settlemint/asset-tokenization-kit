@@ -67,10 +67,14 @@ function RouteComponent() {
           <CopyToClipboard value={user.email ?? "-"} className="w-full">
             <HoverCard>
               <HoverCardTrigger asChild>
-                <span className="cursor-default truncate">{user.email}</span>
+                <span className="cursor-default truncate">
+                  {user.email ?? "-"}
+                </span>
               </HoverCardTrigger>
               <HoverCardContent className="w-auto max-w-[24rem]">
-                <div className="break-all font-mono text-sm">{user.email}</div>
+                <div className="break-all font-mono text-sm">
+                  {user.email ?? "-"}
+                </div>
               </HoverCardContent>
             </HoverCard>
           </CopyToClipboard>

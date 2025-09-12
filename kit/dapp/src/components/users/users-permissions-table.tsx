@@ -64,15 +64,18 @@ export function UsersPermissionsTable() {
   );
 
   // Extract users and total from the paginated response
-  const users =
-    data?.map(
-      (user): User => ({
-        ...user,
-        roles: Object.entries(user.roles)
-          .filter(([_, hasRole]) => hasRole)
-          .map(([role]) => toLabel(role)),
-      })
-    ) ?? [];
+  const users = useMemo(
+    () =>
+      data?.map(
+        (user): User => ({
+          ...user,
+          roles: Object.entries(user.roles)
+            .filter(([_, hasRole]) => hasRole)
+            .map(([role]) => toLabel(role)),
+        })
+      ) ?? [],
+    [data]
+  );
 
   // Handle row click to navigate to user detail
   const handleRowClick = (user: User) => {
