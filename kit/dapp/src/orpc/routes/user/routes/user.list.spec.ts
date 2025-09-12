@@ -301,8 +301,7 @@ describe("User list", () => {
       expect(usersByName.items.length).toBeGreaterThan(0);
       const namesFromQuery = usersByName.items.map((user: User) => user.name);
       const sortedNamesFromQuery = namesFromQuery.toSorted(
-        (a, b) =>
-          a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }) // postgres like sorting
+        (a, b) => a.localeCompare(b, "en-US", { sensitivity: "base" }) // postgres like sorting
       );
       expect(namesFromQuery).toEqual(sortedNamesFromQuery);
       const namesFromQueryReverse = usersByNameReverse.items.map(
@@ -310,11 +309,7 @@ describe("User list", () => {
       );
       const sortedNamesFromQueryReverse = namesFromQueryReverse
         .toSorted(
-          (a, b) =>
-            a.localeCompare(b, undefined, {
-              numeric: true,
-              sensitivity: "base",
-            }) // postgres like sorting
+          (a, b) => a.localeCompare(b, "en-US", { sensitivity: "base" }) // postgres like sorting
         )
         .toReversed();
       expect(namesFromQueryReverse).toEqual(sortedNamesFromQueryReverse);
