@@ -3,9 +3,9 @@ import { portalClient } from "@/lib/settlemint/portal";
 import { getVerificationId } from "@/orpc/helpers/get-verification-id";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { handleWalletVerificationChallenge } from "@settlemint/sdk-portal";
-import { isHex } from "viem";
+import { encodePacked, isHex, keccak256 } from "viem";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createClaim, type CreateClaimInput } from "./create-claim";
+import { ClaimTopic, createClaim, type CreateClaimInput } from "./create-claim";
 
 // Mocks
 vi.mock("@/orpc/helpers/get-verification-id", () => ({
@@ -57,8 +57,7 @@ describe("createClaim", () => {
     });
 
     const claim: CreateClaimInput["claim"] = {
-      topicName: "knowYourCustomer",
-      signature: "string claim",
+      topic: ClaimTopic.kyc,
       data: { claim: "KYC-APPROVED" },
     };
 
@@ -80,12 +79,49 @@ describe("createClaim", () => {
     });
   });
 
+  it("creates a claim with a valid signature for a custom claim", async () => {
+    getVerificationMock.mockReturnValue("verification-id-1");
+    handleWalletVerificationChallengeMock.mockResolvedValue({
+      challengeId: "challenge-1",
+      challengeResponse: "response-1",
+    });
+    portalClientRequestMock.mockResolvedValue({
+      walletSignMessage: { signature: "0xdeadbeef" },
+    });
+
+    const claim: CreateClaimInput["claim"] = {
+      topic: ClaimTopic.custom,
+      data: ["bar"],
+      topicName: "foo",
+      signature: "string foo",
+    };
+
+    const result = await createClaim({
+      user,
+      walletVerification,
+      identity,
+      claim,
+    });
+
+    expect(result).toHaveProperty("claimData");
+    expect(isHex(result.signature)).toBe(true);
+    const expectedTopicId = BigInt(
+      keccak256(encodePacked(["string"], ["foo"]))
+    );
+    expect(result.topicId).toEqual(expectedTopicId);
+    expect(result.signature).toBe("0xdeadbeef");
+    expect(portalClientRequestMock?.mock.calls[0]?.[1]).toMatchObject({
+      address: user.wallet,
+      challengeId: "challenge-1",
+      challengeResponse: "response-1",
+    });
+  });
+
   it("throws if verification ID is not found", async () => {
     getVerificationMock.mockReturnValue(undefined);
 
     const claim: CreateClaimInput["claim"] = {
-      topicName: "knowYourCustomer",
-      signature: "string claim",
+      topic: ClaimTopic.kyc,
       data: { claim: "KYC-APPROVED" },
     };
 
@@ -110,8 +146,7 @@ describe("createClaim", () => {
     });
 
     const claim: CreateClaimInput["claim"] = {
-      topicName: "knowYourCustomer",
-      signature: "string claim",
+      topic: ClaimTopic.kyc,
       data: { claim: "KYC-APPROVED" },
     };
 
@@ -136,8 +171,7 @@ describe("createClaim", () => {
     });
 
     const claim: CreateClaimInput["claim"] = {
-      topicName: "assetClassification",
-      signature: "string class, string category",
+      topic: ClaimTopic.assetClassification,
       data: { class: "Bond", category: "Debt" },
     };
 
@@ -163,8 +197,7 @@ describe("createClaim", () => {
     });
 
     const claim: CreateClaimInput["claim"] = {
-      topicName: "knowYourCustomer",
-      signature: "string claim",
+      topic: ClaimTopic.kyc,
       data: { claim: "KYC-APPROVED" },
     };
 

@@ -1,3 +1,4 @@
+import type { IdentityClaim } from "@atk/zod/claim";
 import { VerificationType } from "@atk/zod/verification-type";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
@@ -11,7 +12,6 @@ import {
 } from "@test/fixtures/user";
 import { waitUntil } from "@test/helpers/test-helpers";
 import { beforeAll, describe, expect, it } from "vitest";
-import type { IdentityClaim } from "@atk/zod/claim";
 
 describe("Claims list (integration)", () => {
   let adminClient: ReturnType<typeof getOrpcClient>;
@@ -64,7 +64,7 @@ describe("Claims list (integration)", () => {
     await adminClient.system.identity.claims.issue({
       targetIdentityAddress: targetAccount.identity,
       claim: {
-        topicName: "knowYourCustomer",
+        topic: "knowYourCustomer",
         data: {
           claim: "kyc-verified",
         },
@@ -79,7 +79,7 @@ describe("Claims list (integration)", () => {
     await issuerClient.system.identity.claims.issue({
       targetIdentityAddress: targetAccount.identity,
       claim: {
-        topicName: "collateral",
+        topic: "collateral",
         data: {
           amount: "1000000000000000000",
           expiryTimestamp: "1735689600",
