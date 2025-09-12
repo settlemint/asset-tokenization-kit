@@ -1,6 +1,9 @@
 # Dockerfile for Asset Tokenization Kit Artifacts
 # Contains ABIs and Genesis files for deployment as init container
-FROM busybox:1.37
+FROM alpine:3.22
+
+# Install jq for JSON processing
+RUN apk add --no-cache jq
 
 # Create directories for artifacts
 RUN mkdir -p /artifacts/abis /artifacts/genesis
