@@ -32,7 +32,7 @@
  * - Integration with identity registry maintains trust boundaries
  */
 
-import type { DynamicClaim } from "@/orpc/helpers/claims/create-claim";
+import { ClaimTopic } from "@/orpc/helpers/claims/create-claim";
 import { issueClaim } from "@/orpc/helpers/claims/issue-claim";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
@@ -116,13 +116,12 @@ export const updateCollateral = tokenRouter.token.updateCollateral
       walletVerification,
       identity: onchainID,
       claim: {
-        topicName: "collateral",
-        signature: "uint256 amount, uint256 expiryTimestamp",
+        topic: ClaimTopic.collateral,
         data: {
           amount: amount,
           expiryTimestamp,
         },
-      } as DynamicClaim,
+      },
       portalClient: context.portalClient,
     });
 

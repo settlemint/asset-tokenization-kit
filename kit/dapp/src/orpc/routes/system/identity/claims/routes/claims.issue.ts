@@ -1,4 +1,3 @@
-import { type ClaimInfo } from "@/orpc/helpers/claims/create-claim";
 import { issueClaim } from "@/orpc/helpers/claims/issue-claim";
 import { toClaimInfo } from "@/orpc/helpers/claims/to-claim-info";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
@@ -9,7 +8,6 @@ import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { topicList } from "@/orpc/routes/system/claim-topics/routes/topic.list";
 import { call } from "@orpc/server";
-import { getAddress } from "viem";
 import type { ClaimsIssueInput } from "./claims.issue.schema";
 
 // ClaimData (API) -> ClaimInfo (internal) conversion handled by helper
@@ -89,7 +87,12 @@ export const issue = authRouter.system.identity.claims.issue
   )
   .use(
     trustedIssuerMiddleware<ClaimsIssueInput>({
-      selectTopic: (i) => i.claim.topicName,
+      selectTopic: (i) => {
+        if (i.claim.topic === "custom") {
+          return i.claim.topicName;
+        }
+        return i.claim.topic;
+      },
     })
   )
   .handler(async ({ context, input, errors }) => {
@@ -104,21 +107,22 @@ export const issue = authRouter.system.identity.claims.issue
       }
     );
 
-    const topicScheme = topics.find((t) => t.name === claim.topicName);
+    const topicName = claim.topic === "custom" ? claim.topicName : claim.topic;
+    const topicScheme = topics.find((t) => t.name === topicName);
     if (!topicScheme) {
       throw errors.BAD_REQUEST({
-        message: `Topic '${claim.topicName}' is not registered in the topic scheme registry`,
+        message: `Topic '${topicName}' is not registered in the topic scheme registry`,
       });
     }
 
-    // Convert API claim data to internal format with topic signature
-    const claimInfo: ClaimInfo = toClaimInfo(claim, topicScheme.signature);
+    // Convert API claim data to internal format and issue via helper
+    const claimInfo = toClaimInfo(claim);
 
     const transactionHash = await issueClaim({
       user: context.auth.user,
       issuer: context.userIssuerIdentity,
       walletVerification,
-      identity: getAddress(targetIdentityAddress),
+      identity: targetIdentityAddress,
       claim: claimInfo,
       portalClient: context.portalClient,
     });
@@ -126,7 +130,7 @@ export const issue = authRouter.system.identity.claims.issue
     return {
       success: true,
       transactionHash,
-      claimTopic: claim.topicName,
+      claimTopic: topicName,
       targetWallet: targetIdentityAddress,
     };
   });
