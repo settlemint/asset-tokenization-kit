@@ -10,7 +10,7 @@ import { z } from "zod";
  */
 export const ClaimsListInputSchema = z.union([
   z.object({
-    wallet: ethereumAddress.describe("Wallet address to fetch claims for"),
+    accountId: ethereumAddress.describe("Account address to fetch claims for"),
   }),
 ]);
 
@@ -42,9 +42,9 @@ export const ClaimsListOutputSchema = z.object({
   isRegistered: z.boolean().describe("Whether user has on-chain identity"),
 
   /**
-   * User's wallet address for reference.
+   * Id of the account for reference.
    */
-  wallet: ethereumAddress.nullable().describe("User's wallet address"),
+  accountId: ethereumAddress.nullable().describe("User's wallet address"),
 });
 
 export type ClaimsListInput = z.infer<typeof ClaimsListInputSchema>;

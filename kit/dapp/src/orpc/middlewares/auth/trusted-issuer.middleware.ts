@@ -1,6 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 // import type { Context } from "@/orpc/context/context";
 import { baseRouter } from "@/orpc/procedures/base.router";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { getAddress } from "viem";
 import z from "zod";
 
@@ -28,7 +29,7 @@ const READ_USER_TRUSTED_ISSUER_TOPICS_QUERY = theGraphGraphql(`
 const TrustedIssuerTopicsResponseSchema = z.object({
   trustedIssuers: z.array(
     z.object({
-      id: z.string(),
+      id: ethereumAddress,
       claimTopics: z.array(
         z.object({
           name: z.string(),

@@ -240,6 +240,8 @@ function getSystemPermissions(userRoles: ReturnType<typeof mapUserRoles>) {
     topicUpdate: false,
     topicDelete: false,
     claimCreate: false,
+    claimList: false,
+    claimRevoke: false,
   };
 
   const userRoleList = Object.entries(userRoles)

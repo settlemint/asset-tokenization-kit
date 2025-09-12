@@ -7,6 +7,7 @@ import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middle
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { topicList } from "@/orpc/routes/system/claim-topics/routes/topic.list";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call } from "@orpc/server";
 import type { ClaimsIssueInput } from "./claims.issue.schema";
 
@@ -79,7 +80,7 @@ export const issue = authRouter.system.identity.claims.issue
   .use(portalMiddleware)
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: { any: ["claimIssuer"] },
+      requiredRoles: SYSTEM_PERMISSIONS.claimCreate,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },

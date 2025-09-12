@@ -1,38 +1,13 @@
 import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { ClaimTopicSchema } from "@atk/zod/claim";
 import { z } from "zod";
 
 /**
- * Enum of claim topics that can be revoked via API.
- * Uses the same topics as issueable claims.
+ * Alias for claim topics that can be revoked via API.
+ * Uses the shared ClaimTopicSchema for consistency.
  */
-export const RevokableClaimTopicSchema = z.enum([
-  // Investor-level claims
-  "knowYourCustomer",
-  "antiMoneyLaundering",
-  "qualifiedInstitutionalInvestor",
-  "professionalInvestor",
-  "accreditedInvestor",
-  "accreditedInvestorVerified",
-  "regulationS",
-
-  // Issuer-level claims
-  "issuerProspectusFiled",
-  "issuerProspectusExempt",
-  "issuerLicensed",
-  "issuerReportingCompliant",
-  "issuerJurisdiction",
-
-  // Asset-level claims
-  "collateral",
-  "isin",
-  "assetClassification",
-  "basePrice",
-  "assetIssuer",
-
-  // General claims
-  "contractIdentity",
-]);
+export const RevokableClaimTopicSchema = ClaimTopicSchema;
 
 /**
  * Input schema for claims revoke endpoint.
@@ -72,11 +47,6 @@ export const ClaimsRevokeOutputSchema = z.object({
     .string()
     .optional()
     .describe("Blockchain transaction hash"),
-
-  /**
-   * Error message if unsuccessful.
-   */
-  error: z.string().optional().describe("Error message if revocation failed"),
 
   /**
    * Claim ID that was revoked.

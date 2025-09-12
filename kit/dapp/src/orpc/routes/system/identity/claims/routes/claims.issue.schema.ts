@@ -1,38 +1,13 @@
 import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { ClaimTopicSchema } from "@atk/zod/claim";
 import { z } from "zod";
 
 /**
- * Enum of supported claim topics for issuing claims.
- * Subset of all available claim topics that can be issued via API.
+ * Alias for claim topics that can be issued via API.
+ * Uses the shared ClaimTopicSchema for consistency.
  */
-export const IssueableClaimTopicSchema = z.enum([
-  // Investor-level claims
-  "knowYourCustomer",
-  "antiMoneyLaundering",
-  "qualifiedInstitutionalInvestor",
-  "professionalInvestor",
-  "accreditedInvestor",
-  "accreditedInvestorVerified",
-  "regulationS",
-
-  // Issuer-level claims
-  "issuerProspectusFiled",
-  "issuerProspectusExempt",
-  "issuerLicensed",
-  "issuerReportingCompliant",
-  "issuerJurisdiction",
-
-  // Asset-level claims
-  "collateral",
-  "isin",
-  "assetClassification",
-  "basePrice",
-  "assetIssuer",
-
-  // General claims
-  "contractIdentity",
-]);
+export const IssueableClaimTopicSchema = ClaimTopicSchema;
 
 /**
  * Dynamic claim data schema based on claim topic.
@@ -213,11 +188,6 @@ export const ClaimsIssueOutputSchema = z.object({
     .string()
     .optional()
     .describe("Blockchain transaction hash"),
-
-  /**
-   * Error message if unsuccessful.
-   */
-  error: z.string().optional().describe("Error message if issuance failed"),
 
   /**
    * The issued claim topic for confirmation.

@@ -88,6 +88,10 @@ const userPermissionsSchema = z.object({
           topicDelete: z
             .boolean()
             .describe("Whether the user can delete topics"),
+          claimList: z.boolean().describe("Whether the user can list claims"),
+          claimRevoke: z
+            .boolean()
+            .describe("Whether the user can revoke claims"),
         };
         return actionsSchema;
       })()

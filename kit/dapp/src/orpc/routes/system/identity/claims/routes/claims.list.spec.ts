@@ -103,7 +103,7 @@ describe("Claims list (integration)", () => {
   it("should successfully list all claims when user has identityManager role", async () => {
     // Admin user should see ALL claims (KYC + collateral)
     const result = await adminClient.system.identity.claims.list({
-      wallet: targetUserData.wallet,
+      accountId: targetUserData.wallet,
     });
 
     expect(result).toBeDefined();
@@ -111,7 +111,7 @@ describe("Claims list (integration)", () => {
     expect(result.claims.length).toBeGreaterThan(0);
     expect(result.identity).toBeDefined();
     expect(result.isRegistered).toBe(true);
-    expect(result.wallet).toBe(targetUserData.wallet);
+    expect(result.accountId).toBe(targetUserData.wallet);
 
     // Admin should see both KYC and collateral claims
     const claimTopics = result.claims.map((claim: IdentityClaim) => claim.name);
@@ -122,7 +122,7 @@ describe("Claims list (integration)", () => {
   it("should list all claims regardless of issuer trust", async () => {
     // Issuer user should see all claims (public on-chain)
     const result = await issuerClient.system.identity.claims.list({
-      wallet: targetUserData.wallet,
+      accountId: targetUserData.wallet,
     });
 
     expect(result).toBeDefined();
@@ -130,7 +130,7 @@ describe("Claims list (integration)", () => {
     expect(result.claims.length).toBeGreaterThan(0);
     expect(result.identity).toBeDefined();
     expect(result.isRegistered).toBe(true);
-    expect(result.wallet).toBe(targetUserData.wallet);
+    expect(result.accountId).toBe(targetUserData.wallet);
 
     // Issuer should see both KYC and collateral claims
     const claimTopics = result.claims.map((claim: IdentityClaim) => claim.name);
@@ -144,7 +144,7 @@ describe("Claims list (integration)", () => {
     // Investor user should NOT have identityManager or claimIssuer role
     await expect(
       investorClient.system.identity.claims.list({
-        wallet: targetUserData.wallet,
+        accountId: targetUserData.wallet,
       })
     ).rejects.toThrow(
       "User does not have the required role to execute this action"

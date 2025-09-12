@@ -226,7 +226,7 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
   logger.info("Set Better Auth role for issuer to 'issuer'");
 
   // Issuer needs both token management roles and the claimIssuer role
-  const issuerRequiredRoles = [
+  const issuerRequiredRoles: AccessControlRoles[] = [
     ...TOKEN_MANAGEMENT_REQUIRED_ROLES,
     "claimIssuer", // Required for issuing claims to user identities
   ];

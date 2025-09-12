@@ -6,13 +6,9 @@ import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware"
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { fetchClaimByTopicAndIdentity } from "@/orpc/routes/user/utils/identity.util";
-import {
-  RevokableClaimTopicSchema,
-  type ClaimsRevokeInput,
-} from "./claims.revoke.schema";
-
-import { getAddress } from "viem";
+import { type ClaimsRevokeInput } from "./claims.revoke.schema";
 
 /**
  * Claims revoke route handler.
@@ -79,7 +75,7 @@ export const revoke = authRouter.system.identity.claims.revoke
   .use(portalMiddleware)
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: { any: ["claimIssuer"] },
+      requiredRoles: SYSTEM_PERMISSIONS.claimRevoke,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },
@@ -101,33 +97,20 @@ export const revoke = authRouter.system.identity.claims.revoke
       });
     }
 
-    // Validate that the claim topic is revokable
-    const validTopics = RevokableClaimTopicSchema.options as string[];
-    if (!validTopics.includes(claimTopic)) {
-      throw errors.BAD_REQUEST({
-        message: `Claim topic '${claimTopic}' cannot be revoked via API`,
-        data: {
-          requestedTopic: claimTopic,
-          revokableTopics: validTopics,
-        },
-      });
-    }
-
-    // Authorization for claim topic is enforced by trustedIssuerMiddleware
-
     // Fetch the claim by topic and identity; let utility surface standardized ORPC errors
     const { extractedClaimId } = await fetchClaimByTopicAndIdentity({
       claimTopic,
       identityAddress: targetIdentityAddress,
       context,
+      errors,
     });
 
     // Submit claim revocation via helper
     const result = await revokeClaim({
       user: context.auth.user,
-      issuer: getAddress(issuerIdentity),
+      issuer: issuerIdentity,
       walletVerification,
-      identity: getAddress(targetIdentityAddress),
+      identity: targetIdentityAddress,
       claimId: extractedClaimId,
       portalClient: context.portalClient,
     });

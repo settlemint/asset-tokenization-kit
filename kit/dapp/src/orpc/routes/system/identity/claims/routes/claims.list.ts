@@ -2,6 +2,7 @@ import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockch
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { fetchUserIdentity } from "@/orpc/routes/user/utils/identity.util";
 
 /**
@@ -48,7 +49,7 @@ export const list = authRouter.system.identity.claims.list
   .use(theGraphMiddleware)
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: { any: ["identityManager", "claimIssuer"] },
+      requiredRoles: SYSTEM_PERMISSIONS.claimList,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },
@@ -57,7 +58,7 @@ export const list = authRouter.system.identity.claims.list
   .handler(async ({ context, input }) => {
     // Fetch identity data from TheGraph
     const identityResult = await fetchUserIdentity({
-      wallet: input.wallet,
+      wallet: input.accountId,
       context,
     });
 
@@ -65,6 +66,6 @@ export const list = authRouter.system.identity.claims.list
       claims: identityResult.claims ?? [],
       identity: identityResult.identity,
       isRegistered: identityResult.isRegistered,
-      wallet: input.wallet,
+      accountId: input.accountId,
     };
   });

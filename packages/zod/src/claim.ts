@@ -108,3 +108,40 @@ export function isIdentityClaim(value: unknown): value is IdentityClaim {
 export function parseIdentityClaim(value: unknown): IdentityClaim {
   return identityClaim.parse(value);
 }
+
+/**
+ * Enum of supported claim topics that can be issued or revoked via API.
+ * These represent the standardized claim types supported by the platform.
+ */
+export const ClaimTopicSchema = z.enum([
+  // Investor-level claims
+  "knowYourCustomer",
+  "antiMoneyLaundering",
+  "qualifiedInstitutionalInvestor",
+  "professionalInvestor",
+  "accreditedInvestor",
+  "accreditedInvestorVerified",
+  "regulationS",
+
+  // Issuer-level claims
+  "issuerProspectusFiled",
+  "issuerProspectusExempt",
+  "issuerLicensed",
+  "issuerReportingCompliant",
+  "issuerJurisdiction",
+
+  // Asset-level claims
+  "collateral",
+  "isin",
+  "assetClassification",
+  "basePrice",
+  "assetIssuer",
+
+  // General claims
+  "contractIdentity",
+]);
+
+/**
+ * Type representing a supported claim topic
+ */
+export type ClaimTopic = z.infer<typeof ClaimTopicSchema>;

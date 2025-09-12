@@ -2,6 +2,7 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import type { Context } from "@/orpc/context/context";
 import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
 import type { IdentityClaim } from "@atk/zod/claim";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { call, ORPCError } from "@orpc/server";
 import { z } from "zod";
 
@@ -81,31 +82,6 @@ export async function fetchUserIdentity({
 }
 
 /**
- * Creates a consistent identity result for users who don't have a wallet address.
- *
- * This is a convenience function that provides the same result structure as
- * `fetchUserIdentity` for users without wallets, ensuring consistent handling
- * across all identity-related code paths.
- *
- * @returns UserIdentityResult indicating no identity, claims, or registration
- *
- * @example
- * ```typescript
- * if (!user.wallet) {
- *   const identityResult = createNullWalletIdentityResult();
- *   // identityResult: { identity: undefined, claims: [], isRegistered: false }
- * }
- * ```
- */
-export function createNullWalletIdentityResult(): UserIdentityResult {
-  return {
-    identity: undefined,
-    claims: [],
-    isRegistered: false,
-  };
-}
-
-/**
  * Extracts the original claimId from a composite subgraph ID.
  *
  * The subgraph stores IdentityClaim IDs as a composite of identityId + claimId:
@@ -129,7 +105,7 @@ export function createNullWalletIdentityResult(): UserIdentityResult {
  * // "0x0b7989988539f5b90672066d7466c45df9faa3d1de73e0b7649a5e463175b6e3"
  * ```
  */
-export function extractClaimIdFromComposite(compositeClaimId: string): string {
+function extractClaimIdFromComposite(compositeClaimId: string): string {
   // Extract the last 64 hex characters (32 bytes) from the composite ID
   const extractedClaimId = compositeClaimId.startsWith("0x")
     ? `0x${compositeClaimId.slice(-64)}` // Take last 64 hex chars and add 0x prefix
@@ -166,10 +142,10 @@ const ClaimLookupResponseSchema = z.object({
       id: z.string(),
       name: z.string(),
       issuer: z.object({
-        id: z.string(),
+        id: ethereumAddress,
       }),
       identity: z.object({
-        id: z.string(),
+        id: ethereumAddress,
       }),
       revoked: z.boolean(),
     })
@@ -190,6 +166,7 @@ export interface FetchClaimByTopicOptions {
   claimTopic: string;
   identityAddress: string;
   context: Context;
+  errors: Parameters<Parameters<typeof import("@/orpc/procedures/base.router").baseRouter.middleware>[0]>[0]["errors"];
 }
 
 /**
@@ -239,10 +216,11 @@ export async function fetchClaimByTopicAndIdentity({
   claimTopic,
   identityAddress,
   context,
+  errors,
 }: FetchClaimByTopicOptions): Promise<ClaimLookupResult> {
   // Query TheGraph to get claim information by topic and identity
   if (!context.theGraphClient) {
-    throw new ORPCError("INTERNAL_SERVER_ERROR", {
+    throw errors.INTERNAL_SERVER_ERROR({
       message:
         "theGraphMiddleware must run before identity utilities can query TheGraph",
     });
@@ -263,14 +241,14 @@ export async function fetchClaimByTopicAndIdentity({
 
   // Check if any claims exist
   if (!claimData.identityClaims || claimData.identityClaims.length === 0) {
-    throw new ORPCError("NOT_FOUND", {
+    throw errors.NOT_FOUND({
       message: `No active claim found for topic '${claimTopic}' on identity ${identityAddress}`,
     });
   }
 
   // Check for multiple active claims (shouldn't happen, but handle gracefully)
   if (claimData.identityClaims.length > 1) {
-    throw new ORPCError("BAD_REQUEST", {
+    throw errors.BAD_REQUEST({
       message: `Multiple active claims found for topic '${claimTopic}' on identity ${identityAddress}`,
       data: {
         claimIds: claimData.identityClaims.map((c) => c.id),
@@ -280,7 +258,7 @@ export async function fetchClaimByTopicAndIdentity({
 
   const claim = claimData.identityClaims[0];
   if (!claim) {
-    throw new ORPCError("INTERNAL_SERVER_ERROR", {
+    throw errors.INTERNAL_SERVER_ERROR({
       message: "Unexpected: claim missing after validation",
     });
   }
