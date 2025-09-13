@@ -32,7 +32,7 @@ const TOKEN_FREEZE_PARTIAL_TOKENS_MUTATION = portalGraphql(`
 export const freezePartial = tokenRouter.token.freezePartial
   .use(
     tokenPermissionMiddleware({
-      requiredRoles: TOKEN_PERMISSIONS.freezeAddress,
+      requiredRoles: TOKEN_PERMISSIONS.freezePartial,
       requiredExtensions: ["CUSTODIAN"],
     })
   )

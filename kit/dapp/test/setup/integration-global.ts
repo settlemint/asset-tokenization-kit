@@ -1,5 +1,4 @@
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { startApiServer } from "../fixtures/dapp";
 import { getOrpcClient } from "../fixtures/orpc-client";
 import {
   bootstrapAddons,
@@ -26,6 +25,7 @@ let stopApi: () => void;
 export async function setup() {
   try {
     // Start dapp api server
+    const { startApiServer } = await import("../fixtures/dapp");
     const { stop } = await startApiServer();
     stopApi = stop;
 

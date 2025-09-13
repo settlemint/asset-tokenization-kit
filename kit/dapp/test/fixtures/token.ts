@@ -66,13 +66,25 @@ export async function createToken(
   }
 
   if (unpause) {
-    await orpClient.token.unpause({
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
-      },
-      contract: result.id,
-    });
+    // Retry unpause once if the challenge expires between operations
+    try {
+      await orpClient.token.unpause({
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+        contract: result.id,
+      });
+    } catch (error) {
+      // Retry a single time for transient challenge expiration
+      await orpClient.token.unpause({
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+        contract: result.id,
+      });
+    }
     logger.info("Unpaused token", {
       token: result.id,
     });

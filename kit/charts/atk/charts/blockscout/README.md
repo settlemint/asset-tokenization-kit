@@ -14,7 +14,7 @@ A Helm chart for the blockscout components
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://blockscout.github.io/helm-charts | blockscout-stack | 3.4.0 |
+| https://blockscout.github.io/helm-charts | blockscout-stack | 3.4.1 |
 
 ## Values
 

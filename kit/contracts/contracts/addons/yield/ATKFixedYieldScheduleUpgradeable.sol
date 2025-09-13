@@ -53,7 +53,7 @@ contract ATKFixedYieldScheduleUpgradeable is
 
     /// @dev Modifier to check if sender has factory or governance privileges
     modifier onlyFactoryOrGovernance() {
-        if(_msgSender() != _factory) {
+        if (_msgSender() != _factory) {
             _checkAssetRole(ATKAssetRoles.GOVERNANCE_ROLE, _msgSender());
         }
         _;

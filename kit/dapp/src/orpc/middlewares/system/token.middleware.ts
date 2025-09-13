@@ -57,7 +57,6 @@ const READ_TOKEN_QUERY = theGraphGraphql(
         faceValue
         isMatured
         maturityDate
-        denominationAssetNeeded
         denominationAsset {
           id
           decimals
@@ -156,8 +155,27 @@ export const tokenMiddleware = baseRouter.middleware<
 
   const userRoles = mapUserRoles(auth.user.wallet, token.accessControl);
 
-  const tokenContext = TokenSchema.parse({
+  // Calculate denominationAssetNeeded for bonds
+  const processedToken = {
     ...token,
+    bond: token.bond
+      ? {
+          ...token.bond,
+          // denominationAssetNeeded = faceValue * totalSupply
+          denominationAssetNeeded:
+            token.bond.faceValue && token.totalSupply
+              ? ([
+                  BigInt(String(token.bond.faceValue)) *
+                    BigInt(String(token.totalSupply)),
+                  0,
+                ] as const)
+              : ([0n, 0] as const),
+        }
+      : undefined,
+  };
+
+  const tokenContext = TokenSchema.parse({
+    ...processedToken,
     userPermissions: {
       roles: userRoles,
       // TODO: implement logic which checks if the user is allowed to interact with the token

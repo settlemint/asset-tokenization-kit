@@ -113,6 +113,6 @@ export async function issueClaim({
       type: walletVerification.verificationType,
     }
   );
-  
+
   return txHash;
 }
