@@ -1,5 +1,6 @@
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import { VerificationType } from "@atk/zod/verification-type";
-import { getOrpcClient } from "@test/fixtures/orpc-client";
+import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
   DEFAULT_ADMIN,
@@ -105,16 +106,23 @@ describe("Claims revoke (integration)", () => {
   it("should fail when user lacks claimIssuer role", async () => {
     // Investor user should NOT have claimIssuer role
     await expect(
-      investorClient.system.identity.claims.revoke({
-        targetIdentityAddress,
-        claimTopic: "collateral",
-        walletVerification: {
-          verificationType: VerificationType.pincode,
-          secretVerificationCode: "123456",
+      investorClient.system.identity.claims.revoke(
+        {
+          targetIdentityAddress,
+          claimTopic: "collateral",
+          walletVerification: {
+            verificationType: VerificationType.pincode,
+            secretVerificationCode: "123456",
+          },
         },
-      })
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+          },
+        }
+      )
     ).rejects.toThrow(
-      "User does not have the required role to execute this action"
+      errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
     );
   });
 
@@ -136,14 +144,21 @@ describe("Claims revoke (integration)", () => {
 
     // Issuer (not trusted for KYC) attempts to revoke
     await expect(
-      issuerClient.system.identity.claims.revoke({
-        targetIdentityAddress,
-        claimTopic: "knowYourCustomer",
-        walletVerification: {
-          verificationType: VerificationType.pincode,
-          secretVerificationCode: "123456",
+      issuerClient.system.identity.claims.revoke(
+        {
+          targetIdentityAddress,
+          claimTopic: "knowYourCustomer",
+          walletVerification: {
+            verificationType: VerificationType.pincode,
+            secretVerificationCode: "123456",
+          },
         },
-      })
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
+          },
+        }
+      )
     ).rejects.toThrow(
       "You are not a trusted issuer for topic: knowYourCustomer"
     );
