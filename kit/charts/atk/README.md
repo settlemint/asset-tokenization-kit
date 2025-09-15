@@ -277,7 +277,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.tempo.tempoQuery.tag | string | `"2.8.1"` |  |
 | observability.victoria-metrics-single.server.image.registry | string | `"docker.io"` |  |
 | observability.victoria-metrics-single.server.image.repository | string | `"victoriametrics/victoria-metrics"` |  |
-| observability.victoria-metrics-single.server.image.tag | string | `"v1.125.1"` |  |
+| observability.victoria-metrics-single.server.image.tag | string | `"v1.126.0"` |  |
 | observability.victoria-metrics-single.server.persistentVolume.size | string | `"10Gi"` |  |
 | observability.victoria-metrics-single.server.persistentVolume.storageClass | string | `""` |  |
 | observability.victoria-metrics-single.server.resources | object | `{}` |  |
@@ -334,14 +334,14 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | support.redis.resources.requests.memory | string | `"128Mi"` |  |
 | support.reloader.enabled | bool | `true` |  |
 | support.reloader.image.repository | string | `"ghcr.io/stakater/reloader"` |  |
-| support.reloader.image.tag | string | `"v1.4.7"` |  |
+| support.reloader.image.tag | string | `"v1.4.8"` |  |
 | txsigner.config.derivationPath | string | `"m/44'/60'/0'/0/0"` |  |
 | txsigner.config.mnemonic | string | `"gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"` |  |
 | txsigner.enabled | bool | `true` |  |
 | txsigner.image.pullPolicy | string | `"IfNotPresent"` |  |
 | txsigner.image.registry | string | `"ghcr.io"` |  |
 | txsigner.image.repository | string | `"settlemint/btp-signer"` |  |
-| txsigner.image.tag | string | `"7.15.11"` |  |
+| txsigner.image.tag | string | `"7.15.12"` |  |
 | txsigner.postgresql | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |

@@ -36,7 +36,7 @@ TxSigner is a secure transaction signing service for blockchain applications tha
 
 ## Source Code
 
-* <https://github.com/settlemint/starterkit-asset-tokenization>
+- <https://github.com/settlemint/starterkit-asset-tokenization>
 
 ## Requirements
 
@@ -155,13 +155,13 @@ The command removes all the Kubernetes components associated with the chart and 
 | global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |
 | global.imageRegistry | string | `""` | Global Docker image registry |
 | global.storageClass | string | `""` | Global StorageClass for Persistent Volume(s) |
-| image | object | `{"digest":"","pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"ghcr.io","repository":"settlemint/btp-signer","tag":"7.15.11"}` | TxSigner image |
+| image | object | `{"digest":"","pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"ghcr.io","repository":"settlemint/btp-signer","tag":"7.15.12"}` | TxSigner image |
 | image.digest | string | `""` | TxSigner image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag |
 | image.pullPolicy | string | `"IfNotPresent"` | TxSigner image pull policy |
 | image.pullSecrets | list | `[]` | TxSigner image pull secrets |
 | image.registry | string | `"ghcr.io"` | TxSigner image registry |
 | image.repository | string | `"settlemint/btp-signer"` | TxSigner image repository |
-| image.tag | string | `"7.15.11"` | TxSigner image tag (immutable tags are recommended) |
+| image.tag | string | `"7.15.12"` | TxSigner image tag (immutable tags are recommended) |
 | ingress | object | `{"annotations":{},"apiVersion":"","enabled":true,"extraHosts":[],"extraPaths":[],"extraRules":[],"extraTls":[],"hostname":"txsigner.k8s.orb.local","ingressClassName":"atk-nginx","path":"/","pathType":"ImplementationSpecific","secrets":[],"selfSigned":false,"tls":false}` | Ingress parameters |
 | ingress.annotations | object | `{}` | Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations. |
 | ingress.apiVersion | string | `""` | Force Ingress API version (automatically detected if not set) |
@@ -399,6 +399,7 @@ podAnnotations:
 ```
 
 Available metrics include:
+
 - Transaction signing requests
 - Queue depth
 - Signing latency
@@ -474,6 +475,7 @@ pdb:
 ### TxSigner pods are not starting
 
 Check the pod logs:
+
 ```console
 kubectl logs -l app.kubernetes.io/name=txsigner
 ```
@@ -481,6 +483,7 @@ kubectl logs -l app.kubernetes.io/name=txsigner
 ### Authentication errors
 
 Verify your private key or KMS configuration:
+
 ```console
 kubectl describe secret txsigner-env
 ```
@@ -488,6 +491,7 @@ kubectl describe secret txsigner-env
 ### Connection to RPC endpoint failing
 
 Test RPC connectivity from within the pod:
+
 ```console
 kubectl exec -it deploy/txsigner -- curl -v http://your-rpc-endpoint:8545
 ```
@@ -495,6 +499,7 @@ kubectl exec -it deploy/txsigner -- curl -v http://your-rpc-endpoint:8545
 ### High latency in transaction signing
 
 Check the metrics to identify bottlenecks:
+
 ```console
 kubectl port-forward svc/txsigner 3001:3001
 curl http://localhost:3001/metrics | grep txsigner_signing_duration
@@ -503,6 +508,7 @@ curl http://localhost:3001/metrics | grep txsigner_signing_duration
 ### Nonce conflicts
 
 Review nonce management strategy and increase `maxPending` if needed:
+
 ```console
 kubectl logs -l app.kubernetes.io/name=txsigner | grep -i nonce
 ```

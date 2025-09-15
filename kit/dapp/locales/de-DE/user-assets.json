@@ -1,0 +1,30 @@
+{
+  "title": "Meine Assets",
+  "actions": {
+    "addressCopied": "Token-Adresse in die Zwischenablage kopiert",
+    "copyAddress": "Adresse kopieren",
+    "tokenDetailsNotImplemented": "Token-Detailansicht noch nicht implementiert",
+    "viewOnBlockExplorer": "Im Block Explorer anzeigen",
+    "viewTokenDetails": "Token-Details anzeigen"
+  },
+  "bulkActions": {
+    "addressesCopied": "{{count}} Token-Adressen in die Zwischenablage kopiert",
+    "exportMessage": "{{count}} ausgewählte Vermögenswerte werden exportiert"
+  },
+  "columns": {
+    "actions": "Aktionen",
+    "available": "Verfügbar",
+    "balance": "Guthaben",
+    "contractAddress": "Vertrag-Adresse",
+    "frozen": "Eingefroren",
+    "ownership": "Besitz %",
+    "symbol": "Symbol",
+    "tokenName": "Token-Name",
+    "totalSupply": "Gesamtangebot"
+  },
+  "emptyState": {
+    "description": "Sie besitzen noch keine Token. Wenn Sie Token erwerben, werden sie hier angezeigt.",
+    "title": "Keine Vermögenswerte gefunden"
+  },
+  "searchPlaceholder": "Nach Token-Name, Symbol oder Adresse suchen..."
+}
