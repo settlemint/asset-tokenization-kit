@@ -2,7 +2,6 @@ import {
   type ActionItem,
   ActionsCell,
 } from "@/components/data-table/cells/actions-cell";
-import { createSelectionColumn } from "@/components/data-table/columns/selection-column";
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
@@ -108,7 +107,6 @@ export function UserAssetsTable() {
   const columns = useMemo(
     () =>
       withAutoFeatures([
-        createSelectionColumn<TokenBalance>(),
         columnHelper.accessor("token.id", {
           header: t("user-assets:columns.contractAddress"),
           meta: {

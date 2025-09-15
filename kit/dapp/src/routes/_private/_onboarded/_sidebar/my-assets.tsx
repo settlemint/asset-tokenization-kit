@@ -5,11 +5,7 @@ import { useTranslation } from "react-i18next";
 export const Route = createFileRoute("/_private/_onboarded/_sidebar/my-assets")(
   {
     loader: async ({ context: { queryClient, orpc } }) => {
-      const user = await queryClient.ensureQueryData(
-        orpc.user.me.queryOptions()
-      );
       await queryClient.prefetchQuery(orpc.user.assets.queryOptions());
-      return { user };
     },
     component: MyAssets,
   }
