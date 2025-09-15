@@ -1,14 +1,16 @@
 import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
-import { amount } from "@atk/zod/amount";
+import { apiBigInt } from "@atk/zod/bigint";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { z } from "zod";
 
 export const TokenFreezePartialInputSchema =
   MutationInputSchemaWithContract.extend({
     userAddress: ethereumAddress.describe("The address to freeze tokens for"),
-    amount: amount({ min: 0.000_000_000_000_000_001 }).describe(
-      "The amount of tokens to freeze"
-    ),
+    amount: apiBigInt
+      .refine((val) => val > 0n, {
+        message: "Freeze amount must be positive",
+      })
+      .describe("The amount of tokens to freeze (supports dnum format)"),
   });
 
 export type TokenFreezePartialInput = z.infer<
