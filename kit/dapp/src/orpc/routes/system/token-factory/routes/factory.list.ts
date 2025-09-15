@@ -79,9 +79,6 @@ const LIST_TOKEN_FACTORIES_QUERY = theGraphGraphql(`
 export const factoryList = authRouter.system.factory.list
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
-    // TODO: @snigdha920 get system from context and then show the token where the tokenFactoryRegistry is the same as the system tokenFactoryRegistry
-    // TODO: @snigdha920 add optional systemAddress param to the route so we can fetch the token factories for a specific system .. by default uses the default system
-
     // Build where clause if hasTokens filter is provided
     const where =
       input.hasTokens === undefined
