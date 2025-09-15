@@ -1,6 +1,6 @@
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import { User } from "@/orpc/routes/user/routes/user.me.schema";
-import { getOrpcClient } from "@test/fixtures/orpc-client";
+import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
   DEFAULT_ADMIN,
@@ -343,7 +343,7 @@ describe("User list", () => {
           }
         )
       ).rejects.toThrow(
-        "User does not have the required role to execute this action."
+        errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
       );
     });
 
@@ -375,7 +375,7 @@ describe("User list", () => {
           }
         )
       ).rejects.toThrow(
-        "User does not have the required role to execute this action."
+        errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
       );
     });
 

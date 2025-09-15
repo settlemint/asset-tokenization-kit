@@ -1,5 +1,6 @@
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import { VerificationType } from "@atk/zod/verification-type";
-import { getOrpcClient } from "@test/fixtures/orpc-client";
+import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
   DEFAULT_ADMIN,
@@ -85,41 +86,55 @@ describe("Claims issue (integration)", () => {
   it("should fail when user lacks claimIssuer role", async () => {
     // Investor user should NOT have claimIssuer role
     await expect(
-      investorClient.system.identity.claims.issue({
-        targetIdentityAddress,
-        claim: {
-          topic: "collateral",
-          data: {
-            amount: "1000000000000000000",
-            expiryTimestamp: "1735689600",
+      investorClient.system.identity.claims.issue(
+        {
+          targetIdentityAddress,
+          claim: {
+            topic: "collateral",
+            data: {
+              amount: "1000000000000000000",
+              expiryTimestamp: "1735689600",
+            },
+          },
+          walletVerification: {
+            verificationType: VerificationType.pincode,
+            secretVerificationCode: "123456",
           },
         },
-        walletVerification: {
-          verificationType: VerificationType.pincode,
-          secretVerificationCode: "123456",
-        },
-      })
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+          },
+        }
+      )
     ).rejects.toThrow(
-      "User does not have the required role to execute this action"
+      errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
     );
   });
 
   it("should fail when user has claimIssuer role but is not a trusted issuer for the claim topic", async () => {
     // Issuer has claimIssuer role but is only trusted issuer for asset-related topics (not KYC)
     await expect(
-      issuerClient.system.identity.claims.issue({
-        targetIdentityAddress,
-        claim: {
-          topic: "knowYourCustomer", // KYC topic that issuer is NOT trusted for
-          data: {
-            claim: "verified",
+      issuerClient.system.identity.claims.issue(
+        {
+          targetIdentityAddress,
+          claim: {
+            topic: "knowYourCustomer", // KYC topic that issuer is NOT trusted for
+            data: {
+              claim: "verified",
+            },
+          },
+          walletVerification: {
+            verificationType: VerificationType.pincode,
+            secretVerificationCode: "123456",
           },
         },
-        walletVerification: {
-          verificationType: VerificationType.pincode,
-          secretVerificationCode: "123456",
-        },
-      })
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
+          },
+        }
+      )
     ).rejects.toThrow(
       "You are not a trusted issuer for topic: knowYourCustomer"
     );
@@ -127,19 +142,26 @@ describe("Claims issue (integration)", () => {
 
   it("should fail with invalid target address format", async () => {
     await expect(
-      adminClient.system.identity.claims.issue({
-        targetIdentityAddress: "invalid-address",
-        claim: {
-          topic: "knowYourCustomer",
-          data: {
-            claim: "verified",
+      adminClient.system.identity.claims.issue(
+        {
+          targetIdentityAddress: "invalid-address",
+          claim: {
+            topic: "knowYourCustomer",
+            data: {
+              claim: "verified",
+            },
+          },
+          walletVerification: {
+            verificationType: VerificationType.pincode,
+            secretVerificationCode: "123456",
           },
         },
-        walletVerification: {
-          verificationType: VerificationType.pincode,
-          secretVerificationCode: "123456",
-        },
-      })
-    ).rejects.toThrow();
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.BAD_REQUEST],
+          },
+        }
+      )
+    ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.BAD_REQUEST));
   });
 });

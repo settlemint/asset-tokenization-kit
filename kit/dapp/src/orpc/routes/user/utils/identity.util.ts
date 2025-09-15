@@ -166,7 +166,11 @@ export interface FetchClaimByTopicOptions {
   claimTopic: string;
   identityAddress: string;
   context: Context;
-  errors: Parameters<Parameters<typeof import("@/orpc/procedures/base.router").baseRouter.middleware>[0]>[0]["errors"];
+  errors: Parameters<
+    Parameters<
+      typeof import("@/orpc/procedures/base.router").baseRouter.middleware
+    >[0]
+  >[0]["errors"];
 }
 
 /**
