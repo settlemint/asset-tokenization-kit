@@ -35,8 +35,10 @@ export function TrustedIssuersTable() {
     orpc.system.trustedIssuers.list.queryOptions()
   );
 
-  // Get current user data with roles
-  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
+  // Get current system permissions for the authenticated user
+  const { data: system } = useSuspenseQuery(
+    orpc.system.read.queryOptions({ input: { id: "default" } })
+  );
 
   /**
    * Defines the column configuration for the trusted issuers table
@@ -121,7 +123,8 @@ export function TrustedIssuersTable() {
           },
           cell: ({ row }) => {
             const issuer = row.original;
-            const hasClaimPolicyManagerRole = user?.roles?.claimPolicyManager;
+            const hasClaimPolicyManagerRole =
+              system?.userPermissions?.roles.claimPolicyManager;
 
             if (!hasClaimPolicyManagerRole) {
               return <span className="text-muted-foreground text-sm" />;
@@ -138,7 +141,7 @@ export function TrustedIssuersTable() {
           },
         }),
       ] as ColumnDef<TrustedIssuer>[]),
-    [setEditingIssuer, t, user]
+    [setEditingIssuer, t, system]
   );
 
   return (

@@ -21,8 +21,7 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { systemRouter } from "@/orpc/procedures/system.router";
 // No need to import SYSTEM_PERMISSIONS - using direct role requirements
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import {
@@ -72,8 +71,7 @@ const REMOVE_TOPIC_SCHEME_MUTATION = portalGraphql(`
  * @param input.name - Name of the topic scheme to remove
  * @returns Transaction hash and removed topic information
  */
-export const topicDelete = onboardedRouter.system.claimTopics.topicDelete
-  .use(systemMiddleware)
+export const topicDelete = systemRouter.system.claimTopics.topicDelete
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.topicDelete,
@@ -83,22 +81,12 @@ export const topicDelete = onboardedRouter.system.claimTopics.topicDelete
       },
     })
   )
-  .handler(async ({ input, context, errors }): Promise<TopicDeleteOutput> => {
+  .handler(async ({ input, context }): Promise<TopicDeleteOutput> => {
     const { system } = context;
     const { name, walletVerification } = input;
     const sender = context.auth.user;
 
-    // Validate system configuration
-    const registryAddress = system?.topicSchemeRegistry;
-    if (!registryAddress) {
-      const cause = new Error(
-        "Topic scheme registry not found in system configuration"
-      );
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: cause.message,
-        cause,
-      });
-    }
+    const registryAddress = system.topicSchemeRegistry.id;
 
     // Execute the removal transaction
     const transactionHash = await context.portalClient.mutate(

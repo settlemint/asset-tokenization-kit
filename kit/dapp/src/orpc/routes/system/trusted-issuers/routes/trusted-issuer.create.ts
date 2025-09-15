@@ -74,44 +74,32 @@ export const trustedIssuerCreate = systemRouter.system.trustedIssuers.create
       },
     })
   )
-  .handler(
-    async ({ input, context, errors }): Promise<TrustedIssuerCreateOutput> => {
-      const { system } = context;
-      const { issuerAddress, claimTopicIds, walletVerification } = input;
-      const sender = context.auth.user;
+  .handler(async ({ input, context }): Promise<TrustedIssuerCreateOutput> => {
+    const { system } = context;
+    const { issuerAddress, claimTopicIds, walletVerification } = input;
+    const sender = context.auth.user;
 
-      // Validate system configuration
-      const registryAddress = system?.trustedIssuersRegistry;
-      if (!registryAddress) {
-        const cause = new Error(
-          "Trusted issuers registry not found in system configuration"
-        );
-        throw errors.INTERNAL_SERVER_ERROR({
-          message: cause.message,
-          cause,
-        });
+    const registryAddress = system.trustedIssuersRegistry.id;
+
+    // Execute the registration transaction
+    const transactionHash = await context.portalClient.mutate(
+      CREATE_TRUSTED_ISSUER_MUTATION,
+      {
+        address: registryAddress,
+        from: sender.wallet,
+        trustedIssuer: issuerAddress,
+        claimTopics: claimTopicIds,
+      },
+      {
+        sender,
+        code: walletVerification.secretVerificationCode,
+        type: walletVerification.verificationType,
       }
+    );
 
-      // Execute the registration transaction
-      const transactionHash = await context.portalClient.mutate(
-        CREATE_TRUSTED_ISSUER_MUTATION,
-        {
-          address: registryAddress,
-          from: sender.wallet,
-          trustedIssuer: issuerAddress,
-          claimTopics: claimTopicIds,
-        },
-        {
-          sender,
-          code: walletVerification.secretVerificationCode,
-          type: walletVerification.verificationType,
-        }
-      );
-
-      // Return success response with transaction details
-      return TrustedIssuerCreateOutputSchema.parse({
-        transactionHash,
-        issuerAddress,
-      });
-    }
-  );
+    // Return success response with transaction details
+    return TrustedIssuerCreateOutputSchema.parse({
+      transactionHash,
+      issuerAddress,
+    });
+  });

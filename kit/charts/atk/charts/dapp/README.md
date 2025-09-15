@@ -30,7 +30,7 @@ A Helm chart for the ATK DApp frontend
 | initContainer.graphQLCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | initContainer.graphQLCheck.image.registry | string | `"docker.io"` |  |
 | initContainer.graphQLCheck.image.repository | string | `"curlimages/curl"` |  |
-| initContainer.graphQLCheck.image.tag | string | `"8.15.0"` |  |
+| initContainer.graphQLCheck.image.tag | string | `"8.16.0"` |  |
 | initContainer.graphQLCheck.name | string | `"wait-for-graphql"` |  |
 | initContainer.graphQLCheck.query | string | `"{ _meta { hasIndexingErrors block { number } } }"` |  |
 | initContainer.graphQLCheck.retries | int | `10` |  |

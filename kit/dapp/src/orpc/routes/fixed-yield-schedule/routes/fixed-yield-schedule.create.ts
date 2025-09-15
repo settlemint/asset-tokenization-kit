@@ -105,7 +105,7 @@ const GET_YIELD_SCHEDULE_ADDRESS_QUERY = theGraphGraphql(`
 export const create = systemRouter.fixedYieldSchedule.create
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: SYSTEM_PERMISSIONS.addonCreate,
+      requiredRoles: SYSTEM_PERMISSIONS.addonFactoryCreate,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },
@@ -129,14 +129,7 @@ export const create = systemRouter.fixedYieldSchedule.create
       });
     }
 
-    if (!system.systemAddons) {
-      throw errors.NOT_FOUND({
-        message:
-          "System addons are missing from system context. Cannot create yield schedule.",
-      });
-    }
-
-    const systemAddons = system.systemAddons;
+    const systemAddons = system.systemAddonRegistry.systemAddons;
     const yieldScheduleAddon = systemAddons.find(
       (addon) =>
         addon.typeId === AddonFactoryTypeIdEnum.ATKFixedYieldScheduleFactory

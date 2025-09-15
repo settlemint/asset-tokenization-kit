@@ -18,8 +18,7 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { systemRouter } from "@/orpc/procedures/system.router";
 // No need to import SYSTEM_PERMISSIONS - using direct role requirements
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import {
@@ -68,8 +67,7 @@ const REGISTER_TOPIC_SCHEME_MUTATION = portalGraphql(`
  * @param input.signature - Function signature for claim verification
  * @returns Transaction hash and generated topic ID
  */
-export const topicCreate = onboardedRouter.system.claimTopics.topicCreate
-  .use(systemMiddleware)
+export const topicCreate = systemRouter.system.claimTopics.topicCreate
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.topicCreate,
@@ -79,22 +77,12 @@ export const topicCreate = onboardedRouter.system.claimTopics.topicCreate
       },
     })
   )
-  .handler(async ({ input, context, errors }): Promise<TopicCreateOutput> => {
+  .handler(async ({ input, context }): Promise<TopicCreateOutput> => {
     const { system } = context;
     const { name, signature, walletVerification } = input;
     const sender = context.auth.user;
 
-    // Validate system configuration
-    const registryAddress = system?.topicSchemeRegistry;
-    if (!registryAddress) {
-      const cause = new Error(
-        "Topic scheme registry not found in system configuration"
-      );
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: cause.message,
-        cause,
-      });
-    }
+    const registryAddress = system.topicSchemeRegistry.id;
 
     // Execute the registration transaction
     const transactionHash = await context.portalClient.mutate(

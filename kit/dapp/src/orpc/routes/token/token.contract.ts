@@ -11,6 +11,7 @@ import { tokenCreateContract } from "@/orpc/routes/token/routes/mutations/create
 import { tokenFreezeAddressContract } from "@/orpc/routes/token/routes/mutations/freeze/token.freeze-address.contract";
 import { tokenFreezePartialContract } from "@/orpc/routes/token/routes/mutations/freeze/token.freeze-partial.contract";
 import { tokenUnfreezePartialContract } from "@/orpc/routes/token/routes/mutations/freeze/token.unfreeze-partial.contract";
+import { tokenMatureContract } from "@/orpc/routes/token/routes/mutations/mature/token.mature.contract";
 import { tokenMintContract } from "@/orpc/routes/token/routes/mutations/mint/token.mint.contract";
 import { tokenPauseContract } from "@/orpc/routes/token/routes/mutations/pause/token.pause.contract";
 import { tokenUnpauseContract } from "@/orpc/routes/token/routes/mutations/pause/token.unpause.contract";
@@ -20,7 +21,6 @@ import { tokenRecoverTokensContract } from "@/orpc/routes/token/routes/mutations
 import { tokenRedeemContract } from "@/orpc/routes/token/routes/mutations/redeem/token.redeem.contract";
 import { tokenTransferContract } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer.contract";
 import { tokenSetYieldScheduleContract } from "@/orpc/routes/token/routes/mutations/yield/token.set-yield-schedule.contract";
-import { tokenMatureContract } from "@/orpc/routes/token/routes/mutations/mature/token.mature.contract";
 
 // Query contracts
 import { tokenActionsContract } from "@/orpc/routes/token/routes/token.actions.contract";
@@ -85,7 +85,6 @@ export const tokenContract = {
 // Extract mutation keys for permissions
 export type TokenAccessManagedMutations =
   | "burn"
-  | "create"
   | "grantRole"
   | "revokeRole"
   | "mint"

@@ -35,31 +35,29 @@ export function AddonsManagement() {
       input: { id: "default" },
     })
   );
+  const system = systemDetails;
 
-  // Get current user data with roles
-  const { data: user } = useQuery(orpc.user.me.queryOptions());
-
-  // Check if user has system manager role for enabling addons
-  const hasSystemManagerRole = user?.roles?.systemManager;
+  // Check if user can create addons
+  const canCreateAddon = system?.userPermissions?.actions.addonCreate;
 
   // Check if bond factory is deployed
   const hasBondFactory = useMemo(
     () =>
-      systemDetails?.tokenFactories.some(
+      system?.tokenFactoryRegistry.tokenFactories.some(
         (factory) => factory.typeId === AssetFactoryTypeIdEnum.ATKBondFactory
       ) ?? false,
-    [systemDetails?.tokenFactories]
+    [system?.tokenFactoryRegistry.tokenFactories]
   );
 
   // Create a set of already deployed addons for easy lookup
   const deployedAddons = useMemo(
     () =>
       new Set(
-        systemDetails?.systemAddons.map((addon) =>
+        system?.systemAddonRegistry.systemAddons.map((addon) =>
           getAddonTypeFromTypeId(addon.typeId)
         ) ?? []
       ),
-    [systemDetails?.systemAddons]
+    [system?.systemAddonRegistry.systemAddons]
   );
 
   const form = useAppForm({
@@ -192,7 +190,7 @@ export function AddonsManagement() {
                   isDeploying ||
                   isDeployed ||
                   isYieldRequiredForBond ||
-                  !hasSystemManagerRole;
+                  !canCreateAddon;
 
                 return (
                   <AddonTypeCard
@@ -219,7 +217,7 @@ export function AddonsManagement() {
               })}
             </div>
 
-            {selectedAddons.length > 0 && hasSystemManagerRole && (
+            {selectedAddons.length > 0 && canCreateAddon && (
               <div className="flex justify-end pt-4 border-t">
                 <form.VerificationButton
                   onSubmit={() => {
@@ -265,8 +263,8 @@ export function AddonsManagement() {
         </Card>
 
         {/* Show enabled addons in a separate section */}
-        {systemDetails?.systemAddons &&
-          systemDetails.systemAddons.length > 0 && (
+        {system?.systemAddonRegistry.systemAddons &&
+          system.systemAddonRegistry.systemAddons.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle>
@@ -280,7 +278,7 @@ export function AddonsManagement() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {systemDetails.systemAddons.map((addon) => {
+                  {system.systemAddonRegistry.systemAddons.map((addon) => {
                     const addonType = getAddonTypeFromTypeId(addon.typeId);
                     const Icon = getAddonIcon(addonType);
 

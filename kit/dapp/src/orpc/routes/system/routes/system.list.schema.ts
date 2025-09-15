@@ -1,26 +1,4 @@
-import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
-import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { z } from "zod";
-
-/**
- * Schema definition for a SMART System entity.
- *
- * Systems are the core infrastructure contracts in the SMART protocol that
- * orchestrate the deployment and management of tokenized assets. Each system
- * manages its own set of factories, registries, and compliance modules.
- *
- * @remarks
- * The system ID is the blockchain address where the system contract is deployed.
- * This address serves as the unique identifier for all operations within that
- * particular SMART protocol instance.
- */
-export const SystemSchema = z.object({
-  /**
-   * Unique identifier of the system - the Ethereum address of the deployed system contract.
-   * This address is used to interact with the system and all its associated components.
-   */
-  id: ethereumAddress,
-});
 
 /**
  * Schema for a simplified system object used in GraphQL list responses.
@@ -57,7 +35,6 @@ export const SystemListSchema = z.array(SystemListItemSchema);
  * across all system-related endpoints. Supports unlimited queries and
  * large result sets through automatic batching.
  */
-export const SystemListInputSchema = ListSchema;
 
 /**
  * Schema for validating GraphQL query responses from TheGraph.
@@ -93,10 +70,3 @@ export const SystemListInputSchema = ListSchema;
 export const SystemsResponseSchema = z.object({
   systems: SystemListSchema,
 });
-
-// Type exports for enhanced TypeScript integration
-export type System = z.infer<typeof SystemSchema>;
-export type SystemListItem = z.infer<typeof SystemListItemSchema>;
-export type SystemList = z.infer<typeof SystemListSchema>;
-export type SystemListInput = z.infer<typeof SystemListInputSchema>;
-export type SystemsResponse = z.infer<typeof SystemsResponseSchema>;

@@ -171,7 +171,6 @@ export const tokenMiddleware = baseRouter.middleware<
         const initialActions: Record<keyof typeof TOKEN_PERMISSIONS, boolean> =
           {
             burn: false,
-            create: false,
             grantRole: false,
             revokeRole: false,
             mint: false,

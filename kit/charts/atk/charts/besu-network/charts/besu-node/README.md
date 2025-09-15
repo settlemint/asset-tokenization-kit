@@ -44,7 +44,7 @@ Besu nodes for a POA network
 | initContainers.curl.image.pullPolicy | string | `"IfNotPresent"` |  |
 | initContainers.curl.image.registry | string | `"docker.io"` |  |
 | initContainers.curl.image.repository | string | `"curlimages/curl"` |  |
-| initContainers.curl.image.tag | string | `"8.15.0"` |  |
+| initContainers.curl.image.tag | string | `"8.16.0"` |  |
 | nameOverride | string | `""` |  |
 | networkPolicy.egress[0].ports[0].port | int | `53` |  |
 | networkPolicy.egress[0].ports[0].protocol | string | `"UDP"` |  |

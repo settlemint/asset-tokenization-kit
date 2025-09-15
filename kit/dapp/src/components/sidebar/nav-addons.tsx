@@ -38,6 +38,11 @@ export function NavAddons() {
   const { t } = useTranslation("navigation");
   const navigate = useNavigate();
   const matches = useMatches();
+  const { data: system } = useSuspenseQuery(
+    orpc.system.read.queryOptions({
+      input: { id: "default" },
+    })
+  );
 
   // Pre-group addons by category using select function
   // This reduces re-renders when addon data changes in ways that don't affect grouping
@@ -104,6 +109,10 @@ export function NavAddons() {
       addons: groupedAddons.income,
     },
   ];
+
+  if (!system.userPermissions?.actions.addonCreate) {
+    return null;
+  }
 
   return (
     <SidebarGroup>

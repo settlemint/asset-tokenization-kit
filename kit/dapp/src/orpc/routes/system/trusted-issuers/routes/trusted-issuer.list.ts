@@ -48,17 +48,11 @@ const TRUSTED_ISSUERS_QUERY = theGraphGraphql(
 export const trustedIssuerList = systemRouter.system.trustedIssuers.list
   .use(systemMiddleware)
   .use(theGraphMiddleware)
-  .handler(async ({ context, errors }): Promise<TrustedIssuerListOutput> => {
+  .handler(async ({ context }): Promise<TrustedIssuerListOutput> => {
     const { system, theGraphClient } = context;
 
     // Get the trusted issuers registry address from the system configuration
-    const registryAddress = system?.trustedIssuersRegistry;
-
-    if (!registryAddress) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: "System trusted issuers registry not found",
-      });
-    }
+    const registryAddress = system.trustedIssuersRegistry.id;
 
     // Query the subgraph for all trusted issuers
     const { trustedIssuers } = await theGraphClient.query(

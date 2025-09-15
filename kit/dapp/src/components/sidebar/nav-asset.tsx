@@ -15,6 +15,8 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { useAssetClass } from "@/hooks/use-asset-class";
+import { orpc } from "@/orpc/orpc-client";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useMatches } from "@tanstack/react-router";
 import { ChartLine, ChevronRight, PlusIcon } from "lucide-react";
 import { useState } from "react";
@@ -32,7 +34,11 @@ export function NavAsset() {
   const { t } = useTranslation("navigation");
   const matches = useMatches();
   const [modalOpen, setModalOpen] = useState(false);
-
+  const { data: system } = useSuspenseQuery(
+    orpc.system.read.queryOptions({
+      input: { id: "default" },
+    })
+  );
   const { assetClasses } = useAssetClass();
 
   // Check if any factory route is active
@@ -52,6 +58,10 @@ export function NavAsset() {
       return params.factoryAddress === factoryId;
     });
   };
+
+  if (!system.userPermissions?.actions.tokenCreate) {
+    return null;
+  }
 
   return (
     <>

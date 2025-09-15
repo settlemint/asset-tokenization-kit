@@ -1,5 +1,5 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
-import { SystemReadOutputSchema } from "@/orpc/routes/system/routes/system.read.schema";
+import { SystemSchema } from "@/orpc/routes/system/routes/system.read.schema";
 import { FactoryCreateSchema } from "@/orpc/routes/system/token-factory/routes/factory.create.schema";
 
 export const factoryCreateContract = baseContract
@@ -13,4 +13,4 @@ export const factoryCreateContract = baseContract
     tags: ["system", "token-factory"],
   })
   .input(FactoryCreateSchema)
-  .output(SystemReadOutputSchema);
+  .output(SystemSchema);

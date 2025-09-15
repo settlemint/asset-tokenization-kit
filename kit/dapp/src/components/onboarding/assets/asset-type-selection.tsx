@@ -1,8 +1,8 @@
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
-import { getAssetIcon } from "@/components/system-assets/components/asset-icons";
-import { AssetTypeCard } from "@/components/system-assets/components/asset-type-card";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
+import { getAssetIcon } from "@/components/system-assets/components/asset-icons";
+import { AssetTypeCard } from "@/components/system-assets/components/asset-type-card";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { WarningAlert } from "@/components/ui/warning-alert";
 import { useAppForm } from "@/hooks/use-app-form";
@@ -13,10 +13,7 @@ import {
   type SingleFactory,
   TokenTypeEnum,
 } from "@/orpc/routes/system/token-factory/routes/factory.create.schema";
-import {
-  type AssetFactoryTypeId,
-  getAssetTypeFromFactoryTypeId,
-} from "@atk/zod/asset-types";
+import { getAssetTypeFromFactoryTypeId } from "@atk/zod/asset-types";
 import { useStore } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -81,11 +78,11 @@ export function AssetTypeSelection() {
   const deployedAssetTypes = useMemo(
     () =>
       new Set(
-        systemDetails?.tokenFactories.map((factory) =>
-          getAssetTypeFromFactoryTypeId(factory.typeId as AssetFactoryTypeId)
+        systemDetails?.tokenFactoryRegistry.tokenFactories.map((factory) =>
+          getAssetTypeFromFactoryTypeId(factory.typeId)
         ) ?? []
       ),
-    [systemDetails?.tokenFactories]
+    [systemDetails?.tokenFactoryRegistry.tokenFactories]
   );
 
   const handleAddFactory = (factory: SingleFactory) => {

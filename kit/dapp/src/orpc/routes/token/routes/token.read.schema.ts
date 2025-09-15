@@ -1,7 +1,7 @@
 import type { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import {
   accessControlRoles,
-  type AccessControl,
+  accessControlSchema,
 } from "@atk/zod/access-control-roles";
 import { assetExtensionArray } from "@atk/zod/asset-extensions";
 import { assetSymbol } from "@atk/zod/asset-symbol";
@@ -152,8 +152,7 @@ export const RawTokenSchema = z.object({
     })
     .nullable()
     .describe("The fund of the token"),
-  accessControl: z
-    .custom<AccessControl>()
+  accessControl: accessControlSchema()
     .describe("The access control of the token")
     .optional(),
   complianceModuleConfigs: z
@@ -188,9 +187,6 @@ export const RawTokenSchema = z.object({
               burn: z
                 .boolean()
                 .describe("Whether the user can execute the burn action"),
-              create: z
-                .boolean()
-                .describe("Whether the user can execute the create action"),
               grantRole: z
                 .boolean()
                 .describe("Whether the user can execute the grantRole action"),

@@ -31,7 +31,9 @@ describe("System Compliance Module create", () => {
     });
 
     const updatedSystem = await client.system.read({ id: result.id });
-    expect(updatedSystem.complianceModules.length).toBeGreaterThanOrEqual(3);
+    expect(
+      updatedSystem.complianceModuleRegistry.complianceModules.length
+    ).toBeGreaterThanOrEqual(3);
   });
 
   test("can create all compliance modules at once using 'all' option", async () => {
@@ -49,14 +51,17 @@ describe("System Compliance Module create", () => {
     const updatedSystem = await client.system.read({ id: result.id });
 
     // Should have all 6 compliance module types
-    expect(updatedSystem.complianceModules.length).toBe(6);
+    expect(
+      updatedSystem.complianceModuleRegistry.complianceModules.length
+    ).toBe(6);
 
     // Verify all expected compliance module types are present
     const expectedTypes = complianceTypeIds;
 
-    const actualTypes = updatedSystem.complianceModules.map(
-      (module) => module.typeId
-    );
+    const actualTypes =
+      updatedSystem.complianceModuleRegistry.complianceModules.map(
+        (module) => module.typeId
+      );
 
     for (const expectedType of expectedTypes) {
       expect(actualTypes).toContain(expectedType);

@@ -38,8 +38,8 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import type { Context } from "@/orpc/context/context";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
+import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call } from "@orpc/server";
@@ -152,7 +152,7 @@ function generateInitializationData(context: Context): string {
   const accessManagerAddress = getAddress(
     context.system?.systemAccessManager?.id ?? ""
   );
-  const systemAddress = getAddress(context.system?.address ?? "");
+  const systemAddress = getAddress(context.system?.id ?? "");
 
   return encodeFunctionData({
     abi: [
@@ -233,7 +233,7 @@ export const addonCreate = onboardedRouter.system.addon.create
   .use(systemMiddleware)
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: SYSTEM_PERMISSIONS.addonCreate,
+      requiredRoles: SYSTEM_PERMISSIONS.addonFactoryCreate,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },
@@ -255,7 +255,7 @@ export const addonCreate = onboardedRouter.system.addon.create
     // TYPESCRIPT SAFETY: Store registry address to satisfy null checks
     // WHY: TypeScript can't prove system.systemAddonRegistry won't be null later
     // This prevents repeated null checks throughout the function
-    const systemAddonRegistry = system.systemAddonRegistry;
+    const systemAddonRegistryAddress = system.systemAddonRegistry.id;
 
     // INPUT NORMALIZATION: Convert single addon to array for consistent processing
     // WHY: API accepts both single addons and arrays, but internal logic expects arrays
@@ -270,7 +270,9 @@ export const addonCreate = onboardedRouter.system.addon.create
       const systemData = context.system;
 
       existingAddonNames = new Set(
-        systemData.systemAddons.map((addon) => addon.name.toLowerCase())
+        systemData.systemAddonRegistry.systemAddons.map((addon) =>
+          addon.name.toLowerCase()
+        )
       );
     } catch (error) {
       // GRACEFUL DEGRADATION: If we can't fetch existing addons, proceed anyway
@@ -310,7 +312,7 @@ export const addonCreate = onboardedRouter.system.addon.create
         // WHY: GraphQL mutation requires specific parameter structure
         // Portal middleware will enrich with challengeId and challengeResponse
         const variables = {
-          address: systemAddonRegistry,
+          address: systemAddonRegistryAddress,
           from: sender.wallet,
           name: name,
           implementation: implementationAddress,
@@ -348,7 +350,7 @@ export const addonCreate = onboardedRouter.system.addon.create
     return await call(
       read,
       {
-        id: context.system.address,
+        id: context.system.id,
       },
       { context }
     );

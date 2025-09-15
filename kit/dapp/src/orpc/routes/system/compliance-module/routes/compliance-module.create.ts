@@ -19,8 +19,7 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
+import { systemRouter } from "@/orpc/procedures/system.router";
 import {
   getDefaultComplianceModuleImplementations,
   type SystemComplianceModuleConfig,
@@ -91,8 +90,7 @@ function getComplianceImplementationAddress(
   return defaultImplementation;
 }
 
-export const complianceModuleCreate = onboardedRouter.system.compliance.create
-  .use(systemMiddleware)
+export const complianceModuleCreate = systemRouter.system.compliance.create
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.complianceModuleCreate,
@@ -107,20 +105,13 @@ export const complianceModuleCreate = onboardedRouter.system.compliance.create
     const sender = context.auth.user;
     const { system } = context;
 
-    const contract = system?.complianceModuleRegistry;
-    if (!contract) {
-      const cause = new Error("System compliance module registry not found");
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: cause.message,
-        cause,
-      });
-    }
+    const contract = system.complianceModuleRegistry.id;
 
     const moduleList = getModuleList(complianceModules);
 
     // Query existing system compliance modules to check for duplicates
     const existingComplianceModuleTypeIds =
-      system?.complianceModules.map(
+      system.complianceModuleRegistry.complianceModules.map(
         (complianceModule) => complianceModule.typeId
       ) ?? [];
 
@@ -189,7 +180,7 @@ export const complianceModuleCreate = onboardedRouter.system.compliance.create
     return await call(
       read,
       {
-        id: "default",
+        id: context.system.id,
       },
       { context }
     );

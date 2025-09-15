@@ -55,7 +55,9 @@ describe("system.trusted-issuers.delete unit", () => {
             roles: [],
           },
         },
-        trustedIssuersRegistry: "0xCCCCcCCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCc",
+        trustedIssuersRegistry: {
+          id: "0xCCCCcCCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCc",
+        },
       },
     });
 
@@ -112,7 +114,9 @@ describe("system.trusted-issuers.delete unit", () => {
             roles: [],
           },
         },
-        trustedIssuersRegistry: "0xCCCCcCCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCc",
+        trustedIssuersRegistry: {
+          id: "0xCCCCcCCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCc",
+        },
       },
     });
 
@@ -157,41 +161,6 @@ describe("system.trusted-issuers.delete unit", () => {
     );
   });
 
-  it("throws INTERNAL_SERVER_ERROR when trusted issuers registry is not configured", async () => {
-    const handler = getHandler();
-    const context = createBaseContext({
-      system: {
-        systemAccessManager: {
-          id: "0xAAAAAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAa",
-          accessControl: {
-            roles: [],
-          },
-        },
-        trustedIssuersRegistry: undefined,
-      },
-    });
-
-    const input: TrustedIssuerDeleteInput = {
-      issuerAddress: "0x1111111111111111111111111111111111111111",
-      walletVerification: {
-        secretVerificationCode: "123456",
-        verificationType: VerificationType.pincode,
-      },
-    };
-
-    await expect(
-      handler({
-        input,
-        context,
-        errors,
-      })
-    ).rejects.toThrow(
-      "Trusted issuers registry not found in system configuration"
-    );
-
-    // Error should be thrown with the correct message
-  });
-
   it("handles portal mutation failures", async () => {
     const handler = getHandler();
     const context = createBaseContext({
@@ -202,7 +171,9 @@ describe("system.trusted-issuers.delete unit", () => {
             roles: [],
           },
         },
-        trustedIssuersRegistry: "0xCCCCcCCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCc",
+        trustedIssuersRegistry: {
+          id: "0xCCCCcCCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCc",
+        },
       },
     });
 

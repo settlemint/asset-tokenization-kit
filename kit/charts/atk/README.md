@@ -40,7 +40,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | besu-network.besu-node.hooks.image.tag | string | `"sha-49c40f5"` |  |
 | besu-network.besu-node.initContainers.checkConnection.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-node.initContainers.checkConnection.image.repository | string | `"docker.io/curlimages/curl"` |  |
-| besu-network.besu-node.initContainers.checkConnection.image.tag | string | `"8.15.0"` |  |
+| besu-network.besu-node.initContainers.checkConnection.image.tag | string | `"8.16.0"` |  |
 | besu-network.besu-node.initContainers.testConnection.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-node.initContainers.testConnection.image.repository | string | `"docker.io/busybox"` |  |
 | besu-network.besu-node.initContainers.testConnection.image.tag | string | `"1.37"` |  |
@@ -89,7 +89,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | blockscout.blockscout-stack.blockscout.resources | object | `{}` |  |
 | blockscout.blockscout-stack.frontend.image.pullPolicy | string | `"IfNotPresent"` |  |
 | blockscout.blockscout-stack.frontend.image.repository | string | `"ghcr.io/blockscout/frontend"` |  |
-| blockscout.blockscout-stack.frontend.image.tag | string | `"v2.3.2"` |  |
+| blockscout.blockscout-stack.frontend.image.tag | string | `"v2.3.3"` |  |
 | blockscout.blockscout-stack.frontend.ingress.hostname | string | `"explorer.k8s.orb.local"` |  |
 | blockscout.blockscout-stack.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
 | blockscout.blockscout-stack.podAnnotations."prometheus.io/port" | string | `"4000"` |  |
@@ -108,7 +108,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | dapp.initContainer.graphQLCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | dapp.initContainer.graphQLCheck.image.registry | string | `"docker.io"` |  |
 | dapp.initContainer.graphQLCheck.image.repository | string | `"curlimages/curl"` |  |
-| dapp.initContainer.graphQLCheck.image.tag | string | `"8.15.0"` |  |
+| dapp.initContainer.graphQLCheck.image.tag | string | `"8.16.0"` |  |
 | dapp.initContainer.graphQLCheck.name | string | `"wait-for-graph-subgraph-kit"` |  |
 | dapp.initContainer.graphQLCheck.query | string | `"{ __typename }"` |  |
 | dapp.initContainer.graphQLCheck.retries | int | `24` |  |
@@ -341,7 +341,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | txsigner.image.pullPolicy | string | `"IfNotPresent"` |  |
 | txsigner.image.registry | string | `"ghcr.io"` |  |
 | txsigner.image.repository | string | `"settlemint/btp-signer"` |  |
-| txsigner.image.tag | string | `"7.15.10"` |  |
+| txsigner.image.tag | string | `"7.15.11"` |  |
 | txsigner.postgresql | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |

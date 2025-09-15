@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 interface AssetTypeActionsProps {
   assetType: (typeof TokenTypeEnum.options)[number];
   isDeployed: boolean;
-  hasSystemManagerRole: boolean;
+  canCreateAssetFactory: boolean;
   isDeploying: boolean;
   isDeployingThisType: boolean;
   onEnable: (assetType: (typeof TokenTypeEnum.options)[number]) => void;
@@ -32,7 +32,7 @@ interface AssetTypeActionsProps {
 export function AssetTypeActions({
   assetType,
   isDeployed,
-  hasSystemManagerRole,
+  canCreateAssetFactory,
   isDeploying,
   isDeployingThisType,
   onEnable,
@@ -52,7 +52,7 @@ export function AssetTypeActions({
     );
   }
 
-  if (!hasSystemManagerRole) {
+  if (!canCreateAssetFactory) {
     return <></>;
   }
 

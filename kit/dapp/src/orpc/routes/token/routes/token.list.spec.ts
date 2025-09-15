@@ -54,7 +54,7 @@ describe("Token list", () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
     const system = await client.system.read({ id: "default" });
-    const depositTokenFactory = system.tokenFactories.find(
+    const depositTokenFactory = system.tokenFactoryRegistry.tokenFactories.find(
       (tokenFactory) => tokenFactory.typeId === "ATKDepositFactory"
     );
     expect(depositTokenFactory).toBeDefined();

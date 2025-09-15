@@ -24,7 +24,7 @@ export function SystemAddonsDeployment() {
   );
 
   // Stable reference for deployed addons
-  const deployedAddons = systemDetails?.systemAddons ?? [];
+  const deployedAddons = systemDetails?.systemAddonRegistry.systemAddons ?? [];
 
   const queryClient = useQueryClient();
 

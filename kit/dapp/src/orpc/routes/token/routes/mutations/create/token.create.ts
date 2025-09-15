@@ -6,6 +6,7 @@ import { userIdentityMiddleware } from "@/orpc/middlewares/system/user-identity.
 import type { baseRouter } from "@/orpc/procedures/base.router";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { getTokenFactory } from "@/orpc/routes/system/token-factory/helpers/factory-context";
 import { tokenCreateHandlerMap } from "@/orpc/routes/token/routes/mutations/create/helpers/handler-map";
 import type {
@@ -13,7 +14,6 @@ import type {
   TokenCreateSchema,
 } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 import { read } from "@/orpc/routes/token/routes/token.read";
-import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { call, InferRouterCurrentContexts } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
@@ -67,7 +67,7 @@ const TokenQueryResultSchema = z.object({
 export const create = systemRouter.token.create
   .use(
     blockchainPermissionsMiddleware<typeof TokenCreateSchema>({
-      requiredRoles: TOKEN_PERMISSIONS.create,
+      requiredRoles: SYSTEM_PERMISSIONS.tokenCreate,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },
