@@ -95,7 +95,6 @@ describe("Token unfreeze partial", () => {
 
     expect(equityToken).toBeDefined();
     expect(equityToken.id).toBeDefined();
-    expect(equityToken.type).toBe(equityToken.type);
 
     await adminClient.token.mint({
       contract: equityToken.id,

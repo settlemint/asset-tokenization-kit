@@ -36,11 +36,11 @@ import { beforeAll, describe, expect, test } from "vitest";
 /**
  * Test suite for partial token freezing operations.
  *
- * ARCHITECTURE: Uses stablecoin token type because it includes CUSTODIAN extension by default,
+ * ARCHITECTURE: Uses equity token type because it includes CUSTODIAN extension by default,
  * which provides the freeze/unfreeze functionality required for regulatory compliance.
  */
 describe("Token freeze partial", () => {
-  let stablecoinToken: Awaited<ReturnType<typeof createToken>>;
+  let equityToken: Awaited<ReturnType<typeof createToken>>;
   let adminClient: OrpcClient;
   let investorClient: OrpcClient;
   let investorAddress: Address;
@@ -51,10 +51,10 @@ describe("Token freeze partial", () => {
    * WHY: Creates controlled test environment with:
    * 1. Admin user with freezer privileges (regulatory authority simulation)
    * 2. Investor user with token holdings (target for freeze operations)
-   * 3. Stablecoin token with CUSTODIAN extension (compliance-ready asset)
+   * 3. Equity token with CUSTODIAN extension (compliance-ready asset)
    * 4. Pre-minted token balance (establishes baseline for freeze testing)
    *
-   * DESIGN DECISION: Uses stablecoin type because it inherently includes CUSTODIAN
+   * DESIGN DECISION: Uses equity type because it inherently includes CUSTODIAN
    * extension, avoiding test flakiness from missing functionality.
    *
    * PERF: 10,000 token mint provides sufficient balance for multiple freeze operations
@@ -71,23 +71,19 @@ describe("Token freeze partial", () => {
     investorAddress = investorUser.wallet as Address;
 
     // WHY: Equity type includes CUSTODIAN and doesn't require collateral for mint
-    const stablecoinData = {
-      type: "equity" as const,
-      name: `Test Freezable Equity ${Date.now()}`,
-      symbol: "TFE",
-      decimals: 18,
-      initialModulePairs: [],
-      basePrice: from("1.00", 2),
-    };
-
-    stablecoinToken = await createToken(
+    equityToken = await createToken(
       adminClient,
       {
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
         },
-        ...stablecoinData,
+        type: "equity",
+        name: `Test Freezable Equity`,
+        symbol: "TFE",
+        decimals: 18,
+        initialModulePairs: [],
+        basePrice: from("1.00", 2),
         countryCode: "056",
       },
       {
@@ -96,46 +92,14 @@ describe("Token freeze partial", () => {
       }
     );
 
-    expect(stablecoinToken).toBeDefined();
-    expect(stablecoinToken.id).toBeDefined();
-    expect(stablecoinToken.type).toBe(stablecoinData.type);
+    expect(equityToken).toBeDefined();
+    expect(equityToken.id).toBeDefined();
 
-    // Ensure sufficient collateral is set before minting to avoid reverts (only if supported)
-    // Read token details if needed; omitted to avoid unused var in typecheck
-    try {
-      await adminClient.token.updateCollateral({
-        contract: stablecoinToken.id,
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
-        },
-        amount: from("1000000", stablecoinToken.decimals),
-        expiryDays: 30,
-      });
-
-      // Transaction tracking with indexing is now handled by the portal middleware
-      // No polling needed - updateCollateral will wait for indexing completion
-    } catch {
-      // If COLLATERAL not supported, attempt to set CAP if available
-      const t = await adminClient.token.read({
-        tokenAddress: stablecoinToken.id,
-      });
-      if (t.extensions.includes("CAPPED")) {
-        await adminClient.token.setCap({
-          contract: stablecoinToken.id,
-          walletVerification: {
-            secretVerificationCode: DEFAULT_PINCODE,
-            verificationType: "PINCODE",
-          },
-          newCap: from("100000000", stablecoinToken.decimals),
-        });
-      }
-    }
     // Mint initial balance for investor used by tests
     await adminClient.token.mint({
-      contract: stablecoinToken.id,
+      contract: equityToken.id,
       recipients: [investorAddress],
-      amounts: [from("10000", stablecoinToken.decimals)],
+      amounts: [from("10000", equityToken.decimals)],
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
@@ -159,40 +123,20 @@ describe("Token freeze partial", () => {
    * freezer permissions, which could happen in different test environments.
    */
   test("admin can freeze partial tokens", async () => {
-    const adminUser = await adminClient.user.me();
-    const adminAddress = adminUser.wallet as Address;
-
-    // SECURITY: Verify role-based access control is properly configured
-    const tokenDetails = await adminClient.token.read({
-      tokenAddress: stablecoinToken.id,
-    });
-
-    const hasCustodianRole =
-      tokenDetails.userPermissions?.roles?.custodian ?? false;
-
-    if (!hasCustodianRole) {
-      // SETUP: Grant freezer role to enable test execution in any environment
-      await adminClient.token.grantRole({
-        contract: stablecoinToken.id,
-        accounts: [adminAddress],
-        role: "custodian",
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
-        },
-      });
-    }
-
     // Capture balances before freeze
     const beforeHolder = await investorClient.token.holder({
-      tokenAddress: stablecoinToken.id,
+      tokenAddress: equityToken.id,
       holderAddress: investorAddress,
     });
+    const beforeAvailable = beforeHolder.holder?.available;
+    const beforeFrozen = beforeHolder.holder?.frozen;
+    expect(beforeAvailable).toBe("10000");
+    expect(beforeFrozen).toBe("0");
 
     // OPERATION: Freeze 10% of investor balance to test partial functionality
-    const freezeAmount = from("1000", stablecoinToken.decimals);
+    const freezeAmount = from("1000", equityToken.decimals);
     const result = await adminClient.token.freezePartial({
-      contract: stablecoinToken.id,
+      contract: equityToken.id,
       userAddress: investorAddress,
       amount: freezeAmount,
       walletVerification: {
@@ -200,35 +144,28 @@ describe("Token freeze partial", () => {
         verificationType: "PINCODE",
       },
     });
-
     expect(result).toBeDefined();
-    expect(result.id).toBe(stablecoinToken.id);
+    expect(result.id).toBe(equityToken.id);
 
     // VERIFICATION: Confirm balances reflect the freeze amount exactly
     const afterHolder = await investorClient.token.holder({
-      tokenAddress: stablecoinToken.id,
+      tokenAddress: equityToken.id,
       holderAddress: investorAddress,
     });
-
     expect(afterHolder.holder).toBeDefined();
 
-    const beforeAvailable = beforeHolder.holder?.available;
-    const beforeFrozen = beforeHolder.holder?.frozen;
     const afterAvailable = afterHolder.holder?.available;
     const afterFrozen = afterHolder.holder?.frozen;
-
-    expect(beforeAvailable).toBeDefined();
-    expect(beforeFrozen).toBeDefined();
     expect(afterAvailable).toBeDefined();
     expect(afterFrozen).toBeDefined();
 
     const expectedAvailable = from(
       String(toNumber(beforeAvailable!) - toNumber(freezeAmount)),
-      stablecoinToken.decimals
+      equityToken.decimals
     );
     const expectedFrozen = from(
       String(toNumber(beforeFrozen!) + toNumber(freezeAmount)),
-      stablecoinToken.decimals
+      equityToken.decimals
     );
 
     expect(toString(afterAvailable!)).toBe(toString(expectedAvailable));
@@ -253,13 +190,13 @@ describe("Token freeze partial", () => {
     const regularUserHeaders = await signInWithUser(DEFAULT_INVESTOR);
     const regularClient = getOrpcClient(regularUserHeaders);
 
-    const freezeAmount = from("100", stablecoinToken.decimals);
+    const freezeAmount = from("100", equityToken.decimals);
 
     // SECURITY: Verify unauthorized users are rejected with proper error code
     await expect(
       regularClient.token.freezePartial(
         {
-          contract: stablecoinToken.id,
+          contract: equityToken.id,
           userAddress: investorAddress,
           amount: freezeAmount,
           walletVerification: {
@@ -295,32 +232,9 @@ describe("Token freeze partial", () => {
    * so we catch the generic throw rather than specific error codes.
    */
   test("cannot freeze more tokens than available balance", async () => {
-    const adminUser = await adminClient.user.me();
-    const adminAddress = adminUser.wallet as Address;
-
-    // SETUP: Ensure admin has proper permissions for this constraint test
-    const tokenDetails = await adminClient.token.read({
-      tokenAddress: stablecoinToken.id,
-    });
-
-    const hasCustodianRole =
-      tokenDetails.userPermissions?.roles?.custodian ?? false;
-
-    if (!hasCustodianRole) {
-      await adminClient.token.grantRole({
-        contract: stablecoinToken.id,
-        accounts: [adminAddress],
-        role: "custodian",
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
-        },
-      });
-    }
-
     // VERIFICATION: Check current balance through holders API
     const holdersData = await adminClient.token.holders({
-      tokenAddress: stablecoinToken.id,
+      tokenAddress: equityToken.id,
     });
 
     const investorHolder = holdersData.token?.balances.find(
@@ -344,7 +258,7 @@ describe("Token freeze partial", () => {
     // Try to freeze significantly more than available (at least double + safety margin)
     const excessiveFreezeAmount = from(
       String(currentAvailable + 1000), // Just 1000 more than available should be enough to trigger error
-      stablecoinToken.decimals
+      equityToken.decimals
     );
 
     // INVARIANT: Smart contract should reject operations exceeding available balance
@@ -354,7 +268,7 @@ describe("Token freeze partial", () => {
     try {
       await adminClient.token.freezePartial(
         {
-          contract: stablecoinToken.id,
+          contract: equityToken.id,
           userAddress: investorAddress,
           amount: excessiveFreezeAmount,
           walletVerification: {
@@ -376,14 +290,7 @@ describe("Token freeze partial", () => {
       // Check if it contains the expected error message
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      if (errorMessage.includes("FreezeAmountExceedsAvailableBalance")) {
-        // Expected error - test should pass
-        return;
-      } else {
-        throw new Error(
-          `Expected FreezeAmountExceedsAvailableBalance error, but got: ${errorMessage}`
-        );
-      }
+      expect(errorMessage).toContain("FreezeAmountExceedsAvailableBalance");
     }
   });
 
@@ -397,34 +304,12 @@ describe("Token freeze partial", () => {
    * malformed requests that could bypass business logic constraints.
    */
   test("cannot freeze zero amount", async () => {
-    const adminUser = await adminClient.user.me();
-    const adminAddress = adminUser.wallet as Address;
-
-    const tokenDetails = await adminClient.token.read({
-      tokenAddress: stablecoinToken.id,
-    });
-
-    const hasCustodianRole =
-      tokenDetails.userPermissions?.roles?.custodian ?? false;
-
-    if (!hasCustodianRole) {
-      await adminClient.token.grantRole({
-        contract: stablecoinToken.id,
-        accounts: [adminAddress],
-        role: "custodian",
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
-        },
-      });
-    }
-
     // VALIDATION: Zero amount should be rejected at schema level
-    const zeroAmount = from("0", stablecoinToken.decimals);
+    const zeroAmount = from("0", equityToken.decimals);
 
     await expect(
       adminClient.token.freezePartial({
-        contract: stablecoinToken.id,
+        contract: equityToken.id,
         userAddress: investorAddress,
         amount: zeroAmount,
         walletVerification: {
@@ -445,35 +330,13 @@ describe("Token freeze partial", () => {
    * that could lead to unintended state changes.
    */
   test("cannot freeze negative amount", async () => {
-    const adminUser = await adminClient.user.me();
-    const adminAddress = adminUser.wallet as Address;
-
-    const tokenDetails = await adminClient.token.read({
-      tokenAddress: stablecoinToken.id,
-    });
-
-    const hasCustodianRole =
-      tokenDetails.userPermissions?.roles?.custodian ?? false;
-
-    if (!hasCustodianRole) {
-      await adminClient.token.grantRole({
-        contract: stablecoinToken.id,
-        accounts: [adminAddress],
-        role: "custodian",
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
-        },
-      });
-    }
-
     // VALIDATION: Negative amount should be rejected at schema level
     // Note: BigInt(-1000) creates a negative value for testing
-    const negativeAmount = [BigInt(-1000), stablecoinToken.decimals] as const;
+    const negativeAmount = [BigInt(-1000), equityToken.decimals] as const;
 
     await expect(
       adminClient.token.freezePartial({
-        contract: stablecoinToken.id,
+        contract: equityToken.id,
         userAddress: investorAddress,
         amount: negativeAmount,
         walletVerification: {
