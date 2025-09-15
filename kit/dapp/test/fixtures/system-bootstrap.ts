@@ -188,6 +188,7 @@ export async function bootstrapAddons(orpClient: OrpcClient) {
 export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
   const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
   const issuerMe = await issuerOrpcClient.user.me({});
+  const issuerSystem = await issuerOrpcClient.system.read({ id: "default" });
 
   // First, set the Better Auth role to 'issuer' to grant off-chain permissions
   // This is required for the { account: ["read"] } permission in offchain-permissions.middleware.ts
@@ -215,7 +216,7 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
   ];
 
   const rolesToGrant = issuerRequiredRoles.filter(
-    (role) => issuerMe.roles[role] !== true
+    (role) => issuerSystem.userPermissions?.roles[role] !== true
   );
 
   if (rolesToGrant.length > 0) {
@@ -225,14 +226,14 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
       },
-      address: issuerMe.wallet ?? "",
+      address: (await issuerOrpcClient.user.me({})).wallet ?? "",
       role: rolesToGrant as AccessControlRoles[],
     });
   }
 }
 
 export async function setupDefaultAdminRoles(orpClient: OrpcClient) {
-  const adminMe = await orpClient.user.me({});
+  const adminSystem = await orpClient.system.read({ id: "default" });
 
   const allRoles = Array.from(
     new Set([
@@ -240,7 +241,9 @@ export async function setupDefaultAdminRoles(orpClient: OrpcClient) {
       ...TOKEN_MANAGEMENT_REQUIRED_ROLES,
     ])
   );
-  const rolesToGrant = allRoles.filter((role) => adminMe.roles[role] !== true);
+  const rolesToGrant = allRoles.filter(
+    (role) => adminSystem.userPermissions?.roles[role] !== true
+  );
 
   if (rolesToGrant.length > 0) {
     logger.info("Granting roles to admin", { roles: rolesToGrant });
@@ -249,7 +252,7 @@ export async function setupDefaultAdminRoles(orpClient: OrpcClient) {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
       },
-      address: adminMe.wallet ?? "",
+      address: (await orpClient.user.me({})).wallet ?? "",
       role: rolesToGrant,
     });
   }

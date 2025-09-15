@@ -17,10 +17,8 @@ import { ComponentErrorBoundary } from "@/components/error/component-error-bound
 import { ChangeSystemRolesSheet } from "@/components/manage-dropdown/sheets/change-role/change-system-roles-sheet";
 import { Button } from "@/components/ui/button";
 import { orpc } from "@/orpc/orpc-client";
-import {
-  CurrentUser,
-  User as UserMe,
-} from "@/orpc/routes/user/routes/user.me.schema";
+import type { System } from "@/orpc/routes/system/routes/system.read.schema";
+import { User as UserMe } from "@/orpc/routes/user/routes/user.me.schema";
 import { EthereumAddress } from "@atk/zod/ethereum-address";
 import { toast } from "sonner";
 
@@ -48,8 +46,6 @@ export function UsersPermissionsTable() {
     EthereumAddress | undefined
   >(undefined);
 
-  const { data: me } = useQuery(orpc.user.me.queryOptions());
-  const canGrant = me?.userSystemPermissions?.actions.grantRole ?? false;
   const { data: system } = useQuery(
     orpc.system.read.queryOptions({
       input: {
@@ -69,12 +65,12 @@ export function UsersPermissionsTable() {
       data?.map(
         (user): User => ({
           ...user,
-          roles: Object.entries(user.roles)
+          roles: Object.entries(system?.userPermissions?.roles ?? {})
             .filter(([_, hasRole]) => hasRole)
             .map(([role]) => toLabel(role)),
         })
       ) ?? [],
-    [data]
+    [data, system]
   );
 
   // Handle row click to navigate to user detail
@@ -90,6 +86,8 @@ export function UsersPermissionsTable() {
       }
     })();
   };
+
+  const canGrant = system?.userPermissions?.actions.grantRole ?? false;
 
   /**
    * Defines the column configuration for the users table
@@ -150,7 +148,7 @@ export function UsersPermissionsTable() {
           header: "",
           cell: ({ row }) => (
             <RowActions
-              me={me}
+              system={system}
               row={row.original}
               onOpenChangeRoles={(account: EthereumAddress) => {
                 setPresetAccount(account);
@@ -161,7 +159,7 @@ export function UsersPermissionsTable() {
           meta: { type: "none", enableCsvExport: false },
         }),
       ] as ColumnDef<User>[]),
-    [t, me]
+    [t, system]
   );
 
   // Handle loading and error states
@@ -224,7 +222,7 @@ export function UsersPermissionsTable() {
       <ChangeSystemRolesSheet
         open={openChangeRoles}
         onOpenChange={setOpenChangeRoles}
-        accessControl={system?.accessControl ?? undefined}
+        accessControl={system?.systemAccessManager?.accessControl ?? undefined}
         presetAccount={presetAccount}
       />
     </ComponentErrorBoundary>
@@ -232,17 +230,17 @@ export function UsersPermissionsTable() {
 }
 
 function RowActions({
-  me,
+  system,
   row,
   onOpenChangeRoles,
 }: {
-  me?: CurrentUser;
+  system?: System;
   row: User;
   onOpenChangeRoles: (account: EthereumAddress) => void;
 }) {
   const { t } = useTranslation("user");
-  const canGrantRole = me?.userSystemPermissions?.actions.grantRole ?? false;
-  const canRevokeRole = me?.userSystemPermissions?.actions.revokeRole ?? false;
+  const canGrantRole = system?.userPermissions?.actions.grantRole ?? false;
+  const canRevokeRole = system?.userPermissions?.actions.revokeRole ?? false;
   const canChangeRoles = canGrantRole || canRevokeRole; // Can do either action
 
   const actions: ActionItem[] = [

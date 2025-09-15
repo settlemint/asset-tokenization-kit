@@ -201,6 +201,7 @@ export function getSystemPermissions(
   const initialActions: Record<keyof typeof SYSTEM_PERMISSIONS, boolean> = {
     tokenFactoryCreate: false,
     tokenCreate: false,
+    addonFactoryCreate: false,
     addonCreate: false,
     grantRole: false,
     revokeRole: false,

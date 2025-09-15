@@ -18,7 +18,9 @@ describe("Admins list", () => {
     expect(defaultAdmin?.name).toBe(
       `${DEFAULT_ADMIN.name} (Integration tests)`
     );
-    expect(defaultAdmin?.roles?.admin).toBe(true);
+    // Verify current user was added as an admin in the default system
+    const system = await client.system.read({ id: "default" });
+    expect(system.userPermissions?.roles.admin).toBe(true);
   });
 
   it("investor cannot list admins", async () => {

@@ -12,8 +12,6 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { orpc } from "@/orpc/orpc-client";
-import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { HomeIcon } from "lucide-react";
 import * as React from "react";
@@ -27,11 +25,6 @@ import { useTranslation } from "react-i18next";
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { t } = useTranslation("navigation");
   const navigate = useNavigate();
-  const { data: system } = useQuery(
-    orpc.system.read.queryOptions({
-      input: { id: "default" },
-    })
-  );
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -55,8 +48,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
-        {system?.userPermissions?.actions.tokenCreate && <NavAsset />}
-        {system?.userPermissions?.actions.addonCreate && <NavAddons />}
+        <NavAsset />
+        <NavAddons />
         <NavSettings />
       </SidebarContent>
       <SidebarRail />
