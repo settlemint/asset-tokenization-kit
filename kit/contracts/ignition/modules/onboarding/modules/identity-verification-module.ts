@@ -8,9 +8,10 @@ const IdentityVerificationModule = buildModule(
     const { complianceModuleRegistry } = m.useModule(ATKOnboardingSystemModule);
     const { identityVerificationModule } = m.useModule(ATKModule);
 
-    m.call(complianceModuleRegistry, "registerComplianceModule", [
-      identityVerificationModule,
-    ]);
+    // Do nothing, this is handled in the system module bootstrap
+    // m.call(complianceModuleRegistry, "registerComplianceModule", [
+    //   identityVerificationModule,
+    // ]);
 
     return { identityVerificationModule };
   }

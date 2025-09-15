@@ -198,7 +198,7 @@ describe("ManageAssetDropdown", () => {
     vi.clearAllMocks();
     queryClient = new QueryClient({
       defaultOptions: {
-        queries: { retry: false },
+        queries: { retry: false, queryFn: vi.fn() },
         mutations: { retry: false },
       },
     });

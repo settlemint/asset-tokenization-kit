@@ -105,7 +105,7 @@ const GET_YIELD_SCHEDULE_ADDRESS_QUERY = theGraphGraphql(`
 export const create = systemRouter.fixedYieldSchedule.create
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: SYSTEM_PERMISSIONS.addonCreate,
+      requiredRoles: SYSTEM_PERMISSIONS.addonFactoryCreate,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },
