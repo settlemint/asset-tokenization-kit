@@ -27,8 +27,7 @@ export function useAssetTypesData() {
 
   // Check if user has system manager role for enabling asset types
   // Only set to true if user data is loaded and user has the role
-  const hasSystemManagerRole =
-    !isUserLoading && !!user?.userSystemPermissions?.roles?.systemManager;
+  const hasSystemManagerRole = !isUserLoading && !!user?.roles?.systemManager;
 
   // Create a set of already deployed asset types for easy lookup
   const deployedAssetTypes = useMemo(
