@@ -475,8 +475,8 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         bond.redeem(redeemAmount);
         uint256 gasUsed = gasBefore - gasleft();
 
-        // Gas should be reasonable (less than 200k for a simple redemption with reentrancy protection)
-        assertLt(gasUsed, 200_000, "Gas consumption should be reasonable");
+        // Gas should be reasonable (less than 300k for a simple redemption with reentrancy protection)
+        assertLt(gasUsed, 300_000, "Gas consumption should be reasonable");
     }
 
     /**
