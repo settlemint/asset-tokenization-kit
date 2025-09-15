@@ -1,24 +1,18 @@
 import { AccessControlFragment } from "@/lib/fragments/the-graph/access-control-fragment";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { Context } from "@/orpc/context/context";
-import {
-  getComponentId,
-  parseSystemComponent,
-} from "@/orpc/helpers/system-component-helpers";
+import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { read } from "@/orpc/routes/settings/routes/settings.read";
-import type { AccessControl } from "@atk/zod/access-control-roles";
-import type { AddonFactoryTypeId } from "@atk/zod/addon-types";
-import type { AssetFactoryTypeId } from "@atk/zod/asset-types";
-import type { ComplianceTypeId } from "@atk/zod/compliance";
-import {
-  type EthereumAddress,
-  getEthereumAddress,
-} from "@atk/zod/ethereum-address";
-import { systemContextSchema } from "@atk/zod/system-context";
+import { SystemSchema } from "@/orpc/routes/system/routes/system.read.schema";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
+import { AccessControlRoles } from "@atk/zod/access-control-roles";
+import { satisfiesRoleRequirement } from "@atk/zod/role-requirement";
 import { call } from "@orpc/server";
-import type { Hex } from "viem";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+import { isAddress } from "viem";
+import z from "zod";
 
 const SYSTEM_QUERY = theGraphGraphql(
   `
@@ -77,71 +71,7 @@ const SYSTEM_QUERY = theGraphGraphql(
   [AccessControlFragment]
 );
 
-/**
- * Interface for a system component.
- * @param id - The address of the system component.
- * @param accessControl - The access control of the system component.
- */
-interface SystemComponent {
-  id: EthereumAddress;
-  accessControl?: AccessControl;
-}
-
-/**
- * Interface for a token factory.
- * @param type - The type of the token factory.
- * @param address - The address of the token factory.
- * @param accessControl - The access control of the token factory.
- */
-interface TokenFactory extends SystemComponent {
-  name: string;
-  typeId: AssetFactoryTypeId;
-}
-
-/**
- * Interface for a system addon.
- * @param id - The id of the system addon.
- * @param typeId - The type of the system addon.
- * @param name - The name of the system addon.
- */
-export interface SystemAddon extends SystemComponent {
-  name: string;
-  typeId: AddonFactoryTypeId;
-}
-
-/**
- * Interface for a compliance module.
- * @param id - The id of the compliance module.
- * @param typeId - The type of the compliance module.
- * @param name - The name of the compliance module.
- */
-export interface SystemComplianceModule extends SystemComponent {
-  name: string;
-  typeId: ComplianceTypeId;
-}
-
-/**
- * Interface for the system context.
- * @param address - The address of the system.
- * @param accessControl - The access control of the system.
- * @param tokenFactories - The token factories of the system.
- */
-export interface SystemContext {
-  address: EthereumAddress;
-  deployedInTransaction: Hex;
-  systemAccessManager: SystemComponent | null;
-  complianceModuleRegistry: EthereumAddress | null;
-  complianceModules: SystemComplianceModule[];
-  identityFactory: EthereumAddress | null;
-  identityRegistry: EthereumAddress | null;
-  identityRegistryStorage: EthereumAddress | null;
-  systemAddonRegistry: EthereumAddress | null;
-  systemAddons: SystemAddon[];
-  tokenFactories: TokenFactory[];
-  tokenFactoryRegistry: EthereumAddress | null;
-  topicSchemeRegistry: EthereumAddress | null;
-  trustedIssuersRegistry: EthereumAddress | null;
-}
+const logger = createLogger();
 
 /**
  * Middleware to inject the system context into the request context.
@@ -150,8 +80,15 @@ export interface SystemContext {
 export const systemMiddleware = baseRouter.middleware<
   Required<Pick<Context, "system">>,
   unknown
->(async ({ context, next, errors }) => {
-  const { theGraphClient } = context;
+>(async ({ context, next, errors }, input) => {
+  const { auth, theGraphClient } = context;
+
+  if (!auth?.user.wallet) {
+    logger.warn("sessionMiddleware should be called before systemMiddleware");
+    throw errors.UNAUTHORIZED({
+      message: "Authentication required to access system information",
+    });
+  }
 
   if (!theGraphClient) {
     throw errors.INTERNAL_SERVER_ERROR({
@@ -160,32 +97,36 @@ export const systemMiddleware = baseRouter.middleware<
   }
 
   // Always fetch fresh system data - no caching
-  const systemAddressHeader = context.headers["x-system-address"];
-  const systemAddress =
-    typeof systemAddressHeader === "string"
-      ? systemAddressHeader
-      : await call(
-          read,
-          {
-            key: "SYSTEM_ADDRESS" as const,
-          },
-          {
-            context,
-          }
-        );
+  const systemAddress = await getSystemAddress(context, input);
   if (!systemAddress) {
     throw errors.SYSTEM_NOT_CREATED();
   }
-  const systemContext = await getSystemContext(
-    getEthereumAddress(systemAddress),
-    theGraphClient
-  );
 
-  if (!systemContext) {
-    throw errors.INTERNAL_SERVER_ERROR({
+  const { system } = await theGraphClient.query(SYSTEM_QUERY, {
+    input: {
+      systemAddress,
+    },
+    output: z.object({ system: SystemSchema }),
+  });
+
+  if (!system) {
+    throw errors.NOT_FOUND({
       message: `System with address '${systemAddress}' not found`,
     });
   }
+
+  const userRoles = mapUserRoles(
+    auth.user.wallet,
+    system.systemAccessManager.accessControl
+  );
+
+  const systemContext = SystemSchema.parse({
+    ...system,
+    userPermissions: {
+      roles: userRoles,
+      actions: getSystemPermissions(userRoles),
+    },
+  });
 
   return next({
     context: {
@@ -194,55 +135,95 @@ export const systemMiddleware = baseRouter.middleware<
   });
 });
 
-export const getSystemContext = async (
-  systemAddress: EthereumAddress,
-  theGraphClient: ValidatedTheGraphClient
-): Promise<SystemContext | null> => {
-  const { system } = await theGraphClient.query(SYSTEM_QUERY, {
-    input: {
-      systemAddress,
-    },
-    output: systemContextSchema(),
-  });
-
-  if (!system) {
-    return null;
+/**
+ * Get the system address based on request context and input.
+ *
+ * Precedence:
+ * 1) Header: `x-system-address`
+ * 2) Input: if `input` is an object with an `id` field
+ * 3) Default: value from settings (SYSTEM_ADDRESS)
+ *
+ * @param context - The ORPC request context
+ * @param input - The procedure input
+ * @returns The resolved system address string, or null if unavailable
+ */
+async function getSystemAddress(
+  context: Context,
+  input: unknown
+): Promise<string | null> {
+  const systemAddressHeader = context.headers["x-system-address"];
+  if (typeof systemAddressHeader === "string" && systemAddressHeader) {
+    return systemAddressHeader;
   }
-  const tokenFactories =
-    system.tokenFactoryRegistry?.tokenFactories.map(({ id, name, typeId }) => ({
-      name,
-      typeId,
-      id: getEthereumAddress(id),
-    })) ?? [];
-  const systemAddons =
-    system.systemAddonRegistry?.systemAddons.map(({ id, name, typeId }) => ({
-      name,
-      typeId,
-      id: getEthereumAddress(id),
-    })) ?? [];
-  const complianceModules =
-    system.complianceModuleRegistry?.complianceModules.map(
-      ({ id, typeId, name }) => ({
-        id: getEthereumAddress(id),
-        typeId,
-        name,
-      })
-    ) ?? [];
 
-  return {
-    address: systemAddress,
-    deployedInTransaction: system.deployedInTransaction as Hex,
-    tokenFactories,
-    systemAddons,
-    complianceModules,
-    systemAccessManager: parseSystemComponent(system.systemAccessManager),
-    identityFactory: getComponentId(system.identityFactory),
-    tokenFactoryRegistry: getComponentId(system.tokenFactoryRegistry),
-    complianceModuleRegistry: getComponentId(system.complianceModuleRegistry),
-    identityRegistryStorage: getComponentId(system.identityRegistryStorage),
-    identityRegistry: getComponentId(system.identityRegistry),
-    trustedIssuersRegistry: getComponentId(system.trustedIssuersRegistry),
-    topicSchemeRegistry: getComponentId(system.topicSchemeRegistry),
-    systemAddonRegistry: getComponentId(system.systemAddonRegistry),
+  if (input && typeof input === "object" && "id" in input) {
+    const maybeId = (input as Record<string, unknown>).id;
+    const maybeEthereumAddress =
+      maybeId && typeof maybeId === "string" && isAddress(maybeId)
+        ? maybeId
+        : null;
+    if (maybeEthereumAddress) {
+      return maybeEthereumAddress;
+    }
+  }
+
+  const defaultAddress = await call(
+    read,
+    {
+      key: "SYSTEM_ADDRESS" as const,
+    },
+    { context }
+  ).catch(() => null);
+
+  return defaultAddress;
+}
+
+/**
+ * Fetch system context directly from TheGraph
+ *
+ * Exposed for routes that need on-demand system reads without applying the middleware.
+ */
+export async function getSystemContext(
+  systemAddress: string,
+  theGraphClient: ValidatedTheGraphClient
+) {
+  const { system } = await theGraphClient.query(SYSTEM_QUERY, {
+    input: { systemAddress },
+    output: z.object({ system: SystemSchema }),
+  });
+  return system;
+}
+
+export function getSystemPermissions(
+  userRoles: ReturnType<typeof mapUserRoles>
+) {
+  // Initialize all actions as false, allowing TypeScript to infer the precise type
+  const initialActions: Record<keyof typeof SYSTEM_PERMISSIONS, boolean> = {
+    tokenFactoryCreate: false,
+    tokenCreate: false,
+    addonCreate: false,
+    grantRole: false,
+    revokeRole: false,
+    complianceModuleCreate: false,
+    identityRegister: false,
+    trustedIssuerCreate: false,
+    trustedIssuerUpdate: false,
+    trustedIssuerDelete: false,
+    topicCreate: false,
+    topicUpdate: false,
+    topicDelete: false,
   };
-};
+
+  const userRoleList = Object.entries(userRoles)
+    .filter(([, hasRole]) => hasRole)
+    .map(([role]) => role) as AccessControlRoles[];
+
+  // Update based on user roles using the flexible role requirement system
+  Object.entries(SYSTEM_PERMISSIONS).forEach(([action, roleRequirement]) => {
+    if (action in initialActions) {
+      initialActions[action as keyof typeof initialActions] =
+        satisfiesRoleRequirement(userRoleList, roleRequirement);
+    }
+  });
+  return initialActions;
+}

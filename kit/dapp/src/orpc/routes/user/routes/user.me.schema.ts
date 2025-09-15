@@ -55,6 +55,9 @@ const userPermissionsSchema = z.object({
           tokenFactoryCreate: z
             .boolean()
             .describe("Whether the user can create token factories"),
+          tokenCreate: z
+            .boolean()
+            .describe("Whether the user can create tokens"),
           addonCreate: z
             .boolean()
             .describe("Whether the user can create addons"),

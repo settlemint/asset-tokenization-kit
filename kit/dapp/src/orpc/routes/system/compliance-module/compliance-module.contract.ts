@@ -1,7 +1,7 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import { SystemComplianceModuleCreateSchema } from "@/orpc/routes/system/compliance-module/routes/compliance-module.create.schema";
 import { ComplianceModulesListOutputSchema } from "@/orpc/routes/system/compliance-module/routes/compliance-module.list.schema";
-import { SystemReadSchema } from "@/orpc/routes/system/routes/system.read.schema";
+import { SystemSchema } from "@/orpc/routes/system/routes/system.read.schema";
 
 const TAGS = ["system", "compliance-module"];
 
@@ -14,7 +14,7 @@ const complianceModuleCreate = baseContract
     tags: TAGS,
   })
   .input(SystemComplianceModuleCreateSchema)
-  .output(SystemReadSchema);
+  .output(SystemSchema);
 
 const complianceModuleList = baseContract
   .route({

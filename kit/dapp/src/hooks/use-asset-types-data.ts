@@ -1,8 +1,5 @@
 import { orpc } from "@/orpc/orpc-client";
-import {
-  type AssetFactoryTypeId,
-  getAssetTypeFromFactoryTypeId,
-} from "@atk/zod/asset-types";
+import { getAssetTypeFromFactoryTypeId } from "@atk/zod/asset-types";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
@@ -34,11 +31,11 @@ export function useAssetTypesData() {
   const deployedAssetTypes = useMemo(
     () =>
       new Set(
-        systemDetails?.tokenFactories.map((factory) =>
-          getAssetTypeFromFactoryTypeId(factory.typeId as AssetFactoryTypeId)
+        systemDetails?.tokenFactoryRegistry.tokenFactories.map((factory) =>
+          getAssetTypeFromFactoryTypeId(factory.typeId)
         ) ?? []
       ),
-    [systemDetails?.tokenFactories]
+    [systemDetails?.tokenFactoryRegistry.tokenFactories]
   );
 
   return {

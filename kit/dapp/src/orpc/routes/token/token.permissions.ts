@@ -12,8 +12,8 @@ export const TOKEN_PERMISSIONS: Record<
   TokenAccessManagedMutations,
   RoleRequirement
 > = {
-  burn: "supplyManagement",
   create: "tokenManager",
+  burn: "supplyManagement",
   grantRole: "admin",
   revokeRole: "admin",
   mint: "supplyManagement",

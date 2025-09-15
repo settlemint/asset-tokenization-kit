@@ -5,16 +5,13 @@ import { claimTopicsContract } from "@/orpc/routes/system/claim-topics/claim-top
 import { complianceModuleContract } from "@/orpc/routes/system/compliance-module/compliance-module.contract";
 import { identityContract } from "@/orpc/routes/system/identity/identity.contract";
 import { SystemCreateSchema } from "@/orpc/routes/system/routes/system.create.schema";
-import {
-  SystemReadOutputSchema,
-  SystemReadSchema,
-} from "@/orpc/routes/system/routes/system.read.schema";
+import { SystemSchema } from "@/orpc/routes/system/routes/system.read.schema";
 import { statsContract } from "@/orpc/routes/system/stats/stats.contract";
 import { factoryContract } from "@/orpc/routes/system/token-factory/factory.contract";
 import { trustedIssuersContract } from "@/orpc/routes/system/trusted-issuers/trusted-issuers.contract";
 import { z } from "zod";
 import { baseContract } from "../../procedures/base.contract";
-import { SystemSchema } from "./routes/system.list.schema";
+import { SystemListItemSchema } from "./routes/system.list.schema";
 
 /**
  * Contract definition for the system list endpoint.
@@ -39,7 +36,7 @@ const list = baseContract
     tags: ["system"],
   })
   .input(ListSchema) // Standard list query parameters (pagination, filters, etc.)
-  .output(z.array(SystemSchema)); // Return array of system objects
+  .output(z.array(SystemListItemSchema)); // Return array of system objects
 
 /**
  * Contract definition for the system creation endpoint.
@@ -64,7 +61,7 @@ const create = baseContract
     tags: ["system"],
   })
   .input(SystemCreateSchema)
-  .output(SystemReadOutputSchema);
+  .output(SystemSchema);
 
 /**
  * Contract definition for the system read endpoint.
@@ -84,8 +81,8 @@ const read = baseContract
     successDescription: "SMART system details with token factories",
     tags: ["system"],
   })
-  .input(SystemReadSchema)
-  .output(SystemReadOutputSchema);
+  .input(z.object({ id: z.string() }))
+  .output(SystemSchema);
 
 /**
  * System API contract collection.

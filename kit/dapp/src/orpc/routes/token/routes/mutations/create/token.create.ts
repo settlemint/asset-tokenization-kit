@@ -1,7 +1,6 @@
 import { getRoleByFieldName } from "@/lib/constants/roles";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { ClaimTopic } from "@/orpc/helpers/claims/create-claim";
 import { issueClaim } from "@/orpc/helpers/claims/issue-claim";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
@@ -9,6 +8,7 @@ import { userIdentityMiddleware } from "@/orpc/middlewares/system/user-identity.
 import type { baseRouter } from "@/orpc/procedures/base.router";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { getTokenFactory } from "@/orpc/routes/system/token-factory/helpers/factory-context";
 import { tokenCreateHandlerMap } from "@/orpc/routes/token/routes/mutations/create/helpers/handler-map";
 import type {
@@ -16,7 +16,7 @@ import type {
   TokenCreateSchema,
 } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 import { read } from "@/orpc/routes/token/routes/token.read";
-import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { call, InferRouterCurrentContexts } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
@@ -102,7 +102,7 @@ const _TokenQueryResultSchema = z.object({
 export const create = systemRouter.token.create
   .use(
     blockchainPermissionsMiddleware<typeof TokenCreateSchema>({
-      requiredRoles: TOKEN_PERMISSIONS.create,
+      requiredRoles: SYSTEM_PERMISSIONS.tokenCreate,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },

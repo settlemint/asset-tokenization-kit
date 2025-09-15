@@ -12,15 +12,16 @@ import { kycProfiles, user as userTable } from "@/lib/db/schema";
 import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
-import { getSystemContext } from "@/orpc/middlewares/system/system.middleware";
+import {
+  getSystemContext,
+  getSystemPermissions,
+} from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
-import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
-import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { AssetFactoryTypeIdEnum } from "@atk/zod/asset-types";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
-import { satisfiesRoleRequirement } from "@atk/zod/role-requirement";
+import { AddonFactoryTypeIdEnum } from "@atk/zod/src/addon-types";
 import type { VerificationType } from "@atk/zod/verification-type";
 import { VerificationType as VerificationTypeEnum } from "@atk/zod/verification-type";
 import { call, ORPCError } from "@orpc/server";
@@ -188,16 +189,18 @@ async function getSystemInfo(
       };
     }
     systemOnboardingState.system = true;
-    systemOnboardingState.systemAssets = systemData.tokenFactories.length > 0;
+    systemOnboardingState.systemAssets =
+      systemData.tokenFactoryRegistry.tokenFactories.length > 0;
 
     // Check if bond factory is deployed
-    const hasBondFactory = systemData.tokenFactories.some(
+    const hasBondFactory = systemData.tokenFactoryRegistry.tokenFactories.some(
       (factory) => factory.typeId === AssetFactoryTypeIdEnum.ATKBondFactory
     );
 
     // Check if yield addon is deployed
-    const hasYieldAddon = systemData.systemAddons.some(
-      (addon) => addon.typeId === "ATKFixedYieldScheduleFactory"
+    const hasYieldAddon = systemData.systemAddonRegistry.systemAddons.some(
+      (addon) =>
+        addon.typeId === AddonFactoryTypeIdEnum.ATKFixedYieldScheduleFactory
     );
 
     // System addons are optional, except when bond factory exists - then yield addon is required
@@ -209,7 +212,7 @@ async function getSystemInfo(
     } else {
       systemOnboardingState.systemAddons = hasBondFactory
         ? hasYieldAddon
-        : systemData.systemAddons.length > 0;
+        : systemData.systemAddonRegistry.systemAddons.length > 0;
     }
     return {
       ...systemOnboardingState,
@@ -222,35 +225,4 @@ async function getSystemInfo(
     ...systemOnboardingState,
     accessControl: null,
   };
-}
-
-function getSystemPermissions(userRoles: ReturnType<typeof mapUserRoles>) {
-  // Initialize all actions as false, allowing TypeScript to infer the precise type
-  const initialActions: Record<keyof typeof SYSTEM_PERMISSIONS, boolean> = {
-    tokenFactoryCreate: false,
-    addonCreate: false,
-    grantRole: false,
-    revokeRole: false,
-    complianceModuleCreate: false,
-    identityRegister: false,
-    trustedIssuerCreate: false,
-    trustedIssuerUpdate: false,
-    trustedIssuerDelete: false,
-    topicCreate: false,
-    topicUpdate: false,
-    topicDelete: false,
-  };
-
-  const userRoleList = Object.entries(userRoles)
-    .filter(([, hasRole]) => hasRole)
-    .map(([role]) => role) as AccessControlRoles[];
-
-  // Update based on user roles using the flexible role requirement system
-  Object.entries(SYSTEM_PERMISSIONS).forEach(([action, roleRequirement]) => {
-    if (action in initialActions) {
-      initialActions[action as keyof typeof initialActions] =
-        satisfiesRoleRequirement(userRoleList, roleRequirement);
-    }
-  });
-  return initialActions;
 }

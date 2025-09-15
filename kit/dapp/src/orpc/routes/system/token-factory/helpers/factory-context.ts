@@ -5,7 +5,7 @@ import {
 } from "@atk/zod/asset-types";
 
 export function getTokenFactory(context: Context, type: AssetType) {
-  return context.system?.tokenFactories.find(
+  return context.system?.tokenFactoryRegistry.tokenFactories.find(
     (tokenFactory) =>
       tokenFactory.typeId === getFactoryTypeIdFromAssetType(type)
   );

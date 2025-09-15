@@ -17,148 +17,208 @@
  * ```
  */
 
+import type { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
+import { accessControlRoles } from "@atk/zod/access-control-roles";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { accessControlSchema } from "@atk/zod/src/access-control-roles";
+import { addonFactoryTypeId } from "@atk/zod/src/addon-types";
+import { assetFactoryTypeId } from "@atk/zod/src/asset-types";
+import { complianceTypeId } from "@atk/zod/src/compliance";
 import { z } from "zod";
 
 /**
- * Input schema for system read operations
- */
-export const SystemReadSchema = z.object({
-  /**
-   * The system contract address to query
-   */
-  id: z.union([
-    z.literal("default").describe("The system used by the dApp"),
-    ethereumAddress.describe("The system contract address"),
-  ]),
-});
-
-/**
- * Token factory information schema
+ * Schema for token factory entries
  */
 const TokenFactorySchema = z.object({
-  /**
-   * The factory contract address
-   */
   id: ethereumAddress,
-
-  /**
-   * The name of the token factory
-   */
   name: z.string(),
-
-  /**
-   * The type identifier of the factory (bond, equity, fund, etc.)
-   */
-  typeId: z.string(),
+  typeId: assetFactoryTypeId(),
 });
 
 /**
- * System addon information schema
+ * Schema for system addon entries
  */
 const SystemAddonSchema = z.object({
-  /**
-   * The addon contract address
-   */
   id: ethereumAddress,
-
-  /**
-   * The name of the addon
-   */
   name: z.string(),
-
-  /**
-   * The type identifier of the addon
-   */
-  typeId: z.string(),
+  typeId: addonFactoryTypeId(),
 });
 
 /**
- * Compliance module information schema
+ * Schema for compliance module entries
  */
 const ComplianceModuleSchema = z.object({
-  /**
-   * The compliance module contract address
-   */
   id: ethereumAddress,
-
-  /**
-   * The name of the compliance module
-   */
+  typeId: complianceTypeId(),
   name: z.string(),
-
-  /**
-   * The type identifier of the compliance module
-   */
-  typeId: z.string(),
 });
 
 /**
  * Output schema for system read operations
  */
-export const SystemReadOutputSchema = z.object({
+export const SystemSchema = z.object({
   /**
    * The system contract address
    */
-  id: ethereumAddress,
-
+  id: ethereumAddress.describe("System address"),
   /**
-   * The deployment transaction hash
+   * The transaction hash where the system was deployed
    */
-  deployedInTransaction: z.string().nullable(),
-
+  deployedInTransaction: z
+    .string()
+    .describe("Transaction hash where system was deployed"),
   /**
-   * The identity registry contract address
+   * The token factory registry
    */
-  identityRegistry: ethereumAddress.nullable(),
-
+  tokenFactoryRegistry: z.object({
+    id: ethereumAddress.describe("Token factory registry address"),
+    tokenFactories: z
+      .array(TokenFactorySchema)
+      .describe("Array of registered token factories"),
+  }),
   /**
-   * The identity factory contract address
+   * The system addon registry
    */
-  identityFactory: ethereumAddress.nullable(),
-
+  systemAddonRegistry: z.object({
+    id: ethereumAddress.describe("System addon registry address"),
+    systemAddons: z
+      .array(SystemAddonSchema)
+      .describe("Array of registered system addons"),
+  }),
   /**
-   * The trusted issuers registry contract address
+   * The compliance module registry
    */
-  trustedIssuersRegistry: ethereumAddress.nullable(),
-
+  complianceModuleRegistry: z.object({
+    id: ethereumAddress.describe("Compliance module registry address"),
+    complianceModules: z
+      .array(ComplianceModuleSchema)
+      .describe("Array of registered compliance modules"),
+  }),
   /**
-   * The compliance module registry contract address
+   * The system access manager
    */
-  complianceModuleRegistry: ethereumAddress.nullable(),
-
+  systemAccessManager: z.object({
+    id: ethereumAddress.describe("System access manager address"),
+    accessControl: accessControlSchema().describe(
+      "Access control configuration"
+    ),
+  }),
   /**
-   * The token factory registry contract address
+   * The identity factory
    */
-  tokenFactoryRegistry: ethereumAddress.nullable(),
-
+  identityFactory: z.object({
+    id: ethereumAddress.describe("Identity factory address"),
+  }),
   /**
-   * The system addon registry contract address
+   * The identity registry storage
    */
-  systemAddonRegistry: ethereumAddress.nullable(),
-
+  identityRegistryStorage: z.object({
+    id: ethereumAddress.describe("Identity registry storage address"),
+  }),
   /**
-   * The system access manager contract address
+   * The identity registry
    */
-  systemAccessManager: ethereumAddress.nullable(),
-
+  identityRegistry: z.object({
+    id: ethereumAddress.describe("Identity registry address"),
+  }),
   /**
-   * List of token factories deployed by this system
+   * The trusted issuers registry
    */
-  tokenFactories: z.array(TokenFactorySchema),
-
+  trustedIssuersRegistry: z.object({
+    id: ethereumAddress.describe("Trusted issuers registry address"),
+  }),
   /**
-   * List of system addons deployed by this system
+   * The topic scheme registry
    */
-  systemAddons: z.array(SystemAddonSchema),
-
+  topicSchemeRegistry: z.object({
+    id: ethereumAddress.describe("Topic scheme registry address"),
+  }),
   /**
-   * List of compliance modules deployed by this system
+   * The permissions of the user for the system
    */
-  complianceModules: z.array(ComplianceModuleSchema),
+  userPermissions: z
+    .object({
+      /**
+       * The roles of the user for the system
+       */
+      roles: accessControlRoles.describe(
+        "The roles of the user for the system"
+      ),
+
+      /**
+       * Whether the user is allowed to interact with the system
+       */
+      isAllowed: z
+        .boolean()
+        .describe("Whether the user is allowed to interact with the system"),
+
+      /**
+       * The reason the user is not allowed to interact with the system
+       */
+      notAllowedReason: z
+        .string()
+        .describe(
+          "The reason the user is not allowed to interact with the system"
+        )
+        .optional(),
+
+      /**
+       * The actions on the system the user is allowed to execute
+       */
+      actions: z
+        .object(
+          (() => {
+            const actionsSchema: Record<
+              keyof typeof SYSTEM_PERMISSIONS,
+              z.ZodType<boolean>
+            > = {
+              tokenFactoryCreate: z
+                .boolean()
+                .describe("Whether the user can create token factories"),
+              tokenCreate: z
+                .boolean()
+                .describe("Whether the user can create tokens"),
+              addonCreate: z
+                .boolean()
+                .describe("Whether the user can create addons"),
+              grantRole: z
+                .boolean()
+                .describe("Whether the user can grant roles"),
+              revokeRole: z
+                .boolean()
+                .describe("Whether the user can revoke roles"),
+              complianceModuleCreate: z
+                .boolean()
+                .describe("Whether the user can create compliance modules"),
+              identityRegister: z
+                .boolean()
+                .describe("Whether the user can register identities"),
+              trustedIssuerCreate: z
+                .boolean()
+                .describe("Whether the user can create trusted issuers"),
+              trustedIssuerUpdate: z
+                .boolean()
+                .describe("Whether the user can update trusted issuers"),
+              trustedIssuerDelete: z
+                .boolean()
+                .describe("Whether the user can delete trusted issuers"),
+              topicCreate: z
+                .boolean()
+                .describe("Whether the user can create topics"),
+              topicUpdate: z
+                .boolean()
+                .describe("Whether the user can update topics"),
+              topicDelete: z
+                .boolean()
+                .describe("Whether the user can delete topics"),
+            };
+            return actionsSchema;
+          })()
+        )
+        .describe("The actions on the system the user is allowed to execute"),
+    })
+    .optional()
+    .describe("The permissions of the user for the system"),
 });
 
-// Type exports
-export type SystemReadInput = z.infer<typeof SystemReadSchema>;
-export type SystemReadOutput = z.infer<typeof SystemReadOutputSchema>;
-export type TokenFactory = z.infer<typeof TokenFactorySchema>;
+export type System = z.infer<typeof SystemSchema>;

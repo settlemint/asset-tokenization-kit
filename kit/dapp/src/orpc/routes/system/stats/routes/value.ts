@@ -57,7 +57,7 @@ export const statsValue = authRouter.system.stats.value
     // Fetch system value from TheGraph
     const response = await context.theGraphClient.query(TOTAL_VALUE_QUERY, {
       input: {
-        systemId: context.system.address.toLowerCase(),
+        systemId: context.system.id.toLowerCase(),
       },
       output: TotalValueResponseSchema,
     });

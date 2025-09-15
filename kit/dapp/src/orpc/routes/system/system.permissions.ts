@@ -50,6 +50,7 @@ type AssertValidContract =
  */
 export const SYSTEM_PERMISSIONS = {
   tokenFactoryCreate: { any: ["systemManager"] },
+  tokenCreate: "tokenManager",
   addonCreate: { any: ["addonManager", "systemManager"] },
   grantRole: { any: ["admin"] },
   revokeRole: { any: ["admin"] },

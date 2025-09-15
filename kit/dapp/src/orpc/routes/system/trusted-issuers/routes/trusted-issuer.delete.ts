@@ -70,43 +70,31 @@ export const trustedIssuerDelete = systemRouter.system.trustedIssuers.delete
       },
     })
   )
-  .handler(
-    async ({ input, context, errors }): Promise<TrustedIssuerDeleteOutput> => {
-      const { system } = context;
-      const { issuerAddress, walletVerification } = input;
-      const sender = context.auth.user;
+  .handler(async ({ input, context }): Promise<TrustedIssuerDeleteOutput> => {
+    const { system } = context;
+    const { issuerAddress, walletVerification } = input;
+    const sender = context.auth.user;
 
-      // Validate system configuration
-      const registryAddress = system?.trustedIssuersRegistry;
-      if (!registryAddress) {
-        const cause = new Error(
-          "Trusted issuers registry not found in system configuration"
-        );
-        throw errors.INTERNAL_SERVER_ERROR({
-          message: cause.message,
-          cause,
-        });
+    const registryAddress = system.trustedIssuersRegistry.id;
+
+    // Execute the deletion transaction
+    const transactionHash = await context.portalClient.mutate(
+      REMOVE_TRUSTED_ISSUER_MUTATION,
+      {
+        address: registryAddress,
+        from: sender.wallet,
+        trustedIssuer: issuerAddress,
+      },
+      {
+        sender,
+        code: walletVerification.secretVerificationCode,
+        type: walletVerification.verificationType,
       }
+    );
 
-      // Execute the deletion transaction
-      const transactionHash = await context.portalClient.mutate(
-        REMOVE_TRUSTED_ISSUER_MUTATION,
-        {
-          address: registryAddress,
-          from: sender.wallet,
-          trustedIssuer: issuerAddress,
-        },
-        {
-          sender,
-          code: walletVerification.secretVerificationCode,
-          type: walletVerification.verificationType,
-        }
-      );
-
-      // Return success response with transaction details
-      return TrustedIssuerDeleteOutputSchema.parse({
-        transactionHash,
-        issuerAddress,
-      });
-    }
-  );
+    // Return success response with transaction details
+    return TrustedIssuerDeleteOutputSchema.parse({
+      transactionHash,
+      issuerAddress,
+    });
+  });

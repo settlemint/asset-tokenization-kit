@@ -77,26 +77,7 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
   return system;
 }
 
-export async function bootstrapTokenFactories(
-  orpClient: OrpcClient,
-  system: {
-    id: string;
-    tokenFactoryRegistry: string | null;
-    identityRegistry?: string | null;
-    compliance?: string | null;
-  }
-) {
-  if (!system.tokenFactoryRegistry) {
-    logger.info("System registries not yet initialized:", {
-      identityRegistry: system.identityRegistry,
-      tokenFactoryRegistry: system.tokenFactoryRegistry,
-      compliance: system.compliance,
-    });
-    throw new Error(
-      "System not fully initialized - token factory registry not found"
-    );
-  }
-
+export async function bootstrapTokenFactories(orpClient: OrpcClient) {
   const tokenFactories = await orpClient.system.factory.list({});
 
   const factories: Parameters<
@@ -129,11 +110,11 @@ export async function bootstrapTokenFactories(
   });
 
   // The factoryCreate method now returns the updated system details
-  if (!result.id || !result.tokenFactories) {
+  if (!result.id || !result.tokenFactoryRegistry?.tokenFactories) {
     throw new Error(`Factory creation failed: invalid response`);
   }
 
-  const finalFactoryCount = result.tokenFactories.length;
+  const finalFactoryCount = result.tokenFactoryRegistry.tokenFactories.length;
   const successfulCreations = finalFactoryCount - initialFactoryCount;
 
   if (successfulCreations !== nonExistingFactories.length) {
@@ -142,7 +123,7 @@ export async function bootstrapTokenFactories(
     );
   }
   logger.info("Token factories created", {
-    created: result.tokenFactories.map((f) => {
+    created: result.tokenFactoryRegistry.tokenFactories.map((f) => {
       return {
         typeId: f.typeId,
         address: f.id,

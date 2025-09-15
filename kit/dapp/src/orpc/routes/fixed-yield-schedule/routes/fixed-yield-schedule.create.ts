@@ -129,14 +129,7 @@ export const create = systemRouter.fixedYieldSchedule.create
       });
     }
 
-    if (!system.systemAddons) {
-      throw errors.NOT_FOUND({
-        message:
-          "System addons are missing from system context. Cannot create yield schedule.",
-      });
-    }
-
-    const systemAddons = system.systemAddons;
+    const systemAddons = system.systemAddonRegistry.systemAddons;
     const yieldScheduleAddon = systemAddons.find(
       (addon) =>
         addon.typeId === AddonFactoryTypeIdEnum.ATKFixedYieldScheduleFactory

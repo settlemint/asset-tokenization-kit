@@ -37,21 +37,21 @@ export function SystemAddonsSelection() {
   // Check if bond factory is deployed
   const hasBondFactory = useMemo(
     () =>
-      systemDetails?.tokenFactories.some(
+      systemDetails?.tokenFactoryRegistry.tokenFactories.some(
         (factory) => factory.typeId === AssetFactoryTypeIdEnum.ATKBondFactory
       ) ?? false,
-    [systemDetails?.tokenFactories]
+    [systemDetails?.tokenFactoryRegistry.tokenFactories]
   );
 
   // Create a set of already deployed addons for easy lookup
   const deployedAddons = useMemo(
     () =>
       new Set(
-        systemDetails?.systemAddons.map((addon) =>
+        systemDetails?.systemAddonRegistry.systemAddons.map((addon) =>
           getAddonTypeFromTypeId(addon.typeId)
         ) ?? []
       ),
-    [systemDetails?.systemAddons]
+    [systemDetails?.systemAddonRegistry.systemAddons]
   );
   const deployedAddonsConfig = useMemo(() => {
     return [...deployedAddons].map((addon) => ({
