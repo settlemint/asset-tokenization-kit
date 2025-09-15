@@ -135,6 +135,12 @@ describe("Token unfreeze partial", () => {
    * is properly subtracted from total frozen balance.
    */
   test("admin can unfreeze partial tokens", async () => {
+    // Capture balances before unfreeze
+    const beforeHolder = await investorClient.token.holder({
+      tokenAddress: equityToken.id,
+      holderAddress: investorAddress,
+    });
+
     // OPERATION: Unfreeze 40% of previously frozen tokens to test partial functionality
     const unfreezeAmount = from("2000", equityToken.decimals);
     const result = await adminClient.token.unfreezePartial({
@@ -150,13 +156,52 @@ describe("Token unfreeze partial", () => {
     expect(result).toBeDefined();
     expect(result.id).toBe(equityToken.id);
 
-    // VERIFICATION: Confirm unfreeze operation updated token state correctly
-    const investorBalance = await investorClient.token.read({
+    // VERIFICATION: Confirm balances reflect the unfreeze amount exactly
+    const afterHolder = await investorClient.token.holder({
       tokenAddress: equityToken.id,
+      holderAddress: investorAddress,
     });
 
-    // The unfrozen balance should be reflected in available tokens
-    expect(investorBalance).toBeDefined();
+    expect(afterHolder.holder).toBeDefined();
+
+    const beforeAvailable = beforeHolder.holder?.available;
+    const beforeFrozen = beforeHolder.holder?.frozen;
+    const afterAvailable = afterHolder.holder?.available;
+    const afterFrozen = afterHolder.holder?.frozen;
+
+    expect(beforeAvailable).toBeDefined();
+    expect(beforeFrozen).toBeDefined();
+    expect(afterAvailable).toBeDefined();
+    expect(afterFrozen).toBeDefined();
+
+    // available should increase, frozen should decrease, by exactly unfreezeAmount
+    const expectedAvailable = from(
+      String(
+        // dnum to number for comparison convenience in tests
+        Number(beforeAvailable?.[0] ?? 0n) /
+          Math.pow(10, beforeAvailable?.[1] ?? 0) +
+          Number(unfreezeAmount[0]) / Math.pow(10, unfreezeAmount[1])
+      ),
+      equityToken.decimals
+    );
+    const expectedFrozen = from(
+      String(
+        Number(beforeFrozen?.[0] ?? 0n) / Math.pow(10, beforeFrozen?.[1] ?? 0) -
+          Number(unfreezeAmount[0]) / Math.pow(10, unfreezeAmount[1])
+      ),
+      equityToken.decimals
+    );
+
+    // Compare numerically with small tolerance to avoid precision issues
+    const scale = (v: readonly [bigint, number]) =>
+      Number(v[0]) / Math.pow(10, v[1]);
+    const epsilon = 1e-12;
+    expect(
+      Math.abs(scale(afterAvailable!) - scale(expectedAvailable)) < epsilon
+    ).toBe(true);
+    expect(
+      Math.abs(scale(afterFrozen!) - scale(expectedFrozen)) < epsilon
+    ).toBe(true);
   }, 100_000);
 
   /**
@@ -283,11 +328,14 @@ describe("Token unfreeze partial", () => {
     expect(result.id).toBe(equityToken.id);
 
     // VERIFICATION: Confirm complete restoration with no remaining frozen balance
-    const finalBalance = await investorClient.token.read({
+    const finalHolder = await investorClient.token.holder({
       tokenAddress: equityToken.id,
+      holderAddress: investorAddress,
     });
 
-    expect(finalBalance).toBeDefined();
+    // All previously frozen should be available; frozen back to zero
+    expect(finalHolder.holder).toBeDefined();
+    expect(finalHolder.holder?.frozen).toEqual([0n, 0]);
   }, 100_000);
 
   /**

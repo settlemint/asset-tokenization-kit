@@ -133,31 +133,6 @@ describe("Token freeze address", () => {
         });
       }
     }
-
-    // Retry mint briefly in case on-chain claim finalization is still indexing
-    {
-      const maxAttempts = 3;
-      let lastError: unknown;
-      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        try {
-          await adminClient.token.mint({
-            contract: stablecoinToken.id,
-            recipients: [investorAddress],
-            amounts: [from("10000", stablecoinToken.decimals)],
-            walletVerification: {
-              secretVerificationCode: DEFAULT_PINCODE,
-              verificationType: "PINCODE",
-            },
-          });
-          lastError = undefined;
-          break;
-        } catch (error) {
-          lastError = error;
-          await new Promise((r) => setTimeout(r, 750));
-        }
-      }
-      if (lastError) throw lastError;
-    }
   });
 
   /**

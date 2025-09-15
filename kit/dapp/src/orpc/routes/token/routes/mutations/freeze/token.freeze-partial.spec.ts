@@ -29,7 +29,7 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
-import { from, toString, toNumber } from "dnum";
+import { from, toNumber, toString } from "dnum";
 import type { Address } from "viem";
 import { beforeAll, describe, expect, test } from "vitest";
 
@@ -131,32 +131,16 @@ describe("Token freeze partial", () => {
         });
       }
     }
-
-    // SETUP: Mint substantial balance to enable multiple freeze operations without depletion
-    // Retry mint briefly in case on-chain claim finalization is still indexing
-    {
-      const maxAttempts = 3;
-      let lastError: unknown;
-      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        try {
-          await adminClient.token.mint({
-            contract: stablecoinToken.id,
-            recipients: [investorAddress],
-            amounts: [from("10000", stablecoinToken.decimals)],
-            walletVerification: {
-              secretVerificationCode: DEFAULT_PINCODE,
-              verificationType: "PINCODE",
-            },
-          });
-          lastError = undefined;
-          break;
-        } catch (error) {
-          lastError = error;
-          await new Promise((r) => setTimeout(r, 750));
-        }
-      }
-      if (lastError) throw lastError;
-    }
+    // Mint initial balance for investor used by tests
+    await adminClient.token.mint({
+      contract: stablecoinToken.id,
+      recipients: [investorAddress],
+      amounts: [from("10000", stablecoinToken.decimals)],
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
+    });
   });
 
   /**
@@ -199,6 +183,12 @@ describe("Token freeze partial", () => {
       });
     }
 
+    // Capture balances before freeze
+    const beforeHolder = await investorClient.token.holder({
+      tokenAddress: stablecoinToken.id,
+      holderAddress: investorAddress,
+    });
+
     // OPERATION: Freeze 10% of investor balance to test partial functionality
     const freezeAmount = from("1000", stablecoinToken.decimals);
     const result = await adminClient.token.freezePartial({
@@ -214,13 +204,35 @@ describe("Token freeze partial", () => {
     expect(result).toBeDefined();
     expect(result.id).toBe(stablecoinToken.id);
 
-    // VERIFICATION: Confirm freeze operation was recorded in token state
-    const investorBalance = await investorClient.token.read({
+    // VERIFICATION: Confirm balances reflect the freeze amount exactly
+    const afterHolder = await investorClient.token.holder({
       tokenAddress: stablecoinToken.id,
+      holderAddress: investorAddress,
     });
 
-    // The frozen balance should be reflected in user's token information
-    expect(investorBalance).toBeDefined();
+    expect(afterHolder.holder).toBeDefined();
+
+    const beforeAvailable = beforeHolder.holder?.available;
+    const beforeFrozen = beforeHolder.holder?.frozen;
+    const afterAvailable = afterHolder.holder?.available;
+    const afterFrozen = afterHolder.holder?.frozen;
+
+    expect(beforeAvailable).toBeDefined();
+    expect(beforeFrozen).toBeDefined();
+    expect(afterAvailable).toBeDefined();
+    expect(afterFrozen).toBeDefined();
+
+    const expectedAvailable = from(
+      String(toNumber(beforeAvailable!) - toNumber(freezeAmount)),
+      stablecoinToken.decimals
+    );
+    const expectedFrozen = from(
+      String(toNumber(beforeFrozen!) + toNumber(freezeAmount)),
+      stablecoinToken.decimals
+    );
+
+    expect(toString(afterAvailable!)).toBe(toString(expectedAvailable));
+    expect(toString(afterFrozen!)).toBe(toString(expectedFrozen));
   }, 100_000);
 
   /**
