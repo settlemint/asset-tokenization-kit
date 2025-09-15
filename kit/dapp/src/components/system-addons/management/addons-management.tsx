@@ -37,12 +37,8 @@ export function AddonsManagement() {
   );
   const system = systemDetails;
 
-  // Get current user data with roles
-  const { data: user } = useQuery(orpc.user.me.queryOptions());
-
-  // Check if user has system manager role for enabling addons
-  const hasSystemManagerRole =
-    user?.userSystemPermissions?.roles?.systemManager;
+  // Check if user can create addons
+  const canCreateAddon = system?.userPermissions?.actions.addonCreate;
 
   // Check if bond factory is deployed
   const hasBondFactory = useMemo(
@@ -194,7 +190,7 @@ export function AddonsManagement() {
                   isDeploying ||
                   isDeployed ||
                   isYieldRequiredForBond ||
-                  !hasSystemManagerRole;
+                  !canCreateAddon;
 
                 return (
                   <AddonTypeCard
@@ -221,7 +217,7 @@ export function AddonsManagement() {
               })}
             </div>
 
-            {selectedAddons.length > 0 && hasSystemManagerRole && (
+            {selectedAddons.length > 0 && canCreateAddon && (
               <div className="flex justify-end pt-4 border-t">
                 <form.VerificationButton
                   onSubmit={() => {

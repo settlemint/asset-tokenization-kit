@@ -45,7 +45,7 @@ export function AssetTypesByClass() {
 
   const {
     systemDetails,
-    hasSystemManagerRole,
+    canCreateAssetFactory,
     deployedAssetTypes,
     isLoading,
     isError,
@@ -110,7 +110,7 @@ export function AssetTypesByClass() {
 
   const handleEnableAssetType = useCallback(
     (assetType: (typeof TokenTypeEnum.options)[number]) => {
-      if (!hasSystemManagerRole) return;
+      if (!canCreateAssetFactory) return;
 
       const factory = createFactory(assetType);
       form.setFieldValue("factories", [factory]);
@@ -120,7 +120,7 @@ export function AssetTypesByClass() {
         void form.handleSubmit();
       }, 0);
     },
-    [hasSystemManagerRole, createFactory, form]
+    [canCreateAssetFactory, createFactory, form]
   );
 
   if (isLoading) {
@@ -213,7 +213,7 @@ export function AssetTypesByClass() {
                         <AssetTypeActions
                           assetType={assetType}
                           isDeployed={isDeployed}
-                          hasSystemManagerRole={hasSystemManagerRole}
+                          canCreateAssetFactory={canCreateAssetFactory}
                           isDeploying={isDeploying}
                           isDeployingThisType={
                             isDeploying && deployingAssetType === assetType
