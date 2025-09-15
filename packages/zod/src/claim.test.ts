@@ -158,7 +158,7 @@ describe("identityClaim", () => {
         "0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
       );
       expect(result.values).toHaveLength(2);
-      
+
       // WHY: Optional chaining prevents runtime errors if array indexing fails
       // TypeScript's strict mode with noUncheckedIndexedAccess requires this
       // safety check since array[index] can return undefined. This protects

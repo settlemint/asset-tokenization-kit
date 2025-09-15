@@ -1,4 +1,5 @@
-import { getOrpcClient } from "@test/fixtures/orpc-client";
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
+import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
@@ -26,8 +27,17 @@ describe("Admins list", () => {
   it("investor cannot list admins", async () => {
     const headers = await signInWithUser(DEFAULT_INVESTOR);
     const client = getOrpcClient(headers);
-    await expect(client.user.adminList({})).rejects.toThrow(
-      "User does not have the required role to execute this action."
+    await expect(
+      client.user.adminList(
+        {},
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+          },
+        }
+      )
+    ).rejects.toThrow(
+      errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
     );
   });
 });

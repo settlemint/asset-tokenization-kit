@@ -96,7 +96,7 @@ export function BurnSheet({
   const newEntry = (max?: Dnum, address?: EthereumAddress): Entry => ({
     id:
       typeof crypto !== "undefined" && "randomUUID" in crypto
-        ? (crypto.randomUUID())
+        ? crypto.randomUUID()
         : Math.random().toString(36).slice(2),
     max,
     address,

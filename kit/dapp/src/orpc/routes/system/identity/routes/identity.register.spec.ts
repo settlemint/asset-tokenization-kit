@@ -1,5 +1,5 @@
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
-import { getOrpcClient } from "@test/fixtures/orpc-client";
+import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
   DEFAULT_ADMIN,
@@ -42,7 +42,7 @@ describe("Identity register", () => {
         }
       )
     ).rejects.toThrow(
-      "User does not have the required role to execute this action."
+      errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
     );
   }, 10_000);
 
