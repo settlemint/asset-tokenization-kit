@@ -53,32 +53,32 @@ function RouteComponent() {
   const yieldScheduleId = asset.yield?.schedule?.id;
 
   // Fetch yield schedule details if available
-  const { data: yieldSchedule } = useQuery({
-    ...orpc.fixedYieldSchedule.read.queryOptions({
+  const { data: yieldSchedule } = useQuery(
+    orpc.fixedYieldSchedule.read.queryOptions({
       input: { id: yieldScheduleId ?? "" },
-    }),
-    enabled: !!yieldScheduleId,
-  });
+      enabled: !!yieldScheduleId,
+    })
+  );
 
   // Fetch denomination asset details when available
   const denominationAssetId = yieldSchedule?.denominationAsset?.id;
-  const { data: denominationAsset } = useQuery({
-    ...orpc.token.read.queryOptions({
+  const { data: denominationAsset } = useQuery(
+    orpc.token.read.queryOptions({
       input: { tokenAddress: denominationAssetId ?? "" },
-    }),
-    enabled: !!denominationAssetId,
-  });
+      enabled: !!denominationAssetId,
+    })
+  );
 
   // Fetch yield schedule's denomination asset balance
-  const { data: yieldScheduleBalance } = useQuery({
-    ...orpc.token.holder.queryOptions({
+  const { data: yieldScheduleBalance } = useQuery(
+    orpc.token.holder.queryOptions({
       input: {
         tokenAddress: yieldSchedule?.denominationAsset?.id ?? "",
         holderAddress: yieldSchedule?.id ?? "",
       },
-    }),
-    enabled: !!yieldSchedule,
-  });
+      enabled: !!yieldSchedule,
+    })
+  );
 
   // Show empty state if no yield schedule exists
   if (!yieldScheduleId) {
