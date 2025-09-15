@@ -5,6 +5,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { orpc } from "@/orpc/orpc-client";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { WalletIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -18,6 +20,11 @@ import { useTranslation } from "react-i18next";
  */
 export function NavMyAssets() {
   const { t } = useTranslation("navigation");
+  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
+
+  if (!user.isRegistered) {
+    return null;
+  }
 
   return (
     <SidebarGroup>
