@@ -19,6 +19,10 @@ import { kycContract } from "@/orpc/routes/user/kyc/kyc.contract";
 import { AdminListOutputSchema } from "@/orpc/routes/user/routes/admins.list.schema";
 import { createWalletContract } from "@/orpc/routes/user/routes/mutations/create-wallet.contract";
 import {
+  UserAssetsInputSchema,
+  UserAssetsResponseSchema,
+} from "@/orpc/routes/user/routes/user.assets.schema";
+import {
   UserListInputSchema,
   UserListOutputSchema,
 } from "@/orpc/routes/user/routes/user.list.schema";
@@ -201,12 +205,24 @@ const statsGrowthOverTime = baseContract
   .input(UserStatsGrowthOverTimeInputSchema)
   .output(UserStatsGrowthOverTimeOutputSchema);
 
+export const assets = baseContract
+  .route({
+    method: "GET",
+    path: "/user/assets",
+    description: "Get all token assets held by a user",
+    successDescription: "List of token balances for the user",
+    tags: ["user", "token"],
+  })
+  .input(UserAssetsInputSchema)
+  .output(UserAssetsResponseSchema);
+
 /**
  * User API contract collection.
  */
 export const userContract = {
   me,
   actions,
+  assets,
   search,
   list,
   adminList,
