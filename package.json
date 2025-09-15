@@ -85,6 +85,7 @@
     "yaml": "2.8.1"
   },
   "trustedDependencies": [
+    "@parcel/watcher",
     "@sentry/cli",
     "@tailwindcss/oxide",
     "canvas",
@@ -92,6 +93,7 @@
     "esbuild",
     "keccak",
     "lefthook",
+    "oxc-resolver",
     "protobufjs",
     "secp256k1",
     "unrs-resolver",
