@@ -24,7 +24,8 @@ export function AssetDeployment() {
   );
 
   // Stable reference for deployed factories
-  const deployedFactories = systemDetails?.tokenFactories ?? [];
+  const deployedFactories =
+    systemDetails?.tokenFactoryRegistry.tokenFactories ?? [];
 
   const queryClient = useQueryClient();
 

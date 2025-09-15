@@ -13,7 +13,6 @@ export const TOKEN_PERMISSIONS: Record<
   RoleRequirement
 > = {
   burn: "supplyManagement",
-  create: "tokenManager",
   grantRole: "admin",
   revokeRole: "admin",
   mint: "supplyManagement",

@@ -6,8 +6,6 @@
  * data throughout the application.
  */
 
-import type { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
-import { accessControlRoles } from "@atk/zod/access-control-roles";
 import { identityClaim } from "@atk/zod/claim";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { userRoles } from "@atk/zod/user-roles";
@@ -44,62 +42,6 @@ const onboardingStateSchema = z.object({
 
 export type OnboardingState = z.infer<typeof onboardingStateSchema>;
 
-const userPermissionsSchema = z.object({
-  actions: z
-    .object(
-      (() => {
-        const actionsSchema: Record<
-          keyof typeof SYSTEM_PERMISSIONS,
-          z.ZodType<boolean>
-        > = {
-          tokenFactoryCreate: z
-            .boolean()
-            .describe("Whether the user can create token factories"),
-          addonCreate: z
-            .boolean()
-            .describe("Whether the user can create addons"),
-          claimCreate: z
-            .boolean()
-            .describe("Whether the user can create claims"),
-          grantRole: z.boolean().describe("Whether the user can grant roles"),
-          revokeRole: z.boolean().describe("Whether the user can revoke roles"),
-          complianceModuleCreate: z
-            .boolean()
-            .describe("Whether the user can create compliance modules"),
-          identityRegister: z
-            .boolean()
-            .describe("Whether the user can register identities"),
-          trustedIssuerCreate: z
-            .boolean()
-            .describe("Whether the user can create trusted issuers"),
-          trustedIssuerUpdate: z
-            .boolean()
-            .describe("Whether the user can update trusted issuers"),
-          trustedIssuerDelete: z
-            .boolean()
-            .describe("Whether the user can delete trusted issuers"),
-          topicCreate: z
-            .boolean()
-            .describe("Whether the user can create topics"),
-          topicUpdate: z
-            .boolean()
-            .describe("Whether the user can update topics"),
-          topicDelete: z
-            .boolean()
-            .describe("Whether the user can delete topics"),
-          claimList: z.boolean().describe("Whether the user can list claims"),
-          claimRevoke: z
-            .boolean()
-            .describe("Whether the user can revoke claims"),
-        };
-        return actionsSchema;
-      })()
-    )
-    .describe("The actions on the system the user is allowed to execute"),
-});
-
-export type UserPermissions = z.infer<typeof userPermissionsSchema>;
-
 export const UserSchema = z.object({
   id: z.string(),
 
@@ -123,13 +65,6 @@ export const UserSchema = z.object({
    * - investor: Standard user
    */
   role: userRoles().default("investor"),
-
-  /**
-   * User's roles for onchain access control.
-   */
-  roles: accessControlRoles.describe(
-    "The onchain roles of the user for the system"
-  ),
 
   /**
    * User's Ethereum wallet address.
@@ -225,12 +160,6 @@ export const UserMeSchema = z.object({
    * This is used to track the user's onboarding progress.
    */
   onboardingState: onboardingStateSchema,
-
-  /**
-   * User's permissions.
-   * This is used to track the user's permissions.
-   */
-  userSystemPermissions: userPermissionsSchema,
 });
 
 /**

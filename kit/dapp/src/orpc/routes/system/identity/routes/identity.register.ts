@@ -1,7 +1,7 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
+import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call } from "@orpc/server";
@@ -48,14 +48,6 @@ export const identityRegister = onboardedRouter.system.identity.register
     const { auth, system } = context;
     const sender = auth.user;
 
-    if (!system?.identityRegistry) {
-      const cause = new Error("Identity registry not found");
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: cause.message,
-        cause,
-      });
-    }
-
     const walletAddress = wallet ?? auth.user.wallet;
 
     const account = await call(
@@ -75,7 +67,7 @@ export const identityRegister = onboardedRouter.system.identity.register
     await context.portalClient.mutate(
       IDENTITY_REGISTER_MUTATION,
       {
-        address: system.identityRegistry,
+        address: system.identityRegistry.id,
         from: sender.wallet,
         country: Number(countries.alpha2ToNumeric(country) ?? "0"),
         identity: account.identity,

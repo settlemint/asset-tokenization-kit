@@ -41,8 +41,11 @@ function ClaimTopicsIssuersPage() {
   const [showAddTopicDialog, setShowAddTopicDialog] = useState(false);
   const [showAddIssuerSheet, setShowAddIssuerSheet] = useState(false);
 
-  // Get current user data with roles
-  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
+  const { data: system } = useSuspenseQuery(
+    orpc.system.read.queryOptions({
+      input: { id: "default" },
+    })
+  );
 
   return (
     <div className="container mx-auto p-6">
@@ -64,7 +67,7 @@ function ClaimTopicsIssuersPage() {
                   {t("claimTopics.description")}
                 </CardDescription>
               </div>
-              {user?.roles?.claimPolicyManager && (
+              {system?.userPermissions?.actions.topicCreate && (
                 <Button
                   onClick={() => {
                     setShowAddTopicDialog(true);
@@ -90,14 +93,16 @@ function ClaimTopicsIssuersPage() {
                   {t("trustedIssuers.description")}
                 </CardDescription>
               </div>
-              <Button
-                onClick={() => {
-                  setShowAddIssuerSheet(true);
-                }}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                {t("trustedIssuers.addButton")}
-              </Button>
+              {system?.userPermissions?.actions.trustedIssuerCreate && (
+                <Button
+                  onClick={() => {
+                    setShowAddIssuerSheet(true);
+                  }}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t("trustedIssuers.addButton")}
+                </Button>
+              )}
             </div>
           </CardHeader>
           <CardContent>

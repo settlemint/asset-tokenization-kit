@@ -37,8 +37,8 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
+import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
 import type { IdentityCreateSchema } from "@/orpc/routes/system/identity/routes/identity.create.schema";
 import { call, ORPCError } from "@orpc/server";
@@ -132,17 +132,6 @@ export const identityCreate = onboardedRouter.system.identity.create
     const { auth, system } = context;
     const sender = auth.user;
 
-    // SYSTEM VALIDATION: Ensure identity factory is available for deployment
-    // WHY: Identity contracts must be deployed through the system's factory
-    // for consistency, security, and proper integration with access control
-    if (!system?.identityFactory) {
-      const cause = new Error("Identity factory not found");
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: cause.message,
-        cause,
-      });
-    }
-
     const walletAddress = wallet ?? auth.user.wallet;
 
     // CONFLICT DETECTION: Check if user already has an identity contract
@@ -179,7 +168,7 @@ export const identityCreate = onboardedRouter.system.identity.create
     await context.portalClient.mutate(
       IDENTITY_CREATE_MUTATION,
       {
-        address: system.identityFactory,
+        address: system.identityFactory.id,
         from: sender.wallet,
         wallet: walletAddress,
       },

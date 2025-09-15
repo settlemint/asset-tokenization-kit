@@ -16,8 +16,8 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
+import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call } from "@orpc/server";
@@ -81,16 +81,8 @@ export const factoryCreate = onboardedRouter.system.factory.create
     const sender = context.auth.user;
     const { system } = context;
 
-    if (!system.tokenFactoryRegistry) {
-      const cause = new Error("Token factory registry not found");
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: cause.message,
-        cause,
-      });
-    }
-
     // Store registry address to satisfy TypeScript's null checks
-    const tokenFactoryRegistry = system.tokenFactoryRegistry;
+    const tokenFactoryRegistryAddress = system.tokenFactoryRegistry.id;
 
     // Normalize to array
     const factoryList = Array.isArray(factories) ? factories : [factories];
@@ -101,7 +93,9 @@ export const factoryCreate = onboardedRouter.system.factory.create
       const systemData = context.system;
 
       existingFactoryNames = new Set(
-        systemData.tokenFactories.map((factory) => factory.name.toLowerCase())
+        systemData.tokenFactoryRegistry.tokenFactories.map((factory) =>
+          factory.name.toLowerCase()
+        )
       );
     } catch (error) {
       // If we can't fetch existing factories, proceed anyway
@@ -132,7 +126,7 @@ export const factoryCreate = onboardedRouter.system.factory.create
 
         // Execute the factory creation transaction
         const variables = {
-          address: tokenFactoryRegistry,
+          address: tokenFactoryRegistryAddress,
           from: sender.wallet,
           factoryImplementation: factoryImplementation,
           tokenImplementation: tokenImplementation,
@@ -170,7 +164,7 @@ export const factoryCreate = onboardedRouter.system.factory.create
     const updatedSystemDetails = await call(
       read,
       {
-        id: context.system.address,
+        id: context.system.id,
       },
       { context }
     );

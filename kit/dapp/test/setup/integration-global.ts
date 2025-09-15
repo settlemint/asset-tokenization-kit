@@ -35,10 +35,10 @@ export async function setup() {
     await Promise.all([setupUser(DEFAULT_INVESTOR), setupUser(DEFAULT_ISSUER)]);
 
     const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
-    const system = await bootstrapSystem(orpClient);
+    await bootstrapSystem(orpClient);
 
     await Promise.all([
-      bootstrapTokenFactories(orpClient, system),
+      bootstrapTokenFactories(orpClient),
       bootstrapAddons(orpClient),
       (async () => {
         await setupDefaultAdminRoles(orpClient);
