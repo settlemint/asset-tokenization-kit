@@ -17,6 +17,7 @@
  * ```
  */
 
+import type { AccessControl } from "@atk/zod/access-control-roles";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { z } from "zod";
 
@@ -156,6 +157,14 @@ export const SystemReadOutputSchema = z.object({
    * List of compliance modules deployed by this system
    */
   complianceModules: z.array(ComplianceModuleSchema),
+
+  /**
+   * The access control of the system
+   */
+  accessControl: z
+    .custom<AccessControl>()
+    .nullable()
+    .describe("The access control of the system"),
 });
 
 // Type exports

@@ -36,8 +36,8 @@ export interface DetailGridItemProps extends PropsWithChildren {
   emptyValue?: React.ReactNode;
   /** Whether to show pretty name for addresses (only applies when type="address") */
   showPrettyName?: boolean;
-  /** Whether to include time in the date formatting */
-  includeTime?: boolean;
+  /** Options for date formatting */
+  dateOptions?: FormatValueOptions["dateOptions"];
 }
 
 /**
@@ -61,7 +61,7 @@ export function DetailGridItem({
   currency,
   emptyValue,
   showPrettyName,
-  includeTime,
+  dateOptions,
 }: DetailGridItemProps) {
   const { t } = useTranslation("detail-grid");
 
@@ -75,7 +75,7 @@ export function DetailGridItem({
           currency,
           emptyValue,
           showPrettyName,
-          includeTime,
+          dateOptions,
         })
       : safeToString(value ?? ""));
 

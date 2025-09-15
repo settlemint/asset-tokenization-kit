@@ -49,7 +49,7 @@ export type AccessControlRoles = (typeof roles)[number];
  */
 export const accessControlRoles = z.object(
   Object.fromEntries(roles.map((role) => [role, z.boolean().default(false)]))
-);
+) as unknown as z.ZodObject<Record<AccessControlRoles, z.ZodBoolean>>;
 
 /**
  * Zod schema for validating an access control role.

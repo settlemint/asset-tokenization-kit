@@ -41,7 +41,6 @@ describe("optionalString", () => {
   it("should accept undefined", () => {
     // WHY: TypeScript optional properties are undefined by default - should bypass validation
     const schema = optionalString(z.string().min(3).max(10));
-    // @ts-expect-error - Testing undefined handling despite type constraints
     expect(schema.parse(undefined)).toBe(undefined);
   });
 
@@ -65,7 +64,6 @@ describe("optionalString", () => {
 
     // Null and undefined bypass ISIN format validation
     expect(schema.parse(null)).toBe(null);
-    // @ts-expect-error - Testing undefined handling despite type constraints
     expect(schema.parse(undefined)).toBe(undefined);
 
     // Invalid ISIN format should still throw

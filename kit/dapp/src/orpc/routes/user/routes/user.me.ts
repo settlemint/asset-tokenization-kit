@@ -129,6 +129,7 @@ export const me = authRouter.user.me
           : authUser.name,
       email: authUser.email,
       role: authUser.role,
+      roles: userRoles,
       wallet: authUser.wallet,
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,
@@ -143,7 +144,6 @@ export const me = authRouter.user.me
           : []),
       ] as VerificationType[],
       userSystemPermissions: {
-        roles: userRoles,
         actions: getSystemPermissions(userRoles),
       },
       onboardingState: {

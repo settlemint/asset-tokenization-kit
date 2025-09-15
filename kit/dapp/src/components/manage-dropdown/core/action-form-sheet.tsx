@@ -1,14 +1,15 @@
-import React from "react";
-import { Store } from "@tanstack/store";
+import { useAppForm } from "@/hooks/use-app-form";
+import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
+import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import type { AnyFieldMeta } from "@tanstack/react-form";
 import { useStore } from "@tanstack/react-store";
+import { Store } from "@tanstack/store";
+import React from "react";
 import {
   createActionFormStore,
   type ActionFormState,
 } from "./action-form-sheet.store";
 import { BaseActionSheet } from "./base-action-sheet";
-import { useAppForm } from "@/hooks/use-app-form";
-import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import type { AnyFieldMeta } from "@tanstack/react-form";
 // Uses form.VerificationButton via useAppForm context
 
 /**
@@ -24,7 +25,7 @@ interface ActionFormSheetProps {
   /** Callback when sheet open state changes */
   onOpenChange: (open: boolean) => void;
   /** Token/asset being operated on */
-  asset: Token;
+  asset?: Token;
   /** Sheet title displayed to user */
   title: string;
   /** Description of the operation */
@@ -49,10 +50,7 @@ interface ActionFormSheetProps {
     errors: AnyFieldMeta["errors"];
   }) => boolean;
   /** Callback executed after successful wallet verification */
-  onSubmit: (verification: {
-    secretVerificationCode: string;
-    verificationType?: "OTP" | "PINCODE" | "SECRET_CODES";
-  }) => void;
+  onSubmit: (verification: UserVerification) => void;
   /** Optional external state store for step management */
   store?: Store<ActionFormState>;
   /** Whether to show asset details card on the confirm step */
@@ -178,10 +176,7 @@ export function ActionFormSheet({
               onSubmit={() => {
                 // EXTRACTION: Get verification data from form field
                 const v = form.getFieldValue("verification") as
-                  | {
-                      secretVerificationCode: string;
-                      verificationType?: "OTP" | "PINCODE" | "SECRET_CODES";
-                    }
+                  | UserVerification
                   | undefined;
                 // SAFETY: Only proceed if verification data is present
                 if (v) onSubmit(v);

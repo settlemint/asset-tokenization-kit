@@ -11,6 +11,7 @@ import {
   type UseDataTableStateOptions,
 } from "@/hooks/use-data-table-state";
 import { cn } from "@/lib/utils";
+import { debounce } from "@/lib/utils/debounce";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import {
   type ColumnFiltersState,
@@ -119,8 +120,15 @@ export interface DataTableProps<TData> {
   /** External state handlers for manual state management */
   externalState?: {
     pagination?: PaginationState;
+    sorting?: SortingState;
     onPaginationChange?: (
       updater: PaginationState | ((old: PaginationState) => PaginationState)
+    ) => void;
+    onGlobalFilterChange?: (
+      updater: string | ((old: string) => string)
+    ) => void;
+    onSortingChange?: (
+      updater: SortingState | ((old: SortingState) => SortingState)
     ) => void;
   };
 }
@@ -238,7 +246,7 @@ function DataTableComponent<TData>({
       : externalState
         ? {
             rowSelection: localRowSelection,
-            sorting: localSorting,
+            sorting: externalState.sorting ?? localSorting,
             columnFilters: localColumnFilters,
             columnVisibility: localColumnVisibility,
             globalFilter: localGlobalFilter,
@@ -269,10 +277,12 @@ function DataTableComponent<TData>({
       : externalState
         ? {
             onRowSelectionChange: setLocalRowSelection,
-            onSortingChange: setLocalSorting,
+            onSortingChange: externalState.onSortingChange ?? setLocalSorting,
             onColumnFiltersChange: setLocalColumnFilters,
             onColumnVisibilityChange: setLocalColumnVisibility,
-            onGlobalFilterChange: setLocalGlobalFilter,
+            onGlobalFilterChange: externalState.onGlobalFilterChange
+              ? debounce(externalState.onGlobalFilterChange, 1000)
+              : setLocalGlobalFilter,
             onPaginationChange: externalState.onPaginationChange ?? (() => {}),
           }
         : {
@@ -303,6 +313,7 @@ function DataTableComponent<TData>({
 
     // Server-side pagination configuration
     manualPagination: serverSidePagination?.enabled ?? false,
+    manualSorting: serverSidePagination?.enabled ?? false,
     pageCount: serverSidePagination?.enabled
       ? Math.ceil(
           serverSidePagination.totalCount / currentState.pagination.pageSize
@@ -462,10 +473,6 @@ function DataTableComponent<TData>({
     );
   };
 
-  if (data.length === 0 && customEmptyState) {
-    return <DataTableEmptyState {...customEmptyState} />;
-  }
-
   const shouldUseAdvancedToolbar = toolbar?.useAdvanced ?? advancedToolbar;
 
   return (
@@ -479,43 +486,47 @@ function DataTableComponent<TData>({
       ) : (
         <DataTableToolbar table={table} {...toolbar} />
       )}
-      <div
-        data-slot="data-table"
-        className={cn(
-          "w-full overflow-x-auto rounded-xl bg-card text-sidebar-foreground shadow-sm",
-          className
-        )}
-      >
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id} colSpan={header.colSpan}>
-                      {header.isPlaceholder ? null : typeof header.column
-                          .columnDef.header === "string" ? (
-                        <DataTableColumnHeader
-                          column={header.column}
-                          variant={header.column.columnDef.meta?.variant}
-                        >
-                          {header.column.columnDef.header}
-                        </DataTableColumnHeader>
-                      ) : (
-                        flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )
-                      )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>{renderTableBody()}</TableBody>
-        </Table>
-      </div>
+      {data.length === 0 && customEmptyState ? (
+        <DataTableEmptyState {...customEmptyState} />
+      ) : (
+        <div
+          data-slot="data-table"
+          className={cn(
+            "w-full overflow-x-auto rounded-xl bg-card text-sidebar-foreground shadow-sm",
+            className
+          )}
+        >
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id} colSpan={header.colSpan}>
+                        {header.isPlaceholder ? null : typeof header.column
+                            .columnDef.header === "string" ? (
+                          <DataTableColumnHeader
+                            column={header.column}
+                            variant={header.column.columnDef.meta?.variant}
+                          >
+                            {header.column.columnDef.header}
+                          </DataTableColumnHeader>
+                        ) : (
+                          flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )
+                        )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>{renderTableBody()}</TableBody>
+          </Table>
+        </div>
+      )}
       {table.getRowModel().rows.length > 0 && (
         <DataTablePagination table={table} {...pagination} />
       )}

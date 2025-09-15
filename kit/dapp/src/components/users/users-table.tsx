@@ -1,19 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { Users } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { DateCell } from "@/components/data-table/cells/date-cell";
-import { UserDisplayCell } from "@/components/data-table/cells/user-display-cell";
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { UserStatusBadge } from "@/components/users/user-status-badge";
-import { getUserDisplayName } from "@/lib/utils/user-display-name";
 import { orpc } from "@/orpc/orpc-client";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { toast } from "sonner";
@@ -33,6 +30,8 @@ export function UsersTable() {
     pageIndex: 0,
     pageSize: 20,
   });
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   // Fetch users data using ORPC with server-side pagination
   const { data, isLoading, error } = useQuery(
@@ -40,8 +39,12 @@ export function UsersTable() {
       input: {
         limit: pagination.pageSize,
         offset: pagination.pageIndex * pagination.pageSize,
-        orderBy: "createdAt",
-        orderDirection: "desc",
+        orderBy: sorting.length > 0 ? sorting[0]?.id : "createdAt",
+        orderDirection:
+          sorting.length > 0 ? (sorting[0]?.desc ? "desc" : "asc") : "desc",
+        filters: {
+          search: globalFilter,
+        },
       },
     })
   );
@@ -70,20 +73,11 @@ export function UsersTable() {
   const columns = useMemo(
     () =>
       withAutoFeatures([
-        columnHelper.display({
-          id: "userDisplay",
+        columnHelper.accessor("wallet", {
           header: t("management.table.columns.name"),
-          cell: ({ row }) => <UserDisplayCell user={row.original} />,
-          filterFn: (row, _columnId, filterValue) => {
-            const user = row.original;
-            const displayName = getUserDisplayName(user);
-            return displayName
-              .toLowerCase()
-              .includes((filterValue as string).toLowerCase());
-          },
           meta: {
             displayName: t("management.table.columns.name"),
-            type: "text",
+            type: "address",
           },
         }),
         columnHelper.accessor("email", {
@@ -97,14 +91,6 @@ export function UsersTable() {
           id: "status",
           header: t("management.table.columns.status"),
           cell: ({ row }) => <UserStatusBadge user={row.original} />,
-          filterFn: (row, _columnId, filterValue) => {
-            const user = row.original;
-            if (filterValue === "registered") return user.isRegistered;
-            if (filterValue === "pending")
-              return Boolean(user.wallet && !user.isRegistered);
-            if (filterValue === "notConnected") return !user.wallet;
-            return true;
-          },
           meta: {
             displayName: t("management.table.columns.status"),
             type: "option",
@@ -121,28 +107,21 @@ export function UsersTable() {
             ],
           },
         }),
-        columnHelper.display({
-          id: "created",
+        columnHelper.accessor("createdAt", {
           header: t("management.table.columns.created"),
-          cell: ({ row }) => <DateCell value={row.original.createdAt} />,
           meta: {
             displayName: t("management.table.columns.created"),
             type: "date",
           },
         }),
-        columnHelper.display({
-          id: "lastActive",
+        columnHelper.accessor("lastLoginAt", {
           header: t("management.table.columns.lastActive"),
-          cell: ({ row }) => (
-            <DateCell
-              value={row.original.lastLoginAt}
-              fallback={t("management.table.fallback.never")}
-              relative
-            />
-          ),
           meta: {
             displayName: t("management.table.columns.lastActive"),
             type: "date",
+            dateOptions: {
+              relative: true,
+            },
           },
         }),
       ] as ColumnDef<User>[]),
@@ -175,14 +154,17 @@ export function UsersTable() {
         }}
         externalState={{
           pagination,
+          sorting,
           onPaginationChange: setPagination,
+          onGlobalFilterChange: setGlobalFilter,
+          onSortingChange: setSorting,
         }}
         urlState={{
           enabled: false, // Disable URL state since we're managing it manually
         }}
         advancedToolbar={{
-          enableGlobalSearch: false,
-          enableFilters: true, // Re-enable filters now that columns are properly accessible
+          enableGlobalSearch: true, // Search by name (server side)
+          enableFilters: false,
           enableExport: true,
           enableViewOptions: true,
           placeholder: t("management.table.search.placeholder"),
@@ -193,14 +175,16 @@ export function UsersTable() {
         initialPageSize={20}
         initialSorting={[
           {
-            id: "created",
+            id: "createdAt",
             desc: true,
           },
         ]}
         customEmptyState={{
-          title: t("management.table.emptyState.title"),
-          description: isLoading
+          title: isLoading
             ? t("management.table.emptyState.loading")
+            : t("management.table.emptyState.title"),
+          description: isLoading
+            ? ""
             : t("management.table.emptyState.description"),
           icon: Users,
         }}

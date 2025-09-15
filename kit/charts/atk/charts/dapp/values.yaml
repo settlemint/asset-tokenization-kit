@@ -239,7 +239,7 @@ initContainer:
     image:
       registry: docker.io
       repository: curlimages/curl
-      tag: "8.15.0"
+      tag: "8.16.0"
       pullPolicy: IfNotPresent
     # Wait for subgraph to finish syncing (extended timeout)
     url: "http://graph-node-combined.atk.svc.cluster.local:8000/subgraphs/name/kit"
