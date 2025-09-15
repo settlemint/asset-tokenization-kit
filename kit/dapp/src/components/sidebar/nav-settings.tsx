@@ -15,14 +15,14 @@ import {
 } from "@/components/ui/sidebar";
 import { Link, useMatches } from "@tanstack/react-router";
 import {
-  Settings,
-  Users,
-  FileText,
-  Shield,
-  Puzzle,
-  ClipboardCheck,
-  Key,
   ChevronRight,
+  ClipboardCheck,
+  FileText,
+  Key,
+  Puzzle,
+  Settings,
+  Shield,
+  Users,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -64,7 +64,7 @@ export function NavSettings() {
       path: "/admin/platform-settings/claim-topics-issuers",
     },
     {
-      name: t("settings.permissions"),
+      name: t("settings.permissions.title"),
       icon: Key,
       path: "/admin/platform-settings/permissions",
     },

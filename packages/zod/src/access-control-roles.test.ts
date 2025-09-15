@@ -24,7 +24,7 @@ describe("accessControlRoles", () => {
     it("should parse valid access control roles object with all roles false", () => {
       // WHY: Test baseline case where user has no elevated permissions
       // SECURITY: Default state should be restrictive (all permissions denied)
-      const validRoles: Record<string, boolean> = {
+      const validRoles: z.infer<typeof accessControlRoles> = {
         addonManager: false,
         addonModule: false,
         addonRegistryModule: false,
@@ -69,7 +69,7 @@ describe("accessControlRoles", () => {
     it("should parse valid access control roles object with mixed boolean values", () => {
       // WHY: Test realistic permission assignment patterns
       // PATTERN: Different roles enabled for different user types (admin, auditor, etc.)
-      const validRoles: Record<string, boolean> = {
+      const validRoles: z.infer<typeof accessControlRoles> = {
         addonManager: true,
         addonModule: false,
         addonRegistryModule: true,

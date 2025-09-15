@@ -16,6 +16,7 @@ import {
   ActionsListSchema,
 } from "@/orpc/routes/actions/routes/actions.list.schema";
 import { kycContract } from "@/orpc/routes/user/kyc/kyc.contract";
+import { AdminListOutputSchema } from "@/orpc/routes/user/routes/admins.list.schema";
 import { createWalletContract } from "@/orpc/routes/user/routes/mutations/create-wallet.contract";
 import {
   UserListInputSchema,
@@ -122,6 +123,16 @@ const list = baseContract
   .input(UserListInputSchema)
   .output(UserListOutputSchema);
 
+const adminList = baseContract
+  .route({
+    method: "GET",
+    path: "/user/list/admins",
+    description: "Get the list of admins",
+    successDescription: "List of admins",
+    tags: ["user"],
+  })
+  .output(AdminListOutputSchema);
+
 /**
  * Get specific user by ID or wallet address.
  *
@@ -198,6 +209,7 @@ export const userContract = {
   actions,
   search,
   list,
+  adminList,
   read,
   stats,
   statsGrowthOverTime,

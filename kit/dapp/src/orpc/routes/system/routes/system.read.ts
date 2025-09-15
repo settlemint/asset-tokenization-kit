@@ -84,6 +84,7 @@ export const read = publicRouter.system.read.handler(
       systemAddons: systemContext.systemAddons,
       complianceModules: systemContext.complianceModules,
       systemAccessManager: systemContext.systemAccessManager?.id ?? null,
+      accessControl: systemContext.systemAccessManager?.accessControl ?? null,
     };
     return output;
   }

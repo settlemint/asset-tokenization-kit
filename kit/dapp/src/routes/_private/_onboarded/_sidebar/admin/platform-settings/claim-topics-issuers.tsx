@@ -64,7 +64,7 @@ function ClaimTopicsIssuersPage() {
                   {t("claimTopics.description")}
                 </CardDescription>
               </div>
-              {user?.userSystemPermissions?.roles?.claimPolicyManager && (
+              {user?.roles?.claimPolicyManager && (
                 <Button
                   onClick={() => {
                     setShowAddTopicDialog(true);

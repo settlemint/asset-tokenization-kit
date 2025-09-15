@@ -72,7 +72,7 @@ export function BondExtensionDetails({
         info={t("tokens:fields.maturityDateInfo")}
         value={bond.maturityDate}
         type="date"
-        includeTime={true}
+        dateOptions={{ includeTime: true }}
         emptyValue={t("tokens:fields.noExpiry")}
       />
       <DetailGridItem

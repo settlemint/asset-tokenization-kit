@@ -11,6 +11,11 @@ import { z } from "zod";
  */
 export const UserListInputSchema = ListSchema.extend({
   orderBy: ListSchema.shape.orderBy.default("createdAt"),
+  filters: z
+    .object({
+      search: z.string().optional().describe("Search query"),
+    })
+    .optional(),
 });
 
 /**
