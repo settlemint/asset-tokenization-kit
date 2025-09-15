@@ -40,7 +40,7 @@ import { beforeAll, describe, expect, test } from "vitest";
  * operations, validating both the unfreezing process and constraint enforcement.
  */
 describe("Token unfreeze partial", () => {
-  let stablecoinToken: Awaited<ReturnType<typeof createToken>>;
+  let equityToken: Awaited<ReturnType<typeof createToken>>;
   let adminClient: OrpcClient;
   let investorClient: OrpcClient;
   let investorAddress: Address;
@@ -51,7 +51,7 @@ describe("Token unfreeze partial", () => {
    * WHY: Creates realistic test scenario with:
    * 1. Admin user with freezer privileges (regulatory authority)
    * 2. Investor user with partially frozen holdings (compliance subject)
-   * 3. Stablecoin token with CUSTODIAN extension (regulated asset)
+   * 3. Equity token with CUSTODIAN extension (regulated asset)
    * 4. Pre-established frozen balance (50% of holdings)
    *
    * DESIGN DECISION: Pre-freezes 5000 out of 10000 tokens to create meaningful
@@ -71,23 +71,20 @@ describe("Token unfreeze partial", () => {
     investorAddress = investorUser.wallet as Address;
 
     // WHY: Equity type includes CUSTODIAN and doesn't require collateral for mint
-    const stablecoinData = {
-      type: "equity" as const,
-      name: `Test Unfreezable Equity ${Date.now()}`,
-      symbol: "TUE",
-      decimals: 18,
-      initialModulePairs: [],
-      basePrice: from("1.00", 2),
-    };
-
-    stablecoinToken = await createToken(
+    equityToken = await createToken(
       adminClient,
       {
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
         },
-        ...stablecoinData,
+
+        type: "equity",
+        name: `Test Unfreezable Equity`,
+        symbol: "TUE",
+        decimals: 18,
+        initialModulePairs: [],
+        basePrice: from("1.00", 2),
         countryCode: "056",
       },
       {
@@ -96,75 +93,14 @@ describe("Token unfreeze partial", () => {
       }
     );
 
-    expect(stablecoinToken).toBeDefined();
-    expect(stablecoinToken.id).toBeDefined();
-    expect(stablecoinToken.type).toBe(stablecoinData.type);
+    expect(equityToken).toBeDefined();
+    expect(equityToken.id).toBeDefined();
+    expect(equityToken.type).toBe(equityToken.type);
 
-    // SETUP: Establish substantial token holdings for meaningful freeze/unfreeze testing
-    // Ensure sufficient collateral is set before minting to avoid reverts (only if supported)
-    // Read token details if needed; omitted to avoid unused var in typecheck
-    try {
-      await adminClient.token.updateCollateral({
-        contract: stablecoinToken.id,
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
-        },
-        amount: from("1000000", stablecoinToken.decimals),
-        expiryDays: 30,
-      });
-
-      // Transaction tracking with indexing is now handled by the portal middleware
-      // No polling needed - updateCollateral will wait for indexing completion
-    } catch {
-      const t = await adminClient.token.read({
-        tokenAddress: stablecoinToken.id,
-      });
-      if (t.extensions.includes("CAPPED")) {
-        await adminClient.token.setCap({
-          contract: stablecoinToken.id,
-          walletVerification: {
-            secretVerificationCode: DEFAULT_PINCODE,
-            verificationType: "PINCODE",
-          },
-          newCap: from("100000000", stablecoinToken.decimals),
-        });
-      }
-    }
-
-    // Retry mint briefly in case on-chain claim finalization is still indexing
-    {
-      const maxAttempts = 3;
-      let lastError: unknown;
-      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        try {
-          await adminClient.token.mint({
-            contract: stablecoinToken.id,
-            recipients: [investorAddress],
-            amounts: [from("10000", stablecoinToken.decimals)],
-            walletVerification: {
-              secretVerificationCode: DEFAULT_PINCODE,
-              verificationType: "PINCODE",
-            },
-          });
-          lastError = undefined;
-          break;
-        } catch (error) {
-          lastError = error;
-          await new Promise((r) => setTimeout(r, 750));
-        }
-      }
-      if (lastError) throw lastError;
-    }
-
-    // SECURITY: Grant custodian role to admin for authorized freeze operations
-    const adminUser = await adminClient.user.me();
-    const adminAddress = adminUser.wallet as Address;
-
-    await adminClient.token.grantRole({
-      contract: stablecoinToken.id,
-      accounts: [adminAddress],
-      role: "custodian",
+    await adminClient.token.mint({
+      contract: equityToken.id,
+      recipients: [investorAddress],
+      amounts: [from("10000", equityToken.decimals)],
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
@@ -173,9 +109,9 @@ describe("Token unfreeze partial", () => {
 
     // PREREQUISITE: Pre-freeze 50% of holdings to establish baseline for unfreeze testing
     await adminClient.token.freezePartial({
-      contract: stablecoinToken.id,
+      contract: equityToken.id,
       userAddress: investorAddress,
-      amount: from("5000", stablecoinToken.decimals),
+      amount: from("5000", equityToken.decimals),
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
@@ -200,9 +136,9 @@ describe("Token unfreeze partial", () => {
    */
   test("admin can unfreeze partial tokens", async () => {
     // OPERATION: Unfreeze 40% of previously frozen tokens to test partial functionality
-    const unfreezeAmount = from("2000", stablecoinToken.decimals);
+    const unfreezeAmount = from("2000", equityToken.decimals);
     const result = await adminClient.token.unfreezePartial({
-      contract: stablecoinToken.id,
+      contract: equityToken.id,
       userAddress: investorAddress,
       amount: unfreezeAmount,
       walletVerification: {
@@ -212,11 +148,11 @@ describe("Token unfreeze partial", () => {
     });
 
     expect(result).toBeDefined();
-    expect(result.id).toBe(stablecoinToken.id);
+    expect(result.id).toBe(equityToken.id);
 
     // VERIFICATION: Confirm unfreeze operation updated token state correctly
     const investorBalance = await investorClient.token.read({
-      tokenAddress: stablecoinToken.id,
+      tokenAddress: equityToken.id,
     });
 
     // The unfrozen balance should be reflected in available tokens
@@ -240,13 +176,13 @@ describe("Token unfreeze partial", () => {
     const regularUserHeaders = await signInWithUser(DEFAULT_INVESTOR);
     const regularClient = getOrpcClient(regularUserHeaders);
 
-    const unfreezeAmount = from("100", stablecoinToken.decimals);
+    const unfreezeAmount = from("100", equityToken.decimals);
 
     // SECURITY: Verify unauthorized users are rejected with proper error code
     await expect(
       regularClient.token.unfreezePartial(
         {
-          contract: stablecoinToken.id,
+          contract: equityToken.id,
           userAddress: investorAddress,
           amount: unfreezeAmount,
           walletVerification: {
@@ -285,13 +221,13 @@ describe("Token unfreeze partial", () => {
   test("cannot unfreeze more tokens than are frozen", async () => {
     // CONSTRAINT: Attempt to unfreeze original full amount when only partial remains
     // (5000 originally frozen, 2000 already unfrozen, only 3000 should remain)
-    const excessiveUnfreezeAmount = from("5000", stablecoinToken.decimals);
+    const excessiveUnfreezeAmount = from("5000", equityToken.decimals);
 
     // INVARIANT: Smart contract should reject operations exceeding frozen balance
     await expect(
       adminClient.token.unfreezePartial(
         {
-          contract: stablecoinToken.id,
+          contract: equityToken.id,
           userAddress: investorAddress,
           amount: excessiveUnfreezeAmount,
           walletVerification: {
@@ -332,9 +268,9 @@ describe("Token unfreeze partial", () => {
    */
   test("can unfreeze all remaining frozen tokens", async () => {
     // COMPLETION: Unfreeze all remaining frozen tokens to restore full liquidity
-    const remainingFrozenAmount = from("3000", stablecoinToken.decimals);
+    const remainingFrozenAmount = from("3000", equityToken.decimals);
     const result = await adminClient.token.unfreezePartial({
-      contract: stablecoinToken.id,
+      contract: equityToken.id,
       userAddress: investorAddress,
       amount: remainingFrozenAmount,
       walletVerification: {
@@ -344,11 +280,11 @@ describe("Token unfreeze partial", () => {
     });
 
     expect(result).toBeDefined();
-    expect(result.id).toBe(stablecoinToken.id);
+    expect(result.id).toBe(equityToken.id);
 
     // VERIFICATION: Confirm complete restoration with no remaining frozen balance
     const finalBalance = await investorClient.token.read({
-      tokenAddress: stablecoinToken.id,
+      tokenAddress: equityToken.id,
     });
 
     expect(finalBalance).toBeDefined();
@@ -365,11 +301,11 @@ describe("Token unfreeze partial", () => {
    */
   test("cannot unfreeze zero amount", async () => {
     // VALIDATION: Zero amount should be rejected at schema level
-    const zeroAmount = from("0", stablecoinToken.decimals);
+    const zeroAmount = from("0", equityToken.decimals);
 
     await expect(
       adminClient.token.unfreezePartial({
-        contract: stablecoinToken.id,
+        contract: equityToken.id,
         userAddress: investorAddress,
         amount: zeroAmount,
         walletVerification: {
@@ -392,11 +328,11 @@ describe("Token unfreeze partial", () => {
   test("cannot unfreeze negative amount", async () => {
     // VALIDATION: Negative amount should be rejected at schema level
     // Note: BigInt(-1000) creates a negative value for testing
-    const negativeAmount = [BigInt(-1000), stablecoinToken.decimals] as const;
+    const negativeAmount = [BigInt(-1000), equityToken.decimals] as const;
 
     await expect(
       adminClient.token.unfreezePartial({
-        contract: stablecoinToken.id,
+        contract: equityToken.id,
         userAddress: investorAddress,
         amount: negativeAmount,
         walletVerification: {
