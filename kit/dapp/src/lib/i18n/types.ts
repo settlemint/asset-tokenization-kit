@@ -59,6 +59,7 @@ import type enThemeTranslations from "@/locales/en-US/theme.json";
 import type enToastTranslations from "@/locales/en-US/toast.json";
 import type enTokenFactoryTranslations from "@/locales/en-US/token-factory.json";
 import type enTokensTranslations from "@/locales/en-US/tokens.json";
+import type enUserAssetsTranslations from "@/locales/en-US/user-assets.json";
 import type enUserTranslations from "@/locales/en-US/user.json";
 import type enValidationTranslations from "@/locales/en-US/validation.json";
 import type enWalletTranslations from "@/locales/en-US/wallet.json";
@@ -121,6 +122,7 @@ declare module "i18next" {
       "token-factory": typeof enTokenFactoryTranslations;
       tokens: typeof enTokensTranslations;
       user: typeof enUserTranslations;
+      "user-assets": typeof enUserAssetsTranslations;
       validation: typeof enValidationTranslations;
       wallet: typeof enWalletTranslations;
     };

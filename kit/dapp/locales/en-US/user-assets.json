@@ -1,0 +1,30 @@
+{
+  "title": "My Assets",
+  "actions": {
+    "addressCopied": "Token address copied to clipboard",
+    "copyAddress": "Copy Address",
+    "tokenDetailsNotImplemented": "Token details view not yet implemented",
+    "viewOnBlockExplorer": "View on Block Explorer",
+    "viewTokenDetails": "View Token Details"
+  },
+  "bulkActions": {
+    "addressesCopied": "{{count}} token addresses copied to clipboard",
+    "exportMessage": "Exporting {{count}} selected assets"
+  },
+  "columns": {
+    "actions": "Actions",
+    "available": "Available",
+    "balance": "Balance",
+    "contractAddress": "Contract Address",
+    "frozen": "Frozen",
+    "ownership": "Ownership %",
+    "symbol": "Symbol",
+    "tokenName": "Token Name",
+    "totalSupply": "Total Supply"
+  },
+  "emptyState": {
+    "description": "You don't hold any tokens yet. When you acquire tokens, they will appear here.",
+    "title": "No Assets Found"
+  },
+  "searchPlaceholder": "Search by token name, symbol, or address..."
+}

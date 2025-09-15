@@ -1,0 +1,30 @@
+{
+  "title": "أصولي",
+  "actions": {
+    "addressCopied": "تم نسخ عنوان الرمز المميز إلى الحافظة",
+    "copyAddress": "نسخ العنوان",
+    "tokenDetailsNotImplemented": "عرض تفاصيل الرمز المميز غير مطبق بعد",
+    "viewOnBlockExplorer": "عرض في مستكشف الكتل",
+    "viewTokenDetails": "عرض تفاصيل الرمز المميز"
+  },
+  "bulkActions": {
+    "addressesCopied": "تم نسخ {{count}} عناوين الرموز المميزة إلى الحافظة",
+    "exportMessage": "يتم تصدير {{count}} الأصول المحددة"
+  },
+  "columns": {
+    "actions": "الإجراءات",
+    "available": "متاح",
+    "balance": "الرصيد",
+    "contractAddress": "عنوان العقد",
+    "frozen": "مجمد",
+    "ownership": "الملكية %",
+    "symbol": "الرمز",
+    "tokenName": "اسم الرمز المميز",
+    "totalSupply": "إجمالي العرض"
+  },
+  "emptyState": {
+    "description": "لا تملك أي رموز مميزة بعد. عندما تحصل على الرموز، ستظهر هنا.",
+    "title": "لم يتم العثور على أصول"
+  },
+  "searchPlaceholder": "البحث بالاسم أو الرمز أو العنوان..."
+}

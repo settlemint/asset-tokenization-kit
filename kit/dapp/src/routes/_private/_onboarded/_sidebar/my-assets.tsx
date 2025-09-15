@@ -1,6 +1,6 @@
-import { orpc } from "@/orpc/orpc-client";
-import { useQuery } from "@tanstack/react-query";
+import { UserAssetsTable } from "@/components/users/user-assets";
 import { createFileRoute } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_private/_onboarded/_sidebar/my-assets")(
   {
@@ -16,10 +16,12 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar/my-assets")(
 );
 
 function MyAssets() {
-  const { user } = Route.useLoaderData();
-  const { data: assets } = useQuery(orpc.user.assets.queryOptions());
+  const { t } = useTranslation("user-assets");
 
-  console.log(assets);
-
-  return <div className="p-6 space-y-6">{user?.wallet}</div>;
+  return (
+    <div className="space-y-6 p-6">
+      <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
+      <UserAssetsTable />
+    </div>
+  );
 }
