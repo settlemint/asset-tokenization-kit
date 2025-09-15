@@ -79,7 +79,7 @@ describe("Token freeze address", () => {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
         },
-        type: "deposit" as const,
+        type: "deposit",
         name: `Test Address Freezable Token`,
         symbol: "TAFT",
         decimals: 18,
@@ -95,7 +95,18 @@ describe("Token freeze address", () => {
 
     expect(depositToken).toBeDefined();
     expect(depositToken.id).toBeDefined();
-  });
+
+    // Mint initial balance for investor used by tests
+    await adminClient.token.mint({
+      contract: depositToken.id,
+      recipients: [investorAddress],
+      amounts: [from("10000", depositToken.decimals)],
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
+    });
+  }, 100_000);
 
   /**
    * Validates that authorized custodians can freeze entire addresses.
@@ -143,7 +154,7 @@ describe("Token freeze address", () => {
     expect(holderData.holder?.available).toEqual([0n, 0]);
     // Total value also uses decimal 0 when address is frozen
     expect(holderData.holder?.value).toEqual([10_000n, 0]);
-  }, 100_000);
+  });
 
   /**
    * Validates that authorized custodians can restore address functionality.
@@ -185,7 +196,7 @@ describe("Token freeze address", () => {
     expect(holderData.holder?.frozen).toEqual([0n, 0]);
     expect(holderData.holder?.available).toEqual([10_000n, 0]);
     expect(holderData.holder?.value).toEqual([10_000n, 0]);
-  }, 100_000);
+  });
 
   /**
    * Ensures unauthorized users cannot perform address freeze operations.
@@ -303,7 +314,7 @@ describe("Token freeze address", () => {
         verificationType: "PINCODE",
       },
     });
-  }, 100_000);
+  });
 
   /**
    * Validates that repeated unfreeze operations are safe and don't cause errors.
@@ -386,5 +397,5 @@ describe("Token freeze address", () => {
     expect(afterSecondUnfreeze.holder?.frozen).toEqual([0n, 0]);
     expect(afterSecondUnfreeze.holder?.available).toEqual([10_000n, 0]);
     expect(afterSecondUnfreeze.holder?.value).toEqual([10_000n, 0]);
-  }, 100_000);
+  });
 });

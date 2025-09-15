@@ -29,7 +29,7 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
-import { from, toNumber, toString } from "dnum";
+import { add, from, subtract, toNumber } from "dnum";
 import type { Address } from "viem";
 import { beforeAll, describe, expect, test } from "vitest";
 
@@ -105,7 +105,7 @@ describe("Token freeze partial", () => {
         verificationType: "PINCODE",
       },
     });
-  });
+  }, 100_000);
 
   /**
    * Validates that authorized users can perform partial token freezing operations.
@@ -130,8 +130,8 @@ describe("Token freeze partial", () => {
     });
     const beforeAvailable = beforeHolder.holder?.available;
     const beforeFrozen = beforeHolder.holder?.frozen;
-    expect(beforeAvailable).toBe("10000");
-    expect(beforeFrozen).toBe("0");
+    expect(beforeAvailable).toEqual(from("10000"));
+    expect(beforeFrozen).toEqual(from("0"));
 
     // OPERATION: Freeze 10% of investor balance to test partial functionality
     const freezeAmount = from("1000", equityToken.decimals);
@@ -159,18 +159,12 @@ describe("Token freeze partial", () => {
     expect(afterAvailable).toBeDefined();
     expect(afterFrozen).toBeDefined();
 
-    const expectedAvailable = from(
-      String(toNumber(beforeAvailable!) - toNumber(freezeAmount)),
-      equityToken.decimals
-    );
-    const expectedFrozen = from(
-      String(toNumber(beforeFrozen!) + toNumber(freezeAmount)),
-      equityToken.decimals
-    );
+    const expectedAvailable = subtract(beforeAvailable!, freezeAmount);
+    const expectedFrozen = add(beforeFrozen!, freezeAmount);
 
-    expect(toString(afterAvailable!)).toBe(toString(expectedAvailable));
-    expect(toString(afterFrozen!)).toBe(toString(expectedFrozen));
-  }, 100_000);
+    expect(afterAvailable).toEqual(expectedAvailable);
+    expect(afterFrozen).toEqual(expectedFrozen);
+  });
 
   /**
    * Ensures unauthorized users cannot perform freeze operations.
@@ -263,10 +257,8 @@ describe("Token freeze partial", () => {
 
     // INVARIANT: Smart contract should reject operations exceeding available balance
     // Expected error: FreezeAmountExceedsAvailableBalance
-
-    // DEBUG: Let's see what actually happens when we try to freeze excessive amount
-    try {
-      await adminClient.token.freezePartial(
+    await expect(
+      adminClient.token.freezePartial(
         {
           contract: equityToken.id,
           userAddress: investorAddress,
@@ -278,20 +270,11 @@ describe("Token freeze partial", () => {
         },
         {
           context: {
-            // TESTING: Skip logging expected transaction reverts to reduce noise
-            skipLoggingFor: ["TRANSACTION_REVERTED"],
+            skipLoggingFor: [CUSTOM_ERROR_CODES.PORTAL_ERROR],
           },
         }
-      );
-      throw new Error(
-        `Freeze should have failed but succeeded. Attempted to freeze ${toString(excessiveFreezeAmount)} tokens when only ${currentAvailable} available.`
-      );
-    } catch (error) {
-      // Check if it contains the expected error message
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      expect(errorMessage).toContain("FreezeAmountExceedsAvailableBalance");
-    }
+      )
+    ).rejects.toThrow("reverted: FreezeAmountExceedsAvailableBalance");
   });
 
   /**
@@ -308,16 +291,23 @@ describe("Token freeze partial", () => {
     const zeroAmount = from("0", equityToken.decimals);
 
     await expect(
-      adminClient.token.freezePartial({
-        contract: equityToken.id,
-        userAddress: investorAddress,
-        amount: zeroAmount,
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
+      adminClient.token.freezePartial(
+        {
+          contract: equityToken.id,
+          userAddress: investorAddress,
+          amount: zeroAmount,
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
+          },
         },
-      })
-    ).rejects.toThrow("Input validation failed");
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.BAD_REQUEST],
+          },
+        }
+      )
+    ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.BAD_REQUEST));
   });
 
   /**
@@ -331,20 +321,27 @@ describe("Token freeze partial", () => {
    */
   test("cannot freeze negative amount", async () => {
     // VALIDATION: Negative amount should be rejected at schema level
-    // Note: BigInt(-1000) creates a negative value for testing
-    const negativeAmount = [BigInt(-1000), equityToken.decimals] as const;
+    // Note: dnum supports negative numbers
+    const negativeAmount = from("-1000", equityToken.decimals);
 
     await expect(
-      adminClient.token.freezePartial({
-        contract: equityToken.id,
-        userAddress: investorAddress,
-        amount: negativeAmount,
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
+      adminClient.token.freezePartial(
+        {
+          contract: equityToken.id,
+          userAddress: investorAddress,
+          amount: negativeAmount,
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
+          },
         },
-      })
-    ).rejects.toThrow("Input validation failed");
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.BAD_REQUEST],
+          },
+        }
+      )
+    ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.BAD_REQUEST));
   });
 
   // NOTE: Test for "cannot freeze on token without CUSTODIAN extension" was removed

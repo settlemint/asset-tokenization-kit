@@ -29,7 +29,7 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
-import { from } from "dnum";
+import { add, from, subtract } from "dnum";
 import type { Address } from "viem";
 import { beforeAll, describe, expect, test } from "vitest";
 
@@ -116,7 +116,7 @@ describe("Token unfreeze partial", () => {
         verificationType: "PINCODE",
       },
     });
-  });
+  }, 100_000);
 
   /**
    * Validates that authorized users can perform partial token unfreezing operations.
@@ -174,34 +174,12 @@ describe("Token unfreeze partial", () => {
     expect(afterFrozen).toBeDefined();
 
     // available should increase, frozen should decrease, by exactly unfreezeAmount
-    const expectedAvailable = from(
-      String(
-        // dnum to number for comparison convenience in tests
-        Number(beforeAvailable?.[0] ?? 0n) /
-          Math.pow(10, beforeAvailable?.[1] ?? 0) +
-          Number(unfreezeAmount[0]) / Math.pow(10, unfreezeAmount[1])
-      ),
-      equityToken.decimals
-    );
-    const expectedFrozen = from(
-      String(
-        Number(beforeFrozen?.[0] ?? 0n) / Math.pow(10, beforeFrozen?.[1] ?? 0) -
-          Number(unfreezeAmount[0]) / Math.pow(10, unfreezeAmount[1])
-      ),
-      equityToken.decimals
-    );
+    const expectedAvailable = add(beforeAvailable!, unfreezeAmount);
+    const expectedFrozen = subtract(beforeFrozen!, unfreezeAmount);
 
-    // Compare numerically with small tolerance to avoid precision issues
-    const scale = (v: readonly [bigint, number]) =>
-      Number(v[0]) / Math.pow(10, v[1]);
-    const epsilon = 1e-12;
-    expect(
-      Math.abs(scale(afterAvailable!) - scale(expectedAvailable)) < epsilon
-    ).toBe(true);
-    expect(
-      Math.abs(scale(afterFrozen!) - scale(expectedFrozen)) < epsilon
-    ).toBe(true);
-  }, 100_000);
+    expect(afterAvailable).toEqual(expectedAvailable);
+    expect(afterFrozen).toEqual(expectedFrozen);
+  });
 
   /**
    * Ensures unauthorized users cannot perform unfreeze operations.
@@ -281,12 +259,11 @@ describe("Token unfreeze partial", () => {
         },
         {
           context: {
-            // TESTING: Skip logging expected transaction reverts for clean output
-            skipLoggingFor: ["TRANSACTION_REVERTED"],
+            skipLoggingFor: [CUSTOM_ERROR_CODES.PORTAL_ERROR],
           },
         }
       )
-    ).rejects.toThrow();
+    ).rejects.toThrow("reverted: InsufficientFrozenTokens");
   });
 
   // NOTE: Test for "cannot unfreeze on token without CUSTODIAN extension" was removed
@@ -351,16 +328,23 @@ describe("Token unfreeze partial", () => {
     const zeroAmount = from("0", equityToken.decimals);
 
     await expect(
-      adminClient.token.unfreezePartial({
-        contract: equityToken.id,
-        userAddress: investorAddress,
-        amount: zeroAmount,
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
+      adminClient.token.unfreezePartial(
+        {
+          contract: equityToken.id,
+          userAddress: investorAddress,
+          amount: zeroAmount,
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
+          },
         },
-      })
-    ).rejects.toThrow("Input validation failed");
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.BAD_REQUEST],
+          },
+        }
+      )
+    ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.BAD_REQUEST));
   });
 
   /**
@@ -374,19 +358,26 @@ describe("Token unfreeze partial", () => {
    */
   test("cannot unfreeze negative amount", async () => {
     // VALIDATION: Negative amount should be rejected at schema level
-    // Note: BigInt(-1000) creates a negative value for testing
-    const negativeAmount = [BigInt(-1000), equityToken.decimals] as const;
+    // Note: dnum supports negative numbers
+    const negativeAmount = from("-1000", equityToken.decimals);
 
     await expect(
-      adminClient.token.unfreezePartial({
-        contract: equityToken.id,
-        userAddress: investorAddress,
-        amount: negativeAmount,
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
+      adminClient.token.unfreezePartial(
+        {
+          contract: equityToken.id,
+          userAddress: investorAddress,
+          amount: negativeAmount,
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
+          },
         },
-      })
-    ).rejects.toThrow("Input validation failed");
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.BAD_REQUEST],
+          },
+        }
+      )
+    ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.BAD_REQUEST));
   });
 });
