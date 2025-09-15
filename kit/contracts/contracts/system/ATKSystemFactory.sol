@@ -209,8 +209,7 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         DEFAULT_COMPLIANCE_MODULE_REGISTRY_IMPLEMENTATION = implementations.complianceModuleRegistryImplementation;
         DEFAULT_ADDON_REGISTRY_IMPLEMENTATION = implementations.addonRegistryImplementation;
         DEFAULT_TRUSTED_ISSUERS_META_REGISTRY_IMPLEMENTATION = implementations.trustedIssuersMetaRegistryImplementation;
-        DEFAULT_IDENTITY_VERIFICATION_COMPLIANCE_MODULE =
-            implementations.identityVerificationComplianceModule;
+        DEFAULT_IDENTITY_VERIFICATION_COMPLIANCE_MODULE = implementations.identityVerificationComplianceModule;
 
         FACTORY_FORWARDER = forwarder_; // Store the forwarder address for use by this factory and new systems.
     }

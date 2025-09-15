@@ -330,7 +330,6 @@ contract ATKSystemImplementation is
         if (impls.identityVerificationComplianceModule == address(0)) revert InvalidComplianceModuleAddress();
         _checkInterface(impls.identityVerificationComplianceModule, _COMPLIANCE_MODULE_ID);
         _defaultIdentityVerificationComplianceModule = impls.identityVerificationComplianceModule;
-
     }
 
     /// @notice Deploys and initializes the proxy contracts for all core ATK modules.
@@ -463,6 +462,27 @@ contract ATKSystemImplementation is
         _addonRegistryProxy = localAddonRegistryProxy;
         _trustedIssuersMetaRegistryProxy = localTrustedIssuersMetaRegistryProxy;
 
+        // Create issuer identity for the system (organisation identity) so its address can be announced in Bootstrapped
+        address localOrganisationIdentity =
+            IATKIdentityFactory(localIdentityFactoryProxy).createContractIdentity(address(this));
+        _organisationIdentity = localOrganisationIdentity;
+
+        // Emit an event early so the subgraph can instantiate templates before subsequent configuration events
+        emit Bootstrapped(
+            _msgSender(),
+            _complianceProxy,
+            _identityRegistryProxy,
+            _identityRegistryStorageProxy,
+            _systemTrustedIssuersRegistryProxy,
+            _trustedIssuersMetaRegistryProxy,
+            _topicSchemeRegistryProxy,
+            _identityFactoryProxy,
+            _tokenFactoryRegistryProxy,
+            _addonRegistryProxy,
+            _complianceModuleRegistryProxy,
+            _organisationIdentity
+        );
+
         // --- Effects (Part 2: Grant roles) ---
         IATKSystemAccessManager(_accessManager).grantRole(
             ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, localIdentityRegistryProxy
@@ -499,10 +519,7 @@ contract ATKSystemImplementation is
         );
 
         // Register default identity verification compliance module globally with empty params
-        IATKCompliance(localComplianceProxy).addGlobalComplianceModule(
-            _defaultIdentityVerificationComplianceModule,
-            ""
-        );
+        IATKCompliance(localComplianceProxy).addGlobalComplianceModule(_defaultIdentityVerificationComplianceModule, "");
 
         // Register the topic schemes.
         IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).batchRegisterTopicSchemes(
@@ -526,11 +543,6 @@ contract ATKSystemImplementation is
         // Set the identity factory's own OnChainID (this will now successfully issue claims)
         IATKIdentityFactory(localIdentityFactoryProxy).setOnchainID(identityFactoryIdentity);
 
-        // Create issuer identity for the system
-        address localOrganisationIdentity =
-            IATKIdentityFactory(localIdentityFactoryProxy).createContractIdentity(address(this));
-        _organisationIdentity = localOrganisationIdentity;
-
         // Register the issuer identity as a trusted issuer for TOPIC_ISSUER claims
         uint256[] memory issuerClaimTopics = new uint256[](1);
         issuerClaimTopics[0] =
@@ -542,21 +554,7 @@ contract ATKSystemImplementation is
         // Mark the system as bootstrapped
         _bootstrapped = true;
 
-        // Emit an event to log that bootstrapping is complete and to provide the addresses of the deployed proxies.
-        emit Bootstrapped(
-            _msgSender(),
-            _complianceProxy, // These will now use the updated state values
-            _identityRegistryProxy,
-            _identityRegistryStorageProxy,
-            _systemTrustedIssuersRegistryProxy,
-            _trustedIssuersMetaRegistryProxy,
-            _topicSchemeRegistryProxy,
-            _identityFactoryProxy,
-            _tokenFactoryRegistryProxy,
-            _addonRegistryProxy,
-            _complianceModuleRegistryProxy,
-            _organisationIdentity
-        );
+        // (Bootstrapped event already emitted above)
     }
 
     // --- Implementation Setter Functions ---

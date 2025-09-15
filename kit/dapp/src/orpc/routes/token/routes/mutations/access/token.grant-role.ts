@@ -206,9 +206,7 @@ export const grantRole = tokenRouter.token.grantRole
       if (!Array.isArray(roles) || roles.length === 0) {
         return { accounts: [] };
       }
-      const roleInfos = roles
-        .map((r) => getRoleByFieldName(r))
-        .filter(Boolean);
+      const roleInfos = roles.map((r) => getRoleByFieldName(r)).filter(Boolean);
       if (roleInfos.length !== roles.length) {
         throw errors.NOT_FOUND({ message: "One or more roles not found" });
       }

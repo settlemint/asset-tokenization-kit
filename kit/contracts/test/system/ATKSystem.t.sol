@@ -26,7 +26,8 @@ import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
 import { IContractWithIdentity } from "../../contracts/system/identity-factory/IContractWithIdentity.sol";
 import { MockedIdentity } from "../utils/mocks/MockedIdentity.sol";
-import { SMARTComplianceModuleParamPair } from "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { SMARTComplianceModuleParamPair } from
+    "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IATKSystemFactory } from "../../contracts/system/IATKSystemFactory.sol";
 
 // Import system errors
@@ -481,7 +482,9 @@ contract ATKSystemTest is Test {
                 identityRegistryImplementation: impls.identityRegistry,
                 identityRegistryStorageImplementation: impls.identityRegistryStorage,
                 trustedIssuersRegistryImplementation: impls.trustedIssuersRegistry,
-                trustedIssuersMetaRegistryImplementation: address(new ATKTrustedIssuersMetaRegistryImplementation(forwarder)),
+                trustedIssuersMetaRegistryImplementation: address(
+                    new ATKTrustedIssuersMetaRegistryImplementation(forwarder)
+                ),
                 topicSchemeRegistryImplementation: impls.topicSchemeRegistry,
                 identityFactoryImplementation: impls.identityFactory,
                 identityImplementation: impls.identity,
@@ -508,7 +511,9 @@ contract ATKSystemTest is Test {
                 identityRegistryImplementation: impls.identityRegistry,
                 identityRegistryStorageImplementation: impls.identityRegistryStorage,
                 trustedIssuersRegistryImplementation: impls.trustedIssuersRegistry,
-                trustedIssuersMetaRegistryImplementation: address(new ATKTrustedIssuersMetaRegistryImplementation(forwarder)),
+                trustedIssuersMetaRegistryImplementation: address(
+                    new ATKTrustedIssuersMetaRegistryImplementation(forwarder)
+                ),
                 topicSchemeRegistryImplementation: impls.topicSchemeRegistry,
                 identityFactoryImplementation: impls.identityFactory,
                 identityImplementation: impls.identity,
@@ -538,7 +543,9 @@ contract ATKSystemTest is Test {
                 identityRegistryImplementation: impls.identityRegistry,
                 identityRegistryStorageImplementation: impls.identityRegistryStorage,
                 trustedIssuersRegistryImplementation: impls.trustedIssuersRegistry,
-                trustedIssuersMetaRegistryImplementation: address(new ATKTrustedIssuersMetaRegistryImplementation(forwarder)),
+                trustedIssuersMetaRegistryImplementation: address(
+                    new ATKTrustedIssuersMetaRegistryImplementation(forwarder)
+                ),
                 topicSchemeRegistryImplementation: impls.topicSchemeRegistry,
                 identityFactoryImplementation: impls.identityFactory,
                 identityImplementation: impls.identity,
@@ -737,16 +744,20 @@ contract ATKSystemTest is Test {
         assertTrue(IATKTypedImplementationRegistry(address(atkSystem)).implementation(ADDON_REGISTRY) != address(0));
 
         // Verify default identity verification module is registered globally with empty params
-        SMARTComplianceModuleParamPair[] memory globals = IATKCompliance(atkSystem.compliance()).getGlobalComplianceModules();
+        SMARTComplianceModuleParamPair[] memory globals =
+            IATKCompliance(atkSystem.compliance()).getGlobalComplianceModules();
         bool foundExpected = false;
-        address expected = IATKSystemFactory(address(systemUtils.systemFactory())).defaultIdentityVerificationComplianceModule();
+        address expected =
+            IATKSystemFactory(address(systemUtils.systemFactory())).defaultIdentityVerificationComplianceModule();
         for (uint256 i = 0; i < globals.length; ++i) {
             if (globals[i].module == expected && globals[i].params.length == 0) {
                 foundExpected = true;
                 break;
             }
         }
-        assertTrue(foundExpected, "Default identity verification module should be registered globally with empty params");
+        assertTrue(
+            foundExpected, "Default identity verification module should be registered globally with empty params"
+        );
     }
 
     // --- Issuer Identity Tests ---
