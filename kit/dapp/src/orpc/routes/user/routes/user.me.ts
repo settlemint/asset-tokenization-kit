@@ -9,13 +9,9 @@
  */
 
 import { kycProfiles, user as userTable } from "@/lib/db/schema";
-import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
-import {
-  getSystemContext,
-  getSystemPermissions,
-} from "@/orpc/middlewares/system/system.middleware";
+import { getSystemContext } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
@@ -116,12 +112,11 @@ export const me = authRouter.user.me
 
     const { kyc } = userQueryResult ?? {};
 
-    const { accessControl, ...systemOnboardingState } = await getSystemInfo(
+    const systemOnboardingState = await getSystemInfo(
       systemAddress,
       systemAddonsSkipped,
       context.theGraphClient
     );
-    const userRoles = mapUserRoles(authUser.wallet, accessControl);
     return {
       id: authUser.id,
       name:
@@ -130,7 +125,6 @@ export const me = authRouter.user.me
           : authUser.name,
       email: authUser.email,
       role: authUser.role,
-      roles: userRoles,
       wallet: authUser.wallet,
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,
@@ -144,9 +138,6 @@ export const me = authRouter.user.me
           ? [VerificationTypeEnum.secretCodes]
           : []),
       ] as VerificationType[],
-      userSystemPermissions: {
-        actions: getSystemPermissions(userRoles),
-      },
       onboardingState: {
         wallet: authUser.wallet !== zeroAddress,
         walletSecurity:
