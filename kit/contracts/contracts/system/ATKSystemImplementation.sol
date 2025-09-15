@@ -519,6 +519,9 @@ contract ATKSystemImplementation is
         );
 
         // Register default identity verification compliance module globally with empty params
+        IATKComplianceModuleRegistry(localComplianceModuleRegistryProxy).registerComplianceModule(
+            _defaultIdentityVerificationComplianceModule
+        );
         IATKCompliance(localComplianceProxy).addGlobalComplianceModule(_defaultIdentityVerificationComplianceModule, "");
 
         // Register the topic schemes.
