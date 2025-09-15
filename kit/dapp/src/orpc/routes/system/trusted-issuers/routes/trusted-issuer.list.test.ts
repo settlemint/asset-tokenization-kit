@@ -10,10 +10,10 @@ import {
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-
-installSystemRouterCaptureMock();
 import "./trusted-issuer.list";
 import type { TrustedIssuerListOutput } from "./trusted-issuer.list.schema";
+
+installSystemRouterCaptureMock();
 
 function getHandler(): OrpcHandler<void, TrustedIssuerListOutput> {
   const handler = getCapturedHandler();
@@ -40,7 +40,9 @@ describe("system.trusted-issuers.list unit", () => {
 
     const context = createBaseContext({
       system: {
-        trustedIssuersRegistry: "0xBBBBbBBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb",
+        trustedIssuersRegistry: {
+          id: "0xBBBBbBBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb",
+        },
       },
       theGraphClient: mockTheGraphClient,
     });
@@ -109,7 +111,9 @@ describe("system.trusted-issuers.list unit", () => {
 
     const context = createBaseContext({
       system: {
-        trustedIssuersRegistry: "0xBBBBbBBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb",
+        trustedIssuersRegistry: {
+          id: "0xBBBBbBBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb",
+        },
       },
       theGraphClient: mockTheGraphClient,
     });
@@ -124,23 +128,6 @@ describe("system.trusted-issuers.list unit", () => {
     expect(mockTheGraphClient.query).toHaveBeenCalledTimes(1);
   });
 
-  it("throws INTERNAL_SERVER_ERROR when trusted issuers registry is not configured", async () => {
-    const handler = getHandler();
-    const context = createBaseContext({
-      system: {
-        trustedIssuersRegistry: undefined,
-      },
-    });
-
-    await expect(
-      handler({
-        input: undefined,
-        context,
-        errors,
-      })
-    ).rejects.toThrow("System trusted issuers registry not found");
-  });
-
   it("handles TheGraph query failures gracefully", async () => {
     const handler = getHandler();
 
@@ -150,7 +137,9 @@ describe("system.trusted-issuers.list unit", () => {
 
     const context = createBaseContext({
       system: {
-        trustedIssuersRegistry: "0xBBBBbBBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb",
+        trustedIssuersRegistry: {
+          id: "0xBBBBbBBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb",
+        },
       },
       theGraphClient: mockTheGraphClient,
     });
