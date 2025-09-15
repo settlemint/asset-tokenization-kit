@@ -137,6 +137,8 @@ contract SystemUtils is Test {
         address systemAccessManagerImpl = address(new ATKSystemAccessManagerImplementation(TRUSTED_FORWARDER_ADDRESS));
         vm.label(systemAccessManagerImpl, "ATKSystemAccessManagerImplementation");
 
+        identityVerificationModule = new SMARTIdentityVerificationComplianceModule(TRUSTED_FORWARDER_ADDRESS);
+
         ATKSystemFactory.SystemImplementations memory implementations = ATKSystemFactory.SystemImplementations({
             atkSystemImplementation: atkSystemImpl,
             complianceImplementation: complianceImpl,
@@ -152,7 +154,8 @@ contract SystemUtils is Test {
             tokenFactoryRegistryImplementation: tokenFactoryRegistryImpl,
             complianceModuleRegistryImplementation: complianceModuleRegistryImpl,
             addonRegistryImplementation: systemAddonRegistryImpl,
-            systemAccessManagerImplementation: systemAccessManagerImpl
+            systemAccessManagerImplementation: systemAccessManagerImpl,
+            identityVerificationComplianceModule: address(identityVerificationModule)
         });
 
         return new ATKSystemFactory(implementations, TRUSTED_FORWARDER_ADDRESS);
@@ -181,7 +184,6 @@ contract SystemUtils is Test {
 
     function _deployComplianceModulesAndGrantRoles(address platformAdmin) internal {
         mockedComplianceModule = new MockedComplianceModule();
-        identityVerificationModule = new SMARTIdentityVerificationComplianceModule(TRUSTED_FORWARDER_ADDRESS);
         countryAllowListComplianceModule = new CountryAllowListComplianceModule(TRUSTED_FORWARDER_ADDRESS);
         countryBlockListComplianceModule = new CountryBlockListComplianceModule(TRUSTED_FORWARDER_ADDRESS);
 

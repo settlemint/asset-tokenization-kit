@@ -66,7 +66,12 @@ contract SMARTIdentityVerificationComplianceModule is AbstractComplianceModule {
         override
     {
         ISMARTIdentityRegistry identityRegistry = ISMARTIdentityRegistry(ISMART(token).identityRegistry());
-        ExpressionNode[] memory expression = abi.decode(_params, (ExpressionNode[]));
+        ExpressionNode[] memory expression;
+        if (_params.length == 0) {
+            expression = new ExpressionNode[](0);
+        } else {
+            expression = abi.decode(_params, (ExpressionNode[]));
+        }
 
         if (!identityRegistry.isVerified(_to, expression)) {
             revert RecipientNotVerified();
@@ -78,6 +83,9 @@ contract SMARTIdentityVerificationComplianceModule is AbstractComplianceModule {
     /// @notice Validates that the provided parameters are properly formatted
     /// @param _params The parameters to validate, expected to be ABI-encoded uint256 array
     function validateParameters(bytes calldata _params) public view virtual override {
+        if (_params.length == 0) {
+            return;
+        }
         ExpressionNode[] memory expression = abi.decode(_params, (ExpressionNode[]));
         _validateExpressionStructure(expression);
     }

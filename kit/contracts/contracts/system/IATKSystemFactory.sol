@@ -77,6 +77,10 @@ interface IATKSystemFactory {
     /// @return address The default token access manager implementation address.
     function defaultTokenAccessManagerImplementation() external view returns (address);
 
+    /// @notice Returns the default identity verification compliance module address
+    /// @return The address of the default identity verification compliance module
+    function defaultIdentityVerificationComplianceModule() external view returns (address);
+
     /// @notice The address of the trusted forwarder contract used by this factory for meta-transactions (ERC2771).
     /// @dev This same forwarder address will also be passed to each new `ATKSystem` instance created by this factory,
     /// enabling them to support meta-transactions as well.

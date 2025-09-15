@@ -185,7 +185,7 @@ contract ATKComplianceImplementation is
         bytes calldata params
     )
         external
-        onlySystemRole(ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE)
+        onlySystemRoles2(ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
     {
         // Validate module and parameters first
         _validateModuleAndParams(module, params);
