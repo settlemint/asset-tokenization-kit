@@ -142,6 +142,9 @@ export const SystemSchema = z.object({
               tokenCreate: z
                 .boolean()
                 .describe("Whether the user can create tokens"),
+              addonFactoryCreate: z
+                .boolean()
+                .describe("Whether the user can create addon factories"),
               addonCreate: z
                 .boolean()
                 .describe("Whether the user can create addons"),
