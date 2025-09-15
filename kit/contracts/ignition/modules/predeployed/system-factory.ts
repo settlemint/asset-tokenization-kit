@@ -6,6 +6,7 @@ import IdentityModule from "./identity";
 import IdentityFactoryModule from "./identity-factory";
 import IdentityRegistryModule from "./identity-registry";
 import IdentityRegistryStorageModule from "./identity-registry-storage";
+import IdentityVerificationModule from "./modules/identity-verification-module";
 import SystemModule from "./system";
 import SystemAccessManagerModule from "./system-access-manager";
 import SystemAddonRegistryModule from "./system-addon-registry";
@@ -40,6 +41,9 @@ const SystemFactoryModule = buildModule("SystemFactoryModule", (m) => {
   );
   const { systemAddonRegistry } = m.useModule(SystemAddonRegistryModule);
   const { systemAccessManager } = m.useModule(SystemAccessManagerModule);
+  const { identityVerificationModule } = m.useModule(
+    IdentityVerificationModule
+  );
 
   const implementsTuple = [
     system,
@@ -57,6 +61,7 @@ const SystemFactoryModule = buildModule("SystemFactoryModule", (m) => {
     complianceModuleRegistry,
     systemAddonRegistry,
     systemAccessManager,
+    identityVerificationModule,
   ];
 
   const systemFactory = m.contract("ATKSystemFactory", [
