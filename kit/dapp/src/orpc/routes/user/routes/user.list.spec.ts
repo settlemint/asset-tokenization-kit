@@ -278,7 +278,7 @@ describe("User list", () => {
       if (usersByEmail.items.length > 1) {
         for (let i = 1; i < usersByEmail.items.length; i++) {
           expect(
-            usersByEmail.items[i]?.email.localeCompare(
+            (usersByEmail.items[i]?.email ?? "").localeCompare(
               usersByEmail.items[i - 1]?.email ?? ""
             )
           ).toBeGreaterThanOrEqual(0);
@@ -286,14 +286,45 @@ describe("User list", () => {
       }
 
       // Test sorting by createdAt (default)
-      const usersByCreated = await client.user.list({
-        orderBy: "createdAt",
+      const usersByName = await client.user.list({
+        orderBy: "wallet",
+        orderDirection: "asc",
+        limit: 5,
+      });
+      const usersByNameReverse = await client.user.list({
+        orderBy: "wallet",
         orderDirection: "desc",
         limit: 5,
       });
 
-      expect(usersByCreated).toBeDefined();
-      expect(usersByCreated.items.length).toBeGreaterThan(0);
+      expect(usersByName).toBeDefined();
+      expect(usersByName.items.length).toBeGreaterThan(0);
+      const namesFromQuery = usersByName.items.map((user: User) => user.name);
+      const namesFromQueryReverse = usersByNameReverse.items.map(
+        (user: User) => user.name
+      );
+      expect(namesFromQuery).not.toEqual(namesFromQueryReverse);
+    });
+  });
+
+  describe("Filtering", () => {
+    it("filters users by name", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
+      const users = await client.user.list({
+        filters: {
+          search: "TestFirst",
+        },
+        limit: 10,
+      });
+
+      expect(users).toBeDefined();
+      expect(Array.isArray(users.items)).toBe(true);
+      expect(users.items.length).toBeGreaterThan(0);
+      expect(
+        users.items.every((user: User) => user.name.includes("TestFirst"))
+      ).toBe(true);
     });
   });
 
@@ -329,7 +360,7 @@ describe("User list", () => {
   });
 
   describe("Identity permissions middleware", () => {
-    it("forbids users without identity manager role or trusted issuer status", async () => {
+    it("forbids users without identity manager or trusted issuer role", async () => {
       // Regular users without any special permissions cannot see user data
       const headers = await signInWithUser(unauthorizedUser.user);
       const client = getOrpcClient(headers);
@@ -375,9 +406,11 @@ describe("User list", () => {
 
         // Identity manager sees ALL claims (whatever TheGraph returns)
         if (user.identity && user.claims.length > 0) {
-          user.claims.forEach((claim: string) => {
-            expect(typeof claim).toBe("string");
-            expect(claim.length).toBeGreaterThan(0);
+          user.claims.forEach((claim) => {
+            expect(claim.name).toBeDefined();
+            expect(claim.revoked).toBeDefined();
+            expect(claim.issuer).toBeDefined();
+            expect(claim.values).toBeDefined();
           });
         }
       });

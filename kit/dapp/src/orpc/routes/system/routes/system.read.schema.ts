@@ -1,22 +1,3 @@
-/**
- * Schema for System Read Operations
- *
- * This schema defines the structure for reading system contract details
- * including associated token factories. It provides access to the system's
- * configuration and deployed token factories.
- * @example
- * ```typescript
- * const system = await client.system.read({
- *   id: "0x1234..."
- * });
- *
- * // Access token factories
- * system.tokenFactories.forEach(factory => {
- *   console.log(factory.name, factory.typeId);
- * });
- * ```
- */
-
 import type { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { accessControlRoles } from "@atk/zod/access-control-roles";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
@@ -146,23 +127,6 @@ export const SystemSchema = z.object({
       ),
 
       /**
-       * Whether the user is allowed to interact with the system
-       */
-      isAllowed: z
-        .boolean()
-        .describe("Whether the user is allowed to interact with the system"),
-
-      /**
-       * The reason the user is not allowed to interact with the system
-       */
-      notAllowedReason: z
-        .string()
-        .describe(
-          "The reason the user is not allowed to interact with the system"
-        )
-        .optional(),
-
-      /**
        * The actions on the system the user is allowed to execute
        */
       actions: z
@@ -211,6 +175,15 @@ export const SystemSchema = z.object({
               topicDelete: z
                 .boolean()
                 .describe("Whether the user can delete topics"),
+              claimCreate: z
+                .boolean()
+                .describe("Whether the user can create claims"),
+              claimList: z
+                .boolean()
+                .describe("Whether the user can list claims"),
+              claimRevoke: z
+                .boolean()
+                .describe("Whether the user can revoke claims"),
             };
             return actionsSchema;
           })()

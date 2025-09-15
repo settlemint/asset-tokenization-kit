@@ -14,7 +14,6 @@ import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { useQuery } from "@tanstack/react-query";
-import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -61,7 +60,7 @@ export function TokenBlocklistTable({ token }: { token: Token }) {
             displayName: t("tokens:blocklist.columns.address"),
             type: "address",
           },
-        }) as unknown as ColumnDef<BlocklistRow>,
+        }),
         columnHelper.display({
           id: "actions",
           header: "",

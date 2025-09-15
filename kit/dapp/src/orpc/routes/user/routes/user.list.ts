@@ -1,18 +1,25 @@
 import { kycProfiles, user } from "@/lib/db/schema";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import {
-  filterClaimsForUser,
-  identityPermissionsMiddleware,
-} from "@/orpc/middlewares/auth/identity-permissions.middleware";
-import { trustedIssuerMiddleware } from "@/orpc/middlewares/auth/trusted-issuer.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import type { User } from "@/orpc/routes/user/routes/user.me.schema";
-import { getUserRole } from "@atk/zod/user-roles";
-import { type AnyColumn, asc, count, desc, eq } from "drizzle-orm";
+import {
+  buildUserWithIdentity,
+  buildUserWithoutWallet,
+} from "@/orpc/routes/user/utils/user-response.util";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
+import {
+  type AnyColumn,
+  asc,
+  count,
+  desc,
+  eq,
+  ilike,
+  or,
+  sql,
+} from "drizzle-orm";
 import { z } from "zod";
 
 // GraphQL query to fetch multiple accounts by wallet addresses
@@ -24,7 +31,11 @@ const READ_ACCOUNTS_QUERY = theGraphGraphql(`
       identity {
         id
         claims {
+          id
           name
+          revoked
+          issuer { id }
+          values { key value }
         }
       }
     }
@@ -42,7 +53,11 @@ const AccountsResponseSchema = z.object({
           id: z.string(),
           claims: z.array(
             z.object({
+              id: z.string(),
               name: z.string(),
+              revoked: z.boolean(),
+              issuer: z.object({ id: ethereumAddress }),
+              values: z.array(z.object({ key: z.string(), value: z.string() })),
             })
           ),
         })
@@ -55,6 +70,7 @@ const AccountsResponseSchema = z.object({
 // Type for database query result rows
 type QueryResultRow = {
   user: typeof user.$inferSelect;
+  name: string;
   kyc: {
     firstName: string | null;
     lastName: string | null;
@@ -137,23 +153,43 @@ export const list = authRouter.user.list
       },
     })
   )
-  .use(trustedIssuerMiddleware)
-  .use(
-    identityPermissionsMiddleware({
-      getTargetUserId: () => undefined, // List operation doesn't target specific user
-    })
-  )
   .use(databaseMiddleware)
   .handler(async ({ context, input }) => {
-    const { limit, offset, orderDirection, orderBy } = input;
+    const {
+      limit: inputLimit,
+      offset,
+      orderDirection,
+      orderBy,
+      filters,
+    } = input;
+
+    const limit = inputLimit ?? 1000;
 
     // Configure sort direction based on input
     const order = orderDirection === "desc" ? desc : asc;
 
     // Safely access the order column, defaulting to createdAt if invalid
+    const nameSelect = sql<string>`
+      COALESCE(
+        COALESCE(${kycProfiles.firstName}, '') || ' ' || COALESCE(${kycProfiles.lastName}, ''),
+        ${user.name}
+      )
+    `;
+    // Sorting is done case insensitive
+    const nameSort = sql<string>`
+      LOWER(
+        COALESCE(${kycProfiles.firstName}, '') ||
+        COALESCE(${kycProfiles.lastName}, '') ||
+        COALESCE(${user.name}, '')
+      )
+    `;
+    // Note: Sorting by 'wallet' uses nameSort, which sorts by a concatenation of firstName, lastName, and user.name.
+    // This does NOT sort by wallet address, but by user name.
     const orderColumn =
-      (user[orderBy as keyof typeof user] as AnyColumn | undefined) ??
-      user.createdAt;
+      orderBy === "wallet"
+        ? nameSort
+        : ((user[orderBy as keyof typeof user] as AnyColumn | undefined) ??
+          user.createdAt);
 
     // Get total count first
     const totalResult = await context.db.select({ count: count() }).from(user);
@@ -161,9 +197,11 @@ export const list = authRouter.user.list
     const total = totalResult[0]?.count ?? 0;
 
     // Execute paginated query with sorting and KYC data
-    const result = await context.db
+
+    const queryResult = await context.db
       .select({
         user: user,
+        name: nameSelect.as("name"),
         kyc: {
           firstName: kycProfiles.firstName,
           lastName: kycProfiles.lastName,
@@ -172,11 +210,18 @@ export const list = authRouter.user.list
       .from(user)
       .leftJoin(kycProfiles, eq(kycProfiles.userId, user.id))
       .orderBy(order(orderColumn))
-      .limit(limit ?? 1000)
+      .where(
+        or(
+          ilike(nameSelect, `%${filters?.search ?? ""}%`),
+          ilike(user.email, `%${filters?.search ?? ""}%`),
+          ilike(user.wallet, `%${filters?.search ?? ""}%`)
+        )
+      )
+      .limit(limit)
       .offset(offset);
 
     // Extract wallet addresses for TheGraph query, filtering out null values
-    const walletAddresses = result
+    const walletAddresses = queryResult
       .map((row: QueryResultRow) => row.user.wallet)
       .filter(
         (wallet: `0x${string}` | null): wallet is `0x${string}` =>
@@ -210,61 +255,30 @@ export const list = authRouter.user.list
     );
 
     // Transform results to include human-readable roles, onboarding state, and identity data
-    const items = result.map((row: QueryResultRow) => {
+    const items = queryResult.map((row: QueryResultRow) => {
       const { user: u, kyc } = row;
 
       // Handle users without wallets gracefully
       if (!u.wallet) {
-        return {
-          id: u.id,
-          name:
-            kyc?.firstName && kyc.lastName
-              ? `${kyc.firstName} ${kyc.lastName}`
-              : u.name,
-          email: u.email,
-          role: getUserRole(u.role),
-          wallet: u.wallet, // null
-          firstName: kyc?.firstName,
-          lastName: kyc?.lastName,
-          identity: undefined,
-          claims: [],
-          isRegistered: false,
-          createdAt: u.createdAt?.toISOString(),
-          lastLoginAt: u.lastLoginAt ? u.lastLoginAt.toISOString() : null,
-        } as User;
+        return buildUserWithoutWallet({
+          userData: u,
+          kyc,
+          context,
+        });
       }
 
       // Look up account data for this user
       const account = accountsMap.get(u.wallet.toLowerCase());
       const identity = account?.identity;
 
-      // Get all claims for this user from TheGraph response
-      const allClaims = identity?.claims.map((claim) => claim.name) ?? [];
-
-      // Apply role-based claim filtering for UI display
-      // This is UI/UX control, not security - claims are publicly verifiable on-chain
-      const filteredClaims = filterClaimsForUser(
-        allClaims,
-        context.identityPermissions
-      );
-
-      return {
-        id: u.id,
-        name:
-          kyc?.firstName && kyc.lastName
-            ? `${kyc.firstName} ${kyc.lastName}`
-            : u.name,
-        email: u.email,
-        role: getUserRole(u.role),
-        wallet: u.wallet,
-        firstName: kyc?.firstName,
-        lastName: kyc?.lastName,
+      return buildUserWithIdentity({
+        userData: u,
+        kyc,
         identity: identity?.id,
-        claims: filteredClaims,
+        claims: identity?.claims ?? [],
         isRegistered: !!identity,
-        createdAt: u.createdAt?.toISOString(),
-        lastLoginAt: u.lastLoginAt ? u.lastLoginAt.toISOString() : null,
-      } as User;
+        context,
+      });
     });
 
     // Return paginated response format

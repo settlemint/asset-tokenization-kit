@@ -4,10 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppForm } from "@/hooks/use-app-form";
 import { getAccessControlEntries } from "@/orpc/helpers/access-control-helpers";
-import { orpc } from "@/orpc/orpc-client";
+import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import type { AccessControlRoles } from "@atk/zod/access-control-roles";
+import type {
+  AccessControl,
+  AccessControlRoles,
+} from "@atk/zod/access-control-roles";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import type { RoleRequirement } from "@atk/zod/role-requirement";
 import {
@@ -15,52 +18,39 @@ import {
   isAnyRoleRequirement,
   isSingleRole,
 } from "@atk/zod/role-requirement";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckSquare, Shield } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { ActionFormSheet } from "../core/action-form-sheet";
-import { createActionFormStore } from "../core/action-form-sheet.store";
+import { ActionFormSheet } from "../../core/action-form-sheet";
+import { createActionFormStore } from "../../core/action-form-sheet.store";
 
-interface ChangeRolesSheetProps {
+type OnRevokeOrGrantRole = (args: {
+  accountAddress: EthereumAddress;
+  walletVerification: UserVerification;
+  roles: AccessControlRoles[];
+}) => Promise<void>;
+
+export interface ChangeRolesSheetProps {
   open: boolean;
+  accessControl: AccessControl | undefined;
   onOpenChange: (open: boolean) => void;
-  asset: Token;
+  asset?: Token;
   presetAccount?: EthereumAddress;
+  revokeRole: OnRevokeOrGrantRole;
+  grantRole: OnRevokeOrGrantRole;
 }
 
 export function ChangeRolesSheet({
   open,
+  accessControl,
   onOpenChange,
   asset,
   presetAccount,
+  revokeRole,
+  grantRole,
 }: ChangeRolesSheetProps) {
   const { t } = useTranslation(["tokens", "common"]);
-  const queryClient = useQueryClient();
-
-  const { mutateAsync: grantRole } = useMutation(
-    orpc.token.grantRole.mutationOptions({
-      onSuccess: async () => {
-        await queryClient.invalidateQueries({
-          queryKey: orpc.token.read.queryKey({
-            input: { tokenAddress: asset.id },
-          }),
-        });
-      },
-    })
-  );
-  const { mutateAsync: revokeRole } = useMutation(
-    orpc.token.revokeRole.mutationOptions({
-      onSuccess: async () => {
-        await queryClient.invalidateQueries({
-          queryKey: orpc.token.read.queryKey({
-            input: { tokenAddress: asset.id },
-          }),
-        });
-      },
-    })
-  );
 
   const form = useAppForm({
     defaultValues: {
@@ -78,9 +68,7 @@ export function ChangeRolesSheet({
   // Compute current roles per address from token access control
   const rolesIndex = useMemo(() => {
     const index = new Map<string, AccessControlRoles[]>();
-    for (const [role, accounts] of getAccessControlEntries(
-      asset.accessControl
-    )) {
+    for (const [role, accounts] of getAccessControlEntries(accessControl)) {
       for (const acc of accounts) {
         const arr = index.get(acc.id) ?? [];
         arr.push(role);
@@ -88,7 +76,7 @@ export function ChangeRolesSheet({
       }
     }
     return index;
-  }, [asset.accessControl]);
+  }, [accessControl]);
 
   const currentRolesForAddress = (addr: string): AccessControlRoles[] => {
     const roles =
@@ -322,25 +310,18 @@ export function ChangeRolesSheet({
               const promise = (async () => {
                 if (rolesToRevoke.length > 0) {
                   await revokeRole({
-                    contract: asset.id,
                     walletVerification: verification,
-                    address,
-                    role: rolesToRevoke,
+                    accountAddress: address,
+                    roles: rolesToRevoke,
                   });
                 }
                 if (rolesToGrant.length > 0) {
                   await grantRole({
-                    contract: asset.id,
                     walletVerification: verification,
-                    address,
+                    accountAddress: address,
                     roles: rolesToGrant,
                   });
                 }
-                await queryClient.invalidateQueries({
-                  queryKey: orpc.token.read.queryKey({
-                    input: { tokenAddress: asset.id },
-                  }),
-                });
               })();
 
               toast.promise(promise, {

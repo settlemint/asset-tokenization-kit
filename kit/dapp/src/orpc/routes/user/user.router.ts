@@ -1,5 +1,6 @@
 import { list as actionsList } from "@/orpc/routes/actions/routes/actions.list";
 import kyc from "@/orpc/routes/user/kyc/kyc.router";
+import { adminList } from "@/orpc/routes/user/routes/admins.list";
 import { createWallet } from "@/orpc/routes/user/routes/mutations/create-wallet";
 import { list } from "@/orpc/routes/user/routes/user.list";
 import { me } from "@/orpc/routes/user/routes/user.me";
@@ -23,6 +24,7 @@ import { statsUserCount } from "@/orpc/routes/user/routes/user.stats.user-count"
  * - read: GET /user/read - Get specific user by ID or wallet address
  * - stats: GET /user/stats - User statistics and metrics
  * - kyc: KYC profile management routes (nested namespace)
+ * - claims: Claims management routes (nested namespace)
  * - actions: GET /user/actions - User's accessible actions (alias for /actions/list)
  *
  * The router is designed to be extended with additional user management
@@ -37,6 +39,7 @@ const routes = {
   actions: actionsList,
   search,
   list,
+  adminList,
   read,
   stats,
   statsGrowthOverTime,

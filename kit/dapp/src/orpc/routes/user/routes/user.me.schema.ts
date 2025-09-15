@@ -8,6 +8,7 @@
 
 import type { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { accessControlRoles } from "@atk/zod/access-control-roles";
+import { identityClaim } from "@atk/zod/claim";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { userRoles } from "@atk/zod/user-roles";
 import { verificationType } from "@atk/zod/verification-type";
@@ -44,7 +45,6 @@ const onboardingStateSchema = z.object({
 export type OnboardingState = z.infer<typeof onboardingStateSchema>;
 
 const userPermissionsSchema = z.object({
-  roles: accessControlRoles.describe("The roles of the user for the system"),
   actions: z
     .object(
       (() => {
@@ -61,6 +61,9 @@ const userPermissionsSchema = z.object({
           addonCreate: z
             .boolean()
             .describe("Whether the user can create addons"),
+          claimCreate: z
+            .boolean()
+            .describe("Whether the user can create claims"),
           grantRole: z.boolean().describe("Whether the user can grant roles"),
           revokeRole: z.boolean().describe("Whether the user can revoke roles"),
           complianceModuleCreate: z
@@ -87,6 +90,10 @@ const userPermissionsSchema = z.object({
           topicDelete: z
             .boolean()
             .describe("Whether the user can delete topics"),
+          claimList: z.boolean().describe("Whether the user can list claims"),
+          claimRevoke: z
+            .boolean()
+            .describe("Whether the user can revoke claims"),
         };
         return actionsSchema;
       })()
@@ -109,7 +116,7 @@ export const UserSchema = z.object({
    * User's email address.
    * Primary identifier for authentication and communication.
    */
-  email: z.email(),
+  email: z.email().optional(),
 
   /**
    * User's role for offchain access control.
@@ -119,6 +126,13 @@ export const UserSchema = z.object({
    * - investor: Standard user
    */
   role: userRoles().default("investor"),
+
+  /**
+   * User's roles for onchain access control.
+   */
+  roles: accessControlRoles.describe(
+    "The onchain roles of the user for the system"
+  ),
 
   /**
    * User's Ethereum wallet address.
@@ -151,7 +165,7 @@ export const UserSchema = z.object({
    * Array of claim names (e.g., "KYC", "ACCREDITATION").
    * Empty array if no identity or no claims.
    */
-  claims: z.array(z.string()).default([]).describe("User's identity claims"),
+  claims: z.array(identityClaim),
 
   /**
    * Whether the user has registered an on-chain identity.
