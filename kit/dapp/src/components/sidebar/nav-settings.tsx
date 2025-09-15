@@ -93,6 +93,13 @@ export function NavSettings() {
 
   const isUserManagementActive = isSettingsActive("/admin/user-management");
 
+  // Determine if there are any items to render under the administration group
+  const hasAdministrationItems =
+    Boolean(system.userPermissions?.actions.identityRegister) ||
+    settingsItems.length > 0;
+
+  if (!hasAdministrationItems) return null;
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{t("administration")}</SidebarGroupLabel>
