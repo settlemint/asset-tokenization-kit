@@ -90,8 +90,8 @@ export function ClaimsTable() {
     void (async () => {
       try {
         await router.navigate({
-          to: "/admin/claim-management/$claimId",
-          params: { claimId: claim.id },
+          to: "/admin/claim-management/$accountId",
+          params: { accountId: claim.user.wallet || "" },
         });
       } catch {
         toast.error(t("table.errors.navigationFailed"));
