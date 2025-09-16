@@ -227,7 +227,11 @@ export function ChangeRolesSheet({
                           {derivedSelected
                             .filter((r) => !currentForSelected.includes(r))
                             .map((r) => (
-                              <Badge key={`grant-${r}`}>{r}</Badge>
+                              <Badge key={`grant-${r}`}>
+                                {t(
+                                  `common:roles.${r.toLowerCase() as Lowercase<AccessControlRoles>}.title`
+                                )}
+                              </Badge>
                             ))}
                           {derivedSelected.filter(
                             (r) => !currentForSelected.includes(r)
@@ -246,7 +250,11 @@ export function ChangeRolesSheet({
                           {currentForSelected
                             .filter((r) => !derivedSelected.includes(r))
                             .map((r) => (
-                              <Badge key={`revoke-${r}`}>{r}</Badge>
+                              <Badge key={`revoke-${r}`}>
+                                {t(
+                                  `common:roles.${r.toLowerCase() as Lowercase<AccessControlRoles>}.title`
+                                )}
+                              </Badge>
                             ))}
                           {currentForSelected.filter(
                             (r) => !derivedSelected.includes(r)
