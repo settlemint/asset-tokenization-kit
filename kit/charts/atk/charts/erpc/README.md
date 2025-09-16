@@ -137,7 +137,11 @@ The command removes all the Kubernetes components associated with the chart and 
 | initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
 | initContainer.tcpCheck.image.tag | string | `"v7.7.10"` |  |
-| initContainer.tcpCheck.timeout | int | `0` |  |
+| initContainer.tcpCheck.resources.limits.cpu | string | `"100m"` |  |
+| initContainer.tcpCheck.resources.limits.memory | string | `"64Mi"` |  |
+| initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` |  |
+| initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
+| initContainer.tcpCheck.timeout | int | `120` |  |
 | lifecycleHooks | object | `{}` | lifecycleHooks for the eRPC container(s) to automate configuration before or after startup |
 | livenessProbe | object | `{"enabled":true,"failureThreshold":3,"httpGet":{"path":"/healthcheck","port":"http"},"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}` | Configure eRPC containers' liveness probe |
 | livenessProbe.enabled | bool | `true` | Enable livenessProbe on eRPC containers |

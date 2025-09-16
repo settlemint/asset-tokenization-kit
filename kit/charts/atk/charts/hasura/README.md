@@ -1,6 +1,6 @@
 # hasura
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 A Helm chart for the hasura components
 
@@ -44,7 +44,7 @@ A Helm chart for the hasura components
 | graphql-engine.initContainers[0].command[0] | string | `"/usr/bin/wait-for-it"` |  |
 | graphql-engine.initContainers[0].command[1] | string | `"postgresql:5432"` |  |
 | graphql-engine.initContainers[0].command[2] | string | `"-t"` |  |
-| graphql-engine.initContainers[0].command[3] | string | `"0"` |  |
+| graphql-engine.initContainers[0].command[3] | string | `"120"` |  |
 | graphql-engine.initContainers[0].image | string | `"ghcr.io/settlemint/btp-waitforit:v7.7.10"` |  |
 | graphql-engine.initContainers[0].imagePullPolicy | string | `"IfNotPresent"` |  |
 | graphql-engine.initContainers[0].name | string | `"wait-for-postgresql"` |  |

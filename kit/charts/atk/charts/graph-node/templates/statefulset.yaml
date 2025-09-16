@@ -62,25 +62,9 @@ spec:
             - name: config
               mountPath: /etc/graph-node
               readOnly: true
-        {{- $tcpDeps := default (list) .Values.initContainer.tcpCheck.dependencies }}
-        {{- if and .Values.initContainer.tcpCheck.enabled (gt (len $tcpDeps) 0) }}
-          {{- range $tcpDeps }}
-        - name: wait-for-{{ .name }}
-          image: "{{ $.Values.initContainer.tcpCheck.image.repository }}:{{ $.Values.initContainer.tcpCheck.image.tag }}"
-          imagePullPolicy: {{ $.Values.initContainer.tcpCheck.image.pullPolicy }}
-          command: ['/usr/bin/wait-for-it', '{{ tpl .endpoint $ }}', '-t', '{{ $.Values.initContainer.tcpCheck.timeout }}']
-          {{- if $.Values.initContainer.tcpCheck.resources }}
-          resources: {{- toYaml $.Values.initContainer.tcpCheck.resources | nindent 12 }}
-          {{- else }}
-          resources:
-            limits:
-              cpu: 100m
-              memory: 64Mi
-            requests:
-              cpu: 10m
-              memory: 32Mi
-          {{- end }}
-          {{- end }}
+        {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck "defaultResources" (dict "limits" (dict "cpu" "100m" "memory" "64Mi") "requests" (dict "cpu" "10m" "memory" "32Mi"))) }}
+        {{- if $waitForIt }}
+{{ $waitForIt | nindent 8 }}
         {{- else if .Values.postgresReadinessCheck.enabled }}
         - name: wait-for-postgresql-ready
           image: {{ .Values.postgresReadinessCheck.image }}

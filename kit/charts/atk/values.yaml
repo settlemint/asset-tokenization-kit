@@ -237,7 +237,14 @@ graph-node:
         repository: ghcr.io/settlemint/btp-waitforit
         tag: v7.7.10
         pullPolicy: IfNotPresent
-      timeout: 0
+      timeout: 120
+      resources:
+        limits:
+          cpu: 100m
+          memory: 64Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
       dependencies:
         - name: postgresql
           endpoint: "{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGHOST }}:{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGPORT }}"
@@ -267,7 +274,7 @@ hasura:
           - /usr/bin/wait-for-it
           - postgresql:5432
           - -t
-          - "0"
+          - "120"
         resources:
           limits:
             cpu: 100m
@@ -290,13 +297,21 @@ portal:
     prometheus.io/port: "3000"
     prometheus.io/path: "/portal-metrics"
   initContainer:
+    # Legacy `initContainers` overrides remain supported for backward compatibility.
     tcpCheck:
       enabled: true
       image:
         repository: ghcr.io/settlemint/btp-waitforit
         tag: v7.7.10
         pullPolicy: IfNotPresent
-      timeout: 0
+      timeout: 120
+      resources:
+        limits:
+          cpu: 100m
+          memory: 64Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
       dependencies:
         - name: postgresql
           endpoint: "postgresql:5432"
@@ -520,6 +535,7 @@ txsigner:
   postgresql: postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable
   replicaCount: 1
   resources: {}
+  # Legacy `initContainers` overrides remain supported for backward compatibility.
   initContainer:
     tcpCheck:
       enabled: true
@@ -527,7 +543,14 @@ txsigner:
         repository: ghcr.io/settlemint/btp-waitforit
         tag: v7.7.10
         pullPolicy: IfNotPresent
-      timeout: 0
+      timeout: 120
+      resources:
+        limits:
+          cpu: 100m
+          memory: 64Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
       dependencies:
         - name: postgresql
           endpoint: "postgresql:5432"
@@ -567,11 +590,18 @@ dapp:
     # Generic TCP check settings
     tcpCheck:
       enabled: true
-      timeout: 0  # Timeout in seconds for each dependency check
+      timeout: 120  # Timeout in seconds for each dependency check
       image:
         repository: ghcr.io/settlemint/btp-waitforit
         tag: v7.7.10
         pullPolicy: IfNotPresent
+      resources:
+        limits:
+          cpu: 100m
+          memory: 64Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
       dependencies:
         # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
         - name: postgres
@@ -601,6 +631,12 @@ dapp:
       timeoutSeconds: 10  # Max time per curl attempt
       connectTimeoutSeconds: 5  # Max time to connect
       retries: 24
+      resources:
+        limits:
+          memory: 64Mi
+        requests:
+          cpu: 10m
+          memory: 12Mi
   podLabels:
     app.kubernetes.io/component: dapp
     kots.io/app-slug: settlemint-atk

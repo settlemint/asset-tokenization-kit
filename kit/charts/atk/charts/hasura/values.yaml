@@ -42,7 +42,7 @@ graphql-engine:
         - /usr/bin/wait-for-it
         - postgresql:5432
         - -t
-        - "0"
+        - "120"
       resources:
         limits:
           cpu: 100m

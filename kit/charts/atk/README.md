@@ -1,6 +1,6 @@
 # atk
 
-![Version: 2.0.0](https://img.shields.io/badge/Version-2.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
+![Version: 2.0.1](https://img.shields.io/badge/Version-2.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
 
 A Helm chart for the SettleMint Asset Tokenization Kit
 
@@ -111,6 +111,9 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | dapp.initContainer.graphQLCheck.image.tag | string | `"8.16.0"` |  |
 | dapp.initContainer.graphQLCheck.name | string | `"wait-for-graph-subgraph-kit"` |  |
 | dapp.initContainer.graphQLCheck.query | string | `"{ __typename }"` |  |
+| dapp.initContainer.graphQLCheck.resources.limits.memory | string | `"64Mi"` |  |
+| dapp.initContainer.graphQLCheck.resources.requests.cpu | string | `"10m"` |  |
+| dapp.initContainer.graphQLCheck.resources.requests.memory | string | `"12Mi"` |  |
 | dapp.initContainer.graphQLCheck.retries | int | `24` |  |
 | dapp.initContainer.graphQLCheck.retryDelaySeconds | int | `20` |  |
 | dapp.initContainer.graphQLCheck.timeoutSeconds | int | `10` |  |
@@ -129,7 +132,11 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | dapp.initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | dapp.initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
 | dapp.initContainer.tcpCheck.image.tag | string | `"v7.7.10"` |  |
-| dapp.initContainer.tcpCheck.timeout | int | `0` |  |
+| dapp.initContainer.tcpCheck.resources.limits.cpu | string | `"100m"` |  |
+| dapp.initContainer.tcpCheck.resources.limits.memory | string | `"64Mi"` |  |
+| dapp.initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` |  |
+| dapp.initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
+| dapp.initContainer.tcpCheck.timeout | int | `120` |  |
 | dapp.podLabels."app.kubernetes.io/component" | string | `"dapp"` |  |
 | dapp.podLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | dapp.replicaCount | int | `1` |  |
@@ -208,7 +215,11 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | graph-node.initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | graph-node.initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
 | graph-node.initContainer.tcpCheck.image.tag | string | `"v7.7.10"` |  |
-| graph-node.initContainer.tcpCheck.timeout | int | `0` |  |
+| graph-node.initContainer.tcpCheck.resources.limits.cpu | string | `"100m"` |  |
+| graph-node.initContainer.tcpCheck.resources.limits.memory | string | `"64Mi"` |  |
+| graph-node.initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` |  |
+| graph-node.initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
+| graph-node.initContainer.tcpCheck.timeout | int | `120` |  |
 | graph-node.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
 | graph-node.podAnnotations."prometheus.io/port" | string | `"8040"` |  |
 | graph-node.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
@@ -220,7 +231,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | hasura.graphql-engine.initContainers[0].command[0] | string | `"/usr/bin/wait-for-it"` |  |
 | hasura.graphql-engine.initContainers[0].command[1] | string | `"postgresql:5432"` |  |
 | hasura.graphql-engine.initContainers[0].command[2] | string | `"-t"` |  |
-| hasura.graphql-engine.initContainers[0].command[3] | string | `"0"` |  |
+| hasura.graphql-engine.initContainers[0].command[3] | string | `"120"` |  |
 | hasura.graphql-engine.initContainers[0].image | string | `"ghcr.io/settlemint/btp-waitforit:v7.7.10"` |  |
 | hasura.graphql-engine.initContainers[0].imagePullPolicy | string | `"IfNotPresent"` |  |
 | hasura.graphql-engine.initContainers[0].name | string | `"wait-for-postgresql"` |  |
@@ -298,7 +309,11 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | portal.initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | portal.initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
 | portal.initContainer.tcpCheck.image.tag | string | `"v7.7.10"` |  |
-| portal.initContainer.tcpCheck.timeout | int | `0` |  |
+| portal.initContainer.tcpCheck.resources.limits.cpu | string | `"100m"` |  |
+| portal.initContainer.tcpCheck.resources.limits.memory | string | `"64Mi"` |  |
+| portal.initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` |  |
+| portal.initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
+| portal.initContainer.tcpCheck.timeout | int | `120` |  |
 | portal.podAnnotations."prometheus.io/path" | string | `"/portal-metrics"` |  |
 | portal.podAnnotations."prometheus.io/port" | string | `"3000"` |  |
 | portal.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
@@ -354,7 +369,11 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | txsigner.initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | txsigner.initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
 | txsigner.initContainer.tcpCheck.image.tag | string | `"v7.7.10"` |  |
-| txsigner.initContainer.tcpCheck.timeout | int | `0` |  |
+| txsigner.initContainer.tcpCheck.resources.limits.cpu | string | `"100m"` |  |
+| txsigner.initContainer.tcpCheck.resources.limits.memory | string | `"64Mi"` |  |
+| txsigner.initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` |  |
+| txsigner.initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
+| txsigner.initContainer.tcpCheck.timeout | int | `120` |  |
 | txsigner.postgresql | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |

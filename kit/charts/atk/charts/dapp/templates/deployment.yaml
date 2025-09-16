@@ -35,23 +35,10 @@ spec:
 
       {{- /* Define initContainers block only if needed */}}
       {{- if or .Values.initContainer.tcpCheck.enabled .Values.initContainer.graphQLCheck.enabled }}
+      {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck "defaultResources" (dict "limits" (dict "cpu" "100m" "memory" "64Mi") "requests" (dict "cpu" "50m" "memory" "32Mi"))) }}
       initContainers:
-
-        {{- /* Add Generic TCP Checks if enabled */}}
-        {{- if .Values.initContainer.tcpCheck.enabled }}
-          {{- range .Values.initContainer.tcpCheck.dependencies }}
-        - name: wait-for-{{ .name }}
-          image: "{{ $.Values.initContainer.tcpCheck.image.repository }}:{{ $.Values.initContainer.tcpCheck.image.tag }}"
-          imagePullPolicy: {{ $.Values.initContainer.tcpCheck.image.pullPolicy }}
-          command: ['/usr/bin/wait-for-it', '{{ tpl .endpoint $ }}', '-t', '{{ $.Values.initContainer.tcpCheck.timeout }}']
-          resources: # Optional: Define minimal resources for init containers
-            limits:
-              cpu: 100m
-              memory: 64Mi
-            requests:
-              cpu: 50m
-              memory: 32Mi
-          {{- end }}
+        {{- if $waitForIt }}
+{{ $waitForIt | nindent 8 }}
         {{- end }}
 
         {{- /* Add GraphQL Check if enabled */}}
@@ -102,12 +89,10 @@ spec:
               done
               echo "Error: GraphQL endpoint $url did not become ready after $max_attempts attempts."
               exit 1
-          resources: # Optional: Define minimal resources for this init container
-            limits:
-              memory: 64Mi
-            requests:
-              cpu: 10m
-              memory: 12Mi
+          {{- if .Values.initContainer.graphQLCheck.resources }}
+          resources:
+{{ toYaml .Values.initContainer.graphQLCheck.resources | nindent 12 }}
+          {{- end }}
         {{- end }}
 
       {{- end }} {{- /* End of 'if or' for initContainers */}}

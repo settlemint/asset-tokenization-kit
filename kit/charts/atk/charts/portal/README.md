@@ -1,6 +1,6 @@
 # portal
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 8.5.5](https://img.shields.io/badge/AppVersion-8.5.5-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 8.5.5](https://img.shields.io/badge/AppVersion-8.5.5-informational?style=flat-square)
 
 Portal is a comprehensive blockchain data management and querying service that provides
 real-time access to on-chain data through GraphQL APIs. It serves as the central data
@@ -146,7 +146,11 @@ The following table lists the configurable parameters of the Portal chart and th
 | initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
 | initContainer.tcpCheck.image.tag | string | `"v7.7.10"` |  |
-| initContainer.tcpCheck.timeout | int | `0` |  |
+| initContainer.tcpCheck.resources.limits.cpu | string | `"100m"` |  |
+| initContainer.tcpCheck.resources.limits.memory | string | `"64Mi"` |  |
+| initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` |  |
+| initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
+| initContainer.tcpCheck.timeout | int | `120` |  |
 | lifecycleHooks | object | `{}` | lifecycleHooks for the Portal container(s) to automate configuration before or after startup |
 | livenessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"tcpSocket":{"port":"http"},"timeoutSeconds":5}` | Configure Portal containers' liveness probe |
 | livenessProbe.enabled | bool | `true` | Enable livenessProbe on Portal containers |
