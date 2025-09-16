@@ -3,7 +3,12 @@
     "pending": "معلق",
     "verified": "تم التحقق",
     "rejected": "مرفوض",
-    "expired": "منتهي الصلاحية"
+    "expired": "منتهي الصلاحية",
+    "registered": "مسجل",
+    "notRegistered": "غير مسجل",
+    "verifiedAriaLabel": "هوية متحقق منها مع مطالبات",
+    "registeredAriaLabel": "هوية مسجلة بدون مطالبات",
+    "notRegisteredAriaLabel": "لا توجد هوية مسجلة"
   },
   "table": {
     "columns": {
@@ -35,34 +40,34 @@
   },
   "identityTable": {
     "columns": {
-      "id": "ID",
-      "type": "Type",
-      "linkedEntity": "Account / Contract",
-      "activeClaims": "Active Claims",
-      "revokedClaims": "Revoked Claims",
-      "deployment": "Deployment Tx"
+      "id": "المعرف",
+      "type": "النوع",
+      "linkedEntity": "الحساب / العقد",
+      "activeClaims": "المطالبات النشطة",
+      "revokedClaims": "المطالبات الملغاة",
+      "deployment": "معاملة النشر"
     },
     "types": {
-      "account": "Account",
-      "contract": "Contract"
+      "account": "حساب",
+      "contract": "عقد"
     },
     "fallback": {
-      "noAccount": "No account",
-      "noContract": "No contract",
-      "noDeployment": "No deployment",
-      "noEntity": "No linked entity"
+      "noAccount": "لا يوجد حساب",
+      "noContract": "لا يوجد عقد",
+      "noDeployment": "لا يوجد نشر",
+      "noEntity": "لا توجد كيانات مرتبطة"
     },
     "search": {
-      "placeholder": "Search identities..."
+      "placeholder": "البحث في الهويات..."
     },
     "emptyState": {
-      "title": "No identities found",
-      "description": "No identities match your filters yet.",
-      "loading": "Loading identities..."
+      "title": "لم يتم العثور على هويات",
+      "description": "لا توجد هويات تطابق عوامل التصفية الخاصة بك حتى الآن.",
+      "loading": "جارٍ تحميل الهويات..."
     },
     "errors": {
-      "loadFailed": "Failed to load identities. Please try again.",
-      "navigationFailed": "Failed to open identity details"
+      "loadFailed": "فشل في تحميل الهويات. يرجى المحاولة مرة أخرى.",
+      "navigationFailed": "فشل في فتح تفاصيل الهوية"
     }
   },
   "page": {

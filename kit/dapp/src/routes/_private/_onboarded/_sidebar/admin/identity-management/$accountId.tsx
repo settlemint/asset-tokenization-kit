@@ -1,10 +1,8 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
-import { ClaimStatusBadge } from "@/components/claims/claim-status-badge";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { getClaimTabConfiguration } from "@/components/tab-navigation/claim-tab-configuration";
 import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -72,18 +70,8 @@ export const Route = createFileRoute(
  * including header, breadcrumbs, tabs, and renders child routes through Outlet.
  */
 function RouteComponent() {
-  const { claimsData: loaderClaimsData } = Route.useLoaderData();
   const { accountId } = Route.useParams();
   const { t } = useTranslation(["claims", "common"]);
-
-  // Subscribe to live claims data so UI reacts to updates
-  const { data: queriedClaimsData } = useQuery(
-    Route.useRouteContext().orpc.system.identity.claims.list.queryOptions({
-      input: { accountId },
-    })
-  );
-
-  const claimsData = queriedClaimsData ?? loaderClaimsData;
 
   const displayAddress = `${accountId.slice(0, 6)}...${accountId.slice(-4)}`;
 
@@ -114,7 +102,6 @@ function RouteComponent() {
             <h1 className="text-3xl font-bold tracking-tight">
               {displayAddress}
             </h1>
-            <ClaimStatusBadge claimsData={claimsData} />
           </div>
           {/* Future: Add ManageClaimDropdown here */}
         </div>

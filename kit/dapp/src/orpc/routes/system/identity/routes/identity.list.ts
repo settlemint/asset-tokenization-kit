@@ -149,9 +149,7 @@ export const identityList = authRouter.system.identity.list
     });
 
     const identities = response.identities ?? [];
-    const identityIds = Array.from(
-      new Set(identities.map((identity) => identity.id.toLowerCase()))
-    );
+    const identityIds = [...new Set(identities.map((identity) => identity.id.toLowerCase()))];
 
     const claimCounts = new Map<
       string,
@@ -184,11 +182,11 @@ export const identityList = authRouter.system.identity.list
       const revokedClaimsCount = counts.revoked;
       const activeClaimsCount = counts.total - revokedClaimsCount;
       const account =
-        identity.account && identity.account.isContract === false
+        identity.account && !identity.account.isContract
           ? { id: identity.account.id }
           : null;
       const contract =
-        identity.account && identity.account.isContract !== false
+        identity.account && identity.account.isContract
           ? {
               id: identity.account.id,
               contractName: identity.account.contractName ?? undefined,

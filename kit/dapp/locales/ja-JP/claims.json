@@ -3,7 +3,12 @@
     "pending": "保留中",
     "verified": "検証済み",
     "rejected": "拒否済み",
-    "expired": "期限切れ"
+    "expired": "期限切れ",
+    "registered": "登録済み",
+    "notRegistered": "未登録",
+    "verifiedAriaLabel": "クレーム付きで検証された身元",
+    "registeredAriaLabel": "クレームなしで登録された身元",
+    "notRegisteredAriaLabel": "身元が登録されていません"
   },
   "table": {
     "columns": {
@@ -35,34 +40,34 @@
   },
   "identityTable": {
     "columns": {
-      "id": "Identity",
-      "type": "Type",
-      "linkedEntity": "Account / Contract",
-      "activeClaims": "Active Claims",
-      "revokedClaims": "Revoked Claims",
-      "deployment": "Deployment Tx"
+      "id": "ID",
+      "type": "タイプ",
+      "linkedEntity": "アカウント / コントラクト",
+      "activeClaims": "アクティブなクレーム",
+      "revokedClaims": "取り消されたクレーム",
+      "deployment": "デプロイメントTx"
     },
     "types": {
-      "account": "Account",
-      "contract": "Contract"
+      "account": "アカウント",
+      "contract": "コントラクト"
     },
     "fallback": {
-      "noAccount": "No account",
-      "noContract": "No contract",
-      "noDeployment": "No deployment",
-      "noEntity": "No linked entity"
+      "noAccount": "アカウントなし",
+      "noContract": "コントラクトなし",
+      "noDeployment": "デプロイメントなし",
+      "noEntity": "リンクされたエンティティなし"
     },
     "search": {
-      "placeholder": "Search identities..."
+      "placeholder": "身元を検索..."
     },
     "emptyState": {
-      "title": "No identities found",
-      "description": "No identities match your filters yet.",
-      "loading": "Loading identities..."
+      "title": "身元が見つかりません",
+      "description": "フィルターに一致する身元はまだありません。",
+      "loading": "身元を読み込み中..."
     },
     "errors": {
-      "loadFailed": "Failed to load identities. Please try again.",
-      "navigationFailed": "Failed to open identity details"
+      "loadFailed": "身元の読み込みに失敗しました。もう一度お試しください。",
+      "navigationFailed": "身元詳細を開けませんでした"
     }
   },
   "page": {

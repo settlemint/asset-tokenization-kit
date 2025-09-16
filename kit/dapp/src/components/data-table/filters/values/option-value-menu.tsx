@@ -161,18 +161,18 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
   const handleOptionSelect = useCallback(
     (value: string, checked: boolean) => {
       column.setFilterValue(() => {
-        if (!checked) {
-          return undefined;
+        if (checked) {
+          return {
+            operator: "is",
+            values: [value],
+            columnMeta: column.columnDef.meta,
+          } satisfies FilterValue<"option", TData>;
         }
 
-        return {
-          operator: "is",
-          values: [value],
-          columnMeta,
-        } satisfies FilterValue<"option", TData>;
+        return undefined;
       });
     },
-    [column, columnMeta]
+    [column]
   );
 
   const Icon = columnMeta.icon;

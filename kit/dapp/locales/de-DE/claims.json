@@ -3,7 +3,12 @@
     "pending": "Ausstehend",
     "verified": "Verifiziert",
     "rejected": "Abgelehnt",
-    "expired": "Abgelaufen"
+    "expired": "Abgelaufen",
+    "registered": "Registriert",
+    "notRegistered": "Nicht registriert",
+    "verifiedAriaLabel": "Identität mit Ansprüchen verifiziert",
+    "registeredAriaLabel": "Identität ohne Ansprüche registriert",
+    "notRegisteredAriaLabel": "Keine Identität registriert"
   },
   "table": {
     "columns": {
@@ -35,34 +40,34 @@
   },
   "identityTable": {
     "columns": {
-      "id": "Identity",
-      "type": "Type",
-      "linkedEntity": "Account / Contract",
-      "activeClaims": "Active Claims",
-      "revokedClaims": "Revoked Claims",
-      "deployment": "Deployment Tx"
+      "id": "ID",
+      "type": "Typ",
+      "linkedEntity": "Konto / Vertrag",
+      "activeClaims": "Aktive Ansprüche",
+      "revokedClaims": "Widerrufene Ansprüche",
+      "deployment": "Bereitstellungs-Tx"
     },
     "types": {
-      "account": "Account",
-      "contract": "Contract"
+      "account": "Konto",
+      "contract": "Vertrag"
     },
     "fallback": {
-      "noAccount": "No account",
-      "noContract": "No contract",
-      "noDeployment": "No deployment",
-      "noEntity": "No linked entity"
+      "noAccount": "Kein Konto",
+      "noContract": "Kein Vertrag",
+      "noDeployment": "Keine Bereitstellung",
+      "noEntity": "Keine verknüpfte Entität"
     },
     "search": {
-      "placeholder": "Search identities..."
+      "placeholder": "Identitäten suchen..."
     },
     "emptyState": {
-      "title": "No identities found",
-      "description": "No identities match your filters yet.",
-      "loading": "Loading identities..."
+      "title": "Keine Identitäten gefunden",
+      "description": "Keine Identitäten entsprechen Ihren Filtern.",
+      "loading": "Identitäten werden geladen..."
     },
     "errors": {
-      "loadFailed": "Failed to load identities. Please try again.",
-      "navigationFailed": "Failed to open identity details"
+      "loadFailed": "Fehler beim Laden der Identitäten. Bitte versuchen Sie es erneut.",
+      "navigationFailed": "Fehler beim Öffnen der Identitätsdetails"
     }
   },
   "page": {
