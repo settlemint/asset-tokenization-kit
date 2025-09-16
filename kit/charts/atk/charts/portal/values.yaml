@@ -197,6 +197,35 @@ extraEnvVarsCM: ""
 # -- Name of existing Secret containing extra env vars for Portal nodes
 extraEnvVarsSecret: ""
 
+# Legacy `initContainers` overrides remain supported for backward compatibility.
+initContainer:
+  # Generic TCP check settings
+  tcpCheck:
+    enabled: true
+    image:
+      repository: ghcr.io/settlemint/btp-waitforit
+      tag: v7.7.10
+      pullPolicy: IfNotPresent
+    timeout: 120 # Timeout in seconds for each dependency check
+    resources:
+      limits:
+        cpu: 100m
+        memory: 64Mi
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      dependencies:
+        - name: postgresql
+          endpoint: "postgresql:5432"
+  copyArtifacts:
+    resources:
+      limits:
+        cpu: 150m
+        memory: 128Mi
+      requests:
+        cpu: 25m
+        memory: 64Mi
+
 # -- Service parameters
 service:
   # -- Portal service type

@@ -218,6 +218,13 @@ initContainer:
       tag: v7.7.10
       pullPolicy: IfNotPresent
     timeout: 5 # Timeout in seconds for each dependency check
+    resources:
+      limits:
+        cpu: 100m
+        memory: 64Mi
+      requests:
+        cpu: 50m
+        memory: 32Mi
     dependencies:
       # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
       - name: postgres
@@ -247,6 +254,12 @@ initContainer:
     retryDelaySeconds: 10
     # Use a more sophisticated query to check sync status
     query: "{ _meta { hasIndexingErrors block { number } } }"
+    resources:
+      limits:
+        memory: 64Mi
+      requests:
+        cpu: 10m
+        memory: 12Mi
 
 job:
   enabled: true
