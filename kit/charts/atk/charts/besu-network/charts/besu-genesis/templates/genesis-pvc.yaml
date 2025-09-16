@@ -1,3 +1,6 @@
+{{- $globalGenerationEnabled := dig "global" "besuGenesis" "generation" "enabled" .Values nil -}}
+{{- $generationEnabled := ternary $globalGenerationEnabled .Values.generation.enabled (ne $globalGenerationEnabled nil) -}}
+{{- if $generationEnabled }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -18,3 +21,4 @@ spec:
   resources:
     requests:
       storage: {{ .Values.storage.size | default "1Gi" }}
+{{- end }}

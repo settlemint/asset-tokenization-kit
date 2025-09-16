@@ -1,3 +1,6 @@
+{{- $globalGenerationEnabled := dig "global" "besuGenesis" "generation" "enabled" .Values nil -}}
+{{- $generationEnabled := ternary $globalGenerationEnabled .Values.generation.enabled (ne $globalGenerationEnabled nil) -}}
+{{- if $generationEnabled }}
 ---
 apiVersion: batch/v1
 kind: Job
@@ -114,3 +117,4 @@ spec:
               fi
 
 {{- end}}
+{{- end }}

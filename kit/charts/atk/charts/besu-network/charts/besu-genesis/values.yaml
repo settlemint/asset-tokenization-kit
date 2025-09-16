@@ -3,6 +3,17 @@
 global:
   artifacts:
     enabled: true
+  besuGenesis:
+    generation:
+      enabled: true
+
+generation:
+  enabled: true
+  manual:
+    genesisJson: ""
+    staticNodes: []
+    bootnodes: []
+    validators: []
 
 quorumFlags:
   removeGenesisOnDelete: true
@@ -94,7 +105,7 @@ rawGenesisConfig:
   blockchain:
     nodes:
       generate: true
-      count: 1
+      count: 4
     accountPassword: "password"
 
 image:

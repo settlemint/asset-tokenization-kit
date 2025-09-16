@@ -1,4 +1,4 @@
----
+{{- $genesisEnabled := dig "global" "besuGenesis" "generation" "enabled" .Values true -}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -44,6 +44,7 @@ spec:
 {{- end }}
       {{- include "atk.imagePullSecrets" . | nindent 6 }}
       initContainers:
+{{- if $genesisEnabled }}
       # Wait for genesis file to be available in PVC
       - name: wait-for-genesis
         image: "{{ .Values.initContainers.busybox.image.registry }}/{{ .Values.initContainers.busybox.image.repository }}:{{ .Values.initContainers.busybox.image.tag }}"
@@ -77,6 +78,34 @@ spec:
         resources:
 {{ toYaml . | nindent 10 }}
         {{- end }}
+{{- else }}
+      - name: load-manual-genesis
+        image: "{{ .Values.initContainers.busybox.image.registry }}/{{ .Values.initContainers.busybox.image.repository }}:{{ .Values.initContainers.busybox.image.tag }}"
+        imagePullPolicy: {{ .Values.initContainers.busybox.image.pullPolicy }}
+        command:
+          - /bin/sh
+          - -c
+          - |
+            set -euo pipefail
+            if [ ! -f /manual/genesis.json ]; then
+              echo "Manual genesis configmap missing genesis.json"
+              exit 1
+            fi
+            cp /manual/genesis.json /shared/genesis.json
+            ls -la /shared/
+        volumeMounts:
+          - name: manual-genesis
+            mountPath: /manual
+          - name: shared-genesis
+            mountPath: /shared
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+        {{- with .Values.initContainers.waitForGenesis.resources }}
+        resources:
+{{ toYaml . | nindent 10 }}
+        {{- end }}
+{{- end }}
 
 {{- if has .Values.cluster.provider .Values.volumePermissionsFix }}
       # fix for minikube and PVC's only writable as root https://github.com/kubernetes/minikube/issues/1990
@@ -296,11 +325,21 @@ spec:
           initialDelaySeconds: 180
           periodSeconds: 60
       volumes:
+{{- if $genesisEnabled }}
       - name: genesis-pvc
         persistentVolumeClaim:
           claimName: besu-genesis-pvc
+{{- end }}
       - name: shared-genesis
         emptyDir: {}
+{{- if not $genesisEnabled }}
+      - name: manual-genesis
+        configMap:
+          name: besu-genesis-manual
+          items:
+            - key: genesis.json
+              path: genesis.json
+{{- end }}
       - name: static-nodes
         configMap:
           name: besu-peers

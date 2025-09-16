@@ -1,0 +1,84 @@
+{{- $globalGenerationEnabled := dig "global" "besuGenesis" "generation" "enabled" .Values nil -}}
+{{- $generationEnabled := ternary $globalGenerationEnabled .Values.generation.enabled (ne $globalGenerationEnabled nil) -}}
+{{- if not $generationEnabled }}
+{{- $manual := .Values.generation.manual | default (dict) -}}
+{{- $genesisJson := required "generation.manual.genesisJson must be provided when genesis generation is disabled" $manual.genesisJson -}}
+{{- $staticNodes := default (list) $manual.staticNodes -}}
+{{- $bootnodes := default (list) $manual.bootnodes -}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: besu-genesis-manual
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "besu-genesis.labels" . | nindent 4 }}
+data:
+  genesis.json: |-
+{{ $genesisJson | nindent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: besu-peers
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "besu-genesis.labels" . | nindent 4 }}
+data:
+  static-nodes.json: |-
+{{ toJson $staticNodes | nindent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: besu-bootnodes
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "besu-genesis.labels" . | nindent 4 }}
+data:
+  bootnodes-json: |-
+{{ toJson $bootnodes | nindent 4 }}
+  bootnodes-string: {{ join "," $bootnodes | quote }}
+{{- $validators := default (list) $manual.validators -}}
+{{- range $index, $validator := $validators }}
+{{- $name := required (printf "generation.manual.validators[%d].name is required" $index) $validator.name -}}
+{{- $keys := $validator.keys | default (dict) -}}
+{{- $nodekey := required (printf "generation.manual.validators[%d].keys.nodekey is required" $index) $keys.nodekey -}}
+{{- $nodekeyPub := required (printf "generation.manual.validators[%d].keys.nodekeyPub is required" $index) $keys.nodekeyPub -}}
+{{- $address := required (printf "generation.manual.validators[%d].keys.address is required" $index) $keys.address -}}
+{{- $accountPrivateKey := required (printf "generation.manual.validators[%d].keys.accountPrivateKey is required" $index) $keys.accountPrivateKey -}}
+{{- $accountPassword := default "" $keys.accountPassword -}}
+{{- $accountKeystore := default "" $keys.accountKeystore -}}
+{{- $accountAddress := default $address $keys.accountAddress -}}
+{{- $enode := default $nodekeyPub $keys.enode -}}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $name }}-keys
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "besu-genesis.labels" $ | nindent 4 }}
+type: Opaque
+data:
+  nodekey: {{ $nodekey | b64enc }}
+  nodekey.pub: {{ $nodekeyPub | b64enc }}
+  enode: {{ $enode | b64enc }}
+  address: {{ $address | b64enc }}
+  accountPrivate.key: {{ $accountPrivateKey | b64enc }}
+  accountPassword: {{ $accountPassword | b64enc }}
+  accountKeystore: {{ $accountKeystore | b64enc }}
+  accountAdddress: {{ $accountAddress | b64enc }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}-address
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "besu-genesis.labels" $ | nindent 4 }}
+data:
+  address: |-
+{{ $address | nindent 4 }}
+{{- end }}
+{{- end }}

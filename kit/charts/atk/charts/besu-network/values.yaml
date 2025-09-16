@@ -1,3 +1,8 @@
+global:
+  besuGenesis:
+    generation:
+      enabled: true
+
 besu-validator-1:
   enabled: true
   fullnameOverride: besu-node-validator-1

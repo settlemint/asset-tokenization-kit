@@ -40,3 +40,4 @@ A Helm chart for the besu network components
 | besu-validator-3.fullnameOverride | string | `"besu-node-validator-3"` |  |
 | besu-validator-4.enabled | bool | `false` |  |
 | besu-validator-4.fullnameOverride | string | `"besu-node-validator-4"` |  |
+| global.besuGenesis.generation.enabled | bool | `true` |  |
