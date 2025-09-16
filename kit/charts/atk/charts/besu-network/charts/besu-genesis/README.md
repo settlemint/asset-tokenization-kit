@@ -33,6 +33,7 @@ Besu Genesis generator with Helm chart in Kubernetes
 | genesisServer.image.registry | string | `"docker.io"` |  |
 | genesisServer.image.repository | string | `"nginx"` |  |
 | genesisServer.image.tag | string | `"1.29.1-alpine"` |  |
+| global.artifacts.enabled | bool | `true` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/settlemint/quorum-genesis-tool"` |  |
 | image.tag | string | `"sha-49c40f5"` |  |
