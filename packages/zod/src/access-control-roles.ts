@@ -19,7 +19,6 @@ export const roles = [
   "forcedTransfer",
   "freezer",
   "fundsManager",
-  "globalListManager",
   "governance",
   "identityManager",
   "identityRegistryModule",
@@ -49,7 +48,7 @@ export type AccessControlRoles = (typeof roles)[number];
  */
 export const accessControlRoles = z.object(
   Object.fromEntries(roles.map((role) => [role, z.boolean().default(false)]))
-);
+) as unknown as z.ZodObject<Record<AccessControlRoles, z.ZodBoolean>>;
 
 /**
  * Zod schema for validating an access control role.
@@ -117,9 +116,6 @@ export const accessControlSchema = () =>
     ),
     freezer: accountArray().describe("Accounts with freezer role"),
     fundsManager: accountArray().describe("Accounts with funds manager role"),
-    globalListManager: accountArray().describe(
-      "Accounts with global list manager role"
-    ),
     governance: accountArray().describe("Accounts with governance role"),
     identityManager: accountArray().describe(
       "Accounts with identity manager role"

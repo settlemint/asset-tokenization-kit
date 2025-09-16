@@ -152,8 +152,6 @@ type AccessControl @entity(immutable: false) {
   saleAdmin: [Account!]!
   # Authorized signers for multi-sig operations
   signer: [Account!]!
-  # Manages global allow/block lists
-  globalListManager: [Account!]!
 }
 
 type System @entity(immutable: false) {

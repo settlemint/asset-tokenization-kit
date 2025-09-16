@@ -24,8 +24,8 @@
   },
   "dependencies": {
     "@nomicfoundation/hardhat-ignition": "0.15.13",
-    "merkletreejs": "0.5.2",
-    "viem": "2.37.5"
+    "merkletreejs": "0.6.0",
+    "viem": "2.37.6"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-foundry": "1.2.0",

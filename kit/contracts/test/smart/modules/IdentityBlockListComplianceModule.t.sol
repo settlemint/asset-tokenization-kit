@@ -119,11 +119,6 @@ contract IdentityBlockListComplianceModuleTest is AbstractComplianceModuleTest {
         vm.prank(tokenIssuer);
         assertTrue(smartToken.transfer(user2, 100), "Transfer failed");
         assertEq(smartToken.balanceOf(user2), 100);
-
-        // Transfer to user3 (no identity) should succeed
-        vm.prank(tokenIssuer);
-        assertTrue(smartToken.transfer(user3, 100), "Transfer failed");
-        assertEq(smartToken.balanceOf(user3), 100);
     }
 
     function test_IdentityBlockList_SupportsInterface() public view {

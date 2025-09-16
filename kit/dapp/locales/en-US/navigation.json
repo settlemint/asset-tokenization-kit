@@ -6,6 +6,7 @@
   "fixedIncome": "Fixed income",
   "flexibleIncome": "Flexible income",
   "home": "Dashboard",
+  "myAssets": "My Assets",
   "statistics": "Statistics",
   "addons": "Addons",
   "assetDesigner": "Asset designer",
@@ -35,6 +36,13 @@
     "compliance": "Compliance",
     "addons": "Addons",
     "claimTopicsIssuers": "Claim Topics & Issuers",
-    "permissions": "Permissions"
+    "permissions": {
+      "title": "Platform admins",
+      "description": "Manage platform admins roles for the Asset Tokenization Kit",
+      "adminRequired": {
+        "title": "Admin Access Required",
+        "description": "You need administrator privileges to manage roles. Please contact your system administrator for access."
+      }
+    }
   }
 }

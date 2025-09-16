@@ -1,8 +1,5 @@
 import { orpc } from "@/orpc/orpc-client";
-import {
-  type AssetFactoryTypeId,
-  getAssetTypeFromFactoryTypeId,
-} from "@atk/zod/asset-types";
+import { getAssetTypeFromFactoryTypeId } from "@atk/zod/asset-types";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
@@ -18,35 +15,26 @@ export function useAssetTypesData() {
     })
   );
 
-  // Get current user data with roles
-  const {
-    data: user,
-    isLoading: isUserLoading,
-    isError: userError,
-  } = useQuery(orpc.user.me.queryOptions());
-
-  // Check if user has system manager role for enabling asset types
-  // Only set to true if user data is loaded and user has the role
-  const hasSystemManagerRole =
-    !isUserLoading && !!user?.userSystemPermissions?.roles?.systemManager;
+  // Check if user can create asset types
+  const canCreateAssetFactory =
+    systemDetails?.userPermissions?.actions.tokenFactoryCreate ?? false;
 
   // Create a set of already deployed asset types for easy lookup
   const deployedAssetTypes = useMemo(
     () =>
       new Set(
-        systemDetails?.tokenFactories.map((factory) =>
-          getAssetTypeFromFactoryTypeId(factory.typeId as AssetFactoryTypeId)
+        systemDetails?.tokenFactoryRegistry.tokenFactories.map((factory) =>
+          getAssetTypeFromFactoryTypeId(factory.typeId)
         ) ?? []
       ),
-    [systemDetails?.tokenFactories]
+    [systemDetails?.tokenFactoryRegistry.tokenFactories]
   );
 
   return {
     systemDetails,
-    user,
-    hasSystemManagerRole,
+    canCreateAssetFactory,
     deployedAssetTypes,
-    isLoading: isLoading || isUserLoading,
-    isError: systemError || userError,
+    isLoading: isLoading,
+    isError: systemError,
   };
 }

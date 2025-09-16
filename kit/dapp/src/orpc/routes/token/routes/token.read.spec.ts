@@ -213,7 +213,6 @@ describe("Token read", () => {
         forcedTransfer: false,
         freezer: false,
         fundsManager: false,
-        globalListManager: false,
         governance: true,
         identityManager: false,
         identityRegistryModule: false,
@@ -236,7 +235,6 @@ describe("Token read", () => {
       isAllowed: true,
       actions: {
         burn: true,
-        create: true,
         grantRole: true,
         mint: true,
         pause: true,
@@ -287,7 +285,6 @@ describe("Token read", () => {
         forcedTransfer: false,
         freezer: false,
         fundsManager: false,
-        globalListManager: false,
         governance: false,
         identityManager: false,
         identityRegistryModule: false,
@@ -310,7 +307,6 @@ describe("Token read", () => {
       isAllowed: true,
       actions: {
         burn: false,
-        create: false,
         grantRole: false,
         mint: false,
         pause: false,

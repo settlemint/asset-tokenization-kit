@@ -1,6 +1,7 @@
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import type { IdentityClaim } from "@atk/zod/claim";
 import { VerificationType } from "@atk/zod/verification-type";
-import { getOrpcClient } from "@test/fixtures/orpc-client";
+import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
   DEFAULT_ADMIN,
@@ -143,11 +144,18 @@ describe("Claims list (integration)", () => {
   it("should fail when user doesn't have required role", async () => {
     // Investor user should NOT have identityManager or claimIssuer role
     await expect(
-      investorClient.system.identity.claims.list({
-        accountId: targetUserData.wallet,
-      })
+      investorClient.system.identity.claims.list(
+        {
+          accountId: targetUserData.wallet,
+        },
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+          },
+        }
+      )
     ).rejects.toThrow(
-      "User does not have the required role to execute this action"
+      errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
     );
   });
 });

@@ -58,6 +58,7 @@ import enUSTheme from "@/locales/en-US/theme.json";
 import enUSToast from "@/locales/en-US/toast.json";
 import enUSTokenFactory from "@/locales/en-US/token-factory.json";
 import enUSTokens from "@/locales/en-US/tokens.json";
+import enUSUserAssets from "@/locales/en-US/user-assets.json";
 import enUSUser from "@/locales/en-US/user.json";
 import enUSValidation from "@/locales/en-US/validation.json";
 import enUSWallet from "@/locales/en-US/wallet.json";
@@ -121,6 +122,7 @@ export const namespaces = [
   "token-factory",
   "tokens",
   "user",
+  "user-assets",
   "validation",
   "wallet",
 ] as const;
@@ -176,6 +178,7 @@ const translationModules = {
     "token-factory": () => import("@/locales/de-DE/token-factory.json"),
     tokens: () => import("@/locales/de-DE/tokens.json"),
     user: () => import("@/locales/de-DE/user.json"),
+    "user-assets": () => import("@/locales/de-DE/user-assets.json"),
     validation: () => import("@/locales/de-DE/validation.json"),
     wallet: () => import("@/locales/de-DE/wallet.json"),
   },
@@ -219,6 +222,7 @@ const translationModules = {
     "token-factory": () => import("@/locales/ar-SA/token-factory.json"),
     tokens: () => import("@/locales/ar-SA/tokens.json"),
     user: () => import("@/locales/ar-SA/user.json"),
+    "user-assets": () => import("@/locales/ar-SA/user-assets.json"),
     validation: () => import("@/locales/ar-SA/validation.json"),
     wallet: () => import("@/locales/ar-SA/wallet.json"),
   },
@@ -262,6 +266,7 @@ const translationModules = {
     "token-factory": () => import("@/locales/ja-JP/token-factory.json"),
     tokens: () => import("@/locales/ja-JP/tokens.json"),
     user: () => import("@/locales/ja-JP/user.json"),
+    "user-assets": () => import("@/locales/ja-JP/user-assets.json"),
     validation: () => import("@/locales/ja-JP/validation.json"),
     wallet: () => import("@/locales/ja-JP/wallet.json"),
   },
@@ -312,6 +317,7 @@ async function loadResource(lng: SupportedLanguage, ns: Namespace) {
         "token-factory": enUSTokenFactory,
         tokens: enUSTokens,
         user: enUSUser,
+        "user-assets": enUSUserAssets,
         validation: enUSValidation,
         wallet: enUSWallet,
       };

@@ -1,16 +1,17 @@
 /**
  * @vitest-environment node
  */
-import { describe, expect, it, beforeEach, vi } from "vitest";
 import {
-  installOnboardedRouterCaptureMock,
-  getCapturedOnboardedHandler,
   createBaseContext,
   createMockErrors,
-  type OrpcHandler,
+  getCapturedHandler,
+  installSystemRouterCaptureMock,
+  OrpcHandler,
 } from "@/test/orpc-route-helpers";
-import { DEFAULT_PINCODE } from "@test/fixtures/user";
 import { VerificationType } from "@atk/zod/verification-type";
+import { DEFAULT_PINCODE } from "@test/fixtures/user";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import "./topic.update";
 import type {
   TopicUpdateInput,
   TopicUpdateOutput,
@@ -23,11 +24,10 @@ vi.mock("@/orpc/helpers/challenge-response", () => ({
   ),
 }));
 
-installOnboardedRouterCaptureMock();
-import "./topic.update";
+installSystemRouterCaptureMock();
 
 function getHandler(): OrpcHandler<TopicUpdateInput, TopicUpdateOutput> {
-  const handler = getCapturedOnboardedHandler();
+  const handler = getCapturedHandler();
   if (!handler) throw new Error("Handler not captured");
   return handler as OrpcHandler<TopicUpdateInput, TopicUpdateOutput>;
 }
@@ -50,7 +50,9 @@ describe("system.claim-topics.topic.update unit", () => {
             roles: [],
           },
         },
-        topicSchemeRegistry: "0xBBBBbBBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb",
+        topicSchemeRegistry: {
+          id: "0xBBBBbBBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb",
+        },
       },
     });
 
@@ -110,7 +112,9 @@ describe("system.claim-topics.topic.update unit", () => {
             roles: [],
           },
         },
-        topicSchemeRegistry: "0xBBBBbBBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb",
+        topicSchemeRegistry: {
+          id: "0xBBBBbBBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb",
+        },
       },
     });
 
@@ -143,43 +147,6 @@ describe("system.claim-topics.topic.update unit", () => {
     });
   });
 
-  it("throws INTERNAL_SERVER_ERROR when topic scheme registry is not configured", async () => {
-    const handler = getHandler();
-    const context = createBaseContext({
-      system: {
-        systemAccessManager: {
-          id: "0xAAAAAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAa",
-          accessControl: {
-            roles: [],
-          },
-        },
-        // Missing topicSchemeRegistry
-      },
-    });
-
-    const input: TopicUpdateInput = {
-      name: "Test Topic",
-      signature: "testFunction(address)",
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: VerificationType.pincode,
-      },
-    };
-
-    await expect(
-      handler({
-        input,
-        context,
-        errors,
-      })
-    ).rejects.toMatchObject({
-      code: "INTERNAL_SERVER_ERROR",
-      message: "Topic scheme registry not found in system configuration",
-    });
-
-    expect(context.portalClient.mutate).not.toHaveBeenCalled();
-  });
-
   it("handles portal client mutation errors", async () => {
     const handler = getHandler();
     const context = createBaseContext({
@@ -190,7 +157,9 @@ describe("system.claim-topics.topic.update unit", () => {
             roles: [],
           },
         },
-        topicSchemeRegistry: "0xBBBBbBBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb",
+        topicSchemeRegistry: {
+          id: "0xBBBBbBBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb",
+        },
       },
     });
 
@@ -228,7 +197,9 @@ describe("system.claim-topics.topic.update unit", () => {
             roles: [],
           },
         },
-        topicSchemeRegistry: "0xBBBBbBBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb",
+        topicSchemeRegistry: {
+          id: "0xBBBBbBBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBbBb",
+        },
       },
     });
 
@@ -290,7 +261,9 @@ describe("system.claim-topics.topic.update unit", () => {
             roles: [],
           },
         },
-        topicSchemeRegistry: "0xCCCCcCCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCc",
+        topicSchemeRegistry: {
+          id: "0xCCCCcCCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCcCc",
+        },
       },
       auth: {
         user: {

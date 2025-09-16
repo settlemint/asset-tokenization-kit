@@ -65,7 +65,7 @@ export const statsAssets = authRouter.system.stats.assets
     const { system } = context;
     // Fetch asset count data in a single query
     const response = await context.theGraphClient.query(ASSET_COUNT_QUERY, {
-      input: { systemAddress: system.address },
+      input: { systemAddress: system.id },
       output: AssetCountResponseSchema,
     });
 

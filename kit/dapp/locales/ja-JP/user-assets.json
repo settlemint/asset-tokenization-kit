@@ -1,0 +1,30 @@
+{
+  "title": "マイアセット",
+  "actions": {
+    "addressCopied": "トークンアドレスをクリップボードにコピーしました",
+    "copyAddress": "アドレスをコピー",
+    "tokenDetailsNotImplemented": "トークン詳細表示はまだ実装されていません",
+    "viewOnBlockExplorer": "ブロックエクスプローラーで表示",
+    "viewTokenDetails": "トークン詳細を表示"
+  },
+  "bulkActions": {
+    "addressesCopied": "{{count}}個のトークンアドレスをクリップボードにコピーしました",
+    "exportMessage": "選択された{{count}}個の資産をエクスポートしています"
+  },
+  "columns": {
+    "actions": "アクション",
+    "available": "利用可能",
+    "balance": "残高",
+    "contractAddress": "コントラクトアドレス",
+    "frozen": "凍結済み",
+    "ownership": "所有率 %",
+    "symbol": "シンボル",
+    "tokenName": "トークン名",
+    "totalSupply": "総供給量"
+  },
+  "emptyState": {
+    "description": "まだトークンを保有していません。トークンを取得すると、ここに表示されます。",
+    "title": "資産が見つかりません"
+  },
+  "searchPlaceholder": "トークン名、シンボル、またはアドレスで検索..."
+}

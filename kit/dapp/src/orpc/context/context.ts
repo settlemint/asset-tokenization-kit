@@ -4,7 +4,7 @@ import type { hasuraClient } from "@/lib/settlemint/hasura";
 import type { client as minioClient } from "@/lib/settlemint/minio";
 import type { ValidatedPortalClient } from "@/orpc/middlewares/services/portal.middleware";
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
-import type { SystemContext } from "@/orpc/middlewares/system/system.middleware";
+import type { System } from "@/orpc/routes/system/routes/system.read.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { EthereumAddress } from "@atk/zod/ethereum-address";
 import type { getHeaders } from "@tanstack/react-start/server";
@@ -127,7 +127,7 @@ export interface Context {
    * @optional
    * @see {@link @/lib/settlemint/system} - System client configuration
    */
-  system?: SystemContext;
+  system?: System;
 
   /**
    * Token information.

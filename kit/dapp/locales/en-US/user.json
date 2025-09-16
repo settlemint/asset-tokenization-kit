@@ -57,6 +57,36 @@
       }
     }
   },
+  "permissions": {
+    "groups": {
+      "compliance": "Compliance",
+      "identity-management": "Identity Management",
+      "assets-management": "Assets Management",
+      "system-administration": "System Administration",
+      "other": "Other"
+    },
+    "table": {
+      "columns": {
+        "name": "Name",
+        "role": "Roles"
+      },
+      "errors": {
+        "navigationFailed": "Failed to navigate to user details",
+        "loadFailed": "Failed to load users. Please try again."
+      },
+      "search": {
+        "placeholder": "Search by wallet address..."
+      },
+      "emptyState": {
+        "title": "No users found",
+        "description": "No users have been registered yet.",
+        "loading": "Loading users..."
+      },
+      "actions": {
+        "changeRoles": "Change roles"
+      }
+    }
+  },
   "tabs": {
     "details": "Details",
     "claims": "Claims"

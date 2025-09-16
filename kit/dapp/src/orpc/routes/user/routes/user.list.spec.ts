@@ -1,6 +1,6 @@
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import { User } from "@/orpc/routes/user/routes/user.me.schema";
-import { getOrpcClient } from "@test/fixtures/orpc-client";
+import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
   DEFAULT_ADMIN,
@@ -278,7 +278,7 @@ describe("User list", () => {
       if (usersByEmail.items.length > 1) {
         for (let i = 1; i < usersByEmail.items.length; i++) {
           expect(
-            usersByEmail.items[i]?.email.localeCompare(
+            (usersByEmail.items[i]?.email ?? "").localeCompare(
               usersByEmail.items[i - 1]?.email ?? ""
             )
           ).toBeGreaterThanOrEqual(0);
@@ -286,14 +286,45 @@ describe("User list", () => {
       }
 
       // Test sorting by createdAt (default)
-      const usersByCreated = await client.user.list({
-        orderBy: "createdAt",
+      const usersByName = await client.user.list({
+        orderBy: "wallet",
+        orderDirection: "asc",
+        limit: 5,
+      });
+      const usersByNameReverse = await client.user.list({
+        orderBy: "wallet",
         orderDirection: "desc",
         limit: 5,
       });
 
-      expect(usersByCreated).toBeDefined();
-      expect(usersByCreated.items.length).toBeGreaterThan(0);
+      expect(usersByName).toBeDefined();
+      expect(usersByName.items.length).toBeGreaterThan(0);
+      const namesFromQuery = usersByName.items.map((user: User) => user.name);
+      const namesFromQueryReverse = usersByNameReverse.items.map(
+        (user: User) => user.name
+      );
+      expect(namesFromQuery).not.toEqual(namesFromQueryReverse);
+    });
+  });
+
+  describe("Filtering", () => {
+    it("filters users by name", async () => {
+      const headers = await signInWithUser(DEFAULT_ADMIN);
+      const client = getOrpcClient(headers);
+
+      const users = await client.user.list({
+        filters: {
+          search: "TestFirst",
+        },
+        limit: 10,
+      });
+
+      expect(users).toBeDefined();
+      expect(Array.isArray(users.items)).toBe(true);
+      expect(users.items.length).toBeGreaterThan(0);
+      expect(
+        users.items.every((user: User) => user.name.includes("TestFirst"))
+      ).toBe(true);
     });
   });
 
@@ -312,7 +343,7 @@ describe("User list", () => {
           }
         )
       ).rejects.toThrow(
-        "User does not have the required role to execute this action."
+        errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
       );
     });
 
@@ -344,7 +375,7 @@ describe("User list", () => {
           }
         )
       ).rejects.toThrow(
-        "User does not have the required role to execute this action."
+        errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
       );
     });
 

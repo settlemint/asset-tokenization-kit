@@ -1,6 +1,8 @@
 import { list as actionsList } from "@/orpc/routes/actions/routes/actions.list";
 import kyc from "@/orpc/routes/user/kyc/kyc.router";
+import { adminList } from "@/orpc/routes/user/routes/admins.list";
 import { createWallet } from "@/orpc/routes/user/routes/mutations/create-wallet";
+import { assets } from "@/orpc/routes/user/routes/user.assets";
 import { list } from "@/orpc/routes/user/routes/user.list";
 import { me } from "@/orpc/routes/user/routes/user.me";
 import { read } from "@/orpc/routes/user/routes/user.read";
@@ -36,8 +38,10 @@ import { statsUserCount } from "@/orpc/routes/user/routes/user.stats.user-count"
 const routes = {
   me,
   actions: actionsList,
+  assets,
   search,
   list,
+  adminList,
   read,
   stats,
   statsGrowthOverTime,

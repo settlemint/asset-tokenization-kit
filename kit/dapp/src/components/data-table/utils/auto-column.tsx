@@ -22,6 +22,8 @@ function FormattedCell<TData, TValue>({
         currency: meta?.currency,
         emptyValue: meta?.emptyValue,
         showPrettyName: meta?.showPrettyName,
+        dateOptions: meta?.dateOptions,
+        multiOptionOptions: meta?.multiOptionOptions,
       })}
     </>
   );
@@ -134,10 +136,8 @@ function withAutoVariant<TData, TValue = unknown>(
  * @param columns - Array of column definitions to enhance
  * @returns Fully enhanced column definitions with auto features
  */
-export function withAutoFeatures<TData>(
-  columns: ColumnDef<TData>[]
-): ColumnDef<TData>[] {
-  return columns.map((column) =>
+export function withAutoFeatures<ColumnDefs>(columns: ColumnDefs): ColumnDefs {
+  return (columns as ColumnDef<unknown>[]).map((column) =>
     withAutoFilterFn(withAutoVariant(withAutoCell(column)))
-  );
+  ) as ColumnDefs;
 }

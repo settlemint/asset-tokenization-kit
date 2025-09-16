@@ -40,7 +40,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | besu-network.besu-node.hooks.image.tag | string | `"sha-49c40f5"` |  |
 | besu-network.besu-node.initContainers.checkConnection.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-node.initContainers.checkConnection.image.repository | string | `"docker.io/curlimages/curl"` |  |
-| besu-network.besu-node.initContainers.checkConnection.image.tag | string | `"8.15.0"` |  |
+| besu-network.besu-node.initContainers.checkConnection.image.tag | string | `"8.16.0"` |  |
 | besu-network.besu-node.initContainers.testConnection.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-node.initContainers.testConnection.image.repository | string | `"docker.io/busybox"` |  |
 | besu-network.besu-node.initContainers.testConnection.image.tag | string | `"1.37"` |  |
@@ -89,7 +89,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | blockscout.blockscout-stack.blockscout.resources | object | `{}` |  |
 | blockscout.blockscout-stack.frontend.image.pullPolicy | string | `"IfNotPresent"` |  |
 | blockscout.blockscout-stack.frontend.image.repository | string | `"ghcr.io/blockscout/frontend"` |  |
-| blockscout.blockscout-stack.frontend.image.tag | string | `"v2.3.2"` |  |
+| blockscout.blockscout-stack.frontend.image.tag | string | `"v2.3.3"` |  |
 | blockscout.blockscout-stack.frontend.ingress.hostname | string | `"explorer.k8s.orb.local"` |  |
 | blockscout.blockscout-stack.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
 | blockscout.blockscout-stack.podAnnotations."prometheus.io/port" | string | `"4000"` |  |
@@ -108,7 +108,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | dapp.initContainer.graphQLCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | dapp.initContainer.graphQLCheck.image.registry | string | `"docker.io"` |  |
 | dapp.initContainer.graphQLCheck.image.repository | string | `"curlimages/curl"` |  |
-| dapp.initContainer.graphQLCheck.image.tag | string | `"8.15.0"` |  |
+| dapp.initContainer.graphQLCheck.image.tag | string | `"8.16.0"` |  |
 | dapp.initContainer.graphQLCheck.name | string | `"wait-for-graph-subgraph-kit"` |  |
 | dapp.initContainer.graphQLCheck.query | string | `"{ __typename }"` |  |
 | dapp.initContainer.graphQLCheck.retries | int | `24` |  |
@@ -173,7 +173,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | erpc.image.pullPolicy | string | `"IfNotPresent"` |  |
 | erpc.image.registry | string | `"ghcr.io"` |  |
 | erpc.image.repository | string | `"erpc/erpc"` |  |
-| erpc.image.tag | string | `"0.0.55"` |  |
+| erpc.image.tag | string | `"0.0.56"` |  |
 | erpc.ingress.className | string | `"atk-nginx"` |  |
 | erpc.ingress.enabled | bool | `true` |  |
 | erpc.ingress.hosts[0].host | string | `"rpc.k8s.orb.local"` |  |
@@ -192,7 +192,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | global.artifacts.image.pullPolicy | string | `"IfNotPresent"` |  |
 | global.artifacts.image.registry | string | `"ghcr.io"` |  |
 | global.artifacts.image.repository | string | `"settlemint/asset-tokenization-kit-artifacts"` |  |
-| global.artifacts.image.tag | string | `"2.0.1"` |  |
+| global.artifacts.image.tag | string | `"2.0.0-main.91391"` |  |
 | global.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | global.networkPolicy.enabled | bool | `false` |  |
 | graph-node.enabled | bool | `true` |  |
@@ -213,7 +213,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | hasura.enabled | bool | `true` |  |
 | hasura.graphql-engine.image.pullPolicy | string | `"IfNotPresent"` |  |
 | hasura.graphql-engine.image.repository | string | `"docker.io/hasura/graphql-engine"` |  |
-| hasura.graphql-engine.image.tag | string | `"v2.48.4"` |  |
+| hasura.graphql-engine.image.tag | string | `"v2.48.5"` |  |
 | hasura.graphql-engine.ingress.hostName | string | `"hasura.k8s.orb.local"` |  |
 | hasura.graphql-engine.initContainers[0].command[0] | string | `"/bin/sh"` |  |
 | hasura.graphql-engine.initContainers[0].command[1] | string | `"-c"` |  |
@@ -252,7 +252,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.loki.gateway.image.tag | string | `"1.29-alpine"` |  |
 | observability.loki.loki.image.registry | string | `"docker.io"` | The Docker registry |
 | observability.loki.loki.image.repository | string | `"grafana/loki"` | Docker image repository |
-| observability.loki.loki.image.tag | string | `"3.5.4"` | Overrides the image tag whose default is the chart's appVersion |
+| observability.loki.loki.image.tag | string | `"3.5.5"` | Overrides the image tag whose default is the chart's appVersion |
 | observability.loki.memcached.enabled | bool | `true` | Enable the built in memcached server provided by the chart |
 | observability.loki.memcached.image.repository | string | `"docker.io/memcached"` | Memcached Docker image repository |
 | observability.loki.memcached.image.tag | string | `"1.6.39-alpine"` | Memcached Docker image tag |
@@ -277,7 +277,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.tempo.tempoQuery.tag | string | `"2.8.1"` |  |
 | observability.victoria-metrics-single.server.image.registry | string | `"docker.io"` |  |
 | observability.victoria-metrics-single.server.image.repository | string | `"victoriametrics/victoria-metrics"` |  |
-| observability.victoria-metrics-single.server.image.tag | string | `"v1.125.1"` |  |
+| observability.victoria-metrics-single.server.image.tag | string | `"v1.126.0"` |  |
 | observability.victoria-metrics-single.server.persistentVolume.size | string | `"10Gi"` |  |
 | observability.victoria-metrics-single.server.persistentVolume.storageClass | string | `""` |  |
 | observability.victoria-metrics-single.server.resources | object | `{}` |  |
@@ -334,14 +334,14 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | support.redis.resources.requests.memory | string | `"128Mi"` |  |
 | support.reloader.enabled | bool | `true` |  |
 | support.reloader.image.repository | string | `"ghcr.io/stakater/reloader"` |  |
-| support.reloader.image.tag | string | `"v1.4.7"` |  |
+| support.reloader.image.tag | string | `"v1.4.8"` |  |
 | txsigner.config.derivationPath | string | `"m/44'/60'/0'/0/0"` |  |
 | txsigner.config.mnemonic | string | `"gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"` |  |
 | txsigner.enabled | bool | `true` |  |
 | txsigner.image.pullPolicy | string | `"IfNotPresent"` |  |
 | txsigner.image.registry | string | `"ghcr.io"` |  |
 | txsigner.image.repository | string | `"settlemint/btp-signer"` |  |
-| txsigner.image.tag | string | `"7.15.10"` |  |
+| txsigner.image.tag | string | `"7.15.12"` |  |
 | txsigner.postgresql | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |

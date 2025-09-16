@@ -48,43 +48,43 @@ export function TopUpDenominationAssetSheet({
   const yieldScheduleId = asset.yield?.schedule?.id;
   const userWallet = session?.user?.wallet;
 
-  const { data: yieldSchedule } = useQuery({
-    ...orpc.fixedYieldSchedule.read.queryOptions({
+  const { data: yieldSchedule } = useQuery(
+    orpc.fixedYieldSchedule.read.queryOptions({
       input: { id: yieldScheduleId ?? "" },
-    }),
-    enabled: !!yieldScheduleId,
-  });
+      enabled: !!yieldScheduleId,
+    })
+  );
 
   // Fetch denomination asset details when available
   const denominationAssetId = yieldSchedule?.denominationAsset?.id;
-  const { data: denominationAsset } = useQuery({
-    ...orpc.token.read.queryOptions({
+  const { data: denominationAsset } = useQuery(
+    orpc.token.read.queryOptions({
       input: { tokenAddress: denominationAssetId ?? "" },
-    }),
-    enabled: !!denominationAssetId,
-  });
+      enabled: !!denominationAssetId,
+    })
+  );
 
   // Fetch user's balance of the denomination asset
-  const { data: userDenominationAssetBalance } = useQuery({
-    ...orpc.token.holder.queryOptions({
+  const { data: userDenominationAssetBalance } = useQuery(
+    orpc.token.holder.queryOptions({
       input: {
         tokenAddress: denominationAsset?.id ?? "",
         holderAddress: userWallet ?? "",
       },
-    }),
-    enabled: !!userWallet && !!denominationAsset,
-  });
+      enabled: !!userWallet && !!denominationAsset,
+    })
+  );
 
   // Fetch yield schedule's denomination asset balance
-  const { data: yieldScheduleBalance } = useQuery({
-    ...orpc.token.holder.queryOptions({
+  const { data: yieldScheduleBalance } = useQuery(
+    orpc.token.holder.queryOptions({
       input: {
         tokenAddress: denominationAsset?.id ?? "",
         holderAddress: yieldSchedule?.id ?? "",
       },
-    }),
-    enabled: !!denominationAsset && !!yieldSchedule,
-  });
+      enabled: !!denominationAsset && !!yieldSchedule,
+    })
+  );
 
   const { mutateAsync: topUp, isPending } = useMutation(
     orpc.fixedYieldSchedule.topUp.mutationOptions({

@@ -39,40 +39,40 @@ export function useDenominationAsset(
     data: denominationAsset,
     isLoading: isDenominationAssetLoading,
     isError: isDenominationAssetError,
-  } = useQuery({
-    ...orpc.token.read.queryOptions({
+  } = useQuery(
+    orpc.token.read.queryOptions({
       input: { tokenAddress: denominationAssetAddress },
-    }),
-  });
+    })
+  );
 
   // Query how much denomination asset the asset contract holds
   const {
     data: assetHoldingData,
     isLoading: isAssetHoldingLoading,
     isError: isAssetHoldingError,
-  } = useQuery({
-    ...orpc.token.holder.queryOptions({
+  } = useQuery(
+    orpc.token.holder.queryOptions({
       input: {
         tokenAddress: denominationAssetAddress,
         holderAddress: asset.id,
       },
-    }),
-  });
+    })
+  );
 
   // Query how much denomination asset the current user holds
   const {
     data: userHoldingData,
     isLoading: isUserHoldingLoading,
     isError: isUserHoldingError,
-  } = useQuery({
-    ...orpc.token.holder.queryOptions({
+  } = useQuery(
+    orpc.token.holder.queryOptions({
       input: {
         tokenAddress: denominationAssetAddress,
         holderAddress: user?.wallet ?? "",
       },
-    }),
-    enabled: !!user?.wallet,
-  });
+      enabled: !!user?.wallet,
+    })
+  );
 
   return {
     denominationAsset: denominationAsset ?? null,

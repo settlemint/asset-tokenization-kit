@@ -1,7 +1,5 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { systemRouter } from "@/orpc/procedures/system.router";
 import {
   TopicListResponseSchema,
   type TopicListOutput,
@@ -40,20 +38,12 @@ const TOPIC_SCHEMES_QUERY = theGraphGraphql(
  *
  * @returns Array of topic schemes with their details
  */
-export const topicList = onboardedRouter.system.claimTopics.topicList
-  .use(systemMiddleware)
-  .use(theGraphMiddleware)
-  .handler(async ({ context, errors }): Promise<TopicListOutput> => {
+export const topicList = systemRouter.system.claimTopics.topicList.handler(
+  async ({ context }): Promise<TopicListOutput> => {
     const { system, theGraphClient } = context;
 
     // Get the topic scheme registry address from the system configuration
-    const registryAddress = system?.topicSchemeRegistry;
-
-    if (!registryAddress) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: "System topic scheme registry not found",
-      });
-    }
+    const registryAddress = system.topicSchemeRegistry.id;
 
     // Query the subgraph for all topic schemes
     const { topicSchemes } = await theGraphClient.query(TOPIC_SCHEMES_QUERY, {
@@ -65,4 +55,5 @@ export const topicList = onboardedRouter.system.claimTopics.topicList
 
     // Return the validated topic schemes
     return topicSchemes;
-  });
+  }
+);

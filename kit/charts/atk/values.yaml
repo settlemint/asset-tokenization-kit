@@ -58,7 +58,7 @@ besu-network:
       checkConnection:
         image:
           repository: docker.io/curlimages/curl
-          tag: "8.15.0"
+          tag: "8.16.0"
           pullPolicy: IfNotPresent
   besu-validator-1:
     enabled: true
@@ -213,7 +213,7 @@ blockscout:
         hostname: explorer.k8s.orb.local
       image:
         repository: ghcr.io/blockscout/frontend
-        tag: "v2.3.2"
+        tag: "v2.3.3"
         pullPolicy: IfNotPresent
 
 graph-node:
@@ -386,7 +386,7 @@ support:
     enabled: true
     image:
       repository: ghcr.io/stakater/reloader
-      tag: v1.4.7
+      tag: v1.4.8
 
   minio:
     enabled: true
@@ -469,7 +469,7 @@ observability:
       image:
         registry: docker.io
         repository: victoriametrics/victoria-metrics
-        tag: "v1.125.1"
+        tag: "v1.126.0"
 
   # https://github.com/grafana/loki/blob/main/production/helm/loki/values.yaml
   loki:
@@ -572,7 +572,7 @@ txsigner:
   image:
     registry: ghcr.io
     repository: settlemint/btp-signer
-    tag: "7.15.10"
+    tag: "7.15.12"
     pullPolicy: IfNotPresent
   # Init container for testing
   test:
@@ -648,7 +648,7 @@ dapp:
       image:
         registry: docker.io
         repository: curlimages/curl
-        tag: "8.15.0"
+        tag: "8.16.0"
         pullPolicy: IfNotPresent
       # Target GraphQL endpoint URL (where POST requests are sent)
       url: "http://graph-node-combined:8000/subgraphs/name/kit"

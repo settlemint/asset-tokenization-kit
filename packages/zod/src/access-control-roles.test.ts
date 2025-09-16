@@ -24,7 +24,7 @@ describe("accessControlRoles", () => {
     it("should parse valid access control roles object with all roles false", () => {
       // WHY: Test baseline case where user has no elevated permissions
       // SECURITY: Default state should be restrictive (all permissions denied)
-      const validRoles: Record<string, boolean> = {
+      const validRoles: z.infer<typeof accessControlRoles> = {
         addonManager: false,
         addonModule: false,
         addonRegistryModule: false,
@@ -41,7 +41,6 @@ describe("accessControlRoles", () => {
         forcedTransfer: false,
         freezer: false,
         fundsManager: false,
-        globalListManager: false,
         governance: false,
         identityManager: false,
         identityRegistryModule: false,
@@ -69,7 +68,7 @@ describe("accessControlRoles", () => {
     it("should parse valid access control roles object with mixed boolean values", () => {
       // WHY: Test realistic permission assignment patterns
       // PATTERN: Different roles enabled for different user types (admin, auditor, etc.)
-      const validRoles: Record<string, boolean> = {
+      const validRoles: z.infer<typeof accessControlRoles> = {
         addonManager: true,
         addonModule: false,
         addonRegistryModule: true,
@@ -86,7 +85,6 @@ describe("accessControlRoles", () => {
         forcedTransfer: false,
         freezer: true,
         fundsManager: false,
-        globalListManager: true,
         governance: false,
         identityManager: true,
         identityRegistryModule: false,
@@ -141,7 +139,6 @@ describe("accessControlRoles", () => {
       expect(result.forcedTransfer).toBe(false);
       expect(result.freezer).toBe(false);
       expect(result.fundsManager).toBe(false);
-      expect(result.globalListManager).toBe(false);
       expect(result.governance).toBe(false);
       expect(result.identityManager).toBe(false);
       expect(result.identityRegistryModule).toBe(false);
@@ -271,7 +268,6 @@ describe("accessControlRoles", () => {
         "forcedTransfer",
         "freezer",
         "fundsManager",
-        "globalListManager",
         "governance",
         "identityManager",
         "identityRegistryModule",

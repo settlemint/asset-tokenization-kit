@@ -29,6 +29,7 @@ import { Route as PrivateOnboardingSidebarSystemAssetsRouteImport } from './rout
 import { Route as PrivateOnboardingSidebarSystemAddonsRouteImport } from './routes/_private/onboarding/_sidebar/system-addons'
 import { Route as PrivateOnboardingSidebarIdentitySetupRouteImport } from './routes/_private/onboarding/_sidebar/identity-setup'
 import { Route as PrivateOnboardingSidebarIdentityRouteImport } from './routes/_private/onboarding/_sidebar/identity'
+import { Route as PrivateOnboardedSidebarMyAssetsRouteImport } from './routes/_private/_onboarded/_sidebar/my-assets'
 import { Route as PrivateOnboardedSidebarAddonDesignerRouteImport } from './routes/_private/_onboarded/_sidebar/addon-designer'
 import { Route as PrivateOnboardedSidebarAddonIndexRouteImport } from './routes/_private/_onboarded/_sidebar/addon/index'
 import { Route as PrivateOnboardedSidebarTokenStatsRouteImport } from './routes/_private/_onboarded/_sidebar/token/stats'
@@ -154,6 +155,12 @@ const PrivateOnboardingSidebarIdentityRoute =
     id: '/identity',
     path: '/identity',
     getParentRoute: () => PrivateOnboardingSidebarRoute,
+  } as any)
+const PrivateOnboardedSidebarMyAssetsRoute =
+  PrivateOnboardedSidebarMyAssetsRouteImport.update({
+    id: '/my-assets',
+    path: '/my-assets',
+    getParentRoute: () => PrivateOnboardedSidebarRoute,
   } as any)
 const PrivateOnboardedSidebarAddonDesignerRoute =
   PrivateOnboardedSidebarAddonDesignerRouteImport.update({
@@ -338,6 +345,7 @@ export interface FileRoutesByFullPath {
   '/auth/$pathname': typeof AuthPathnameRoute
   '/onboarding/': typeof PrivateOnboardingIndexRoute
   '/addon-designer': typeof PrivateOnboardedSidebarAddonDesignerRoute
+  '/my-assets': typeof PrivateOnboardedSidebarMyAssetsRoute
   '/onboarding/identity': typeof PrivateOnboardingSidebarIdentityRoute
   '/onboarding/identity-setup': typeof PrivateOnboardingSidebarIdentitySetupRoute
   '/onboarding/system-addons': typeof PrivateOnboardingSidebarSystemAddonsRoute
@@ -376,6 +384,7 @@ export interface FileRoutesByTo {
   '/auth/$pathname': typeof AuthPathnameRoute
   '/onboarding': typeof PrivateOnboardingIndexRoute
   '/addon-designer': typeof PrivateOnboardedSidebarAddonDesignerRoute
+  '/my-assets': typeof PrivateOnboardedSidebarMyAssetsRoute
   '/onboarding/identity': typeof PrivateOnboardingSidebarIdentityRoute
   '/onboarding/identity-setup': typeof PrivateOnboardingSidebarIdentitySetupRoute
   '/onboarding/system-addons': typeof PrivateOnboardingSidebarSystemAddonsRoute
@@ -417,6 +426,7 @@ export interface FileRoutesById {
   '/_private/onboarding/_sidebar': typeof PrivateOnboardingSidebarRouteWithChildren
   '/_private/onboarding/': typeof PrivateOnboardingIndexRoute
   '/_private/_onboarded/_sidebar/addon-designer': typeof PrivateOnboardedSidebarAddonDesignerRoute
+  '/_private/_onboarded/_sidebar/my-assets': typeof PrivateOnboardedSidebarMyAssetsRoute
   '/_private/onboarding/_sidebar/identity': typeof PrivateOnboardingSidebarIdentityRoute
   '/_private/onboarding/_sidebar/identity-setup': typeof PrivateOnboardingSidebarIdentitySetupRoute
   '/_private/onboarding/_sidebar/system-addons': typeof PrivateOnboardingSidebarSystemAddonsRoute
@@ -458,6 +468,7 @@ export interface FileRouteTypes {
     | '/auth/$pathname'
     | '/onboarding/'
     | '/addon-designer'
+    | '/my-assets'
     | '/onboarding/identity'
     | '/onboarding/identity-setup'
     | '/onboarding/system-addons'
@@ -496,6 +507,7 @@ export interface FileRouteTypes {
     | '/auth/$pathname'
     | '/onboarding'
     | '/addon-designer'
+    | '/my-assets'
     | '/onboarding/identity'
     | '/onboarding/identity-setup'
     | '/onboarding/system-addons'
@@ -536,6 +548,7 @@ export interface FileRouteTypes {
     | '/_private/onboarding/_sidebar'
     | '/_private/onboarding/'
     | '/_private/_onboarded/_sidebar/addon-designer'
+    | '/_private/_onboarded/_sidebar/my-assets'
     | '/_private/onboarding/_sidebar/identity'
     | '/_private/onboarding/_sidebar/identity-setup'
     | '/_private/onboarding/_sidebar/system-addons'
@@ -731,6 +744,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/onboarding/identity'
       preLoaderRoute: typeof PrivateOnboardingSidebarIdentityRouteImport
       parentRoute: typeof PrivateOnboardingSidebarRoute
+    }
+    '/_private/_onboarded/_sidebar/my-assets': {
+      id: '/_private/_onboarded/_sidebar/my-assets'
+      path: '/my-assets'
+      fullPath: '/my-assets'
+      preLoaderRoute: typeof PrivateOnboardedSidebarMyAssetsRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarRoute
     }
     '/_private/_onboarded/_sidebar/addon-designer': {
       id: '/_private/_onboarded/_sidebar/addon-designer'
@@ -983,6 +1003,7 @@ const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren =
 
 interface PrivateOnboardedSidebarRouteChildren {
   PrivateOnboardedSidebarAddonDesignerRoute: typeof PrivateOnboardedSidebarAddonDesignerRoute
+  PrivateOnboardedSidebarMyAssetsRoute: typeof PrivateOnboardedSidebarMyAssetsRoute
   PrivateOnboardedSidebarIndexRoute: typeof PrivateOnboardedSidebarIndexRoute
   PrivateOnboardedSidebarAddonAddonAddressRoute: typeof PrivateOnboardedSidebarAddonAddonAddressRoute
   PrivateOnboardedSidebarTokenStatsRoute: typeof PrivateOnboardedSidebarTokenStatsRoute
@@ -1004,6 +1025,7 @@ const PrivateOnboardedSidebarRouteChildren: PrivateOnboardedSidebarRouteChildren
   {
     PrivateOnboardedSidebarAddonDesignerRoute:
       PrivateOnboardedSidebarAddonDesignerRoute,
+    PrivateOnboardedSidebarMyAssetsRoute: PrivateOnboardedSidebarMyAssetsRoute,
     PrivateOnboardedSidebarIndexRoute: PrivateOnboardedSidebarIndexRoute,
     PrivateOnboardedSidebarAddonAddonAddressRoute:
       PrivateOnboardedSidebarAddonAddonAddressRoute,

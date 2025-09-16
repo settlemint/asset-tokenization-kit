@@ -44,7 +44,7 @@ export function AddressRestrictionModuleDetail({
   type Entry = { id: string; value: string };
   const makeId = () =>
     typeof crypto !== "undefined" && "randomUUID" in crypto
-      ? (crypto.randomUUID())
+      ? crypto.randomUUID()
       : Math.random().toString(36).slice(2);
 
   const [selectedAddresses, setSelectedAddresses] = useState<Entry[]>(

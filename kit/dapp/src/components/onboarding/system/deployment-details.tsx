@@ -122,7 +122,7 @@ export function DeploymentDetails() {
                       {t("system.identity-registry-label")}
                     </p>
                     <Web3Address
-                      address={systemDetails.identityRegistry}
+                      address={systemDetails.identityRegistry.id}
                       copyToClipboard
                       showFullAddress={false}
                       showBadge={false}
@@ -139,7 +139,7 @@ export function DeploymentDetails() {
                       {t("system.compliance-engine-label")}
                     </p>
                     <Web3Address
-                      address={systemDetails.complianceModuleRegistry}
+                      address={systemDetails.complianceModuleRegistry.id}
                       copyToClipboard
                       showFullAddress={false}
                       showBadge={false}
@@ -156,7 +156,7 @@ export function DeploymentDetails() {
                       {t("system.trusted-issuers-label")}
                     </p>
                     <Web3Address
-                      address={systemDetails.trustedIssuersRegistry}
+                      address={systemDetails.trustedIssuersRegistry.id}
                       copyToClipboard
                       showFullAddress={false}
                       showBadge={false}
@@ -173,7 +173,7 @@ export function DeploymentDetails() {
                       {t("system.token-factory-label")}
                     </p>
                     <Web3Address
-                      address={systemDetails.tokenFactoryRegistry}
+                      address={systemDetails.tokenFactoryRegistry.id}
                       copyToClipboard
                       showFullAddress={false}
                       showBadge={false}

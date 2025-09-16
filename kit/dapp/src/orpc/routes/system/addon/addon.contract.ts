@@ -4,7 +4,7 @@ import {
   SystemAddonListSchema,
   SystemAddonSchema,
 } from "@/orpc/routes/system/addon/routes/addon.list.schema";
-import { SystemReadOutputSchema } from "@/orpc/routes/system/routes/system.read.schema";
+import { SystemSchema } from "@/orpc/routes/system/routes/system.read.schema";
 import { z } from "zod";
 
 const TAGS = ["system", "addon"];
@@ -32,7 +32,7 @@ const addonCreate = baseContract
     tags: TAGS,
   })
   .input(SystemAddonCreateSchema)
-  .output(SystemReadOutputSchema);
+  .output(SystemSchema);
 
 /**
  * Contract definition for the addons list endpoint.

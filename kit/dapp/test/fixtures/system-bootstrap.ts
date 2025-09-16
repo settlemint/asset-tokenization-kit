@@ -1,5 +1,4 @@
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
-import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { isContractAddress } from "@/test/anvil";
 import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import type { RoleRequirement } from "@atk/zod/role-requirement";
@@ -16,9 +15,6 @@ import {
   signInWithUser,
 } from "./user";
 
-const TOKEN_MANAGEMENT_REQUIRED_ROLES = extractRequiredRoles(
-  TOKEN_PERMISSIONS
-).filter((role) => role !== "admin");
 const SYSTEM_MANAGEMENT_REQUIRED_ROLES =
   extractRequiredRoles(SYSTEM_PERMISSIONS);
 
@@ -78,26 +74,7 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
   return system;
 }
 
-export async function bootstrapTokenFactories(
-  orpClient: OrpcClient,
-  system: {
-    id: string;
-    tokenFactoryRegistry: string | null;
-    identityRegistry?: string | null;
-    compliance?: string | null;
-  }
-) {
-  if (!system.tokenFactoryRegistry) {
-    logger.info("System registries not yet initialized:", {
-      identityRegistry: system.identityRegistry,
-      tokenFactoryRegistry: system.tokenFactoryRegistry,
-      compliance: system.compliance,
-    });
-    throw new Error(
-      "System not fully initialized - token factory registry not found"
-    );
-  }
-
+export async function bootstrapTokenFactories(orpClient: OrpcClient) {
   const tokenFactories = await orpClient.system.factory.list({});
 
   const factories: Parameters<
@@ -130,11 +107,11 @@ export async function bootstrapTokenFactories(
   });
 
   // The factoryCreate method now returns the updated system details
-  if (!result.id || !result.tokenFactories) {
+  if (!result.id || !result.tokenFactoryRegistry?.tokenFactories) {
     throw new Error(`Factory creation failed: invalid response`);
   }
 
-  const finalFactoryCount = result.tokenFactories.length;
+  const finalFactoryCount = result.tokenFactoryRegistry.tokenFactories.length;
   const successfulCreations = finalFactoryCount - initialFactoryCount;
 
   if (successfulCreations !== nonExistingFactories.length) {
@@ -143,7 +120,7 @@ export async function bootstrapTokenFactories(
     );
   }
   logger.info("Token factories created", {
-    created: result.tokenFactories.map((f) => {
+    created: result.tokenFactoryRegistry.tokenFactories.map((f) => {
       return {
         typeId: f.typeId,
         address: f.id,
@@ -207,32 +184,35 @@ export async function bootstrapAddons(orpClient: OrpcClient) {
 export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
   const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
   const issuerMe = await issuerOrpcClient.user.me({});
+  const issuerSystem = await issuerOrpcClient.system.read({ id: "default" });
 
   // First, set the Better Auth role to 'issuer' to grant off-chain permissions
   // This is required for the { account: ["read"] } permission in offchain-permissions.middleware.ts
-  const authClient = getAuthClient();
-  const adminHeaders = await signInWithUser(DEFAULT_ADMIN);
-  await authClient.admin.setRole(
-    {
-      userId: issuerMe.id,
-      role: "issuer",
-    },
-    {
-      headers: {
-        ...Object.fromEntries(adminHeaders.entries()),
+  if (issuerMe.role !== "issuer") {
+    const authClient = getAuthClient();
+    const adminHeaders = await signInWithUser(DEFAULT_ADMIN);
+    await authClient.admin.setRole(
+      {
+        userId: issuerMe.id,
+        role: "issuer",
       },
-    }
-  );
-  logger.info("Set Better Auth role for issuer to 'issuer'");
+      {
+        headers: {
+          ...Object.fromEntries(adminHeaders.entries()),
+        },
+      }
+    );
+    logger.info("Set Better Auth role for issuer to 'issuer'");
+  }
 
   // Issuer needs both token management roles and the claimIssuer role
   const issuerRequiredRoles: AccessControlRoles[] = [
-    ...TOKEN_MANAGEMENT_REQUIRED_ROLES,
+    "tokenManager",
     "claimIssuer", // Required for issuing claims to user identities
   ];
 
   const rolesToGrant = issuerRequiredRoles.filter(
-    (role) => issuerMe.userSystemPermissions.roles[role] !== true
+    (role) => issuerSystem.userPermissions?.roles[role] !== true
   );
 
   if (rolesToGrant.length > 0) {
@@ -242,23 +222,17 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
       },
-      address: issuerMe.wallet ?? "",
+      address: (await issuerOrpcClient.user.me({})).wallet ?? "",
       role: rolesToGrant as AccessControlRoles[],
     });
   }
 }
 
 export async function setupDefaultAdminRoles(orpClient: OrpcClient) {
-  const adminMe = await orpClient.user.me({});
+  const adminSystem = await orpClient.system.read({ id: "default" });
 
-  const allRoles = Array.from(
-    new Set([
-      ...SYSTEM_MANAGEMENT_REQUIRED_ROLES,
-      ...TOKEN_MANAGEMENT_REQUIRED_ROLES,
-    ])
-  );
-  const rolesToGrant = allRoles.filter(
-    (role) => adminMe.userSystemPermissions.roles[role] !== true
+  const rolesToGrant = SYSTEM_MANAGEMENT_REQUIRED_ROLES.filter(
+    (role) => adminSystem.userPermissions?.roles[role] !== true
   );
 
   if (rolesToGrant.length > 0) {
@@ -268,7 +242,7 @@ export async function setupDefaultAdminRoles(orpClient: OrpcClient) {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
       },
-      address: adminMe.wallet ?? "",
+      address: (await orpClient.user.me({})).wallet ?? "",
       role: rolesToGrant,
     });
   }

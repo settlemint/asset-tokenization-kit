@@ -52,7 +52,7 @@ services:
       retries: 5
       start_period: 1s
   txsigner:
-    image: ghcr.io/settlemint/btp-signer:7.15.10
+    image: ghcr.io/settlemint/btp-signer:7.15.12
     container_name: ${CONTAINER_PREFIX:-atk}-txsigner
     restart: unless-stopped
     depends_on:
@@ -338,7 +338,7 @@ services:
     ports:
       - "${BLOCKSCOUT_BACKEND_PORT:-4000}:4000"
   blockscout-frontend:
-    image: ghcr.io/blockscout/frontend:v2.3.2
+    image: ghcr.io/blockscout/frontend:v2.3.3
     platform: linux/amd64
     restart: unless-stopped
     container_name: ${CONTAINER_PREFIX:-atk}-blockscout-frontend

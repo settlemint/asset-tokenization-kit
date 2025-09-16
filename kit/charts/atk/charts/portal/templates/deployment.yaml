@@ -61,7 +61,7 @@ spec:
             - -c
             - |
               echo "Copying ABIs from artifacts container..."
-              cp -a /artifacts/abis/. /shared-abis/
+              cp -a /artifacts/abis/asset-tokenization-3643/. /shared-abis/
               echo "ABIs copied successfully"
               ls -la /shared-abis/
           volumeMounts:
