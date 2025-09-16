@@ -106,7 +106,7 @@ export function MatureConfirmationSheet({
         </Card>
       }
       onSubmit={(v) => {
-        handleSubmit(v as UserVerification);
+        handleSubmit(v);
       }}
     />
   );
