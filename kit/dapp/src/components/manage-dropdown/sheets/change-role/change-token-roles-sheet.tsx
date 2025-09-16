@@ -1,12 +1,18 @@
 import {
   ChangeRolesSheet,
-  type ChangeRolesSheetProps,
+  ChangeRolesSheetProps,
+  RoleInfo,
+  deriveAssignableRoles,
+  mergeRoles,
 } from "@/components/manage-dropdown/sheets/change-role/change-roles-sheet";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { AccessControlRoles } from "@atk/zod/access-control-roles";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 interface ChangeTokenRolesSheetProps {
   open: boolean;
@@ -21,6 +27,7 @@ export function ChangeTokenRolesSheet({
   asset,
   presetAccount,
 }: ChangeTokenRolesSheetProps) {
+  const { t } = useTranslation(["tokens", "common"]);
   const queryClient = useQueryClient();
 
   const { mutateAsync: grantRole } = useMutation(
@@ -70,6 +77,50 @@ export function ChangeTokenRolesSheet({
     [grantRole, asset.id]
   );
 
+  // Derive token-assignable roles from TOKEN_PERMISSIONS role requirements
+  const tokenAssignableRoles = useMemo(
+    () => deriveAssignableRoles(TOKEN_PERMISSIONS),
+    []
+  );
+
+  const rolesSet = useMemo(
+    () => mergeRoles(tokenAssignableRoles, asset.accessControl),
+    [asset.accessControl, tokenAssignableRoles]
+  );
+
+  const groupedRoles = useMemo(() => {
+    const groupForRole = (role: AccessControlRoles) => {
+      if (role === "admin" || role === "tokenManager") return "Administration";
+      if (role === "governance") return "Compliance";
+      if (
+        role === "supplyManagement" ||
+        role === "emergency" ||
+        role === "custodian"
+      )
+        return "Operations";
+      return "Other";
+    };
+
+    const map = new Map<string, { label: string; roles: RoleInfo[] }>();
+    rolesSet.forEach((r) => {
+      const g = groupForRole(r);
+      const group = map.get(g) ?? {
+        roles: [],
+        label: t(
+          `tokens:permissions.groups.${g.toLowerCase() as Lowercase<typeof g>}` as const
+        ),
+      };
+      const roleName = r.toLowerCase() as Lowercase<typeof r>;
+      group.roles.push({
+        role: r,
+        label: t(`common:roles.${roleName}.title` as const),
+        description: t(`common:roles.${roleName}.description` as const),
+      });
+      map.set(g, group);
+    });
+    return map;
+  }, [rolesSet, t]);
+
   return (
     <ChangeRolesSheet
       open={open}
@@ -79,6 +130,7 @@ export function ChangeTokenRolesSheet({
       presetAccount={presetAccount}
       revokeRole={onRevokeRole}
       grantRole={onGrantRole}
+      groupedRoles={groupedRoles}
     />
   );
 }

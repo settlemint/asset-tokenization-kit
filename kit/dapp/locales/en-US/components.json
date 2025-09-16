@@ -73,5 +73,12 @@
     "pinCode": "PIN Code",
     "useAuthenticatorInstead": "Use Authenticator App instead",
     "usePinInstead": "Use PIN Code instead"
+  },
+  "changeRolesSheet": {
+    "title": "Change roles",
+    "description": "Assign or remove roles for this address",
+    "cta": "Change roles",
+    "accountLabel": "Account",
+    "rolesLabel": "Roles"
   }
 }

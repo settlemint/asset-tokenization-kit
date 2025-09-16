@@ -23,6 +23,7 @@ function FormattedCell<TData, TValue>({
         emptyValue: meta?.emptyValue,
         showPrettyName: meta?.showPrettyName,
         dateOptions: meta?.dateOptions,
+        multiOptionOptions: meta?.multiOptionOptions,
       })}
     </>
   );

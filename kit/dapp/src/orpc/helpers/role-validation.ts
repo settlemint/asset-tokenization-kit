@@ -38,7 +38,6 @@ export function mapUserRoles(
     forcedTransfer: false,
     freezer: false,
     fundsManager: false,
-    globalListManager: false,
     governance: false,
     identityManager: false,
     identityRegistryModule: false,
