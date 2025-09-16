@@ -134,3 +134,72 @@ Extract domain from a hostname (e.g., "hasura.k8s.orb.local" -> "k8s.orb.local")
 {{- .url -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Shared PostgreSQL helpers.
+*/}}
+{{- define "atk.postgresql.host" -}}
+{{- $global := .Values.global | default (dict) -}}
+{{- $pg := $global.postgresql | default (dict) -}}
+{{- default "postgresql" $pg.host -}}
+{{- end -}}
+
+{{- define "atk.postgresql.port" -}}
+{{- $global := .Values.global | default (dict) -}}
+{{- $pg := $global.postgresql | default (dict) -}}
+{{- printf "%v" (default 5432 $pg.port) -}}
+{{- end -}}
+
+{{- define "atk.postgresql.sslMode" -}}
+{{- $global := .Values.global | default (dict) -}}
+{{- $pg := $global.postgresql | default (dict) -}}
+{{- default "disable" $pg.sslMode -}}
+{{- end -}}
+
+{{- define "atk.postgresql.endpoint" -}}
+{{- printf "%s:%s" (include "atk.postgresql.host" .) (include "atk.postgresql.port" .) -}}
+{{- end -}}
+
+{{- define "atk.postgresql.url" -}}
+{{- $ctx := .context -}}
+{{- $username := .username -}}
+{{- $password := .password -}}
+{{- $database := .database -}}
+{{- $sslMode := .sslMode | default (include "atk.postgresql.sslMode" $ctx) -}}
+{{- printf "postgresql://%s:%s@%s/%s?sslmode=%s" $username $password (include "atk.postgresql.endpoint" $ctx) $database $sslMode -}}
+{{- end -}}
+
+{{/*
+Shared Redis helpers.
+*/}}
+{{- define "atk.redis.host" -}}
+{{- $global := .Values.global | default (dict) -}}
+{{- $redis := $global.redis | default (dict) -}}
+{{- default "redis" $redis.host -}}
+{{- end -}}
+
+{{- define "atk.redis.port" -}}
+{{- $global := .Values.global | default (dict) -}}
+{{- $redis := $global.redis | default (dict) -}}
+{{- printf "%v" (default 6379 $redis.port) -}}
+{{- end -}}
+
+{{- define "atk.redis.username" -}}
+{{- $global := .Values.global | default (dict) -}}
+{{- $redis := $global.redis | default (dict) -}}
+{{- default "default" $redis.username -}}
+{{- end -}}
+
+{{- define "atk.redis.password" -}}
+{{- $global := .Values.global | default (dict) -}}
+{{- $redis := $global.redis | default (dict) -}}
+{{- default "atk" $redis.password -}}
+{{- end -}}
+
+{{- define "atk.redis.address" -}}
+{{- printf "%s:%s" (include "atk.redis.host" .) (include "atk.redis.port" .) -}}
+{{- end -}}
+
+{{- define "atk.redis.url" -}}
+{{- printf "redis://%s:%s@%s" (include "atk.redis.username" .) (include "atk.redis.password" .) (include "atk.redis.address" .) -}}
+{{- end -}}

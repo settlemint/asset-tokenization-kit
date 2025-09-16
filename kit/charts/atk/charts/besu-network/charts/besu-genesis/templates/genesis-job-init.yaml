@@ -59,6 +59,10 @@ spec:
               cp -a /artifacts/genesis/. /shared-artifacts/
               echo "Genesis files copied successfully"
               ls -la /shared-artifacts/
+          {{- with .Values.initJob.copyArtifacts.resources }}
+          resources:
+{{ toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: artifacts
               mountPath: /shared-artifacts
@@ -72,6 +76,10 @@ spec:
           securityContext:
             runAsUser: 0
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.initJob.resources }}
+          resources:
+{{ toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: generated-config
               mountPath: /generated-config

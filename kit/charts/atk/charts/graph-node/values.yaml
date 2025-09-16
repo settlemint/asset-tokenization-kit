@@ -23,6 +23,23 @@ initContainer:
     repository: docker.io/kubesphere/kubectl
     tag: v1.33.4
     pullPolicy: IfNotPresent
+  tcpCheck:
+    enabled: true
+    image:
+      repository: ghcr.io/settlemint/btp-waitforit
+      tag: v7.7.10
+      pullPolicy: IfNotPresent
+    timeout: 120
+    dependencies:
+      - name: postgresql
+        endpoint: "{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGHOST }}:{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGPORT }}"
+    resources:
+      limits:
+        cpu: 100m
+        memory: 64Mi
+      requests:
+        cpu: 10m
+        memory: 32Mi
 
 # -- Pull secrets required to fetch the Image
 imagePullSecrets: []
@@ -278,6 +295,13 @@ postgresReadinessCheck:
   randomDelayRange:
     min: 5
     max: 30
+  resources:
+    limits:
+      cpu: 100m
+      memory: 96Mi
+    requests:
+      cpu: 25m
+      memory: 48Mi
 
 # Additional init containers
 extraInitContainers: []

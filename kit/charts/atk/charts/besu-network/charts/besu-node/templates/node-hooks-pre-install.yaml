@@ -43,6 +43,10 @@ spec:
         - name: {{ template "besu-node.fullname" . }}-pre-start-hook
           image: {{ .Values.hooks.image.repository }}:{{ .Values.hooks.image.tag }}
           imagePullPolicy: {{ .Values.hooks.image.pullPolicy }}
+          {{- with .Values.hooks.preInstall.resources }}
+          resources:
+{{ toYaml . | nindent 12 }}
+          {{- end }}
           securityContext:
             runAsUser: 0
           command:

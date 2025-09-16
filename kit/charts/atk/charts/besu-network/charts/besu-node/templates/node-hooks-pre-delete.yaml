@@ -43,6 +43,10 @@ spec:
         - name: {{ template "besu-node.fullname" . }}-node-pre-delete-hook
           image: "{{ .Values.hooks.image.repository }}:{{ .Values.hooks.image.tag }}"
           imagePullPolicy: {{ .Values.hooks.image.pullPolicy }}
+          {{- with .Values.hooks.preDelete.resources }}
+          resources:
+{{ toYaml . | nindent 12 }}
+          {{- end }}
           command:
             - /bin/bash
             - -c
