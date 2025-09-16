@@ -102,11 +102,4 @@ image:
   tag: sha-49c40f5
   pullPolicy: IfNotPresent
 
-genesisServer:
-  image:
-    registry: docker.io
-    repository: nginx
-    tag: 1.29.1-alpine
-    pullPolicy: IfNotPresent
-
 imagePullSecrets: []
