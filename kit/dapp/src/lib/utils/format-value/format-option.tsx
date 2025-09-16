@@ -14,15 +14,10 @@ export function FormatOption({ value, options }: FormatValueProps) {
     return (
       <div className="flex gap-1 flex-wrap">
         {value.map((item, index) => {
-          const description = multiOptionOptions?.getDescription(item);
+          const description = multiOptionOptions?.getDescription?.(item);
           const badge = (
-            <Badge
-              key={index}
-              variant="secondary"
-              className="text-xs"
-              title={multiOptionOptions?.getDescription(item) ?? ""}
-            >
-              {multiOptionOptions?.getLabel(item) ?? safeToString(item)}
+            <Badge key={index} variant="secondary" className="text-xs">
+              {multiOptionOptions?.getLabel?.(item) ?? safeToString(item)}
             </Badge>
           );
           if (description) {

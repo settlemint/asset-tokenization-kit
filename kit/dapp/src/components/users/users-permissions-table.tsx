@@ -129,10 +129,6 @@ export function UsersPermissionsTable() {
                 t(
                   `common:roles.${value.toLowerCase() as Lowercase<AccessControlRoles>}.title`
                 ),
-              getDescription: (value: AccessControlRoles) =>
-                t(
-                  `common:roles.${value.toLowerCase() as Lowercase<AccessControlRoles>}.description`
-                ),
             },
             transformOptionFn: (value) => ({
               label: value,

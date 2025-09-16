@@ -1,6 +1,7 @@
 import {
   ChangeRolesSheet,
-  type ChangeRolesSheetProps,
+  ChangeRolesSheetProps,
+  RoleInfo,
 } from "@/components/manage-dropdown/sheets/change-role/change-roles-sheet";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
@@ -30,7 +31,7 @@ export function ChangeTokenRolesSheet({
   asset,
   presetAccount,
 }: ChangeTokenRolesSheetProps) {
-  const { t } = useTranslation(["tokens"]);
+  const { t } = useTranslation(["tokens", "common"]);
   const queryClient = useQueryClient();
 
   const { mutateAsync: grantRole } = useMutation(
@@ -130,10 +131,7 @@ export function ChangeTokenRolesSheet({
       return "Other";
     };
 
-    const map = new Map<
-      string,
-      { label: string; roles: AccessControlRoles[] }
-    >();
+    const map = new Map<string, { label: string; roles: RoleInfo[] }>();
     rolesSet.forEach((r) => {
       const g = groupForRole(r);
       const group = map.get(g) ?? {
@@ -142,7 +140,12 @@ export function ChangeTokenRolesSheet({
           `tokens:permissions.groups.${g.toLowerCase() as Lowercase<typeof g>}` as const
         ),
       };
-      group.roles.push(r);
+      const roleName = r.toLowerCase() as Lowercase<typeof r>;
+      group.roles.push({
+        role: r,
+        label: t(`common:roles.${roleName}.title` as const),
+        description: t(`common:roles.${roleName}.description` as const),
+      });
       map.set(g, group);
     });
     return map;

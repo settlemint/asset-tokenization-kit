@@ -90,10 +90,6 @@ export function TokenPermissionsTable({ token }: { token: Token }) {
                 t(
                   `common:roles.${value.toLowerCase() as Lowercase<AccessControlRoles>}.title`
                 ),
-              getDescription: (value: AccessControlRoles) =>
-                t(
-                  `common:roles.${value.toLowerCase() as Lowercase<AccessControlRoles>}.description`
-                ),
             },
             transformOptionFn: (value) => ({
               label: value,

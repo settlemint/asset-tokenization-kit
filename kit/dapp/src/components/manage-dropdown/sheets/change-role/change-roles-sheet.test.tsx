@@ -3,11 +3,10 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ChangeRolesSheet } from "./change-roles-sheet";
+import { ChangeRolesSheet, type RoleInfo } from "./change-roles-sheet";
 
 // Import the mocked modules
 import { useAppForm } from "@/hooks/use-app-form";
-import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 
 // Mock dependencies
 vi.mock("react-i18next", () => ({
@@ -172,20 +171,51 @@ describe("ChangeRolesSheet", () => {
   let queryClient: QueryClient;
   const mockOnOpenChange = vi.fn();
 
-  const groupedRoles = new Map<
-    string,
-    { label: string; roles: AccessControlRoles[] }
-  >([
+  const groupedRoles = new Map<string, { label: string; roles: RoleInfo[] }>([
     [
       "Administration",
-      { label: "Administration", roles: ["admin", "tokenManager"] },
+      {
+        label: "Administration",
+        roles: [
+          {
+            role: "admin",
+            label: "Administration",
+            description: "Administration",
+          },
+          {
+            role: "tokenManager",
+            label: "Token Manager",
+            description: "Token Manager",
+          },
+        ],
+      },
     ],
-    ["Compliance", { label: "Compliance", roles: ["complianceManager"] }],
+    [
+      "Compliance",
+      {
+        label: "Compliance",
+        roles: [
+          {
+            role: "complianceManager",
+            label: "Compliance Manager",
+            description: "Compliance Manager",
+          },
+        ],
+      },
+    ],
     [
       "Operations",
       {
         label: "Operations",
-        roles: ["supplyManagement", "emergency", "custodian"],
+        roles: [
+          {
+            role: "supplyManagement",
+            label: "Supply Management",
+            description: "Supply Management",
+          },
+          { role: "emergency", label: "Emergency", description: "Emergency" },
+          { role: "custodian", label: "Custodian", description: "Custodian" },
+        ],
       },
     ],
   ]);

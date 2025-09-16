@@ -40,6 +40,6 @@ export interface FormatDateOptions {
 }
 
 export interface FormatMultiOptionOptions {
-  getLabel(value: unknown): string;
-  getDescription(value: unknown): string;
+  getLabel?(value: unknown): string;
+  getDescription?(value: unknown): string;
 }
