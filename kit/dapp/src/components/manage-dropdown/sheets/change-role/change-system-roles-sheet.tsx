@@ -1,5 +1,7 @@
 import {
   ChangeRolesSheet,
+  deriveAssignableRoles,
+  mergeRoles,
   type ChangeRolesSheetProps,
   type RoleInfo,
 } from "@/components/manage-dropdown/sheets/change-role/change-roles-sheet";
@@ -10,12 +12,6 @@ import {
   AccessControlRoles,
 } from "@atk/zod/access-control-roles";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
-import {
-  RoleRequirement,
-  isAllRoleRequirement,
-  isAnyRoleRequirement,
-  isSingleRole,
-} from "@atk/zod/role-requirement";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -75,41 +71,15 @@ export function ChangeSystemRolesSheet({
   );
 
   // Derive system-assignable roles from SYSTEM_PERMISSIONS role requirements
-  const systemAssignableRoles = useMemo(() => {
-    const set = new Set<AccessControlRoles>();
-    const collect = (req: RoleRequirement) => {
-      if (!req) return;
-      if (isSingleRole(req)) {
-        set.add(req);
-        return;
-      }
-      if (isAnyRoleRequirement(req)) {
-        for (const r of req.any) collect(r);
-        return;
-      }
-      if (isAllRoleRequirement(req)) {
-        for (const r of req.all) collect(r);
-        return;
-      }
-    };
-    Object.values(SYSTEM_PERMISSIONS).forEach((req) => {
-      collect(req);
-    });
-    return [...set.values()];
-  }, []);
+  const systemAssignableRoles = useMemo(
+    () => deriveAssignableRoles(SYSTEM_PERMISSIONS),
+    []
+  );
 
-  const rolesSet = useMemo(() => {
-    if (!accessControl) {
-      return systemAssignableRoles;
-    }
-    const rolesFromAccessControl = Object.keys(accessControl).filter(
-      (field) => {
-        const value = accessControl[field as AccessControlRoles];
-        return Array.isArray(value) && value.length > 0;
-      }
-    ) as AccessControlRoles[];
-    return [...new Set([...systemAssignableRoles, ...rolesFromAccessControl])];
-  }, [accessControl, systemAssignableRoles]);
+  const rolesSet = useMemo(
+    () => mergeRoles(systemAssignableRoles, accessControl),
+    [accessControl, systemAssignableRoles]
+  );
 
   const groupedRoles = useMemo(() => {
     const groupForRole = (role: AccessControlRoles) => {

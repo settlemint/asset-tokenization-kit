@@ -16,6 +16,7 @@ import type {
   AccessControlRoles,
 } from "@atk/zod/access-control-roles";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
+import type { RoleRequirement } from "@atk/zod/role-requirement";
 import { CheckSquare, Shield } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -143,7 +144,7 @@ export function ChangeRolesSheet({
             <div className="flex w-full items-center justify-between">
               <span className="inline-flex items-center gap-2 overflow-hidden">
                 <Shield className="h-4 w-4" />
-                <span className="truncate ml-2">{role.label}</span>
+                <span className="truncate">{role.label}</span>
               </span>
 
               {checked ? (
@@ -379,4 +380,42 @@ export function ChangeRolesSheet({
       }}
     </form.Subscribe>
   );
+}
+
+export function deriveAssignableRoles(
+  reqs: Record<string, RoleRequirement>
+): AccessControlRoles[] {
+  const set = new Set<AccessControlRoles>();
+  const collect = (r?: RoleRequirement) => {
+    if (!r) return;
+    if (typeof r === "string") {
+      set.add(r);
+      return;
+    }
+    if ("any" in r)
+      r.any.forEach((element) => {
+        collect(element);
+      });
+    else if ("all" in r)
+      r.all.forEach((element) => {
+        collect(element);
+      });
+  };
+  Object.values(reqs).forEach((element) => {
+    collect(element);
+  });
+  return [...set];
+}
+
+export function mergeRoles(
+  assignable: AccessControlRoles[],
+  existing?: Record<AccessControlRoles, unknown>
+): AccessControlRoles[] {
+  const fromExisting = existing
+    ? (Object.keys(existing).filter((k) => {
+        const value = existing[k as AccessControlRoles];
+        return Array.isArray(value) && value.length > 0;
+      }) as AccessControlRoles[])
+    : [];
+  return [...new Set([...assignable, ...fromExisting])];
 }

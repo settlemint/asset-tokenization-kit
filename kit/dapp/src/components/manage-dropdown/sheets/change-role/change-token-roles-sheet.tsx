@@ -2,18 +2,14 @@ import {
   ChangeRolesSheet,
   ChangeRolesSheetProps,
   RoleInfo,
+  deriveAssignableRoles,
+  mergeRoles,
 } from "@/components/manage-dropdown/sheets/change-role/change-roles-sheet";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { AccessControlRoles } from "@atk/zod/access-control-roles";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
-import {
-  RoleRequirement,
-  isAllRoleRequirement,
-  isAnyRoleRequirement,
-  isSingleRole,
-} from "@atk/zod/role-requirement";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -82,41 +78,15 @@ export function ChangeTokenRolesSheet({
   );
 
   // Derive token-assignable roles from TOKEN_PERMISSIONS role requirements
-  const tokenAssignableRoles = useMemo(() => {
-    const set = new Set<AccessControlRoles>();
-    const collect = (req: RoleRequirement) => {
-      if (!req) return;
-      if (isSingleRole(req)) {
-        set.add(req);
-        return;
-      }
-      if (isAnyRoleRequirement(req)) {
-        for (const r of req.any) collect(r);
-        return;
-      }
-      if (isAllRoleRequirement(req)) {
-        for (const r of req.all) collect(r);
-        return;
-      }
-    };
-    Object.values(TOKEN_PERMISSIONS).forEach((req) => {
-      collect(req);
-    });
-    return [...set.values()];
-  }, []);
+  const tokenAssignableRoles = useMemo(
+    () => deriveAssignableRoles(TOKEN_PERMISSIONS),
+    []
+  );
 
-  const rolesSet = useMemo(() => {
-    if (!asset.accessControl) {
-      return tokenAssignableRoles;
-    }
-    const rolesFromAccessControl = asset.accessControl
-      ? (Object.keys(asset.accessControl).filter((field) => {
-          const value = asset.accessControl?.[field as AccessControlRoles];
-          return Array.isArray(value) && value.length > 0;
-        }) as AccessControlRoles[])
-      : [];
-    return [...new Set([...tokenAssignableRoles, ...rolesFromAccessControl])];
-  }, [asset.accessControl, tokenAssignableRoles]);
+  const rolesSet = useMemo(
+    () => mergeRoles(tokenAssignableRoles, asset.accessControl),
+    [asset.accessControl, tokenAssignableRoles]
+  );
 
   const groupedRoles = useMemo(() => {
     const groupForRole = (role: AccessControlRoles) => {

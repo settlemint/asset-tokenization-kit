@@ -131,7 +131,9 @@ export function UsersPermissionsTable() {
                 ),
             },
             transformOptionFn: (value) => ({
-              label: value,
+              label: t(
+                `common:roles.${value.toLowerCase() as Lowercase<AccessControlRoles>}.title`
+              ),
               value: value,
             }),
           },
