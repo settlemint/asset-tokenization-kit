@@ -92,7 +92,6 @@ export const Roles = [
   new RoleConfig("FUNDS_MANAGER_ROLE", "fundsManager"),
   new RoleConfig("SALE_ADMIN_ROLE", "saleAdmin"),
   new RoleConfig("SIGNER_ROLE", "signer"),
-  new RoleConfig("GLOBAL_LIST_MANAGER_ROLE", "globalListManager"),
 ];
 
 export function getRoleConfigFromBytes(bytes: Bytes): RoleConfig {

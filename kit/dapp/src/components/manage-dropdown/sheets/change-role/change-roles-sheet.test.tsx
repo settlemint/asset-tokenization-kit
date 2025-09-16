@@ -7,6 +7,7 @@ import { ChangeRolesSheet } from "./change-roles-sheet";
 
 // Import the mocked modules
 import { useAppForm } from "@/hooks/use-app-form";
+import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 
 // Mock dependencies
 vi.mock("react-i18next", () => ({
@@ -14,16 +15,20 @@ vi.mock("react-i18next", () => ({
     t: (key: string, options?: { defaultValue?: string }) => {
       if (options?.defaultValue) return options.defaultValue;
       // Return proper translations for known keys
+      // Updated translations based on keys in change-token-roles-sheet.tsx and related context
       const translations: Record<string, string> = {
-        "tokens:permissions.columns.roles": "Roles",
-        "tokens:permissions.groups.administration": "Administration",
-        "tokens:permissions.groups.operations": "Operations",
-        "tokens:permissions.groups.compliance": "Compliance",
-        "tokens:permissions.groups.other": "Other",
-        "tokens:actions.grantRole.form.accountLabel": "Account",
-        "tokens:permissions.changeRoles.title": "Change roles",
-        "tokens:permissions.changeRoles.description":
+        "components:changeRolesSheet.title": "Change roles",
+        "components:changeRolesSheet.description":
           "Assign or remove roles for this address",
+        "components:changeRolesSheet.accountLabel": "Account",
+        "components:changeRolesSheet.rolesLabel": "Roles",
+        "common:add": "Add",
+        "common:remove": "Remove",
+        "common:none": "None",
+        "common:save": "Save",
+        "common:saving": "Saving...",
+        "common:saved": "Saved",
+        "common:error": "An error occurred",
       };
       return translations[key] || key;
     },
@@ -167,6 +172,24 @@ describe("ChangeRolesSheet", () => {
   let queryClient: QueryClient;
   const mockOnOpenChange = vi.fn();
 
+  const groupedRoles = new Map<
+    string,
+    { label: string; roles: AccessControlRoles[] }
+  >([
+    [
+      "Administration",
+      { label: "Administration", roles: ["admin", "tokenManager"] },
+    ],
+    ["Compliance", { label: "Compliance", roles: ["complianceManager"] }],
+    [
+      "Operations",
+      {
+        label: "Operations",
+        roles: ["supplyManagement", "emergency", "custodian"],
+      },
+    ],
+  ]);
+
   beforeEach(() => {
     vi.clearAllMocks();
     queryClient = new QueryClient({
@@ -194,6 +217,7 @@ describe("ChangeRolesSheet", () => {
           accessControl={mockToken.accessControl}
           revokeRole={mockRevokeRole}
           grantRole={mockGrantRole}
+          groupedRoles={groupedRoles}
         />
       );
 
@@ -213,6 +237,7 @@ describe("ChangeRolesSheet", () => {
           accessControl={mockToken.accessControl}
           revokeRole={mockRevokeRole}
           grantRole={mockGrantRole}
+          groupedRoles={groupedRoles}
         />
       );
 
@@ -261,6 +286,7 @@ describe("ChangeRolesSheet", () => {
           accessControl={mockToken.accessControl}
           revokeRole={mockRevokeRole}
           grantRole={mockGrantRole}
+          groupedRoles={groupedRoles}
         />
       );
 
@@ -280,6 +306,7 @@ describe("ChangeRolesSheet", () => {
           accessControl={mockToken.accessControl}
           revokeRole={mockRevokeRole}
           grantRole={mockGrantRole}
+          groupedRoles={groupedRoles}
         />
       );
 
@@ -328,6 +355,7 @@ describe("ChangeRolesSheet", () => {
           accessControl={mockToken.accessControl}
           revokeRole={mockRevokeRole}
           grantRole={mockGrantRole}
+          groupedRoles={groupedRoles}
         />
       );
 
@@ -352,6 +380,7 @@ describe("ChangeRolesSheet", () => {
           accessControl={mockToken.accessControl}
           revokeRole={mockRevokeRole}
           grantRole={mockGrantRole}
+          groupedRoles={groupedRoles}
         />
       );
 

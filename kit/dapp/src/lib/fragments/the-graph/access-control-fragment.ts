@@ -27,7 +27,6 @@ export const AccessControlFragment = theGraphGraphql(`
     forcedTransfer { id isContract }
     freezer { id isContract }
     fundsManager { id isContract }
-    globalListManager { id isContract }
     governance { id isContract }
     identityManager { id isContract }
     identityRegistryModule { id isContract }

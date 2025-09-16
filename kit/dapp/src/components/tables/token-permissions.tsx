@@ -25,12 +25,6 @@ type PermissionRow = {
 
 const columnHelper = createStrictColumnHelper<PermissionRow>();
 
-function toLabel(role: string) {
-  // Convert camelCase/pascalCase to spaced Title Case for display
-  const spaced = role.replaceAll(/([A-Z])/g, " $1").trim();
-  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
-}
-
 export function TokenPermissionsTable({ token }: { token: Token }) {
   const { t } = useTranslation(["tokens", "common"]);
   const [openChangeRoles, setOpenChangeRoles] = useState(false);
@@ -52,7 +46,7 @@ export function TokenPermissionsTable({ token }: { token: Token }) {
     }
     return [...map.entries()].map(([id, roles]) => ({
       id,
-      roles: [...roles.values()].map((role) => toLabel(role)),
+      roles: [...roles.values()],
     }));
   }, [token.accessControl]);
 
@@ -91,6 +85,16 @@ export function TokenPermissionsTable({ token }: { token: Token }) {
           meta: {
             displayName: t("tokens:permissions.columns.roles"),
             type: "multiOption",
+            multiOptionOptions: {
+              getLabel: (value: AccessControlRoles) =>
+                t(
+                  `common:roles.${value.toLowerCase() as Lowercase<AccessControlRoles>}.title`
+                ),
+              getDescription: (value: AccessControlRoles) =>
+                t(
+                  `common:roles.${value.toLowerCase() as Lowercase<AccessControlRoles>}.description`
+                ),
+            },
             transformOptionFn: (value) => ({
               label: value,
               value: value,

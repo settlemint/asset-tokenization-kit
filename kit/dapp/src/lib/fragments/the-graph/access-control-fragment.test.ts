@@ -60,7 +60,6 @@ describe("AccessControlFragment", () => {
           "forcedTransfer",
           "freezer",
           "fundsManager",
-          "globalListManager",
           "governance",
           "identityManager",
           "identityRegistryModule",
