@@ -1,6 +1,6 @@
 # hasura
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 A Helm chart for the hasura components
 
@@ -41,6 +41,17 @@ A Helm chart for the hasura components
 | graphql-engine.ingress.enabled | bool | `true` |  |
 | graphql-engine.ingress.hostName | string | `"hasura.k8s.orb.local"` |  |
 | graphql-engine.ingress.ingressClassName | string | `"atk-nginx"` |  |
+| graphql-engine.initContainers[0].command[0] | string | `"/usr/bin/wait-for-it"` |  |
+| graphql-engine.initContainers[0].command[1] | string | `"postgresql:5432"` |  |
+| graphql-engine.initContainers[0].command[2] | string | `"-t"` |  |
+| graphql-engine.initContainers[0].command[3] | string | `"120"` |  |
+| graphql-engine.initContainers[0].image | string | `"ghcr.io/settlemint/btp-waitforit:v7.7.10"` |  |
+| graphql-engine.initContainers[0].imagePullPolicy | string | `"IfNotPresent"` |  |
+| graphql-engine.initContainers[0].name | string | `"wait-for-postgresql"` |  |
+| graphql-engine.initContainers[0].resources.limits.cpu | string | `"100m"` |  |
+| graphql-engine.initContainers[0].resources.limits.memory | string | `"64Mi"` |  |
+| graphql-engine.initContainers[0].resources.requests.cpu | string | `"10m"` |  |
+| graphql-engine.initContainers[0].resources.requests.memory | string | `"32Mi"` |  |
 | graphql-engine.labels."app.kubernetes.io/component" | string | `"hasura"` |  |
 | graphql-engine.labels."app.kubernetes.io/instance" | string | `"atk"` |  |
 | graphql-engine.labels."app.kubernetes.io/managed-by" | string | `"helm"` |  |

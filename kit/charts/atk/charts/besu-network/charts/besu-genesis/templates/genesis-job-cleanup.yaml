@@ -47,6 +47,10 @@ spec:
           securityContext:
             runAsUser: 0
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.cleanupJob.resources }}
+          resources:
+{{ toYaml . | nindent 12 }}
+          {{- end }}
           command:
             - /bin/bash
             - -c

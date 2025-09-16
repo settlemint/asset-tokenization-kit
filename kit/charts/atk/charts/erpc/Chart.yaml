@@ -7,7 +7,7 @@ description: |
   automatic failover, and comprehensive monitoring for production-grade blockchain
   infrastructure.
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: "0.0.50"
 icon: https://console.settlemint.com/android-chrome-512x512.png
 home: https://erpc.cloud/

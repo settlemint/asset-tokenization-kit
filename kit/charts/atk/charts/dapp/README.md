@@ -1,6 +1,6 @@
 # dapp
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 A Helm chart for the ATK DApp frontend
 
@@ -33,6 +33,9 @@ A Helm chart for the ATK DApp frontend
 | initContainer.graphQLCheck.image.tag | string | `"8.16.0"` |  |
 | initContainer.graphQLCheck.name | string | `"wait-for-graphql"` |  |
 | initContainer.graphQLCheck.query | string | `"{ _meta { hasIndexingErrors block { number } } }"` |  |
+| initContainer.graphQLCheck.resources.limits.memory | string | `"64Mi"` |  |
+| initContainer.graphQLCheck.resources.requests.cpu | string | `"10m"` |  |
+| initContainer.graphQLCheck.resources.requests.memory | string | `"12Mi"` |  |
 | initContainer.graphQLCheck.retries | int | `10` |  |
 | initContainer.graphQLCheck.retryDelaySeconds | int | `10` |  |
 | initContainer.graphQLCheck.url | string | `"http://graph-node-combined.atk.svc.cluster.local:8000/subgraphs/name/kit"` |  |
@@ -50,6 +53,10 @@ A Helm chart for the ATK DApp frontend
 | initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
 | initContainer.tcpCheck.image.tag | string | `"v7.7.10"` |  |
+| initContainer.tcpCheck.resources.limits.cpu | string | `"100m"` |  |
+| initContainer.tcpCheck.resources.limits.memory | string | `"64Mi"` |  |
+| initContainer.tcpCheck.resources.requests.cpu | string | `"50m"` |  |
+| initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
 | initContainer.tcpCheck.timeout | int | `5` |  |
 | job.enabled | bool | `true` |  |
 | job.image.pullPolicy | string | `"IfNotPresent"` |  |

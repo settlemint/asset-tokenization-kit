@@ -1,6 +1,6 @@
 # graph-node
 
-![Version: 0.0.1](https://img.shields.io/badge/Version-0.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.39.1](https://img.shields.io/badge/AppVersion-v0.39.1-informational?style=flat-square)
+![Version: 0.0.2](https://img.shields.io/badge/Version-0.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.39.1](https://img.shields.io/badge/AppVersion-v0.39.1-informational?style=flat-square)
 
 A Helm chart for Graph Node
 
@@ -63,6 +63,17 @@ A Helm chart for Graph Node
 | ingress.hosts[0].paths[4].pathType | string | `"ImplementationSpecific"` |  |
 | ingress.tls | list | `[]` |  |
 | initContainer.image | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/kubesphere/kubectl","tag":"v1.33.4"}` | Image for init container kubectl |
+| initContainer.tcpCheck.dependencies[0].endpoint | string | `"{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGHOST }}:{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGPORT }}"` |  |
+| initContainer.tcpCheck.dependencies[0].name | string | `"postgresql"` |  |
+| initContainer.tcpCheck.enabled | bool | `true` |  |
+| initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
+| initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
+| initContainer.tcpCheck.image.tag | string | `"v7.7.10"` |  |
+| initContainer.tcpCheck.resources.limits.cpu | string | `"100m"` |  |
+| initContainer.tcpCheck.resources.limits.memory | string | `"64Mi"` |  |
+| initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` |  |
+| initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
+| initContainer.tcpCheck.timeout | int | `120` |  |
 | nameOverride | string | `""` |  |
 | networkPolicy.egress | list | `[]` |  |
 | networkPolicy.enabled | bool | `false` |  |
@@ -77,6 +88,10 @@ A Helm chart for Graph Node
 | postgresReadinessCheck.maxRetries | int | `30` | Maximum number of connection retries |
 | postgresReadinessCheck.maxWaitTime | int | `30` | Maximum wait time between retries |
 | postgresReadinessCheck.randomDelayRange | object | `{"max":30,"min":5}` | Add random delay to prevent all nodes from connecting simultaneously |
+| postgresReadinessCheck.resources.limits.cpu | string | `"100m"` |  |
+| postgresReadinessCheck.resources.limits.memory | string | `"96Mi"` |  |
+| postgresReadinessCheck.resources.requests.cpu | string | `"25m"` |  |
+| postgresReadinessCheck.resources.requests.memory | string | `"48Mi"` |  |
 | rbac.create | bool | `false` | Specifies whether RBAC resources are to be created |
 | rbac.rules | list | `[]` |  |
 | replicaCount | int | `1` |  |
