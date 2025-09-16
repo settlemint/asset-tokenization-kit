@@ -6,7 +6,8 @@ import {
   TokenBalance,
 } from "../../generated/schema";
 import { fetchAccount } from "../account/fetch/account";
-import { fetchToken } from "../token/fetch/token";
+import { fetchBond } from '../token-assets/bond/fetch/bond';
+import { fetchToken } from '../token/fetch/token';
 import { getTokenBasePrice } from "../token/utils/token-utils";
 
 /**
@@ -57,10 +58,22 @@ export function updateAccountStatsForBalanceChange(
   balanceDelta: BigDecimal
 ): void {
   const state = fetchAccountStatsState(accountAddress);
-  const basePrice = getTokenBasePrice(token.basePriceClaim);
 
-  // Calculate value delta = balanceDelta * basePrice
-  const valueDelta = balanceDelta.times(basePrice);
+  let valueDelta = BigDecimal.zero();
+
+  // For bonds the value delta equals the face value times the price of the denomination asset
+  if (token.bond) {
+    const bond = fetchBond(Address.fromBytes(token.bond!));
+    const denominationAsset = fetchToken(
+      Address.fromBytes(bond.denominationAsset)
+    );
+    const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
+    valueDelta = valueDelta.times(bond.faceValue).times(basePrice);
+  } else {
+    const basePrice = getTokenBasePrice(token.basePriceClaim);
+    // Calculate value delta = balanceDelta * basePric
+    valueDelta =  balanceDelta.times(basePrice);
+  }
 
   // Update total value
   state.totalValueInBaseCurrency =
@@ -91,22 +104,7 @@ export function updateAccountStatsForPriceChange(
   // Calculate value delta
   const oldValue = oldPrice.times(tokenBalance.value);
   const newValue = newPrice.times(tokenBalance.value);
-  let valueDelta = newValue.minus(oldValue);
-
-  // Check if the token is a denomination asset for a bond
-  // For bonds the value equals the face value times the price of the denomination asset
-  const token = fetchToken(Address.fromBytes(tokenBalance.token));
-  const bonds = token.denominationAssetForBond.load();
-  for (let i = 0; i < bonds.length; i++) {
-    const oldValueBond = oldPrice
-      .times(bonds[i].faceValue)
-      .times(tokenBalance.value);
-    const newValueBond = newPrice
-      .times(bonds[i].faceValue)
-      .times(tokenBalance.value);
-    const valueDeltaBond = newValueBond.minus(oldValueBond);
-    valueDelta = valueDelta.plus(valueDeltaBond);
-  }
+  const valueDelta = newValue.minus(oldValue);
 
   if (valueDelta.equals(BigDecimal.zero())) {
     return;

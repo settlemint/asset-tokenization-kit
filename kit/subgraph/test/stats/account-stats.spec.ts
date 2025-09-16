@@ -137,35 +137,35 @@ describe("AccountStats", () => {
     // - Fixed yield schedule contract (denomination deposit asset)
     expect(accountsResponse.accounts.length).toBe(5);
 
-    const account = accountsResponse.accounts[0];
+    for (const account of accountsResponse.accounts) {
+      // Calculate expected total value
+      const expectedTotalValue = account.balances.reduce((acc, balance) => {
+        const balanceValue = Number(balance.value);
+        return acc + getBasePrice(balance.token) * balanceValue;
+      }, 0);
 
-    // Calculate expected total value
-    const expectedTotalValue = account.balances.reduce((acc, balance) => {
-      const balanceValue = Number(balance.value);
-      return acc + getBasePrice(balance.token) * balanceValue;
-    }, 0);
-
-    // Get the account stats state
-    const statsQuery = theGraphGraphql(
-      `query($accountId: Bytes!) {
+      // Get the account stats state
+      const statsQuery = theGraphGraphql(
+        `query($accountId: Bytes!) {
           accountStatsState(id: $accountId) {
             totalValueInBaseCurrency
             balancesCount
           }
         }
       `
-    );
-    const statsResponse = await theGraphClient.request(statsQuery, {
-      accountId: account.id,
-    });
-
-    if (statsResponse.accountStatsState) {
-      expect(
-        Number(statsResponse.accountStatsState.totalValueInBaseCurrency)
-      ).toBeCloseTo(expectedTotalValue, 6);
-      expect(statsResponse.accountStatsState.balancesCount).toBe(
-        account.balances.length
       );
+      const statsResponse = await theGraphClient.request(statsQuery, {
+        accountId: account.id,
+      });
+
+      if (statsResponse.accountStatsState) {
+        expect(
+          Number(statsResponse.accountStatsState.totalValueInBaseCurrency)
+        ).toBeCloseTo(expectedTotalValue, 6);
+        expect(statsResponse.accountStatsState.balancesCount).toBe(
+          account.balances.length
+        );
+      }
     }
   });
 });
