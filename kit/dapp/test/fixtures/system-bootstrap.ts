@@ -1,5 +1,4 @@
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
-import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { isContractAddress } from "@/test/anvil";
 import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import type { RoleRequirement } from "@atk/zod/role-requirement";
@@ -16,9 +15,6 @@ import {
   signInWithUser,
 } from "./user";
 
-const TOKEN_MANAGEMENT_REQUIRED_ROLES = extractRequiredRoles(
-  TOKEN_PERMISSIONS
-).filter((role) => role !== "admin");
 const SYSTEM_MANAGEMENT_REQUIRED_ROLES =
   extractRequiredRoles(SYSTEM_PERMISSIONS);
 
@@ -211,7 +207,7 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
 
   // Issuer needs both token management roles and the claimIssuer role
   const issuerRequiredRoles: AccessControlRoles[] = [
-    ...TOKEN_MANAGEMENT_REQUIRED_ROLES,
+    "tokenManager",
     "claimIssuer", // Required for issuing claims to user identities
   ];
 
@@ -235,13 +231,7 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
 export async function setupDefaultAdminRoles(orpClient: OrpcClient) {
   const adminSystem = await orpClient.system.read({ id: "default" });
 
-  const allRoles = Array.from(
-    new Set([
-      ...SYSTEM_MANAGEMENT_REQUIRED_ROLES,
-      ...TOKEN_MANAGEMENT_REQUIRED_ROLES,
-    ])
-  );
-  const rolesToGrant = allRoles.filter(
+  const rolesToGrant = SYSTEM_MANAGEMENT_REQUIRED_ROLES.filter(
     (role) => adminSystem.userPermissions?.roles[role] !== true
   );
 

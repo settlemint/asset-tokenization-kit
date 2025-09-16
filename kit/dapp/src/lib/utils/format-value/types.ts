@@ -26,6 +26,7 @@ export interface FormatValueOptions {
   showPrettyName?: boolean;
 
   dateOptions?: FormatDateOptions;
+  multiOptionOptions?: FormatMultiOptionOptions;
 }
 
 export interface FormatValueProps {
@@ -36,4 +37,9 @@ export interface FormatValueProps {
 export interface FormatDateOptions {
   includeTime?: boolean;
   relative?: boolean;
+}
+
+export interface FormatMultiOptionOptions {
+  getLabel?(value: unknown): string;
+  getDescription?(value: unknown): string;
 }
