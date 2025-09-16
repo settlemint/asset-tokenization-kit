@@ -23,7 +23,9 @@ describe("Token factory create", () => {
     // The factoryCreate method now returns the updated system details
     expect(result.id).toBeDefined();
     expect(result.tokenFactoryRegistry.tokenFactories).toBeDefined();
-    expect(result.tokenFactoryRegistry.tokenFactories.length).toBeGreaterThan(0);
+    expect(result.tokenFactoryRegistry.tokenFactories.length).toBeGreaterThan(
+      0
+    );
 
     const factories = await client.system.factory.list({});
     expect(factories.length).toBeGreaterThan(0);

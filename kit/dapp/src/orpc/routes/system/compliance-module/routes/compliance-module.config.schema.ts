@@ -12,8 +12,20 @@ export const ComplianceModuleParametersSchema = z.object({
 /**
  * Schema for global compliance module configuration
  */
+const globalComplianceModuleId = z
+  .string()
+  .refine(
+    (value) =>
+      /^0x[a-fA-F0-9]+$/.test(value) &&
+      (value.length === 66 || value.length === 82),
+    {
+      message:
+        "Global compliance module id must be a 0x-prefixed hex string of 32 or 40 bytes",
+    }
+  );
+
 export const GlobalComplianceModuleConfigSchema = z.object({
-  id: ethereumHash,
+  id: globalComplianceModuleId,
   parameters: ComplianceModuleParametersSchema,
 });
 
