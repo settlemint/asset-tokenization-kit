@@ -393,6 +393,8 @@ type Identity @entity(immutable: false) {
   keys: [IdentityKey!]! @derivedFrom(field: "identity")
   # Account associated with this identity
   account: Account
+  # Whether this identity is registered in the system
+  isRegistered: Boolean!
   # Whether this identity is a smart contract
   isContract: Boolean
   # Transaction hash where this was deployed
@@ -1708,4 +1710,3 @@ type TokenDistributionStats
   totalValueSegment5Exact: BigInt!
     @aggregate(fn: "last", arg: "totalValueSegment5Exact")
 }
-

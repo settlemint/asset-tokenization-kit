@@ -315,9 +315,10 @@ templates:
       entities:
         - Address
         - Event
+        - Identity
       abis:
         - name: IdentityRegistry
-          file: ../contracts/.generated/artifacts/contracts/smart/interface/ISMARTIdentityRegistry.sol/ISMARTIdentityRegistry.json
+          file: ../contracts/.generated/out/ATKIdentityRegistryImplementation.sol/ATKIdentityRegistryImplementation.json
       eventHandlers:
         - event: IdentityStorageSet(indexed address,indexed address)
           handler: handleIdentityStorageSet
@@ -325,6 +326,11 @@ templates:
           handler: handleTopicSchemeRegistrySet
         - event: TrustedIssuersRegistrySet(indexed address,indexed address)
           handler: handleTrustedIssuersRegistrySet
+        - event: IdentityRegistered(indexed address,indexed address,indexed
+            address,uint16)
+          handler: handleIdentityRegistered
+        - event: IdentityRemoved(indexed address,indexed address,indexed address)
+          handler: handleIdentityRemoved
       file: ./src/identity-registry/identity-registry.ts
   - kind: ethereum
     name: Custodian
