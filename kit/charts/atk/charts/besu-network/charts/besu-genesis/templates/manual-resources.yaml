@@ -1,5 +1,16 @@
-{{- $globalGenerationEnabled := dig "global" "besuGenesis" "generation" "enabled" .Values nil -}}
-{{- $generationEnabled := ternary $globalGenerationEnabled .Values.generation.enabled (ne $globalGenerationEnabled nil) -}}
+{{- $globalGenerationEnabled := false -}}
+{{- if .Values -}}
+  {{- if .Values.global -}}
+    {{- $globalGenerationEnabled = ((.Values.global.besuGenesis).generation).enabled | default false -}}
+  {{- end -}}
+{{- end -}}
+{{- $localGenerationEnabled := false -}}
+{{- if .Values -}}
+  {{- if .Values.generation -}}
+    {{- $localGenerationEnabled = .Values.generation.enabled | default false -}}
+  {{- end -}}
+{{- end -}}
+{{- $generationEnabled := ternary $globalGenerationEnabled $localGenerationEnabled $globalGenerationEnabled -}}
 {{- if not $generationEnabled }}
 {{- $manual := .Values.generation.manual | default (dict) -}}
 {{- $genesisJson := required "generation.manual.genesisJson must be provided when genesis generation is disabled" $manual.genesisJson -}}

@@ -1,5 +1,19 @@
-{{- $globalGenerationEnabled := dig "global" "besuGenesis" "generation" "enabled" .Values nil -}}
-{{- $generationEnabled := ternary $globalGenerationEnabled .Values.generation.enabled (ne $globalGenerationEnabled nil) -}}
+{{- $generationEnabled := true -}}
+{{- if hasKey . "Values" -}}
+  {{- if hasKey .Values "global" -}}
+    {{- if hasKey .Values.global "besuGenesis" -}}
+      {{- if hasKey .Values.global.besuGenesis "generation" -}}
+        {{- if hasKey .Values.global.besuGenesis.generation "enabled" -}}
+          {{- $generationEnabled = .Values.global.besuGenesis.generation.enabled -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else if hasKey .Values "generation" -}}
+    {{- if hasKey .Values.generation "enabled" -}}
+      {{- $generationEnabled = .Values.generation.enabled -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
 {{- if $generationEnabled }}
 ---
 apiVersion: v1
