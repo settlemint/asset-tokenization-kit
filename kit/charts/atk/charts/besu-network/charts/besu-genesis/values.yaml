@@ -1,4 +1,9 @@
 ---
+
+global:
+  artifacts:
+    enabled: true
+
 quorumFlags:
   removeGenesisOnDelete: true
 
