@@ -6,6 +6,7 @@ import {
   TokenBalance,
 } from "../../generated/schema";
 import { fetchAccount } from "../account/fetch/account";
+import { fetchToken } from "../token/fetch/token";
 import { getTokenBasePrice } from "../token/utils/token-utils";
 
 /**
@@ -90,7 +91,23 @@ export function updateAccountStatsForPriceChange(
   // Calculate value delta
   const oldValue = oldPrice.times(tokenBalance.value);
   const newValue = newPrice.times(tokenBalance.value);
-  const valueDelta = newValue.minus(oldValue);
+  let valueDelta = newValue.minus(oldValue);
+
+  // Check if the token is a denomination asset for a bond
+  // For bonds the value equals the face value times the price of the denomination asset
+  const token = fetchToken(Address.fromBytes(tokenBalance.token));
+  const bonds = token.denominationAssetForBond.load();
+  for (let i = 0; i < bonds.length; i++) {
+    const bondToken = fetchToken(Address.fromBytes(bonds[i].id));
+    const oldValueBond = oldPrice
+      .times(bonds[i].faceValue)
+      .times(bondToken.totalSupply);
+    const newValueBond = newPrice
+      .times(bonds[i].faceValue)
+      .times(bondToken.totalSupply);
+    const valueDeltaBond = newValueBond.minus(oldValueBond);
+    valueDelta = valueDelta.plus(valueDeltaBond);
+  }
 
   if (valueDelta.equals(BigDecimal.zero())) {
     return;
