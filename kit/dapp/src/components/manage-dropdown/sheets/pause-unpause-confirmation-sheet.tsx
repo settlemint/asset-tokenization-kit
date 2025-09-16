@@ -174,7 +174,7 @@ export function PauseUnpauseConfirmationSheet({
         </Card>
       }
       onSubmit={(v) => {
-        handleSubmit(v as UserVerification);
+        handleSubmit(v);
       }}
     />
   );

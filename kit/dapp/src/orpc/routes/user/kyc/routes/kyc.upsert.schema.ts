@@ -1,9 +1,6 @@
-import { residencyStatusEnum } from "@/lib/db/schemas/kyc";
 import { isoCountryCode } from "@atk/zod/iso-country-code";
+import { residencyStatus } from "@atk/zod/residency-status";
 import { z } from "zod";
-
-const residencyStatusValues = residencyStatusEnum.enumValues;
-const residencyStatusZod = z.enum(residencyStatusValues);
 
 // Strict field definitions shared between input and output
 const strictFirstName = z.string().min(1).max(64).trim();
@@ -22,7 +19,7 @@ const KycBaseSchema = {
   lastName: strictLastName,
   dob: strictDob,
   country: isoCountryCode,
-  residencyStatus: residencyStatusZod,
+  residencyStatus: residencyStatus(),
 };
 
 export const KycUpsertInputSchema = z.object({
