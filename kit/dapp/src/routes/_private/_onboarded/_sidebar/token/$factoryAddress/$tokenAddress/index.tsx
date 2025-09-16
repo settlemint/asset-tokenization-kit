@@ -237,10 +237,8 @@ function RouteComponent() {
             emptyValue={t("tokens:fields.noExpiry")}
           />
           <DetailGridItem
-            label={"Committed collateral ratio"}
-            info={
-              "The ratio of the collateral committed to the total supply of the asset"
-            }
+            label={t("tokens:fields.committedCollateralRatio")}
+            info={t("tokens:fields.committedCollateralRatioInfo")}
           >
             <PercentageProgressBar percentage={collateralRatio} />
           </DetailGridItem>
