@@ -42,11 +42,11 @@ spec:
         - name: genesis-pvc
           persistentVolumeClaim:
             claimName: besu-genesis-pvc
-{{- if .Values.global.artifacts.enabled }}
+{{ if .Values.global.artifacts.enabled }}
         - name: artifacts
           emptyDir: {}
-{{- end }}
-{{- if .Values.global.artifacts.enabled }}
+{{ end }}
+{{ if .Values.global.artifacts.enabled }}
       initContainers:
         - name: copy-artifacts
           image: "{{ .Values.global.artifacts.image.registry }}/{{ .Values.global.artifacts.image.repository }}:{{ .Values.global.artifacts.image.tag }}"
@@ -65,7 +65,7 @@ spec:
           securityContext:
             runAsUser: 1001
             runAsGroup: 1001
-{{- end }}
+{{ end }}
       containers:
         - name: generate-genesis
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -77,11 +77,11 @@ spec:
               mountPath: /generated-config
             - name: genesis-pvc
               mountPath: /genesis-pvc
-{{- if .Values.global.artifacts.enabled }}
+{{ if .Values.global.artifacts.enabled }}
             - name: artifacts
               mountPath: /contracts/genesis
               readOnly: true
-{{- end }}
+{{ end }}
           command:
             - /bin/bash
             - -c
@@ -171,9 +171,10 @@ spec:
               echo "Generated genesis file info:"
               ls -la "$GENESIS_FILE"
 
+              # Default to empty allocations so downstream merge logic can skip merging cleanly
               ARTIFACTS_ALLOC='{}'
 
-{{- if .Values.global.artifacts.enabled }}
+{{ if .Values.global.artifacts.enabled }}
               # Optionally merge contract alloc data from artifacts if needed
               ARTIFACTS_ALLOC_FILE="/contracts/genesis/genesis-allocations.json"
               ARTIFACTS_GENESIS_FILE="/contracts/genesis/genesis.json"
@@ -183,7 +184,12 @@ spec:
                 echo "Found genesis-allocations.json file, using it for allocations..."
 
                 # Read the allocation file directly
-                ARTIFACTS_ALLOC=$(cat "$ARTIFACTS_ALLOC_FILE" 2>/dev/null || echo '{}')
+                if ARTIFACTS_ALLOC=$(cat "$ARTIFACTS_ALLOC_FILE"); then
+                  :
+                else
+                  echo "Warning: Could not read $ARTIFACTS_ALLOC_FILE. File may be missing, unreadable, or corrupted." >&2
+                  ARTIFACTS_ALLOC='{}'
+                fi
 
                 # Validate it's valid JSON
                 if echo "$ARTIFACTS_ALLOC" | jq -e . >/dev/null 2>&1; then
@@ -203,7 +209,7 @@ spec:
                 echo "No allocation data found in artifacts"
                 ARTIFACTS_ALLOC='{}'
               fi
-{{- end }}
+{{ end }}
 
               # Only merge if there are actual allocations
               if [ "$ARTIFACTS_ALLOC" != "{}" ] && [ "$ARTIFACTS_ALLOC" != "null" ]; then
