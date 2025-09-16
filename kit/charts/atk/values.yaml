@@ -18,8 +18,6 @@ global:
       repository: settlemint/asset-tokenization-kit-artifacts
       tag: 2.0.0-main.91391
       pullPolicy: IfNotPresent
-
-
 besu-network:
   enabled: true
   # Besu network images
@@ -33,6 +31,30 @@ besu-network:
         repository: docker.io/nginx
         tag: "1.29.1-alpine"
         pullPolicy: IfNotPresent
+    initJob:
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 150m
+          memory: 256Mi
+      copyArtifacts:
+        resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+    cleanupJob:
+      resources:
+        limits:
+          cpu: 250m
+          memory: 256Mi
+        requests:
+          cpu: 75m
+          memory: 128Mi
   besu-node:
     node:
       image:
@@ -49,6 +71,22 @@ besu-network:
         repository: ghcr.io/settlemint/quorum-genesis-tool
         tag: "sha-49c40f5"
         pullPolicy: IfNotPresent
+      preInstall:
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 150m
+            memory: 256Mi
+      preDelete:
+        resources:
+          limits:
+            cpu: 300m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
     initContainers:
       testConnection:
         image:
@@ -60,6 +98,22 @@ besu-network:
           repository: docker.io/curlimages/curl
           tag: "8.16.0"
           pullPolicy: IfNotPresent
+      waitForGenesis:
+        resources:
+          limits:
+            cpu: 150m
+            memory: 128Mi
+          requests:
+            cpu: 25m
+            memory: 64Mi
+      volumePermissions:
+        resources:
+          limits:
+            cpu: 100m
+            memory: 64Mi
+          requests:
+            cpu: 20m
+            memory: 32Mi
   besu-validator-1:
     enabled: true
     storage:
@@ -159,7 +213,8 @@ erpc:
           - id: redis-cache
             driver: redis  # Refer to "redis" driver docs below
             redis:
-              addr: redis.atk.svc.cluster.local:6379
+              addr: "redis:6379"
+              username: "default"
               password: "atk"
               db: 0
               connPoolSize: 128
@@ -205,6 +260,7 @@ blockscout:
       ingress:
         hostname: explorer.k8s.orb.local
       env:
+        DATABASE_URL: "postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"
         API_URL: https://explorer.k8s.orb.local
         WEBAPP_URL: https://explorer.k8s.orb.local
       resources: {}
@@ -222,29 +278,81 @@ graph-node:
     repository: docker.io/graphprotocol/graph-node
     tag: "v0.40.1"
     pullPolicy: IfNotPresent
-  initContainers:
-    kubectlImage:
-      repository: docker.io/kubesphere/kubectl
-      tag: "v1.33.4"
-      pullPolicy: IfNotPresent
-    postgresImage:
-      repository: docker.io/postgres
-      tag: "17.6-alpine"
-      pullPolicy: IfNotPresent
   podAnnotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8040"
     prometheus.io/path: "/metrics"
+  initContainer:
+    image:
+      repository: docker.io/kubesphere/kubectl
+      tag: "v1.33.4"
+      pullPolicy: IfNotPresent
+    tcpCheck:
+      enabled: true
+      image:
+        repository: ghcr.io/settlemint/btp-waitforit
+        tag: v7.7.10
+        pullPolicy: IfNotPresent
+      timeout: 120
+      resources:
+        limits:
+          cpu: 100m
+          memory: 64Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
+      dependencies:
+        - name: postgresql
+          endpoint: "postgresql:5432"
+  ingress:
+    enabled: true
+    className: "atk-nginx"
+    annotations:
+      nginx.ingress.kubernetes.io/use-regex: 'true'
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+    hosts:
+      - host: graph.k8s.orb.local
+        paths:
+          - path: /(.*)
+            pathType: ImplementationSpecific
+          - path: /ws/?(.*)
+            pathType: ImplementationSpecific
+          - path: /admin/?(.*)
+            pathType: ImplementationSpecific
+          - path: /indexer/?(.*)
+            pathType: ImplementationSpecific
+          - path: /graphman/?(.*)
+            pathType: ImplementationSpecific
+    tls: []
+  env:
+    PRIMARY_SUBGRAPH_DATA_PGHOST: postgresql
+    PRIMARY_SUBGRAPH_DATA_PGPORT: 5432
+    PRIMARY_SUBGRAPH_DATA_PGDATABASE: thegraph
+    PRIMARY_SUBGRAPH_DATA_PGUSER: thegraph
+    PRIMARY_SUBGRAPH_DATA_PGPASSWORD: atk
   postgresReadinessCheck:
     enabled: true
     image: docker.io/postgres:17.6-alpine
+    maxRetries: 30
+    initialWaitTime: 2
+    maxWaitTime: 30
+    randomDelayRange:
+      min: 5
+      max: 30
+    resources:
+      limits:
+        cpu: 100m
+        memory: 96Mi
+      requests:
+        cpu: 25m
+        memory: 48Mi
 
 hasura:
   enabled: true
   graphql-engine:
     replicas: 1
     ingress:
-      hostName: "hasura.k8s.orb.local"
+      hostName: hasura.k8s.orb.local
     labels:
       app.kubernetes.io/instance: atk
       kots.io/app-slug: settlemint-atk
@@ -256,55 +364,28 @@ hasura:
       ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
       ##
       pullPolicy: IfNotPresent
-    # Init container for waiting for PostgreSQL
     initContainers:
-      - name: wait-for-postgresql-ready
-        image: docker.io/postgres:17.6-alpine
+      - name: wait-for-postgresql
+        image: ghcr.io/settlemint/btp-waitforit:v7.7.10
+        imagePullPolicy: IfNotPresent
         command:
-          - /bin/sh
-          - -c
-          - |
-            set -e
-            echo "Waiting for PostgreSQL to be ready..."
-
-            # Add random delay to prevent all nodes from connecting simultaneously
-            RANDOM_DELAY=$((RANDOM % 30 + 5))
-            echo "Adding random delay of ${RANDOM_DELAY} seconds to stagger connections..."
-            sleep $RANDOM_DELAY
-
-            # Function to test PostgreSQL connection
-            test_postgres() {
-              pg_isready -h postgresql -p 5432 -U hasura && \
-              psql -h postgresql -p 5432 -U hasura -d hasura -c "SELECT 1;" > /dev/null 2>&1
-            }
-
-            # Wait with exponential backoff
-            RETRY_COUNT=0
-            MAX_RETRIES=30
-            WAIT_TIME=2
-
-            while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-              if test_postgres; then
-                echo "PostgreSQL is ready!"
-                exit 0
-              fi
-
-              RETRY_COUNT=$((RETRY_COUNT + 1))
-              echo "PostgreSQL not ready (attempt $RETRY_COUNT/$MAX_RETRIES). Waiting ${WAIT_TIME}s..."
-              sleep $WAIT_TIME
-
-              # Exponential backoff with max of 30 seconds
-              WAIT_TIME=$((WAIT_TIME * 2))
-              if [ $WAIT_TIME -gt 30 ]; then
-                WAIT_TIME=30
-              fi
-            done
-
-            echo "PostgreSQL failed to become ready after $MAX_RETRIES attempts"
-            exit 1
-        env:
-          - name: PGPASSWORD
-            value: "atk"
+          - /usr/bin/wait-for-it
+          - "postgresql:5432"
+          - -t
+          - "120"
+        resources:
+          limits:
+            cpu: 100m
+            memory: 64Mi
+          requests:
+            cpu: 10m
+            memory: 32Mi
+    secret:
+      metadataDbUrl: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
+      extraSecrets:
+        DEFAULT_DB_URL: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
+      redisUrl: "redis://default:atk@redis:6379/0"
+      rateLimitRedisUrl: "redis://default:atk@redis:6379/0"
 
 portal:
   enabled: true
@@ -319,54 +400,43 @@ portal:
     prometheus.io/scrape: "true"
     prometheus.io/port: "3000"
     prometheus.io/path: "/portal-metrics"
-  initContainers:
-    - name: wait-for-postgresql-ready
-      image: docker.io/postgres:17.6-alpine
-      command:
-        - /bin/sh
-        - -c
-        - |
-          set -e
-          echo "Waiting for PostgreSQL to be ready..."
-
-          # Add random delay to prevent all nodes from connecting simultaneously
-          RANDOM_DELAY=$((RANDOM % 30 + 5))
-          echo "Adding random delay of ${RANDOM_DELAY} seconds to stagger connections..."
-          sleep $RANDOM_DELAY
-
-          # Function to test PostgreSQL connection
-          test_postgres() {
-            pg_isready -h postgresql -p 5432 -U portal && \
-            psql -h postgresql -p 5432 -U portal -d portal -c "SELECT 1;" > /dev/null 2>&1
-          }
-
-          # Wait with exponential backoff
-          RETRY_COUNT=0
-          MAX_RETRIES=30
-          WAIT_TIME=2
-
-          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-            if test_postgres; then
-              echo "PostgreSQL is ready!"
-              exit 0
-            fi
-
-            RETRY_COUNT=$((RETRY_COUNT + 1))
-            echo "PostgreSQL not ready (attempt $RETRY_COUNT/$MAX_RETRIES). Waiting ${WAIT_TIME}s..."
-            sleep $WAIT_TIME
-
-            # Exponential backoff with max of 30 seconds
-            WAIT_TIME=$((WAIT_TIME * 2))
-            if [ $WAIT_TIME -gt 30 ]; then
-              WAIT_TIME=30
-            fi
-          done
-
-          echo "PostgreSQL failed to become ready after $MAX_RETRIES attempts"
-          exit 1
-      env:
-        - name: PGPASSWORD
-          value: "atk"
+  initContainer:
+    # Legacy `initContainers` overrides remain supported for backward compatibility.
+    tcpCheck:
+      enabled: true
+      image:
+        repository: ghcr.io/settlemint/btp-waitforit
+        tag: v7.7.10
+        pullPolicy: IfNotPresent
+      timeout: 120
+      resources:
+        limits:
+          cpu: 100m
+          memory: 64Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
+      dependencies:
+        - name: postgresql
+          endpoint: "postgresql:5432"
+    copyArtifacts:
+      resources:
+        limits:
+          cpu: 150m
+          memory: 128Mi
+        requests:
+          cpu: 25m
+          memory: 64Mi
+  config:
+    postgresql: "postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"
+    redis:
+      host: "redis"
+      port: 6379
+      username: "default"
+      password: "atk"
+      db: 0
+  ingress:
+    hostname: portal.k8s.orb.local
 
 support:
   enabled: true
@@ -434,6 +504,7 @@ support:
         cpu: "200m"
 
   postgresql:
+    enabled: true
     image:
       registry: docker.io
       repository: postgres
@@ -584,9 +655,30 @@ txsigner:
   config:
     mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
     derivationPath: "m/44'/60'/0'/0/0"
-  postgresql: postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable
+  postgresql: "postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"
   replicaCount: 1
   resources: {}
+  ingress:
+    hostname: txsigner.k8s.orb.local
+  # Legacy `initContainers` overrides remain supported for backward compatibility.
+  initContainer:
+    tcpCheck:
+      enabled: true
+      image:
+        repository: ghcr.io/settlemint/btp-waitforit
+        tag: v7.7.10
+        pullPolicy: IfNotPresent
+      timeout: 120
+      resources:
+        limits:
+          cpu: 100m
+          memory: 64Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
+      dependencies:
+        - name: postgresql
+          endpoint: "postgresql:5432"
 
 # DApp Frontend Configuration
 dapp:
@@ -600,7 +692,7 @@ dapp:
     enabled: true
     # IMPORTANT: Set the correct hostname for your environment
     hosts:
-      - host: dapp.k8s.orb.local  # Example hostname
+      - host: dapp.k8s.orb.local
         paths:
           - path: /  # Adjust path if needed
             pathType: ImplementationSpecific
@@ -613,7 +705,7 @@ dapp:
     OTEL_EXPORTER_OTLP_PROTOCOL: "http"
     SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "http://blockscout-frontend-svc/"
     SETTLEMINT_HASURA_ADMIN_SECRET: "atk"
-    SETTLEMINT_HASURA_DATABASE_URL: "postgresql://hasura:atk@postgresql:5432/hasura"
+    SETTLEMINT_HASURA_DATABASE_URL: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
     SETTLEMINT_HASURA_ENDPOINT: "http://hasura:8080/v1/graphql"
     SETTLEMINT_HD_PRIVATE_KEY: "atk-hd-private-key"
     SETTLEMINT_INSTANCE: "standalone"
@@ -623,11 +715,18 @@ dapp:
     # Generic TCP check settings
     tcpCheck:
       enabled: true
-      timeout: 0  # Timeout in seconds for each dependency check
+      timeout: 120  # Timeout in seconds for each dependency check
       image:
         repository: ghcr.io/settlemint/btp-waitforit
         tag: v7.7.10
         pullPolicy: IfNotPresent
+      resources:
+        limits:
+          cpu: 100m
+          memory: 64Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
       dependencies:
         # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
         - name: postgres
@@ -657,6 +756,12 @@ dapp:
       timeoutSeconds: 10  # Max time per curl attempt
       connectTimeoutSeconds: 5  # Max time to connect
       retries: 24
+      resources:
+        limits:
+          memory: 64Mi
+        requests:
+          cpu: 10m
+          memory: 12Mi
   podLabels:
     app.kubernetes.io/component: dapp
     kots.io/app-slug: settlemint-atk

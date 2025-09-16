@@ -73,6 +73,10 @@ spec:
         securityContext:
           runAsNonRoot: true
           runAsUser: 1000
+        {{- with .Values.initContainers.waitForGenesis.resources }}
+        resources:
+{{ toYaml . | nindent 10 }}
+        {{- end }}
 
 {{- if has .Values.cluster.provider .Values.volumePermissionsFix }}
       # fix for minikube and PVC's only writable as root https://github.com/kubernetes/minikube/issues/1990
@@ -85,6 +89,10 @@ spec:
             mountPath: /data
         securityContext:
           runAsUser: 0
+        {{- with .Values.initContainers.volumePermissions.resources }}
+        resources:
+{{ toYaml . | nindent 10 }}
+        {{- end }}
 {{- end}}
 
       containers:
@@ -333,4 +341,3 @@ spec:
         configMap:
           name: {{ include "besu-node.fullname" . }}-permissions
 {{- end }}
-

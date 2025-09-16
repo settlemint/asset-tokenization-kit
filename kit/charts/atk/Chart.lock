@@ -25,9 +25,9 @@ dependencies:
   version: '*'
 - name: txsigner
   repository: file://./charts/txsigner
-  version: 0.1.0
+  version: 0.1.1
 - name: dapp
   repository: file://./charts/dapp
-  version: 0.1.0
-digest: sha256:43cedf79e086ffadc3bb34dff32fd38d40d556798ecbebd3d4a0c823fb6cd299
-generated: "2025-07-29T14:54:38.099496+02:00"
+  version: 0.1.1
+digest: sha256:1252411edad5a23e6d18f04c3ac9c443dd4cfc21cad4326fd1ad065a641468f7
+generated: "2025-09-16T13:54:35.31316+02:00"
