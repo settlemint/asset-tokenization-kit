@@ -1,3 +1,4 @@
+import { store } from "@graphprotocol/graph-ts";
 import {
   IdentityRegistered as IdentityRegisteredEvent,
   IdentityRemoved as IdentityRemovedEvent,
@@ -64,11 +65,5 @@ export function handleIdentityRemoved(event: IdentityRemovedEvent): void {
   fetchEvent(event, "IdentityRemoved");
 
   const identity = fetchIdentity(event.params._identity);
-  identity.isRegistered = false;
-  identity.account = null;
-  identity.save();
-
-  const investor = fetchAccount(event.params._investorAddress);
-  investor.identity = null;
-  investor.save();
+  store.remove("Identity", identity.id.toHexString());
 }
