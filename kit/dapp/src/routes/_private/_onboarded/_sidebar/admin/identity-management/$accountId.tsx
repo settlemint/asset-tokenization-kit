@@ -31,7 +31,7 @@ const routeParamsSchema = z.object({
  * ```
  * // Navigating to this route
  * navigate({
- *   to: '/admin/claim-management/$accountId',
+ *   to: '/admin/identity-management/$accountId',
  *   params: { accountId: '0x1234567890123456789012345678901234567890' }
  * });
  * ```
@@ -51,7 +51,7 @@ export const Route = createFileRoute(
     return {
       claimsData,
       breadcrumb: [
-        createI18nBreadcrumbMetadata("claimManagement"),
+        createI18nBreadcrumbMetadata("identityManagement"),
         {
           title: `${accountId.slice(0, 6)}...${accountId.slice(-4)}`,
           href: `/admin/identity-management/${accountId}`,

@@ -104,7 +104,7 @@ export const identityList = authRouter.system.identity.list
   .use(theGraphMiddleware)
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: SYSTEM_PERMISSIONS.claimList,
+      requiredRoles: SYSTEM_PERMISSIONS.identityRead,
       getAccessControl: ({ context }) =>
         context.system?.systemAccessManager?.accessControl,
     })
@@ -113,7 +113,7 @@ export const identityList = authRouter.system.identity.list
     const parsedInput = IdentityListInputSchema.parse(input);
     const { limit, offset, orderDirection, orderBy, filters } = parsedInput;
 
-    const first = limit ?? 1000;
+    const first = limit ?? 50;
     const skip = offset;
     const graphOrderBy = resolveOrderBy(orderBy);
     const graphOrderDirection: "asc" | "desc" =
@@ -143,21 +143,20 @@ export const identityList = authRouter.system.identity.list
           : undefined,
     };
 
-    const response = await context.theGraphClient.query(IDENTITY_LIST_QUERY, {
+    const response = await context.theGraphClient?.query(IDENTITY_LIST_QUERY, {
       input: variables,
       output: IdentityListGraphSchema,
     });
 
-    const identities = response.identities ?? [];
-    const identityIds = [...new Set(identities.map((identity) => identity.id.toLowerCase()))];
+    const identities = response?.identities ?? [];
+    const identityIds = [
+      ...new Set(identities.map((identity) => identity.id.toLowerCase())),
+    ];
 
-    const claimCounts = new Map<
-      string,
-      { total: number; revoked: number }
-    >();
+    const claimCounts = new Map<string, { total: number; revoked: number }>();
 
     if (identityIds.length > 0) {
-      const claimsResponse = await context.theGraphClient.query(
+      const claimsResponse = await context.theGraphClient?.query(
         IDENTITY_CLAIMS_FOR_LIST_QUERY,
         {
           input: { identityIds },
@@ -165,7 +164,7 @@ export const identityList = authRouter.system.identity.list
         }
       );
 
-      for (const claim of claimsResponse.identityClaims ?? []) {
+      for (const claim of claimsResponse?.identityClaims ?? []) {
         const key = claim.identity.id.toLowerCase();
         const totals = claimCounts.get(key) ?? { total: 0, revoked: 0 };
         totals.total += 1;
@@ -177,8 +176,10 @@ export const identityList = authRouter.system.identity.list
     }
 
     const items = identities.map((identity) => {
-      const counts =
-        claimCounts.get(identity.id.toLowerCase()) ?? { total: 0, revoked: 0 };
+      const counts = claimCounts.get(identity.id.toLowerCase()) ?? {
+        total: 0,
+        revoked: 0,
+      };
       const revokedClaimsCount = counts.revoked;
       const activeClaimsCount = counts.total - revokedClaimsCount;
       const account =
@@ -201,13 +202,13 @@ export const identityList = authRouter.system.identity.list
         activeClaimsCount,
         revokedClaimsCount,
         registryStorageId: identity.registryStorage?.id,
-        deployedInTransaction: identity.deployedInTransaction,
+        deployedInTransaction: identity.deployedInTransaction ?? "",
       };
     });
 
     return IdentityListOutputSchema.parse({
       items,
-      total: response.total?.length ?? 0,
+      total: response?.total?.length ?? 0,
       limit,
       offset,
     });

@@ -125,23 +125,22 @@ export function NavSettings() {
           </SidebarMenuItem>
         )}
 
-        {system.userPermissions?.actions.identityRead ||
-          (system.userPermissions?.actions.claimRead && (
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link
-                  to="/admin/identity-management"
-                  activeProps={{
-                    "data-active": true,
-                  }}
-                  className={isIdentityManagementActive ? "font-semibold" : ""}
-                >
-                  <UserCheck />
-                  <span>{t("identityManagement")}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+        {system.userPermissions?.actions.identityRead && (
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
+              <Link
+                to="/admin/identity-management"
+                activeProps={{
+                  "data-active": true,
+                }}
+                className={isIdentityManagementActive ? "font-semibold" : ""}
+              >
+                <UserCheck />
+                <span>{t("identityManagement")}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        )}
 
         {settingsItems.length > 0 && (
           <Collapsible

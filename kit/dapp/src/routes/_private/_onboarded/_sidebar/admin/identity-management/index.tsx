@@ -11,7 +11,7 @@ export const Route = createFileRoute(
   component: IdentityManagementPage,
   loader: () => {
     return {
-      breadcrumb: [createI18nBreadcrumbMetadata("claimManagement")],
+      breadcrumb: [createI18nBreadcrumbMetadata("identityManagement")],
     };
   },
 });

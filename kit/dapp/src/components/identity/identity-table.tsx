@@ -138,16 +138,9 @@ export function IdentityTable() {
                 );
               }
 
-              const fallbackKey =
-                contract === null && account === null
-                  ? "noEntity"
-                  : contract === null
-                    ? "noContract"
-                    : "noAccount";
-
               return (
                 <span className="text-muted-foreground text-sm">
-                  {t(`identityTable.fallback.${fallbackKey}`)}
+                  {t(`identityTable.fallback.noEntity`)}
                 </span>
               );
             },

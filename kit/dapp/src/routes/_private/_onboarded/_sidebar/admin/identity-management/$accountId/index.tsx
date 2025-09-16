@@ -7,7 +7,7 @@ import { createFileRoute } from "@tanstack/react-router";
  * It displays all claim data, identity information, and verification status
  * for the specified account ID (wallet address).
  *
- * Route path: `/admin/claim-management/{accountId}`
+ * Route path: `/admin/identity-management/{accountId}`
  */
 export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/admin/identity-management/$accountId/"
