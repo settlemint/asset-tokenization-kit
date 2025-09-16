@@ -1,4 +1,5 @@
 import { ethereumHash } from "@atk/zod/ethereum-hash";
+import { ethereumHex } from "@atk/zod/ethereum-hex";
 import { z } from "zod";
 
 /**
@@ -13,7 +14,7 @@ export const ComplianceModuleParametersSchema = z.object({
  * Schema for global compliance module configuration
  */
 export const GlobalComplianceModuleConfigSchema = z.object({
-  id: ethereumHash,
+  id: ethereumHex,
   parameters: ComplianceModuleParametersSchema,
 });
 
