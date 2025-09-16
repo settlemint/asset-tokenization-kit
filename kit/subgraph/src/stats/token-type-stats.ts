@@ -126,8 +126,8 @@ export function updateTokenTypeStatsForPriceChange(
   let valueDeltaBonds = BigDecimal.zero();
   for (let i = 0; i < bonds.length; i++) {
     const bondToken = fetchToken(Address.fromBytes(bonds[i].id));
-    const newPriceBond = oldPrice.times(bonds[i].faceValue);
-    const oldPriceBond = newPrice.times(bonds[i].faceValue);
+    const newPriceBond = newPrice.times(bonds[i].faceValue);
+    const oldPriceBond = oldPrice.times(bonds[i].faceValue);
     const valueDeltaBond = newPriceBond
       .minus(oldPriceBond)
       .times(bondToken.totalSupply);

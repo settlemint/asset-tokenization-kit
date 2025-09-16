@@ -32,7 +32,9 @@ type TOKEN_QUERY = ReturnType<
 
 type Token = ResultOf<TOKEN_QUERY>["tokens"][number];
 
-export const getBasePrice = (token: Omit<Token, "totalSupply"> | undefined): number => {
+export const getBasePrice = (
+  token: Omit<Token, "totalSupply"> | undefined
+): number => {
   if (!token) {
     return 0;
   }
@@ -46,8 +48,8 @@ export const getBasePrice = (token: Omit<Token, "totalSupply"> | undefined): num
     (value) => value.key === "amount"
   )?.value;
   const basePriceDecimals =
-    basePriceClaim?.values.find((value) => value.key === "decimals")
-      ?.value ?? "0";
+    basePriceClaim?.values.find((value) => value.key === "decimals")?.value ??
+    "0";
   const basePriceParsed =
     Number(basePrice) / Math.pow(10, Number(basePriceDecimals));
   if (token.bond) {

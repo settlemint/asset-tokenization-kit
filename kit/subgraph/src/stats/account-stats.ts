@@ -98,13 +98,12 @@ export function updateAccountStatsForPriceChange(
   const token = fetchToken(Address.fromBytes(tokenBalance.token));
   const bonds = token.denominationAssetForBond.load();
   for (let i = 0; i < bonds.length; i++) {
-    const bondToken = fetchToken(Address.fromBytes(bonds[i].id));
     const oldValueBond = oldPrice
       .times(bonds[i].faceValue)
-      .times(bondToken.totalSupply);
+      .times(tokenBalance.value);
     const newValueBond = newPrice
       .times(bonds[i].faceValue)
-      .times(bondToken.totalSupply);
+      .times(tokenBalance.value);
     const valueDeltaBond = newValueBond.minus(oldValueBond);
     valueDelta = valueDelta.plus(valueDeltaBond);
   }
