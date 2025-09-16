@@ -1,4 +1,3 @@
-import { describe, expect, it, vi } from "vitest";
 import {
   createBaseContext,
   createMockErrors,
@@ -6,6 +5,7 @@ import {
   installAuthRouterCaptureMock,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
+import { describe, expect, it, vi } from "vitest";
 
 installAuthRouterCaptureMock();
 
@@ -47,6 +47,7 @@ describe("account.read (unit)", () => {
       id: ADDRESS,
       country: undefined,
       identity: undefined,
+      identityIsRegistered: false,
       claims: [],
     });
   });
