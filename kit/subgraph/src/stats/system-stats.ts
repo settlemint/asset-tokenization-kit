@@ -28,8 +28,8 @@ export function updateSystemStatsForSupplyChange(
 
   // For bonds the value delta equals the face value times the price of the denomination asset
   if (token.extensions.includes(TokenExtension.BOND)) {
-    const bond = fetchBond(token.id);
-    const denominationAsset = fetchToken(bond.denominationAsset);
+    const bond = fetchBond(Address.fromBytes(token.id));
+    const denominationAsset = fetchToken(Address.fromBytes(bond.denominationAsset));
     const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
     valueDelta = supplyDelta.times(bond.faceValue).times(basePrice);
   } else {
@@ -80,7 +80,7 @@ export function updateSystemStatsForPriceChange(
   // For bonds the value equals the face value times the price of the denomination asset
   const bonds = token.denominationAssetForBond.load();
   for (let i = 0; i < bonds.length; i++) {
-    const bondToken = fetchToken(bonds[i].id);
+    const bondToken = fetchToken(Address.fromBytes(bonds[i].id));
     const oldValueBond = oldPrice
       .times(bonds[i].faceValue)
       .times(bondToken.totalSupply);
