@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
+import { getBasePrice } from "../utils/token-stats-test-utils";
 
 describe("AccountStats", () => {
   it("should fetch account stats aggregated by hour", async () => {
@@ -105,9 +106,20 @@ describe("AccountStats", () => {
               decimals
               basePriceClaim {
                 id
-                values(where: { key: "amount" }) {
+                values {
                   key
                   value
+                }
+              }
+              bond {
+                faceValue
+                denominationAsset {
+                  basePriceClaim {
+                    values {
+                      key
+                      value
+                    }
+                  }
                 }
               }
             }
@@ -129,16 +141,8 @@ describe("AccountStats", () => {
 
     // Calculate expected total value
     const expectedTotalValue = account.balances.reduce((acc, balance) => {
-      const basePrice = balance.token.basePriceClaim?.values.find(
-        (value) => value.key === "amount"
-      )?.value;
-      if (!basePrice) {
-        return acc;
-      }
-
-      const basePriceParsed = Number(basePrice) / Math.pow(10, 18);
       const balanceValue = Number(balance.value);
-      return acc + basePriceParsed * balanceValue;
+      return acc + getBasePrice(balance.token) * balanceValue;
     }, 0);
 
     // Get the account stats state
@@ -158,7 +162,7 @@ describe("AccountStats", () => {
     if (statsResponse.accountStatsState) {
       expect(
         Number(statsResponse.accountStatsState.totalValueInBaseCurrency)
-      ).toBeCloseTo(expectedTotalValue, 2);
+      ).toBeCloseTo(expectedTotalValue, 6);
       expect(statsResponse.accountStatsState.balancesCount).toBe(
         account.balances.length
       );

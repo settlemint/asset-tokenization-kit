@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
+import { getTotalValueInBaseCurrency } from "../utils/token-stats-test-utils";
 
 describe("TokenTypeStats", () => {
   it("should fetch token type stats aggregated by hour", async () => {
@@ -120,7 +121,7 @@ describe("TokenTypeStats", () => {
       );
     expect(totalValueInBaseCurrency).toBeCloseTo(
       Number(systemValueInBaseCurrency),
-      2
+      6
     );
 
     for (const tokenTypeStat of tokenTypeStatsResponse?.tokenTypeStatsStates) {
@@ -135,9 +136,20 @@ describe("TokenTypeStats", () => {
               totalSupply
               basePriceClaim {
                 id
-                values(where: { key: "amount" }) {
+                values {
                   key
                   value
+                }
+              }
+              bond {
+                faceValue
+                denominationAsset {
+                  basePriceClaim {
+                    values {
+                      key
+                      value
+                    }
+                  }
                 }
               }
             }
@@ -149,18 +161,11 @@ describe("TokenTypeStats", () => {
       expect(tokenResponse.tokens.length).toEqual(tokenTypeStat.count);
 
       const expectedTotalValue = tokenResponse.tokens.reduce((acc, token) => {
-        const basePrice = token.basePriceClaim?.values.find(
-          (value) => value.key === "amount"
-        )?.value;
-        if (!basePrice) {
-          return acc;
-        }
-        const basePriceParsed = Number(basePrice) / Math.pow(10, 18);
-        return acc + basePriceParsed * Number(token.totalSupply);
+        return acc + getTotalValueInBaseCurrency(token);
       }, 0);
       expect(Number(tokenTypeStat.totalValueInBaseCurrency)).toBeCloseTo(
         expectedTotalValue,
-        2
+        6
       );
 
       const expectedPercentageOfTotalSupply =
@@ -169,7 +174,7 @@ describe("TokenTypeStats", () => {
         100;
       expect(Number(tokenTypeStat.percentageOfTotalSupply)).toBeCloseTo(
         expectedPercentageOfTotalSupply,
-        2
+        6
       );
     }
   });
