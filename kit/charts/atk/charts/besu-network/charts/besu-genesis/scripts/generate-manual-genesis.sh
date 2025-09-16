@@ -5,12 +5,13 @@ usage() {
   cat <<'USAGE'
 Generate Besu genesis artifacts locally using the same container logic as the Helm job.
 
-Usage: generate-manual-genesis.sh [--values <file>] [--output <dir>] [--artifacts <dir>]
+Usage: generate-manual-genesis.sh [--values <file>] [--output <dir>] [--artifacts <dir>] [--validators <count>]
 
-  --values, -f    Path to besu-genesis values file (default: chart values.yaml)
-  --output, -o    Directory to place generated artifacts (default: ./output)
-  --artifacts     Optional path with contract artifact overrides mounted at /contracts/genesis
-  --help, -h      Show this help message
+  --values, -f       Path to besu-genesis values file (default: chart values.yaml)
+  --output, -o       Directory to place generated artifacts (default: ./output)
+  --artifacts        Optional path with contract artifact overrides mounted at /contracts/genesis
+  --validators, -v   Number of validators to generate (overrides values file)
+  --help, -h         Show this help message
 USAGE
 }
 
@@ -32,6 +33,7 @@ CHART_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 VALUES_FILE="$CHART_DIR/values.yaml"
 OUTPUT_DIR="$CHART_DIR/output"
 ARTIFACTS_DIR=""
+VALIDATOR_COUNT_OVERRIDE=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -49,6 +51,11 @@ while [[ $# -gt 0 ]]; do
       shift
       [[ $# -gt 0 ]] || { echo "Missing argument for --artifacts" >&2; exit 1; }
       ARTIFACTS_DIR=$1
+      ;;
+    --validators|-v)
+      shift
+      [[ $# -gt 0 ]] || { echo "Missing argument for --validators" >&2; exit 1; }
+      VALIDATOR_COUNT_OVERRIDE=$1
       ;;
     --help|-h)
       usage
@@ -96,7 +103,10 @@ if [[ "$IMAGE_TAG" == "null" || "$IMAGE_TAG" == "" ]]; then
 fi
 
 VALIDATORS_ARG="0"
-if [[ "$VALIDATORS_GENERATE" == "true" ]]; then
+if [[ -n "$VALIDATOR_COUNT_OVERRIDE" ]]; then
+  VALIDATORS_ARG="$VALIDATOR_COUNT_OVERRIDE"
+  echo "Using validator count override: $VALIDATOR_COUNT_OVERRIDE"
+elif [[ "$VALIDATORS_GENERATE" == "true" ]]; then
   VALIDATORS_ARG="$VALIDATOR_COUNT"
 fi
 
@@ -175,12 +185,12 @@ SNIPPET_FILE="$OUTPUT_DIR/manual-values.yaml"
   echo "    genesisJson: |-"
   indent "      " < "$GENESIS_FILE"
   echo "    staticNodes:"
-  if [[ -s "$STATIC_NODES_FILE" ]]; then
+  if jq -e '. | length > 0' "$STATIC_NODES_FILE" >/dev/null 2>&1; then
     jq -r '.[]' "$STATIC_NODES_FILE" | while IFS= read -r node; do
       printf '      - "%s"\n' "$node"
     done
   else
-    echo "      - \"\""
+    echo "      []"
   fi
   echo "    bootnodes: []"
   echo "    validators:"

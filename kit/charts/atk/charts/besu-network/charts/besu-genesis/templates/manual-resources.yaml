@@ -79,7 +79,7 @@ data:
   accountPrivate.key: {{ $accountPrivateKey | b64enc }}
   accountPassword: {{ $accountPassword | b64enc }}
   accountKeystore: {{ $accountKeystore | b64enc }}
-  accountAdddress: {{ $accountAddress | b64enc }}
+  accountAddress: {{ $accountAddress | b64enc }}
 ---
 apiVersion: v1
 kind: ConfigMap
