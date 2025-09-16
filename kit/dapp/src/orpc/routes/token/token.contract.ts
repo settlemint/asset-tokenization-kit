@@ -20,6 +20,7 @@ import { tokenRecoverERC20Contract } from "@/orpc/routes/token/routes/mutations/
 import { tokenRecoverTokensContract } from "@/orpc/routes/token/routes/mutations/recovery/token.recover-tokens.contract";
 import { tokenRedeemContract } from "@/orpc/routes/token/routes/mutations/redeem/token.redeem.contract";
 import { tokenTransferContract } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer.contract";
+import { tokenForcedTransferContract } from "@/orpc/routes/token/routes/mutations/transfer/token.forced-transfer.contract";
 import { tokenSetYieldScheduleContract } from "@/orpc/routes/token/routes/mutations/yield/token.set-yield-schedule.contract";
 
 // Query contracts
@@ -49,6 +50,7 @@ export const tokenContract = {
   mint: tokenMintContract,
   burn: tokenBurnContract,
   transfer: tokenTransferContract,
+  forcedTransfer: tokenForcedTransferContract,
   approve: tokenApproveContract,
   redeem: tokenRedeemContract,
   mature: tokenMatureContract,
@@ -104,5 +106,6 @@ export type TokenAccessManagedMutations =
   | "updateCollateral"
   | "setYieldSchedule"
   | "transfer"
+  | "forcedTransfer"
   | "unpause"
   | "withdrawDenominationAsset";
