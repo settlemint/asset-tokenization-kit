@@ -33,11 +33,6 @@ const IDENTITY_LIST_QUERY = theGraphGraphql(`
         isContract
         contractName
       }
-      claims {
-        id
-        name
-        revoked
-      }
       registryStorage {
         id
       }
@@ -62,15 +57,6 @@ const IdentityListGraphSchema = z.object({
             contractName: z.string().nullish(),
           })
           .nullish(),
-        claims: z
-          .array(
-            z.object({
-              id: z.string(),
-              name: z.string().nullish(),
-              revoked: z.boolean(),
-            })
-          )
-          .nullish(),
         registryStorage: z.object({ id: z.string() }).nullish(),
         deployedInTransaction: z.string().nullish(),
       })
@@ -78,6 +64,28 @@ const IdentityListGraphSchema = z.object({
     .default([]),
   total: z.array(z.object({ id: z.string() })).default([]),
 });
+
+const IdentityClaimsForListSchema = z.object({
+  identityClaims: z
+    .array(
+      z.object({
+        identity: z.object({ id: z.string() }),
+        revoked: z.boolean(),
+      })
+    )
+    .default([]),
+});
+
+const IDENTITY_CLAIMS_FOR_LIST_QUERY = theGraphGraphql(`
+  query IdentityClaimsForList($identityIds: [String!]!) {
+    identityClaims(where: { identity_in: $identityIds }) @fetchAll {
+      identity {
+        id
+      }
+      revoked
+    }
+  }
+`);
 
 type IdentityOrderField = "id" | "deployedInTransaction";
 
@@ -141,10 +149,40 @@ export const identityList = authRouter.system.identity.list
     });
 
     const identities = response.identities ?? [];
+    const identityIds = Array.from(
+      new Set(identities.map((identity) => identity.id.toLowerCase()))
+    );
+
+    const claimCounts = new Map<
+      string,
+      { total: number; revoked: number }
+    >();
+
+    if (identityIds.length > 0) {
+      const claimsResponse = await context.theGraphClient.query(
+        IDENTITY_CLAIMS_FOR_LIST_QUERY,
+        {
+          input: { identityIds },
+          output: IdentityClaimsForListSchema,
+        }
+      );
+
+      for (const claim of claimsResponse.identityClaims ?? []) {
+        const key = claim.identity.id.toLowerCase();
+        const totals = claimCounts.get(key) ?? { total: 0, revoked: 0 };
+        totals.total += 1;
+        if (claim.revoked) {
+          totals.revoked += 1;
+        }
+        claimCounts.set(key, totals);
+      }
+    }
+
     const items = identities.map((identity) => {
-      const claims = identity.claims ?? [];
-      const revokedClaimsCount = claims.filter((claim) => claim.revoked).length;
-      const activeClaimsCount = claims.length - revokedClaimsCount;
+      const counts =
+        claimCounts.get(identity.id.toLowerCase()) ?? { total: 0, revoked: 0 };
+      const revokedClaimsCount = counts.revoked;
+      const activeClaimsCount = counts.total - revokedClaimsCount;
       const account =
         identity.account && identity.account.isContract === false
           ? { id: identity.account.id }
@@ -161,7 +199,7 @@ export const identityList = authRouter.system.identity.list
         id: identity.id,
         account,
         contract,
-        claimsCount: claims.length,
+        claimsCount: counts.total,
         activeClaimsCount,
         revokedClaimsCount,
         registryStorageId: identity.registryStorage?.id,

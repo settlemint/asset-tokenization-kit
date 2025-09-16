@@ -21,7 +21,7 @@ const routeParamsSchema = z.object({
  * for all claim detail sub-routes. The route is authenticated and requires
  * the user to be onboarded.
  *
- * Route path: `/admin/claim-management/{accountId}`
+ * Route path: `/admin/identity-management/{accountId}`
  *
  * @remarks
  * - The accountId parameter must be a non-empty string (wallet address)
@@ -56,7 +56,7 @@ export const Route = createFileRoute(
         createI18nBreadcrumbMetadata("claimManagement"),
         {
           title: `${accountId.slice(0, 6)}...${accountId.slice(-4)}`,
-          href: `/admin/claim-management/${accountId}`,
+          href: `/admin/identity-management/${accountId}`,
         },
       ],
     };

@@ -1,5 +1,4 @@
 import { DataTable } from "@/components/data-table/data-table";
-import type { FilterValue } from "@/components/data-table/filters/types/filter-types";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
@@ -10,7 +9,7 @@ import { orpc } from "@/orpc/orpc-client";
 import type { IdentityListOutput } from "@/orpc/routes/system/identity/routes/identity.list.schema";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import type { CellContext, ColumnDef, Row } from "@tanstack/table-core";
+import type { CellContext, ColumnDef } from "@tanstack/table-core";
 import { Fingerprint } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -59,82 +58,6 @@ export function IdentityTable() {
   const columns = useMemo(
     () =>
       withAutoFeatures([
-        columnHelper.display({
-          id: "identity",
-          header: t("identityTable.columns.id"),
-          cell: ({ row }: CellContext<IdentityRow, unknown>) => {
-            const identity = row.original;
-            const kind: EntityKind = identity.contract ? "contract" : "account";
-            const typeLabel = t(
-              kind === "contract"
-                ? "identityTable.types.contract"
-                : "identityTable.types.account"
-            );
-
-            return (
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline">{typeLabel}</Badge>
-                  <Web3Address
-                    address={identity.id}
-                    size="small"
-                    copyToClipboard
-                    showPrettyName={false}
-                  />
-                </div>
-                {identity.contract?.contractName ? (
-                  <span className="text-muted-foreground text-xs">
-                    {identity.contract.contractName}
-                  </span>
-                ) : null}
-              </div>
-            );
-          },
-          filterFn: (
-            row: Row<IdentityRow>,
-            _columnId: string,
-            filterValue: string | string[] | FilterValue<"text", IdentityRow>
-          ) => {
-            if (!filterValue) return true;
-
-            const haystack = [
-              row.original.id,
-              row.original.account?.id,
-              row.original.contract?.id,
-              row.original.contract?.contractName,
-            ]
-              .filter(Boolean)
-              .map((value) => value?.toLowerCase() ?? "")
-              .join(" ");
-
-            const evaluate = (query: string) => {
-              if (!query) return true;
-              const normalized = query.toLowerCase();
-              return haystack.includes(normalized);
-            };
-
-            if (typeof filterValue === "string") {
-              return evaluate(filterValue);
-            }
-
-            if (Array.isArray(filterValue)) {
-              return filterValue.every((value) =>
-                typeof value === "string" ? evaluate(value) : true
-              );
-            }
-
-            const values = filterValue.values ?? [];
-            const term = values[0]?.toLowerCase() ?? "";
-            if (!term) return true;
-            const match = haystack.includes(term);
-            return filterValue.operator === "does not contain" ? !match : match;
-          },
-          meta: {
-            displayName: t("identityTable.columns.id"),
-            type: "address",
-            enableColumnFilter: true,
-          },
-        }),
         columnHelper.accessor(
           (row: IdentityRow) =>
             (row.contract ? "contract" : "account") as EntityKind,
@@ -176,7 +99,7 @@ export function IdentityTable() {
               row.contract ? "contract" : undefined,
               row.account ? "account" : undefined,
             ]
-              .filter((value): value is string => Boolean(value))
+              .filter(Boolean)
               .join(" "),
           {
             id: "linkedEntity",
@@ -194,7 +117,7 @@ export function IdentityTable() {
                     )}
                     <Web3Address
                       address={contract.id}
-                      size="tiny"
+                      size="small"
                       copyToClipboard
                       showBadge={!contract.contractName}
                       showPrettyName={false}
@@ -207,7 +130,7 @@ export function IdentityTable() {
                 return (
                   <Web3Address
                     address={account.id}
-                    size="tiny"
+                    size="small"
                     copyToClipboard
                     showBadge
                     showPrettyName={false}
