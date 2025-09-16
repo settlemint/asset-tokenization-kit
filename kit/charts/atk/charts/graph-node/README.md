@@ -63,6 +63,14 @@ A Helm chart for Graph Node
 | ingress.hosts[0].paths[4].pathType | string | `"ImplementationSpecific"` |  |
 | ingress.tls | list | `[]` |  |
 | initContainer.image | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/kubesphere/kubectl","tag":"v1.33.4"}` | Image for init container kubectl |
+| initContainer.tcpCheck.dependencies[0].endpoint | string | `"{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGHOST }}:{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGPORT }}"` |  |
+| initContainer.tcpCheck.dependencies[0].name | string | `"postgresql"` |  |
+| initContainer.tcpCheck.enabled | bool | `true` |  |
+| initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
+| initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
+| initContainer.tcpCheck.image.tag | string | `"v7.7.10"` |  |
+| initContainer.tcpCheck.resources | object | `{}` |  |
+| initContainer.tcpCheck.timeout | int | `0` |  |
 | nameOverride | string | `""` |  |
 | networkPolicy.egress | list | `[]` |  |
 | networkPolicy.enabled | bool | `false` |  |

@@ -52,6 +52,7 @@ spec:
       {{- if .Values.tolerations }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tolerations "context" $) | nindent 8 }}
       {{- end }}
+      {{- $tcpDeps := default (list) .Values.initContainer.tcpCheck.dependencies }}
       initContainers:
         - name: copy-artifacts
           image: "{{ .Values.global.artifacts.image.registry }}/{{ .Values.global.artifacts.image.repository }}:{{ .Values.global.artifacts.image.tag }}"
@@ -70,6 +71,21 @@ spec:
           securityContext:
             runAsUser: 1001
             runAsGroup: 1001
+        {{- if and .Values.initContainer.tcpCheck.enabled (gt (len $tcpDeps) 0) }}
+          {{- range $tcpDeps }}
+        - name: wait-for-{{ .name }}
+          image: "{{ $.Values.initContainer.tcpCheck.image.repository }}:{{ $.Values.initContainer.tcpCheck.image.tag }}"
+          imagePullPolicy: {{ $.Values.initContainer.tcpCheck.image.pullPolicy }}
+          command: ['/usr/bin/wait-for-it', '{{ tpl .endpoint $ }}', '-t', '{{ $.Values.initContainer.tcpCheck.timeout }}']
+          resources:
+            limits:
+              cpu: 100m
+              memory: 64Mi
+            requests:
+              cpu: 10m
+              memory: 32Mi
+          {{- end }}
+        {{- end }}
       {{- if .Values.initContainers }}
         {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | nindent 8 }}
       {{- end }}
