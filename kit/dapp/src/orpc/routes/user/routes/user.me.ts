@@ -130,7 +130,7 @@ export const me = authRouter.user.me
       lastName: kyc?.lastName,
       identity: account?.identity,
       claims: account?.claims ?? [],
-      isRegistered: !!account?.identity,
+      isRegistered: account?.identityIsRegistered ?? false,
       verificationTypes: [
         ...(authUser.pincodeEnabled ? [VerificationTypeEnum.pincode] : []),
         ...(authUser.twoFactorEnabled ? [VerificationTypeEnum.otp] : []),

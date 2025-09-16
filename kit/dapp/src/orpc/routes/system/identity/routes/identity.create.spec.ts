@@ -73,5 +73,8 @@ describe("Identity create", () => {
     });
     expect(result.id).toBe(wallet);
     expect(result.identity).toBeDefined();
+
+    const initialUser = await client.user.read({ wallet });
+    expect(initialUser.isRegistered).toBe(false);
   });
 });

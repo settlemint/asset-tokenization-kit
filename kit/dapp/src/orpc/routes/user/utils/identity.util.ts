@@ -63,7 +63,7 @@ export async function fetchUserIdentity({
     return {
       identity,
       claims,
-      isRegistered: !!identity,
+      isRegistered: accountData?.identityIsRegistered ?? false,
     };
   } catch (error: unknown) {
     // 404 from TheGraph means user has no on-chain identity yet

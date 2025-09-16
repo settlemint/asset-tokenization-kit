@@ -14,6 +14,7 @@ const READ_ACCOUNT_QUERY = theGraphGraphql(`
       country
       identity {
         id
+        isRegistered
         claims {
           id
           name
@@ -70,6 +71,7 @@ export const read = authRouter.account.read
         ? countries.numericToAlpha2(result.account.country)
         : undefined,
       identity: result.account.identity?.id,
+      identityIsRegistered: result.account.identity?.isRegistered ?? false,
       claims:
         result.account.identity?.claims.map((claim) => ({
           id: claim.id,

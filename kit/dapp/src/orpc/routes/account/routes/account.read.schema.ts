@@ -1,6 +1,6 @@
+import { identityClaim } from "@atk/zod/claim";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { isoCountryCode } from "@atk/zod/iso-country-code";
-import { identityClaim } from "@atk/zod/claim";
 import { z } from "zod";
 
 export const AccountReadSchema = z.object({
@@ -39,6 +39,11 @@ export const AccountSchema = z.object({
   identity: ethereumAddress.optional(),
 
   /**
+   * Whether the identity is registered in the system.
+   */
+  identityIsRegistered: z.boolean().default(false),
+
+  /**
    * User's identity claims.
    * Returns both claim names and IDs for revocation operations
    */
@@ -56,6 +61,7 @@ export const AccountResponseSchema = z.object({
       identity: z
         .object({
           id: ethereumAddress,
+          isRegistered: z.boolean(),
           claims: z.array(identityClaim),
         })
         .nullable()
