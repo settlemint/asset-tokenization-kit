@@ -33,6 +33,38 @@
       "notVerified": "Nicht verifiziert"
     }
   },
+  "identityTable": {
+    "columns": {
+      "id": "Identity",
+      "type": "Type",
+      "linkedEntity": "Account / Contract",
+      "activeClaims": "Active Claims",
+      "revokedClaims": "Revoked Claims",
+      "deployment": "Deployment Tx"
+    },
+    "types": {
+      "account": "Account",
+      "contract": "Contract"
+    },
+    "fallback": {
+      "noAccount": "No account",
+      "noContract": "No contract",
+      "noDeployment": "No deployment",
+      "noEntity": "No linked entity"
+    },
+    "search": {
+      "placeholder": "Search identities..."
+    },
+    "emptyState": {
+      "title": "No identities found",
+      "description": "No identities match your filters yet.",
+      "loading": "Loading identities..."
+    },
+    "errors": {
+      "loadFailed": "Failed to load identities. Please try again.",
+      "navigationFailed": "Failed to open identity details"
+    }
+  },
   "page": {
     "description": "Identitätsansprüche, Verifizierungsstatus und Compliance für Benutzer verwalten.",
     "loading": "Ansprüche werden geladen..."

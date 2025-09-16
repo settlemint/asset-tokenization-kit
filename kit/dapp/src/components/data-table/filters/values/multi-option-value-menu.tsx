@@ -168,26 +168,9 @@ export function PropertyFilterMultiOptionValueMenu<
    */
   const handleOptionSelect = useCallback(
     (value: string, checked: boolean) => {
-      column.setFilterValue(
-        (old: undefined | FilterValue<"multiOption", TData>) => {
-          if (checked) {
-            const newVals = old?.values[0]
-              ? [...old.values[0], value]
-              : [value];
-            const newOperator = determineNewOperator(
-              "multiOption",
-              old?.values ?? [],
-              [newVals],
-              old?.operator ?? "include"
-            );
-
-            return {
-              operator: newOperator,
-              values: [uniq(newVals)],
-            } as FilterValue<"multiOption", TData>;
-          }
-
-          const newVals = old?.values[0]?.filter((v) => v !== value) ?? [];
+      column.setFilterValue((old: undefined | FilterValue<"multiOption", TData>) => {
+        if (checked) {
+          const newVals = old?.values[0] ? [...old.values[0], value] : [value];
           const newOperator = determineNewOperator(
             "multiOption",
             old?.values ?? [],
@@ -195,18 +178,33 @@ export function PropertyFilterMultiOptionValueMenu<
             old?.operator ?? "include"
           );
 
-          if (newVals.length === 0) {
-            return undefined;
-          }
-
           return {
             operator: newOperator,
-            values: [newVals],
-          } as FilterValue<"multiOption", TData>;
+            values: [uniq(newVals)],
+            columnMeta,
+          } satisfies FilterValue<"multiOption", TData>;
         }
-      );
+
+        const newVals = old?.values[0]?.filter((v) => v !== value) ?? [];
+        const newOperator = determineNewOperator(
+          "multiOption",
+          old?.values ?? [],
+          [newVals],
+          old?.operator ?? "include"
+        );
+
+        if (newVals.length === 0) {
+          return undefined;
+        }
+
+        return {
+          operator: newOperator,
+          values: [newVals],
+          columnMeta,
+        } satisfies FilterValue<"multiOption", TData>;
+      });
     },
-    [column]
+    [column, columnMeta]
   );
 
   const Icon = columnMeta.icon;

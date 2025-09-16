@@ -1,5 +1,6 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
+import { IdentityTable } from "@/components/identity/identity-table";
 import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
@@ -7,7 +8,7 @@ import { useTranslation } from "react-i18next";
 export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/admin/identity-management/"
 )({
-  component: ClaimManagementPage,
+  component: IdentityManagementPage,
   loader: () => {
     return {
       breadcrumb: [createI18nBreadcrumbMetadata("claimManagement")],
@@ -15,7 +16,7 @@ export const Route = createFileRoute(
   },
 });
 
-function ClaimManagementPage() {
+function IdentityManagementPage() {
   const { t } = useTranslation("navigation");
   const { t: tClaims } = useTranslation("claims");
 
@@ -35,7 +36,9 @@ function ClaimManagementPage() {
             <p className="text-muted-foreground">{tClaims("page.loading")}</p>
           </div>
         }
-      ></Suspense>
+      >
+        <IdentityTable />
+      </Suspense>
     </div>
   );
 }
