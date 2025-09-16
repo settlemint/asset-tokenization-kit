@@ -1,6 +1,6 @@
 {{- /*
 Render wait-for-it style init containers for tcp dependency checks.
-Usage: include "atk.waitforit.containers" (dict "context" $ "config" <values> "defaultResources" <dict>)
+Usage: include "atk.waitforit.containers" (dict "context" $ "config" <values>)
 */ -}}
 {{- define "atk.waitforit.containers" -}}
 {{- $ctx := .context -}}
@@ -13,8 +13,7 @@ Usage: include "atk.waitforit.containers" (dict "context" $ "config" <values> "d
 {{- $tag := $image.tag | default "v7.7.10" -}}
 {{- $pullPolicy := $image.pullPolicy | default "IfNotPresent" -}}
 {{- $timeout := $cfg.timeout | default 120 -}}
-{{- $defaultResources := .defaultResources | default (dict) -}}
-{{- $resources := $cfg.resources | default $defaultResources -}}
+{{- $resources := $cfg.resources | default (dict) -}}
 {{- range $deps }}
 - name: wait-for-{{ .name }}
   image: "{{ $repository }}:{{ $tag }}"

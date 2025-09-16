@@ -295,6 +295,13 @@ postgresReadinessCheck:
   randomDelayRange:
     min: 5
     max: 30
+  resources:
+    limits:
+      cpu: 100m
+      memory: 96Mi
+    requests:
+      cpu: 25m
+      memory: 48Mi
 
 # Additional init containers
 extraInitContainers: []

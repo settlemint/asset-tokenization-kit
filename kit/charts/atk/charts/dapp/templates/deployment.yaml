@@ -35,7 +35,7 @@ spec:
 
       {{- /* Define initContainers block only if needed */}}
       {{- if or .Values.initContainer.tcpCheck.enabled .Values.initContainer.graphQLCheck.enabled }}
-      {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck "defaultResources" (dict "limits" (dict "cpu" "100m" "memory" "64Mi") "requests" (dict "cpu" "50m" "memory" "32Mi"))) }}
+      {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck) }}
       initContainers:
         {{- if $waitForIt }}
 {{ $waitForIt | nindent 8 }}

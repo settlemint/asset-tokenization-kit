@@ -1,6 +1,6 @@
 # atk
 
-![Version: 2.0.1](https://img.shields.io/badge/Version-2.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
+![Version: 2.0.0](https://img.shields.io/badge/Version-2.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
 
 A Helm chart for the SettleMint Asset Tokenization Kit
 
@@ -29,21 +29,49 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| besu-network.besu-genesis.cleanupJob.resources.limits.cpu | string | `"250m"` |  |
+| besu-network.besu-genesis.cleanupJob.resources.limits.memory | string | `"256Mi"` |  |
+| besu-network.besu-genesis.cleanupJob.resources.requests.cpu | string | `"75m"` |  |
+| besu-network.besu-genesis.cleanupJob.resources.requests.memory | string | `"128Mi"` |  |
 | besu-network.besu-genesis.configServer.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-genesis.configServer.image.repository | string | `"docker.io/nginx"` |  |
 | besu-network.besu-genesis.configServer.image.tag | string | `"1.29.1-alpine"` |  |
 | besu-network.besu-genesis.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-genesis.image.repository | string | `"ghcr.io/settlemint/quorum-genesis-tool"` |  |
 | besu-network.besu-genesis.image.tag | string | `"sha-49c40f5"` |  |
+| besu-network.besu-genesis.initJob.copyArtifacts.resources.limits.cpu | string | `"200m"` |  |
+| besu-network.besu-genesis.initJob.copyArtifacts.resources.limits.memory | string | `"256Mi"` |  |
+| besu-network.besu-genesis.initJob.copyArtifacts.resources.requests.cpu | string | `"50m"` |  |
+| besu-network.besu-genesis.initJob.copyArtifacts.resources.requests.memory | string | `"128Mi"` |  |
+| besu-network.besu-genesis.initJob.resources.limits.cpu | string | `"500m"` |  |
+| besu-network.besu-genesis.initJob.resources.limits.memory | string | `"512Mi"` |  |
+| besu-network.besu-genesis.initJob.resources.requests.cpu | string | `"150m"` |  |
+| besu-network.besu-genesis.initJob.resources.requests.memory | string | `"256Mi"` |  |
 | besu-network.besu-node.hooks.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-node.hooks.image.repository | string | `"ghcr.io/settlemint/quorum-genesis-tool"` |  |
 | besu-network.besu-node.hooks.image.tag | string | `"sha-49c40f5"` |  |
+| besu-network.besu-node.hooks.preDelete.resources.limits.cpu | string | `"300m"` |  |
+| besu-network.besu-node.hooks.preDelete.resources.limits.memory | string | `"256Mi"` |  |
+| besu-network.besu-node.hooks.preDelete.resources.requests.cpu | string | `"100m"` |  |
+| besu-network.besu-node.hooks.preDelete.resources.requests.memory | string | `"128Mi"` |  |
+| besu-network.besu-node.hooks.preInstall.resources.limits.cpu | string | `"500m"` |  |
+| besu-network.besu-node.hooks.preInstall.resources.limits.memory | string | `"512Mi"` |  |
+| besu-network.besu-node.hooks.preInstall.resources.requests.cpu | string | `"150m"` |  |
+| besu-network.besu-node.hooks.preInstall.resources.requests.memory | string | `"256Mi"` |  |
 | besu-network.besu-node.initContainers.checkConnection.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-node.initContainers.checkConnection.image.repository | string | `"docker.io/curlimages/curl"` |  |
 | besu-network.besu-node.initContainers.checkConnection.image.tag | string | `"8.16.0"` |  |
 | besu-network.besu-node.initContainers.testConnection.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-node.initContainers.testConnection.image.repository | string | `"docker.io/busybox"` |  |
 | besu-network.besu-node.initContainers.testConnection.image.tag | string | `"1.37"` |  |
+| besu-network.besu-node.initContainers.volumePermissions.resources.limits.cpu | string | `"100m"` |  |
+| besu-network.besu-node.initContainers.volumePermissions.resources.limits.memory | string | `"64Mi"` |  |
+| besu-network.besu-node.initContainers.volumePermissions.resources.requests.cpu | string | `"20m"` |  |
+| besu-network.besu-node.initContainers.volumePermissions.resources.requests.memory | string | `"32Mi"` |  |
+| besu-network.besu-node.initContainers.waitForGenesis.resources.limits.cpu | string | `"150m"` |  |
+| besu-network.besu-node.initContainers.waitForGenesis.resources.limits.memory | string | `"128Mi"` |  |
+| besu-network.besu-node.initContainers.waitForGenesis.resources.requests.cpu | string | `"25m"` |  |
+| besu-network.besu-node.initContainers.waitForGenesis.resources.requests.memory | string | `"64Mi"` |  |
 | besu-network.besu-node.node.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-node.node.image.repository | string | `"docker.io/hyperledger/besu"` |  |
 | besu-network.besu-node.node.image.tag | string | `"25.8.0"` |  |
@@ -77,6 +105,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | besu-network.enabled | bool | `true` |  |
 | besu-network.rawGenesisConfig.blockchain.nodes.count | int | `1` |  |
 | blockscout.blockscout-stack.blockscout.env.API_URL | string | `"https://explorer.k8s.orb.local"` |  |
+| blockscout.blockscout-stack.blockscout.env.DATABASE_URL | string | `"postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"` |  |
 | blockscout.blockscout-stack.blockscout.env.WEBAPP_URL | string | `"https://explorer.k8s.orb.local"` |  |
 | blockscout.blockscout-stack.blockscout.image.pullPolicy | string | `"IfNotPresent"` |  |
 | blockscout.blockscout-stack.blockscout.image.repository | string | `"ghcr.io/blockscout/blockscout"` |  |
@@ -148,7 +177,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | dapp.secretEnv.OTEL_EXPORTER_OTLP_PROTOCOL | string | `"http"` |  |
 | dapp.secretEnv.SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT | string | `"http://blockscout-frontend-svc/"` |  |
 | dapp.secretEnv.SETTLEMINT_HASURA_ADMIN_SECRET | string | `"atk"` |  |
-| dapp.secretEnv.SETTLEMINT_HASURA_DATABASE_URL | string | `"postgresql://hasura:atk@postgresql:5432/hasura"` |  |
+| dapp.secretEnv.SETTLEMINT_HASURA_DATABASE_URL | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
 | dapp.secretEnv.SETTLEMINT_HASURA_ENDPOINT | string | `"http://hasura:8080/v1/graphql"` |  |
 | dapp.secretEnv.SETTLEMINT_HD_PRIVATE_KEY | string | `"atk-hd-private-key"` |  |
 | dapp.secretEnv.SETTLEMINT_INSTANCE | string | `"standalone"` |  |
@@ -156,10 +185,11 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | dapp.secretEnv.SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS | string | `"[\"http://graph-node-combined:8000/subgraphs/name/kit\"]"` |  |
 | erpc.config.database.evmJsonRpcCache.connectors[0].driver | string | `"redis"` |  |
 | erpc.config.database.evmJsonRpcCache.connectors[0].id | string | `"redis-cache"` |  |
-| erpc.config.database.evmJsonRpcCache.connectors[0].redis.addr | string | `"redis.atk.svc.cluster.local:6379"` |  |
+| erpc.config.database.evmJsonRpcCache.connectors[0].redis.addr | string | `"redis:6379"` |  |
 | erpc.config.database.evmJsonRpcCache.connectors[0].redis.connPoolSize | int | `128` |  |
 | erpc.config.database.evmJsonRpcCache.connectors[0].redis.db | int | `0` |  |
 | erpc.config.database.evmJsonRpcCache.connectors[0].redis.password | string | `"atk"` |  |
+| erpc.config.database.evmJsonRpcCache.connectors[0].redis.username | string | `"default"` |  |
 | erpc.config.database.evmJsonRpcCache.policies[0].connector | string | `"redis-cache"` |  |
 | erpc.config.database.evmJsonRpcCache.policies[0].finality | string | `"finalized"` |  |
 | erpc.config.database.evmJsonRpcCache.policies[0].method | string | `"*"` |  |
@@ -203,13 +233,34 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | global.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | global.networkPolicy.enabled | bool | `false` |  |
 | graph-node.enabled | bool | `true` |  |
+| graph-node.env.PRIMARY_SUBGRAPH_DATA_PGDATABASE | string | `"thegraph"` |  |
+| graph-node.env.PRIMARY_SUBGRAPH_DATA_PGHOST | string | `"postgresql"` |  |
+| graph-node.env.PRIMARY_SUBGRAPH_DATA_PGPASSWORD | string | `"atk"` |  |
+| graph-node.env.PRIMARY_SUBGRAPH_DATA_PGPORT | int | `5432` |  |
+| graph-node.env.PRIMARY_SUBGRAPH_DATA_PGUSER | string | `"thegraph"` |  |
 | graph-node.image.pullPolicy | string | `"IfNotPresent"` |  |
 | graph-node.image.repository | string | `"docker.io/graphprotocol/graph-node"` |  |
 | graph-node.image.tag | string | `"v0.40.1"` |  |
+| graph-node.ingress.annotations."nginx.ingress.kubernetes.io/rewrite-target" | string | `"/$1"` |  |
+| graph-node.ingress.annotations."nginx.ingress.kubernetes.io/use-regex" | string | `"true"` |  |
+| graph-node.ingress.className | string | `"atk-nginx"` |  |
+| graph-node.ingress.enabled | bool | `true` |  |
+| graph-node.ingress.hosts[0].host | string | `"graph.k8s.orb.local"` |  |
+| graph-node.ingress.hosts[0].paths[0].path | string | `"/(.*)"` |  |
+| graph-node.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
+| graph-node.ingress.hosts[0].paths[1].path | string | `"/ws/?(.*)"` |  |
+| graph-node.ingress.hosts[0].paths[1].pathType | string | `"ImplementationSpecific"` |  |
+| graph-node.ingress.hosts[0].paths[2].path | string | `"/admin/?(.*)"` |  |
+| graph-node.ingress.hosts[0].paths[2].pathType | string | `"ImplementationSpecific"` |  |
+| graph-node.ingress.hosts[0].paths[3].path | string | `"/indexer/?(.*)"` |  |
+| graph-node.ingress.hosts[0].paths[3].pathType | string | `"ImplementationSpecific"` |  |
+| graph-node.ingress.hosts[0].paths[4].path | string | `"/graphman/?(.*)"` |  |
+| graph-node.ingress.hosts[0].paths[4].pathType | string | `"ImplementationSpecific"` |  |
+| graph-node.ingress.tls | list | `[]` |  |
 | graph-node.initContainer.image.pullPolicy | string | `"IfNotPresent"` |  |
 | graph-node.initContainer.image.repository | string | `"docker.io/kubesphere/kubectl"` |  |
 | graph-node.initContainer.image.tag | string | `"v1.33.4"` |  |
-| graph-node.initContainer.tcpCheck.dependencies[0].endpoint | string | `"{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGHOST }}:{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGPORT }}"` |  |
+| graph-node.initContainer.tcpCheck.dependencies[0].endpoint | string | `"postgresql:5432"` |  |
 | graph-node.initContainer.tcpCheck.dependencies[0].name | string | `"postgresql"` |  |
 | graph-node.initContainer.tcpCheck.enabled | bool | `true` |  |
 | graph-node.initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -223,6 +274,17 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | graph-node.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
 | graph-node.podAnnotations."prometheus.io/port" | string | `"8040"` |  |
 | graph-node.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
+| graph-node.postgresReadinessCheck.enabled | bool | `true` |  |
+| graph-node.postgresReadinessCheck.image | string | `"docker.io/postgres:17.6-alpine"` |  |
+| graph-node.postgresReadinessCheck.initialWaitTime | int | `2` |  |
+| graph-node.postgresReadinessCheck.maxRetries | int | `30` |  |
+| graph-node.postgresReadinessCheck.maxWaitTime | int | `30` |  |
+| graph-node.postgresReadinessCheck.randomDelayRange.max | int | `30` |  |
+| graph-node.postgresReadinessCheck.randomDelayRange.min | int | `5` |  |
+| graph-node.postgresReadinessCheck.resources.limits.cpu | string | `"100m"` |  |
+| graph-node.postgresReadinessCheck.resources.limits.memory | string | `"96Mi"` |  |
+| graph-node.postgresReadinessCheck.resources.requests.cpu | string | `"25m"` |  |
+| graph-node.postgresReadinessCheck.resources.requests.memory | string | `"48Mi"` |  |
 | hasura.enabled | bool | `true` |  |
 | hasura.graphql-engine.image.pullPolicy | string | `"IfNotPresent"` |  |
 | hasura.graphql-engine.image.repository | string | `"docker.io/hasura/graphql-engine"` |  |
@@ -243,6 +305,10 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | hasura.graphql-engine.labels."app.kubernetes.io/instance" | string | `"atk"` |  |
 | hasura.graphql-engine.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | hasura.graphql-engine.replicas | int | `1` |  |
+| hasura.graphql-engine.secret.extraSecrets.DEFAULT_DB_URL | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
+| hasura.graphql-engine.secret.metadataDbUrl | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
+| hasura.graphql-engine.secret.rateLimitRedisUrl | string | `"redis://default:atk@redis:6379/0"` |  |
+| hasura.graphql-engine.secret.redisUrl | string | `"redis://default:atk@redis:6379/0"` |  |
 | observability.alloy.alloy.resources | object | `{}` |  |
 | observability.alloy.configReloader.image.registry | string | `"quay.io"` |  |
 | observability.alloy.configReloader.image.repository | string | `"prometheus-operator/prometheus-config-reloader"` | Repository to get config reloader image from. |
@@ -298,11 +364,22 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.victoria-metrics-single.server.persistentVolume.size | string | `"10Gi"` |  |
 | observability.victoria-metrics-single.server.persistentVolume.storageClass | string | `""` |  |
 | observability.victoria-metrics-single.server.resources | object | `{}` |  |
+| portal.config.postgresql | string | `"postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"` |  |
+| portal.config.redis.db | int | `0` |  |
+| portal.config.redis.host | string | `"redis"` |  |
+| portal.config.redis.password | string | `"atk"` |  |
+| portal.config.redis.port | int | `6379` |  |
+| portal.config.redis.username | string | `"default"` |  |
 | portal.enabled | bool | `true` |  |
 | portal.image.pullPolicy | string | `"IfNotPresent"` |  |
 | portal.image.registry | string | `"ghcr.io"` |  |
 | portal.image.repository | string | `"settlemint/btp-scs-portal"` |  |
 | portal.image.tag | string | `"8.6.7"` |  |
+| portal.ingress.hostname | string | `"portal.k8s.orb.local"` |  |
+| portal.initContainer.copyArtifacts.resources.limits.cpu | string | `"150m"` |  |
+| portal.initContainer.copyArtifacts.resources.limits.memory | string | `"128Mi"` |  |
+| portal.initContainer.copyArtifacts.resources.requests.cpu | string | `"25m"` |  |
+| portal.initContainer.copyArtifacts.resources.requests.memory | string | `"64Mi"` |  |
 | portal.initContainer.tcpCheck.dependencies[0].endpoint | string | `"postgresql:5432"` |  |
 | portal.initContainer.tcpCheck.dependencies[0].name | string | `"postgresql"` |  |
 | portal.initContainer.tcpCheck.enabled | bool | `true` |  |
@@ -335,6 +412,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | support.minio.mcImage.pullPolicy | string | `"IfNotPresent"` |  |
 | support.minio.mcImage.repository | string | `"docker.io/minio/minio"` |  |
 | support.minio.mcImage.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` |  |
+| support.postgresql.enabled | bool | `true` |  |
 | support.postgresql.image.registry | string | `"docker.io"` |  |
 | support.postgresql.image.repository | string | `"postgres"` |  |
 | support.postgresql.image.tag | string | `"17.6-alpine"` |  |
@@ -363,6 +441,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | txsigner.image.registry | string | `"ghcr.io"` |  |
 | txsigner.image.repository | string | `"settlemint/btp-signer"` |  |
 | txsigner.image.tag | string | `"7.15.12"` |  |
+| txsigner.ingress.hostname | string | `"txsigner.k8s.orb.local"` |  |
 | txsigner.initContainer.tcpCheck.dependencies[0].endpoint | string | `"postgresql:5432"` |  |
 | txsigner.initContainer.tcpCheck.dependencies[0].name | string | `"postgresql"` |  |
 | txsigner.initContainer.tcpCheck.enabled | bool | `true` |  |

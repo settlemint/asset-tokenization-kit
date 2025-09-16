@@ -35,6 +35,30 @@ initJob:
     helm.sh/hook: pre-install
     helm.sh/hook-weight: "-10"
     helm.sh/hook-delete-policy: "hook-succeeded"
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 150m
+      memory: 256Mi
+  copyArtifacts:
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 128Mi
+
+cleanupJob:
+  resources:
+    limits:
+      cpu: 250m
+      memory: 256Mi
+    requests:
+      cpu: 75m
+      memory: 128Mi
 
 aws:
   # the aws cli commands uses the name 'quorum-sa' so only change this if you altered the name
@@ -86,4 +110,3 @@ genesisServer:
     pullPolicy: IfNotPresent
 
 imagePullSecrets: []
-

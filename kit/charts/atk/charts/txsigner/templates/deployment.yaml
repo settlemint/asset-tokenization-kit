@@ -52,7 +52,7 @@ spec:
       {{- if .Values.tolerations }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tolerations "context" $) | nindent 8 }}
       {{- end }}
-      {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck "defaultResources" (dict "limits" (dict "cpu" "100m" "memory" "64Mi") "requests" (dict "cpu" "10m" "memory" "32Mi"))) }}
+      {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck) }}
       {{- $legacyInit := "" }}
       {{- if .Values.initContainers }}
         {{- $legacyInit = include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) }}

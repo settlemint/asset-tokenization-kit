@@ -62,7 +62,7 @@ spec:
             - name: config
               mountPath: /etc/graph-node
               readOnly: true
-        {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck "defaultResources" (dict "limits" (dict "cpu" "100m" "memory" "64Mi") "requests" (dict "cpu" "10m" "memory" "32Mi"))) }}
+        {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck) }}
         {{- if $waitForIt }}
 {{ $waitForIt | nindent 8 }}
         {{- else if .Values.postgresReadinessCheck.enabled }}
@@ -110,6 +110,10 @@ spec:
 
               echo "PostgreSQL failed to become ready after $MAX_RETRIES attempts"
               exit 1
+          {{- with .Values.postgresReadinessCheck.resources }}
+          resources:
+{{ toYaml . | nindent 12 }}
+          {{- end }}
           env:
             - name: PGUSER
               valueFrom:

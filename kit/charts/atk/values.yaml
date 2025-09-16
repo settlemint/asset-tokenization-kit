@@ -18,8 +18,6 @@ global:
       repository: settlemint/asset-tokenization-kit-artifacts
       tag: 2.0.0-main.91391
       pullPolicy: IfNotPresent
-
-
 besu-network:
   enabled: true
   # Besu network images
@@ -33,6 +31,30 @@ besu-network:
         repository: docker.io/nginx
         tag: "1.29.1-alpine"
         pullPolicy: IfNotPresent
+    initJob:
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 150m
+          memory: 256Mi
+      copyArtifacts:
+        resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+    cleanupJob:
+      resources:
+        limits:
+          cpu: 250m
+          memory: 256Mi
+        requests:
+          cpu: 75m
+          memory: 128Mi
   besu-node:
     node:
       image:
@@ -49,6 +71,22 @@ besu-network:
         repository: ghcr.io/settlemint/quorum-genesis-tool
         tag: "sha-49c40f5"
         pullPolicy: IfNotPresent
+      preInstall:
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 150m
+            memory: 256Mi
+      preDelete:
+        resources:
+          limits:
+            cpu: 300m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
     initContainers:
       testConnection:
         image:
@@ -60,6 +98,22 @@ besu-network:
           repository: docker.io/curlimages/curl
           tag: "8.16.0"
           pullPolicy: IfNotPresent
+      waitForGenesis:
+        resources:
+          limits:
+            cpu: 150m
+            memory: 128Mi
+          requests:
+            cpu: 25m
+            memory: 64Mi
+      volumePermissions:
+        resources:
+          limits:
+            cpu: 100m
+            memory: 64Mi
+          requests:
+            cpu: 20m
+            memory: 32Mi
   besu-validator-1:
     enabled: true
     storage:
@@ -159,7 +213,8 @@ erpc:
           - id: redis-cache
             driver: redis  # Refer to "redis" driver docs below
             redis:
-              addr: redis.atk.svc.cluster.local:6379
+              addr: "redis:6379"
+              username: "default"
               password: "atk"
               db: 0
               connPoolSize: 128
@@ -205,6 +260,7 @@ blockscout:
       ingress:
         hostname: explorer.k8s.orb.local
       env:
+        DATABASE_URL: "postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"
         API_URL: https://explorer.k8s.orb.local
         WEBAPP_URL: https://explorer.k8s.orb.local
       resources: {}
@@ -247,14 +303,56 @@ graph-node:
           memory: 32Mi
       dependencies:
         - name: postgresql
-          endpoint: "{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGHOST }}:{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGPORT }}"
+          endpoint: "postgresql:5432"
+  ingress:
+    enabled: true
+    className: "atk-nginx"
+    annotations:
+      nginx.ingress.kubernetes.io/use-regex: 'true'
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+    hosts:
+      - host: graph.k8s.orb.local
+        paths:
+          - path: /(.*)
+            pathType: ImplementationSpecific
+          - path: /ws/?(.*)
+            pathType: ImplementationSpecific
+          - path: /admin/?(.*)
+            pathType: ImplementationSpecific
+          - path: /indexer/?(.*)
+            pathType: ImplementationSpecific
+          - path: /graphman/?(.*)
+            pathType: ImplementationSpecific
+    tls: []
+  env:
+    PRIMARY_SUBGRAPH_DATA_PGHOST: postgresql
+    PRIMARY_SUBGRAPH_DATA_PGPORT: 5432
+    PRIMARY_SUBGRAPH_DATA_PGDATABASE: thegraph
+    PRIMARY_SUBGRAPH_DATA_PGUSER: thegraph
+    PRIMARY_SUBGRAPH_DATA_PGPASSWORD: atk
+  postgresReadinessCheck:
+    enabled: true
+    image: docker.io/postgres:17.6-alpine
+    maxRetries: 30
+    initialWaitTime: 2
+    maxWaitTime: 30
+    randomDelayRange:
+      min: 5
+      max: 30
+    resources:
+      limits:
+        cpu: 100m
+        memory: 96Mi
+      requests:
+        cpu: 25m
+        memory: 48Mi
 
 hasura:
   enabled: true
   graphql-engine:
     replicas: 1
     ingress:
-      hostName: "hasura.k8s.orb.local"
+      hostName: hasura.k8s.orb.local
     labels:
       app.kubernetes.io/instance: atk
       kots.io/app-slug: settlemint-atk
@@ -272,7 +370,7 @@ hasura:
         imagePullPolicy: IfNotPresent
         command:
           - /usr/bin/wait-for-it
-          - postgresql:5432
+          - "postgresql:5432"
           - -t
           - "120"
         resources:
@@ -282,6 +380,12 @@ hasura:
           requests:
             cpu: 10m
             memory: 32Mi
+    secret:
+      metadataDbUrl: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
+      extraSecrets:
+        DEFAULT_DB_URL: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
+      redisUrl: "redis://default:atk@redis:6379/0"
+      rateLimitRedisUrl: "redis://default:atk@redis:6379/0"
 
 portal:
   enabled: true
@@ -315,6 +419,24 @@ portal:
       dependencies:
         - name: postgresql
           endpoint: "postgresql:5432"
+    copyArtifacts:
+      resources:
+        limits:
+          cpu: 150m
+          memory: 128Mi
+        requests:
+          cpu: 25m
+          memory: 64Mi
+  config:
+    postgresql: "postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"
+    redis:
+      host: "redis"
+      port: 6379
+      username: "default"
+      password: "atk"
+      db: 0
+  ingress:
+    hostname: portal.k8s.orb.local
 
 support:
   enabled: true
@@ -382,6 +504,7 @@ support:
         cpu: "200m"
 
   postgresql:
+    enabled: true
     image:
       registry: docker.io
       repository: postgres
@@ -532,9 +655,11 @@ txsigner:
   config:
     mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
     derivationPath: "m/44'/60'/0'/0/0"
-  postgresql: postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable
+  postgresql: "postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"
   replicaCount: 1
   resources: {}
+  ingress:
+    hostname: txsigner.k8s.orb.local
   # Legacy `initContainers` overrides remain supported for backward compatibility.
   initContainer:
     tcpCheck:
@@ -567,7 +692,7 @@ dapp:
     enabled: true
     # IMPORTANT: Set the correct hostname for your environment
     hosts:
-      - host: dapp.k8s.orb.local  # Example hostname
+      - host: dapp.k8s.orb.local
         paths:
           - path: /  # Adjust path if needed
             pathType: ImplementationSpecific
@@ -580,7 +705,7 @@ dapp:
     OTEL_EXPORTER_OTLP_PROTOCOL: "http"
     SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "http://blockscout-frontend-svc/"
     SETTLEMINT_HASURA_ADMIN_SECRET: "atk"
-    SETTLEMINT_HASURA_DATABASE_URL: "postgresql://hasura:atk@postgresql:5432/hasura"
+    SETTLEMINT_HASURA_DATABASE_URL: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
     SETTLEMINT_HASURA_ENDPOINT: "http://hasura:8080/v1/graphql"
     SETTLEMINT_HD_PRIVATE_KEY: "atk-hd-private-key"
     SETTLEMINT_INSTANCE: "standalone"

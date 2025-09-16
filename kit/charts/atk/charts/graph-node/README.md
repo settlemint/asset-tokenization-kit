@@ -88,6 +88,10 @@ A Helm chart for Graph Node
 | postgresReadinessCheck.maxRetries | int | `30` | Maximum number of connection retries |
 | postgresReadinessCheck.maxWaitTime | int | `30` | Maximum wait time between retries |
 | postgresReadinessCheck.randomDelayRange | object | `{"max":30,"min":5}` | Add random delay to prevent all nodes from connecting simultaneously |
+| postgresReadinessCheck.resources.limits.cpu | string | `"100m"` |  |
+| postgresReadinessCheck.resources.limits.memory | string | `"96Mi"` |  |
+| postgresReadinessCheck.resources.requests.cpu | string | `"25m"` |  |
+| postgresReadinessCheck.resources.requests.memory | string | `"48Mi"` |  |
 | rbac.create | bool | `false` | Specifies whether RBAC resources are to be created |
 | rbac.rules | list | `[]` |  |
 | replicaCount | int | `1` |  |

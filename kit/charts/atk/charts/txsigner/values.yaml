@@ -505,6 +505,6 @@ initContainer:
       requests:
         cpu: 10m
         memory: 32Mi
-    dependencies:
-      - name: postgresql
-        endpoint: "postgresql:5432"
+      dependencies:
+        - name: postgresql
+          endpoint: "postgresql:5432"
