@@ -6,8 +6,8 @@ import {
   TokenBalance,
 } from "../../generated/schema";
 import { fetchAccount } from "../account/fetch/account";
-import { fetchBond } from '../token-assets/bond/fetch/bond';
-import { fetchToken } from '../token/fetch/token';
+import { fetchBond } from "../token-assets/bond/fetch/bond";
+import { fetchToken } from "../token/fetch/token";
 import { getTokenBasePrice } from "../token/utils/token-utils";
 
 /**
@@ -68,11 +68,11 @@ export function updateAccountStatsForBalanceChange(
       Address.fromBytes(bond.denominationAsset)
     );
     const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
-    valueDelta = valueDelta.times(bond.faceValue).times(basePrice);
+    valueDelta = balanceDelta.times(bond.faceValue).times(basePrice);
   } else {
     const basePrice = getTokenBasePrice(token.basePriceClaim);
     // Calculate value delta = balanceDelta * basePric
-    valueDelta =  balanceDelta.times(basePrice);
+    valueDelta = balanceDelta.times(basePrice);
   }
 
   // Update total value

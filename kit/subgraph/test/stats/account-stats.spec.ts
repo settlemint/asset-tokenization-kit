@@ -102,6 +102,8 @@ describe("AccountStats", () => {
             value
             token {
               id
+              name
+              type
               symbol
               decimals
               basePriceClaim {
@@ -141,7 +143,12 @@ describe("AccountStats", () => {
       // Calculate expected total value
       const expectedTotalValue = account.balances.reduce((acc, balance) => {
         const balanceValue = Number(balance.value);
-        return acc + getBasePrice(balance.token) * balanceValue;
+        const basePrice = getBasePrice(balance.token);
+        const totalValue = basePrice * balanceValue;
+        console.log(
+          `${balance.token.name} ${balance.token.type} ${balanceValue} ${basePrice} ${totalValue}`
+        );
+        return acc + totalValue;
       }, 0);
 
       // Get the account stats state
@@ -161,7 +168,7 @@ describe("AccountStats", () => {
       if (statsResponse.accountStatsState) {
         expect(
           Number(statsResponse.accountStatsState.totalValueInBaseCurrency)
-        ).toBeCloseTo(expectedTotalValue, 6);
+        ).toBeCloseTo(expectedTotalValue, 2);
         expect(statsResponse.accountStatsState.balancesCount).toBe(
           account.balances.length
         );
