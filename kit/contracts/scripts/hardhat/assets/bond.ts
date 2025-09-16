@@ -75,9 +75,7 @@ export const createBond = async (depositToken: Asset<any>) => {
 
   await bond.waitUntilDeployed(transactionHash);
 
-  await setupAsset(bond, {
-    basePrice: 1.23,
-  });
+  await setupAsset(bond);
 
   // core
   await mint(bond, owner, 100n);

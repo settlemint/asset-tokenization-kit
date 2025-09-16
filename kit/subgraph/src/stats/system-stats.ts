@@ -5,6 +5,9 @@ import {
   Token,
 } from "../../generated/schema";
 import { fetchSystem } from "../system/fetch/system";
+import { fetchBond } from "../token-assets/bond/fetch/bond";
+import { TokenExtension } from "../token-extensions/utils/token-extensions-utils";
+import { fetchToken } from "../token/fetch/token";
 import {
   getTokenBasePrice,
   getTokenSystemAddress,
@@ -20,10 +23,20 @@ export function updateSystemStatsForSupplyChange(
 ): BigDecimal {
   const systemAddress = getTokenSystemAddress(token);
   const state = fetchSystemStatsState(systemAddress);
-  const basePrice = getTokenBasePrice(token.basePriceClaim);
 
-  // Calculate value delta = supplyDelta * basePrice
-  const valueDelta = supplyDelta.times(basePrice);
+  let valueDelta = BigDecimal.zero();
+
+  // For bonds the value delta equals the face value times the price of the denomination asset
+  if (token.extensions.includes(TokenExtension.BOND)) {
+    const bond = fetchBond(token.id);
+    const denominationAsset = fetchToken(bond.denominationAsset);
+    const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
+    valueDelta = supplyDelta.times(bond.faceValue).times(basePrice);
+  } else {
+    const basePrice = getTokenBasePrice(token.basePriceClaim);
+    // Calculate value delta = supplyDelta * basePrice
+    valueDelta = supplyDelta.times(basePrice);
+  }
 
   if (valueDelta.equals(BigDecimal.zero())) {
     return state.totalValueInBaseCurrency;
@@ -53,10 +66,30 @@ export function updateSystemStatsForPriceChange(
   const systemAddress = getTokenSystemAddress(token);
   const state = fetchSystemStatsState(systemAddress);
 
+  // Ignore bonds as there value is tracked by it's denomination asset
+  if (token.extensions.includes(TokenExtension.BOND)) {
+    return state.totalValueInBaseCurrency;
+  }
+
   // Calculate value delta
   const oldValue = oldPrice.times(token.totalSupply);
   const newValue = newPrice.times(token.totalSupply);
-  const valueDelta = newValue.minus(oldValue);
+  let valueDelta = newValue.minus(oldValue);
+
+  // Check if the token is a denomination asset for a bond
+  // For bonds the value equals the face value times the price of the denomination asset
+  const bonds = token.denominationAssetForBond.load();
+  for (let i = 0; i < bonds.length; i++) {
+    const bondToken = fetchToken(bonds[i].id);
+    const oldValueBond = oldPrice
+      .times(bonds[i].faceValue)
+      .times(bondToken.totalSupply);
+    const newValueBond = newPrice
+      .times(bonds[i].faceValue)
+      .times(bondToken.totalSupply);
+    const valueDeltaBond = newValueBond.minus(oldValueBond);
+    valueDelta = valueDelta.plus(valueDeltaBond);
+  }
 
   if (valueDelta.equals(BigDecimal.zero())) {
     return state.totalValueInBaseCurrency;

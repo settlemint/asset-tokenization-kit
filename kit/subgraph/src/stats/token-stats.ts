@@ -5,6 +5,8 @@ import {
   TokenStatsData,
   TokenStatsState,
 } from "../../generated/schema";
+import { fetchBond } from "../token-assets/bond/fetch/bond";
+import { TokenExtension } from "../token-extensions/utils/token-extensions-utils";
 import { fetchToken } from "../token/fetch/token";
 import { getTokenBasePrice } from "../token/utils/token-utils";
 import { setBigNumber } from "../utils/bignumber";
@@ -43,10 +45,42 @@ export function decreaseTokenStatsBalanceCount(tokenAddress: Address): void {
  */
 export function updateTokenStatsTotalValueInBaseCurrency(token: Token): void {
   const state = fetchTokenStatsState(Address.fromBytes(token.id));
-  const basePrice = getTokenBasePrice(token.basePriceClaim);
-  const totalValueInBaseCurrency = token.totalSupply.times(basePrice);
-  state.totalValueInBaseCurrency = totalValueInBaseCurrency;
-  state.save();
+
+  // For bonds the value equals the face value times the price of the denomination asset
+  if (token.extensions.includes(TokenExtension.BOND)) {
+    const bond = fetchBond(token.id);
+    const denominationAsset = fetchToken(bond.denominationAsset);
+    const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
+    const totalValueInBaseCurrency = token.totalSupply
+      .times(bond.faceValue)
+      .times(basePrice);
+    state.totalValueInBaseCurrency = totalValueInBaseCurrency;
+    state.save();
+  } else {
+    const basePrice = getTokenBasePrice(token.basePriceClaim);
+    const totalValueInBaseCurrency = token.totalSupply.times(basePrice);
+    state.totalValueInBaseCurrency = totalValueInBaseCurrency;
+    state.save();
+
+    // Make sure to update the value for all denomination assets for bonds
+    const bonds = token.denominationAssetForBond.load();
+    for (let i = 0; i < bonds.length; i++) {
+      const bondState = fetchTokenStatsState(Address.fromBytes(bonds[i].id));
+      const denominationAsset = fetchToken(bonds[i].id);
+      const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
+      const totalValueInBaseCurrency = token.totalSupply
+        .times(bonds[i].faceValue)
+        .times(basePrice);
+      bondState.totalValueInBaseCurrency = state.totalValueInBaseCurrency.plus(
+        totalValueInBaseCurrency
+      );
+      if (
+        totalValueInBaseCurrency.notEqual(bondState.totalValueInBaseCurrency)
+      ) {
+        bondState.save();
+      }
+    }
+  }
 }
 
 /**
