@@ -3,6 +3,7 @@ import { ChartSkeleton } from "@/components/charts/chart-skeleton";
 import { DetailGrid } from "@/components/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
+import { PercentageProgressBar } from "@/components/percentage-progress/percentage-progress";
 import { AssetBondStatusProgressChart } from "@/components/stats/charts/asset-bond-status-progress-chart";
 import { AssetCollateralRatioChart } from "@/components/stats/charts/asset-collateral-ratio-chart";
 import { AssetSupplyChangesAreaChart } from "@/components/stats/charts/asset-supply-changes-area-chart";
@@ -11,6 +12,8 @@ import { AssetTotalVolumeAreaChart } from "@/components/stats/charts/asset-total
 import { AssetWalletDistributionChart } from "@/components/stats/charts/asset-wallet-distribution-chart";
 import { useTokenLoaderQuery } from "@/hooks/use-token-loader-query";
 import { parseClaim } from "@/lib/utils/claims/parse-claim";
+import { orpc } from "@/orpc/orpc-client";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { from } from "dnum";
 import { Suspense } from "react";
@@ -109,6 +112,14 @@ function RouteComponent() {
     currencyCode: string;
     decimals: string;
   }>(asset.account.identity?.claims, "basePrice");
+
+  // Collateral ratio from ORPC stats API
+  const { data: collateralStats } = useQuery(
+    orpc.token.statsCollateralRatio.queryOptions({
+      input: { tokenAddress: asset.id },
+    })
+  );
+  const collateralRatio = collateralStats?.collateralRatio ?? 0;
 
   return (
     <>
@@ -225,6 +236,14 @@ function RouteComponent() {
             type="date"
             emptyValue={t("tokens:fields.noExpiry")}
           />
+          <DetailGridItem
+            label={"Committed collateral ratio"}
+            info={
+              "The ratio of the collateral committed to the total supply of the asset"
+            }
+          >
+            <PercentageProgressBar percentage={collateralRatio} />
+          </DetailGridItem>
         </DetailGrid>
       )}
 

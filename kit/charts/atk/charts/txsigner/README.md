@@ -36,7 +36,7 @@ TxSigner is a secure transaction signing service for blockchain applications tha
 
 ## Source Code
 
-- <https://github.com/settlemint/starterkit-asset-tokenization>
+* <https://github.com/settlemint/starterkit-asset-tokenization>
 
 ## Requirements
 
@@ -399,7 +399,6 @@ podAnnotations:
 ```
 
 Available metrics include:
-
 - Transaction signing requests
 - Queue depth
 - Signing latency
@@ -475,7 +474,6 @@ pdb:
 ### TxSigner pods are not starting
 
 Check the pod logs:
-
 ```console
 kubectl logs -l app.kubernetes.io/name=txsigner
 ```
@@ -483,7 +481,6 @@ kubectl logs -l app.kubernetes.io/name=txsigner
 ### Authentication errors
 
 Verify your private key or KMS configuration:
-
 ```console
 kubectl describe secret txsigner-env
 ```
@@ -491,7 +488,6 @@ kubectl describe secret txsigner-env
 ### Connection to RPC endpoint failing
 
 Test RPC connectivity from within the pod:
-
 ```console
 kubectl exec -it deploy/txsigner -- curl -v http://your-rpc-endpoint:8545
 ```
@@ -499,7 +495,6 @@ kubectl exec -it deploy/txsigner -- curl -v http://your-rpc-endpoint:8545
 ### High latency in transaction signing
 
 Check the metrics to identify bottlenecks:
-
 ```console
 kubectl port-forward svc/txsigner 3001:3001
 curl http://localhost:3001/metrics | grep txsigner_signing_duration
@@ -508,7 +503,6 @@ curl http://localhost:3001/metrics | grep txsigner_signing_duration
 ### Nonce conflicts
 
 Review nonce management strategy and increase `maxPending` if needed:
-
 ```console
 kubectl logs -l app.kubernetes.io/name=txsigner | grep -i nonce
 ```
