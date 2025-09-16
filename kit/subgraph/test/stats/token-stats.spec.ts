@@ -123,6 +123,17 @@ describe("TokenStats", () => {
               }
             }
             totalSupply
+            bond {
+              faceValue
+              denominationAsset {
+                basePriceClaim {
+                  values {
+                    key
+                    value
+                  }
+                }
+              }
+            }
           }
           balancesCount
           totalValueInBaseCurrency
@@ -153,17 +164,9 @@ describe("TokenStats", () => {
       );
       expect(found).toBeDefined();
       expect(found?.balancesCount).toBe(expected.balancesCount);
-      const basePrice = found?.token.basePriceClaim?.values.find(
-        (value) => value.key === "amount"
-      )?.value;
-      const basePriceDecimals =
-        found?.token.basePriceClaim?.values.find(
-          (value) => value.key === "decimals"
-        )?.value ?? "0";
-      const basePriceParsed =
-        Number(basePrice) / Math.pow(10, Number(basePriceDecimals));
-      const expectedTotalValueInBaseCurrency =
-        basePriceParsed * Number(found?.token.totalSupply);
+      const expectedTotalValueInBaseCurrency = getTotalValueInBaseCurrency(
+        found?.token
+      );
       expect(found?.totalValueInBaseCurrency).toBe(
         expectedTotalValueInBaseCurrency.toString()
       );
@@ -314,3 +317,55 @@ describe("TokenStats", () => {
     ]);
   });
 });
+
+function getTotalValueInBaseCurrency(
+  token:
+    | {
+        basePriceClaim: {
+          values: {
+            key: string;
+            value: string;
+          }[];
+        } | null;
+        bond: {
+          faceValue: string;
+          denominationAsset: {
+            basePriceClaim: {
+              values: {
+                key: string;
+                value: string;
+              }[];
+            } | null;
+          } | null;
+        } | null;
+        totalSupply: string;
+      }
+    | undefined
+): number {
+  if (!token) {
+    return 0;
+  }
+  if (token.bond) {
+    const basePrice = token.bond.denominationAsset?.basePriceClaim?.values.find(
+      (value) => value.key === "amount"
+    )?.value;
+    const basePriceDecimals =
+      token.bond.denominationAsset?.basePriceClaim?.values.find(
+        (value) => value.key === "decimals"
+      )?.value ?? "0";
+    const basePriceParsed =
+      Number(basePrice) / Math.pow(10, Number(basePriceDecimals));
+    return (
+      basePriceParsed * Number(token.bond.faceValue) * Number(token.totalSupply)
+    );
+  }
+  const basePrice = token.basePriceClaim?.values.find(
+    (value) => value.key === "amount"
+  )?.value;
+  const basePriceDecimals =
+    token.basePriceClaim?.values.find((value) => value.key === "decimals")
+      ?.value ?? "0";
+  const basePriceParsed =
+    Number(basePrice) / Math.pow(10, Number(basePriceDecimals));
+  return basePriceParsed * Number(token.totalSupply);
+}

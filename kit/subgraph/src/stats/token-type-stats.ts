@@ -6,7 +6,6 @@ import {
 } from "../../generated/schema";
 import { fetchSystem } from "../system/fetch/system";
 import { fetchBond } from "../token-assets/bond/fetch/bond";
-import { TokenExtension } from "../token-extensions/utils/token-extensions-utils";
 import { fetchToken } from "../token/fetch/token";
 import {
   getTokenBasePrice,
@@ -30,9 +29,16 @@ export function updateTokenTypeStatsForTokenCreation(token: Token): void {
   // Add initial value (0 if no supply yet)
   let initialValue = BigDecimal.zero();
   // For bonds the value equals the face value times the price of the denomination asset
-  if (token.extensions.includes(TokenExtension.BOND)) {
-    const bond = fetchBond(Address.fromBytes(token.id));
-    const denominationAsset = fetchToken(Address.fromBytes(bond.denominationAsset));
+  if (token.bond) {
+    const bond = fetchBond(Address.fromBytes(token.bond!));
+    if (bond.denominationAsset == Address.zero()) {
+      // Return early if the denomination asset is not set
+      // handleBondCreated sets the denomination asset and will trigger this function again
+      return;
+    }
+    const denominationAsset = fetchToken(
+      Address.fromBytes(bond.denominationAsset)
+    );
     const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
     initialValue = token.totalSupply.times(bond.faceValue).times(basePrice);
   } else {
@@ -61,9 +67,11 @@ export function updateTokenTypeStatsForSupplyChange(
   let valueDelta = BigDecimal.zero();
 
   // For bonds the value delta equals the face value times the price of the denomination asset
-  if (token.extensions.includes(TokenExtension.BOND)) {
-    const bond = fetchBond(Address.fromBytes(token.id));
-    const denominationAsset = fetchToken(Address.fromBytes(bond.denominationAsset));
+  if (token.bond) {
+    const bond = fetchBond(Address.fromBytes(token.bond!));
+    const denominationAsset = fetchToken(
+      Address.fromBytes(bond.denominationAsset)
+    );
     const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
     valueDelta = supplyDelta.times(bond.faceValue).times(basePrice);
   } else {
@@ -107,8 +115,8 @@ export function updateTokenTypeStatsForPriceChange(
   oldPrice: BigDecimal,
   newPrice: BigDecimal
 ): void {
-  // Ignore bonds as there value is tracked by it's denomination asset
-  if (token.extensions.includes(TokenExtension.BOND)) {
+  // Ignore bonds as there value is tracked by its denomination asset
+  if (token.bond) {
     return;
   }
 

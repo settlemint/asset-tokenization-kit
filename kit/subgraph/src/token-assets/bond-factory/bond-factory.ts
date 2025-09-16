@@ -2,6 +2,7 @@ import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { BondCreated } from "../../../generated/templates/BondFactory/BondFactory";
 import { fetchAccount } from "../../account/fetch/account";
 import { fetchEvent } from "../../event/fetch/event";
+import { updateTokenTypeStatsForTokenCreation } from "../../stats/token-type-stats";
 import { fetchToken } from "../../token/fetch/token";
 import {
   ActionName,
@@ -40,6 +41,10 @@ export function handleBondCreated(event: BondCreated): void {
   bond.denominationAssetNeeded = BigDecimal.zero();
   bond.denominationAssetNeededExact = BigInt.zero();
   bond.save();
+
+  // Update token type stats for token creation
+  // Done here because it requires the denomination asset to be set
+  updateTokenTypeStatsForTokenCreation(token);
 
   // Create MatureBond action
   const creator = fetchAccount(event.transaction.from);

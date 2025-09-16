@@ -27,7 +27,6 @@ import {
   isCollateralClaim,
   updateCollateral,
 } from "../token-extensions/collateral/utils/collateral-utils";
-import { TokenExtension } from "../token-extensions/utils/token-extensions-utils";
 import { fetchTokenByIdentity } from "../token/fetch/token";
 import { getTokenBasePrice, updateBasePrice } from "../token/utils/token-utils";
 import { fetchIdentity } from "./fetch/identity";
@@ -52,8 +51,8 @@ function updateAccountStatsForAllTokenHolders(
     return;
   }
 
-  // Ignore bonds as there value is tracked by it's denomination asset
-  if (token.extensions.includes(TokenExtension.BOND)) {
+  // Ignore bonds as there value is tracked by its denomination asset
+  if (token.bond) {
     return;
   }
 

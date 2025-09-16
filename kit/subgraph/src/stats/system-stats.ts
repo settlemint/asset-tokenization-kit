@@ -6,7 +6,6 @@ import {
 } from "../../generated/schema";
 import { fetchSystem } from "../system/fetch/system";
 import { fetchBond } from "../token-assets/bond/fetch/bond";
-import { TokenExtension } from "../token-extensions/utils/token-extensions-utils";
 import { fetchToken } from "../token/fetch/token";
 import {
   getTokenBasePrice,
@@ -27,9 +26,11 @@ export function updateSystemStatsForSupplyChange(
   let valueDelta = BigDecimal.zero();
 
   // For bonds the value delta equals the face value times the price of the denomination asset
-  if (token.extensions.includes(TokenExtension.BOND)) {
-    const bond = fetchBond(Address.fromBytes(token.id));
-    const denominationAsset = fetchToken(Address.fromBytes(bond.denominationAsset));
+  if (token.bond) {
+    const bond = fetchBond(Address.fromBytes(token.bond!));
+    const denominationAsset = fetchToken(
+      Address.fromBytes(bond.denominationAsset)
+    );
     const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
     valueDelta = supplyDelta.times(bond.faceValue).times(basePrice);
   } else {
@@ -66,8 +67,8 @@ export function updateSystemStatsForPriceChange(
   const systemAddress = getTokenSystemAddress(token);
   const state = fetchSystemStatsState(systemAddress);
 
-  // Ignore bonds as there value is tracked by it's denomination asset
-  if (token.extensions.includes(TokenExtension.BOND)) {
+  // Ignore bonds as there value is tracked by its denomination asset
+  if (token.bond) {
     return state.totalValueInBaseCurrency;
   }
 

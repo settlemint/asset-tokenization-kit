@@ -6,7 +6,6 @@ import {
   TokenStatsState,
 } from "../../generated/schema";
 import { fetchBond } from "../token-assets/bond/fetch/bond";
-import { TokenExtension } from "../token-extensions/utils/token-extensions-utils";
 import { fetchToken } from "../token/fetch/token";
 import { getTokenBasePrice } from "../token/utils/token-utils";
 import { setBigNumber } from "../utils/bignumber";
@@ -47,38 +46,38 @@ export function updateTokenStatsTotalValueInBaseCurrency(token: Token): void {
   const state = fetchTokenStatsState(Address.fromBytes(token.id));
 
   // For bonds the value equals the face value times the price of the denomination asset
-  if (token.extensions.includes(TokenExtension.BOND)) {
-    const bond = fetchBond(Address.fromBytes(token.id));
-    const denominationAsset = fetchToken(Address.fromBytes(bond.denominationAsset));
+  if (token.bond) {
+    const bond = fetchBond(Address.fromBytes(token.bond!));
+    const denominationAsset = fetchToken(
+      Address.fromBytes(bond.denominationAsset)
+    );
     const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
     const totalValueInBaseCurrency = token.totalSupply
       .times(bond.faceValue)
       .times(basePrice);
     state.totalValueInBaseCurrency = totalValueInBaseCurrency;
     state.save();
-  } else {
-    const basePrice = getTokenBasePrice(token.basePriceClaim);
-    const totalValueInBaseCurrency = token.totalSupply.times(basePrice);
-    state.totalValueInBaseCurrency = totalValueInBaseCurrency;
-    state.save();
+    return;
+  }
 
-    // Make sure to update the value for all denomination assets for bonds
-    const bonds = token.denominationAssetForBond.load();
-    for (let i = 0; i < bonds.length; i++) {
-      const bondState = fetchTokenStatsState(Address.fromBytes(bonds[i].id));
-      const denominationAsset = fetchToken(Address.fromBytes(bonds[i].id));
-      const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
-      const totalValueInBaseCurrency = token.totalSupply
-        .times(bonds[i].faceValue)
-        .times(basePrice);
-      bondState.totalValueInBaseCurrency = state.totalValueInBaseCurrency.plus(
-        totalValueInBaseCurrency
-      );
-      if (
-        totalValueInBaseCurrency.notEqual(bondState.totalValueInBaseCurrency)
-      ) {
-        bondState.save();
-      }
+  const basePrice = getTokenBasePrice(token.basePriceClaim);
+  const totalValueInBaseCurrency = token.totalSupply.times(basePrice);
+  state.totalValueInBaseCurrency = totalValueInBaseCurrency;
+  state.save();
+
+  // Make sure to update the value for all denomination assets for bonds
+  const bonds = token.denominationAssetForBond.load();
+  for (let i = 0; i < bonds.length; i++) {
+    const bondToken = fetchToken(Address.fromBytes(bonds[i].id));
+    const denominationAsset = fetchToken(Address.fromBytes(bonds[i].id));
+    const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
+    const totalValueInBaseCurrency = bondToken.totalSupply
+      .times(bonds[i].faceValue)
+      .times(basePrice);
+    const bondState = fetchTokenStatsState(Address.fromBytes(bonds[i].id));
+    if (totalValueInBaseCurrency.notEqual(bondState.totalValueInBaseCurrency)) {
+      bondState.totalValueInBaseCurrency = totalValueInBaseCurrency;
+      bondState.save();
     }
   }
 }
@@ -162,8 +161,7 @@ function createTokenStatsData(state: TokenStatsState): TokenStatsData {
   setBigNumber(tokenStats, "minted", BigInt.zero(), token.decimals);
   setBigNumber(tokenStats, "burned", BigInt.zero(), token.decimals);
   setBigNumber(tokenStats, "transferred", BigInt.zero(), token.decimals);
-  const basePrice = getTokenBasePrice(token.basePriceClaim);
-  tokenStats.totalValueInBaseCurrency = token.totalSupply.times(basePrice);
+  tokenStats.totalValueInBaseCurrency = state.totalValueInBaseCurrency;
 
   return tokenStats;
 }
