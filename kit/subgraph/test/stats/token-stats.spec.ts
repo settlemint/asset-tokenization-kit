@@ -116,6 +116,7 @@ describe("TokenStats", () => {
         tokenStatsStates(orderBy: token__symbol) {
           token {
             symbol
+            decimals
             basePriceClaim {
               values {
                 key
@@ -164,11 +165,42 @@ describe("TokenStats", () => {
       );
       expect(found).toBeDefined();
       expect(found?.balancesCount).toBe(expected.balancesCount);
-      const expectedTotalValueInBaseCurrency = getTotalValueInBaseCurrency(
-        found?.token
-      );
-      expect(found?.totalValueInBaseCurrency).toBe(
-        expectedTotalValueInBaseCurrency.toString()
+      const getTotalValueInBaseCurrency = (): number => {
+        const token = found?.token;
+        if (!token) {
+          return 0;
+        }
+        if (token.bond) {
+          const basePrice =
+            token.bond.denominationAsset?.basePriceClaim?.values.find(
+              (value) => value.key === "amount"
+            )?.value;
+          const basePriceDecimals =
+            token.bond.denominationAsset?.basePriceClaim?.values.find(
+              (value) => value.key === "decimals"
+            )?.value ?? "0";
+          const basePriceParsed =
+            Number(basePrice) / Math.pow(10, Number(basePriceDecimals));
+          return (
+            basePriceParsed *
+            Number(token.bond.faceValue) *
+            Number(token.totalSupply)
+          );
+        }
+        const basePrice = token.basePriceClaim?.values.find(
+          (value) => value.key === "amount"
+        )?.value;
+        const basePriceDecimals =
+          token.basePriceClaim?.values.find((value) => value.key === "decimals")
+            ?.value ?? "0";
+        const basePriceParsed =
+          Number(basePrice) / Math.pow(10, Number(basePriceDecimals));
+        return basePriceParsed * Number(token.totalSupply);
+      };
+      const expectedTotalValueInBaseCurrency = getTotalValueInBaseCurrency();
+      expect(Number(found?.totalValueInBaseCurrency)).toBeCloseTo(
+        expectedTotalValueInBaseCurrency,
+        6
       );
     }
   });
@@ -317,55 +349,3 @@ describe("TokenStats", () => {
     ]);
   });
 });
-
-function getTotalValueInBaseCurrency(
-  token:
-    | {
-        basePriceClaim: {
-          values: {
-            key: string;
-            value: string;
-          }[];
-        } | null;
-        bond: {
-          faceValue: string;
-          denominationAsset: {
-            basePriceClaim: {
-              values: {
-                key: string;
-                value: string;
-              }[];
-            } | null;
-          } | null;
-        } | null;
-        totalSupply: string;
-      }
-    | undefined
-): number {
-  if (!token) {
-    return 0;
-  }
-  if (token.bond) {
-    const basePrice = token.bond.denominationAsset?.basePriceClaim?.values.find(
-      (value) => value.key === "amount"
-    )?.value;
-    const basePriceDecimals =
-      token.bond.denominationAsset?.basePriceClaim?.values.find(
-        (value) => value.key === "decimals"
-      )?.value ?? "0";
-    const basePriceParsed =
-      Number(basePrice) / Math.pow(10, Number(basePriceDecimals));
-    return (
-      basePriceParsed * Number(token.bond.faceValue) * Number(token.totalSupply)
-    );
-  }
-  const basePrice = token.basePriceClaim?.values.find(
-    (value) => value.key === "amount"
-  )?.value;
-  const basePriceDecimals =
-    token.basePriceClaim?.values.find((value) => value.key === "decimals")
-      ?.value ?? "0";
-  const basePriceParsed =
-    Number(basePrice) / Math.pow(10, Number(basePriceDecimals));
-  return basePriceParsed * Number(token.totalSupply);
-}

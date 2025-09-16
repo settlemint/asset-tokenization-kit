@@ -69,7 +69,9 @@ export function updateTokenStatsTotalValueInBaseCurrency(token: Token): void {
   const bonds = token.denominationAssetForBond.load();
   for (let i = 0; i < bonds.length; i++) {
     const bondToken = fetchToken(Address.fromBytes(bonds[i].id));
-    const denominationAsset = fetchToken(Address.fromBytes(bonds[i].id));
+    const denominationAsset = fetchToken(
+      Address.fromBytes(bonds[i].denominationAsset)
+    );
     const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
     const totalValueInBaseCurrency = bondToken.totalSupply
       .times(bonds[i].faceValue)
