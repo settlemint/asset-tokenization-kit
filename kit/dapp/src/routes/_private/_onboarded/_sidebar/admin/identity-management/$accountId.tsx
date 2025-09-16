@@ -39,7 +39,7 @@ const routeParamsSchema = z.object({
  * ```
  */
 export const Route = createFileRoute(
-  "/_private/_onboarded/_sidebar/admin/claim-management/$accountId"
+  "/_private/_onboarded/_sidebar/admin/identity-management/$accountId"
 )({
   parseParams: (params) => routeParamsSchema.parse(params),
   /**

@@ -8,16 +8,16 @@ interface GetClaimTabConfigurationProps {
 }
 
 /**
- * Returns the tab configuration for claim management pages
+ * Returns the tab configuration for identity management pages
  * Currently only includes the details tab, but can be extended
- * for additional claim-related tabs in the future
+ * for additional identity-related tabs in the future
  */
 export function getClaimTabConfiguration({
   accountId,
 }: GetClaimTabConfigurationProps): ClaimTabConfig[] {
   return [
     {
-      href: `/admin/claim-management/${accountId}`,
+      href: `/admin/identity-management/${accountId}`,
       tabKey: "details",
     },
   ];

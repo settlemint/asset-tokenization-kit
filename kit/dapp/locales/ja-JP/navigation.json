@@ -19,7 +19,7 @@
   "administration": "管理",
   "platformSettings": "プラットフォーム設定",
   "userManagement": "ユーザー管理",
-  "claimManagement": "クレーム管理",
+  "identityManagement": "アイデンティティ管理",
   "settings": {
     "assetTypes": {
       "title": "資産タイプ",

@@ -10,7 +10,7 @@ import { createFileRoute } from "@tanstack/react-router";
  * Route path: `/admin/claim-management/{accountId}`
  */
 export const Route = createFileRoute(
-  "/_private/_onboarded/_sidebar/admin/claim-management/$accountId/"
+  "/_private/_onboarded/_sidebar/admin/identity-management/$accountId/"
 )({
   component: ClaimDetailPage,
 });

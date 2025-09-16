@@ -77,7 +77,7 @@ export function NavSettings() {
   );
 
   const isUserManagementActive = isSettingsActive("/admin/user-management");
-  const isClaimManagementActive = isSettingsActive("/admin/claim-management");
+  const isIdentityManagementActive = isSettingsActive("/admin/identity-management");
 
   return (
     <SidebarGroup>
@@ -100,14 +100,14 @@ export function NavSettings() {
         <SidebarMenuItem>
           <SidebarMenuButton asChild>
             <Link
-              to="/admin/claim-management"
+              to="/admin/identity-management"
               activeProps={{
                 "data-active": true,
               }}
-              className={isClaimManagementActive ? "font-semibold" : ""}
+              className={isIdentityManagementActive ? "font-semibold" : ""}
             >
               <UserCheck />
-              <span>{t("claimManagement")}</span>
+              <span>{t("identityManagement")}</span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>

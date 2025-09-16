@@ -1,12 +1,11 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
-import { ClaimsTable } from "@/components/claims/claims-table";
 import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
-  "/_private/_onboarded/_sidebar/admin/claim-management/"
+  "/_private/_onboarded/_sidebar/admin/identity-management/"
 )({
   component: ClaimManagementPage,
   loader: () => {
@@ -24,7 +23,7 @@ function ClaimManagementPage() {
     <div className="container mx-auto p-6">
       <RouterBreadcrumb />
       <div className="mb-8 mt-4">
-        <h1 className="text-3xl font-bold">{t("claimManagement")}</h1>
+        <h1 className="text-3xl font-bold">{t("identityManagement")}</h1>
         <p className="text-muted-foreground mt-2">
           {tClaims("page.description")}
         </p>
@@ -36,9 +35,7 @@ function ClaimManagementPage() {
             <p className="text-muted-foreground">{tClaims("page.loading")}</p>
           </div>
         }
-      >
-        <ClaimsTable />
-      </Suspense>
+      ></Suspense>
     </div>
   );
 }

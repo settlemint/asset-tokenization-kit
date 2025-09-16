@@ -19,7 +19,7 @@
   "administration": "الإدارة",
   "platformSettings": "إعدادات المنصة",
   "userManagement": "إدارة المستخدمين",
-  "claimManagement": "إدارة المطالبات",
+  "identityManagement": "إدارة الهوية",
   "settings": {
     "assetTypes": {
       "title": "أنواع الأصول",
