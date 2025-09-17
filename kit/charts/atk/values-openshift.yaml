@@ -10,7 +10,7 @@
 # Besu Network security contexts for OpenShift
 besu-network:
   # Override for besu-rpc-1 (alias of besu-node)
-  besu-genesis:
+  besu-rpc-1:
     # Pod security context - OpenShift compatible
     podSecurityContext:
       fsGroup: null  # OpenShift assigns this
@@ -43,7 +43,7 @@ besu-network:
         type: RuntimeDefault
 
   # Override for besu-validator-1 (alias of besu-node)
-  besu-node:
+  besu-validator-1:
     # Pod security context - OpenShift compatible
     podSecurityContext:
       fsGroup: null  # OpenShift assigns this
@@ -264,15 +264,6 @@ erpc:
     seccompProfile:
       type: RuntimeDefault
 
-  initContainerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: null
-    runAsGroup: null
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop: [ALL]
-    seccompProfile:
-      type: RuntimeDefault
 
 # DApp security contexts for OpenShift
 dapp:
