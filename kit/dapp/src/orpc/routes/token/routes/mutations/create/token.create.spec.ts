@@ -54,7 +54,7 @@ describe("Token create", () => {
       },
       totalSupply: dnumFrom("0"),
     });
-    const basePriceClaim = createdToken.account.identity?.claims?.find(
+    const basePriceClaim = createdToken.identity?.claims?.find(
       (c) => c.name === "basePrice"
     );
     expect(basePriceClaim).toBeDefined();
@@ -102,7 +102,7 @@ describe("Token create", () => {
       name: fundData.name,
       symbol: fundData.symbol,
     });
-    const basePriceClaim = createdFund.account.identity?.claims?.find(
+    const basePriceClaim = createdFund.identity?.claims?.find(
       (c) => c.name === "basePrice"
     );
     expect(basePriceClaim).toBeDefined();
@@ -278,7 +278,7 @@ describe("Token create", () => {
       name: equityData.name,
       symbol: equityData.symbol,
     });
-    const basePriceClaim = createdEquity.account.identity?.claims?.find(
+    const basePriceClaim = createdEquity.identity?.claims?.find(
       (c) => c.name === "basePrice"
     );
     expect(basePriceClaim).toBeDefined();
@@ -326,7 +326,7 @@ describe("Token create", () => {
       name: depositData.name,
       symbol: depositData.symbol,
     });
-    const basePriceClaim = createdDeposit.account.identity?.claims?.find(
+    const basePriceClaim = createdDeposit.identity?.claims?.find(
       (c) => c.name === "basePrice"
     );
     expect(basePriceClaim).toBeDefined();
@@ -359,9 +359,7 @@ describe("Token create", () => {
     expect(result).toBeDefined();
     expect(result.id).toBeDefined();
 
-    const isin = result.account.identity?.claims?.find(
-      (c) => c.name === "isin"
-    );
+    const isin = result.identity?.claims?.find((c) => c.name === "isin");
     expect(isin).toBeDefined();
     expect(isin?.values.find((v) => v.key === "isin")?.value).toBe(
       "US0378331005"

@@ -56,12 +56,12 @@ Defines the type-safe API contract:
 ```typescript
 // account/account.contract.ts
 import { oc } from "@orpc/contract";
-import { AccountSchema, AccountReadSchema } from "./routes/account.read.schema";
+import { IdentitySchema, IdentityReadSchema } from "./routes/identity.read.schema";
 
-export const accountContract = {
+export const identityContract = {
   read: oc
-    .input(AccountReadSchema)
-    .output(AccountSchema)
+    .input(IdentityReadSchema)
+    .output(IdentitySchema)
     .metadata({
       openapi: {
         method: "GET",
@@ -88,19 +88,22 @@ export const accountContract = {
 Define validation schemas for inputs and outputs:
 
 ```typescript
-// account/routes/account.read.schema.ts
+// identity/routes/identity.read.schema.ts
 import { z } from "zod";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 
-export const AccountReadSchema = z.object({
-  wallet: ethereumAddress.describe("The wallet address to read"),
+export const IdentityReadSchema = z.object({
+  account: ethereumAddress.describe("The account address to read identity for"),
 });
 
-export const AccountSchema = z.object({
+export const IdentitySchema = z.object({
   id: ethereumAddress,
-  country: isoCountryCode.optional(),
-  identity: ethereumAddress.optional(),
-  claims: z.array(z.string()).optional(),
+  account: ethereumAddress,
+  registered: z.object({
+    isRegistered: z.literal(true),
+    country: isoCountryCode,
+  }).or(z.literal(false)).optional(),
+  claims: z.array(identityClaim).default([]),
 });
 ```
 
@@ -109,27 +112,27 @@ export const AccountSchema = z.object({
 Implement the business logic:
 
 ```typescript
-// account/routes/account.read.ts
-import { authRouter } from "@/orpc/procedures/auth.router";
+// identity/routes/identity.read.ts
+import { systemRouter } from "@/orpc/procedures/system.router";
 import {
-  AccountReadSchema,
-  AccountResponseSchema,
-} from "./account.read.schema";
+  IdentityReadSchema,
+  IdentitySchema,
+} from "./identity.read.schema";
 
-export const read = authRouter.account.read
+export const read = systemRouter.system.identity.read
   .use(hasuraMiddleware)
   .handler(async ({ input, context }) => {
-    const { wallet } = input;
+    const { account } = input;
 
-    // Query account data
+    // Query identity data
     const response = await context.hasuraClient.query({
-      query: GET_ACCOUNT_QUERY,
-      variables: { wallet },
-      schema: AccountResponseSchema,
+      query: GET_IDENTITY_QUERY,
+      variables: { account },
+      schema: IdentityResponseSchema,
     });
 
     // Transform and return
-    return transformAccount(response.account);
+    return transformIdentity(response.identity);
   });
 ```
 
@@ -138,8 +141,8 @@ export const read = authRouter.account.read
 Aggregates all handlers for the module:
 
 ```typescript
-// account/account.router.ts
-import { read } from "./routes/account.read";
+// identity/identity.router.ts
+import { read } from "./routes/identity.read";
 import { me } from "./routes/identity.me";
 
 const routes = {

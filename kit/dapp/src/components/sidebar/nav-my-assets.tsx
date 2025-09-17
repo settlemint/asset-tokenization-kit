@@ -20,9 +20,13 @@ import { useTranslation } from "react-i18next";
  */
 export function NavMyAssets() {
   const { t } = useTranslation("navigation");
-  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
+  const { data: system } = useSuspenseQuery(
+    orpc.system.read.queryOptions({
+      input: { id: "default" },
+    })
+  );
 
-  if (!user.isRegistered) {
+  if (!system.userIdentity.registered) {
     return null;
   }
 

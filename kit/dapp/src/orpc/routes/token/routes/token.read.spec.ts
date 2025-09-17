@@ -60,7 +60,7 @@ describe("Token read", () => {
     expect(token.type).toBe("stablecoin");
     expect(token.stats?.totalValueInBaseCurrency).toEqual(from("0"));
     expect(token.stats?.balancesCount).toEqual(0);
-    const basePriceClaim = token.account.identity?.claims?.find(
+    const basePriceClaim = token.identity?.claims?.find(
       (c) => c.name === "basePrice"
     );
     expect(basePriceClaim).toBeDefined();
