@@ -1,16 +1,20 @@
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
+import { AccountSchema } from "@/orpc/routes/account/routes/account.read.schema";
 import { VerificationType } from "@atk/zod/verification-type";
-import { getOrpcClient } from "@test/fixtures/orpc-client";
+import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
   DEFAULT_ISSUER,
+  DEFAULT_PINCODE,
   getUserData,
   registerUserIdentity,
   signInWithUser,
 } from "@test/fixtures/user";
 import { waitUntil } from "@test/helpers/test-helpers";
 import { beforeAll, describe, expect, it } from "vitest";
+import { z } from "zod";
 
 describe("Identity list (integration)", () => {
   let adminClient: ReturnType<typeof getOrpcClient>;
@@ -39,13 +43,6 @@ describe("Identity list (integration)", () => {
 
     await registerUserIdentity(adminClient, targetUserData.wallet);
 
-    await waitUntil({
-      get: () => adminClient.account.read({ wallet: targetUserData.wallet }),
-      until: (account) => Boolean(account?.identity),
-      timeoutMs: 60_000,
-      intervalMs: 1000,
-    });
-
     const account = await adminClient.account.read({
       wallet: targetUserData.wallet,
     });
@@ -66,7 +63,7 @@ describe("Identity list (integration)", () => {
       },
       walletVerification: {
         verificationType: VerificationType.pincode,
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
       },
     });
 
@@ -81,11 +78,11 @@ describe("Identity list (integration)", () => {
       },
       walletVerification: {
         verificationType: VerificationType.pincode,
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
       },
     });
 
-    await waitUntil({
+    await waitUntil<z.infer<typeof AccountSchema>>({
       get: () => adminClient.account.read({ wallet: targetUserData.wallet }),
       until: (latestAccount) => (latestAccount?.claims?.length ?? 0) >= 2,
       timeoutMs: 60_000,
@@ -107,17 +104,35 @@ describe("Identity list (integration)", () => {
     expect(result.limit).toBe(25);
     expect(result.offset).toBe(0);
 
-    const [firstIdentity] = result.items;
-    expect(firstIdentity).toBeDefined();
-    if (!firstIdentity) {
-      return;
-    }
+    // Iterate through all results to validate structure
+    for (const identity of result.items) {
+      expect(identity).toBeDefined();
+      expect(typeof identity.id).toBe("string");
+      expect(identity.id).toMatch(/^0x[a-fA-F0-9]{40}$/); // Valid Ethereum address
+      expect(identity.claimsCount).toBeGreaterThanOrEqual(0);
+      expect(identity.activeClaimsCount).toBeGreaterThanOrEqual(0);
+      expect(identity.revokedClaimsCount).toBeGreaterThanOrEqual(0);
+      expect(identity.activeClaimsCount + identity.revokedClaimsCount).toBe(
+        identity.claimsCount
+      );
+      expect(typeof identity.deployedInTransaction).toBe("string");
 
-    expect(typeof firstIdentity.id).toBe("string");
-    expect(firstIdentity.claimsCount).toBeGreaterThanOrEqual(0);
-    expect(firstIdentity.activeClaimsCount).toBeGreaterThanOrEqual(0);
-    expect(firstIdentity.revokedClaimsCount).toBeGreaterThanOrEqual(0);
-    expect(typeof firstIdentity.deployedInTransaction).toBe("string");
+      // Validate account/contract relationship
+      if (identity.account) {
+        expect(identity.contract).toBeNull();
+        expect(identity.account.id).toMatch(/^0x[a-fA-F0-9]{40}$/);
+      }
+      if (identity.contract) {
+        expect(identity.account).toBeNull();
+        expect(identity.contract.id).toMatch(/^0x[a-fA-F0-9]{40}$/);
+        if (identity.contract.contractName) {
+          expect(typeof identity.contract.contractName).toBe("string");
+        }
+      }
+
+      // At least one of account or contract should be present
+      expect(identity.account || identity.contract).toBeTruthy();
+    }
   });
 
   it("supports filtering by account address", async () => {
@@ -144,13 +159,18 @@ describe("Identity list (integration)", () => {
 
   it("rejects users without identity permissions", async () => {
     await expect(
-      investorClient.system.identity.list({
-        filters: {
-          accountId: targetUserData.wallet,
+      investorClient.system.identity.list(
+        {
+          filters: {
+            accountId: targetUserData.wallet,
+          },
         },
-      })
-    ).rejects.toThrow(
-      "User does not have the required role to execute this action"
-    );
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
+          },
+        }
+      )
+    ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.FORBIDDEN));
   });
 });

@@ -207,6 +207,7 @@ export function getSystemPermissions(
     revokeRole: false,
     complianceModuleCreate: false,
     identityRegister: false,
+    identityList: false,
     trustedIssuerCreate: false,
     trustedIssuerUpdate: false,
     trustedIssuerDelete: false,

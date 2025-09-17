@@ -56,7 +56,7 @@ export const IdentityListOutputSchema = z.object({
     })
   ),
   total: z.number().int().nonnegative(),
-  limit: z.number().int().positive().max(1000).optional(),
+  limit: z.number().int().positive().max(200).optional(),
   offset: z.number().int().nonnegative(),
 });
 

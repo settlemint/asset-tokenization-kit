@@ -125,7 +125,7 @@ export function NavSettings() {
           </SidebarMenuItem>
         )}
 
-        {system.userPermissions?.actions.identityRead && (
+        {system.userPermissions?.actions.identityList && (
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <Link

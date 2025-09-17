@@ -57,7 +57,7 @@ export const SYSTEM_PERMISSIONS = {
   revokeRole: { any: ["admin"] },
   complianceModuleCreate: { any: ["complianceManager", "systemManager"] },
   identityRegister: { any: ["identityManager", "systemManager"] },
-  identityRead: { any: ["identityManager", "claimIssuer", "systemModule"] },
+  identityList: { any: ["identityManager", "claimIssuer", "systemModule"] },
   trustedIssuerCreate: { any: ["claimPolicyManager", "systemModule"] },
   trustedIssuerUpdate: { any: ["claimPolicyManager", "systemModule"] },
   trustedIssuerDelete: { any: ["claimPolicyManager", "systemModule"] },
