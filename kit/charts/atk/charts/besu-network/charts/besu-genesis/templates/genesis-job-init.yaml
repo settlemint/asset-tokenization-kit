@@ -42,8 +42,11 @@ spec:
         - name: genesis-pvc
           persistentVolumeClaim:
             claimName: besu-genesis-pvc
+{{ if .Values.global.artifacts.enabled }}
         - name: artifacts
           emptyDir: {}
+{{ end }}
+{{ if .Values.global.artifacts.enabled }}
       initContainers:
         - name: copy-artifacts
           image: "{{ .Values.global.artifacts.image.registry }}/{{ .Values.global.artifacts.image.repository }}:{{ .Values.global.artifacts.image.tag }}"
@@ -56,26 +59,37 @@ spec:
               cp -a /artifacts/genesis/. /shared-artifacts/
               echo "Genesis files copied successfully"
               ls -la /shared-artifacts/
+          {{- with .Values.initJob.copyArtifacts.resources }}
+          resources:
+{{ toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: artifacts
               mountPath: /shared-artifacts
           securityContext:
             runAsUser: 1001
             runAsGroup: 1001
+{{ end }}
       containers:
         - name: generate-genesis
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           securityContext:
             runAsUser: 0
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.initJob.resources }}
+          resources:
+{{ toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: generated-config
               mountPath: /generated-config
             - name: genesis-pvc
               mountPath: /genesis-pvc
+{{ if .Values.global.artifacts.enabled }}
             - name: artifacts
               mountPath: /contracts/genesis
               readOnly: true
+{{ end }}
           command:
             - /bin/bash
             - -c
@@ -164,18 +178,27 @@ spec:
               echo "Using generated genesis file with correct validator addresses..."
               echo "Generated genesis file info:"
               ls -la "$GENESIS_FILE"
-              
+
+              # Default to empty allocations so downstream merge logic can skip merging cleanly
+              ARTIFACTS_ALLOC='{}'
+
+{{ if .Values.global.artifacts.enabled }}
               # Optionally merge contract alloc data from artifacts if needed
               ARTIFACTS_ALLOC_FILE="/contracts/genesis/genesis-allocations.json"
               ARTIFACTS_GENESIS_FILE="/contracts/genesis/genesis.json"
-              
+
               # First try to use dedicated allocations file, fall back to extracting from genesis.json
               if [ -f "$ARTIFACTS_ALLOC_FILE" ]; then
                 echo "Found genesis-allocations.json file, using it for allocations..."
-                
+
                 # Read the allocation file directly
-                ARTIFACTS_ALLOC=$(cat "$ARTIFACTS_ALLOC_FILE" 2>/dev/null || echo '{}')
-                
+                if ARTIFACTS_ALLOC=$(cat "$ARTIFACTS_ALLOC_FILE"); then
+                  :
+                else
+                  echo "Warning: Could not read $ARTIFACTS_ALLOC_FILE. File may be missing, unreadable, or corrupted." >&2
+                  ARTIFACTS_ALLOC='{}'
+                fi
+
                 # Validate it's valid JSON
                 if echo "$ARTIFACTS_ALLOC" | jq -e . >/dev/null 2>&1; then
                   echo "Valid allocations file found"
@@ -183,29 +206,30 @@ spec:
                   echo "Error: genesis-allocations.json is not valid JSON"
                   ARTIFACTS_ALLOC='{}'
                 fi
-                
+
               elif [ -f "$ARTIFACTS_GENESIS_FILE" ]; then
                 echo "No genesis-allocations.json found, falling back to extracting from genesis.json..."
-                
+
                 # Extract only the alloc section from artifacts (contract deployments)
                 ARTIFACTS_ALLOC=$(jq -r '.alloc // {}' "$ARTIFACTS_GENESIS_FILE" 2>/dev/null || echo '{}')
-                
+
               else
                 echo "No allocation data found in artifacts"
                 ARTIFACTS_ALLOC='{}'
               fi
-              
+{{ end }}
+
               # Only merge if there are actual allocations
               if [ "$ARTIFACTS_ALLOC" != "{}" ] && [ "$ARTIFACTS_ALLOC" != "null" ]; then
                 echo "Merging contract allocations into genesis..."
-                
+
                 # Write allocation to temp file to avoid command line length issues
                 echo "$ARTIFACTS_ALLOC" > /tmp/artifacts_alloc.json
-                
+
                 # Merge artifacts alloc into generated genesis using file
                 jq '.alloc = (.alloc + input)' \
                    "$GENESIS_FILE" /tmp/artifacts_alloc.json > "${GENESIS_FILE}.merged"
-                
+
                 if [ -s "${GENESIS_FILE}.merged" ]; then
                   mv "${GENESIS_FILE}.merged" "$GENESIS_FILE"
                   echo "Successfully merged contract allocations"
@@ -216,7 +240,7 @@ spec:
               else
                 echo "No allocations to merge, using generated genesis as-is"
               fi
-              
+
               echo "Final genesis file info:"
               ls -la "$GENESIS_FILE"
               echo "Genesis file validation:"

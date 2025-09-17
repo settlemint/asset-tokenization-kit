@@ -202,6 +202,22 @@ hooks:
     repository: ghcr.io/settlemint/quorum-genesis-tool
     tag: sha-49c40f5
     pullPolicy: IfNotPresent
+  preInstall:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+  preDelete:
+    resources:
+      limits:
+        cpu: 300m
+        memory: 256Mi
+      requests:
+        cpu: 75m
+        memory: 128Mi
 
 initContainers:
   busybox:
@@ -216,6 +232,22 @@ initContainers:
       repository: curlimages/curl
       tag: 8.16.0
       pullPolicy: IfNotPresent
+  waitForGenesis:
+    resources:
+      limits:
+        cpu: 150m
+        memory: 128Mi
+      requests:
+        cpu: 25m
+        memory: 64Mi
+  volumePermissions:
+    resources:
+      limits:
+        cpu: 100m
+        memory: 64Mi
+      requests:
+        cpu: 20m
+        memory: 32Mi
 
 imagePullSecrets: []
 

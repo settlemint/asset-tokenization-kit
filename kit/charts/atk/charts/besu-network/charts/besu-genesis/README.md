@@ -1,6 +1,6 @@
 # besu-genesis
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 Besu Genesis generator with Helm chart in Kubernetes
 
@@ -27,12 +27,17 @@ Besu Genesis generator with Helm chart in Kubernetes
 | azure.serviceAccountName | string | `"quorum-sa"` |  |
 | azure.subscriptionId | string | `"azure-subscriptionId"` |  |
 | azure.tenantId | string | `"azure-tenantId"` |  |
+| cleanupJob.resources.limits.cpu | string | `"250m"` |  |
+| cleanupJob.resources.limits.memory | string | `"256Mi"` |  |
+| cleanupJob.resources.requests.cpu | string | `"75m"` |  |
+| cleanupJob.resources.requests.memory | string | `"128Mi"` |  |
 | cluster.cloudNativeServices | bool | `false` |  |
 | cluster.provider | string | `"local"` |  |
 | genesisServer.image.pullPolicy | string | `"IfNotPresent"` |  |
 | genesisServer.image.registry | string | `"docker.io"` |  |
 | genesisServer.image.repository | string | `"nginx"` |  |
 | genesisServer.image.tag | string | `"1.29.1-alpine"` |  |
+| global.artifacts.enabled | bool | `true` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/settlemint/quorum-genesis-tool"` |  |
 | image.tag | string | `"sha-49c40f5"` |  |
@@ -40,6 +45,14 @@ Besu Genesis generator with Helm chart in Kubernetes
 | initJob.annotations."helm.sh/hook" | string | `"pre-install"` |  |
 | initJob.annotations."helm.sh/hook-delete-policy" | string | `"hook-succeeded"` |  |
 | initJob.annotations."helm.sh/hook-weight" | string | `"-10"` |  |
+| initJob.copyArtifacts.resources.limits.cpu | string | `"200m"` |  |
+| initJob.copyArtifacts.resources.limits.memory | string | `"256Mi"` |  |
+| initJob.copyArtifacts.resources.requests.cpu | string | `"50m"` |  |
+| initJob.copyArtifacts.resources.requests.memory | string | `"128Mi"` |  |
+| initJob.resources.limits.cpu | string | `"500m"` |  |
+| initJob.resources.limits.memory | string | `"512Mi"` |  |
+| initJob.resources.requests.cpu | string | `"150m"` |  |
+| initJob.resources.requests.memory | string | `"256Mi"` |  |
 | quorumFlags.removeGenesisOnDelete | bool | `true` |  |
 | rawGenesisConfig.blockchain.accountPassword | string | `"password"` |  |
 | rawGenesisConfig.blockchain.nodes.count | int | `1` |  |

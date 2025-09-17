@@ -24,6 +24,7 @@ import {
   Puzzle,
   Settings,
   Shield,
+  UserCheck,
   Users,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -92,6 +93,9 @@ export function NavSettings() {
   );
 
   const isUserManagementActive = isSettingsActive("/admin/user-management");
+  const isIdentityManagementActive = isSettingsActive(
+    "/admin/identity-management"
+  );
 
   // Determine if there are any items to render under the administration group
   const hasAdministrationItems =
@@ -120,6 +124,24 @@ export function NavSettings() {
             </SidebarMenuButton>
           </SidebarMenuItem>
         )}
+
+        {system.userPermissions?.actions.identityList && (
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
+              <Link
+                to="/admin/identity-management"
+                activeProps={{
+                  "data-active": true,
+                }}
+                className={isIdentityManagementActive ? "font-semibold" : ""}
+              >
+                <UserCheck />
+                <span>{t("identityManagement")}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        )}
+
         {settingsItems.length > 0 && (
           <Collapsible
             asChild

@@ -76,7 +76,7 @@ export const Route = createFileRoute(
  * including header, breadcrumbs, tabs, and renders child routes through Outlet.
  */
 function RouteComponent() {
-  const { user: loaderUser, identity: loaderIdentity } = Route.useLoaderData();
+  const { user: loaderUser } = Route.useLoaderData();
   const { userId } = Route.useParams();
   const { t } = useTranslation(["user", "common"]);
 
@@ -87,21 +87,14 @@ function RouteComponent() {
     })
   );
 
-  const { data: queriedIdentity } = useQuery(
-    Route.useRouteContext().orpc.system.identity.read.queryOptions({
-      input: { wallet: loaderUser.wallet ?? "" },
-    })
-  );
-
   const user = queriedUser ?? loaderUser;
-  const identity = queriedIdentity ?? loaderIdentity;
   const displayName = getUserDisplayName(user);
 
   // Generate tab configuration based on user data
   // Only memoize based on properties that affect tab configuration
   const tabConfigs = useMemo(
-    () => getUserTabConfiguration({ userId, user, identity }),
-    [userId, user, identity]
+    () => getUserTabConfiguration({ userId }),
+    [userId]
   );
 
   // Transform tab configurations to TabItemProps with translations

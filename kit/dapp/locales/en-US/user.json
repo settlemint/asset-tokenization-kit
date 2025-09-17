@@ -58,6 +58,13 @@
     }
   },
   "permissions": {
+    "groups": {
+      "compliance": "Compliance",
+      "identity-management": "Identity Management",
+      "assets-management": "Assets Management",
+      "system-administration": "System Administration",
+      "other": "Other"
+    },
     "table": {
       "columns": {
         "name": "Name",

@@ -202,7 +202,8 @@ export function PropertyFilterMultiOptionValueMenu<
           return {
             operator: newOperator,
             values: [newVals],
-          } as FilterValue<"multiOption", TData>;
+            columnMeta: column.columnDef.meta,
+          } satisfies FilterValue<"multiOption", TData>;
         }
       );
     },

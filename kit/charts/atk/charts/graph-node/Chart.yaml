@@ -2,7 +2,7 @@ apiVersion: v2
 name: graph-node
 description: A Helm chart for Graph Node
 type: application
-version: 0.0.1
+version: 0.0.2
 appVersion: "v0.39.1"
 icon: https://console.settlemint.com/android-chrome-512x512.png
 maintainers:

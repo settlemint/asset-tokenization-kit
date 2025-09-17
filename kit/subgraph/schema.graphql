@@ -148,8 +148,6 @@ type AccessControl @entity(immutable: false) {
   saleAdmin: [Account!]!
   # Authorized signers for multi-sig operations
   signer: [Account!]!
-  # Manages global allow/block lists
-  globalListManager: [Account!]!
 }
 
 type System @entity(immutable: false) {
@@ -819,6 +817,8 @@ type Token @entity(immutable: false) {
   stats: TokenStatsState @derivedFrom(field: "token")
   # Distribution statistics
   distributionStats: TokenDistributionStatsState @derivedFrom(field: "token")
+  # Denomination asset for bond
+  denominationAssetForBond: [TokenBond!]! @derivedFrom(field: "denominationAsset")
 }
 
 type TokenBalance @entity(immutable: false) {

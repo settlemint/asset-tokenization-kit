@@ -23,7 +23,7 @@ image:
   # -- TxSigner image repository
   repository: settlemint/btp-signer
   # -- TxSigner image tag (immutable tags are recommended)
-  tag: "7.15.12"
+  tag: "7.15.13"
   # -- TxSigner image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
   digest: ""
   # -- TxSigner image pull policy
@@ -488,51 +488,23 @@ config:
 postgresql: "postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"
 
 # -- Init containers configuration
-initContainers:
-  - name: wait-for-postgresql-ready
-    image: docker.io/postgres:17.6-alpine
-    command:
-      - /bin/sh
-      - -c
-      - |
-        set -e
-        echo "Waiting for PostgreSQL to be ready..."
-
-        # Add random delay to prevent all nodes from connecting simultaneously
-        RANDOM_DELAY=$((RANDOM % 30 + 5))
-        echo "Adding random delay of ${RANDOM_DELAY} seconds to stagger connections..."
-        sleep $RANDOM_DELAY
-
-        # Function to test PostgreSQL connection
-        test_postgres() {
-          pg_isready -h postgresql -p 5432 -U txsigner && \
-          psql -h postgresql -p 5432 -U txsigner -d txsigner -c "SELECT 1;" > /dev/null 2>&1
-        }
-
-        # Wait with exponential backoff
-        RETRY_COUNT=0
-        MAX_RETRIES=30
-        WAIT_TIME=2
-
-        while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-          if test_postgres; then
-            echo "PostgreSQL is ready!"
-            exit 0
-          fi
-
-          RETRY_COUNT=$((RETRY_COUNT + 1))
-          echo "PostgreSQL not ready (attempt $RETRY_COUNT/$MAX_RETRIES). Waiting ${WAIT_TIME}s..."
-          sleep $WAIT_TIME
-
-          # Exponential backoff with max of 30 seconds
-          WAIT_TIME=$((WAIT_TIME * 2))
-          if [ $WAIT_TIME -gt 30 ]; then
-            WAIT_TIME=30
-          fi
-        done
-
-        echo "PostgreSQL failed to become ready after $MAX_RETRIES attempts"
-        exit 1
-    env:
-      - name: PGPASSWORD
-        value: "atk"
+# Legacy `initContainers` overrides remain supported for backward compatibility.
+initContainer:
+  # Generic TCP check settings
+  tcpCheck:
+    enabled: true
+    image:
+      repository: ghcr.io/settlemint/btp-waitforit
+      tag: v7.7.10
+      pullPolicy: IfNotPresent
+    timeout: 120 # Timeout in seconds for each dependency check
+    resources:
+      limits:
+        cpu: 100m
+        memory: 64Mi
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      dependencies:
+        - name: postgresql
+          endpoint: "postgresql:5432"

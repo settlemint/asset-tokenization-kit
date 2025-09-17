@@ -6,7 +6,7 @@ description: |
   access layer for the Asset Tokenization Kit, offering high-performance queries, data
   synchronization, and API endpoints for frontend applications and external integrations.
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: "8.5.5"
 icon: https://console.settlemint.com/android-chrome-512x512.png
 home: https://settlemint.com/

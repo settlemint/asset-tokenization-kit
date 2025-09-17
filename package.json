@@ -67,8 +67,8 @@
     "db:studio": "turbo run db:studio "
   },
   "dependencies": {
-    "@aws-sdk/client-ecr": "3.888.0",
-    "@aws-sdk/client-marketplace-catalog": "3.888.0",
+    "@aws-sdk/client-ecr": "3.890.0",
+    "@aws-sdk/client-marketplace-catalog": "3.890.0",
     "@types/js-yaml": "4.0.9",
     "js-yaml": "4.1.0"
   },
@@ -77,7 +77,7 @@
     "@settlemint/sdk-cli": "2.6.2",
     "@settlemint/sdk-utils": "2.6.2",
     "@types/lodash": "4.17.20",
-    "@typescript/native-preview": "7.0.0-dev.20250915.1",
+    "@typescript/native-preview": "7.0.0-dev.20250916.1",
     "graphql": "16.11.0",
     "prettier": "3.6.2",
     "turbo": "2.5.6",

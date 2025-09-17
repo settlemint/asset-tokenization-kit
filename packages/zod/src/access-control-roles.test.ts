@@ -41,7 +41,6 @@ describe("accessControlRoles", () => {
         forcedTransfer: false,
         freezer: false,
         fundsManager: false,
-        globalListManager: false,
         governance: false,
         identityManager: false,
         identityRegistryModule: false,
@@ -86,7 +85,6 @@ describe("accessControlRoles", () => {
         forcedTransfer: false,
         freezer: true,
         fundsManager: false,
-        globalListManager: true,
         governance: false,
         identityManager: true,
         identityRegistryModule: false,
@@ -141,7 +139,6 @@ describe("accessControlRoles", () => {
       expect(result.forcedTransfer).toBe(false);
       expect(result.freezer).toBe(false);
       expect(result.fundsManager).toBe(false);
-      expect(result.globalListManager).toBe(false);
       expect(result.governance).toBe(false);
       expect(result.identityManager).toBe(false);
       expect(result.identityRegistryModule).toBe(false);
@@ -271,7 +268,6 @@ describe("accessControlRoles", () => {
         "forcedTransfer",
         "freezer",
         "fundsManager",
-        "globalListManager",
         "governance",
         "identityManager",
         "identityRegistryModule",

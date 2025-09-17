@@ -1,3 +1,4 @@
+import { residencyStatuses } from "@atk/zod/residency-status";
 import {
   date,
   index,
@@ -9,12 +10,10 @@ import {
 } from "drizzle-orm/pg-core";
 import { user } from "../../auth/db/auth";
 
-export const residencyStatusEnum = pgEnum("residency_status", [
-  "resident",
-  "non_resident",
-  "dual_resident",
-  "unknown",
-]);
+export const residencyStatusEnum = pgEnum(
+  "residency_status",
+  residencyStatuses
+);
 
 export const kycProfiles = pgTable(
   "kyc_profiles",

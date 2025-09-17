@@ -2,14 +2,18 @@ import { baseContract } from "@/orpc/procedures/base.contract";
 import claimsContract from "@/orpc/routes/system/identity/claims/claims.contract";
 import { IdentityCreateSchema } from "@/orpc/routes/system/identity/routes/identity.create.schema";
 import {
+  IdentityListInputSchema,
+  IdentityListOutputSchema,
+} from "@/orpc/routes/system/identity/routes/identity.list.schema";
+import {
   IdentityReadSchema,
   IdentitySchema,
 } from "@/orpc/routes/system/identity/routes/identity.read.schema";
-import {
-  IdentitySearchSchema,
-  IdentitySearchResultSchema,
-} from "@/orpc/routes/system/identity/routes/identity.search.schema";
 import { IdentityRegisterSchema } from "@/orpc/routes/system/identity/routes/identity.register.schema";
+import {
+  IdentitySearchResultSchema,
+  IdentitySearchSchema,
+} from "@/orpc/routes/system/identity/routes/identity.search.schema";
 
 const TAGS = ["system", "identity"];
 
@@ -54,7 +58,8 @@ const identitySearch = baseContract
   .route({
     method: "POST",
     path: "/system/identity/search",
-    description: "Search for basic identity information without claims by account address or identity contract address",
+    description:
+      "Search for basic identity information without claims by account address or identity contract address",
     successDescription: "Identity search completed successfully",
     tags: TAGS,
   })
@@ -73,11 +78,25 @@ const identityMe = baseContract
   })
   .output(IdentitySchema);
 
+const identityList = baseContract
+  .route({
+    method: "GET",
+    path: "/system/identity/list",
+    description:
+      "Retrieve a paginated list of blockchain identities with account metadata, claim counts, and registry association for administrative views.",
+    successDescription:
+      "Identities fetched successfully with pagination metadata and associated account information.",
+    tags: TAGS,
+  })
+  .input(IdentityListInputSchema)
+  .output(IdentityListOutputSchema);
+
 export const identityContract = {
   create: identityCreate,
   register: identityRegister,
   read: identityRead,
   search: identitySearch,
   me: identityMe,
+  list: identityList,
   claims: claimsContract,
 };
