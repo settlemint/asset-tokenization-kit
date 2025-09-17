@@ -61,6 +61,34 @@ besu-network:
         requests:
           cpu: 75m
           memory: 128Mi
+    # Pod security context for genesis jobs
+    podSecurityContext:
+      fsGroup: 10001
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    # Container security context for genesis jobs
+    containerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      seccompProfile:
+        type: RuntimeDefault
+    # Init container security context
+    initContainerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 1001
+      runAsGroup: 1001
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      seccompProfile:
+        type: RuntimeDefault
   besu-node:
     node:
       image:
@@ -120,6 +148,34 @@ besu-network:
           requests:
             cpu: 20m
             memory: 32Mi
+    # Pod security context for besu nodes
+    podSecurityContext:
+      fsGroup: 10001
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    # Container security context for besu nodes
+    containerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      seccompProfile:
+        type: RuntimeDefault
+    # Init container security context
+    initContainerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 1001
+      runAsGroup: 1001
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      seccompProfile:
+        type: RuntimeDefault
   besu-validator-1:
     enabled: true
     storage:
@@ -182,6 +238,34 @@ erpc:
       tag: "1.37"
       pullPolicy: IfNotPresent
   resources: {}
+  # Pod security context
+  podSecurityContext:
+    fsGroup: 10001
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  # Container security context
+  containerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    seccompProfile:
+      type: RuntimeDefault
+  # Init container security context
+  initContainerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1001
+    runAsGroup: 1001
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    seccompProfile:
+      type: RuntimeDefault
   ingress:
     enabled: true
     className: "atk-nginx"
@@ -287,6 +371,34 @@ graph-node:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8040"
     prometheus.io/path: "/metrics"
+  # Pod security context
+  podSecurityContext:
+    fsGroup: 10001
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  # Container security context
+  containerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    seccompProfile:
+      type: RuntimeDefault
+  # Init container security context
+  initContainerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1001
+    runAsGroup: 1001
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    seccompProfile:
+      type: RuntimeDefault
   initContainer:
     image:
       repository: docker.io/kubesphere/kubectl
@@ -405,6 +517,34 @@ portal:
     prometheus.io/scrape: "true"
     prometheus.io/port: "3000"
     prometheus.io/path: "/portal-metrics"
+  # Pod security context
+  podSecurityContext:
+    fsGroup: 10001
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  # Container security context
+  containerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    seccompProfile:
+      type: RuntimeDefault
+  # Init container security context
+  initContainerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1001
+    runAsGroup: 1001
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    seccompProfile:
+      type: RuntimeDefault
   initContainer:
     # Legacy `initContainers` overrides remain supported for backward compatibility.
     tcpCheck:
@@ -657,6 +797,34 @@ txsigner:
       repository: docker.io/busybox
       tag: "1.37"
       pullPolicy: IfNotPresent
+  # Pod security context
+  podSecurityContext:
+    fsGroup: 10001
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  # Container security context
+  containerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    seccompProfile:
+      type: RuntimeDefault
+  # Init container security context
+  initContainerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1001
+    runAsGroup: 1001
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    seccompProfile:
+      type: RuntimeDefault
   # Configuration for the txsigner subchart
   config:
     mnemonic:
