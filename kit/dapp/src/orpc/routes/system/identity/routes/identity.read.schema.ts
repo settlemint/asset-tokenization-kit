@@ -1,5 +1,6 @@
 import { identityClaim } from "@atk/zod/claim";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { ethereumHex } from "@atk/zod/ethereum-hex";
 import { isoCountryCode } from "@atk/zod/iso-country-code";
 import { z } from "zod";
 
@@ -59,7 +60,7 @@ export const IdentityResponseSchema = z.object({
         registered: z
           .array(
             z.object({
-              id: ethereumAddress,
+              id: ethereumHex,
               country: z.number(),
             })
           )

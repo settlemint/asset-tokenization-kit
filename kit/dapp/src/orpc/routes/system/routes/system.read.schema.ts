@@ -1,6 +1,7 @@
 import type { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { accessControlRoles } from "@atk/zod/access-control-roles";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { ethereumHex } from "@atk/zod/ethereum-hex";
 import { isoCountryCode } from "@atk/zod/iso-country-code";
 import { accessControlSchema } from "@atk/zod/src/access-control-roles";
 import { addonFactoryTypeId } from "@atk/zod/src/addon-types";
@@ -106,7 +107,7 @@ export const SystemSchema = z.object({
     registeredIdentities: z
       .array(
         z.object({
-          id: ethereumAddress.describe("Registered identity ID"),
+          id: ethereumHex.describe("Registered identity ID"),
           country: z.number().describe("ISO country code"),
         })
       )
