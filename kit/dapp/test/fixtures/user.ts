@@ -287,15 +287,15 @@ export async function registerUserIdentity(
 ) {
   // Check if identity already exists
   try {
-    const account = await adminClient.account.read(
-      { wallet },
+    const identity = await adminClient.system.identity.search(
+      { account: wallet },
       {
         context: {
           skipLoggingFor: ["NOT_FOUND"],
         },
       }
     );
-    if (account?.identity) {
+    if (identity?.account) {
       console.log(`Identity already exists for wallet ${wallet}`);
       return;
     }

@@ -101,14 +101,14 @@ function RouteComponent() {
     "data-table",
   ]);
   const isinClaim = parseClaim<{ isin: string }>(
-    asset.account.identity?.claims,
+    asset.identity?.claims,
     "isin"
   );
   const basePriceClaim = parseClaim<{
     amount: string;
     currencyCode: string;
     decimals: string;
-  }>(asset.account.identity?.claims, "basePrice");
+  }>(asset.identity?.claims, "basePrice");
 
   return (
     <>

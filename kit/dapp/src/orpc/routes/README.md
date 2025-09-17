@@ -140,7 +140,7 @@ Aggregates all handlers for the module:
 ```typescript
 // account/account.router.ts
 import { read } from "./routes/account.read";
-import { me } from "./routes/account.me";
+import { me } from "./routes/identity.me";
 
 const routes = {
   read,

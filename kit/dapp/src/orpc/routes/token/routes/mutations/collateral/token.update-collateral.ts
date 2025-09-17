@@ -90,7 +90,7 @@ export const updateCollateral = tokenRouter.token.updateCollateral
     const tokenData = context.token;
 
     // Get the token's identity contract address from the graph data
-    const onchainID = tokenData.account.identity?.id;
+    const onchainID = tokenData.identity?.id;
 
     if (!onchainID) {
       const errorMessage = `Token at address ${contract} does not have an associated identity contract`;

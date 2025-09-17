@@ -51,8 +51,14 @@ export const Route = createFileRoute(
     const user = await queryClient.ensureQueryData(
       orpc.user.read.queryOptions({ input: { userId } })
     );
+    const identity = await queryClient.ensureQueryData(
+      orpc.system.identity.read.queryOptions({
+        input: { account: user.wallet ?? "" },
+      })
+    );
     return {
       user,
+      identity,
       breadcrumb: [
         createI18nBreadcrumbMetadata("userManagement"),
         { title: user.name, href: `/admin/user-management/${userId}` },
@@ -70,7 +76,7 @@ export const Route = createFileRoute(
  * including header, breadcrumbs, tabs, and renders child routes through Outlet.
  */
 function RouteComponent() {
-  const { user: loaderUser } = Route.useLoaderData();
+  const { user: loaderUser, identity: loaderIdentity } = Route.useLoaderData();
   const { userId } = Route.useParams();
   const { t } = useTranslation(["user", "common"]);
 
@@ -81,15 +87,21 @@ function RouteComponent() {
     })
   );
 
-  const user = queriedUser ?? loaderUser;
+  const { data: queriedIdentity } = useQuery(
+    Route.useRouteContext().orpc.system.identity.read.queryOptions({
+      input: { account: loaderUser.wallet ?? "" },
+    })
+  );
 
+  const user = queriedUser ?? loaderUser;
+  const identity = queriedIdentity ?? loaderIdentity;
   const displayName = getUserDisplayName(user);
 
   // Generate tab configuration based on user data
   // Only memoize based on properties that affect tab configuration
   const tabConfigs = useMemo(
-    () => getUserTabConfiguration({ userId, user }),
-    [userId, user]
+    () => getUserTabConfiguration({ userId, user, identity }),
+    [userId, user, identity]
   );
 
   // Transform tab configurations to TabItemProps with translations

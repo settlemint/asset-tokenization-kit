@@ -1,8 +1,10 @@
+import type { Identity } from "@/orpc/routes/system/identity/routes/identity.read.schema";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 
 export interface UserTabConfigurationParams {
   userId: string;
   user: User;
+  identity: Identity;
 }
 
 export interface UserTabConfig {
@@ -17,6 +19,7 @@ export interface UserTabConfig {
 export function getUserTabConfiguration({
   userId,
   user,
+  identity,
 }: UserTabConfigurationParams): UserTabConfig[] {
   const baseUrl = `/admin/user-management/${userId}`;
 
@@ -28,7 +31,7 @@ export function getUserTabConfiguration({
   ];
 
   // Add claims tab if user has identity or wallet
-  if (user.identity || user.wallet) {
+  if (identity.id || user.wallet) {
     tabs.push({
       tabKey: "claims",
       href: `${baseUrl}/claims`,

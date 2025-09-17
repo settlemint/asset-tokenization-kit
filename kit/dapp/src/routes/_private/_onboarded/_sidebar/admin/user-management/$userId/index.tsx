@@ -42,7 +42,7 @@ export const Route = createFileRoute(
  */
 function RouteComponent() {
   // Get data from parent route loader
-  const { user } = useLoaderData({
+  const { user, identity } = useLoaderData({
     from: "/_private/_onboarded/_sidebar/admin/user-management/$userId",
   });
   const { t } = useTranslation(["user", "common"]);
@@ -114,7 +114,7 @@ function RouteComponent() {
         <DetailGridItem
           label={t("user:fields.onChainIdentity")}
           info={t("user:fields.onChainIdentityInfo")}
-          value={user.identity}
+          value={identity?.id}
           type="address"
           showPrettyName={false}
           emptyValue={t("user:fields.noIdentityRegistered")}
