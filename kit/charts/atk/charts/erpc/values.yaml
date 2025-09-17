@@ -210,7 +210,7 @@ initContainer:
     dependencies:
       # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
       - name: besu-rpc
-        endpoint: "besu-node-rpc-1.atk.svc.cluster.local:8545"
+        endpoint: "besu-node-rpc-0.besu-node-rpc:8545"
 
 # -- Service parameters
 service:

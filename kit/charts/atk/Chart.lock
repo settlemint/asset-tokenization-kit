@@ -8,6 +8,9 @@ dependencies:
 - name: besu-network
   repository: ""
   version: '*'
+- name: network
+  repository: oci://ghcr.io/settlemint/network-bootstrapper
+  version: 1.0.12
 - name: erpc
   repository: ""
   version: '*'
@@ -24,10 +27,10 @@ dependencies:
   repository: ""
   version: '*'
 - name: txsigner
-  repository: file://./charts/txsigner
-  version: 0.1.1
+  repository: ""
+  version: '*'
 - name: dapp
-  repository: file://./charts/dapp
-  version: 0.1.1
-digest: sha256:1252411edad5a23e6d18f04c3ac9c443dd4cfc21cad4326fd1ad065a641468f7
-generated: "2025-09-16T13:54:35.31316+02:00"
+  repository: ""
+  version: '*'
+digest: sha256:f281fd7e7c8bb06c32fb4162fe13cb0a5eada7cfa784b8e2d965cf52bc480fa9
+generated: "2025-09-17T23:42:01.69184+02:00"
