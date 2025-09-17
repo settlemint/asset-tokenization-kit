@@ -21,7 +21,7 @@ const columnHelper = createStrictColumnHelper<IdentityRow>();
 
 export function IdentityTable() {
   const router = useRouter();
-  const { t } = useTranslation("claims");
+  const { t } = useTranslation("identities");
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 20,
@@ -44,8 +44,8 @@ export function IdentityTable() {
   const handleRowClick = async (identity: IdentityRow) => {
     try {
       await router.navigate({
-        to: "/admin/identity-management/$accountId",
-        params: { accountId: identity.account?.id ?? identity.id },
+        to: "/admin/identity-management/$address",
+        params: { address: identity.id },
       });
     } catch {
       toast.error(t("identityTable.errors.navigationFailed"));
