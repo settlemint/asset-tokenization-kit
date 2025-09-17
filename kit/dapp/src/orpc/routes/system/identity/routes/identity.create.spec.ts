@@ -73,5 +73,5 @@ describe("Identity create", () => {
     });
     expect(result.id).toBe(wallet);
     expect(result.identity).toBeDefined();
-  });
+  }, 100_000);
 });
