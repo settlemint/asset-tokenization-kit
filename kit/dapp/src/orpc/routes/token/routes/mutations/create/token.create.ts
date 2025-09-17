@@ -35,11 +35,6 @@ const FIND_TOKEN_FOR_TRANSACTION_QUERY = theGraphGraphql(`
       symbol
       decimals
       type
-      account {
-        identity {
-          id
-        }
-      }
     }
   }
 `);
