@@ -24,13 +24,19 @@ spec:
     spec:
       {{- include "graph-node.imagePullSecrets" . | nindent 6 }}
       serviceAccountName: {{ include "graph-node.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       initContainers:
         - name: combined-init
           image: {{ include "graph-node.initContainerImage" . }}
           imagePullPolicy: {{ .Values.initContainer.image.pullPolicy }}
+          {{- with .Values.initContainerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           env:
             - name: NODE_ID
               valueFrom:
@@ -137,6 +143,10 @@ spec:
         - name: graph-node
           image: {{ include "graph-node.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           command:
             - sh
             - -c
