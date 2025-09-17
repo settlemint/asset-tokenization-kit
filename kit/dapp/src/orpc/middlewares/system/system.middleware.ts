@@ -134,13 +134,6 @@ export const systemMiddleware = baseRouter.middleware<
 
   // Process user identity data
   const userIdentity = system.identityFactory.identities?.[0];
-
-  if (!userIdentity) {
-    throw errors.NOT_FOUND({
-      message: `User identity not found for address '${auth.user.wallet}'`,
-    });
-  }
-
   const registeredIdentity =
     system.identityRegistryStorage.registeredIdentities?.[0];
 
@@ -150,16 +143,18 @@ export const systemMiddleware = baseRouter.middleware<
       roles: userRoles,
       actions: getSystemPermissions(userRoles),
     },
-    userIdentity: {
-      address: userIdentity?.id,
-      registered: registeredIdentity
-        ? {
-            isRegistered: true,
-            country:
-              countries.numericToAlpha2(registeredIdentity?.country) ?? "",
-          }
-        : undefined,
-    },
+    userIdentity: userIdentity
+      ? {
+          address: userIdentity?.id,
+          registered: registeredIdentity
+            ? {
+                isRegistered: true,
+                country:
+                  countries.numericToAlpha2(registeredIdentity?.country) ?? "",
+              }
+            : undefined,
+        }
+      : undefined,
   };
 
   const systemContext = SystemSchema.parse(systemInfo);
@@ -222,14 +217,12 @@ async function getSystemAddress(
 export async function getSystemContext(
   systemAddress: string,
   theGraphClient: ValidatedTheGraphClient,
-  userAddress?: string
+  userAddress: string
 ) {
   const { system } = await theGraphClient.query(SYSTEM_QUERY, {
     input: {
       systemAddress,
-      userAddress:
-        userAddress?.toLowerCase() ||
-        "0x0000000000000000000000000000000000000000",
+      userAddress: userAddress.toLowerCase(),
     },
     output: z.object({ system: SystemSchema }),
   });

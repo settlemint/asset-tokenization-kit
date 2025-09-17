@@ -233,6 +233,7 @@ export const SystemSchema = z.object({
         .or(z.literal(false))
         .optional(),
     })
+    .optional()
     .describe("The user's identity information within this system"),
 });
 

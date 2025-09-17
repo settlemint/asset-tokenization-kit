@@ -26,7 +26,7 @@ export function NavMyAssets() {
     })
   );
 
-  if (!system.userIdentity.registered) {
+  if (!system.userIdentity?.registered) {
     return null;
   }
 

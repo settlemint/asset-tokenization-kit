@@ -14,7 +14,6 @@ import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-gr
 import { getSystemContext } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
-import { identitySearch } from "@/orpc/routes/system/identity/routes/identity.search";
 import { AssetFactoryTypeIdEnum } from "@atk/zod/asset-types";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { AddonFactoryTypeIdEnum } from "@atk/zod/src/addon-types";
@@ -63,7 +62,6 @@ export const me = authRouter.user.me
       systemAddress,
       baseCurrency,
       systemAddonsSkipped,
-      identity,
     ] = await Promise.all([
       context.db
         .select({
@@ -100,7 +98,6 @@ export const me = authRouter.user.me
         },
         { context }
       ).catch(() => "false"), // Default to false if not set
-      call(identitySearch, { account: authUser.wallet }, { context }),
     ]);
 
     const { kyc } = userQueryResult ?? {};
@@ -108,7 +105,8 @@ export const me = authRouter.user.me
     const systemOnboardingState = await getSystemInfo(
       systemAddress,
       systemAddonsSkipped,
-      context.theGraphClient
+      context.theGraphClient,
+      authUser.wallet
     );
     return {
       id: authUser.id,
@@ -135,7 +133,7 @@ export const me = authRouter.user.me
         walletRecoveryCodes: authUser.secretCodesConfirmed ?? false,
         ...systemOnboardingState,
         systemSettings: !!baseCurrency,
-        identitySetup: !!identity?.id,
+        identitySetup: systemOnboardingState.identitySetup,
         identity: !!userQueryResult?.kyc,
       },
     };
@@ -144,12 +142,14 @@ export const me = authRouter.user.me
 async function getSystemInfo(
   systemAddress: string | null,
   systemAddonsSkipped: string | null,
-  theGraphClient: ValidatedTheGraphClient
+  theGraphClient: ValidatedTheGraphClient,
+  userWallet: string
 ) {
   const systemOnboardingState = {
     system: false,
     systemAssets: false,
     systemAddons: false,
+    identitySetup: false,
   };
 
   if (!systemAddress) {
@@ -161,7 +161,8 @@ async function getSystemInfo(
   try {
     const systemData = await getSystemContext(
       getEthereumAddress(systemAddress),
-      theGraphClient
+      theGraphClient,
+      userWallet
     );
     if (!systemData) {
       return {
@@ -195,6 +196,11 @@ async function getSystemInfo(
         ? hasYieldAddon
         : systemData.systemAddonRegistry.systemAddons.length > 0;
     }
+
+    // We filter identities by user wallet in the query
+    systemOnboardingState.identitySetup =
+      systemData.identityFactory.identities.length > 0;
+
     return {
       ...systemOnboardingState,
       accessControl: systemData.systemAccessManager?.accessControl ?? null,
