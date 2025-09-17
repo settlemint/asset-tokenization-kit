@@ -1,0 +1,443 @@
+# Complete OpenShift-specific values for the ATK Helm chart
+# This file configures ALL components to be compatible with OpenShift's restricted SCC
+#
+# Usage:
+#   helm install atk ./atk -f values-openshift-complete.yaml
+#
+# This comprehensive configuration:
+# - Disables hardcoded UIDs/GIDs for all components
+# - Lets OpenShift automatically assign UIDs from the namespace range
+# - Sets proper security contexts for all containers
+# - Ensures compatibility with restricted-v2 SCC
+
+# Global configuration for OpenShift
+global:
+  # Enable OpenShift-specific configurations
+  openshift:
+    enabled: true
+    # OpenShift automatically assigns a UID/GID from this range
+    # Update this based on your namespace's UID range
+    fsGroup: 1000750000
+
+# Support services configuration for OpenShift (PostgreSQL, Redis, MinIO)
+support:
+  # PostgreSQL configuration for OpenShift
+  postgresql:
+    podSecurityContext:
+      enabled: false # Disable to avoid hardcoded UIDs
+      runAsUser: null
+      runAsGroup: null
+      fsGroup: null
+
+    containerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: null # Let OpenShift assign
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+
+  # Redis configuration for OpenShift
+  redis:
+    master:
+      podSecurityContext:
+        enabled: false
+        runAsUser: null
+        runAsGroup: null
+        fsGroup: null
+      containerSecurityContext:
+        runAsNonRoot: true
+        runAsUser: null # Let OpenShift assign
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+
+    replica:
+      podSecurityContext:
+        enabled: false
+        runAsUser: null
+        runAsGroup: null
+        fsGroup: null
+      containerSecurityContext:
+        runAsNonRoot: true
+        runAsUser: null # Let OpenShift assign
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+
+  # MinIO configuration for OpenShift
+  minio:
+    # CRITICAL: Disable MinIO's built-in security context to let OpenShift handle it
+    securityContext:
+      enabled: false # This MUST be false for OpenShift
+      runAsUser: null
+      runAsGroup: null
+      fsGroup: null
+
+    containerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: null # Let OpenShift assign
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+
+    postJob:
+      securityContext:
+        enabled: false
+        runAsUser: null
+        runAsGroup: null
+
+    makePolicyJob:
+      securityContext:
+        enabled: false
+        runAsUser: null
+        runAsGroup: null
+      containerSecurityContext:
+        runAsNonRoot: true
+        runAsUser: null # Let OpenShift assign
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+
+    makeBucketJob:
+      securityContext:
+        enabled: false
+        runAsUser: null
+        runAsGroup: null
+      containerSecurityContext:
+        runAsNonRoot: true
+        runAsUser: null # Let OpenShift assign
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+
+    makeUserJob:
+      securityContext:
+        enabled: false
+        runAsUser: null
+        runAsGroup: null
+      containerSecurityContext:
+        runAsNonRoot: true
+        runAsUser: null # Let OpenShift assign
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+
+    makeServiceAccountJob:
+      securityContext:
+        enabled: false
+        runAsUser: null
+        runAsGroup: null
+      containerSecurityContext:
+        runAsNonRoot: true
+        runAsUser: null # Let OpenShift assign
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+
+    customCommandJob:
+      securityContext:
+        enabled: false
+        runAsUser: null
+        runAsGroup: null
+      containerSecurityContext:
+        runAsNonRoot: true
+        runAsUser: null # Let OpenShift assign
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+
+  ingress-nginx:
+    enabled: false
+    controller:
+      podSecurityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+
+      containerSecurityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+          add:
+            - NET_BIND_SERVICE
+        seccompProfile:
+          type: RuntimeDefault
+
+  # Reloader configuration
+  reloader:
+    reloader:
+      deployment:
+        securityContext:
+          runAsUser: null
+
+# Dapp configuration for OpenShift
+dapp:
+  podSecurityContext:
+    runAsGroup: null
+    runAsUser: null
+    fsGroup: null
+
+# Portal configuration for OpenShift
+portal:
+  podSecurityContext:
+    enabled: false # Disable to avoid hardcoded UID 1001
+
+  containerSecurityContext:
+    enabled: true
+    runAsUser: null # Let OpenShift assign
+    runAsGroup: null # Let OpenShift assign
+
+  initContainer:
+    # Copy artifacts init container - override hardcoded UIDs
+    copyArtifacts:
+      securityContext:
+        runAsUser: null # Let OpenShift assign
+        runAsGroup: null # Let OpenShift assign
+
+    tcpCheck:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: null # Let OpenShift assign
+        runAsGroup: null # Let OpenShift assign
+
+# TxSigner configuration for OpenShift
+txsigner:
+  podSecurityContext:
+    enabled: false # Disable to avoid hardcoded UID 1001
+
+  containerSecurityContext:
+    runAsUser: null
+    runAsGroup: null
+
+# ERPC configuration for OpenShift
+erpc:
+  podSecurityContext:
+    enabled: false
+
+  containerSecurityContext:
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+
+# Graph Node configuration for OpenShift
+graph-node:
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: null
+    runAsGroup: null
+    fsGroup: null
+
+# Hasura configuration for OpenShift
+hasura:
+  graphql-engine:
+    # Override the hardcoded secret name to use the release name
+    extraEnvs:
+      - name: HASURA_GRAPHQL_PG_CONNECTIONS
+        value: "10"
+      - name: HASURA_GRAPHQL_DATABASE_URL
+        valueFrom:
+          secretKeyRef:
+            key: DEFAULT_DB_URL
+            name: atk-secrets
+
+    # Override init container with proper security context for OpenShift
+    initContainers:
+      - name: wait-for-postgresql
+        image: ghcr.io/settlemint/btp-waitforit:v7.7.10
+        imagePullPolicy: IfNotPresent
+        command:
+          - /usr/bin/wait-for-it
+          - postgresql:5432
+          - -t
+          - "120"
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          seccompProfile:
+            type: RuntimeDefault
+        resources:
+          limits:
+            cpu: 100m
+            memory: 64Mi
+          requests:
+            cpu: 10m
+            memory: 32Mi
+
+    podSecurityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+
+# Observability components for OpenShift
+observability:
+  # Alloy
+  alloy:
+    alloy:
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+
+  # Grafana
+  grafana:
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: null
+      runAsGroup: null
+      fsGroup: null
+
+  # Loki
+  loki:
+    enabled: false
+    loki:
+      podSecurityContext:
+        runAsNonRoot: true
+        runAsUser: null
+        runAsGroup: null
+        fsGroup: null
+
+    gateway:
+      podSecurityContext:
+        runAsNonRoot: true
+        runAsUser: null
+        runAsGroup: null
+        fsGroup: null
+
+  # Tempo
+  tempo:
+    securityContext:
+    runAsUser: null
+    runAsGroup: null
+    fsGroup: null
+
+  # Kube State Metrics
+  kube-state-metrics:
+    securityContext:
+      enabled: true
+      runAsGroup: null
+      runAsUser: null
+      fsGroup: null
+
+  # Node exporter - disable on OpenShift
+  prometheus-node-exporter:
+    enabled: false
+
+# Blockscout configuration for OpenShift
+blockscout:
+  blockscout-stack:
+    blockscout:
+      podSecurityContext:
+        enabled: false
+
+      containerSecurityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+
+    frontend:
+      podSecurityContext:
+        enabled: false
+
+      containerSecurityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+
+# Besu Network configuration for OpenShift
+besu-network:
+  besu-genesis:
+    podSecurityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+
+  besu-node:
+    podSecurityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+
+    initContainers:
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
