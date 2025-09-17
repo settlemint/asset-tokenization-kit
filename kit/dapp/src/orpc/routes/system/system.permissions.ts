@@ -60,6 +60,7 @@ export const SYSTEM_PERMISSIONS = {
   complianceModuleCreate: { any: ["complianceManager", "systemManager"] },
   grantRole: { any: ["admin"] },
   identityCreate: { any: ["identityManager", "systemManager"] },
+  identityList: { any: ["identityManager", "claimIssuer", "systemModule"] },
   identityRegister: { any: ["identityManager", "systemManager"] },
   kycDelete: { any: ["identityManager", "claimIssuer"] },
   kycList: { any: ["identityManager", "claimIssuer"] },

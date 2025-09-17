@@ -33,7 +33,7 @@ import { serverOnly } from "@tanstack/react-start";
 import {
   betterAuth,
   type BetterAuthOptions,
-  type InferUser
+  type InferUser,
 } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { APIError } from "better-auth/api";
@@ -326,24 +326,29 @@ const options = {
     /**
      * Custom session plugin to add KYC information to the user.
      */
-    customSession(async ({ user, session }): Promise<{
-      user: SessionUser;
-      session: Parameters<Parameters<typeof customSession>[0]>[0]["session"];
-    }> => {
-      const kyc = await db.query.kycProfiles.findFirst({
-        where: eq(kycProfiles.userId, user.id),
-      });
-      return {
-        user: {
-          ...user,
-          name:
-            kyc?.firstName && kyc.lastName
-              ? `${kyc.firstName} ${kyc.lastName}`
-              : user.name,
-        } as SessionUser,
+    customSession(
+      async ({
+        user,
         session,
-      } ;
-    }),
+      }): Promise<{
+        user: SessionUser;
+        session: Parameters<Parameters<typeof customSession>[0]>[0]["session"];
+      }> => {
+        const kyc = await db.query.kycProfiles.findFirst({
+          where: eq(kycProfiles.userId, user.id),
+        });
+        return {
+          user: {
+            ...user,
+            name:
+              kyc?.firstName && kyc.lastName
+                ? `${kyc.firstName} ${kyc.lastName}`
+                : user.name,
+          } as SessionUser,
+          session,
+        };
+      }
+    ),
   ],
 } satisfies BetterAuthOptions;
 

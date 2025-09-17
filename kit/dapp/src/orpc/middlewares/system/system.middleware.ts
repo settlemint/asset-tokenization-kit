@@ -209,6 +209,7 @@ export function getSystemPermissions(
     complianceModuleCreate: false,
     grantRole: false,
     identityCreate: false,
+    identityList: false,
     identityRegister: false,
     kycDelete: false,
     kycList: false,

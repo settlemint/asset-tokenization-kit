@@ -166,6 +166,9 @@ export const SystemSchema = z.object({
               identityCreate: z
                 .boolean()
                 .describe("Whether the user can create identities"),
+              identityList: z
+                .boolean()
+                .describe("Whether the user can read identities"),
               identityRegister: z
                 .boolean()
                 .describe("Whether the user can register identities"),

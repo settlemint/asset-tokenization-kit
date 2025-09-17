@@ -16,5 +16,26 @@
     "exchange": "التبادل",
     "custody": "الحفظ",
     "income": "الدخل"
+  },
+  "administration": "الإدارة",
+  "platformSettings": "إعدادات المنصة",
+  "userManagement": "إدارة المستخدمين",
+  "identityManagement": "إدارة الهوية",
+  "settings": {
+    "assetTypes": {
+      "title": "أنواع الأصول",
+      "description": "قم بتكوين وتمكين أنواع مختلفة من الأصول المتاحة على المنصة. بمجرد تمكينها، لا يمكن تعطيل أنواع الأصول.",
+      "allEnabled": "تم تمكين جميع أنواع الأصول المتاحة.",
+      "enabledTitle": "أنواع الأصول المُمكّنة",
+      "enabledDescription": "هذه أنواع الأصول نشطة حالياً ومتاحة للاستخدام على المنصة.",
+      "enable": "تمكين",
+      "enabled": "مُمكّن",
+      "confirmEnableTitle": "تمكين {{assetType}}؟",
+      "confirmEnableDescription": "لا يمكن التراجع عن هذا الإجراء. بمجرد تمكينه، سيكون هذا النوع من الأصول متاحاً بشكل دائم على المنصة."
+    },
+    "compliance": "الامتثال",
+    "addons": "الإضافات",
+    "claimTopicsIssuers": "مواضيع المطالبات والمُصدرين",
+    "permissions": "الأذونات"
   }
 }
