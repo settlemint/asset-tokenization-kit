@@ -594,6 +594,16 @@ portal:
         requests:
           cpu: 25m
           memory: 64Mi
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
   config:
     postgresql: "postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"
     redis:

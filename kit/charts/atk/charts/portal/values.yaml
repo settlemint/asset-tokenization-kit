@@ -201,6 +201,13 @@ initContainer:
     securityContext:
       runAsUser: 1001
       runAsGroup: 1001
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
 
   # Generic TCP check settings
   tcpCheck:
