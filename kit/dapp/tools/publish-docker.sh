@@ -9,6 +9,14 @@ if [ -z "${CI:-}" ]; then
     DOCKER_BUILD_TAG="$DOCKER_BUILD_TAG-dev.$(date +%s)"
 fi
 
+# Ensure script runs from monorepo root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../" && pwd)"
+cd "$REPO_ROOT"
+
+# Copy dApp Dockerfile
+cp Dockerfile.dapp Dockerfile
+
 # Build and push Docker image
 docker buildx build . \
     --platform=linux/amd64,linux/arm64 \

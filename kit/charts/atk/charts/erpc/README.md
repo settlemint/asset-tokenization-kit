@@ -88,17 +88,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | config.logLevel | string | `"info"` | Log level for eRPC |
 | config.projects | list | `[]` | Array of project configurations (will be overridden by parent chart) |
 | config.server | object | `{"httpHostV4":"0.0.0.0","httpPort":4000}` | Server configuration |
-| containerSecurityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"enabled":false,"readOnlyRootFilesystem":false,"runAsGroup":1001,"runAsNonRoot":true,"runAsUser":1001,"seccompProfile":{"type":"RuntimeDefault"}}` | Container Security Context configuration |
-| containerSecurityContext.allowPrivilegeEscalation | bool | `false` | Set container's Security Context allowPrivilegeEscalation |
-| containerSecurityContext.capabilities | object | `{"drop":["ALL"]}` | Linux capabilities configuration |
-| containerSecurityContext.capabilities.drop | list | `["ALL"]` | Set container's Security Context drop capabilities |
-| containerSecurityContext.enabled | bool | `false` | Enable container Security Context |
-| containerSecurityContext.readOnlyRootFilesystem | bool | `false` | Set container's Security Context readOnlyRootFilesystem |
-| containerSecurityContext.runAsGroup | int | `1001` | Set container's Security Context runAsGroup |
-| containerSecurityContext.runAsNonRoot | bool | `true` | Set container's Security Context runAsNonRoot |
-| containerSecurityContext.runAsUser | int | `1001` | Set container's Security Context runAsUser |
-| containerSecurityContext.seccompProfile | object | `{"type":"RuntimeDefault"}` | Seccomp profile configuration |
-| containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` | Set container's Security Context seccomp profile |
+| containerSecurityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":false,"runAsGroup":1001,"runAsNonRoot":true,"runAsUser":1001,"seccompProfile":{"type":"RuntimeDefault"}}` | Container Security Context configuration |
 | extraEnvVars | list | `[]` | Array with extra environment variables to add to eRPC nodes |
 | extraEnvVarsCM | string | `""` | Name of existing ConfigMap containing extra env vars for eRPC nodes |
 | extraEnvVarsSecret | string | `""` | Name of existing Secret containing extra env vars for eRPC nodes |
@@ -181,10 +171,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | podAnnotations."prometheus.io/scrape" | string | `"true"` | Enable prometheus scraping |
 | podAntiAffinityPreset | string | `"soft"` | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard` |
 | podLabels | object | `{}` | Extra labels for eRPC pods |
-| podSecurityContext | object | `{"enabled":false,"fsGroup":1001,"sysctls":[]}` | Pod Security Context configuration |
-| podSecurityContext.enabled | bool | `false` | Enabled eRPC pods' Security Context |
-| podSecurityContext.fsGroup | int | `1001` | Set eRPC pod's Security Context fsGroup |
-| podSecurityContext.sysctls | list | `[]` | Set kernel settings using the sysctl interface |
+| podSecurityContext | object | `{"fsGroup":1001,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Pod Security Context configuration |
 | priorityClassName | string | `""` | eRPC pods' priority class name |
 | readinessProbe | object | `{"enabled":true,"failureThreshold":3,"httpGet":{"path":"/healthcheck","port":"http"},"initialDelaySeconds":5,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}` | Configure eRPC containers' readiness probe |
 | readinessProbe.enabled | bool | `true` | Enable readinessProbe on eRPC containers |

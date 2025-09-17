@@ -61,10 +61,9 @@ export const UserSchema = z.object({
    * User's role for offchain access control.
    * Determines access permissions and onboarding flow.
    * - admin: First user, can perform platform onboarding
-   * - issuer: Can see all users data
-   * - investor: Standard user
+   * - user: Standard user
    */
-  role: userRoles().default("investor"),
+  role: userRoles().default("user"),
 
   /**
    * User's Ethereum wallet address.

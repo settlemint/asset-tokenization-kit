@@ -9,6 +9,9 @@ out
 .idea
 .turbo
 .generated
+.output
+.tanstack
 kit/contracts/ignition/deloyments
 kit/subgraph/build
 kit/charts
+kit/e2e
