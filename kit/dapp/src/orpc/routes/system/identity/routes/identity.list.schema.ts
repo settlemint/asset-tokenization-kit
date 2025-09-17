@@ -11,8 +11,6 @@ export const IdentityListFiltersSchema = z
     accountId: ethereumAddress.optional(),
     /** Whether the identity represents a smart contract */
     isContract: z.boolean().optional(),
-    /** Identity registry storage address */
-    registryStorageId: ethereumAddress.optional(),
   })
   .partial();
 
@@ -51,7 +49,6 @@ export const IdentityListOutputSchema = z.object({
       claimsCount: z.number().int().nonnegative(),
       activeClaimsCount: z.number().int().nonnegative(),
       revokedClaimsCount: z.number().int().nonnegative(),
-      registryStorageId: ethereumAddress.optional(),
       deployedInTransaction: z.string(),
     })
   ),

@@ -1,5 +1,5 @@
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
-import { AccountSchema } from "@/orpc/routes/account/routes/account.read.schema";
+import { IdentitySchema } from "@/orpc/routes/system/identity/routes/identity.read.schema";
 import { VerificationType } from "@atk/zod/verification-type";
 import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
@@ -43,18 +43,18 @@ describe("Identity list (integration)", () => {
 
     await registerUserIdentity(adminClient, targetUserData.wallet);
 
-    const account = await adminClient.account.read({
+    const account = await adminClient.system.identity.read({
       wallet: targetUserData.wallet,
     });
 
-    if (!account?.identity) {
+    if (!account?.id) {
       throw new Error("Identity was not created for target user");
     }
 
-    targetIdentityAddress = account.identity;
+    targetIdentityAddress = account.id;
 
     await adminClient.system.identity.claims.issue({
-      targetIdentityAddress: account.identity,
+      targetIdentityAddress: account.id,
       claim: {
         topic: "knowYourCustomer",
         data: {
@@ -68,7 +68,7 @@ describe("Identity list (integration)", () => {
     });
 
     await issuerClient.system.identity.claims.issue({
-      targetIdentityAddress: account.identity,
+      targetIdentityAddress: account.id,
       claim: {
         topic: "collateral",
         data: {
@@ -82,8 +82,9 @@ describe("Identity list (integration)", () => {
       },
     });
 
-    await waitUntil<z.infer<typeof AccountSchema>>({
-      get: () => adminClient.account.read({ wallet: targetUserData.wallet }),
+    await waitUntil<z.infer<typeof IdentitySchema>>({
+      get: () =>
+        adminClient.system.identity.read({ wallet: targetUserData.wallet }),
       until: (latestAccount) => (latestAccount?.claims?.length ?? 0) >= 2,
       timeoutMs: 60_000,
       intervalMs: 1000,
