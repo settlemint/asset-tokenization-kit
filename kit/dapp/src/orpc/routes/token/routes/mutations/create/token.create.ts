@@ -2,7 +2,6 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { ClaimTopic } from "@/orpc/helpers/claims/create-claim";
 import { issueClaim } from "@/orpc/helpers/claims/issue-claim";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { userIdentityMiddleware } from "@/orpc/middlewares/system/user-identity.middleware";
 import type { baseRouter } from "@/orpc/procedures/base.router";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
@@ -68,7 +67,6 @@ export const create = systemRouter.token.create
       },
     })
   )
-  .use(userIdentityMiddleware)
   .handler(async ({ input, context, errors }) => {
     const tokenFactory = getTokenFactory(context, input.type);
     if (!tokenFactory) {
@@ -160,7 +158,7 @@ async function issueClaims(
     });
   }
 
-  const userIdentity = context.userIdentity?.address;
+  const userIdentity = context.system.userIdentity.address;
   if (!userIdentity) {
     const errorMessage = `Account at address ${context.auth.user.wallet} does not have an associated identity contract`;
     logger.error(errorMessage);

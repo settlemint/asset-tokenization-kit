@@ -17,6 +17,7 @@ const READ_TOKEN_QUERY = theGraphGraphql(
   `
   query ReadTokenQuery($id: ID!) {
     token(id: $id) {
+      # TODO: fetch identity info from the system
       id
       type
       createdAt
@@ -27,20 +28,6 @@ const READ_TOKEN_QUERY = theGraphGraphql(
       extensions
       implementsERC3643
       implementsSMART
-      account {
-        identity {
-          id
-          claims {
-            id
-            name
-            values {
-              key
-              value
-            }
-            revoked
-          }
-        }
-      }
       pausable {
         paused
       }
@@ -106,22 +93,13 @@ export const tokenMiddleware = baseRouter.middleware<
   unknown
 >(async ({ next, context, errors }, input) => {
   // Always fetch fresh token data - no caching
-  const { auth, userIdentity, theGraphClient } = context;
+  const { auth, theGraphClient } = context;
 
   // Early authorization check before making expensive queries
   if (!auth?.user.wallet) {
     logger.warn("sessionMiddleware should be called before tokenMiddleware");
     throw errors.UNAUTHORIZED({
       message: "Authentication required to access token information",
-    });
-  }
-
-  if (!userIdentity?.claims) {
-    logger.warn(
-      "userIdentityMiddleware should be called before tokenMiddleware"
-    );
-    throw errors.INTERNAL_SERVER_ERROR({
-      message: "User identity context not set",
     });
   }
 

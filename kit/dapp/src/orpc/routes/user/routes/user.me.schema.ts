@@ -6,7 +6,6 @@
  * data throughout the application.
  */
 
-import { identityClaim } from "@atk/zod/claim";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { userRoles } from "@atk/zod/user-roles";
 import { verificationType } from "@atk/zod/verification-type";
@@ -84,26 +83,6 @@ export const UserSchema = z.object({
    */
   lastName: z.string().optional(),
 
-  /**
-   * User's on-chain identity address.
-   * Only present if the user has registered an identity on-chain.
-   */
-  identity: ethereumAddress
-    .optional()
-    .describe("User's on-chain identity address"),
-
-  /**
-   * User's on-chain identity claims.
-   * Array of claim names (e.g., "KYC", "ACCREDITATION").
-   * Empty array if no identity or no claims.
-   */
-  claims: z.array(identityClaim),
-
-  /**
-   * Whether the user has registered an on-chain identity.
-   * Computed field based on identity presence.
-   */
-  isRegistered: z.boolean().describe("Whether user has on-chain identity"),
 
   /**
    * User account creation timestamp.

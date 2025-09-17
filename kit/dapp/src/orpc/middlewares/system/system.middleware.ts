@@ -5,18 +5,22 @@ import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { read } from "@/orpc/routes/settings/routes/settings.read";
-import { SystemSchema } from "@/orpc/routes/system/routes/system.read.schema";
+import {
+  SystemSchema,
+  type System,
+} from "@/orpc/routes/system/routes/system.read.schema";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { satisfiesRoleRequirement } from "@atk/zod/role-requirement";
 import { call } from "@orpc/server";
 import { createLogger } from "@settlemint/sdk-utils/logging";
+import countries from "i18n-iso-countries";
 import { isAddress } from "viem";
 import z from "zod";
 
 const SYSTEM_QUERY = theGraphGraphql(
   `
-  query GetSystem($systemAddress: ID!) {
+  query GetSystem($systemAddress: ID!, $userAddress: String!) {
     system(id: $systemAddress) {
       id
       deployedInTransaction
@@ -44,9 +48,16 @@ const SYSTEM_QUERY = theGraphGraphql(
       }
       identityFactory {
         id
+        identities(where: { account: $userAddress }) {
+          id
+        }
       }
       identityRegistryStorage {
         id
+        registeredIdentities(where: { account: $userAddress }) {
+          id
+          country
+        }
       }
       identityRegistry {
         id
@@ -105,6 +116,7 @@ export const systemMiddleware = baseRouter.middleware<
   const { system } = await theGraphClient.query(SYSTEM_QUERY, {
     input: {
       systemAddress,
+      userAddress: auth.user.wallet.toLowerCase(),
     },
     output: z.object({ system: SystemSchema }),
   });
@@ -120,13 +132,37 @@ export const systemMiddleware = baseRouter.middleware<
     system.systemAccessManager.accessControl
   );
 
-  const systemContext = SystemSchema.parse({
+  // Process user identity data
+  const userIdentity = system.identityFactory.identities?.[0];
+
+  if (!userIdentity) {
+    throw errors.NOT_FOUND({
+      message: `User identity not found for address '${auth.user.wallet}'`,
+    });
+  }
+
+  const registeredIdentity =
+    system.identityRegistryStorage.registeredIdentities?.[0];
+
+  const systemInfo: System = {
     ...system,
     userPermissions: {
       roles: userRoles,
       actions: getSystemPermissions(userRoles),
     },
-  });
+    userIdentity: {
+      address: userIdentity?.id,
+      registered: registeredIdentity
+        ? {
+            isRegistered: true,
+            country:
+              countries.numericToAlpha2(registeredIdentity?.country) ?? "",
+          }
+        : undefined,
+    },
+  };
+
+  const systemContext = SystemSchema.parse(systemInfo);
 
   return next({
     context: {
@@ -185,10 +221,16 @@ async function getSystemAddress(
  */
 export async function getSystemContext(
   systemAddress: string,
-  theGraphClient: ValidatedTheGraphClient
+  theGraphClient: ValidatedTheGraphClient,
+  userAddress?: string
 ) {
   const { system } = await theGraphClient.query(SYSTEM_QUERY, {
-    input: { systemAddress },
+    input: {
+      systemAddress,
+      userAddress:
+        userAddress?.toLowerCase() ||
+        "0x0000000000000000000000000000000000000000",
+    },
     output: z.object({ system: SystemSchema }),
   });
   return system;

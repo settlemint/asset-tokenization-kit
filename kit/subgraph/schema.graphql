@@ -359,6 +359,8 @@ type IdentityFactory @entity(immutable: false) {
   id: Bytes!
   # Account representation of the factory contract
   account: Account!
+  # List of identities created by this factory
+  identities: [Identity!]! @derivedFrom(field: "identityFactory")
   # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
 }

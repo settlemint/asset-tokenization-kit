@@ -6,11 +6,12 @@ import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { zeroAddress } from "viem";
 
 export function IdentityCreated() {
   const { t } = useTranslation(["common", "onboarding"]);
-  const { data: account } = useSuspenseQuery(orpc.account.me.queryOptions());
+  const { data: identity } = useSuspenseQuery(
+    orpc.system.identity.me.queryOptions()
+  );
   const { completeStepAndNavigate } = useOnboardingNavigation();
 
   return (
@@ -36,7 +37,7 @@ export function IdentityCreated() {
           <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 space-y-3">
             <div className="flex items-center justify-center gap-2">
               <Web3Address
-                address={account?.identity ?? zeroAddress}
+                address={identity.id}
                 showPrettyName={false}
                 showFullAddress
                 copyToClipboard

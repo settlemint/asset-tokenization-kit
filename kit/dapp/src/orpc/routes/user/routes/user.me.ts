@@ -13,8 +13,8 @@ import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
 import { getSystemContext } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
+import { identityRead } from "@/orpc/routes/system/identity/routes/identity.read";
 import { AssetFactoryTypeIdEnum } from "@atk/zod/asset-types";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { AddonFactoryTypeIdEnum } from "@atk/zod/src/addon-types";
@@ -63,7 +63,7 @@ export const me = authRouter.user.me
       systemAddress,
       baseCurrency,
       systemAddonsSkipped,
-      account,
+      identity,
     ] = await Promise.all([
       context.db
         .select({
@@ -100,7 +100,8 @@ export const me = authRouter.user.me
         },
         { context }
       ).catch(() => "false"), // Default to false if not set
-      call(readAccount, { wallet: authUser.wallet }, { context }).catch(
+      // TODO: @snigdha920 replace with an identity.search because read also fetches all the claims so it can be very big
+      call(identityRead, { account: authUser.wallet }, { context }).catch(
         (error: unknown) => {
           if (error instanceof ORPCError && error.status === 404) {
             return null;
@@ -128,9 +129,6 @@ export const me = authRouter.user.me
       wallet: authUser.wallet,
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,
-      identity: account?.identity,
-      claims: account?.claims ?? [],
-      isRegistered: account?.identityIsRegistered ?? false,
       verificationTypes: [
         ...(authUser.pincodeEnabled ? [VerificationTypeEnum.pincode] : []),
         ...(authUser.twoFactorEnabled ? [VerificationTypeEnum.otp] : []),
@@ -145,7 +143,7 @@ export const me = authRouter.user.me
         walletRecoveryCodes: authUser.secretCodesConfirmed ?? false,
         ...systemOnboardingState,
         systemSettings: !!baseCurrency,
-        identitySetup: !!account?.identity,
+        identitySetup: !!identity?.id,
         identity: !!userQueryResult?.kyc,
       },
     };
