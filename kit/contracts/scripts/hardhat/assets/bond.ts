@@ -15,6 +15,7 @@ import { mature } from "./actions/bond/mature";
 import { burn } from "./actions/burnable/burn";
 import { setCap } from "./actions/capped/set-cap";
 import { setAddressParametersForComplianceModule } from "./actions/compliance/set-address-parameters-for-compliance-module";
+import { issueBasePriceClaim } from "./actions/core/issue-base-price-claim";
 import { mint } from "./actions/core/mint";
 import { transfer } from "./actions/core/transfer";
 import { forcedTransfer } from "./actions/custodian/forced-transfer";
@@ -75,9 +76,7 @@ export const createBond = async (depositToken: Asset<any>) => {
 
   await bond.waitUntilDeployed(transactionHash);
 
-  await setupAsset(bond, {
-    basePrice: 1.23,
-  });
+  await setupAsset(bond);
 
   // core
   await mint(bond, owner, 100n);
@@ -150,6 +149,9 @@ export const createBond = async (depositToken: Asset<any>) => {
   // redeemable
   await redeem(bond, owner, 10n);
   await redeem(bond, investorB, 1n);
+
+  // Change base price of the deposit
+  await issueBasePriceClaim(depositToken, 1.23);
 
   return bond;
 };

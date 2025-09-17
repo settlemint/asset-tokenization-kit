@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
+import { getTotalValueInBaseCurrency } from "../utils/token-stats-test-utils";
 
 describe("TokenStats", () => {
   it("should fetch token stats aggregated by hour", async () => {
@@ -116,6 +117,7 @@ describe("TokenStats", () => {
         tokenStatsStates(orderBy: token__symbol) {
           token {
             symbol
+            decimals
             basePriceClaim {
               values {
                 key
@@ -123,6 +125,17 @@ describe("TokenStats", () => {
               }
             }
             totalSupply
+            bond {
+              faceValue
+              denominationAsset {
+                basePriceClaim {
+                  values {
+                    key
+                    value
+                  }
+                }
+              }
+            }
           }
           balancesCount
           totalValueInBaseCurrency
@@ -153,19 +166,13 @@ describe("TokenStats", () => {
       );
       expect(found).toBeDefined();
       expect(found?.balancesCount).toBe(expected.balancesCount);
-      const basePrice = found?.token.basePriceClaim?.values.find(
-        (value) => value.key === "amount"
-      )?.value;
-      const basePriceDecimals =
-        found?.token.basePriceClaim?.values.find(
-          (value) => value.key === "decimals"
-        )?.value ?? "0";
-      const basePriceParsed =
-        Number(basePrice) / Math.pow(10, Number(basePriceDecimals));
-      const expectedTotalValueInBaseCurrency =
-        basePriceParsed * Number(found?.token.totalSupply);
-      expect(found?.totalValueInBaseCurrency).toBe(
-        expectedTotalValueInBaseCurrency.toString()
+
+      const expectedTotalValueInBaseCurrency = getTotalValueInBaseCurrency(
+        found?.token
+      );
+      expect(Number(found?.totalValueInBaseCurrency)).toBeCloseTo(
+        expectedTotalValueInBaseCurrency,
+        6
       );
     }
   });
