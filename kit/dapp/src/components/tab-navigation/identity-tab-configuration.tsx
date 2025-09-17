@@ -1,10 +1,10 @@
-interface ClaimTabConfig {
+interface IdentityTabConfig {
   href: string;
   tabKey: "details";
 }
 
-interface GetClaimTabConfigurationProps {
-  accountId: string;
+interface GetIdentityTabConfigurationProps {
+  address: string;
 }
 
 /**
@@ -12,12 +12,12 @@ interface GetClaimTabConfigurationProps {
  * Currently only includes the details tab, but can be extended
  * for additional identity-related tabs in the future
  */
-export function getClaimTabConfiguration({
-  accountId,
-}: GetClaimTabConfigurationProps): ClaimTabConfig[] {
+export function getIdentityTabConfiguration({
+  address,
+}: GetIdentityTabConfigurationProps): IdentityTabConfig[] {
   return [
     {
-      href: `/admin/identity-management/${accountId}`,
+      href: `/admin/identity-management/${address}`,
       tabKey: "details",
     },
   ];
