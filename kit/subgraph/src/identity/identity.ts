@@ -27,7 +27,7 @@ import {
   isCollateralClaim,
   updateCollateral,
 } from "../token-extensions/collateral/utils/collateral-utils";
-import { fetchTokenByIdentity } from "../token/fetch/token";
+import { fetchToken, fetchTokenByIdentity } from "../token/fetch/token";
 import { getTokenBasePrice, updateBasePrice } from "../token/utils/token-utils";
 import { fetchIdentity } from "./fetch/identity";
 import { fetchIdentityClaim } from "./fetch/identity-claim";
@@ -51,6 +51,11 @@ function updateAccountStatsForAllTokenHolders(
     return;
   }
 
+  // Ignore bonds as there value is tracked by its denomination asset
+  if (token.bond) {
+    return;
+  }
+
   // Load all token balances for this token
   const balances = token.balances.load();
 
@@ -64,6 +69,27 @@ function updateAccountStatsForAllTokenHolders(
         oldPrice,
         newPrice
       );
+    }
+  }
+
+  // Check if the token is a denomination asset for a bond
+  // If so, we need to update the account stats for all holders of the bond
+  const bonds = token.denominationAssetForBond.load();
+  for (let i = 0; i < bonds.length; i++) {
+    const bond = bonds[i];
+    const bondToken = fetchToken(Address.fromBytes(bond.id));
+    const bondBalances = bondToken.balances.load();
+    for (let i = 0; i < bondBalances.length; i++) {
+      const bondBalance = bondBalances[i];
+      if (bondBalance.valueExact.gt(BigInt.zero())) {
+        // Update account stats for this holder
+        updateAccountStatsForPriceChange(
+          Address.fromBytes(bondBalance.account),
+          bondBalance,
+          oldPrice.times(bond.faceValue),
+          newPrice.times(bond.faceValue)
+        );
+      }
     }
   }
 }

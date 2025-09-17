@@ -443,6 +443,7 @@ support:
 
   # https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
   ingress-nginx:
+    enabled: true
     replicaCount: 1
     controller:
       resources: {}
@@ -643,7 +644,7 @@ txsigner:
   image:
     registry: ghcr.io
     repository: settlemint/btp-signer
-    tag: "7.15.12"
+    tag: "7.15.13"
     pullPolicy: IfNotPresent
   # Init container for testing
   test:

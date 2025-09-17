@@ -10,9 +10,9 @@ dependencies:
   version: 0.1.0
 - name: reloader
   repository: https://stakater.github.io/stakater-charts
-  version: 2.2.2
+  version: 2.2.3
 - name: minio
   repository: file://./charts/minio
   version: 0.1.0
-digest: sha256:c097c874aa6a50ceb7e9eb750f7ee8269bb98dcc98c4590d42d2d5adbcff9ebb
-generated: "2025-08-31T06:42:49.687580601Z"
+digest: sha256:83b2606f0239882bb8278cf8b3ab1910e5c89a43d4883964e147797d38f83adc
+generated: "2025-09-17T14:31:11.826259+03:00"
