@@ -318,7 +318,7 @@ templates:
         - Identity
       abis:
         - name: IdentityRegistry
-          file: ../contracts/.generated/out/ATKIdentityRegistryImplementation.sol/ATKIdentityRegistryImplementation.json
+          file: ../contracts/.generated/out/ISMARTIdentityRegistry.sol/ISMARTIdentityRegistry.json
       eventHandlers:
         - event: IdentityStorageSet(indexed address,indexed address)
           handler: handleIdentityStorageSet
@@ -326,11 +326,6 @@ templates:
           handler: handleTopicSchemeRegistrySet
         - event: TrustedIssuersRegistrySet(indexed address,indexed address)
           handler: handleTrustedIssuersRegistrySet
-        - event: IdentityRegistered(indexed address,indexed address,indexed
-            address,uint16)
-          handler: handleIdentityRegistered
-        - event: IdentityRemoved(indexed address,indexed address,indexed address)
-          handler: handleIdentityRemoved
       file: ./src/identity-registry/identity-registry.ts
   - kind: ethereum
     name: Custodian
@@ -1029,17 +1024,17 @@ templates:
         - Event
       abis:
         - name: IdentityRegistryStorage
-          file: ../contracts/.generated/out/IATKIdentityRegistryStorage.sol/IATKIdentityRegistryStorage.json
+          file: ../contracts/.generated/out/ISMARTIdentityRegistryStorage.sol/ISMARTIdentityRegistryStorage.json
       eventHandlers:
         - event: CountryModified(indexed address,indexed uint16)
           handler: handleCountryModified
-        - event: IdentityModified(indexed address,indexed address)
+        - event: IdentityModified(indexed address,indexed address,indexed address)
           handler: handleIdentityModified
         - event: IdentityRegistryBound(indexed address)
           handler: handleIdentityRegistryBound
         - event: IdentityRegistryUnbound(indexed address)
           handler: handleIdentityRegistryUnbound
-        - event: IdentityStored(indexed address,indexed address)
+        - event: IdentityStored(indexed address,indexed address,indexed uint16)
           handler: handleIdentityStored
         - event: IdentityUnstored(indexed address,indexed address)
           handler: handleIdentityUnstored
