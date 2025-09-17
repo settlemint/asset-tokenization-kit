@@ -39,10 +39,31 @@ spec:
 {{- end }}
       restartPolicy: "OnFailure"
       {{- include "atk.imagePullSecrets" . | nindent 6 }}
+      securityContext:
+        {{- if .Values.global.openshift.enabled }}
+        fsGroup: {{ .Values.global.openshift.fsGroup | default 1000660000 }}
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+        {{- else }}
+        fsGroup: 10001
+        {{- end }}
       containers:
         - name: {{ template "besu-node.fullname" . }}-node-pre-delete-hook
           image: "{{ .Values.hooks.image.repository }}:{{ .Values.hooks.image.tag }}"
           imagePullPolicy: {{ .Values.hooks.image.pullPolicy }}
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            seccompProfile:
+              type: RuntimeDefault
+            {{- if not .Values.global.openshift.enabled }}
+            runAsUser: 1000
+            runAsGroup: 1000
+            {{- end }}
           {{- with .Values.hooks.preDelete.resources }}
           resources:
 {{ toYaml . | nindent 12 }}

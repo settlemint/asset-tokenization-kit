@@ -43,6 +43,15 @@ spec:
       serviceAccountName: {{ include "besu-node.fullname" . }}-sa
 {{- end }}
       {{- include "atk.imagePullSecrets" . | nindent 6 }}
+      securityContext:
+        {{- if .Values.global.openshift.enabled }}
+        fsGroup: {{ .Values.global.openshift.fsGroup | default 1000650000 }}
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+        {{- else }}
+        fsGroup: 10001
+        {{- end }}
       initContainers:
       # Wait for genesis file to be available in PVC
       - name: wait-for-genesis
@@ -72,14 +81,23 @@ spec:
             mountPath: /shared
         securityContext:
           runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          seccompProfile:
+            type: RuntimeDefault
+          {{- if not .Values.global.openshift.enabled }}
           runAsUser: 1000
+          {{- end }}
         {{- with .Values.initContainers.waitForGenesis.resources }}
         resources:
 {{ toYaml . | nindent 10 }}
         {{- end }}
 
-{{- if has .Values.cluster.provider .Values.volumePermissionsFix }}
+{{- if and (has .Values.cluster.provider .Values.volumePermissionsFix) (not .Values.global.openshift.enabled) }}
       # fix for minikube and PVC's only writable as root https://github.com/kubernetes/minikube/issues/1990
+      # This is skipped on OpenShift as it handles permissions automatically
       - name: volume-permission-besu
         image: "{{ .Values.initContainers.busybox.image.registry }}/{{ .Values.initContainers.busybox.image.repository }}:{{ .Values.initContainers.busybox.image.tag }}"
         imagePullPolicy: {{ .Values.initContainers.busybox.image.pullPolicy }}
@@ -89,6 +107,14 @@ spec:
             mountPath: /data
         securityContext:
           runAsUser: 0
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - CHOWN
+          seccompProfile:
+            type: RuntimeDefault
         {{- with .Values.initContainers.volumePermissions.resources }}
         resources:
 {{ toYaml . | nindent 10 }}
@@ -101,6 +127,18 @@ spec:
       - name: {{ .Release.Name }}-tessera
         image: {{ .Values.node.tessera.image.repository }}:{{ .Values.node.tessera.image.tag }}
         imagePullPolicy: {{ .Values.node.tessera.image.pullPolicy }}
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          seccompProfile:
+            type: RuntimeDefault
+          {{- if not .Values.global.openshift.enabled }}
+          runAsUser: 100
+          runAsGroup: 1000
+          {{- end }}
         {{- with .Values.node.tessera.resources }}
         resources:
           {{- toYaml . | nindent 10 }}
@@ -210,6 +248,18 @@ spec:
       - name: {{ .Release.Name }}-besu
         image: {{ .Values.node.besu.image.repository }}:{{ .Values.node.besu.image.tag }}
         imagePullPolicy: {{ .Values.node.besu.image.pullPolicy }}
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          seccompProfile:
+            type: RuntimeDefault
+          {{- if not .Values.global.openshift.enabled }}
+          runAsUser: 1000
+          runAsGroup: 1000
+          {{- end }}
         {{- with .Values.node.besu.resources }}
         resources:
           {{- toYaml . | nindent 10 }}

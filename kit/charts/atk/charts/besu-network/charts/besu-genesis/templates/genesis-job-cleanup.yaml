@@ -41,11 +41,30 @@ spec:
       {{- else }}
       serviceAccountName: {{ include "besu-genesis.name" . }}-sa
       {{- end }}
+      securityContext:
+        {{- if .Values.global.openshift.enabled }}
+        fsGroup: {{ .Values.global.openshift.fsGroup | default 1000660000 }}
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+        {{- else }}
+        fsGroup: 10001
+        {{- end }}
       containers:
         - name: delete-genesis
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           securityContext:
-            runAsUser: 0
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            seccompProfile:
+              type: RuntimeDefault
+            {{- if not .Values.global.openshift.enabled }}
+            runAsUser: 1000
+            runAsGroup: 1000
+            {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- with .Values.cleanupJob.resources }}
           resources:

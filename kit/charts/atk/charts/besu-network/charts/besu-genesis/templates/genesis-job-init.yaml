@@ -36,6 +36,15 @@ spec:
       restartPolicy: Never
       {{- include "atk.imagePullSecrets" . | nindent 6 }}
       serviceAccountName: {{ include "besu-genesis.serviceAccountName" . }}
+      securityContext:
+        {{- if .Values.global.openshift.enabled }}
+        fsGroup: {{ .Values.global.openshift.fsGroup | default 1000650000 }}
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+        {{- else }}
+        fsGroup: 10001
+        {{- end }}
       volumes:
         - name: generated-config
           emptyDir: {}
@@ -67,14 +76,33 @@ spec:
             - name: artifacts
               mountPath: /shared-artifacts
           securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            seccompProfile:
+              type: RuntimeDefault
+            {{- if not .Values.global.openshift.enabled }}
             runAsUser: 1001
             runAsGroup: 1001
+            {{- end }}
 {{ end }}
       containers:
         - name: generate-genesis
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           securityContext:
-            runAsUser: 0
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            seccompProfile:
+              type: RuntimeDefault
+            {{- if not .Values.global.openshift.enabled }}
+            runAsUser: 1000
+            runAsGroup: 1000
+            {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- with .Values.initJob.resources }}
           resources:

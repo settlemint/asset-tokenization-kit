@@ -46,6 +46,14 @@ spec:
         - name: {{ .Values.initContainer.graphQLCheck.name | default "wait-for-graphql" }}
           image: "{{ .Values.initContainer.graphQLCheck.image.registry }}/{{ .Values.initContainer.graphQLCheck.image.repository }}:{{ .Values.initContainer.graphQLCheck.image.tag }}"
           imagePullPolicy: {{ .Values.initContainer.graphQLCheck.image.pullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
           command:
             - /bin/sh
             - -c

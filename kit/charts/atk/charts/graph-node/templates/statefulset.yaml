@@ -68,6 +68,23 @@ spec:
         {{- else if .Values.postgresReadinessCheck.enabled }}
         - name: wait-for-postgresql-ready
           image: {{ .Values.postgresReadinessCheck.image }}
+          {{- with .Values.postgresReadinessCheck.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- else }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            runAsNonRoot: true
+            {{- if not .Values.global.openshift.enabled }}
+            runAsUser: 1001
+            runAsGroup: 1001
+            {{- end }}
+            seccompProfile:
+              type: RuntimeDefault
+          {{- end }}
           command:
             - /bin/sh
             - -c

@@ -50,6 +50,8 @@ securityContext:
   capabilities:
     drop:
       - ALL
+  seccompProfile:
+    type: RuntimeDefault
 
 # Pod disruption budget
 podDisruptionBudget:

@@ -10,6 +10,12 @@ global:
   networkPolicy:
     # Enable NetworkPolicies across all services
     enabled: false
+  # OpenShift compatibility settings
+  openshift:
+    # Enable OpenShift-specific security context configurations
+    enabled: false
+    # Default fsGroup for OpenShift (typically in the range 1000640000-1000649999)
+    fsGroup: 1000640000
   # Artifacts container configuration
   artifacts:
     # Image containing contract ABIs and genesis files
@@ -211,7 +217,7 @@ erpc:
         # Define one or more storage connectors with unique IDs useful in policies
         connectors:
           - id: redis-cache
-            driver: redis  # Refer to "redis" driver docs below
+            driver: redis # Refer to "redis" driver docs below
             redis:
               addr: "redis:6379"
               username: "default"
@@ -228,7 +234,6 @@ erpc:
     prometheus.io/port: "4001"
   podLabels:
     app.kubernetes.io/component: erpc
-
 
 blockscout:
   enabled: true
@@ -249,7 +254,7 @@ blockscout:
           - /bin/sh
         args:
           - -c
-          - |  # Using YAML multiline string for clarity
+          - | # Using YAML multiline string for clarity
             echo "Waiting for postgresql:5432..."
             while ! nc -z postgresql 5432; do
               sleep 2;
@@ -308,7 +313,7 @@ graph-node:
     enabled: true
     className: "atk-nginx"
     annotations:
-      nginx.ingress.kubernetes.io/use-regex: 'true'
+      nginx.ingress.kubernetes.io/use-regex: "true"
       nginx.ingress.kubernetes.io/rewrite-target: /$1
     hosts:
       - host: graph.k8s.orb.local
@@ -653,7 +658,9 @@ txsigner:
       pullPolicy: IfNotPresent
   # Configuration for the txsigner subchart
   config:
-    mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
+    mnemonic:
+      "gate yellow grunt wrestle disease obtain mixed nature mansion tape
+      purchase awful"
     derivationPath: "m/44'/60'/0'/0/0"
   postgresql: "postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"
   replicaCount: 1
@@ -694,14 +701,14 @@ dapp:
     hosts:
       - host: dapp.k8s.orb.local
         paths:
-          - path: /  # Adjust path if needed
+          - path: / # Adjust path if needed
             pathType: ImplementationSpecific
   resources: {}
   secretEnv:
     BETTER_AUTH_URL: "https://dapp.k8s.orb.local"
     NEXT_PUBLIC_APP_ID: "dapp"
     NEXTAUTH_URL: "https://dapp.k8s.orb.local"
-    OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy:4318/v1/traces"  # Adjust if needed
+    OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy:4318/v1/traces" # Adjust if needed
     OTEL_EXPORTER_OTLP_PROTOCOL: "http"
     SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "http://blockscout-frontend-svc/"
     SETTLEMINT_HASURA_ADMIN_SECRET: "atk"
@@ -715,7 +722,7 @@ dapp:
     # Generic TCP check settings
     tcpCheck:
       enabled: true
-      timeout: 120  # Timeout in seconds for each dependency check
+      timeout: 120 # Timeout in seconds for each dependency check
       image:
         repository: ghcr.io/settlemint/btp-waitforit
         tag: v7.7.10
@@ -735,15 +742,15 @@ dapp:
           endpoint: "hasura:8080"
         - name: portal
           endpoint: "portal:3001"
-        - name: graph-node-tcp  # Renamed to distinguish from graphQLCheck
-          endpoint: "graph-node-combined:8020"  # Status API port (TCP check)
-        - name: blockscout  # Add Blockscout if needed, determine correct service/port
+        - name: graph-node-tcp # Renamed to distinguish from graphQLCheck
+          endpoint: "graph-node-combined:8020" # Status API port (TCP check)
+        - name: blockscout # Add Blockscout if needed, determine correct service/port
           endpoint: "blockscout-frontend-svc:80"
 
     # Specific check for GraphQL endpoint readiness (e.g., The Graph subgraph)
     graphQLCheck:
       enabled: true
-      name: wait-for-graph-subgraph-kit  # Name for the init container
+      name: wait-for-graph-subgraph-kit # Name for the init container
       image:
         registry: docker.io
         repository: curlimages/curl
@@ -751,10 +758,10 @@ dapp:
         pullPolicy: IfNotPresent
       # Target GraphQL endpoint URL (where POST requests are sent)
       url: "http://graph-node-combined:8000/subgraphs/name/kit"
-      query: '{ __typename }'  # Basic query to check for GraphQL errors
+      query: "{ __typename }" # Basic query to check for GraphQL errors
       retryDelaySeconds: 20
-      timeoutSeconds: 10  # Max time per curl attempt
-      connectTimeoutSeconds: 5  # Max time to connect
+      timeoutSeconds: 10 # Max time per curl attempt
+      connectTimeoutSeconds: 5 # Max time to connect
       retries: 24
       resources:
         limits:
