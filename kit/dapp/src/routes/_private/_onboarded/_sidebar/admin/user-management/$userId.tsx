@@ -88,8 +88,8 @@ function RouteComponent() {
   // Generate tab configuration based on user data
   // Only memoize based on properties that affect tab configuration
   const tabConfigs = useMemo(
-    () => getUserTabConfiguration({ userId, user }),
-    [userId, user]
+    () => getUserTabConfiguration({ userId }),
+    [userId]
   );
 
   // Transform tab configurations to TabItemProps with translations

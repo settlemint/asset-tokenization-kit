@@ -554,6 +554,7 @@ describe("PropertyFilterMultiOptionValueMenu", () => {
       expect(result).toEqual({
         operator: "include any of",
         values: [["tag2"]],
+        columnMeta: { type: "multiOption" },
       });
     });
 

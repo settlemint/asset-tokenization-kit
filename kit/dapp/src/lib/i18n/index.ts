@@ -32,6 +32,7 @@ import enUSAssets from "@/locales/en-US/assets.json";
 import enUSAuth from "@/locales/en-US/auth.json";
 import enUSBlockchain from "@/locales/en-US/blockchain.json";
 import enUSClaimTopicsIssuers from "@/locales/en-US/claim-topics-issuers.json";
+import enUSClaims from "@/locales/en-US/claims.json";
 import enUSCommon from "@/locales/en-US/common.json";
 import enUSComplianceModules from "@/locales/en-US/compliance-modules.json";
 import enUSComponents from "@/locales/en-US/components.json";
@@ -94,6 +95,7 @@ export const namespaces = [
   "auth",
   "blockchain",
   "claim-topics-issuers",
+  "claims",
   "compliance-modules",
   "common",
   "country-multiselect",
@@ -147,6 +149,7 @@ const translationModules = {
     blockchain: () => import("@/locales/de-DE/blockchain.json"),
     "claim-topics-issuers": () =>
       import("@/locales/de-DE/claim-topics-issuers.json"),
+    claims: () => import("@/locales/de-DE/claims.json"),
     "compliance-modules": () =>
       import("@/locales/de-DE/compliance-modules.json"),
     common: () => import("@/locales/de-DE/common.json"),
@@ -190,6 +193,7 @@ const translationModules = {
     blockchain: () => import("@/locales/ar-SA/blockchain.json"),
     "claim-topics-issuers": () =>
       import("@/locales/ar-SA/claim-topics-issuers.json"),
+    claims: () => import("@/locales/ar-SA/claims.json"),
     "compliance-modules": () =>
       import("@/locales/ar-SA/compliance-modules.json"),
     common: () => import("@/locales/ar-SA/common.json"),
@@ -233,6 +237,7 @@ const translationModules = {
     blockchain: () => import("@/locales/ja-JP/blockchain.json"),
     "claim-topics-issuers": () =>
       import("@/locales/ja-JP/claim-topics-issuers.json"),
+    claims: () => import("@/locales/ja-JP/claims.json"),
     "compliance-modules": () =>
       import("@/locales/ja-JP/compliance-modules.json"),
     common: () => import("@/locales/ja-JP/common.json"),
@@ -285,6 +290,7 @@ async function loadResource(lng: SupportedLanguage, ns: Namespace) {
         auth: enUSAuth,
         blockchain: enUSBlockchain,
         "claim-topics-issuers": enUSClaimTopicsIssuers,
+        claims: enUSClaims,
         "compliance-modules": enUSComplianceModules,
         common: enUSCommon,
         "country-multiselect": enUSCountryMultiselect,
@@ -395,6 +401,7 @@ void i18n.init({
       auth: enUSAuth,
       blockchain: enUSBlockchain,
       "claim-topics-issuers": enUSClaimTopicsIssuers,
+      claims: enUSClaims,
       "compliance-modules": enUSComplianceModules,
       common: enUSCommon,
       "country-multiselect": enUSCountryMultiselect,
