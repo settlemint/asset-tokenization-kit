@@ -1,15 +1,19 @@
 import { kycProfiles } from "@/lib/db/schema";
-import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
+import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { generateId } from "better-auth";
 import { sql } from "drizzle-orm";
 import { KycUpsertInputSchema } from "./kyc.upsert.schema";
 
 export const upsert = authRouter.user.kyc.upsert
   .use(
-    offChainPermissionsMiddleware<typeof KycUpsertInputSchema>({
-      requiredPermissions: { kyc: ["upsert"] },
+    blockchainPermissionsMiddleware<typeof KycUpsertInputSchema>({
+      requiredRoles: SYSTEM_PERMISSIONS.kycUpsert,
+      getAccessControl: ({ context }) => {
+        return context.system?.systemAccessManager?.accessControl;
+      },
       alwaysAllowIf: (context, input) => input.userId === context.auth?.user.id,
     })
   )

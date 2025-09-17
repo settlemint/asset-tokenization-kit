@@ -22,8 +22,8 @@ import { twoFactor } from "@/lib/auth/plugins/two-factor";
 import {
   accessControl,
   adminRole,
-  investorRole,
   issuerRole,
+  userRole,
 } from "@/lib/auth/utils/permissions";
 import { kycProfiles } from "@/lib/db/schema";
 import { env } from "@atk/config/env";
@@ -135,7 +135,7 @@ const options = {
       role: {
         type: "string",
         required: true,
-        defaultValue: "investor",
+        defaultValue: "user",
         input: false,
       },
       /**
@@ -272,7 +272,7 @@ const options = {
       ac: accessControl,
       roles: {
         admin: adminRole,
-        user: investorRole,
+        user: userRole,
         issuer: issuerRole,
       },
     }),

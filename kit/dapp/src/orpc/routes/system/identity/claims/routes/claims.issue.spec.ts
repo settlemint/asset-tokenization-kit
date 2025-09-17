@@ -72,7 +72,7 @@ describe("Claims issue (integration)", () => {
       },
       walletVerification: {
         verificationType: VerificationType.pincode,
-        secretVerificationCode: DEFAULT_PINCODE
+        secretVerificationCode: DEFAULT_PINCODE,
       },
     });
 

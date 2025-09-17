@@ -1,7 +1,7 @@
-import type { AccessControl } from "@atk/zod/access-control-roles";
 import type { Context } from "@/orpc/context/context";
 import { getUserRoles } from "@/orpc/helpers/access-control-helpers";
 import { baseRouter } from "@/orpc/procedures/base.router";
+import type { AccessControl } from "@atk/zod/access-control-roles";
 import type { RoleRequirement } from "@atk/zod/role-requirement";
 import { satisfiesRoleRequirement } from "@atk/zod/role-requirement";
 import type { z } from "zod";
@@ -15,12 +15,17 @@ import type { z } from "zod";
 export const blockchainPermissionsMiddleware = <InputSchema extends z.ZodType>({
   requiredRoles,
   getAccessControl,
+  alwaysAllowIf,
 }: {
   requiredRoles: RoleRequirement;
   getAccessControl: (data: {
     context: Context;
     input: z.infer<InputSchema>;
   }) => AccessControl | undefined;
+  alwaysAllowIf?: (
+    context: Pick<Context, "auth">,
+    input: z.infer<InputSchema>
+  ) => boolean;
 }) =>
   baseRouter.middleware(async ({ context, next, errors }, input) => {
     const { auth, system } = context;
@@ -29,6 +34,10 @@ export const blockchainPermissionsMiddleware = <InputSchema extends z.ZodType>({
       throw errors.INTERNAL_SERVER_ERROR({
         message: "System context not set",
       });
+    }
+
+    if (typeof alwaysAllowIf === "function" && alwaysAllowIf(context, input as z.infer<InputSchema>)) {
+      return next();
     }
 
     const accessControl = getAccessControl({

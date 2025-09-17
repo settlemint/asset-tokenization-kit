@@ -1,4 +1,5 @@
 import type { systemContract } from "@/orpc/routes/system/system.contract";
+import { roles } from "@atk/zod/access-control-roles";
 import type { RoleRequirement } from "@atk/zod/role-requirement";
 
 /**
@@ -49,23 +50,33 @@ type AssertValidContract =
  * The SystemContractValidation type above ensures these mappings stay valid during refactoring.
  */
 export const SYSTEM_PERMISSIONS = {
-  tokenFactoryCreate: { any: ["systemManager"] },
-  tokenCreate: "tokenManager",
-  addonFactoryCreate: { any: ["addonManager", "systemManager"] },
+  accountRead: { any: ["identityManager", "claimIssuer"] },
+  accountSearch: { any: ["identityManager", "claimIssuer"] },
   addonCreate: "addonManager",
-  grantRole: { any: ["admin"] },
-  revokeRole: { any: ["admin"] },
-  complianceModuleCreate: { any: ["complianceManager", "systemManager"] },
-  identityRegister: { any: ["identityManager", "systemManager"] },
-  trustedIssuerCreate: { any: ["claimPolicyManager", "systemModule"] },
-  trustedIssuerUpdate: { any: ["claimPolicyManager", "systemModule"] },
-  trustedIssuerDelete: { any: ["claimPolicyManager", "systemModule"] },
-  topicCreate: { any: ["claimPolicyManager", "systemModule"] },
-  topicUpdate: { any: ["claimPolicyManager", "systemModule"] },
-  topicDelete: { any: ["claimPolicyManager", "systemModule"] },
+  addonFactoryCreate: { any: ["addonManager", "systemManager"] },
   claimCreate: { any: ["claimIssuer", "systemModule"] },
   claimList: { any: ["identityManager", "claimIssuer"] },
   claimRevoke: { any: ["claimIssuer", "systemModule"] },
+  complianceModuleCreate: { any: ["complianceManager", "systemManager"] },
+  grantRole: { any: ["admin"] },
+  identityCreate: { any: ["identityManager", "systemManager"] },
+  identityRegister: { any: ["identityManager", "systemManager"] },
+  kycDelete: { any: ["identityManager", "claimIssuer"] },
+  kycList: { any: ["identityManager", "claimIssuer"] },
+  kycRead: { any: ["identityManager", "claimIssuer"] },
+  kycUpsert: { any: ["identityManager", "claimIssuer"] },
+  revokeRole: { any: ["admin"] },
+  tokenCreate: "tokenManager",
+  tokenFactoryCreate: { any: ["systemManager"] },
+  topicCreate: { any: ["claimPolicyManager", "systemModule"] },
+  topicDelete: { any: ["claimPolicyManager", "systemModule"] },
+  topicUpdate: { any: ["claimPolicyManager", "systemModule"] },
+  trustedIssuerCreate: { any: ["claimPolicyManager", "systemModule"] },
+  trustedIssuerDelete: { any: ["claimPolicyManager", "systemModule"] },
+  trustedIssuerUpdate: { any: ["claimPolicyManager", "systemModule"] },
+  userList: { any: ["identityManager", "claimIssuer"] },
+  userRead: { any: ["identityManager", "claimIssuer"] },
+  userSearch: { any: [...roles] }, // at least one blockchain role is required to search for users
 } as const satisfies Record<string, RoleRequirement>;
 
 // Use the validation type to ensure it's not stripped

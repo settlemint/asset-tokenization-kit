@@ -12,14 +12,13 @@ import { z } from "zod";
  * Available user roles with different permission levels.
  * @remarks
  * Simple role hierarchy for application access:
- * - `admin`: Full administrative access, can manage users and settings
- * - `investor`: Standard investor access, can perform regular operations
- * - `issuer`: Trusted issuer access, can see all users data and issue claims
+ * - `admin`: Full administrative access, can create a system and manage settings
+ * - `user`: Standard user access, can perform regular operations
  *
  * Note: This is separate from system roles (roles.ts) which handle
  * blockchain/smart contract permissions.
  */
-export const userRoleNames = ["admin", "investor", "issuer"] as const;
+export const userRoleNames = ["admin", "user"] as const;
 
 /**
  * Creates a Zod schema that validates user roles.
@@ -29,16 +28,15 @@ export const userRoleNames = ["admin", "investor", "issuer"] as const;
  * const schema = userRoles();
  *
  * // Valid roles
- * schema.parse("admin");    // Administrative access
- * schema.parse("investor"); // Standard investor access
- * schema.parse("issuer");   // Trusted issuer access
+ * schema.parse("admin");   // Admin, can bootstrap a system
+ * schema.parse("user");    // Standard user access
  *
  * // Invalid role
  * schema.parse("moderator"); // Throws ZodError
  * ```
  */
 export const userRoles = () =>
-  z.enum(userRoleNames).describe("User role in the system").default("investor");
+  z.enum(userRoleNames).describe("User role in the system").default("user");
 
 /**
  * Type representing a validated user role.
@@ -60,7 +58,7 @@ export type UserRole = z.infer<ReturnType<typeof userRoles>>;
  *   // Apply role-based logic
  *   if (role === "admin") {
  *     showAdminDashboard();
- *   } else if (role === "issuer") {
+ *   } else if (role === "user") {
  *     showAssetCreationTools();
  *   }
  * }
@@ -78,12 +76,12 @@ export function isUserRole(value: unknown): value is UserRole {
  * @example
  * ```typescript
  * try {
- *   const role = getUserRole("investor"); // Returns "investor" as UserRole
+ *   const role = getUserRole("user"); // Returns "user" as UserRole
  *   const invalid = getUserRole("superuser"); // Throws Error
  * } catch (error) {
  *   console.error("Invalid user role provided");
- *   // Default to investor for safety
- *   assignRole("investor");
+ *   // Default to user for safety
+ *   assignRole("user");
  * }
  *
  * // Use in middleware
@@ -94,8 +92,7 @@ export function isUserRole(value: unknown): value is UserRole {
  *
  * // Permission checks
  * const role = getUserRole(currentUser.role);
- * const canEdit = role === "admin" || role === "investor";
- * const canCreateAssets = role === "admin" || role === "issuer";
+ * const canEdit = role === "admin";
  * ```
  */
 export function getUserRole(value: unknown): UserRole {
