@@ -337,7 +337,7 @@ observability:
 
   # Loki
   loki:
-    enabled: false
+    enabled: true
     loki:
       podSecurityContext:
         runAsNonRoot: true
@@ -346,18 +346,19 @@ observability:
         fsGroup: null
 
     gateway:
+      enabled: false
       podSecurityContext:
+        fsGroup: 101
+        runAsGroup: 101
         runAsNonRoot: true
-        runAsUser: null
-        runAsGroup: null
-        fsGroup: null
+        runAsUser: 101
 
   # Tempo
   tempo:
     securityContext:
-    runAsUser: null
-    runAsGroup: null
-    fsGroup: null
+      runAsUser: null
+      runAsGroup: null
+      fsGroup: null
 
   # Kube State Metrics
   kube-state-metrics:
