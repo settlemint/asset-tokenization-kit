@@ -1,0 +1,25 @@
+FROM oven/bun:1.2.22 AS base
+WORKDIR /app
+
+# DEPENDENCIES
+FROM base AS deps
+COPY . .
+RUN bun install --ignore-scripts
+
+# BUILD
+FROM base AS builder
+ENV NODE_ENV=production
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN bun run --cwd kit/dapp build
+
+# RUNTIME
+FROM oven/bun:1.2.22-slim AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=builder /app/kit/dapp/.nitro ./.nitro
+COPY --from=builder /app/kit/dapp/.output ./.output
+COPY --from=builder /app/kit/dapp/drizzle ./drizzle
+EXPOSE 3000
+CMD ["bun", ".output/server/index.mjs"]
