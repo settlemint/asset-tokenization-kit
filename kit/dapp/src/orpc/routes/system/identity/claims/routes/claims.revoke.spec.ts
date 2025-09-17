@@ -50,7 +50,7 @@ describe("Claims revoke (integration)", () => {
 
     // Get the target user's identity address
     const targetIdentity = await adminClient.system.identity.read({
-      account: targetUserData.wallet,
+      wallet: targetUserData.wallet,
     });
     if (!targetIdentity?.id) {
       throw new Error("Target test user does not have an identity setup");

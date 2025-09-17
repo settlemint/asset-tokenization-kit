@@ -103,7 +103,7 @@ export function AddTrustedIssuerSheet({
     onSubmit: async ({ value }) => {
       try {
         const trustedIssuerIdentity = await client.system.identity.read({
-          account: value.issuerAddress,
+          wallet: value.issuerAddress,
         });
         if (!trustedIssuerIdentity) {
           throw new Error("Trusted issuer identity not found");

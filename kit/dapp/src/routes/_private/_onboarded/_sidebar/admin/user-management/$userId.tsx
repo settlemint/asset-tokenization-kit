@@ -53,7 +53,7 @@ export const Route = createFileRoute(
     );
     const identity = await queryClient.ensureQueryData(
       orpc.system.identity.read.queryOptions({
-        input: { account: user.wallet ?? "" },
+        input: { wallet: user.wallet ?? "" },
       })
     );
     return {
@@ -89,7 +89,7 @@ function RouteComponent() {
 
   const { data: queriedIdentity } = useQuery(
     Route.useRouteContext().orpc.system.identity.read.queryOptions({
-      input: { account: loaderUser.wallet ?? "" },
+      input: { wallet: loaderUser.wallet ?? "" },
     })
   );
 

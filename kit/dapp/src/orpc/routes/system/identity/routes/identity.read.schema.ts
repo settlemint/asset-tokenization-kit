@@ -7,7 +7,7 @@ import { z } from "zod";
  * Input schema for identity read
  */
 export const IdentityReadSchema = z.object({
-  account: ethereumAddress.describe(
+  wallet: ethereumAddress.describe(
     "The account of the user to read the identity for"
   ),
 });

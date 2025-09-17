@@ -53,7 +53,7 @@ export const identityRegister = onboardedRouter.system.identity.register
     const identity = await call(
       identityRead,
       {
-        account: walletAddress,
+        wallet: walletAddress,
       },
       { context }
     );
@@ -84,7 +84,7 @@ export const identityRegister = onboardedRouter.system.identity.register
     return await call(
       identityRead,
       {
-        account: walletAddress,
+        wallet: walletAddress,
       },
       { context }
     );

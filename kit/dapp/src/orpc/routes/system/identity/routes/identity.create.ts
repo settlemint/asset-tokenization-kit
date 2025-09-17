@@ -140,7 +140,7 @@ export const identityCreate = onboardedRouter.system.identity.create
     const identity = await call(
       identityRead,
       {
-        account: walletAddress,
+        wallet: walletAddress,
       },
       { context }
     ).catch((error: unknown) => {
@@ -185,7 +185,7 @@ export const identityCreate = onboardedRouter.system.identity.create
     return await call(
       identityRead,
       {
-        account: walletAddress,
+        wallet: walletAddress,
       },
       { context }
     );

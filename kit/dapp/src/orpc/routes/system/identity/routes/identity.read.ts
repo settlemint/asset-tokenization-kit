@@ -68,17 +68,17 @@ export const identityRead = systemRouter.system.identity.read
     offChainPermissionsMiddleware<typeof IdentityReadSchema>({
       requiredPermissions: { account: ["read"] },
       alwaysAllowIf: (context, input) =>
-        input.account === context.auth?.user.wallet,
+        input.wallet === context.auth?.user.wallet,
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const { account } = input;
+    const { wallet } = input;
     const { system, theGraphClient } = context;
 
     // Execute TheGraph query with comprehensive identity data
     const result = await theGraphClient.query(READ_IDENTITY_QUERY, {
       input: {
-        userAddress: account.toLowerCase(),
+        userAddress: wallet.toLowerCase(),
         identityFactory: system.identityFactory.id.toLowerCase(),
         registryStorage: system.identityRegistryStorage.id.toLowerCase(),
       },
@@ -90,7 +90,7 @@ export const identityRead = systemRouter.system.identity.read
 
     if (!identity) {
       throw errors.NOT_FOUND({
-        message: `No identity found for address ${account}`,
+        message: `No identity found for address ${wallet}`,
       });
     }
 

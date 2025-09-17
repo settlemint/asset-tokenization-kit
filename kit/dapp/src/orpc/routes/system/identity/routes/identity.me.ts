@@ -21,7 +21,7 @@ export const identityMe = systemRouter.system.identity.me.handler(
     return await call(
       identityRead,
       {
-        account: auth.user.wallet,
+        wallet: auth.user.wallet,
       },
       {
         context,

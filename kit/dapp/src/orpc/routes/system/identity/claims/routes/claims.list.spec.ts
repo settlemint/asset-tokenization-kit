@@ -45,7 +45,7 @@ describe("Claims list (integration)", () => {
 
     // Get the target user's identity address for issuing claims
     const targetIdentity = await adminClient.system.identity.read({
-      account: targetUserData.wallet,
+      wallet: targetUserData.wallet,
     });
     if (!targetIdentity?.id) {
       throw new Error("Target test user does not have an identity setup");
@@ -82,7 +82,6 @@ describe("Claims list (integration)", () => {
         secretVerificationCode: "123456",
       },
     });
-
   });
 
   it("should successfully list all claims when user has identityManager role", async () => {

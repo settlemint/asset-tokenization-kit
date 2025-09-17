@@ -57,7 +57,7 @@ export async function fetchUserIdentity({
   try {
     const identityData = await call(
       identityRead,
-      { account: wallet },
+      { wallet: wallet },
       { context }
     );
 
