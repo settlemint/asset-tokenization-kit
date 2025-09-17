@@ -107,6 +107,12 @@
   "sortAscending": "Sort ascending",
   "sortDescending": "Sort descending",
   "standard": "Standard",
+  "table": {
+    "emptyState": {
+      "title": "No data available",
+      "description": "There are no items to display at the moment"
+    }
+  },
   "toggleColumns": "Toggle columns",
   "tryAdjustingFilters": "Try adjusting your filters to find what you're looking for",
   "view": "View",
