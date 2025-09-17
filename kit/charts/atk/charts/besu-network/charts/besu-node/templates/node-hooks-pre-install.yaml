@@ -39,6 +39,10 @@ spec:
 {{- end }}
       restartPolicy: "OnFailure"
       {{- include "atk.imagePullSecrets" . | nindent 6 }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ template "besu-node.fullname" . }}-pre-start-hook
           image: {{ .Values.hooks.image.repository }}:{{ .Values.hooks.image.tag }}
@@ -47,8 +51,10 @@ spec:
           resources:
 {{ toYaml . | nindent 12 }}
           {{- end }}
+          {{- with .Values.containerSecurityContext }}
           securityContext:
-            runAsUser: 0
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           command:
             - /bin/bash
             - -c

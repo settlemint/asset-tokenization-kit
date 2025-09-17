@@ -33,7 +33,6 @@ spec:
         app.kubernetes.io/managed-by: helm
     spec:
       restartPolicy: Never
-      {{- include "atk.imagePullSecrets" . | nindent 6 }}
       {{- if and (eq .Values.cluster.provider "azure") (.Values.cluster.cloudNativeServices) }}
       serviceAccountName: {{ .Values.azure.serviceAccountName }}
      {{- else if and (eq .Values.cluster.provider "aws") (.Values.cluster.cloudNativeServices) }}
@@ -41,11 +40,17 @@ spec:
       {{- else }}
       serviceAccountName: {{ include "besu-genesis.name" . }}-sa
       {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: delete-genesis
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          {{- with .Values.containerSecurityContext }}
           securityContext:
-            runAsUser: 0
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- with .Values.cleanupJob.resources }}
           resources:
