@@ -14,7 +14,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../../" && pwd)"
 cd "$REPO_ROOT"
 
-# Copy Code studio Dockerfile
+# Copy dApp Dockerfile
 cp Dockerfile.dapp Dockerfile
 
 # Build and push Docker image

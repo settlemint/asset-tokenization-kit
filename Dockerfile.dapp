@@ -3,7 +3,13 @@ WORKDIR /app
 
 # DEPENDENCIES
 FROM base AS deps
-COPY . .
+COPY package.json .
+COPY bun.lock .
+COPY packages/ packages/
+COPY tools/ tools/
+COPY kit/dapp/package.json kit/dapp/
+COPY kit/contracts/package.json kit/contracts/
+COPY kit/subgraph/package.json kit/subgraph/
 RUN bun install --ignore-scripts
 
 # BUILD
