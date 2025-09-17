@@ -371,11 +371,11 @@ type IdentityRegistry @entity(immutable: false) {
   # Account representation of the registry contract
   account: Account!
   # Registry of trusted claim issuers
-  trustedIssuersRegistry: TrustedIssuersRegistry!
+  trustedIssuersRegistry: TrustedIssuersRegistry
   # Registry of claim topic schemes
-  topicSchemeRegistry: TopicSchemeRegistry!
+  topicSchemeRegistry: TopicSchemeRegistry
   # Storage backend for identity data
-  identityRegistryStorage: IdentityRegistryStorage!
+  identityRegistryStorage: IdentityRegistryStorage
   # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
 }
