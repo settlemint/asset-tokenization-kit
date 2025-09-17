@@ -167,10 +167,12 @@ describe("Identity list (integration)", () => {
         },
         {
           context: {
-            skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
+            skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
           },
         }
       )
-    ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.FORBIDDEN));
+    ).rejects.toThrow(
+      errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
+    );
   });
 });
