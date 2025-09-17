@@ -15,7 +15,7 @@ describe("Ethereum Composite ID Validation", () => {
   const zeroCompositeId =
     "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000";
   const maxCompositeId =
-    "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+    "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 
   const invalidNoPrefix =
     "1234567890abcdef1234567890abcdef123456789876543210fedcba9876543210fedcba98765432";
