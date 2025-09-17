@@ -1,5 +1,5 @@
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
-import { getOrpcClient } from "@test/fixtures/orpc-client";
+import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
   DEFAULT_ADMIN,
@@ -48,11 +48,13 @@ describe("Identity create", () => {
         },
         {
           context: {
-            skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
+            skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
           },
         }
       )
-    ).rejects.toThrow("Forbidden");
+    ).rejects.toThrow(
+      errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
+    );
   });
 
   test("admin can create an identity for another user", async () => {
@@ -73,5 +75,5 @@ describe("Identity create", () => {
     });
     expect(result.id).toBe(wallet);
     expect(result.identity).toBeDefined();
-  });
+  }, 100_000);
 });

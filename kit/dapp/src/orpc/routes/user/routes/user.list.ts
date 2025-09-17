@@ -5,6 +5,7 @@ import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import {
   buildUserWithIdentity,
   buildUserWithoutWallet,
@@ -147,7 +148,7 @@ export const list = authRouter.user.list
   .use(theGraphMiddleware)
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: { any: ["identityManager", "claimIssuer"] },
+      requiredRoles: SYSTEM_PERMISSIONS.userList,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },

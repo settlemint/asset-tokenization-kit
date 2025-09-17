@@ -1,6 +1,9 @@
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { read } from "@/orpc/routes/account/routes/account.read";
-import { call } from "@orpc/server";
+import { call, ORPCError } from "@orpc/server";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+
+const logger = createLogger();
 
 /**
  * System listing route handler.
@@ -40,7 +43,13 @@ export const me = authRouter.account.me.handler(async ({ context }) => {
         context,
       }
     );
-  } catch {
+  } catch (error: unknown) {
+    if (error instanceof ORPCError && error.status === 404) {
+      return null;
+    }
+    logger.warn(
+      `Failed to get account me: ${error instanceof Error ? error.message : "Unknown error"}`
+    );
     return null;
   }
 });
