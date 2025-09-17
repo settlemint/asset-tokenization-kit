@@ -33,7 +33,7 @@ describe("Token mature", () => {
     // Deposit token to use as denomination asset
     const depositData = {
       type: "deposit" as const,
-      name: `Test Denomination Deposit ${Date.now()}`,
+      name: `Test Denomination Deposit`,
       symbol: "TDD",
       decimals: 18,
       initialModulePairs: [],
@@ -63,7 +63,7 @@ describe("Token mature", () => {
       adminClient,
       {
         type: "bond" as const,
-        name: `Test Bond ${Date.now()}`,
+        name: `Test Bond`,
         symbol: "TB",
         decimals: 18,
         cap: from(1_000_000, 18),
@@ -111,7 +111,7 @@ describe("Token mature", () => {
       adminClient,
       {
         type: "bond" as const,
-        name: `Test Bond ${Date.now()}`,
+        name: `Test Bond`,
         symbol: "TB",
         decimals: 18,
         cap: from(1_000_000, 18),
@@ -151,186 +151,216 @@ describe("Token mature", () => {
     );
   }, 120_000);
 
-  test("can mature bond after maturity date", async () => {
-    const timeAtCreate = await getAnvilTimeMilliseconds();
-    const bond = await createToken(
-      adminClient,
-      {
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
-        },
-        type: "bond" as const,
-        name: `Test Mature Bond ${Date.now()}`,
-        symbol: "TMB2",
-        decimals: 18,
-        cap: from(1_000_000, 18),
-        faceValue: from(1000, depositToken.decimals),
-        maturityDate: addSeconds(new Date(timeAtCreate), 10),
-        denominationAsset: depositToken.id,
-        initialModulePairs: [],
-        countryCode: "056",
-      },
-      {
-        grantRole: ["governance", "emergency"],
-        unpause: true,
-      }
-    );
-
-    await increaseAnvilTimeToPassMaturityDate(bond);
-
-    // Fund the bond contract with denomination assets
-    await adminClient.token.mint({
-      contract: depositToken.id,
-      recipients: [bond.id],
-      amounts: from(1_000_000, 18), // 1M denomination assets
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
-      },
-    });
-
-    const result = await adminClient.token.mature({
-      contract: bond.id,
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
-      },
-    });
-
-    expect(result).toBeDefined();
-    expect(result.id).toBe(bond.id);
-    expect(result.bond).toBeDefined();
-    expect(result.bond?.isMatured).toBe(true);
-  }, 120_000); // Increase timeout for proper blockchain time manipulation
-
-  test("cannot mature already matured bond", async () => {
-    const timeAtCreate = await getAnvilTimeMilliseconds();
-    const bond = await createToken(
-      adminClient,
-      {
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
-        },
-        type: "bond" as const,
-        name: `Test Already Matured Bond ${Date.now()}`,
-        symbol: "TAMB",
-        decimals: 18,
-        cap: from(1_000_000, 18),
-        faceValue: from(1000, depositToken.decimals),
-        maturityDate: addSeconds(new Date(timeAtCreate), 10),
-        denominationAsset: depositToken.id,
-        initialModulePairs: [],
-        countryCode: "056",
-      },
-      {
-        grantRole: ["governance", "emergency"],
-        unpause: true,
-      }
-    );
-
-    await increaseAnvilTimeToPassMaturityDate(bond);
-
-    await adminClient.token.mint({
-      contract: depositToken.id,
-      recipients: [bond.id],
-      amounts: from(1_000_000, 18), // 1M denomination assets
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
-      },
-    });
-
-    const firstMatureResult = await adminClient.token.mature({
-      contract: bond.id,
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
-      },
-    });
-
-    expect(firstMatureResult).toBeDefined();
-    expect(firstMatureResult.id).toBe(bond.id);
-    expect(firstMatureResult.bond).toBeDefined();
-    expect(firstMatureResult.bond?.isMatured).toBe(true);
-
-    await expect(
-      adminClient.token.mature(
+  test(
+    "can mature bond after maturity date",
+    {
+      // Test can be flaky due to blockchain time manipulation
+      // If there are many concurrent blocks being mined, the maturity date may already be in the past
+      retry: 3,
+      // Increase timeout for proper blockchain time manipulation
+      timeout: 120_000,
+    },
+    async () => {
+      const timeAtCreate = await getAnvilTimeMilliseconds();
+      const bond = await createToken(
+        adminClient,
         {
-          contract: bond.id,
           walletVerification: {
             secretVerificationCode: DEFAULT_PINCODE,
             verificationType: "PINCODE",
           },
+          type: "bond" as const,
+          name: `Test Mature Bond`,
+          symbol: "TMB2",
+          decimals: 18,
+          cap: from(1_000_000, 18),
+          faceValue: from(1000, depositToken.decimals),
+          maturityDate: addSeconds(new Date(timeAtCreate), 10),
+          denominationAsset: depositToken.id,
+          initialModulePairs: [],
+          countryCode: "056",
         },
         {
-          context: {
-            skipLoggingFor: [CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED],
-          },
+          grantRole: ["governance", "emergency"],
+          unpause: true,
         }
-      )
-    ).rejects.toThrow(/Bond is already matured/);
-  }, 120_000); // Increase timeout for proper blockchain time manipulation
+      );
 
-  test("cannot mature without sufficient denomination asset balance", async () => {
-    const timeAtCreate = await getAnvilTimeMilliseconds();
-    const bond = await createToken(
-      adminClient,
-      {
+      await increaseAnvilTimeToPassMaturityDate(bond);
+
+      // Fund the bond contract with denomination assets
+      await adminClient.token.mint({
+        contract: depositToken.id,
+        recipients: [bond.id],
+        amounts: from(1_000_000, 18), // 1M denomination assets
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
         },
-        type: "bond" as const,
-        name: `Test Already Matured Bond ${Date.now()}`,
-        symbol: "TAMB",
-        decimals: 18,
-        cap: from(1_000_000, 18),
-        faceValue: from(1000, depositToken.decimals),
-        maturityDate: addSeconds(new Date(timeAtCreate), 10),
-        denominationAsset: depositToken.id,
-        initialModulePairs: [],
-        countryCode: "056",
-      },
-      {
-        grantRole: ["governance", "emergency", "supplyManagement"],
-        unpause: true,
-      }
-    );
+      });
 
-    await increaseAnvilTimeToPassMaturityDate(bond);
+      const result = await adminClient.token.mature({
+        contract: bond.id,
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+      });
 
-    // Mint some bonds to have a non-zero amount of denomination asset required for maturity
-    await adminClient.token.mint({
-      contract: bond.id,
-      recipients: [bond.id],
-      amounts: from(1_000_000, 18),
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
-      },
-    });
+      expect(result).toBeDefined();
+      expect(result.id).toBe(bond.id);
+      expect(result.bond).toBeDefined();
+      expect(result.bond?.isMatured).toBe(true);
+    }
+  ); // Increase timeout for proper blockchain time manipulation
 
-    await expect(
-      adminClient.token.mature(
+  test(
+    "cannot mature already matured bond",
+    {
+      // Test can be flaky due to blockchain time manipulation
+      // If there are many concurrent blocks being mined, the maturity date may already be in the past
+      retry: 3,
+      // Increase timeout for proper blockchain time manipulation
+      timeout: 120_000,
+    },
+    async () => {
+      const timeAtCreate = await getAnvilTimeMilliseconds();
+      const bond = await createToken(
+        adminClient,
         {
-          contract: bond.id,
           walletVerification: {
             secretVerificationCode: DEFAULT_PINCODE,
             verificationType: "PINCODE",
           },
+          type: "bond" as const,
+          name: `Test Already Matured Bond`,
+          symbol: "TAMB",
+          decimals: 18,
+          cap: from(1_000_000, 18),
+          faceValue: from(1000, depositToken.decimals),
+          maturityDate: addSeconds(new Date(timeAtCreate), 10),
+          denominationAsset: depositToken.id,
+          initialModulePairs: [],
+          countryCode: "056",
         },
         {
-          context: {
-            skipLoggingFor: [CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED],
-          },
+          grantRole: ["governance", "emergency"],
+          unpause: true,
         }
-      )
-    ).rejects.toThrow(
-      /Insufficient denomination asset balance|transfer amount exceeds balance|ERC20: transfer amount exceeds balance/
-    );
-  }, 120_000); // Increase timeout for proper blockchain time manipulation
+      );
+
+      await increaseAnvilTimeToPassMaturityDate(bond);
+
+      await adminClient.token.mint({
+        contract: depositToken.id,
+        recipients: [bond.id],
+        amounts: from(1_000_000, 18), // 1M denomination assets
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+      });
+
+      const firstMatureResult = await adminClient.token.mature({
+        contract: bond.id,
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+      });
+
+      expect(firstMatureResult).toBeDefined();
+      expect(firstMatureResult.id).toBe(bond.id);
+      expect(firstMatureResult.bond).toBeDefined();
+      expect(firstMatureResult.bond?.isMatured).toBe(true);
+
+      await expect(
+        adminClient.token.mature(
+          {
+            contract: bond.id,
+            walletVerification: {
+              secretVerificationCode: DEFAULT_PINCODE,
+              verificationType: "PINCODE",
+            },
+          },
+          {
+            context: {
+              skipLoggingFor: [CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED],
+            },
+          }
+        )
+      ).rejects.toThrow(/Bond is already matured/);
+    }
+  );
+
+  test(
+    "cannot mature without sufficient denomination asset balance",
+    {
+      // Test can be flaky due to blockchain time manipulation
+      // If there are many concurrent blocks being mined, the maturity date may already be in the past
+      retry: 3,
+      // Increase timeout for proper blockchain time manipulation
+      timeout: 120_000,
+    },
+    async () => {
+      const timeAtCreate = await getAnvilTimeMilliseconds();
+      const bond = await createToken(
+        adminClient,
+        {
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
+          },
+          type: "bond" as const,
+          name: `Test Already Matured Bond`,
+          symbol: "TAMB",
+          decimals: 18,
+          cap: from(1_000_000, 18),
+          faceValue: from(1000, depositToken.decimals),
+          maturityDate: addSeconds(new Date(timeAtCreate), 10),
+          denominationAsset: depositToken.id,
+          initialModulePairs: [],
+          countryCode: "056",
+        },
+        {
+          grantRole: ["governance", "emergency", "supplyManagement"],
+          unpause: true,
+        }
+      );
+
+      await increaseAnvilTimeToPassMaturityDate(bond);
+
+      // Mint some bonds to have a non-zero amount of denomination asset required for maturity
+      await adminClient.token.mint({
+        contract: bond.id,
+        recipients: [bond.id],
+        amounts: from(1_000_000, 18),
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+      });
+
+      await expect(
+        adminClient.token.mature(
+          {
+            contract: bond.id,
+            walletVerification: {
+              secretVerificationCode: DEFAULT_PINCODE,
+              verificationType: "PINCODE",
+            },
+          },
+          {
+            context: {
+              skipLoggingFor: [CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED],
+            },
+          }
+        )
+      ).rejects.toThrow(
+        /Insufficient denomination asset balance|transfer amount exceeds balance|ERC20: transfer amount exceeds balance/
+      );
+    }
+  );
 });
 
 async function increaseAnvilTimeToPassMaturityDate(bond: Token) {
