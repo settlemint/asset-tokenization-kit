@@ -42,6 +42,7 @@
     "columns": {
       "id": "ID",
       "type": "Typ",
+      "entity": "Entität",
       "linkedEntity": "Konto / Vertrag",
       "activeClaims": "Aktive Ansprüche",
       "revokedClaims": "Widerrufene Ansprüche",

@@ -42,6 +42,7 @@
     "columns": {
       "id": "المعرف",
       "type": "النوع",
+      "entity": "الكيان",
       "linkedEntity": "الحساب / العقد",
       "activeClaims": "المطالبات النشطة",
       "revokedClaims": "المطالبات الملغاة",

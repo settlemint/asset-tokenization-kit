@@ -42,6 +42,7 @@
     "columns": {
       "id": "ID",
       "type": "タイプ",
+      "entity": "エンティティ",
       "linkedEntity": "アカウント / コントラクト",
       "activeClaims": "アクティブなクレーム",
       "revokedClaims": "取り消されたクレーム",

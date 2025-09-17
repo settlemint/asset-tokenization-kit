@@ -42,6 +42,7 @@
     "columns": {
       "id": "ID",
       "type": "Type",
+      "entity": "Entity",
       "linkedEntity": "Account / Contract",
       "activeClaims": "Active Claims",
       "revokedClaims": "Revoked Claims",

@@ -16,7 +16,6 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 type IdentityRow = IdentityListOutput["items"][number];
-type EntityKind = "account" | "contract";
 
 const columnHelper = createStrictColumnHelper<IdentityRow>();
 
@@ -42,37 +41,118 @@ export function IdentityTable() {
   const items = data?.items ?? [];
   const totalCount = data?.total ?? 0;
 
-  const handleRowClick = (identity: IdentityRow) => {
-    void (async () => {
-      try {
-        await router.navigate({
-          to: "/admin/identity-management/$accountId",
-          params: { accountId: identity.account?.id ?? identity.id },
-        });
-      } catch {
-        toast.error(t("identityTable.errors.navigationFailed"));
-      }
-    })();
+  const handleRowClick = async (identity: IdentityRow) => {
+    try {
+      await router.navigate({
+        to: "/admin/identity-management/$accountId",
+        params: { accountId: identity.account?.id ?? identity.id },
+      });
+    } catch {
+      toast.error(t("identityTable.errors.navigationFailed"));
+    }
   };
 
   const columns = useMemo(
     () =>
       withAutoFeatures([
+        // Identity ID column - shows the unique identity identifier
+        columnHelper.display({
+          id: "identityId",
+          header: t("identityTable.columns.id"),
+          cell: ({ row }: CellContext<IdentityRow, string>) => (
+            <Web3Address
+              address={row.original.id}
+              size="small"
+              copyToClipboard
+              showBadge={false}
+              showPrettyName={false}
+            />
+          ),
+          meta: {
+            displayName: t("identityTable.columns.id"),
+            type: "none",
+          },
+        }),
+        // Hidden accessor column for filtering functionality
+        // This column provides searchable text content but is not visible in the UI
+        // It allows users to filter by contract name, addresses, and entity type
         columnHelper.accessor(
           (row: IdentityRow) =>
-            (row.contract ? "contract" : "account") as EntityKind,
+            [
+              row.contract?.contractName,
+              row.contract?.id,
+              row.account?.id,
+              row.contract ? "contract" : undefined,
+              row.account ? "account" : undefined,
+            ]
+              .filter(Boolean)
+              .join(" "),
           {
-            id: "type",
-            header: t("identityTable.columns.type"),
-            cell: ({ getValue }: CellContext<IdentityRow, EntityKind>) => {
-              const kind = getValue();
-              const label = t(
-                kind === "contract"
-                  ? "identityTable.types.contract"
-                  : "identityTable.types.account"
-              );
-              return <Badge variant="outline">{label}</Badge>;
+            id: "linkedEntity_filter",
+            header: "", // Hidden column, no header needed
+            enableHiding: false, // Prevent users from showing this column
+            meta: {
+              displayName: t("identityTable.columns.entity"),
+              type: "text",
             },
+          }
+        ),
+        // Visible display column for UI presentation
+        // This column shows the rich Web3Address components with proper formatting
+        // It cannot be used for filtering due to strict column helper constraints
+        columnHelper.display({
+          id: "linkedEntity",
+          header: t("identityTable.columns.entity"),
+          cell: ({ row }: CellContext<IdentityRow, unknown>) => {
+            const { contract, account } = row.original;
+
+            if (contract) {
+              return (
+                <div className="flex flex-col gap-1">
+                  {contract.contractName && (
+                    <span className="font-medium">{contract.contractName}</span>
+                  )}
+                  <Web3Address
+                    address={contract.id}
+                    size="small"
+                    copyToClipboard
+                    showBadge={!contract.contractName}
+                    showPrettyName={false}
+                  />
+                </div>
+              );
+            }
+
+            if (account) {
+              return (
+                <Web3Address
+                  address={account.id}
+                  size="small"
+                  copyToClipboard
+                  showBadge
+                  showPrettyName={false}
+                />
+              );
+            }
+
+            return (
+              <span className="text-muted-foreground text-sm">
+                {t(`identityTable.fallback.noEntity`)}
+              </span>
+            );
+          },
+          meta: {
+            displayName: t("identityTable.columns.entity"),
+            type: "none",
+          },
+        }),
+        // Hidden accessor column for filtering by entity type
+        columnHelper.accessor(
+          (row: IdentityRow) => (row.contract ? "contract" : "account"),
+          {
+            id: "type_filter",
+            header: "",
+            enableHiding: false,
             meta: {
               displayName: t("identityTable.columns.type"),
               type: "option",
@@ -86,71 +166,37 @@ export function IdentityTable() {
                   value: "contract",
                 },
               ],
-              enableColumnFilter: true,
             },
           }
         ),
-        columnHelper.accessor(
-          (row: IdentityRow) =>
-            [
-              row.contract?.contractName,
-              row.contract?.id,
-              row.account?.id,
-              row.contract ? "contract" : undefined,
-              row.account ? "account" : undefined,
-            ]
-              .filter(Boolean)
-              .join(" "),
-          {
-            id: "linkedEntity",
-            header: t("identityTable.columns.linkedEntity"),
-            cell: ({ row }: CellContext<IdentityRow, string>) => {
-              const { contract, account } = row.original;
+        // Visible entity type column with distinctive brand colors
+        columnHelper.display({
+          id: "type",
+          header: t("identityTable.columns.type"),
+          cell: ({ row }: CellContext<IdentityRow, unknown>) => {
+            const isContract = !!row.original.contract;
+            const label = t(
+              isContract
+                ? "identityTable.types.contract"
+                : "identityTable.types.account"
+            );
 
-              if (contract) {
-                return (
-                  <div className="flex flex-col gap-1">
-                    {contract.contractName && (
-                      <span className="font-medium">
-                        {contract.contractName}
-                      </span>
-                    )}
-                    <Web3Address
-                      address={contract.id}
-                      size="small"
-                      copyToClipboard
-                      showBadge={!contract.contractName}
-                      showPrettyName={false}
-                    />
-                  </div>
-                );
-              }
+            // Use SettleMint brand colors for distinction
+            const brandColorClasses = isContract
+              ? "bg-[oklch(0.7675_0.0982_182.83)]/20 text-[oklch(0.7675_0.0982_182.83)] border-[oklch(0.7675_0.0982_182.83)]/30"
+              : "bg-sm-accent/20 text-sm-accent border-sm-accent/30";
 
-              if (account) {
-                return (
-                  <Web3Address
-                    address={account.id}
-                    size="small"
-                    copyToClipboard
-                    showBadge
-                    showPrettyName={false}
-                  />
-                );
-              }
-
-              return (
-                <span className="text-muted-foreground text-sm">
-                  {t(`identityTable.fallback.noEntity`)}
-                </span>
-              );
-            },
-            meta: {
-              displayName: t("identityTable.columns.linkedEntity"),
-              type: "text",
-              enableColumnFilter: true,
-            },
-          }
-        ),
+            return (
+              <Badge variant="outline" className={brandColorClasses}>
+                {label}
+              </Badge>
+            );
+          },
+          meta: {
+            displayName: t("identityTable.columns.type"),
+            type: "none",
+          },
+        }),
         columnHelper.display({
           id: "activeClaimsCount",
           header: t("identityTable.columns.activeClaims"),
@@ -215,6 +261,12 @@ export function IdentityTable() {
           enablePagination: true,
         }}
         initialPageSize={20}
+        // Hide the filter-only columns which are used for filtering functionality
+        // The visible display columns handle the UI presentation
+        initialColumnVisibility={{
+          linkedEntity_filter: false,
+          type_filter: false,
+        }}
         customEmptyState={{
           title: t("identityTable.emptyState.title"),
           description: isLoading
