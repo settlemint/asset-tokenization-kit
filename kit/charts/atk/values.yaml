@@ -63,7 +63,7 @@ besu-network:
           memory: 128Mi
     # Pod security context for genesis jobs
     podSecurityContext:
-      fsGroup: 10001
+      fsGroup: 1000
       runAsNonRoot: true
       seccompProfile:
         type: RuntimeDefault
@@ -92,6 +92,7 @@ besu-network:
     # Volume permissions init container security context (needs root to fix permissions)
     volumePermissionsSecurityContext:
       runAsUser: 0
+      runAsNonRoot: false  # This container needs root to fix permissions
       allowPrivilegeEscalation: false
       capabilities:
         drop:
@@ -161,7 +162,7 @@ besu-network:
             memory: 32Mi
     # Pod security context for besu nodes
     podSecurityContext:
-      fsGroup: 10001
+      fsGroup: 1000
       runAsNonRoot: true
       seccompProfile:
         type: RuntimeDefault
@@ -190,6 +191,7 @@ besu-network:
     # Volume permissions init container security context (needs root to fix permissions)
     volumePermissionsSecurityContext:
       runAsUser: 0
+      runAsNonRoot: false  # This container needs root to fix permissions
       allowPrivilegeEscalation: false
       capabilities:
         drop:
@@ -262,7 +264,7 @@ erpc:
   resources: {}
   # Pod security context
   podSecurityContext:
-    fsGroup: 10001
+    fsGroup: 1000
     runAsNonRoot: true
     seccompProfile:
       type: RuntimeDefault
@@ -395,7 +397,7 @@ graph-node:
     prometheus.io/path: "/metrics"
   # Pod security context
   podSecurityContext:
-    fsGroup: 10001
+    fsGroup: 1000
     runAsNonRoot: true
     seccompProfile:
       type: RuntimeDefault
@@ -541,7 +543,7 @@ portal:
     prometheus.io/path: "/portal-metrics"
   # Pod security context
   podSecurityContext:
-    fsGroup: 10001
+    fsGroup: 1000
     runAsNonRoot: true
     seccompProfile:
       type: RuntimeDefault
@@ -867,7 +869,7 @@ txsigner:
       pullPolicy: IfNotPresent
   # Pod security context
   podSecurityContext:
-    fsGroup: 10001
+    fsGroup: 1000
     runAsNonRoot: true
     seccompProfile:
       type: RuntimeDefault

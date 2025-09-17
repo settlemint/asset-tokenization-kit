@@ -9,6 +9,72 @@
 
 # Besu Network security contexts for OpenShift
 besu-network:
+  # Override for besu-rpc-1 (alias of besu-node)
+  besu-genesis:
+    # Pod security context - OpenShift compatible
+    podSecurityContext:
+      fsGroup: null  # OpenShift assigns this
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    # Container security context - no user/group IDs
+    containerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: null  # OpenShift assigns this
+      runAsGroup: null  # OpenShift assigns this
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      seccompProfile:
+        type: RuntimeDefault
+
+    # Init container security context
+    initContainerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: null  # OpenShift assigns this
+      runAsGroup: null  # OpenShift assigns this
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      seccompProfile:
+        type: RuntimeDefault
+
+  # Override for besu-validator-1 (alias of besu-node)
+  besu-node:
+    # Pod security context - OpenShift compatible
+    podSecurityContext:
+      fsGroup: null  # OpenShift assigns this
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    # Container security context - no user/group IDs
+    containerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: null  # OpenShift assigns this
+      runAsGroup: null  # OpenShift assigns this
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      seccompProfile:
+        type: RuntimeDefault
+
+    # Init container security context
+    initContainerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: null  # OpenShift assigns this
+      runAsGroup: null  # OpenShift assigns this
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      seccompProfile:
+        type: RuntimeDefault
+
   besu-genesis:
     # Pod security context - OpenShift compatible
     podSecurityContext:
@@ -165,11 +231,14 @@ txsigner:
     runAsNonRoot: true
     runAsUser: null
     runAsGroup: null
+
+  initContainerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: null
+    runAsGroup: null
     allowPrivilegeEscalation: false
-    readOnlyRootFilesystem: false
     capabilities:
-      drop:
-      - ALL
+      drop: [ALL]
     seccompProfile:
       type: RuntimeDefault
 
@@ -192,6 +261,16 @@ erpc:
     capabilities:
       drop:
       - ALL
+    seccompProfile:
+      type: RuntimeDefault
+
+  initContainerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: null
+    runAsGroup: null
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: [ALL]
     seccompProfile:
       type: RuntimeDefault
 
@@ -272,6 +351,7 @@ support:
 
   # Nginx Ingress Controller adjustments for OpenShift (if used)
   ingress-nginx:
+    enabled: false
     controller:
       podSecurityContext:
         fsGroup: null
@@ -292,6 +372,44 @@ support:
           - NET_BIND_SERVICE
         seccompProfile:
           type: RuntimeDefault
+  reloader:
+    reloader:
+      deployment:
+        securityContext:
+          runAsUser: null
+  minio:
+    securityContext:
+      enabled: false
+
+observability:
+  grafana:
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: null
+      runAsGroup: null
+      fsGroup: null
+  kube-state-metrics:
+    securityContext:
+      enabled: true
+      runAsGroup: null
+      runAsUser: null
+      fsGroup: null
+  prometheus-node-exporter:
+    enabled: false
+  loki:
+    loki:
+      podSecurityContext:
+        fsGroup: null
+        runAsGroup: null
+        runAsNonRoot: true
+        runAsUser: null
+    gateway:
+      enabled: false
+  tempo:
+    securityContext:
+      runAsUser: null
+      runAsGroup: null
+      fsGroup: null
 
 # Hasura configuration for OpenShift
 hasura:
