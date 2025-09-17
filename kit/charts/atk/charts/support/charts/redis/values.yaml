@@ -104,6 +104,8 @@ podSecurityContext:
   fsGroup: 999
   runAsNonRoot: true
   runAsUser: 999
+  seccompProfile:
+    type: RuntimeDefault
 
 # -- Container security context
 containerSecurityContext:
@@ -114,6 +116,9 @@ containerSecurityContext:
   readOnlyRootFilesystem: false
   runAsNonRoot: true
   runAsUser: 999
+  runAsGroup: 999
+  seccompProfile:
+    type: RuntimeDefault
 
 # Liveness probe configuration
 livenessProbe:

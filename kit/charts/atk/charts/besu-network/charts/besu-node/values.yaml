@@ -253,6 +253,49 @@ imagePullSecrets: []
 
 imagePullPolicy: IfNotPresent
 
+# Pod security context
+podSecurityContext:
+  fsGroup: 10001
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
+# Container security context for main containers
+containerSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+# Container security context for init containers
+initContainerSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  runAsGroup: 1001
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+# Volume permissions init container security context (needs root to fix permissions)
+volumePermissionsSecurityContext:
+  runAsUser: 0
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+    add:
+    - CHOWN
+  seccompProfile:
+    type: RuntimeDefault
+
 # PodDisruptionBudget configuration
 podDisruptionBudget:
   enabled: false

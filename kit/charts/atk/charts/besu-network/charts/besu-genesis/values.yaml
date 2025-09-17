@@ -60,6 +60,37 @@ cleanupJob:
       cpu: 75m
       memory: 128Mi
 
+# Pod security context for the genesis jobs
+podSecurityContext:
+  fsGroup: 10001
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
+# Container security context for the genesis jobs
+containerSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+# Container security context for init containers (copy-artifacts)
+initContainerSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  runAsGroup: 1001
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
 aws:
   # the aws cli commands uses the name 'quorum-sa' so only change this if you altered the name
   serviceAccountName: quorum-sa
