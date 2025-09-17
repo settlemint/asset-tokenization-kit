@@ -10,7 +10,7 @@ if [ -z "${CI:-}" ]; then
 fi
 
 # Copy Code studio Dockerfile
-cp Dockerfile.codestudio Dockerfile
+cp Dockerfile.code-studio Dockerfile
 
 # Build and push Docker image
 docker buildx build . \
