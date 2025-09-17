@@ -350,7 +350,7 @@ type IdentityRegistryStorage @entity(immutable: false) {
   deployedInTransaction: Bytes!
   # List of identity registries using this storage
   registries: [IdentityRegistry!]! @derivedFrom(field: "identityRegistryStorage")
-  # List of registered identities stored in this registry
+  # List of registered identities stored in this storage
   registeredIdentities: [RegisteredIdentity!]! @derivedFrom(field: "registryStorage")
 }
 

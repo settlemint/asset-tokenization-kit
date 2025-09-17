@@ -11,7 +11,6 @@ export function fetchAccount(address: Address): Account {
     } else {
       account.isContract = false;
     }
-    account.isLost = false;
     account.save();
   }
 
