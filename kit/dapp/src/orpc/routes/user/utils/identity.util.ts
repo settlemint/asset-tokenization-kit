@@ -1,6 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import type { Context } from "@/orpc/context/context";
-import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
+import { identityRead } from "@/orpc/routes/system/identity/routes/identity.read";
 import type { IdentityClaim } from "@atk/zod/claim";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { call, ORPCError } from "@orpc/server";
@@ -55,15 +55,29 @@ export async function fetchUserIdentity({
   context,
 }: FetchUserIdentityOptions): Promise<UserIdentityResult> {
   try {
-    const accountData = await call(readAccount, { wallet }, { context });
+    const identityData = await call(
+      identityRead,
+      { account: wallet },
+      { context }
+    );
 
-    const identity = accountData?.identity;
-    const claims = accountData?.claims ?? [];
+    if (!identityData) {
+      return {
+        identity: undefined,
+        claims: [],
+        isRegistered: false,
+      };
+    }
+
+    const identity = identityData.id;
+    const claims = identityData.claims ?? [];
 
     return {
       identity,
       claims,
-      isRegistered: accountData?.identityIsRegistered ?? false,
+      isRegistered: identityData.registered
+        ? identityData.registered.isRegistered
+        : false,
     };
   } catch (error: unknown) {
     // 404 from TheGraph means user has no on-chain identity yet
