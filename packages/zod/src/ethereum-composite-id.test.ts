@@ -13,9 +13,9 @@ describe("Ethereum Composite ID Validation", () => {
   const validMixedCompositeId =
     "0x1234567890AbCdEf1234567890aBcDeF123456789876543210FeDcBa9876543210fEdCbA98765432";
   const zeroCompositeId =
-    "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+    "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000";
   const maxCompositeId =
-    "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+    "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 
   const invalidNoPrefix =
     "1234567890abcdef1234567890abcdef123456789876543210fedcba9876543210fedcba98765432";
@@ -138,7 +138,7 @@ describe("Ethereum Composite ID Validation", () => {
         // In practice, this is hard to construct since viem's isHex is quite permissive
         // but we can test the error message format
         const idWithCorrectFormat =
-          "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+          "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000";
         const result = ethereumCompositeId.safeParse(idWithCorrectFormat);
         // This should actually pass, so let's verify it does
         expect(result.success).toBe(true);
