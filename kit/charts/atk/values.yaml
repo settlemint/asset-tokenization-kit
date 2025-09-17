@@ -398,7 +398,7 @@ graph-node:
   enabled: true
   image:
     repository: docker.io/graphprotocol/graph-node
-    tag: "v0.40.1"
+    tag: "v0.40.2"
     pullPolicy: IfNotPresent
   podAnnotations:
     prometheus.io/scrape: "true"
