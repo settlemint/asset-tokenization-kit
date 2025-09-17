@@ -112,6 +112,9 @@ besu-network:
         repository: docker.io/quorumengineering/tessera
         tag: "24.4"
         pullPolicy: IfNotPresent
+    # Disable root-based volume permission fixer; OpenShift/SCC-compatible clusters
+    # enforce non-root pods, so we skip the helper init container entirely.
+    volumePermissionsFix: []
     hooks:
       image:
         repository: ghcr.io/settlemint/quorum-genesis-tool
@@ -206,36 +209,42 @@ besu-network:
       sizeLimit: "5Gi"
       pvcSizeLimit: "5Gi"
     resources: {}
+    volumePermissionsFix: []
   besu-validator-2:
     enabled: false
     storage:
       sizeLimit: "5Gi"
       pvcSizeLimit: "5Gi"
     resources: {}
+    volumePermissionsFix: []
   besu-validator-3:
     enabled: false
     storage:
       sizeLimit: "5Gi"
       pvcSizeLimit: "5Gi"
     resources: {}
+    volumePermissionsFix: []
   besu-validator-4:
     enabled: false
     storage:
       sizeLimit: "5Gi"
       pvcSizeLimit: "5Gi"
     resources: {}
+    volumePermissionsFix: []
   besu-rpc-1:
     enabled: true
     storage:
       sizeLimit: "5Gi"
       pvcSizeLimit: "5Gi"
     resources: {}
+    volumePermissionsFix: []
   besu-rpc-2:
     enabled: false
     storage:
       sizeLimit: "5Gi"
       pvcSizeLimit: "5Gi"
     resources: {}
+    volumePermissionsFix: []
   rawGenesisConfig:
     blockchain:
       nodes:
