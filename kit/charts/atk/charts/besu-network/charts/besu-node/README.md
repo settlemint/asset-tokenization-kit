@@ -31,6 +31,12 @@ Besu nodes for a POA network
 | cluster.cloudNativeServices | bool | `false` |  |
 | cluster.provider | string | `"local"` |  |
 | cluster.reclaimPolicy | string | `"Delete"` |  |
+| containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| containerSecurityContext.runAsGroup | int | `1000` |  |
+| containerSecurityContext.runAsNonRoot | bool | `true` |  |
+| containerSecurityContext.runAsUser | int | `1000` |  |
+| containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | fullnameOverride | string | `""` |  |
 | hooks.image.pullPolicy | string | `"IfNotPresent"` |  |
 | hooks.image.repository | string | `"ghcr.io/settlemint/quorum-genesis-tool"` |  |
@@ -45,6 +51,12 @@ Besu nodes for a POA network
 | hooks.preInstall.resources.requests.memory | string | `"256Mi"` |  |
 | imagePullPolicy | string | `"IfNotPresent"` |  |
 | imagePullSecrets | list | `[]` |  |
+| initContainerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| initContainerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| initContainerSecurityContext.runAsGroup | int | `1001` |  |
+| initContainerSecurityContext.runAsNonRoot | bool | `true` |  |
+| initContainerSecurityContext.runAsUser | int | `1001` |  |
+| initContainerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | initContainers.busybox.image.pullPolicy | string | `"IfNotPresent"` |  |
 | initContainers.busybox.image.registry | string | `"docker.io"` |  |
 | initContainers.busybox.image.repository | string | `"busybox"` |  |
@@ -198,6 +210,9 @@ Besu nodes for a POA network
 | node.tessera.tpport | int | `9080` |  |
 | podDisruptionBudget.enabled | bool | `false` |  |
 | podDisruptionBudget.minAvailable | int | `1` |  |
+| podSecurityContext.fsGroup | int | `10001` |  |
+| podSecurityContext.runAsNonRoot | bool | `true` |  |
+| podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | quorumFlags.isBootnode | bool | `false` |  |
 | quorumFlags.privacy | bool | `false` |  |
 | quorumFlags.removeKeysOnDelete | bool | `false` |  |
@@ -211,3 +226,8 @@ Besu nodes for a POA network
 | storage.storageClass | string | `""` |  |
 | volumePermissionsFix[0] | string | `"local"` |  |
 | volumePermissionsFix[1] | string | `"aws"` |  |
+| volumePermissionsSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| volumePermissionsSecurityContext.capabilities.add[0] | string | `"CHOWN"` |  |
+| volumePermissionsSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| volumePermissionsSecurityContext.runAsUser | int | `0` |  |
+| volumePermissionsSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
