@@ -23,7 +23,7 @@ RUN bun run --cwd kit/dapp build
 FROM oven/bun:1.2.22-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/kit/dapp/.nitro ./.nitro
 COPY --from=builder /app/kit/dapp/.output ./.output
 COPY --from=builder /app/kit/dapp/drizzle ./drizzle
