@@ -10,7 +10,10 @@ import {
 } from "drizzle-orm/pg-core";
 import { user } from "../../auth/db/auth";
 
-export const residencyStatusEnum = pgEnum("residency_status", residencyStatuses);
+export const residencyStatusEnum = pgEnum(
+  "residency_status",
+  residencyStatuses
+);
 
 export const kycProfiles = pgTable(
   "kyc_profiles",

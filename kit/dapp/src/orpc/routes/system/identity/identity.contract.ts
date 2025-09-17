@@ -1,7 +1,10 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import { AccountSchema } from "@/orpc/routes/account/routes/account.read.schema";
 import { IdentityCreateSchema } from "@/orpc/routes/system/identity/routes/identity.create.schema";
-import { IdentityListInputSchema, IdentityListOutputSchema } from "@/orpc/routes/system/identity/routes/identity.list.schema";
+import {
+  IdentityListInputSchema,
+  IdentityListOutputSchema,
+} from "@/orpc/routes/system/identity/routes/identity.list.schema";
 import { IdentityRegisterSchema } from "@/orpc/routes/system/identity/routes/identity.register.schema";
 import claimsContract from "@/orpc/routes/system/identity/claims/claims.contract";
 

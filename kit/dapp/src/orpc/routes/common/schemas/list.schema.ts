@@ -78,7 +78,7 @@ export const ListSchema = z.object({
    * - limit: 200 returns up to 200 items
    * - limit: undefined (or omitted) defaults to 100 items
    */
-  limit: z.number().int().positive().max(200).default(100).optional(),
+  limit: z.number().int().positive().max(200).optional(),
 
   /**
    * Sort order direction for the results.
