@@ -18,18 +18,10 @@ Usage: include "atk.waitforit.containers" (dict "context" $ "config" <values>)
 - name: wait-for-{{ .name }}
   image: "{{ $repository }}:{{ $tag }}"
   imagePullPolicy: {{ $pullPolicy }}
+  {{- with $ctx.Values.initContainerSecurityContext }}
   securityContext:
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-      - ALL
-    runAsNonRoot: true
-    {{- if not $ctx.Values.global.openshift.enabled }}
-    runAsUser: 1001
-    runAsGroup: 1001
-    {{- end }}
-    seccompProfile:
-      type: RuntimeDefault
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   command:
     - /usr/bin/wait-for-it
     - "{{ tpl .endpoint $ctx }}"
