@@ -22,7 +22,6 @@ import { twoFactor } from "@/lib/auth/plugins/two-factor";
 import {
   accessControl,
   adminRole,
-  issuerRole,
   userRole,
 } from "@/lib/auth/utils/permissions";
 import { kycProfiles } from "@/lib/db/schema";
@@ -273,7 +272,6 @@ const options = {
       roles: {
         admin: adminRole,
         user: userRole,
-        issuer: issuerRole,
       },
     }),
 
