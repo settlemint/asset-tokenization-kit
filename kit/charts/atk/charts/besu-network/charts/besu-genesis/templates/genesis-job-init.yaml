@@ -35,15 +35,9 @@ spec:
     spec:
       restartPolicy: Never
       serviceAccountName: {{ include "besu-genesis.serviceAccountName" . }}
-      {{- if .Values.global.openshift.enabled }}
+      {{- with .Values.podSecurityContext }}
       securityContext:
-        fsGroup: {{ .Values.global.openshift.fsGroup | default 1000650000 }}
-        runAsNonRoot: true
-        seccompProfile:
-          type: RuntimeDefault
-      {{- else if .Values.podSecurityContext }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
         - name: generated-config
@@ -75,35 +69,17 @@ spec:
           volumeMounts:
             - name: artifacts
               mountPath: /shared-artifacts
-          {{- if .Values.global.openshift.enabled }}
+          {{- with .Values.initContainerSecurityContext }}
           securityContext:
-            runAsNonRoot: true
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-              - ALL
-            seccompProfile:
-              type: RuntimeDefault
-          {{- else if .Values.initContainerSecurityContext }}
-          securityContext:
-            {{- toYaml .Values.initContainerSecurityContext | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
 {{ end }}
       containers:
         - name: generate-genesis
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          {{- if .Values.global.openshift.enabled }}
+          {{- with .Values.containerSecurityContext }}
           securityContext:
-            runAsNonRoot: true
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-              - ALL
-            seccompProfile:
-              type: RuntimeDefault
-          {{- else if .Values.containerSecurityContext }}
-          securityContext:
-            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- with .Values.initJob.resources }}

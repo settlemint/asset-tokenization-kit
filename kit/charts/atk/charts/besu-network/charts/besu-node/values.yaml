@@ -284,6 +284,18 @@ initContainerSecurityContext:
   seccompProfile:
     type: RuntimeDefault
 
+# Volume permissions init container security context (needs root to fix permissions)
+volumePermissionsSecurityContext:
+  runAsUser: 0
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+    add:
+    - CHOWN
+  seccompProfile:
+    type: RuntimeDefault
+
 # PodDisruptionBudget configuration
 podDisruptionBudget:
   enabled: false

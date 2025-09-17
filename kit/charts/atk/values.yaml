@@ -89,6 +89,17 @@ besu-network:
         - ALL
       seccompProfile:
         type: RuntimeDefault
+    # Volume permissions init container security context (needs root to fix permissions)
+    volumePermissionsSecurityContext:
+      runAsUser: 0
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+        add:
+        - CHOWN
+      seccompProfile:
+        type: RuntimeDefault
   besu-node:
     node:
       image:
@@ -174,6 +185,17 @@ besu-network:
       capabilities:
         drop:
         - ALL
+      seccompProfile:
+        type: RuntimeDefault
+    # Volume permissions init container security context (needs root to fix permissions)
+    volumePermissionsSecurityContext:
+      runAsUser: 0
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+        add:
+        - CHOWN
       seccompProfile:
         type: RuntimeDefault
   besu-validator-1:

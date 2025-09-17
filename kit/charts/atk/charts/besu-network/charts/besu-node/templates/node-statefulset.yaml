@@ -43,15 +43,10 @@ spec:
       serviceAccountName: {{ include "besu-node.fullname" . }}-sa
 {{- end }}
       {{- include "atk.imagePullSecrets" . | nindent 6 }}
+      {{- with .Values.podSecurityContext }}
       securityContext:
-        {{- if .Values.global.openshift.enabled }}
-        fsGroup: {{ .Values.global.openshift.fsGroup | default 1000650000 }}
-        runAsNonRoot: true
-        seccompProfile:
-          type: RuntimeDefault
-        {{- else }}
-        fsGroup: 10001
-        {{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       initContainers:
       # Wait for genesis file to be available in PVC
       - name: wait-for-genesis
@@ -79,17 +74,10 @@ spec:
             readOnly: true
           - name: shared-genesis
             mountPath: /shared
+        {{- with .Values.initContainerSecurityContext }}
         securityContext:
-          runAsNonRoot: true
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          seccompProfile:
-            type: RuntimeDefault
-          {{- if not .Values.global.openshift.enabled }}
-          runAsUser: 1000
-          {{- end }}
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         {{- with .Values.initContainers.waitForGenesis.resources }}
         resources:
 {{ toYaml . | nindent 10 }}
@@ -105,16 +93,10 @@ spec:
         volumeMounts:
           - name: data
             mountPath: /data
+        {{- with .Values.volumePermissionsSecurityContext }}
         securityContext:
-          runAsUser: 0
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-            add:
-            - CHOWN
-          seccompProfile:
-            type: RuntimeDefault
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         {{- with .Values.initContainers.volumePermissions.resources }}
         resources:
 {{ toYaml . | nindent 10 }}
@@ -127,18 +109,10 @@ spec:
       - name: {{ .Release.Name }}-tessera
         image: {{ .Values.node.tessera.image.repository }}:{{ .Values.node.tessera.image.tag }}
         imagePullPolicy: {{ .Values.node.tessera.image.pullPolicy }}
+        {{- with .Values.containerSecurityContext }}
         securityContext:
-          runAsNonRoot: true
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          seccompProfile:
-            type: RuntimeDefault
-          {{- if not .Values.global.openshift.enabled }}
-          runAsUser: 100
-          runAsGroup: 1000
-          {{- end }}
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         {{- with .Values.node.tessera.resources }}
         resources:
           {{- toYaml . | nindent 10 }}
@@ -248,18 +222,10 @@ spec:
       - name: {{ .Release.Name }}-besu
         image: {{ .Values.node.besu.image.repository }}:{{ .Values.node.besu.image.tag }}
         imagePullPolicy: {{ .Values.node.besu.image.pullPolicy }}
+        {{- with .Values.containerSecurityContext }}
         securityContext:
-          runAsNonRoot: true
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          seccompProfile:
-            type: RuntimeDefault
-          {{- if not .Values.global.openshift.enabled }}
-          runAsUser: 1000
-          runAsGroup: 1000
-          {{- end }}
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         {{- with .Values.node.besu.resources }}
         resources:
           {{- toYaml . | nindent 10 }}
