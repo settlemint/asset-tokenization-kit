@@ -199,6 +199,21 @@ extraEnvVarsSecret: ""
 
 # Legacy `initContainers` overrides remain supported for backward compatibility.
 initContainer:
+  # Copy artifacts init container settings
+  copyArtifacts:
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi
+    # Security context for the copy-artifacts container
+    # Can be overridden for different environments (e.g., OpenShift)
+    securityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+
   # Generic TCP check settings
   tcpCheck:
     enabled: true
