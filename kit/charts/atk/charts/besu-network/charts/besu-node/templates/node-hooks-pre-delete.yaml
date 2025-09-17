@@ -39,10 +39,18 @@ spec:
 {{- end }}
       restartPolicy: "OnFailure"
       {{- include "atk.imagePullSecrets" . | nindent 6 }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ template "besu-node.fullname" . }}-node-pre-delete-hook
           image: "{{ .Values.hooks.image.repository }}:{{ .Values.hooks.image.tag }}"
           imagePullPolicy: {{ .Values.hooks.image.pullPolicy }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with .Values.hooks.preDelete.resources }}
           resources:
 {{ toYaml . | nindent 12 }}

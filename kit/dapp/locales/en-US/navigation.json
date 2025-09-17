@@ -20,6 +20,7 @@
   "administration": "Administration",
   "platformSettings": "Platform Settings",
   "userManagement": "User Management",
+  "identityManagement": "Identity Management",
   "settings": {
     "assetTypes": {
       "title": "Asset Types",

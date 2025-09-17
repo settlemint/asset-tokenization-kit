@@ -13,7 +13,7 @@ import { fetchBond } from "../fetch/bond";
  * @param token - The token entity representing the bond
  */
 export function updateTotalDenominationAssetNeeded(token: Token): void {
-  const bond = fetchBond(Address.fromBytes(token.id));
+  const bond = fetchBond(Address.fromBytes(token.bond!));
   const denominationAsset = fetchToken(
     Address.fromBytes(bond.denominationAsset)
   );

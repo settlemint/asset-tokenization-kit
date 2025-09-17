@@ -34,8 +34,11 @@ spec:
         app.kubernetes.io/managed-by: helm
     spec:
       restartPolicy: Never
-      {{- include "atk.imagePullSecrets" . | nindent 6 }}
       serviceAccountName: {{ include "besu-genesis.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       volumes:
         - name: generated-config
           emptyDir: {}
@@ -66,15 +69,18 @@ spec:
           volumeMounts:
             - name: artifacts
               mountPath: /shared-artifacts
+          {{- with .Values.initContainerSecurityContext }}
           securityContext:
-            runAsUser: 1001
-            runAsGroup: 1001
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
 {{ end }}
       containers:
         - name: generate-genesis
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          {{- with .Values.containerSecurityContext }}
           securityContext:
-            runAsUser: 0
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- with .Values.initJob.resources }}
           resources:

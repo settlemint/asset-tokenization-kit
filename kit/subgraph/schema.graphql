@@ -799,6 +799,8 @@ type Token @entity(immutable: false) {
   stats: TokenStatsState @derivedFrom(field: "token")
   # Distribution statistics
   distributionStats: TokenDistributionStatsState @derivedFrom(field: "token")
+  # Denomination asset for bond
+  denominationAssetForBond: [TokenBond!]! @derivedFrom(field: "denominationAsset")
 }
 
 type TokenBalance @entity(immutable: false) {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
+import { getTotalValueInBaseCurrency } from "../utils/token-stats-test-utils";
 
 describe("SystemStats", () => {
   it("should fetch system stats aggregated by hour", async () => {
@@ -86,9 +87,20 @@ describe("SystemStats", () => {
           totalSupply
           basePriceClaim {
             id
-            values(where: { key: "amount" }) {
+            values {
               key
               value
+            }
+          }
+          bond {
+            faceValue
+            denominationAsset {
+              basePriceClaim {
+                values {
+                  key
+                  value
+                }
+              }
             }
           }
         }
@@ -97,15 +109,7 @@ describe("SystemStats", () => {
     );
     const tokenResponse = await theGraphClient.request(tokenQuery, {});
     const expectedTotalValue = tokenResponse.tokens.reduce((acc, token) => {
-      const basePrice = token.basePriceClaim?.values.find(
-        (value) => value.key === "amount"
-      )?.value;
-      if (!basePrice) {
-        return acc;
-      }
-
-      const basePriceParsed = Number(basePrice) / Math.pow(10, 18);
-      return acc + basePriceParsed * Number(token.totalSupply);
+      return acc + getTotalValueInBaseCurrency(token);
     }, 0);
 
     const statsQuery = theGraphGraphql(
@@ -119,7 +123,7 @@ describe("SystemStats", () => {
     const statsResponse = await theGraphClient.request(statsQuery, {});
     expect(
       Number(statsResponse?.systemStatsStates[0]?.totalValueInBaseCurrency)
-    ).toBeCloseTo(expectedTotalValue, 2);
+    ).toBeCloseTo(expectedTotalValue, 6);
   });
 
   it("should have processed all events leading to a price change", async () => {

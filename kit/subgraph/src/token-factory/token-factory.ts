@@ -64,7 +64,6 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
 
   if (event.params.interfaces.includes(InterfaceIds.ISMARTPausable)) {
     token.pausable = fetchPausable(event.params.tokenAddress).id;
-    token.save();
   }
   if (event.params.interfaces.includes(InterfaceIds.ISMARTBurnable)) {
     BurnableTemplate.create(event.params.tokenAddress);
@@ -74,27 +73,21 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   }
   if (event.params.interfaces.includes(InterfaceIds.ISMARTCollateral)) {
     token.collateral = fetchCollateral(event.params.tokenAddress).id;
-    token.save();
   }
   if (event.params.interfaces.includes(InterfaceIds.ISMARTCapped)) {
     token.capped = fetchCapped(event.params.tokenAddress).id;
-    token.save();
   }
   if (event.params.interfaces.includes(InterfaceIds.ISMARTYield)) {
     token.yield_ = fetchYield(event.params.tokenAddress).id;
-    token.save();
   }
   if (event.params.interfaces.includes(InterfaceIds.ISMARTRedeemable)) {
     token.redeemable = fetchRedeemable(event.params.tokenAddress).id;
-    token.save();
   }
   if (event.params.interfaces.includes(InterfaceIds.IATKBond)) {
     token.bond = fetchBond(event.params.tokenAddress).id;
-    token.save();
   }
   if (event.params.interfaces.includes(InterfaceIds.IATKFund)) {
     token.fund = fetchFund(event.params.tokenAddress).id;
-    token.save();
   }
 
   token.save();

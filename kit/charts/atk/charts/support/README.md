@@ -18,7 +18,7 @@ A Helm chart for the supporting components
 | file://./charts/postgresql | postgresql | * |
 | file://./charts/redis | redis | * |
 | https://kubernetes.github.io/ingress-nginx | ingress-nginx | 4.13.2 |
-| https://stakater.github.io/stakater-charts | reloader | 2.2.2 |
+| https://stakater.github.io/stakater-charts | reloader | 2.2.3 |
 
 ## Values
 

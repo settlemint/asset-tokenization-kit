@@ -1,6 +1,10 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import { AccountSchema } from "@/orpc/routes/account/routes/account.read.schema";
 import { IdentityCreateSchema } from "@/orpc/routes/system/identity/routes/identity.create.schema";
+import {
+  IdentityListInputSchema,
+  IdentityListOutputSchema,
+} from "@/orpc/routes/system/identity/routes/identity.list.schema";
 import { IdentityRegisterSchema } from "@/orpc/routes/system/identity/routes/identity.register.schema";
 import claimsContract from "@/orpc/routes/system/identity/claims/claims.contract";
 
@@ -32,8 +36,22 @@ const identityRegister = baseContract
   .input(IdentityRegisterSchema)
   .output(AccountSchema);
 
+const identityList = baseContract
+  .route({
+    method: "GET",
+    path: "/system/identity/list",
+    description:
+      "Retrieve a paginated list of blockchain identities with account metadata, claim counts, and registry association for administrative views.",
+    successDescription:
+      "Identities fetched successfully with pagination metadata and associated account information.",
+    tags: TAGS,
+  })
+  .input(IdentityListInputSchema)
+  .output(IdentityListOutputSchema);
+
 export const identityContract = {
   create: identityCreate,
   register: identityRegister,
+  list: identityList,
   claims: claimsContract,
 };

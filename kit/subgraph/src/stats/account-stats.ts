@@ -6,6 +6,8 @@ import {
   TokenBalance,
 } from "../../generated/schema";
 import { fetchAccount } from "../account/fetch/account";
+import { fetchBond } from "../token-assets/bond/fetch/bond";
+import { fetchToken } from "../token/fetch/token";
 import { getTokenBasePrice } from "../token/utils/token-utils";
 
 /**
@@ -56,10 +58,22 @@ export function updateAccountStatsForBalanceChange(
   balanceDelta: BigDecimal
 ): void {
   const state = fetchAccountStatsState(accountAddress);
-  const basePrice = getTokenBasePrice(token.basePriceClaim);
 
-  // Calculate value delta = balanceDelta * basePrice
-  const valueDelta = balanceDelta.times(basePrice);
+  let valueDelta = BigDecimal.zero();
+
+  // For bonds the value delta equals the face value times the price of the denomination asset
+  if (token.bond) {
+    const bond = fetchBond(Address.fromBytes(token.bond!));
+    const denominationAsset = fetchToken(
+      Address.fromBytes(bond.denominationAsset)
+    );
+    const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
+    valueDelta = balanceDelta.times(bond.faceValue).times(basePrice);
+  } else {
+    const basePrice = getTokenBasePrice(token.basePriceClaim);
+    // Calculate value delta = balanceDelta * basePric
+    valueDelta = balanceDelta.times(basePrice);
+  }
 
   // Update total value
   state.totalValueInBaseCurrency =

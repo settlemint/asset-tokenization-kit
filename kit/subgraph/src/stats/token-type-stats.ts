@@ -5,6 +5,8 @@ import {
   TokenTypeStatsState,
 } from "../../generated/schema";
 import { fetchSystem } from "../system/fetch/system";
+import { fetchBond } from "../token-assets/bond/fetch/bond";
+import { fetchToken } from "../token/fetch/token";
 import {
   getTokenBasePrice,
   getTokenSystemAddress,
@@ -25,8 +27,25 @@ export function updateTokenTypeStatsForTokenCreation(token: Token): void {
   state.count = state.count + 1;
 
   // Add initial value (0 if no supply yet)
-  const basePrice = getTokenBasePrice(token.basePriceClaim);
-  const initialValue = token.totalSupply.times(basePrice);
+  let initialValue = BigDecimal.zero();
+  // For bonds the value equals the face value times the price of the denomination asset
+  if (token.bond) {
+    const bond = fetchBond(Address.fromBytes(token.bond!));
+    if (bond.denominationAsset == Address.zero()) {
+      // Return early if the denomination asset is not set
+      // handleBondCreated sets the denomination asset and will trigger this function again
+      return;
+    }
+    const denominationAsset = fetchToken(
+      Address.fromBytes(bond.denominationAsset)
+    );
+    const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
+    initialValue = token.totalSupply.times(bond.faceValue).times(basePrice);
+  } else {
+    const basePrice = getTokenBasePrice(token.basePriceClaim);
+    initialValue = token.totalSupply.times(basePrice);
+  }
+
   state.totalValueInBaseCurrency =
     state.totalValueInBaseCurrency.plus(initialValue);
 
@@ -45,8 +64,20 @@ export function updateTokenTypeStatsForSupplyChange(
   token: Token,
   supplyDelta: BigDecimal
 ): void {
-  const basePrice = getTokenBasePrice(token.basePriceClaim);
-  const valueDelta = supplyDelta.times(basePrice);
+  let valueDelta = BigDecimal.zero();
+
+  // For bonds the value delta equals the face value times the price of the denomination asset
+  if (token.bond) {
+    const bond = fetchBond(Address.fromBytes(token.bond!));
+    const denominationAsset = fetchToken(
+      Address.fromBytes(bond.denominationAsset)
+    );
+    const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
+    valueDelta = supplyDelta.times(bond.faceValue).times(basePrice);
+  } else {
+    const basePrice = getTokenBasePrice(token.basePriceClaim);
+    valueDelta = supplyDelta.times(basePrice);
+  }
 
   if (valueDelta.equals(BigDecimal.zero())) {
     return;
@@ -84,6 +115,45 @@ export function updateTokenTypeStatsForPriceChange(
   oldPrice: BigDecimal,
   newPrice: BigDecimal
 ): void {
+  // Ignore bonds as there value is tracked by its denomination asset
+  if (token.bond) {
+    return;
+  }
+
+  // Check if the token is a denomination asset for a bond
+  // For bonds the value equals the face value times the price of the denomination asset
+  const bonds = token.denominationAssetForBond.load();
+  let valueDeltaBonds = BigDecimal.zero();
+  for (let i = 0; i < bonds.length; i++) {
+    const bondToken = fetchToken(Address.fromBytes(bonds[i].id));
+    const newPriceBond = newPrice.times(bonds[i].faceValue);
+    const oldPriceBond = oldPrice.times(bonds[i].faceValue);
+    const valueDeltaBond = newPriceBond
+      .minus(oldPriceBond)
+      .times(bondToken.totalSupply);
+    valueDeltaBonds = valueDeltaBonds.plus(valueDeltaBond);
+  }
+  if (!valueDeltaBonds.equals(BigDecimal.zero())) {
+    const bondToken = fetchToken(Address.fromBytes(bonds[0].id));
+    const stateForBond = fetchTokenTypeStatsState(bondToken);
+    stateForBond.totalValueInBaseCurrency =
+      stateForBond.totalValueInBaseCurrency.plus(valueDeltaBonds);
+    stateForBond.percentageOfTotalSupply = getPercentageOfTotalSupply(
+      stateForBond.totalValueInBaseCurrency,
+      totalSystemValueInBaseCurrency
+    );
+    stateForBond.save();
+
+    // Update the percentage of total supply for all other token types in the system
+    updateTotalSupplyPercentageForOtherTypes(
+      stateForBond,
+      totalSystemValueInBaseCurrency
+    );
+
+    // Track in timeseries
+    trackTokenTypeStats(stateForBond);
+  }
+
   const valueDelta = newPrice.minus(oldPrice).times(token.totalSupply);
 
   if (valueDelta.equals(BigDecimal.zero())) {

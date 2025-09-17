@@ -400,6 +400,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | support.ingress-nginx.controller.image.repository | string | `"registry.k8s.io/ingress-nginx/controller"` |  |
 | support.ingress-nginx.controller.image.tag | string | `"v1.13.2"` |  |
 | support.ingress-nginx.controller.resources | object | `{}` |  |
+| support.ingress-nginx.enabled | bool | `true` |  |
 | support.ingress-nginx.replicaCount | int | `1` |  |
 | support.minio.enabled | bool | `true` |  |
 | support.minio.image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -440,7 +441,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | txsigner.image.pullPolicy | string | `"IfNotPresent"` |  |
 | txsigner.image.registry | string | `"ghcr.io"` |  |
 | txsigner.image.repository | string | `"settlemint/btp-signer"` |  |
-| txsigner.image.tag | string | `"7.15.12"` |  |
+| txsigner.image.tag | string | `"7.15.13"` |  |
 | txsigner.ingress.hostname | string | `"txsigner.k8s.orb.local"` |  |
 | txsigner.initContainer.tcpCheck.dependencies[0].endpoint | string | `"postgresql:5432"` |  |
 | txsigner.initContainer.tcpCheck.dependencies[0].name | string | `"postgresql"` |  |
