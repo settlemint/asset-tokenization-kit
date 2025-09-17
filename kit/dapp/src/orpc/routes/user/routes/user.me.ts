@@ -14,13 +14,13 @@ import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-gr
 import { getSystemContext } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
-import { identityRead } from "@/orpc/routes/system/identity/routes/identity.read";
+import { identitySearch } from "@/orpc/routes/system/identity/routes/identity.search";
 import { AssetFactoryTypeIdEnum } from "@atk/zod/asset-types";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { AddonFactoryTypeIdEnum } from "@atk/zod/src/addon-types";
 import type { VerificationType } from "@atk/zod/verification-type";
 import { VerificationType as VerificationTypeEnum } from "@atk/zod/verification-type";
-import { call, ORPCError } from "@orpc/server";
+import { call } from "@orpc/server";
 import { eq } from "drizzle-orm";
 import { zeroAddress } from "viem";
 
@@ -100,15 +100,7 @@ export const me = authRouter.user.me
         },
         { context }
       ).catch(() => "false"), // Default to false if not set
-      // TODO: @snigdha920 replace with an identity.search because read also fetches all the claims so it can be very big
-      call(identityRead, { account: authUser.wallet }, { context }).catch(
-        (error: unknown) => {
-          if (error instanceof ORPCError && error.status === 404) {
-            return null;
-          }
-          throw error;
-        }
-      ),
+      call(identitySearch, { account: authUser.wallet }, { context }),
     ]);
 
     const { kyc } = userQueryResult ?? {};

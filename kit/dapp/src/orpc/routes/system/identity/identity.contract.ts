@@ -5,6 +5,10 @@ import {
   IdentityReadSchema,
   IdentitySchema,
 } from "@/orpc/routes/system/identity/routes/identity.read.schema";
+import {
+  IdentitySearchSchema,
+  IdentitySearchResultSchema,
+} from "@/orpc/routes/system/identity/routes/identity.search.schema";
 import { IdentityRegisterSchema } from "@/orpc/routes/system/identity/routes/identity.register.schema";
 
 const TAGS = ["system", "identity"];
@@ -46,6 +50,17 @@ const identityRead = baseContract
   .input(IdentityReadSchema)
   .output(IdentitySchema);
 
+const identitySearch = baseContract
+  .route({
+    method: "POST",
+    path: "/system/identity/search",
+    description: "Search for basic identity information without claims by account address or identity contract address",
+    successDescription: "Identity search completed successfully",
+    tags: TAGS,
+  })
+  .input(IdentitySearchSchema)
+  .output(IdentitySearchResultSchema);
+
 const identityMe = baseContract
   .route({
     method: "GET",
@@ -62,6 +77,7 @@ export const identityContract = {
   create: identityCreate,
   register: identityRegister,
   read: identityRead,
+  search: identitySearch,
   me: identityMe,
   claims: claimsContract,
 };

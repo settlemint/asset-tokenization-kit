@@ -55,22 +55,7 @@ export const IdentityResponseSchema = z.object({
         account: z.object({
           id: ethereumAddress,
         }),
-        claims: z.array(
-          z.object({
-            id: z.string(),
-            name: z.string(),
-            revoked: z.boolean(),
-            issuer: z.object({
-              id: ethereumAddress,
-            }),
-            values: z.array(
-              z.object({
-                key: z.string(),
-                value: z.string(),
-              })
-            ),
-          })
-        ),
+        claims: z.array(identityClaim),
         registered: z
           .array(
             z.object({
