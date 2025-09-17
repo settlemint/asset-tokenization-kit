@@ -264,6 +264,16 @@ erpc:
     seccompProfile:
       type: RuntimeDefault
 
+  initContainerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: null
+    runAsGroup: null
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    seccompProfile:
+      type: RuntimeDefault
 
 # DApp security contexts for OpenShift
 dapp:
