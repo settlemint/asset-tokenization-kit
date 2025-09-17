@@ -1,4 +1,5 @@
 import type { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { IdentitySchema } from "@/orpc/routes/system/identity/routes/identity.read.schema";
 import {
   accessControlRoles,
   accessControlSchema,
@@ -52,31 +53,7 @@ export const RawTokenSchema = z.object({
     .boolean()
     .describe("Whether the token implements ERC3643"),
   implementsSMART: z.boolean().describe("Whether the token implements SMART"),
-  // account: z
-  //   .object({
-  //     identity: z
-  //       .object({
-  //         id: ethereumAddress.describe("The identity contract address"),
-  //         claims: z
-  //           .array(
-  //             z.object({
-  //               revoked: z.boolean().describe("Whether the claim is revoked"),
-  //               name: z.string().describe("The name of the claim"),
-  //               values: z.array(
-  //                 z.object({
-  //                   key: z.string().describe("The key of the claim value"),
-  //                   value: z.string().describe("The value of the claim value"),
-  //                 })
-  //               ),
-  //             })
-  //           )
-  //           .describe("The claims of the identity")
-  //           .optional(),
-  //       })
-  //       .nullable()
-  //       .describe("The identity associated with this token"),
-  //   })
-  //   .describe("The account associated with this token"),
+  identity: IdentitySchema.optional().describe("Identity associated with this token"),
   pausable: z.object({
     paused: z.boolean().describe("Whether the token is paused"),
   }),

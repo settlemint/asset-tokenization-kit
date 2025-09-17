@@ -3,21 +3,25 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { Context } from "@/orpc/context/context";
 import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { baseRouter } from "@/orpc/procedures/base.router";
-import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
+import { IdentityResponseSchema } from "@/orpc/routes/system/identity/routes/identity.read.schema";
+import {
+  TokenSchema,
+  type Token,
+} from "@/orpc/routes/token/routes/token.read.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { isEthereumAddress } from "@atk/zod/ethereum-address";
 import { satisfiesRoleRequirement } from "@atk/zod/role-requirement";
 import { createLogger } from "@settlemint/sdk-utils/logging";
+import countries from "i18n-iso-countries";
 import z from "zod";
 
 const logger = createLogger();
 
 const READ_TOKEN_QUERY = theGraphGraphql(
   `
-  query ReadTokenQuery($id: ID!) {
+  query ReadTokenQuery($id: ID!, $identityFactory: String!) {
     token(id: $id) {
-      # TODO: fetch identity info from the system
       id
       type
       createdAt
@@ -28,6 +32,29 @@ const READ_TOKEN_QUERY = theGraphGraphql(
       extensions
       implementsERC3643
       implementsSMART
+      account {
+        identities(
+          where: { identityFactory: $identityFactory }
+          first: 1
+        ) {
+          id
+          claims {
+            id
+            name
+            revoked
+            issuer {
+              id
+            }
+            values {
+              key
+              value
+            }
+          }
+          registered(first: 1) {
+            country
+          }
+        }
+      }
       pausable {
         paused
       }
@@ -93,7 +120,7 @@ export const tokenMiddleware = baseRouter.middleware<
   unknown
 >(async ({ next, context, errors }, input) => {
   // Always fetch fresh token data - no caching
-  const { auth, theGraphClient } = context;
+  const { auth, system, theGraphClient } = context;
 
   // Early authorization check before making expensive queries
   if (!auth?.user.wallet) {
@@ -106,6 +133,12 @@ export const tokenMiddleware = baseRouter.middleware<
   if (!theGraphClient) {
     throw errors.INTERNAL_SERVER_ERROR({
       message: "theGraphMiddleware should be called before tokenMiddleware",
+    });
+  }
+
+  if (!system?.identityFactory?.id) {
+    throw errors.INTERNAL_SERVER_ERROR({
+      message: "systemMiddleware should be called before tokenMiddleware",
     });
   }
 
@@ -124,18 +157,38 @@ export const tokenMiddleware = baseRouter.middleware<
   const result = await theGraphClient.query(READ_TOKEN_QUERY, {
     input: {
       id: tokenAddress,
+      identityFactory: system.identityFactory.id,
     },
     output: z.object({
-      token: TokenSchema,
+      token: TokenSchema.omit({ identity: true }).extend({
+        account: IdentityResponseSchema.optional(),
+      }),
     }),
   });
 
   const token = result.token;
+  const identity = token.account?.identities?.[0];
 
   const userRoles = mapUserRoles(auth.user.wallet, token.accessControl);
 
-  const tokenContext = TokenSchema.parse({
+  const tokenContextResult: Token = {
     ...token,
+    identity: identity
+      ? {
+          id: identity.id,
+          account: identity.account.id,
+          claims: identity.claims,
+          registered: identity.registered?.[0]
+            ? {
+                isRegistered: true,
+                country:
+                  countries.numericToAlpha2(
+                    String(identity.registered[0].country)
+                  ) ?? "",
+              }
+            : undefined,
+        }
+      : undefined,
     userPermissions: {
       roles: userRoles,
       // TODO: implement logic which checks if the user is allowed to interact with the token
@@ -187,7 +240,9 @@ export const tokenMiddleware = baseRouter.middleware<
         return initialActions;
       })(),
     },
-  });
+  };
+
+  const tokenContext = TokenSchema.parse(tokenContextResult);
 
   return next({
     context: {
