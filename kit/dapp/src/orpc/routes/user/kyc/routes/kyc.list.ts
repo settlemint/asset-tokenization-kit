@@ -1,11 +1,13 @@
 import { kycProfiles } from "@/lib/db/schema";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { asc, desc, ilike, or, sql, type AnyColumn } from "drizzle-orm";
 
 export const list = authRouter.user.kyc.list
+  .use(systemMiddleware)
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.kycList,

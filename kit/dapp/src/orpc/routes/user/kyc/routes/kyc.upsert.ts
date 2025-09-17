@@ -1,6 +1,7 @@
 import { kycProfiles } from "@/lib/db/schema";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { generateId } from "better-auth";
@@ -8,6 +9,7 @@ import { sql } from "drizzle-orm";
 import { KycUpsertInputSchema } from "./kyc.upsert.schema";
 
 export const upsert = authRouter.user.kyc.upsert
+  .use(systemMiddleware)
   .use(
     blockchainPermissionsMiddleware<typeof KycUpsertInputSchema>({
       requiredRoles: SYSTEM_PERMISSIONS.kycUpsert,

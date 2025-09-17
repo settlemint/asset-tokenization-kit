@@ -1,7 +1,11 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { AccountResponseSchema } from "@/orpc/routes/account/routes/account.read.schema";
+import {
+  AccountResponseSchema,
+  type AccountReadSchema,
+} from "@/orpc/routes/account/routes/account.read.schema";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import countries from "i18n-iso-countries";
 
@@ -37,11 +41,15 @@ const READ_ACCOUNT_QUERY = theGraphGraphql(`
  *
  */
 export const read = authRouter.account.read
+  .use(systemMiddleware)
   .use(
-    blockchainPermissionsMiddleware({
+    blockchainPermissionsMiddleware<typeof AccountReadSchema>({
       requiredRoles: SYSTEM_PERMISSIONS.accountRead,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
+      },
+      alwaysAllowIf: ({ auth }, { wallet }) => {
+        return wallet === auth?.user.wallet;
       },
     })
   )

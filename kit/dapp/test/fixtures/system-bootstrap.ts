@@ -14,8 +14,8 @@ import {
   signInWithUser,
 } from "./user";
 
-const SYSTEM_MANAGEMENT_REQUIRED_ROLES =
-  extractRequiredRoles(SYSTEM_PERMISSIONS);
+const { userSearch: _, ...otherSystemRoles } = SYSTEM_PERMISSIONS;
+const SYSTEM_MANAGEMENT_REQUIRED_ROLES = extractRequiredRoles(otherSystemRoles);
 
 const logger = createLogger({ level: "info" });
 

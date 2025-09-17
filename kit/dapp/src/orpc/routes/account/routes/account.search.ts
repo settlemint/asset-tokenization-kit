@@ -1,5 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { isAddress } from "viem";
@@ -16,6 +17,7 @@ const SEARCH_ACCOUNT_QUERY = theGraphGraphql(`
 `);
 
 export const search = authRouter.account.search
+  .use(systemMiddleware)
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.accountSearch,

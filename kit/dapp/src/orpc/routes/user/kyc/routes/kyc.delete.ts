@@ -1,12 +1,14 @@
 import { kycProfiles } from "@/lib/db/schema";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { eq } from "drizzle-orm";
 import { KycDeleteInputSchema } from "./kyc.delete.schema";
 
 export const remove = authRouter.user.kyc.remove
+  .use(systemMiddleware)
   .use(
     blockchainPermissionsMiddleware<typeof KycDeleteInputSchema>({
       requiredRoles: SYSTEM_PERMISSIONS.kycDelete,
