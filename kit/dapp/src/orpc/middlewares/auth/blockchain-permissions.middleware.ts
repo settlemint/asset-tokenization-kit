@@ -36,7 +36,10 @@ export const blockchainPermissionsMiddleware = <InputSchema extends z.ZodType>({
       });
     }
 
-    if (typeof alwaysAllowIf === "function" && alwaysAllowIf(context, input as z.infer<InputSchema>)) {
+    if (
+      typeof alwaysAllowIf === "function" &&
+      alwaysAllowIf(context, input as z.infer<InputSchema>)
+    ) {
       return next();
     }
 

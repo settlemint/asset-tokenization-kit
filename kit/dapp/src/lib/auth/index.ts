@@ -229,7 +229,7 @@ const options = {
             return {
               data: {
                 ...user,
-                role: firstUser ? "admin" : "investor",
+                role: firstUser ? "admin" : "user",
                 wallet: zeroAddress,
               },
             };
@@ -346,7 +346,7 @@ const getAuthConfig = serverOnly(() => {
                 data: {
                   ...user,
                   wallet: zeroAddress,
-                  role: firstUser ? "investor" : "admin",
+                  role: firstUser ? "user" : "admin",
                 },
               };
             } catch (error) {

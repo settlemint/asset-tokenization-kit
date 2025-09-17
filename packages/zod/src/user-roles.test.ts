@@ -124,7 +124,7 @@ describe("isUserRole", () => {
   });
 
   it("should handle undefined by returning true (defaults to investor)", () => {
-    // The userRoles schema has a default value of "investor" for undefined
+    // The userRoles schema has a default value of "user" for undefined
     expect(isUserRole(undefined)).toBe(true);
   });
 

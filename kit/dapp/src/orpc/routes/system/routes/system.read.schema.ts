@@ -208,12 +208,8 @@ export const SystemSchema = z.object({
               trustedIssuerUpdate: z
                 .boolean()
                 .describe("Whether the user can update trusted issuers"),
-              userList: z
-                .boolean()
-                .describe("Whether the user can list users"),
-              userRead: z
-                .boolean()
-                .describe("Whether the user can read users"),
+              userList: z.boolean().describe("Whether the user can list users"),
+              userRead: z.boolean().describe("Whether the user can read users"),
               userSearch: z
                 .boolean()
                 .describe("Whether the user can search users"),
