@@ -87,35 +87,23 @@ tolerations: []
 
 # -- Pod Security Context configuration
 podSecurityContext:
-  # -- Enabled Portal pods' Security Context
-  enabled: false
-  # -- Set Portal pod's Security Context fsGroup
   fsGroup: 1001
-  # -- Set kernel settings using the sysctl interface
-  sysctls: []
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
 
 # -- Container Security Context configuration
 containerSecurityContext:
-  # -- Enable container Security Context
-  enabled: false
-  # -- Set container's Security Context runAsUser
   runAsUser: 1001
-  # -- Set container's Security Context runAsGroup
   runAsGroup: 1001
-  # -- Set container's Security Context allowPrivilegeEscalation
-  allowPrivilegeEscalation: false
-  # -- Set container's Security Context readOnlyRootFilesystem
-  readOnlyRootFilesystem: false
-  # -- Set container's Security Context runAsNonRoot
   runAsNonRoot: true
-  # -- Linux capabilities configuration
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
   capabilities:
-    # -- Set container's Security Context drop capabilities
-    drop: ["ALL"]
-  # -- Seccomp profile configuration
+    drop:
+      - ALL
   seccompProfile:
-    # -- Set container's Security Context seccomp profile
-    type: "RuntimeDefault"
+    type: RuntimeDefault
 
 # -- Portal containers resource requests and limits
 resources: {}

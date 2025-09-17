@@ -31,39 +31,18 @@ spec:
         {{- end }}
     spec:
       {{- include "atk.common.imagePullSecrets" . | nindent 6 }}
+      {{- with .Values.podSecurityContext }}
       securityContext:
-        {{- if .Values.global.openshift.enabled }}
-        fsGroup: {{ .Values.global.openshift.fsGroup | default 1000640000 }}
-        runAsNonRoot: true
-        seccompProfile:
-          type: RuntimeDefault
-        {{- else }}
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
-        seccompProfile:
-          type: RuntimeDefault
-        {{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: redis
           image: {{ include "redis.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.containerSecurityContext }}
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-              - ALL
-            runAsNonRoot: true
-            seccompProfile:
-              type: RuntimeDefault
-            {{- if not .Values.global.openshift.enabled }}
-            {{- with .Values.containerSecurityContext }}
-            {{- if .runAsUser }}
-            runAsUser: {{ .runAsUser }}
-            {{- end }}
-            {{- if .runAsGroup }}
-            runAsGroup: {{ .runAsGroup }}
-            {{- end }}
-            {{- end }}
-            {{- end }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           command:
             - redis-server
             - /usr/local/etc/redis/redis.conf

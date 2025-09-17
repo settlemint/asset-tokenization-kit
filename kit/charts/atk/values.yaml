@@ -670,6 +670,25 @@ support:
       limits:
         memory: "256Mi"
         cpu: "200m"
+    # Pod security context
+    podSecurityContext:
+      fsGroup: 999
+      runAsNonRoot: true
+      runAsUser: 999
+      seccompProfile:
+        type: RuntimeDefault
+    # Container security context
+    containerSecurityContext:
+      runAsUser: 999
+      runAsGroup: 999
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: false
+      seccompProfile:
+        type: RuntimeDefault
 
   postgresql:
     enabled: true
@@ -677,6 +696,23 @@ support:
       registry: docker.io
       repository: postgres
       tag: "17.6-alpine"
+    # Pod security context
+    podSecurityContext:
+      fsGroup: 999
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    # Container security context
+    securityContext:
+      runAsUser: 999
+      runAsGroup: 999
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
 
 observability:
   enabled: true

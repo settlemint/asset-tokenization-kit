@@ -48,14 +48,10 @@ spec:
         - name: {{ .Values.initContainer.graphQLCheck.name | default "wait-for-graphql" }}
           image: "{{ .Values.initContainer.graphQLCheck.image.registry }}/{{ .Values.initContainer.graphQLCheck.image.repository }}:{{ .Values.initContainer.graphQLCheck.image.tag }}"
           imagePullPolicy: {{ .Values.initContainer.graphQLCheck.image.pullPolicy }}
+          {{- with .Values.initContainerSecurityContext }}
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-              - ALL
-            runAsNonRoot: true
-            seccompProfile:
-              type: RuntimeDefault
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           command:
             - /bin/sh
             - -c
@@ -109,8 +105,10 @@ spec:
 
       containers:
         - name: {{ .Chart.Name }}
+          {{- with .Values.securityContext }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if .Values.secretEnv }}
