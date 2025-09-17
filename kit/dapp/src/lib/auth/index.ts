@@ -33,8 +33,7 @@ import { serverOnly } from "@tanstack/react-start";
 import {
   betterAuth,
   type BetterAuthOptions,
-  type InferUser,
-  type User,
+  type InferUser
 } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { APIError } from "better-auth/api";
@@ -226,10 +225,11 @@ const options = {
         before: async (user) => {
           try {
             const firstUser = await db.query.user.findFirst();
+            const isFirstUSer = !firstUser;
             return {
               data: {
                 ...user,
-                role: firstUser ? "admin" : "user",
+                role: isFirstUSer ? "admin" : "user",
                 wallet: zeroAddress,
               },
             };
@@ -322,6 +322,28 @@ const options = {
      * React Start cookie integration for SSR support.
      */
     reactStartCookies(),
+
+    /**
+     * Custom session plugin to add KYC information to the user.
+     */
+    customSession(async ({ user, session }): Promise<{
+      user: SessionUser;
+      session: Parameters<Parameters<typeof customSession>[0]>[0]["session"];
+    }> => {
+      const kyc = await db.query.kycProfiles.findFirst({
+        where: eq(kycProfiles.userId, user.id),
+      });
+      return {
+        user: {
+          ...user,
+          name:
+            kyc?.firstName && kyc.lastName
+              ? `${kyc.firstName} ${kyc.lastName}`
+              : user.name,
+        } as SessionUser,
+        session,
+      } ;
+    }),
   ],
 } satisfies BetterAuthOptions;
 
@@ -332,56 +354,7 @@ const options = {
  * preventing sensitive configuration like secrets from being exposed to the client.
  */
 const getAuthConfig = serverOnly(() => {
-  // Override the databaseHooks to add wallet creation
-  const enhancedOptions = {
-    ...options,
-    databaseHooks: {
-      ...options.databaseHooks,
-      user: {
-        create: {
-          before: async (user: User) => {
-            try {
-              const firstUser = await db.query.user.findFirst();
-              return {
-                data: {
-                  ...user,
-                  wallet: zeroAddress,
-                  role: firstUser ? "user" : "admin",
-                },
-              };
-            } catch (error) {
-              throw new APIError("BAD_REQUEST", {
-                message: "Failed to set the user role",
-                cause: error instanceof Error ? error : undefined,
-              });
-            }
-          },
-        },
-      },
-    },
-  };
-
-  return betterAuth({
-    ...enhancedOptions,
-    plugins: [
-      ...enhancedOptions.plugins,
-      customSession(async ({ user, session }) => {
-        const kyc = await db.query.kycProfiles.findFirst({
-          where: eq(kycProfiles.userId, user.id),
-        });
-        return {
-          user: {
-            ...user,
-            name:
-              kyc?.firstName && kyc.lastName
-                ? `${kyc.firstName} ${kyc.lastName}`
-                : user.name,
-          } as SessionUser,
-          session,
-        };
-      }, enhancedOptions),
-    ],
-  });
+  return betterAuth(options);
 });
 
 /**
