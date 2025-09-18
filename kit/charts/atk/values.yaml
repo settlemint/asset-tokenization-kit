@@ -85,71 +85,32 @@ global:
 network:
   enabled: true
   network-bootstrapper:
-    podSecurityContext:
-      fsGroup: 101337
-      fsGroupChangePolicy: Always
-      runAsGroup: 101337
-      runAsUser: 101337
-      runAsNonRoot: true
-      seccompProfile:
-        type: RuntimeDefault
-    securityContext:
-      runAsNonRoot: true
-      runAsUser: 101337
-      runAsGroup: 101337
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-        - ALL
-      seccompProfile:
-        type: RuntimeDefault
     settings:
       chainId: "53771311147"
   network-nodes:
-    podSecurityContext:
-      fsGroup: 101337
-      fsGroupChangePolicy: Always
-      runAsGroup: 101337
-      runAsUser: 101337
-      runAsNonRoot: true
-      seccompProfile:
-        type: RuntimeDefault
-    securityContext:
-      runAsNonRoot: true
-      runAsUser: 101337
-      runAsGroup: 101337
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-        - ALL
-      seccompProfile:
-        type: RuntimeDefault
     persistence:
-      enabled: true
       size: 20Gi
 
 erpc:
   enabled: true
   image:
     registry: ghcr.io
-    repository: erpc/erpc
-    tag: "0.0.56"
-    pullPolicy: IfNotPresent
   # Init containers
   initContainers:
     waitforit:
       image:
         repository: ghcr.io/settlemint/btp-waitforit
-        tag: "v7.7.10"
-        pullPolicy: IfNotPresent
   # Test container
   test:
     image:
       repository: docker.io/busybox
-      tag: "1.37"
-      pullPolicy: IfNotPresent
-  resources: {}
-  # Init containers
+  # resources:
+  #   limits:
+  #     cpu: 100m
+  #     memory: 128Mi
+  #   requests:
+  #     cpu: 100m
+  #     memory: 128Mi
   ingress:
     enabled: true
     className: "atk-nginx"
@@ -327,8 +288,6 @@ graph-node:
   enabled: true
   image:
     repository: docker.io/graphprotocol/graph-node
-    tag: "v0.40.2"
-    pullPolicy: IfNotPresent
   podAnnotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8040"
@@ -336,8 +295,6 @@ graph-node:
   initContainer:
     image:
       repository: docker.io/kubesphere/kubectl
-      tag: "v1.33.4"
-      pullPolicy: IfNotPresent
     tcpCheck:
       enabled: true
       image:
@@ -569,7 +526,7 @@ observability:
 
   # https://github.com/kubernetes-sigs/metrics-server/blob/master/charts/metrics-server/values.yaml
   metrics-server:
-    enabled: false
+    enabled: true
     resources: {}
     image:
       repository: registry.k8s.io/metrics-server/metrics-server
