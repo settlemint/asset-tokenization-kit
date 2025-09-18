@@ -28,7 +28,7 @@ spec:
     - host: {{ .Values.blockscout.ingress.hostname | quote }}
       http:
         paths:
-          - path: /
+          - path: /api
             pathType: Prefix
             backend:
               service:

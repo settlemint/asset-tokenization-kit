@@ -103,6 +103,12 @@ spec:
           args:
             - -c
             - bin/blockscout start
+          {{- else }}
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - bin/blockscout start
           {{- end }}
           ports:
             - name: http
@@ -111,7 +117,7 @@ spec:
           {{- if .Values.blockscout.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
-              path: /api/v1/health/liveness
+              path: /api/health/liveness
               port: http
               scheme: HTTP
             initialDelaySeconds: {{ .Values.blockscout.livenessProbe.initialDelaySeconds }}
@@ -123,7 +129,7 @@ spec:
           {{- if .Values.blockscout.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
-              path: /api/v1/health/readiness
+              path: /api/health/readiness
               port: http
               scheme: HTTP
             initialDelaySeconds: {{ .Values.blockscout.readinessProbe.initialDelaySeconds }}
