@@ -45,9 +45,7 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
     event IdentityStored(address indexed investorAddress, IIdentity indexed identity, uint16 indexed country);
     event IdentityUnstored(address indexed investorAddress, IIdentity indexed identity);
     event IdentityModified(
-        address indexed investorAddress,
-        IIdentity indexed oldIdentity,
-        IIdentity indexed newIdentity
+        address indexed investorAddress, IIdentity indexed oldIdentity, IIdentity indexed newIdentity
     );
     event CountryModified(address indexed _identityWallet, uint16 indexed _country);
     event IdentityRegistryBound(address indexed identityRegistry);

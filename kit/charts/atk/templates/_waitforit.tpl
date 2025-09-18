@@ -18,7 +18,14 @@ Usage: include "atk.waitforit.containers" (dict "context" $ "config" <values>)
 {{- $tag := $image.tag | default "v7.7.10" -}}
 {{- $pullPolicy := $image.pullPolicy | default "IfNotPresent" -}}
 {{- $timeout := $cfg.timeout | default 120 -}}
-{{- $resources := $cfg.resources | default (dict) -}}
+{{- $rawResources := $cfg.resources | default (dict) -}}
+{{- $resourceKeys := list "limits" "requests" "claims" -}}
+{{- $resources := dict -}}
+{{- range $resourceKeys }}
+  {{- if hasKey $rawResources . }}
+    {{- $_ := set $resources . (index $rawResources .) -}}
+  {{- end }}
+{{- end -}}
 {{- range $deps }}
 - name: wait-for-{{ .name }}
   image: "{{ $repository }}:{{ $tag }}"
@@ -35,7 +42,7 @@ Usage: include "atk.waitforit.containers" (dict "context" $ "config" <values>)
     - "{{ tpl .endpoint $ctx }}"
     - -t
     - "{{ $timeout }}"
-  {{- if $resources }}
+  {{- if gt (len $resources) 0 }}
   resources:
 {{ toYaml $resources | nindent 4 }}
   {{- end }}

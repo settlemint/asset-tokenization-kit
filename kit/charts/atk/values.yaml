@@ -16,22 +16,22 @@ global:
       pullPolicy: IfNotPresent
   chainId: "53771311147"
   chainName: "ATK"
-  securityContexts:
-    pod:
-      fsGroup: 101337
-      runAsNonRoot: true
-      seccompProfile:
-        type: RuntimeDefault
-    container:
-      runAsNonRoot: true
-      runAsUser: 101337
-      runAsGroup: 101337
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      seccompProfile:
-        type: RuntimeDefault
+  # securityContexts:
+  #   pod:
+  #     fsGroup: 101337
+  #     runAsNonRoot: true
+  #     seccompProfile:
+  #       type: RuntimeDefault
+  #   container:
+  #     runAsNonRoot: true
+  #     runAsUser: 101337
+  #     runAsGroup: 101337
+  #     allowPrivilegeEscalation: false
+  #     capabilities:
+  #       drop:
+  #         - ALL
+  #     seccompProfile:
+  #       type: RuntimeDefault
   datastores:
     default:
       redis:
@@ -52,16 +52,6 @@ global:
       redis:
         cacheDb: 0
         sharedStateDb: 1
-    hasura:
-      postgresql:
-        database: "hasura"
-        username: "hasura"
-        password: "atk"
-      redis:
-        primary:
-          db: 2
-        rateLimit:
-          db: 3
     portal:
       postgresql:
         database: "portal"
@@ -78,6 +68,11 @@ global:
       postgresql:
         database: "thegraph"
         username: "thegraph"
+        password: "atk"
+    blockscout:
+      postgresql:
+        database: "blockscout"
+        username: "blockscout"
         password: "atk"
 
 network:
@@ -119,95 +114,27 @@ erpc:
         paths:
           - path: /
             pathType: ImplementationSpecific
-
   openShiftRoute:
     enabled: false
     host: rpc.k8s.orb.local
 
 blockscout:
   enabled: true
-  postgresql:
-    host: "postgresql"
-    port: 5432
-    database: "blockscout"
-    username: "blockscout"
-    password: "atk"
-    sslMode: "disable"
-    endpoint: "postgresql:5432"
-    url: "postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"
-  # Direct configuration for local blockscout chart
-  fullnameOverride: blockscout
-  podAnnotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "4000"
-    prometheus.io/path: "/metrics"
   blockscout:
     image:
       repository: ghcr.io/blockscout/blockscout
-      tag: "9.0.2"
-      pullPolicy: IfNotPresent
-    # Pod security context
-    podSecurityContext:
-      fsGroup: 1001
-      runAsUser: 1001
-      runAsGroup: 1001
-      runAsNonRoot: true
-    # Container security context
-    containerSecurityContext:
-      runAsUser: 1001
-      runAsGroup: 1001
-      runAsNonRoot: true
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      readOnlyRootFilesystem: false
-    # Init container security context
-    initContainerSecurityContext:
-      runAsUser: 1001
-      runAsGroup: 1001
-      runAsNonRoot: true
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      readOnlyRootFilesystem: false
-    init:
-      enabled: true
-      command:
-        - /bin/sh
-      args:
-        - -c
-        - |
-          echo "Running database migrations..."
-          bin/blockscout eval "Elixir.Explorer.ReleaseTasks.create_and_migrate()"
     initContainer:
       tcpCheck:
-        enabled: true
         image:
           repository: ghcr.io/settlemint/btp-waitforit
-          tag: v7.7.10
-          pullPolicy: IfNotPresent
-        timeout: 120
-        resources:
-          limits:
-            cpu: 100m
-            memory: 64Mi
-          requests:
-            cpu: 10m
-            memory: 32Mi
-        dependencies:
-          - name: postgresql
-            endpoint: "postgresql:5432"
-    extraInitContainers: []
     ingress:
       enabled: true
       className: "atk-nginx"
       hostname: explorer.k8s.orb.local
+    openShiftRoute:
+      enabled: false
+      host: explorer.k8s.orb.local
     env:
-      DATABASE_URL: "postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"
-      ETHEREUM_JSONRPC_HTTP_URL: http://erpc:4000/settlemint/evm/53771311147
-      ETHEREUM_JSONRPC_TRACE_URL: http://erpc:4000/settlemint/evm/53771311147
       API_URL: https://explorer.k8s.orb.local
       WEBAPP_URL: https://explorer.k8s.orb.local
     resources: {}
@@ -219,54 +146,17 @@ blockscout:
       hostname: explorer.k8s.orb.local
     image:
       repository: ghcr.io/blockscout/frontend
-      tag: "v2.3.3"
-      pullPolicy: IfNotPresent
-    # Pod security context
-    podSecurityContext:
-      fsGroup: 1001
-      runAsUser: 1001
-      runAsGroup: 1001
-      runAsNonRoot: true
-    # Container security context
-    containerSecurityContext:
-      runAsUser: 1001
-      runAsGroup: 1001
-      runAsNonRoot: true
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      readOnlyRootFilesystem: false
 
 graph-node:
   enabled: true
   image:
     repository: docker.io/graphprotocol/graph-node
-  podAnnotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "8040"
-    prometheus.io/path: "/metrics"
   initContainer:
     image:
       repository: docker.io/kubesphere/kubectl
     tcpCheck:
-      enabled: true
       image:
         repository: ghcr.io/settlemint/btp-waitforit
-        tag: v7.7.10
-        pullPolicy: IfNotPresent
-      timeout: 120
-      resources:
-        limits:
-          cpu: 100m
-          memory: 64Mi
-        requests:
-          cpu: 10m
-          memory: 32Mi
-      dependencies:
-        - name: postgresql
-          endpoint: "postgresql:5432"
-  extraInitContainers: []
   ingress:
     enabled: true
     className: "atk-nginx"
@@ -286,68 +176,9 @@ graph-node:
             pathType: ImplementationSpecific
           - path: /graphman/?(.*)
             pathType: ImplementationSpecific
-    tls: []
   openShiftRoute:
     enabled: false
-    annotations: {}
     host: graph.k8s.orb.local
-    wildcardPolicy: None
-    tls: null
-    to:
-      weight: 100
-    alternateBackends: []
-    routes:
-      - nameSuffix: ""
-        host: ""
-        path: /
-        targetPort: http-query
-        annotations: {}
-      - nameSuffix: ws
-        host: ""
-        path: /ws
-        targetPort: http-queryws
-        annotations:
-          haproxy.router.openshift.io/rewrite-target: /
-      - nameSuffix: admin
-        host: ""
-        path: /admin
-        targetPort: http-admin
-        annotations:
-          haproxy.router.openshift.io/rewrite-target: /
-      - nameSuffix: indexer
-        host: ""
-        path: /indexer
-        targetPort: http-status
-        annotations:
-          haproxy.router.openshift.io/rewrite-target: /
-      - nameSuffix: graphman
-        host: ""
-        path: /graphman
-        targetPort: http-status
-        annotations:
-          haproxy.router.openshift.io/rewrite-target: /
-  env:
-    PRIMARY_SUBGRAPH_DATA_PGHOST: "postgresql"
-    PRIMARY_SUBGRAPH_DATA_PGPORT: 5432
-    PRIMARY_SUBGRAPH_DATA_PGDATABASE: "thegraph"
-    PRIMARY_SUBGRAPH_DATA_PGUSER: "thegraph"
-    PRIMARY_SUBGRAPH_DATA_PGPASSWORD: "atk"
-  postgresReadinessCheck:
-    enabled: true
-    image: docker.io/postgres:17.6-alpine
-    maxRetries: 30
-    initialWaitTime: 2
-    maxWaitTime: 30
-    randomDelayRange:
-      min: 5
-      max: 30
-    resources:
-      limits:
-        cpu: 100m
-        memory: 96Mi
-      requests:
-        cpu: 25m
-        memory: 48Mi
 
 hasura:
   enabled: true
@@ -376,32 +207,13 @@ hasura:
       db: 3
       url: "redis://default:atk@redis:6379/3"
   graphql-engine:
-    replicas: 1
     ingress:
       hostName: hasura.k8s.orb.local
-    labels:
-      app.kubernetes.io/instance: atk
-      kots.io/app-slug: settlemint-atk
-      app.kubernetes.io/component: hasura
     openShiftRoute:
       enabled: false
-      annotations: {}
       host: hasura.k8s.orb.local
-      path: /
-      wildcardPolicy: None
-      port:
-        targetPort: http
-      to:
-        weight: 100
-      alternateBackends: []
-      tls: null
     image:
       repository: docker.io/hasura/graphql-engine
-      tag: v2.48.5
-      ## Specify a imagePullPolicy
-      ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
-      ##
-      pullPolicy: IfNotPresent
     initContainers:
       - name: wait-for-postgresql
         image: ghcr.io/settlemint/btp-waitforit:v7.7.10
