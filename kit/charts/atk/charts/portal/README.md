@@ -50,9 +50,14 @@ Portal is a powerful blockchain data management and querying service designed sp
 
 ## Connection Requirements
 
-Portal consumes its PostgreSQL and Redis settings from the umbrella chart under
-`datastores.postgresql.portal` and `datastores.redis.portal`. Override those entries to target managed
-database or cache services.
+Update the following sections of `values.yaml` to point Portal at your infrastructure:
+
+| Service | Values path | Default |
+| --- | --- | --- |
+| PostgreSQL | `portal.config.postgresqlConnection` | `postgresql://portal:atk@postgresql:5432/portal?sslmode=disable` |
+| Redis cache | `portal.config.redis` | `redis://default:atk@redis:6379/4` |
+
+Provide external hostnames, credentials, logical database numbers, and SSL settings where required.
 
 ## Installing the Chart
 

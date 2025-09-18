@@ -6,17 +6,30 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 
 ## Connection Overview
 
-All runtime credentials are centralized in the root `values.yaml` under the `datastores` key:
+Collect the following connection parameters before deploying or overriding values. Update the listed
+keys in `values.yaml` (or your environment-specific values file) to point services at your
+environment.
 
-- `datastores.postgresql` lists the logical databases and users consumed by Blockscout, Graph Node,
-  Hasura, Portal, and TxSigner. Override these entries to point every service at your external
-  PostgreSQL instance.
-- `datastores.redis` assigns dedicated logical databases for eRPC (cache and shared state), Hasura
-  (cache and rate limit), and Portal. Update these entries when wiring the deployment to an external
-  Redis cluster.
+### PostgreSQL Targets
+| Service | Values path | Default host | Default port | Default database | Default username | Default password | Default SSL mode |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Blockscout | `blockscout.postgresql` | `postgresql` | `5432` | `blockscout` | `blockscout` | `atk` | `disable` |
+| Graph Node | `graph-node.postgresql` | `postgresql` | `5432` | `thegraph` | `thegraph` | `atk` | `disable` |
+| Hasura | `hasura.postgresql` | `postgresql` | `5432` | `hasura` | `hasura` | `atk` | `disable` |
+| Portal | `portal.config.postgresqlConnection` | `postgresql` | `5432` | `portal` | `portal` | `atk` | `disable` |
+| TxSigner | `txsigner.postgresqlConnection` | `postgresql` | `5432` | `txsigner` | `txsigner` | `atk` | `disable` |
 
-Downstream subcharts automatically read from these top-level maps, so you only need to edit the
-connection information in one place.
+### Redis Targets
+| Service | Values path | Default host | Default port | Default database | Default username | Default password |
+| --- | --- | --- | --- | --- | --- | --- |
+| eRPC Cache | `erpc.redis.cacheDb` | `redis` | `6379` | `0` | `default` | `atk` |
+| eRPC Shared State | `erpc.redis.sharedStateDb` | `redis` | `6379` | `1` | `default` | `atk` |
+| Hasura Cache | `hasura.redis.primary` | `redis` | `6379` | `2` | `default` | `atk` |
+| Hasura Rate Limit | `hasura.redis.rateLimit` | `redis` | `6379` | `3` | `default` | `atk` |
+| Portal | `portal.config.redis` | `redis` | `6379` | `4` | `default` | `atk` |
+
+Each service uses its own logical database to avoid key collisions. When pointing to an external
+Redis or PostgreSQL deployment, update the appropriate values paths listed above.
 
 ## Configuration
 
@@ -171,7 +184,6 @@ The following table lists the configurable parameters of this chart and their de
 | blockscout.blockscout-stack.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
 | blockscout.enabled | bool | `true` |  |
 | blockscout.postgresql.database | string | `"blockscout"` |  |
-| blockscout.postgresql.displayName | string | `"Blockscout"` |  |
 | blockscout.postgresql.endpoint | string | `"postgresql:5432"` |  |
 | blockscout.postgresql.host | string | `"postgresql"` |  |
 | blockscout.postgresql.password | string | `"atk"` |  |
@@ -238,86 +250,6 @@ The following table lists the configurable parameters of this chart and their de
 | dapp.secretEnv.SETTLEMINT_INSTANCE | string | `"standalone"` |  |
 | dapp.secretEnv.SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT | string | `"http://portal:3001/graphql"` |  |
 | dapp.secretEnv.SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS | string | `"[\"http://graph-node-combined:8000/subgraphs/name/kit\"]"` |  |
-| datastores.postgresql.blockscout.database | string | `"blockscout"` |  |
-| datastores.postgresql.blockscout.displayName | string | `"Blockscout"` |  |
-| datastores.postgresql.blockscout.endpoint | string | `"postgresql:5432"` |  |
-| datastores.postgresql.blockscout.host | string | `"postgresql"` |  |
-| datastores.postgresql.blockscout.password | string | `"atk"` |  |
-| datastores.postgresql.blockscout.port | int | `5432` |  |
-| datastores.postgresql.blockscout.sslMode | string | `"disable"` |  |
-| datastores.postgresql.blockscout.url | string | `"postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"` |  |
-| datastores.postgresql.blockscout.username | string | `"blockscout"` |  |
-| datastores.postgresql.graphNode.database | string | `"thegraph"` |  |
-| datastores.postgresql.graphNode.displayName | string | `"Graph Node"` |  |
-| datastores.postgresql.graphNode.endpoint | string | `"postgresql:5432"` |  |
-| datastores.postgresql.graphNode.host | string | `"postgresql"` |  |
-| datastores.postgresql.graphNode.password | string | `"atk"` |  |
-| datastores.postgresql.graphNode.port | int | `5432` |  |
-| datastores.postgresql.graphNode.sslMode | string | `"disable"` |  |
-| datastores.postgresql.graphNode.url | string | `"postgresql://thegraph:atk@postgresql:5432/thegraph?sslmode=disable"` |  |
-| datastores.postgresql.graphNode.username | string | `"thegraph"` |  |
-| datastores.postgresql.hasura.database | string | `"hasura"` |  |
-| datastores.postgresql.hasura.displayName | string | `"Hasura Metadata"` |  |
-| datastores.postgresql.hasura.endpoint | string | `"postgresql:5432"` |  |
-| datastores.postgresql.hasura.host | string | `"postgresql"` |  |
-| datastores.postgresql.hasura.password | string | `"atk"` |  |
-| datastores.postgresql.hasura.port | int | `5432` |  |
-| datastores.postgresql.hasura.sslMode | string | `"disable"` |  |
-| datastores.postgresql.hasura.url | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
-| datastores.postgresql.hasura.username | string | `"hasura"` |  |
-| datastores.postgresql.portal.database | string | `"portal"` |  |
-| datastores.postgresql.portal.displayName | string | `"Portal"` |  |
-| datastores.postgresql.portal.endpoint | string | `"postgresql:5432"` |  |
-| datastores.postgresql.portal.host | string | `"postgresql"` |  |
-| datastores.postgresql.portal.password | string | `"atk"` |  |
-| datastores.postgresql.portal.port | int | `5432` |  |
-| datastores.postgresql.portal.sslMode | string | `"disable"` |  |
-| datastores.postgresql.portal.url | string | `"postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"` |  |
-| datastores.postgresql.portal.username | string | `"portal"` |  |
-| datastores.postgresql.txsigner.database | string | `"txsigner"` |  |
-| datastores.postgresql.txsigner.displayName | string | `"TxSigner"` |  |
-| datastores.postgresql.txsigner.endpoint | string | `"postgresql:5432"` |  |
-| datastores.postgresql.txsigner.host | string | `"postgresql"` |  |
-| datastores.postgresql.txsigner.password | string | `"atk"` |  |
-| datastores.postgresql.txsigner.port | int | `5432` |  |
-| datastores.postgresql.txsigner.sslMode | string | `"disable"` |  |
-| datastores.postgresql.txsigner.url | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
-| datastores.postgresql.txsigner.username | string | `"txsigner"` |  |
-| datastores.redis.erpcCache.db | int | `0` |  |
-| datastores.redis.erpcCache.displayName | string | `"eRPC Cache"` |  |
-| datastores.redis.erpcCache.host | string | `"redis"` |  |
-| datastores.redis.erpcCache.password | string | `"atk"` |  |
-| datastores.redis.erpcCache.port | int | `6379` |  |
-| datastores.redis.erpcCache.url | string | `"redis://default:atk@redis:6379/0"` |  |
-| datastores.redis.erpcCache.username | string | `"default"` |  |
-| datastores.redis.erpcSharedState.db | int | `1` |  |
-| datastores.redis.erpcSharedState.displayName | string | `"eRPC Shared State"` |  |
-| datastores.redis.erpcSharedState.host | string | `"redis"` |  |
-| datastores.redis.erpcSharedState.password | string | `"atk"` |  |
-| datastores.redis.erpcSharedState.port | int | `6379` |  |
-| datastores.redis.erpcSharedState.url | string | `"redis://default:atk@redis:6379/1"` |  |
-| datastores.redis.erpcSharedState.username | string | `"default"` |  |
-| datastores.redis.hasuraPrimary.db | int | `2` |  |
-| datastores.redis.hasuraPrimary.displayName | string | `"Hasura Cache"` |  |
-| datastores.redis.hasuraPrimary.host | string | `"redis"` |  |
-| datastores.redis.hasuraPrimary.password | string | `"atk"` |  |
-| datastores.redis.hasuraPrimary.port | int | `6379` |  |
-| datastores.redis.hasuraPrimary.url | string | `"redis://default:atk@redis:6379/2"` |  |
-| datastores.redis.hasuraPrimary.username | string | `"default"` |  |
-| datastores.redis.hasuraRateLimit.db | int | `3` |  |
-| datastores.redis.hasuraRateLimit.displayName | string | `"Hasura Rate Limit"` |  |
-| datastores.redis.hasuraRateLimit.host | string | `"redis"` |  |
-| datastores.redis.hasuraRateLimit.password | string | `"atk"` |  |
-| datastores.redis.hasuraRateLimit.port | int | `6379` |  |
-| datastores.redis.hasuraRateLimit.url | string | `"redis://default:atk@redis:6379/3"` |  |
-| datastores.redis.hasuraRateLimit.username | string | `"default"` |  |
-| datastores.redis.portal.db | int | `4` |  |
-| datastores.redis.portal.displayName | string | `"Portal"` |  |
-| datastores.redis.portal.host | string | `"redis"` |  |
-| datastores.redis.portal.password | string | `"atk"` |  |
-| datastores.redis.portal.port | int | `6379` |  |
-| datastores.redis.portal.url | string | `"redis://default:atk@redis:6379/4"` |  |
-| datastores.redis.portal.username | string | `"default"` |  |
 | erpc.config.logLevel | string | `"info"` |  |
 | erpc.config.projects[0].id | string | `"settlemint"` |  |
 | erpc.config.projects[0].networks[0].architecture | string | `"evm"` |  |
@@ -376,9 +308,21 @@ The following table lists the configurable parameters of this chart and their de
 | erpc.config.projects[0].networks[0].failsafe[5].timeout.duration | string | `"12s"` |  |
 | erpc.config.projects[0].upstreams[0].endpoint | string | `"http://besu-node-rpc-0.besu-node-rpc:8545"` |  |
 | erpc.config.projects[0].upstreams[0].evm.chainId | int | `53771311147` |  |
+| erpc.config.projects[0].upstreams[0].failsafe[0].circuitBreaker.failureThresholdCapacity | int | `80` |  |
+| erpc.config.projects[0].upstreams[0].failsafe[0].circuitBreaker.failureThresholdCount | int | `40` |  |
+| erpc.config.projects[0].upstreams[0].failsafe[0].circuitBreaker.halfOpenAfter | string | `"120s"` |  |
+| erpc.config.projects[0].upstreams[0].failsafe[0].circuitBreaker.successThresholdCapacity | int | `10` |  |
+| erpc.config.projects[0].upstreams[0].failsafe[0].circuitBreaker.successThresholdCount | int | `3` |  |
+| erpc.config.projects[0].upstreams[0].failsafe[0].matchMethod | string | `"*"` |  |
 | erpc.config.projects[0].upstreams[0].id | string | `"besu-node-rpc-0"` |  |
 | erpc.config.projects[0].upstreams[1].endpoint | string | `"http://besu-node-rpc-1.besu-node-rpc:8545"` |  |
 | erpc.config.projects[0].upstreams[1].evm.chainId | int | `53771311147` |  |
+| erpc.config.projects[0].upstreams[1].failsafe[0].circuitBreaker.failureThresholdCapacity | int | `80` |  |
+| erpc.config.projects[0].upstreams[1].failsafe[0].circuitBreaker.failureThresholdCount | int | `40` |  |
+| erpc.config.projects[0].upstreams[1].failsafe[0].circuitBreaker.halfOpenAfter | string | `"120s"` |  |
+| erpc.config.projects[0].upstreams[1].failsafe[0].circuitBreaker.successThresholdCapacity | int | `10` |  |
+| erpc.config.projects[0].upstreams[1].failsafe[0].circuitBreaker.successThresholdCount | int | `3` |  |
+| erpc.config.projects[0].upstreams[1].failsafe[0].matchMethod | string | `"*"` |  |
 | erpc.config.projects[0].upstreams[1].id | string | `"besu-node-rpc-1"` |  |
 | erpc.config.server.httpHostV4 | string | `"0.0.0.0"` |  |
 | erpc.config.server.httpPort | int | `4000` |  |
@@ -502,12 +446,10 @@ The following table lists the configurable parameters of this chart and their de
 | graph-node.postgresReadinessCheck.resources.requests.cpu | string | `"25m"` |  |
 | graph-node.postgresReadinessCheck.resources.requests.memory | string | `"48Mi"` |  |
 | graph-node.postgresql.database | string | `"thegraph"` |  |
-| graph-node.postgresql.displayName | string | `"Graph Node"` |  |
 | graph-node.postgresql.endpoint | string | `"postgresql:5432"` |  |
 | graph-node.postgresql.host | string | `"postgresql"` |  |
 | graph-node.postgresql.password | string | `"atk"` |  |
 | graph-node.postgresql.port | int | `5432` |  |
-| graph-node.postgresql.sslMode | string | `"disable"` |  |
 | graph-node.postgresql.url | string | `"postgresql://thegraph:atk@postgresql:5432/thegraph?sslmode=disable"` |  |
 | graph-node.postgresql.username | string | `"thegraph"` |  |
 | hasura.enabled | bool | `true` |  |
@@ -535,7 +477,6 @@ The following table lists the configurable parameters of this chart and their de
 | hasura.graphql-engine.secret.rateLimitRedisUrl | string | `"redis://default:atk@redis:6379/3"` |  |
 | hasura.graphql-engine.secret.redisUrl | string | `"redis://default:atk@redis:6379/2"` |  |
 | hasura.postgresql.database | string | `"hasura"` |  |
-| hasura.postgresql.displayName | string | `"Hasura Metadata"` |  |
 | hasura.postgresql.endpoint | string | `"postgresql:5432"` |  |
 | hasura.postgresql.host | string | `"postgresql"` |  |
 | hasura.postgresql.password | string | `"atk"` |  |
@@ -544,14 +485,12 @@ The following table lists the configurable parameters of this chart and their de
 | hasura.postgresql.url | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
 | hasura.postgresql.username | string | `"hasura"` |  |
 | hasura.redis.primary.db | int | `2` |  |
-| hasura.redis.primary.displayName | string | `"Hasura Cache"` |  |
 | hasura.redis.primary.host | string | `"redis"` |  |
 | hasura.redis.primary.password | string | `"atk"` |  |
 | hasura.redis.primary.port | int | `6379` |  |
 | hasura.redis.primary.url | string | `"redis://default:atk@redis:6379/2"` |  |
 | hasura.redis.primary.username | string | `"default"` |  |
 | hasura.redis.rateLimit.db | int | `3` |  |
-| hasura.redis.rateLimit.displayName | string | `"Hasura Rate Limit"` |  |
 | hasura.redis.rateLimit.host | string | `"redis"` |  |
 | hasura.redis.rateLimit.password | string | `"atk"` |  |
 | hasura.redis.rateLimit.port | int | `6379` |  |
@@ -616,7 +555,6 @@ The following table lists the configurable parameters of this chart and their de
 | observability.victoria-metrics-single.server.resources | object | `{}` |  |
 | portal.config.postgresql | string | `"postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"` |  |
 | portal.config.postgresqlConnection.database | string | `"portal"` |  |
-| portal.config.postgresqlConnection.displayName | string | `"Portal"` |  |
 | portal.config.postgresqlConnection.endpoint | string | `"postgresql:5432"` |  |
 | portal.config.postgresqlConnection.host | string | `"postgresql"` |  |
 | portal.config.postgresqlConnection.password | string | `"atk"` |  |
@@ -625,7 +563,6 @@ The following table lists the configurable parameters of this chart and their de
 | portal.config.postgresqlConnection.url | string | `"postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"` |  |
 | portal.config.postgresqlConnection.username | string | `"portal"` |  |
 | portal.config.redis.db | int | `4` |  |
-| portal.config.redis.displayName | string | `"Portal"` |  |
 | portal.config.redis.host | string | `"redis"` |  |
 | portal.config.redis.password | string | `"atk"` |  |
 | portal.config.redis.port | int | `6379` |  |
@@ -773,7 +710,6 @@ The following table lists the configurable parameters of this chart and their de
 | txsigner.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | txsigner.postgresql | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
 | txsigner.postgresqlConnection.database | string | `"txsigner"` |  |
-| txsigner.postgresqlConnection.displayName | string | `"TxSigner"` |  |
 | txsigner.postgresqlConnection.endpoint | string | `"postgresql:5432"` |  |
 | txsigner.postgresqlConnection.host | string | `"postgresql"` |  |
 | txsigner.postgresqlConnection.password | string | `"atk"` |  |

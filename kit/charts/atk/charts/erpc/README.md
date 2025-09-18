@@ -49,9 +49,14 @@ Kubernetes: `>=1.21.0-0`
 
 ## Connection Requirements
 
-The chart expects Redis connection details to be provided via the umbrella chart under
-`datastores.redis.erpcCache` (DB 0) and `datastores.redis.erpcSharedState` (DB 1). Override those
-entries when pointing eRPC at an external Redis instance.
+Configure the Redis endpoints used for caching in the `erpc.redis` section of the values file.
+
+| Purpose | Values path | Default |
+| --- | --- | --- |
+| Cache connector | `erpc.redis.cacheDb` | `redis://default:atk@redis:6379/0` |
+| Shared state connector | `erpc.redis.sharedStateDb` | `redis://default:atk@redis:6379/1` |
+
+Update the host, port, credentials, and database numbers to match your external Redis deployment.
 
 ## Installing the Chart
 

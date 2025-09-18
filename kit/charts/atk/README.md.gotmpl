@@ -7,17 +7,30 @@
 
 ## Connection Overview
 
-All runtime credentials are centralized in the root `values.yaml` under the `datastores` key:
+Collect the following connection parameters before deploying or overriding values. Update the listed
+keys in `values.yaml` (or your environment-specific values file) to point services at your
+environment.
 
-- `datastores.postgresql` lists the logical databases and users consumed by Blockscout, Graph Node,
-  Hasura, Portal, and TxSigner. Override these entries to point every service at your external
-  PostgreSQL instance.
-- `datastores.redis` assigns dedicated logical databases for eRPC (cache and shared state), Hasura
-  (cache and rate limit), and Portal. Update these entries when wiring the deployment to an external
-  Redis cluster.
+### PostgreSQL Targets
+| Service | Values path | Default host | Default port | Default database | Default username | Default password | Default SSL mode |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Blockscout | `blockscout.postgresql` | `postgresql` | `5432` | `blockscout` | `blockscout` | `atk` | `disable` |
+| Graph Node | `graph-node.postgresql` | `postgresql` | `5432` | `thegraph` | `thegraph` | `atk` | `disable` |
+| Hasura | `hasura.postgresql` | `postgresql` | `5432` | `hasura` | `hasura` | `atk` | `disable` |
+| Portal | `portal.config.postgresqlConnection` | `postgresql` | `5432` | `portal` | `portal` | `atk` | `disable` |
+| TxSigner | `txsigner.postgresqlConnection` | `postgresql` | `5432` | `txsigner` | `txsigner` | `atk` | `disable` |
 
-Downstream subcharts automatically read from these top-level maps, so you only need to edit the
-connection information in one place.
+### Redis Targets
+| Service | Values path | Default host | Default port | Default database | Default username | Default password |
+| --- | --- | --- | --- | --- | --- | --- |
+| eRPC Cache | `erpc.redis.cacheDb` | `redis` | `6379` | `0` | `default` | `atk` |
+| eRPC Shared State | `erpc.redis.sharedStateDb` | `redis` | `6379` | `1` | `default` | `atk` |
+| Hasura Cache | `hasura.redis.primary` | `redis` | `6379` | `2` | `default` | `atk` |
+| Hasura Rate Limit | `hasura.redis.rateLimit` | `redis` | `6379` | `3` | `default` | `atk` |
+| Portal | `portal.config.redis` | `redis` | `6379` | `4` | `default` | `atk` |
+
+Each service uses its own logical database to avoid key collisions. When pointing to an external
+Redis or PostgreSQL deployment, update the appropriate values paths listed above.
 
 {{ template "chart.homepageLine" . }}
 

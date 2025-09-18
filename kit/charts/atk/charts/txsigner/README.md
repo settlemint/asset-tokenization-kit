@@ -52,8 +52,9 @@ Kubernetes: `>=1.21.0-0`
 
 ## Connection Requirements
 
-TxSigner sources its PostgreSQL credentials from `datastores.postgresql.txsigner` in the umbrella
-chart. Update that entry to point at your external database and redeploy.
+TxSigner reads its database credentials from the `txsigner.postgresqlConnection` values block. Update
+that section with the hostname, port, database, username, password, and SSL mode for your external
+PostgreSQL instance.
 
 ## Installing the Chart
 
