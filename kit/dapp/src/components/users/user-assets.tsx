@@ -6,33 +6,28 @@ import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
-import { TransferAssetSheet } from "@/components/manage-dropdown/sheets/transfer-asset-sheet";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { TransferAssetSheet } from "@/components/manage-dropdown/sheets/transfer-asset-sheet";
 import { formatValue } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenBalance } from "@/orpc/routes/user/routes/user.assets.schema";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
+import { from, greaterThan } from "dnum";
 import {
   Coins,
   Copy,
-  Eye,
   Hash,
   Lock,
-  Send,
   Package,
+  Send,
   Type,
   Unlock,
   Wallet,
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-import { from, greaterThan } from "dnum";
-
-const logger = createLogger();
 
 const columnHelper = createStrictColumnHelper<TokenBalance>();
 
@@ -111,24 +106,6 @@ export function UserAssetsTable() {
             openTransferSheet(row.original);
           },
           disabled: !hasTransferableBalance,
-        },
-        {
-          label: t("user-assets:actions.viewTokenDetails"),
-          icon: <Eye className="h-4 w-4" />,
-          onClick: () => {
-            logger.debug("View token details onClick triggered");
-            // Navigate to a token details page if it exists
-            // This would need to be implemented based on your routing structure
-            toast.info(t("user-assets:actions.tokenDetailsNotImplemented"));
-          },
-        },
-        {
-          label: t("user-assets:actions.copyAddress"),
-          icon: <Copy className="h-4 w-4" />,
-          onClick: () => {
-            void navigator.clipboard.writeText(row.original.token.id);
-            toast.success(t("user-assets:actions.addressCopied"));
-          },
         },
       ];
     },
