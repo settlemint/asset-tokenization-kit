@@ -153,9 +153,6 @@ export const SystemSchema = z.object({
               keyof typeof SYSTEM_PERMISSIONS,
               z.ZodType<boolean>
             > = {
-              accountRead: z
-                .boolean()
-                .describe("Whether the user can read accounts"),
               accountSearch: z
                 .boolean()
                 .describe("Whether the user can search accounts"),
@@ -183,6 +180,12 @@ export const SystemSchema = z.object({
               identityCreate: z
                 .boolean()
                 .describe("Whether the user can create identities"),
+              identityRead: z
+                .boolean()
+                .describe("Whether the user can read identities"),
+              identitySearch: z
+                .boolean()
+                .describe("Whether the user can search identities"),
               identityList: z
                 .boolean()
                 .describe("Whether the user can read identities"),

@@ -234,7 +234,6 @@ export function getSystemPermissions(
 ) {
   // Initialize all actions as false, allowing TypeScript to infer the precise type
   const initialActions: Record<keyof typeof SYSTEM_PERMISSIONS, boolean> = {
-    accountRead: false,
     accountSearch: false,
     addonCreate: false,
     addonFactoryCreate: false,
@@ -244,6 +243,8 @@ export function getSystemPermissions(
     complianceModuleCreate: false,
     grantRole: false,
     identityCreate: false,
+    identityRead: false,
+    identitySearch: false,
     identityList: false,
     identityRegister: false,
     kycDelete: false,
