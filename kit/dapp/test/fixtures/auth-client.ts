@@ -5,8 +5,7 @@ import { twoFactorClient } from "@/lib/auth/plugins/two-factor/client";
 import {
   accessControl,
   adminRole,
-  investorRole,
-  issuerRole,
+  userRole,
 } from "@/lib/auth/utils/permissions";
 import {
   adminClient,
@@ -28,8 +27,7 @@ export const getAuthClient = () =>
         ac: accessControl,
         roles: {
           admin: adminRole,
-          investor: investorRole,
-          issuer: issuerRole,
+          user: userRole,
         },
       }),
       apiKeyClient(),

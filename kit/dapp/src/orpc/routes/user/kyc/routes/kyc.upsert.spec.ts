@@ -123,11 +123,13 @@ describe("KYC upsert", () => {
         },
         {
           context: {
-            skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
+            skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
           },
         }
       )
-    ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.FORBIDDEN));
+    ).rejects.toThrow(
+      errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
+    );
   });
 
   it("can upsert with minimal required fields", async () => {

@@ -35,8 +35,9 @@ spec:
       {{- if .Values.topologySpreadConstraints }}
       topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.topologySpreadConstraints "context" $) | nindent 8 }}
       {{- end }}
-      {{- if .Values.podSecurityContext.enabled }}
-      securityContext: {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- if .Values.affinity }}
       affinity: {{- include "common.tplvalues.render" (dict "value" .Values.affinity "context" $) | nindent 8 }}
@@ -61,15 +62,42 @@ spec:
         - name: erpc
           image: {{ include "common.images.image" (dict "imageRoot" .Values.image "global" .Values.global) }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- if .Values.workingDir }}
+          workingDir: {{ .Values.workingDir | quote }}
+          {{- end }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- if .Values.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
-          {{- if .Values.extraEnvVars }}
+          {{- $gcEnabled := default false .Values.runtime.gc.enabled }}
+          {{- $extraEnvLen := len (default (list) .Values.extraEnvVars) }}
+          {{- $memLimit := "" }}
+          {{- if and .Values.resources .Values.resources.limits }}
+            {{- $memLimit = default "" .Values.resources.limits.memory }}
+          {{- end }}
+          {{- $gomemlimit := "" }}
+          {{- if $gcEnabled }}
+            {{- $gomemlimit = include "erpc.gc.computeGOMEMLIMIT" (dict "limit" $memLimit "ratio" (default 1 .Values.runtime.gc.gomemlimitRatio) "override" (default "" .Values.runtime.gc.gomemlimitOverride)) }}
+          {{- end }}
+          {{- $hasGoGc := and $gcEnabled (or (ne (printf "%v" (default "" .Values.runtime.gc.gogc)) "") (ne $gomemlimit "")) }}
+          {{- if or $hasGoGc (gt $extraEnvLen 0) }}
           env:
+            {{- if $hasGoGc }}
+            {{- if ne (printf "%v" (default "" .Values.runtime.gc.gogc)) "" }}
+            - name: GOGC
+              value: {{ printf "%v" .Values.runtime.gc.gogc | quote }}
+            {{- end }}
+            {{- if ne $gomemlimit "" }}
+            - name: GOMEMLIMIT
+              value: {{ $gomemlimit | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
           {{- end }}
           {{- if or .Values.extraEnvVarsCM .Values.extraEnvVarsSecret }}
           envFrom:
@@ -103,8 +131,16 @@ spec:
           {{- end }}
           volumeMounts:
             - name: config
-              mountPath: /root/erpc.yaml
+              mountPath: {{ .Values.configMountPath | quote }}
               subPath: erpc.yaml
+          {{- if .Values.envSecret.enabled }}
+            - name: dotenv
+              mountPath: {{ .Values.envSecret.mountPath | quote }}
+              {{- if .Values.envSecret.subPath }}
+              subPath: {{ .Values.envSecret.subPath | quote }}
+              {{- end }}
+              readOnly: true
+          {{- end }}
           {{- if .Values.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -112,6 +148,14 @@ spec:
         - name: config
           configMap:
             name: {{ include "common.names.fullname" . }}
+      {{- if .Values.envSecret.enabled }}
+        - name: dotenv
+          secret:
+            secretName: {{ required "envSecret.name must be provided when envSecret.enabled=true" .Values.envSecret.name }}
+            {{- if .Values.envSecret.defaultMode }}
+            defaultMode: {{ .Values.envSecret.defaultMode }}
+            {{- end }}
+      {{- end }}
       {{- if .Values.extraVolumes }}
       {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 8 }}
       {{- end }}

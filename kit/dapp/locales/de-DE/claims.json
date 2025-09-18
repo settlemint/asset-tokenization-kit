@@ -1,0 +1,93 @@
+{
+  "status": {
+    "pending": "Ausstehend",
+    "verified": "Verifiziert",
+    "rejected": "Abgelehnt",
+    "expired": "Abgelaufen",
+    "registered": "Registriert",
+    "notRegistered": "Nicht registriert",
+    "verifiedAriaLabel": "Identität mit Ansprüchen verifiziert",
+    "registeredAriaLabel": "Identität ohne Ansprüche registriert",
+    "notRegisteredAriaLabel": "Keine Identität registriert"
+  },
+  "table": {
+    "columns": {
+      "user": "Benutzer",
+      "claimType": "Anspruchstyp",
+      "topic": "Thema",
+      "status": "Status",
+      "issuer": "Aussteller",
+      "issuedAt": "Ausgestellt am",
+      "expiresAt": "Läuft ab am",
+      "verifiedAt": "Verifiziert am"
+    },
+    "search": {
+      "placeholder": "Ansprüche suchen..."
+    },
+    "emptyState": {
+      "title": "Keine Ansprüche gefunden",
+      "description": "Es wurden noch keine Identitätsansprüche ausgestellt.",
+      "loading": "Lade Ansprüche..."
+    },
+    "errors": {
+      "loadFailed": "Fehler beim Laden der Ansprüche. Bitte versuchen Sie es erneut.",
+      "navigationFailed": "Fehler beim Navigieren zu den Anspruchsdetails"
+    },
+    "fallback": {
+      "noExpiry": "Kein Ablaufdatum",
+      "notVerified": "Nicht verifiziert"
+    }
+  },
+  "identityTable": {
+    "columns": {
+      "id": "ID",
+      "type": "Typ",
+      "entity": "Entität",
+      "linkedEntity": "Konto / Vertrag",
+      "activeClaims": "Aktive Ansprüche",
+      "revokedClaims": "Widerrufene Ansprüche",
+      "deployment": "Bereitstellungs-Tx"
+    },
+    "types": {
+      "account": "Konto",
+      "contract": "Vertrag"
+    },
+    "fallback": {
+      "noAccount": "Kein Konto",
+      "noContract": "Kein Vertrag",
+      "noDeployment": "Keine Bereitstellung",
+      "noEntity": "Keine verknüpfte Entität"
+    },
+    "search": {
+      "placeholder": "Identitäten suchen..."
+    },
+    "emptyState": {
+      "title": "Keine Identitäten gefunden",
+      "description": "Keine Identitäten entsprechen Ihren Filtern.",
+      "loading": "Identitäten werden geladen..."
+    },
+    "errors": {
+      "loadFailed": "Fehler beim Laden der Identitäten. Bitte versuchen Sie es erneut.",
+      "navigationFailed": "Fehler beim Öffnen der Identitätsdetails"
+    }
+  },
+  "page": {
+    "description": "Identitätsansprüche, Verifizierungsstatus und Compliance für Benutzer verwalten.",
+    "loading": "Ansprüche werden geladen..."
+  },
+  "details": {
+    "title": "Konto-Ansprüche",
+    "summary": {
+      "total": "Ansprüche gesamt",
+      "verified": "Verifiziert",
+      "pending": "Ausstehend",
+      "rejectedExpired": "Abgelehnt/Abgelaufen"
+    },
+    "claimId": "Anspruchs-ID",
+    "noClaimsTitle": "Keine Ansprüche gefunden",
+    "noClaimsDescription": "Diesem Konto wurden noch keine Identitätsansprüche zugewiesen."
+  },
+  "tabs": {
+    "details": "Details"
+  }
+}

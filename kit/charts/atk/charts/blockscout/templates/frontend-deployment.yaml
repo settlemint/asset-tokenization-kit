@@ -1,0 +1,119 @@
+{{- if .Values.frontend.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "blockscout.fullname" . }}-frontend
+  labels:
+    app: {{ include "blockscout.fullname" . }}-frontend
+    {{- include "blockscout.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.frontend.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "blockscout.fullname" . }}-frontend
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/frontend-secret.yaml") . | sha256sum }}
+      {{- with .Values.frontend.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: {{ include "blockscout.fullname" . }}-frontend
+        {{- include "blockscout.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- include "atk.common.imagePullSecrets" . | nindent 6 }}
+      serviceAccountName: {{ include "blockscout.serviceAccountName" . }}
+      {{- with .Values.frontend.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: frontend
+          {{- with .Values.frontend.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+          imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          {{- if .Values.frontend.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /api/healthz
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: {{ .Values.frontend.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.frontend.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.frontend.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.frontend.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.frontend.livenessProbe.failureThreshold }}
+          {{- end }}
+          {{- if .Values.frontend.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: /api/healthz
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: {{ .Values.frontend.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.frontend.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.frontend.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.frontend.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.frontend.readinessProbe.failureThreshold }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.frontend.resources | nindent 12 }}
+          env:
+          - name: NEXT_PUBLIC_API_HOST
+            value: {{ .Values.blockscout.ingress.hostname | quote }}
+          - name: NEXT_PUBLIC_API_PROTOCOL
+            value: {{ .Values.frontend.env.NEXT_PUBLIC_API_PROTOCOL | default "https" | quote }}
+          - name: NEXT_PUBLIC_STATS_API_HOST
+            value: {{ if .Values.stats.enabled }}{{ .Values.stats.ingress.hostname | quote }}{{ else }}""{{ end }}
+          - name: NEXT_PUBLIC_NETWORK_NAME
+            value: {{ .Values.config.network.name | quote }}
+          - name: NEXT_PUBLIC_NETWORK_SHORT_NAME
+            value: {{ .Values.config.network.shortname | quote }}
+          - name: NEXT_PUBLIC_NETWORK_ID
+            value: {{ .Values.config.network.id | quote }}
+          - name: NEXT_PUBLIC_NETWORK_CURRENCY_NAME
+            value: {{ .Values.config.network.currency.name | quote }}
+          - name: NEXT_PUBLIC_NETWORK_CURRENCY_SYMBOL
+            value: {{ .Values.config.network.currency.symbol | quote }}
+          - name: NEXT_PUBLIC_NETWORK_CURRENCY_DECIMALS
+            value: {{ .Values.config.network.currency.decimals | quote }}
+          - name: NEXT_PUBLIC_NETWORK_ICON
+            value: {{ .Values.config.network.icon | quote }}
+          - name: NEXT_PUBLIC_NETWORK_ICON_DARK
+            value: {{ .Values.config.network.icon_dark | quote }}
+          - name: NEXT_PUBLIC_NETWORK_LOGO
+            value: {{ .Values.config.network.logo | quote }}
+          - name: NEXT_PUBLIC_NETWORK_LOGO_DARK
+            value: {{ .Values.config.network.logo_dark | quote }}
+          - name: NEXT_PUBLIC_APP_HOST
+            value: {{ .Values.frontend.ingress.hostname | quote }}
+          - name: NEXT_PUBLIC_APP_PROTOCOL
+            value: {{ .Values.frontend.env.NEXT_PUBLIC_APP_PROTOCOL | default "https" | quote }}
+          {{- range $key, $value := .Values.frontend.env }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
+          {{- end }}
+          envFrom:
+            - secretRef:
+                name: {{ include "blockscout.fullname" . }}-frontend-env
+      {{- with .Values.frontend.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.frontend.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.frontend.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

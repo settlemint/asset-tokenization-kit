@@ -4,26 +4,36 @@
 
 A Helm chart for the SettleMint Asset Tokenization Kit
 
-## Maintainers
+## Connection Overview
 
-| Name | Email | Url |
-| ---- | ------ | --- |
-| SettleMint | <support@settlemint.com> | <https://settlemint.com> |
+Collect the following connection parameters before deploying or overriding values. Update the listed
+keys in `values.yaml` (or your environment-specific values file) to point services at your
+environment.
 
-## Requirements
+### PostgreSQL Targets
+| Service | Values path | Default host | Default port | Default database | Default username | Default password | Default SSL mode |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Blockscout | `blockscout.postgresql` | `postgresql` | `5432` | `blockscout` | `blockscout` | `atk` | `disable` |
+| Graph Node | `graph-node.postgresql` | `postgresql` | `5432` | `thegraph` | `thegraph` | `atk` | `disable` |
+| Hasura | `hasura.postgresql` | `postgresql` | `5432` | `hasura` | `hasura` | `atk` | `disable` |
+| Portal | `portal.config.postgresqlConnection` | `postgresql` | `5432` | `portal` | `portal` | `atk` | `disable` |
+| TxSigner | `txsigner.postgresqlConnection` | `postgresql` | `5432` | `txsigner` | `txsigner` | `atk` | `disable` |
 
-| Repository | Name | Version |
-|------------|------|---------|
-|  | besu-network | * |
-|  | blockscout | * |
-|  | erpc | * |
-|  | graph-node | * |
-|  | hasura | * |
-|  | observability | * |
-|  | portal | * |
-|  | support | * |
-| file://./charts/dapp | dapp | * |
-| file://./charts/txsigner | txsigner | * |
+### Redis Targets
+| Service | Values path | Default host | Default port | Default database | Default username | Default password |
+| --- | --- | --- | --- | --- | --- | --- |
+| eRPC Cache | `erpc.redis.cacheDb` | `redis` | `6379` | `0` | `default` | `atk` |
+| eRPC Shared State | `erpc.redis.sharedStateDb` | `redis` | `6379` | `1` | `default` | `atk` |
+| Hasura Cache | `hasura.redis.primary` | `redis` | `6379` | `2` | `default` | `atk` |
+| Hasura Rate Limit | `hasura.redis.rateLimit` | `redis` | `6379` | `3` | `default` | `atk` |
+| Portal | `portal.config.redis` | `redis` | `6379` | `4` | `default` | `atk` |
+
+Each service uses its own logical database to avoid key collisions. When pointing to an external
+Redis or PostgreSQL deployment, update the appropriate values paths listed above.
+
+## Configuration
+
+The following table lists the configurable parameters of this chart and their default values.
 
 ## Values
 
@@ -36,9 +46,21 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | besu-network.besu-genesis.configServer.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-genesis.configServer.image.repository | string | `"docker.io/nginx"` |  |
 | besu-network.besu-genesis.configServer.image.tag | string | `"1.29.1-alpine"` |  |
+| besu-network.besu-genesis.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| besu-network.besu-genesis.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| besu-network.besu-genesis.containerSecurityContext.runAsGroup | int | `1000` |  |
+| besu-network.besu-genesis.containerSecurityContext.runAsNonRoot | bool | `true` |  |
+| besu-network.besu-genesis.containerSecurityContext.runAsUser | int | `1000` |  |
+| besu-network.besu-genesis.containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | besu-network.besu-genesis.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-genesis.image.repository | string | `"ghcr.io/settlemint/quorum-genesis-tool"` |  |
 | besu-network.besu-genesis.image.tag | string | `"sha-49c40f5"` |  |
+| besu-network.besu-genesis.initContainerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| besu-network.besu-genesis.initContainerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| besu-network.besu-genesis.initContainerSecurityContext.runAsGroup | int | `1001` |  |
+| besu-network.besu-genesis.initContainerSecurityContext.runAsNonRoot | bool | `true` |  |
+| besu-network.besu-genesis.initContainerSecurityContext.runAsUser | int | `1001` |  |
+| besu-network.besu-genesis.initContainerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | besu-network.besu-genesis.initJob.copyArtifacts.resources.limits.cpu | string | `"200m"` |  |
 | besu-network.besu-genesis.initJob.copyArtifacts.resources.limits.memory | string | `"256Mi"` |  |
 | besu-network.besu-genesis.initJob.copyArtifacts.resources.requests.cpu | string | `"50m"` |  |
@@ -47,6 +69,21 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | besu-network.besu-genesis.initJob.resources.limits.memory | string | `"512Mi"` |  |
 | besu-network.besu-genesis.initJob.resources.requests.cpu | string | `"150m"` |  |
 | besu-network.besu-genesis.initJob.resources.requests.memory | string | `"256Mi"` |  |
+| besu-network.besu-genesis.podSecurityContext.fsGroup | int | `1000` |  |
+| besu-network.besu-genesis.podSecurityContext.runAsNonRoot | bool | `true` |  |
+| besu-network.besu-genesis.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| besu-network.besu-genesis.volumePermissionsSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| besu-network.besu-genesis.volumePermissionsSecurityContext.capabilities.add[0] | string | `"CHOWN"` |  |
+| besu-network.besu-genesis.volumePermissionsSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| besu-network.besu-genesis.volumePermissionsSecurityContext.runAsNonRoot | bool | `false` |  |
+| besu-network.besu-genesis.volumePermissionsSecurityContext.runAsUser | int | `0` |  |
+| besu-network.besu-genesis.volumePermissionsSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| besu-network.besu-node.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| besu-network.besu-node.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| besu-network.besu-node.containerSecurityContext.runAsGroup | int | `1000` |  |
+| besu-network.besu-node.containerSecurityContext.runAsNonRoot | bool | `true` |  |
+| besu-network.besu-node.containerSecurityContext.runAsUser | int | `1000` |  |
+| besu-network.besu-node.containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | besu-network.besu-node.hooks.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-node.hooks.image.repository | string | `"ghcr.io/settlemint/quorum-genesis-tool"` |  |
 | besu-network.besu-node.hooks.image.tag | string | `"sha-49c40f5"` |  |
@@ -58,6 +95,12 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | besu-network.besu-node.hooks.preInstall.resources.limits.memory | string | `"512Mi"` |  |
 | besu-network.besu-node.hooks.preInstall.resources.requests.cpu | string | `"150m"` |  |
 | besu-network.besu-node.hooks.preInstall.resources.requests.memory | string | `"256Mi"` |  |
+| besu-network.besu-node.initContainerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| besu-network.besu-node.initContainerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| besu-network.besu-node.initContainerSecurityContext.runAsGroup | int | `1001` |  |
+| besu-network.besu-node.initContainerSecurityContext.runAsNonRoot | bool | `true` |  |
+| besu-network.besu-node.initContainerSecurityContext.runAsUser | int | `1001` |  |
+| besu-network.besu-node.initContainerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | besu-network.besu-node.initContainers.checkConnection.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-node.initContainers.checkConnection.image.repository | string | `"docker.io/curlimages/curl"` |  |
 | besu-network.besu-node.initContainers.checkConnection.image.tag | string | `"8.16.0"` |  |
@@ -75,34 +118,50 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | besu-network.besu-node.node.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-node.node.image.repository | string | `"docker.io/hyperledger/besu"` |  |
 | besu-network.besu-node.node.image.tag | string | `"25.8.0"` |  |
+| besu-network.besu-node.podSecurityContext.fsGroup | int | `1000` |  |
+| besu-network.besu-node.podSecurityContext.runAsNonRoot | bool | `true` |  |
+| besu-network.besu-node.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | besu-network.besu-node.tessera.image.pullPolicy | string | `"IfNotPresent"` |  |
 | besu-network.besu-node.tessera.image.repository | string | `"docker.io/quorumengineering/tessera"` |  |
 | besu-network.besu-node.tessera.image.tag | string | `"24.4"` |  |
+| besu-network.besu-node.volumePermissionsFix | list | `[]` |  |
+| besu-network.besu-node.volumePermissionsSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| besu-network.besu-node.volumePermissionsSecurityContext.capabilities.add[0] | string | `"CHOWN"` |  |
+| besu-network.besu-node.volumePermissionsSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| besu-network.besu-node.volumePermissionsSecurityContext.runAsNonRoot | bool | `false` |  |
+| besu-network.besu-node.volumePermissionsSecurityContext.runAsUser | int | `0` |  |
+| besu-network.besu-node.volumePermissionsSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | besu-network.besu-rpc-1.enabled | bool | `true` |  |
 | besu-network.besu-rpc-1.resources | object | `{}` |  |
 | besu-network.besu-rpc-1.storage.pvcSizeLimit | string | `"5Gi"` |  |
 | besu-network.besu-rpc-1.storage.sizeLimit | string | `"5Gi"` |  |
+| besu-network.besu-rpc-1.volumePermissionsFix | list | `[]` |  |
 | besu-network.besu-rpc-2.enabled | bool | `false` |  |
 | besu-network.besu-rpc-2.resources | object | `{}` |  |
 | besu-network.besu-rpc-2.storage.pvcSizeLimit | string | `"5Gi"` |  |
 | besu-network.besu-rpc-2.storage.sizeLimit | string | `"5Gi"` |  |
+| besu-network.besu-rpc-2.volumePermissionsFix | list | `[]` |  |
 | besu-network.besu-validator-1.enabled | bool | `true` |  |
 | besu-network.besu-validator-1.resources | object | `{}` |  |
 | besu-network.besu-validator-1.storage.pvcSizeLimit | string | `"5Gi"` |  |
 | besu-network.besu-validator-1.storage.sizeLimit | string | `"5Gi"` |  |
+| besu-network.besu-validator-1.volumePermissionsFix | list | `[]` |  |
 | besu-network.besu-validator-2.enabled | bool | `false` |  |
 | besu-network.besu-validator-2.resources | object | `{}` |  |
 | besu-network.besu-validator-2.storage.pvcSizeLimit | string | `"5Gi"` |  |
 | besu-network.besu-validator-2.storage.sizeLimit | string | `"5Gi"` |  |
+| besu-network.besu-validator-2.volumePermissionsFix | list | `[]` |  |
 | besu-network.besu-validator-3.enabled | bool | `false` |  |
 | besu-network.besu-validator-3.resources | object | `{}` |  |
 | besu-network.besu-validator-3.storage.pvcSizeLimit | string | `"5Gi"` |  |
 | besu-network.besu-validator-3.storage.sizeLimit | string | `"5Gi"` |  |
+| besu-network.besu-validator-3.volumePermissionsFix | list | `[]` |  |
 | besu-network.besu-validator-4.enabled | bool | `false` |  |
 | besu-network.besu-validator-4.resources | object | `{}` |  |
 | besu-network.besu-validator-4.storage.pvcSizeLimit | string | `"5Gi"` |  |
 | besu-network.besu-validator-4.storage.sizeLimit | string | `"5Gi"` |  |
-| besu-network.enabled | bool | `true` |  |
+| besu-network.besu-validator-4.volumePermissionsFix | list | `[]` |  |
+| besu-network.enabled | bool | `false` |  |
 | besu-network.rawGenesisConfig.blockchain.nodes.count | int | `1` |  |
 | blockscout.blockscout-stack.blockscout.env.API_URL | string | `"https://explorer.k8s.orb.local"` |  |
 | blockscout.blockscout-stack.blockscout.env.DATABASE_URL | string | `"postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"` |  |
@@ -124,6 +183,14 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | blockscout.blockscout-stack.podAnnotations."prometheus.io/port" | string | `"4000"` |  |
 | blockscout.blockscout-stack.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
 | blockscout.enabled | bool | `true` |  |
+| blockscout.postgresql.database | string | `"blockscout"` |  |
+| blockscout.postgresql.endpoint | string | `"postgresql:5432"` |  |
+| blockscout.postgresql.host | string | `"postgresql"` |  |
+| blockscout.postgresql.password | string | `"atk"` |  |
+| blockscout.postgresql.port | int | `5432` |  |
+| blockscout.postgresql.sslMode | string | `"disable"` |  |
+| blockscout.postgresql.url | string | `"postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"` |  |
+| blockscout.postgresql.username | string | `"blockscout"` |  |
 | dapp.enabled | bool | `true` |  |
 | dapp.image.pullPolicy | string | `"IfNotPresent"` |  |
 | dapp.image.repository | string | `"ghcr.io/settlemint/asset-tokenization-kit"` |  |
@@ -183,29 +250,88 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | dapp.secretEnv.SETTLEMINT_INSTANCE | string | `"standalone"` |  |
 | dapp.secretEnv.SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT | string | `"http://portal:3001/graphql"` |  |
 | dapp.secretEnv.SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS | string | `"[\"http://graph-node-combined:8000/subgraphs/name/kit\"]"` |  |
-| erpc.config.database.evmJsonRpcCache.connectors[0].driver | string | `"redis"` |  |
-| erpc.config.database.evmJsonRpcCache.connectors[0].id | string | `"redis-cache"` |  |
-| erpc.config.database.evmJsonRpcCache.connectors[0].redis.addr | string | `"redis:6379"` |  |
-| erpc.config.database.evmJsonRpcCache.connectors[0].redis.connPoolSize | int | `128` |  |
-| erpc.config.database.evmJsonRpcCache.connectors[0].redis.db | int | `0` |  |
-| erpc.config.database.evmJsonRpcCache.connectors[0].redis.password | string | `"atk"` |  |
-| erpc.config.database.evmJsonRpcCache.connectors[0].redis.username | string | `"default"` |  |
-| erpc.config.database.evmJsonRpcCache.policies[0].connector | string | `"redis-cache"` |  |
-| erpc.config.database.evmJsonRpcCache.policies[0].finality | string | `"finalized"` |  |
-| erpc.config.database.evmJsonRpcCache.policies[0].method | string | `"*"` |  |
-| erpc.config.database.evmJsonRpcCache.policies[0].network | string | `"*"` |  |
 | erpc.config.logLevel | string | `"info"` |  |
 | erpc.config.projects[0].id | string | `"settlemint"` |  |
-| erpc.config.projects[0].upstreams[0].endpoint | string | `"http://besu-node-rpc-1:8545"` |  |
+| erpc.config.projects[0].networks[0].architecture | string | `"evm"` |  |
+| erpc.config.projects[0].networks[0].directiveDefaults.retryEmpty | bool | `true` |  |
+| erpc.config.projects[0].networks[0].evm.chainId | int | `53771311147` |  |
+| erpc.config.projects[0].networks[0].evm.integrity.enforceGetLogsBlockRange | bool | `true` |  |
+| erpc.config.projects[0].networks[0].evm.integrity.enforceHighestBlock | bool | `true` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].hedge.maxCount | int | `1` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].hedge.maxDelay | string | `"4s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].hedge.minDelay | string | `"200ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].hedge.quantile | float | `0.9` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].matchMethod | string | `"eth_getLogs"` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].retry.backoffFactor | int | `2` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].retry.backoffMaxDelay | string | `"10s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].retry.delay | string | `"500ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].retry.jitter | string | `"300ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].retry.maxAttempts | int | `3` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].timeout.duration | string | `"45s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[1].matchMethod | string | `"trace_*|debug_*|arbtrace_*"` |  |
+| erpc.config.projects[0].networks[0].failsafe[1].retry.maxAttempts | int | `1` |  |
+| erpc.config.projects[0].networks[0].failsafe[1].timeout.duration | string | `"90s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[2].matchMethod | string | `"eth_getBlock*|eth_getTransaction*"` |  |
+| erpc.config.projects[0].networks[0].failsafe[2].retry.backoffFactor | float | `1.5` |  |
+| erpc.config.projects[0].networks[0].failsafe[2].retry.backoffMaxDelay | string | `"3s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[2].retry.delay | string | `"200ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[2].retry.jitter | string | `"150ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[2].retry.maxAttempts | int | `2` |  |
+| erpc.config.projects[0].networks[0].failsafe[2].timeout.duration | string | `"6s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[3].hedge.delay | string | `"250ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[3].hedge.maxCount | int | `1` |  |
+| erpc.config.projects[0].networks[0].failsafe[3].matchFinality[0] | string | `"unfinalized"` |  |
+| erpc.config.projects[0].networks[0].failsafe[3].matchFinality[1] | string | `"realtime"` |  |
+| erpc.config.projects[0].networks[0].failsafe[3].matchMethod | string | `"*"` |  |
+| erpc.config.projects[0].networks[0].failsafe[3].retry.delay | string | `"150ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[3].retry.jitter | string | `"150ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[3].retry.maxAttempts | int | `2` |  |
+| erpc.config.projects[0].networks[0].failsafe[3].timeout.duration | string | `"4s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[4].matchFinality[0] | string | `"finalized"` |  |
+| erpc.config.projects[0].networks[0].failsafe[4].matchMethod | string | `"*"` |  |
+| erpc.config.projects[0].networks[0].failsafe[4].retry.backoffFactor | float | `1.8` |  |
+| erpc.config.projects[0].networks[0].failsafe[4].retry.backoffMaxDelay | string | `"8s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[4].retry.delay | string | `"400ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[4].retry.jitter | string | `"250ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[4].retry.maxAttempts | int | `4` |  |
+| erpc.config.projects[0].networks[0].failsafe[4].timeout.duration | string | `"20s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].hedge.maxCount | int | `2` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].hedge.maxDelay | string | `"2s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].hedge.minDelay | string | `"120ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].hedge.quantile | float | `0.95` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].matchMethod | string | `"*"` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].retry.backoffFactor | float | `1.4` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].retry.backoffMaxDelay | string | `"5s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].retry.delay | string | `"300ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].retry.jitter | string | `"200ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].retry.maxAttempts | int | `3` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].timeout.duration | string | `"12s"` |  |
+| erpc.config.projects[0].upstreams[0].endpoint | string | `"http://besu-node-rpc-0.besu-node-rpc:8545"` |  |
 | erpc.config.projects[0].upstreams[0].evm.chainId | int | `53771311147` |  |
-| erpc.config.projects[0].upstreams[0].failsafe.timeout.duration | string | `"30s"` |  |
-| erpc.config.projects[0].upstreams[0].id | string | `"besu-node-rpc-1"` |  |
-| erpc.config.projects[0].upstreams[1].endpoint | string | `"http://besu-node-validator-1:8545"` |  |
+| erpc.config.projects[0].upstreams[0].failsafe[0].circuitBreaker.failureThresholdCapacity | int | `80` |  |
+| erpc.config.projects[0].upstreams[0].failsafe[0].circuitBreaker.failureThresholdCount | int | `40` |  |
+| erpc.config.projects[0].upstreams[0].failsafe[0].circuitBreaker.halfOpenAfter | string | `"120s"` |  |
+| erpc.config.projects[0].upstreams[0].failsafe[0].circuitBreaker.successThresholdCapacity | int | `10` |  |
+| erpc.config.projects[0].upstreams[0].failsafe[0].circuitBreaker.successThresholdCount | int | `3` |  |
+| erpc.config.projects[0].upstreams[0].failsafe[0].matchMethod | string | `"*"` |  |
+| erpc.config.projects[0].upstreams[0].id | string | `"besu-node-rpc-0"` |  |
+| erpc.config.projects[0].upstreams[1].endpoint | string | `"http://besu-node-rpc-1.besu-node-rpc:8545"` |  |
 | erpc.config.projects[0].upstreams[1].evm.chainId | int | `53771311147` |  |
-| erpc.config.projects[0].upstreams[1].failsafe.timeout.duration | string | `"30s"` |  |
-| erpc.config.projects[0].upstreams[1].id | string | `"besu-node-validator-1"` |  |
+| erpc.config.projects[0].upstreams[1].failsafe[0].circuitBreaker.failureThresholdCapacity | int | `80` |  |
+| erpc.config.projects[0].upstreams[1].failsafe[0].circuitBreaker.failureThresholdCount | int | `40` |  |
+| erpc.config.projects[0].upstreams[1].failsafe[0].circuitBreaker.halfOpenAfter | string | `"120s"` |  |
+| erpc.config.projects[0].upstreams[1].failsafe[0].circuitBreaker.successThresholdCapacity | int | `10` |  |
+| erpc.config.projects[0].upstreams[1].failsafe[0].circuitBreaker.successThresholdCount | int | `3` |  |
+| erpc.config.projects[0].upstreams[1].failsafe[0].matchMethod | string | `"*"` |  |
+| erpc.config.projects[0].upstreams[1].id | string | `"besu-node-rpc-1"` |  |
 | erpc.config.server.httpHostV4 | string | `"0.0.0.0"` |  |
 | erpc.config.server.httpPort | int | `4000` |  |
+| erpc.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| erpc.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| erpc.containerSecurityContext.runAsGroup | int | `1000` |  |
+| erpc.containerSecurityContext.runAsNonRoot | bool | `true` |  |
+| erpc.containerSecurityContext.runAsUser | int | `1000` |  |
+| erpc.containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | erpc.enabled | bool | `true` |  |
 | erpc.image.pullPolicy | string | `"IfNotPresent"` |  |
 | erpc.image.registry | string | `"ghcr.io"` |  |
@@ -216,12 +342,29 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | erpc.ingress.hosts[0].host | string | `"rpc.k8s.orb.local"` |  |
 | erpc.ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | erpc.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
+| erpc.initContainerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| erpc.initContainerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| erpc.initContainerSecurityContext.runAsGroup | int | `1001` |  |
+| erpc.initContainerSecurityContext.runAsNonRoot | bool | `true` |  |
+| erpc.initContainerSecurityContext.runAsUser | int | `1001` |  |
+| erpc.initContainerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | erpc.initContainers.waitforit.image.pullPolicy | string | `"IfNotPresent"` |  |
 | erpc.initContainers.waitforit.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
 | erpc.initContainers.waitforit.image.tag | string | `"v7.7.10"` |  |
 | erpc.podAnnotations."prometheus.io/port" | string | `"4001"` |  |
 | erpc.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
 | erpc.podLabels."app.kubernetes.io/component" | string | `"erpc"` |  |
+| erpc.podSecurityContext.fsGroup | int | `1000` |  |
+| erpc.podSecurityContext.runAsNonRoot | bool | `true` |  |
+| erpc.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| erpc.redis.cacheDb | int | `0` |  |
+| erpc.redis.cacheQuery | string | `"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"` |  |
+| erpc.redis.host | string | `"redis"` |  |
+| erpc.redis.password | string | `"atk"` |  |
+| erpc.redis.port | int | `6379` |  |
+| erpc.redis.sharedStateDb | int | `1` |  |
+| erpc.redis.sharedStateQuery | string | `"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=20"` |  |
+| erpc.redis.username | string | `"default"` |  |
 | erpc.resources | object | `{}` |  |
 | erpc.test.image.pullPolicy | string | `"IfNotPresent"` |  |
 | erpc.test.image.repository | string | `"docker.io/busybox"` |  |
@@ -232,6 +375,14 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | global.artifacts.image.tag | string | `"2.0.0-main.91391"` |  |
 | global.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | global.networkPolicy.enabled | bool | `false` |  |
+| global.openshift.enabled | bool | `false` |  |
+| global.openshift.fsGroup | int | `1000640000` |  |
+| graph-node.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| graph-node.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| graph-node.containerSecurityContext.runAsGroup | int | `1000` |  |
+| graph-node.containerSecurityContext.runAsNonRoot | bool | `true` |  |
+| graph-node.containerSecurityContext.runAsUser | int | `1000` |  |
+| graph-node.containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | graph-node.enabled | bool | `true` |  |
 | graph-node.env.PRIMARY_SUBGRAPH_DATA_PGDATABASE | string | `"thegraph"` |  |
 | graph-node.env.PRIMARY_SUBGRAPH_DATA_PGHOST | string | `"postgresql"` |  |
@@ -240,7 +391,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | graph-node.env.PRIMARY_SUBGRAPH_DATA_PGUSER | string | `"thegraph"` |  |
 | graph-node.image.pullPolicy | string | `"IfNotPresent"` |  |
 | graph-node.image.repository | string | `"docker.io/graphprotocol/graph-node"` |  |
-| graph-node.image.tag | string | `"v0.40.1"` |  |
+| graph-node.image.tag | string | `"v0.40.2"` |  |
 | graph-node.ingress.annotations."nginx.ingress.kubernetes.io/rewrite-target" | string | `"/$1"` |  |
 | graph-node.ingress.annotations."nginx.ingress.kubernetes.io/use-regex" | string | `"true"` |  |
 | graph-node.ingress.className | string | `"atk-nginx"` |  |
@@ -271,9 +422,18 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | graph-node.initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` |  |
 | graph-node.initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
 | graph-node.initContainer.tcpCheck.timeout | int | `120` |  |
+| graph-node.initContainerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| graph-node.initContainerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| graph-node.initContainerSecurityContext.runAsGroup | int | `1001` |  |
+| graph-node.initContainerSecurityContext.runAsNonRoot | bool | `true` |  |
+| graph-node.initContainerSecurityContext.runAsUser | int | `1001` |  |
+| graph-node.initContainerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | graph-node.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
 | graph-node.podAnnotations."prometheus.io/port" | string | `"8040"` |  |
 | graph-node.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
+| graph-node.podSecurityContext.fsGroup | int | `1000` |  |
+| graph-node.podSecurityContext.runAsNonRoot | bool | `true` |  |
+| graph-node.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | graph-node.postgresReadinessCheck.enabled | bool | `true` |  |
 | graph-node.postgresReadinessCheck.image | string | `"docker.io/postgres:17.6-alpine"` |  |
 | graph-node.postgresReadinessCheck.initialWaitTime | int | `2` |  |
@@ -285,6 +445,13 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | graph-node.postgresReadinessCheck.resources.limits.memory | string | `"96Mi"` |  |
 | graph-node.postgresReadinessCheck.resources.requests.cpu | string | `"25m"` |  |
 | graph-node.postgresReadinessCheck.resources.requests.memory | string | `"48Mi"` |  |
+| graph-node.postgresql.database | string | `"thegraph"` |  |
+| graph-node.postgresql.endpoint | string | `"postgresql:5432"` |  |
+| graph-node.postgresql.host | string | `"postgresql"` |  |
+| graph-node.postgresql.password | string | `"atk"` |  |
+| graph-node.postgresql.port | int | `5432` |  |
+| graph-node.postgresql.url | string | `"postgresql://thegraph:atk@postgresql:5432/thegraph?sslmode=disable"` |  |
+| graph-node.postgresql.username | string | `"thegraph"` |  |
 | hasura.enabled | bool | `true` |  |
 | hasura.graphql-engine.image.pullPolicy | string | `"IfNotPresent"` |  |
 | hasura.graphql-engine.image.repository | string | `"docker.io/hasura/graphql-engine"` |  |
@@ -307,8 +474,30 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | hasura.graphql-engine.replicas | int | `1` |  |
 | hasura.graphql-engine.secret.extraSecrets.DEFAULT_DB_URL | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
 | hasura.graphql-engine.secret.metadataDbUrl | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
-| hasura.graphql-engine.secret.rateLimitRedisUrl | string | `"redis://default:atk@redis:6379/0"` |  |
-| hasura.graphql-engine.secret.redisUrl | string | `"redis://default:atk@redis:6379/0"` |  |
+| hasura.graphql-engine.secret.rateLimitRedisUrl | string | `"redis://default:atk@redis:6379/3"` |  |
+| hasura.graphql-engine.secret.redisUrl | string | `"redis://default:atk@redis:6379/2"` |  |
+| hasura.postgresql.database | string | `"hasura"` |  |
+| hasura.postgresql.endpoint | string | `"postgresql:5432"` |  |
+| hasura.postgresql.host | string | `"postgresql"` |  |
+| hasura.postgresql.password | string | `"atk"` |  |
+| hasura.postgresql.port | int | `5432` |  |
+| hasura.postgresql.sslMode | string | `"disable"` |  |
+| hasura.postgresql.url | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
+| hasura.postgresql.username | string | `"hasura"` |  |
+| hasura.redis.primary.db | int | `2` |  |
+| hasura.redis.primary.host | string | `"redis"` |  |
+| hasura.redis.primary.password | string | `"atk"` |  |
+| hasura.redis.primary.port | int | `6379` |  |
+| hasura.redis.primary.url | string | `"redis://default:atk@redis:6379/2"` |  |
+| hasura.redis.primary.username | string | `"default"` |  |
+| hasura.redis.rateLimit.db | int | `3` |  |
+| hasura.redis.rateLimit.host | string | `"redis"` |  |
+| hasura.redis.rateLimit.password | string | `"atk"` |  |
+| hasura.redis.rateLimit.port | int | `6379` |  |
+| hasura.redis.rateLimit.url | string | `"redis://default:atk@redis:6379/3"` |  |
+| hasura.redis.rateLimit.username | string | `"default"` |  |
+| network.enabled | bool | `true` |  |
+| network.network-bootstrapper.settings.chainId | string | `"53771311147"` |  |
 | observability.alloy.alloy.resources | object | `{}` |  |
 | observability.alloy.configReloader.image.registry | string | `"quay.io"` |  |
 | observability.alloy.configReloader.image.repository | string | `"prometheus-operator/prometheus-config-reloader"` | Repository to get config reloader image from. |
@@ -365,11 +554,26 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.victoria-metrics-single.server.persistentVolume.storageClass | string | `""` |  |
 | observability.victoria-metrics-single.server.resources | object | `{}` |  |
 | portal.config.postgresql | string | `"postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"` |  |
-| portal.config.redis.db | int | `0` |  |
+| portal.config.postgresqlConnection.database | string | `"portal"` |  |
+| portal.config.postgresqlConnection.endpoint | string | `"postgresql:5432"` |  |
+| portal.config.postgresqlConnection.host | string | `"postgresql"` |  |
+| portal.config.postgresqlConnection.password | string | `"atk"` |  |
+| portal.config.postgresqlConnection.port | int | `5432` |  |
+| portal.config.postgresqlConnection.sslMode | string | `"disable"` |  |
+| portal.config.postgresqlConnection.url | string | `"postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"` |  |
+| portal.config.postgresqlConnection.username | string | `"portal"` |  |
+| portal.config.redis.db | int | `4` |  |
 | portal.config.redis.host | string | `"redis"` |  |
 | portal.config.redis.password | string | `"atk"` |  |
 | portal.config.redis.port | int | `6379` |  |
+| portal.config.redis.url | string | `"redis://default:atk@redis:6379/4"` |  |
 | portal.config.redis.username | string | `"default"` |  |
+| portal.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| portal.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| portal.containerSecurityContext.runAsGroup | int | `1000` |  |
+| portal.containerSecurityContext.runAsNonRoot | bool | `true` |  |
+| portal.containerSecurityContext.runAsUser | int | `1000` |  |
+| portal.containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | portal.enabled | bool | `true` |  |
 | portal.image.pullPolicy | string | `"IfNotPresent"` |  |
 | portal.image.registry | string | `"ghcr.io"` |  |
@@ -380,6 +584,12 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | portal.initContainer.copyArtifacts.resources.limits.memory | string | `"128Mi"` |  |
 | portal.initContainer.copyArtifacts.resources.requests.cpu | string | `"25m"` |  |
 | portal.initContainer.copyArtifacts.resources.requests.memory | string | `"64Mi"` |  |
+| portal.initContainer.copyArtifacts.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| portal.initContainer.copyArtifacts.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| portal.initContainer.copyArtifacts.securityContext.runAsGroup | int | `1001` |  |
+| portal.initContainer.copyArtifacts.securityContext.runAsNonRoot | bool | `true` |  |
+| portal.initContainer.copyArtifacts.securityContext.runAsUser | int | `1001` |  |
+| portal.initContainer.copyArtifacts.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | portal.initContainer.tcpCheck.dependencies[0].endpoint | string | `"postgresql:5432"` |  |
 | portal.initContainer.tcpCheck.dependencies[0].name | string | `"postgresql"` |  |
 | portal.initContainer.tcpCheck.enabled | bool | `true` |  |
@@ -391,15 +601,25 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | portal.initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` |  |
 | portal.initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
 | portal.initContainer.tcpCheck.timeout | int | `120` |  |
+| portal.initContainerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| portal.initContainerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| portal.initContainerSecurityContext.runAsGroup | int | `1001` |  |
+| portal.initContainerSecurityContext.runAsNonRoot | bool | `true` |  |
+| portal.initContainerSecurityContext.runAsUser | int | `1001` |  |
+| portal.initContainerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | portal.podAnnotations."prometheus.io/path" | string | `"/portal-metrics"` |  |
 | portal.podAnnotations."prometheus.io/port" | string | `"3000"` |  |
 | portal.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
 | portal.podLabels."app.kubernetes.io/component" | string | `"portal"` |  |
+| portal.podSecurityContext.fsGroup | int | `1000` |  |
+| portal.podSecurityContext.runAsNonRoot | bool | `true` |  |
+| portal.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | support.enabled | bool | `true` |  |
 | support.ingress-nginx.controller.image.digest | string | `""` |  |
 | support.ingress-nginx.controller.image.repository | string | `"registry.k8s.io/ingress-nginx/controller"` |  |
 | support.ingress-nginx.controller.image.tag | string | `"v1.13.2"` |  |
 | support.ingress-nginx.controller.resources | object | `{}` |  |
+| support.ingress-nginx.enabled | bool | `true` |  |
 | support.ingress-nginx.replicaCount | int | `1` |  |
 | support.minio.enabled | bool | `true` |  |
 | support.minio.image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -416,10 +636,26 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | support.postgresql.image.registry | string | `"docker.io"` |  |
 | support.postgresql.image.repository | string | `"postgres"` |  |
 | support.postgresql.image.tag | string | `"17.6-alpine"` |  |
+| support.postgresql.podSecurityContext.fsGroup | int | `999` |  |
+| support.postgresql.podSecurityContext.runAsNonRoot | bool | `true` |  |
+| support.postgresql.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| support.postgresql.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| support.postgresql.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| support.postgresql.securityContext.runAsGroup | int | `999` |  |
+| support.postgresql.securityContext.runAsNonRoot | bool | `true` |  |
+| support.postgresql.securityContext.runAsUser | int | `999` |  |
+| support.postgresql.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | support.redis.auth.enabled | bool | `true` |  |
 | support.redis.auth.password | string | `"atk"` |  |
 | support.redis.commonLabels."app.kubernetes.io/managed-by" | string | `"helm"` |  |
 | support.redis.commonLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
+| support.redis.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| support.redis.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| support.redis.containerSecurityContext.readOnlyRootFilesystem | bool | `false` |  |
+| support.redis.containerSecurityContext.runAsGroup | int | `999` |  |
+| support.redis.containerSecurityContext.runAsNonRoot | bool | `true` |  |
+| support.redis.containerSecurityContext.runAsUser | int | `999` |  |
+| support.redis.containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | support.redis.enabled | bool | `true` |  |
 | support.redis.fullnameOverride | string | `"redis"` |  |
 | support.redis.image.registry | string | `"docker.io"` | Redis image registry |
@@ -427,6 +663,10 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | support.redis.image.tag | string | `"8.2.1-alpine"` | Redis image tag |
 | support.redis.persistence.enabled | bool | `true` |  |
 | support.redis.persistence.size | string | `"1Gi"` |  |
+| support.redis.podSecurityContext.fsGroup | int | `999` |  |
+| support.redis.podSecurityContext.runAsNonRoot | bool | `true` |  |
+| support.redis.podSecurityContext.runAsUser | int | `999` |  |
+| support.redis.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | support.redis.resources.limits.cpu | string | `"200m"` |  |
 | support.redis.resources.limits.memory | string | `"256Mi"` |  |
 | support.redis.resources.requests.cpu | string | `"100m"` |  |
@@ -436,11 +676,17 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | support.reloader.image.tag | string | `"v1.4.8"` |  |
 | txsigner.config.derivationPath | string | `"m/44'/60'/0'/0/0"` |  |
 | txsigner.config.mnemonic | string | `"gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"` |  |
+| txsigner.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| txsigner.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| txsigner.containerSecurityContext.runAsGroup | int | `1000` |  |
+| txsigner.containerSecurityContext.runAsNonRoot | bool | `true` |  |
+| txsigner.containerSecurityContext.runAsUser | int | `1000` |  |
+| txsigner.containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | txsigner.enabled | bool | `true` |  |
 | txsigner.image.pullPolicy | string | `"IfNotPresent"` |  |
 | txsigner.image.registry | string | `"ghcr.io"` |  |
 | txsigner.image.repository | string | `"settlemint/btp-signer"` |  |
-| txsigner.image.tag | string | `"7.15.12"` |  |
+| txsigner.image.tag | string | `"7.15.13"` |  |
 | txsigner.ingress.hostname | string | `"txsigner.k8s.orb.local"` |  |
 | txsigner.initContainer.tcpCheck.dependencies[0].endpoint | string | `"postgresql:5432"` |  |
 | txsigner.initContainer.tcpCheck.dependencies[0].name | string | `"postgresql"` |  |
@@ -453,9 +699,47 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | txsigner.initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` |  |
 | txsigner.initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
 | txsigner.initContainer.tcpCheck.timeout | int | `120` |  |
+| txsigner.initContainerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| txsigner.initContainerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| txsigner.initContainerSecurityContext.runAsGroup | int | `1001` |  |
+| txsigner.initContainerSecurityContext.runAsNonRoot | bool | `true` |  |
+| txsigner.initContainerSecurityContext.runAsUser | int | `1001` |  |
+| txsigner.initContainerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| txsigner.podSecurityContext.fsGroup | int | `1000` |  |
+| txsigner.podSecurityContext.runAsNonRoot | bool | `true` |  |
+| txsigner.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | txsigner.postgresql | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
+| txsigner.postgresqlConnection.database | string | `"txsigner"` |  |
+| txsigner.postgresqlConnection.endpoint | string | `"postgresql:5432"` |  |
+| txsigner.postgresqlConnection.host | string | `"postgresql"` |  |
+| txsigner.postgresqlConnection.password | string | `"atk"` |  |
+| txsigner.postgresqlConnection.port | int | `5432` |  |
+| txsigner.postgresqlConnection.sslMode | string | `"disable"` |  |
+| txsigner.postgresqlConnection.url | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
+| txsigner.postgresqlConnection.username | string | `"txsigner"` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |
 | txsigner.test.image.pullPolicy | string | `"IfNotPresent"` |  |
 | txsigner.test.image.repository | string | `"docker.io/busybox"` |  |
 | txsigner.test.image.tag | string | `"1.37"` |  |
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| SettleMint | <support@settlemint.com> | <https://settlemint.com> |
+
+## Requirements
+
+| Repository | Name | Version |
+|------------|------|---------|
+|  | blockscout | * |
+|  | dapp | * |
+|  | erpc | * |
+|  | graph-node | * |
+|  | hasura | * |
+|  | observability | * |
+|  | portal | * |
+|  | support | * |
+|  | txsigner | * |
+| oci://ghcr.io/settlemint/network-bootstrapper | network | 1.0.13 |

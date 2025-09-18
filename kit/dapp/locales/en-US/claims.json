@@ -1,0 +1,93 @@
+{
+  "status": {
+    "pending": "Pending",
+    "verified": "Verified",
+    "rejected": "Rejected",
+    "expired": "Expired",
+    "registered": "Registered",
+    "notRegistered": "Not Registered",
+    "verifiedAriaLabel": "Identity verified with claims",
+    "registeredAriaLabel": "Identity registered without claims",
+    "notRegisteredAriaLabel": "No identity registered"
+  },
+  "table": {
+    "columns": {
+      "user": "User",
+      "claimType": "Claim Type",
+      "topic": "Topic",
+      "status": "Status",
+      "issuer": "Issuer",
+      "issuedAt": "Issued At",
+      "expiresAt": "Expires At",
+      "verifiedAt": "Verified At"
+    },
+    "search": {
+      "placeholder": "Search claims..."
+    },
+    "emptyState": {
+      "title": "No claims found",
+      "description": "No identity claims have been issued yet.",
+      "loading": "Loading claims..."
+    },
+    "errors": {
+      "loadFailed": "Failed to load claims. Please try again.",
+      "navigationFailed": "Failed to navigate to claim details"
+    },
+    "fallback": {
+      "noExpiry": "No expiry",
+      "notVerified": "Not verified"
+    }
+  },
+  "identityTable": {
+    "columns": {
+      "id": "ID",
+      "type": "Type",
+      "entity": "Entity",
+      "linkedEntity": "Account / Contract",
+      "activeClaims": "Active Claims",
+      "revokedClaims": "Revoked Claims",
+      "deployment": "Deployment Tx"
+    },
+    "types": {
+      "account": "Account",
+      "contract": "Contract"
+    },
+    "fallback": {
+      "noAccount": "No account",
+      "noContract": "No contract",
+      "noDeployment": "No deployment",
+      "noEntity": "No linked entity"
+    },
+    "search": {
+      "placeholder": "Search identities..."
+    },
+    "emptyState": {
+      "title": "No identities found",
+      "description": "No identities match your filters yet.",
+      "loading": "Loading identities..."
+    },
+    "errors": {
+      "loadFailed": "Failed to load identities. Please try again.",
+      "navigationFailed": "Failed to open identity details"
+    }
+  },
+  "page": {
+    "description": "Manage identity claims, verification status, and compliance for users.",
+    "loading": "Loading claims..."
+  },
+  "details": {
+    "title": "Account Claims",
+    "summary": {
+      "total": "Total Claims",
+      "verified": "Verified",
+      "pending": "Pending",
+      "rejectedExpired": "Rejected/Expired"
+    },
+    "claimId": "Claim ID",
+    "noClaimsTitle": "No Claims Found",
+    "noClaimsDescription": "This account has not been assigned any identity claims yet."
+  },
+  "tabs": {
+    "details": "Details"
+  }
+}

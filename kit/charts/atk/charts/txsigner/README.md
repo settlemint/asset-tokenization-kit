@@ -48,6 +48,13 @@ Kubernetes: `>=1.21.0-0`
 - Helm 3.2.0+
 - Access to a blockchain RPC endpoint
 - Private key or key management service configured
+- PostgreSQL database (defaults target the bundled `support.postgresql` release)
+
+## Connection Requirements
+
+TxSigner reads its database credentials from the `txsigner.postgresqlConnection` values block. Update
+that section with the hostname, port, database, username, password, and SSL mode for your external
+PostgreSQL instance.
 
 ## Installing the Chart
 
@@ -134,17 +141,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | config.rateLimit.maxRequestsPerMinute | int | `60` | Maximum requests per minute |
 | config.rpcUrl | string | `"http://erpc:4000"` | RPC endpoint URL |
 | config.signingStrategy | string | `"local"` | Signing strategy (local, kms, hsm) |
-| containerSecurityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"enabled":true,"readOnlyRootFilesystem":false,"runAsGroup":1001,"runAsNonRoot":true,"runAsUser":1001,"seccompProfile":{"type":"RuntimeDefault"}}` | Container Security Context configuration |
-| containerSecurityContext.allowPrivilegeEscalation | bool | `false` | Set container's Security Context allowPrivilegeEscalation |
-| containerSecurityContext.capabilities | object | `{"drop":["ALL"]}` | Linux capabilities configuration |
-| containerSecurityContext.capabilities.drop | list | `["ALL"]` | Set container's Security Context drop capabilities |
-| containerSecurityContext.enabled | bool | `true` | Enable container Security Context |
-| containerSecurityContext.readOnlyRootFilesystem | bool | `false` | Set container's Security Context readOnlyRootFilesystem |
-| containerSecurityContext.runAsGroup | int | `1001` | Set container's Security Context runAsGroup |
-| containerSecurityContext.runAsNonRoot | bool | `true` | Set container's Security Context runAsNonRoot |
-| containerSecurityContext.runAsUser | int | `1001` | Set container's Security Context runAsUser |
-| containerSecurityContext.seccompProfile | object | `{"type":"RuntimeDefault"}` | Seccomp profile configuration |
-| containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` | Set container's Security Context seccomp profile |
+| containerSecurityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":false,"runAsGroup":1001,"runAsNonRoot":true,"runAsUser":1001,"seccompProfile":{"type":"RuntimeDefault"}}` | Container Security Context configuration |
 | extraEnvVars | list | `[]` | Array with extra environment variables to add to TxSigner nodes |
 | extraEnvVarsCM | string | `""` | Name of existing ConfigMap containing extra env vars for TxSigner nodes |
 | extraEnvVarsSecret | string | `""` | Name of existing Secret containing extra env vars for TxSigner nodes |
@@ -155,13 +152,13 @@ The command removes all the Kubernetes components associated with the chart and 
 | global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |
 | global.imageRegistry | string | `""` | Global Docker image registry |
 | global.storageClass | string | `""` | Global StorageClass for Persistent Volume(s) |
-| image | object | `{"digest":"","pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"ghcr.io","repository":"settlemint/btp-signer","tag":"7.15.12"}` | TxSigner image |
+| image | object | `{"digest":"","pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"ghcr.io","repository":"settlemint/btp-signer","tag":"7.15.13"}` | TxSigner image |
 | image.digest | string | `""` | TxSigner image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag |
 | image.pullPolicy | string | `"IfNotPresent"` | TxSigner image pull policy |
 | image.pullSecrets | list | `[]` | TxSigner image pull secrets |
 | image.registry | string | `"ghcr.io"` | TxSigner image registry |
 | image.repository | string | `"settlemint/btp-signer"` | TxSigner image repository |
-| image.tag | string | `"7.15.12"` | TxSigner image tag (immutable tags are recommended) |
+| image.tag | string | `"7.15.13"` | TxSigner image tag (immutable tags are recommended) |
 | ingress | object | `{"annotations":{},"apiVersion":"","enabled":true,"extraHosts":[],"extraPaths":[],"extraRules":[],"extraTls":[],"hostname":"txsigner.k8s.orb.local","ingressClassName":"atk-nginx","path":"/","pathType":"ImplementationSpecific","secrets":[],"selfSigned":false,"tls":false}` | Ingress parameters |
 | ingress.annotations | object | `{}` | Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations. |
 | ingress.apiVersion | string | `""` | Force Ingress API version (automatically detected if not set) |
@@ -216,10 +213,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | podAnnotations."prometheus.io/scrape" | string | `"true"` | Enable prometheus scraping |
 | podAntiAffinityPreset | string | `"soft"` | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard` |
 | podLabels | object | `{}` | Extra labels for TxSigner pods |
-| podSecurityContext | object | `{"enabled":true,"fsGroup":1001,"sysctls":[]}` | Pod Security Context configuration |
-| podSecurityContext.enabled | bool | `true` | Enabled TxSigner pods' Security Context |
-| podSecurityContext.fsGroup | int | `1001` | Set TxSigner pod's Security Context fsGroup |
-| podSecurityContext.sysctls | list | `[]` | Set kernel settings using the sysctl interface |
+| podSecurityContext | object | `{"fsGroup":1001,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Pod Security Context configuration |
 | postgresql | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` | PostgreSQL connection string |
 | priorityClassName | string | `""` | TxSigner pods' priority class name |
 | readinessProbe | object | `{"enabled":true,"failureThreshold":60,"initialDelaySeconds":1,"periodSeconds":5,"successThreshold":1,"tcpSocket":{"port":"http"},"timeoutSeconds":5}` | Configure TxSigner containers' readiness probe |

@@ -142,7 +142,7 @@ Usage: {{ include "atk.common.imagePullSecrets" . }}
 */}}
 {{- define "atk.common.imagePullSecrets" -}}
 {{- $root := . -}}
-{{- $secrets := list -}}
+{{- $secretsDict := dict -}}
 {{- $localCredentials := .Values.imagePullCredentials }}
 {{- $globalCredentials := .Values.global.imagePullCredentials }}
 {{- $credentials := $globalCredentials }}
@@ -153,7 +153,8 @@ Usage: {{ include "atk.common.imagePullSecrets" . }}
   {{- if $credentials.registries -}}
     {{- range $name, $registry := $credentials.registries -}}
       {{- if $registry.enabled -}}
-        {{- $secrets = append $secrets (printf "image-pull-secret-%s" $name) -}}
+        {{- $secretName := printf "image-pull-secret-%s" $name -}}
+        {{- $_ := set $secretsDict $secretName true -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
@@ -163,10 +164,10 @@ Usage: {{ include "atk.common.imagePullSecrets" . }}
     {{- if .Values.global.imagePullSecrets -}}
       {{- range .Values.global.imagePullSecrets -}}
         {{- if kindIs "string" . -}}
-          {{- $secrets = append $secrets . -}}
+          {{- $_ := set $secretsDict . true -}}
         {{- else if kindIs "map" . -}}
           {{- if .name -}}
-            {{- $secrets = append $secrets .name -}}
+            {{- $_ := set $secretsDict .name true -}}
           {{- end -}}
         {{- end -}}
       {{- end -}}
@@ -177,19 +178,19 @@ Usage: {{ include "atk.common.imagePullSecrets" . }}
   {{- if kindIs "slice" .Values.imagePullSecrets -}}
     {{- range .Values.imagePullSecrets -}}
       {{- if kindIs "string" . -}}
-        {{- $secrets = append $secrets . -}}
+        {{- $_ := set $secretsDict . true -}}
       {{- else if kindIs "map" . -}}
         {{- if .name -}}
-          {{- $secrets = append $secrets .name -}}
+          {{- $_ := set $secretsDict .name true -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
-{{- if $secrets }}
+{{- if $secretsDict }}
 imagePullSecrets:
-{{- range $secrets }}
-  - name: {{ . }}
+{{- range $secretName, $_ := $secretsDict }}
+  - name: {{ $secretName }}
 {{- end }}
 {{- end }}
 {{- end }}

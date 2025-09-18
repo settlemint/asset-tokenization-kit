@@ -20,6 +20,7 @@
     "helm:secrets": "op inject --force -i tools/values-orbstack.1p.yaml -o tools/values-orbstack.yaml ",
     "helm:check-context": "bash tools/helm-check-context.sh",
     "helm": "bun run helm:secrets && helm upgrade --install atk ./atk -f ./tools/values-orbstack.yaml -n atk --create-namespace --timeout 15m",
+    "helm:openshift": "bun run helm:secrets && helm upgrade --install atk ./atk -f ./tools/values-orbstack.yaml -f ./atk/values-openshift.yaml -n atk --create-namespace --timeout 15m",
     "helm:extract-env": "bun run tools/extract-env.ts",
     "helm:connect": "cd ../../ && bunx settlemint connect -a",
     "helm:subgraph": "bash tools/helm-subgraph.sh",

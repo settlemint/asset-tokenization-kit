@@ -35,6 +35,18 @@
 - Kubernetes 1.19+
 - Helm 3.2.0+
 - PV provisioner support in the underlying infrastructure (if persistence is enabled)
+- Redis instance reachable from the cluster (defaults target the bundled `support.redis` release)
+
+## Connection Requirements
+
+Configure the Redis endpoints used for caching in the `erpc.redis` section of the values file.
+
+| Purpose | Values path | Default |
+| --- | --- | --- |
+| Cache connector | `erpc.redis.cacheDb` | `redis://default:atk@redis:6379/0` |
+| Shared state connector | `erpc.redis.sharedStateDb` | `redis://default:atk@redis:6379/1` |
+
+Update the host, port, credentials, and database numbers to match your external Redis deployment.
 
 ## Installing the Chart
 

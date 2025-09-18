@@ -9,6 +9,9 @@ if [ -z "${CI:-}" ]; then
     DOCKER_BUILD_TAG="$DOCKER_BUILD_TAG-dev.$(date +%s)"
 fi
 
+# Copy Code studio Dockerfile
+cp Dockerfile.code-studio Dockerfile
+
 # Build and push Docker image
 docker buildx build . \
     --platform=linux/amd64,linux/arm64 \

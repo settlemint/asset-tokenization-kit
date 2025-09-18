@@ -15,7 +15,7 @@ image:
   pullPolicy: IfNotPresent
   # -- Overrides the image tag
   # @default -- Chart.appVersion
-  tag: "v0.40.1"
+  tag: "v0.40.2"
 
 initContainer:
   # -- Image for init container kubectl

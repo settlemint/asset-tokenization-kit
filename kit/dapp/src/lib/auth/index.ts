@@ -22,8 +22,7 @@ import { twoFactor } from "@/lib/auth/plugins/two-factor";
 import {
   accessControl,
   adminRole,
-  investorRole,
-  issuerRole,
+  userRole,
 } from "@/lib/auth/utils/permissions";
 import { kycProfiles } from "@/lib/db/schema";
 import { env } from "@atk/config/env";
@@ -35,7 +34,6 @@ import {
   betterAuth,
   type BetterAuthOptions,
   type InferUser,
-  type User,
 } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { APIError } from "better-auth/api";
@@ -135,7 +133,7 @@ const options = {
       role: {
         type: "string",
         required: true,
-        defaultValue: "investor",
+        defaultValue: "user",
         input: false,
       },
       /**
@@ -227,10 +225,11 @@ const options = {
         before: async (user) => {
           try {
             const firstUser = await db.query.user.findFirst();
+            const isFirstUSer = !firstUser;
             return {
               data: {
                 ...user,
-                role: firstUser ? "admin" : "investor",
+                role: isFirstUSer ? "admin" : "user",
                 wallet: zeroAddress,
               },
             };
@@ -272,8 +271,7 @@ const options = {
       ac: accessControl,
       roles: {
         admin: adminRole,
-        user: investorRole,
-        issuer: issuerRole,
+        user: userRole,
       },
     }),
 
@@ -324,50 +322,18 @@ const options = {
      * React Start cookie integration for SSR support.
      */
     reactStartCookies(),
-  ],
-} satisfies BetterAuthOptions;
 
-/**
- * Creates the authentication configuration.
- *
- * This function is wrapped with `serverOnly` to ensure it only runs on the server,
- * preventing sensitive configuration like secrets from being exposed to the client.
- */
-const getAuthConfig = serverOnly(() => {
-  // Override the databaseHooks to add wallet creation
-  const enhancedOptions = {
-    ...options,
-    databaseHooks: {
-      ...options.databaseHooks,
-      user: {
-        create: {
-          before: async (user: User) => {
-            try {
-              const firstUser = await db.query.user.findFirst();
-              return {
-                data: {
-                  ...user,
-                  wallet: zeroAddress,
-                  role: firstUser ? "investor" : "admin",
-                },
-              };
-            } catch (error) {
-              throw new APIError("BAD_REQUEST", {
-                message: "Failed to set the user role",
-                cause: error instanceof Error ? error : undefined,
-              });
-            }
-          },
-        },
-      },
-    },
-  };
-
-  return betterAuth({
-    ...enhancedOptions,
-    plugins: [
-      ...enhancedOptions.plugins,
-      customSession(async ({ user, session }) => {
+    /**
+     * Custom session plugin to add KYC information to the user.
+     */
+    customSession(
+      async ({
+        user,
+        session,
+      }): Promise<{
+        user: SessionUser;
+        session: Parameters<Parameters<typeof customSession>[0]>[0]["session"];
+      }> => {
         const kyc = await db.query.kycProfiles.findFirst({
           where: eq(kycProfiles.userId, user.id),
         });
@@ -381,9 +347,19 @@ const getAuthConfig = serverOnly(() => {
           } as SessionUser,
           session,
         };
-      }, enhancedOptions),
-    ],
-  });
+      }
+    ),
+  ],
+} satisfies BetterAuthOptions;
+
+/**
+ * Creates the authentication configuration.
+ *
+ * This function is wrapped with `serverOnly` to ensure it only runs on the server,
+ * preventing sensitive configuration like secrets from being exposed to the client.
+ */
+const getAuthConfig = serverOnly(() => {
+  return betterAuth(options);
 });
 
 /**
