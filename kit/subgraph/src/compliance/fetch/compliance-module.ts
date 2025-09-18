@@ -12,6 +12,7 @@ export function fetchComplianceModule(address: Address): ComplianceModule {
     complianceModule.name = "unknown";
     complianceModule.typeId = "unknown";
     complianceModule.deployedInTransaction = Bytes.empty();
+    complianceModule.complianceModuleRegistry = Address.zero();
     complianceModule.save();
     setAccountContractName(address, "Compliance Module");
   }

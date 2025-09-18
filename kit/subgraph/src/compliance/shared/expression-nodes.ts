@@ -1,4 +1,10 @@
-import { BigInt, Bytes, ethereum, store } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigInt,
+  Bytes,
+  ethereum,
+  store,
+} from "@graphprotocol/graph-ts";
 import { ExpressionNode } from "../../../generated/schema";
 import { fetchTopicScheme } from "../../topic-scheme-registry/fetch/topic-scheme";
 
@@ -47,11 +53,13 @@ export function decodeExpressionNodeArray(
  * @param baseId The base ID to generate unique node IDs from
  * @param nodes Array of decoded expression nodes
  * @param setParent Function to set the appropriate parent reference on the ExpressionNode
+ * @param topicSchemeRegistry ID of the TopicSchemeRegistry
  */
 export function createExpressionNodeEntities(
   baseId: Bytes,
   nodes: Array<DecodedExpressionNode>,
-  setParent: (node: ExpressionNode, baseId: Bytes) => void
+  setParent: (node: ExpressionNode, baseId: Bytes) => void,
+  topicSchemeRegistry: Bytes
 ): void {
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
@@ -67,7 +75,10 @@ export function createExpressionNodeEntities(
     if (node.nodeType === 0) {
       expressionNode.nodeType = "TOPIC";
       // For TOPIC nodes, link to TopicScheme if needed
-      const topicScheme = fetchTopicScheme(node.value);
+      const topicScheme = fetchTopicScheme(
+        node.value,
+        Address.fromBytes(topicSchemeRegistry)
+      );
       expressionNode.topicScheme = topicScheme.id;
     } else if (node.nodeType === 1) {
       expressionNode.nodeType = "AND";
