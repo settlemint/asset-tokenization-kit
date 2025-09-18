@@ -129,21 +129,18 @@ function RouteComponent() {
   );
   const totalHolders =
     walletDistribution?.totalHolders ?? asset.stats?.balancesCount ?? 0;
-  const ownershipConcentration = (() => {
-    const topBucket = walletDistribution?.buckets?.[4]?.count ?? 0;
-    return totalHolders > 0 ? Math.round((topBucket / totalHolders) * 100) : 0;
-  })();
+  const topBucket = walletDistribution?.buckets?.[4]?.count ?? 0;
+  const ownershipConcentration =
+    totalHolders > 0 ? Math.round((topBucket / totalHolders) * 100) : 0;
 
   // Total burned (from supply changes history - last data point)
   const { data: supplyChanges } = useQuery(
     orpc.token.statsSupplyChanges.queryOptions({
-      input: { tokenAddress: asset.id, days: 3650 },
+      input: { tokenAddress: asset.id, days: 365 },
     })
   );
   const totalBurned =
-    supplyChanges?.supplyChangesHistory?.[
-      Math.max(0, (supplyChanges?.supplyChangesHistory?.length ?? 1) - 1)
-    ]?.totalBurned ?? "0";
+    supplyChanges?.supplyChangesHistory?.at(-1)?.totalBurned ?? "0";
 
   return (
     <>
@@ -186,19 +183,19 @@ function RouteComponent() {
         />
 
         <DetailGridItem
-          label={"Ownership concentration"}
+          label={t("tokens:fields.ownershipConcentration")}
           value={ownershipConcentration}
           type="percentage"
         />
 
         <DetailGridItem
-          label={"Total burned"}
+          label={t("tokens:fields.totalBurned")}
           value={totalBurned}
           type="number"
         />
 
         <DetailGridItem
-          label={"# of holders"}
+          label={t("tokens:fields.holdersCount")}
           value={totalHolders}
           type="number"
         />
