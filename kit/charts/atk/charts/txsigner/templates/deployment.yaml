@@ -55,17 +55,14 @@ spec:
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tolerations "context" $) | nindent 8 }}
       {{- end }}
       {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck) }}
-      {{- $legacyInit := "" }}
-      {{- if .Values.initContainers }}
-        {{- $legacyInit = include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) }}
-      {{- end }}
-      {{- if or $waitForIt $legacyInit }}
+      {{- $extraInit := .Values.extraInitContainers | default (list) }}
+      {{- if or $waitForIt (gt (len $extraInit) 0) }}
       initContainers:
         {{- if $waitForIt }}
 {{ $waitForIt | nindent 8 }}
         {{- end }}
-        {{- if $legacyInit }}
-{{ $legacyInit | nindent 8 }}
+        {{- if gt (len $extraInit) 0 }}
+{{ toYaml $extraInit | nindent 8 }}
         {{- end }}
       {{- end }}
       {{- $postgresLocal := default (dict) .Values.postgresql }}

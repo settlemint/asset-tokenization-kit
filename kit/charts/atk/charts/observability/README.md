@@ -126,14 +126,15 @@ A Helm chart for the observability components
 | grafana.sidecar.datasources.enabled | bool | `true` |  |
 | grafana.sidecar.datasources.initDatasources | bool | `true` |  |
 | grafana.sidecar.plugins.enabled | bool | `true` |  |
-| kube-state-metrics.customLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
-| kube-state-metrics.enabled | bool | `true` |  |
-| kube-state-metrics.fullnameOverride | string | `"kube-state-metrics"` |  |
-| kube-state-metrics.image.registry | string | `"registry.k8s.io"` |  |
-| kube-state-metrics.imagePullSecrets | list | `[]` |  |
-| kube-state-metrics.metricLabelsAllowlist[0] | string | `"pods=[*]"` |  |
-| kube-state-metrics.metricLabelsAllowlist[1] | string | `"ingresses=[*]"` |  |
-| kube-state-metrics.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
+| kube-state-metrics | object | `{"customLabels":{"kots.io/app-slug":"settlemint-atk"},"enabled":true,"fullnameOverride":"kube-state-metrics","image":{"registry":"registry.k8s.io"},"imagePullSecrets":[],"metricLabelsAllowlist":["pods=[*]","ingresses=[*]"],"podAnnotations":{"prometheus.io/scrape":"true"}}` | Kube State Metrics configuration (list) |
+| kube-state-metrics.customLabels | object | `{"kots.io/app-slug":"settlemint-atk"}` | Custom labels to add to all resources (list) |
+| kube-state-metrics.enabled | bool | `true` | Enable kube-state-metrics deployment (bool) |
+| kube-state-metrics.fullnameOverride | string | `"kube-state-metrics"` | String to fully override common.names.fullname (string) |
+| kube-state-metrics.image | object | `{"registry":"registry.k8s.io"}` | Kube state metrics image configuration (list) |
+| kube-state-metrics.image.registry | string | `"registry.k8s.io"` | Kube state metrics image registry (list) |
+| kube-state-metrics.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array (list) |
+| kube-state-metrics.metricLabelsAllowlist | list | `["pods=[*]","ingresses=[*]"]` | Allow list for metric labels (list) |
+| kube-state-metrics.podAnnotations | object | `{"prometheus.io/scrape":"true"}` | Annotations for kube-state-metrics pods (list) |
 | loki.backend.replicas | int | `0` |  |
 | loki.bloomCompactor.replicas | int | `0` |  |
 | loki.bloomGateway.replicas | int | `0` |  |
@@ -211,19 +212,24 @@ A Helm chart for the observability components
 | loki.queryScheduler.replicas | int | `0` |  |
 | loki.read.replicas | int | `0` |  |
 | loki.resultsCache.enabled | bool | `false` |  |
-| loki.sidecar.image.repository | string | `"docker.io/kiwigrid/k8s-sidecar"` | The Docker registry and image for the k8s sidecar |
+| loki.sidecar.image.repository | string | `"docker.io/kiwigrid/k8s-sidecar"` | The Docker registry and image for the k8s sidecar (object) |
 | loki.singleBinary.persistence.size | string | `"10Gi"` |  |
 | loki.singleBinary.replicas | int | `1` |  |
 | loki.singleBinary.resources | object | `{}` |  |
 | loki.test.enabled | bool | `false` |  |
 | loki.write.replicas | int | `0` |  |
-| metrics-server.enabled | bool | `true` |  |
-| metrics-server.fullnameOverride | string | `"metrics-server"` |  |
-| metrics-server.image.repository | string | `"registry.k8s.io/metrics-server/metrics-server"` |  |
-| metrics-server.imagePullSecrets | list | `[]` |  |
-| metrics-server.podLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
-| metrics-server.server.persistentVolume.enabled | bool | `false` |  |
-| metrics-server.service.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
+| metrics-server | object | `{"enabled":true,"fullnameOverride":"metrics-server","image":{"repository":"registry.k8s.io/metrics-server/metrics-server"},"imagePullSecrets":[],"podLabels":{"kots.io/app-slug":"settlemint-atk"},"server":{"persistentVolume":{"enabled":false}},"service":{"labels":{"kots.io/app-slug":"settlemint-atk"}}}` | Kubernetes Metrics Server configuration (list) |
+| metrics-server.enabled | bool | `true` | Enable metrics server deployment (bool) |
+| metrics-server.fullnameOverride | string | `"metrics-server"` | String to fully override common.names.fullname (string) |
+| metrics-server.image | object | `{"repository":"registry.k8s.io/metrics-server/metrics-server"}` | Metrics server image configuration (list) |
+| metrics-server.image.repository | string | `"registry.k8s.io/metrics-server/metrics-server"` | Metrics server image repository (list) |
+| metrics-server.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array (list) |
+| metrics-server.podLabels | object | `{"kots.io/app-slug":"settlemint-atk"}` | Additional labels for metrics server pods (list) |
+| metrics-server.server | object | `{"persistentVolume":{"enabled":false}}` | Server configuration (object) |
+| metrics-server.server.persistentVolume | object | `{"enabled":false}` | Persistent volume configuration (object) |
+| metrics-server.server.persistentVolume.enabled | bool | `false` | Enable persistent volume for metrics server (bool) |
+| metrics-server.service | object | `{"labels":{"kots.io/app-slug":"settlemint-atk"}}` | Service configuration (object) |
+| metrics-server.service.labels | object | `{"kots.io/app-slug":"settlemint-atk"}` | Additional labels for metrics server service (list) |
 | prometheus-node-exporter.enabled | bool | `true` |  |
 | prometheus-node-exporter.fullnameOverride | string | `"node-exporter"` |  |
 | prometheus-node-exporter.global.imageRegistry | string | `"quay.io"` |  |
@@ -267,33 +273,18 @@ A Helm chart for the observability components
 | tempo.tempoQuery.ingress.pathType | string | `"Prefix"` |  |
 | tempo.tempoQuery.pullSecrets | list | `[]` |  |
 | tempo.tempoQuery.repository | string | `"docker.io/grafana/tempo-query"` |  |
-| victoria-metrics-single.enabled | bool | `true` |  |
-| victoria-metrics-single.global.image.registry | string | `"docker.io"` |  |
-| victoria-metrics-single.global.imagePullSecrets | list | `[]` |  |
-| victoria-metrics-single.server.extraArgs."search.maxQueryLen" | int | `163840` |  |
-| victoria-metrics-single.server.fullnameOverride | string | `"metrics"` |  |
-| victoria-metrics-single.server.ingress.annotations."nginx.ingress.kubernetes.io/auth-realm" | string | `"Authentication Required - Metrics"` |  |
-| victoria-metrics-single.server.ingress.annotations."nginx.ingress.kubernetes.io/auth-secret" | string | `"observability-metrics"` |  |
-| victoria-metrics-single.server.ingress.annotations."nginx.ingress.kubernetes.io/auth-type" | string | `"basic"` |  |
-| victoria-metrics-single.server.ingress.annotations."nginx.ingress.kubernetes.io/client-body-buffer-size" | string | `"500m"` |  |
-| victoria-metrics-single.server.ingress.annotations."nginx.ingress.kubernetes.io/proxy-body-size" | string | `"500m"` |  |
-| victoria-metrics-single.server.ingress.annotations."nginx.ingress.kubernetes.io/proxy-read-timeout" | string | `"3600"` |  |
-| victoria-metrics-single.server.ingress.annotations."nginx.ingress.kubernetes.io/proxy-send-timeout" | string | `"3600"` |  |
-| victoria-metrics-single.server.ingress.enabled | bool | `false` |  |
-| victoria-metrics-single.server.ingress.hosts[0].name | string | `"metrics.settlemint.local"` |  |
-| victoria-metrics-single.server.ingress.hosts[0].path | string | `"/"` |  |
-| victoria-metrics-single.server.ingress.hosts[0].port | string | `"http"` |  |
-| victoria-metrics-single.server.ingress.ingressClassName | string | `"atk-nginx"` |  |
-| victoria-metrics-single.server.ingress.pathType | string | `"Prefix"` |  |
-| victoria-metrics-single.server.persistentVolume.size | string | `"10Gi"` |  |
-| victoria-metrics-single.server.persistentVolume.storageClass | string | `""` |  |
-| victoria-metrics-single.server.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
-| victoria-metrics-single.server.podAnnotations."prometheus.io/port" | string | `"8428"` |  |
-| victoria-metrics-single.server.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
-| victoria-metrics-single.server.podLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
-| victoria-metrics-single.server.resources | object | `{}` |  |
-| victoria-metrics-single.server.retentionPeriod | int | `1` |  |
-| victoria-metrics-single.server.service.annotations."prometheus.io/path" | string | `"/metrics"` |  |
-| victoria-metrics-single.server.service.annotations."prometheus.io/port" | string | `"8428"` |  |
-| victoria-metrics-single.server.service.annotations."prometheus.io/scrape" | string | `"true"` |  |
-| victoria-metrics-single.server.service.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
+| victoria-metrics-single | object | `{"enabled":true,"global":{"image":{"registry":"docker.io"},"imagePullSecrets":[]},"server":{"extraArgs":{"search.maxQueryLen":163840},"fullnameOverride":"metrics","ingress":{"annotations":{"nginx.ingress.kubernetes.io/auth-realm":"Authentication Required - Metrics","nginx.ingress.kubernetes.io/auth-secret":"observability-metrics","nginx.ingress.kubernetes.io/auth-type":"basic","nginx.ingress.kubernetes.io/client-body-buffer-size":"500m","nginx.ingress.kubernetes.io/proxy-body-size":"500m","nginx.ingress.kubernetes.io/proxy-read-timeout":"3600","nginx.ingress.kubernetes.io/proxy-send-timeout":"3600"},"enabled":false,"hosts":[{"name":"metrics.settlemint.local","path":"/","port":"http"}],"ingressClassName":"atk-nginx","pathType":"Prefix"},"persistentVolume":{"size":"10Gi","storageClass":""},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"8428","prometheus.io/scrape":"true"},"podLabels":{"kots.io/app-slug":"settlemint-atk"},"resources":{},"retentionPeriod":1,"service":{"annotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"8428","prometheus.io/scrape":"true"},"labels":{"kots.io/app-slug":"settlemint-atk"}}}}` | Victoria Metrics Single configuration (list) |
+| victoria-metrics-single.enabled | bool | `true` | Enable Victoria Metrics Single deployment (bool) |
+| victoria-metrics-single.global | object | `{"image":{"registry":"docker.io"},"imagePullSecrets":[]}` | Global configuration (object) |
+| victoria-metrics-single.global.image | object | `{"registry":"docker.io"}` | Global image configuration (object) |
+| victoria-metrics-single.global.image.registry | string | `"docker.io"` | Global image registry (object) |
+| victoria-metrics-single.global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array (list) |
+| victoria-metrics-single.server | object | `{"extraArgs":{"search.maxQueryLen":163840},"fullnameOverride":"metrics","ingress":{"annotations":{"nginx.ingress.kubernetes.io/auth-realm":"Authentication Required - Metrics","nginx.ingress.kubernetes.io/auth-secret":"observability-metrics","nginx.ingress.kubernetes.io/auth-type":"basic","nginx.ingress.kubernetes.io/client-body-buffer-size":"500m","nginx.ingress.kubernetes.io/proxy-body-size":"500m","nginx.ingress.kubernetes.io/proxy-read-timeout":"3600","nginx.ingress.kubernetes.io/proxy-send-timeout":"3600"},"enabled":false,"hosts":[{"name":"metrics.settlemint.local","path":"/","port":"http"}],"ingressClassName":"atk-nginx","pathType":"Prefix"},"persistentVolume":{"size":"10Gi","storageClass":""},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"8428","prometheus.io/scrape":"true"},"podLabels":{"kots.io/app-slug":"settlemint-atk"},"resources":{},"retentionPeriod":1,"service":{"annotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"8428","prometheus.io/scrape":"true"},"labels":{"kots.io/app-slug":"settlemint-atk"}}}` | Victoria Metrics server configuration (list) |
+| victoria-metrics-single.server.extraArgs | object | `{"search.maxQueryLen":163840}` | Extra arguments for Victoria Metrics server (list) |
+| victoria-metrics-single.server.extraArgs."search.maxQueryLen" | int | `163840` | Maximum query length (int) |
+| victoria-metrics-single.server.fullnameOverride | string | `"metrics"` | String to fully override common.names.fullname (string) |
+| victoria-metrics-single.server.persistentVolume | object | `{"size":"10Gi","storageClass":""}` | Persistent volume configuration (object) |
+| victoria-metrics-single.server.persistentVolume.size | string | `"10Gi"` | Size of the persistent volume (string) |
+| victoria-metrics-single.server.persistentVolume.storageClass | string | `""` | Storage class for persistent volume (uses default if empty) |
+| victoria-metrics-single.server.resources | object | `{}` | Resource requests and limits for Victoria Metrics server (list) |
+| victoria-metrics-single.server.retentionPeriod | int | `1` | Data retention period in months (string) |

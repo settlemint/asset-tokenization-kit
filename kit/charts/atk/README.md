@@ -50,6 +50,7 @@ The following table lists the configurable parameters of this chart and their de
 | blockscout.blockscout.env.ETHEREUM_JSONRPC_HTTP_URL | string | `"http://erpc:4000/settlemint/evm/53771311147"` |  |
 | blockscout.blockscout.env.ETHEREUM_JSONRPC_TRACE_URL | string | `"http://erpc:4000/settlemint/evm/53771311147"` |  |
 | blockscout.blockscout.env.WEBAPP_URL | string | `"https://explorer.k8s.orb.local"` |  |
+| blockscout.blockscout.extraInitContainers | list | `[]` |  |
 | blockscout.blockscout.image.pullPolicy | string | `"IfNotPresent"` |  |
 | blockscout.blockscout.image.repository | string | `"ghcr.io/blockscout/blockscout"` |  |
 | blockscout.blockscout.image.tag | string | `"9.0.2"` |  |
@@ -57,9 +58,20 @@ The following table lists the configurable parameters of this chart and their de
 | blockscout.blockscout.ingress.enabled | bool | `true` |  |
 | blockscout.blockscout.ingress.hostname | string | `"explorer.k8s.orb.local"` |  |
 | blockscout.blockscout.init.args[0] | string | `"-c"` |  |
-| blockscout.blockscout.init.args[1] | string | `"echo \"Waiting for postgresql:5432...\"\nwhile ! nc -z postgresql 5432; do\n  sleep 2;\ndone;\necho \"PostgreSQL is ready!\"\n# Original command:\nbin/blockscout eval \"Elixir.Explorer.ReleaseTasks.create_and_migrate()\"\n"` |  |
+| blockscout.blockscout.init.args[1] | string | `"echo \"Running database migrations...\"\nbin/blockscout eval \"Elixir.Explorer.ReleaseTasks.create_and_migrate()\"\n"` |  |
 | blockscout.blockscout.init.command[0] | string | `"/bin/sh"` |  |
 | blockscout.blockscout.init.enabled | bool | `true` |  |
+| blockscout.blockscout.initContainer.tcpCheck.dependencies[0].endpoint | string | `"postgresql:5432"` |  |
+| blockscout.blockscout.initContainer.tcpCheck.dependencies[0].name | string | `"postgresql"` |  |
+| blockscout.blockscout.initContainer.tcpCheck.enabled | bool | `true` |  |
+| blockscout.blockscout.initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
+| blockscout.blockscout.initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
+| blockscout.blockscout.initContainer.tcpCheck.image.tag | string | `"v7.7.10"` |  |
+| blockscout.blockscout.initContainer.tcpCheck.resources.limits.cpu | string | `"100m"` |  |
+| blockscout.blockscout.initContainer.tcpCheck.resources.limits.memory | string | `"64Mi"` |  |
+| blockscout.blockscout.initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` |  |
+| blockscout.blockscout.initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
+| blockscout.blockscout.initContainer.tcpCheck.timeout | int | `120` |  |
 | blockscout.blockscout.initContainerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
 | blockscout.blockscout.initContainerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | blockscout.blockscout.initContainerSecurityContext.readOnlyRootFilesystem | bool | `false` |  |
@@ -102,25 +114,24 @@ The following table lists the configurable parameters of this chart and their de
 | blockscout.postgresql.url | string | `"postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"` |  |
 | blockscout.postgresql.username | string | `"blockscout"` |  |
 | dapp.enabled | bool | `true` |  |
+| dapp.extraInitContainers | list | `[]` |  |
 | dapp.image.repository | string | `"ghcr.io/settlemint/asset-tokenization-kit"` |  |
 | dapp.ingress.enabled | bool | `true` |  |
 | dapp.ingress.hosts[0].host | string | `"dapp.k8s.orb.local"` |  |
 | dapp.ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | dapp.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
-| dapp.initContainer.graphQLCheck.connectTimeoutSeconds | int | `5` |  |
 | dapp.initContainer.graphQLCheck.enabled | bool | `true` |  |
 | dapp.initContainer.graphQLCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | dapp.initContainer.graphQLCheck.image.registry | string | `"docker.io"` |  |
 | dapp.initContainer.graphQLCheck.image.repository | string | `"curlimages/curl"` |  |
 | dapp.initContainer.graphQLCheck.image.tag | string | `"8.16.0"` |  |
-| dapp.initContainer.graphQLCheck.name | string | `"wait-for-graph-subgraph-kit"` |  |
-| dapp.initContainer.graphQLCheck.query | string | `"{ __typename }"` |  |
+| dapp.initContainer.graphQLCheck.name | string | `"wait-for-graphql"` |  |
+| dapp.initContainer.graphQLCheck.query | string | `"{ _meta { hasIndexingErrors block { number } } }"` |  |
 | dapp.initContainer.graphQLCheck.resources.limits.memory | string | `"64Mi"` |  |
 | dapp.initContainer.graphQLCheck.resources.requests.cpu | string | `"10m"` |  |
 | dapp.initContainer.graphQLCheck.resources.requests.memory | string | `"12Mi"` |  |
-| dapp.initContainer.graphQLCheck.retries | int | `24` |  |
-| dapp.initContainer.graphQLCheck.retryDelaySeconds | int | `20` |  |
-| dapp.initContainer.graphQLCheck.timeoutSeconds | int | `10` |  |
+| dapp.initContainer.graphQLCheck.retries | int | `10` |  |
+| dapp.initContainer.graphQLCheck.retryDelaySeconds | int | `10` |  |
 | dapp.initContainer.graphQLCheck.url | string | `"http://graph-node-combined:8000/subgraphs/name/kit"` |  |
 | dapp.initContainer.tcpCheck.dependencies[0].endpoint | string | `"postgresql:5432"` |  |
 | dapp.initContainer.tcpCheck.dependencies[0].name | string | `"postgres"` |  |
@@ -129,8 +140,8 @@ The following table lists the configurable parameters of this chart and their de
 | dapp.initContainer.tcpCheck.dependencies[2].endpoint | string | `"portal:3001"` |  |
 | dapp.initContainer.tcpCheck.dependencies[2].name | string | `"portal"` |  |
 | dapp.initContainer.tcpCheck.dependencies[3].endpoint | string | `"graph-node-combined:8020"` |  |
-| dapp.initContainer.tcpCheck.dependencies[3].name | string | `"graph-node-tcp"` |  |
-| dapp.initContainer.tcpCheck.dependencies[4].endpoint | string | `"blockscout-frontend:80"` |  |
+| dapp.initContainer.tcpCheck.dependencies[3].name | string | `"graph-node"` |  |
+| dapp.initContainer.tcpCheck.dependencies[4].endpoint | string | `"blockscout-frontend-svc:80"` |  |
 | dapp.initContainer.tcpCheck.dependencies[4].name | string | `"blockscout"` |  |
 | dapp.initContainer.tcpCheck.enabled | bool | `true` |  |
 | dapp.initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -138,7 +149,7 @@ The following table lists the configurable parameters of this chart and their de
 | dapp.initContainer.tcpCheck.image.tag | string | `"v7.7.10"` |  |
 | dapp.initContainer.tcpCheck.resources.limits.cpu | string | `"100m"` |  |
 | dapp.initContainer.tcpCheck.resources.limits.memory | string | `"64Mi"` |  |
-| dapp.initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` |  |
+| dapp.initContainer.tcpCheck.resources.requests.cpu | string | `"50m"` |  |
 | dapp.initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
 | dapp.initContainer.tcpCheck.timeout | int | `120` |  |
 | dapp.podLabels."app.kubernetes.io/component" | string | `"dapp"` |  |
@@ -152,7 +163,6 @@ The following table lists the configurable parameters of this chart and their de
 | dapp.secretEnv.SETTLEMINT_INSTANCE | string | `"standalone"` |  |
 | dapp.secretEnv.SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT | string | `"http://portal:3001/graphql"` |  |
 | dapp.secretEnv.SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS | string | `"[\"http://graph-node-combined:8000/subgraphs/name/kit\"]"` |  |
-| erpc.config.logLevel | string | `"info"` |  |
 | erpc.config.projects[0].id | string | `"settlemint"` |  |
 | erpc.config.projects[0].networks[0].architecture | string | `"evm"` |  |
 | erpc.config.projects[0].networks[0].directiveDefaults.retryEmpty | bool | `true` |  |
@@ -226,16 +236,27 @@ The following table lists the configurable parameters of this chart and their de
 | erpc.config.projects[0].upstreams[1].failsafe[0].circuitBreaker.successThresholdCount | int | `3` |  |
 | erpc.config.projects[0].upstreams[1].failsafe[0].matchMethod | string | `"*"` |  |
 | erpc.config.projects[0].upstreams[1].id | string | `"besu-node-rpc-1"` |  |
-| erpc.config.server.httpHostV4 | string | `"0.0.0.0"` |  |
-| erpc.config.server.httpPort | int | `4000` |  |
 | erpc.enabled | bool | `true` |  |
+| erpc.extraInitContainers | list | `[]` |  |
 | erpc.image.registry | string | `"ghcr.io"` |  |
 | erpc.ingress.className | string | `"atk-nginx"` |  |
 | erpc.ingress.enabled | bool | `true` |  |
 | erpc.ingress.hosts[0].host | string | `"rpc.k8s.orb.local"` |  |
 | erpc.ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | erpc.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
-| erpc.initContainers.waitforit.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
+| erpc.initContainer.tcpCheck.dependencies[0].endpoint | string | `"besu-node-rpc-0.besu-node-rpc:8545"` |  |
+| erpc.initContainer.tcpCheck.dependencies[0].name | string | `"besu-rpc"` |  |
+| erpc.initContainer.tcpCheck.dependencies[1].endpoint | string | `"{{ include \"erpc.redis.endpoint\" (dict \"context\" $) }}"` |  |
+| erpc.initContainer.tcpCheck.dependencies[1].name | string | `"redis"` |  |
+| erpc.initContainer.tcpCheck.enabled | bool | `true` |  |
+| erpc.initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
+| erpc.initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
+| erpc.initContainer.tcpCheck.image.tag | string | `"v7.7.10"` |  |
+| erpc.initContainer.tcpCheck.resources.limits.cpu | string | `"100m"` |  |
+| erpc.initContainer.tcpCheck.resources.limits.memory | string | `"64Mi"` |  |
+| erpc.initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` |  |
+| erpc.initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
+| erpc.initContainer.tcpCheck.timeout | int | `120` |  |
 | erpc.podAnnotations."prometheus.io/port" | string | `"4001"` |  |
 | erpc.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
 | erpc.podLabels."app.kubernetes.io/component" | string | `"erpc"` |  |
@@ -285,6 +306,7 @@ The following table lists the configurable parameters of this chart and their de
 | global.securityContexts.pod.runAsNonRoot | bool | `true` |  |
 | global.securityContexts.pod.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | graph-node.enabled | bool | `true` |  |
+| graph-node.extraInitContainers | list | `[]` |  |
 | graph-node.image.repository | string | `"docker.io/graphprotocol/graph-node"` |  |
 | graph-node.ingress.annotations."nginx.ingress.kubernetes.io/rewrite-target" | string | `"/$1"` |  |
 | graph-node.ingress.annotations."nginx.ingress.kubernetes.io/use-regex" | string | `"true"` |  |
@@ -419,12 +441,14 @@ The following table lists the configurable parameters of this chart and their de
 | portal.config.network.networkName | string | `"ATK"` | Network name |
 | portal.config.network.nodeRpcUrl | string | `"http://txsigner:3000"` | Node RPC URL |
 | portal.enabled | bool | `true` |  |
+| portal.extraInitContainers | list | `[]` |  |
 | portal.image.registry | string | `"ghcr.io"` |  |
 | portal.ingress.hostname | string | `"portal.k8s.orb.local"` |  |
 | portal.initContainer.copyArtifacts.resources.limits.cpu | string | `"150m"` |  |
 | portal.initContainer.copyArtifacts.resources.limits.memory | string | `"128Mi"` |  |
 | portal.initContainer.copyArtifacts.resources.requests.cpu | string | `"25m"` |  |
 | portal.initContainer.copyArtifacts.resources.requests.memory | string | `"64Mi"` |  |
+| portal.initContainer.copyArtifacts.securityContext | object | `{}` |  |
 | portal.initContainer.tcpCheck.dependencies[0].endpoint | string | `"postgresql:5432"` |  |
 | portal.initContainer.tcpCheck.dependencies[0].name | string | `"postgresql"` |  |
 | portal.initContainer.tcpCheck.enabled | bool | `true` |  |
@@ -472,9 +496,21 @@ The following table lists the configurable parameters of this chart and their de
 | txsigner.config.derivationPath | string | `"m/44'/60'/0'/0/0"` |  |
 | txsigner.config.mnemonic | string | `"gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"` |  |
 | txsigner.enabled | bool | `true` |  |
+| txsigner.extraInitContainers | list | `[]` |  |
 | txsigner.image.registry | string | `"ghcr.io"` |  |
 | txsigner.image.repository | string | `"settlemint/btp-signer"` |  |
 | txsigner.ingress.hostname | string | `"txsigner.k8s.orb.local"` |  |
+| txsigner.initContainer.tcpCheck.dependencies[0].endpoint | string | `"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"txsigner\") }}"` |  |
+| txsigner.initContainer.tcpCheck.dependencies[0].name | string | `"postgresql"` |  |
+| txsigner.initContainer.tcpCheck.enabled | bool | `true` |  |
+| txsigner.initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
+| txsigner.initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
+| txsigner.initContainer.tcpCheck.image.tag | string | `"v7.7.10"` |  |
+| txsigner.initContainer.tcpCheck.resources.limits.cpu | string | `"100m"` |  |
+| txsigner.initContainer.tcpCheck.resources.limits.memory | string | `"64Mi"` |  |
+| txsigner.initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` |  |
+| txsigner.initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
+| txsigner.initContainer.tcpCheck.timeout | int | `120` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |
 | txsigner.test.image.repository | string | `"docker.io/busybox"` |  |

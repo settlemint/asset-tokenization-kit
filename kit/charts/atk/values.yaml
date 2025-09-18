@@ -18,6 +18,7 @@ global:
       repository: settlemint/asset-tokenization-kit-artifacts
       tag: 2.0.0-main.91391
       pullPolicy: IfNotPresent
+  chainId: "53771311147"
   securityContexts:
     pod:
       fsGroup: 101337
@@ -85,9 +86,19 @@ global:
 network:
   enabled: true
   network-bootstrapper:
-    settings:
-      chainId: "53771311147"
+    image:
+      repository: ghcr.io/settlemint/network-bootstrapper
+    initContainer:
+      tcpCheck:
+        image:
+          repository: ghcr.io/settlemint/btp-waitforit
   network-nodes:
+    image:
+      repository: docker.io/hyperledger/besu
+    initContainer:
+      tcpCheck:
+        image:
+          repository: ghcr.io/settlemint/btp-waitforit
     persistence:
       size: 20Gi
 
@@ -95,22 +106,10 @@ erpc:
   enabled: true
   image:
     registry: ghcr.io
-  # Init containers
-  initContainers:
-    waitforit:
-      image:
-        repository: ghcr.io/settlemint/btp-waitforit
-  # Test container
   test:
     image:
       repository: docker.io/busybox
-  # resources:
-  #   limits:
-  #     cpu: 100m
-  #     memory: 128Mi
-  #   requests:
-  #     cpu: 100m
-  #     memory: 128Mi
+  resources: {}
   ingress:
     enabled: true
     className: "atk-nginx"
@@ -120,10 +119,6 @@ erpc:
           - path: /
             pathType: ImplementationSpecific
   config:
-    logLevel: info
-    server:
-      httpHostV4: 0.0.0.0
-      httpPort: 4000
     projects:
       - id: settlemint
         networks:
@@ -281,21 +276,34 @@ blockscout:
         drop:
         - ALL
       readOnlyRootFilesystem: false
-    # Add an extra init container to wait for PostgreSQL
     init:
       enabled: true
       command:
         - /bin/sh
       args:
         - -c
-        - | # Using YAML multiline string for clarity
-          echo "Waiting for postgresql:5432..."
-          while ! nc -z postgresql 5432; do
-            sleep 2;
-          done;
-          echo "PostgreSQL is ready!"
-          # Original command:
+        - |
+          echo "Running database migrations..."
           bin/blockscout eval "Elixir.Explorer.ReleaseTasks.create_and_migrate()"
+    initContainer:
+      tcpCheck:
+        enabled: true
+        image:
+          repository: ghcr.io/settlemint/btp-waitforit
+          tag: v7.7.10
+          pullPolicy: IfNotPresent
+        timeout: 120
+        resources:
+          limits:
+            cpu: 100m
+            memory: 64Mi
+          requests:
+            cpu: 10m
+            memory: 32Mi
+        dependencies:
+          - name: postgresql
+            endpoint: "postgresql:5432"
+    extraInitContainers: []
     ingress:
       enabled: true
       className: "atk-nginx"
@@ -362,6 +370,7 @@ graph-node:
       dependencies:
         - name: postgresql
           endpoint: "postgresql:5432"
+  extraInitContainers: []
   ingress:
     enabled: true
     className: "atk-nginx"
@@ -486,7 +495,16 @@ portal:
     prometheus.io/port: "3000"
     prometheus.io/path: "/portal-metrics"
   initContainer:
-    # Legacy `initContainers` overrides remain supported for backward compatibility.
+    copyArtifacts:
+      resources:
+        limits:
+          cpu: 150m
+          memory: 128Mi
+        requests:
+          cpu: 25m
+          memory: 64Mi
+      securityContext: {}
+
     tcpCheck:
       enabled: true
       image:
@@ -504,14 +522,7 @@ portal:
       dependencies:
         - name: postgresql
           endpoint: "postgresql:5432"
-    copyArtifacts:
-      resources:
-        limits:
-          cpu: 150m
-          memory: 128Mi
-        requests:
-          cpu: 25m
-          memory: 64Mi
+  extraInitContainers: []
   config:
     network:
       # -- Network ID
@@ -691,6 +702,25 @@ txsigner:
     derivationPath: "m/44'/60'/0'/0/0"
   replicaCount: 1
   resources: {}
+  initContainer:
+    tcpCheck:
+      enabled: true
+      image:
+        repository: ghcr.io/settlemint/btp-waitforit
+        tag: v7.7.10
+        pullPolicy: IfNotPresent
+      timeout: 120
+      resources:
+        limits:
+          cpu: 100m
+          memory: 64Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
+      dependencies:
+        - name: postgresql
+          endpoint: "{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"txsigner\") }}"
+  extraInitContainers: []
   ingress:
     hostname: txsigner.k8s.orb.local
 
@@ -718,56 +748,51 @@ dapp:
     SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT: "http://portal:3001/graphql"
     SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS: '["http://graph-node-combined:8000/subgraphs/name/kit"]'
   initContainer:
-    # Generic TCP check settings
     tcpCheck:
       enabled: true
-      timeout: 120 # Timeout in seconds for each dependency check
       image:
         repository: ghcr.io/settlemint/btp-waitforit
         tag: v7.7.10
         pullPolicy: IfNotPresent
+      timeout: 120
       resources:
         limits:
           cpu: 100m
           memory: 64Mi
         requests:
-          cpu: 10m
+          cpu: 50m
           memory: 32Mi
       dependencies:
-        # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
         - name: postgres
           endpoint: "postgresql:5432"
         - name: hasura
           endpoint: "hasura:8080"
         - name: portal
           endpoint: "portal:3001"
-        - name: graph-node-tcp # Renamed to distinguish from graphQLCheck
-          endpoint: "graph-node-combined:8020" # Status API port (TCP check)
-        - name: blockscout # Add Blockscout if needed, determine correct service/port
-          endpoint: "blockscout-frontend:80"
+        - name: graph-node
+          endpoint: "graph-node-combined:8020"
+        - name: blockscout
+          endpoint: "blockscout-frontend-svc:80"
 
-    # Specific check for GraphQL endpoint readiness (e.g., The Graph subgraph)
     graphQLCheck:
       enabled: true
-      name: wait-for-graph-subgraph-kit # Name for the init container
+      name: "wait-for-graphql"
       image:
         registry: docker.io
         repository: curlimages/curl
         tag: "8.16.0"
         pullPolicy: IfNotPresent
-      # Target GraphQL endpoint URL (where POST requests are sent)
       url: "http://graph-node-combined:8000/subgraphs/name/kit"
-      query: "{ __typename }" # Basic query to check for GraphQL errors
-      retryDelaySeconds: 20
-      timeoutSeconds: 10 # Max time per curl attempt
-      connectTimeoutSeconds: 5 # Max time to connect
-      retries: 24
+      retries: 10
+      retryDelaySeconds: 10
+      query: "{ _meta { hasIndexingErrors block { number } } }"
       resources:
         limits:
           memory: 64Mi
         requests:
           cpu: 10m
           memory: 12Mi
+  extraInitContainers: []
   podLabels:
     app.kubernetes.io/component: dapp
     kots.io/app-slug: settlemint-atk

@@ -2,60 +2,80 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# -- (int) Number of dApp replicas to deploy
 replicaCount: 1
 
+# -- (object) dApp image configuration
 image:
+  # -- (string) dApp image repository
   repository: ghcr.io/settlemint/asset-tokenization-kit
+  # -- (string) dApp image pull policy
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
+  # -- (string) dApp image tag (defaults to chart appVersion)
   tag: "2.0.0-main1e32acb7f"
 
+# -- (string) String to partially override dapp.fullname template
 nameOverride: "dapp"
+# -- (string) String to fully override dapp.fullname template
 fullnameOverride: "dapp"
 
+# -- (object) Service account configuration
 serviceAccount:
-  # Specifies whether a service account should be created
+  # -- (bool) Specifies whether a service account should be created
   create: false # Set to true if your deployment needs specific permissions
-  # Annotations to add to the service account
+  # -- (object) Annotations to add to the service account
   annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
+  # -- (string) The name of the service account to use. If not set and create is true, a name is generated using the fullname template
   name: ""
 
-# Additional annotations for the deployment metadata
+# -- (object) Additional annotations for the deployment metadata
 annotations: {}
-# Additional labels for the deployment pod metadata
+# -- (object) Additional labels for the deployment pod metadata
 podLabels: {}
+# -- (object) Annotations for dApp pods
 podAnnotations: {}
 
+# -- (object) Pod security context configuration
 podSecurityContext: {}
 
+# -- (object) Container security context configuration
 securityContext: {}
 
+# -- (object) Service configuration
 service:
+  # -- (string) Service type
   type: ClusterIP
+  # -- (int) Service port
   port: 3000
+  # -- (object) Service annotations
   annotations: {}
 
+# -- (object) Ingress configuration
 ingress:
+  # -- (bool) Enable ingress controller resource
   enabled: false
+  # -- (string) IngressClass that will be used to implement the Ingress
   className: "atk-nginx"
-  # Add other annotations as needed
+  # -- (object) Additional annotations for the Ingress resource
   annotations: {}
+  # -- (list) Ingress host configuration
   hosts:
     - host: dapp.local # Placeholder - Should be configured in parent chart values
       paths:
         - path: /((?:sm_|bpaas-)[^/]+)?/?(.*) # Match original path structure
           pathType: ImplementationSpecific
+  # -- (list) TLS configuration for the ingress
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
 
-# Resource requests and limits
+# -- (object) Resource requests and limits
 resources: {}
-# Liveness and Readiness probes configuration
+# -- (object) Liveness and Readiness probes configuration
 probes:
+  # -- (object) Liveness probe configuration
   liveness:
     httpGet:
       path: "/"
@@ -66,6 +86,7 @@ probes:
     timeoutSeconds: 3
     failureThreshold: 10
     successThreshold: 1
+  # -- (object) Readiness probe configuration
   readiness:
     httpGet:
       path: "/"
@@ -77,29 +98,33 @@ probes:
     failureThreshold: 10
     successThreshold: 1
 
-# Additional volumes for the deployment
+# -- (list) Additional volumes for the deployment
 volumes: []
 #  - name: foo
 #    secret:
 #      secretName: mysecret
 #      optional: false
 
-# Additional volume mounts for the main container
+# -- (list) Additional volume mounts for the main container
 volumeMounts: []
 # - name: foo
 #   mountPath: "/etc/foo"
 #   readOnly: true
 
+# -- (object) Node selector for pod assignment
 nodeSelector: {}
 
+# -- (list) Tolerations for pod assignment
 tolerations: []
 
+# -- (object) Affinity for pod assignment
 affinity: {}
 
-# NetworkPolicy configuration
+# -- (object) NetworkPolicy configuration
 networkPolicy:
+  # -- (bool) Enable network policy
   enabled: false
-  # Ingress rules
+  # -- (list) Ingress rules for the network policy
   ingress:
     # Allow from ingress controller
     - from:
@@ -116,7 +141,7 @@ networkPolicy:
         - protocol: TCP
           port: 3000
 
-  # Egress rules
+  # -- (list) Egress rules for the network policy
   egress:
     # Allow DNS resolution
     - to:
@@ -168,8 +193,7 @@ networkPolicy:
         - protocol: TCP
           port: 443
 
-# Environment variables sourced from a secret
-# These will be created in the secret.yaml template
+# -- (object) Environment variables sourced from a secret. These will be created in the secret.yaml template
 secretEnv:
   BETTER_AUTH_URL: "https://dapp.local"
   NEXT_PUBLIC_APP_ID: "dapp"
@@ -186,31 +210,34 @@ secretEnv:
   SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT: "http://portal:3001/graphql"
   SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS: '["http://graph-node-combined:8000/subgraphs/name/kit"]'
 
-# Environment variables defined directly in the deployment
+# -- (list) Environment variables defined directly in the deployment
 env: []
 # - name: MY_VAR
 #   value: my_value
 
-# Autoscaling configuration (optional)
+# -- (object) Autoscaling configuration (optional)
 autoscaling:
+  # -- (bool) Enable autoscaling
   enabled: false
+  # -- (int) Minimum number of replicas
   minReplicas: 1
+  # -- (int) Maximum number of replicas
   maxReplicas: 10
+  # -- (int) Target CPU utilization percentage for autoscaling
   targetCPUUtilizationPercentage: 80
+  # -- Target memory utilization percentage for autoscaling (optional)
   # targetMemoryUtilizationPercentage: 80
 
-# PodDisruptionBudget configuration
+# -- (object) PodDisruptionBudget configuration
 podDisruptionBudget:
+  # -- (bool) Enable pod disruption budget
   enabled: false
-  # Minimum number of pods that must be available during disruption
-  # Can be an integer or percentage (e.g., "50%")
+  # -- (int) Minimum number of pods that must be available during disruption. Can be an integer or percentage (e.g., "50%")
   minAvailable: 1
-  # Maximum number of pods that can be unavailable during disruption
-  # Can be an integer or percentage (e.g., "50%")
-  # Note: Only one of minAvailable or maxUnavailable can be specified
+  # -- (int) Maximum number of pods that can be unavailable during disruption. Can be an integer or percentage. Only one of minAvailable or maxUnavailable can be specified
   # maxUnavailable: 1
 
-# Init container configuration
+# -- (object) Init container configuration
 initContainer:
   # Generic TCP check settings
   tcpCheck:
@@ -219,7 +246,7 @@ initContainer:
       repository: ghcr.io/settlemint/btp-waitforit
       tag: v7.7.10
       pullPolicy: IfNotPresent
-    timeout: 120 # Timeout in seconds for each dependency check
+    timeout: 120
     resources:
       limits:
         cpu: 100m
@@ -235,11 +262,10 @@ initContainer:
         endpoint: "hasura:8080"
       - name: portal
         endpoint: "portal:3001"
-      - name: graph-node-tcp # Renamed to distinguish from graphQLCheck
-        endpoint: "graph-node-combined:8020" # Status API port (TCP check)
-      - name: blockscout # Add Blockscout if needed, determine correct service/port
+      - name: graph-node
+        endpoint: "graph-node-combined:8020"
+      - name: blockscout
         endpoint: "blockscout-frontend-svc:80"
-
 
   # Specific check for GraphQL endpoint readiness (e.g., The Graph subgraph)
   graphQLCheck:
@@ -263,47 +289,70 @@ initContainer:
         cpu: 10m
         memory: 12Mi
 
+# -- (list) Additional init containers appended verbatim to the deployment pod spec
+extraInitContainers: []
+
+# -- (object) Job configuration for initialization tasks
 job:
+  # -- (bool) Enable initialization job
   enabled: true
 
-  # Pod Security Context
+  # -- (object) Pod Security Context for job
   podSecurityContext: {}
 
-  # Container Security Context
+  # -- (object) Container Security Context for job
   securityContext: {}
 
-  # Image configuration
+  # -- (object) Image configuration for job
   image:
+    # -- (string) Job image repository
     repository: docker.io/node
+    # -- (string) Job image tag
     tag: "23.11.1-slim"
+    # -- (string) Job image pull policy
     pullPolicy: IfNotPresent
 
+  # -- (object) Init containers for job
   initContainer:
+    # -- (object) Hasura check configuration
     hasuraCheck:
+      # -- (object) Hasura check image configuration
       image:
+        # -- (string) Image repository
         repository: ghcr.io/settlemint/btp-waitforit
+        # -- (string) Image tag
         tag: v7.7.10
+        # -- (string) Image pull policy
         pullPolicy: IfNotPresent
-      timeout: 5 # Timeout in seconds for each dependency check
+      # -- (int) Timeout in seconds for dependency check
+      timeout: 5
+      # -- (string) Endpoint to check
       endpoint: hasura:8080
+    # -- (object) Repository clone configuration
     cloneRepo:
+      # -- (object) Git clone image configuration
       image:
+        # -- (string) Image registry
         registry: docker.io
+        # -- (string) Image repository
         repository: alpine/git
-        tag: v2.49.1 # Or pin to a specific version
+        # -- (string) Image tag
+        tag: v2.49.1
+        # -- (string) Image pull policy
         pullPolicy: IfNotPresent
 
-  # Pod annotations
+  # -- (object) Pod annotations for job
   podAnnotations: {}
 
-  # Image pull secrets
+  # -- (list) Image pull secrets for job
   imagePullSecrets: []
 
-  # Resource configuration
+  # -- (object) Resource configuration for job
   resources: {}
 
+  # -- (object) Workspace configuration for job
   workspace:
-    # Size of the workspace PVC
+    # -- (string) Size of the workspace PVC
     size: 1Gi
-    # Storage class to use for the workspace PVC
+    # -- (string) Storage class to use for the workspace PVC
     storageClass: ""

@@ -20,7 +20,7 @@ A simple MinIO deployment for development environments
 | bucketRoot | string | `""` |  |
 | buckets | list | `[]` |  |
 | certsPath | string | `"/etc/minio/certs/"` |  |
-| clusterDomain | string | `"cluster.local"` |  |
+| clusterDomain | string | `"cluster.local"` | Kubernetes cluster domain where minio is running (string) |
 | configPathmc | string | `"/etc/minio/mc/"` |  |
 | consoleIngress.annotations | object | `{}` |  |
 | consoleIngress.enabled | bool | `false` |  |
@@ -63,12 +63,13 @@ A simple MinIO deployment for development environments
 | extraSecret | string | `nil` |  |
 | extraVolumeMounts | list | `[]` |  |
 | extraVolumes | list | `[]` |  |
-| fullnameOverride | string | `""` |  |
+| fullnameOverride | string | `""` | String to fully override common.names.fullname (string) |
 | ignoreChartChecksums | bool | `false` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"docker.io/minio/minio"` |  |
-| image.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` |  |
-| imagePullSecrets | list | `[]` |  |
+| image | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/minio/minio","tag":"RELEASE.2025-07-23T15-54-02Z"}` | MinIO image configuration (object) |
+| image.pullPolicy | string | `"IfNotPresent"` | MinIO image pull policy (object) |
+| image.repository | string | `"docker.io/minio/minio"` | MinIO image repository (object) |
+| image.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` | MinIO image tag (immutable tags are recommended) |
+| imagePullSecrets | list | `[]` | Global Docker registry secret names as an array (list) |
 | ingress.annotations | object | `{}` |  |
 | ingress.enabled | bool | `false` |  |
 | ingress.hosts[0] | string | `"minio-example.local"` |  |
@@ -96,9 +97,10 @@ A simple MinIO deployment for development environments
 | makeUserJob.securityContext.enabled | bool | `false` |  |
 | makeUserJob.securityContext.runAsGroup | int | `1000` |  |
 | makeUserJob.securityContext.runAsUser | int | `1000` |  |
-| mcImage.pullPolicy | string | `"IfNotPresent"` |  |
-| mcImage.repository | string | `"docker.io/minio/minio"` |  |
-| mcImage.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` |  |
+| mcImage | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/minio/minio","tag":"RELEASE.2025-07-23T15-54-02Z"}` | MinIO client image configuration (object) |
+| mcImage.pullPolicy | string | `"IfNotPresent"` | MinIO client image pull policy (object) |
+| mcImage.repository | string | `"docker.io/minio/minio"` | MinIO client image repository (object) |
+| mcImage.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` | MinIO client image tag (object) |
 | metrics.serviceMonitor.additionalLabels | object | `{}` |  |
 | metrics.serviceMonitor.annotations | object | `{}` |  |
 | metrics.serviceMonitor.enabled | bool | `false` |  |
@@ -111,9 +113,9 @@ A simple MinIO deployment for development environments
 | metrics.serviceMonitor.scrapeTimeout | string | `nil` |  |
 | minioAPIPort | string | `"9000"` |  |
 | minioConsolePort | string | `"9001"` |  |
-| mode | string | `"distributed"` |  |
+| mode | string | `"distributed"` | MinIO mode (standalone or distributed) |
 | mountPath | string | `"/export"` |  |
-| nameOverride | string | `""` |  |
+| nameOverride | string | `""` | String to partially override common.names.fullname template (will maintain the release name) |
 | networkPolicy.allowExternal | bool | `true` |  |
 | networkPolicy.egressEntities[0] | string | `"kube-apiserver"` |  |
 | networkPolicy.enabled | bool | `false` |  |

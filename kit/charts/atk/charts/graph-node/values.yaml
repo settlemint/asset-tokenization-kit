@@ -1,69 +1,96 @@
 # Default values for thegraph.
 # This is a YAML-formatted file.
 
+# -- (object) Global configuration
 global:
+  # -- (object) Global labels to add to all resources
   labels: {}
 
+# -- (string) String to partially override common.names.fullname template (will maintain the release name)
 nameOverride: ""
-# -- Override the full resource name. Set to "graph-node" for backward compatibility
+# -- (string) Override the full resource name. Set to "graph-node" for backward compatibility
 # with existing ATK deployments that reference "graph-node-combined" service name
 fullnameOverride: "graph-node"
 
+# -- (object) Graph Node image configuration
 image:
-  # -- Image for Graph Node
+  # -- (string) Image for Graph Node
   repository: graphprotocol/graph-node
+  # -- (string) Graph Node image pull policy
   pullPolicy: IfNotPresent
-  # -- Overrides the image tag
+  # -- (string) Overrides the image tag
   # @default -- Chart.appVersion
   tag: "v0.40.2"
 
+# -- (object) Init container configuration
 initContainer:
-  # -- Image for init container kubectl
+  # -- (object) Image for init container kubectl
   image:
+    # -- (string) Kubectl image repository
     repository: docker.io/kubesphere/kubectl
+    # -- (string) Kubectl image tag
     tag: v1.33.4
+    # -- (string) Kubectl image pull policy
     pullPolicy: IfNotPresent
+  # -- (object) TCP check configuration
   tcpCheck:
+    # -- (bool) Enable TCP check init container
     enabled: true
+    # -- (object) TCP check image configuration
     image:
+      # -- (string) TCP check image repository
       repository: ghcr.io/settlemint/btp-waitforit
+      # -- (string) TCP check image tag
       tag: v7.7.10
+      # -- (string) TCP check image pull policy
       pullPolicy: IfNotPresent
+    # -- (int) Timeout in seconds for each dependency check
     timeout: 120
+    # -- (list) List of dependencies to check
     dependencies:
       - name: postgresql
         endpoint: "{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGHOST }}:{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGPORT }}"
+    # -- (object) Resource limits and requests for TCP check container
     resources:
+      # -- (object) Resource limits
       limits:
+        # -- (string) CPU limit
         cpu: 100m
+        # -- (string) Memory limit
         memory: 64Mi
+      # -- (object) Resource requests
       requests:
+        # -- (string) CPU request
         cpu: 10m
+        # -- (string) Memory request
         memory: 32Mi
 
-# -- Pull secrets required to fetch the Image
+# -- (list) Pull secrets required to fetch the Image
 imagePullSecrets: []
 
+# -- (object) Service account configuration
 serviceAccount:
-  # -- Specifies whether a service account should be created
+  # -- (bool) Specifies whether a service account should be created
   create: true
-  # -- Annotations to add to the service account
+  # -- (object) Annotations to add to the service account
   annotations: {}
-  # -- The name of the service account to use.
+  # -- (string) The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+# -- (object) RBAC configuration
 rbac:
-  # -- Specifies whether RBAC resources are to be created
+  # -- (bool) Specifies whether RBAC resources are to be created
   create: false
   # @default -- See `values.yaml`
   rules: []
     # Add RBAC rules here if graph-node requires specific Kubernetes API access
     # Currently no special permissions are needed
 
+# -- (int) Number of Graph Node replicas to deploy
 replicaCount: 1
 
-# -- Specify [resource requests and limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits)
+# -- (object) Specify [resource requests and limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits)
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -78,27 +105,27 @@ resources: {}
   #   memory: 128Mi
   #   ephemeral-storage: 100Mi
 
-# -- Specify a [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
+# -- (object) Specify a [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
 nodeSelector: {}
 
-# -- Specify [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)
+# -- (list) Specify [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)
 tolerations: []
 
-# -- Pod-wide security context
+# -- (object) Pod-wide security context
 podSecurityContext:
   runAsNonRoot: true
   runAsUser: 101337
   runAsGroup: 101337
   fsGroup: 101337
 
-# -- Annotations for the `Pod`
+# -- (object) Annotations for the `Pod`
 podAnnotations: {}
 
-# -- Environment variables
+# -- (object) Environment variables
 env:
-  # -- The URL for your IPFS node
+  # -- (string) The URL for your IPFS node
   IPFS: "https://ipfs.console.settlemint.com"
-  # -- Node role
+  # -- (string) Node role
   node_role: "combined"
   EXPERIMENTAL_SUBGRAPH_VERSION_SWITCHING_MODE: 'synced'
   GRAPH_ETH_CALL_GAS: '50000000'
@@ -134,43 +161,51 @@ env:
   GRAPH_IPFS_TIMEOUT: '30'
   GRAPH_ETHEREUM_BLOCK_INGESTOR_MAX_CONCURRENT_JSON_RPC_CALLS: '100'
 
-# -- Environment variables from secrets
+# -- (object) Environment variables from secrets
 secretEnv:
   PRIMARY_SUBGRAPH_DATA_PGUSER:
-    # -- Name of the secret that contains your PG username (uses graph-node.pgSecretName helper)
+    # -- (string) Name of the secret that contains your PG username (uses graph-node.pgSecretName helper)
     secretName: ""  # Dynamically set in templates using helper
-    # -- Name of the data key in the secret that contains your PG username
+    # -- (string) Name of the data key in the secret that contains your PG username
     key: PGUSER
   PRIMARY_SUBGRAPH_DATA_PGPASSWORD:
-    # -- Name of the secret that contains your PG password (uses graph-node.pgSecretName helper)
+    # -- (string) Name of the secret that contains your PG password (uses graph-node.pgSecretName helper)
     secretName: ""  # Dynamically set in templates using helper
-    # -- Name of the data key in the secret that contains your PG password
+    # -- (string) Name of the data key in the secret that contains your PG password
     key: PGPASSWORD
 
-# -- Custom secret data for PostgreSQL credentials
+# -- (object) Custom secret data for PostgreSQL credentials
 # Used for backward compatibility and default values
 customSecret: {}
 
+# -- (object) Service configuration
 service:
+  # -- (string) Service type
   type: ClusterIP
+  # -- (object) Service ports configuration
   ports:
-    # -- Service Port to expose Graph Node Query endpoint on
+    # -- (int) Service Port to expose Graph Node Query endpoint on
     httpQuery: 8000
-    # -- Service Port to expose Graph Node Websocket Query endpoint on
+    # -- (int) Service Port to expose Graph Node Websocket Query endpoint on
     httpQueryws: 8001
-    # -- Service Port to expose Graph Node Admin endpoint on
+    # -- (int) Service Port to expose Graph Node Admin endpoint on
     httpAdmin: 8020
-    # -- Service Port to expose Graph Node Status endpoint on
+    # -- (int) Service Port to expose Graph Node Status endpoint on
     httpStatus: 8030
-    # -- Service Port to expose Graph Node Metrics endpoint on
+    # -- (int) Service Port to expose Graph Node Metrics endpoint on
     httpMetrics: 8040
 
+# -- (object) Ingress configuration
 ingress:
+  # -- (bool) Enable ingress record generation for Graph Node
   enabled: true
+  # -- (string) IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
   className: "atk-nginx"
+  # -- (object) Additional annotations for the Ingress resource
   annotations:
     nginx.ingress.kubernetes.io/use-regex: 'true'
     nginx.ingress.kubernetes.io/rewrite-target: /$1
+  # -- (list) An array with hosts and paths
   hosts:
     - host: graph.k8s.orb.local
       paths:
@@ -184,37 +219,38 @@ ingress:
           pathType: ImplementationSpecific
         - path: /graphman/?(.*)
           pathType: ImplementationSpecific
+  # -- (list) TLS configuration for the ingress
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
 
-# -- Blockchain configuration for Graph Node
+# -- (object) Blockchain configuration for Graph Node
 chains:
-  # -- Ethereum Mainnet
+  # -- (object) Ethereum Mainnet
   settlemint:
-    # -- Enable this configuring graph-node with this chain
+    # -- (bool) Enable this configuring graph-node with this chain
     enabled: true
-    # -- The database shard to use for this chain
+    # -- (string) The database shard to use for this chain
     shard: primary
     ## -- A list of JSON-RPC endpoints for this node (you should override this list with your own configuration)
     provider:
-      - # -- Label for a JSON-RPC endpoint
+      - # -- (string) Label for a JSON-RPC endpoint
         label: erpc
         details:
-          # -- Type of Provider: web3
+          # -- (string) Type of Provider: web3
           type: web3
-          # -- URL for JSON-RPC endpoint
+          # -- (string) URL for JSON-RPC endpoint
           url: http://erpc:4000/settlemint/evm/53771311147
-          # -- Data capabilities this node has
+          # -- (list) Data capabilities this node has
           features: [archive, traces]
 
-# -- Store configuration for Graph Node
+# -- (object) Store configuration for Graph Node
 store:
   primary:
-    # -- Enable this store for Graph Node
+    # -- (bool) Enable this store for Graph Node
     enabled: true
-    # -- PostgreSQL connection string for primary shard
+    # -- (string) PostgreSQL connection string for primary shard
     connection: "postgresql://${PRIMARY_SUBGRAPH_DATA_PGUSER}:${PRIMARY_SUBGRAPH_DATA_PGPASSWORD}@${PRIMARY_SUBGRAPH_DATA_PGHOST}:${PRIMARY_SUBGRAPH_DATA_PGPORT}/${PRIMARY_SUBGRAPH_DATA_PGDATABASE}"
 
 # -- [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md)
@@ -249,39 +285,47 @@ configTemplate: |
     shards = ["primary"]
     indexers = ["{{ include "graph-node.fullname" $ }}-combined-0"]
 
-# Network policies
+# -- (object) Network policies
 networkPolicy:
+  # -- (bool) Enable network policies
   enabled: false
+  # -- (list) Ingress rules for network policy
   ingress: []
+  # -- (list) Egress rules for network policy
   egress: []
 
-# Autoscaling
+# -- (object) Autoscaling
 autoscaling:
+  # -- (bool) Enable autoscaling
   enabled: false
+  # -- (int) Minimum number of replicas
   minReplicas: 1
+  # -- (int) Maximum number of replicas
   maxReplicas: 100
+  # -- (int) Target CPU utilization percentage
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
-# Pod disruption budget
+# -- (object) Pod disruption budget
 podDisruptionBudget:
+  # -- (bool) Enable pod disruption budget
   enabled: false
   # minAvailable: 1
   # maxUnavailable: 1
 
-# PostgreSQL readiness check configuration
+# -- (object) PostgreSQL readiness check configuration
 postgresReadinessCheck:
-  # -- Enable PostgreSQL readiness check init container
+  # -- (bool) Enable PostgreSQL readiness check init container
   enabled: true
-  # -- Docker image for PostgreSQL readiness check
+  # -- (string) Docker image for PostgreSQL readiness check
   image: docker.io/postgres:17.6-alpine
-  # -- Maximum number of connection retries
+  # -- (int) Maximum number of connection retries
   maxRetries: 30
-  # -- Initial wait time between retries (doubles with exponential backoff)
+  # -- (int) Initial wait time between retries (doubles with exponential backoff)
   initialWaitTime: 2
-  # -- Maximum wait time between retries
+  # -- (int) Maximum wait time between retries
   maxWaitTime: 30
-  # -- Add random delay to prevent all nodes from connecting simultaneously
+  # -- (object) Add random delay to prevent all nodes from connecting simultaneously
   randomDelayRange:
     min: 5
     max: 30
@@ -293,19 +337,20 @@ postgresReadinessCheck:
       cpu: 25m
       memory: 48Mi
 
-# Additional init containers
+# -- (list) Additional init containers
 extraInitContainers: []
 
-# Additional containers
+# -- (list) Additional containers
 extraContainers: []
 
-# Additional volumes
+# -- (list) Additional volumes
 extraVolumes: []
 
-# Additional volume mounts
+# -- (list) Additional volume mounts
 extraVolumeMounts: []
 
 # Increasing the grace termination period prevents Kubernetes
 # from killing the node process prematurely. Premature shutdown
 # can lead to data integrity issues
+# -- (int) Termination grace period seconds
 terminationGracePeriodSeconds: 60
