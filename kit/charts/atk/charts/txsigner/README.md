@@ -202,6 +202,18 @@ The command removes all the Kubernetes components associated with the chart and 
 | nodeAffinityPreset.type | string | `""` | Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard` |
 | nodeAffinityPreset.values | list | `[]` | Node label values to match. Ignored if `affinity` is set |
 | nodeSelector | object | `{}` | Node labels for pod assignment |
+| openShiftRoute | object | `{"alternateBackends":[],"annotations":{},"enabled":false,"host":"txsigner.k8s.orb.local","path":"/","port":{"targetPort":"http"},"tls":null,"to":{"weight":100},"wildcardPolicy":"None"}` | OpenShift Route parameters |
+| openShiftRoute.alternateBackends | list | `[]` | Additional backends for weighted routing |
+| openShiftRoute.annotations | object | `{}` | Additional annotations for the OpenShift route resource |
+| openShiftRoute.enabled | bool | `false` | Enable OpenShift route creation for TxSigner |
+| openShiftRoute.host | string | `"txsigner.k8s.orb.local"` | Hostname exposed via the OpenShift route |
+| openShiftRoute.path | string | `"/"` | HTTP path exposed via the OpenShift route |
+| openShiftRoute.port | object | `{"targetPort":"http"}` | Service port configuration for the route target |
+| openShiftRoute.port.targetPort | string | `"http"` | Service target port name (must exist on the TxSigner service) |
+| openShiftRoute.tls | string | `nil` | TLS configuration for the OpenShift route |
+| openShiftRoute.to | object | `{"weight":100}` | Primary service weight configuration |
+| openShiftRoute.to.weight | int | `100` | Weight assigned to the TxSigner service backend |
+| openShiftRoute.wildcardPolicy | string | `"None"` | Wildcard policy to apply to the route |
 | pdb | object | `{"enabled":false,"maxUnavailable":"","minAvailable":""}` | Pod disruption budget configuration |
 | pdb.enabled | bool | `false` | If true, create a pod disruption budget for pods. |
 | pdb.maxUnavailable | string | `""` | Maximum number/percentage of pods that may be made unavailable. Defaults to 1 if both pdb.minAvailable and pdb.maxUnavailable are empty. |

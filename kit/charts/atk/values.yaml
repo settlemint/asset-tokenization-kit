@@ -734,6 +734,18 @@ txsigner:
   resources: {}
   ingress:
     hostname: txsigner.k8s.orb.local
+  openShiftRoute:
+    enabled: false
+    annotations: {}
+    host: txsigner.k8s.orb.local
+    path: /
+    wildcardPolicy: None
+    port:
+      targetPort: http
+    to:
+      weight: 100
+    alternateBackends: []
+    tls: null
 
 # DApp Frontend Configuration
 dapp:

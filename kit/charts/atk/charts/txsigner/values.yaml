@@ -237,6 +237,31 @@ ingress:
   # -- Additional rules to be covered with this ingress record
   extraRules: []
 
+# -- OpenShift Route parameters
+openShiftRoute:
+  # -- Enable OpenShift route creation for TxSigner
+  enabled: false
+  # -- Additional annotations for the OpenShift route resource
+  annotations: {}
+  # -- Hostname exposed via the OpenShift route
+  host: txsigner.k8s.orb.local
+  # -- HTTP path exposed via the OpenShift route
+  path: /
+  # -- Wildcard policy to apply to the route
+  wildcardPolicy: None
+  # -- Service port configuration for the route target
+  port:
+    # -- Service target port name (must exist on the TxSigner service)
+    targetPort: http
+  # -- Primary service weight configuration
+  to:
+    # -- Weight assigned to the TxSigner service backend
+    weight: 100
+  # -- Additional backends for weighted routing
+  alternateBackends: []
+  # -- TLS configuration for the OpenShift route
+  tls: null
+
 # -- Service account for TxSigner pods
 serviceAccount:
   # -- Specifies whether a ServiceAccount should be created
