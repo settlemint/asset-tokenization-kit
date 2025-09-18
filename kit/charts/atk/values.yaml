@@ -434,6 +434,45 @@ graph-node:
           - path: /graphman/?(.*)
             pathType: ImplementationSpecific
     tls: []
+  openShiftRoute:
+    enabled: false
+    annotations: {}
+    host: graph.k8s.orb.local
+    wildcardPolicy: None
+    tls: null
+    to:
+      weight: 100
+    alternateBackends: []
+    routes:
+      - nameSuffix: ""
+        host: ""
+        path: /
+        targetPort: http-query
+        annotations: {}
+      - nameSuffix: ws
+        host: ""
+        path: /ws
+        targetPort: http-queryws
+        annotations:
+          haproxy.router.openshift.io/rewrite-target: /
+      - nameSuffix: admin
+        host: ""
+        path: /admin
+        targetPort: http-admin
+        annotations:
+          haproxy.router.openshift.io/rewrite-target: /
+      - nameSuffix: indexer
+        host: ""
+        path: /indexer
+        targetPort: http-status
+        annotations:
+          haproxy.router.openshift.io/rewrite-target: /
+      - nameSuffix: graphman
+        host: ""
+        path: /graphman
+        targetPort: http-status
+        annotations:
+          haproxy.router.openshift.io/rewrite-target: /
   env:
     PRIMARY_SUBGRAPH_DATA_PGHOST: "postgresql"
     PRIMARY_SUBGRAPH_DATA_PGPORT: 5432

@@ -79,6 +79,15 @@ A Helm chart for Graph Node
 | networkPolicy.enabled | bool | `false` |  |
 | networkPolicy.ingress | list | `[]` |  |
 | nodeSelector | object | `{}` | Specify a [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
+| openShiftRoute | object | `{"alternateBackends":[],"annotations":{},"enabled":false,"host":"graph.k8s.orb.local","routes":[{"annotations":{},"host":"","nameSuffix":"","path":"/","targetPort":"http-query"},{"annotations":{"haproxy.router.openshift.io/rewrite-target":"/"},"host":"","nameSuffix":"ws","path":"/ws","targetPort":"http-queryws"},{"annotations":{"haproxy.router.openshift.io/rewrite-target":"/"},"host":"","nameSuffix":"admin","path":"/admin","targetPort":"http-admin"},{"annotations":{"haproxy.router.openshift.io/rewrite-target":"/"},"host":"","nameSuffix":"indexer","path":"/indexer","targetPort":"http-status"},{"annotations":{"haproxy.router.openshift.io/rewrite-target":"/"},"host":"","nameSuffix":"graphman","path":"/graphman","targetPort":"http-status"}],"tls":null,"to":{"weight":100},"wildcardPolicy":"None"}` | OpenShift Route parameters |
+| openShiftRoute.alternateBackends | list | `[]` | Additional service backends shared by the generated routes |
+| openShiftRoute.annotations | object | `{}` | Additional annotations applied to every generated route |
+| openShiftRoute.enabled | bool | `false` | Enable OpenShift route creation for Graph Node endpoints |
+| openShiftRoute.host | string | `"graph.k8s.orb.local"` | Hostname exposed via the OpenShift routes |
+| openShiftRoute.routes | list | `[{"annotations":{},"host":"","nameSuffix":"","path":"/","targetPort":"http-query"},{"annotations":{"haproxy.router.openshift.io/rewrite-target":"/"},"host":"","nameSuffix":"ws","path":"/ws","targetPort":"http-queryws"},{"annotations":{"haproxy.router.openshift.io/rewrite-target":"/"},"host":"","nameSuffix":"admin","path":"/admin","targetPort":"http-admin"},{"annotations":{"haproxy.router.openshift.io/rewrite-target":"/"},"host":"","nameSuffix":"indexer","path":"/indexer","targetPort":"http-status"},{"annotations":{"haproxy.router.openshift.io/rewrite-target":"/"},"host":"","nameSuffix":"graphman","path":"/graphman","targetPort":"http-status"}]` | Route definitions for the exposed Graph Node endpoints |
+| openShiftRoute.tls | string | `nil` | TLS configuration shared by the generated routes |
+| openShiftRoute.to | object | `{"weight":100}` | Primary service weight configuration used when routes omit a weight |
+| openShiftRoute.wildcardPolicy | string | `"None"` | Wildcard policy applied when individual routes do not override it |
 | podAnnotations | object | `{}` | Annotations for the `Pod` |
 | podDisruptionBudget.enabled | bool | `false` |  |
 | podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
