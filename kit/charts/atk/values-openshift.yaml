@@ -206,6 +206,12 @@ txsigner:
     seccompProfile:
       type: RuntimeDefault
 
+  openShiftRoute:
+    enabled: true
+    host: txsigner.apps-crc.testing
+    path: /
+    tls: null
+
 # ERPC security contexts for OpenShift
 erpc:
 
@@ -249,10 +255,6 @@ erpc:
       - ALL
     seccompProfile:
       type: RuntimeDefault
-
-  initContainer:
-    tcpCheck:
-      enabled: false
 
 # DApp security contexts for OpenShift
 dapp:

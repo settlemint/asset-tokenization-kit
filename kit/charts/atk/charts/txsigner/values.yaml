@@ -93,8 +93,7 @@ podSecurityContext: {}
 containerSecurityContext: {}
 
 # -- TxSigner containers resource requests and limits
-resources:
-  {}
+resources: {}
   # limits:
   #   cpu: 100m
   #   memory: 128Mi
@@ -236,6 +235,31 @@ ingress:
   secrets: []
   # -- Additional rules to be covered with this ingress record
   extraRules: []
+
+# -- OpenShift Route parameters
+openShiftRoute:
+  # -- Enable OpenShift route creation for TxSigner
+  enabled: false
+  # -- Additional annotations for the OpenShift route resource
+  annotations: {}
+  # -- Hostname exposed via the OpenShift route
+  host: txsigner.k8s.orb.local
+  # -- HTTP path exposed via the OpenShift route
+  path: /
+  # -- Wildcard policy to apply to the route
+  wildcardPolicy: None
+  # -- Service port configuration for the route target
+  port:
+    # -- Service target port name (must exist on the TxSigner service)
+    targetPort: http
+  # -- Primary service weight configuration
+  to:
+    # -- Weight assigned to the TxSigner service backend
+    weight: 100
+  # -- Additional backends for weighted routing
+  alternateBackends: []
+  # -- TLS configuration for the OpenShift route
+  tls: null
 
 # -- Service account for TxSigner pods
 serviceAccount:
@@ -476,6 +500,8 @@ initContainer:
       requests:
         cpu: 10m
         memory: 32Mi
-      dependencies:
-        - name: postgresql
-          endpoint: "{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"txsigner\") }}"
+    dependencies:
+      - name: postgresql
+        endpoint:
+          '{{ include "atk.postgresql.endpoint" (dict "context" $ "chartKey"
+          "txsigner") }}'

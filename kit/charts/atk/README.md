@@ -512,6 +512,15 @@ The following table lists the configurable parameters of this chart and their de
 | txsigner.image.registry | string | `"ghcr.io"` |  |
 | txsigner.image.repository | string | `"settlemint/btp-signer"` |  |
 | txsigner.ingress.hostname | string | `"txsigner.k8s.orb.local"` |  |
+| txsigner.openShiftRoute.alternateBackends | list | `[]` |  |
+| txsigner.openShiftRoute.annotations | object | `{}` |  |
+| txsigner.openShiftRoute.enabled | bool | `false` |  |
+| txsigner.openShiftRoute.host | string | `"txsigner.k8s.orb.local"` |  |
+| txsigner.openShiftRoute.path | string | `"/"` |  |
+| txsigner.openShiftRoute.port.targetPort | string | `"http"` |  |
+| txsigner.openShiftRoute.tls | string | `nil` |  |
+| txsigner.openShiftRoute.to.weight | int | `100` |  |
+| txsigner.openShiftRoute.wildcardPolicy | string | `"None"` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |
 | txsigner.test.image.repository | string | `"docker.io/busybox"` |  |
