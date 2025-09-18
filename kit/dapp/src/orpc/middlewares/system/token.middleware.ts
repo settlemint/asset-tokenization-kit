@@ -4,17 +4,16 @@ import { Context } from "@/orpc/context/context";
 import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import {
+  Token,
+  TokenReadResponseSchema,
   TokenSchema,
-  type Token,
 } from "@/orpc/routes/token/routes/token.read.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import type { AccessControlRoles } from "@atk/zod/access-control-roles";
-import { identityClaim } from "@atk/zod/claim";
-import { ethereumAddress, isEthereumAddress } from "@atk/zod/ethereum-address";
+import { isEthereumAddress } from "@atk/zod/ethereum-address";
 import { satisfiesRoleRequirement } from "@atk/zod/role-requirement";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import countries from "i18n-iso-countries";
-import z from "zod";
 
 const logger = createLogger();
 
@@ -159,29 +158,7 @@ export const tokenMiddleware = baseRouter.middleware<
       id: tokenAddress,
       identityFactory: system.identityFactory.id,
     },
-    output: z.object({
-      token: TokenSchema.omit({ identity: true }).extend({
-        account: z.object({
-          identities: z
-            .array(
-              z.object({
-                id: ethereumAddress,
-                claims: z.array(identityClaim),
-                registered: z
-                  .array(
-                    z.object({
-                      country: z.number(),
-                    })
-                  )
-                  .nullable()
-                  .optional(),
-              })
-            )
-            .nullable()
-            .optional(),
-        }),
-      }),
-    }),
+    output: TokenReadResponseSchema,
   });
 
   const token = result.token;
