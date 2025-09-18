@@ -129,9 +129,6 @@ A Helm chart for Blockscout blockchain explorer stack
 | frontend.enabled | bool | `true` |  |
 | frontend.env.NEXT_PUBLIC_AD_BANNER_PROVIDER | string | `"none"` |  |
 | frontend.env.NEXT_PUBLIC_AD_TEXT_PROVIDER | string | `"none"` |  |
-| frontend.env.NEXT_PUBLIC_API_PROTOCOL | string | `"https"` |  |
-| frontend.env.NEXT_PUBLIC_APP_NAME | string | `"Asset Tokenization Kit"` |  |
-| frontend.env.NEXT_PUBLIC_APP_PROTOCOL | string | `"https"` |  |
 | frontend.env.NEXT_PUBLIC_FONT_FAMILY_BODY | string | `"{'name':'Figtree','url':'https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap'}"` |  |
 | frontend.env.NEXT_PUBLIC_FONT_FAMILY_HEADING | string | `"{'name':'Figtree','url':'https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap'}"` |  |
 | frontend.env.NEXT_PUBLIC_HAS_BEACON_CHAIN | string | `"false"` |  |

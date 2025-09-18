@@ -1,0 +1,114 @@
+{{- /* OpenShift Route for exposing the Portal service when enabled. */ -}}
+{{- $hasRouteAPI := .Capabilities.APIVersions.Has "route.openshift.io/v1" -}}
+{{- if and $hasRouteAPI .Values.openShiftRoute.enabled -}}
+{{- $routeValues := .Values.openShiftRoute -}}
+{{- $fullName := include "common.names.fullname" . -}}
+{{- $targetPort := "http" -}}
+{{- with $routeValues.port }}
+  {{- with .targetPort }}
+    {{- $targetPort = . -}}
+  {{- end }}
+{{- end }}
+{{- $weight := "" -}}
+{{- with $routeValues.to }}
+  {{- with .weight }}
+    {{- $weight = . -}}
+  {{- end }}
+{{- end }}
+{{- $wildcard := default "None" $routeValues.wildcardPolicy -}}
+{{- $baseAnnotations := include "common.tplvalues.merge" ( dict "values" ( list (default (dict) $routeValues.annotations) .Values.commonAnnotations ) "context" . ) -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ $fullName }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+  {{- if $baseAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" $baseAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  to:
+    kind: Service
+    name: {{ $fullName }}
+    {{- if $weight }}
+    weight: {{ int $weight }}
+    {{- end }}
+  {{- with $routeValues.alternateBackends }}
+  alternateBackends:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  port:
+    targetPort: {{ $targetPort }}
+  {{- with $routeValues.host }}
+  host: {{ . | quote }}
+  {{- end }}
+  {{- with $routeValues.path }}
+  path: {{ . | quote }}
+  {{- end }}
+  {{- if $wildcard }}
+  wildcardPolicy: {{ $wildcard }}
+  {{- end }}
+  {{- with $routeValues.tls }}
+  tls:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+{{- $graphqlValues := default (dict) $routeValues.graphql -}}
+{{- $graphqlPath := default .Values.ingress.graphqlPath $graphqlValues.path -}}
+{{- $graphqlEnabled := and (ne (default true $graphqlValues.enabled) false) $graphqlPath -}}
+{{- if $graphqlEnabled }}
+---
+{{- $graphqlName := printf "%s-graphql" $fullName -}}
+{{- $graphqlTargetPort := "graphql" -}}
+{{- with $graphqlValues.port }}
+  {{- with .targetPort }}
+    {{- $graphqlTargetPort = . -}}
+  {{- end }}
+{{- end }}
+{{- $graphqlWeight := $weight -}}
+{{- with $graphqlValues.to }}
+  {{- with .weight }}
+    {{- $graphqlWeight = . -}}
+  {{- end }}
+{{- end }}
+{{- $graphqlWildcard := default $wildcard $graphqlValues.wildcardPolicy -}}
+{{- $graphqlHost := default $routeValues.host $graphqlValues.host -}}
+{{- $graphqlAnnotations := include "common.tplvalues.merge" ( dict "values" ( list (default (dict) $graphqlValues.annotations) .Values.commonAnnotations ) "context" . ) -}}
+{{- $graphqlTLS := default $routeValues.tls $graphqlValues.tls -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ $graphqlName }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+  {{- if $graphqlAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" $graphqlAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  to:
+    kind: Service
+    name: {{ $fullName }}
+    {{- if $graphqlWeight }}
+    weight: {{ int $graphqlWeight }}
+    {{- end }}
+  {{- with $graphqlValues.alternateBackends }}
+  alternateBackends:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  port:
+    targetPort: {{ $graphqlTargetPort }}
+  {{- with $graphqlHost }}
+  host: {{ . | quote }}
+  {{- end }}
+  {{- with $graphqlPath }}
+  path: {{ . | quote }}
+  {{- end }}
+  {{- if $graphqlWildcard }}
+  wildcardPolicy: {{ $graphqlWildcard }}
+  {{- end }}
+  {{- with $graphqlTLS }}
+  tls:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}

@@ -82,6 +82,19 @@ graph-node:
 
 # Portal security contexts for OpenShift
 portal:
+  ingress:
+    enabled: false
+
+  openShiftRoute:
+    enabled: true
+    host: portal.apps-crc.testing
+    path: /
+    tls: null
+    graphql:
+      enabled: true
+      host: portal.apps-crc.testing
+      path: /graphql
+
   podSecurityContext:
     fsGroup: null
     runAsUser: null
