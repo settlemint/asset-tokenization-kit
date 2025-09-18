@@ -7,6 +7,11 @@ Usage: include "atk.waitforit.containers" (dict "context" $ "config" <values>)
 {{- $cfg := .config | default (dict) -}}
 {{- $deps := $cfg.dependencies | default (list) -}}
 {{- $enabled := $cfg.enabled | default false -}}
+{{- $chartName := default "" $ctx.Chart.Name -}}
+{{- $chartKey := default $chartName .chartKey -}}
+{{- $legacyKey := default $chartKey .legacyKey -}}
+{{- $initContainerSecurityContext := default (dict) $ctx.Values.initContainerSecurityContext -}}
+{{- $configSecurityContext := default (dict) $cfg.securityContext -}}
 {{- if and $enabled (gt (len $deps) 0) -}}
 {{- $image := $cfg.image | default (dict) -}}
 {{- $repository := $image.repository | default "ghcr.io/settlemint/btp-waitforit" -}}
@@ -18,9 +23,12 @@ Usage: include "atk.waitforit.containers" (dict "context" $ "config" <values>)
 - name: wait-for-{{ .name }}
   image: "{{ $repository }}:{{ $tag }}"
   imagePullPolicy: {{ $pullPolicy }}
-  {{- with $ctx.Values.initContainerSecurityContext }}
+  {{- /* Merge global defaults with chart-level and dependency overrides */ -}}
+  {{- $dependencySecurityContext := merge (dict) $initContainerSecurityContext $configSecurityContext (default (dict) .securityContext) -}}
+  {{- $resolvedSecurityContext := (include "atk.securityContext.container" (dict "context" $ctx "local" $dependencySecurityContext "chartKey" $chartKey "legacyKey" $legacyKey)) | fromYaml -}}
+  {{- if $resolvedSecurityContext }}
   securityContext:
-    {{- toYaml . | nindent 4 }}
+    {{- toYaml $resolvedSecurityContext | nindent 4 }}
   {{- end }}
   command:
     - /usr/bin/wait-for-it

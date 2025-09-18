@@ -54,7 +54,7 @@ spec:
       {{- if .Values.tolerations }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tolerations "context" $) | nindent 8 }}
       {{- end }}
-      {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck) }}
+      {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck "chartKey" "portal") }}
       {{- $legacyInit := "" }}
       {{- if .Values.initContainers }}
         {{- $legacyInit = include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) }}
@@ -78,9 +78,15 @@ spec:
           volumeMounts:
             - name: abis
               mountPath: /shared-abis
-          {{- with .Values.initContainer.copyArtifacts.securityContext }}
+          {{- $copyArtifactsSecurityContext := (include "atk.securityContext.container" (dict
+            "context" $
+            "local" (default (dict) .Values.initContainer.copyArtifacts.securityContext)
+            "chartKey" "portal"
+          )) | fromYaml }}
+          {{- if $copyArtifactsSecurityContext }}
+          # Ensure the artifacts image runs with numeric IDs derived from global defaults
           securityContext:
-            {{- toYaml . | nindent 12 }}
+            {{- toYaml $copyArtifactsSecurityContext | nindent 12 }}
           {{- end }}
         {{- if $waitForIt }}
 {{ $waitForIt | nindent 8 }}

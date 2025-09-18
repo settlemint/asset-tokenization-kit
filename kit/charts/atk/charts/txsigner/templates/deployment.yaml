@@ -68,198 +68,205 @@ spec:
 {{ $legacyInit | nindent 8 }}
         {{- end }}
       {{- end }}
+      {{- $postgresLocal := default (dict) .Values.postgresql }}
+      {{- $postgresConfig := ((include "atk.datastores.postgresql" (dict "context" . "chartKey" "txsigner" "local" $postgresLocal)) | fromYaml) | default (dict) }}
+      {{- $postgresUrl := "" }}
+      {{- if and $postgresConfig (hasKey $postgresConfig "url") }}
+        {{- $maybe := index $postgresConfig "url" }}
+        {{- if $maybe }}
+          {{- $postgresUrl = printf "%v" $maybe }}
+        {{- end }}
+      {{- end }}
+      {{- if eq (trim $postgresUrl) "" }}
+        {{- $postgresUrl = include "atk.datastores.postgresql.url" (dict "context" . "chartKey" "txsigner" "local" $postgresLocal) }}
+      {{- end }}
       containers:
-      - name: txsigner
-        image: {{ include "common.images.image" (dict "imageRoot" .Values.image "global" .Values.global) }}
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        {{- $containerSecurityContext := (include "atk.securityContext.container" (dict "context" $ "local" .Values.containerSecurityContext "chartKey" "txsigner")) | fromYaml }}
-        {{- if $containerSecurityContext }}
-        securityContext:
-          {{- toYaml $containerSecurityContext | nindent 10 }}
-        {{- end }}
-        {{- if .Values.lifecycleHooks }}
-        lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" $) | nindent 10 }}
-        {{- end }}
-        {{- $postgresLocal := default (dict) .Values.postgresql -}}
-        {{- $postgresConfig := ((include "atk.datastores.postgresql" (dict "context" . "chartKey" "txsigner" "local" $postgresLocal)) | fromYaml) | default (dict) -}}
-        {{- $postgresUrl := "" -}}
-        {{- if and $postgresConfig (hasKey $postgresConfig "url") -}}
-          {{- $maybe := index $postgresConfig "url" -}}
-          {{- if $maybe -}}
-            {{- $postgresUrl = printf "%v" $maybe -}}
-          {{- end -}}
-        {{- end -}}
-        {{- if eq (trim $postgresUrl) "" -}}
-          {{- $postgresUrl = include "atk.datastores.postgresql.url" (dict "context" . "chartKey" "txsigner" "local" $postgresLocal) -}}
-        {{- end -}}
-        env:
-        - name: TX_SIGNER_PORT
-          value: {{ .Values.config.port | quote }}
-        - name: TX_SIGNER_METRICS_PORT
-          value: {{ .Values.config.metricsPort | quote }}
-        - name: TX_SIGNER_RPC_URL
-          value: {{ .Values.config.rpcUrl | quote }}
-        - name: TX_SIGNER_CHAIN_ID
-          value: {{ .Values.config.chainId | quote }}
-        - name: TX_SIGNER_LOG_LEVEL
-          value: {{ .Values.config.logLevel | quote }}
-        - name: TX_SIGNER_DEBUG
-          value: {{ .Values.config.debug | quote }}
-        - name: TX_SIGNER_SIGNING_STRATEGY
-          value: {{ .Values.config.signingStrategy | quote }}
-        {{- if ne (trim $postgresUrl) "" }}
-        - name: DATABASE_URL
-          value: {{ $postgresUrl | quote }}
-        {{- end }}
-        {{- if eq .Values.config.signingStrategy "local" }}
-        {{- if .Values.config.existingSecret }}
-        - name: TX_SIGNER_PRIVATE_KEY
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.config.existingSecret }}
-              key: {{ .Values.config.existingSecretKey }}
-        {{- else if or .Values.config.privateKey .Values.config.mnemonic }}
-        {{- if .Values.config.privateKey }}
-        - name: TX_SIGNER_PRIVATE_KEY
-          valueFrom:
-            secretKeyRef:
-              name: {{ include "common.names.fullname" . }}-private-key
-              key: private-key
-        {{- end }}
-        {{- if .Values.config.mnemonic }}
-        - name: PRIVATE_KEY_MNEMONIC
-          valueFrom:
-            secretKeyRef:
-              name: {{ include "common.names.fullname" . }}-private-key
-              key: PRIVATE_KEY_MNEMONIC
-        {{- end }}
-        {{- if .Values.config.derivationPath }}
-        - name: PRIVATE_KEY_DERIVATION_PATH
-          valueFrom:
-            secretKeyRef:
-              name: {{ include "common.names.fullname" . }}-private-key
-              key: PRIVATE_KEY_DERIVATION_PATH
-        {{- end }}
-        {{- end }}
-        {{- end }}
-        {{- if eq .Values.config.signingStrategy "kms" }}
-        - name: TX_SIGNER_KMS_PROVIDER
-          value: {{ .Values.config.kms.provider | quote }}
-        - name: TX_SIGNER_KMS_KEY_ID
-          value: {{ .Values.config.kms.keyId | quote }}
-        - name: TX_SIGNER_KMS_REGION
-          value: {{ .Values.config.kms.region | quote }}
-        {{- end }}
-        {{- if eq .Values.config.signingStrategy "hsm" }}
-        - name: TX_SIGNER_HSM_MODULE
-          value: {{ .Values.config.hsm.module | quote }}
-        - name: TX_SIGNER_HSM_SLOT
-          value: {{ .Values.config.hsm.slot | quote }}
-        - name: TX_SIGNER_HSM_PIN
-          value: {{ .Values.config.hsm.pin | quote }}
-        {{- end }}
-        - name: TX_SIGNER_RATE_LIMIT_ENABLED
-          value: {{ .Values.config.rateLimit.enabled | quote }}
-        - name: TX_SIGNER_RATE_LIMIT_MAX_REQUESTS_PER_MINUTE
-          value: {{ .Values.config.rateLimit.maxRequestsPerMinute | quote }}
-        - name: TX_SIGNER_RATE_LIMIT_MAX_REQUESTS_PER_HOUR
-          value: {{ .Values.config.rateLimit.maxRequestsPerHour | quote }}
-        - name: TX_SIGNER_QUEUE_MAX_SIZE
-          value: {{ .Values.config.queue.maxSize | quote }}
-        - name: TX_SIGNER_QUEUE_PROCESSING_INTERVAL
-          value: {{ .Values.config.queue.processingInterval | quote }}
-        - name: TX_SIGNER_GAS_PRICE_STRATEGY
-          value: {{ .Values.config.gas.priceStrategy | quote }}
-        - name: TX_SIGNER_GAS_FIXED_PRICE
-          value: {{ .Values.config.gas.fixedPrice | quote }}
-        - name: TX_SIGNER_GAS_LIMIT
-          value: {{ .Values.config.gas.limit | quote }}
-        - name: TX_SIGNER_GAS_MULTIPLIER
-          value: {{ .Values.config.gas.multiplier | quote }}
-        - name: TX_SIGNER_NONCE_STRATEGY
-          value: {{ .Values.config.nonce.strategy | quote }}
-        - name: TX_SIGNER_NONCE_MAX_PENDING
-          value: {{ .Values.config.nonce.maxPending | quote }}
-        - name: TX_SIGNER_AUDIT_ENABLED
-          value: {{ .Values.config.audit.enabled | quote }}
-        - name: TX_SIGNER_AUDIT_RETENTION_DAYS
-          value: {{ .Values.config.audit.retentionDays | quote }}
-        {{- if .Values.config.allowedContracts }}
-        - name: TX_SIGNER_ALLOWED_CONTRACTS
-          value: {{ join "," .Values.config.allowedContracts | quote }}
-        {{- end }}
-        {{- if .Values.config.allowedMethods }}
-        - name: TX_SIGNER_ALLOWED_METHODS
-          value: {{ join "," .Values.config.allowedMethods | quote }}
-        {{- end }}
-        - name: TX_SIGNER_CORS_ENABLED
-          value: {{ .Values.config.cors.enabled | quote }}
-        {{- if .Values.config.cors.origins }}
-        - name: TX_SIGNER_CORS_ORIGINS
-          value: {{ join "," .Values.config.cors.origins | quote }}
-        {{- end }}
-        {{- if .Values.config.cors.methods }}
-        - name: TX_SIGNER_CORS_METHODS
-          value: {{ join "," .Values.config.cors.methods | quote }}
-        {{- end }}
-        {{- if .Values.config.cors.headers }}
-        - name: TX_SIGNER_CORS_HEADERS
-          value: {{ join "," .Values.config.cors.headers | quote }}
-        {{- end }}
-        {{- if .Values.extraEnvVars }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 8 }}
-        {{- end }}
-        envFrom:
-          - secretRef:
-              name: {{ include "common.names.fullname" . }}-env
+        - name: txsigner
+          image: {{ include "common.images.image" (dict "imageRoot" .Values.image "global" .Values.global) }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- $containerSecurityContext := (include "atk.securityContext.container" (dict "context" $ "local" .Values.containerSecurityContext "chartKey" "txsigner")) | fromYaml }}
+          {{- if $containerSecurityContext }}
+          securityContext:
+            {{- toYaml $containerSecurityContext | nindent 12 }}
+          {{- end }}
+          {{- if .Values.lifecycleHooks }}
+          lifecycle:
+            {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          env:
+            - name: TX_SIGNER_PORT
+              value: {{ .Values.config.port | quote }}
+            - name: TX_SIGNER_METRICS_PORT
+              value: {{ .Values.config.metricsPort | quote }}
+            - name: TX_SIGNER_RPC_URL
+              value: {{ .Values.config.rpcUrl | quote }}
+            - name: TX_SIGNER_CHAIN_ID
+              value: {{ .Values.config.chainId | quote }}
+            - name: TX_SIGNER_LOG_LEVEL
+              value: {{ .Values.config.logLevel | quote }}
+            - name: TX_SIGNER_DEBUG
+              value: {{ .Values.config.debug | quote }}
+            - name: TX_SIGNER_SIGNING_STRATEGY
+              value: {{ .Values.config.signingStrategy | quote }}
+            {{- if ne (trim $postgresUrl) "" }}
+            - name: DATABASE_URL
+              value: {{ $postgresUrl | quote }}
+            {{- end }}
+            {{- if eq .Values.config.signingStrategy "local" }}
+              {{- if .Values.config.existingSecret }}
+            - name: TX_SIGNER_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.config.existingSecret }}
+                  key: {{ .Values.config.existingSecretKey }}
+              {{- else }}
+                {{- with .Values.config.privateKey }}
+            - name: TX_SIGNER_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "common.names.fullname" $ }}-private-key
+                  key: private-key
+                {{- end }}
+                {{- with .Values.config.mnemonic }}
+            - name: PRIVATE_KEY_MNEMONIC
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "common.names.fullname" $ }}-private-key
+                  key: PRIVATE_KEY_MNEMONIC
+                {{- end }}
+              {{- end }}
+              {{- with .Values.config.derivationPath }}
+            - name: PRIVATE_KEY_DERIVATION_PATH
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "common.names.fullname" $ }}-private-key
+                  key: PRIVATE_KEY_DERIVATION_PATH
+              {{- end }}
+            {{- end }}
+            {{- with .Values.config.kms }}
+            {{- if eq $.Values.config.signingStrategy "kms" }}
+            - name: TX_SIGNER_KMS_PROVIDER
+              value: {{ .provider | quote }}
+            - name: TX_SIGNER_KMS_KEY_ID
+              value: {{ .keyId | quote }}
+            - name: TX_SIGNER_KMS_REGION
+              value: {{ .region | quote }}
+            {{- end }}
+            {{- end }}
+            {{- with .Values.config.hsm }}
+            {{- if eq $.Values.config.signingStrategy "hsm" }}
+            - name: TX_SIGNER_HSM_MODULE
+              value: {{ .module | quote }}
+            - name: TX_SIGNER_HSM_SLOT
+              value: {{ .slot | quote }}
+            - name: TX_SIGNER_HSM_PIN
+              value: {{ .pin | quote }}
+            {{- end }}
+            {{- end }}
+            - name: TX_SIGNER_RATE_LIMIT_ENABLED
+              value: {{ .Values.config.rateLimit.enabled | quote }}
+            - name: TX_SIGNER_RATE_LIMIT_MAX_REQUESTS_PER_MINUTE
+              value: {{ .Values.config.rateLimit.maxRequestsPerMinute | quote }}
+            - name: TX_SIGNER_RATE_LIMIT_MAX_REQUESTS_PER_HOUR
+              value: {{ .Values.config.rateLimit.maxRequestsPerHour | quote }}
+            - name: TX_SIGNER_QUEUE_MAX_SIZE
+              value: {{ .Values.config.queue.maxSize | quote }}
+            - name: TX_SIGNER_QUEUE_PROCESSING_INTERVAL
+              value: {{ .Values.config.queue.processingInterval | quote }}
+            - name: TX_SIGNER_GAS_PRICE_STRATEGY
+              value: {{ .Values.config.gas.priceStrategy | quote }}
+            - name: TX_SIGNER_GAS_FIXED_PRICE
+              value: {{ .Values.config.gas.fixedPrice | quote }}
+            - name: TX_SIGNER_GAS_LIMIT
+              value: {{ .Values.config.gas.limit | quote }}
+            - name: TX_SIGNER_GAS_MULTIPLIER
+              value: {{ .Values.config.gas.multiplier | quote }}
+            - name: TX_SIGNER_NONCE_STRATEGY
+              value: {{ .Values.config.nonce.strategy | quote }}
+            - name: TX_SIGNER_NONCE_MAX_PENDING
+              value: {{ .Values.config.nonce.maxPending | quote }}
+            - name: TX_SIGNER_AUDIT_ENABLED
+              value: {{ .Values.config.audit.enabled | quote }}
+            - name: TX_SIGNER_AUDIT_RETENTION_DAYS
+              value: {{ .Values.config.audit.retentionDays | quote }}
+          {{- if .Values.config.allowedContracts }}
+            - name: TX_SIGNER_ALLOWED_CONTRACTS
+              value: {{ join "," .Values.config.allowedContracts | quote }}
+          {{- end }}
+          {{- if .Values.config.allowedMethods }}
+            - name: TX_SIGNER_ALLOWED_METHODS
+              value: {{ join "," .Values.config.allowedMethods | quote }}
+          {{- end }}
+            - name: TX_SIGNER_CORS_ENABLED
+              value: {{ .Values.config.cors.enabled | quote }}
+          {{- if .Values.config.cors.origins }}
+            - name: TX_SIGNER_CORS_ORIGINS
+              value: {{ join "," .Values.config.cors.origins | quote }}
+          {{- end }}
+          {{- if .Values.config.cors.methods }}
+            - name: TX_SIGNER_CORS_METHODS
+              value: {{ join "," .Values.config.cors.methods | quote }}
+          {{- end }}
+          {{- if .Values.config.cors.headers }}
+            - name: TX_SIGNER_CORS_HEADERS
+              value: {{ join "," .Values.config.cors.headers | quote }}
+          {{- end }}
+          {{- if .Values.extraEnvVars }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
+          {{- end }}
+          envFrom:
+            - secretRef:
+                name: {{ include "common.names.fullname" . }}-env
           {{- if .Values.extraEnvVarsCM }}
-          - configMapRef:
-              name: {{ .Values.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ .Values.extraEnvVarsCM }}
           {{- end }}
           {{- if .Values.extraEnvVarsSecret }}
-          - secretRef:
-              name: {{ .Values.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ .Values.extraEnvVarsSecret }}
           {{- end }}
-        ports:
-        - name: http
-          containerPort: {{ .Values.config.port }}
-          protocol: TCP
-        - name: metrics
-          containerPort: {{ .Values.config.metricsPort }}
-          protocol: TCP
-        {{- if .Values.livenessProbe.enabled }}
-        livenessProbe:
-          tcpSocket:
-            port: {{ .Values.livenessProbe.tcpSocket.port }}
-          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
-          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
-          successThreshold: {{ .Values.livenessProbe.successThreshold }}
-        {{- end }}
-        {{- if .Values.readinessProbe.enabled }}
-        readinessProbe:
-          tcpSocket:
-            port: {{ .Values.readinessProbe.tcpSocket.port }}
-          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
-          failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
-          successThreshold: {{ .Values.readinessProbe.successThreshold }}
-        {{- end }}
-        {{- if .Values.startupProbe.enabled }}
-        startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.startupProbe "enabled") "context" $) | nindent 10 }}
-        {{- end }}
-        {{- if .Values.resources }}
-        resources: {{- toYaml .Values.resources | nindent 10 }}
-        {{- end }}
-        volumeMounts:
-        - name: config
-          mountPath: /etc/txsigner
-          readOnly: true
-        {{- if .Values.extraVolumeMounts }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 8 }}
-        {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.config.port }}
+              protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.config.metricsPort }}
+              protocol: TCP
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.livenessProbe.tcpSocket.port }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.readinessProbe.tcpSocket.port }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.readinessProbe.successThreshold }}
+          {{- end }}
+          {{- if .Values.startupProbe.enabled }}
+          startupProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.startupProbe "enabled") "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.resources }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/txsigner
+              readOnly: true
+          {{- if .Values.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
       volumes:
         - name: config
           configMap:

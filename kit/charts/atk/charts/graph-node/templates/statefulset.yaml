@@ -30,12 +30,13 @@ spec:
         {{- toYaml $podSecurityContext | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
-      {{- $pgLocal := default (dict) .Values.postgresql -}}
-      {{- $pgConfig := ((include "atk.datastores.postgresql" (dict "context" $ "chartKey" "graphNode" "local" $pgLocal)) | fromYaml) | default (dict) -}}
-      {{- $pgHost := default "postgresql" (index $pgConfig "host") -}}
-      {{- $pgPortValue := default 5432 (index $pgConfig "port") -}}
-      {{- $pgPort := printf "%v" $pgPortValue -}}
-      {{- $pgDatabase := default "thegraph" (index $pgConfig "database") -}}
+      {{- $pgLocal := default (dict) .Values.postgresql }}
+      {{- $pgConfig := ((include "atk.datastores.postgresql" (dict "context" $ "chartKey" "graphNode" "local" $pgLocal)) | fromYaml) | default (dict) }}
+      {{- $pgHost := default "postgresql" (index $pgConfig "host") }}
+      {{- $pgPortValue := default 5432 (index $pgConfig "port") }}
+      {{- $pgPort := printf "%v" $pgPortValue }}
+      {{- $pgDatabase := default "thegraph" (index $pgConfig "database") }}
+      {{- $env := default (dict) .Values.env }}
       initContainers:
         - name: combined-init
           image: {{ include "graph-node.initContainerImage" . }}
@@ -50,19 +51,19 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            {{- range $key, $val := .Values.env }}
+            {{- range $key, $val := $env }}
             - name: {{ $key | quote }}
               value: {{ $val | quote }}
             {{- end }}
-            {{- if not (hasKey .Values.env "PRIMARY_SUBGRAPH_DATA_PGHOST") }}
+            {{- if not (hasKey $env "PRIMARY_SUBGRAPH_DATA_PGHOST") }}
             - name: "PRIMARY_SUBGRAPH_DATA_PGHOST"
               value: {{ $pgHost | quote }}
             {{- end }}
-            {{- if not (hasKey .Values.env "PRIMARY_SUBGRAPH_DATA_PGPORT") }}
+            {{- if not (hasKey $env "PRIMARY_SUBGRAPH_DATA_PGPORT") }}
             - name: "PRIMARY_SUBGRAPH_DATA_PGPORT"
               value: {{ $pgPort | quote }}
             {{- end }}
-            {{- if not (hasKey .Values.env "PRIMARY_SUBGRAPH_DATA_PGDATABASE") }}
+            {{- if not (hasKey $env "PRIMARY_SUBGRAPH_DATA_PGDATABASE") }}
             - name: "PRIMARY_SUBGRAPH_DATA_PGDATABASE"
               value: {{ $pgDatabase | quote }}
             {{- end }}
@@ -88,15 +89,20 @@ spec:
             - name: config
               mountPath: /etc/graph-node
               readOnly: true
-        {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck) }}
+        {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck "chartKey" "graph-node") }}
         {{- if $waitForIt }}
 {{ $waitForIt | nindent 8 }}
         {{- else if .Values.postgresReadinessCheck.enabled }}
         - name: wait-for-postgresql-ready
           image: {{ .Values.postgresReadinessCheck.image }}
-          {{- with .Values.postgresReadinessCheck.securityContext | default .Values.initContainerSecurityContext }}
+          {{- $postgresReadinessSecurityContext := (include "atk.securityContext.container" (dict
+            "context" $
+            "local" (merge (dict) (default (dict) .Values.initContainerSecurityContext) (default (dict) .Values.postgresReadinessCheck.securityContext))
+            "chartKey" "graph-node"
+          )) | fromYaml }}
+          {{- if $postgresReadinessSecurityContext }}
           securityContext:
-            {{- toYaml . | nindent 12 }}
+            {{- toYaml $postgresReadinessSecurityContext | nindent 12 }}
           {{- end }}
           command:
             - /bin/sh
@@ -196,19 +202,19 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            {{- range $key, $val := .Values.env }}
+            {{- range $key, $val := $env }}
             - name: {{ $key | quote }}
               value: {{ $val | quote }}
             {{- end }}
-            {{- if not (hasKey .Values.env "PRIMARY_SUBGRAPH_DATA_PGHOST") }}
+            {{- if not (hasKey $env "PRIMARY_SUBGRAPH_DATA_PGHOST") }}
             - name: "PRIMARY_SUBGRAPH_DATA_PGHOST"
               value: {{ $pgHost | quote }}
             {{- end }}
-            {{- if not (hasKey .Values.env "PRIMARY_SUBGRAPH_DATA_PGPORT") }}
+            {{- if not (hasKey $env "PRIMARY_SUBGRAPH_DATA_PGPORT") }}
             - name: "PRIMARY_SUBGRAPH_DATA_PGPORT"
               value: {{ $pgPort | quote }}
             {{- end }}
-            {{- if not (hasKey .Values.env "PRIMARY_SUBGRAPH_DATA_PGDATABASE") }}
+            {{- if not (hasKey $env "PRIMARY_SUBGRAPH_DATA_PGDATABASE") }}
             - name: "PRIMARY_SUBGRAPH_DATA_PGDATABASE"
               value: {{ $pgDatabase | quote }}
             {{- end }}

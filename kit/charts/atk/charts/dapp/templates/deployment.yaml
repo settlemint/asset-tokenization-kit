@@ -38,7 +38,7 @@ spec:
 
       {{- /* Define initContainers block only if needed */}}
       {{- if or .Values.initContainer.tcpCheck.enabled .Values.initContainer.graphQLCheck.enabled }}
-      {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck) }}
+      {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck "chartKey" "dapp") }}
       initContainers:
         {{- if $waitForIt }}
 {{ $waitForIt | nindent 8 }}
@@ -49,9 +49,14 @@ spec:
         - name: {{ .Values.initContainer.graphQLCheck.name | default "wait-for-graphql" }}
           image: "{{ .Values.initContainer.graphQLCheck.image.registry }}/{{ .Values.initContainer.graphQLCheck.image.repository }}:{{ .Values.initContainer.graphQLCheck.image.tag }}"
           imagePullPolicy: {{ .Values.initContainer.graphQLCheck.image.pullPolicy }}
-          {{- with .Values.initContainerSecurityContext }}
+          {{- $graphQLSecurityContext := (include "atk.securityContext.container" (dict
+            "context" $
+            "local" (merge (dict) (default (dict) .Values.initContainerSecurityContext) (default (dict) .Values.initContainer.graphQLCheck.securityContext))
+            "chartKey" "dapp"
+          )) | fromYaml }}
+          {{- if $graphQLSecurityContext }}
           securityContext:
-            {{- toYaml . | nindent 12 }}
+            {{- toYaml $graphQLSecurityContext | nindent 12 }}
           {{- end }}
           command:
             - /bin/sh
