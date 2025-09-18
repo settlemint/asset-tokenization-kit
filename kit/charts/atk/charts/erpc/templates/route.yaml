@@ -1,0 +1,58 @@
+{{- /*
+OpenShift Route for exposing the eRPC service when the Route API is available
+and the feature is enabled via chart values.
+*/ -}}
+{{- $hasRouteAPI := .Capabilities.APIVersions.Has "route.openshift.io/v1" -}}
+{{- $routeValues := .Values.openShiftRoute -}}
+{{- if and $hasRouteAPI $routeValues.enabled -}}
+{{- $fullName := include "common.names.fullname" . -}}
+{{- $targetPort := "http" -}}
+{{- with $routeValues.port }}
+  {{- with .targetPort }}
+    {{- $targetPort = . -}}
+  {{- end }}
+{{- end }}
+{{- $weight := "" -}}
+{{- with $routeValues.to }}
+  {{- with .weight }}
+    {{- $weight = . -}}
+  {{- end }}
+{{- end }}
+{{- $wildcard := default "None" $routeValues.wildcardPolicy -}}
+{{- $baseAnnotations := include "common.tplvalues.merge" ( dict "values" ( list (default (dict) $routeValues.annotations) .Values.commonAnnotations ) "context" . ) -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ $fullName }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+  {{- if $baseAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" $baseAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  to:
+    kind: Service
+    name: {{ $fullName }}
+    {{- if $weight }}
+    weight: {{ int $weight }}
+    {{- end }}
+  {{- with $routeValues.alternateBackends }}
+  alternateBackends:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  port:
+    targetPort: {{ $targetPort }}
+  {{- with $routeValues.host }}
+  host: {{ . | quote }}
+  {{- end }}
+  {{- with $routeValues.path }}
+  path: {{ . | quote }}
+  {{- end }}
+  {{- if $wildcard }}
+  wildcardPolicy: {{ $wildcard }}
+  {{- end }}
+  {{- with $routeValues.tls }}
+  tls:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

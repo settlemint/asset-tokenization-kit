@@ -208,6 +208,17 @@ txsigner:
 
 # ERPC security contexts for OpenShift
 erpc:
+
+  ingress:
+    enabled: false
+
+  openShiftRoute:
+    enabled: true
+    host: rpc.apps-crc.testing
+    path: /
+    wildcardPolicy: None
+    tls: null
+
   podSecurityContext:
     fsGroup: null
     runAsUser: null
@@ -238,6 +249,10 @@ erpc:
       - ALL
     seccompProfile:
       type: RuntimeDefault
+
+  initContainer:
+    tcpCheck:
+      enabled: false
 
 # DApp security contexts for OpenShift
 dapp:
