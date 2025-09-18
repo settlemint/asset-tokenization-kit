@@ -1,5 +1,5 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
+import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import {
   IdentityReadSchema,
@@ -7,6 +7,7 @@ import {
   IdentitySchema,
   type Identity,
 } from "@/orpc/routes/system/identity/routes/identity.read.schema";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import countries from "i18n-iso-countries";
 
 // Query to get comprehensive identity information including claims
@@ -65,10 +66,14 @@ const READ_IDENTITY_QUERY = theGraphGraphql(`
  */
 export const identityRead = systemRouter.system.identity.read
   .use(
-    offChainPermissionsMiddleware<typeof IdentityReadSchema>({
-      requiredPermissions: { account: ["read"] },
-      alwaysAllowIf: (context, input) =>
-        input.wallet === context.auth?.user.wallet,
+    blockchainPermissionsMiddleware<typeof IdentityReadSchema>({
+      requiredRoles: SYSTEM_PERMISSIONS.accountRead,
+      getAccessControl: ({ context }) => {
+        return context.system?.systemAccessManager?.accessControl;
+      },
+      alwaysAllowIf: ({ auth }, { wallet }) => {
+        return wallet === auth?.user.wallet;
+      },
     })
   )
   .handler(async ({ input, context, errors }) => {
