@@ -58,10 +58,7 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
     throw new Error("Failed to bootstrap system");
   }
 
-  // System.create now grants all necessary roles including:
-  // - DEFAULT_ADMIN_ROLE and SYSTEM_MANAGER_ROLE (granted by smart contract)
-  // - TOKEN_MANAGER_ROLE, IDENTITY_MANAGER_ROLE, COMPLIANCE_MANAGER_ROLE, ADDON_MANAGER_ROLE (granted by API)
-  logger.info("✓ System created with all necessary roles granted");
+  logger.info("✓ System created ");
 
   // The create method already returns a fully initialized system
   if (!system.tokenFactoryRegistry) {
