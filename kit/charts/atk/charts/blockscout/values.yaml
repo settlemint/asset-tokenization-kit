@@ -149,6 +149,7 @@ blockscout:
     ETHEREUM_JSONRPC_HTTP_URL: http://erpc:4000/settlemint/evm/53771311147
     ETHEREUM_JSONRPC_TRACE_URL: http://erpc:4000/settlemint/evm/53771311147
     SECRET_KEY_BASE: atk
+    TZDATA_DIR: /tmp/tzdata
 
 frontend:
   enabled: true

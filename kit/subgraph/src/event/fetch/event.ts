@@ -121,8 +121,8 @@ function getAccount(address: Address): Account {
   let accountAddress = address;
   // First check if the address is an existing identity
   const identity = Identity.load(address);
-  if (identity && identity.account) {
-    accountAddress = Address.fromBytes(identity.account!);
+  if (identity) {
+    accountAddress = Address.fromBytes(identity.account);
   }
   return fetchAccount(accountAddress);
 }

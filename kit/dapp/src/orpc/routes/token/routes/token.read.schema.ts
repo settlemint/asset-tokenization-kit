@@ -1,3 +1,4 @@
+import { IdentitySchema } from "@/orpc/routes/system/identity/routes/identity.read.schema";
 import type { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import {
   accessControlRoles,
@@ -7,6 +8,7 @@ import { assetExtensionArray } from "@atk/zod/asset-extensions";
 import { assetSymbol } from "@atk/zod/asset-symbol";
 import { assetType } from "@atk/zod/asset-types";
 import { bigDecimal } from "@atk/zod/bigdecimal";
+import { identityClaim } from "@atk/zod/claim";
 import { complianceTypeId } from "@atk/zod/compliance";
 import { decimals } from "@atk/zod/decimals";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
@@ -52,31 +54,9 @@ export const RawTokenSchema = z.object({
     .boolean()
     .describe("Whether the token implements ERC3643"),
   implementsSMART: z.boolean().describe("Whether the token implements SMART"),
-  account: z
-    .object({
-      identity: z
-        .object({
-          id: ethereumAddress.describe("The identity contract address"),
-          claims: z
-            .array(
-              z.object({
-                revoked: z.boolean().describe("Whether the claim is revoked"),
-                name: z.string().describe("The name of the claim"),
-                values: z.array(
-                  z.object({
-                    key: z.string().describe("The key of the claim value"),
-                    value: z.string().describe("The value of the claim value"),
-                  })
-                ),
-              })
-            )
-            .describe("The claims of the identity")
-            .optional(),
-        })
-        .nullable()
-        .describe("The identity associated with this token"),
-    })
-    .describe("The account associated with this token"),
+  identity: IdentitySchema.optional().describe(
+    "Identity associated with this token"
+  ),
   pausable: z.object({
     paused: z.boolean().describe("Whether the token is paused"),
   }),
@@ -312,33 +292,26 @@ export const TokenReadInputSchema = z.object({
   tokenAddress: ethereumAddress,
 });
 
-/**
- * Type-safe transformer function that converts RawToken to Token
- * Ensures totalSupply is properly transformed from string to Dnum
- *
- * @param raw - The raw token data from The Graph
- * @returns The transformed token with totalSupply as Dnum
- * @example
- * ```typescript
- * const rawToken = {
- *   id: "0x123...",
- *   name: "Token",
- *   totalSupply: "1000000000000000000"
- * };
- * const token = transformRawToken(rawToken);
- * // token.totalSupply is now a Dnum for precise arithmetic
- * ```
- */
-export function transformRawToken(raw: z.infer<typeof RawTokenSchema>): Token {
-  return TokenSchema.parse(raw);
-}
-
-/**
- * Type guard function to check if a value is a valid Token
- *
- * @param value - The value to check
- * @returns true if the value is a valid Token
- */
-export function isToken(value: unknown): value is Token {
-  return TokenSchema.safeParse(value).success;
-}
+export const TokenReadResponseSchema = z.object({
+  token: TokenSchema.omit({ identity: true }).extend({
+    account: z.object({
+      identities: z
+        .array(
+          z.object({
+            id: ethereumAddress,
+            claims: z.array(identityClaim),
+            registered: z
+              .array(
+                z.object({
+                  country: z.number(),
+                })
+              )
+              .nullable()
+              .optional(),
+          })
+        )
+        .nullable()
+        .optional(),
+    }),
+  }),
+});

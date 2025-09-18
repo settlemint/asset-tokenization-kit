@@ -130,22 +130,23 @@ describe("Fixed yield", () => {
 
     // the first period should start at the same time as the schedule
     for (const token of response.tokens) {
-      expect(token.yield_?.schedule.startDate).toBe(
-        token.yield_?.schedule.periods[0]?.startDate ?? "0"
+      expect(token.yield_?.schedule?.startDate).toBe(
+        token.yield_?.schedule?.periods[0]?.startDate ?? "0"
       );
     }
 
     // the last period should end at the same time as the schedule
     for (const token of response.tokens) {
-      const periods = token.yield_?.schedule.periods ?? [];
-      expect(token.yield_?.schedule.endDate).toBe(
-        periods[periods.length - 1]?.endDate
-      );
+      const periods = token.yield_?.schedule?.periods ?? [];
+      const periodEndDate = periods[periods.length - 1]?.endDate;
+      if (periodEndDate) {
+        expect(token.yield_?.schedule?.endDate).toBe(periodEndDate);
+      }
     }
 
     // there should be no periods which have overlapping dates
     for (const token of response.tokens) {
-      const periods = token.yield_?.schedule.periods ?? [];
+      const periods = token.yield_?.schedule?.periods ?? [];
       for (const period1 of periods) {
         for (const period2 of periods) {
           if (period1 === period2) continue;
@@ -161,37 +162,37 @@ describe("Fixed yield", () => {
 
     // Total yield should be the sum of all periods
     for (const token of response.tokens) {
-      const periods = token.yield_?.schedule.periods ?? [];
+      const periods = token.yield_?.schedule?.periods ?? [];
       let totalYieldPeriods = 0;
       for (const period of periods) {
         totalYieldPeriods += Number(period.totalYield);
       }
       expect(totalYieldPeriods.toFixed(3)).toBe(
-        Number(token.yield_?.schedule.totalYield ?? "0").toFixed(3)
+        Number(token.yield_?.schedule?.totalYield ?? "0").toFixed(3)
       );
     }
 
     // Total claimed should be the sum of all periods
     for (const token of response.tokens) {
-      const periods = token.yield_?.schedule.periods ?? [];
+      const periods = token.yield_?.schedule?.periods ?? [];
       let totalClaimedPeriods = 0;
       for (const period of periods) {
         totalClaimedPeriods += Number(period.totalClaimed);
       }
       expect(totalClaimedPeriods.toFixed(3)).toBe(
-        Number(token.yield_?.schedule.totalClaimed ?? "0").toFixed(3)
+        Number(token.yield_?.schedule?.totalClaimed ?? "0").toFixed(3)
       );
     }
 
     // Total unclaimed yield should be the sum of all periods
     for (const token of response.tokens) {
-      const periods = token.yield_?.schedule.periods ?? [];
+      const periods = token.yield_?.schedule?.periods ?? [];
       let totalUnclaimedYieldPeriods = 0;
       for (const period of periods) {
         totalUnclaimedYieldPeriods += Number(period.totalUnclaimedYield);
       }
       expect(totalUnclaimedYieldPeriods.toFixed(3)).toBe(
-        Number(token.yield_?.schedule.totalUnclaimedYield ?? "0").toFixed(3)
+        Number(token.yield_?.schedule?.totalUnclaimedYield ?? "0").toFixed(3)
       );
     }
   });

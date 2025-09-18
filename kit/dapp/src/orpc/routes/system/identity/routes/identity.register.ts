@@ -2,7 +2,7 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
+import { identityRead } from "@/orpc/routes/system/identity/routes/identity.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call } from "@orpc/server";
 import countries from "i18n-iso-countries";
@@ -50,15 +50,15 @@ export const identityRegister = onboardedRouter.system.identity.register
 
     const walletAddress = wallet ?? auth.user.wallet;
 
-    const account = await call(
-      readAccount,
+    const identity = await call(
+      identityRead,
       {
         wallet: walletAddress,
       },
       { context }
     );
 
-    if (!account.identity) {
+    if (!identity) {
       throw errors.NOT_FOUND({
         message: `No identity found for the account "${walletAddress}"`,
       });
@@ -70,7 +70,7 @@ export const identityRegister = onboardedRouter.system.identity.register
         address: system.identityRegistry.id,
         from: sender.wallet,
         country: Number(countries.alpha2ToNumeric(country) ?? "0"),
-        identity: account.identity,
+        identity: identity.id,
         wallet: walletAddress,
       },
       {
@@ -80,9 +80,9 @@ export const identityRegister = onboardedRouter.system.identity.register
       }
     );
 
-    // Return the updated account data
+    // Return the updated identity data
     return await call(
-      readAccount,
+      identityRead,
       {
         wallet: walletAddress,
       },

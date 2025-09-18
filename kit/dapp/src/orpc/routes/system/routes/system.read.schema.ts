@@ -1,6 +1,8 @@
 import type { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { accessControlRoles } from "@atk/zod/access-control-roles";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { ethereumHex } from "@atk/zod/ethereum-hex";
+import { isoCountryCode } from "@atk/zod/iso-country-code";
 import { accessControlSchema } from "@atk/zod/src/access-control-roles";
 import { addonFactoryTypeId } from "@atk/zod/src/addon-types";
 import { assetFactoryTypeId } from "@atk/zod/src/asset-types";
@@ -89,12 +91,27 @@ export const SystemSchema = z.object({
    */
   identityFactory: z.object({
     id: ethereumAddress.describe("Identity factory address"),
+    identities: z
+      .array(
+        z.object({
+          id: ethereumAddress.describe("Identity contract address"),
+        })
+      )
+      .describe("Identities created by this factory for the user"),
   }),
   /**
    * The identity registry storage
    */
   identityRegistryStorage: z.object({
     id: ethereumAddress.describe("Identity registry storage address"),
+    registeredIdentities: z
+      .array(
+        z.object({
+          id: ethereumHex.describe("Registered identity ID"),
+          country: z.number().describe("ISO country code"),
+        })
+      )
+      .describe("Registered identities for the user"),
   }),
   /**
    * The identity registry
@@ -136,9 +153,6 @@ export const SystemSchema = z.object({
               keyof typeof SYSTEM_PERMISSIONS,
               z.ZodType<boolean>
             > = {
-              accountRead: z
-                .boolean()
-                .describe("Whether the user can read accounts"),
               accountSearch: z
                 .boolean()
                 .describe("Whether the user can search accounts"),
@@ -166,6 +180,12 @@ export const SystemSchema = z.object({
               identityCreate: z
                 .boolean()
                 .describe("Whether the user can create identities"),
+              identityRead: z
+                .boolean()
+                .describe("Whether the user can read identities"),
+              identitySearch: z
+                .boolean()
+                .describe("Whether the user can search identities"),
               identityList: z
                 .boolean()
                 .describe("Whether the user can read identities"),
@@ -224,6 +244,30 @@ export const SystemSchema = z.object({
     })
     .optional()
     .describe("The permissions of the user for the system"),
+
+  /**
+   * The user's identity information within this system
+   */
+  userIdentity: z
+    .object({
+      /**
+       * The user's identity contract address
+       */
+      address: ethereumAddress.describe("User's identity contract address"),
+
+      /**
+       * The registered identity.
+       */
+      registered: z
+        .object({
+          isRegistered: z.literal(true),
+          country: isoCountryCode,
+        })
+        .or(z.literal(false))
+        .optional(),
+    })
+    .optional()
+    .describe("The user's identity information within this system"),
 });
 
 export type System = z.infer<typeof SystemSchema>;

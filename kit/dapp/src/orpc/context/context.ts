@@ -138,17 +138,6 @@ export interface Context {
   token?: Token;
 
   /**
-   * User identity and claims.
-   * Injected by userClaimsMiddleware for procedures that need to access the user's identity contract and claims.
-   * @optional
-   * @see {@link @/orpc/middlewares/system/user-identity.middleware} - User identity middleware configuration
-   */
-  userIdentity?: {
-    address?: EthereumAddress;
-    claims: string[];
-  };
-
-  /**
    * Claim topics the authenticated user is authorized to issue as a trusted issuer.
    * Injected by trustedIssuerMiddleware for procedures that need issuer authorization.
    * Contains topic names (e.g., ["kyc", "aml"]) that the user can verify/issue for others.

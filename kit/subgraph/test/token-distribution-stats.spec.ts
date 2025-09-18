@@ -39,19 +39,19 @@ describe("TokenDistributionStats", () => {
     // Verify that stats have required fields
     if (response.tokenDistributionStats_collection.length > 0) {
       const firstStat = response.tokenDistributionStats_collection[0];
-      expect(firstStat.timestamp).toBeDefined();
-      expect(firstStat.token).toBeDefined();
-      expect(firstStat.percentageOwnedByTop5Holders).toBeDefined();
-      expect(firstStat.balancesCountSegment1).toBeDefined();
-      expect(firstStat.totalValueSegment1).toBeDefined();
-      expect(firstStat.balancesCountSegment2).toBeDefined();
-      expect(firstStat.totalValueSegment2).toBeDefined();
-      expect(firstStat.balancesCountSegment3).toBeDefined();
-      expect(firstStat.totalValueSegment3).toBeDefined();
-      expect(firstStat.balancesCountSegment4).toBeDefined();
-      expect(firstStat.totalValueSegment4).toBeDefined();
-      expect(firstStat.balancesCountSegment5).toBeDefined();
-      expect(firstStat.totalValueSegment5).toBeDefined();
+      expect(firstStat?.timestamp).toBeDefined();
+      expect(firstStat?.token).toBeDefined();
+      expect(firstStat?.percentageOwnedByTop5Holders).toBeDefined();
+      expect(firstStat?.balancesCountSegment1).toBeDefined();
+      expect(firstStat?.totalValueSegment1).toBeDefined();
+      expect(firstStat?.balancesCountSegment2).toBeDefined();
+      expect(firstStat?.totalValueSegment2).toBeDefined();
+      expect(firstStat?.balancesCountSegment3).toBeDefined();
+      expect(firstStat?.totalValueSegment3).toBeDefined();
+      expect(firstStat?.balancesCountSegment4).toBeDefined();
+      expect(firstStat?.totalValueSegment4).toBeDefined();
+      expect(firstStat?.balancesCountSegment5).toBeDefined();
+      expect(firstStat?.totalValueSegment5).toBeDefined();
     }
   });
 

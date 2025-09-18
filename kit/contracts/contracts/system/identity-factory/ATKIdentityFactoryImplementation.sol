@@ -215,7 +215,7 @@ contract ATKIdentityFactoryImplementation is
         if (_identities[_wallet] != address(0)) revert WalletAlreadyLinked(_wallet);
 
         // Deploy identity with _wallet as the initial management key passed to proxy constructor
-        address identity = _createAndRegisterWalletIdentity(_wallet, _wallet);
+        address identity = _createWalletIdentity(_wallet, _wallet);
         IERC734 identityContract = IERC734(identity);
 
         // Add specified management keys
@@ -258,7 +258,7 @@ contract ATKIdentityFactoryImplementation is
         }
 
         // Deploy identity with address-based salt
-        address identity = _createAndRegisterContractIdentity(_contract);
+        address identity = _createContractIdentity(_contract);
 
         _contractIdentities[_contract] = identity;
         emit ContractIdentityCreated(_msgSender(), identity, _contract);
@@ -355,7 +355,7 @@ contract ATKIdentityFactoryImplementation is
     /// @param _walletAddress The address of the wallet for which to create an identity.
     /// @param _initialManagerAddress The address to be set as the initial management key in the proxy's constructor.
     /// @return address The address of the newly deployed `ATKIdentityProxy`.
-    function _createAndRegisterWalletIdentity(
+    function _createWalletIdentity(
         address _walletAddress,
         address _initialManagerAddress
     )
@@ -380,7 +380,7 @@ contract ATKIdentityFactoryImplementation is
     /// @param _contractAddress The address of the contract (must implement IContractWithIdentity) for which to create
     /// an identity.
     /// @return address The address of the newly deployed identity proxy.
-    function _createAndRegisterContractIdentity(address _contractAddress) private returns (address) {
+    function _createContractIdentity(address _contractAddress) private returns (address) {
         (bytes32 saltBytes, string memory saltString) = _calculateSalt(CONTRACT_SALT_PREFIX, _contractAddress);
 
         if (_saltTakenByteSalt[saltBytes]) revert SaltAlreadyTaken(saltString);

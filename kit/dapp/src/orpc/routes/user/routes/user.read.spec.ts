@@ -90,13 +90,6 @@ describe("User read", () => {
       expect(user.lastName).toBe("TestLast");
       expect(user.name).toBe("TestFirst TestLast");
       expect(user.role).toBeDefined();
-      // Check new identity fields
-      expect(typeof user.isRegistered).toBe("boolean");
-      expect(Array.isArray(user.claims)).toBe(true);
-      if (user.identity) {
-        expect(typeof user.identity).toBe("string");
-        expect(user.identity).toMatch(/^0x[a-fA-F0-9]{40}$/);
-      }
     });
 
     it("admin can read user by wallet address", async () => {
@@ -306,58 +299,6 @@ describe("User read", () => {
     });
   });
 
-  describe("Identity and registration status", () => {
-    it("includes identity registration status and claims", async () => {
-      const headers = await signInWithUser(DEFAULT_ADMIN);
-      const client = getOrpcClient(headers);
-
-      const user = await client.user.read({
-        userId: testUserData.id,
-      });
-
-      // Every user should have isRegistered field
-      expect(typeof user.isRegistered).toBe("boolean");
-
-      // Claims should always be an array
-      expect(Array.isArray(user.claims)).toBe(true);
-
-      // Identity field should be string or undefined
-      if (user.identity) {
-        expect(typeof user.identity).toBe("string");
-        expect(user.identity).toMatch(/^0x[a-fA-F0-9]{40}$/); // Valid Ethereum address
-      }
-
-      // If user has identity, isRegistered should be true
-      if (user.identity) {
-        expect(user.isRegistered).toBe(true);
-      }
-
-      // If user doesn't have identity, isRegistered should be false
-      if (!user.identity) {
-        expect(user.isRegistered).toBe(false);
-        expect(user.claims).toEqual([]); // Should have empty claims array
-      }
-    });
-
-    it("gracefully handles TheGraph unavailability", async () => {
-      // This test ensures that if TheGraph is down, the read still works
-      // but without identity data
-      const headers = await signInWithUser(DEFAULT_ADMIN);
-      const client = getOrpcClient(headers);
-
-      const user = await client.user.read({
-        userId: testUserData.id,
-      });
-
-      expect(user).toBeDefined();
-      expect(user.id).toBe(testUserData.id);
-      expect(user.email).toBeDefined();
-      expect(user.wallet).toBeDefined();
-      expect(typeof user.isRegistered).toBe("boolean");
-      expect(Array.isArray(user.claims)).toBe(true);
-    });
-  });
-
   describe("Identity permissions middleware", () => {
     it("forbids regular users without permissions", async () => {
       const headers = await signInWithUser(unauthorizedUser.user);
@@ -377,33 +318,6 @@ describe("User read", () => {
       ).rejects.toThrow(
         errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
       );
-    });
-
-    it("identity manager can see all users and all claims unfiltered", async () => {
-      // Identity managers have canSeeAllClaims = true, so they see everything from TheGraph
-      const headers = await signInWithUser(DEFAULT_ADMIN);
-      const client = getOrpcClient(headers);
-
-      const user = await client.user.read({
-        userId: testUserData.id,
-      });
-
-      expect(user).toBeDefined();
-      expect(user.id).toBe(testUserData.id);
-      expect(user.wallet).toBe(testUserData.wallet);
-
-      // Identity manager sees ALL claims (whatever TheGraph returns)
-      expect(Array.isArray(user.claims)).toBe(true);
-
-      // If the user has an identity with claims, identity manager should see them all
-      if (user.identity && user.claims.length > 0) {
-        user.claims.forEach((claim) => {
-          expect(claim.name).toBeDefined();
-          expect(claim.revoked).toBeDefined();
-          expect(claim.issuer).toBeDefined();
-          expect(claim.values).toBeDefined();
-        });
-      }
     });
   });
 });

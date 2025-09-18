@@ -11,6 +11,7 @@ keys in `values.yaml` (or your environment-specific values file) to point servic
 environment.
 
 ### PostgreSQL Targets
+
 | Service | Values path | Default host | Default port | Default database | Default username | Default password | Default SSL mode |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Blockscout | `blockscout.postgresql` | `postgresql` | `5432` | `blockscout` | `blockscout` | `atk` | `disable` |
@@ -20,6 +21,7 @@ environment.
 | TxSigner | `txsigner.postgresqlConnection` | `postgresql` | `5432` | `txsigner` | `txsigner` | `atk` | `disable` |
 
 ### Redis Targets
+
 | Service | Values path | Default host | Default port | Default database | Default username | Default password |
 | --- | --- | --- | --- | --- | --- | --- |
 | eRPC Cache | `erpc.redis.cacheDb` | `redis` | `6379` | `0` | `default` | `atk` |
