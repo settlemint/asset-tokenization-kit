@@ -18,22 +18,6 @@ global:
       repository: settlemint/asset-tokenization-kit-artifacts
       tag: 2.0.0-main.91391
       pullPolicy: IfNotPresent
-  securityContexts:
-    pod:
-      fsGroup: 101337
-      runAsNonRoot: true
-      seccompProfile:
-        type: RuntimeDefault
-    container:
-      runAsNonRoot: true
-      runAsUser: 101337
-      runAsGroup: 101337
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      seccompProfile:
-        type: RuntimeDefault
   datastores:
     default:
       redis:
@@ -119,6 +103,18 @@ erpc:
         paths:
           - path: /
             pathType: ImplementationSpecific
+  openShiftRoute:
+    enabled: false
+    annotations: {}
+    host: rpc.k8s.orb.local
+    path: /
+    wildcardPolicy: None
+    port:
+      targetPort: http
+    to:
+      weight: 100
+    alternateBackends: []
+    tls: null
   config:
     logLevel: info
     server:
