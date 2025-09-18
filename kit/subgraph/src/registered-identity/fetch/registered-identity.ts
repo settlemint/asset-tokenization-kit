@@ -18,7 +18,7 @@ export function fetchRegisteredIdentity(
 
     registeredIdentity.identity = Address.zero();
     registeredIdentity.country = 0;
-    registeredIdentity.recoveredIdentity = Address.zero();
+    registeredIdentity.recoveredIdentity = null;
     registeredIdentity.isLost = false;
 
     registeredIdentity.save();

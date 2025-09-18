@@ -1,4 +1,4 @@
-import { Bytes, store } from "@graphprotocol/graph-ts";
+import { store } from "@graphprotocol/graph-ts";
 import {
   CountryModified as CountryModifiedEvent,
   IdentityModified as IdentityModifiedEvent,
@@ -55,7 +55,7 @@ export function handleIdentityRegistryUnbound(
   const identityRegistry = fetchIdentityRegistry(
     event.params._identityRegistry
   );
-  identityRegistry.identityRegistryStorage = Bytes.empty();
+  identityRegistry.identityRegistryStorage = null;
   identityRegistry.save();
 }
 
