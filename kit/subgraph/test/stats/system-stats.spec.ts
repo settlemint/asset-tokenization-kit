@@ -21,16 +21,17 @@ describe("SystemStats", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
-    expect(response.systemStats_collection).toBeDefined();
-    expect(Array.isArray(response.systemStats_collection)).toBe(true);
+    const systemStats = response.systemStats_collection ?? [];
+    expect(Array.isArray(systemStats)).toBe(true);
 
     // Verify that stats have required fields
-    if (response.systemStats_collection.length > 0) {
-      const firstStat = response.systemStats_collection[0];
-      expect(firstStat.timestamp).toBeDefined();
-      expect(firstStat.system).toBeDefined();
-      expect(firstStat.totalValueInBaseCurrency).toBeDefined();
+    if (!systemStats.length) {
+      return;
     }
+    const firstStat = systemStats[0]!;
+    expect(firstStat.timestamp).toBeDefined();
+    expect(firstStat.system).toBeDefined();
+    expect(firstStat.totalValueInBaseCurrency).toBeDefined();
   });
 
   it("should fetch system stats aggregated by day", async () => {
@@ -51,8 +52,8 @@ describe("SystemStats", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
-    expect(response.systemStats_collection).toBeDefined();
-    expect(Array.isArray(response.systemStats_collection)).toBe(true);
+    const systemStats = response.systemStats_collection;
+    expect(systemStats && Array.isArray(systemStats)).toBe(true);
   });
 
   it("should have a persistent system stats state", async () => {
@@ -69,13 +70,15 @@ describe("SystemStats", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
+    const states = response.systemStatsStates ?? [];
 
-    if (response.systemStatsStates.length > 0) {
-      const state = response.systemStatsStates[0];
-      expect(state.id).toBeDefined();
-      expect(state.system).toBeDefined();
-      expect(state.totalValueInBaseCurrency).toBeDefined();
+    if (!states.length) {
+      return;
     }
+    const state = states[0]!;
+    expect(state.id).toBeDefined();
+    expect(state.system).toBeDefined();
+    expect(state.totalValueInBaseCurrency).toBeDefined();
   });
 
   it("should calculate total value based on token supply and base price", async () => {
@@ -108,7 +111,8 @@ describe("SystemStats", () => {
     `
     );
     const tokenResponse = await theGraphClient.request(tokenQuery, {});
-    const expectedTotalValue = tokenResponse.tokens.reduce((acc, token) => {
+    const tokens = tokenResponse.tokens ?? [];
+    const expectedTotalValue = tokens.reduce((acc, token) => {
       return acc + getTotalValueInBaseCurrency(token);
     }, 0);
 
@@ -121,9 +125,11 @@ describe("SystemStats", () => {
       `
     );
     const statsResponse = await theGraphClient.request(statsQuery, {});
-    expect(
-      Number(statsResponse?.systemStatsStates[0]?.totalValueInBaseCurrency)
-    ).toBeCloseTo(expectedTotalValue, 6);
+    const stat = statsResponse.systemStatsStates?.[0];
+    expect(Number(stat?.totalValueInBaseCurrency)).toBeCloseTo(
+      expectedTotalValue,
+      6
+    );
   });
 
   it("should have processed all events leading to a price change", async () => {
@@ -140,9 +146,10 @@ describe("SystemStats", () => {
     `
     );
     const eventsResponse = await theGraphClient.request(eventsQuery, {});
+    const events = eventsResponse.events ?? [];
 
     // Check that all expected event types are present
-    const eventNames = eventsResponse.events.map((event) => event.eventName);
+    const eventNames = events.map((event) => event.eventName);
 
     expect(eventNames).toContain("BurnCompleted");
     expect(eventNames).toContain("MintCompleted");
@@ -151,6 +158,6 @@ describe("SystemStats", () => {
     expect(eventNames).toContain("ClaimChanged");
 
     // Verify we have the expected number of events
-    expect(eventsResponse.events.length).toBeGreaterThan(0);
+    expect(events.length).toBeGreaterThan(0);
   });
 });

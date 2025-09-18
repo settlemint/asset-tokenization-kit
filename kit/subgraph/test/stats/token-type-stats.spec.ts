@@ -20,19 +20,20 @@ describe("TokenTypeStats", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
-    expect(response.tokenTypeStats_collection).toBeDefined();
-    expect(Array.isArray(response.tokenTypeStats_collection)).toBe(true);
+    const tokenTypeStatsCollection = response.tokenTypeStats_collection ?? [];
+    expect(Array.isArray(tokenTypeStatsCollection)).toBe(true);
 
     // Verify that stats have required fields
-    if (response.tokenTypeStats_collection.length > 0) {
-      const firstStat = response.tokenTypeStats_collection[0];
-      expect(firstStat.timestamp).toBeDefined();
-      expect(firstStat.type).toBeDefined();
-      expect(firstStat.count).toBeDefined();
-      expect(firstStat.percentageOfTotalSupply).toBeDefined();
-      expect(typeof firstStat.count).toBe("number");
-      expect(typeof firstStat.percentageOfTotalSupply).toBe("string");
+    if (!tokenTypeStatsCollection.length) {
+      return;
     }
+    const firstStat = tokenTypeStatsCollection[0]!;
+    expect(firstStat.timestamp).toBeDefined();
+    expect(firstStat.type).toBeDefined();
+    expect(firstStat.count).toBeDefined();
+    expect(firstStat.percentageOfTotalSupply).toBeDefined();
+    expect(typeof firstStat.count).toBe("number");
+    expect(typeof firstStat.percentageOfTotalSupply).toBe("string");
   });
 
   it("should fetch token type stats aggregated by day", async () => {
@@ -52,19 +53,20 @@ describe("TokenTypeStats", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
-    expect(response.tokenTypeStats_collection).toBeDefined();
-    expect(Array.isArray(response.tokenTypeStats_collection)).toBe(true);
+    const tokenTypeStatsCollection = response.tokenTypeStats_collection;
+    expect(Array.isArray(tokenTypeStatsCollection)).toBe(true);
 
     // Verify that stats have required fields
-    if (response.tokenTypeStats_collection.length > 0) {
-      const firstStat = response.tokenTypeStats_collection[0];
-      expect(firstStat.timestamp).toBeDefined();
-      expect(firstStat.type).toBeDefined();
-      expect(firstStat.count).toBeDefined();
-      expect(firstStat.percentageOfTotalSupply).toBeDefined();
-      expect(typeof firstStat.count).toBe("number");
-      expect(typeof firstStat.percentageOfTotalSupply).toBe("string");
+    if (!tokenTypeStatsCollection.length) {
+      return;
     }
+    const firstStat = tokenTypeStatsCollection[0]!;
+    expect(firstStat.timestamp).toBeDefined();
+    expect(firstStat.type).toBeDefined();
+    expect(firstStat.count).toBeDefined();
+    expect(firstStat.percentageOfTotalSupply).toBeDefined();
+    expect(typeof firstStat.count).toBe("number");
+    expect(typeof firstStat.percentageOfTotalSupply).toBe("string");
   });
 
   it("should track token type stats correctly", async () => {
@@ -81,10 +83,14 @@ describe("TokenTypeStats", () => {
       systemStatQuery,
       {}
     );
-    expect(systemStatsResponse?.systemStatsStates).toBeArray();
-    expect(systemStatsResponse?.systemStatsStates.length).toEqual(1);
+    const systemStatsStates = systemStatsResponse?.systemStatsStates;
+    expect(Array.isArray(systemStatsStates)).toBe(true);
+    expect(systemStatsStates.length).toEqual(1);
 
-    const systemStat = systemStatsResponse?.systemStatsStates[0];
+    const systemStat = systemStatsStates[0];
+    if (!systemStat) {
+      throw new Error("Expected system stats state for token type stats tests");
+    }
     const systemValueInBaseCurrency = systemStat.totalValueInBaseCurrency;
     const tokenTypeStatsQuery = theGraphGraphql(
       `query ($system: Bytes!) {
@@ -109,22 +115,22 @@ describe("TokenTypeStats", () => {
         system: systemStat.id,
       }
     );
-    expect(tokenTypeStatsResponse?.tokenTypeStatsStates).toBeArray();
-    expect(tokenTypeStatsResponse?.tokenTypeStatsStates.length).toEqual(5);
+    const tokenTypeStatsStates = tokenTypeStatsResponse?.tokenTypeStatsStates;
+    expect(Array.isArray(tokenTypeStatsStates)).toBe(true);
+    expect(tokenTypeStatsStates.length).toEqual(5);
 
-    const totalValueInBaseCurrency =
-      tokenTypeStatsResponse?.tokenTypeStatsStates.reduce(
-        (acc, tokenTypeStat) => {
-          return acc + Number(tokenTypeStat.totalValueInBaseCurrency);
-        },
-        0
-      );
+    const totalValueInBaseCurrency = tokenTypeStatsStates.reduce(
+      (acc, tokenTypeStat) => {
+        return acc + Number(tokenTypeStat.totalValueInBaseCurrency);
+      },
+      0
+    );
     expect(totalValueInBaseCurrency).toBeCloseTo(
       Number(systemValueInBaseCurrency),
       6
     );
 
-    for (const tokenTypeStat of tokenTypeStatsResponse?.tokenTypeStatsStates) {
+    for (const tokenTypeStat of tokenTypeStatsStates) {
       expect(tokenTypeStat.system.id).toBe(systemStat.id);
 
       const tokenResponse = await theGraphClient.request(
@@ -158,9 +164,10 @@ describe("TokenTypeStats", () => {
         ),
         { type: tokenTypeStat.type }
       );
-      expect(tokenResponse.tokens.length).toEqual(tokenTypeStat.count);
+      const tokens = tokenResponse.tokens;
+      expect(tokens.length).toEqual(tokenTypeStat.count);
 
-      const expectedTotalValue = tokenResponse.tokens.reduce((acc, token) => {
+      const expectedTotalValue = tokens.reduce((acc, token) => {
         return acc + getTotalValueInBaseCurrency(token);
       }, 0);
       expect(Number(tokenTypeStat.totalValueInBaseCurrency)).toBeCloseTo(

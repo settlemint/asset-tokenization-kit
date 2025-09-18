@@ -85,7 +85,8 @@ describe("TokenBalances", () => {
     // Should be all from the same account
     expect(
       response.tokenBalances.every(
-        (balance) => balance.account.id === response.tokenBalances[0].account.id
+        (balance) =>
+          balance.account.id === response.tokenBalances[0]?.account.id
       )
     ).toBe(true);
   });
