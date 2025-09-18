@@ -9,5 +9,4 @@ metadata:
   {{- end }}
 data:
   erpc.yaml: |
-    {{- toYaml .Values.config | nindent 4 }}
-
+    {{- tpl (toYaml .Values.config) $ | nindent 4 }}

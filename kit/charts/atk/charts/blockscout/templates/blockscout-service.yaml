@@ -1,0 +1,19 @@
+{{- if .Values.blockscout.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "blockscout.fullname" . }}-blockscout
+  labels:
+    app: {{ include "blockscout.fullname" . }}-blockscout
+    {{- include "blockscout.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.blockscout.service.type }}
+  ports:
+    - port: {{ .Values.blockscout.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "blockscout.fullname" . }}-blockscout
+    {{- include "blockscout.selectorLabels" . | nindent 4 }}
+{{- end }}

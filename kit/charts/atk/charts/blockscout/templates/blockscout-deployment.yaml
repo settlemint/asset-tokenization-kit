@@ -1,0 +1,179 @@
+{{- if .Values.blockscout.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "blockscout.fullname" . }}-blockscout
+  labels:
+    app: {{ include "blockscout.fullname" . }}-blockscout
+    {{- include "blockscout.labels" . | nindent 4 }}
+  {{- with .Values.blockscout.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.blockscout.separateApi.enabled }}
+  replicas: {{ .Values.blockscout.separateApi.replicaCount }}
+  {{- else }}
+  replicas: {{ .Values.blockscout.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ include "blockscout.fullname" . }}-blockscout
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/blockscout-secret.yaml") . | sha256sum }}
+      {{- with .Values.blockscout.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: {{ include "blockscout.fullname" . }}-blockscout
+        {{- include "blockscout.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- include "atk.common.imagePullSecrets" . | nindent 6 }}
+      serviceAccountName: {{ include "blockscout.serviceAccountName" . }}
+      {{- with .Values.blockscout.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if and .Values.blockscout.init.enabled (not .Values.blockscout.separateApi.enabled) }}
+      initContainers:
+        - name: init-migrations
+          {{- with .Values.blockscout.initContainerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.blockscout.image.repository }}:{{ .Values.blockscout.image.tag }}"
+          resources:
+            {{- toYaml .Values.blockscout.resources | nindent 12 }}
+          {{- with .Values.blockscout.init.command }}
+          command:  {{ . | toYaml | nindent 12 }}
+          {{- end }}
+          {{- with .Values.blockscout.init.args }}
+          args: {{ . | toYaml | nindent 12 }}
+          {{- end }}
+          env:
+          - name: PORT
+            value: "4000"
+          - name: CHAIN_ID
+            value: {{ .Values.config.network.id | quote }}
+          {{- if and .Values.config.network.currency.symbol (not .Values.config.network.currency.dualToken) }}
+          - name: COIN
+            value: {{ .Values.config.network.currency.symbol | quote }}
+          - name: COIN_NAME
+            value: {{ .Values.config.network.currency.symbol | quote }}
+          {{- end }}
+          {{- if .Values.config.account.enabled }}
+          - name: ACCOUNT_ENABLED
+            value: "true"
+          {{- end }}
+          {{- if .Values.config.testnet }}
+          - name: SHOW_TESTNET_LABEL
+            value: "true"
+          {{- end }}
+          {{- if .Values.frontend.enabled }}
+          - name: API_V2_ENABLED
+            value: "true"
+          {{- end }}
+          {{- if .Values.blockscout.ingress.enabled }}
+          - name: BLOCKSCOUT_HOST
+            value: {{ .Values.blockscout.ingress.hostname | quote }}
+          {{- end }}
+          envFrom:
+            - secretRef:
+                name: {{ include "blockscout.fullname" . }}-blockscout-env
+      {{- end }}
+      containers:
+        - name: blockscout
+          {{- with .Values.blockscout.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.blockscout.image.repository }}:{{ .Values.blockscout.image.tag }}"
+          imagePullPolicy: {{ .Values.blockscout.image.pullPolicy }}
+          {{- if and .Values.blockscout.separateApi.enabled .Values.blockscout.init.enabled }}
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - bin/blockscout eval "Elixir.Explorer.ReleaseTasks.create_and_migrate()" && bin/blockscout start
+          {{- else if .Values.blockscout.separateApi.enabled }}
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - bin/blockscout start
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 4000
+              protocol: TCP
+          {{- if .Values.blockscout.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health/liveness
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: {{ .Values.blockscout.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.blockscout.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.blockscout.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.blockscout.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.blockscout.livenessProbe.failureThreshold }}
+          {{- end }}
+          {{- if .Values.blockscout.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health/readiness
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: {{ .Values.blockscout.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.blockscout.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.blockscout.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.blockscout.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.blockscout.readinessProbe.failureThreshold }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.blockscout.resources | nindent 12 }}
+          env:
+          - name: PORT
+            value: "4000"
+          - name: CHAIN_ID
+            value: {{ .Values.config.network.id | quote }}
+          {{- if and .Values.config.network.currency.symbol (not .Values.config.network.currency.dualToken) }}
+          - name: COIN
+            value: {{ .Values.config.network.currency.symbol | quote }}
+          - name: COIN_NAME
+            value: {{ .Values.config.network.currency.symbol | quote }}
+          {{- end }}
+          {{- if .Values.config.account.enabled }}
+          - name: ACCOUNT_ENABLED
+            value: "true"
+          {{- end }}
+          {{- if .Values.config.testnet }}
+          - name: SHOW_TESTNET_LABEL
+            value: "true"
+          {{- end }}
+          {{- if .Values.frontend.enabled }}
+          - name: API_V2_ENABLED
+            value: "true"
+          {{- end }}
+          {{- if .Values.blockscout.ingress.enabled }}
+          - name: BLOCKSCOUT_HOST
+            value: {{ .Values.blockscout.ingress.hostname | quote }}
+          {{- end }}
+          envFrom:
+            - secretRef:
+                name: {{ include "blockscout.fullname" . }}-blockscout-env
+      {{- with .Values.blockscout.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.blockscout.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.blockscout.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
