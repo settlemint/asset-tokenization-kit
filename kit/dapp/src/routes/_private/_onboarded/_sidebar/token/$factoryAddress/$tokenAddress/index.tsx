@@ -4,6 +4,7 @@ import { DetailGrid } from "@/components/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { PercentageProgressBar } from "@/components/percentage-progress/percentage-progress";
+import { TokenRelatedActions } from "@/components/related/token-related-actions";
 import { AssetBondStatusProgressChart } from "@/components/stats/charts/asset-bond-status-progress-chart";
 import { AssetCollateralRatioChart } from "@/components/stats/charts/asset-collateral-ratio-chart";
 import { AssetSupplyChangesAreaChart } from "@/components/stats/charts/asset-supply-changes-area-chart";
@@ -327,6 +328,12 @@ function RouteComponent() {
             <AssetWalletDistributionChart assetAddress={asset.id} />
           </Suspense>
         </div>
+      </section>
+
+      {/* Related actions (based on extensions/permissions) */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-medium text-accent">Related Actions</h2>
+        <TokenRelatedActions asset={asset} />
       </section>
     </>
   );
