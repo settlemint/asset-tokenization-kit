@@ -3,6 +3,7 @@ import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { getIdentityTabConfiguration } from "@/components/tab-navigation/identity-tab-configuration";
 import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
+import { client } from "@/orpc/orpc-client";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -41,52 +42,56 @@ export const Route = createFileRoute(
 )({
   parseParams: (params) => routeParamsSchema.parse(params),
   /**
-   * Loader function to prepare identity data (using dummy data for now)
+   * Loader function to fetch identity data from ORPC API
    */
-  loader: ({ params: { address } }) => {
-    // Mock data for now - will be replaced with real ORPC call later
-    const mockClaimsData = {
-      claims: [
-        {
-          id: "claim-1",
-          name: "Know Your Customer",
-          revoked: false,
-          issuer: {
-            id: "0xabcdef1234567890123456789012345678901234" as `0x${string}`,
-          },
-        },
-        {
-          id: "claim-2",
-          name: "Anti Money Laundering",
-          revoked: false,
-          issuer: {
-            id: "0xfedcba0987654321098765432109876543210987" as `0x${string}`,
-          },
-        },
-        {
-          id: "claim-3",
-          name: "Accredited Investor",
-          revoked: true,
-          issuer: {
-            id: "0x1111222233334444555566667777888899990000" as `0x${string}`,
-          },
-        },
-      ],
-      identity: address,
-      isRegistered: true,
-      accountId: address,
-    };
+  loader: async ({ params: { address } }) => {
+    try {
+      const identity = await client.system.identity.read({
+        wallet: address as `0x${string}`,
+      });
 
-    return {
-      claimsData: mockClaimsData,
-      breadcrumb: [
-        createI18nBreadcrumbMetadata("identityManagement"),
-        {
-          title: `${address.slice(0, 6)}...${address.slice(-4)}`,
-          href: `/admin/identity-management/${address}`,
-        },
-      ],
-    };
+      const claimsData = {
+        claims: identity.claims,
+        identity: identity.id,
+        isRegistered: identity.registered
+          ? identity.registered.isRegistered
+          : false,
+        account: identity.account,
+        contract: identity.contract,
+      };
+
+      return {
+        claimsData,
+        breadcrumb: [
+          createI18nBreadcrumbMetadata("identityManagement"),
+          {
+            title: `${address.slice(0, 6)}...${address.slice(-4)}`,
+            href: `/admin/identity-management/${address}`,
+          },
+        ],
+      };
+    } catch {
+      // Handle errors - identity not found, permission denied, etc.
+      // Return fallback data structure for non-existent identities
+      const fallbackClaimsData = {
+        claims: [],
+        identity: address,
+        isRegistered: false,
+        account: { id: address as `0x${string}` },
+        contract: null,
+      };
+
+      return {
+        claimsData: fallbackClaimsData,
+        breadcrumb: [
+          createI18nBreadcrumbMetadata("identityManagement"),
+          {
+            title: `${address.slice(0, 6)}...${address.slice(-4)}`,
+            href: `/admin/identity-management/${address}`,
+          },
+        ],
+      };
+    }
   },
   errorComponent: DefaultCatchBoundary,
   component: RouteComponent,

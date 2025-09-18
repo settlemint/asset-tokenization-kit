@@ -61,6 +61,7 @@ export const SYSTEM_PERMISSIONS = {
   grantRole: { any: ["admin"] },
   identityCreate: { any: ["identityManager", "systemManager"] },
   identityList: { any: ["identityManager", "claimIssuer", "systemModule"] },
+  identityRead: { any: ["identityManager", "claimIssuer", "systemModule"] },
   identityRegister: { any: ["identityManager", "systemManager"] },
   kycDelete: { any: ["identityManager", "claimIssuer"] },
   kycList: { any: ["identityManager", "claimIssuer"] },

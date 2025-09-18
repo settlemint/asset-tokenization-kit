@@ -2,6 +2,7 @@ import { DetailGrid } from "@/components/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { Badge } from "@/components/ui/badge";
+import { Web3Address } from "@/components/web3/web3-address";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
@@ -26,6 +27,13 @@ function IdentityDetailPage() {
     from: "/_private/_onboarded/_sidebar/admin/identity-management/$address",
   });
   const { t } = useTranslation(["identities", "common"]);
+
+  // Determine entity type and entity information
+  const isContract = Boolean(claimsData.contract);
+  const entityType = isContract ? "contract" : "account";
+  const entityAddress = isContract
+    ? claimsData.contract?.id
+    : claimsData.account?.id;
 
   return (
     <>
@@ -52,11 +60,44 @@ function IdentityDetailPage() {
         <DetailGridItem
           label={t("identities:fields.linkedAccount")}
           info={t("identities:fields.linkedAccountInfo")}
-          value={claimsData.accountId}
-          type="address"
-          showPrettyName={false}
-          emptyValue={t("common:none")}
-        />
+        >
+          {entityAddress ? (
+            <div className="flex flex-col gap-1">
+              {isContract && claimsData.contract?.contractName && (
+                <span className="font-medium">
+                  {claimsData.contract.contractName}
+                </span>
+              )}
+              <Web3Address
+                address={entityAddress}
+                size="small"
+                copyToClipboard
+                showBadge={!isContract || !claimsData.contract?.contractName}
+                showPrettyName={false}
+              />
+            </div>
+          ) : (
+            <span className="text-muted-foreground text-sm">
+              {t("common:none")}
+            </span>
+          )}
+        </DetailGridItem>
+
+        <DetailGridItem
+          label={t("identities:identityTable.columns.type")}
+          info={t("identities:fields.linkedAccountInfo")}
+        >
+          <Badge
+            variant="outline"
+            className={
+              isContract
+                ? "bg-[oklch(0.7675_0.0982_182.83)]/20 text-[oklch(0.7675_0.0982_182.83)] border-[oklch(0.7675_0.0982_182.83)]/30"
+                : "bg-sm-accent/20 text-sm-accent border-sm-accent/30"
+            }
+          >
+            {t(`identities:identityTable.types.${entityType}`)}
+          </Badge>
+        </DetailGridItem>
 
         <DetailGridItem
           label={t("identities:fields.createdAt")}

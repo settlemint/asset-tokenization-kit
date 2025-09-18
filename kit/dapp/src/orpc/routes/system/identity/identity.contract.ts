@@ -1,12 +1,16 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import { AccountSchema } from "@/orpc/routes/account/routes/account.read.schema";
+import claimsContract from "@/orpc/routes/system/identity/claims/claims.contract";
 import { IdentityCreateSchema } from "@/orpc/routes/system/identity/routes/identity.create.schema";
 import {
   IdentityListInputSchema,
   IdentityListOutputSchema,
 } from "@/orpc/routes/system/identity/routes/identity.list.schema";
+import {
+  IdentityReadSchema,
+  IdentitySchema,
+} from "@/orpc/routes/system/identity/routes/identity.read.schema";
 import { IdentityRegisterSchema } from "@/orpc/routes/system/identity/routes/identity.register.schema";
-import claimsContract from "@/orpc/routes/system/identity/claims/claims.contract";
 
 const TAGS = ["system", "identity"];
 
@@ -49,9 +53,21 @@ const identityList = baseContract
   .input(IdentityListInputSchema)
   .output(IdentityListOutputSchema);
 
+const identityRead = baseContract
+  .route({
+    method: "GET",
+    path: "/system/identity/{account}",
+    description: "Read identity information for a specified account",
+    successDescription: "Identity information retrieved successfully",
+    tags: TAGS,
+  })
+  .input(IdentityReadSchema)
+  .output(IdentitySchema);
+
 export const identityContract = {
   create: identityCreate,
   register: identityRegister,
   list: identityList,
   claims: claimsContract,
+  read: identityRead,
 };

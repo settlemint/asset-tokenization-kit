@@ -45,11 +45,9 @@ import { Route as PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuers
 import { Route as PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/asset-types'
 import { Route as PrivateOnboardedSidebarAdminPlatformSettingsAddonsRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/addons'
 import { Route as PrivateOnboardedSidebarAdminIdentityManagementAddressRouteImport } from './routes/_private/_onboarded/_sidebar/admin/identity-management/$address'
-import { Route as PrivateOnboardedSidebarAdminIdentityManagementAccountIdRouteImport } from './routes/_private/_onboarded/_sidebar/admin/identity-management/$accountId'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/index'
 import { Route as PrivateOnboardedSidebarAdminUserManagementUserIdIndexRouteImport } from './routes/_private/_onboarded/_sidebar/admin/user-management/$userId/index'
 import { Route as PrivateOnboardedSidebarAdminIdentityManagementAddressIndexRouteImport } from './routes/_private/_onboarded/_sidebar/admin/identity-management/$address/index'
-import { Route as PrivateOnboardedSidebarAdminIdentityManagementAccountIdIndexRouteImport } from './routes/_private/_onboarded/_sidebar/admin/identity-management/$accountId/index'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/yield'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders'
@@ -257,12 +255,6 @@ const PrivateOnboardedSidebarAdminIdentityManagementAddressRoute =
     path: '/admin/identity-management/$address',
     getParentRoute: () => PrivateOnboardedSidebarRoute,
   } as any)
-const PrivateOnboardedSidebarAdminIdentityManagementAccountIdRoute =
-  PrivateOnboardedSidebarAdminIdentityManagementAccountIdRouteImport.update({
-    id: '/admin/identity-management/$accountId',
-    path: '/admin/identity-management/$accountId',
-    getParentRoute: () => PrivateOnboardedSidebarRoute,
-  } as any)
 const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute =
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRouteImport.update(
     {
@@ -285,15 +277,6 @@ const PrivateOnboardedSidebarAdminIdentityManagementAddressIndexRoute =
     getParentRoute: () =>
       PrivateOnboardedSidebarAdminIdentityManagementAddressRoute,
   } as any)
-const PrivateOnboardedSidebarAdminIdentityManagementAccountIdIndexRoute =
-  PrivateOnboardedSidebarAdminIdentityManagementAccountIdIndexRouteImport.update(
-    {
-      id: '/',
-      path: '/',
-      getParentRoute: () =>
-        PrivateOnboardedSidebarAdminIdentityManagementAccountIdRoute,
-    } as any,
-  )
 const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute =
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRouteImport.update(
     {
@@ -384,7 +367,6 @@ export interface FileRoutesByFullPath {
   '/addon/$addonAddress': typeof PrivateOnboardedSidebarAddonAddonAddressRoute
   '/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
   '/addon': typeof PrivateOnboardedSidebarAddonIndexRoute
-  '/admin/identity-management/$accountId': typeof PrivateOnboardedSidebarAdminIdentityManagementAccountIdRouteWithChildren
   '/admin/identity-management/$address': typeof PrivateOnboardedSidebarAdminIdentityManagementAddressRouteWithChildren
   '/admin/platform-settings/addons': typeof PrivateOnboardedSidebarAdminPlatformSettingsAddonsRoute
   '/admin/platform-settings/asset-types': typeof PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRoute
@@ -402,7 +384,6 @@ export interface FileRoutesByFullPath {
   '/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
   '/token/$factoryAddress/$tokenAddress/permissions': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute
   '/token/$factoryAddress/$tokenAddress/yield': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute
-  '/admin/identity-management/$accountId/': typeof PrivateOnboardedSidebarAdminIdentityManagementAccountIdIndexRoute
   '/admin/identity-management/$address/': typeof PrivateOnboardedSidebarAdminIdentityManagementAddressIndexRoute
   '/admin/user-management/$userId/': typeof PrivateOnboardedSidebarAdminUserManagementUserIdIndexRoute
   '/token/$factoryAddress/$tokenAddress/': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute
@@ -440,7 +421,6 @@ export interface FileRoutesByTo {
   '/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
   '/token/$factoryAddress/$tokenAddress/permissions': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute
   '/token/$factoryAddress/$tokenAddress/yield': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute
-  '/admin/identity-management/$accountId': typeof PrivateOnboardedSidebarAdminIdentityManagementAccountIdIndexRoute
   '/admin/identity-management/$address': typeof PrivateOnboardedSidebarAdminIdentityManagementAddressIndexRoute
   '/admin/user-management/$userId': typeof PrivateOnboardedSidebarAdminUserManagementUserIdIndexRoute
   '/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute
@@ -470,7 +450,6 @@ export interface FileRoutesById {
   '/_private/_onboarded/_sidebar/addon/$addonAddress': typeof PrivateOnboardedSidebarAddonAddonAddressRoute
   '/_private/_onboarded/_sidebar/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
   '/_private/_onboarded/_sidebar/addon/': typeof PrivateOnboardedSidebarAddonIndexRoute
-  '/_private/_onboarded/_sidebar/admin/identity-management/$accountId': typeof PrivateOnboardedSidebarAdminIdentityManagementAccountIdRouteWithChildren
   '/_private/_onboarded/_sidebar/admin/identity-management/$address': typeof PrivateOnboardedSidebarAdminIdentityManagementAddressRouteWithChildren
   '/_private/_onboarded/_sidebar/admin/platform-settings/addons': typeof PrivateOnboardedSidebarAdminPlatformSettingsAddonsRoute
   '/_private/_onboarded/_sidebar/admin/platform-settings/asset-types': typeof PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRoute
@@ -488,7 +467,6 @@ export interface FileRoutesById {
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/yield': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute
-  '/_private/_onboarded/_sidebar/admin/identity-management/$accountId/': typeof PrivateOnboardedSidebarAdminIdentityManagementAccountIdIndexRoute
   '/_private/_onboarded/_sidebar/admin/identity-management/$address/': typeof PrivateOnboardedSidebarAdminIdentityManagementAddressIndexRoute
   '/_private/_onboarded/_sidebar/admin/user-management/$userId/': typeof PrivateOnboardedSidebarAdminUserManagementUserIdIndexRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute
@@ -515,7 +493,6 @@ export interface FileRouteTypes {
     | '/addon/$addonAddress'
     | '/token/stats'
     | '/addon'
-    | '/admin/identity-management/$accountId'
     | '/admin/identity-management/$address'
     | '/admin/platform-settings/addons'
     | '/admin/platform-settings/asset-types'
@@ -533,7 +510,6 @@ export interface FileRouteTypes {
     | '/token/$factoryAddress/$tokenAddress/holders'
     | '/token/$factoryAddress/$tokenAddress/permissions'
     | '/token/$factoryAddress/$tokenAddress/yield'
-    | '/admin/identity-management/$accountId/'
     | '/admin/identity-management/$address/'
     | '/admin/user-management/$userId/'
     | '/token/$factoryAddress/$tokenAddress/'
@@ -571,7 +547,6 @@ export interface FileRouteTypes {
     | '/token/$factoryAddress/$tokenAddress/holders'
     | '/token/$factoryAddress/$tokenAddress/permissions'
     | '/token/$factoryAddress/$tokenAddress/yield'
-    | '/admin/identity-management/$accountId'
     | '/admin/identity-management/$address'
     | '/admin/user-management/$userId'
     | '/token/$factoryAddress/$tokenAddress'
@@ -600,7 +575,6 @@ export interface FileRouteTypes {
     | '/_private/_onboarded/_sidebar/addon/$addonAddress'
     | '/_private/_onboarded/_sidebar/token/stats'
     | '/_private/_onboarded/_sidebar/addon/'
-    | '/_private/_onboarded/_sidebar/admin/identity-management/$accountId'
     | '/_private/_onboarded/_sidebar/admin/identity-management/$address'
     | '/_private/_onboarded/_sidebar/admin/platform-settings/addons'
     | '/_private/_onboarded/_sidebar/admin/platform-settings/asset-types'
@@ -618,7 +592,6 @@ export interface FileRouteTypes {
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/yield'
-    | '/_private/_onboarded/_sidebar/admin/identity-management/$accountId/'
     | '/_private/_onboarded/_sidebar/admin/identity-management/$address/'
     | '/_private/_onboarded/_sidebar/admin/user-management/$userId/'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/'
@@ -898,13 +871,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardedSidebarAdminIdentityManagementAddressRouteImport
       parentRoute: typeof PrivateOnboardedSidebarRoute
     }
-    '/_private/_onboarded/_sidebar/admin/identity-management/$accountId': {
-      id: '/_private/_onboarded/_sidebar/admin/identity-management/$accountId'
-      path: '/admin/identity-management/$accountId'
-      fullPath: '/admin/identity-management/$accountId'
-      preLoaderRoute: typeof PrivateOnboardedSidebarAdminIdentityManagementAccountIdRouteImport
-      parentRoute: typeof PrivateOnboardedSidebarRoute
-    }
     '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/': {
       id: '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/'
       path: '/'
@@ -925,13 +891,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/identity-management/$address/'
       preLoaderRoute: typeof PrivateOnboardedSidebarAdminIdentityManagementAddressIndexRouteImport
       parentRoute: typeof PrivateOnboardedSidebarAdminIdentityManagementAddressRoute
-    }
-    '/_private/_onboarded/_sidebar/admin/identity-management/$accountId/': {
-      id: '/_private/_onboarded/_sidebar/admin/identity-management/$accountId/'
-      path: '/'
-      fullPath: '/admin/identity-management/$accountId/'
-      preLoaderRoute: typeof PrivateOnboardedSidebarAdminIdentityManagementAccountIdIndexRouteImport
-      parentRoute: typeof PrivateOnboardedSidebarAdminIdentityManagementAccountIdRoute
     }
     '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/yield': {
       id: '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/yield'
@@ -1003,21 +962,6 @@ declare module '@tanstack/react-start/server' {
   }
 }
 
-interface PrivateOnboardedSidebarAdminIdentityManagementAccountIdRouteChildren {
-  PrivateOnboardedSidebarAdminIdentityManagementAccountIdIndexRoute: typeof PrivateOnboardedSidebarAdminIdentityManagementAccountIdIndexRoute
-}
-
-const PrivateOnboardedSidebarAdminIdentityManagementAccountIdRouteChildren: PrivateOnboardedSidebarAdminIdentityManagementAccountIdRouteChildren =
-  {
-    PrivateOnboardedSidebarAdminIdentityManagementAccountIdIndexRoute:
-      PrivateOnboardedSidebarAdminIdentityManagementAccountIdIndexRoute,
-  }
-
-const PrivateOnboardedSidebarAdminIdentityManagementAccountIdRouteWithChildren =
-  PrivateOnboardedSidebarAdminIdentityManagementAccountIdRoute._addFileChildren(
-    PrivateOnboardedSidebarAdminIdentityManagementAccountIdRouteChildren,
-  )
-
 interface PrivateOnboardedSidebarAdminIdentityManagementAddressRouteChildren {
   PrivateOnboardedSidebarAdminIdentityManagementAddressClaimsRoute: typeof PrivateOnboardedSidebarAdminIdentityManagementAddressClaimsRoute
   PrivateOnboardedSidebarAdminIdentityManagementAddressIndexRoute: typeof PrivateOnboardedSidebarAdminIdentityManagementAddressIndexRoute
@@ -1088,7 +1032,6 @@ interface PrivateOnboardedSidebarRouteChildren {
   PrivateOnboardedSidebarAddonAddonAddressRoute: typeof PrivateOnboardedSidebarAddonAddonAddressRoute
   PrivateOnboardedSidebarTokenStatsRoute: typeof PrivateOnboardedSidebarTokenStatsRoute
   PrivateOnboardedSidebarAddonIndexRoute: typeof PrivateOnboardedSidebarAddonIndexRoute
-  PrivateOnboardedSidebarAdminIdentityManagementAccountIdRoute: typeof PrivateOnboardedSidebarAdminIdentityManagementAccountIdRouteWithChildren
   PrivateOnboardedSidebarAdminIdentityManagementAddressRoute: typeof PrivateOnboardedSidebarAdminIdentityManagementAddressRouteWithChildren
   PrivateOnboardedSidebarAdminPlatformSettingsAddonsRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsAddonsRoute
   PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRoute
@@ -1114,8 +1057,6 @@ const PrivateOnboardedSidebarRouteChildren: PrivateOnboardedSidebarRouteChildren
       PrivateOnboardedSidebarTokenStatsRoute,
     PrivateOnboardedSidebarAddonIndexRoute:
       PrivateOnboardedSidebarAddonIndexRoute,
-    PrivateOnboardedSidebarAdminIdentityManagementAccountIdRoute:
-      PrivateOnboardedSidebarAdminIdentityManagementAccountIdRouteWithChildren,
     PrivateOnboardedSidebarAdminIdentityManagementAddressRoute:
       PrivateOnboardedSidebarAdminIdentityManagementAddressRouteWithChildren,
     PrivateOnboardedSidebarAdminPlatformSettingsAddonsRoute:
