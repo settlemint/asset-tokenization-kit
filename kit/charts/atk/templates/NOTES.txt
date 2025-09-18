@@ -5,7 +5,7 @@
 The following endpoints are now available:
 
   Blockchain JSON-RPC: https://{{ (index .Values.erpc.ingress.hosts 0).host | default "rpc.k8s.orb.local" }}
-   Blockchain Explorer: https://{{ .Values.blockscout.frontend.ingress.hostname | default "explorer.k8s.orb.local" }}
+  Blockchain Explorer: https://{{ .Values.blockscout.frontend.ingress.hostname | default "explorer.k8s.orb.local" }}
              The Graph: https://{{ (index .Values "graph-node" "ingress" "hosts" 0).host | default "graph.k8s.orb.local" }}
                 Hasura: https://{{ (index .Values "hasura" "graphql-engine" "ingress" "hostName" ) | default "hasura.k8s.orb.local" }}
                Grafana: https://{{ (index .Values "observability" "grafana" "ingress" "hosts" 0 ) | default "grafana.k8s.orb.local" }}
@@ -68,8 +68,8 @@ SETTLEMINT_MINIO_SECRET_KEY=atk-service-secret
 
 ========================================================================
 
-Notes:
 {{- if and .Values.txsigner.enabled (not .Values.txsigner.ingress.enabled) }}
+Notes:
 - Transaction Signer is enabled but not exposed via ingress. To use it
   for signing transactions, either enable ingress for txsigner or use
   the regular RPC endpoint which will handle transactions internally.

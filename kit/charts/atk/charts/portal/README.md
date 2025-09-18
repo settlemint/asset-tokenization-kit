@@ -54,7 +54,7 @@ Update the following sections of `values.yaml` to point Portal at your infrastru
 
 | Service | Values path | Default |
 | --- | --- | --- |
-| PostgreSQL | `portal.config.postgresqlConnection` | `postgresql://portal:atk@postgresql:5432/portal?sslmode=disable` |
+| PostgreSQL | `global.datastores.portal.postgresql` | `postgresql://portal:atk@postgresql:5432/portal?sslmode=disable` |
 | Redis cache | `portal.config.redis` | `redis://default:atk@redis:6379/4` |
 
 Provide external hostnames, credentials, logical database numbers, and SSL settings where required.
@@ -95,18 +95,14 @@ The following table lists the configurable parameters of the Portal chart and th
 | autoscaling.minReplicas | int | `1` | Minimum number of Portal replicas |
 | commonAnnotations | object | `{}` | Annotations to add to all deployed objects |
 | commonLabels | object | `{}` | Labels to add to all deployed objects |
-| config | object | `{"network":{"networkId":"53771311147","networkName":"ATK","nodeRpcUrl":"http://txsigner:3000"},"postgresql":"postgresql://portal:atk@postgresql:5432/portal?sslmode=disable","redis":{"host":"redis","password":"atk","port":6379,"username":"default"}}` | Portal configuration |
+| config | object | `{"network":{"networkId":"53771311147","networkName":"ATK","nodeRpcUrl":"http://txsigner:3000"},"postgresql":{},"redis":{}}` | Portal configuration |
 | config.network | object | `{"networkId":"53771311147","networkName":"ATK","nodeRpcUrl":"http://txsigner:3000"}` | Network configuration |
 | config.network.networkId | string | `"53771311147"` | Network ID |
 | config.network.networkName | string | `"ATK"` | Network name |
 | config.network.nodeRpcUrl | string | `"http://txsigner:3000"` | Node RPC URL |
-| config.postgresql | string | `"postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"` | PostgreSQL connection string |
-| config.redis | object | `{"host":"redis","password":"atk","port":6379,"username":"default"}` | Redis configuration |
-| config.redis.host | string | `"redis"` | Redis host |
-| config.redis.password | string | `"atk"` | Redis password |
-| config.redis.port | int | `6379` | Redis port |
-| config.redis.username | string | `"default"` | Redis username |
-| containerSecurityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":false,"runAsGroup":1001,"runAsNonRoot":true,"runAsUser":1001,"seccompProfile":{"type":"RuntimeDefault"}}` | Container Security Context configuration |
+| config.postgresql | object | `{}` | PostgreSQL overrides merged with global.datastores.portal.postgresql |
+| config.redis | object | `{}` | Redis overrides merged with global.datastores.portal.redis |
+| containerSecurityContext | object | `{}` | Container Security Context configuration (overrides global.securityContexts.container) |
 | extraEnvVars | list | `[]` | Array with extra environment variables to add to Portal nodes |
 | extraEnvVarsCM | string | `""` | Name of existing ConfigMap containing extra env vars for Portal nodes |
 | extraEnvVarsSecret | string | `""` | Name of existing Secret containing extra env vars for Portal nodes |
@@ -145,16 +141,11 @@ The following table lists the configurable parameters of the Portal chart and th
 | initContainer.copyArtifacts.resources.limits.cpu | string | `"150m"` |  |
 | initContainer.copyArtifacts.resources.limits.memory | string | `"128Mi"` |  |
 | initContainer.copyArtifacts.resources.limits.memory | string | `"128Mi"` |  |
-| initContainer.copyArtifacts.resources.requests.cpu | string | `"50m"` |  |
 | initContainer.copyArtifacts.resources.requests.cpu | string | `"25m"` |  |
+| initContainer.copyArtifacts.resources.requests.cpu | string | `"50m"` |  |
 | initContainer.copyArtifacts.resources.requests.memory | string | `"64Mi"` |  |
 | initContainer.copyArtifacts.resources.requests.memory | string | `"64Mi"` |  |
-| initContainer.copyArtifacts.securityContext.allowPrivilegeEscalation | bool | `false` |  |
-| initContainer.copyArtifacts.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| initContainer.copyArtifacts.securityContext.runAsGroup | int | `1001` |  |
-| initContainer.copyArtifacts.securityContext.runAsNonRoot | bool | `true` |  |
-| initContainer.copyArtifacts.securityContext.runAsUser | int | `1001` |  |
-| initContainer.copyArtifacts.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| initContainer.copyArtifacts.securityContext | object | `{}` |  |
 | initContainer.tcpCheck.enabled | bool | `true` |  |
 | initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
@@ -226,7 +217,7 @@ The following table lists the configurable parameters of the Portal chart and th
 | podAnnotations | object | `{}` | Annotations for Portal pods |
 | podAntiAffinityPreset | string | `"soft"` | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard` |
 | podLabels | object | `{}` | Extra labels for Portal pods |
-| podSecurityContext | object | `{"fsGroup":1001,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Pod Security Context configuration |
+| podSecurityContext | object | `{}` | Pod Security Context configuration (overrides global.securityContexts.pod) |
 | priorityClassName | string | `""` | Portal pods' priority class name |
 | readinessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":5,"periodSeconds":10,"successThreshold":1,"tcpSocket":{"port":"http"},"timeoutSeconds":5}` | Configure Portal containers' readiness probe |
 | readinessProbe.enabled | bool | `true` | Enable readinessProbe on Portal containers |
