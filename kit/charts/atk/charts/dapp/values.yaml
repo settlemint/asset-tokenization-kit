@@ -32,7 +32,9 @@ serviceAccount:
 # -- (object) Additional annotations for the deployment metadata
 annotations: {}
 # -- (object) Additional labels for the deployment pod metadata
-podLabels: {}
+podLabels:
+  app.kubernetes.io/component: dapp
+  kots.io/app-slug: settlemint-atk
 # -- (object) Annotations for dApp pods
 podAnnotations: {}
 
@@ -292,67 +294,3 @@ initContainer:
 # -- (list) Additional init containers appended verbatim to the deployment pod spec
 extraInitContainers: []
 
-# -- (object) Job configuration for initialization tasks
-job:
-  # -- (bool) Enable initialization job
-  enabled: true
-
-  # -- (object) Pod Security Context for job
-  podSecurityContext: {}
-
-  # -- (object) Container Security Context for job
-  securityContext: {}
-
-  # -- (object) Image configuration for job
-  image:
-    # -- (string) Job image repository
-    repository: docker.io/node
-    # -- (string) Job image tag
-    tag: "23.11.1-slim"
-    # -- (string) Job image pull policy
-    pullPolicy: IfNotPresent
-
-  # -- (object) Init containers for job
-  initContainer:
-    # -- (object) Hasura check configuration
-    hasuraCheck:
-      # -- (object) Hasura check image configuration
-      image:
-        # -- (string) Image repository
-        repository: ghcr.io/settlemint/btp-waitforit
-        # -- (string) Image tag
-        tag: v7.7.10
-        # -- (string) Image pull policy
-        pullPolicy: IfNotPresent
-      # -- (int) Timeout in seconds for dependency check
-      timeout: 5
-      # -- (string) Endpoint to check
-      endpoint: hasura:8080
-    # -- (object) Repository clone configuration
-    cloneRepo:
-      # -- (object) Git clone image configuration
-      image:
-        # -- (string) Image registry
-        registry: docker.io
-        # -- (string) Image repository
-        repository: alpine/git
-        # -- (string) Image tag
-        tag: v2.49.1
-        # -- (string) Image pull policy
-        pullPolicy: IfNotPresent
-
-  # -- (object) Pod annotations for job
-  podAnnotations: {}
-
-  # -- (list) Image pull secrets for job
-  imagePullSecrets: []
-
-  # -- (object) Resource configuration for job
-  resources: {}
-
-  # -- (object) Workspace configuration for job
-  workspace:
-    # -- (string) Size of the workspace PVC
-    size: 1Gi
-    # -- (string) Storage class to use for the workspace PVC
-    storageClass: ""

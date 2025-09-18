@@ -386,6 +386,55 @@ portal:
   ingress:
     hostname: portal.k8s.orb.local
 
+# Transaction Signer Configuration
+txsigner:
+  enabled: true
+  image:
+    registry: ghcr.io
+  tests:
+    image:
+      registry: docker.io
+  # Configuration for the txsigner subchart
+  config:
+    mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
+    derivationPath: "m/44'/60'/0'/0/0"
+  resources: {}
+  initContainer:
+    tcpCheck:
+      image:
+        repository: ghcr.io/settlemint/btp-waitforit
+  ingress:
+    hostname: txsigner.k8s.orb.local
+
+# DApp Frontend Configuration
+dapp:
+  enabled: true
+  image:
+    repository: ghcr.io/settlemint/asset-tokenization-kit
+  ingress:
+    enabled: true
+    # IMPORTANT: Set the correct hostname for your environment
+    hosts:
+      - host: dapp.k8s.orb.local
+        paths:
+          - path: / # Adjust path if needed
+            pathType: ImplementationSpecific
+  resources: {}
+  secretEnv:
+    BETTER_AUTH_URL: "https://dapp.k8s.orb.local"
+    SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "https://blockscout.k8s.orb.local/"
+  initContainer:
+    tcpCheck:
+      image:
+        repository: ghcr.io/settlemint/btp-waitforit
+    graphQLCheck:
+      image:
+        registry: docker.io
+  job:
+    image:
+      # -- (string) Job image repository
+      repository: docker.io/node
+
 support:
   enabled: true
 
@@ -539,73 +588,3 @@ observability:
     image:
       registry: quay.io
 
-# Transaction Signer Configuration
-txsigner:
-  enabled: true
-  image:
-    registry: ghcr.io
-    repository: settlemint/btp-signer
-  test:
-    image:
-      repository: docker.io/busybox
-  # Configuration for the txsigner subchart
-  config:
-    mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
-    derivationPath: "m/44'/60'/0'/0/0"
-  replicaCount: 1
-  resources: {}
-  initContainer:
-    tcpCheck:
-      enabled: true
-      image:
-        repository: ghcr.io/settlemint/btp-waitforit
-        tag: v7.7.10
-        pullPolicy: IfNotPresent
-      timeout: 120
-      resources:
-        limits:
-          cpu: 100m
-          memory: 64Mi
-        requests:
-          cpu: 10m
-          memory: 32Mi
-      dependencies:
-        - name: postgresql
-          endpoint: "{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"txsigner\") }}"
-  extraInitContainers: []
-  ingress:
-    hostname: txsigner.k8s.orb.local
-
-# DApp Frontend Configuration
-dapp:
-  enabled: true
-  image:
-    repository: ghcr.io/settlemint/asset-tokenization-kit
-  replicaCount: 1
-  ingress:
-    enabled: true
-    # IMPORTANT: Set the correct hostname for your environment
-    hosts:
-      - host: dapp.k8s.orb.local
-        paths:
-          - path: / # Adjust path if needed
-            pathType: ImplementationSpecific
-  resources: {}
-  secretEnv:
-    BETTER_AUTH_URL: "https://dapp.k8s.orb.local"
-    SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "http://blockscout-frontend-svc/"
-    SETTLEMINT_HASURA_ADMIN_SECRET: "atk"
-    SETTLEMINT_HD_PRIVATE_KEY: "atk-hd-private-key"
-    SETTLEMINT_INSTANCE: "standalone"
-    SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT: "http://portal:3001/graphql"
-    SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS: '["http://graph-node-combined:8000/subgraphs/name/kit"]'
-  initContainer:
-    tcpCheck:
-      image:
-        repository: ghcr.io/settlemint/btp-waitforit
-    graphQLCheck:
-      image:
-        registry: docker.io
-  podLabels:
-    app.kubernetes.io/component: dapp
-    kots.io/app-slug: settlemint-atk
