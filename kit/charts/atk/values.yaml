@@ -24,8 +24,13 @@ global:
       repository: settlemint/asset-tokenization-kit-artifacts
       tag: 2.0.0-main.91391
       pullPolicy: IfNotPresent
-besu-network:
+network:
   enabled: true
+  network-bootstrapper:
+    settings:
+      chainId: "53771311147"
+besu-network:
+  enabled: false
   # Besu network images
   besu-genesis:
     image:
@@ -315,15 +320,15 @@ erpc:
     projects:
       - id: settlemint
         upstreams:
-          - id: besu-node-rpc-1
-            endpoint: http://besu-node-rpc-1:8545
+          - id: besu-node-rpc-0
+            endpoint: http://besu-node-rpc-0.besu-node-rpc:8545
             evm:
               chainId: 53771311147
             failsafe:
               timeout:
                 duration: 30s
-          - id: besu-node-validator-1
-            endpoint: http://besu-node-validator-1:8545
+          - id: besu-node-rpc-1
+            endpoint: http://besu-node-rpc-1.besu-node-rpc:8545
             evm:
               chainId: 53771311147
             failsafe:

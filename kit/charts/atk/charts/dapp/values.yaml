@@ -228,15 +228,15 @@ initContainer:
     dependencies:
       # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
       - name: postgres
-        endpoint: "postgresql.atk.svc.cluster.local:5432"
+        endpoint: "postgresql:5432"
       - name: hasura
-        endpoint: "hasura.atk.svc.cluster.local:8080"
+        endpoint: "hasura:8080"
       - name: portal
-        endpoint: "portal.atk.svc.cluster.local:3001"
+        endpoint: "portal:3001"
       - name: graph-node-tcp # Renamed to distinguish from graphQLCheck
-        endpoint: "graph-node-combined.atk.svc.cluster.local:8020" # Status API port (TCP check)
+        endpoint: "graph-node-combined:8020" # Status API port (TCP check)
       - name: blockscout # Add Blockscout if needed, determine correct service/port
-        endpoint: "blockscout-frontend-svc.atk.svc.cluster.local:80"
+        endpoint: "blockscout-frontend-svc:80"
 
 
   # Specific check for GraphQL endpoint readiness (e.g., The Graph subgraph)
@@ -249,7 +249,7 @@ initContainer:
       tag: "8.16.0"
       pullPolicy: IfNotPresent
     # Wait for subgraph to finish syncing (extended timeout)
-    url: "http://graph-node-combined.atk.svc.cluster.local:8000/subgraphs/name/kit"
+    url: "http://graph-node-combined:8000/subgraphs/name/kit"
     retries: 10
     retryDelaySeconds: 10
     # Use a more sophisticated query to check sync status
@@ -283,7 +283,7 @@ job:
         tag: v7.7.10
         pullPolicy: IfNotPresent
       timeout: 5 # Timeout in seconds for each dependency check
-      endpoint: hasura.atk.svc.cluster.local:8080
+      endpoint: hasura:8080
     cloneRepo:
       image:
         registry: docker.io
