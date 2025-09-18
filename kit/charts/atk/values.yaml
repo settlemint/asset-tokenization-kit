@@ -16,22 +16,22 @@ global:
       pullPolicy: IfNotPresent
   chainId: "53771311147"
   chainName: "ATK"
-  securityContexts:
-    pod:
-      fsGroup: 101337
-      runAsNonRoot: true
-      seccompProfile:
-        type: RuntimeDefault
-    container:
-      runAsNonRoot: true
-      runAsUser: 101337
-      runAsGroup: 101337
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      seccompProfile:
-        type: RuntimeDefault
+  # securityContexts:
+  #   pod:
+  #     fsGroup: 101337
+  #     runAsNonRoot: true
+  #     seccompProfile:
+  #       type: RuntimeDefault
+  #   container:
+  #     runAsNonRoot: true
+  #     runAsUser: 101337
+  #     runAsGroup: 101337
+  #     allowPrivilegeEscalation: false
+  #     capabilities:
+  #       drop:
+  #         - ALL
+  #     seccompProfile:
+  #       type: RuntimeDefault
   datastores:
     default:
       redis:
