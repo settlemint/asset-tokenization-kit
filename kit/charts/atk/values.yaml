@@ -244,45 +244,95 @@ blockscout:
     sslMode: "disable"
     endpoint: "postgresql:5432"
     url: "postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"
-  blockscout-stack:
-    podAnnotations:
-      prometheus.io/scrape: "true"
-      prometheus.io/port: "4000"
-      prometheus.io/path: "/metrics"
-    blockscout:
-      image:
-        repository: ghcr.io/blockscout/blockscout
-        tag: "9.0.2"
-        pullPolicy: IfNotPresent
-      # Add an extra init container to wait for PostgreSQL
-      init:
-        enabled: true
-        command:
-          - /bin/sh
-        args:
-          - -c
-          - | # Using YAML multiline string for clarity
-            echo "Waiting for postgresql:5432..."
-            while ! nc -z postgresql 5432; do
-              sleep 2;
-            done;
-            echo "PostgreSQL is ready!"
-            # Original command:
-            bin/blockscout eval "Elixir.Explorer.ReleaseTasks.create_and_migrate()"
-      ingress:
-        hostname: explorer.k8s.orb.local
-      env:
-        DATABASE_URL: "postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"
-        API_URL: https://explorer.k8s.orb.local
-        WEBAPP_URL: https://explorer.k8s.orb.local
-      resources: {}
-    frontend:
-      ingress:
-        hostname: explorer.k8s.orb.local
-      image:
-        repository: ghcr.io/blockscout/frontend
-        tag: "v2.3.3"
-        pullPolicy: IfNotPresent
+  # Direct configuration for local blockscout chart
+  fullnameOverride: blockscout
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "4000"
+    prometheus.io/path: "/metrics"
+  blockscout:
+    image:
+      repository: ghcr.io/blockscout/blockscout
+      tag: "9.0.2"
+      pullPolicy: IfNotPresent
+    # Pod security context
+    podSecurityContext:
+      fsGroup: 1001
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+    # Container security context
+    containerSecurityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false
+    # Init container security context
+    initContainerSecurityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false
+    # Add an extra init container to wait for PostgreSQL
+    init:
+      enabled: true
+      command:
+        - /bin/sh
+      args:
+        - -c
+        - | # Using YAML multiline string for clarity
+          echo "Waiting for postgresql:5432..."
+          while ! nc -z postgresql 5432; do
+            sleep 2;
+          done;
+          echo "PostgreSQL is ready!"
+          # Original command:
+          bin/blockscout eval "Elixir.Explorer.ReleaseTasks.create_and_migrate()"
+    ingress:
+      enabled: true
+      className: "atk-nginx"
+      hostname: explorer.k8s.orb.local
+    env:
+      DATABASE_URL: "postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"
+      ETHEREUM_JSONRPC_HTTP_URL: http://erpc:4000/settlemint/evm/53771311147
+      ETHEREUM_JSONRPC_TRACE_URL: http://erpc:4000/settlemint/evm/53771311147
+      API_URL: https://explorer.k8s.orb.local
+      WEBAPP_URL: https://explorer.k8s.orb.local
+    resources: {}
+  frontend:
+    enabled: true
+    ingress:
+      enabled: true
+      className: "atk-nginx"
+      hostname: explorer.k8s.orb.local
+    image:
+      repository: ghcr.io/blockscout/frontend
+      tag: "v2.3.3"
+      pullPolicy: IfNotPresent
+    # Pod security context
+    podSecurityContext:
+      fsGroup: 1001
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+    # Container security context
+    containerSecurityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false
 
 graph-node:
   enabled: true
@@ -383,6 +433,18 @@ hasura:
       app.kubernetes.io/instance: atk
       kots.io/app-slug: settlemint-atk
       app.kubernetes.io/component: hasura
+    openShiftRoute:
+      enabled: false
+      annotations: {}
+      host: hasura.k8s.orb.local
+      path: /
+      wildcardPolicy: None
+      port:
+        targetPort: http
+      to:
+        weight: 100
+      alternateBackends: []
+      tls: null
     image:
       repository: docker.io/hasura/graphql-engine
       tag: v2.48.5
@@ -652,6 +714,60 @@ dapp:
     SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "http://blockscout-frontend-svc/"
     SETTLEMINT_HASURA_ADMIN_SECRET: "atk"
     SETTLEMINT_HD_PRIVATE_KEY: "atk-hd-private-key"
+    SETTLEMINT_INSTANCE: "standalone"
+    SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT: "http://portal:3001/graphql"
+    SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS: '["http://graph-node-combined:8000/subgraphs/name/kit"]'
+  initContainer:
+    # Generic TCP check settings
+    tcpCheck:
+      enabled: true
+      timeout: 120 # Timeout in seconds for each dependency check
+      image:
+        repository: ghcr.io/settlemint/btp-waitforit
+        tag: v7.7.10
+        pullPolicy: IfNotPresent
+      resources:
+        limits:
+          cpu: 100m
+          memory: 64Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
+      dependencies:
+        # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
+        - name: postgres
+          endpoint: "postgresql:5432"
+        - name: hasura
+          endpoint: "hasura:8080"
+        - name: portal
+          endpoint: "portal:3001"
+        - name: graph-node-tcp # Renamed to distinguish from graphQLCheck
+          endpoint: "graph-node-combined:8020" # Status API port (TCP check)
+        - name: blockscout # Add Blockscout if needed, determine correct service/port
+          endpoint: "blockscout-frontend:80"
+
+    # Specific check for GraphQL endpoint readiness (e.g., The Graph subgraph)
+    graphQLCheck:
+      enabled: true
+      name: wait-for-graph-subgraph-kit # Name for the init container
+      image:
+        registry: docker.io
+        repository: curlimages/curl
+        tag: "8.16.0"
+        pullPolicy: IfNotPresent
+      # Target GraphQL endpoint URL (where POST requests are sent)
+      url: "http://graph-node-combined:8000/subgraphs/name/kit"
+      query: "{ __typename }" # Basic query to check for GraphQL errors
+      retryDelaySeconds: 20
+      timeoutSeconds: 10 # Max time per curl attempt
+      connectTimeoutSeconds: 5 # Max time to connect
+      retries: 24
+      resources:
+        limits:
+          memory: 64Mi
+        requests:
+          cpu: 10m
+          memory: 12Mi
   podLabels:
     app.kubernetes.io/component: dapp
     kots.io/app-slug: settlemint-atk

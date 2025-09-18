@@ -275,6 +275,55 @@ ingress:
   # -- Additional rules to be covered with this ingress record
   extraRules: []
 
+# -- OpenShift Route parameters
+openShiftRoute:
+  # -- Enable OpenShift route creation for Portal
+  enabled: false
+  # -- Additional annotations for the OpenShift route resource
+  annotations: {}
+  # -- Hostname exposed via the OpenShift route
+  host: portal.k8s.orb.local
+  # -- HTTP path exposed via the OpenShift route
+  path: /
+  # -- Wildcard policy to apply to the route
+  wildcardPolicy: None
+  # -- Service port configuration for the route target
+  port:
+    # -- Service target port name (must exist on the Portal service)
+    targetPort: http
+  # -- Primary service weight configuration
+  to:
+    # -- Weight assigned to the Portal service backend
+    weight: 100
+  # -- Additional backends for weighted routing
+  alternateBackends: []
+  # -- TLS configuration for the OpenShift route
+  tls: null
+  # -- GraphQL route specific configuration
+  graphql:
+    # -- Enable a dedicated route for the GraphQL endpoint
+    enabled: true
+    # -- Additional annotations for the GraphQL route resource
+    annotations: {}
+    # -- Hostname exposed via the GraphQL route (defaults to openShiftRoute.host when empty)
+    host: ""
+    # -- HTTP path exposed via the GraphQL route (defaults to ingress.graphqlPath)
+    path: ""
+    # -- Wildcard policy to apply to the GraphQL route (defaults to openShiftRoute.wildcardPolicy)
+    wildcardPolicy: ""
+    # -- Service port configuration for the GraphQL route target
+    port:
+      # -- Service target port name (defaults to `graphql`)
+      targetPort: ""
+    # -- Primary service weight configuration for the GraphQL route
+    to:
+      # -- Weight assigned to the Portal service backend (defaults to openShiftRoute.to.weight)
+      weight: ""
+    # -- Additional backends for weighted routing (same structure as openShiftRoute.alternateBackends)
+    alternateBackends: []
+    # -- TLS configuration for the GraphQL route
+    tls: null
+
 # -- Service account for Portal pods
 serviceAccount:
   # -- Specifies whether a ServiceAccount should be created

@@ -96,10 +96,6 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   identity.isContract = true;
   identity.save();
 
-  const account = fetchAccount(event.params.tokenAddress);
-  account.identity = identity.id;
-  account.save();
-
   // Update token type stats for new token creation
   updateTokenTypeStatsForTokenCreation(token);
 }

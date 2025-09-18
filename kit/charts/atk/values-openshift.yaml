@@ -82,6 +82,19 @@ graph-node:
 
 # Portal security contexts for OpenShift
 portal:
+  ingress:
+    enabled: false
+
+  openShiftRoute:
+    enabled: true
+    host: portal.apps-crc.testing
+    path: /
+    tls: null
+    graphql:
+      enabled: true
+      host: portal.apps-crc.testing
+      path: /graphql
+
   podSecurityContext:
     fsGroup: null
     runAsUser: null
@@ -324,6 +337,15 @@ observability:
 # Hasura configuration for OpenShift
 hasura:
   graphql-engine:
+    ingress:
+      enabled: false
+
+    openShiftRoute:
+      enabled: true
+      host: hasura.apps-crc.testing
+      path: /
+      wildcardPolicy: None
+
     podSecurityContext:
       runAsNonRoot: true
       fsGroup: null
@@ -345,43 +367,69 @@ hasura:
 
 # Blockscout configuration for OpenShift
 blockscout:
-  blockscout-stack:
-    blockscout:
-      podSecurityContext:
-        fsGroup: null
-        runAsUser: null
-        runAsGroup: null
-        runAsNonRoot: true
-        seccompProfile:
-          type: RuntimeDefault
+  blockscout:
+    ingress:
+      enabled: false
 
-      containerSecurityContext:
-        runAsNonRoot: true
-        runAsUser: null
-        runAsGroup: null
-        allowPrivilegeEscalation: false
-        capabilities:
-          drop:
-          - ALL
-        seccompProfile:
-          type: RuntimeDefault
+    openShiftRoute:
+      enabled: true
+      host: explorer.apps-crc.testing
+      path: /api
+      wildcardPolicy: None
 
-    frontend:
-      podSecurityContext:
-        fsGroup: null
-        runAsUser: null
-        runAsGroup: null
-        runAsNonRoot: true
-        seccompProfile:
-          type: RuntimeDefault
+    env:
+      API_URL: https://explorer.apps-crc.testing
+      WEBAPP_URL: https://explorer.apps-crc.testing
 
-      containerSecurityContext:
-        runAsNonRoot: true
-        runAsUser: null
-        runAsGroup: null
-        allowPrivilegeEscalation: false
-        capabilities:
-          drop:
-          - ALL
-        seccompProfile:
-          type: RuntimeDefault
+    podSecurityContext:
+      fsGroup: null
+      runAsUser: null
+      runAsGroup: null
+      runAsNonRoot: true
+
+    containerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: null
+      runAsGroup: null
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false
+
+    initContainerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: null
+      runAsGroup: null
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false
+
+  frontend:
+    ingress:
+      enabled: false
+
+    openShiftRoute:
+      enabled: true
+      host: explorer.apps-crc.testing
+      path: /
+      wildcardPolicy: None
+
+
+    podSecurityContext:
+      fsGroup: null
+      runAsUser: null
+      runAsGroup: null
+      runAsNonRoot: true
+
+    containerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: null
+      runAsGroup: null
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false

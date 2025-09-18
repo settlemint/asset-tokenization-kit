@@ -42,9 +42,13 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
     uint16 public constant COUNTRY_US = 840;
     uint16 public constant COUNTRY_UK = 826;
 
-    event IdentityStored(address indexed investorAddress, IIdentity indexed identity);
+    event IdentityStored(address indexed investorAddress, IIdentity indexed identity, uint16 indexed country);
     event IdentityUnstored(address indexed investorAddress, IIdentity indexed identity);
-    event IdentityModified(IIdentity indexed oldIdentity, IIdentity indexed newIdentity);
+    event IdentityModified(
+        address indexed investorAddress,
+        IIdentity indexed oldIdentity,
+        IIdentity indexed newIdentity
+    );
     event CountryModified(address indexed _identityWallet, uint16 indexed _country);
     event IdentityRegistryBound(address indexed identityRegistry);
     event IdentityRegistryUnbound(address indexed identityRegistry);
@@ -124,8 +128,8 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
 
     function test_AddIdentityToStorage() public {
         vm.prank(admin);
-        vm.expectEmit(true, true, false, true);
-        emit IdentityStored(user1, identity1);
+        vm.expectEmit(true, true, true, false);
+        emit IdentityStored(user1, identity1, COUNTRY_US);
         storageContract.addIdentityToStorage(user1, identity1, COUNTRY_US);
 
         assertEq(address(storageContract.storedIdentity(user1)), address(identity1));
@@ -208,8 +212,8 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
         vm.startPrank(admin);
         storageContract.addIdentityToStorage(user1, identity1, COUNTRY_US);
 
-        vm.expectEmit(true, true, false, true);
-        emit IdentityModified(identity1, identity2);
+        vm.expectEmit(true, true, true, false);
+        emit IdentityModified(user1, identity1, identity2);
         storageContract.modifyStoredIdentity(user1, identity2);
         vm.stopPrank();
 
@@ -245,7 +249,7 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
         vm.startPrank(admin);
         storageContract.addIdentityToStorage(user1, identity1, COUNTRY_US);
 
-        vm.expectEmit(true, true, false, true);
+        vm.expectEmit(true, true, false, false);
         emit CountryModified(user1, COUNTRY_UK);
         storageContract.modifyStoredInvestorCountry(user1, COUNTRY_UK);
         vm.stopPrank();

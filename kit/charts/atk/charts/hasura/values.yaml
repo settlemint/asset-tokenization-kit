@@ -14,6 +14,18 @@ graphql-engine:
     enabled: true
     ingressClassName: "atk-nginx"
     hostName: "hasura.k8s.orb.local"
+  openShiftRoute:
+    enabled: false
+    annotations: {}
+    host: hasura.k8s.orb.local
+    path: /
+    wildcardPolicy: None
+    port:
+      targetPort: http
+    to:
+      weight: 100
+    alternateBackends: []
+    tls: null
   config:
     metadataOnly: false
     enableInternalConsoleAssets: true

@@ -1,15 +1,11 @@
 apiVersion: v2
 name: blockscout
-description: A Helm chart for the blockscout components
+description: A Helm chart for Blockscout blockchain explorer stack
 type: application
 version: 0.1.0
-appVersion: "0.1.0"
+appVersion: "9.0.2"
 icon: https://console.settlemint.com/android-chrome-512x512.png
 maintainers:
   - name: SettleMint
     email: support@settlemint.com
     url: https://settlemint.com
-dependencies:
-  - name: blockscout-stack
-    version: "3.4.1"
-    repository: https://blockscout.github.io/helm-charts

@@ -1,4 +1,4 @@
-import { ResultOf } from "gql.tada";
+import type { ResultOf } from "gql.tada";
 import { theGraphGraphql } from "./thegraph-client";
 
 type TOKEN_QUERY = ReturnType<

@@ -102,14 +102,14 @@ export function AddTrustedIssuerSheet({
     },
     onSubmit: async ({ value }) => {
       try {
-        const trustedIssuerAccount = await client.account.read({
+        const trustedIssuerIdentity = await client.system.identity.read({
           wallet: value.issuerAddress,
         });
-        if (!trustedIssuerAccount.identity) {
-          throw new Error("Trusted issuer account not found");
+        if (!trustedIssuerIdentity) {
+          throw new Error("Trusted issuer identity not found");
         }
         createMutation.mutate({
-          issuerAddress: trustedIssuerAccount.identity,
+          issuerAddress: trustedIssuerIdentity.id,
           claimTopicIds: value.claimTopicIds,
           walletVerification: value.walletVerification,
         });
