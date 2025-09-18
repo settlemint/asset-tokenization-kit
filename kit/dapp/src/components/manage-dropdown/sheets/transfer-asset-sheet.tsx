@@ -128,13 +128,21 @@ export function TransferAssetSheet({
           (entry) =>
             form.getFieldValue(`recipient_${entry.id}`) as EthereumAddress | ""
         );
-        const amountValues = entries.map(
-          (entry) => form.getFieldValue(`amount_${entry.id}`) ?? zero
-        ) as Dnum[];
+        const rawAmountValues = entries.map(
+          (entry) =>
+            form.getFieldValue(`amount_${entry.id}`) as Dnum | undefined
+        );
+        const amountValues = rawAmountValues.map((value) => value ?? zero);
+        const hasAmountInput = rawAmountValues.some(
+          (value) => value !== undefined
+        );
 
         const allRecipientsProvided = recipientValues.every(Boolean);
-        const allAmountsPositive = amountValues.every((value) =>
-          greaterThan(value, zero)
+        const allAmountsProvided = rawAmountValues.every(
+          (value) => value !== undefined
+        );
+        const allAmountsPositive = rawAmountValues.every(
+          (value) => value !== undefined && greaterThan(value, zero)
         );
         const totalRequested = amountValues.reduce(
           (acc, value) => add(acc, value),
@@ -151,6 +159,7 @@ export function TransferAssetSheet({
         const canContinue = () =>
           entries.length > 0 &&
           allRecipientsProvided &&
+          allAmountsProvided &&
           allAmountsPositive &&
           withinAvailable;
 
@@ -419,7 +428,9 @@ export function TransferAssetSheet({
                           {format(availableBalance)} {tokenSymbol}
                         </span>
                       </div>
-                      {(!allAmountsPositive || !withinAvailable) && (
+                      {hasAmountInput &&
+                        allAmountsProvided &&
+                        (!allAmountsPositive || !withinAvailable) && (
                         <div className="text-xs text-destructive">
                           {allAmountsPositive
                             ? t("user-assets:actions.transfer.overAvailable")

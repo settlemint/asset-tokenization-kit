@@ -9,7 +9,7 @@
     "transfer": {
       "label": "Transfer",
       "title": "Transfer Tokens",
-      "description": "Send tokens to another address.",
+      "description": "Send tokens to one or more recipient addresses. This action requires verification.",
       "submit": "Confirm Transfer",
       "reviewTitle": "Review Transfer",
       "fromLabel": "From",
@@ -20,12 +20,12 @@
       "availableLabel": "Current Available",
       "remainingLabel": "Available After Transfer",
       "availableMessage": "You can transfer up to {{amount}} {{symbol}}.",
-      "amountRequired": "Enter an amount greater than zero.",
+      "amountRequired": "Add an amount greater than zero to keep going.",
       "exceedsAvailable": "Amount exceeds your available balance.",
       "recipientsTitle": "Recipients",
       "addRecipient": "Add recipient",
       "totalLabel": "Total",
-      "overAvailable": "Total exceeds your available balance."
+      "overAvailable": "Lower the total so it stays within your available balance."
     }
   },
   "bulkActions": {
