@@ -1,6 +1,6 @@
 interface IdentityTabConfig {
   href: string;
-  tabKey: "details";
+  tabKey: "details" | "claims";
 }
 
 interface GetIdentityTabConfigurationProps {
@@ -9,8 +9,7 @@ interface GetIdentityTabConfigurationProps {
 
 /**
  * Returns the tab configuration for identity management pages
- * Currently only includes the details tab, but can be extended
- * for additional identity-related tabs in the future
+ * Includes details and claims tabs for comprehensive identity view
  */
 export function getIdentityTabConfiguration({
   address,
@@ -19,6 +18,10 @@ export function getIdentityTabConfiguration({
     {
       href: `/admin/identity-management/${address}`,
       tabKey: "details",
+    },
+    {
+      href: `/admin/identity-management/${address}/claims`,
+      tabKey: "claims",
     },
   ];
 }

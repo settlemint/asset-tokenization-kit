@@ -51,19 +51,25 @@ export const Route = createFileRoute(
           id: "claim-1",
           name: "Know Your Customer",
           revoked: false,
-          issuer: { id: "0xabcdef1234567890123456789012345678901234" },
+          issuer: {
+            id: "0xabcdef1234567890123456789012345678901234" as `0x${string}`,
+          },
         },
         {
           id: "claim-2",
           name: "Anti Money Laundering",
           revoked: false,
-          issuer: { id: "0xfedcba0987654321098765432109876543210987" },
+          issuer: {
+            id: "0xfedcba0987654321098765432109876543210987" as `0x${string}`,
+          },
         },
         {
           id: "claim-3",
           name: "Accredited Investor",
           revoked: true,
-          issuer: { id: "0x1111222233334444555566667777888899990000" },
+          issuer: {
+            id: "0x1111222233334444555566667777888899990000" as `0x${string}`,
+          },
         },
       ],
       identity: address,
@@ -107,7 +113,7 @@ function RouteComponent() {
 
   // Transform tab configurations to TabItemProps with translations
   const tabs = useMemo(() => {
-    type IdentityTabKey = "details";
+    type IdentityTabKey = "details" | "claims";
     type IdentityTabConfig = { href: string; tabKey: IdentityTabKey };
     return (tabConfigs as IdentityTabConfig[]).map((config) => ({
       href: config.href,

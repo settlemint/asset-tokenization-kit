@@ -88,6 +88,35 @@
     "noClaimsDescription": "This account has not been assigned any identity claims yet."
   },
   "tabs": {
-    "details": "Details"
+    "details": "Details",
+    "claims": "Claims"
+  },
+  "fields": {
+    "identityAddress": "Identity Address",
+    "identityAddressInfo": "The blockchain address of this identity",
+    "registrationStatus": "Registration Status",
+    "registrationStatusInfo": "Whether this identity is registered on-chain",
+    "linkedAccount": "Linked Account",
+    "linkedAccountInfo": "The account associated with this identity",
+    "createdAt": "Created At",
+    "createdAtInfo": "When this identity was first registered",
+    "lastModified": "Last Modified",
+    "lastModifiedInfo": "When this identity was last updated"
+  },
+  "claimsTable": {
+    "columns": {
+      "claimName": "Claim Name",
+      "status": "Status",
+      "issuer": "Issuer",
+      "issuedDate": "Issued Date"
+    },
+    "status": {
+      "active": "Active",
+      "revoked": "Revoked"
+    },
+    "emptyState": {
+      "title": "No claims found",
+      "description": "This identity has no associated claims."
+    }
   }
 }

@@ -53,6 +53,7 @@ import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissi
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist'
+import { Route as PrivateOnboardedSidebarAdminIdentityManagementAddressClaimsRouteImport } from './routes/_private/_onboarded/_sidebar/admin/identity-management/$address/claims'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
@@ -321,6 +322,15 @@ const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute =
         PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute,
     } as any,
   )
+const PrivateOnboardedSidebarAdminIdentityManagementAddressClaimsRoute =
+  PrivateOnboardedSidebarAdminIdentityManagementAddressClaimsRouteImport.update(
+    {
+      id: '/claims',
+      path: '/claims',
+      getParentRoute: () =>
+        PrivateOnboardedSidebarAdminIdentityManagementAddressRoute,
+    } as any,
+  )
 const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
   id: '/api/$',
   path: '/api/$',
@@ -368,6 +378,7 @@ export interface FileRoutesByFullPath {
   '/admin/identity-management': typeof PrivateOnboardedSidebarAdminIdentityManagementIndexRoute
   '/admin/user-management': typeof PrivateOnboardedSidebarAdminUserManagementIndexRoute
   '/token/$factoryAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
+  '/admin/identity-management/$address/claims': typeof PrivateOnboardedSidebarAdminIdentityManagementAddressClaimsRoute
   '/token/$factoryAddress/$tokenAddress/blocklist': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute
   '/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   '/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
@@ -404,6 +415,7 @@ export interface FileRoutesByTo {
   '/admin/identity-management': typeof PrivateOnboardedSidebarAdminIdentityManagementIndexRoute
   '/admin/user-management': typeof PrivateOnboardedSidebarAdminUserManagementIndexRoute
   '/token/$factoryAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
+  '/admin/identity-management/$address/claims': typeof PrivateOnboardedSidebarAdminIdentityManagementAddressClaimsRoute
   '/token/$factoryAddress/$tokenAddress/blocklist': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute
   '/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   '/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
@@ -449,6 +461,7 @@ export interface FileRoutesById {
   '/_private/_onboarded/_sidebar/admin/identity-management/': typeof PrivateOnboardedSidebarAdminIdentityManagementIndexRoute
   '/_private/_onboarded/_sidebar/admin/user-management/': typeof PrivateOnboardedSidebarAdminUserManagementIndexRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/': typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
+  '/_private/_onboarded/_sidebar/admin/identity-management/$address/claims': typeof PrivateOnboardedSidebarAdminIdentityManagementAddressClaimsRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
@@ -491,6 +504,7 @@ export interface FileRouteTypes {
     | '/admin/identity-management'
     | '/admin/user-management'
     | '/token/$factoryAddress'
+    | '/admin/identity-management/$address/claims'
     | '/token/$factoryAddress/$tokenAddress/blocklist'
     | '/token/$factoryAddress/$tokenAddress/events'
     | '/token/$factoryAddress/$tokenAddress/holders'
@@ -527,6 +541,7 @@ export interface FileRouteTypes {
     | '/admin/identity-management'
     | '/admin/user-management'
     | '/token/$factoryAddress'
+    | '/admin/identity-management/$address/claims'
     | '/token/$factoryAddress/$tokenAddress/blocklist'
     | '/token/$factoryAddress/$tokenAddress/events'
     | '/token/$factoryAddress/$tokenAddress/holders'
@@ -571,6 +586,7 @@ export interface FileRouteTypes {
     | '/_private/_onboarded/_sidebar/admin/identity-management/'
     | '/_private/_onboarded/_sidebar/admin/user-management/'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/'
+    | '/_private/_onboarded/_sidebar/admin/identity-management/$address/claims'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders'
@@ -911,6 +927,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRouteImport
       parentRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute
     }
+    '/_private/_onboarded/_sidebar/admin/identity-management/$address/claims': {
+      id: '/_private/_onboarded/_sidebar/admin/identity-management/$address/claims'
+      path: '/claims'
+      fullPath: '/admin/identity-management/$address/claims'
+      preLoaderRoute: typeof PrivateOnboardedSidebarAdminIdentityManagementAddressClaimsRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarAdminIdentityManagementAddressRoute
+    }
   }
 }
 declare module '@tanstack/react-start/server' {
@@ -940,11 +963,14 @@ declare module '@tanstack/react-start/server' {
 }
 
 interface PrivateOnboardedSidebarAdminIdentityManagementAddressRouteChildren {
+  PrivateOnboardedSidebarAdminIdentityManagementAddressClaimsRoute: typeof PrivateOnboardedSidebarAdminIdentityManagementAddressClaimsRoute
   PrivateOnboardedSidebarAdminIdentityManagementAddressIndexRoute: typeof PrivateOnboardedSidebarAdminIdentityManagementAddressIndexRoute
 }
 
 const PrivateOnboardedSidebarAdminIdentityManagementAddressRouteChildren: PrivateOnboardedSidebarAdminIdentityManagementAddressRouteChildren =
   {
+    PrivateOnboardedSidebarAdminIdentityManagementAddressClaimsRoute:
+      PrivateOnboardedSidebarAdminIdentityManagementAddressClaimsRoute,
     PrivateOnboardedSidebarAdminIdentityManagementAddressIndexRoute:
       PrivateOnboardedSidebarAdminIdentityManagementAddressIndexRoute,
   }
