@@ -1,6 +1,19 @@
 # Default values for blockscout chart.
 # This chart is a local implementation of the blockscout-stack chart
 
+# -- (object) Global Docker image registry and security defaults
+global:
+  # -- (string) Global Docker image registry
+  imageRegistry: ""
+  # -- (list) Global Docker registry secret names as an array
+  imagePullSecrets: []
+  # -- (string) Global StorageClass for Persistent Volume(s)
+  storageClass: ""
+  # -- (object) Shared security context defaults
+  securityContexts: {}
+  # -- (object) Shared datastore definitions
+  datastores: {}
+
 # -- (string) String to fully override common.names.fullname
 fullnameOverride: blockscout
 
@@ -16,12 +29,15 @@ serviceAccount:
   # -- (string) The name of the ServiceAccount to use
   name: ""
 
+# -- (object) PostgreSQL connection overrides (merged with global.datastores.blockscout.postgresql)
+postgresql: {}
+
 # -- (object) Blockscout configuration
 config:
   # -- (object) Network configuration
   network:
     # -- (int) Network ID
-    id: 53771311147
+    id: '{{ .Values.global.chainId }}'
     # -- (string) Network name
     name: Asset Tokenization Kit
     # -- (string) Network short name
@@ -112,9 +128,9 @@ blockscout:
         requests:
           cpu: 10m
           memory: 32Mi
-      dependencies:
-        - name: postgresql
-          endpoint: "{{ include \"atk.postgresql.endpoint\" (dict \"context\" $) }}"
+        dependencies:
+          - name: postgresql
+            endpoint: "{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"blockscout\" \"local\" $.Values.postgresql) }}"
 
   # -- (list) Additional init containers appended verbatim
   extraInitContainers: []
@@ -174,50 +190,14 @@ blockscout:
   # -- (object) Blockscout backend containers resource requests and limits
   resources: {}
 
-  # -- (object) Pod Security Context configuration for Blockscout backend
-  podSecurityContext:
-    # -- (int) Group ID for filesystem ownership
-    fsGroup: 1001
-    # -- (int) User ID to run the entrypoint of the container process
-    runAsUser: 1001
-    # -- (int) Group ID to run the entrypoint of the container process
-    runAsGroup: 1001
-    # -- (bool) Indicates that the container must run as a non-root user
-    runAsNonRoot: true
+  # -- (object) Pod Security Context configuration for Blockscout backend (overrides global.securityContexts.pod)
+  podSecurityContext: {}
 
-  # -- Container Security Context configuration for Blockscout backend (object)
-  containerSecurityContext:
-    # -- (int) User ID to run the entrypoint of the container process
-    runAsUser: 1001
-    # -- (int) Group ID to run the entrypoint of the container process
-    runAsGroup: 1001
-    # -- (bool) Indicates that the container must run as a non-root user
-    runAsNonRoot: true
-    # -- (bool) Controls whether a process can gain more privileges than its parent process
-    allowPrivilegeEscalation: false
-    # -- (object) Linux capabilities to drop
-    capabilities:
-      drop:
-      - ALL
-    # -- (bool) Mount the container's root filesystem as read-only
-    readOnlyRootFilesystem: false
+  # -- (object) Container Security Context configuration for Blockscout backend (overrides global.securityContexts.container)
+  containerSecurityContext: {}
 
-  # -- Init container Security Context configuration for Blockscout backend (object)
-  initContainerSecurityContext:
-    # -- (int) User ID to run the entrypoint of the container process
-    runAsUser: 1001
-    # -- (int) Group ID to run the entrypoint of the container process
-    runAsGroup: 1001
-    # -- (bool) Indicates that the container must run as a non-root user
-    runAsNonRoot: true
-    # -- (bool) Controls whether a process can gain more privileges than its parent process
-    allowPrivilegeEscalation: false
-    # -- (object) Linux capabilities to drop
-    capabilities:
-      drop:
-      - ALL
-    # -- (bool) Mount the container's root filesystem as read-only
-    readOnlyRootFilesystem: false
+  # -- (object) Init container Security Context configuration for Blockscout backend (overrides global.securityContexts.container)
+  initContainerSecurityContext: {}
 
   # -- (object) Node labels for pod assignment
   nodeSelector: {}
@@ -302,12 +282,12 @@ blockscout:
     API_URL: https://explorer.k8s.orb.local
     # -- (string) Web application URL
     WEBAPP_URL: https://explorer.k8s.orb.local
-    # -- (string) Database connection URL
-    DATABASE_URL: postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable
+    # -- (string) Database connection URL (overrides global.datastores.blockscout.postgresql)
+    DATABASE_URL: ""
     # -- (string) Ethereum JSON-RPC HTTP URL
-    ETHEREUM_JSONRPC_HTTP_URL: http://erpc:4000/settlemint/evm/53771311147
+    ETHEREUM_JSONRPC_HTTP_URL: 'http://erpc:4000/settlemint/evm/{{ include "blockscout.chainId" . }}'
     # -- (string) Ethereum JSON-RPC trace URL
-    ETHEREUM_JSONRPC_TRACE_URL: http://erpc:4000/settlemint/evm/53771311147
+    ETHEREUM_JSONRPC_TRACE_URL: 'http://erpc:4000/settlemint/evm/{{ include "blockscout.chainId" . }}'
     # -- (string) Secret key base for Phoenix application
     SECRET_KEY_BASE: atk
     # -- (string) Timezone data directory

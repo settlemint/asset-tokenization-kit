@@ -366,7 +366,8 @@ contract ATKIdentityRegistryStorageImplementation is
 
     /// @inheritdoc IERC3643IdentityRegistryStorage
     /// @notice Modifies the country code associated with an existing identity record.
-    /// @dev This function can only be called by an address holding the `SYSTEM_MANAGER_ROLE` or `IDENTITY_REGISTRY_MODULE_ROLE`.
+    /// @dev This function can only be called by an address holding the `SYSTEM_MANAGER_ROLE` or
+    /// `IDENTITY_REGISTRY_MODULE_ROLE`.
     /// It first checks if an identity record exists for the given `_userAddress`. If not, it reverts.
     /// If the identity exists, it updates the `country` field within the `Identity` struct stored for the
     /// `_userAddress` in the `_identities` mapping with the new `_country` code.

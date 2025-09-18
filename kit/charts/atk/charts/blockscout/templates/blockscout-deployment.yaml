@@ -32,9 +32,10 @@ spec:
     spec:
       {{- include "atk.common.imagePullSecrets" . | nindent 6 }}
       serviceAccountName: {{ include "blockscout.serviceAccountName" . }}
-      {{- with .Values.blockscout.podSecurityContext }}
+      {{- $podSecurityContext := (include "blockscout.securityContext.pod" (dict "context" $ "local" .Values.blockscout.podSecurityContext)) | fromYaml }}
+      {{- if $podSecurityContext }}
       securityContext:
-        {{- toYaml . | nindent 8 }}
+        {{- toYaml $podSecurityContext | nindent 8 }}
       {{- end }}
       {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.blockscout.initContainer.tcpCheck "chartKey" "blockscout") }}
       {{- $extraInit := .Values.blockscout.extraInitContainers | default (list) }}
@@ -46,9 +47,10 @@ spec:
         {{- end }}
         {{- if $migrationsEnabled }}
         - name: init-migrations
-          {{- with .Values.blockscout.initContainerSecurityContext }}
+          {{- $initContainerSecurityContext := (include "blockscout.securityContext.container" (dict "context" $ "local" .Values.blockscout.initContainerSecurityContext)) | fromYaml }}
+          {{- if $initContainerSecurityContext }}
           securityContext:
-            {{- toYaml . | nindent 12 }}
+            {{- toYaml $initContainerSecurityContext | nindent 12 }}
           {{- end }}
           image: "{{ .Values.blockscout.image.repository }}:{{ .Values.blockscout.image.tag }}"
           resources:
@@ -67,7 +69,7 @@ spec:
           - name: PORT
             value: "4000"
           - name: CHAIN_ID
-            value: {{ .Values.config.network.id | quote }}
+            value: {{ include "blockscout.chainId" . | quote }}
           {{- if and .Values.config.network.currency.symbol (not .Values.config.network.currency.dualToken) }}
           - name: COIN
             value: {{ .Values.config.network.currency.symbol | quote }}
@@ -102,9 +104,10 @@ spec:
       {{- end }}
       containers:
         - name: blockscout
-          {{- with .Values.blockscout.containerSecurityContext }}
+          {{- $containerSecurityContext := (include "blockscout.securityContext.container" (dict "context" $ "local" .Values.blockscout.containerSecurityContext)) | fromYaml }}
+          {{- if $containerSecurityContext }}
           securityContext:
-            {{- toYaml . | nindent 12 }}
+            {{- toYaml $containerSecurityContext | nindent 12 }}
           {{- end }}
           image: "{{ .Values.blockscout.image.repository }}:{{ .Values.blockscout.image.tag }}"
           imagePullPolicy: {{ .Values.blockscout.image.pullPolicy }}
@@ -165,7 +168,7 @@ spec:
           - name: PORT
             value: "4000"
           - name: CHAIN_ID
-            value: {{ .Values.config.network.id | quote }}
+            value: {{ include "blockscout.chainId" . | quote }}
           {{- if and .Values.config.network.currency.symbol (not .Values.config.network.currency.dualToken) }}
           - name: COIN
             value: {{ .Values.config.network.currency.symbol | quote }}
