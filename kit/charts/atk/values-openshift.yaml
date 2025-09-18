@@ -346,6 +346,19 @@ hasura:
 # Blockscout configuration for OpenShift
 blockscout:
   blockscout:
+    ingress:
+      enabled: false
+
+    openShiftRoute:
+      enabled: true
+      host: explorer.apps-crc.testing
+      path: /api
+      wildcardPolicy: None
+
+    env:
+      API_URL: https://explorer.apps-crc.testing
+      WEBAPP_URL: https://explorer.apps-crc.testing
+
     podSecurityContext:
       fsGroup: null
       runAsUser: null
@@ -373,6 +386,16 @@ blockscout:
       readOnlyRootFilesystem: false
 
   frontend:
+    ingress:
+      enabled: false
+
+    openShiftRoute:
+      enabled: true
+      host: explorer.apps-crc.testing
+      path: /
+      wildcardPolicy: None
+
+
     podSecurityContext:
       fsGroup: null
       runAsUser: null

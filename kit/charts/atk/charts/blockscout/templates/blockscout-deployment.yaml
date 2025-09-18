@@ -52,6 +52,10 @@ spec:
           {{- with .Values.blockscout.init.args }}
           args: {{ . | toYaml | nindent 12 }}
           {{- end }}
+          {{- $blockscoutHost := .Values.blockscout.ingress.hostname -}}
+          {{- if and .Values.blockscout.openShiftRoute.enabled .Values.blockscout.openShiftRoute.host -}}
+            {{- $blockscoutHost = .Values.blockscout.openShiftRoute.host -}}
+          {{- end }}
           env:
           - name: PORT
             value: "4000"
@@ -75,10 +79,12 @@ spec:
           - name: API_V2_ENABLED
             value: "true"
           {{- end }}
-          {{- if .Values.blockscout.ingress.enabled }}
           - name: BLOCKSCOUT_HOST
-            value: {{ .Values.blockscout.ingress.hostname | quote }}
-          {{- end }}
+            {{- if or .Values.blockscout.ingress.enabled .Values.blockscout.openShiftRoute.enabled }}
+            value: {{ $blockscoutHost | quote }}
+            {{- else }}
+            value: ""
+            {{- end }}
           envFrom:
             - secretRef:
                 name: {{ include "blockscout.fullname" . }}-blockscout-env
@@ -140,6 +146,10 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.blockscout.resources | nindent 12 }}
+          {{- $blockscoutHost := .Values.blockscout.ingress.hostname -}}
+          {{- if and .Values.blockscout.openShiftRoute.enabled .Values.blockscout.openShiftRoute.host -}}
+            {{- $blockscoutHost = .Values.blockscout.openShiftRoute.host -}}
+          {{- end }}
           env:
           - name: PORT
             value: "4000"
@@ -163,9 +173,9 @@ spec:
           - name: API_V2_ENABLED
             value: "true"
           {{- end }}
-          {{- if .Values.blockscout.ingress.enabled }}
+          {{- if or .Values.blockscout.ingress.enabled .Values.blockscout.openShiftRoute.enabled }}
           - name: BLOCKSCOUT_HOST
-            value: {{ .Values.blockscout.ingress.hostname | quote }}
+            value: {{ $blockscoutHost | quote }}
           {{- end }}
           envFrom:
             - secretRef:
