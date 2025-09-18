@@ -121,6 +121,30 @@ function RouteComponent() {
   );
   const collateralRatio = collateralStats?.collateralRatio ?? 0;
 
+  // Holders distribution and count
+  const { data: walletDistribution } = useQuery(
+    orpc.token.statsWalletDistribution.queryOptions({
+      input: { tokenAddress: asset.id },
+    })
+  );
+  const totalHolders =
+    walletDistribution?.totalHolders ?? asset.stats?.balancesCount ?? 0;
+  const ownershipConcentration = (() => {
+    const topBucket = walletDistribution?.buckets?.[4]?.count ?? 0;
+    return totalHolders > 0 ? Math.round((topBucket / totalHolders) * 100) : 0;
+  })();
+
+  // Total burned (from supply changes history - last data point)
+  const { data: supplyChanges } = useQuery(
+    orpc.token.statsSupplyChanges.queryOptions({
+      input: { tokenAddress: asset.id, days: 3650 },
+    })
+  );
+  const totalBurned =
+    supplyChanges?.supplyChangesHistory?.[
+      Math.max(0, (supplyChanges?.supplyChangesHistory?.length ?? 1) - 1)
+    ]?.totalBurned ?? "0";
+
   return (
     <>
       <DetailGrid>
@@ -159,6 +183,24 @@ function RouteComponent() {
           value={asset.totalSupply}
           type="currency"
           currency={{ assetSymbol: asset.symbol }}
+        />
+
+        <DetailGridItem
+          label={"Ownership concentration"}
+          value={ownershipConcentration}
+          type="percentage"
+        />
+
+        <DetailGridItem
+          label={"Total burned"}
+          value={totalBurned}
+          type="number"
+        />
+
+        <DetailGridItem
+          label={"# of holders"}
+          value={totalHolders}
+          type="number"
         />
 
         <DetailGridItem
