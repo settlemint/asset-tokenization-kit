@@ -424,7 +424,7 @@ Usage: {{ include "common.tplvalues.merge" (dict "values" (list .Values.val1 .Va
 {{- $result := dict -}}
 {{- range $values -}}
   {{- if . -}}
-    {{- $result = merge $result . -}}
+    {{- $result = mergeOverwrite $result . -}}
   {{- end -}}
 {{- end -}}
 {{- if $result -}}
