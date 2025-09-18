@@ -1,8 +1,11 @@
 import { DetailGrid } from "@/components/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
 import { useDenominationAsset } from "@/hooks/use-denomination-asset";
+import { parseClaim } from "@/lib/utils/claims/parse-claim";
+import { orpc } from "@/orpc/orpc-client";
 import { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { greaterThan, sub } from "dnum";
+import { useQuery } from "@tanstack/react-query";
+import { from, greaterThan, multiply, sub } from "dnum";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 export function BondExtensionDetails({
@@ -22,6 +25,33 @@ export function BondExtensionDetails({
   const denominationAssetData = useDenominationAsset(
     bond.denominationAsset.id,
     asset
+  );
+
+  const _basePriceClaim = parseClaim<{
+    amount: string;
+    currencyCode: string;
+    decimals: string;
+  }>(asset.identity?.claims, "basePrice");
+
+  const denominationBasePriceClaim = parseClaim<{
+    amount: string;
+    currencyCode: string;
+    decimals: string;
+  }>(denominationAssetData.denominationAsset?.identity?.claims, "basePrice");
+
+  const unitPrice = useMemo(() => {
+    if (!denominationBasePriceClaim) return null;
+    const denomBase = from([
+      BigInt(denominationBasePriceClaim.amount),
+      Number(denominationBasePriceClaim.decimals),
+    ]);
+    return multiply(denomBase, bond.faceValue);
+  }, [denominationBasePriceClaim, bond.faceValue]);
+
+  const { data: bondStatus } = useQuery(
+    orpc.token.statsBondStatus.queryOptions({
+      input: { tokenAddress: asset.id },
+    })
   );
 
   const shortfall = useMemo(() => {
@@ -95,6 +125,34 @@ export function BondExtensionDetails({
           currency={{ assetSymbol: bond.denominationAsset.symbol }}
         />
       )}
+      <DetailGridItem
+        label={"Price"}
+        value={unitPrice ?? undefined}
+        type="currency"
+        currency={
+          denominationBasePriceClaim
+            ? { assetSymbol: denominationBasePriceClaim.currencyCode }
+            : undefined
+        }
+        emptyValue={"-"}
+      />
+      <DetailGridItem
+        label={t("tokens:fields.totalPrice")}
+        info={t("tokens:fields.totalPriceInfo")}
+        value={unitPrice ? multiply(unitPrice, asset.totalSupply) : undefined}
+        type="currency"
+        currency={
+          denominationBasePriceClaim
+            ? { assetSymbol: denominationBasePriceClaim.currencyCode }
+            : undefined
+        }
+        emptyValue={"-"}
+      />
+      <DetailGridItem
+        label={t("stats:charts.bondStatus.active.title")}
+        value={bondStatus?.coveredPercentage ?? from(0)}
+        type={"percentage"}
+      />
     </DetailGrid>
   );
 }
