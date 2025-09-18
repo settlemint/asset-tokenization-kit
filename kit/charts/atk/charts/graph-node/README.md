@@ -28,6 +28,7 @@ A Helm chart for Graph Node
 | chains.settlemint.provider[0].label | string | `"erpc"` | Label for a JSON-RPC endpoint |
 | chains.settlemint.shard | string | `"primary"` | The database shard to use for this chain |
 | configTemplate | string | See default template in [values.yaml](values.yaml) | [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md) |
+| containerSecurityContext | object | `{}` | Container-level security context overrides |
 | customSecret | object | `{}` | Custom secret data for PostgreSQL credentials Used for backward compatibility and default values |
 | env | object | `{"ETHEREUM_POLLING_INTERVAL":"1000","EXPERIMENTAL_SUBGRAPH_VERSION_SWITCHING_MODE":"synced","GRAPH_ALLOW_NON_DETERMINISTIC_FULLTEXT_SEARCH":"true","GRAPH_ALLOW_NON_DETERMINISTIC_IPFS":"true","GRAPH_CHAIN_HEAD_WATCHER_TIMEOUT":"5","GRAPH_DISABLE_GRAFTS":"false","GRAPH_ENABLE_PROMETHEUS_METRICS":"true","GRAPH_ETHEREUM_BLOCK_BATCH_SIZE":"100","GRAPH_ETHEREUM_BLOCK_INGESTOR_MAX_CONCURRENT_JSON_RPC_CALLS":"100","GRAPH_ETHEREUM_CLEANUP_BLOCKS":"true","GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE":"1000","GRAPH_ETHEREUM_REQUEST_RETRIES":"10","GRAPH_ETHEREUM_TARGET_TRIGGERS_PER_BLOCK_RANGE":"100","GRAPH_ETH_CALL_GAS":"50000000","GRAPH_GETH_ETH_CALL_ERRORS":"out of gas","GRAPH_IPFS_TIMEOUT":"30","GRAPH_KILL_IF_UNRESPONSIVE":"true","GRAPH_LOAD_BIN_SIZE":"10","GRAPH_LOAD_WINDOW_SIZE":"3600","GRAPH_LOG":"info","GRAPH_LOG_QUERY_TIMING":"gql","GRAPH_MAX_GAS_PER_HANDLER":"1_000_000_000_000_000","GRAPH_MAX_SPEC_VERSION":"1.2.0","GRAPH_PARALLEL_BLOCK_CONSTRAINTS":"true","GRAPH_POSTPONE_ATTRIBUTE_INDEX_CREATION":"true","GRAPH_PROMETHEUS_HOST":"0.0.0.0","GRAPH_QUERY_CACHE_BLOCKS":"6","GRAPH_QUERY_CACHE_MAX_MEM":"3000","GRAPH_QUERY_CACHE_STALE_PERIOD":"1000","GRAPH_STATIC_FILTERS_THRESHOLD":"10000","GRAPH_STORE_WRITE_BATCH_DURATION":"0","GRAPH_STORE_WRITE_BATCH_SIZE":"0","IPFS":"https://ipfs.console.settlemint.com","SUBGRAPH":"kit:QmbA53S3UUeoxdNQV9PGUDN7WAgFcHT6qU9FiH8QXXGv3z","node_role":"combined"}` | Environment variables |
 | env.IPFS | string | `"https://ipfs.console.settlemint.com"` | The URL for your IPFS node |
@@ -50,13 +51,13 @@ A Helm chart for Graph Node
 | ingress.enabled | bool | `true` | Enable ingress record generation for Graph Node |
 | ingress.hosts | list | `[{"host":"graph.k8s.orb.local","paths":[{"path":"/(.*)","pathType":"ImplementationSpecific"},{"path":"/ws/?(.*)","pathType":"ImplementationSpecific"},{"path":"/admin/?(.*)","pathType":"ImplementationSpecific"},{"path":"/indexer/?(.*)","pathType":"ImplementationSpecific"},{"path":"/graphman/?(.*)","pathType":"ImplementationSpecific"}]}]` | An array with hosts and paths |
 | ingress.tls | list | `[]` | TLS configuration for the ingress |
-| initContainer | object | `{"image":{"pullPolicy":"IfNotPresent","repository":"docker.io/kubesphere/kubectl","tag":"v1.33.4"},"tcpCheck":{"dependencies":[{"endpoint":"{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGHOST }}:{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGPORT }}","name":"postgresql"}],"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}},"timeout":120}}` | Init container configuration |
+| initContainer | object | `{"image":{"pullPolicy":"IfNotPresent","repository":"docker.io/kubesphere/kubectl","tag":"v1.33.4"},"tcpCheck":{"dependencies":[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"graphNode\" \"local\" .Values.postgresql) }}","name":"postgresql"}],"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}},"timeout":120}}` | Init container configuration |
 | initContainer.image | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/kubesphere/kubectl","tag":"v1.33.4"}` | Image for init container kubectl |
 | initContainer.image.pullPolicy | string | `"IfNotPresent"` | Kubectl image pull policy |
 | initContainer.image.repository | string | `"docker.io/kubesphere/kubectl"` | Kubectl image repository |
 | initContainer.image.tag | string | `"v1.33.4"` | Kubectl image tag |
-| initContainer.tcpCheck | object | `{"dependencies":[{"endpoint":"{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGHOST }}:{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGPORT }}","name":"postgresql"}],"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}},"timeout":120}` | TCP check configuration |
-| initContainer.tcpCheck.dependencies | list | `[{"endpoint":"{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGHOST }}:{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGPORT }}","name":"postgresql"}]` | List of dependencies to check |
+| initContainer.tcpCheck | object | `{"dependencies":[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"graphNode\" \"local\" .Values.postgresql) }}","name":"postgresql"}],"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}},"timeout":120}` | TCP check configuration |
+| initContainer.tcpCheck.dependencies | list | `[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"graphNode\" \"local\" .Values.postgresql) }}","name":"postgresql"}]` | List of dependencies to check |
 | initContainer.tcpCheck.enabled | bool | `true` | Enable TCP check init container |
 | initContainer.tcpCheck.image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"}` | TCP check image configuration |
 | initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` | TCP check image pull policy |
@@ -85,7 +86,7 @@ A Helm chart for Graph Node
 | openShiftRoute.tls | string | `nil` | TLS configuration shared by the generated routes |
 | openShiftRoute.to | object | `{"weight":100}` | Primary service weight configuration used when routes omit a weight |
 | openShiftRoute.wildcardPolicy | string | `"None"` | Wildcard policy applied when individual routes do not override it |
-| podAnnotations | object | `{}` | Annotations for the `Pod` |
+| podAnnotations | object | `{"prometheus.io/path":"/metrics","prometheus.io/port":"8040","prometheus.io/scrape":"true"}` | Annotations for the `Pod` |
 | podDisruptionBudget | object | `{"enabled":false}` | Pod disruption budget |
 | podDisruptionBudget.enabled | bool | `false` | Enable pod disruption budget |
 | podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
@@ -96,6 +97,7 @@ A Helm chart for Graph Node
 | postgresReadinessCheck.maxRetries | int | `30` | Maximum number of connection retries |
 | postgresReadinessCheck.maxWaitTime | int | `30` | Maximum wait time between retries |
 | postgresReadinessCheck.randomDelayRange | object | `{"max":30,"min":5}` | Add random delay to prevent all nodes from connecting simultaneously |
+| postgresql | object | `{}` | PostgreSQL overrides merged with global.datastores.graphNode.postgresql |
 | rbac | object | `{"create":false,"rules":[]}` | RBAC configuration |
 | rbac.create | bool | `false` | Specifies whether RBAC resources are to be created |
 | replicaCount | int | `1` | Number of Graph Node replicas to deploy |

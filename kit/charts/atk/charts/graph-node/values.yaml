@@ -49,7 +49,7 @@ initContainer:
     # -- (list) List of dependencies to check
     dependencies:
       - name: postgresql
-        endpoint: "{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGHOST }}:{{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGPORT }}"
+        endpoint: "{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"graphNode\" \"local\" .Values.postgresql) }}"
     # -- (object) Resource limits and requests for TCP check container
     resources:
       # -- (object) Resource limits
@@ -118,8 +118,14 @@ podSecurityContext:
   runAsGroup: 101337
   fsGroup: 101337
 
+# -- (object) Container-level security context overrides
+containerSecurityContext: {}
+
 # -- (object) Annotations for the `Pod`
-podAnnotations: {}
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8040"
+  prometheus.io/path: "/metrics"
 
 # -- (object) Environment variables
 env:
@@ -177,6 +183,9 @@ secretEnv:
 # -- (object) Custom secret data for PostgreSQL credentials
 # Used for backward compatibility and default values
 customSecret: {}
+
+# -- (object) PostgreSQL overrides merged with global.datastores.graphNode.postgresql
+postgresql: {}
 
 # -- (object) Service configuration
 service:
