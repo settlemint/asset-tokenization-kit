@@ -996,7 +996,7 @@ dapp:
         - name: graph-node-tcp # Renamed to distinguish from graphQLCheck
           endpoint: "graph-node-combined:8020" # Status API port (TCP check)
         - name: blockscout # Add Blockscout if needed, determine correct service/port
-          endpoint: "blockscout-frontend-svc:80"
+          endpoint: "blockscout-frontend:80"
 
     # Specific check for GraphQL endpoint readiness (e.g., The Graph subgraph)
     graphQLCheck:
