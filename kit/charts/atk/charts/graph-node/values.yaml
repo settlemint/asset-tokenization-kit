@@ -96,12 +96,6 @@ podAnnotations: {}
 
 # -- Environment variables
 env:
-  # -- Hostname of the primary shard PostgreSQL server
-  PRIMARY_SUBGRAPH_DATA_PGHOST: postgresql
-  # -- Port for the primary shard PostgreSQL server
-  PRIMARY_SUBGRAPH_DATA_PGPORT: 5432
-  # -- Name of the primary shard database to use
-  PRIMARY_SUBGRAPH_DATA_PGDATABASE: "thegraph"
   # -- The URL for your IPFS node
   IPFS: "https://ipfs.console.settlemint.com"
   # -- Node role
@@ -155,11 +149,7 @@ secretEnv:
 
 # -- Custom secret data for PostgreSQL credentials
 # Used for backward compatibility and default values
-customSecret:
-  # -- PostgreSQL username
-  PGUSER: thegraph
-  # -- PostgreSQL password
-  PGPASSWORD: atk
+customSecret: {}
 
 service:
   type: ClusterIP

@@ -85,25 +85,11 @@ nodeSelector: {}
 # -- Tolerations for pod assignment
 tolerations: []
 
-# -- Pod Security Context configuration
-podSecurityContext:
-  fsGroup: 1001
-  runAsNonRoot: true
-  seccompProfile:
-    type: RuntimeDefault
+# -- Pod Security Context configuration (overrides global.securityContexts.pod)
+podSecurityContext: {}
 
-# -- Container Security Context configuration
-containerSecurityContext:
-  runAsUser: 1001
-  runAsGroup: 1001
-  runAsNonRoot: true
-  allowPrivilegeEscalation: false
-  readOnlyRootFilesystem: false
-  capabilities:
-    drop:
-      - ALL
-  seccompProfile:
-    type: RuntimeDefault
+# -- Container Security Context configuration (overrides global.securityContexts.container)
+containerSecurityContext: {}
 
 # -- Portal containers resource requests and limits
 resources: {}
@@ -198,16 +184,7 @@ initContainer:
         memory: 64Mi
     # Security context for the copy-artifacts container
     # Can be overridden for different environments (e.g., OpenShift)
-    securityContext:
-      runAsUser: 1001
-      runAsGroup: 1001
-      runAsNonRoot: true
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      seccompProfile:
-        type: RuntimeDefault
+    securityContext: {}
 
   # Generic TCP check settings
   tcpCheck:
@@ -487,16 +464,8 @@ config:
     # -- Node RPC URL
     nodeRpcUrl: "http://txsigner:3000"
 
-  # -- PostgreSQL connection string
-  postgresql: "postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"
+  # -- PostgreSQL overrides merged with global.datastores.portal.postgresql
+  postgresql: {}
 
-  # -- Redis configuration
-  redis:
-    # -- Redis host
-    host: "redis"
-    # -- Redis port
-    port: 6379
-    # -- Redis username
-    username: "default"
-    # -- Redis password
-    password: "atk"
+  # -- Redis overrides merged with global.datastores.portal.redis
+  redis: {}

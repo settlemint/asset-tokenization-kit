@@ -28,16 +28,9 @@ annotations: {}
 podLabels: {}
 podAnnotations: {}
 
-podSecurityContext:
-  fsGroup: 2016
-  runAsNonRoot: true
-  runAsUser: 2016
+podSecurityContext: {}
 
-securityContext:
-  allowPrivilegeEscalation: false
-  capabilities:
-    drop:
-      - ALL
+securityContext: {}
 
 service:
   type: ClusterIP
@@ -64,12 +57,20 @@ resources: {}
 # Liveness and Readiness probes configuration
 probes:
   liveness:
+    httpGet:
+      path: "/"
+      port: http
+      scheme: HTTP
     initialDelaySeconds: 10
     periodSeconds: 15
     timeoutSeconds: 3
     failureThreshold: 10
     successThreshold: 1
   readiness:
+    httpGet:
+      path: "/"
+      port: http
+      scheme: HTTP
     initialDelaySeconds: 5
     periodSeconds: 10
     timeoutSeconds: 3
@@ -173,16 +174,17 @@ secretEnv:
   BETTER_AUTH_URL: "https://dapp.local"
   NEXT_PUBLIC_APP_ID: "dapp"
   NEXTAUTH_URL: "https://dapp.local"
-  OTEL_EXPORTER_OTLP_ENDPOINT: "http://o11y-alloy.btp-platform.svc.cluster.local:4318/v1/traces" # Adjust if needed
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy:4318/v1/traces"
   OTEL_EXPORTER_OTLP_PROTOCOL: "http"
-  SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "https://explorer.local/" # Placeholder
-  SETTLEMINT_HASURA_ADMIN_SECRET: "dummy-secret" # Placeholder
-  SETTLEMINT_HASURA_DATABASE_URL: "postgresql://user:pass@host:port/db" # Placeholder
-  SETTLEMINT_HASURA_ENDPOINT: "https://hasura.local/v1/graphql" # Placeholder
-  SETTLEMINT_HD_PRIVATE_KEY: "dummy-key" # Placeholder
+  SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "http://blockscout-frontend-svc/"
+  SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT: "http://txsigner:3000"
+  SETTLEMINT_HASURA_ADMIN_SECRET: "atk"
+  SETTLEMINT_HASURA_DATABASE_URL: "{{ include \"atk.datastores.postgresql.url\" (dict \"context\" $ \"chartKey\" \"hasura\") }}"
+  SETTLEMINT_HASURA_ENDPOINT: "http://hasura:8080/v1/graphql"
+  SETTLEMINT_HD_PRIVATE_KEY: "atk-hd-private-key"
   SETTLEMINT_INSTANCE: "standalone"
-  SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT: "https://portal.local/graphql" # Placeholder
-  SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS: '["https://graph.local/subgraphs/name/kit"]' # Placeholder
+  SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT: "http://portal:3001/graphql"
+  SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS: '["http://graph-node-combined:8000/subgraphs/name/kit"]'
 
 # Environment variables defined directly in the deployment
 env: []
@@ -217,7 +219,7 @@ initContainer:
       repository: ghcr.io/settlemint/btp-waitforit
       tag: v7.7.10
       pullPolicy: IfNotPresent
-    timeout: 5 # Timeout in seconds for each dependency check
+    timeout: 120 # Timeout in seconds for each dependency check
     resources:
       limits:
         cpu: 100m
@@ -228,7 +230,7 @@ initContainer:
     dependencies:
       # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
       - name: postgres
-        endpoint: "postgresql:5432"
+        endpoint: "{{ include \"atk.postgresql.endpoint\" (dict \"context\" $) }}"
       - name: hasura
         endpoint: "hasura:8080"
       - name: portal

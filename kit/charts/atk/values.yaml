@@ -18,111 +18,99 @@ global:
       repository: settlemint/asset-tokenization-kit-artifacts
       tag: 2.0.0-main.91391
       pullPolicy: IfNotPresent
+  securityContexts:
+    pod:
+      fsGroup: 101337
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    container:
+      runAsNonRoot: true
+      runAsUser: 101337
+      runAsGroup: 101337
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+  datastores:
+    default:
+      redis:
+        host: "redis"
+        port: 6379
+        username: "default"
+        password: "atk"
+        db: 0
+        query: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"
+      postgresql:
+        host: "postgresql"
+        port: 5432
+        username: "postgres"
+        password: "atk"
+        database: "postgres"
+        sslMode: "disable"
+    erpc:
+      redis:
+        cacheDb: 0
+        sharedStateDb: 1
+    hasura:
+      postgresql:
+        database: "hasura"
+        username: "hasura"
+        password: "atk"
+      redis:
+        primary:
+          db: 2
+        rateLimit:
+          db: 3
+    portal:
+      postgresql:
+        database: "portal"
+        username: "portal"
+        password: "atk"
+      redis:
+        db: 4
+    txsigner:
+      postgresql:
+        database: "txsigner"
+        username: "txsigner"
+        password: "atk"
+    graphNode:
+      postgresql:
+        database: "thegraph"
+        username: "thegraph"
+        password: "atk"
 
 network:
   enabled: true
   network-bootstrapper:
-    podSecurityContext:
-      fsGroup: 1000
-      fsGroupChangePolicy: Always
-      runAsGroup: 1000
-      runAsUser: 1000
-      runAsNonRoot: true
-      seccompProfile:
-        type: RuntimeDefault
-    securityContext:
-      runAsNonRoot: true
-      runAsUser: 1000
-      runAsGroup: 1000
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-        - ALL
-      seccompProfile:
-        type: RuntimeDefault
     settings:
       chainId: "53771311147"
   network-nodes:
-    podSecurityContext:
-      fsGroup: 1000
-      fsGroupChangePolicy: Always
-      runAsGroup: 1000
-      runAsUser: 1000
-      runAsNonRoot: true
-      seccompProfile:
-        type: RuntimeDefault
-    securityContext:
-      runAsNonRoot: true
-      runAsUser: 1000
-      runAsGroup: 1000
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-        - ALL
-      seccompProfile:
-        type: RuntimeDefault
     persistence:
-      enabled: true
       size: 20Gi
 
 erpc:
   enabled: true
   image:
     registry: ghcr.io
-    repository: erpc/erpc
-    tag: "0.0.56"
-    pullPolicy: IfNotPresent
-  redis:
-    host: "redis"
-    port: 6379
-    username: "default"
-    password: "atk"
-    cacheDb: 0
-    sharedStateDb: 1
-    cacheQuery: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"
-    sharedStateQuery: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=20"
   # Init containers
   initContainers:
     waitforit:
       image:
         repository: ghcr.io/settlemint/btp-waitforit
-        tag: "v7.7.10"
-        pullPolicy: IfNotPresent
   # Test container
   test:
     image:
       repository: docker.io/busybox
-      tag: "1.37"
-      pullPolicy: IfNotPresent
-  resources: {}
-  # Pod security context
-  podSecurityContext:
-    fsGroup: 1000
-    runAsNonRoot: true
-    seccompProfile:
-      type: RuntimeDefault
-  # Container security context
-  containerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 1000
-    runAsGroup: 1000
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-      - ALL
-    seccompProfile:
-      type: RuntimeDefault
-  # Init container security context
-  initContainerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 1001
-    runAsGroup: 1001
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-      - ALL
-    seccompProfile:
-      type: RuntimeDefault
+  # resources:
+  #   limits:
+  #     cpu: 100m
+  #     memory: 128Mi
+  #   requests:
+  #     cpu: 100m
+  #     memory: 128Mi
   ingress:
     enabled: true
     className: "atk-nginx"
@@ -348,55 +336,15 @@ blockscout:
 
 graph-node:
   enabled: true
-  postgresql:
-    host: "postgresql"
-    port: 5432
-    database: "thegraph"
-    username: "thegraph"
-    password: "atk"
-    endpoint: "postgresql:5432"
-    url: "postgresql://thegraph:atk@postgresql:5432/thegraph?sslmode=disable"
   image:
     repository: docker.io/graphprotocol/graph-node
-    tag: "v0.40.2"
-    pullPolicy: IfNotPresent
   podAnnotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8040"
     prometheus.io/path: "/metrics"
-  # Pod security context
-  podSecurityContext:
-    fsGroup: 1000
-    runAsNonRoot: true
-    seccompProfile:
-      type: RuntimeDefault
-  # Container security context
-  containerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 1000
-    runAsGroup: 1000
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-      - ALL
-    seccompProfile:
-      type: RuntimeDefault
-  # Init container security context
-  initContainerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 1001
-    runAsGroup: 1001
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-      - ALL
-    seccompProfile:
-      type: RuntimeDefault
   initContainer:
     image:
       repository: docker.io/kubesphere/kubectl
-      tag: "v1.33.4"
-      pullPolicy: IfNotPresent
     tcpCheck:
       enabled: true
       image:
@@ -434,12 +382,6 @@ graph-node:
           - path: /graphman/?(.*)
             pathType: ImplementationSpecific
     tls: []
-  env:
-    PRIMARY_SUBGRAPH_DATA_PGHOST: "postgresql"
-    PRIMARY_SUBGRAPH_DATA_PGPORT: 5432
-    PRIMARY_SUBGRAPH_DATA_PGDATABASE: "thegraph"
-    PRIMARY_SUBGRAPH_DATA_PGUSER: "thegraph"
-    PRIMARY_SUBGRAPH_DATA_PGPASSWORD: "atk"
   postgresReadinessCheck:
     enabled: true
     image: docker.io/postgres:17.6-alpine
@@ -537,43 +479,12 @@ portal:
   enabled: true
   image:
     registry: ghcr.io
-    repository: settlemint/btp-scs-portal
-    tag: "8.6.7"
-    pullPolicy: IfNotPresent
   podLabels:
     app.kubernetes.io/component: portal
   podAnnotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "3000"
     prometheus.io/path: "/portal-metrics"
-  # Pod security context
-  podSecurityContext:
-    fsGroup: 1000
-    runAsNonRoot: true
-    seccompProfile:
-      type: RuntimeDefault
-  # Container security context
-  containerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 1000
-    runAsGroup: 1000
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-      - ALL
-    seccompProfile:
-      type: RuntimeDefault
-  # Init container security context
-  initContainerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 1001
-    runAsGroup: 1001
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-      - ALL
-    seccompProfile:
-      type: RuntimeDefault
   initContainer:
     # Legacy `initContainers` overrides remain supported for backward compatibility.
     tcpCheck:
@@ -601,34 +512,14 @@ portal:
         requests:
           cpu: 25m
           memory: 64Mi
-      securityContext:
-        runAsUser: 1001
-        runAsGroup: 1001
-        runAsNonRoot: true
-        allowPrivilegeEscalation: false
-        capabilities:
-          drop:
-            - ALL
-        seccompProfile:
-          type: RuntimeDefault
   config:
-    postgresqlConnection:
-      host: "postgresql"
-      port: 5432
-      database: "portal"
-      username: "portal"
-      password: "atk"
-      sslMode: "disable"
-      endpoint: "postgresql:5432"
-      url: "postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"
-    postgresql: "postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"
-    redis:
-      host: "redis"
-      port: 6379
-      username: "default"
-      password: "atk"
-      db: 4
-      url: "redis://default:atk@redis:6379/4"
+    network:
+      # -- Network ID
+      networkId: "53771311147"
+      # -- Network name
+      networkName: "ATK"
+      # -- Node RPC URL
+      nodeRpcUrl: "http://txsigner:3000"
   ingress:
     hostname: portal.k8s.orb.local
 
@@ -643,26 +534,19 @@ support:
       resources: {}
       image:
         repository: registry.k8s.io/ingress-nginx/controller
-        tag: "v1.13.2"
-        digest: ""
 
   # https://github.com/stakater/Reloader/tree/master/deployments/kubernetes/chart/reloader
   reloader:
     enabled: true
     image:
       repository: ghcr.io/stakater/reloader
-      tag: v1.4.8
 
   minio:
     enabled: true
     image:
       repository: docker.io/minio/minio
-      tag: RELEASE.2025-07-23T15-54-02Z
-      pullPolicy: IfNotPresent
     mcImage:
       repository: docker.io/minio/minio
-      tag: RELEASE.2025-07-23T15-54-02Z
-      pullPolicy: IfNotPresent
     ingress:
       enabled: true
       ingressClassName: atk-nginx
@@ -676,10 +560,6 @@ support:
     image:
       # -- Redis image registry
       registry: docker.io
-      # -- Redis image repository
-      repository: redis
-      # -- Redis image tag
-      tag: "8.2.1-alpine"
     fullnameOverride: redis
     commonLabels:
       kots.io/app-slug: settlemint-atk
@@ -697,69 +577,27 @@ support:
       limits:
         memory: "256Mi"
         cpu: "200m"
-    # Pod security context
-    podSecurityContext:
-      fsGroup: 999
-      runAsNonRoot: true
-      runAsUser: 999
-      seccompProfile:
-        type: RuntimeDefault
-    # Container security context
-    containerSecurityContext:
-      runAsUser: 999
-      runAsGroup: 999
-      runAsNonRoot: true
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      readOnlyRootFilesystem: false
-      seccompProfile:
-        type: RuntimeDefault
 
   postgresql:
     enabled: true
     image:
       registry: docker.io
-      repository: postgres
-      tag: "17.6-alpine"
-    # Pod security context
-    podSecurityContext:
-      fsGroup: 999
-      runAsNonRoot: true
-      seccompProfile:
-        type: RuntimeDefault
-    # Container security context
-    securityContext:
-      runAsUser: 999
-      runAsGroup: 999
-      runAsNonRoot: true
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      seccompProfile:
-        type: RuntimeDefault
 
 observability:
   enabled: true
 
   # https://github.com/kubernetes-sigs/metrics-server/blob/master/charts/metrics-server/values.yaml
   metrics-server:
-    enabled: false
+    enabled: true
     resources: {}
     image:
       repository: registry.k8s.io/metrics-server/metrics-server
-      tag: "v0.8.0"
 
   # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-state-metrics/values.yaml
   kube-state-metrics:
     resources: {}
     image:
       registry: registry.k8s.io
-      repository: kube-state-metrics/kube-state-metrics
-      # If unset use v + .Charts.appVersion
-      tag: "v2.17.0"
 
   # https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metrics-single/values.yaml
   victoria-metrics-single:
@@ -770,8 +608,6 @@ observability:
       resources: {}
       image:
         registry: docker.io
-        repository: victoriametrics/victoria-metrics
-        tag: "v1.126.0"
 
   # https://github.com/grafana/loki/blob/main/production/helm/loki/values.yaml
   loki:
@@ -779,10 +615,6 @@ observability:
       image:
         # -- The Docker registry
         registry: docker.io
-        # -- Docker image repository
-        repository: grafana/loki
-        # -- Overrides the image tag whose default is the chart's appVersion
-        tag: 3.5.5
     singleBinary:
       persistence:
         size: 10Gi
@@ -797,22 +629,16 @@ observability:
       image:
         # -- Memcached Docker image repository
         repository: docker.io/memcached
-        # -- Memcached Docker image tag
-        tag: 1.6.39-alpine
     memcachedExporter:
       image:
         repository: docker.io/prom/memcached-exporter
-        tag: v0.15.3
     sidecar:
       image:
         # -- The Docker registry and image for the k8s sidecar
         repository: docker.io/kiwigrid/k8s-sidecar
-        tag: 1.30.10
     gateway:
       image:
         registry: docker.io
-        repository: nginxinc/nginx-unprivileged
-        tag: "1.29-alpine"
 
   # https://github.com/grafana/alloy/blob/main/operations/helm/charts/alloy/values.yaml
   alloy:
@@ -820,31 +646,18 @@ observability:
       resources: {}
     image:
       registry: docker.io
-      # -- Grafana Alloy image repository.
-      repository: grafana/alloy
-      tag: v1.10.2
     configReloader:
       image:
         registry: quay.io
-        # -- Repository to get config reloader image from.
-        repository: prometheus-operator/prometheus-config-reloader
-        # -- Tag of image to use for config reloading.
-        tag: v0.85.0
 
   grafana:
     image:
       # -- The Docker registry
       registry: docker.io
-      # -- Docker image repository
-      repository: grafana/grafana
-      # Overrides the Grafana image tag whose default is the chart appVersion
-      tag: "12.1.1"
     # Sidecar configuration for Grafana dashboards and datasources
     sidecar:
       image:
         registry: docker.io
-        repository: kiwigrid/k8s-sidecar
-        tag: "1.30.10"
     ingress:
       hosts:
         - grafana.k8s.orb.local
@@ -854,19 +667,14 @@ observability:
   tempo:
     tempo:
       repository: docker.io/grafana/tempo
-      tag: "2.8.1"
     tempoQuery:
       repository: docker.io/grafana/tempo-query
-      tag: "2.8.1"
     server:
       resources: {}
 
   prometheus-node-exporter:
     image:
       registry: quay.io
-      repository: prometheus/node-exporter
-      # Overrides the image tag whose default is {{ printf "v%s" .Chart.AppVersion }}
-      tag: "v1.9.1"
 
 # Transaction Signer Configuration
 txsigner:
@@ -874,89 +682,23 @@ txsigner:
   image:
     registry: ghcr.io
     repository: settlemint/btp-signer
-    tag: "7.15.13"
-    pullPolicy: IfNotPresent
-  # Init container for testing
   test:
     image:
       repository: docker.io/busybox
-      tag: "1.37"
-      pullPolicy: IfNotPresent
-  # Pod security context
-  podSecurityContext:
-    fsGroup: 1000
-    runAsNonRoot: true
-    seccompProfile:
-      type: RuntimeDefault
-  # Container security context
-  containerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 1000
-    runAsGroup: 1000
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-      - ALL
-    seccompProfile:
-      type: RuntimeDefault
-  # Init container security context
-  initContainerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 1001
-    runAsGroup: 1001
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-      - ALL
-    seccompProfile:
-      type: RuntimeDefault
   # Configuration for the txsigner subchart
   config:
-    mnemonic:
-      "gate yellow grunt wrestle disease obtain mixed nature mansion tape
-      purchase awful"
+    mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
     derivationPath: "m/44'/60'/0'/0/0"
-  postgresqlConnection:
-    host: "postgresql"
-    port: 5432
-    database: "txsigner"
-    username: "txsigner"
-    password: "atk"
-    sslMode: "disable"
-    endpoint: "postgresql:5432"
-    url: "postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"
-  postgresql: "postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"
   replicaCount: 1
   resources: {}
   ingress:
     hostname: txsigner.k8s.orb.local
-  # Legacy `initContainers` overrides remain supported for backward compatibility.
-  initContainer:
-    tcpCheck:
-      enabled: true
-      image:
-        repository: ghcr.io/settlemint/btp-waitforit
-        tag: v7.7.10
-        pullPolicy: IfNotPresent
-      timeout: 120
-      resources:
-        limits:
-          cpu: 100m
-          memory: 64Mi
-        requests:
-          cpu: 10m
-          memory: 32Mi
-      dependencies:
-        - name: postgresql
-          endpoint: "postgresql:5432"
 
 # DApp Frontend Configuration
 dapp:
   enabled: true
   image:
     repository: ghcr.io/settlemint/asset-tokenization-kit
-    tag: "2.0.0-main1e32acb7f"
-    pullPolicy: IfNotPresent
   replicaCount: 1
   ingress:
     enabled: true
@@ -969,14 +711,8 @@ dapp:
   resources: {}
   secretEnv:
     BETTER_AUTH_URL: "https://dapp.k8s.orb.local"
-    NEXT_PUBLIC_APP_ID: "dapp"
-    NEXTAUTH_URL: "https://dapp.k8s.orb.local"
-    OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy:4318/v1/traces" # Adjust if needed
-    OTEL_EXPORTER_OTLP_PROTOCOL: "http"
     SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "http://blockscout-frontend-svc/"
     SETTLEMINT_HASURA_ADMIN_SECRET: "atk"
-    SETTLEMINT_HASURA_DATABASE_URL: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
-    SETTLEMINT_HASURA_ENDPOINT: "http://hasura:8080/v1/graphql"
     SETTLEMINT_HD_PRIVATE_KEY: "atk-hd-private-key"
     SETTLEMINT_INSTANCE: "standalone"
     SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT: "http://portal:3001/graphql"

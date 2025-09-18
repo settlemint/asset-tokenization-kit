@@ -14,19 +14,19 @@ environment.
 | Service | Values path | Default host | Default port | Default database | Default username | Default password | Default SSL mode |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Blockscout | `blockscout.postgresql` | `postgresql` | `5432` | `blockscout` | `blockscout` | `atk` | `disable` |
-| Graph Node | `graph-node.postgresql` | `postgresql` | `5432` | `thegraph` | `thegraph` | `atk` | `disable` |
+| Graph Node | `global.datastores.graphNode.postgresql` | `postgresql` | `5432` | `thegraph` | `thegraph` | `atk` | `disable` |
 | Hasura | `hasura.postgresql` | `postgresql` | `5432` | `hasura` | `hasura` | `atk` | `disable` |
-| Portal | `portal.config.postgresqlConnection` | `postgresql` | `5432` | `portal` | `portal` | `atk` | `disable` |
-| TxSigner | `txsigner.postgresqlConnection` | `postgresql` | `5432` | `txsigner` | `txsigner` | `atk` | `disable` |
+| Portal | `global.datastores.portal.postgresql` | `postgresql` | `5432` | `portal` | `portal` | `atk` | `disable` |
+| TxSigner | `global.datastores.txsigner.postgresql` | `postgresql` | `5432` | `txsigner` | `txsigner` | `atk` | `disable` |
 
 ### Redis Targets
 | Service | Values path | Default host | Default port | Default database | Default username | Default password |
 | --- | --- | --- | --- | --- | --- | --- |
-| eRPC Cache | `erpc.redis.cacheDb` | `redis` | `6379` | `0` | `default` | `atk` |
-| eRPC Shared State | `erpc.redis.sharedStateDb` | `redis` | `6379` | `1` | `default` | `atk` |
+| eRPC Cache | `global.datastores.erpc.redis.cacheDb` | `redis` | `6379` | `0` | `default` | `atk` |
+| eRPC Shared State | `global.datastores.erpc.redis.sharedStateDb` | `redis` | `6379` | `1` | `default` | `atk` |
 | Hasura Cache | `hasura.redis.primary` | `redis` | `6379` | `2` | `default` | `atk` |
 | Hasura Rate Limit | `hasura.redis.rateLimit` | `redis` | `6379` | `3` | `default` | `atk` |
-| Portal | `portal.config.redis` | `redis` | `6379` | `4` | `default` | `atk` |
+| Portal | `global.datastores.portal.redis` | `redis` | `6379` | `4` | `default` | `atk` |
 
 Each service uses its own logical database to avoid key collisions. When pointing to an external
 Redis or PostgreSQL deployment, update the appropriate values paths listed above.
@@ -102,9 +102,7 @@ The following table lists the configurable parameters of this chart and their de
 | blockscout.postgresql.url | string | `"postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"` |  |
 | blockscout.postgresql.username | string | `"blockscout"` |  |
 | dapp.enabled | bool | `true` |  |
-| dapp.image.pullPolicy | string | `"IfNotPresent"` |  |
 | dapp.image.repository | string | `"ghcr.io/settlemint/asset-tokenization-kit"` |  |
-| dapp.image.tag | string | `"2.0.0-main1e32acb7f"` |  |
 | dapp.ingress.enabled | bool | `true` |  |
 | dapp.ingress.hosts[0].host | string | `"dapp.k8s.orb.local"` |  |
 | dapp.ingress.hosts[0].paths[0].path | string | `"/"` |  |
@@ -148,14 +146,8 @@ The following table lists the configurable parameters of this chart and their de
 | dapp.replicaCount | int | `1` |  |
 | dapp.resources | object | `{}` |  |
 | dapp.secretEnv.BETTER_AUTH_URL | string | `"https://dapp.k8s.orb.local"` |  |
-| dapp.secretEnv.NEXTAUTH_URL | string | `"https://dapp.k8s.orb.local"` |  |
-| dapp.secretEnv.NEXT_PUBLIC_APP_ID | string | `"dapp"` |  |
-| dapp.secretEnv.OTEL_EXPORTER_OTLP_ENDPOINT | string | `"http://alloy:4318/v1/traces"` |  |
-| dapp.secretEnv.OTEL_EXPORTER_OTLP_PROTOCOL | string | `"http"` |  |
 | dapp.secretEnv.SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT | string | `"http://blockscout-frontend-svc/"` |  |
 | dapp.secretEnv.SETTLEMINT_HASURA_ADMIN_SECRET | string | `"atk"` |  |
-| dapp.secretEnv.SETTLEMINT_HASURA_DATABASE_URL | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
-| dapp.secretEnv.SETTLEMINT_HASURA_ENDPOINT | string | `"http://hasura:8080/v1/graphql"` |  |
 | dapp.secretEnv.SETTLEMINT_HD_PRIVATE_KEY | string | `"atk-hd-private-key"` |  |
 | dapp.secretEnv.SETTLEMINT_INSTANCE | string | `"standalone"` |  |
 | dapp.secretEnv.SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT | string | `"http://portal:3001/graphql"` |  |
@@ -236,70 +228,64 @@ The following table lists the configurable parameters of this chart and their de
 | erpc.config.projects[0].upstreams[1].id | string | `"besu-node-rpc-1"` |  |
 | erpc.config.server.httpHostV4 | string | `"0.0.0.0"` |  |
 | erpc.config.server.httpPort | int | `4000` |  |
-| erpc.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
-| erpc.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| erpc.containerSecurityContext.runAsGroup | int | `1000` |  |
-| erpc.containerSecurityContext.runAsNonRoot | bool | `true` |  |
-| erpc.containerSecurityContext.runAsUser | int | `1000` |  |
-| erpc.containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | erpc.enabled | bool | `true` |  |
-| erpc.image.pullPolicy | string | `"IfNotPresent"` |  |
 | erpc.image.registry | string | `"ghcr.io"` |  |
-| erpc.image.repository | string | `"erpc/erpc"` |  |
-| erpc.image.tag | string | `"0.0.56"` |  |
 | erpc.ingress.className | string | `"atk-nginx"` |  |
 | erpc.ingress.enabled | bool | `true` |  |
 | erpc.ingress.hosts[0].host | string | `"rpc.k8s.orb.local"` |  |
 | erpc.ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | erpc.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
-| erpc.initContainerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
-| erpc.initContainerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| erpc.initContainerSecurityContext.runAsGroup | int | `1001` |  |
-| erpc.initContainerSecurityContext.runAsNonRoot | bool | `true` |  |
-| erpc.initContainerSecurityContext.runAsUser | int | `1001` |  |
-| erpc.initContainerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| erpc.initContainers.waitforit.image.pullPolicy | string | `"IfNotPresent"` |  |
 | erpc.initContainers.waitforit.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
-| erpc.initContainers.waitforit.image.tag | string | `"v7.7.10"` |  |
 | erpc.podAnnotations."prometheus.io/port" | string | `"4001"` |  |
 | erpc.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
 | erpc.podLabels."app.kubernetes.io/component" | string | `"erpc"` |  |
-| erpc.podSecurityContext.fsGroup | int | `1000` |  |
-| erpc.podSecurityContext.runAsNonRoot | bool | `true` |  |
-| erpc.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| erpc.redis.cacheDb | int | `0` |  |
-| erpc.redis.cacheQuery | string | `"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"` |  |
-| erpc.redis.host | string | `"redis"` |  |
-| erpc.redis.password | string | `"atk"` |  |
-| erpc.redis.port | int | `6379` |  |
-| erpc.redis.sharedStateDb | int | `1` |  |
-| erpc.redis.sharedStateQuery | string | `"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=20"` |  |
-| erpc.redis.username | string | `"default"` |  |
-| erpc.resources | object | `{}` |  |
-| erpc.test.image.pullPolicy | string | `"IfNotPresent"` |  |
 | erpc.test.image.repository | string | `"docker.io/busybox"` |  |
-| erpc.test.image.tag | string | `"1.37"` |  |
 | global.artifacts.image.pullPolicy | string | `"IfNotPresent"` |  |
 | global.artifacts.image.registry | string | `"ghcr.io"` |  |
 | global.artifacts.image.repository | string | `"settlemint/asset-tokenization-kit-artifacts"` |  |
 | global.artifacts.image.tag | string | `"2.0.0-main.91391"` |  |
+| global.datastores.default.postgresql.database | string | `"postgres"` |  |
+| global.datastores.default.postgresql.host | string | `"postgresql"` |  |
+| global.datastores.default.postgresql.password | string | `"atk"` |  |
+| global.datastores.default.postgresql.port | int | `5432` |  |
+| global.datastores.default.postgresql.sslMode | string | `"disable"` |  |
+| global.datastores.default.postgresql.username | string | `"postgres"` |  |
+| global.datastores.default.redis.db | int | `0` |  |
+| global.datastores.default.redis.host | string | `"redis"` |  |
+| global.datastores.default.redis.password | string | `"atk"` |  |
+| global.datastores.default.redis.port | int | `6379` |  |
+| global.datastores.default.redis.query | string | `"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"` |  |
+| global.datastores.default.redis.username | string | `"default"` |  |
+| global.datastores.erpc.redis.cacheDb | int | `0` |  |
+| global.datastores.erpc.redis.sharedStateDb | int | `1` |  |
+| global.datastores.graphNode.postgresql.database | string | `"thegraph"` |  |
+| global.datastores.graphNode.postgresql.password | string | `"atk"` |  |
+| global.datastores.graphNode.postgresql.username | string | `"thegraph"` |  |
+| global.datastores.hasura.postgresql.database | string | `"hasura"` |  |
+| global.datastores.hasura.postgresql.password | string | `"atk"` |  |
+| global.datastores.hasura.postgresql.username | string | `"hasura"` |  |
+| global.datastores.hasura.redis.primary.db | int | `2` |  |
+| global.datastores.hasura.redis.rateLimit.db | int | `3` |  |
+| global.datastores.portal.postgresql.database | string | `"portal"` |  |
+| global.datastores.portal.postgresql.password | string | `"atk"` |  |
+| global.datastores.portal.postgresql.username | string | `"portal"` |  |
+| global.datastores.portal.redis.db | int | `4` |  |
+| global.datastores.txsigner.postgresql.database | string | `"txsigner"` |  |
+| global.datastores.txsigner.postgresql.password | string | `"atk"` |  |
+| global.datastores.txsigner.postgresql.username | string | `"txsigner"` |  |
 | global.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | global.networkPolicy.enabled | bool | `false` |  |
-| graph-node.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
-| graph-node.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| graph-node.containerSecurityContext.runAsGroup | int | `1000` |  |
-| graph-node.containerSecurityContext.runAsNonRoot | bool | `true` |  |
-| graph-node.containerSecurityContext.runAsUser | int | `1000` |  |
-| graph-node.containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| global.securityContexts.container.allowPrivilegeEscalation | bool | `false` |  |
+| global.securityContexts.container.capabilities.drop[0] | string | `"ALL"` |  |
+| global.securityContexts.container.runAsGroup | int | `101337` |  |
+| global.securityContexts.container.runAsNonRoot | bool | `true` |  |
+| global.securityContexts.container.runAsUser | int | `101337` |  |
+| global.securityContexts.container.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| global.securityContexts.pod.fsGroup | int | `101337` |  |
+| global.securityContexts.pod.runAsNonRoot | bool | `true` |  |
+| global.securityContexts.pod.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | graph-node.enabled | bool | `true` |  |
-| graph-node.env.PRIMARY_SUBGRAPH_DATA_PGDATABASE | string | `"thegraph"` |  |
-| graph-node.env.PRIMARY_SUBGRAPH_DATA_PGHOST | string | `"postgresql"` |  |
-| graph-node.env.PRIMARY_SUBGRAPH_DATA_PGPASSWORD | string | `"atk"` |  |
-| graph-node.env.PRIMARY_SUBGRAPH_DATA_PGPORT | int | `5432` |  |
-| graph-node.env.PRIMARY_SUBGRAPH_DATA_PGUSER | string | `"thegraph"` |  |
-| graph-node.image.pullPolicy | string | `"IfNotPresent"` |  |
 | graph-node.image.repository | string | `"docker.io/graphprotocol/graph-node"` |  |
-| graph-node.image.tag | string | `"v0.40.2"` |  |
 | graph-node.ingress.annotations."nginx.ingress.kubernetes.io/rewrite-target" | string | `"/$1"` |  |
 | graph-node.ingress.annotations."nginx.ingress.kubernetes.io/use-regex" | string | `"true"` |  |
 | graph-node.ingress.className | string | `"atk-nginx"` |  |
@@ -316,9 +302,7 @@ The following table lists the configurable parameters of this chart and their de
 | graph-node.ingress.hosts[0].paths[4].path | string | `"/graphman/?(.*)"` |  |
 | graph-node.ingress.hosts[0].paths[4].pathType | string | `"ImplementationSpecific"` |  |
 | graph-node.ingress.tls | list | `[]` |  |
-| graph-node.initContainer.image.pullPolicy | string | `"IfNotPresent"` |  |
 | graph-node.initContainer.image.repository | string | `"docker.io/kubesphere/kubectl"` |  |
-| graph-node.initContainer.image.tag | string | `"v1.33.4"` |  |
 | graph-node.initContainer.tcpCheck.dependencies[0].endpoint | string | `"postgresql:5432"` |  |
 | graph-node.initContainer.tcpCheck.dependencies[0].name | string | `"postgresql"` |  |
 | graph-node.initContainer.tcpCheck.enabled | bool | `true` |  |
@@ -330,18 +314,9 @@ The following table lists the configurable parameters of this chart and their de
 | graph-node.initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` |  |
 | graph-node.initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
 | graph-node.initContainer.tcpCheck.timeout | int | `120` |  |
-| graph-node.initContainerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
-| graph-node.initContainerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| graph-node.initContainerSecurityContext.runAsGroup | int | `1001` |  |
-| graph-node.initContainerSecurityContext.runAsNonRoot | bool | `true` |  |
-| graph-node.initContainerSecurityContext.runAsUser | int | `1001` |  |
-| graph-node.initContainerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | graph-node.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
 | graph-node.podAnnotations."prometheus.io/port" | string | `"8040"` |  |
 | graph-node.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
-| graph-node.podSecurityContext.fsGroup | int | `1000` |  |
-| graph-node.podSecurityContext.runAsNonRoot | bool | `true` |  |
-| graph-node.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | graph-node.postgresReadinessCheck.enabled | bool | `true` |  |
 | graph-node.postgresReadinessCheck.image | string | `"docker.io/postgres:17.6-alpine"` |  |
 | graph-node.postgresReadinessCheck.initialWaitTime | int | `2` |  |
@@ -353,13 +328,6 @@ The following table lists the configurable parameters of this chart and their de
 | graph-node.postgresReadinessCheck.resources.limits.memory | string | `"96Mi"` |  |
 | graph-node.postgresReadinessCheck.resources.requests.cpu | string | `"25m"` |  |
 | graph-node.postgresReadinessCheck.resources.requests.memory | string | `"48Mi"` |  |
-| graph-node.postgresql.database | string | `"thegraph"` |  |
-| graph-node.postgresql.endpoint | string | `"postgresql:5432"` |  |
-| graph-node.postgresql.host | string | `"postgresql"` |  |
-| graph-node.postgresql.password | string | `"atk"` |  |
-| graph-node.postgresql.port | int | `5432` |  |
-| graph-node.postgresql.url | string | `"postgresql://thegraph:atk@postgresql:5432/thegraph?sslmode=disable"` |  |
-| graph-node.postgresql.username | string | `"thegraph"` |  |
 | hasura.enabled | bool | `true` |  |
 | hasura.graphql-engine.image.pullPolicy | string | `"IfNotPresent"` |  |
 | hasura.graphql-engine.image.repository | string | `"docker.io/hasura/graphql-engine"` |  |
@@ -414,125 +382,49 @@ The following table lists the configurable parameters of this chart and their de
 | hasura.redis.rateLimit.url | string | `"redis://default:atk@redis:6379/3"` |  |
 | hasura.redis.rateLimit.username | string | `"default"` |  |
 | network.enabled | bool | `true` |  |
-| network.network-bootstrapper.podSecurityContext.fsGroup | int | `1000` |  |
-| network.network-bootstrapper.podSecurityContext.fsGroupChangePolicy | string | `"Always"` |  |
-| network.network-bootstrapper.podSecurityContext.runAsGroup | int | `1000` |  |
-| network.network-bootstrapper.podSecurityContext.runAsNonRoot | bool | `true` |  |
-| network.network-bootstrapper.podSecurityContext.runAsUser | int | `1000` |  |
-| network.network-bootstrapper.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| network.network-bootstrapper.securityContext.allowPrivilegeEscalation | bool | `false` |  |
-| network.network-bootstrapper.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| network.network-bootstrapper.securityContext.runAsGroup | int | `1000` |  |
-| network.network-bootstrapper.securityContext.runAsNonRoot | bool | `true` |  |
-| network.network-bootstrapper.securityContext.runAsUser | int | `1000` |  |
-| network.network-bootstrapper.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | network.network-bootstrapper.settings.chainId | string | `"53771311147"` |  |
-| network.network-nodes.persistence.enabled | bool | `true` |  |
 | network.network-nodes.persistence.size | string | `"20Gi"` |  |
-| network.network-nodes.podSecurityContext.fsGroup | int | `1000` |  |
-| network.network-nodes.podSecurityContext.fsGroupChangePolicy | string | `"Always"` |  |
-| network.network-nodes.podSecurityContext.runAsGroup | int | `1000` |  |
-| network.network-nodes.podSecurityContext.runAsNonRoot | bool | `true` |  |
-| network.network-nodes.podSecurityContext.runAsUser | int | `1000` |  |
-| network.network-nodes.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| network.network-nodes.securityContext.allowPrivilegeEscalation | bool | `false` |  |
-| network.network-nodes.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| network.network-nodes.securityContext.runAsGroup | int | `1000` |  |
-| network.network-nodes.securityContext.runAsNonRoot | bool | `true` |  |
-| network.network-nodes.securityContext.runAsUser | int | `1000` |  |
-| network.network-nodes.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | observability.alloy.alloy.resources | object | `{}` |  |
 | observability.alloy.configReloader.image.registry | string | `"quay.io"` |  |
-| observability.alloy.configReloader.image.repository | string | `"prometheus-operator/prometheus-config-reloader"` | Repository to get config reloader image from. |
-| observability.alloy.configReloader.image.tag | string | `"v0.85.0"` | Tag of image to use for config reloading. |
 | observability.alloy.image.registry | string | `"docker.io"` |  |
-| observability.alloy.image.repository | string | `"grafana/alloy"` | Grafana Alloy image repository. |
-| observability.alloy.image.tag | string | `"v1.10.2"` |  |
 | observability.enabled | bool | `true` |  |
 | observability.grafana.adminPassword | string | `"atk"` |  |
 | observability.grafana.adminUser | string | `"settlemint"` |  |
 | observability.grafana.image.registry | string | `"docker.io"` | The Docker registry |
-| observability.grafana.image.repository | string | `"grafana/grafana"` | Docker image repository |
-| observability.grafana.image.tag | string | `"12.1.1"` |  |
 | observability.grafana.ingress.hosts[0] | string | `"grafana.k8s.orb.local"` |  |
 | observability.grafana.sidecar.image.registry | string | `"docker.io"` |  |
-| observability.grafana.sidecar.image.repository | string | `"kiwigrid/k8s-sidecar"` |  |
-| observability.grafana.sidecar.image.tag | string | `"1.30.10"` |  |
 | observability.kube-state-metrics.image.registry | string | `"registry.k8s.io"` |  |
-| observability.kube-state-metrics.image.repository | string | `"kube-state-metrics/kube-state-metrics"` |  |
-| observability.kube-state-metrics.image.tag | string | `"v2.17.0"` |  |
 | observability.kube-state-metrics.resources | object | `{}` |  |
 | observability.loki.gateway.image.registry | string | `"docker.io"` |  |
-| observability.loki.gateway.image.repository | string | `"nginxinc/nginx-unprivileged"` |  |
-| observability.loki.gateway.image.tag | string | `"1.29-alpine"` |  |
 | observability.loki.loki.image.registry | string | `"docker.io"` | The Docker registry |
-| observability.loki.loki.image.repository | string | `"grafana/loki"` | Docker image repository |
-| observability.loki.loki.image.tag | string | `"3.5.5"` | Overrides the image tag whose default is the chart's appVersion |
 | observability.loki.memcached.enabled | bool | `true` | Enable the built in memcached server provided by the chart |
 | observability.loki.memcached.image.repository | string | `"docker.io/memcached"` | Memcached Docker image repository |
-| observability.loki.memcached.image.tag | string | `"1.6.39-alpine"` | Memcached Docker image tag |
 | observability.loki.memcachedExporter.image.repository | string | `"docker.io/prom/memcached-exporter"` |  |
-| observability.loki.memcachedExporter.image.tag | string | `"v0.15.3"` |  |
 | observability.loki.sidecar.image.repository | string | `"docker.io/kiwigrid/k8s-sidecar"` | The Docker registry and image for the k8s sidecar |
-| observability.loki.sidecar.image.tag | string | `"1.30.10"` |  |
 | observability.loki.singleBinary.extraEnv | object | `{}` |  |
 | observability.loki.singleBinary.persistence.size | string | `"10Gi"` |  |
 | observability.loki.singleBinary.resources | object | `{}` |  |
-| observability.metrics-server.enabled | bool | `false` |  |
+| observability.metrics-server.enabled | bool | `true` |  |
 | observability.metrics-server.image.repository | string | `"registry.k8s.io/metrics-server/metrics-server"` |  |
-| observability.metrics-server.image.tag | string | `"v0.8.0"` |  |
 | observability.metrics-server.resources | object | `{}` |  |
 | observability.prometheus-node-exporter.image.registry | string | `"quay.io"` |  |
-| observability.prometheus-node-exporter.image.repository | string | `"prometheus/node-exporter"` |  |
-| observability.prometheus-node-exporter.image.tag | string | `"v1.9.1"` |  |
 | observability.tempo.server.resources | object | `{}` |  |
 | observability.tempo.tempo.repository | string | `"docker.io/grafana/tempo"` |  |
-| observability.tempo.tempo.tag | string | `"2.8.1"` |  |
 | observability.tempo.tempoQuery.repository | string | `"docker.io/grafana/tempo-query"` |  |
-| observability.tempo.tempoQuery.tag | string | `"2.8.1"` |  |
 | observability.victoria-metrics-single.server.image.registry | string | `"docker.io"` |  |
-| observability.victoria-metrics-single.server.image.repository | string | `"victoriametrics/victoria-metrics"` |  |
-| observability.victoria-metrics-single.server.image.tag | string | `"v1.126.0"` |  |
 | observability.victoria-metrics-single.server.persistentVolume.size | string | `"10Gi"` |  |
 | observability.victoria-metrics-single.server.persistentVolume.storageClass | string | `""` |  |
 | observability.victoria-metrics-single.server.resources | object | `{}` |  |
-| portal.config.postgresql | string | `"postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"` |  |
-| portal.config.postgresqlConnection.database | string | `"portal"` |  |
-| portal.config.postgresqlConnection.endpoint | string | `"postgresql:5432"` |  |
-| portal.config.postgresqlConnection.host | string | `"postgresql"` |  |
-| portal.config.postgresqlConnection.password | string | `"atk"` |  |
-| portal.config.postgresqlConnection.port | int | `5432` |  |
-| portal.config.postgresqlConnection.sslMode | string | `"disable"` |  |
-| portal.config.postgresqlConnection.url | string | `"postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"` |  |
-| portal.config.postgresqlConnection.username | string | `"portal"` |  |
-| portal.config.redis.db | int | `4` |  |
-| portal.config.redis.host | string | `"redis"` |  |
-| portal.config.redis.password | string | `"atk"` |  |
-| portal.config.redis.port | int | `6379` |  |
-| portal.config.redis.url | string | `"redis://default:atk@redis:6379/4"` |  |
-| portal.config.redis.username | string | `"default"` |  |
-| portal.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
-| portal.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| portal.containerSecurityContext.runAsGroup | int | `1000` |  |
-| portal.containerSecurityContext.runAsNonRoot | bool | `true` |  |
-| portal.containerSecurityContext.runAsUser | int | `1000` |  |
-| portal.containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| portal.config.network.networkId | string | `"53771311147"` | Network ID |
+| portal.config.network.networkName | string | `"ATK"` | Network name |
+| portal.config.network.nodeRpcUrl | string | `"http://txsigner:3000"` | Node RPC URL |
 | portal.enabled | bool | `true` |  |
-| portal.image.pullPolicy | string | `"IfNotPresent"` |  |
 | portal.image.registry | string | `"ghcr.io"` |  |
-| portal.image.repository | string | `"settlemint/btp-scs-portal"` |  |
-| portal.image.tag | string | `"8.6.7"` |  |
 | portal.ingress.hostname | string | `"portal.k8s.orb.local"` |  |
 | portal.initContainer.copyArtifacts.resources.limits.cpu | string | `"150m"` |  |
 | portal.initContainer.copyArtifacts.resources.limits.memory | string | `"128Mi"` |  |
 | portal.initContainer.copyArtifacts.resources.requests.cpu | string | `"25m"` |  |
 | portal.initContainer.copyArtifacts.resources.requests.memory | string | `"64Mi"` |  |
-| portal.initContainer.copyArtifacts.securityContext.allowPrivilegeEscalation | bool | `false` |  |
-| portal.initContainer.copyArtifacts.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| portal.initContainer.copyArtifacts.securityContext.runAsGroup | int | `1001` |  |
-| portal.initContainer.copyArtifacts.securityContext.runAsNonRoot | bool | `true` |  |
-| portal.initContainer.copyArtifacts.securityContext.runAsUser | int | `1001` |  |
-| portal.initContainer.copyArtifacts.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | portal.initContainer.tcpCheck.dependencies[0].endpoint | string | `"postgresql:5432"` |  |
 | portal.initContainer.tcpCheck.dependencies[0].name | string | `"postgresql"` |  |
 | portal.initContainer.tcpCheck.enabled | bool | `true` |  |
@@ -544,127 +436,48 @@ The following table lists the configurable parameters of this chart and their de
 | portal.initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` |  |
 | portal.initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
 | portal.initContainer.tcpCheck.timeout | int | `120` |  |
-| portal.initContainerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
-| portal.initContainerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| portal.initContainerSecurityContext.runAsGroup | int | `1001` |  |
-| portal.initContainerSecurityContext.runAsNonRoot | bool | `true` |  |
-| portal.initContainerSecurityContext.runAsUser | int | `1001` |  |
-| portal.initContainerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | portal.podAnnotations."prometheus.io/path" | string | `"/portal-metrics"` |  |
 | portal.podAnnotations."prometheus.io/port" | string | `"3000"` |  |
 | portal.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
 | portal.podLabels."app.kubernetes.io/component" | string | `"portal"` |  |
-| portal.podSecurityContext.fsGroup | int | `1000` |  |
-| portal.podSecurityContext.runAsNonRoot | bool | `true` |  |
-| portal.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | support.enabled | bool | `true` |  |
-| support.ingress-nginx.controller.image.digest | string | `""` |  |
 | support.ingress-nginx.controller.image.repository | string | `"registry.k8s.io/ingress-nginx/controller"` |  |
-| support.ingress-nginx.controller.image.tag | string | `"v1.13.2"` |  |
 | support.ingress-nginx.controller.resources | object | `{}` |  |
 | support.ingress-nginx.enabled | bool | `true` |  |
 | support.ingress-nginx.replicaCount | int | `1` |  |
 | support.minio.enabled | bool | `true` |  |
-| support.minio.image.pullPolicy | string | `"IfNotPresent"` |  |
 | support.minio.image.repository | string | `"docker.io/minio/minio"` |  |
-| support.minio.image.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` |  |
 | support.minio.ingress.enabled | bool | `true` |  |
 | support.minio.ingress.hosts[0] | string | `"minio.k8s.orb.local"` |  |
 | support.minio.ingress.ingressClassName | string | `"atk-nginx"` |  |
 | support.minio.ingress.path | string | `"/"` |  |
-| support.minio.mcImage.pullPolicy | string | `"IfNotPresent"` |  |
 | support.minio.mcImage.repository | string | `"docker.io/minio/minio"` |  |
-| support.minio.mcImage.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` |  |
 | support.postgresql.enabled | bool | `true` |  |
 | support.postgresql.image.registry | string | `"docker.io"` |  |
-| support.postgresql.image.repository | string | `"postgres"` |  |
-| support.postgresql.image.tag | string | `"17.6-alpine"` |  |
-| support.postgresql.podSecurityContext.fsGroup | int | `999` |  |
-| support.postgresql.podSecurityContext.runAsNonRoot | bool | `true` |  |
-| support.postgresql.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| support.postgresql.securityContext.allowPrivilegeEscalation | bool | `false` |  |
-| support.postgresql.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| support.postgresql.securityContext.runAsGroup | int | `999` |  |
-| support.postgresql.securityContext.runAsNonRoot | bool | `true` |  |
-| support.postgresql.securityContext.runAsUser | int | `999` |  |
-| support.postgresql.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | support.redis.auth.enabled | bool | `true` |  |
 | support.redis.auth.password | string | `"atk"` |  |
 | support.redis.commonLabels."app.kubernetes.io/managed-by" | string | `"helm"` |  |
 | support.redis.commonLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
-| support.redis.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
-| support.redis.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| support.redis.containerSecurityContext.readOnlyRootFilesystem | bool | `false` |  |
-| support.redis.containerSecurityContext.runAsGroup | int | `999` |  |
-| support.redis.containerSecurityContext.runAsNonRoot | bool | `true` |  |
-| support.redis.containerSecurityContext.runAsUser | int | `999` |  |
-| support.redis.containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | support.redis.enabled | bool | `true` |  |
 | support.redis.fullnameOverride | string | `"redis"` |  |
 | support.redis.image.registry | string | `"docker.io"` | Redis image registry |
-| support.redis.image.repository | string | `"redis"` | Redis image repository |
-| support.redis.image.tag | string | `"8.2.1-alpine"` | Redis image tag |
 | support.redis.persistence.enabled | bool | `true` |  |
 | support.redis.persistence.size | string | `"1Gi"` |  |
-| support.redis.podSecurityContext.fsGroup | int | `999` |  |
-| support.redis.podSecurityContext.runAsNonRoot | bool | `true` |  |
-| support.redis.podSecurityContext.runAsUser | int | `999` |  |
-| support.redis.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | support.redis.resources.limits.cpu | string | `"200m"` |  |
 | support.redis.resources.limits.memory | string | `"256Mi"` |  |
 | support.redis.resources.requests.cpu | string | `"100m"` |  |
 | support.redis.resources.requests.memory | string | `"128Mi"` |  |
 | support.reloader.enabled | bool | `true` |  |
 | support.reloader.image.repository | string | `"ghcr.io/stakater/reloader"` |  |
-| support.reloader.image.tag | string | `"v1.4.8"` |  |
 | txsigner.config.derivationPath | string | `"m/44'/60'/0'/0/0"` |  |
 | txsigner.config.mnemonic | string | `"gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"` |  |
-| txsigner.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
-| txsigner.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| txsigner.containerSecurityContext.runAsGroup | int | `1000` |  |
-| txsigner.containerSecurityContext.runAsNonRoot | bool | `true` |  |
-| txsigner.containerSecurityContext.runAsUser | int | `1000` |  |
-| txsigner.containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | txsigner.enabled | bool | `true` |  |
-| txsigner.image.pullPolicy | string | `"IfNotPresent"` |  |
 | txsigner.image.registry | string | `"ghcr.io"` |  |
 | txsigner.image.repository | string | `"settlemint/btp-signer"` |  |
-| txsigner.image.tag | string | `"7.15.13"` |  |
 | txsigner.ingress.hostname | string | `"txsigner.k8s.orb.local"` |  |
-| txsigner.initContainer.tcpCheck.dependencies[0].endpoint | string | `"postgresql:5432"` |  |
-| txsigner.initContainer.tcpCheck.dependencies[0].name | string | `"postgresql"` |  |
-| txsigner.initContainer.tcpCheck.enabled | bool | `true` |  |
-| txsigner.initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
-| txsigner.initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
-| txsigner.initContainer.tcpCheck.image.tag | string | `"v7.7.10"` |  |
-| txsigner.initContainer.tcpCheck.resources.limits.cpu | string | `"100m"` |  |
-| txsigner.initContainer.tcpCheck.resources.limits.memory | string | `"64Mi"` |  |
-| txsigner.initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` |  |
-| txsigner.initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
-| txsigner.initContainer.tcpCheck.timeout | int | `120` |  |
-| txsigner.initContainerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
-| txsigner.initContainerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| txsigner.initContainerSecurityContext.runAsGroup | int | `1001` |  |
-| txsigner.initContainerSecurityContext.runAsNonRoot | bool | `true` |  |
-| txsigner.initContainerSecurityContext.runAsUser | int | `1001` |  |
-| txsigner.initContainerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| txsigner.podSecurityContext.fsGroup | int | `1000` |  |
-| txsigner.podSecurityContext.runAsNonRoot | bool | `true` |  |
-| txsigner.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| txsigner.postgresql | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
-| txsigner.postgresqlConnection.database | string | `"txsigner"` |  |
-| txsigner.postgresqlConnection.endpoint | string | `"postgresql:5432"` |  |
-| txsigner.postgresqlConnection.host | string | `"postgresql"` |  |
-| txsigner.postgresqlConnection.password | string | `"atk"` |  |
-| txsigner.postgresqlConnection.port | int | `5432` |  |
-| txsigner.postgresqlConnection.sslMode | string | `"disable"` |  |
-| txsigner.postgresqlConnection.url | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
-| txsigner.postgresqlConnection.username | string | `"txsigner"` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |
-| txsigner.test.image.pullPolicy | string | `"IfNotPresent"` |  |
 | txsigner.test.image.repository | string | `"docker.io/busybox"` |  |
-| txsigner.test.image.tag | string | `"1.37"` |  |
 
 ## Maintainers
 
@@ -685,4 +498,4 @@ The following table lists the configurable parameters of this chart and their de
 |  | portal | * |
 |  | support | * |
 |  | txsigner | * |
-| oci://ghcr.io/settlemint/network-bootstrapper | network | 1.0.13 |
+| oci://ghcr.io/settlemint/network-bootstrapper | network | 1.0.16 |

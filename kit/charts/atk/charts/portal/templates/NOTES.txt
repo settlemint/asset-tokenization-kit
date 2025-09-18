@@ -5,12 +5,16 @@ APP VERSION: {{ .Chart.AppVersion }}
 ** Please be patient while the chart is being deployed **
 
 {{- if .Values.config }}
+{{- $ctx := . -}}
+{{- $redisConfig := ((include "atk.datastores.redis" (dict "context" $ctx "chartKey" "portal" "local" (default (dict) .Values.config.redis))) | fromYaml) | default (dict) -}}
+{{- $redisHost := default "redis" (index $redisConfig "host") -}}
+{{- $redisPort := printf "%v" (default 6379 (index $redisConfig "port")) -}}
 Portal Configuration:
   - Network ID: {{ .Values.config.network.networkId }}
   - Network Name: {{ .Values.config.network.networkName }}
   - Node RPC URL: {{ .Values.config.network.nodeRpcUrl }}
   - PostgreSQL: Connected
-  - Redis: {{ .Values.config.redis.host }}:{{ .Values.config.redis.port }}
+  - Redis: {{ $redisHost }}:{{ $redisPort }}
 {{- end }}
 
 Portal can be accessed through the following DNS names from within your cluster:
