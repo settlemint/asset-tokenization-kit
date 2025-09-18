@@ -386,7 +386,7 @@ type Identity @entity(immutable: false) {
   # Unique identifier - identity contract address
   id: Bytes!
   # Storage registry containing this identity
-  registryStorage: IdentityRegistryStorage!
+  registryStorage: IdentityRegistryStorage
   # List of claims associated with this identity
   claims: [IdentityClaim!]! @derivedFrom(field: "identity")
   # List of cryptographic keys for this identity

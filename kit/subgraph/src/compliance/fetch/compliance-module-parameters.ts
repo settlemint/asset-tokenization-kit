@@ -10,10 +10,6 @@ import {
 } from "../../../generated/schema";
 import { getEncodedTypeId } from "../../type-identifier/type-identifier";
 import {
-  createExpressionNodeEntities,
-  clearExpressionNodeEntities,
-} from "../shared/expression-nodes";
-import {
   decodeAddressListParams,
   isAddressListComplianceModule,
 } from "../modules/address-list-compliance-module";
@@ -41,6 +37,10 @@ import {
   decodeTransferApprovalParams,
   isTransferApprovalComplianceModule,
 } from "../modules/transfer-approval-compliance-module";
+import {
+  clearExpressionNodeEntities,
+  createExpressionNodeEntities,
+} from "../shared/expression-nodes";
 
 export function fetchComplianceModuleParameters(
   configId: Bytes
@@ -67,6 +67,8 @@ export function updateComplianceModuleParameters(
 ): void {
   complianceModuleParameters.encodedParams = encodedParams;
 
+  const topicSchemeRegistryId = complianceModule.complianceModuleRegistry;
+
   // Handle different compliance module types
   if (
     isAddressListComplianceModule(getEncodedTypeId(complianceModule.typeId))
@@ -85,7 +87,11 @@ export function updateComplianceModuleParameters(
       getEncodedTypeId(complianceModule.typeId)
     )
   ) {
-    decodeExpressionParams(complianceModuleParameters, encodedParams);
+    decodeExpressionParams(
+      complianceModuleParameters,
+      encodedParams,
+      topicSchemeRegistryId
+    );
   }
   if (
     isTokenSupplyLimitComplianceModule(
@@ -138,7 +144,8 @@ export function updateComplianceModuleParameters(
         decoded.topicFilter,
         (node: ExpressionNode, baseId: Bytes) => {
           node.investorCountParams = baseId;
-        }
+        },
+        topicSchemeRegistryId
       );
 
       complianceModuleParameters.investorCount = icp.id;
@@ -169,7 +176,8 @@ export function updateComplianceModuleParameters(
         decoded.exemptionExpression,
         (node: ExpressionNode, baseId: Bytes) => {
           node.timeLockParams = baseId;
-        }
+        },
+        topicSchemeRegistryId
       );
 
       complianceModuleParameters.timeLock = tlp.id;
@@ -206,7 +214,8 @@ export function updateComplianceModuleParameters(
         decoded.exemptionExpression,
         (node: ExpressionNode, baseId: Bytes) => {
           node.transferApprovalParams = baseId;
-        }
+        },
+        topicSchemeRegistryId
       );
 
       complianceModuleParameters.transferApproval = tap.id;
