@@ -18,6 +18,7 @@ global:
       repository: settlemint/asset-tokenization-kit-artifacts
       tag: 2.0.0-main.91391
       pullPolicy: IfNotPresent
+
 network:
   enabled: true
   network-bootstrapper:
@@ -71,6 +72,15 @@ erpc:
     repository: erpc/erpc
     tag: "0.0.56"
     pullPolicy: IfNotPresent
+  redis:
+    host: "redis"
+    port: 6379
+    username: "default"
+    password: "atk"
+    cacheDb: 0
+    sharedStateDb: 1
+    cacheQuery: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"
+    sharedStateQuery: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=20"
   # Init containers
   initContainers:
     waitforit:
@@ -128,38 +138,107 @@ erpc:
       httpPort: 4000
     projects:
       - id: settlemint
+        networks:
+          - architecture: evm
+            evm:
+              chainId: 53771311147
+              integrity:
+                enforceHighestBlock: true
+                enforceGetLogsBlockRange: true
+            directiveDefaults:
+              retryEmpty: true
+            failsafe:
+              - matchMethod: "eth_getLogs"
+                timeout:
+                  duration: 45s
+                retry:
+                  maxAttempts: 3
+                  delay: 500ms
+                  backoffFactor: 2
+                  backoffMaxDelay: 10s
+                  jitter: 300ms
+                hedge:
+                  quantile: 0.9
+                  minDelay: 200ms
+                  maxDelay: 4s
+                  maxCount: 1
+              - matchMethod: "trace_*|debug_*|arbtrace_*"
+                timeout:
+                  duration: 90s
+                retry:
+                  maxAttempts: 1
+              - matchMethod: "eth_getBlock*|eth_getTransaction*"
+                timeout:
+                  duration: 6s
+                retry:
+                  maxAttempts: 2
+                  delay: 200ms
+                  backoffFactor: 1.5
+                  backoffMaxDelay: 3s
+                  jitter: 150ms
+              - matchMethod: "*"
+                matchFinality:
+                  - unfinalized
+                  - realtime
+                timeout:
+                  duration: 4s
+                retry:
+                  maxAttempts: 2
+                  delay: 150ms
+                  jitter: 150ms
+                hedge:
+                  delay: 250ms
+                  maxCount: 1
+              - matchMethod: "*"
+                matchFinality:
+                  - finalized
+                timeout:
+                  duration: 20s
+                retry:
+                  maxAttempts: 4
+                  delay: 400ms
+                  backoffFactor: 1.8
+                  backoffMaxDelay: 8s
+                  jitter: 250ms
+              - matchMethod: "*"
+                timeout:
+                  duration: 12s
+                retry:
+                  maxAttempts: 3
+                  delay: 300ms
+                  backoffFactor: 1.4
+                  backoffMaxDelay: 5s
+                  jitter: 200ms
+                hedge:
+                  quantile: 0.95
+                  minDelay: 120ms
+                  maxDelay: 2s
+                  maxCount: 2
         upstreams:
           - id: besu-node-rpc-0
             endpoint: http://besu-node-rpc-0.besu-node-rpc:8545
             evm:
               chainId: 53771311147
             failsafe:
-              timeout:
-                duration: 30s
+              - matchMethod: "*"
+                circuitBreaker:
+                  failureThresholdCount: 40
+                  failureThresholdCapacity: 80
+                  halfOpenAfter: 120s
+                  successThresholdCount: 3
+                  successThresholdCapacity: 10
           - id: besu-node-rpc-1
             endpoint: http://besu-node-rpc-1.besu-node-rpc:8545
             evm:
               chainId: 53771311147
             failsafe:
-              timeout:
-                duration: 30s
-    database:
-      evmJsonRpcCache:
-        # Define one or more storage connectors with unique IDs useful in policies
-        connectors:
-          - id: redis-cache
-            driver: redis # Refer to "redis" driver docs below
-            redis:
-              addr: "redis:6379"
-              username: "default"
-              password: "atk"
-              db: 0
-              connPoolSize: 128
-        policies:
-          - network: "*"
-            method: "*"
-            finality: finalized
-            connector: redis-cache
+              - matchMethod: "*"
+                circuitBreaker:
+                  failureThresholdCount: 40
+                  failureThresholdCapacity: 80
+                  halfOpenAfter: 120s
+                  successThresholdCount: 3
+                  successThresholdCapacity: 10
   podAnnotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "4001"
@@ -168,6 +247,15 @@ erpc:
 
 blockscout:
   enabled: true
+  postgresql:
+    host: "postgresql"
+    port: 5432
+    database: "blockscout"
+    username: "blockscout"
+    password: "atk"
+    sslMode: "disable"
+    endpoint: "postgresql:5432"
+    url: "postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"
   blockscout-stack:
     podAnnotations:
       prometheus.io/scrape: "true"
@@ -210,6 +298,14 @@ blockscout:
 
 graph-node:
   enabled: true
+  postgresql:
+    host: "postgresql"
+    port: 5432
+    database: "thegraph"
+    username: "thegraph"
+    password: "atk"
+    endpoint: "postgresql:5432"
+    url: "postgresql://thegraph:atk@postgresql:5432/thegraph?sslmode=disable"
   image:
     repository: docker.io/graphprotocol/graph-node
     tag: "v0.40.2"
@@ -289,11 +385,11 @@ graph-node:
             pathType: ImplementationSpecific
     tls: []
   env:
-    PRIMARY_SUBGRAPH_DATA_PGHOST: postgresql
+    PRIMARY_SUBGRAPH_DATA_PGHOST: "postgresql"
     PRIMARY_SUBGRAPH_DATA_PGPORT: 5432
-    PRIMARY_SUBGRAPH_DATA_PGDATABASE: thegraph
-    PRIMARY_SUBGRAPH_DATA_PGUSER: thegraph
-    PRIMARY_SUBGRAPH_DATA_PGPASSWORD: atk
+    PRIMARY_SUBGRAPH_DATA_PGDATABASE: "thegraph"
+    PRIMARY_SUBGRAPH_DATA_PGUSER: "thegraph"
+    PRIMARY_SUBGRAPH_DATA_PGPASSWORD: "atk"
   postgresReadinessCheck:
     enabled: true
     image: docker.io/postgres:17.6-alpine
@@ -313,6 +409,30 @@ graph-node:
 
 hasura:
   enabled: true
+  postgresql:
+    host: "postgresql"
+    port: 5432
+    database: "hasura"
+    username: "hasura"
+    password: "atk"
+    sslMode: "disable"
+    endpoint: "postgresql:5432"
+    url: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
+  redis:
+    primary:
+      host: "redis"
+      port: 6379
+      username: "default"
+      password: "atk"
+      db: 2
+      url: "redis://default:atk@redis:6379/2"
+    rateLimit:
+      host: "redis"
+      port: 6379
+      username: "default"
+      password: "atk"
+      db: 3
+      url: "redis://default:atk@redis:6379/3"
   graphql-engine:
     replicas: 1
     ingress:
@@ -348,8 +468,8 @@ hasura:
       metadataDbUrl: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
       extraSecrets:
         DEFAULT_DB_URL: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
-      redisUrl: "redis://default:atk@redis:6379/0"
-      rateLimitRedisUrl: "redis://default:atk@redis:6379/0"
+      redisUrl: "redis://default:atk@redis:6379/2"
+      rateLimitRedisUrl: "redis://default:atk@redis:6379/3"
 
 portal:
   enabled: true
@@ -430,13 +550,23 @@ portal:
         seccompProfile:
           type: RuntimeDefault
   config:
+    postgresqlConnection:
+      host: "postgresql"
+      port: 5432
+      database: "portal"
+      username: "portal"
+      password: "atk"
+      sslMode: "disable"
+      endpoint: "postgresql:5432"
+      url: "postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"
     postgresql: "postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"
     redis:
       host: "redis"
       port: 6379
       username: "default"
       password: "atk"
-      db: 0
+      db: 4
+      url: "redis://default:atk@redis:6379/4"
   ingress:
     hostname: portal.k8s.orb.local
 
@@ -724,6 +854,15 @@ txsigner:
       "gate yellow grunt wrestle disease obtain mixed nature mansion tape
       purchase awful"
     derivationPath: "m/44'/60'/0'/0/0"
+  postgresqlConnection:
+    host: "postgresql"
+    port: 5432
+    database: "txsigner"
+    username: "txsigner"
+    password: "atk"
+    sslMode: "disable"
+    endpoint: "postgresql:5432"
+    url: "postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"
   postgresql: "postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"
   replicaCount: 1
   resources: {}
