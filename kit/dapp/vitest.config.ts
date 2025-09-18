@@ -9,6 +9,14 @@ export default defineConfig({
     globals: true,
     passWithNoTests: true,
     pool: "forks",
+    poolOptions: {
+      forks: {
+        // Limit the number of parallel test workers to avoid exceeding the PostgreSQL
+        // connection limit. Integration tests spin up services that connect to the
+        // database, and running too many in parallel can exhaust the connection pool.
+        maxForks: 16,
+      },
+    },
     reporters: process.env.CLAUDECODE
       ? ["dot"]
       : process.env.CI
