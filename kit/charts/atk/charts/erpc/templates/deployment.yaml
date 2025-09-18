@@ -35,8 +35,10 @@ spec:
       {{- if .Values.topologySpreadConstraints }}
       topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.topologySpreadConstraints "context" $) | nindent 8 }}
       {{- end }}
-      {{- if .Values.podSecurityContext.enabled }}
-      securityContext: {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- $podSecurityContext := (include "erpc.securityContext.pod" (dict "context" $)) | fromYaml }}
+      {{- if $podSecurityContext }}
+      securityContext:
+        {{- toYaml $podSecurityContext | nindent 8 }}
       {{- end }}
       {{- if .Values.affinity }}
       affinity: {{- include "common.tplvalues.render" (dict "value" .Values.affinity "context" $) | nindent 8 }}
@@ -52,39 +54,58 @@ spec:
       {{- if .Values.tolerations }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tolerations "context" $) | nindent 8 }}
       {{- end }}
-      {{- /* Define initContainers block only if needed */}}
-      {{- if .Values.initContainer.tcpCheck.enabled }}
+      {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck) }}
+      {{- $extraInit := .Values.extraInitContainers | default (list) }}
+      {{- if or $waitForIt (gt (len $extraInit) 0) }}
       initContainers:
-        {{- /* Add Generic TCP Checks if enabled */}}
-        {{- if .Values.initContainer.tcpCheck.enabled }}
-          {{- range .Values.initContainer.tcpCheck.dependencies }}
-        - name: wait-for-{{ .name }}
-          image: "{{ $.Values.initContainer.tcpCheck.image.repository }}:{{ $.Values.initContainer.tcpCheck.image.tag }}"
-          imagePullPolicy: {{ $.Values.initContainer.tcpCheck.image.pullPolicy }}
-          command: ['/usr/bin/wait-for-it', '{{ tpl .endpoint $ }}', '-t', '{{ $.Values.initContainer.tcpCheck.timeout }}']
-          resources: # Optional: Define minimal resources for init containers
-            limits:
-              cpu: 100m
-              memory: 64Mi
-            requests:
-              cpu: 10m
-              memory: 32Mi
-          {{- end }}
+        {{- if $waitForIt }}
+{{ $waitForIt | nindent 8 }}
+        {{- end }}
+        {{- if gt (len $extraInit) 0 }}
+{{ toYaml $extraInit | nindent 8 }}
         {{- end }}
       {{- end }}
       containers:
         - name: erpc
           image: {{ include "common.images.image" (dict "imageRoot" .Values.image "global" .Values.global) }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- if .Values.workingDir }}
+          workingDir: {{ .Values.workingDir | quote }}
+          {{- end }}
+          {{- $containerSecurityContext := (include "erpc.securityContext.container" (dict "context" $)) | fromYaml }}
+          {{- if $containerSecurityContext }}
+          securityContext:
+            {{- toYaml $containerSecurityContext | nindent 12 }}
           {{- end }}
           {{- if .Values.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
-          {{- if .Values.extraEnvVars }}
+          {{- $gcEnabled := default false .Values.runtime.gc.enabled }}
+          {{- $extraEnvLen := len (default (list) .Values.extraEnvVars) }}
+          {{- $memLimit := "" }}
+          {{- if and .Values.resources .Values.resources.limits }}
+            {{- $memLimit = default "" .Values.resources.limits.memory }}
+          {{- end }}
+          {{- $gomemlimit := "" }}
+          {{- if $gcEnabled }}
+            {{- $gomemlimit = include "erpc.gc.computeGOMEMLIMIT" (dict "limit" $memLimit "ratio" (default 1 .Values.runtime.gc.gomemlimitRatio) "override" (default "" .Values.runtime.gc.gomemlimitOverride)) }}
+          {{- end }}
+          {{- $hasGoGc := and $gcEnabled (or (ne (printf "%v" (default "" .Values.runtime.gc.gogc)) "") (ne $gomemlimit "")) }}
+          {{- if or $hasGoGc (gt $extraEnvLen 0) }}
           env:
+            {{- if $hasGoGc }}
+            {{- if ne (printf "%v" (default "" .Values.runtime.gc.gogc)) "" }}
+            - name: GOGC
+              value: {{ printf "%v" .Values.runtime.gc.gogc | quote }}
+            {{- end }}
+            {{- if ne $gomemlimit "" }}
+            - name: GOMEMLIMIT
+              value: {{ $gomemlimit | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
           {{- end }}
           {{- if or .Values.extraEnvVarsCM .Values.extraEnvVarsSecret }}
           envFrom:
@@ -118,8 +139,16 @@ spec:
           {{- end }}
           volumeMounts:
             - name: config
-              mountPath: /root/erpc.yaml
+              mountPath: {{ .Values.configMountPath | quote }}
               subPath: erpc.yaml
+          {{- if .Values.envSecret.enabled }}
+            - name: dotenv
+              mountPath: {{ .Values.envSecret.mountPath | quote }}
+              {{- if .Values.envSecret.subPath }}
+              subPath: {{ .Values.envSecret.subPath | quote }}
+              {{- end }}
+              readOnly: true
+          {{- end }}
           {{- if .Values.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -127,6 +156,14 @@ spec:
         - name: config
           configMap:
             name: {{ include "common.names.fullname" . }}
+      {{- if .Values.envSecret.enabled }}
+        - name: dotenv
+          secret:
+            secretName: {{ required "envSecret.name must be provided when envSecret.enabled=true" .Values.envSecret.name }}
+            {{- if .Values.envSecret.defaultMode }}
+            defaultMode: {{ .Values.envSecret.defaultMode }}
+            {{- end }}
+      {{- end }}
       {{- if .Values.extraVolumes }}
       {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 8 }}
       {{- end }}

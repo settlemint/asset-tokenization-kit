@@ -1,0 +1,501 @@
+# OpenShift-specific values override for ATK
+#
+# This file overrides specific security context values for OpenShift environments.
+# Use this file with: helm install atk ./atk -f values.yaml -f values-openshift.yaml
+#
+# Key principle: Templates are the same for both Kubernetes and OpenShift.
+# The only difference is in the values - OpenShift doesn't set runAsUser/runAsGroup/fsGroup
+# because OpenShift assigns these automatically based on the project's UID range.
+
+# Network bootstrapper security context overrides for OpenShift
+network:
+  network-bootstrapper:
+    podSecurityContext:
+      fsGroup: null
+      fsGroupChangePolicy: Always
+      runAsNonRoot: true
+      runAsUser: null
+      runAsGroup: null
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: null
+      runAsGroup: null
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+  network-nodes:
+    podSecurityContext:
+      fsGroup: null
+      runAsUser: null
+      runAsGroup: null
+      fsGroupChangePolicy: Always
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: null
+      runAsGroup: null
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+
+# Graph Node security contexts for OpenShift
+graph-node:
+  podSecurityContext:
+    fsGroup: null
+    runAsUser: null
+    runAsGroup: null
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+  containerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: null
+    runAsGroup: null
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+
+  initContainerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: null
+    runAsGroup: null
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+
+  ingress:
+    enabled: false
+
+  openShiftRoute:
+    enabled: true
+    host: graph.apps-crc.testing
+    wildcardPolicy: None
+    tls: null
+    to:
+      weight: 100
+    alternateBackends: []
+    routes:
+      - nameSuffix: ""
+        host: ""
+        path: /
+        targetPort: http-query
+        annotations: {}
+      - nameSuffix: ws
+        host: ""
+        path: /ws
+        targetPort: http-queryws
+        annotations:
+          haproxy.router.openshift.io/rewrite-target: /
+      - nameSuffix: admin
+        host: ""
+        path: /admin
+        targetPort: http-admin
+        annotations:
+          haproxy.router.openshift.io/rewrite-target: /
+      - nameSuffix: indexer
+        host: ""
+        path: /indexer
+        targetPort: http-status
+        annotations:
+          haproxy.router.openshift.io/rewrite-target: /
+      - nameSuffix: graphman
+        host: ""
+        path: /graphman
+        targetPort: http-status
+        annotations:
+          haproxy.router.openshift.io/rewrite-target: /
+
+# Portal security contexts for OpenShift
+portal:
+  ingress:
+    enabled: false
+
+  openShiftRoute:
+    enabled: true
+    host: portal.apps-crc.testing
+    path: /
+    tls: null
+    graphql:
+      enabled: true
+      host: portal.apps-crc.testing
+      path: /graphql
+
+  podSecurityContext:
+    fsGroup: null
+    runAsUser: null
+    runAsGroup: null
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+  containerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: null
+    runAsGroup: null
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: false
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+
+  initContainerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: null
+    runAsGroup: null
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+
+  initContainer:
+    copyArtifacts:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: null
+        runAsGroup: null
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+
+# Transaction Signer security contexts for OpenShift
+txsigner:
+  podSecurityContext:
+    fsGroup: null
+    runAsUser: null
+    runAsGroup: null
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+  containerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: null
+    runAsGroup: null
+
+  initContainerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: null
+    runAsGroup: null
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: [ALL]
+    seccompProfile:
+      type: RuntimeDefault
+
+  openShiftRoute:
+    enabled: true
+    host: txsigner.apps-crc.testing
+    path: /
+    tls: null
+
+# ERPC security contexts for OpenShift
+erpc:
+  ingress:
+    enabled: false
+
+  openShiftRoute:
+    enabled: true
+    host: rpc.apps-crc.testing
+    path: /
+    wildcardPolicy: None
+    tls: null
+
+  podSecurityContext:
+    fsGroup: null
+    runAsUser: null
+    runAsGroup: null
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+  containerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: null
+    runAsGroup: null
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: false
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+
+  initContainerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: null
+    runAsGroup: null
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+
+# DApp security contexts for OpenShift
+dapp:
+  ingress:
+    enabled: false
+
+  openShiftRoute:
+    enabled: true
+    host: dapp.apps-crc.testing
+    path: /
+    tls: null
+
+  podSecurityContext:
+    fsGroup: null
+    runAsUser: null
+    runAsGroup: null
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: null
+    runAsGroup: null
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+
+  initContainerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: null
+    runAsGroup: null
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+
+# Support services security contexts for OpenShift
+support:
+  # PostgreSQL security contexts for OpenShift
+  postgresql:
+    podSecurityContext:
+      fsGroup: null
+      runAsUser: null
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
+      runAsUser: null
+      runAsGroup: null
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+
+  # Redis security contexts for OpenShift
+  redis:
+    podSecurityContext:
+      fsGroup: null
+      runAsNonRoot: true
+      runAsUser: null
+      seccompProfile:
+        type: RuntimeDefault
+
+    containerSecurityContext:
+      runAsUser: null
+      runAsGroup: null
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: false
+      seccompProfile:
+        type: RuntimeDefault
+
+  # Nginx Ingress Controller adjustments for OpenShift (if used)
+  ingress-nginx:
+    enabled: false
+    controller:
+      podSecurityContext:
+        fsGroup: null
+        runAsUser: null
+        runAsGroup: null
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containerSecurityContext:
+        runAsNonRoot: true
+        runAsUser: null
+        runAsGroup: null
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+          add:
+            - NET_BIND_SERVICE
+        seccompProfile:
+          type: RuntimeDefault
+  reloader:
+    reloader:
+      deployment:
+        securityContext:
+          runAsUser: null
+  minio:
+    securityContext:
+      enabled: false
+
+observability:
+  grafana:
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: null
+      runAsGroup: null
+      fsGroup: null
+  kube-state-metrics:
+    securityContext:
+      enabled: true
+      runAsGroup: null
+      runAsUser: null
+      fsGroup: null
+  prometheus-node-exporter:
+    enabled: false
+  loki:
+    loki:
+      podSecurityContext:
+        fsGroup: null
+        runAsGroup: null
+        runAsNonRoot: true
+        runAsUser: null
+    gateway:
+      enabled: false
+  tempo:
+    securityContext:
+      runAsUser: null
+      runAsGroup: null
+      fsGroup: null
+
+# Hasura configuration for OpenShift
+hasura:
+  graphql-engine:
+    ingress:
+      enabled: false
+
+    openShiftRoute:
+      enabled: true
+      host: hasura.apps-crc.testing
+      path: /
+      wildcardPolicy: None
+
+    podSecurityContext:
+      runAsNonRoot: true
+      fsGroup: null
+      runAsUser: null
+      runAsGroup: null
+      seccompProfile:
+        type: RuntimeDefault
+
+    containerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: null
+      runAsGroup: null
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+
+# Blockscout configuration for OpenShift
+blockscout:
+  blockscout:
+    ingress:
+      enabled: false
+
+    openShiftRoute:
+      enabled: true
+      host: explorer.apps-crc.testing
+      path: /api
+      wildcardPolicy: None
+
+    env:
+      API_URL: https://explorer.apps-crc.testing
+      WEBAPP_URL: https://explorer.apps-crc.testing
+
+    podSecurityContext:
+      fsGroup: null
+      runAsUser: null
+      runAsGroup: null
+      runAsNonRoot: true
+
+    containerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: null
+      runAsGroup: null
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: false
+
+    initContainerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: null
+      runAsGroup: null
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: false
+
+  frontend:
+    ingress:
+      enabled: false
+
+    openShiftRoute:
+      enabled: true
+      host: explorer.apps-crc.testing
+      path: /
+      wildcardPolicy: None
+
+    podSecurityContext:
+      fsGroup: null
+      runAsUser: null
+      runAsGroup: null
+      runAsNonRoot: true
+
+    containerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: null
+      runAsGroup: null
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: false

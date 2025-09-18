@@ -6,11 +6,10 @@ FROM alpine:3.22
 RUN apk add --no-cache jq
 
 # Create directories for artifacts
-RUN mkdir -p /artifacts/abis/asset-tokenization-3643 /artifacts/abis/asset-tokenization /artifacts/genesis
+RUN mkdir -p /artifacts/abis/asset-tokenization-3643 /artifacts/genesis
 
 # Copy ABIs from the generated portal directory
 COPY .generated/portal/ /artifacts/abis/asset-tokenization-3643/
-COPY portal/abis/asset-tokenization/ /artifacts/abis/asset-tokenization/
 
 # Copy genesis file only (no allocations file)
 COPY .generated/genesis* /artifacts/genesis/

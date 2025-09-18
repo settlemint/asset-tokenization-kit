@@ -50,6 +50,11 @@ describe("Identity register", () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
 
+    const preRegistrationIdentity = await client.system.identity.read({
+      wallet: wallet2,
+    });
+    expect(preRegistrationIdentity.registered).toBeUndefined();
+
     const result = await client.system.identity.register({
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
@@ -58,9 +63,15 @@ describe("Identity register", () => {
       country: "BE",
       wallet: wallet2,
     });
-    expect(result.id).toBe(wallet2);
-    expect(result.identity).toBeDefined();
-    expect(result.country).toBe("BE");
+    expect(result.account).toBe(wallet2);
+
+    const postRegistrationIdentity = await client.system.identity.read({
+      wallet: wallet2,
+    });
+    expect(postRegistrationIdentity.registered).toEqual({
+      isRegistered: true,
+      country: "BE",
+    });
   }, 10_000);
 });
 

@@ -30,46 +30,57 @@ spec:
     spec:
       {{- include "atk.imagePullSecrets" . | nindent 6 }}
       serviceAccountName: {{ include "dapp.serviceAccountName" . }}
+      {{- $podSecurityContext := (include "atk.securityContext.pod" (dict "context" $ "local" .Values.podSecurityContext "chartKey" "dapp")) | fromYaml }}
+      {{- if $podSecurityContext }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml $podSecurityContext | nindent 8 }}
+      {{- end }}
 
       {{- /* Define initContainers block only if needed */}}
-      {{- if or .Values.initContainer.tcpCheck.enabled .Values.initContainer.graphQLCheck.enabled }}
+      {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck "chartKey" "dapp") }}
+      {{- $graphQL := .Values.initContainer.graphQLCheck | default (dict) }}
+      {{- $graphQLEnabled := $graphQL.enabled | default false }}
+      {{- $extraInit := .Values.extraInitContainers | default (list) }}
+      {{- if or $waitForIt $graphQLEnabled (gt (len $extraInit) 0) }}
       initContainers:
-
-        {{- /* Add Generic TCP Checks if enabled */}}
-        {{- if .Values.initContainer.tcpCheck.enabled }}
-          {{- range .Values.initContainer.tcpCheck.dependencies }}
-        - name: wait-for-{{ .name }}
-          image: "{{ $.Values.initContainer.tcpCheck.image.repository }}:{{ $.Values.initContainer.tcpCheck.image.tag }}"
-          imagePullPolicy: {{ $.Values.initContainer.tcpCheck.image.pullPolicy }}
-          command: ['/usr/bin/wait-for-it', '{{ tpl .endpoint $ }}', '-t', '{{ $.Values.initContainer.tcpCheck.timeout }}']
-          resources: # Optional: Define minimal resources for init containers
-            limits:
-              cpu: 100m
-              memory: 64Mi
-            requests:
-              cpu: 50m
-              memory: 32Mi
-          {{- end }}
+        {{- if $waitForIt }}
+{{ $waitForIt | nindent 8 }}
         {{- end }}
-
-        {{- /* Add GraphQL Check if enabled */}}
-        {{- if .Values.initContainer.graphQLCheck.enabled }}
-        - name: {{ .Values.initContainer.graphQLCheck.name | default "wait-for-graphql" }}
-          image: "{{ .Values.initContainer.graphQLCheck.image.registry }}/{{ .Values.initContainer.graphQLCheck.image.repository }}:{{ .Values.initContainer.graphQLCheck.image.tag }}"
-          imagePullPolicy: {{ .Values.initContainer.graphQLCheck.image.pullPolicy }}
+        {{- if $graphQLEnabled }}
+        {{- $graphQLImage := $graphQL.image | default (dict) }}
+        {{- $graphQLRegistry := $graphQLImage.registry | default "docker.io" }}
+        {{- $graphQLRepository := $graphQLImage.repository | default "curlimages/curl" }}
+        {{- $graphQLTag := $graphQLImage.tag | default "8.16.0" }}
+        {{- $graphQLPullPolicy := $graphQLImage.pullPolicy | default "IfNotPresent" }}
+        {{- $graphQLUrl := $graphQL.url | default "http://graph-node-combined:8000/subgraphs/name/kit" }}
+        {{- $graphQLRetries := $graphQL.retries | default 10 }}
+        {{- $graphQLDelay := $graphQL.retryDelaySeconds | default 10 }}
+        {{- $graphQLQuery := $graphQL.query | default "{ __typename }" }}
+        {{- $graphQLConnectTimeout := $graphQL.connectTimeoutSeconds | default 5 }}
+        {{- $graphQLTimeout := $graphQL.timeoutSeconds | default 10 }}
+        - name: {{ $graphQL.name | default "wait-for-graphql" }}
+          image: "{{ $graphQLRegistry }}/{{ $graphQLRepository }}:{{ $graphQLTag }}"
+          imagePullPolicy: {{ $graphQLPullPolicy }}
+          {{- $graphQLSecurityContext := (include "atk.securityContext.container" (dict
+            "context" $
+            "local" (merge (dict) (default (dict) .Values.initContainerSecurityContext) (default (dict) $graphQL.securityContext))
+            "chartKey" "dapp"
+          )) | fromYaml }}
+          {{- if $graphQLSecurityContext }}
+          securityContext:
+            {{- toYaml $graphQLSecurityContext | nindent 12 }}
+          {{- end }}
           command:
             - /bin/sh
             - -c
             - |
               attempts=0
-              max_attempts={{ .Values.initContainer.graphQLCheck.retries | default 24 }}
-              url="{{ .Values.initContainer.graphQLCheck.url }}"
-              query='{"query":"{{ .Values.initContainer.graphQLCheck.query | default "{ __typename }" }}"}'
-              delay={{ .Values.initContainer.graphQLCheck.retryDelaySeconds | default 5 }}
-              connect_timeout={{ .Values.initContainer.graphQLCheck.connectTimeoutSeconds | default 5 }}
-              max_time={{ .Values.initContainer.graphQLCheck.timeoutSeconds | default 10 }}
+              max_attempts={{ $graphQLRetries }}
+              url="{{ $graphQLUrl }}"
+              query='{"query":"{{ $graphQLQuery }}"}'
+              delay={{ $graphQLDelay }}
+              connect_timeout={{ $graphQLConnectTimeout }}
+              max_time={{ $graphQLTimeout }}
 
               echo "Waiting for GraphQL endpoint at $url to be ready and synced..."
               until [ "$attempts" -ge "$max_attempts" ]
@@ -79,18 +90,14 @@ spec:
                   "$url" 2>/dev/null)
 
                 if [ $? -eq 0 ]; then
-                  # Check if response has no errors or only "syncing" related errors
                   if echo "$response" | grep -q -v '"errors"'; then
-                    # No errors - GraphQL endpoint is working
-                    echo "✅ GraphQL endpoint $url is ready."
+                    echo "GraphQL endpoint $url is ready."
                     exit 0
-                  elif echo "$response" | grep -q "has not started syncing yet\|wait.*ingest.*blocks\|still syncing"; then
-                    # Expected "syncing" errors - endpoint is working, subgraph is just starting
-                    echo "✅ GraphQL endpoint is ready (subgraph is syncing, which is expected)"
+                  elif echo "$response" | grep -Eq 'has not started syncing yet|wait.*ingest.*blocks|still syncing'; then
+                    echo "GraphQL endpoint is responding (subgraph syncing)."
                     exit 0
                   else
-                    # Other errors - still not ready
-                    echo "GraphQL endpoint has errors (attempt $attempts/$max_attempts): $response"
+                    echo "GraphQL endpoint errors (attempt $attempts/$max_attempts): $response"
                   fi
                 else
                   echo "GraphQL endpoint not reachable (attempt $attempts/$max_attempts)..."
@@ -100,22 +107,25 @@ spec:
                 echo "Retrying in ${delay}s..."
                 sleep "$delay"
               done
-              echo "Error: GraphQL endpoint $url did not become ready after $max_attempts attempts."
+              echo "GraphQL endpoint $url did not become ready after $max_attempts attempts."
               exit 1
-          resources: # Optional: Define minimal resources for this init container
-            limits:
-              memory: 64Mi
-            requests:
-              cpu: 10m
-              memory: 12Mi
+          {{- with $graphQL.resources }}
+          resources:
+{{ toYaml . | nindent 12 }}
+          {{- end }}
         {{- end }}
-
-      {{- end }} {{- /* End of 'if or' for initContainers */}}
+        {{- if gt (len $extraInit) 0 }}
+{{ toYaml $extraInit | nindent 8 }}
+        {{- end }}
+      {{- end }}
 
       containers:
         - name: {{ .Chart.Name }}
+          {{- $containerSecurityContext := (include "atk.securityContext.container" (dict "context" $ "local" .Values.securityContext "chartKey" "dapp")) | fromYaml }}
+          {{- if $containerSecurityContext }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- toYaml $containerSecurityContext | nindent 12 }}
+          {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if .Values.secretEnv }}
@@ -131,22 +141,14 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+          {{- with .Values.probes.liveness }}
           livenessProbe:
-            tcpSocket:
-              port: http
-            initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
-            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
-            timeoutSeconds: {{ .Values.probes.liveness.timeoutSeconds }}
-            failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
-            successThreshold: {{ .Values.probes.liveness.successThreshold }}
+{{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.probes.readiness }}
           readinessProbe:
-            tcpSocket:
-              port: http
-            initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
-            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
-            timeoutSeconds: {{ .Values.probes.readiness.timeoutSeconds }}
-            failureThreshold: {{ .Values.probes.readiness.failureThreshold }}
-            successThreshold: {{ .Values.probes.readiness.successThreshold }}
+{{- toYaml . | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- with .Values.volumeMounts }}

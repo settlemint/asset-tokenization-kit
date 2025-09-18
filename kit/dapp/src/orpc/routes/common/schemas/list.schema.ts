@@ -66,19 +66,19 @@ export const ListSchema = z.object({
    * Maximum number of items to return.
    *
    * Controls the page size for pagination. Auto-pagination is triggered
-   * for queries requesting more than 1000 items or when no limit is specified
+   * for queries requesting more than 200 items or when no limit is specified
    * to work around GraphQL query limits while maintaining optimal performance.
    *
    * Constraints:
    * - Must be a positive integer (>= 1) when specified
-   * - Maximum allowed is 100,000 items per request (with auto-pagination)
-   * - Optional - when undefined, fetches ALL available records
+   * - Maximum allowed is 200 items per request (with auto-pagination)
+   * - Optional - defaults to 100 items when not specified
    *
    * Examples:
-   * - limit: 5000 automatically uses batched pagination behind the scenes
-   * - limit: undefined (or omitted) gets all available records
+   * - limit: 200 returns up to 200 items
+   * - limit: undefined (or omitted) defaults to 100 items
    */
-  limit: z.number().int().positive().max(1000).optional(),
+  limit: z.number().int().positive().max(200).optional(),
 
   /**
    * Sort order direction for the results.

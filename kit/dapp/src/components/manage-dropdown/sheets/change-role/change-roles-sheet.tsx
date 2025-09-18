@@ -2,22 +2,21 @@ import { AddressSelectOrInputToggle } from "@/components/address/address-select-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useAppForm } from "@/hooks/use-app-form";
 import { getAccessControlEntries } from "@/orpc/helpers/access-control-helpers";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import type {
   AccessControl,
   AccessControlRoles,
 } from "@atk/zod/access-control-roles";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import type { RoleRequirement } from "@atk/zod/role-requirement";
-import {
-  isAllRoleRequirement,
-  isAnyRoleRequirement,
-  isSingleRole,
-} from "@atk/zod/role-requirement";
 import { CheckSquare, Shield } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -31,12 +30,24 @@ type OnRevokeOrGrantRole = (args: {
   roles: AccessControlRoles[];
 }) => Promise<void>;
 
+export interface RoleInfo {
+  role: AccessControlRoles;
+  label: string;
+  description: string;
+}
+
+export interface GroupedRoles {
+  label: string;
+  roles: RoleInfo[];
+}
+
 export interface ChangeRolesSheetProps {
   open: boolean;
   accessControl: AccessControl | undefined;
   onOpenChange: (open: boolean) => void;
   asset?: Token;
   presetAccount?: EthereumAddress;
+  groupedRoles: Map<string, GroupedRoles>;
   revokeRole: OnRevokeOrGrantRole;
   grantRole: OnRevokeOrGrantRole;
 }
@@ -47,10 +58,11 @@ export function ChangeRolesSheet({
   onOpenChange,
   asset,
   presetAccount,
+  groupedRoles,
   revokeRole,
   grantRole,
 }: ChangeRolesSheetProps) {
-  const { t } = useTranslation(["tokens", "common"]);
+  const { t } = useTranslation(["common", "components"]);
 
   const form = useAppForm({
     defaultValues: {
@@ -113,85 +125,41 @@ export function ChangeRolesSheet({
 
   // No effects needed: we derive current selection from overrides or current roles
 
-  // Derive token-assignable roles from TOKEN_PERMISSIONS role requirements
-  const tokenAssignableRoles = useMemo(() => {
-    const set = new Set<AccessControlRoles>();
-    const collect = (req: RoleRequirement) => {
-      if (!req) return;
-      if (isSingleRole(req)) {
-        set.add(req);
-        return;
-      }
-      if (isAnyRoleRequirement(req)) {
-        for (const r of req.any) collect(r);
-        return;
-      }
-      if (isAllRoleRequirement(req)) {
-        for (const r of req.all) collect(r);
-        return;
-      }
-    };
-    Object.values(TOKEN_PERMISSIONS).forEach((req) => {
-      collect(req);
-    });
-    return [...set.values()];
-  }, []);
-
-  const groupedRoles = useMemo(() => {
-    const groupForRole = (role: AccessControlRoles) => {
-      if (role === "admin" || role === "tokenManager") return "Administration";
-      if (role === "governance") return "Compliance";
-      if (
-        role === "supplyManagement" ||
-        role === "emergency" ||
-        role === "custodian"
-      )
-        return "Operations";
-      return "Other";
-    };
-
-    const map = new Map<string, AccessControlRoles[]>();
-    tokenAssignableRoles.forEach((r) => {
-      const g = groupForRole(r);
-      const arr = map.get(g) ?? [];
-      arr.push(r);
-      map.set(g, arr);
-    });
-    return map;
-  }, [tokenAssignableRoles]);
-
-  const renderRoleButton = (role: AccessControlRoles, addr: string) => {
+  const renderRoleButton = (role: RoleInfo, addr: string) => {
     const currentSelected = addr
       ? (selectionOverrides.get(addr) ?? currentRolesForAddress(addr))
       : [];
-    const checked = currentSelected.includes(role);
-    const label =
-      role.charAt(0).toUpperCase() +
-      role
-        .slice(1)
-        .replaceAll(/([A-Z])/g, " $1")
-        .trim();
+    const checked = currentSelected.includes(role.role);
     return (
-      <Button
-        key={role}
-        type="button"
-        variant={checked ? "default" : "outline"}
-        className="w-full"
-        onClick={() => {
-          toggleRole(addr, role);
-        }}
-      >
-        <div className="flex w-full items-center justify-between">
-          <span className="inline-flex items-center gap-2">
-            <Shield className="h-4 w-4" /> {label}
-          </span>
-          {checked ? (
-            <CheckSquare className="h-4 w-4 opacity-90" aria-label="selected" />
-          ) : (
-            <span aria-hidden className="h-4 w-4" />
-          )}
-        </div>
-      </Button>
+      <Tooltip key={role.role}>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            variant={checked ? "default" : "outline"}
+            className="w-full"
+            onClick={() => {
+              toggleRole(addr, role.role);
+            }}
+          >
+            <div className="flex w-full items-center justify-between">
+              <span className="inline-flex items-center gap-2 overflow-hidden">
+                <Shield className="h-4 w-4" />
+                <span className="truncate">{role.label}</span>
+              </span>
+
+              {checked ? (
+                <CheckSquare
+                  className="h-4 w-4 opacity-90"
+                  aria-label="selected"
+                />
+              ) : (
+                <span aria-hidden className="h-4 w-4" />
+              )}
+            </div>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>{role.description}</TooltipContent>
+      </Tooltip>
     );
   };
 
@@ -231,8 +199,8 @@ export function ChangeRolesSheet({
               onOpenChange(next);
             }}
             asset={asset}
-            title={t("tokens:permissions.changeRoles.title")}
-            description={t("tokens:permissions.changeRoles.description")}
+            title={t("components:changeRolesSheet.title")}
+            description={t("components:changeRolesSheet.description")}
             submitLabel={t("common:save")}
             hasValuesStep={true}
             canContinue={() => Boolean(selectedAddress && hasChanges)}
@@ -241,13 +209,13 @@ export function ChangeRolesSheet({
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
-                    {t("tokens:permissions.changeRoles.title")}
+                    {t("components:changeRolesSheet.title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
                     <div className="text-sm text-muted-foreground">
-                      {t("tokens:actions.grantRole.form.accountLabel")}
+                      {t("components:changeRolesSheet.accountLabel")}
                     </div>
                     <div className="text-sm font-medium">{selectedAddress}</div>
                     <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -259,7 +227,11 @@ export function ChangeRolesSheet({
                           {derivedSelected
                             .filter((r) => !currentForSelected.includes(r))
                             .map((r) => (
-                              <Badge key={`grant-${r}`}>{r}</Badge>
+                              <Badge key={`grant-${r}`}>
+                                {t(
+                                  `common:roles.${r.toLowerCase() as Lowercase<AccessControlRoles>}.title`
+                                )}
+                              </Badge>
                             ))}
                           {derivedSelected.filter(
                             (r) => !currentForSelected.includes(r)
@@ -278,7 +250,11 @@ export function ChangeRolesSheet({
                           {currentForSelected
                             .filter((r) => !derivedSelected.includes(r))
                             .map((r) => (
-                              <Badge key={`revoke-${r}`}>{r}</Badge>
+                              <Badge key={`revoke-${r}`}>
+                                {t(
+                                  `common:roles.${r.toLowerCase() as Lowercase<AccessControlRoles>}.title`
+                                )}
+                              </Badge>
                             ))}
                           {currentForSelected.filter(
                             (r) => !derivedSelected.includes(r)
@@ -340,7 +316,7 @@ export function ChangeRolesSheet({
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">
-                    {t("tokens:actions.grantRole.form.accountLabel")}
+                    {t("components:changeRolesSheet.accountLabel")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -354,7 +330,7 @@ export function ChangeRolesSheet({
                               <field.AddressSelectField
                                 scope="user"
                                 label={t(
-                                  "tokens:actions.grantRole.form.accountLabel"
+                                  "components:changeRolesSheet.accountLabel"
                                 )}
                                 required
                               />
@@ -367,7 +343,7 @@ export function ChangeRolesSheet({
                             children={(field) => (
                               <field.AddressInputField
                                 label={t(
-                                  "tokens:actions.grantRole.form.accountLabel"
+                                  "components:changeRolesSheet.accountLabel"
                                 )}
                                 required
                               />
@@ -385,32 +361,21 @@ export function ChangeRolesSheet({
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-base">
-                      {t("tokens:permissions.columns.roles")}
+                      {t("components:changeRolesSheet.rolesLabel")}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {(
-                      [
-                        "Administration",
-                        "Operations",
-                        "Compliance",
-                        "Other",
-                      ] as const
-                    )
-                      .filter((group) => groupedRoles.get(group)?.length)
-                      .map((group) => (
-                        <div key={group} className="mb-4 last:mb-0">
+                    {[...groupedRoles.entries()]
+                      .filter(([_, { roles }]) => roles.length > 0)
+                      .map(([groupName, { roles, label }]) => (
+                        <div key={groupName} className="mb-4 last:mb-0">
                           <div className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
-                            {t(
-                              `tokens:permissions.groups.${group.toLowerCase() as Lowercase<typeof group>}` as const
-                            )}
+                            {label}
                           </div>
                           <div className="grid grid-cols-2 gap-2">
-                            {groupedRoles
-                              .get(group)
-                              ?.map((role) =>
-                                renderRoleButton(role, selectedAddress)
-                              )}
+                            {roles.map((role) =>
+                              renderRoleButton(role, selectedAddress)
+                            )}
                           </div>
                         </div>
                       ))}
@@ -423,4 +388,42 @@ export function ChangeRolesSheet({
       }}
     </form.Subscribe>
   );
+}
+
+export function deriveAssignableRoles(
+  reqs: Record<string, RoleRequirement>
+): AccessControlRoles[] {
+  const set = new Set<AccessControlRoles>();
+  const collect = (r?: RoleRequirement) => {
+    if (!r) return;
+    if (typeof r === "string") {
+      set.add(r);
+      return;
+    }
+    if ("any" in r)
+      r.any.forEach((element) => {
+        collect(element);
+      });
+    else if ("all" in r)
+      r.all.forEach((element) => {
+        collect(element);
+      });
+  };
+  Object.values(reqs).forEach((element) => {
+    collect(element);
+  });
+  return [...set];
+}
+
+export function mergeRoles(
+  assignable: AccessControlRoles[],
+  existing?: Record<AccessControlRoles, unknown>
+): AccessControlRoles[] {
+  const fromExisting = existing
+    ? (Object.keys(existing).filter((k) => {
+        const value = existing[k as AccessControlRoles];
+        return Array.isArray(value) && value.length > 0;
+      }) as AccessControlRoles[])
+    : [];
+  return [...new Set([...assignable, ...fromExisting])];
 }

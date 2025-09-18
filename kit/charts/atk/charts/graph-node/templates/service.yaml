@@ -29,7 +29,7 @@ Common selector labels to avoid duplication
 */}}
 {{- define "graph-node.serviceSelector" -}}
 {{- include "graph-node.selectorLabels" . | nindent 4 }}
-app.kubernetes.io/component: combined
+{{- printf "app.kubernetes.io/component: combined" | nindent 4 }}
 {{- end }}
 
 apiVersion: v1

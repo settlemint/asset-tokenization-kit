@@ -19,9 +19,8 @@ describe("userRoles", () => {
 
     it("should accept all defined roles", () => {
       expect(validator.parse("admin") as string).toBe("admin");
-      expect(validator.parse("investor") as string).toBe("investor");
-      expect(validator.parse("issuer") as string).toBe("issuer");
-      expect(validator.parse(undefined) as string).toBe("investor");
+      expect(validator.parse("user") as string).toBe("user");
+      expect(validator.parse(undefined) as string).toBe("user");
     });
   });
 
@@ -44,7 +43,7 @@ describe("userRoles", () => {
     it("should be case-sensitive", () => {
       expect(() => validator.parse("Admin")).toThrow();
       expect(() => validator.parse("USER")).toThrow();
-      expect(() => validator.parse("Issuer")).toThrow();
+      expect(() => validator.parse("User")).toThrow();
       expect(() => validator.parse("ADMIN")).toThrow();
     });
 
@@ -61,11 +60,8 @@ describe("userRoles", () => {
       // Admin has highest permissions
       expect(validator.parse("admin") as string).toBe("admin");
 
-      // Investor has standard permissions
-      expect(validator.parse("investor") as string).toBe("investor");
-
-      // Issuer has trusted issuer permissions
-      expect(validator.parse("issuer") as string).toBe("issuer");
+      // User has standard permissions
+      expect(validator.parse("user") as string).toBe("user");
     });
   });
 
@@ -77,10 +73,10 @@ describe("userRoles", () => {
     });
 
     it("should handle safeParse", () => {
-      const result = validator.safeParse("issuer");
+      const result = validator.safeParse("user");
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data).toBe("issuer");
+        expect(result.data).toBe("user");
       }
     });
   });
@@ -90,8 +86,7 @@ describe("getUserRole function", () => {
   describe("getUserRole", () => {
     it("should return valid user roles", () => {
       expect(getUserRole("admin") as string).toBe("admin");
-      expect(getUserRole("investor") as string).toBe("investor");
-      expect(getUserRole("issuer") as string).toBe("issuer");
+      expect(getUserRole("user") as string).toBe("user");
     });
 
     it("should throw for invalid user roles", () => {
@@ -112,8 +107,7 @@ describe("getUserRole function", () => {
 describe("isUserRole", () => {
   it("should return true for valid user roles", () => {
     expect(isUserRole("admin")).toBe(true);
-    expect(isUserRole("investor")).toBe(true);
-    expect(isUserRole("issuer")).toBe(true);
+    expect(isUserRole("user")).toBe(true);
   });
 
   it("should return false for invalid user roles", () => {
@@ -130,7 +124,7 @@ describe("isUserRole", () => {
   });
 
   it("should handle undefined by returning true (defaults to investor)", () => {
-    // The userRoles schema has a default value of "investor" for undefined
+    // The userRoles schema has a default value of "user" for undefined
     expect(isUserRole(undefined)).toBe(true);
   });
 
@@ -138,7 +132,7 @@ describe("isUserRole", () => {
     const value: unknown = "admin";
     if (isUserRole(value)) {
       // TypeScript should recognize value as UserRole here
-      const validRole: "admin" | "investor" | "issuer" = value;
+      const validRole: "admin" | "user" = value;
       expect(validRole).toBe("admin");
     }
   });

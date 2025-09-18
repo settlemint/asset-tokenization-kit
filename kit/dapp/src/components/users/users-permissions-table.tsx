@@ -20,6 +20,7 @@ import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { orpc } from "@/orpc/orpc-client";
 import type { System } from "@/orpc/routes/system/routes/system.read.schema";
 import { User as UserMe } from "@/orpc/routes/user/routes/user.me.schema";
+import { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { EthereumAddress } from "@atk/zod/ethereum-address";
 import { toast } from "sonner";
 
@@ -29,18 +30,12 @@ interface User extends UserMe {
 
 const columnHelper = createStrictColumnHelper<User>();
 
-function toLabel(role: string) {
-  // Convert camelCase/pascalCase to spaced Title Case for display
-  const spaced = role.replaceAll(/([A-Z])/g, " $1").trim();
-  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
-}
-
 /**
  * Users table component for displaying and managing platform users
  * Shows user information, registration status, and actions for each user with chunked loading
  */
 export function UsersPermissionsTable() {
-  const { t } = useTranslation("user");
+  const { t } = useTranslation(["user", "common"]);
   const router = useRouter();
   const [openChangeRoles, setOpenChangeRoles] = useState(false);
   const [presetAccount, setPresetAccount] = useState<
@@ -69,7 +64,7 @@ export function UsersPermissionsTable() {
           ...user,
           roles: Object.entries(mapUserRoles(user.wallet, accessControl) ?? {})
             .filter(([_, hasRole]) => hasRole)
-            .map(([role]) => toLabel(role)),
+            .map(([role]) => role),
         })
       ) ?? []
     );
@@ -129,8 +124,16 @@ export function UsersPermissionsTable() {
           meta: {
             displayName: t("permissions.table.columns.role"),
             type: "multiOption",
+            multiOptionOptions: {
+              getLabel: (value: AccessControlRoles) =>
+                t(
+                  `common:roles.${value.toLowerCase() as Lowercase<AccessControlRoles>}.title`
+                ),
+            },
             transformOptionFn: (value) => ({
-              label: value,
+              label: t(
+                `common:roles.${value.toLowerCase() as Lowercase<AccessControlRoles>}.title`
+              ),
               value: value,
             }),
           },

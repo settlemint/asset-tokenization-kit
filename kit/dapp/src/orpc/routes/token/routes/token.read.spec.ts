@@ -60,7 +60,7 @@ describe("Token read", () => {
     expect(token.type).toBe("stablecoin");
     expect(token.stats?.totalValueInBaseCurrency).toEqual(from("0"));
     expect(token.stats?.balancesCount).toEqual(0);
-    const basePriceClaim = token.account.identity?.claims?.find(
+    const basePriceClaim = token.identity?.claims?.find(
       (c) => c.name === "basePrice"
     );
     expect(basePriceClaim).toBeDefined();
@@ -213,7 +213,6 @@ describe("Token read", () => {
         forcedTransfer: false,
         freezer: false,
         fundsManager: false,
-        globalListManager: false,
         governance: true,
         identityManager: false,
         identityRegistryModule: false,
@@ -286,7 +285,6 @@ describe("Token read", () => {
         forcedTransfer: false,
         freezer: false,
         fundsManager: false,
-        globalListManager: false,
         governance: false,
         identityManager: false,
         identityRegistryModule: false,

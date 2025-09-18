@@ -36,11 +36,12 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
+import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
 import type { IdentityCreateSchema } from "@/orpc/routes/system/identity/routes/identity.create.schema";
+import { identityRead } from "@/orpc/routes/system/identity/routes/identity.read";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call, ORPCError } from "@orpc/server";
 
 /**
@@ -114,9 +115,10 @@ const IDENTITY_CREATE_MUTATION = portalGraphql(`
 export const identityCreate = onboardedRouter.system.identity.create
   .use(systemMiddleware)
   .use(
-    offChainPermissionsMiddleware<typeof IdentityCreateSchema>({
-      requiredPermissions: {
-        account: ["create-identity"],
+    blockchainPermissionsMiddleware<typeof IdentityCreateSchema>({
+      requiredRoles: SYSTEM_PERMISSIONS.identityCreate,
+      getAccessControl: ({ context }) => {
+        return context.system?.systemAccessManager?.accessControl;
       },
       alwaysAllowIf: ({ auth }, { wallet }) => {
         return (
@@ -137,15 +139,15 @@ export const identityCreate = onboardedRouter.system.identity.create
     // CONFLICT DETECTION: Check if user already has an identity contract
     // WHY: Each user should have at most one identity contract per system
     // Multiple identities would complicate compliance verification and access control
-    const account = await call(
-      readAccount,
+    const identity = await call(
+      identityRead,
       {
         wallet: walletAddress,
       },
       { context }
     ).catch((error: unknown) => {
-      // GRACEFUL DEGRADATION: If account lookup fails, proceed with creation
-      // WHY: Account might not exist yet (first-time user) or temporary indexing issues
+      // GRACEFUL DEGRADATION: If identity lookup fails, proceed with creation
+      // WHY: Identity might not exist yet (first-time user) or temporary indexing issues
       // Smart contract will enforce uniqueness if this is indeed a duplicate
       if (error instanceof ORPCError && error.status === 404) {
         return null;
@@ -156,7 +158,7 @@ export const identityCreate = onboardedRouter.system.identity.create
     // DUPLICATE PREVENTION: Reject creation if identity already exists
     // WHY: Each wallet can only have one identity contract for security and clarity
     // Multiple identities would create confusion in compliance and access control
-    if (account?.identity) {
+    if (identity) {
       throw errors.CONFLICT({
         message: "Identity already exists",
       });
@@ -179,11 +181,11 @@ export const identityCreate = onboardedRouter.system.identity.create
       }
     );
 
-    // UPDATED DATA RETRIEVAL: Return fresh account data including new identity
-    // WHY: Client needs updated account information reflecting the new identity contract
+    // UPDATED DATA RETRIEVAL: Return fresh identity data after creation
+    // WHY: Client needs updated identity information reflecting the new identity contract
     // Portal middleware ensures transaction is confirmed and indexed before returning
     return await call(
-      readAccount,
+      identityRead,
       {
         wallet: walletAddress,
       },

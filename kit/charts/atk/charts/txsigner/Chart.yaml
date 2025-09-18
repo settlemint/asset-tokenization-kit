@@ -7,7 +7,7 @@ description: |
   multiple signing strategies, rate limiting, and comprehensive audit logging for production-grade
   blockchain infrastructure.
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: "1.16.0"
 icon: https://console.settlemint.com/android-chrome-512x512.png
 home: https://github.com/settlemint/starterkit-asset-tokenization

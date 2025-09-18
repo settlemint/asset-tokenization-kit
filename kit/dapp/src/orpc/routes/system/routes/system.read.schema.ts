@@ -1,6 +1,8 @@
 import type { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { accessControlRoles } from "@atk/zod/access-control-roles";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { ethereumHex } from "@atk/zod/ethereum-hex";
+import { isoCountryCode } from "@atk/zod/iso-country-code";
 import { accessControlSchema } from "@atk/zod/src/access-control-roles";
 import { addonFactoryTypeId } from "@atk/zod/src/addon-types";
 import { assetFactoryTypeId } from "@atk/zod/src/asset-types";
@@ -89,12 +91,27 @@ export const SystemSchema = z.object({
    */
   identityFactory: z.object({
     id: ethereumAddress.describe("Identity factory address"),
+    identities: z
+      .array(
+        z.object({
+          id: ethereumAddress.describe("Identity contract address"),
+        })
+      )
+      .describe("Identities created by this factory for the user"),
   }),
   /**
    * The identity registry storage
    */
   identityRegistryStorage: z.object({
     id: ethereumAddress.describe("Identity registry storage address"),
+    registeredIdentities: z
+      .array(
+        z.object({
+          id: ethereumHex.describe("Registered identity ID"),
+          country: z.number().describe("ISO country code"),
+        })
+      )
+      .describe("Registered identities for the user"),
   }),
   /**
    * The identity registry
@@ -136,48 +153,15 @@ export const SystemSchema = z.object({
               keyof typeof SYSTEM_PERMISSIONS,
               z.ZodType<boolean>
             > = {
-              tokenFactoryCreate: z
+              accountSearch: z
                 .boolean()
-                .describe("Whether the user can create token factories"),
-              tokenCreate: z
-                .boolean()
-                .describe("Whether the user can create tokens"),
-              addonFactoryCreate: z
-                .boolean()
-                .describe("Whether the user can create addon factories"),
+                .describe("Whether the user can search accounts"),
               addonCreate: z
                 .boolean()
                 .describe("Whether the user can create addons"),
-              grantRole: z
+              addonFactoryCreate: z
                 .boolean()
-                .describe("Whether the user can grant roles"),
-              revokeRole: z
-                .boolean()
-                .describe("Whether the user can revoke roles"),
-              complianceModuleCreate: z
-                .boolean()
-                .describe("Whether the user can create compliance modules"),
-              identityRegister: z
-                .boolean()
-                .describe("Whether the user can register identities"),
-              trustedIssuerCreate: z
-                .boolean()
-                .describe("Whether the user can create trusted issuers"),
-              trustedIssuerUpdate: z
-                .boolean()
-                .describe("Whether the user can update trusted issuers"),
-              trustedIssuerDelete: z
-                .boolean()
-                .describe("Whether the user can delete trusted issuers"),
-              topicCreate: z
-                .boolean()
-                .describe("Whether the user can create topics"),
-              topicUpdate: z
-                .boolean()
-                .describe("Whether the user can update topics"),
-              topicDelete: z
-                .boolean()
-                .describe("Whether the user can delete topics"),
+                .describe("Whether the user can create addon factories"),
               claimCreate: z
                 .boolean()
                 .describe("Whether the user can create claims"),
@@ -187,6 +171,71 @@ export const SystemSchema = z.object({
               claimRevoke: z
                 .boolean()
                 .describe("Whether the user can revoke claims"),
+              complianceModuleCreate: z
+                .boolean()
+                .describe("Whether the user can create compliance modules"),
+              grantRole: z
+                .boolean()
+                .describe("Whether the user can grant roles"),
+              identityCreate: z
+                .boolean()
+                .describe("Whether the user can create identities"),
+              identityRead: z
+                .boolean()
+                .describe("Whether the user can read identities"),
+              identitySearch: z
+                .boolean()
+                .describe("Whether the user can search identities"),
+              identityList: z
+                .boolean()
+                .describe("Whether the user can read identities"),
+              identityRegister: z
+                .boolean()
+                .describe("Whether the user can register identities"),
+              kycDelete: z
+                .boolean()
+                .describe("Whether the user can delete KYC profiles"),
+              kycList: z
+                .boolean()
+                .describe("Whether the user can list KYC profiles"),
+              kycRead: z
+                .boolean()
+                .describe("Whether the user can read KYC profiles"),
+              kycUpsert: z
+                .boolean()
+                .describe("Whether the user can upsert KYC profiles"),
+              revokeRole: z
+                .boolean()
+                .describe("Whether the user can revoke roles"),
+              tokenCreate: z
+                .boolean()
+                .describe("Whether the user can create tokens"),
+              tokenFactoryCreate: z
+                .boolean()
+                .describe("Whether the user can create token factories"),
+              topicCreate: z
+                .boolean()
+                .describe("Whether the user can create topics"),
+              topicDelete: z
+                .boolean()
+                .describe("Whether the user can delete topics"),
+              topicUpdate: z
+                .boolean()
+                .describe("Whether the user can update topics"),
+              trustedIssuerCreate: z
+                .boolean()
+                .describe("Whether the user can create trusted issuers"),
+              trustedIssuerDelete: z
+                .boolean()
+                .describe("Whether the user can delete trusted issuers"),
+              trustedIssuerUpdate: z
+                .boolean()
+                .describe("Whether the user can update trusted issuers"),
+              userList: z.boolean().describe("Whether the user can list users"),
+              userRead: z.boolean().describe("Whether the user can read users"),
+              userSearch: z
+                .boolean()
+                .describe("Whether the user can search users"),
             };
             return actionsSchema;
           })()
@@ -195,6 +244,30 @@ export const SystemSchema = z.object({
     })
     .optional()
     .describe("The permissions of the user for the system"),
+
+  /**
+   * The user's identity information within this system
+   */
+  userIdentity: z
+    .object({
+      /**
+       * The user's identity contract address
+       */
+      address: ethereumAddress.describe("User's identity contract address"),
+
+      /**
+       * The registered identity.
+       */
+      registered: z
+        .object({
+          isRegistered: z.literal(true),
+          country: isoCountryCode,
+        })
+        .or(z.literal(false))
+        .optional(),
+    })
+    .optional()
+    .describe("The user's identity information within this system"),
 });
 
 export type System = z.infer<typeof SystemSchema>;

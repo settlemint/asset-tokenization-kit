@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
+import { getBasePrice } from "../utils/token-stats-test-utils";
 
 describe("AccountStats", () => {
   it("should fetch account stats aggregated by hour", async () => {
@@ -21,17 +22,18 @@ describe("AccountStats", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
-    expect(response.accountStats_collection).toBeDefined();
-    expect(Array.isArray(response.accountStats_collection)).toBe(true);
+    const accountStats = response.accountStats_collection ?? [];
+    expect(Array.isArray(accountStats)).toBe(true);
 
     // Verify that stats have required fields
-    if (response.accountStats_collection.length > 0) {
-      const firstStat = response.accountStats_collection[0];
-      expect(firstStat.timestamp).toBeDefined();
-      expect(firstStat.account).toBeDefined();
-      expect(firstStat.totalValueInBaseCurrency).toBeDefined();
-      expect(firstStat.balancesCount).toBeDefined();
+    if (!accountStats.length) {
+      return;
     }
+    const firstStat = accountStats[0]!;
+    expect(firstStat.timestamp).toBeDefined();
+    expect(firstStat.account).toBeDefined();
+    expect(firstStat.totalValueInBaseCurrency).toBeDefined();
+    expect(firstStat.balancesCount).toBeDefined();
   });
 
   it("should fetch account stats aggregated by day", async () => {
@@ -53,17 +55,18 @@ describe("AccountStats", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
-    expect(response.accountStats_collection).toBeDefined();
-    expect(Array.isArray(response.accountStats_collection)).toBe(true);
+    const accountStats = response.accountStats_collection ?? [];
+    expect(Array.isArray(accountStats)).toBe(true);
 
     // Verify that stats have required fields
-    if (response.accountStats_collection.length > 0) {
-      const firstStat = response.accountStats_collection[0];
-      expect(firstStat.timestamp).toBeDefined();
-      expect(firstStat.account).toBeDefined();
-      expect(firstStat.totalValueInBaseCurrency).toBeDefined();
-      expect(firstStat.balancesCount).toBeDefined();
+    if (!accountStats.length) {
+      return;
     }
+    const firstStat = accountStats[0]!;
+    expect(firstStat.timestamp).toBeDefined();
+    expect(firstStat.account).toBeDefined();
+    expect(firstStat.totalValueInBaseCurrency).toBeDefined();
+    expect(firstStat.balancesCount).toBeDefined();
   });
 
   it("should fetch account stats state entity", async () => {
@@ -85,8 +88,8 @@ describe("AccountStats", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
-    expect(response.accountStatsStates).toBeDefined();
-    expect(Array.isArray(response.accountStatsStates)).toBe(true);
+    const accountStatsStates = response.accountStatsStates;
+    expect(accountStatsStates && Array.isArray(accountStatsStates)).toBe(true);
   });
 
   it("should have correct total value calculation for accounts with tokens", async () => {
@@ -96,18 +99,30 @@ describe("AccountStats", () => {
         accounts(where: { balances_: { value_gt: "0" } }) {
           id
           isContract
-          identity { id }
           balances {
             value
             token {
               id
+              name
+              type
               symbol
               decimals
               basePriceClaim {
                 id
-                values(where: { key: "amount" }) {
+                values {
                   key
                   value
+                }
+              }
+              bond {
+                faceValue
+                denominationAsset {
+                  basePriceClaim {
+                    values {
+                      key
+                      value
+                    }
+                  }
                 }
               }
             }
@@ -123,45 +138,43 @@ describe("AccountStats", () => {
     // - Investor B
     // - Bond contract (denomination deposit asset)
     // - Fixed yield schedule contract (denomination deposit asset)
-    expect(accountsResponse.accounts.length).toBe(5);
+    const accounts = accountsResponse.accounts ?? [];
+    expect(accounts.length).toBe(5);
 
-    const account = accountsResponse.accounts[0];
+    for (const account of accounts) {
+      // Calculate expected total value
+      const expectedTotalValue = account.balances.reduce((acc, balance) => {
+        const balanceValue = Number(balance.value);
+        const basePrice = getBasePrice(balance.token);
+        const totalValue = basePrice * balanceValue;
+        console.log(
+          `${balance.token.name} ${balance.token.type} ${balanceValue} ${basePrice} ${totalValue}`
+        );
+        return acc + totalValue;
+      }, 0);
 
-    // Calculate expected total value
-    const expectedTotalValue = account.balances.reduce((acc, balance) => {
-      const basePrice = balance.token.basePriceClaim?.values.find(
-        (value) => value.key === "amount"
-      )?.value;
-      if (!basePrice) {
-        return acc;
-      }
-
-      const basePriceParsed = Number(basePrice) / Math.pow(10, 18);
-      const balanceValue = Number(balance.value);
-      return acc + basePriceParsed * balanceValue;
-    }, 0);
-
-    // Get the account stats state
-    const statsQuery = theGraphGraphql(
-      `query($accountId: Bytes!) {
+      // Get the account stats state
+      const statsQuery = theGraphGraphql(
+        `query($accountId: ID!) {
           accountStatsState(id: $accountId) {
             totalValueInBaseCurrency
             balancesCount
           }
         }
       `
-    );
-    const statsResponse = await theGraphClient.request(statsQuery, {
-      accountId: account.id,
-    });
-
-    if (statsResponse.accountStatsState) {
-      expect(
-        Number(statsResponse.accountStatsState.totalValueInBaseCurrency)
-      ).toBeCloseTo(expectedTotalValue, 2);
-      expect(statsResponse.accountStatsState.balancesCount).toBe(
-        account.balances.length
       );
+      const statsResponse = await theGraphClient.request(statsQuery, {
+        accountId: account.id,
+      });
+
+      if (statsResponse.accountStatsState) {
+        expect(
+          Number(statsResponse.accountStatsState.totalValueInBaseCurrency)
+        ).toBeCloseTo(expectedTotalValue, 6);
+        expect(statsResponse.accountStatsState.balancesCount).toBe(
+          account.balances.length
+        );
+      }
     }
   });
 });

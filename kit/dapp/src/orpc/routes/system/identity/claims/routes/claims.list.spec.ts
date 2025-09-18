@@ -7,11 +7,11 @@ import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
   DEFAULT_ISSUER,
+  DEFAULT_PINCODE,
   getUserData,
   registerUserIdentity,
   signInWithUser,
 } from "@test/fixtures/user";
-import { waitUntil } from "@test/helpers/test-helpers";
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe("Claims list (integration)", () => {
@@ -44,26 +44,18 @@ describe("Claims list (integration)", () => {
       throw new Error("Target test user does not have a wallet");
     }
 
-    // Wait until identity is indexed in the subgraph
-    await waitUntil({
-      get: () => adminClient.account.read({ wallet: targetUserData.wallet }),
-      until: (account) => Boolean(account?.identity),
-      timeoutMs: 60_000,
-      intervalMs: 1000,
-    });
-
     // Get the target user's identity address for issuing claims
-    const targetAccount = await adminClient.account.read({
+    const targetIdentity = await adminClient.system.identity.read({
       wallet: targetUserData.wallet,
     });
-    if (!targetAccount?.identity) {
+    if (!targetIdentity?.id) {
       throw new Error("Target test user does not have an identity setup");
     }
 
     // Set up test claims (no read filtering applied by API)
     // Issue a KYC claim
     await adminClient.system.identity.claims.issue({
-      targetIdentityAddress: targetAccount.identity,
+      targetIdentityAddress: targetIdentity.id,
       claim: {
         topic: "knowYourCustomer",
         data: {
@@ -72,13 +64,13 @@ describe("Claims list (integration)", () => {
       },
       walletVerification: {
         verificationType: VerificationType.pincode,
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
       },
     });
 
     // Issue a collateral claim
     await issuerClient.system.identity.claims.issue({
-      targetIdentityAddress: targetAccount.identity,
+      targetIdentityAddress: targetIdentity.id,
       claim: {
         topic: "collateral",
         data: {
@@ -88,16 +80,8 @@ describe("Claims list (integration)", () => {
       },
       walletVerification: {
         verificationType: VerificationType.pincode,
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
       },
-    });
-
-    // Wait until both claims are visible in the subgraph
-    await waitUntil({
-      get: () => adminClient.account.read({ wallet: targetUserData.wallet }),
-      until: (account) => (account?.claims?.length ?? 0) >= 2,
-      timeoutMs: 60_000,
-      intervalMs: 1000,
     });
   });
 

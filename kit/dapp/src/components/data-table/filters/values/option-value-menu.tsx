@@ -165,7 +165,8 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
           return {
             operator: "is",
             values: [value],
-          };
+            columnMeta: column.columnDef.meta,
+          } satisfies FilterValue<"option", TData>;
         }
 
         return undefined;

@@ -6,6 +6,7 @@ import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
   DEFAULT_ISSUER,
+  DEFAULT_PINCODE,
   getUserData,
   registerUserIdentity,
   signInWithUser,
@@ -33,8 +34,8 @@ describe("Claims revoke (integration)", () => {
     // Issuer user has claimIssuer role but is only trusted for specific topics (not KYC)
     const issuerHeaders = await signInWithUser(DEFAULT_ISSUER);
     issuerClient = getOrpcClient(issuerHeaders);
-    const issuerAccount = await issuerClient.account.me({});
-    if (!issuerAccount?.identity) {
+    const issuerIdentity = await issuerClient.system.identity.me({});
+    if (!issuerIdentity?.id) {
       throw new Error("Issuer account does not have an identity setup");
     }
 
@@ -48,17 +49,14 @@ describe("Claims revoke (integration)", () => {
       throw new Error("Target test user does not have a wallet");
     }
 
-    // Wait for graph sync to ensure identity is indexed
-    await waitForGraphIndexing();
-
     // Get the target user's identity address
-    const targetAccount = await adminClient.account.read({
+    const targetIdentity = await adminClient.system.identity.read({
       wallet: targetUserData.wallet,
     });
-    if (!targetAccount?.identity) {
+    if (!targetIdentity?.id) {
       throw new Error("Target test user does not have an identity setup");
     }
-    targetIdentityAddress = targetAccount.identity;
+    targetIdentityAddress = targetIdentity.id;
   });
 
   it("should successfully revoke a collateral claim when user has proper permissions", async () => {
@@ -74,7 +72,7 @@ describe("Claims revoke (integration)", () => {
       },
       walletVerification: {
         verificationType: VerificationType.pincode,
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
       },
     });
 
@@ -94,7 +92,7 @@ describe("Claims revoke (integration)", () => {
       claimTopic: "collateral",
       walletVerification: {
         verificationType: VerificationType.pincode,
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
       },
     });
 
@@ -112,7 +110,7 @@ describe("Claims revoke (integration)", () => {
           claimTopic: "collateral",
           walletVerification: {
             verificationType: VerificationType.pincode,
-            secretVerificationCode: "123456",
+            secretVerificationCode: DEFAULT_PINCODE,
           },
         },
         {
@@ -138,7 +136,7 @@ describe("Claims revoke (integration)", () => {
       },
       walletVerification: {
         verificationType: VerificationType.pincode,
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
       },
     });
 
@@ -150,7 +148,7 @@ describe("Claims revoke (integration)", () => {
           claimTopic: "knowYourCustomer",
           walletVerification: {
             verificationType: VerificationType.pincode,
-            secretVerificationCode: "123456",
+            secretVerificationCode: DEFAULT_PINCODE,
           },
         },
         {

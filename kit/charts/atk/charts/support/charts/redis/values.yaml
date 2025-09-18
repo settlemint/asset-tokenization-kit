@@ -2,110 +2,116 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# -- Global Docker image registry
+# -- (object) Global Docker image registry
 global:
-  # -- Global Docker image registry
+  # -- (string) Global Docker image registry
   imageRegistry: ""
-  # -- Global Docker registry secret names as an array
+  # -- (list) Global Docker registry secret names as an array
   imagePullSecrets: []
-  # -- Global StorageClass for Persistent Volume(s)
+  # -- (string) Global StorageClass for Persistent Volume(s)
   storageClass: ""
 
-# -- String to fully override common.names.fullname
+# -- String to fully override common.names.fullname (string)
 fullnameOverride: ""
 
-# -- String to partially override common.names.fullname
+# -- String to partially override common.names.fullname (string)
 nameOverride: ""
 
-# -- Labels to add to all deployed objects
+# -- Labels to add to all deployed objects (object)
 commonLabels: {}
 
-# -- Annotations to add to all deployed objects
+# -- Annotations to add to all deployed objects (object)
 commonAnnotations: {}
 
-# Redis image configuration
+# -- (object) Redis image configuration
 image:
-  # -- Redis image registry
+  # -- (string) Redis image registry
   registry: docker.io
-  # -- Redis image repository
+  # -- (string) Redis image repository
   repository: redis
-  # -- Redis image tag
+  # -- (string) Redis image tag
   tag: "8.2.1-alpine"
-  # -- Redis image pull policy
+  # -- (string) Redis image pull policy
   pullPolicy: IfNotPresent
-  # -- Redis image pull secrets
+  # -- Redis image pull secrets (list)
   pullSecrets: []
 
-# -- Number of Redis replicas (should be 1 for development)
+# -- (int) Number of Redis replicas (should be 1 for development)
 replicaCount: 1
 
-# Service configuration
+# -- (object) Service configuration
 service:
-  # -- Service type
+  # -- (string) Service type
   type: ClusterIP
-  # -- Redis port
+  # -- (int) Redis port
   port: 6379
-  # -- Service annotations
+  # -- (object) Service annotations
   annotations: {}
-  # -- Service labels
+  # -- (object) Service labels
   labels: {}
 
-# Resources configuration
+# -- (object) Resources configuration
 resources:
-  # -- Resource requests
+  # -- (object) Resource requests
   requests:
+    # -- (string) Memory request
     memory: "128Mi"
+    # -- (string) CPU request
     cpu: "100m"
-  # -- Resource limits
+  # -- (object) Resource limits
   limits:
+    # -- (string) Memory limit
     memory: "256Mi"
+    # -- (string) CPU limit
     cpu: "200m"
 
-# Persistence configuration
+# -- (object) Persistence configuration
 persistence:
-  # -- Enable persistence using PVC
+  # -- (bool) Enable persistence using PVC
   enabled: true
-  # -- Storage class for the PVC
+  # -- (string) Storage class for the PVC
   storageClass: ""
-  # -- Access mode for the PVC
+  # -- (list) Access mode for the PVC
   accessModes:
     - ReadWriteOnce
-  # -- Size of the PVC
+  # -- (string) Size of the PVC
   size: 1Gi
-  # -- Annotations for the PVC
+  # -- (object) Annotations for the PVC
   annotations: {}
 
-# Redis configuration
+# -- (object) Redis configuration
 config:
-  # -- Maximum memory Redis can use
+  # -- (string) Maximum memory Redis can use
   maxmemory: "256mb"
-  # -- Memory eviction policy
+  # -- (string) Memory eviction policy
   maxmemoryPolicy: "allkeys-lru"
-  # -- Save DB to disk (RDB persistence)
+  # -- (string) Save DB to disk (RDB persistence)
   save: ""
-  # -- Append only file (AOF persistence)
+  # -- (string) Append only file (AOF persistence)
   appendonly: "no"
 
-# Authentication
+# -- (object) Authentication
 auth:
-  # -- Enable authentication
+  # -- (bool) Enable authentication
   enabled: true
-  # -- Redis password
+  # -- (string) Redis password
   password: "atk"
 
-# -- Pod annotations
+# -- Pod annotations (object)
 podAnnotations: {}
 
-# -- Pod labels
+# -- Pod labels (object)
 podLabels: {}
 
-# -- Pod security context
+# -- Pod security context (object)
 podSecurityContext:
   fsGroup: 999
   runAsNonRoot: true
   runAsUser: 999
+  seccompProfile:
+    type: RuntimeDefault
 
-# -- Container security context
+# -- Container security context (object)
 containerSecurityContext:
   allowPrivilegeEscalation: false
   capabilities:
@@ -114,52 +120,55 @@ containerSecurityContext:
   readOnlyRootFilesystem: false
   runAsNonRoot: true
   runAsUser: 999
+  runAsGroup: 999
+  seccompProfile:
+    type: RuntimeDefault
 
-# Liveness probe configuration
+# -- (object) Liveness probe configuration
 livenessProbe:
-  # -- Enable liveness probe
+  # -- Enable liveness probe (bool)
   enabled: true
-  # -- Initial delay seconds
+  # -- Initial delay seconds (int)
   initialDelaySeconds: 30
-  # -- Period seconds
+  # -- Period seconds (int)
   periodSeconds: 10
-  # -- Timeout seconds
+  # -- Timeout seconds (int)
   timeoutSeconds: 5
-  # -- Success threshold
+  # -- Success threshold (int)
   successThreshold: 1
-  # -- Failure threshold
+  # -- Failure threshold (int)
   failureThreshold: 3
 
-# Readiness probe configuration
+# -- (object) Readiness probe configuration
 readinessProbe:
-  # -- Enable readiness probe
+  # -- Enable readiness probe (bool)
   enabled: true
-  # -- Initial delay seconds
+  # -- Initial delay seconds (int)
   initialDelaySeconds: 5
-  # -- Period seconds
+  # -- Period seconds (int)
   periodSeconds: 10
-  # -- Timeout seconds
+  # -- Timeout seconds (int)
   timeoutSeconds: 5
-  # -- Success threshold
+  # -- Success threshold (int)
   successThreshold: 1
-  # -- Failure threshold
+  # -- Failure threshold (int)
   failureThreshold: 3
 
-# -- Node selector
+# -- Node selector (object)
 nodeSelector: {}
 
-# -- Tolerations
+# -- Tolerations (list)
 tolerations: []
 
-# -- Affinity
+# -- Affinity (object)
 affinity: {}
 
-# Network policy configuration
+# -- (object) Network policy configuration
 networkPolicy:
-  # -- Enable network policies
+  # -- Enable network policies (bool)
   enabled: false
-  # -- Additional allowed pod selectors
+  # -- Additional allowed pod selectors (list)
   allowedPodSelectors: []
-  # -- Additional allowed namespace selectors
+  # -- Additional allowed namespace selectors (list)
   allowedNamespaceSelectors: []
 

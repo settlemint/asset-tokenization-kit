@@ -1,12 +1,10 @@
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
-import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { isContractAddress } from "@/test/anvil";
 import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import type { RoleRequirement } from "@atk/zod/role-requirement";
 import { ORPCError } from "@orpc/server";
 import { retryWhenFailed } from "@settlemint/sdk-utils";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { getAuthClient } from "@test/fixtures/auth-client";
 import { DEFAULT_INVESTOR } from "@test/fixtures/user";
 import { getOrpcClient, type OrpcClient } from "./orpc-client";
 import {
@@ -16,11 +14,8 @@ import {
   signInWithUser,
 } from "./user";
 
-const TOKEN_MANAGEMENT_REQUIRED_ROLES = extractRequiredRoles(
-  TOKEN_PERMISSIONS
-).filter((role) => role !== "admin");
-const SYSTEM_MANAGEMENT_REQUIRED_ROLES =
-  extractRequiredRoles(SYSTEM_PERMISSIONS);
+const { userSearch: _, ...otherSystemRoles } = SYSTEM_PERMISSIONS;
+const SYSTEM_MANAGEMENT_REQUIRED_ROLES = extractRequiredRoles(otherSystemRoles);
 
 const logger = createLogger({ level: "info" });
 
@@ -63,10 +58,7 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
     throw new Error("Failed to bootstrap system");
   }
 
-  // System.create now grants all necessary roles including:
-  // - DEFAULT_ADMIN_ROLE and SYSTEM_MANAGER_ROLE (granted by smart contract)
-  // - TOKEN_MANAGER_ROLE, IDENTITY_MANAGER_ROLE, COMPLIANCE_MANAGER_ROLE, ADDON_MANAGER_ROLE (granted by API)
-  logger.info("✓ System created with all necessary roles granted");
+  logger.info("✓ System created ");
 
   // The create method already returns a fully initialized system
   if (!system.tokenFactoryRegistry) {
@@ -187,31 +179,11 @@ export async function bootstrapAddons(orpClient: OrpcClient) {
 
 export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
   const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
-  const issuerMe = await issuerOrpcClient.user.me({});
   const issuerSystem = await issuerOrpcClient.system.read({ id: "default" });
-
-  // First, set the Better Auth role to 'issuer' to grant off-chain permissions
-  // This is required for the { account: ["read"] } permission in offchain-permissions.middleware.ts
-  if (issuerMe.role !== "issuer") {
-    const authClient = getAuthClient();
-    const adminHeaders = await signInWithUser(DEFAULT_ADMIN);
-    await authClient.admin.setRole(
-      {
-        userId: issuerMe.id,
-        role: "issuer",
-      },
-      {
-        headers: {
-          ...Object.fromEntries(adminHeaders.entries()),
-        },
-      }
-    );
-    logger.info("Set Better Auth role for issuer to 'issuer'");
-  }
 
   // Issuer needs both token management roles and the claimIssuer role
   const issuerRequiredRoles: AccessControlRoles[] = [
-    ...TOKEN_MANAGEMENT_REQUIRED_ROLES,
+    "tokenManager",
     "claimIssuer", // Required for issuing claims to user identities
   ];
 
@@ -235,13 +207,7 @@ export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
 export async function setupDefaultAdminRoles(orpClient: OrpcClient) {
   const adminSystem = await orpClient.system.read({ id: "default" });
 
-  const allRoles = Array.from(
-    new Set([
-      ...SYSTEM_MANAGEMENT_REQUIRED_ROLES,
-      ...TOKEN_MANAGEMENT_REQUIRED_ROLES,
-    ])
-  );
-  const rolesToGrant = allRoles.filter(
+  const rolesToGrant = SYSTEM_MANAGEMENT_REQUIRED_ROLES.filter(
     (role) => adminSystem.userPermissions?.roles[role] !== true
   );
 
@@ -261,8 +227,8 @@ export async function setupDefaultAdminRoles(orpClient: OrpcClient) {
 export async function setupTrustedClaimIssuers(orpClient: OrpcClient) {
   const topics = await orpClient.system.claimTopics.topicList({});
   const trustedIssuers = await orpClient.system.trustedIssuers.list({});
-  const adminAccount = await orpClient.account.me({});
-  if (!trustedIssuers.some((t) => t.id === adminAccount?.identity)) {
+  const adminIdentity = await orpClient.system.identity.me({});
+  if (!trustedIssuers.some((t) => t.id === adminIdentity?.id)) {
     logger.info("Making admin a trusted issuer of all topics");
     // Make admin a trusted issuer of all topics
     await orpClient.system.trustedIssuers.create({
@@ -270,13 +236,13 @@ export async function setupTrustedClaimIssuers(orpClient: OrpcClient) {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
       },
-      issuerAddress: adminAccount?.identity ?? "",
+      issuerAddress: adminIdentity?.id ?? "",
       claimTopicIds: topics.map((t) => t.topicId),
     });
   }
   const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
-  const issuerAccount = await issuerOrpcClient.account.me({});
-  if (!trustedIssuers.some((t) => t.id === issuerAccount?.identity)) {
+  const issuerIdentity = await issuerOrpcClient.system.identity.me({});
+  if (!trustedIssuers.some((t) => t.id === issuerIdentity?.id)) {
     logger.info("Making issuer a trusted issuer of asset related topics");
     // Make issuer a trusted issuer of asset related topics
     await orpClient.system.trustedIssuers.create({
@@ -284,7 +250,7 @@ export async function setupTrustedClaimIssuers(orpClient: OrpcClient) {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
       },
-      issuerAddress: issuerAccount?.identity ?? "",
+      issuerAddress: issuerIdentity?.id ?? "",
       claimTopicIds: topics
         .filter((topic) =>
           ["collateral", "assetClassification", "basePrice", "isin"].includes(

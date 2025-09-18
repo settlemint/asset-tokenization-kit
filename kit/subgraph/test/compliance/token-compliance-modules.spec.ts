@@ -79,21 +79,21 @@ describe("Token Compliance Modules", () => {
         expect(expressionNodes).toHaveLength(3);
 
         // Node 0: KYC topic
-        expect(expressionNodes[0].nodeType).toBe("TOPIC");
-        expect(expressionNodes[0].index).toBe(0);
-        expect(expressionNodes[0].topicScheme?.name).toBe("knowYourCustomer");
+        expect(expressionNodes[0]?.nodeType).toBe("TOPIC");
+        expect(expressionNodes[0]?.index).toBe(0);
+        expect(expressionNodes[0]?.topicScheme?.name).toBe("knowYourCustomer");
 
         // Node 1: AML topic
-        expect(expressionNodes[1].nodeType).toBe("TOPIC");
-        expect(expressionNodes[1].index).toBe(1);
-        expect(expressionNodes[1].topicScheme?.name).toBe(
+        expect(expressionNodes[1]?.nodeType).toBe("TOPIC");
+        expect(expressionNodes[1]?.index).toBe(1);
+        expect(expressionNodes[1]?.topicScheme?.name).toBe(
           "antiMoneyLaundering"
         );
 
         // Node 2: AND operation
-        expect(expressionNodes[2].nodeType).toBe("AND");
-        expect(expressionNodes[2].index).toBe(2);
-        expect(expressionNodes[2].topicScheme).toBeNull();
+        expect(expressionNodes[2]?.nodeType).toBe("AND");
+        expect(expressionNodes[2]?.index).toBe(2);
+        expect(expressionNodes[2]?.topicScheme).toBeNull();
       }
 
       const countryBlockListModule = complianceModules.find(

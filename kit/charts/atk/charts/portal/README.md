@@ -1,6 +1,6 @@
 # portal
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 8.5.5](https://img.shields.io/badge/AppVersion-8.5.5-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 8.5.5](https://img.shields.io/badge/AppVersion-8.5.5-informational?style=flat-square)
 
 Portal is a comprehensive blockchain data management and querying service that provides
 real-time access to on-chain data through GraphQL APIs. It serves as the central data
@@ -48,6 +48,17 @@ Portal is a powerful blockchain data management and querying service designed sp
 - Redis cache (can use Bitnami Redis chart)
 - Access to a blockchain RPC endpoint (e.g., through txsigner)
 
+## Connection Requirements
+
+Update the following sections of `values.yaml` to point Portal at your infrastructure:
+
+| Service | Values path | Default |
+| --- | --- | --- |
+| PostgreSQL | `global.datastores.portal.postgresql` | `postgresql://portal:atk@postgresql:5432/portal?sslmode=disable` |
+| Redis cache | `portal.config.redis` | `redis://default:atk@redis:6379/4` |
+
+Provide external hostnames, credentials, logical database numbers, and SSL settings where required.
+
 ## Installing the Chart
 
 To install the chart with the release name `my-portal`:
@@ -84,31 +95,18 @@ The following table lists the configurable parameters of the Portal chart and th
 | autoscaling.minReplicas | int | `1` | Minimum number of Portal replicas |
 | commonAnnotations | object | `{}` | Annotations to add to all deployed objects |
 | commonLabels | object | `{}` | Labels to add to all deployed objects |
-| config | object | `{"network":{"networkId":"53771311147","networkName":"ATK","nodeRpcUrl":"http://txsigner:3000"},"postgresql":"postgresql://portal:atk@postgresql:5432/portal?sslmode=disable","redis":{"host":"redis","password":"atk","port":6379,"username":"default"}}` | Portal configuration |
-| config.network | object | `{"networkId":"53771311147","networkName":"ATK","nodeRpcUrl":"http://txsigner:3000"}` | Network configuration |
-| config.network.networkId | string | `"53771311147"` | Network ID |
-| config.network.networkName | string | `"ATK"` | Network name |
+| config | object | `{"network":{"networkId":null,"networkName":null,"nodeRpcUrl":"http://txsigner:3000"},"postgresql":{},"redis":{}}` | Portal configuration |
+| config.network | object | `{"networkId":null,"networkName":null,"nodeRpcUrl":"http://txsigner:3000"}` | Network configuration |
+| config.network.networkId | string | `nil` | Network ID (defaults to global.chainId when unset) |
+| config.network.networkName | string | `nil` | Network name (defaults to global.chainName when unset) |
 | config.network.nodeRpcUrl | string | `"http://txsigner:3000"` | Node RPC URL |
-| config.postgresql | string | `"postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"` | PostgreSQL connection string |
-| config.redis | object | `{"host":"redis","password":"atk","port":6379,"username":"default"}` | Redis configuration |
-| config.redis.host | string | `"redis"` | Redis host |
-| config.redis.password | string | `"atk"` | Redis password |
-| config.redis.port | int | `6379` | Redis port |
-| config.redis.username | string | `"default"` | Redis username |
-| containerSecurityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"enabled":false,"readOnlyRootFilesystem":false,"runAsGroup":1001,"runAsNonRoot":true,"runAsUser":1001,"seccompProfile":{"type":"RuntimeDefault"}}` | Container Security Context configuration |
-| containerSecurityContext.allowPrivilegeEscalation | bool | `false` | Set container's Security Context allowPrivilegeEscalation |
-| containerSecurityContext.capabilities | object | `{"drop":["ALL"]}` | Linux capabilities configuration |
-| containerSecurityContext.capabilities.drop | list | `["ALL"]` | Set container's Security Context drop capabilities |
-| containerSecurityContext.enabled | bool | `false` | Enable container Security Context |
-| containerSecurityContext.readOnlyRootFilesystem | bool | `false` | Set container's Security Context readOnlyRootFilesystem |
-| containerSecurityContext.runAsGroup | int | `1001` | Set container's Security Context runAsGroup |
-| containerSecurityContext.runAsNonRoot | bool | `true` | Set container's Security Context runAsNonRoot |
-| containerSecurityContext.runAsUser | int | `1001` | Set container's Security Context runAsUser |
-| containerSecurityContext.seccompProfile | object | `{"type":"RuntimeDefault"}` | Seccomp profile configuration |
-| containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` | Set container's Security Context seccomp profile |
+| config.postgresql | object | `{}` | PostgreSQL overrides merged with global.datastores.portal.postgresql |
+| config.redis | object | `{}` | Redis overrides merged with global.datastores.portal.redis |
+| containerSecurityContext | object | `{}` | Container Security Context configuration (overrides global.securityContexts.container) |
 | extraEnvVars | list | `[]` | Array with extra environment variables to add to Portal nodes |
 | extraEnvVarsCM | string | `""` | Name of existing ConfigMap containing extra env vars for Portal nodes |
 | extraEnvVarsSecret | string | `""` | Name of existing Secret containing extra env vars for Portal nodes |
+| extraInitContainers | list | `[]` |  |
 | extraVolumeMounts | list | `[]` | Optionally specify extra list of additional volumeMounts for the Portal container(s) |
 | extraVolumes | list | `[]` | Optionally specify extra list of additional volumes for the Portal pod(s) |
 | fullnameOverride | string | `"portal"` | String to fully override common.names.fullname |
@@ -140,6 +138,22 @@ The following table lists the configurable parameters of the Portal chart and th
 | ingress.secrets | list | `[]` | Custom TLS certificates as secrets |
 | ingress.selfSigned | bool | `false` | Create a TLS secret for this ingress record using self-signed certificates generated by Helm |
 | ingress.tls | bool | `false` | Enable TLS configuration for the host defined at `ingress.hostname` parameter |
+| initContainer.copyArtifacts.resources.limits.cpu | string | `"150m"` |  |
+| initContainer.copyArtifacts.resources.limits.memory | string | `"128Mi"` |  |
+| initContainer.copyArtifacts.resources.requests.cpu | string | `"25m"` |  |
+| initContainer.copyArtifacts.resources.requests.memory | string | `"64Mi"` |  |
+| initContainer.copyArtifacts.securityContext | object | `{}` |  |
+| initContainer.tcpCheck.dependencies[0].endpoint | string | `"postgresql:5432"` |  |
+| initContainer.tcpCheck.dependencies[0].name | string | `"postgresql"` |  |
+| initContainer.tcpCheck.enabled | bool | `true` |  |
+| initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
+| initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
+| initContainer.tcpCheck.image.tag | string | `"v7.7.10"` |  |
+| initContainer.tcpCheck.resources.limits.cpu | string | `"100m"` |  |
+| initContainer.tcpCheck.resources.limits.memory | string | `"64Mi"` |  |
+| initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` |  |
+| initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
+| initContainer.tcpCheck.timeout | int | `120` |  |
 | lifecycleHooks | object | `{}` | lifecycleHooks for the Portal container(s) to automate configuration before or after startup |
 | livenessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"tcpSocket":{"port":"http"},"timeoutSeconds":5}` | Configure Portal containers' liveness probe |
 | livenessProbe.enabled | bool | `true` | Enable livenessProbe on Portal containers |
@@ -168,18 +182,39 @@ The following table lists the configurable parameters of the Portal chart and th
 | nodeAffinityPreset.type | string | `""` | Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard` |
 | nodeAffinityPreset.values | list | `[]` | Node label values to match. Ignored if `affinity` is set |
 | nodeSelector | object | `{}` | Node labels for pod assignment |
+| openShiftRoute | object | `{"alternateBackends":[],"annotations":{},"enabled":false,"graphql":{"alternateBackends":[],"annotations":{},"enabled":true,"host":"","path":"","port":{"targetPort":""},"tls":null,"to":{"weight":""},"wildcardPolicy":""},"host":"portal.k8s.orb.local","path":"/","port":{"targetPort":"http"},"tls":null,"to":{"weight":100},"wildcardPolicy":"None"}` | OpenShift Route parameters |
+| openShiftRoute.alternateBackends | list | `[]` | Additional backends for weighted routing |
+| openShiftRoute.annotations | object | `{}` | Additional annotations for the OpenShift route resource |
+| openShiftRoute.enabled | bool | `false` | Enable OpenShift route creation for Portal |
+| openShiftRoute.graphql | object | `{"alternateBackends":[],"annotations":{},"enabled":true,"host":"","path":"","port":{"targetPort":""},"tls":null,"to":{"weight":""},"wildcardPolicy":""}` | GraphQL route specific configuration |
+| openShiftRoute.graphql.alternateBackends | list | `[]` | Additional backends for weighted routing (same structure as openShiftRoute.alternateBackends) |
+| openShiftRoute.graphql.annotations | object | `{}` | Additional annotations for the GraphQL route resource |
+| openShiftRoute.graphql.enabled | bool | `true` | Enable a dedicated route for the GraphQL endpoint |
+| openShiftRoute.graphql.host | string | `""` | Hostname exposed via the GraphQL route (defaults to openShiftRoute.host when empty) |
+| openShiftRoute.graphql.path | string | `""` | HTTP path exposed via the GraphQL route (defaults to ingress.graphqlPath) |
+| openShiftRoute.graphql.port | object | `{"targetPort":""}` | Service port configuration for the GraphQL route target |
+| openShiftRoute.graphql.port.targetPort | string | `""` | Service target port name (defaults to `graphql`) |
+| openShiftRoute.graphql.tls | object | `nil` | TLS configuration for the GraphQL route |
+| openShiftRoute.graphql.to | object | `{"weight":""}` | Primary service weight configuration for the GraphQL route |
+| openShiftRoute.graphql.to.weight | string | `""` | Weight assigned to the Portal service backend (defaults to openShiftRoute.to.weight) |
+| openShiftRoute.graphql.wildcardPolicy | string | `""` | Wildcard policy to apply to the GraphQL route (defaults to openShiftRoute.wildcardPolicy) |
+| openShiftRoute.host | string | `"portal.k8s.orb.local"` | Hostname exposed via the OpenShift route |
+| openShiftRoute.path | string | `"/"` | HTTP path exposed via the OpenShift route |
+| openShiftRoute.port | object | `{"targetPort":"http"}` | Service port configuration for the route target |
+| openShiftRoute.port.targetPort | string | `"http"` | Service target port name (must exist on the Portal service) |
+| openShiftRoute.tls | object | `nil` | TLS configuration for the OpenShift route |
+| openShiftRoute.to | object | `{"weight":100}` | Primary service weight configuration |
+| openShiftRoute.to.weight | int | `100` | Weight assigned to the Portal service backend |
+| openShiftRoute.wildcardPolicy | string | `"None"` | Wildcard policy to apply to the route |
 | pdb | object | `{"enabled":false,"maxUnavailable":"","minAvailable":""}` | Pod disruption budget configuration |
 | pdb.enabled | bool | `false` | If true, create a pod disruption budget for pods. |
 | pdb.maxUnavailable | string | `""` | Maximum number/percentage of pods that may be made unavailable. Defaults to 1 if both pdb.minAvailable and pdb.maxUnavailable are empty. |
 | pdb.minAvailable | string | `""` | Minimum number/percentage of pods that should remain scheduled |
 | podAffinityPreset | string | `""` | Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard` |
-| podAnnotations | object | `{}` | Annotations for Portal pods |
+| podAnnotations | object | `{"prometheus.io/path":"/portal-metrics","prometheus.io/port":"3000","prometheus.io/scrape":"true"}` | Annotations for Portal pods |
 | podAntiAffinityPreset | string | `"soft"` | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard` |
-| podLabels | object | `{}` | Extra labels for Portal pods |
-| podSecurityContext | object | `{"enabled":false,"fsGroup":1001,"sysctls":[]}` | Pod Security Context configuration |
-| podSecurityContext.enabled | bool | `false` | Enabled Portal pods' Security Context |
-| podSecurityContext.fsGroup | int | `1001` | Set Portal pod's Security Context fsGroup |
-| podSecurityContext.sysctls | list | `[]` | Set kernel settings using the sysctl interface |
+| podLabels | object | `{"app.kubernetes.io/component":"portal"}` | Extra labels for Portal pods |
+| podSecurityContext | object | `{}` | Pod Security Context configuration (overrides global.securityContexts.pod) |
 | priorityClassName | string | `""` | Portal pods' priority class name |
 | readinessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":5,"periodSeconds":10,"successThreshold":1,"tcpSocket":{"port":"http"},"timeoutSeconds":5}` | Configure Portal containers' readiness probe |
 | readinessProbe.enabled | bool | `true` | Enable readinessProbe on Portal containers |

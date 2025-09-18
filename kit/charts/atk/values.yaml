@@ -1,7 +1,3 @@
-# Default values for atk.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
 # Global values shared across all subcharts
 global:
   labels:
@@ -18,109 +14,102 @@ global:
       repository: settlemint/asset-tokenization-kit-artifacts
       tag: 2.0.0-main.91391
       pullPolicy: IfNotPresent
+  chainId: "53771311147"
+  chainName: "ATK"
+  securityContexts:
+    pod:
+      fsGroup: 101337
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    container:
+      runAsNonRoot: true
+      runAsUser: 101337
+      runAsGroup: 101337
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+  datastores:
+    default:
+      redis:
+        host: "redis"
+        port: 6379
+        username: "default"
+        password: "atk"
+        db: 0
+        query: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"
+      postgresql:
+        host: "postgresql"
+        port: 5432
+        username: "postgres"
+        password: "atk"
+        database: "postgres"
+        sslMode: "disable"
+    erpc:
+      redis:
+        cacheDb: 0
+        sharedStateDb: 1
+    hasura:
+      postgresql:
+        database: "hasura"
+        username: "hasura"
+        password: "atk"
+      redis:
+        primary:
+          db: 2
+        rateLimit:
+          db: 3
+    portal:
+      postgresql:
+        database: "portal"
+        username: "portal"
+        password: "atk"
+      redis:
+        db: 4
+    txsigner:
+      postgresql:
+        database: "txsigner"
+        username: "txsigner"
+        password: "atk"
+    graphNode:
+      postgresql:
+        database: "thegraph"
+        username: "thegraph"
+        password: "atk"
 
-
-besu-network:
+network:
   enabled: true
-  # Besu network images
-  besu-genesis:
+  network-bootstrapper:
     image:
-      repository: ghcr.io/settlemint/quorum-genesis-tool
-      tag: "sha-49c40f5"
-      pullPolicy: IfNotPresent
-    configServer:
-      image:
-        repository: docker.io/nginx
-        tag: "1.29.1-alpine"
-        pullPolicy: IfNotPresent
-  besu-node:
-    node:
-      image:
-        repository: docker.io/hyperledger/besu
-        tag: "25.8.0"
-        pullPolicy: IfNotPresent
-    tessera:
-      image:
-        repository: docker.io/quorumengineering/tessera
-        tag: "24.4"
-        pullPolicy: IfNotPresent
-    hooks:
-      image:
-        repository: ghcr.io/settlemint/quorum-genesis-tool
-        tag: "sha-49c40f5"
-        pullPolicy: IfNotPresent
-    initContainers:
-      testConnection:
+      repository: ghcr.io/settlemint/network-bootstrapper
+    initContainer:
+      tcpCheck:
         image:
-          repository: docker.io/busybox
-          tag: "1.37"
-          pullPolicy: IfNotPresent
-      checkConnection:
+          repository: ghcr.io/settlemint/btp-waitforit
+  network-nodes:
+    image:
+      repository: docker.io/hyperledger/besu
+    initContainer:
+      tcpCheck:
         image:
-          repository: docker.io/curlimages/curl
-          tag: "8.16.0"
-          pullPolicy: IfNotPresent
-  besu-validator-1:
-    enabled: true
-    storage:
-      sizeLimit: "5Gi"
-      pvcSizeLimit: "5Gi"
-    resources: {}
-  besu-validator-2:
-    enabled: false
-    storage:
-      sizeLimit: "5Gi"
-      pvcSizeLimit: "5Gi"
-    resources: {}
-  besu-validator-3:
-    enabled: false
-    storage:
-      sizeLimit: "5Gi"
-      pvcSizeLimit: "5Gi"
-    resources: {}
-  besu-validator-4:
-    enabled: false
-    storage:
-      sizeLimit: "5Gi"
-      pvcSizeLimit: "5Gi"
-    resources: {}
-  besu-rpc-1:
-    enabled: true
-    storage:
-      sizeLimit: "5Gi"
-      pvcSizeLimit: "5Gi"
-    resources: {}
-  besu-rpc-2:
-    enabled: false
-    storage:
-      sizeLimit: "5Gi"
-      pvcSizeLimit: "5Gi"
-    resources: {}
-  rawGenesisConfig:
-    blockchain:
-      nodes:
-        count: 1
+          repository: ghcr.io/settlemint/btp-waitforit
+    persistence:
+      size: 20Gi
 
 erpc:
   enabled: true
   image:
     registry: ghcr.io
-    repository: erpc/erpc
-    tag: "0.0.56"
-    pullPolicy: IfNotPresent
-  # Init containers
-  initContainers:
-    waitforit:
+  tests:
+    image:
+      registry: docker.io
+  initContainer:
+    tcpCheck:
       image:
         repository: ghcr.io/settlemint/btp-waitforit
-        tag: "v7.7.10"
-        pullPolicy: IfNotPresent
-  # Test container
-  test:
-    image:
-      repository: docker.io/busybox
-      tag: "1.37"
-      pullPolicy: IfNotPresent
   resources: {}
   ingress:
     enabled: true
@@ -130,125 +119,282 @@ erpc:
         paths:
           - path: /
             pathType: ImplementationSpecific
-  config:
-    logLevel: info
-    server:
-      httpHostV4: 0.0.0.0
-      httpPort: 4000
-    projects:
-      - id: settlemint
-        upstreams:
-          - id: besu-node-rpc-1
-            endpoint: http://besu-node-rpc-1:8545
-            evm:
-              chainId: 53771311147
-            failsafe:
-              timeout:
-                duration: 30s
-          - id: besu-node-validator-1
-            endpoint: http://besu-node-validator-1:8545
-            evm:
-              chainId: 53771311147
-            failsafe:
-              timeout:
-                duration: 30s
-    database:
-      evmJsonRpcCache:
-        # Define one or more storage connectors with unique IDs useful in policies
-        connectors:
-          - id: redis-cache
-            driver: redis  # Refer to "redis" driver docs below
-            redis:
-              addr: redis.atk.svc.cluster.local:6379
-              password: "atk"
-              db: 0
-              connPoolSize: 128
-        policies:
-          - network: "*"
-            method: "*"
-            finality: finalized
-            connector: redis-cache
-  podAnnotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "4001"
-  podLabels:
-    app.kubernetes.io/component: erpc
 
+  openShiftRoute:
+    enabled: false
+    host: rpc.k8s.orb.local
 
 blockscout:
   enabled: true
-  blockscout-stack:
-    podAnnotations:
-      prometheus.io/scrape: "true"
-      prometheus.io/port: "4000"
-      prometheus.io/path: "/metrics"
-    blockscout:
-      image:
-        repository: ghcr.io/blockscout/blockscout
-        tag: "9.0.2"
-        pullPolicy: IfNotPresent
-      # Add an extra init container to wait for PostgreSQL
-      init:
+  postgresql:
+    host: "postgresql"
+    port: 5432
+    database: "blockscout"
+    username: "blockscout"
+    password: "atk"
+    sslMode: "disable"
+    endpoint: "postgresql:5432"
+    url: "postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"
+  # Direct configuration for local blockscout chart
+  fullnameOverride: blockscout
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "4000"
+    prometheus.io/path: "/metrics"
+  blockscout:
+    image:
+      repository: ghcr.io/blockscout/blockscout
+      tag: "9.0.2"
+      pullPolicy: IfNotPresent
+    # Pod security context
+    podSecurityContext:
+      fsGroup: 1001
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+    # Container security context
+    containerSecurityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: false
+    # Init container security context
+    initContainerSecurityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: false
+    init:
+      enabled: true
+      command:
+        - /bin/sh
+      args:
+        - -c
+        - |
+          echo "Running database migrations..."
+          bin/blockscout eval "Elixir.Explorer.ReleaseTasks.create_and_migrate()"
+    initContainer:
+      tcpCheck:
         enabled: true
-        command:
-          - /bin/sh
-        args:
-          - -c
-          - |  # Using YAML multiline string for clarity
-            echo "Waiting for postgresql:5432..."
-            while ! nc -z postgresql 5432; do
-              sleep 2;
-            done;
-            echo "PostgreSQL is ready!"
-            # Original command:
-            bin/blockscout eval "Elixir.Explorer.ReleaseTasks.create_and_migrate()"
-      ingress:
-        hostname: explorer.k8s.orb.local
-      env:
-        API_URL: https://explorer.k8s.orb.local
-        WEBAPP_URL: https://explorer.k8s.orb.local
-      resources: {}
-    frontend:
-      ingress:
-        hostname: explorer.k8s.orb.local
-      image:
-        repository: ghcr.io/blockscout/frontend
-        tag: "v2.3.3"
-        pullPolicy: IfNotPresent
+        image:
+          repository: ghcr.io/settlemint/btp-waitforit
+          tag: v7.7.10
+          pullPolicy: IfNotPresent
+        timeout: 120
+        resources:
+          limits:
+            cpu: 100m
+            memory: 64Mi
+          requests:
+            cpu: 10m
+            memory: 32Mi
+        dependencies:
+          - name: postgresql
+            endpoint: "postgresql:5432"
+    extraInitContainers: []
+    ingress:
+      enabled: true
+      className: "atk-nginx"
+      hostname: explorer.k8s.orb.local
+    env:
+      DATABASE_URL: "postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"
+      ETHEREUM_JSONRPC_HTTP_URL: http://erpc:4000/settlemint/evm/53771311147
+      ETHEREUM_JSONRPC_TRACE_URL: http://erpc:4000/settlemint/evm/53771311147
+      API_URL: https://explorer.k8s.orb.local
+      WEBAPP_URL: https://explorer.k8s.orb.local
+    resources: {}
+  frontend:
+    enabled: true
+    ingress:
+      enabled: true
+      className: "atk-nginx"
+      hostname: explorer.k8s.orb.local
+    image:
+      repository: ghcr.io/blockscout/frontend
+      tag: "v2.3.3"
+      pullPolicy: IfNotPresent
+    # Pod security context
+    podSecurityContext:
+      fsGroup: 1001
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+    # Container security context
+    containerSecurityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: false
 
 graph-node:
   enabled: true
   image:
     repository: docker.io/graphprotocol/graph-node
-    tag: "v0.40.1"
-    pullPolicy: IfNotPresent
-  initContainers:
-    kubectlImage:
-      repository: docker.io/kubesphere/kubectl
-      tag: "v1.33.4"
-      pullPolicy: IfNotPresent
-    postgresImage:
-      repository: docker.io/postgres
-      tag: "17.6-alpine"
-      pullPolicy: IfNotPresent
   podAnnotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8040"
     prometheus.io/path: "/metrics"
+  initContainer:
+    image:
+      repository: docker.io/kubesphere/kubectl
+    tcpCheck:
+      enabled: true
+      image:
+        repository: ghcr.io/settlemint/btp-waitforit
+        tag: v7.7.10
+        pullPolicy: IfNotPresent
+      timeout: 120
+      resources:
+        limits:
+          cpu: 100m
+          memory: 64Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
+      dependencies:
+        - name: postgresql
+          endpoint: "postgresql:5432"
+  extraInitContainers: []
+  ingress:
+    enabled: true
+    className: "atk-nginx"
+    annotations:
+      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+    hosts:
+      - host: graph.k8s.orb.local
+        paths:
+          - path: /(.*)
+            pathType: ImplementationSpecific
+          - path: /ws/?(.*)
+            pathType: ImplementationSpecific
+          - path: /admin/?(.*)
+            pathType: ImplementationSpecific
+          - path: /indexer/?(.*)
+            pathType: ImplementationSpecific
+          - path: /graphman/?(.*)
+            pathType: ImplementationSpecific
+    tls: []
+  openShiftRoute:
+    enabled: false
+    annotations: {}
+    host: graph.k8s.orb.local
+    wildcardPolicy: None
+    tls: null
+    to:
+      weight: 100
+    alternateBackends: []
+    routes:
+      - nameSuffix: ""
+        host: ""
+        path: /
+        targetPort: http-query
+        annotations: {}
+      - nameSuffix: ws
+        host: ""
+        path: /ws
+        targetPort: http-queryws
+        annotations:
+          haproxy.router.openshift.io/rewrite-target: /
+      - nameSuffix: admin
+        host: ""
+        path: /admin
+        targetPort: http-admin
+        annotations:
+          haproxy.router.openshift.io/rewrite-target: /
+      - nameSuffix: indexer
+        host: ""
+        path: /indexer
+        targetPort: http-status
+        annotations:
+          haproxy.router.openshift.io/rewrite-target: /
+      - nameSuffix: graphman
+        host: ""
+        path: /graphman
+        targetPort: http-status
+        annotations:
+          haproxy.router.openshift.io/rewrite-target: /
+  env:
+    PRIMARY_SUBGRAPH_DATA_PGHOST: "postgresql"
+    PRIMARY_SUBGRAPH_DATA_PGPORT: 5432
+    PRIMARY_SUBGRAPH_DATA_PGDATABASE: "thegraph"
+    PRIMARY_SUBGRAPH_DATA_PGUSER: "thegraph"
+    PRIMARY_SUBGRAPH_DATA_PGPASSWORD: "atk"
   postgresReadinessCheck:
     enabled: true
     image: docker.io/postgres:17.6-alpine
+    maxRetries: 30
+    initialWaitTime: 2
+    maxWaitTime: 30
+    randomDelayRange:
+      min: 5
+      max: 30
+    resources:
+      limits:
+        cpu: 100m
+        memory: 96Mi
+      requests:
+        cpu: 25m
+        memory: 48Mi
 
 hasura:
   enabled: true
+  postgresql:
+    host: "postgresql"
+    port: 5432
+    database: "hasura"
+    username: "hasura"
+    password: "atk"
+    sslMode: "disable"
+    endpoint: "postgresql:5432"
+    url: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
+  redis:
+    primary:
+      host: "redis"
+      port: 6379
+      username: "default"
+      password: "atk"
+      db: 2
+      url: "redis://default:atk@redis:6379/2"
+    rateLimit:
+      host: "redis"
+      port: 6379
+      username: "default"
+      password: "atk"
+      db: 3
+      url: "redis://default:atk@redis:6379/3"
   graphql-engine:
     replicas: 1
     ingress:
-      hostName: "hasura.k8s.orb.local"
+      hostName: hasura.k8s.orb.local
     labels:
       app.kubernetes.io/instance: atk
       kots.io/app-slug: settlemint-atk
       app.kubernetes.io/component: hasura
+    openShiftRoute:
+      enabled: false
+      annotations: {}
+      host: hasura.k8s.orb.local
+      path: /
+      wildcardPolicy: None
+      port:
+        targetPort: http
+      to:
+        weight: 100
+      alternateBackends: []
+      tls: null
     image:
       repository: docker.io/hasura/graphql-engine
       tag: v2.48.5
@@ -256,148 +402,113 @@ hasura:
       ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
       ##
       pullPolicy: IfNotPresent
-    # Init container for waiting for PostgreSQL
     initContainers:
-      - name: wait-for-postgresql-ready
-        image: docker.io/postgres:17.6-alpine
+      - name: wait-for-postgresql
+        image: ghcr.io/settlemint/btp-waitforit:v7.7.10
+        imagePullPolicy: IfNotPresent
         command:
-          - /bin/sh
-          - -c
-          - |
-            set -e
-            echo "Waiting for PostgreSQL to be ready..."
-
-            # Add random delay to prevent all nodes from connecting simultaneously
-            RANDOM_DELAY=$((RANDOM % 30 + 5))
-            echo "Adding random delay of ${RANDOM_DELAY} seconds to stagger connections..."
-            sleep $RANDOM_DELAY
-
-            # Function to test PostgreSQL connection
-            test_postgres() {
-              pg_isready -h postgresql -p 5432 -U hasura && \
-              psql -h postgresql -p 5432 -U hasura -d hasura -c "SELECT 1;" > /dev/null 2>&1
-            }
-
-            # Wait with exponential backoff
-            RETRY_COUNT=0
-            MAX_RETRIES=30
-            WAIT_TIME=2
-
-            while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-              if test_postgres; then
-                echo "PostgreSQL is ready!"
-                exit 0
-              fi
-
-              RETRY_COUNT=$((RETRY_COUNT + 1))
-              echo "PostgreSQL not ready (attempt $RETRY_COUNT/$MAX_RETRIES). Waiting ${WAIT_TIME}s..."
-              sleep $WAIT_TIME
-
-              # Exponential backoff with max of 30 seconds
-              WAIT_TIME=$((WAIT_TIME * 2))
-              if [ $WAIT_TIME -gt 30 ]; then
-                WAIT_TIME=30
-              fi
-            done
-
-            echo "PostgreSQL failed to become ready after $MAX_RETRIES attempts"
-            exit 1
-        env:
-          - name: PGPASSWORD
-            value: "atk"
+          - /usr/bin/wait-for-it
+          - "postgresql:5432"
+          - -t
+          - "120"
+        resources:
+          limits:
+            cpu: 100m
+            memory: 64Mi
+          requests:
+            cpu: 10m
+            memory: 32Mi
+    secret:
+      metadataDbUrl: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
+      extraSecrets:
+        DEFAULT_DB_URL: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
+      redisUrl: "redis://default:atk@redis:6379/2"
+      rateLimitRedisUrl: "redis://default:atk@redis:6379/3"
 
 portal:
   enabled: true
   image:
     registry: ghcr.io
-    repository: settlemint/btp-scs-portal
-    tag: "8.6.7"
-    pullPolicy: IfNotPresent
-  podLabels:
-    app.kubernetes.io/component: portal
-  podAnnotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "3000"
-    prometheus.io/path: "/portal-metrics"
-  initContainers:
-    - name: wait-for-postgresql-ready
-      image: docker.io/postgres:17.6-alpine
-      command:
-        - /bin/sh
-        - -c
-        - |
-          set -e
-          echo "Waiting for PostgreSQL to be ready..."
+  initContainer:
+    tcpCheck:
+      image:
+        repository: ghcr.io/settlemint/btp-waitforit
+  ingress:
+    hostname: portal.k8s.orb.local
 
-          # Add random delay to prevent all nodes from connecting simultaneously
-          RANDOM_DELAY=$((RANDOM % 30 + 5))
-          echo "Adding random delay of ${RANDOM_DELAY} seconds to stagger connections..."
-          sleep $RANDOM_DELAY
+# Transaction Signer Configuration
+txsigner:
+  enabled: true
+  image:
+    registry: ghcr.io
+  tests:
+    image:
+      registry: docker.io
+  # Configuration for the txsigner subchart
+  config:
+    mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
+    derivationPath: "m/44'/60'/0'/0/0"
+  resources: {}
+  initContainer:
+    tcpCheck:
+      image:
+        repository: ghcr.io/settlemint/btp-waitforit
+  ingress:
+    hostname: txsigner.k8s.orb.local
 
-          # Function to test PostgreSQL connection
-          test_postgres() {
-            pg_isready -h postgresql -p 5432 -U portal && \
-            psql -h postgresql -p 5432 -U portal -d portal -c "SELECT 1;" > /dev/null 2>&1
-          }
-
-          # Wait with exponential backoff
-          RETRY_COUNT=0
-          MAX_RETRIES=30
-          WAIT_TIME=2
-
-          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-            if test_postgres; then
-              echo "PostgreSQL is ready!"
-              exit 0
-            fi
-
-            RETRY_COUNT=$((RETRY_COUNT + 1))
-            echo "PostgreSQL not ready (attempt $RETRY_COUNT/$MAX_RETRIES). Waiting ${WAIT_TIME}s..."
-            sleep $WAIT_TIME
-
-            # Exponential backoff with max of 30 seconds
-            WAIT_TIME=$((WAIT_TIME * 2))
-            if [ $WAIT_TIME -gt 30 ]; then
-              WAIT_TIME=30
-            fi
-          done
-
-          echo "PostgreSQL failed to become ready after $MAX_RETRIES attempts"
-          exit 1
-      env:
-        - name: PGPASSWORD
-          value: "atk"
+# DApp Frontend Configuration
+dapp:
+  enabled: true
+  image:
+    repository: ghcr.io/settlemint/asset-tokenization-kit
+  ingress:
+    enabled: true
+    # IMPORTANT: Set the correct hostname for your environment
+    hosts:
+      - host: dapp.k8s.orb.local
+        paths:
+          - path: / # Adjust path if needed
+            pathType: ImplementationSpecific
+  resources: {}
+  secretEnv:
+    BETTER_AUTH_URL: "https://dapp.k8s.orb.local"
+    SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "https://blockscout.k8s.orb.local/"
+  initContainer:
+    tcpCheck:
+      image:
+        repository: ghcr.io/settlemint/btp-waitforit
+    graphQLCheck:
+      image:
+        registry: docker.io
+  job:
+    image:
+      # -- (string) Job image repository
+      repository: docker.io/node
 
 support:
   enabled: true
 
   # https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
   ingress-nginx:
+    enabled: true
     replicaCount: 1
     controller:
       resources: {}
       image:
         repository: registry.k8s.io/ingress-nginx/controller
-        tag: "v1.13.2"
-        digest: ""
 
   # https://github.com/stakater/Reloader/tree/master/deployments/kubernetes/chart/reloader
   reloader:
     enabled: true
     image:
       repository: ghcr.io/stakater/reloader
-      tag: v1.4.8
 
   minio:
     enabled: true
     image:
       repository: docker.io/minio/minio
-      tag: RELEASE.2025-07-23T15-54-02Z
-      pullPolicy: IfNotPresent
     mcImage:
       repository: docker.io/minio/minio
-      tag: RELEASE.2025-07-23T15-54-02Z
-      pullPolicy: IfNotPresent
     ingress:
       enabled: true
       ingressClassName: atk-nginx
@@ -411,10 +522,6 @@ support:
     image:
       # -- Redis image registry
       registry: docker.io
-      # -- Redis image repository
-      repository: redis
-      # -- Redis image tag
-      tag: "8.2.1-alpine"
     fullnameOverride: redis
     commonLabels:
       kots.io/app-slug: settlemint-atk
@@ -434,30 +541,25 @@ support:
         cpu: "200m"
 
   postgresql:
+    enabled: true
     image:
       registry: docker.io
-      repository: postgres
-      tag: "17.6-alpine"
 
 observability:
   enabled: true
 
   # https://github.com/kubernetes-sigs/metrics-server/blob/master/charts/metrics-server/values.yaml
   metrics-server:
-    enabled: false
+    enabled: true
     resources: {}
     image:
       repository: registry.k8s.io/metrics-server/metrics-server
-      tag: "v0.8.0"
 
   # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-state-metrics/values.yaml
   kube-state-metrics:
     resources: {}
     image:
       registry: registry.k8s.io
-      repository: kube-state-metrics/kube-state-metrics
-      # If unset use v + .Charts.appVersion
-      tag: "v2.17.0"
 
   # https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metrics-single/values.yaml
   victoria-metrics-single:
@@ -468,8 +570,6 @@ observability:
       resources: {}
       image:
         registry: docker.io
-        repository: victoriametrics/victoria-metrics
-        tag: "v1.126.0"
 
   # https://github.com/grafana/loki/blob/main/production/helm/loki/values.yaml
   loki:
@@ -477,10 +577,6 @@ observability:
       image:
         # -- The Docker registry
         registry: docker.io
-        # -- Docker image repository
-        repository: grafana/loki
-        # -- Overrides the image tag whose default is the chart's appVersion
-        tag: 3.5.5
     singleBinary:
       persistence:
         size: 10Gi
@@ -495,22 +591,16 @@ observability:
       image:
         # -- Memcached Docker image repository
         repository: docker.io/memcached
-        # -- Memcached Docker image tag
-        tag: 1.6.39-alpine
     memcachedExporter:
       image:
         repository: docker.io/prom/memcached-exporter
-        tag: v0.15.3
     sidecar:
       image:
         # -- The Docker registry and image for the k8s sidecar
         repository: docker.io/kiwigrid/k8s-sidecar
-        tag: 1.30.10
     gateway:
       image:
         registry: docker.io
-        repository: nginxinc/nginx-unprivileged
-        tag: "1.29-alpine"
 
   # https://github.com/grafana/alloy/blob/main/operations/helm/charts/alloy/values.yaml
   alloy:
@@ -518,31 +608,18 @@ observability:
       resources: {}
     image:
       registry: docker.io
-      # -- Grafana Alloy image repository.
-      repository: grafana/alloy
-      tag: v1.10.2
     configReloader:
       image:
         registry: quay.io
-        # -- Repository to get config reloader image from.
-        repository: prometheus-operator/prometheus-config-reloader
-        # -- Tag of image to use for config reloading.
-        tag: v0.85.0
 
   grafana:
     image:
       # -- The Docker registry
       registry: docker.io
-      # -- Docker image repository
-      repository: grafana/grafana
-      # Overrides the Grafana image tag whose default is the chart appVersion
-      tag: "12.1.1"
     # Sidecar configuration for Grafana dashboards and datasources
     sidecar:
       image:
         registry: docker.io
-        repository: kiwigrid/k8s-sidecar
-        tag: "1.30.10"
     ingress:
       hosts:
         - grafana.k8s.orb.local
@@ -552,111 +629,11 @@ observability:
   tempo:
     tempo:
       repository: docker.io/grafana/tempo
-      tag: "2.8.1"
     tempoQuery:
       repository: docker.io/grafana/tempo-query
-      tag: "2.8.1"
     server:
       resources: {}
 
   prometheus-node-exporter:
     image:
       registry: quay.io
-      repository: prometheus/node-exporter
-      # Overrides the image tag whose default is {{ printf "v%s" .Chart.AppVersion }}
-      tag: "v1.9.1"
-
-# Transaction Signer Configuration
-txsigner:
-  enabled: true
-  image:
-    registry: ghcr.io
-    repository: settlemint/btp-signer
-    tag: "7.15.12"
-    pullPolicy: IfNotPresent
-  # Init container for testing
-  test:
-    image:
-      repository: docker.io/busybox
-      tag: "1.37"
-      pullPolicy: IfNotPresent
-  # Configuration for the txsigner subchart
-  config:
-    mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
-    derivationPath: "m/44'/60'/0'/0/0"
-  postgresql: postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable
-  replicaCount: 1
-  resources: {}
-
-# DApp Frontend Configuration
-dapp:
-  enabled: true
-  image:
-    repository: ghcr.io/settlemint/asset-tokenization-kit
-    tag: "2.0.0-main1e32acb7f"
-    pullPolicy: IfNotPresent
-  replicaCount: 1
-  ingress:
-    enabled: true
-    # IMPORTANT: Set the correct hostname for your environment
-    hosts:
-      - host: dapp.k8s.orb.local  # Example hostname
-        paths:
-          - path: /  # Adjust path if needed
-            pathType: ImplementationSpecific
-  resources: {}
-  secretEnv:
-    BETTER_AUTH_URL: "https://dapp.k8s.orb.local"
-    NEXT_PUBLIC_APP_ID: "dapp"
-    NEXTAUTH_URL: "https://dapp.k8s.orb.local"
-    OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy:4318/v1/traces"  # Adjust if needed
-    OTEL_EXPORTER_OTLP_PROTOCOL: "http"
-    SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "http://blockscout-frontend-svc/"
-    SETTLEMINT_HASURA_ADMIN_SECRET: "atk"
-    SETTLEMINT_HASURA_DATABASE_URL: "postgresql://hasura:atk@postgresql:5432/hasura"
-    SETTLEMINT_HASURA_ENDPOINT: "http://hasura:8080/v1/graphql"
-    SETTLEMINT_HD_PRIVATE_KEY: "atk-hd-private-key"
-    SETTLEMINT_INSTANCE: "standalone"
-    SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT: "http://portal:3001/graphql"
-    SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS: '["http://graph-node-combined:8000/subgraphs/name/kit"]'
-  initContainer:
-    # Generic TCP check settings
-    tcpCheck:
-      enabled: true
-      timeout: 0  # Timeout in seconds for each dependency check
-      image:
-        repository: ghcr.io/settlemint/btp-waitforit
-        tag: v7.7.10
-        pullPolicy: IfNotPresent
-      dependencies:
-        # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
-        - name: postgres
-          endpoint: "postgresql:5432"
-        - name: hasura
-          endpoint: "hasura:8080"
-        - name: portal
-          endpoint: "portal:3001"
-        - name: graph-node-tcp  # Renamed to distinguish from graphQLCheck
-          endpoint: "graph-node-combined:8020"  # Status API port (TCP check)
-        - name: blockscout  # Add Blockscout if needed, determine correct service/port
-          endpoint: "blockscout-frontend-svc:80"
-
-    # Specific check for GraphQL endpoint readiness (e.g., The Graph subgraph)
-    graphQLCheck:
-      enabled: true
-      name: wait-for-graph-subgraph-kit  # Name for the init container
-      image:
-        registry: docker.io
-        repository: curlimages/curl
-        tag: "8.16.0"
-        pullPolicy: IfNotPresent
-      # Target GraphQL endpoint URL (where POST requests are sent)
-      url: "http://graph-node-combined:8000/subgraphs/name/kit"
-      query: '{ __typename }'  # Basic query to check for GraphQL errors
-      retryDelaySeconds: 20
-      timeoutSeconds: 10  # Max time per curl attempt
-      connectTimeoutSeconds: 5  # Max time to connect
-      retries: 24
-  podLabels:
-    app.kubernetes.io/component: dapp
-    kots.io/app-slug: settlemint-atk

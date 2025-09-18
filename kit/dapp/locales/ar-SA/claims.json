@@ -1,0 +1,93 @@
+{
+  "status": {
+    "pending": "معلق",
+    "verified": "تم التحقق",
+    "rejected": "مرفوض",
+    "expired": "منتهي الصلاحية",
+    "registered": "مسجل",
+    "notRegistered": "غير مسجل",
+    "verifiedAriaLabel": "هوية متحقق منها مع مطالبات",
+    "registeredAriaLabel": "هوية مسجلة بدون مطالبات",
+    "notRegisteredAriaLabel": "لا توجد هوية مسجلة"
+  },
+  "table": {
+    "columns": {
+      "user": "المستخدم",
+      "claimType": "نوع المطالبة",
+      "topic": "الموضوع",
+      "status": "الحالة",
+      "issuer": "المُصدر",
+      "issuedAt": "تاريخ الإصدار",
+      "expiresAt": "تاريخ انتهاء الصلاحية",
+      "verifiedAt": "تاريخ التحقق"
+    },
+    "search": {
+      "placeholder": "البحث في المطالبات..."
+    },
+    "emptyState": {
+      "title": "لم يتم العثور على مطالبات",
+      "description": "لم يتم إصدار أي مطالبات هوية بعد.",
+      "loading": "جارٍ تحميل المطالبات..."
+    },
+    "errors": {
+      "loadFailed": "فشل في تحميل المطالبات. يرجى المحاولة مرة أخرى.",
+      "navigationFailed": "فشل في الانتقال إلى تفاصيل المطالبة"
+    },
+    "fallback": {
+      "noExpiry": "لا يوجد تاريخ انتهاء",
+      "notVerified": "غير محقق"
+    }
+  },
+  "identityTable": {
+    "columns": {
+      "id": "المعرف",
+      "type": "النوع",
+      "entity": "الكيان",
+      "linkedEntity": "الحساب / العقد",
+      "activeClaims": "المطالبات النشطة",
+      "revokedClaims": "المطالبات الملغاة",
+      "deployment": "معاملة النشر"
+    },
+    "types": {
+      "account": "حساب",
+      "contract": "عقد"
+    },
+    "fallback": {
+      "noAccount": "لا يوجد حساب",
+      "noContract": "لا يوجد عقد",
+      "noDeployment": "لا يوجد نشر",
+      "noEntity": "لا توجد كيانات مرتبطة"
+    },
+    "search": {
+      "placeholder": "البحث في الهويات..."
+    },
+    "emptyState": {
+      "title": "لم يتم العثور على هويات",
+      "description": "لا توجد هويات تطابق عوامل التصفية الخاصة بك حتى الآن.",
+      "loading": "جارٍ تحميل الهويات..."
+    },
+    "errors": {
+      "loadFailed": "فشل في تحميل الهويات. يرجى المحاولة مرة أخرى.",
+      "navigationFailed": "فشل في فتح تفاصيل الهوية"
+    }
+  },
+  "page": {
+    "description": "إدارة مطالبات الهوية وحالة التحقق والامتثال للمستخدمين.",
+    "loading": "جارِ تحميل المطالبات..."
+  },
+  "details": {
+    "title": "مطالبات الحساب",
+    "summary": {
+      "total": "إجمالي المطالبات",
+      "verified": "تم التحقق",
+      "pending": "معلق",
+      "rejectedExpired": "مرفوض/منتهي الصلاحية"
+    },
+    "claimId": "معرف المطالبة",
+    "noClaimsTitle": "لم يتم العثور على مطالبات",
+    "noClaimsDescription": "لم يتم تعيين أي مطالبات هوية لهذا الحساب بعد."
+  },
+  "tabs": {
+    "details": "التفاصيل"
+  }
+}

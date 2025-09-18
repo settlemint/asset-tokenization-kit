@@ -142,7 +142,7 @@ Usage: {{ include "atk.common.imagePullSecrets" . }}
 */}}
 {{- define "atk.common.imagePullSecrets" -}}
 {{- $root := . -}}
-{{- $secrets := list -}}
+{{- $secretsDict := dict -}}
 {{- $localCredentials := .Values.imagePullCredentials }}
 {{- $globalCredentials := .Values.global.imagePullCredentials }}
 {{- $credentials := $globalCredentials }}
@@ -153,7 +153,8 @@ Usage: {{ include "atk.common.imagePullSecrets" . }}
   {{- if $credentials.registries -}}
     {{- range $name, $registry := $credentials.registries -}}
       {{- if $registry.enabled -}}
-        {{- $secrets = append $secrets (printf "image-pull-secret-%s" $name) -}}
+        {{- $secretName := printf "image-pull-secret-%s" $name -}}
+        {{- $_ := set $secretsDict $secretName true -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
@@ -163,10 +164,10 @@ Usage: {{ include "atk.common.imagePullSecrets" . }}
     {{- if .Values.global.imagePullSecrets -}}
       {{- range .Values.global.imagePullSecrets -}}
         {{- if kindIs "string" . -}}
-          {{- $secrets = append $secrets . -}}
+          {{- $_ := set $secretsDict . true -}}
         {{- else if kindIs "map" . -}}
           {{- if .name -}}
-            {{- $secrets = append $secrets .name -}}
+            {{- $_ := set $secretsDict .name true -}}
           {{- end -}}
         {{- end -}}
       {{- end -}}
@@ -177,19 +178,19 @@ Usage: {{ include "atk.common.imagePullSecrets" . }}
   {{- if kindIs "slice" .Values.imagePullSecrets -}}
     {{- range .Values.imagePullSecrets -}}
       {{- if kindIs "string" . -}}
-        {{- $secrets = append $secrets . -}}
+        {{- $_ := set $secretsDict . true -}}
       {{- else if kindIs "map" . -}}
         {{- if .name -}}
-          {{- $secrets = append $secrets .name -}}
+          {{- $_ := set $secretsDict .name true -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
-{{- if $secrets }}
+{{- if $secretsDict }}
 imagePullSecrets:
-{{- range $secrets }}
-  - name: {{ . }}
+{{- range $secretName, $_ := $secretsDict }}
+  - name: {{ $secretName }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -360,6 +361,60 @@ Usage: {{ include "common.images.image" (dict "imageRoot" .Values.image "global"
 {{- end -}}
 
 {{/*
+Merge shared and chart-specific security context defaults with local overrides.
+Parameters:
+- context: root context
+- category: "pod" or "container"
+- chartKey: optional global.<chartKey>.securityContexts fallback
+- legacyKey: optional override for legacy subkey lookup (defaults to chartKey)
+- local: chart-level overrides
+*/}}
+{{- define "atk.securityContext.merge" -}}
+{{- $context := .context | default . -}}
+{{- $category := default "pod" .category -}}
+{{- $local := default (dict) .local -}}
+{{- $chartKey := default "" .chartKey -}}
+{{- $legacyKey := default $chartKey .legacyKey -}}
+{{- $values := list -}}
+{{- if and $context.Values.global (hasKey $context.Values.global "securityContexts") -}}
+  {{- $shared := index $context.Values.global "securityContexts" -}}
+  {{- if and $shared (hasKey $shared $category) -}}
+    {{- $values = append $values (index $shared $category) -}}
+  {{- end -}}
+{{- end -}}
+{{- if and (ne $legacyKey "") $context.Values.global (hasKey $context.Values.global $legacyKey) -}}
+  {{- $chartGlobal := index $context.Values.global $legacyKey -}}
+  {{- if and $chartGlobal (hasKey $chartGlobal "securityContexts") -}}
+    {{- $legacyContexts := index $chartGlobal "securityContexts" -}}
+    {{- if and $legacyContexts (hasKey $legacyContexts $category) -}}
+      {{- $values = append $values (index $legacyContexts $category) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $values = append $values $local -}}
+{{- $merged := include "common.tplvalues.merge" (dict "values" $values "context" $context) -}}
+{{- if $merged -}}
+{{- $merged -}}
+{{- else -}}
+{{- toYaml dict -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Return merged pod security context defaults.
+*/}}
+{{- define "atk.securityContext.pod" -}}
+{{ include "atk.securityContext.merge" (dict "context" (.context | default .) "category" "pod" "local" (default (dict) .local) "chartKey" (default "" .chartKey) "legacyKey" (default (default "" .legacyKey))) }}
+{{- end }}
+
+{{/*
+Return merged container security context defaults.
+*/}}
+{{- define "atk.securityContext.container" -}}
+{{ include "atk.securityContext.merge" (dict "context" (.context | default .) "category" "container" "local" (default (dict) .local) "chartKey" (default "" .chartKey) "legacyKey" (default (default "" .legacyKey))) }}
+{{- end }}
+
+{{/*
 Merge template values - compatibility
 Usage: {{ include "common.tplvalues.merge" (dict "values" (list .Values.val1 .Values.val2) "context" $) }}
 */}}
@@ -369,7 +424,7 @@ Usage: {{ include "common.tplvalues.merge" (dict "values" (list .Values.val1 .Va
 {{- $result := dict -}}
 {{- range $values -}}
   {{- if . -}}
-    {{- $result = merge $result . -}}
+    {{- $result = mergeOverwrite $result . -}}
   {{- end -}}
 {{- end -}}
 {{- if $result -}}

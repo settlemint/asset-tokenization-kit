@@ -1,41 +1,10 @@
 import { describe, expect, it } from "bun:test";
 import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
 
-// Type definitions for GraphQL responses
-interface TopicScheme {
-  id: string;
-  topicId: string;
-  name: string;
-  signature: string;
-  enabled: boolean;
-  registry: {
-    id: string;
-  };
-}
-
-interface TopicSchemeRegistry {
-  id: string;
-  schemes: Array<{
-    id: string;
-    topicId: string;
-    name: string;
-    signature: string;
-    enabled: boolean;
-  }>;
-}
-
-interface TopicSchemesResponse {
-  topicSchemes: TopicScheme[];
-}
-
-interface TopicSchemeRegistriesResponse {
-  topicSchemeRegistries: TopicSchemeRegistry[];
-}
-
 describe("Topic scheme registry", () => {
   it("topic schemes should be linked to the topic scheme registry", async () => {
     // Query all topic schemes
-    const topicSchemesResponse = (await theGraphClient.request(
+    const topicSchemesResponse = await theGraphClient.request(
       theGraphGraphql(
         `query {
           topicSchemes {
@@ -50,10 +19,10 @@ describe("Topic scheme registry", () => {
           }
         }`
       )
-    )) as TopicSchemesResponse;
+    );
 
     // Query topic scheme registries with their schemes
-    const topicSchemeRegistriesResponse = (await theGraphClient.request(
+    const topicSchemeRegistriesResponse = await theGraphClient.request(
       theGraphGraphql(
         `query {
           topicSchemeRegistries {
@@ -68,7 +37,7 @@ describe("Topic scheme registry", () => {
           }
         }`
       )
-    )) as TopicSchemeRegistriesResponse;
+    );
 
     // Verify that topic schemes exist
     expect(topicSchemesResponse.topicSchemes.length).toBeGreaterThan(0);
@@ -120,7 +89,7 @@ describe("Topic scheme registry", () => {
 
   it("should be able to filter topic schemes by registry address", async () => {
     // First get all registries
-    const registriesResponse = (await theGraphClient.request(
+    const registriesResponse = await theGraphClient.request(
       theGraphGraphql(
         `query {
           topicSchemeRegistries {
@@ -132,13 +101,13 @@ describe("Topic scheme registry", () => {
           }
         }`
       )
-    )) as TopicSchemeRegistriesResponse;
+    );
 
     expect(registriesResponse.topicSchemeRegistries.length).toBeGreaterThan(0);
 
     // Test filtering by each registry
     for (const registry of registriesResponse.topicSchemeRegistries) {
-      const filteredResponse = (await theGraphClient.request(
+      const filteredResponse = await theGraphClient.request(
         theGraphGraphql(
           `query GetTopicSchemesByRegistry($registryAddress: String!) {
             topicSchemes(where: { registry: $registryAddress, enabled: true }) {
@@ -153,7 +122,7 @@ describe("Topic scheme registry", () => {
           }`
         ),
         { registryAddress: registry.id }
-      )) as TopicSchemesResponse;
+      );
 
       // All returned schemes should belong to this registry
       filteredResponse.topicSchemes.forEach((scheme) => {
@@ -176,7 +145,7 @@ describe("Topic scheme registry", () => {
       "isin",
     ];
 
-    const topicSchemesResponse = (await theGraphClient.request(
+    const topicSchemesResponse = await theGraphClient.request(
       theGraphGraphql(
         `query {
           topicSchemes(where: { enabled: true }) {
@@ -187,7 +156,7 @@ describe("Topic scheme registry", () => {
           }
         }`
       )
-    )) as TopicSchemesResponse;
+    );
 
     const topicNames = topicSchemesResponse.topicSchemes.map(
       (scheme) => scheme.name
@@ -209,20 +178,24 @@ describe("Topic scheme registry", () => {
   });
 
   it("should have unique topic IDs", async () => {
-    const topicSchemesResponse = (await theGraphClient.request(
+    const topicSchemesResponse = await theGraphClient.request(
       theGraphGraphql(
         `query {
           topicSchemes {
             id
             topicId
             name
+            registry {
+              id
+            }
           }
         }`
       )
-    )) as TopicSchemesResponse;
+    );
 
+    // All topic IDs should be unique for a registry
     const topicIds = topicSchemesResponse.topicSchemes.map(
-      (scheme) => scheme.topicId
+      (scheme) => `${scheme.topicId}-${scheme.registry.id}`
     );
     const uniqueTopicIds = [...new Set(topicIds)];
 
@@ -230,7 +203,7 @@ describe("Topic scheme registry", () => {
     expect(uniqueTopicIds.length).toEqual(topicIds.length);
 
     // All topic IDs should be valid (non-zero)
-    topicIds.forEach((topicId) => {
+    topicSchemesResponse.topicSchemes.forEach(({ topicId }) => {
       expect(BigInt(topicId)).toBeGreaterThan(0n);
     });
   });

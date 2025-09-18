@@ -16,9 +16,10 @@ dependencies:
   - name: observability
     version: "*"
     condition: observability.enabled
-  - name: besu-network
-    version: "*"
-    condition: besu-network.enabled
+  - name: network
+    version: "1.0.18"
+    repository: oci://ghcr.io/settlemint/network-bootstrapper
+    condition: network.enabled
   - name: erpc
     version: "*"
     condition: erpc.enabled
@@ -36,9 +37,7 @@ dependencies:
     condition: hasura.enabled
   - name: txsigner
     version: "*"
-    repository: file://./charts/txsigner
     condition: txsigner.enabled
   - name: dapp
     version: "*"
-    repository: file://./charts/dapp
     condition: dapp.enabled

@@ -494,10 +494,7 @@ contract ATKSystemTest is Test {
         initImpls1.identityVerificationComplianceModule = impls.identityVerificationModule;
 
         bytes memory initData1 = abi.encodeWithSelector(
-            systemImplementation.initialize.selector,
-            admin,
-            impls.systemAccessManager,
-            initImpls1
+            systemImplementation.initialize.selector, admin, impls.systemAccessManager, initImpls1
         );
         vm.expectRevert(abi.encodeWithSelector(ComplianceImplementationNotSet.selector));
         new ERC1967Proxy(address(systemImplementation), initData1);
@@ -531,10 +528,7 @@ contract ATKSystemTest is Test {
         initImpls2.identityVerificationComplianceModule = impls.identityVerificationModule;
 
         bytes memory initData2 = abi.encodeWithSelector(
-            systemImplementation.initialize.selector,
-            admin,
-            impls.systemAccessManager,
-            initImpls2
+            systemImplementation.initialize.selector, admin, impls.systemAccessManager, initImpls2
         );
         vm.expectRevert(abi.encodeWithSelector(IdentityRegistryImplementationNotSet.selector));
         new ERC1967Proxy(address(systemImplementation), initData2);

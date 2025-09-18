@@ -133,10 +133,6 @@ export const FUNDS_MANAGER_ROLE = new RoleConfig(
 );
 export const SALE_ADMIN_ROLE = new RoleConfig("SALE_ADMIN_ROLE", "saleAdmin");
 export const SIGNER_ROLE = new RoleConfig("SIGNER_ROLE", "signer");
-export const GLOBAL_LIST_MANAGER_ROLE = new RoleConfig(
-  "GLOBAL_LIST_MANAGER_ROLE",
-  "globalListManager"
-);
 
 // Export all roles as an array for iteration
 export const ALL_ROLES = [
@@ -171,9 +167,9 @@ export const ALL_ROLES = [
   FUNDS_MANAGER_ROLE,
   SALE_ADMIN_ROLE,
   SIGNER_ROLE,
-  GLOBAL_LIST_MANAGER_ROLE,
   CLAIM_ISSUER_ROLE,
   ORGANISATION_IDENTITY_MANAGER_ROLE,
+  TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE,
 ];
 
 // Helper function to get role by name

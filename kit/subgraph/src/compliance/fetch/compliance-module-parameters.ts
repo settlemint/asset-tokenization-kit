@@ -1,4 +1,4 @@
-import { Bytes, store } from "@graphprotocol/graph-ts";
+import { Address, Bytes, log, store } from "@graphprotocol/graph-ts";
 import {
   ComplianceModule,
   ComplianceModuleParameters,
@@ -8,11 +8,8 @@ import {
   TokenSupplyLimitParams,
   TransferApprovalParams,
 } from "../../../generated/schema";
+import { fetchSystem } from "../../system/fetch/system";
 import { getEncodedTypeId } from "../../type-identifier/type-identifier";
-import {
-  createExpressionNodeEntities,
-  clearExpressionNodeEntities,
-} from "../shared/expression-nodes";
 import {
   decodeAddressListParams,
   isAddressListComplianceModule,
@@ -41,6 +38,11 @@ import {
   decodeTransferApprovalParams,
   isTransferApprovalComplianceModule,
 } from "../modules/transfer-approval-compliance-module";
+import {
+  clearExpressionNodeEntities,
+  createExpressionNodeEntities,
+} from "../shared/expression-nodes";
+import { fetchComplianceModuleRegistry } from "./compliance-module-registry";
 
 export function fetchComplianceModuleParameters(
   configId: Bytes
@@ -67,6 +69,21 @@ export function updateComplianceModuleParameters(
 ): void {
   complianceModuleParameters.encodedParams = encodedParams;
 
+  const complianceModuleRegistry = fetchComplianceModuleRegistry(
+    Address.fromBytes(complianceModule.complianceModuleRegistry)
+  );
+  const system = fetchSystem(
+    Address.fromBytes(complianceModuleRegistry.system)
+  );
+  const topicSchemeRegistryId = system.topicSchemeRegistry;
+  if (!topicSchemeRegistryId) {
+    log.error(
+      "Topic scheme registry not found for system: {}, cannot update compliance module parameters",
+      [system.id.toHexString()]
+    );
+    return;
+  }
+
   // Handle different compliance module types
   if (
     isAddressListComplianceModule(getEncodedTypeId(complianceModule.typeId))
@@ -85,7 +102,11 @@ export function updateComplianceModuleParameters(
       getEncodedTypeId(complianceModule.typeId)
     )
   ) {
-    decodeExpressionParams(complianceModuleParameters, encodedParams);
+    decodeExpressionParams(
+      complianceModuleParameters,
+      encodedParams,
+      topicSchemeRegistryId
+    );
   }
   if (
     isTokenSupplyLimitComplianceModule(
@@ -138,7 +159,8 @@ export function updateComplianceModuleParameters(
         decoded.topicFilter,
         (node: ExpressionNode, baseId: Bytes) => {
           node.investorCountParams = baseId;
-        }
+        },
+        topicSchemeRegistryId
       );
 
       complianceModuleParameters.investorCount = icp.id;
@@ -169,7 +191,8 @@ export function updateComplianceModuleParameters(
         decoded.exemptionExpression,
         (node: ExpressionNode, baseId: Bytes) => {
           node.timeLockParams = baseId;
-        }
+        },
+        topicSchemeRegistryId
       );
 
       complianceModuleParameters.timeLock = tlp.id;
@@ -206,7 +229,8 @@ export function updateComplianceModuleParameters(
         decoded.exemptionExpression,
         (node: ExpressionNode, baseId: Bytes) => {
           node.transferApprovalParams = baseId;
-        }
+        },
+        topicSchemeRegistryId
       );
 
       complianceModuleParameters.transferApproval = tap.id;

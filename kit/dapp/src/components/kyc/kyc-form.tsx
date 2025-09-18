@@ -66,7 +66,7 @@ export function KycForm({ onComplete }: KycFormProps) {
           // Account query updates blockchain-related data, user query updates profile
           await Promise.all([
             queryClient.invalidateQueries({
-              queryKey: orpc.account.me.queryKey(),
+              queryKey: orpc.system.identity.me.queryKey(),
               refetchType: "all",
             }),
             queryClient.invalidateQueries({

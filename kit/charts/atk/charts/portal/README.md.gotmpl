@@ -46,6 +46,17 @@ Portal is a powerful blockchain data management and querying service designed sp
 - Redis cache (can use Bitnami Redis chart)
 - Access to a blockchain RPC endpoint (e.g., through txsigner)
 
+## Connection Requirements
+
+Update the following sections of `values.yaml` to point Portal at your infrastructure:
+
+| Service | Values path | Default |
+| --- | --- | --- |
+| PostgreSQL | `global.datastores.portal.postgresql` | `postgresql://portal:atk@postgresql:5432/portal?sslmode=disable` |
+| Redis cache | `portal.config.redis` | `redis://default:atk@redis:6379/4` |
+
+Provide external hostnames, credentials, logical database numbers, and SSL settings where required.
+
 ## Installing the Chart
 
 To install the chart with the release name `my-portal`:

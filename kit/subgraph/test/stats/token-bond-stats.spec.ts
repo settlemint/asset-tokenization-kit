@@ -30,15 +30,20 @@ describe("TokenBondStats", () => {
   `
   );
 
-  let bondToken: ResultOf<typeof bondQuery>["tokens"][0];
+  type BondToken = NonNullable<ResultOf<typeof bondQuery>["tokens"]>[number];
+  let bondToken: BondToken;
   beforeAll(async () => {
     const bondResponse = await theGraphClient.request(bondQuery);
-    bondToken = bondResponse.tokens[0];
+    const firstToken = bondResponse.tokens?.[0];
+    if (!firstToken) {
+      throw new Error("Expected at least one bond token for stats tests");
+    }
+    bondToken = firstToken;
   });
 
   it("should track bond statistics with denomination asset balance", async () => {
     const query = theGraphGraphql(
-      `query($tokenId: String!) {
+      `query($tokenId: ID!) {
         tokenBondStatsState(id: $tokenId) {
           id
           denominationAssetBalanceAvailable
@@ -108,23 +113,25 @@ describe("TokenBondStats", () => {
     const response = await theGraphClient.request(query, {
       tokenId: bondToken.id,
     });
+    const aggregatedStats = response.tokenBondStatsHours ?? [];
 
     // Check if we have aggregated stats (might be empty if no time has passed)
-    if (response.tokenBondStatsHours.length > 0) {
-      const stats = response.tokenBondStatsHours[0];
-      expect(stats).toHaveProperty("coveredPercentage");
+    if (!aggregatedStats.length) {
+      return;
+    }
+    const stats = aggregatedStats[0]!;
+    expect(stats).toHaveProperty("coveredPercentage");
 
-      // Coverage percentage should be (available / required) * 100
-      const available = Number(stats.denominationAssetBalanceAvailable);
-      const required = Number(stats.denominationAssetBalanceRequired);
+    // Coverage percentage should be (available / required) * 100
+    const available = Number(stats.denominationAssetBalanceAvailable);
+    const required = Number(stats.denominationAssetBalanceRequired);
 
-      if (required > 0) {
-        const expectedCoverage = (available / required) * 100;
-        // Allow for some rounding differences
-        expect(
-          Math.abs(parseFloat(stats.coveredPercentage) - expectedCoverage)
-        ).toBeLessThan(0.01);
-      }
+    if (required > 0) {
+      const expectedCoverage = (available / required) * 100;
+      // Allow for some rounding differences
+      expect(
+        Math.abs(parseFloat(stats.coveredPercentage) - expectedCoverage)
+      ).toBeLessThan(0.01);
     }
   });
 });

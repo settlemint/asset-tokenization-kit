@@ -9,5 +9,38 @@ metadata:
   {{- end }}
 data:
   erpc.yaml: |
-    {{- toYaml .Values.config | nindent 4 }}
-
+    {{- $config := deepCopy (default (dict) .Values.config) -}}
+    {{- $chainDefaults := dict "value" nil -}}
+    {{- if hasKey .Values "global" }}
+      {{- $global := index .Values "global" -}}
+      {{- if and $global (hasKey $global "chainId") }}
+        {{- $_ := set $chainDefaults "value" (index $global "chainId") }}
+        {{- $raw := index $chainDefaults "value" -}}
+        {{- if kindIs "string" $raw }}
+          {{- if regexMatch "^[0-9]+$" $raw }}
+            {{- $_ := set $chainDefaults "value" (atoi $raw) }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- $globalChainId := index $chainDefaults "value" -}}
+    {{- /* Inject global.chainId when chart-level config omits project/upstream EVM chain IDs. */ -}}
+    {{- if ne $globalChainId nil }}
+      {{- range $project := (default (list) $config.projects) }}
+        {{- range $network := (default (list) $project.networks) }}
+          {{- $evm := default (dict) $network.evm }}
+          {{- if or (not (hasKey $evm "chainId")) (empty (index $evm "chainId")) }}
+            {{- $_ := set $evm "chainId" $globalChainId }}
+          {{- end }}
+          {{- $_ := set $network "evm" $evm }}
+        {{- end }}
+        {{- range $upstream := (default (list) $project.upstreams) }}
+          {{- $evm := default (dict) $upstream.evm }}
+          {{- if or (not (hasKey $evm "chainId")) (empty (index $evm "chainId")) }}
+            {{- $_ := set $evm "chainId" $globalChainId }}
+          {{- end }}
+          {{- $_ := set $upstream "evm" $evm }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- tpl (toYaml $config) $ | nindent 4 }}
