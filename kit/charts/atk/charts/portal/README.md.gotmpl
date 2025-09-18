@@ -46,6 +46,12 @@ Portal is a powerful blockchain data management and querying service designed sp
 - Redis cache (can use Bitnami Redis chart)
 - Access to a blockchain RPC endpoint (e.g., through txsigner)
 
+## Connection Requirements
+
+Portal consumes its PostgreSQL and Redis settings from the umbrella chart under
+`datastores.postgresql.portal` and `datastores.redis.portal`. Override those entries to target managed
+database or cache services.
+
 ## Installing the Chart
 
 To install the chart with the release name `my-portal`:

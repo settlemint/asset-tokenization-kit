@@ -1,0 +1,34 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+## Connection Overview
+
+All runtime credentials are centralized in the root `values.yaml` under the `datastores` key:
+
+- `datastores.postgresql` lists the logical databases and users consumed by Blockscout, Graph Node,
+  Hasura, Portal, and TxSigner. Override these entries to point every service at your external
+  PostgreSQL instance.
+- `datastores.redis` assigns dedicated logical databases for eRPC (cache and shared state), Hasura
+  (cache and rate limit), and Portal. Update these entries when wiring the deployment to an external
+  Redis cluster.
+
+Downstream subcharts automatically read from these top-level maps, so you only need to edit the
+connection information in one place.
+
+{{ template "chart.homepageLine" . }}
+
+## Configuration
+
+The following table lists the configurable parameters of this chart and their default values.
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}

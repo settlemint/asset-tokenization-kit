@@ -45,6 +45,13 @@ Kubernetes: `>=1.21.0-0`
 - Kubernetes 1.19+
 - Helm 3.2.0+
 - PV provisioner support in the underlying infrastructure (if persistence is enabled)
+- Redis instance reachable from the cluster (defaults target the bundled `support.redis` release)
+
+## Connection Requirements
+
+The chart expects Redis connection details to be provided via the umbrella chart under
+`datastores.redis.erpcCache` (DB 0) and `datastores.redis.erpcSharedState` (DB 1). Override those
+entries when pointing eRPC at an external Redis instance.
 
 ## Installing the Chart
 
@@ -83,12 +90,20 @@ The command removes all the Kubernetes components associated with the chart and 
 | autoscaling.minReplicas | int | `1` | Minimum number of eRPC replicas |
 | commonAnnotations | object | `{}` | Annotations to add to all deployed objects |
 | commonLabels | object | `{}` | Labels to add to all deployed objects |
-| config | object | `{"database":{},"logLevel":"info","projects":[],"server":{"httpHostV4":"0.0.0.0","httpPort":4000}}` | eRPC configuration |
-| config.database | object | `{}` | Database configuration for caching |
+| config | object | `{"database":{"evmJsonRpcCache":{"compression":{"algorithm":"zstd","enabled":true,"threshold":1024,"zstdLevel":"default"},"connectors":[{"driver":"redis","id":"redis-cache","redis":{"uri":"{{ include \"erpc.redis.uri\" (dict \"host\" .Values.redis.host \"port\" .Values.redis.port \"username\" .Values.redis.username \"password\" .Values.redis.password \"db\" .Values.redis.cacheDb \"query\" .Values.redis.cacheQuery) }}"}}],"policies":[{"connector":"redis-cache","finality":"finalized","method":"*","network":"*","ttl":0},{"connector":"redis-cache","finality":"unfinalized","method":"*","network":"*","ttl":"5s"},{"connector":"redis-cache","finality":"realtime","method":"*","network":"*","ttl":"5s"}]},"sharedState":{"clusterKey":"atk-erpc-shared","connector":{"driver":"redis","redis":{"uri":"{{ include \"erpc.redis.uri\" (dict \"host\" .Values.redis.host \"port\" .Values.redis.port \"username\" .Values.redis.username \"password\" .Values.redis.password \"db\" .Values.redis.sharedStateDb \"query\" .Values.redis.sharedStateQuery) }}"}},"fallbackTimeout":"5s","lockTtl":"30s"}},"logLevel":"info","metrics":{"enabled":true,"hostV4":"0.0.0.0","port":4001},"projects":[],"server":{"httpHostV4":"0.0.0.0","httpPort":4000,"waitAfterShutdown":"30s","waitBeforeShutdown":"30s"}}` | eRPC configuration |
+| config.database | object | `{"evmJsonRpcCache":{"compression":{"algorithm":"zstd","enabled":true,"threshold":1024,"zstdLevel":"default"},"connectors":[{"driver":"redis","id":"redis-cache","redis":{"uri":"{{ include \"erpc.redis.uri\" (dict \"host\" .Values.redis.host \"port\" .Values.redis.port \"username\" .Values.redis.username \"password\" .Values.redis.password \"db\" .Values.redis.cacheDb \"query\" .Values.redis.cacheQuery) }}"}}],"policies":[{"connector":"redis-cache","finality":"finalized","method":"*","network":"*","ttl":0},{"connector":"redis-cache","finality":"unfinalized","method":"*","network":"*","ttl":"5s"},{"connector":"redis-cache","finality":"realtime","method":"*","network":"*","ttl":"5s"}]},"sharedState":{"clusterKey":"atk-erpc-shared","connector":{"driver":"redis","redis":{"uri":"{{ include \"erpc.redis.uri\" (dict \"host\" .Values.redis.host \"port\" .Values.redis.port \"username\" .Values.redis.username \"password\" .Values.redis.password \"db\" .Values.redis.sharedStateDb \"query\" .Values.redis.sharedStateQuery) }}"}},"fallbackTimeout":"5s","lockTtl":"30s"}}` | Database configuration for caching |
 | config.logLevel | string | `"info"` | Log level for eRPC |
+| config.metrics | object | `{"enabled":true,"hostV4":"0.0.0.0","port":4001}` | Metrics endpoint configuration |
 | config.projects | list | `[]` | Array of project configurations (will be overridden by parent chart) |
-| config.server | object | `{"httpHostV4":"0.0.0.0","httpPort":4000}` | Server configuration |
+| config.server | object | `{"httpHostV4":"0.0.0.0","httpPort":4000,"waitAfterShutdown":"30s","waitBeforeShutdown":"30s"}` | Server configuration |
+| configMountPath | string | `"/erpc.yaml"` | Path where the rendered configuration file will be mounted |
 | containerSecurityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":false,"runAsGroup":1001,"runAsNonRoot":true,"runAsUser":1001,"seccompProfile":{"type":"RuntimeDefault"}}` | Container Security Context configuration |
+| envSecret | object | `{"defaultMode":420,"enabled":false,"mountPath":"/.env","name":"","subPath":""}` | .env Secret mount configuration |
+| envSecret.defaultMode | int | `420` | File mode applied to the mounted Secret (decimal 420 = 0644) |
+| envSecret.enabled | bool | `false` | Enable mounting a Secret containing a .env file |
+| envSecret.mountPath | string | `"/.env"` | Path where the .env file will be mounted |
+| envSecret.name | string | `""` | Name of the Secret containing the .env data (required when enabled) |
+| envSecret.subPath | string | `""` | Optional subPath within the Secret to mount (defaults to the key named `.env`) |
 | extraEnvVars | list | `[]` | Array with extra environment variables to add to eRPC nodes |
 | extraEnvVarsCM | string | `""` | Name of existing ConfigMap containing extra env vars for eRPC nodes |
 | extraEnvVarsSecret | string | `""` | Name of existing Secret containing extra env vars for eRPC nodes |
@@ -121,8 +136,10 @@ The command removes all the Kubernetes components associated with the chart and 
 | ingress.secrets | list | `[]` | Custom TLS certificates as secrets |
 | ingress.selfSigned | bool | `false` | Create a TLS secret for this ingress record using self-signed certificates generated by Helm |
 | ingress.tls | bool | `false` | Enable TLS configuration for the host defined at `ingress.hostname` parameter |
-| initContainer.tcpCheck.dependencies[0].endpoint | string | `"besu-node-rpc-1.atk.svc.cluster.local:8545"` |  |
+| initContainer.tcpCheck.dependencies[0].endpoint | string | `"besu-node-rpc-0.besu-node-rpc:8545"` |  |
 | initContainer.tcpCheck.dependencies[0].name | string | `"besu-rpc"` |  |
+| initContainer.tcpCheck.dependencies[1].endpoint | string | `"{{ printf \"%s:%d\" .Values.redis.host (int .Values.redis.port) }}"` |  |
+| initContainer.tcpCheck.dependencies[1].name | string | `"redis"` |  |
 | initContainer.tcpCheck.enabled | bool | `true` |  |
 | initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
@@ -183,8 +200,22 @@ The command removes all the Kubernetes components associated with the chart and 
 | readinessProbe.periodSeconds | int | `10` | Period seconds for readinessProbe |
 | readinessProbe.successThreshold | int | `1` | Success threshold for readinessProbe |
 | readinessProbe.timeoutSeconds | int | `5` | Timeout seconds for readinessProbe |
+| redis | object | `{"cacheDb":0,"cacheQuery":"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50","host":"redis","password":"atk","port":6379,"sharedStateDb":1,"sharedStateQuery":"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=20","username":"default"}` | Redis parameters for cache/shared state connectivity |
+| redis.cacheDb | int | `0` | Database index for the EVM cache connector |
+| redis.cacheQuery | string | `"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"` | Additional query parameters for the cache connector (omit leading '?') |
+| redis.host | string | `"redis"` | Hostname of the Redis service used by eRPC |
+| redis.password | string | `"atk"` | Optional password for Redis authentication |
+| redis.port | int | `6379` | Port of the Redis service used by eRPC |
+| redis.sharedStateDb | int | `1` | Database index for the shared state connector |
+| redis.sharedStateQuery | string | `"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=20"` | Additional query parameters for the shared state connector (omit leading '?') |
+| redis.username | string | `"default"` | Optional username for Redis authentication |
 | replicaCount | int | `1` | Number of eRPC replicas to deploy |
 | resources | object | `{}` | eRPC containers resource requests and limits |
+| runtime | object | `{"gc":{"enabled":true,"gogc":30,"gomemlimitOverride":"","gomemlimitRatio":0.85}}` | Runtime tuning |
+| runtime.gc.enabled | bool | `true` | Enable automatic Go GC tuning based on container limits |
+| runtime.gc.gogc | int | `30` | Triggers garbage collection when heap grows by this percentage |
+| runtime.gc.gomemlimitOverride | string | `""` | Absolute fallback for GOMEMLIMIT (takes precedence when set, e.g. "2GiB") |
+| runtime.gc.gomemlimitRatio | float | `0.85` | Fraction of the pod memory limit used to derive GOMEMLIMIT (set to 1.0 for 100%) |
 | schedulerName | string | `""` | Alternate scheduler |
 | service | object | `{"annotations":{},"clusterIP":"","externalTrafficPolicy":"Cluster","extraPorts":[],"loadBalancerIP":"","loadBalancerSourceRanges":[],"metricsNodePort":"","metricsPort":4001,"nodePort":"","port":4000,"sessionAffinity":"None","sessionAffinityConfig":{},"type":"ClusterIP"}` | Service parameters |
 | service.annotations | object | `{}` | Additional custom annotations for eRPC service |
@@ -224,6 +255,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | updateStrategy | object | `{"rollingUpdate":{},"type":"RollingUpdate"}` | Update strategy configuration for eRPC deployment |
 | updateStrategy.rollingUpdate | object | `{}` | eRPC deployment rolling update configuration parameters |
 | updateStrategy.type | string | `"RollingUpdate"` | eRPC deployment strategy type |
+| workingDir | string | `"/"` | Working directory for the eRPC container |
 
 ## Configuration and installation details
 

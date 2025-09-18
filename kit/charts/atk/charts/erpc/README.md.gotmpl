@@ -35,6 +35,13 @@
 - Kubernetes 1.19+
 - Helm 3.2.0+
 - PV provisioner support in the underlying infrastructure (if persistence is enabled)
+- Redis instance reachable from the cluster (defaults target the bundled `support.redis` release)
+
+## Connection Requirements
+
+The chart expects Redis connection details to be provided via the umbrella chart under
+`datastores.redis.erpcCache` (DB 0) and `datastores.redis.erpcSharedState` (DB 1). Override those
+entries when pointing eRPC at an external Redis instance.
 
 ## Installing the Chart
 

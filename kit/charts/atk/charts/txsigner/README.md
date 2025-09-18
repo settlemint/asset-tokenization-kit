@@ -48,6 +48,12 @@ Kubernetes: `>=1.21.0-0`
 - Helm 3.2.0+
 - Access to a blockchain RPC endpoint
 - Private key or key management service configured
+- PostgreSQL database (defaults target the bundled `support.postgresql` release)
+
+## Connection Requirements
+
+TxSigner sources its PostgreSQL credentials from `datastores.postgresql.txsigner` in the umbrella
+chart. Update that entry to point at your external database and redeploy.
 
 ## Installing the Chart
 

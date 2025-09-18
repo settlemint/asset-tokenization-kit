@@ -4,26 +4,23 @@
 
 A Helm chart for the SettleMint Asset Tokenization Kit
 
-## Maintainers
+## Connection Overview
 
-| Name | Email | Url |
-| ---- | ------ | --- |
-| SettleMint | <support@settlemint.com> | <https://settlemint.com> |
+All runtime credentials are centralized in the root `values.yaml` under the `datastores` key:
 
-## Requirements
+- `datastores.postgresql` lists the logical databases and users consumed by Blockscout, Graph Node,
+  Hasura, Portal, and TxSigner. Override these entries to point every service at your external
+  PostgreSQL instance.
+- `datastores.redis` assigns dedicated logical databases for eRPC (cache and shared state), Hasura
+  (cache and rate limit), and Portal. Update these entries when wiring the deployment to an external
+  Redis cluster.
 
-| Repository | Name | Version |
-|------------|------|---------|
-|  | besu-network | * |
-|  | blockscout | * |
-|  | erpc | * |
-|  | graph-node | * |
-|  | hasura | * |
-|  | observability | * |
-|  | portal | * |
-|  | support | * |
-| file://./charts/dapp | dapp | * |
-| file://./charts/txsigner | txsigner | * |
+Downstream subcharts automatically read from these top-level maps, so you only need to edit the
+connection information in one place.
+
+## Configuration
+
+The following table lists the configurable parameters of this chart and their default values.
 
 ## Values
 
@@ -151,7 +148,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | besu-network.besu-validator-4.storage.pvcSizeLimit | string | `"5Gi"` |  |
 | besu-network.besu-validator-4.storage.sizeLimit | string | `"5Gi"` |  |
 | besu-network.besu-validator-4.volumePermissionsFix | list | `[]` |  |
-| besu-network.enabled | bool | `true` |  |
+| besu-network.enabled | bool | `false` |  |
 | besu-network.rawGenesisConfig.blockchain.nodes.count | int | `1` |  |
 | blockscout.blockscout-stack.blockscout.env.API_URL | string | `"https://explorer.k8s.orb.local"` |  |
 | blockscout.blockscout-stack.blockscout.env.DATABASE_URL | string | `"postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"` |  |
@@ -173,6 +170,15 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | blockscout.blockscout-stack.podAnnotations."prometheus.io/port" | string | `"4000"` |  |
 | blockscout.blockscout-stack.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
 | blockscout.enabled | bool | `true` |  |
+| blockscout.postgresql.database | string | `"blockscout"` |  |
+| blockscout.postgresql.displayName | string | `"Blockscout"` |  |
+| blockscout.postgresql.endpoint | string | `"postgresql:5432"` |  |
+| blockscout.postgresql.host | string | `"postgresql"` |  |
+| blockscout.postgresql.password | string | `"atk"` |  |
+| blockscout.postgresql.port | int | `5432` |  |
+| blockscout.postgresql.sslMode | string | `"disable"` |  |
+| blockscout.postgresql.url | string | `"postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"` |  |
+| blockscout.postgresql.username | string | `"blockscout"` |  |
 | dapp.enabled | bool | `true` |  |
 | dapp.image.pullPolicy | string | `"IfNotPresent"` |  |
 | dapp.image.repository | string | `"ghcr.io/settlemint/asset-tokenization-kit"` |  |
@@ -232,27 +238,148 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | dapp.secretEnv.SETTLEMINT_INSTANCE | string | `"standalone"` |  |
 | dapp.secretEnv.SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT | string | `"http://portal:3001/graphql"` |  |
 | dapp.secretEnv.SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS | string | `"[\"http://graph-node-combined:8000/subgraphs/name/kit\"]"` |  |
-| erpc.config.database.evmJsonRpcCache.connectors[0].driver | string | `"redis"` |  |
-| erpc.config.database.evmJsonRpcCache.connectors[0].id | string | `"redis-cache"` |  |
-| erpc.config.database.evmJsonRpcCache.connectors[0].redis.addr | string | `"redis:6379"` |  |
-| erpc.config.database.evmJsonRpcCache.connectors[0].redis.connPoolSize | int | `128` |  |
-| erpc.config.database.evmJsonRpcCache.connectors[0].redis.db | int | `0` |  |
-| erpc.config.database.evmJsonRpcCache.connectors[0].redis.password | string | `"atk"` |  |
-| erpc.config.database.evmJsonRpcCache.connectors[0].redis.username | string | `"default"` |  |
-| erpc.config.database.evmJsonRpcCache.policies[0].connector | string | `"redis-cache"` |  |
-| erpc.config.database.evmJsonRpcCache.policies[0].finality | string | `"finalized"` |  |
-| erpc.config.database.evmJsonRpcCache.policies[0].method | string | `"*"` |  |
-| erpc.config.database.evmJsonRpcCache.policies[0].network | string | `"*"` |  |
+| datastores.postgresql.blockscout.database | string | `"blockscout"` |  |
+| datastores.postgresql.blockscout.displayName | string | `"Blockscout"` |  |
+| datastores.postgresql.blockscout.endpoint | string | `"postgresql:5432"` |  |
+| datastores.postgresql.blockscout.host | string | `"postgresql"` |  |
+| datastores.postgresql.blockscout.password | string | `"atk"` |  |
+| datastores.postgresql.blockscout.port | int | `5432` |  |
+| datastores.postgresql.blockscout.sslMode | string | `"disable"` |  |
+| datastores.postgresql.blockscout.url | string | `"postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"` |  |
+| datastores.postgresql.blockscout.username | string | `"blockscout"` |  |
+| datastores.postgresql.graphNode.database | string | `"thegraph"` |  |
+| datastores.postgresql.graphNode.displayName | string | `"Graph Node"` |  |
+| datastores.postgresql.graphNode.endpoint | string | `"postgresql:5432"` |  |
+| datastores.postgresql.graphNode.host | string | `"postgresql"` |  |
+| datastores.postgresql.graphNode.password | string | `"atk"` |  |
+| datastores.postgresql.graphNode.port | int | `5432` |  |
+| datastores.postgresql.graphNode.sslMode | string | `"disable"` |  |
+| datastores.postgresql.graphNode.url | string | `"postgresql://thegraph:atk@postgresql:5432/thegraph?sslmode=disable"` |  |
+| datastores.postgresql.graphNode.username | string | `"thegraph"` |  |
+| datastores.postgresql.hasura.database | string | `"hasura"` |  |
+| datastores.postgresql.hasura.displayName | string | `"Hasura Metadata"` |  |
+| datastores.postgresql.hasura.endpoint | string | `"postgresql:5432"` |  |
+| datastores.postgresql.hasura.host | string | `"postgresql"` |  |
+| datastores.postgresql.hasura.password | string | `"atk"` |  |
+| datastores.postgresql.hasura.port | int | `5432` |  |
+| datastores.postgresql.hasura.sslMode | string | `"disable"` |  |
+| datastores.postgresql.hasura.url | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
+| datastores.postgresql.hasura.username | string | `"hasura"` |  |
+| datastores.postgresql.portal.database | string | `"portal"` |  |
+| datastores.postgresql.portal.displayName | string | `"Portal"` |  |
+| datastores.postgresql.portal.endpoint | string | `"postgresql:5432"` |  |
+| datastores.postgresql.portal.host | string | `"postgresql"` |  |
+| datastores.postgresql.portal.password | string | `"atk"` |  |
+| datastores.postgresql.portal.port | int | `5432` |  |
+| datastores.postgresql.portal.sslMode | string | `"disable"` |  |
+| datastores.postgresql.portal.url | string | `"postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"` |  |
+| datastores.postgresql.portal.username | string | `"portal"` |  |
+| datastores.postgresql.txsigner.database | string | `"txsigner"` |  |
+| datastores.postgresql.txsigner.displayName | string | `"TxSigner"` |  |
+| datastores.postgresql.txsigner.endpoint | string | `"postgresql:5432"` |  |
+| datastores.postgresql.txsigner.host | string | `"postgresql"` |  |
+| datastores.postgresql.txsigner.password | string | `"atk"` |  |
+| datastores.postgresql.txsigner.port | int | `5432` |  |
+| datastores.postgresql.txsigner.sslMode | string | `"disable"` |  |
+| datastores.postgresql.txsigner.url | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
+| datastores.postgresql.txsigner.username | string | `"txsigner"` |  |
+| datastores.redis.erpcCache.db | int | `0` |  |
+| datastores.redis.erpcCache.displayName | string | `"eRPC Cache"` |  |
+| datastores.redis.erpcCache.host | string | `"redis"` |  |
+| datastores.redis.erpcCache.password | string | `"atk"` |  |
+| datastores.redis.erpcCache.port | int | `6379` |  |
+| datastores.redis.erpcCache.url | string | `"redis://default:atk@redis:6379/0"` |  |
+| datastores.redis.erpcCache.username | string | `"default"` |  |
+| datastores.redis.erpcSharedState.db | int | `1` |  |
+| datastores.redis.erpcSharedState.displayName | string | `"eRPC Shared State"` |  |
+| datastores.redis.erpcSharedState.host | string | `"redis"` |  |
+| datastores.redis.erpcSharedState.password | string | `"atk"` |  |
+| datastores.redis.erpcSharedState.port | int | `6379` |  |
+| datastores.redis.erpcSharedState.url | string | `"redis://default:atk@redis:6379/1"` |  |
+| datastores.redis.erpcSharedState.username | string | `"default"` |  |
+| datastores.redis.hasuraPrimary.db | int | `2` |  |
+| datastores.redis.hasuraPrimary.displayName | string | `"Hasura Cache"` |  |
+| datastores.redis.hasuraPrimary.host | string | `"redis"` |  |
+| datastores.redis.hasuraPrimary.password | string | `"atk"` |  |
+| datastores.redis.hasuraPrimary.port | int | `6379` |  |
+| datastores.redis.hasuraPrimary.url | string | `"redis://default:atk@redis:6379/2"` |  |
+| datastores.redis.hasuraPrimary.username | string | `"default"` |  |
+| datastores.redis.hasuraRateLimit.db | int | `3` |  |
+| datastores.redis.hasuraRateLimit.displayName | string | `"Hasura Rate Limit"` |  |
+| datastores.redis.hasuraRateLimit.host | string | `"redis"` |  |
+| datastores.redis.hasuraRateLimit.password | string | `"atk"` |  |
+| datastores.redis.hasuraRateLimit.port | int | `6379` |  |
+| datastores.redis.hasuraRateLimit.url | string | `"redis://default:atk@redis:6379/3"` |  |
+| datastores.redis.hasuraRateLimit.username | string | `"default"` |  |
+| datastores.redis.portal.db | int | `4` |  |
+| datastores.redis.portal.displayName | string | `"Portal"` |  |
+| datastores.redis.portal.host | string | `"redis"` |  |
+| datastores.redis.portal.password | string | `"atk"` |  |
+| datastores.redis.portal.port | int | `6379` |  |
+| datastores.redis.portal.url | string | `"redis://default:atk@redis:6379/4"` |  |
+| datastores.redis.portal.username | string | `"default"` |  |
 | erpc.config.logLevel | string | `"info"` |  |
 | erpc.config.projects[0].id | string | `"settlemint"` |  |
-| erpc.config.projects[0].upstreams[0].endpoint | string | `"http://besu-node-rpc-1:8545"` |  |
+| erpc.config.projects[0].networks[0].architecture | string | `"evm"` |  |
+| erpc.config.projects[0].networks[0].directiveDefaults.retryEmpty | bool | `true` |  |
+| erpc.config.projects[0].networks[0].evm.chainId | int | `53771311147` |  |
+| erpc.config.projects[0].networks[0].evm.integrity.enforceGetLogsBlockRange | bool | `true` |  |
+| erpc.config.projects[0].networks[0].evm.integrity.enforceHighestBlock | bool | `true` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].hedge.maxCount | int | `1` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].hedge.maxDelay | string | `"4s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].hedge.minDelay | string | `"200ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].hedge.quantile | float | `0.9` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].matchMethod | string | `"eth_getLogs"` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].retry.backoffFactor | int | `2` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].retry.backoffMaxDelay | string | `"10s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].retry.delay | string | `"500ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].retry.jitter | string | `"300ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].retry.maxAttempts | int | `3` |  |
+| erpc.config.projects[0].networks[0].failsafe[0].timeout.duration | string | `"45s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[1].matchMethod | string | `"trace_*|debug_*|arbtrace_*"` |  |
+| erpc.config.projects[0].networks[0].failsafe[1].retry.maxAttempts | int | `1` |  |
+| erpc.config.projects[0].networks[0].failsafe[1].timeout.duration | string | `"90s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[2].matchMethod | string | `"eth_getBlock*|eth_getTransaction*"` |  |
+| erpc.config.projects[0].networks[0].failsafe[2].retry.backoffFactor | float | `1.5` |  |
+| erpc.config.projects[0].networks[0].failsafe[2].retry.backoffMaxDelay | string | `"3s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[2].retry.delay | string | `"200ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[2].retry.jitter | string | `"150ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[2].retry.maxAttempts | int | `2` |  |
+| erpc.config.projects[0].networks[0].failsafe[2].timeout.duration | string | `"6s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[3].hedge.delay | string | `"250ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[3].hedge.maxCount | int | `1` |  |
+| erpc.config.projects[0].networks[0].failsafe[3].matchFinality[0] | string | `"unfinalized"` |  |
+| erpc.config.projects[0].networks[0].failsafe[3].matchFinality[1] | string | `"realtime"` |  |
+| erpc.config.projects[0].networks[0].failsafe[3].matchMethod | string | `"*"` |  |
+| erpc.config.projects[0].networks[0].failsafe[3].retry.delay | string | `"150ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[3].retry.jitter | string | `"150ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[3].retry.maxAttempts | int | `2` |  |
+| erpc.config.projects[0].networks[0].failsafe[3].timeout.duration | string | `"4s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[4].matchFinality[0] | string | `"finalized"` |  |
+| erpc.config.projects[0].networks[0].failsafe[4].matchMethod | string | `"*"` |  |
+| erpc.config.projects[0].networks[0].failsafe[4].retry.backoffFactor | float | `1.8` |  |
+| erpc.config.projects[0].networks[0].failsafe[4].retry.backoffMaxDelay | string | `"8s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[4].retry.delay | string | `"400ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[4].retry.jitter | string | `"250ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[4].retry.maxAttempts | int | `4` |  |
+| erpc.config.projects[0].networks[0].failsafe[4].timeout.duration | string | `"20s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].hedge.maxCount | int | `2` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].hedge.maxDelay | string | `"2s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].hedge.minDelay | string | `"120ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].hedge.quantile | float | `0.95` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].matchMethod | string | `"*"` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].retry.backoffFactor | float | `1.4` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].retry.backoffMaxDelay | string | `"5s"` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].retry.delay | string | `"300ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].retry.jitter | string | `"200ms"` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].retry.maxAttempts | int | `3` |  |
+| erpc.config.projects[0].networks[0].failsafe[5].timeout.duration | string | `"12s"` |  |
+| erpc.config.projects[0].upstreams[0].endpoint | string | `"http://besu-node-rpc-0.besu-node-rpc:8545"` |  |
 | erpc.config.projects[0].upstreams[0].evm.chainId | int | `53771311147` |  |
-| erpc.config.projects[0].upstreams[0].failsafe.timeout.duration | string | `"30s"` |  |
-| erpc.config.projects[0].upstreams[0].id | string | `"besu-node-rpc-1"` |  |
-| erpc.config.projects[0].upstreams[1].endpoint | string | `"http://besu-node-validator-1:8545"` |  |
+| erpc.config.projects[0].upstreams[0].id | string | `"besu-node-rpc-0"` |  |
+| erpc.config.projects[0].upstreams[1].endpoint | string | `"http://besu-node-rpc-1.besu-node-rpc:8545"` |  |
 | erpc.config.projects[0].upstreams[1].evm.chainId | int | `53771311147` |  |
-| erpc.config.projects[0].upstreams[1].failsafe.timeout.duration | string | `"30s"` |  |
-| erpc.config.projects[0].upstreams[1].id | string | `"besu-node-validator-1"` |  |
+| erpc.config.projects[0].upstreams[1].id | string | `"besu-node-rpc-1"` |  |
 | erpc.config.server.httpHostV4 | string | `"0.0.0.0"` |  |
 | erpc.config.server.httpPort | int | `4000` |  |
 | erpc.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
@@ -286,6 +413,14 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | erpc.podSecurityContext.fsGroup | int | `1000` |  |
 | erpc.podSecurityContext.runAsNonRoot | bool | `true` |  |
 | erpc.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| erpc.redis.cacheDb | int | `0` |  |
+| erpc.redis.cacheQuery | string | `"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"` |  |
+| erpc.redis.host | string | `"redis"` |  |
+| erpc.redis.password | string | `"atk"` |  |
+| erpc.redis.port | int | `6379` |  |
+| erpc.redis.sharedStateDb | int | `1` |  |
+| erpc.redis.sharedStateQuery | string | `"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=20"` |  |
+| erpc.redis.username | string | `"default"` |  |
 | erpc.resources | object | `{}` |  |
 | erpc.test.image.pullPolicy | string | `"IfNotPresent"` |  |
 | erpc.test.image.repository | string | `"docker.io/busybox"` |  |
@@ -312,7 +447,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | graph-node.env.PRIMARY_SUBGRAPH_DATA_PGUSER | string | `"thegraph"` |  |
 | graph-node.image.pullPolicy | string | `"IfNotPresent"` |  |
 | graph-node.image.repository | string | `"docker.io/graphprotocol/graph-node"` |  |
-| graph-node.image.tag | string | `"v0.40.1"` |  |
+| graph-node.image.tag | string | `"v0.40.2"` |  |
 | graph-node.ingress.annotations."nginx.ingress.kubernetes.io/rewrite-target" | string | `"/$1"` |  |
 | graph-node.ingress.annotations."nginx.ingress.kubernetes.io/use-regex" | string | `"true"` |  |
 | graph-node.ingress.className | string | `"atk-nginx"` |  |
@@ -366,6 +501,15 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | graph-node.postgresReadinessCheck.resources.limits.memory | string | `"96Mi"` |  |
 | graph-node.postgresReadinessCheck.resources.requests.cpu | string | `"25m"` |  |
 | graph-node.postgresReadinessCheck.resources.requests.memory | string | `"48Mi"` |  |
+| graph-node.postgresql.database | string | `"thegraph"` |  |
+| graph-node.postgresql.displayName | string | `"Graph Node"` |  |
+| graph-node.postgresql.endpoint | string | `"postgresql:5432"` |  |
+| graph-node.postgresql.host | string | `"postgresql"` |  |
+| graph-node.postgresql.password | string | `"atk"` |  |
+| graph-node.postgresql.port | int | `5432` |  |
+| graph-node.postgresql.sslMode | string | `"disable"` |  |
+| graph-node.postgresql.url | string | `"postgresql://thegraph:atk@postgresql:5432/thegraph?sslmode=disable"` |  |
+| graph-node.postgresql.username | string | `"thegraph"` |  |
 | hasura.enabled | bool | `true` |  |
 | hasura.graphql-engine.image.pullPolicy | string | `"IfNotPresent"` |  |
 | hasura.graphql-engine.image.repository | string | `"docker.io/hasura/graphql-engine"` |  |
@@ -388,8 +532,33 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | hasura.graphql-engine.replicas | int | `1` |  |
 | hasura.graphql-engine.secret.extraSecrets.DEFAULT_DB_URL | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
 | hasura.graphql-engine.secret.metadataDbUrl | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
-| hasura.graphql-engine.secret.rateLimitRedisUrl | string | `"redis://default:atk@redis:6379/0"` |  |
-| hasura.graphql-engine.secret.redisUrl | string | `"redis://default:atk@redis:6379/0"` |  |
+| hasura.graphql-engine.secret.rateLimitRedisUrl | string | `"redis://default:atk@redis:6379/3"` |  |
+| hasura.graphql-engine.secret.redisUrl | string | `"redis://default:atk@redis:6379/2"` |  |
+| hasura.postgresql.database | string | `"hasura"` |  |
+| hasura.postgresql.displayName | string | `"Hasura Metadata"` |  |
+| hasura.postgresql.endpoint | string | `"postgresql:5432"` |  |
+| hasura.postgresql.host | string | `"postgresql"` |  |
+| hasura.postgresql.password | string | `"atk"` |  |
+| hasura.postgresql.port | int | `5432` |  |
+| hasura.postgresql.sslMode | string | `"disable"` |  |
+| hasura.postgresql.url | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
+| hasura.postgresql.username | string | `"hasura"` |  |
+| hasura.redis.primary.db | int | `2` |  |
+| hasura.redis.primary.displayName | string | `"Hasura Cache"` |  |
+| hasura.redis.primary.host | string | `"redis"` |  |
+| hasura.redis.primary.password | string | `"atk"` |  |
+| hasura.redis.primary.port | int | `6379` |  |
+| hasura.redis.primary.url | string | `"redis://default:atk@redis:6379/2"` |  |
+| hasura.redis.primary.username | string | `"default"` |  |
+| hasura.redis.rateLimit.db | int | `3` |  |
+| hasura.redis.rateLimit.displayName | string | `"Hasura Rate Limit"` |  |
+| hasura.redis.rateLimit.host | string | `"redis"` |  |
+| hasura.redis.rateLimit.password | string | `"atk"` |  |
+| hasura.redis.rateLimit.port | int | `6379` |  |
+| hasura.redis.rateLimit.url | string | `"redis://default:atk@redis:6379/3"` |  |
+| hasura.redis.rateLimit.username | string | `"default"` |  |
+| network.enabled | bool | `true` |  |
+| network.network-bootstrapper.settings.chainId | string | `"53771311147"` |  |
 | observability.alloy.alloy.resources | object | `{}` |  |
 | observability.alloy.configReloader.image.registry | string | `"quay.io"` |  |
 | observability.alloy.configReloader.image.repository | string | `"prometheus-operator/prometheus-config-reloader"` | Repository to get config reloader image from. |
@@ -446,10 +615,21 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.victoria-metrics-single.server.persistentVolume.storageClass | string | `""` |  |
 | observability.victoria-metrics-single.server.resources | object | `{}` |  |
 | portal.config.postgresql | string | `"postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"` |  |
-| portal.config.redis.db | int | `0` |  |
+| portal.config.postgresqlConnection.database | string | `"portal"` |  |
+| portal.config.postgresqlConnection.displayName | string | `"Portal"` |  |
+| portal.config.postgresqlConnection.endpoint | string | `"postgresql:5432"` |  |
+| portal.config.postgresqlConnection.host | string | `"postgresql"` |  |
+| portal.config.postgresqlConnection.password | string | `"atk"` |  |
+| portal.config.postgresqlConnection.port | int | `5432` |  |
+| portal.config.postgresqlConnection.sslMode | string | `"disable"` |  |
+| portal.config.postgresqlConnection.url | string | `"postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"` |  |
+| portal.config.postgresqlConnection.username | string | `"portal"` |  |
+| portal.config.redis.db | int | `4` |  |
+| portal.config.redis.displayName | string | `"Portal"` |  |
 | portal.config.redis.host | string | `"redis"` |  |
 | portal.config.redis.password | string | `"atk"` |  |
 | portal.config.redis.port | int | `6379` |  |
+| portal.config.redis.url | string | `"redis://default:atk@redis:6379/4"` |  |
 | portal.config.redis.username | string | `"default"` |  |
 | portal.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
 | portal.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
@@ -592,8 +772,38 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | txsigner.podSecurityContext.runAsNonRoot | bool | `true` |  |
 | txsigner.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | txsigner.postgresql | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
+| txsigner.postgresqlConnection.database | string | `"txsigner"` |  |
+| txsigner.postgresqlConnection.displayName | string | `"TxSigner"` |  |
+| txsigner.postgresqlConnection.endpoint | string | `"postgresql:5432"` |  |
+| txsigner.postgresqlConnection.host | string | `"postgresql"` |  |
+| txsigner.postgresqlConnection.password | string | `"atk"` |  |
+| txsigner.postgresqlConnection.port | int | `5432` |  |
+| txsigner.postgresqlConnection.sslMode | string | `"disable"` |  |
+| txsigner.postgresqlConnection.url | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
+| txsigner.postgresqlConnection.username | string | `"txsigner"` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |
 | txsigner.test.image.pullPolicy | string | `"IfNotPresent"` |  |
 | txsigner.test.image.repository | string | `"docker.io/busybox"` |  |
 | txsigner.test.image.tag | string | `"1.37"` |  |
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| SettleMint | <support@settlemint.com> | <https://settlemint.com> |
+
+## Requirements
+
+| Repository | Name | Version |
+|------------|------|---------|
+|  | blockscout | * |
+|  | dapp | * |
+|  | erpc | * |
+|  | graph-node | * |
+|  | hasura | * |
+|  | observability | * |
+|  | portal | * |
+|  | support | * |
+|  | txsigner | * |
+| oci://ghcr.io/settlemint/network-bootstrapper | network | 1.0.13 |

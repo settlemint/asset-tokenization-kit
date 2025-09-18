@@ -24,6 +24,101 @@ global:
       repository: settlemint/asset-tokenization-kit-artifacts
       tag: 2.0.0-main.91391
       pullPolicy: IfNotPresent
+
+datastores:
+  postgresql:
+    blockscout: &postgres_blockscout
+      displayName: Blockscout
+      host: &postgres_blockscout_host postgresql
+      port: &postgres_blockscout_port 5432
+      database: &postgres_blockscout_database blockscout
+      username: &postgres_blockscout_username blockscout
+      password: &postgres_blockscout_password atk
+      sslMode: &postgres_blockscout_sslMode disable
+      url: &postgres_blockscout_url "postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"
+      endpoint: &postgres_blockscout_endpoint "postgresql:5432"
+    graphNode: &postgres_graphnode
+      displayName: Graph Node
+      host: &postgres_graphnode_host postgresql
+      port: &postgres_graphnode_port 5432
+      database: &postgres_graphnode_database thegraph
+      username: &postgres_graphnode_username thegraph
+      password: &postgres_graphnode_password atk
+      sslMode: &postgres_graphnode_sslMode disable
+      url: &postgres_graphnode_url "postgresql://thegraph:atk@postgresql:5432/thegraph?sslmode=disable"
+      endpoint: &postgres_graphnode_endpoint "postgresql:5432"
+    hasura: &postgres_hasura
+      displayName: Hasura Metadata
+      host: &postgres_hasura_host postgresql
+      port: &postgres_hasura_port 5432
+      database: &postgres_hasura_database hasura
+      username: &postgres_hasura_username hasura
+      password: &postgres_hasura_password atk
+      sslMode: &postgres_hasura_sslMode disable
+      url: &postgres_hasura_url "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
+      endpoint: &postgres_hasura_endpoint "postgresql:5432"
+    portal: &postgres_portal
+      displayName: Portal
+      host: &postgres_portal_host postgresql
+      port: &postgres_portal_port 5432
+      database: &postgres_portal_database portal
+      username: &postgres_portal_username portal
+      password: &postgres_portal_password atk
+      sslMode: &postgres_portal_sslMode disable
+      url: &postgres_portal_url "postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"
+      endpoint: &postgres_portal_endpoint "postgresql:5432"
+    txsigner: &postgres_txsigner
+      displayName: TxSigner
+      host: &postgres_txsigner_host postgresql
+      port: &postgres_txsigner_port 5432
+      database: &postgres_txsigner_database txsigner
+      username: &postgres_txsigner_username txsigner
+      password: &postgres_txsigner_password atk
+      sslMode: &postgres_txsigner_sslMode disable
+      url: &postgres_txsigner_url "postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"
+      endpoint: &postgres_txsigner_endpoint "postgresql:5432"
+  redis:
+    erpcCache: &redis_erpc_cache
+      displayName: eRPC Cache
+      host: &redis_erpc_host redis
+      port: &redis_erpc_port 6379
+      username: &redis_erpc_username default
+      password: &redis_erpc_password atk
+      db: &redis_erpc_cache_db 0
+      url: &redis_erpc_cache_url "redis://default:atk@redis:6379/0"
+    erpcSharedState: &redis_erpc_shared
+      displayName: eRPC Shared State
+      host: *redis_erpc_host
+      port: *redis_erpc_port
+      username: *redis_erpc_username
+      password: *redis_erpc_password
+      db: &redis_erpc_shared_db 1
+      url: &redis_erpc_shared_url "redis://default:atk@redis:6379/1"
+    hasuraPrimary: &redis_hasura_primary
+      displayName: Hasura Cache
+      host: &redis_hasura_host redis
+      port: &redis_hasura_port 6379
+      username: &redis_hasura_username default
+      password: &redis_hasura_password atk
+      db: &redis_hasura_primary_db 2
+      url: &redis_hasura_primary_url "redis://default:atk@redis:6379/2"
+    hasuraRateLimit: &redis_hasura_rate
+      displayName: Hasura Rate Limit
+      host: *redis_hasura_host
+      port: *redis_hasura_port
+      username: *redis_hasura_username
+      password: *redis_hasura_password
+      db: &redis_hasura_rate_db 3
+      url: &redis_hasura_rate_url "redis://default:atk@redis:6379/3"
+    portal: &redis_portal
+      displayName: Portal
+      host: &redis_portal_host redis
+      port: &redis_portal_port 6379
+      username: &redis_portal_username default
+      password: &redis_portal_password atk
+      db: &redis_portal_db 4
+      url: &redis_portal_url "redis://default:atk@redis:6379/4"
+
 network:
   enabled: true
   network-bootstrapper:
@@ -262,6 +357,15 @@ erpc:
     repository: erpc/erpc
     tag: "0.0.56"
     pullPolicy: IfNotPresent
+  redis:
+    host: *redis_erpc_host
+    port: *redis_erpc_port
+    username: *redis_erpc_username
+    password: *redis_erpc_password
+    cacheDb: *redis_erpc_cache_db
+    sharedStateDb: *redis_erpc_shared_db
+    cacheQuery: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"
+    sharedStateQuery: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=20"
   # Init containers
   initContainers:
     waitforit:
@@ -319,38 +423,107 @@ erpc:
       httpPort: 4000
     projects:
       - id: settlemint
+        networks:
+          - architecture: evm
+            evm:
+              chainId: 53771311147
+              integrity:
+                enforceHighestBlock: true
+                enforceGetLogsBlockRange: true
+            directiveDefaults:
+              retryEmpty: true
+            failsafe:
+              - matchMethod: "eth_getLogs"
+                timeout:
+                  duration: 45s
+                retry:
+                  maxAttempts: 3
+                  delay: 500ms
+                  backoffFactor: 2
+                  backoffMaxDelay: 10s
+                  jitter: 300ms
+                hedge:
+                  quantile: 0.9
+                  minDelay: 200ms
+                  maxDelay: 4s
+                  maxCount: 1
+              - matchMethod: "trace_*|debug_*|arbtrace_*"
+                timeout:
+                  duration: 90s
+                retry:
+                  maxAttempts: 1
+              - matchMethod: "eth_getBlock*|eth_getTransaction*"
+                timeout:
+                  duration: 6s
+                retry:
+                  maxAttempts: 2
+                  delay: 200ms
+                  backoffFactor: 1.5
+                  backoffMaxDelay: 3s
+                  jitter: 150ms
+              - matchMethod: "*"
+                matchFinality:
+                  - unfinalized
+                  - realtime
+                timeout:
+                  duration: 4s
+                retry:
+                  maxAttempts: 2
+                  delay: 150ms
+                  jitter: 150ms
+                hedge:
+                  delay: 250ms
+                  maxCount: 1
+              - matchMethod: "*"
+                matchFinality:
+                  - finalized
+                timeout:
+                  duration: 20s
+                retry:
+                  maxAttempts: 4
+                  delay: 400ms
+                  backoffFactor: 1.8
+                  backoffMaxDelay: 8s
+                  jitter: 250ms
+              - matchMethod: "*"
+                timeout:
+                  duration: 12s
+                retry:
+                  maxAttempts: 3
+                  delay: 300ms
+                  backoffFactor: 1.4
+                  backoffMaxDelay: 5s
+                  jitter: 200ms
+                hedge:
+                  quantile: 0.95
+                  minDelay: 120ms
+                  maxDelay: 2s
+                  maxCount: 2
         upstreams:
           - id: besu-node-rpc-0
             endpoint: http://besu-node-rpc-0.besu-node-rpc:8545
             evm:
               chainId: 53771311147
             failsafe:
-              timeout:
-                duration: 30s
+              - matchMethod: "*"
+                circuitBreaker:
+                  failureThresholdCount: 40
+                  failureThresholdCapacity: 80
+                  halfOpenAfter: 120s
+                  successThresholdCount: 3
+                  successThresholdCapacity: 10
           - id: besu-node-rpc-1
             endpoint: http://besu-node-rpc-1.besu-node-rpc:8545
             evm:
               chainId: 53771311147
             failsafe:
-              timeout:
-                duration: 30s
-    database:
-      evmJsonRpcCache:
-        # Define one or more storage connectors with unique IDs useful in policies
-        connectors:
-          - id: redis-cache
-            driver: redis # Refer to "redis" driver docs below
-            redis:
-              addr: "redis:6379"
-              username: "default"
-              password: "atk"
-              db: 0
-              connPoolSize: 128
-        policies:
-          - network: "*"
-            method: "*"
-            finality: finalized
-            connector: redis-cache
+              - matchMethod: "*"
+                circuitBreaker:
+                  failureThresholdCount: 40
+                  failureThresholdCapacity: 80
+                  halfOpenAfter: 120s
+                  successThresholdCount: 3
+                  successThresholdCapacity: 10
   podAnnotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "4001"
@@ -359,6 +532,7 @@ erpc:
 
 blockscout:
   enabled: true
+  postgresql: *postgres_blockscout
   blockscout-stack:
     podAnnotations:
       prometheus.io/scrape: "true"
@@ -387,7 +561,7 @@ blockscout:
       ingress:
         hostname: explorer.k8s.orb.local
       env:
-        DATABASE_URL: "postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"
+        DATABASE_URL: *postgres_blockscout_url
         API_URL: https://explorer.k8s.orb.local
         WEBAPP_URL: https://explorer.k8s.orb.local
       resources: {}
@@ -401,6 +575,7 @@ blockscout:
 
 graph-node:
   enabled: true
+  postgresql: *postgres_graphnode
   image:
     repository: docker.io/graphprotocol/graph-node
     tag: "v0.40.2"
@@ -458,7 +633,7 @@ graph-node:
           memory: 32Mi
       dependencies:
         - name: postgresql
-          endpoint: "postgresql:5432"
+          endpoint: *postgres_graphnode_endpoint
   ingress:
     enabled: true
     className: "atk-nginx"
@@ -480,11 +655,11 @@ graph-node:
             pathType: ImplementationSpecific
     tls: []
   env:
-    PRIMARY_SUBGRAPH_DATA_PGHOST: postgresql
-    PRIMARY_SUBGRAPH_DATA_PGPORT: 5432
-    PRIMARY_SUBGRAPH_DATA_PGDATABASE: thegraph
-    PRIMARY_SUBGRAPH_DATA_PGUSER: thegraph
-    PRIMARY_SUBGRAPH_DATA_PGPASSWORD: atk
+    PRIMARY_SUBGRAPH_DATA_PGHOST: *postgres_graphnode_host
+    PRIMARY_SUBGRAPH_DATA_PGPORT: *postgres_graphnode_port
+    PRIMARY_SUBGRAPH_DATA_PGDATABASE: *postgres_graphnode_database
+    PRIMARY_SUBGRAPH_DATA_PGUSER: *postgres_graphnode_username
+    PRIMARY_SUBGRAPH_DATA_PGPASSWORD: *postgres_graphnode_password
   postgresReadinessCheck:
     enabled: true
     image: docker.io/postgres:17.6-alpine
@@ -504,6 +679,10 @@ graph-node:
 
 hasura:
   enabled: true
+  postgresql: *postgres_hasura
+  redis:
+    primary: *redis_hasura_primary
+    rateLimit: *redis_hasura_rate
   graphql-engine:
     replicas: 1
     ingress:
@@ -525,7 +704,7 @@ hasura:
         imagePullPolicy: IfNotPresent
         command:
           - /usr/bin/wait-for-it
-          - "postgresql:5432"
+          - *postgres_hasura_endpoint
           - -t
           - "120"
         resources:
@@ -536,11 +715,11 @@ hasura:
             cpu: 10m
             memory: 32Mi
     secret:
-      metadataDbUrl: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
+      metadataDbUrl: *postgres_hasura_url
       extraSecrets:
-        DEFAULT_DB_URL: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
-      redisUrl: "redis://default:atk@redis:6379/0"
-      rateLimitRedisUrl: "redis://default:atk@redis:6379/0"
+        DEFAULT_DB_URL: *postgres_hasura_url
+      redisUrl: *redis_hasura_primary_url
+      rateLimitRedisUrl: *redis_hasura_rate_url
 
 portal:
   enabled: true
@@ -601,7 +780,7 @@ portal:
           memory: 32Mi
       dependencies:
         - name: postgresql
-          endpoint: "postgresql:5432"
+          endpoint: *postgres_portal_endpoint
     copyArtifacts:
       resources:
         limits:
@@ -621,13 +800,9 @@ portal:
         seccompProfile:
           type: RuntimeDefault
   config:
-    postgresql: "postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"
-    redis:
-      host: "redis"
-      port: 6379
-      username: "default"
-      password: "atk"
-      db: 0
+    postgresqlConnection: *postgres_portal
+    postgresql: *postgres_portal_url
+    redis: *redis_portal
   ingress:
     hostname: portal.k8s.orb.local
 
@@ -915,7 +1090,8 @@ txsigner:
       "gate yellow grunt wrestle disease obtain mixed nature mansion tape
       purchase awful"
     derivationPath: "m/44'/60'/0'/0/0"
-  postgresql: "postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"
+  postgresqlConnection: *postgres_txsigner
+  postgresql: *postgres_txsigner_url
   replicaCount: 1
   resources: {}
   ingress:
@@ -938,7 +1114,7 @@ txsigner:
           memory: 32Mi
       dependencies:
         - name: postgresql
-          endpoint: "postgresql:5432"
+          endpoint: *postgres_txsigner_endpoint
 
 # DApp Frontend Configuration
 dapp:
@@ -965,7 +1141,7 @@ dapp:
     OTEL_EXPORTER_OTLP_PROTOCOL: "http"
     SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "http://blockscout-frontend-svc/"
     SETTLEMINT_HASURA_ADMIN_SECRET: "atk"
-    SETTLEMINT_HASURA_DATABASE_URL: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
+    SETTLEMINT_HASURA_DATABASE_URL: *postgres_hasura_url
     SETTLEMINT_HASURA_ENDPOINT: "http://hasura:8080/v1/graphql"
     SETTLEMINT_HD_PRIVATE_KEY: "atk-hd-private-key"
     SETTLEMINT_INSTANCE: "standalone"
@@ -990,7 +1166,7 @@ dapp:
       dependencies:
         # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
         - name: postgres
-          endpoint: "postgresql:5432"
+          endpoint: *postgres_hasura_endpoint
         - name: hasura
           endpoint: "hasura:8080"
         - name: portal
