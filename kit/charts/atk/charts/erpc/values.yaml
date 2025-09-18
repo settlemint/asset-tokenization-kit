@@ -300,7 +300,32 @@ ingress:
   # -- (list) Additional rules to be covered with this ingress record
   extraRules: []
 
-# -- (object) Service account for eRPC pods
+# -- OpenShift Route parameters
+openShiftRoute:
+  # -- Enable OpenShift route creation for eRPC
+  enabled: false
+  # -- Additional annotations for the OpenShift route resource
+  annotations: {}
+  # -- Hostname exposed via the OpenShift route
+  host: besu.k8s.orb.local
+  # -- HTTP path exposed via the OpenShift route
+  path: /
+  # -- Wildcard policy applied to the route
+  wildcardPolicy: None
+  # -- Service port configuration for the route target
+  port:
+    # -- Service target port name (must exist on the eRPC service)
+    targetPort: http
+  # -- Primary service weight configuration
+  to:
+    # -- Weight assigned to the eRPC service backend
+    weight: 100
+  # -- Additional backends for weighted routing
+  alternateBackends: []
+  # -- TLS configuration for the OpenShift route
+  tls: null
+
+# -- Service account for eRPC pods
 serviceAccount:
   # -- (bool) Specifies whether a ServiceAccount should be created
   create: true

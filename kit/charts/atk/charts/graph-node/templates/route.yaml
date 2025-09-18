@@ -1,0 +1,113 @@
+{{- /*
+OpenShift Routes for Graph Node endpoints when the Route API is available
+and the feature is enabled via values.
+*/ -}}
+{{- $hasRouteAPI := .Capabilities.APIVersions.Has "route.openshift.io/v1" -}}
+{{- $routeValues := .Values.openShiftRoute -}}
+{{- if and $hasRouteAPI $routeValues.enabled -}}
+{{- $root := . -}}
+{{- $fullName := include "graph-node.fullname" $root -}}
+{{- $baseHost := $routeValues.host -}}
+{{- $baseAnnotations := default (dict) $routeValues.annotations -}}
+{{- $baseWildcard := default "None" $routeValues.wildcardPolicy -}}
+{{- $baseTLS := $routeValues.tls -}}
+{{- $baseAlternateBackends := default (list) $routeValues.alternateBackends -}}
+{{- $baseWeight := "" -}}
+{{- with $routeValues.to }}
+  {{- with .weight }}
+    {{- $baseWeight = . -}}
+  {{- end }}
+{{- end }}
+{{- $defaultRoutes := list -}}
+{{- $defaultRoutes = append $defaultRoutes (dict "nameSuffix" "" "path" "/" "targetPort" "http-query") -}}
+{{- $defaultRoutes = append $defaultRoutes (dict
+  "nameSuffix" "ws"
+  "path" "/ws"
+  "targetPort" "http-queryws"
+  "annotations" (dict "haproxy.router.openshift.io/rewrite-target" "/")
+) -}}
+{{- $defaultRoutes = append $defaultRoutes (dict
+  "nameSuffix" "admin"
+  "path" "/admin"
+  "targetPort" "http-admin"
+  "annotations" (dict "haproxy.router.openshift.io/rewrite-target" "/")
+) -}}
+{{- $defaultRoutes = append $defaultRoutes (dict
+  "nameSuffix" "indexer"
+  "path" "/indexer"
+  "targetPort" "http-status"
+  "annotations" (dict "haproxy.router.openshift.io/rewrite-target" "/")
+) -}}
+{{- $defaultRoutes = append $defaultRoutes (dict
+  "nameSuffix" "graphman"
+  "path" "/graphman"
+  "targetPort" "http-status"
+  "annotations" (dict "haproxy.router.openshift.io/rewrite-target" "/")
+) -}}
+{{- $routes := $routeValues.routes | default $defaultRoutes -}}
+{{- range $idx, $route := $routes }}
+{{- if gt $idx 0 }}
+---
+{{- end }}
+{{- $nameSuffix := default "" $route.nameSuffix -}}
+{{- $routeName := $fullName -}}
+{{- if ne $nameSuffix "" }}
+    {{- $routeName = printf "%s-%s" $fullName $nameSuffix -}}
+{{- end }}
+{{- $routeHost := default $baseHost $route.host -}}
+{{- $routePath := default "/" $route.path -}}
+{{- $routeTargetPort := default "http-query" $route.targetPort -}}
+{{- $routeWildcard := default $baseWildcard $route.wildcardPolicy -}}
+{{- $routeTLS := default $baseTLS $route.tls -}}
+{{- $routeAlternateBackends := default $baseAlternateBackends $route.alternateBackends -}}
+{{- $routeWeight := $baseWeight -}}
+{{- with $route.to }}
+  {{- with .weight }}
+    {{- $routeWeight = . -}}
+  {{- end }}
+{{- end }}
+{{- $annotations := dict -}}
+{{- if $baseAnnotations }}
+    {{- $annotations = merge (dict) $baseAnnotations -}}
+{{- end }}
+{{- with $route.annotations }}
+  {{- $annotations = merge $annotations . -}}
+{{- end }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ $routeName }}
+  labels:
+    {{- include "graph-node.labels" $root | nindent 4 }}
+  {{- if $annotations }}
+  annotations:
+    {{- toYaml $annotations | nindent 4 }}
+  {{- end }}
+spec:
+  to:
+    kind: Service
+    name: {{ include "graph-node.fullname" $root }}-combined
+    {{- if $routeWeight }}
+    weight: {{ int $routeWeight }}
+    {{- end }}
+  {{- if $routeAlternateBackends }}
+  alternateBackends:
+    {{- toYaml $routeAlternateBackends | nindent 4 }}
+  {{- end }}
+  port:
+    targetPort: {{ $routeTargetPort }}
+  {{- if $routeHost }}
+  host: {{ $routeHost | quote }}
+  {{- end }}
+  {{- if $routePath }}
+  path: {{ $routePath | quote }}
+  {{- end }}
+  {{- if $routeWildcard }}
+  wildcardPolicy: {{ $routeWildcard }}
+  {{- end }}
+  {{- if $routeTLS }}
+  tls:
+    {{- toYaml $routeTLS | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}

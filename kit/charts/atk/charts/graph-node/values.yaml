@@ -225,7 +225,56 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-# -- (object) Blockchain configuration for Graph Node
+# -- OpenShift Route parameters
+openShiftRoute:
+  # -- Enable OpenShift route creation for Graph Node endpoints
+  enabled: false
+  # -- Additional annotations applied to every generated route
+  annotations: {}
+  # -- Hostname exposed via the OpenShift routes
+  host: graph.k8s.orb.local
+  # -- Wildcard policy applied when individual routes do not override it
+  wildcardPolicy: None
+  # -- TLS configuration shared by the generated routes
+  tls: null
+  # -- Primary service weight configuration used when routes omit a weight
+  to:
+    weight: 100
+  # -- Additional service backends shared by the generated routes
+  alternateBackends: []
+  # -- Route definitions for the exposed Graph Node endpoints
+  routes:
+    - nameSuffix: ""
+      host: ""
+      path: /
+      targetPort: http-query
+      annotations: {}
+    - nameSuffix: ws
+      host: ""
+      path: /ws
+      targetPort: http-queryws
+      annotations:
+        haproxy.router.openshift.io/rewrite-target: /
+    - nameSuffix: admin
+      host: ""
+      path: /admin
+      targetPort: http-admin
+      annotations:
+        haproxy.router.openshift.io/rewrite-target: /
+    - nameSuffix: indexer
+      host: ""
+      path: /indexer
+      targetPort: http-status
+      annotations:
+        haproxy.router.openshift.io/rewrite-target: /
+    - nameSuffix: graphman
+      host: ""
+      path: /graphman
+      targetPort: http-status
+      annotations:
+        haproxy.router.openshift.io/rewrite-target: /
+
+# -- Blockchain configuration for Graph Node
 chains:
   # -- (object) Ethereum Mainnet
   settlemint:
