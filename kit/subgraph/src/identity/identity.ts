@@ -119,7 +119,7 @@ export function handleClaimAdded(event: ClaimAdded): void {
   if (!topicScheme) {
     return;
   }
-  decodeClaimValues(identityClaim, topicScheme!, event.params.data);
+  decodeClaimValues(identityClaim, topicScheme, event.params.data);
 
   if (isCollateralClaim(identityClaim)) {
     updateCollateral(identityClaim);
@@ -170,7 +170,7 @@ export function handleClaimChanged(event: ClaimChanged): void {
   if (!topicScheme) {
     return;
   }
-  decodeClaimValues(identityClaim, topicScheme!, event.params.data);
+  decodeClaimValues(identityClaim, topicScheme, event.params.data);
 
   if (isCollateralClaim(identityClaim)) {
     updateCollateral(identityClaim);
@@ -345,7 +345,7 @@ function getTopicSchemeFromIdentity(
   }
 
   const identityRegistryStorage = fetchIdentityRegistryStorage(
-    Address.fromBytes(registryStorageId!)
+    Address.fromBytes(registryStorageId)
   );
   const system = fetchSystem(Address.fromBytes(identityRegistryStorage.system));
   const topicSchemeRegistryId = system.topicSchemeRegistry;
@@ -357,5 +357,5 @@ function getTopicSchemeFromIdentity(
     return null;
   }
 
-  return fetchTopicScheme(topic, Address.fromBytes(topicSchemeRegistryId!));
+  return fetchTopicScheme(topic, Address.fromBytes(topicSchemeRegistryId));
 }

@@ -9,9 +9,7 @@ export function fetchIdentity(address: Address): Identity {
 
   if (!identity) {
     identity = new Identity(address);
-    identity.registryStorage = Address.zero();
     identity.deployedInTransaction = Bytes.empty();
-    identity.registryStorage = Address.zero();
     identity.save();
     IdentityTemplate.create(address);
     // Ensure the identity contract address has a readable name

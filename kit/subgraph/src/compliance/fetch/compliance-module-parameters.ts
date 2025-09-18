@@ -1,4 +1,4 @@
-import { Bytes, store } from "@graphprotocol/graph-ts";
+import { Address, Bytes, log, store } from "@graphprotocol/graph-ts";
 import {
   ComplianceModule,
   ComplianceModuleParameters,
@@ -8,6 +8,7 @@ import {
   TokenSupplyLimitParams,
   TransferApprovalParams,
 } from "../../../generated/schema";
+import { fetchSystem } from "../../system/fetch/system";
 import { getEncodedTypeId } from "../../type-identifier/type-identifier";
 import {
   decodeAddressListParams,
@@ -41,6 +42,7 @@ import {
   clearExpressionNodeEntities,
   createExpressionNodeEntities,
 } from "../shared/expression-nodes";
+import { fetchComplianceModuleRegistry } from "./compliance-module-registry";
 
 export function fetchComplianceModuleParameters(
   configId: Bytes
@@ -67,7 +69,20 @@ export function updateComplianceModuleParameters(
 ): void {
   complianceModuleParameters.encodedParams = encodedParams;
 
-  const topicSchemeRegistryId = complianceModule.complianceModuleRegistry;
+  const complianceModuleRegistry = fetchComplianceModuleRegistry(
+    Address.fromBytes(complianceModule.complianceModuleRegistry)
+  );
+  const system = fetchSystem(
+    Address.fromBytes(complianceModuleRegistry.system)
+  );
+  const topicSchemeRegistryId = system.topicSchemeRegistry;
+  if (!topicSchemeRegistryId) {
+    log.error(
+      "Topic scheme registry not found for system, cannot update compliance module parameters",
+      [system.id.toHexString()]
+    );
+    return;
+  }
 
   // Handle different compliance module types
   if (
