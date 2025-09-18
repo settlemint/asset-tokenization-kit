@@ -141,7 +141,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | config.rateLimit.maxRequestsPerMinute | int | `60` | Maximum requests per minute |
 | config.rpcUrl | string | `"http://erpc:4000"` | RPC endpoint URL |
 | config.signingStrategy | string | `"local"` | Signing strategy (local, kms, hsm) |
-| containerSecurityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":false,"runAsGroup":1001,"runAsNonRoot":true,"runAsUser":1001,"seccompProfile":{"type":"RuntimeDefault"}}` | Container Security Context configuration |
+| containerSecurityContext | object | `{}` | Container Security Context configuration |
 | extraEnvVars | list | `[]` | Array with extra environment variables to add to TxSigner nodes |
 | extraEnvVarsCM | string | `""` | Name of existing ConfigMap containing extra env vars for TxSigner nodes |
 | extraEnvVarsSecret | string | `""` | Name of existing Secret containing extra env vars for TxSigner nodes |
@@ -213,7 +213,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | podAnnotations."prometheus.io/scrape" | string | `"true"` | Enable prometheus scraping |
 | podAntiAffinityPreset | string | `"soft"` | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard` |
 | podLabels | object | `{}` | Extra labels for TxSigner pods |
-| podSecurityContext | object | `{"fsGroup":1001,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Pod Security Context configuration |
+| podSecurityContext | object | `{}` | Pod Security Context configuration |
 | postgresql | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` | PostgreSQL connection string |
 | priorityClassName | string | `""` | TxSigner pods' priority class name |
 | readinessProbe | object | `{"enabled":true,"failureThreshold":60,"initialDelaySeconds":1,"periodSeconds":5,"successThreshold":1,"tcpSocket":{"port":"http"},"timeoutSeconds":5}` | Configure TxSigner containers' readiness probe |

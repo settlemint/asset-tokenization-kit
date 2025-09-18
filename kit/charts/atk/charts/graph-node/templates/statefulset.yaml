@@ -24,18 +24,20 @@ spec:
     spec:
       {{- include "graph-node.imagePullSecrets" . | nindent 6 }}
       serviceAccountName: {{ include "graph-node.serviceAccountName" . }}
-      {{- with .Values.podSecurityContext }}
+      {{- $podSecurityContext := (include "atk.securityContext.pod" (dict "context" $ "local" .Values.podSecurityContext "chartKey" "graph-node")) | fromYaml }}
+      {{- if $podSecurityContext }}
       securityContext:
-        {{- toYaml . | nindent 8 }}
+        {{- toYaml $podSecurityContext | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       initContainers:
         - name: combined-init
           image: {{ include "graph-node.initContainerImage" . }}
           imagePullPolicy: {{ .Values.initContainer.image.pullPolicy }}
-          {{- with .Values.initContainerSecurityContext }}
+          {{- $initSecurityContext := (include "atk.securityContext.container" (dict "context" $ "local" .Values.initContainerSecurityContext "chartKey" "graph-node")) | fromYaml }}
+          {{- if $initSecurityContext }}
           securityContext:
-            {{- toYaml . | nindent 12 }}
+            {{- toYaml $initSecurityContext | nindent 12 }}
           {{- end }}
           env:
             - name: NODE_ID
@@ -143,9 +145,10 @@ spec:
         - name: graph-node
           image: {{ include "graph-node.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- with .Values.containerSecurityContext }}
+          {{- $containerSecurityContext := (include "atk.securityContext.container" (dict "context" $ "local" .Values.containerSecurityContext "chartKey" "graph-node")) | fromYaml }}
+          {{- if $containerSecurityContext }}
           securityContext:
-            {{- toYaml . | nindent 12 }}
+            {{- toYaml $containerSecurityContext | nindent 12 }}
           {{- end }}
           command:
             - sh

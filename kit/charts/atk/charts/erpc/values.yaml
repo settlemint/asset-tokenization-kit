@@ -6,6 +6,37 @@ global:
   imagePullSecrets: []
   # -- Global StorageClass for Persistent Volume(s)
   storageClass: ""
+  securityContexts:
+    # -- Pod security context defaults shared across charts
+    pod:
+      fsGroup: 101337
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    # -- Container security context defaults shared across charts
+    container:
+      runAsUser: 101337
+      runAsGroup: 101337
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+  erpc:
+    datastores:
+      # -- Default Redis connection settings shared across eRPC components
+      redis:
+        host: redis
+        port: 6379
+        username: default
+        password: atk
+        cacheDb: 0
+        sharedStateDb: 1
+        cacheQuery: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"
+        sharedStateQuery: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=20"
 
 # -- String to fully override common.names.fullname
 fullnameOverride: "erpc"
@@ -32,24 +63,8 @@ image:
   # -- eRPC image pull secrets
   pullSecrets: []
 
-# -- Redis parameters for cache/shared state connectivity
-redis:
-  # -- Hostname of the Redis service used by eRPC
-  host: redis
-  # -- Port of the Redis service used by eRPC
-  port: 6379
-  # -- Optional username for Redis authentication
-  username: default
-  # -- Optional password for Redis authentication
-  password: atk
-  # -- Database index for the EVM cache connector
-  cacheDb: 0
-  # -- Database index for the shared state connector
-  sharedStateDb: 1
-  # -- Additional query parameters for the cache connector (omit leading '?')
-  cacheQuery: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"
-  # -- Additional query parameters for the shared state connector (omit leading '?')
-  sharedStateQuery: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=20"
+# -- Redis parameters for cache/shared state connectivity (overrides global.erpc.datastores.redis)
+redis: {}
 
 # -- Number of eRPC replicas to deploy
 replicaCount: 1
@@ -106,25 +121,11 @@ nodeSelector: {}
 # -- Tolerations for pod assignment
 tolerations: []
 
-# -- Pod Security Context configuration
-podSecurityContext:
-  fsGroup: 1001
-  runAsNonRoot: true
-  seccompProfile:
-    type: RuntimeDefault
+# -- Pod Security Context configuration (overrides global.securityContexts.pod)
+podSecurityContext: {}
 
-# -- Container Security Context configuration
-containerSecurityContext:
-  runAsUser: 1001
-  runAsGroup: 1001
-  runAsNonRoot: true
-  allowPrivilegeEscalation: false
-  readOnlyRootFilesystem: false
-  capabilities:
-    drop:
-      - ALL
-  seccompProfile:
-    type: RuntimeDefault
+# -- Container Security Context configuration (overrides global.securityContexts.container)
+containerSecurityContext: {}
 
 # -- Runtime tuning
 runtime:
@@ -262,7 +263,7 @@ initContainer:
       - name: besu-rpc
         endpoint: "besu-node-rpc-0.besu-node-rpc:8545"
       - name: redis
-        endpoint: '{{ printf "%s:%d" .Values.redis.host (int .Values.redis.port) }}'
+        endpoint: '{{ include "erpc.redis.endpoint" (dict "context" $) }}'
 
 # -- Service parameters
 service:
@@ -466,7 +467,7 @@ config:
         - id: redis-cache
           driver: redis
           redis:
-            uri: '{{ include "erpc.redis.uri" (dict "host" .Values.redis.host "port" .Values.redis.port "username" .Values.redis.username "password" .Values.redis.password "db" .Values.redis.cacheDb "query" .Values.redis.cacheQuery) }}'
+            uri: '{{ include "erpc.redis.uriFor" (dict "context" $ "dbKey" "cacheDb" "queryKey" "cacheQuery") }}'
       compression:
         enabled: true
         algorithm: zstd
@@ -493,6 +494,6 @@ config:
       connector:
         driver: redis
         redis:
-          uri: '{{ include "erpc.redis.uri" (dict "host" .Values.redis.host "port" .Values.redis.port "username" .Values.redis.username "password" .Values.redis.password "db" .Values.redis.sharedStateDb "query" .Values.redis.sharedStateQuery) }}'
+          uri: '{{ include "erpc.redis.uriFor" (dict "context" $ "dbKey" "sharedStateDb" "queryKey" "sharedStateQuery") }}'
       fallbackTimeout: 5s
       lockTtl: 30s

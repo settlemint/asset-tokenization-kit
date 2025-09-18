@@ -30,9 +30,10 @@ spec:
     spec:
       {{- include "atk.imagePullSecrets" . | nindent 6 }}
       serviceAccountName: {{ include "dapp.serviceAccountName" . }}
-      {{- with .Values.podSecurityContext }}
+      {{- $podSecurityContext := (include "atk.securityContext.pod" (dict "context" $ "local" .Values.podSecurityContext "chartKey" "dapp")) | fromYaml }}
+      {{- if $podSecurityContext }}
       securityContext:
-        {{- toYaml . | nindent 8 }}
+        {{- toYaml $podSecurityContext | nindent 8 }}
       {{- end }}
 
       {{- /* Define initContainers block only if needed */}}
@@ -105,9 +106,10 @@ spec:
 
       containers:
         - name: {{ .Chart.Name }}
-          {{- with .Values.securityContext }}
+          {{- $containerSecurityContext := (include "atk.securityContext.container" (dict "context" $ "local" .Values.securityContext "chartKey" "dapp")) | fromYaml }}
+          {{- if $containerSecurityContext }}
           securityContext:
-            {{- toYaml . | nindent 12 }}
+            {{- toYaml $containerSecurityContext | nindent 12 }}
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}

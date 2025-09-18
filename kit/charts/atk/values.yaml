@@ -18,22 +18,49 @@ global:
       repository: settlemint/asset-tokenization-kit-artifacts
       tag: 2.0.0-main.91391
       pullPolicy: IfNotPresent
+  securityContexts:
+    pod:
+      fsGroup: 101337
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    container:
+      runAsNonRoot: true
+      runAsUser: 101337
+      runAsGroup: 101337
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+  erpc:
+    datastores:
+      redis:
+        host: "redis"
+        port: 6379
+        username: "default"
+        password: "atk"
+        cacheDb: 0
+        sharedStateDb: 1
+        cacheQuery: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"
+        sharedStateQuery: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=20"
 
 network:
   enabled: true
   network-bootstrapper:
     podSecurityContext:
-      fsGroup: 1000
+      fsGroup: 101337
       fsGroupChangePolicy: Always
-      runAsGroup: 1000
-      runAsUser: 1000
+      runAsGroup: 101337
+      runAsUser: 101337
       runAsNonRoot: true
       seccompProfile:
         type: RuntimeDefault
     securityContext:
       runAsNonRoot: true
-      runAsUser: 1000
-      runAsGroup: 1000
+      runAsUser: 101337
+      runAsGroup: 101337
       allowPrivilegeEscalation: false
       capabilities:
         drop:
@@ -44,17 +71,17 @@ network:
       chainId: "53771311147"
   network-nodes:
     podSecurityContext:
-      fsGroup: 1000
+      fsGroup: 101337
       fsGroupChangePolicy: Always
-      runAsGroup: 1000
-      runAsUser: 1000
+      runAsGroup: 101337
+      runAsUser: 101337
       runAsNonRoot: true
       seccompProfile:
         type: RuntimeDefault
     securityContext:
       runAsNonRoot: true
-      runAsUser: 1000
-      runAsGroup: 1000
+      runAsUser: 101337
+      runAsGroup: 101337
       allowPrivilegeEscalation: false
       capabilities:
         drop:
@@ -72,15 +99,6 @@ erpc:
     repository: erpc/erpc
     tag: "0.0.56"
     pullPolicy: IfNotPresent
-  redis:
-    host: "redis"
-    port: 6379
-    username: "default"
-    password: "atk"
-    cacheDb: 0
-    sharedStateDb: 1
-    cacheQuery: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"
-    sharedStateQuery: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=20"
   # Init containers
   initContainers:
     waitforit:
@@ -95,34 +113,7 @@ erpc:
       tag: "1.37"
       pullPolicy: IfNotPresent
   resources: {}
-  # Pod security context
-  podSecurityContext:
-    fsGroup: 1000
-    runAsNonRoot: true
-    seccompProfile:
-      type: RuntimeDefault
-  # Container security context
-  containerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 1000
-    runAsGroup: 1000
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-      - ALL
-    seccompProfile:
-      type: RuntimeDefault
-  # Init container security context
-  initContainerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 1001
-    runAsGroup: 1001
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-      - ALL
-    seccompProfile:
-      type: RuntimeDefault
+  # Init containers
   ingress:
     enabled: true
     className: "atk-nginx"
@@ -314,34 +305,6 @@ graph-node:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8040"
     prometheus.io/path: "/metrics"
-  # Pod security context
-  podSecurityContext:
-    fsGroup: 1000
-    runAsNonRoot: true
-    seccompProfile:
-      type: RuntimeDefault
-  # Container security context
-  containerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 1000
-    runAsGroup: 1000
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-      - ALL
-    seccompProfile:
-      type: RuntimeDefault
-  # Init container security context
-  initContainerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 1001
-    runAsGroup: 1001
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-      - ALL
-    seccompProfile:
-      type: RuntimeDefault
   initContainer:
     image:
       repository: docker.io/kubesphere/kubectl
@@ -484,34 +447,6 @@ portal:
     prometheus.io/scrape: "true"
     prometheus.io/port: "3000"
     prometheus.io/path: "/portal-metrics"
-  # Pod security context
-  podSecurityContext:
-    fsGroup: 1000
-    runAsNonRoot: true
-    seccompProfile:
-      type: RuntimeDefault
-  # Container security context
-  containerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 1000
-    runAsGroup: 1000
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-      - ALL
-    seccompProfile:
-      type: RuntimeDefault
-  # Init container security context
-  initContainerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 1001
-    runAsGroup: 1001
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-      - ALL
-    seccompProfile:
-      type: RuntimeDefault
   initContainer:
     # Legacy `initContainers` overrides remain supported for backward compatibility.
     tcpCheck:
@@ -539,16 +474,6 @@ portal:
         requests:
           cpu: 25m
           memory: 64Mi
-      securityContext:
-        runAsUser: 1001
-        runAsGroup: 1001
-        runAsNonRoot: true
-        allowPrivilegeEscalation: false
-        capabilities:
-          drop:
-            - ALL
-        seccompProfile:
-          type: RuntimeDefault
   config:
     postgresqlConnection:
       host: "postgresql"
@@ -635,25 +560,6 @@ support:
       limits:
         memory: "256Mi"
         cpu: "200m"
-    # Pod security context
-    podSecurityContext:
-      fsGroup: 999
-      runAsNonRoot: true
-      runAsUser: 999
-      seccompProfile:
-        type: RuntimeDefault
-    # Container security context
-    containerSecurityContext:
-      runAsUser: 999
-      runAsGroup: 999
-      runAsNonRoot: true
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      readOnlyRootFilesystem: false
-      seccompProfile:
-        type: RuntimeDefault
 
   postgresql:
     enabled: true
@@ -661,23 +567,6 @@ support:
       registry: docker.io
       repository: postgres
       tag: "17.6-alpine"
-    # Pod security context
-    podSecurityContext:
-      fsGroup: 999
-      runAsNonRoot: true
-      seccompProfile:
-        type: RuntimeDefault
-    # Container security context
-    securityContext:
-      runAsUser: 999
-      runAsGroup: 999
-      runAsNonRoot: true
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      seccompProfile:
-        type: RuntimeDefault
 
 observability:
   enabled: true
@@ -820,34 +709,6 @@ txsigner:
       repository: docker.io/busybox
       tag: "1.37"
       pullPolicy: IfNotPresent
-  # Pod security context
-  podSecurityContext:
-    fsGroup: 1000
-    runAsNonRoot: true
-    seccompProfile:
-      type: RuntimeDefault
-  # Container security context
-  containerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 1000
-    runAsGroup: 1000
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-      - ALL
-    seccompProfile:
-      type: RuntimeDefault
-  # Init container security context
-  initContainerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 1001
-    runAsGroup: 1001
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-      - ALL
-    seccompProfile:
-      type: RuntimeDefault
   # Configuration for the txsigner subchart
   config:
     mnemonic:

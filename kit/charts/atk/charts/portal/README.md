@@ -106,7 +106,7 @@ The following table lists the configurable parameters of the Portal chart and th
 | config.redis.password | string | `"atk"` | Redis password |
 | config.redis.port | int | `6379` | Redis port |
 | config.redis.username | string | `"default"` | Redis username |
-| containerSecurityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":false,"runAsGroup":1001,"runAsNonRoot":true,"runAsUser":1001,"seccompProfile":{"type":"RuntimeDefault"}}` | Container Security Context configuration |
+| containerSecurityContext | object | `{}` | Container Security Context configuration (overrides global.securityContexts.container) |
 | extraEnvVars | list | `[]` | Array with extra environment variables to add to Portal nodes |
 | extraEnvVarsCM | string | `""` | Name of existing ConfigMap containing extra env vars for Portal nodes |
 | extraEnvVarsSecret | string | `""` | Name of existing Secret containing extra env vars for Portal nodes |
@@ -145,16 +145,11 @@ The following table lists the configurable parameters of the Portal chart and th
 | initContainer.copyArtifacts.resources.limits.cpu | string | `"150m"` |  |
 | initContainer.copyArtifacts.resources.limits.memory | string | `"128Mi"` |  |
 | initContainer.copyArtifacts.resources.limits.memory | string | `"128Mi"` |  |
-| initContainer.copyArtifacts.resources.requests.cpu | string | `"50m"` |  |
 | initContainer.copyArtifacts.resources.requests.cpu | string | `"25m"` |  |
+| initContainer.copyArtifacts.resources.requests.cpu | string | `"50m"` |  |
 | initContainer.copyArtifacts.resources.requests.memory | string | `"64Mi"` |  |
 | initContainer.copyArtifacts.resources.requests.memory | string | `"64Mi"` |  |
-| initContainer.copyArtifacts.securityContext.allowPrivilegeEscalation | bool | `false` |  |
-| initContainer.copyArtifacts.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| initContainer.copyArtifacts.securityContext.runAsGroup | int | `1001` |  |
-| initContainer.copyArtifacts.securityContext.runAsNonRoot | bool | `true` |  |
-| initContainer.copyArtifacts.securityContext.runAsUser | int | `1001` |  |
-| initContainer.copyArtifacts.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| initContainer.copyArtifacts.securityContext | object | `{}` |  |
 | initContainer.tcpCheck.enabled | bool | `true` |  |
 | initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
@@ -202,7 +197,7 @@ The following table lists the configurable parameters of the Portal chart and th
 | podAnnotations | object | `{}` | Annotations for Portal pods |
 | podAntiAffinityPreset | string | `"soft"` | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard` |
 | podLabels | object | `{}` | Extra labels for Portal pods |
-| podSecurityContext | object | `{"fsGroup":1001,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Pod Security Context configuration |
+| podSecurityContext | object | `{}` | Pod Security Context configuration (overrides global.securityContexts.pod) |
 | priorityClassName | string | `""` | Portal pods' priority class name |
 | readinessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":5,"periodSeconds":10,"successThreshold":1,"tcpSocket":{"port":"http"},"timeoutSeconds":5}` | Configure Portal containers' readiness probe |
 | readinessProbe.enabled | bool | `true` | Enable readinessProbe on Portal containers |

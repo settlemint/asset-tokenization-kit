@@ -35,9 +35,10 @@ spec:
       {{- if .Values.topologySpreadConstraints }}
       topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.topologySpreadConstraints "context" $) | nindent 8 }}
       {{- end }}
-      {{- with .Values.podSecurityContext }}
+      {{- $podSecurityContext := (include "atk.securityContext.pod" (dict "context" $ "local" .Values.podSecurityContext "chartKey" "txsigner")) | fromYaml }}
+      {{- if $podSecurityContext }}
       securityContext:
-        {{- toYaml . | nindent 8 }}
+        {{- toYaml $podSecurityContext | nindent 8 }}
       {{- end }}
       {{- if .Values.affinity }}
       affinity: {{- include "common.tplvalues.render" (dict "value" .Values.affinity "context" $) | nindent 8 }}
@@ -71,9 +72,10 @@ spec:
       - name: txsigner
         image: {{ include "common.images.image" (dict "imageRoot" .Values.image "global" .Values.global) }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        {{- with .Values.containerSecurityContext }}
+        {{- $containerSecurityContext := (include "atk.securityContext.container" (dict "context" $ "local" .Values.containerSecurityContext "chartKey" "txsigner")) | fromYaml }}
+        {{- if $containerSecurityContext }}
         securityContext:
-          {{- toYaml . | nindent 10 }}
+          {{- toYaml $containerSecurityContext | nindent 10 }}
         {{- end }}
         {{- if .Values.lifecycleHooks }}
         lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" $) | nindent 10 }}

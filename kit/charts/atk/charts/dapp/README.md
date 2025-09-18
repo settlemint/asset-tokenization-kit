@@ -112,9 +112,7 @@ A Helm chart for the ATK DApp frontend
 | podDisruptionBudget.enabled | bool | `false` |  |
 | podDisruptionBudget.minAvailable | int | `1` |  |
 | podLabels | object | `{}` |  |
-| podSecurityContext.fsGroup | int | `2016` |  |
-| podSecurityContext.runAsNonRoot | bool | `true` |  |
-| podSecurityContext.runAsUser | int | `2016` |  |
+| podSecurityContext | object | `{}` |  |
 | probes.liveness.failureThreshold | int | `10` |  |
 | probes.liveness.initialDelaySeconds | int | `10` |  |
 | probes.liveness.periodSeconds | int | `15` |  |
@@ -140,8 +138,7 @@ A Helm chart for the ATK DApp frontend
 | secretEnv.SETTLEMINT_INSTANCE | string | `"standalone"` |  |
 | secretEnv.SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT | string | `"https://portal.local/graphql"` |  |
 | secretEnv.SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS | string | `"[\"https://graph.local/subgraphs/name/kit\"]"` |  |
-| securityContext.allowPrivilegeEscalation | bool | `false` |  |
-| securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| securityContext | object | `{}` |  |
 | service.annotations | object | `{}` |  |
 | service.port | int | `3000` |  |
 | service.type | string | `"ClusterIP"` |  |

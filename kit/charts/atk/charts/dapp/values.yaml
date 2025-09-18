@@ -28,16 +28,9 @@ annotations: {}
 podLabels: {}
 podAnnotations: {}
 
-podSecurityContext:
-  fsGroup: 2016
-  runAsNonRoot: true
-  runAsUser: 2016
+podSecurityContext: {}
 
-securityContext:
-  allowPrivilegeEscalation: false
-  capabilities:
-    drop:
-      - ALL
+securityContext: {}
 
 service:
   type: ClusterIP

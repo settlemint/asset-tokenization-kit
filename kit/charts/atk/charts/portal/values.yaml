@@ -85,25 +85,11 @@ nodeSelector: {}
 # -- Tolerations for pod assignment
 tolerations: []
 
-# -- Pod Security Context configuration
-podSecurityContext:
-  fsGroup: 1001
-  runAsNonRoot: true
-  seccompProfile:
-    type: RuntimeDefault
+# -- Pod Security Context configuration (overrides global.securityContexts.pod)
+podSecurityContext: {}
 
-# -- Container Security Context configuration
-containerSecurityContext:
-  runAsUser: 1001
-  runAsGroup: 1001
-  runAsNonRoot: true
-  allowPrivilegeEscalation: false
-  readOnlyRootFilesystem: false
-  capabilities:
-    drop:
-      - ALL
-  seccompProfile:
-    type: RuntimeDefault
+# -- Container Security Context configuration (overrides global.securityContexts.container)
+containerSecurityContext: {}
 
 # -- Portal containers resource requests and limits
 resources: {}
@@ -198,16 +184,7 @@ initContainer:
         memory: 64Mi
     # Security context for the copy-artifacts container
     # Can be overridden for different environments (e.g., OpenShift)
-    securityContext:
-      runAsUser: 1001
-      runAsGroup: 1001
-      runAsNonRoot: true
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      seccompProfile:
-        type: RuntimeDefault
+    securityContext: {}
 
   # Generic TCP check settings
   tcpCheck:

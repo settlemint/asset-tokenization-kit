@@ -116,6 +116,98 @@ Parameters: host, port, username, password, db, query (without leading '?').
 {{- end }}
 
 {{/*
+Merge global and chart-specific Redis configuration for eRPC.
+*/}}
+{{- define "erpc.redis.config" -}}
+{{- $context := .context | default . -}}
+{{- $global := dict -}}
+{{- if and $context.Values.global (hasKey $context.Values.global "erpc") -}}
+  {{- $erpcGlobal := index $context.Values.global "erpc" -}}
+  {{- if and $erpcGlobal (hasKey $erpcGlobal "datastores") -}}
+    {{- $datastores := index $erpcGlobal "datastores" -}}
+    {{- if and $datastores (hasKey $datastores "redis") -}}
+      {{- $global = index $datastores "redis" -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $local := default (dict) $context.Values.redis -}}
+{{- $merged := include "common.tplvalues.merge" (dict "values" (list $global $local) "context" $context) -}}
+{{- if $merged -}}
+{{- $merged -}}
+{{- else -}}
+{{- toYaml dict -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Generate a Redis URI selecting fields from merged configuration.
+*/}}
+{{- define "erpc.redis.uriFor" -}}
+{{- $context := .context -}}
+{{- $config := (include "erpc.redis.config" (dict "context" $context)) | fromYaml -}}
+{{- $dbKey := default "cacheDb" .dbKey -}}
+{{- $queryKey := default "" .queryKey -}}
+{{- $db := 0 -}}
+{{- if and $config (hasKey $config $dbKey) -}}
+  {{- $db = index $config $dbKey -}}
+{{- end -}}
+{{- $query := "" -}}
+{{- if and $config (ne $queryKey "") (hasKey $config $queryKey) -}}
+  {{- $query = index $config $queryKey -}}
+{{- end -}}
+{{- $host := "redis" -}}
+{{- if and $config (hasKey $config "host") -}}
+  {{- $host = index $config "host" -}}
+{{- end -}}
+{{- $port := 6379 -}}
+{{- if and $config (hasKey $config "port") -}}
+  {{- $port = index $config "port" -}}
+{{- end -}}
+{{- $username := "" -}}
+{{- if and $config (hasKey $config "username") -}}
+  {{- $username = index $config "username" -}}
+{{- end -}}
+{{- $password := "" -}}
+{{- if and $config (hasKey $config "password") -}}
+  {{- $password = index $config "password" -}}
+{{- end -}}
+{{- include "erpc.redis.uri" (dict "host" $host "port" $port "username" $username "password" $password "db" $db "query" $query) -}}
+{{- end }}
+
+{{/*
+Return the host:port tuple for the configured Redis endpoint.
+*/}}
+{{- define "erpc.redis.endpoint" -}}
+{{- $context := .context -}}
+{{- $config := (include "erpc.redis.config" (dict "context" $context)) | fromYaml -}}
+{{- $host := "redis" -}}
+{{- if and $config (hasKey $config "host") -}}
+  {{- $host = index $config "host" -}}
+{{- end -}}
+{{- $port := 6379 -}}
+{{- if and $config (hasKey $config "port") -}}
+  {{- $port = index $config "port" -}}
+{{- end -}}
+{{- printf "%s:%v" $host $port -}}
+{{- end }}
+
+{{/*
+Merge pod-level security context defaults with chart overrides.
+*/}}
+{{- define "erpc.securityContext.pod" -}}
+{{- $ctx := .context | default . -}}
+{{ include "atk.securityContext.pod" (dict "context" $ctx "local" (default (dict) $ctx.Values.podSecurityContext) "chartKey" "erpc") }}
+{{- end }}
+
+{{/*
+Merge container-level security context defaults with chart overrides.
+*/}}
+{{- define "erpc.securityContext.container" -}}
+{{- $ctx := .context | default . -}}
+{{ include "atk.securityContext.container" (dict "context" $ctx "local" (default (dict) $ctx.Values.containerSecurityContext) "chartKey" "erpc") }}
+{{- end }}
+
+{{/*
 Compute GOMEMLIMIT value in bytes based on a Kubernetes memory limit and ratio.
 If override is provided, it is used verbatim.
 */}}
