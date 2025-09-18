@@ -39,6 +39,23 @@ describe("Identity registry", () => {
       )
     );
 
+    // Trusted issuers should not be in the identityRegistryStorage id list
+    const storedIdentities = identitiyRegistryResponse.systems
+      .map((system) =>
+        system.identityRegistryStorage?.registeredIdentities.map(
+          (identity) => identity.id
+        )
+      )
+      .flat()
+      .filter((identity) => identity !== undefined);
+
+    const trustedIssuers = identitiesResponse.trustedIssuers.map(
+      (trustedIssuer) => trustedIssuer.id
+    );
+    expect(
+      storedIdentities.every((identity) => !trustedIssuers.includes(identity))
+    ).toBe(true);
+
     // Id of the system registry should be in the identityRegistryStorage id list
     expect(
       identitiyRegistryResponse.systems.map(
