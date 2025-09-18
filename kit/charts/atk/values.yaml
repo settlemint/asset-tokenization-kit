@@ -1,7 +1,3 @@
-# Default values for atk.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
 # Global values shared across all subcharts
 global:
   labels:
@@ -106,9 +102,13 @@ erpc:
   enabled: true
   image:
     registry: ghcr.io
-  test:
+  tests:
     image:
-      repository: docker.io/busybox
+      registry: docker.io
+  initContainer:
+    tcpCheck:
+      image:
+        repository: ghcr.io/settlemint/btp-waitforit
   resources: {}
   ingress:
     enabled: true
@@ -118,115 +118,6 @@ erpc:
         paths:
           - path: /
             pathType: ImplementationSpecific
-  config:
-    projects:
-      - id: settlemint
-        networks:
-          - architecture: evm
-            evm:
-              chainId: 53771311147
-              integrity:
-                enforceHighestBlock: true
-                enforceGetLogsBlockRange: true
-            directiveDefaults:
-              retryEmpty: true
-            failsafe:
-              - matchMethod: "eth_getLogs"
-                timeout:
-                  duration: 45s
-                retry:
-                  maxAttempts: 3
-                  delay: 500ms
-                  backoffFactor: 2
-                  backoffMaxDelay: 10s
-                  jitter: 300ms
-                hedge:
-                  quantile: 0.9
-                  minDelay: 200ms
-                  maxDelay: 4s
-                  maxCount: 1
-              - matchMethod: "trace_*|debug_*|arbtrace_*"
-                timeout:
-                  duration: 90s
-                retry:
-                  maxAttempts: 1
-              - matchMethod: "eth_getBlock*|eth_getTransaction*"
-                timeout:
-                  duration: 6s
-                retry:
-                  maxAttempts: 2
-                  delay: 200ms
-                  backoffFactor: 1.5
-                  backoffMaxDelay: 3s
-                  jitter: 150ms
-              - matchMethod: "*"
-                matchFinality:
-                  - unfinalized
-                  - realtime
-                timeout:
-                  duration: 4s
-                retry:
-                  maxAttempts: 2
-                  delay: 150ms
-                  jitter: 150ms
-                hedge:
-                  delay: 250ms
-                  maxCount: 1
-              - matchMethod: "*"
-                matchFinality:
-                  - finalized
-                timeout:
-                  duration: 20s
-                retry:
-                  maxAttempts: 4
-                  delay: 400ms
-                  backoffFactor: 1.8
-                  backoffMaxDelay: 8s
-                  jitter: 250ms
-              - matchMethod: "*"
-                timeout:
-                  duration: 12s
-                retry:
-                  maxAttempts: 3
-                  delay: 300ms
-                  backoffFactor: 1.4
-                  backoffMaxDelay: 5s
-                  jitter: 200ms
-                hedge:
-                  quantile: 0.95
-                  minDelay: 120ms
-                  maxDelay: 2s
-                  maxCount: 2
-        upstreams:
-          - id: besu-node-rpc-0
-            endpoint: http://besu-node-rpc-0.besu-node-rpc:8545
-            evm:
-              chainId: 53771311147
-            failsafe:
-              - matchMethod: "*"
-                circuitBreaker:
-                  failureThresholdCount: 40
-                  failureThresholdCapacity: 80
-                  halfOpenAfter: 120s
-                  successThresholdCount: 3
-                  successThresholdCapacity: 10
-          - id: besu-node-rpc-1
-            endpoint: http://besu-node-rpc-1.besu-node-rpc:8545
-            evm:
-              chainId: 53771311147
-            failsafe:
-              - matchMethod: "*"
-                circuitBreaker:
-                  failureThresholdCount: 40
-                  failureThresholdCapacity: 80
-                  halfOpenAfter: 120s
-                  successThresholdCount: 3
-                  successThresholdCapacity: 10
-  podAnnotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "4001"
-  podLabels:
-    app.kubernetes.io/component: erpc
 
 blockscout:
   enabled: true

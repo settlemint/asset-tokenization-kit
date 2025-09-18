@@ -57,7 +57,8 @@ priorityClassName: ""
 topologySpreadConstraints: []
 
 # -- (object) Extra labels for eRPC pods
-podLabels: {}
+podLabels:
+  app.kubernetes.io/component: erpc
 
 # -- (object) Annotations for eRPC pods
 podAnnotations:
@@ -433,7 +434,107 @@ config:
     hostV4: 0.0.0.0
     port: 4001
   # -- (list) Array of project configurations (will be overridden by parent chart)
-  projects: []
+  #    Chain IDs default from .Values.global.chainId when omitted (see configmap template).
+  projects:
+    - id: settlemint
+      networks:
+        - architecture: evm
+          evm:
+            integrity:
+              enforceHighestBlock: true
+              enforceGetLogsBlockRange: true
+          directiveDefaults:
+            retryEmpty: true
+          failsafe:
+            - matchMethod: "eth_getLogs"
+              timeout:
+                duration: 45s
+              retry:
+                maxAttempts: 3
+                delay: 500ms
+                backoffFactor: 2
+                backoffMaxDelay: 10s
+                jitter: 300ms
+              hedge:
+                quantile: 0.9
+                minDelay: 200ms
+                maxDelay: 4s
+                maxCount: 1
+            - matchMethod: "trace_*|debug_*|arbtrace_*"
+              timeout:
+                duration: 90s
+              retry:
+                maxAttempts: 1
+            - matchMethod: "eth_getBlock*|eth_getTransaction*"
+              timeout:
+                duration: 6s
+              retry:
+                maxAttempts: 2
+                delay: 200ms
+                backoffFactor: 1.5
+                backoffMaxDelay: 3s
+                jitter: 150ms
+            - matchMethod: "*"
+              matchFinality:
+                - unfinalized
+                - realtime
+              timeout:
+                duration: 4s
+              retry:
+                maxAttempts: 2
+                delay: 150ms
+                jitter: 150ms
+              hedge:
+                delay: 250ms
+                maxCount: 1
+            - matchMethod: "*"
+              matchFinality:
+                - finalized
+              timeout:
+                duration: 20s
+              retry:
+                maxAttempts: 4
+                delay: 400ms
+                backoffFactor: 1.8
+                backoffMaxDelay: 8s
+                jitter: 250ms
+            - matchMethod: "*"
+              timeout:
+                duration: 12s
+              retry:
+                maxAttempts: 3
+                delay: 300ms
+                backoffFactor: 1.4
+                backoffMaxDelay: 5s
+                jitter: 200ms
+              hedge:
+                quantile: 0.95
+                minDelay: 120ms
+                maxDelay: 2s
+                maxCount: 2
+      upstreams:
+        - id: besu-node-rpc-0
+          endpoint: http://besu-node-rpc-0.besu-node-rpc:8545
+          evm: {}
+          failsafe:
+            - matchMethod: "*"
+              circuitBreaker:
+                failureThresholdCount: 40
+                failureThresholdCapacity: 80
+                halfOpenAfter: 120s
+                successThresholdCount: 3
+                successThresholdCapacity: 10
+        - id: besu-node-rpc-1
+          endpoint: http://besu-node-rpc-1.besu-node-rpc:8545
+          evm: {}
+          failsafe:
+            - matchMethod: "*"
+              circuitBreaker:
+                failureThresholdCount: 40
+                failureThresholdCapacity: 80
+                halfOpenAfter: 120s
+                successThresholdCount: 3
+                successThresholdCapacity: 10
   # -- (object) Database configuration for caching
   database:
     evmJsonRpcCache:
