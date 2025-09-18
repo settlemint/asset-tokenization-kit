@@ -56,10 +56,14 @@ priorityClassName: ""
 topologySpreadConstraints: []
 
 # -- (object) Extra labels for Portal pods
-podLabels: {}
+podLabels:
+  app.kubernetes.io/component: portal
 
 # -- (object) Annotations for Portal pods
-podAnnotations: {}
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "3000"
+  prometheus.io/path: "/portal-metrics"
 
 # -- (string) Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 podAffinityPreset: ""
@@ -446,10 +450,10 @@ tests:
 config:
   # -- (object) Network configuration
   network:
-    # -- (string) Network ID
-    networkId: "53771311147"
-    # -- (string) Network name
-    networkName: "ATK"
+    # -- (string) Network ID (defaults to global.chainId when unset)
+    networkId:
+    # -- (string) Network name (defaults to global.chainName when unset)
+    networkName:
     # -- (string) Node RPC URL
     nodeRpcUrl: "http://txsigner:3000"
 

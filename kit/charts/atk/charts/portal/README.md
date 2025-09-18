@@ -95,10 +95,10 @@ The following table lists the configurable parameters of the Portal chart and th
 | autoscaling.minReplicas | int | `1` | Minimum number of Portal replicas |
 | commonAnnotations | object | `{}` | Annotations to add to all deployed objects |
 | commonLabels | object | `{}` | Labels to add to all deployed objects |
-| config | object | `{"network":{"networkId":"53771311147","networkName":"ATK","nodeRpcUrl":"http://txsigner:3000"},"postgresql":{},"redis":{}}` | Portal configuration |
-| config.network | object | `{"networkId":"53771311147","networkName":"ATK","nodeRpcUrl":"http://txsigner:3000"}` | Network configuration |
-| config.network.networkId | string | `"53771311147"` | Network ID |
-| config.network.networkName | string | `"ATK"` | Network name |
+| config | object | `{"network":{"networkId":null,"networkName":null,"nodeRpcUrl":"http://txsigner:3000"},"postgresql":{},"redis":{}}` | Portal configuration |
+| config.network | object | `{"networkId":null,"networkName":null,"nodeRpcUrl":"http://txsigner:3000"}` | Network configuration |
+| config.network.networkId | string | `nil` | Network ID (defaults to global.chainId when unset) |
+| config.network.networkName | string | `nil` | Network name (defaults to global.chainName when unset) |
 | config.network.nodeRpcUrl | string | `"http://txsigner:3000"` | Node RPC URL |
 | config.postgresql | object | `{}` | PostgreSQL overrides merged with global.datastores.portal.postgresql |
 | config.redis | object | `{}` | Redis overrides merged with global.datastores.portal.redis |
@@ -211,9 +211,9 @@ The following table lists the configurable parameters of the Portal chart and th
 | pdb.maxUnavailable | string | `""` | Maximum number/percentage of pods that may be made unavailable. Defaults to 1 if both pdb.minAvailable and pdb.maxUnavailable are empty. |
 | pdb.minAvailable | string | `""` | Minimum number/percentage of pods that should remain scheduled |
 | podAffinityPreset | string | `""` | Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard` |
-| podAnnotations | object | `{}` | Annotations for Portal pods |
+| podAnnotations | object | `{"prometheus.io/path":"/portal-metrics","prometheus.io/port":"3000","prometheus.io/scrape":"true"}` | Annotations for Portal pods |
 | podAntiAffinityPreset | string | `"soft"` | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard` |
-| podLabels | object | `{}` | Extra labels for Portal pods |
+| podLabels | object | `{"app.kubernetes.io/component":"portal"}` | Extra labels for Portal pods |
 | podSecurityContext | object | `{}` | Pod Security Context configuration (overrides global.securityContexts.pod) |
 | priorityClassName | string | `""` | Portal pods' priority class name |
 | readinessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":5,"periodSeconds":10,"successThreshold":1,"tcpSocket":{"port":"http"},"timeoutSeconds":5}` | Configure Portal containers' readiness probe |
