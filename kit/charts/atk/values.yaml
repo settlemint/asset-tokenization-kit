@@ -15,6 +15,7 @@ global:
       tag: 2.0.0-main.91391
       pullPolicy: IfNotPresent
   chainId: "53771311147"
+  chainName: "ATK"
   securityContexts:
     pod:
       fsGroup: 101337
