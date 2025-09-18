@@ -265,7 +265,7 @@ initContainer:
       - name: graph-node
         endpoint: "graph-node-combined:8020"
       - name: blockscout
-        endpoint: "blockscout-frontend-svc:80"
+        endpoint: "blockscout-blockscout:80"
 
   # Specific check for GraphQL endpoint readiness (e.g., The Graph subgraph)
   graphQLCheck:

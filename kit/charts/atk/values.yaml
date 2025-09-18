@@ -640,50 +640,11 @@ dapp:
     SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS: '["http://graph-node-combined:8000/subgraphs/name/kit"]'
   initContainer:
     tcpCheck:
-      enabled: true
       image:
         repository: ghcr.io/settlemint/btp-waitforit
-        tag: v7.7.10
-        pullPolicy: IfNotPresent
-      timeout: 120
-      resources:
-        limits:
-          cpu: 100m
-          memory: 64Mi
-        requests:
-          cpu: 50m
-          memory: 32Mi
-      dependencies:
-        - name: postgres
-          endpoint: "postgresql:5432"
-        - name: hasura
-          endpoint: "hasura:8080"
-        - name: portal
-          endpoint: "portal:3001"
-        - name: graph-node
-          endpoint: "graph-node-combined:8020"
-        - name: blockscout
-          endpoint: "blockscout-frontend-svc:80"
-
     graphQLCheck:
-      enabled: true
-      name: "wait-for-graphql"
       image:
         registry: docker.io
-        repository: curlimages/curl
-        tag: "8.16.0"
-        pullPolicy: IfNotPresent
-      url: "http://graph-node-combined:8000/subgraphs/name/kit"
-      retries: 10
-      retryDelaySeconds: 10
-      query: "{ _meta { hasIndexingErrors block { number } } }"
-      resources:
-        limits:
-          memory: 64Mi
-        requests:
-          cpu: 10m
-          memory: 12Mi
-  extraInitContainers: []
   podLabels:
     app.kubernetes.io/component: dapp
     kots.io/app-slug: settlemint-atk
