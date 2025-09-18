@@ -460,9 +460,6 @@ portal:
   enabled: true
   image:
     registry: ghcr.io
-    repository: settlemint/btp-scs-portal
-    tag: "8.6.7"
-    pullPolicy: IfNotPresent
   podLabels:
     app.kubernetes.io/component: portal
   podAnnotations:
@@ -518,26 +515,19 @@ support:
       resources: {}
       image:
         repository: registry.k8s.io/ingress-nginx/controller
-        tag: "v1.13.2"
-        digest: ""
 
   # https://github.com/stakater/Reloader/tree/master/deployments/kubernetes/chart/reloader
   reloader:
     enabled: true
     image:
       repository: ghcr.io/stakater/reloader
-      tag: v1.4.8
 
   minio:
     enabled: true
     image:
       repository: docker.io/minio/minio
-      tag: RELEASE.2025-07-23T15-54-02Z
-      pullPolicy: IfNotPresent
     mcImage:
       repository: docker.io/minio/minio
-      tag: RELEASE.2025-07-23T15-54-02Z
-      pullPolicy: IfNotPresent
     ingress:
       enabled: true
       ingressClassName: atk-nginx
@@ -551,10 +541,6 @@ support:
     image:
       # -- Redis image registry
       registry: docker.io
-      # -- Redis image repository
-      repository: redis
-      # -- Redis image tag
-      tag: "8.2.1-alpine"
     fullnameOverride: redis
     commonLabels:
       kots.io/app-slug: settlemint-atk
@@ -577,8 +563,6 @@ support:
     enabled: true
     image:
       registry: docker.io
-      repository: postgres
-      tag: "17.6-alpine"
 
 observability:
   enabled: true
@@ -589,16 +573,12 @@ observability:
     resources: {}
     image:
       repository: registry.k8s.io/metrics-server/metrics-server
-      tag: "v0.8.0"
 
   # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-state-metrics/values.yaml
   kube-state-metrics:
     resources: {}
     image:
       registry: registry.k8s.io
-      repository: kube-state-metrics/kube-state-metrics
-      # If unset use v + .Charts.appVersion
-      tag: "v2.17.0"
 
   # https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metrics-single/values.yaml
   victoria-metrics-single:
@@ -609,8 +589,6 @@ observability:
       resources: {}
       image:
         registry: docker.io
-        repository: victoriametrics/victoria-metrics
-        tag: "v1.126.0"
 
   # https://github.com/grafana/loki/blob/main/production/helm/loki/values.yaml
   loki:
@@ -618,10 +596,6 @@ observability:
       image:
         # -- The Docker registry
         registry: docker.io
-        # -- Docker image repository
-        repository: grafana/loki
-        # -- Overrides the image tag whose default is the chart's appVersion
-        tag: 3.5.5
     singleBinary:
       persistence:
         size: 10Gi
@@ -636,22 +610,16 @@ observability:
       image:
         # -- Memcached Docker image repository
         repository: docker.io/memcached
-        # -- Memcached Docker image tag
-        tag: 1.6.39-alpine
     memcachedExporter:
       image:
         repository: docker.io/prom/memcached-exporter
-        tag: v0.15.3
     sidecar:
       image:
         # -- The Docker registry and image for the k8s sidecar
         repository: docker.io/kiwigrid/k8s-sidecar
-        tag: 1.30.10
     gateway:
       image:
         registry: docker.io
-        repository: nginxinc/nginx-unprivileged
-        tag: "1.29-alpine"
 
   # https://github.com/grafana/alloy/blob/main/operations/helm/charts/alloy/values.yaml
   alloy:
@@ -659,31 +627,18 @@ observability:
       resources: {}
     image:
       registry: docker.io
-      # -- Grafana Alloy image repository.
-      repository: grafana/alloy
-      tag: v1.10.2
     configReloader:
       image:
         registry: quay.io
-        # -- Repository to get config reloader image from.
-        repository: prometheus-operator/prometheus-config-reloader
-        # -- Tag of image to use for config reloading.
-        tag: v0.85.0
 
   grafana:
     image:
       # -- The Docker registry
       registry: docker.io
-      # -- Docker image repository
-      repository: grafana/grafana
-      # Overrides the Grafana image tag whose default is the chart appVersion
-      tag: "12.1.1"
     # Sidecar configuration for Grafana dashboards and datasources
     sidecar:
       image:
         registry: docker.io
-        repository: kiwigrid/k8s-sidecar
-        tag: "1.30.10"
     ingress:
       hosts:
         - grafana.k8s.orb.local
@@ -693,19 +648,14 @@ observability:
   tempo:
     tempo:
       repository: docker.io/grafana/tempo
-      tag: "2.8.1"
     tempoQuery:
       repository: docker.io/grafana/tempo-query
-      tag: "2.8.1"
     server:
       resources: {}
 
   prometheus-node-exporter:
     image:
       registry: quay.io
-      repository: prometheus/node-exporter
-      # Overrides the image tag whose default is {{ printf "v%s" .Chart.AppVersion }}
-      tag: "v1.9.1"
 
 # Transaction Signer Configuration
 txsigner:
@@ -713,14 +663,9 @@ txsigner:
   image:
     registry: ghcr.io
     repository: settlemint/btp-signer
-    tag: "7.15.13"
-    pullPolicy: IfNotPresent
-  # Init container for testing
   test:
     image:
       repository: docker.io/busybox
-      tag: "1.37"
-      pullPolicy: IfNotPresent
   # Configuration for the txsigner subchart
   config:
     mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
@@ -735,8 +680,6 @@ dapp:
   enabled: true
   image:
     repository: ghcr.io/settlemint/asset-tokenization-kit
-    tag: "2.0.0-main1e32acb7f"
-    pullPolicy: IfNotPresent
   replicaCount: 1
   ingress:
     enabled: true
@@ -749,18 +692,9 @@ dapp:
   resources: {}
   secretEnv:
     BETTER_AUTH_URL: "https://dapp.k8s.orb.local"
-    NEXT_PUBLIC_APP_ID: "dapp"
-    NEXTAUTH_URL: "https://dapp.k8s.orb.local"
-    OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy:4318/v1/traces" # Adjust if needed
-    OTEL_EXPORTER_OTLP_PROTOCOL: "http"
     SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "http://blockscout-frontend-svc/"
     SETTLEMINT_HASURA_ADMIN_SECRET: "atk"
-    SETTLEMINT_HASURA_DATABASE_URL: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
-    SETTLEMINT_HASURA_ENDPOINT: "http://hasura:8080/v1/graphql"
     SETTLEMINT_HD_PRIVATE_KEY: "atk-hd-private-key"
-    SETTLEMINT_INSTANCE: "standalone"
-    SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT: "http://portal:3001/graphql"
-    SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS: '["http://graph-node-combined:8000/subgraphs/name/kit"]'
   podLabels:
     app.kubernetes.io/component: dapp
     kots.io/app-slug: settlemint-atk
