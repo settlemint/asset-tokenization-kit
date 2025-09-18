@@ -16,11 +16,8 @@ dependencies:
   - name: observability
     version: "*"
     condition: observability.enabled
-  - name: besu-network
-    version: "*"
-    condition: besu-network.enabled
   - name: network
-    version: "1.0.12"
+    version: "1.0.13"
     repository: oci://ghcr.io/settlemint/network-bootstrapper
     condition: network.enabled
   - name: erpc

@@ -5,12 +5,9 @@ dependencies:
 - name: observability
   repository: ""
   version: '*'
-- name: besu-network
-  repository: ""
-  version: '*'
 - name: network
   repository: oci://ghcr.io/settlemint/network-bootstrapper
-  version: 1.0.12
+  version: 1.0.13
 - name: erpc
   repository: ""
   version: '*'
@@ -32,5 +29,5 @@ dependencies:
 - name: dapp
   repository: ""
   version: '*'
-digest: sha256:f281fd7e7c8bb06c32fb4162fe13cb0a5eada7cfa784b8e2d965cf52bc480fa9
-generated: "2025-09-17T23:42:01.69184+02:00"
+digest: sha256:f296c4ab3f4308923c2d140428c95b004b6bac4ce646780d49ae28d070de80cd
+generated: "2025-09-18T09:11:39.409237+02:00"
