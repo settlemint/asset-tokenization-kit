@@ -263,9 +263,11 @@ function calculateTop5HoldersPercentage(
     }
   }
 
-  const percentage = totalBalanceTopHolders
-    .toBigDecimal()
-    .div(token.totalSupplyExact.toBigDecimal());
+  const percentage = token.totalSupplyExact.gt(BigInt.zero())
+    ? totalBalanceTopHolders
+        .toBigDecimal()
+        .div(token.totalSupplyExact.toBigDecimal())
+    : BigDecimal.zero();
   return percentage.times(BigDecimal.fromString("100"));
 }
 
