@@ -52,6 +52,33 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
+# OpenShift Route configuration
+openShiftRoute:
+  # -- Enable OpenShift route creation for DApp
+  enabled: false
+  # -- Additional annotations for the OpenShift route resource
+  annotations: {}
+  # -- Hostname exposed via the OpenShift route
+  host: dapp.k8s.orb.local
+  # -- HTTP path exposed via the OpenShift route
+  path: /
+  # -- Wildcard policy to apply to the route
+  wildcardPolicy: None
+  # -- Service port configuration for the route target
+  port:
+    # -- Service target port name (must exist on the DApp service)
+    targetPort: http
+  # -- Primary service weight configuration
+  to:
+    # -- Weight assigned to the DApp service backend
+    weight: 100
+  # -- Additional backends for weighted routing
+  alternateBackends: []
+  # -- TLS configuration for the route (optional)
+  # Set to null for no TLS (HTTP only)
+  # Or specify configuration for TLS termination
+  tls: null
+
 # Resource requests and limits
 resources: {}
 # Liveness and Readiness probes configuration
@@ -179,7 +206,9 @@ secretEnv:
   SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "http://blockscout-frontend-svc/"
   SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT: "http://txsigner:3000"
   SETTLEMINT_HASURA_ADMIN_SECRET: "atk"
-  SETTLEMINT_HASURA_DATABASE_URL: "{{ include \"atk.datastores.postgresql.url\" (dict \"context\" $ \"chartKey\" \"hasura\") }}"
+  SETTLEMINT_HASURA_DATABASE_URL:
+    '{{ include "atk.datastores.postgresql.url" (dict "context" $ "chartKey"
+    "hasura") }}'
   SETTLEMINT_HASURA_ENDPOINT: "http://hasura:8080/v1/graphql"
   SETTLEMINT_HD_PRIVATE_KEY: "atk-hd-private-key"
   SETTLEMINT_INSTANCE: "standalone"
@@ -230,7 +259,7 @@ initContainer:
     dependencies:
       # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
       - name: postgres
-        endpoint: "{{ include \"atk.postgresql.endpoint\" (dict \"context\" $) }}"
+        endpoint: '{{ include "atk.postgresql.endpoint" (dict "context" $) }}'
       - name: hasura
         endpoint: "hasura:8080"
       - name: portal
@@ -239,7 +268,6 @@ initContainer:
         endpoint: "graph-node-combined:8020" # Status API port (TCP check)
       - name: blockscout # Add Blockscout if needed, determine correct service/port
         endpoint: "blockscout-frontend-svc:80"
-
 
   # Specific check for GraphQL endpoint readiness (e.g., The Graph subgraph)
   graphQLCheck:
