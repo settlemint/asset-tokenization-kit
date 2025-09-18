@@ -256,45 +256,95 @@ blockscout:
     sslMode: "disable"
     endpoint: "postgresql:5432"
     url: "postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"
-  blockscout-stack:
-    podAnnotations:
-      prometheus.io/scrape: "true"
-      prometheus.io/port: "4000"
-      prometheus.io/path: "/metrics"
-    blockscout:
-      image:
-        repository: ghcr.io/blockscout/blockscout
-        tag: "9.0.2"
-        pullPolicy: IfNotPresent
-      # Add an extra init container to wait for PostgreSQL
-      init:
-        enabled: true
-        command:
-          - /bin/sh
-        args:
-          - -c
-          - | # Using YAML multiline string for clarity
-            echo "Waiting for postgresql:5432..."
-            while ! nc -z postgresql 5432; do
-              sleep 2;
-            done;
-            echo "PostgreSQL is ready!"
-            # Original command:
-            bin/blockscout eval "Elixir.Explorer.ReleaseTasks.create_and_migrate()"
-      ingress:
-        hostname: explorer.k8s.orb.local
-      env:
-        DATABASE_URL: "postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"
-        API_URL: https://explorer.k8s.orb.local
-        WEBAPP_URL: https://explorer.k8s.orb.local
-      resources: {}
-    frontend:
-      ingress:
-        hostname: explorer.k8s.orb.local
-      image:
-        repository: ghcr.io/blockscout/frontend
-        tag: "v2.3.3"
-        pullPolicy: IfNotPresent
+  # Direct configuration for local blockscout chart
+  fullnameOverride: blockscout
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "4000"
+    prometheus.io/path: "/metrics"
+  blockscout:
+    image:
+      repository: ghcr.io/blockscout/blockscout
+      tag: "9.0.2"
+      pullPolicy: IfNotPresent
+    # Pod security context
+    podSecurityContext:
+      fsGroup: 1001
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+    # Container security context
+    containerSecurityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false
+    # Init container security context
+    initContainerSecurityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false
+    # Add an extra init container to wait for PostgreSQL
+    init:
+      enabled: true
+      command:
+        - /bin/sh
+      args:
+        - -c
+        - | # Using YAML multiline string for clarity
+          echo "Waiting for postgresql:5432..."
+          while ! nc -z postgresql 5432; do
+            sleep 2;
+          done;
+          echo "PostgreSQL is ready!"
+          # Original command:
+          bin/blockscout eval "Elixir.Explorer.ReleaseTasks.create_and_migrate()"
+    ingress:
+      enabled: true
+      className: "atk-nginx"
+      hostname: explorer.k8s.orb.local
+    env:
+      DATABASE_URL: "postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"
+      ETHEREUM_JSONRPC_HTTP_URL: http://erpc:4000/settlemint/evm/53771311147
+      ETHEREUM_JSONRPC_TRACE_URL: http://erpc:4000/settlemint/evm/53771311147
+      API_URL: https://explorer.k8s.orb.local
+      WEBAPP_URL: https://explorer.k8s.orb.local
+    resources: {}
+  frontend:
+    enabled: true
+    ingress:
+      enabled: true
+      className: "atk-nginx"
+      hostname: explorer.k8s.orb.local
+    image:
+      repository: ghcr.io/blockscout/frontend
+      tag: "v2.3.3"
+      pullPolicy: IfNotPresent
+    # Pod security context
+    podSecurityContext:
+      fsGroup: 1001
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+    # Container security context
+    containerSecurityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false
 
 graph-node:
   enabled: true
