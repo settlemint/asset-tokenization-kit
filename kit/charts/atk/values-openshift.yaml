@@ -337,6 +337,15 @@ observability:
 # Hasura configuration for OpenShift
 hasura:
   graphql-engine:
+    ingress:
+      enabled: false
+
+    openShiftRoute:
+      enabled: true
+      host: hasura.apps-crc.testing
+      path: /
+      wildcardPolicy: None
+
     podSecurityContext:
       runAsNonRoot: true
       fsGroup: null
