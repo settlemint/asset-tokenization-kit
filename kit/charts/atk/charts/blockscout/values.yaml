@@ -1,82 +1,192 @@
-# https://github.com/blockscout/helm-charts/blob/main/charts/blockscout-stack/values.yaml
-blockscout-stack:
-  fullnameOverride: blockscout
-  imagePullSecrets: []
-  config:
-    prometheus:
+# Default values for blockscout chart.
+# This chart is a local implementation of the blockscout-stack chart
+
+fullnameOverride: blockscout
+
+imagePullSecrets: []
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+config:
+  network:
+    id: 53771311147
+    name: Asset Tokenization Kit
+    shortname: ATK
+    icon: ""
+    icon_dark: ""
+    logo: ""
+    logo_dark: ""
+    currency:
+      name: Native Token
+      symbol: NT
+      decimals: 18
+      dualToken: false
+  account:
+    enabled: false
+  testnet: false
+  prometheus:
+    enabled: false
+    blackbox:
       enabled: false
-      blackbox:
-        enabled: false
-    network:
-      id: 53771311147
-      name: Asset Tokenization Kit
-      shortname: ATK
-      currency:
-        name: Native Token
-        symbol: NT
-        decimals: 18
-  blockscout:
+
+blockscout:
+  enabled: true
+  replicaCount: 1
+  annotations: {}
+
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "4000"
+    prometheus.io/path: "/metrics"
+
+  image:
+    repository: ghcr.io/blockscout/blockscout
+    tag: "9.0.2"
+    pullPolicy: IfNotPresent
+
+  init:
+    enabled: true
+    command: ["/bin/sh"]
+    args:
+      - -c
+      - |
+        echo "Running database migrations..."
+        bin/blockscout eval "Elixir.Explorer.ReleaseTasks.create_and_migrate()"
+
+  separateApi:
+    enabled: false
     replicaCount: 1
-    podAnnotations:
-      prometheus.io/scrape: "true"
-      prometheus.io/port: "4000"
-      prometheus.io/path: "/metrics"
-    image:
-      repository: ghcr.io/blockscout/blockscout
-      tag: "9.0.2"
-    ingress:
-      enabled: true
-      className: "atk-nginx"
-      hostname: explorer.k8s.orb.local
-    resources: {}
-    env:
-      NETWORK: "mainnet"
-      SUBNETWORK: "ATK"
-      ETHEREUM_JSONRPC_VARIANT: besu
-      SHOW_TXS_CHART: 'true'
-      TXS_STATS_ENABLED: 'true'
-      OTHER_EXPLORERS: '{}'
-      SUPPORTED_CHAINS: '{}'
-      ADMIN_PANEL_ENABLED: 'true'
-      EMISSION_FORMAT: 'DEFAULT'
-      FETCH_REWARDS_WAY: 'trace_block'
-      DISABLE_EXCHANGE_RATES: 'true'
-      ECTO_USE_SSL: 'false'
-      POOL_SIZE: '10'
-      POOL_SIZE_API: '10'
-      ECTO_ADAPTER_TIMEOUT: '60000'
-      DATABASE_TIMEOUT: '60000'
-      MIX_ENV: 'prod'
-      API_GRAPHQL_MAX_COMPLEXITY: '1000'
-      IPFS_GATEWAY_URL: 'https://ipfs.io/ipfs'
-      IPFS_PUBLIC_GATEWAY_URL: 'https://ipfs.io/ipfs'
-      API_URL: https://explorer.k8s.orb.local
-      WEBAPP_URL: https://explorer.k8s.orb.local
-      DATABASE_URL: postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable
-      ETHEREUM_JSONRPC_HTTP_URL: http://erpc:4000/settlemint/evm/53771311147
-      ETHEREUM_JSONRPC_TRACE_URL: http://erpc:4000/settlemint/evm/53771311147
-      SECRET_KEY_BASE: atk
-  frontend:
-    image:
-      repository: ghcr.io/blockscout/frontend
-      tag: "v2.3.3"
-    replicaCount: 1
-    env:
-      NEXT_PUBLIC_IS_ACCOUNT_SUPPORTED: 'false'
-      NEXT_PUBLIC_IS_TESTNET: 'false'
-      NEXT_PUBLIC_AD_BANNER_PROVIDER: 'none'
-      NEXT_PUBLIC_AD_TEXT_PROVIDER: 'none'
-      NEXT_PUBLIC_HAS_BEACON_CHAIN: 'false'
-      NEXT_PUBLIC_TRANSACTION_INTERPRETATION_PROVIDER: 'blockscout'
-      NEXT_PUBLIC_HOMEPAGE_CHARTS: '["daily_txs"]'
-      NEXT_PUBLIC_HOMEPAGE_STATS: '["total_blocks","average_block_time","total_txs","wallet_addresses","gas_tracker"]'
-      NEXT_PUBLIC_PROMOTE_BLOCKSCOUT_IN_TITLE: 'false'
-      NEXT_PUBLIC_OG_ENHANCED_DATA_ENABLED: 'true'
-      NEXT_PUBLIC_SEO_ENHANCED_DATA_ENABLED: 'true'
-      NEXT_PUBLIC_HAS_CONTRACT_AUDIT_REPORTS: 'true'
-      NEXT_PUBLIC_FONT_FAMILY_HEADING: "{'name':'Figtree','url':'https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap'}"
-      NEXT_PUBLIC_FONT_FAMILY_BODY: "{'name':'Figtree','url':'https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap'}"
-    ingress:
-      enabled: true
-      className: "atk-nginx"
-      hostname: explorer.k8s.orb.local
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  ingress:
+    enabled: true
+    className: "atk-nginx"
+    hostname: explorer.k8s.orb.local
+    annotations: {}
+    tls: []
+
+  resources: {}
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 100
+    periodSeconds: 100
+    timeoutSeconds: 30
+    successThreshold: 1
+    failureThreshold: 5
+
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 30
+    successThreshold: 1
+    failureThreshold: 5
+
+  env:
+    NETWORK: "mainnet"
+    SUBNETWORK: "ATK"
+    ETHEREUM_JSONRPC_VARIANT: besu
+    SHOW_TXS_CHART: 'true'
+    TXS_STATS_ENABLED: 'true'
+    OTHER_EXPLORERS: '{}'
+    SUPPORTED_CHAINS: '{}'
+    ADMIN_PANEL_ENABLED: 'true'
+    EMISSION_FORMAT: 'DEFAULT'
+    FETCH_REWARDS_WAY: 'trace_block'
+    DISABLE_EXCHANGE_RATES: 'true'
+    ECTO_USE_SSL: 'false'
+    POOL_SIZE: '10'
+    POOL_SIZE_API: '10'
+    ECTO_ADAPTER_TIMEOUT: '60000'
+    DATABASE_TIMEOUT: '60000'
+    MIX_ENV: 'prod'
+    API_GRAPHQL_MAX_COMPLEXITY: '1000'
+    IPFS_GATEWAY_URL: 'https://ipfs.io/ipfs'
+    IPFS_PUBLIC_GATEWAY_URL: 'https://ipfs.io/ipfs'
+    API_URL: https://explorer.k8s.orb.local
+    WEBAPP_URL: https://explorer.k8s.orb.local
+    DATABASE_URL: postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable
+    ETHEREUM_JSONRPC_HTTP_URL: http://erpc:4000/settlemint/evm/53771311147
+    ETHEREUM_JSONRPC_TRACE_URL: http://erpc:4000/settlemint/evm/53771311147
+    SECRET_KEY_BASE: atk
+
+frontend:
+  enabled: true
+  replicaCount: 1
+
+  podAnnotations: {}
+
+  image:
+    repository: ghcr.io/blockscout/frontend
+    tag: "v2.3.3"
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  ingress:
+    enabled: true
+    className: "atk-nginx"
+    hostname: explorer.k8s.orb.local
+    annotations: {}
+    tls: []
+
+  resources: {}
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 5
+    timeoutSeconds: 3
+    successThreshold: 1
+    failureThreshold: 5
+
+  env:
+    NEXT_PUBLIC_API_PROTOCOL: https
+    NEXT_PUBLIC_APP_PROTOCOL: https
+    NEXT_PUBLIC_IS_ACCOUNT_SUPPORTED: 'false'
+    NEXT_PUBLIC_IS_TESTNET: 'false'
+    NEXT_PUBLIC_AD_BANNER_PROVIDER: 'none'
+    NEXT_PUBLIC_AD_TEXT_PROVIDER: 'none'
+    NEXT_PUBLIC_HAS_BEACON_CHAIN: 'false'
+    NEXT_PUBLIC_TRANSACTION_INTERPRETATION_PROVIDER: 'blockscout'
+    NEXT_PUBLIC_HOMEPAGE_CHARTS: '["daily_txs"]'
+    NEXT_PUBLIC_HOMEPAGE_STATS: '["total_blocks","average_block_time","total_txs","wallet_addresses","gas_tracker"]'
+    NEXT_PUBLIC_PROMOTE_BLOCKSCOUT_IN_TITLE: 'false'
+    NEXT_PUBLIC_OG_ENHANCED_DATA_ENABLED: 'true'
+    NEXT_PUBLIC_SEO_ENHANCED_DATA_ENABLED: 'true'
+    NEXT_PUBLIC_HAS_CONTRACT_AUDIT_REPORTS: 'true'
+    NEXT_PUBLIC_FONT_FAMILY_HEADING: "{'name':'Figtree','url':'https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap'}"
+    NEXT_PUBLIC_FONT_FAMILY_BODY: "{'name':'Figtree','url':'https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap'}"
+
+stats:
+  enabled: false
+  ingress:
+    hostname: ""
+
+redirect:
+  enabled: false
