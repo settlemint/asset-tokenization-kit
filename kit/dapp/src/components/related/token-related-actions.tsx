@@ -3,6 +3,7 @@ import { CollateralSheet } from "@/components/manage-dropdown/sheets/collateral-
 import { MatureConfirmationSheet } from "@/components/manage-dropdown/sheets/mature-confirmation-sheet";
 import { MintSheet } from "@/components/manage-dropdown/sheets/mint-sheet";
 import { PauseUnpauseConfirmationSheet } from "@/components/manage-dropdown/sheets/pause-unpause-confirmation-sheet";
+import { SetCapSheet } from "@/components/manage-dropdown/sheets/set-cap-sheet";
 import { SetYieldScheduleSheet } from "@/components/manage-dropdown/sheets/set-yield-schedule-sheet";
 import { Button } from "@/components/ui/button";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
@@ -40,7 +41,8 @@ type ActionKey =
   | "setYieldSchedule"
   | "mature"
   | "pause"
-  | "unpause";
+  | "unpause"
+  | "setCap";
 
 export function TokenRelatedActions({ asset }: TokenRelatedActionsProps) {
   const { t } = useTranslation(["tokens"]);
@@ -51,8 +53,8 @@ export function TokenRelatedActions({ asset }: TokenRelatedActionsProps) {
   const can = useMemo(
     () => ({
       collateral:
-        asset.collateral != null &&
-        (asset.userPermissions?.actions?.updateCollateral ?? false),
+        asset.userPermissions?.actions?.updateCollateral === true ||
+        asset.extensions?.includes(AssetExtensionEnum.COLLATERAL) === true,
       mint: (asset.userPermissions?.actions?.mint ?? false) && !isPaused,
       burn: (asset.userPermissions?.actions?.burn ?? false) && !isPaused,
       setYieldSchedule:
@@ -70,6 +72,10 @@ export function TokenRelatedActions({ asset }: TokenRelatedActionsProps) {
         !isPaused,
       pause: (asset.userPermissions?.actions?.pause ?? false) && !isPaused,
       unpause: (asset.userPermissions?.actions?.unpause ?? false) && isPaused,
+      setCap:
+        asset.extensions?.includes(AssetExtensionEnum.CAPPED) === true &&
+        (asset.userPermissions?.actions?.setCap ?? false) &&
+        !isPaused,
     }),
     [asset, isPaused]
   );
@@ -88,16 +94,16 @@ export function TokenRelatedActions({ asset }: TokenRelatedActionsProps) {
     if (can.setYieldSchedule)
       arr.push({
         key: "setYieldSchedule",
-        title: t("tokens:actions.setYieldSchedule.title"),
-        description: t("tokens:actions.setYieldSchedule.description"),
+        title: t("tokens:related.increase-supply.title.bonds"),
+        description: t("tokens:related.increase-supply.description.bonds"),
         cta: t("tokens:actions.setYieldSchedule.submit"),
         icon: TrendingUp,
       });
     if (can.mature)
       arr.push({
         key: "mature",
-        title: t("tokens:actions.mature.label"),
-        description: t("tokens:actions.mature.description"),
+        title: t("tokens:related.decrease-supply.title.bonds"),
+        description: t("tokens:related.decrease-supply.description.bonds"),
         cta: t("tokens:actions.mature.submit"),
         icon: CheckCircle,
       });
@@ -106,26 +112,40 @@ export function TokenRelatedActions({ asset }: TokenRelatedActionsProps) {
     if (can.collateral)
       arr.push({
         key: "collateral",
-        title: t("tokens:actions.collateral.title"),
-        description: t("tokens:actions.collateral.description"),
+        title: t("tokens:related.update-collateral.title"),
+        description: t(
+          "tokens:related.update-collateral.description.stablecoins"
+        ),
         cta: t("tokens:actions.collateral.submit"),
         icon: Shield,
       });
     if (can.mint)
       arr.push({
         key: "mint",
-        title: t("tokens:actions.mint.title"),
-        description: t("tokens:actions.mint.description"),
+        title: t("tokens:related.increase-supply.title.stablecoins"),
+        description: t(
+          "tokens:related.increase-supply.description.stablecoins"
+        ),
         cta: t("tokens:actions.mint.label"),
         icon: Plus,
       });
     if (can.burn)
       arr.push({
         key: "burn",
-        title: t("tokens:actions.burn.title"),
-        description: t("tokens:actions.burn.description"),
+        title: t("tokens:related.decrease-supply.title.stablecoins"),
+        description: t(
+          "tokens:related.decrease-supply.description.stablecoins"
+        ),
         cta: t("tokens:actions.burn.label"),
         icon: Flame,
+      });
+    if (can.setCap)
+      arr.push({
+        key: "setCap",
+        title: t("tokens:actions.setCap.title"),
+        description: t("tokens:actions.setCap.description"),
+        cta: t("tokens:actions.setCap.submit"),
+        icon: TrendingUp,
       });
 
     // Operational actions as fallbacks to fill to 3
@@ -209,6 +229,11 @@ export function TokenRelatedActions({ asset }: TokenRelatedActionsProps) {
         onOpenChange={(o) =>
           setOpen(o ? (isPaused ? "unpause" : "pause") : null)
         }
+        asset={asset}
+      />
+      <SetCapSheet
+        open={open === "setCap"}
+        onOpenChange={(o) => setOpen(o ? "setCap" : null)}
         asset={asset}
       />
     </RelatedGrid>
