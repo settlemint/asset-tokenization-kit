@@ -491,6 +491,18 @@ hasura:
       app.kubernetes.io/instance: atk
       kots.io/app-slug: settlemint-atk
       app.kubernetes.io/component: hasura
+    openShiftRoute:
+      enabled: false
+      annotations: {}
+      host: hasura.k8s.orb.local
+      path: /
+      wildcardPolicy: None
+      port:
+        targetPort: http
+      to:
+        weight: 100
+      alternateBackends: []
+      tls: null
     image:
       repository: docker.io/hasura/graphql-engine
       tag: v2.48.5

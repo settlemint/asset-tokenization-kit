@@ -1,0 +1,64 @@
+{{- /* OpenShift Route for exposing the Hasura graphql-engine service when enabled. */ -}}
+{{- $hasRouteAPI := .Capabilities.APIVersions.Has "route.openshift.io/v1" -}}
+{{- $hasuraValues := index .Values "graphql-engine" -}}
+{{- $routeValues := default dict $hasuraValues.openShiftRoute -}}
+{{- if and $hasRouteAPI $routeValues $routeValues.enabled -}}
+{{- $servicePrefix := .Release.Name -}}
+{{- if and $hasuraValues $hasuraValues.global $hasuraValues.global.prefixOverride -}}
+  {{- $servicePrefix = $hasuraValues.global.prefixOverride -}}
+{{- end -}}
+{{- $serviceName := default (printf "%s-graphql-engine" $servicePrefix) $hasuraValues.nameOverride -}}
+{{- $routeName := default $serviceName $routeValues.name -}}
+{{- $targetPort := "http" -}}
+{{- with $routeValues.port }}
+  {{- with .targetPort }}
+    {{- $targetPort = . -}}
+  {{- end }}
+{{- end }}
+{{- $weight := "" -}}
+{{- with $routeValues.to }}
+  {{- with .weight }}
+    {{- $weight = . -}}
+  {{- end }}
+{{- end }}
+{{- $wildcard := default "None" $routeValues.wildcardPolicy -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ $routeName }}
+  labels:
+    app: {{ $routeName }}
+    {{- with $hasuraValues.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with $routeValues.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  to:
+    kind: Service
+    name: {{ $serviceName }}
+    {{- if $weight }}
+    weight: {{ int $weight }}
+    {{- end }}
+  {{- with $routeValues.alternateBackends }}
+  alternateBackends:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  port:
+    targetPort: {{ $targetPort }}
+  {{- with $routeValues.host }}
+  host: {{ . | quote }}
+  {{- end }}
+  {{- with $routeValues.path }}
+  path: {{ . | quote }}
+  {{- end }}
+  {{- if $wildcard }}
+  wildcardPolicy: {{ $wildcard }}
+  {{- end }}
+  {{- with $routeValues.tls }}
+  tls:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

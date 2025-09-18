@@ -58,6 +58,15 @@ A Helm chart for the hasura components
 | graphql-engine.labels."app.kubernetes.io/part-of" | string | `"settlemint-atk"` |  |
 | graphql-engine.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | graphql-engine.nameOverride | string | `"hasura"` |  |
+| graphql-engine.openShiftRoute.alternateBackends | list | `[]` |  |
+| graphql-engine.openShiftRoute.annotations | object | `{}` |  |
+| graphql-engine.openShiftRoute.enabled | bool | `false` |  |
+| graphql-engine.openShiftRoute.host | string | `"hasura.k8s.orb.local"` |  |
+| graphql-engine.openShiftRoute.path | string | `"/"` |  |
+| graphql-engine.openShiftRoute.port.targetPort | string | `"http"` |  |
+| graphql-engine.openShiftRoute.tls | string | `nil` |  |
+| graphql-engine.openShiftRoute.to.weight | int | `100` |  |
+| graphql-engine.openShiftRoute.wildcardPolicy | string | `"None"` |  |
 | graphql-engine.postgres.enabled | bool | `false` |  |
 | graphql-engine.replicas | int | `1` |  |
 | graphql-engine.secret.adminSecret | string | `"atk"` |  |

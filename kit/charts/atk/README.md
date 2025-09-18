@@ -379,6 +379,15 @@ The following table lists the configurable parameters of this chart and their de
 | hasura.graphql-engine.labels."app.kubernetes.io/component" | string | `"hasura"` |  |
 | hasura.graphql-engine.labels."app.kubernetes.io/instance" | string | `"atk"` |  |
 | hasura.graphql-engine.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
+| hasura.graphql-engine.openShiftRoute.alternateBackends | list | `[]` |  |
+| hasura.graphql-engine.openShiftRoute.annotations | object | `{}` |  |
+| hasura.graphql-engine.openShiftRoute.enabled | bool | `false` |  |
+| hasura.graphql-engine.openShiftRoute.host | string | `"hasura.k8s.orb.local"` |  |
+| hasura.graphql-engine.openShiftRoute.path | string | `"/"` |  |
+| hasura.graphql-engine.openShiftRoute.port.targetPort | string | `"http"` |  |
+| hasura.graphql-engine.openShiftRoute.tls | string | `nil` |  |
+| hasura.graphql-engine.openShiftRoute.to.weight | int | `100` |  |
+| hasura.graphql-engine.openShiftRoute.wildcardPolicy | string | `"None"` |  |
 | hasura.graphql-engine.replicas | int | `1` |  |
 | hasura.graphql-engine.secret.extraSecrets.DEFAULT_DB_URL | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
 | hasura.graphql-engine.secret.metadataDbUrl | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
