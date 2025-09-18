@@ -250,7 +250,7 @@ function getPercentageOfTotalSupply(
   totalValueInBaseCurrency: BigDecimal,
   totalSystemValueInBaseCurrency: BigDecimal
 ): BigDecimal {
-  const percentage = totalValueInBaseCurrency.gt(BigDecimal.zero())
+  const percentage = totalSystemValueInBaseCurrency.gt(BigDecimal.zero())
     ? totalValueInBaseCurrency.div(totalSystemValueInBaseCurrency)
     : BigDecimal.zero();
   log.info(
