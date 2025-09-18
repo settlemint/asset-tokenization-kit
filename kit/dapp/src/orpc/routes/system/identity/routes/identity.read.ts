@@ -67,7 +67,7 @@ const READ_IDENTITY_QUERY = theGraphGraphql(`
 export const identityRead = systemRouter.system.identity.read
   .use(
     blockchainPermissionsMiddleware<typeof IdentityReadSchema>({
-      requiredRoles: SYSTEM_PERMISSIONS.accountRead,
+      requiredRoles: SYSTEM_PERMISSIONS.identityRead,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },

@@ -1,5 +1,5 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
+import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import {
   IdentitySearchResponseSchema,
@@ -7,6 +7,7 @@ import {
   IdentitySearchSchema,
   type IdentitySearchResult,
 } from "@/orpc/routes/system/identity/routes/identity.search.schema";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import countries from "i18n-iso-countries";
 
 // Query to search identity by account address or identity contract address
@@ -60,22 +61,26 @@ const SEARCH_IDENTITY_QUERY = theGraphGraphql(`
  */
 export const identitySearch = systemRouter.system.identity.search
   .use(
-    offChainPermissionsMiddleware<typeof IdentitySearchSchema>({
-      requiredPermissions: { account: ["read"] },
-      alwaysAllowIf: (context, input) =>
-        input.account === context.auth?.user.wallet,
+    blockchainPermissionsMiddleware<typeof IdentitySearchSchema>({
+      requiredRoles: SYSTEM_PERMISSIONS.identitySearch,
+      getAccessControl: ({ context }) => {
+        return context.system?.systemAccessManager?.accessControl;
+      },
+      alwaysAllowIf: ({ auth }, { wallet }) => {
+        return wallet === auth?.user.wallet;
+      },
     })
   )
   .handler(async ({ input, context }) => {
-    const { account, address } = input;
+    const { wallet, address } = input;
     const { system, theGraphClient } = context;
 
     // Execute single query with OR condition
     const result = await theGraphClient.query(SEARCH_IDENTITY_QUERY, {
       input: {
-        userAddress: account?.toLowerCase() || null,
+        userAddress: wallet?.toLowerCase() || null,
         identityAddress: address?.toLowerCase() || null,
-        identityFactory: account
+        identityFactory: wallet
           ? system.identityFactory.id.toLowerCase()
           : null,
         registryStorage: system.identityRegistryStorage.id.toLowerCase(),

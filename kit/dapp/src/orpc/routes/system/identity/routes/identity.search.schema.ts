@@ -9,14 +9,14 @@ import { z } from "zod";
  */
 export const IdentitySearchSchema = z
   .object({
-    account: ethereumAddress
+    wallet: ethereumAddress
       .describe("The account address of the user to search the identity for")
       .optional(),
     address: ethereumAddress
       .describe("The identity contract address to search for")
       .optional(),
   })
-  .refine((data) => data.account || data.address, {
+  .refine((data) => data.wallet || data.address, {
     message: "Either account or address must be provided",
     path: ["account", "address"],
   });

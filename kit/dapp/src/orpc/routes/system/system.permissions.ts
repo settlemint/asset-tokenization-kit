@@ -50,8 +50,9 @@ type AssertValidContract =
  * The SystemContractValidation type above ensures these mappings stay valid during refactoring.
  */
 export const SYSTEM_PERMISSIONS = {
-  accountRead: { any: ["identityManager", "claimIssuer"] },
   accountSearch: { any: ["identityManager", "claimIssuer"] },
+  identityRead: { any: ["identityManager", "claimIssuer"] },
+  identitySearch: { any: ["identityManager", "claimIssuer"] },
   addonCreate: "addonManager",
   addonFactoryCreate: { any: ["addonManager", "systemManager"] },
   claimCreate: { any: ["claimIssuer", "systemModule"] },
