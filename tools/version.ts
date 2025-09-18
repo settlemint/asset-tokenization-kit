@@ -80,8 +80,9 @@ function generateVersionInfo(
   baseVersion: string,
   buildId?: string
 ): VersionInfo {
-  // Check if ref slug matches version pattern (v?[0-9]+\.[0-9]+\.[0-9]+$)
-  const versionPattern = /^v?[0-9]+\.[0-9]+\.[0-9]+$/;
+  // Check if ref slug matches semantic version tag (allows optional pre-release/build e.g. v1.2.3-alpha.1+001)
+  const versionPattern =
+    /^v?[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
 
   if (versionPattern.test(refSlug)) {
     // Remove 'v' prefix if present
