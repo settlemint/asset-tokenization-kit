@@ -11,9 +11,9 @@ export default defineConfig({
     pool: "forks",
     poolOptions: {
       forks: {
-        // Run max 16 tests in parallell
-        // WHY? Because postgress only allows a limited amount of connections
-        // As we use a single database server for all tests and underlying services we need to limit the number of forks
+        // Limit the number of parallel test workers to avoid exceeding the PostgreSQL
+        // connection limit. Integration tests spin up services that connect to the
+        // database, and running too many in parallel can exhaust the connection pool.
         maxForks: 16,
       },
     },
