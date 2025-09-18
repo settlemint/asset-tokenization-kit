@@ -93,8 +93,7 @@ podSecurityContext: {}
 containerSecurityContext: {}
 
 # -- TxSigner containers resource requests and limits
-resources:
-  {}
+resources: {}
   # limits:
   #   cpu: 100m
   #   memory: 128Mi
@@ -501,6 +500,8 @@ initContainer:
       requests:
         cpu: 10m
         memory: 32Mi
-      dependencies:
-        - name: postgresql
-          endpoint: "{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"txsigner\") }}"
+    dependencies:
+      - name: postgresql
+        endpoint:
+          '{{ include "atk.postgresql.endpoint" (dict "context" $ "chartKey"
+          "txsigner") }}'
