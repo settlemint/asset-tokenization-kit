@@ -27,12 +27,6 @@ export function BondExtensionDetails({
     asset
   );
 
-  const _basePriceClaim = parseClaim<{
-    amount: string;
-    currencyCode: string;
-    decimals: string;
-  }>(asset.identity?.claims, "basePrice");
-
   const denominationBasePriceClaim = parseClaim<{
     amount: string;
     currencyCode: string;
