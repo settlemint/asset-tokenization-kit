@@ -1,6 +1,8 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
+import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { isAddress } from "viem";
 import { z } from "zod";
 
@@ -15,12 +17,15 @@ const SEARCH_ACCOUNT_QUERY = theGraphGraphql(`
 `);
 
 export const search = authRouter.account.search
+  .use(systemMiddleware)
   .use(
-    offChainPermissionsMiddleware({
-      requiredPermissions: { account: ["list"] },
+    blockchainPermissionsMiddleware({
+      requiredRoles: SYSTEM_PERMISSIONS.accountSearch,
+      getAccessControl: ({ context }) => {
+        return context.system?.systemAccessManager?.accessControl;
+      },
     })
   )
-
   .handler(async ({ input, context }) => {
     const { query } = input;
 

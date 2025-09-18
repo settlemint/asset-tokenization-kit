@@ -4,8 +4,6 @@ import { adminAc, defaultStatements } from "better-auth/plugins/admin/access";
 
 const customPermissions = {
   ...defaultStatements,
-  account: ["read", "list", "create-identity"],
-  kyc: ["list", "upsert", "remove"],
   setting: ["read", "list", "upsert", "remove"],
   system: ["read", "list", "create"],
   exchangeRates: ["read", "list", "remove", "sync", "update"],
@@ -25,30 +23,15 @@ export const accessControl = createAccessControl(customPermissions);
  */
 export const adminRole = accessControl.newRole({
   ...adminAc.statements,
-  account: ["read", "list", "create-identity"],
-  kyc: ["list", "upsert", "remove"],
   setting: ["read", "list", "upsert", "remove"],
   system: ["read", "list", "create"],
   exchangeRates: ["read", "list", "remove", "sync", "update"],
 });
 
 /**
- * Trusted issuer role, this user will verify the kyc of the users.
- * Typically this will be a trusted issuer on chain.
+ * User role, regular user on the platform.
  */
-export const issuerRole = accessControl.newRole({
-  account: ["read", "list"],
-  kyc: ["list", "upsert", "remove"],
-  setting: ["read", "list"],
-  system: ["read", "list"],
-  exchangeRates: ["read", "list"],
-  user: ["list"],
-});
-
-/**
- * Investor role, regular user on the platform.
- */
-export const investorRole = accessControl.newRole({
+export const userRole = accessControl.newRole({
   setting: ["read", "list"],
   system: ["read", "list"],
   exchangeRates: ["read", "list"],

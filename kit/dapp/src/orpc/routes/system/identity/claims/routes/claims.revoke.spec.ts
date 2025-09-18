@@ -6,6 +6,7 @@ import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
   DEFAULT_ISSUER,
+  DEFAULT_PINCODE,
   getUserData,
   registerUserIdentity,
   signInWithUser,
@@ -71,7 +72,7 @@ describe("Claims revoke (integration)", () => {
       },
       walletVerification: {
         verificationType: VerificationType.pincode,
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
       },
     });
 
@@ -91,7 +92,7 @@ describe("Claims revoke (integration)", () => {
       claimTopic: "collateral",
       walletVerification: {
         verificationType: VerificationType.pincode,
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
       },
     });
 
@@ -109,7 +110,7 @@ describe("Claims revoke (integration)", () => {
           claimTopic: "collateral",
           walletVerification: {
             verificationType: VerificationType.pincode,
-            secretVerificationCode: "123456",
+            secretVerificationCode: DEFAULT_PINCODE,
           },
         },
         {
@@ -135,7 +136,7 @@ describe("Claims revoke (integration)", () => {
       },
       walletVerification: {
         verificationType: VerificationType.pincode,
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
       },
     });
 
@@ -147,7 +148,7 @@ describe("Claims revoke (integration)", () => {
           claimTopic: "knowYourCustomer",
           walletVerification: {
             verificationType: VerificationType.pincode,
-            secretVerificationCode: "123456",
+            secretVerificationCode: DEFAULT_PINCODE,
           },
         },
         {

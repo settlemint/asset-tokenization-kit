@@ -36,11 +36,12 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
+import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import type { IdentityCreateSchema } from "@/orpc/routes/system/identity/routes/identity.create.schema";
 import { identityRead } from "@/orpc/routes/system/identity/routes/identity.read";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call, ORPCError } from "@orpc/server";
 
 /**
@@ -114,9 +115,10 @@ const IDENTITY_CREATE_MUTATION = portalGraphql(`
 export const identityCreate = onboardedRouter.system.identity.create
   .use(systemMiddleware)
   .use(
-    offChainPermissionsMiddleware<typeof IdentityCreateSchema>({
-      requiredPermissions: {
-        account: ["create-identity"],
+    blockchainPermissionsMiddleware<typeof IdentityCreateSchema>({
+      requiredRoles: SYSTEM_PERMISSIONS.identityCreate,
+      getAccessControl: ({ context }) => {
+        return context.system?.systemAccessManager?.accessControl;
       },
       alwaysAllowIf: ({ auth }, { wallet }) => {
         return (

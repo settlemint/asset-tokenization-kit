@@ -193,8 +193,6 @@ export function isResidencyStatusArray(
  * const empty = getResidencyStatusArray([]); // Throws Error - empty array
  * ```
  */
-export function getResidencyStatusArray(
-  value: unknown
-): ResidencyStatusArray {
+export function getResidencyStatusArray(value: unknown): ResidencyStatusArray {
   return residencyStatusArray().parse(value);
 }

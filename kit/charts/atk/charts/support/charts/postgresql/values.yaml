@@ -41,6 +41,9 @@ service:
 # Security context
 podSecurityContext:
   fsGroup: 999
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
 
 securityContext:
   runAsUser: 999
@@ -50,6 +53,8 @@ securityContext:
   capabilities:
     drop:
       - ALL
+  seccompProfile:
+    type: RuntimeDefault
 
 # Pod disruption budget
 podDisruptionBudget:

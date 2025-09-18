@@ -82,3 +82,6 @@ PROJECT_INDEX.dsl
 tools/eslint-config/tsconfig.tsbuildinfo
 .serena/cache
 /kit/contracts/cache
+
+# Docker
+Dockerfile

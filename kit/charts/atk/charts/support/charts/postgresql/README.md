@@ -31,6 +31,8 @@ A simple PostgreSQL Helm chart for ATK development
 | podDisruptionBudget.enabled | bool | `false` |  |
 | podDisruptionBudget.minAvailable | int | `1` |  |
 | podSecurityContext.fsGroup | int | `999` |  |
+| podSecurityContext.runAsNonRoot | bool | `true` |  |
+| podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | postgresql.database | string | `"postgres"` |  |
 | postgresql.password | string | `"atk"` |  |
 | postgresql.username | string | `"postgres"` |  |
@@ -55,6 +57,7 @@ A simple PostgreSQL Helm chart for ATK development
 | securityContext.runAsGroup | int | `999` |  |
 | securityContext.runAsNonRoot | bool | `true` |  |
 | securityContext.runAsUser | int | `999` |  |
+| securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | service.port | int | `5432` |  |
 | service.targetPort | int | `5432` |  |
 | service.type | string | `"ClusterIP"` |  |

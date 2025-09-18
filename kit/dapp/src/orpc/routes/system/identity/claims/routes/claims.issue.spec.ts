@@ -6,6 +6,7 @@ import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
   DEFAULT_ISSUER,
+  DEFAULT_PINCODE,
   getUserData,
   registerUserIdentity,
   signInWithUser,
@@ -67,7 +68,7 @@ describe("Claims issue (integration)", () => {
       },
       walletVerification: {
         verificationType: VerificationType.pincode,
-        secretVerificationCode: "123456",
+        secretVerificationCode: DEFAULT_PINCODE,
       },
     });
 
@@ -94,7 +95,7 @@ describe("Claims issue (integration)", () => {
           },
           walletVerification: {
             verificationType: VerificationType.pincode,
-            secretVerificationCode: "123456",
+            secretVerificationCode: DEFAULT_PINCODE,
           },
         },
         {
@@ -122,7 +123,7 @@ describe("Claims issue (integration)", () => {
           },
           walletVerification: {
             verificationType: VerificationType.pincode,
-            secretVerificationCode: "123456",
+            secretVerificationCode: DEFAULT_PINCODE,
           },
         },
         {
@@ -149,7 +150,7 @@ describe("Claims issue (integration)", () => {
           },
           walletVerification: {
             verificationType: VerificationType.pincode,
-            secretVerificationCode: "123456",
+            secretVerificationCode: DEFAULT_PINCODE,
           },
         },
         {
