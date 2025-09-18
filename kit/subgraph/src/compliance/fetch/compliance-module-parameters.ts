@@ -78,7 +78,7 @@ export function updateComplianceModuleParameters(
   const topicSchemeRegistryId = system.topicSchemeRegistry;
   if (!topicSchemeRegistryId) {
     log.error(
-      "Topic scheme registry not found for system, cannot update compliance module parameters",
+      "Topic scheme registry not found for system: {}, cannot update compliance module parameters",
       [system.id.toHexString()]
     );
     return;

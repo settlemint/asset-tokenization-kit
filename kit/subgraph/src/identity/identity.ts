@@ -338,7 +338,7 @@ function getTopicSchemeFromIdentity(
   const registryStorageId = identity.registryStorage;
   if (!registryStorageId) {
     log.error(
-      "Identity registry storage not found for identity, cannot get topic scheme",
+      "Identity registry storage not found for identity: {}, cannot get topic scheme",
       [identity.id.toHexString()]
     );
     return null;
@@ -351,7 +351,7 @@ function getTopicSchemeFromIdentity(
   const topicSchemeRegistryId = system.topicSchemeRegistry;
   if (!topicSchemeRegistryId) {
     log.error(
-      "Topic scheme registry not found for system, cannot get topic scheme",
+      "Topic scheme registry not found for system: {}, cannot get topic scheme",
       [system.id.toHexString()]
     );
     return null;

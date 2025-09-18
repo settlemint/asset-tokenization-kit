@@ -485,7 +485,7 @@ type TrustedIssuersRegistry @entity(immutable: false) {
   # List of trusted issuers in this registry
   trustedIssuers: [TrustedIssuer!]! @derivedFrom(field: "registry")
   # System this registry belongs to
-  system: System!
+  system: System
   # Token this registry belongs to
   token: Token
   # System-wide registry reference
