@@ -377,6 +377,8 @@ The following table lists the configurable parameters of this chart and their de
 | global.artifacts.image.tag | string | `"2.0.0-main.91391"` |  |
 | global.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | global.networkPolicy.enabled | bool | `false` |  |
+| global.openshift.enabled | bool | `false` |  |
+| global.openshift.fsGroup | int | `1000640000` |  |
 | graph-node.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
 | graph-node.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | graph-node.containerSecurityContext.runAsGroup | int | `1000` |  |
