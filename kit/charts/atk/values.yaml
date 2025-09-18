@@ -52,16 +52,6 @@ global:
       redis:
         cacheDb: 0
         sharedStateDb: 1
-    hasura:
-      postgresql:
-        database: "hasura"
-        username: "hasura"
-        password: "atk"
-      redis:
-        primary:
-          db: 2
-        rateLimit:
-          db: 3
     portal:
       postgresql:
         database: "portal"
@@ -141,6 +131,9 @@ blockscout:
       enabled: true
       className: "atk-nginx"
       hostname: explorer.k8s.orb.local
+    openShiftRoute:
+      enabled: false
+      host: explorer.k8s.orb.local
     env:
       API_URL: https://explorer.k8s.orb.local
       WEBAPP_URL: https://explorer.k8s.orb.local
@@ -214,32 +207,13 @@ hasura:
       db: 3
       url: "redis://default:atk@redis:6379/3"
   graphql-engine:
-    replicas: 1
     ingress:
       hostName: hasura.k8s.orb.local
-    labels:
-      app.kubernetes.io/instance: atk
-      kots.io/app-slug: settlemint-atk
-      app.kubernetes.io/component: hasura
     openShiftRoute:
       enabled: false
-      annotations: {}
       host: hasura.k8s.orb.local
-      path: /
-      wildcardPolicy: None
-      port:
-        targetPort: http
-      to:
-        weight: 100
-      alternateBackends: []
-      tls: null
     image:
       repository: docker.io/hasura/graphql-engine
-      tag: v2.48.5
-      ## Specify a imagePullPolicy
-      ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
-      ##
-      pullPolicy: IfNotPresent
     initContainers:
       - name: wait-for-postgresql
         image: ghcr.io/settlemint/btp-waitforit:v7.7.10
