@@ -19,13 +19,15 @@ export default defineConfig({
     coverage: {
       all: true,
       provider: "v8",
-      reporter: ["text", "json", "json-summary", "lcov"],
+      reporter: ["text-summary", "json", "json-summary", "lcov"],
       reportOnFailure: true,
       reportsDirectory: "./coverage",
       enabled: process.env.CI ? true : false,
+      include: ["src/**/*.{ts,tsx,js,jsx}", "src/**/*.mjs"],
       exclude: [
         "**/node_modules/**",
         "**/dist/**",
+        "**/.next/**",
         "**/.nitro/**",
         "**/public/**",
         "**/src/**/*.gen.ts",
