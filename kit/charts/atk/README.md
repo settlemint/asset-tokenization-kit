@@ -141,6 +141,15 @@ The following table lists the configurable parameters of this chart and their de
 | dapp.initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` |  |
 | dapp.initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
 | dapp.initContainer.tcpCheck.timeout | int | `120` |  |
+| dapp.openShiftRoute.alternateBackends | list | `[]` |  |
+| dapp.openShiftRoute.annotations | object | `{}` |  |
+| dapp.openShiftRoute.enabled | bool | `false` |  |
+| dapp.openShiftRoute.host | string | `"dapp.k8s.orb.local"` |  |
+| dapp.openShiftRoute.path | string | `"/"` |  |
+| dapp.openShiftRoute.port.targetPort | string | `"http"` |  |
+| dapp.openShiftRoute.tls | string | `nil` |  |
+| dapp.openShiftRoute.to.weight | int | `100` |  |
+| dapp.openShiftRoute.wildcardPolicy | string | `"None"` |  |
 | dapp.podLabels."app.kubernetes.io/component" | string | `"dapp"` |  |
 | dapp.podLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | dapp.replicaCount | int | `1` |  |

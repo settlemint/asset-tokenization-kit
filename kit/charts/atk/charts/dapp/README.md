@@ -108,6 +108,17 @@ A Helm chart for the ATK DApp frontend
 | networkPolicy.ingress[1].ports[0].port | int | `3000` |  |
 | networkPolicy.ingress[1].ports[0].protocol | string | `"TCP"` |  |
 | nodeSelector | object | `{}` |  |
+| openShiftRoute.alternateBackends | list | `[]` | Additional backends for weighted routing |
+| openShiftRoute.annotations | object | `{}` | Additional annotations for the OpenShift route resource |
+| openShiftRoute.enabled | bool | `false` | Enable OpenShift route creation for DApp |
+| openShiftRoute.host | string | `"dapp.k8s.orb.local"` | Hostname exposed via the OpenShift route |
+| openShiftRoute.path | string | `"/"` | HTTP path exposed via the OpenShift route |
+| openShiftRoute.port | object | `{"targetPort":"http"}` | Service port configuration for the route target |
+| openShiftRoute.port.targetPort | string | `"http"` | Service target port name (must exist on the DApp service) |
+| openShiftRoute.tls | string | `nil` | TLS configuration for the route (optional) Set to null for no TLS (HTTP only) Or specify configuration for TLS termination |
+| openShiftRoute.to | object | `{"weight":100}` | Primary service weight configuration |
+| openShiftRoute.to.weight | int | `100` | Weight assigned to the DApp service backend |
+| openShiftRoute.wildcardPolicy | string | `"None"` | Wildcard policy to apply to the route |
 | podAnnotations | object | `{}` |  |
 | podDisruptionBudget.enabled | bool | `false` |  |
 | podDisruptionBudget.minAvailable | int | `1` |  |

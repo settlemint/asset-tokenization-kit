@@ -265,7 +265,7 @@ blockscout:
       allowPrivilegeEscalation: false
       capabilities:
         drop:
-        - ALL
+          - ALL
       readOnlyRootFilesystem: false
     # Init container security context
     initContainerSecurityContext:
@@ -275,7 +275,7 @@ blockscout:
       allowPrivilegeEscalation: false
       capabilities:
         drop:
-        - ALL
+          - ALL
       readOnlyRootFilesystem: false
     # Add an extra init container to wait for PostgreSQL
     init:
@@ -327,7 +327,7 @@ blockscout:
       allowPrivilegeEscalation: false
       capabilities:
         drop:
-        - ALL
+          - ALL
       readOnlyRootFilesystem: false
 
 graph-node:
@@ -728,7 +728,9 @@ txsigner:
       repository: docker.io/busybox
   # Configuration for the txsigner subchart
   config:
-    mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
+    mnemonic:
+      "gate yellow grunt wrestle disease obtain mixed nature mansion tape
+      purchase awful"
     derivationPath: "m/44'/60'/0'/0/0"
   replicaCount: 1
   resources: {}
@@ -761,6 +763,18 @@ dapp:
         paths:
           - path: / # Adjust path if needed
             pathType: ImplementationSpecific
+  openShiftRoute:
+    enabled: false
+    annotations: {}
+    host: dapp.k8s.orb.local
+    path: /
+    wildcardPolicy: None
+    port:
+      targetPort: http
+    to:
+      weight: 100
+    alternateBackends: []
+    tls: null
   resources: {}
   secretEnv:
     BETTER_AUTH_URL: "https://dapp.k8s.orb.local"

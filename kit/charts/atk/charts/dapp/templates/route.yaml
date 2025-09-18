@@ -1,0 +1,60 @@
+{{- /* OpenShift Route for exposing the DApp service when enabled. */ -}}
+{{- $hasRouteAPI := .Capabilities.APIVersions.Has "route.openshift.io/v1" -}}
+{{- if and $hasRouteAPI .Values.openShiftRoute.enabled -}}
+{{- $routeValues := .Values.openShiftRoute -}}
+{{- $fullName := include "dapp.fullname" . -}}
+{{- $targetPort := "http" -}}
+{{- with $routeValues.port }}
+  {{- with .targetPort }}
+    {{- $targetPort = . -}}
+  {{- end }}
+{{- end }}
+{{- $weight := "" -}}
+{{- with $routeValues.to }}
+  {{- with .weight }}
+    {{- $weight = . -}}
+  {{- end }}
+{{- end }}
+{{- $wildcard := default "None" $routeValues.wildcardPolicy -}}
+{{- $baseAnnotations := dict -}}
+{{- if $routeValues.annotations }}
+  {{- $baseAnnotations = $routeValues.annotations -}}
+{{- end }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ $fullName }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "dapp.labels" . | nindent 4 }}
+  {{- if $baseAnnotations }}
+  annotations:
+    {{- toYaml $baseAnnotations | nindent 4 }}
+  {{- end }}
+spec:
+  to:
+    kind: Service
+    name: {{ $fullName }}
+    {{- if $weight }}
+    weight: {{ int $weight }}
+    {{- end }}
+  {{- with $routeValues.alternateBackends }}
+  alternateBackends:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  port:
+    targetPort: {{ $targetPort }}
+  {{- with $routeValues.host }}
+  host: {{ . | quote }}
+  {{- end }}
+  {{- with $routeValues.path }}
+  path: {{ . | quote }}
+  {{- end }}
+  {{- if $wildcard }}
+  wildcardPolicy: {{ $wildcard }}
+  {{- end }}
+  {{- with $routeValues.tls }}
+  tls:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
