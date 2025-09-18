@@ -5,7 +5,6 @@ import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
   DEFAULT_PINCODE,
-  getUserData,
   signInWithUser,
 } from "@test/fixtures/user";
 import { from } from "dnum";
@@ -18,11 +17,6 @@ describe("Token update collateral", () => {
   beforeAll(async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     adminClient = getOrpcClient(headers);
-
-    const adminData = await getUserData(DEFAULT_ADMIN);
-    if (!adminData.wallet) {
-      throw new Error("Default admin does not have a wallet");
-    }
 
     // First create a stablecoin to use as denomination asset
     const stablecoinData = {

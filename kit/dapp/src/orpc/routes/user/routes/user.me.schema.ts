@@ -148,10 +148,6 @@ export const UserMeSchema = z.object({
 export type CurrentUser = z.infer<typeof UserMeSchema>;
 
 /**
- * Extended user schema for list operations that includes identity information.
- */
-
-/**
  * TypeScript type derived from the UserSchema.
  *
  * Provides compile-time type safety for user objects throughout

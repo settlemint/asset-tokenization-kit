@@ -43,18 +43,18 @@ describe("Identity list (integration)", () => {
 
     await registerUserIdentity(adminClient, targetUserData.wallet);
 
-    const account = await adminClient.system.identity.read({
+    const identity = await adminClient.system.identity.read({
       wallet: targetUserData.wallet,
     });
 
-    if (!account?.id) {
+    if (!identity?.id) {
       throw new Error("Identity was not created for target user");
     }
 
-    targetIdentityAddress = account.id;
+    targetIdentityAddress = identity.id;
 
     await adminClient.system.identity.claims.issue({
-      targetIdentityAddress: account.id,
+      targetIdentityAddress: identity.id,
       claim: {
         topic: "knowYourCustomer",
         data: {
@@ -68,7 +68,7 @@ describe("Identity list (integration)", () => {
     });
 
     await issuerClient.system.identity.claims.issue({
-      targetIdentityAddress: account.id,
+      targetIdentityAddress: identity.id,
       claim: {
         topic: "collateral",
         data: {
