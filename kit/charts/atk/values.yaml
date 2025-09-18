@@ -10,12 +10,6 @@ global:
   networkPolicy:
     # Enable NetworkPolicies across all services
     enabled: false
-  # OpenShift compatibility settings
-  openshift:
-    # Enable OpenShift-specific security context configurations
-    enabled: false
-    # Default fsGroup for OpenShift (typically in the range 1000640000-1000649999)
-    fsGroup: 1000640000
   # Artifacts container configuration
   artifacts:
     # Image containing contract ABIs and genesis files
@@ -24,56 +18,40 @@ global:
       repository: settlemint/asset-tokenization-kit-artifacts
       tag: 2.0.0-main.91391
       pullPolicy: IfNotPresent
+
 network:
   enabled: true
   network-bootstrapper:
+    podSecurityContext:
+      fsGroup: 1000
+      fsGroupChangePolicy: Always
+      runAsGroup: 1000
+      runAsUser: 1000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      seccompProfile:
+        type: RuntimeDefault
     settings:
       chainId: "53771311147"
-besu-network:
-  enabled: false
-  # Besu network images
-  besu-genesis:
-    image:
-      repository: ghcr.io/settlemint/quorum-genesis-tool
-      tag: "sha-49c40f5"
-      pullPolicy: IfNotPresent
-    configServer:
-      image:
-        repository: docker.io/nginx
-        tag: "1.29.1-alpine"
-        pullPolicy: IfNotPresent
-    initJob:
-      resources:
-        limits:
-          cpu: 500m
-          memory: 512Mi
-        requests:
-          cpu: 150m
-          memory: 256Mi
-      copyArtifacts:
-        resources:
-          limits:
-            cpu: 200m
-            memory: 256Mi
-          requests:
-            cpu: 50m
-            memory: 128Mi
-    cleanupJob:
-      resources:
-        limits:
-          cpu: 250m
-          memory: 256Mi
-        requests:
-          cpu: 75m
-          memory: 128Mi
-    # Pod security context for genesis jobs
+  network-nodes:
     podSecurityContext:
       fsGroup: 1000
+      fsGroupChangePolicy: Always
+      runAsGroup: 1000
+      runAsUser: 1000
       runAsNonRoot: true
       seccompProfile:
         type: RuntimeDefault
-    # Container security context for genesis jobs
-    containerSecurityContext:
+    securityContext:
       runAsNonRoot: true
       runAsUser: 1000
       runAsGroup: 1000
@@ -83,177 +61,9 @@ besu-network:
         - ALL
       seccompProfile:
         type: RuntimeDefault
-    # Init container security context
-    initContainerSecurityContext:
-      runAsNonRoot: true
-      runAsUser: 1001
-      runAsGroup: 1001
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-        - ALL
-      seccompProfile:
-        type: RuntimeDefault
-    # Volume permissions init container security context (needs root to fix permissions)
-    volumePermissionsSecurityContext:
-      runAsUser: 0
-      runAsNonRoot: false  # This container needs root to fix permissions
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-        - ALL
-        add:
-        - CHOWN
-      seccompProfile:
-        type: RuntimeDefault
-  besu-node:
-    node:
-      image:
-        repository: docker.io/hyperledger/besu
-        tag: "25.8.0"
-        pullPolicy: IfNotPresent
-    tessera:
-      image:
-        repository: docker.io/quorumengineering/tessera
-        tag: "24.4"
-        pullPolicy: IfNotPresent
-    # Disable root-based volume permission fixer; OpenShift/SCC-compatible clusters
-    # enforce non-root pods, so we skip the helper init container entirely.
-    volumePermissionsFix: []
-    hooks:
-      image:
-        repository: ghcr.io/settlemint/quorum-genesis-tool
-        tag: "sha-49c40f5"
-        pullPolicy: IfNotPresent
-      preInstall:
-        resources:
-          limits:
-            cpu: 500m
-            memory: 512Mi
-          requests:
-            cpu: 150m
-            memory: 256Mi
-      preDelete:
-        resources:
-          limits:
-            cpu: 300m
-            memory: 256Mi
-          requests:
-            cpu: 100m
-            memory: 128Mi
-    initContainers:
-      testConnection:
-        image:
-          repository: docker.io/busybox
-          tag: "1.37"
-          pullPolicy: IfNotPresent
-      checkConnection:
-        image:
-          repository: docker.io/curlimages/curl
-          tag: "8.16.0"
-          pullPolicy: IfNotPresent
-      waitForGenesis:
-        resources:
-          limits:
-            cpu: 150m
-            memory: 128Mi
-          requests:
-            cpu: 25m
-            memory: 64Mi
-      volumePermissions:
-        resources:
-          limits:
-            cpu: 100m
-            memory: 64Mi
-          requests:
-            cpu: 20m
-            memory: 32Mi
-    # Pod security context for besu nodes
-    podSecurityContext:
-      fsGroup: 1000
-      runAsNonRoot: true
-      seccompProfile:
-        type: RuntimeDefault
-    # Container security context for besu nodes
-    containerSecurityContext:
-      runAsNonRoot: true
-      runAsUser: 1000
-      runAsGroup: 1000
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-        - ALL
-      seccompProfile:
-        type: RuntimeDefault
-    # Init container security context
-    initContainerSecurityContext:
-      runAsNonRoot: true
-      runAsUser: 1001
-      runAsGroup: 1001
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-        - ALL
-      seccompProfile:
-        type: RuntimeDefault
-    # Volume permissions init container security context (needs root to fix permissions)
-    volumePermissionsSecurityContext:
-      runAsUser: 0
-      runAsNonRoot: false  # This container needs root to fix permissions
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-        - ALL
-        add:
-        - CHOWN
-      seccompProfile:
-        type: RuntimeDefault
-  besu-validator-1:
-    enabled: true
-    storage:
-      sizeLimit: "5Gi"
-      pvcSizeLimit: "5Gi"
-    resources: {}
-    volumePermissionsFix: []
-  besu-validator-2:
-    enabled: false
-    storage:
-      sizeLimit: "5Gi"
-      pvcSizeLimit: "5Gi"
-    resources: {}
-    volumePermissionsFix: []
-  besu-validator-3:
-    enabled: false
-    storage:
-      sizeLimit: "5Gi"
-      pvcSizeLimit: "5Gi"
-    resources: {}
-    volumePermissionsFix: []
-  besu-validator-4:
-    enabled: false
-    storage:
-      sizeLimit: "5Gi"
-      pvcSizeLimit: "5Gi"
-    resources: {}
-    volumePermissionsFix: []
-  besu-rpc-1:
-    enabled: true
-    storage:
-      sizeLimit: "5Gi"
-      pvcSizeLimit: "5Gi"
-    resources: {}
-    volumePermissionsFix: []
-  besu-rpc-2:
-    enabled: false
-    storage:
-      sizeLimit: "5Gi"
-      pvcSizeLimit: "5Gi"
-    resources: {}
-    volumePermissionsFix: []
-  rawGenesisConfig:
-    blockchain:
-      nodes:
-        count: 1
+    persistence:
+      enabled: true
+      size: 20Gi
 
 erpc:
   enabled: true
@@ -262,6 +72,15 @@ erpc:
     repository: erpc/erpc
     tag: "0.0.56"
     pullPolicy: IfNotPresent
+  redis:
+    host: "redis"
+    port: 6379
+    username: "default"
+    password: "atk"
+    cacheDb: 0
+    sharedStateDb: 1
+    cacheQuery: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"
+    sharedStateQuery: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=20"
   # Init containers
   initContainers:
     waitforit:
@@ -319,38 +138,107 @@ erpc:
       httpPort: 4000
     projects:
       - id: settlemint
+        networks:
+          - architecture: evm
+            evm:
+              chainId: 53771311147
+              integrity:
+                enforceHighestBlock: true
+                enforceGetLogsBlockRange: true
+            directiveDefaults:
+              retryEmpty: true
+            failsafe:
+              - matchMethod: "eth_getLogs"
+                timeout:
+                  duration: 45s
+                retry:
+                  maxAttempts: 3
+                  delay: 500ms
+                  backoffFactor: 2
+                  backoffMaxDelay: 10s
+                  jitter: 300ms
+                hedge:
+                  quantile: 0.9
+                  minDelay: 200ms
+                  maxDelay: 4s
+                  maxCount: 1
+              - matchMethod: "trace_*|debug_*|arbtrace_*"
+                timeout:
+                  duration: 90s
+                retry:
+                  maxAttempts: 1
+              - matchMethod: "eth_getBlock*|eth_getTransaction*"
+                timeout:
+                  duration: 6s
+                retry:
+                  maxAttempts: 2
+                  delay: 200ms
+                  backoffFactor: 1.5
+                  backoffMaxDelay: 3s
+                  jitter: 150ms
+              - matchMethod: "*"
+                matchFinality:
+                  - unfinalized
+                  - realtime
+                timeout:
+                  duration: 4s
+                retry:
+                  maxAttempts: 2
+                  delay: 150ms
+                  jitter: 150ms
+                hedge:
+                  delay: 250ms
+                  maxCount: 1
+              - matchMethod: "*"
+                matchFinality:
+                  - finalized
+                timeout:
+                  duration: 20s
+                retry:
+                  maxAttempts: 4
+                  delay: 400ms
+                  backoffFactor: 1.8
+                  backoffMaxDelay: 8s
+                  jitter: 250ms
+              - matchMethod: "*"
+                timeout:
+                  duration: 12s
+                retry:
+                  maxAttempts: 3
+                  delay: 300ms
+                  backoffFactor: 1.4
+                  backoffMaxDelay: 5s
+                  jitter: 200ms
+                hedge:
+                  quantile: 0.95
+                  minDelay: 120ms
+                  maxDelay: 2s
+                  maxCount: 2
         upstreams:
           - id: besu-node-rpc-0
             endpoint: http://besu-node-rpc-0.besu-node-rpc:8545
             evm:
               chainId: 53771311147
             failsafe:
-              timeout:
-                duration: 30s
+              - matchMethod: "*"
+                circuitBreaker:
+                  failureThresholdCount: 40
+                  failureThresholdCapacity: 80
+                  halfOpenAfter: 120s
+                  successThresholdCount: 3
+                  successThresholdCapacity: 10
           - id: besu-node-rpc-1
             endpoint: http://besu-node-rpc-1.besu-node-rpc:8545
             evm:
               chainId: 53771311147
             failsafe:
-              timeout:
-                duration: 30s
-    database:
-      evmJsonRpcCache:
-        # Define one or more storage connectors with unique IDs useful in policies
-        connectors:
-          - id: redis-cache
-            driver: redis # Refer to "redis" driver docs below
-            redis:
-              addr: "redis:6379"
-              username: "default"
-              password: "atk"
-              db: 0
-              connPoolSize: 128
-        policies:
-          - network: "*"
-            method: "*"
-            finality: finalized
-            connector: redis-cache
+              - matchMethod: "*"
+                circuitBreaker:
+                  failureThresholdCount: 40
+                  failureThresholdCapacity: 80
+                  halfOpenAfter: 120s
+                  successThresholdCount: 3
+                  successThresholdCapacity: 10
   podAnnotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "4001"
@@ -359,48 +247,115 @@ erpc:
 
 blockscout:
   enabled: true
-  blockscout-stack:
-    podAnnotations:
-      prometheus.io/scrape: "true"
-      prometheus.io/port: "4000"
-      prometheus.io/path: "/metrics"
-    blockscout:
-      image:
-        repository: ghcr.io/blockscout/blockscout
-        tag: "9.0.2"
-        pullPolicy: IfNotPresent
-      # Add an extra init container to wait for PostgreSQL
-      init:
-        enabled: true
-        command:
-          - /bin/sh
-        args:
-          - -c
-          - | # Using YAML multiline string for clarity
-            echo "Waiting for postgresql:5432..."
-            while ! nc -z postgresql 5432; do
-              sleep 2;
-            done;
-            echo "PostgreSQL is ready!"
-            # Original command:
-            bin/blockscout eval "Elixir.Explorer.ReleaseTasks.create_and_migrate()"
-      ingress:
-        hostname: explorer.k8s.orb.local
-      env:
-        DATABASE_URL: "postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"
-        API_URL: https://explorer.k8s.orb.local
-        WEBAPP_URL: https://explorer.k8s.orb.local
-      resources: {}
-    frontend:
-      ingress:
-        hostname: explorer.k8s.orb.local
-      image:
-        repository: ghcr.io/blockscout/frontend
-        tag: "v2.3.3"
-        pullPolicy: IfNotPresent
+  postgresql:
+    host: "postgresql"
+    port: 5432
+    database: "blockscout"
+    username: "blockscout"
+    password: "atk"
+    sslMode: "disable"
+    endpoint: "postgresql:5432"
+    url: "postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"
+  # Direct configuration for local blockscout chart
+  fullnameOverride: blockscout
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "4000"
+    prometheus.io/path: "/metrics"
+  blockscout:
+    image:
+      repository: ghcr.io/blockscout/blockscout
+      tag: "9.0.2"
+      pullPolicy: IfNotPresent
+    # Pod security context
+    podSecurityContext:
+      fsGroup: 1001
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+    # Container security context
+    containerSecurityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false
+    # Init container security context
+    initContainerSecurityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false
+    # Add an extra init container to wait for PostgreSQL
+    init:
+      enabled: true
+      command:
+        - /bin/sh
+      args:
+        - -c
+        - | # Using YAML multiline string for clarity
+          echo "Waiting for postgresql:5432..."
+          while ! nc -z postgresql 5432; do
+            sleep 2;
+          done;
+          echo "PostgreSQL is ready!"
+          # Original command:
+          bin/blockscout eval "Elixir.Explorer.ReleaseTasks.create_and_migrate()"
+    ingress:
+      enabled: true
+      className: "atk-nginx"
+      hostname: explorer.k8s.orb.local
+    env:
+      DATABASE_URL: "postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"
+      ETHEREUM_JSONRPC_HTTP_URL: http://erpc:4000/settlemint/evm/53771311147
+      ETHEREUM_JSONRPC_TRACE_URL: http://erpc:4000/settlemint/evm/53771311147
+      API_URL: https://explorer.k8s.orb.local
+      WEBAPP_URL: https://explorer.k8s.orb.local
+    resources: {}
+  frontend:
+    enabled: true
+    ingress:
+      enabled: true
+      className: "atk-nginx"
+      hostname: explorer.k8s.orb.local
+    image:
+      repository: ghcr.io/blockscout/frontend
+      tag: "v2.3.3"
+      pullPolicy: IfNotPresent
+    # Pod security context
+    podSecurityContext:
+      fsGroup: 1001
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+    # Container security context
+    containerSecurityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false
 
 graph-node:
   enabled: true
+  postgresql:
+    host: "postgresql"
+    port: 5432
+    database: "thegraph"
+    username: "thegraph"
+    password: "atk"
+    endpoint: "postgresql:5432"
+    url: "postgresql://thegraph:atk@postgresql:5432/thegraph?sslmode=disable"
   image:
     repository: docker.io/graphprotocol/graph-node
     tag: "v0.40.2"
@@ -480,11 +435,11 @@ graph-node:
             pathType: ImplementationSpecific
     tls: []
   env:
-    PRIMARY_SUBGRAPH_DATA_PGHOST: postgresql
+    PRIMARY_SUBGRAPH_DATA_PGHOST: "postgresql"
     PRIMARY_SUBGRAPH_DATA_PGPORT: 5432
-    PRIMARY_SUBGRAPH_DATA_PGDATABASE: thegraph
-    PRIMARY_SUBGRAPH_DATA_PGUSER: thegraph
-    PRIMARY_SUBGRAPH_DATA_PGPASSWORD: atk
+    PRIMARY_SUBGRAPH_DATA_PGDATABASE: "thegraph"
+    PRIMARY_SUBGRAPH_DATA_PGUSER: "thegraph"
+    PRIMARY_SUBGRAPH_DATA_PGPASSWORD: "atk"
   postgresReadinessCheck:
     enabled: true
     image: docker.io/postgres:17.6-alpine
@@ -504,6 +459,30 @@ graph-node:
 
 hasura:
   enabled: true
+  postgresql:
+    host: "postgresql"
+    port: 5432
+    database: "hasura"
+    username: "hasura"
+    password: "atk"
+    sslMode: "disable"
+    endpoint: "postgresql:5432"
+    url: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
+  redis:
+    primary:
+      host: "redis"
+      port: 6379
+      username: "default"
+      password: "atk"
+      db: 2
+      url: "redis://default:atk@redis:6379/2"
+    rateLimit:
+      host: "redis"
+      port: 6379
+      username: "default"
+      password: "atk"
+      db: 3
+      url: "redis://default:atk@redis:6379/3"
   graphql-engine:
     replicas: 1
     ingress:
@@ -539,8 +518,8 @@ hasura:
       metadataDbUrl: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
       extraSecrets:
         DEFAULT_DB_URL: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
-      redisUrl: "redis://default:atk@redis:6379/0"
-      rateLimitRedisUrl: "redis://default:atk@redis:6379/0"
+      redisUrl: "redis://default:atk@redis:6379/2"
+      rateLimitRedisUrl: "redis://default:atk@redis:6379/3"
 
 portal:
   enabled: true
@@ -621,13 +600,23 @@ portal:
         seccompProfile:
           type: RuntimeDefault
   config:
+    postgresqlConnection:
+      host: "postgresql"
+      port: 5432
+      database: "portal"
+      username: "portal"
+      password: "atk"
+      sslMode: "disable"
+      endpoint: "postgresql:5432"
+      url: "postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"
     postgresql: "postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"
     redis:
       host: "redis"
       port: 6379
       username: "default"
       password: "atk"
-      db: 0
+      db: 4
+      url: "redis://default:atk@redis:6379/4"
   ingress:
     hostname: portal.k8s.orb.local
 
@@ -915,6 +904,15 @@ txsigner:
       "gate yellow grunt wrestle disease obtain mixed nature mansion tape
       purchase awful"
     derivationPath: "m/44'/60'/0'/0/0"
+  postgresqlConnection:
+    host: "postgresql"
+    port: 5432
+    database: "txsigner"
+    username: "txsigner"
+    password: "atk"
+    sslMode: "disable"
+    endpoint: "postgresql:5432"
+    url: "postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"
   postgresql: "postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"
   replicaCount: 1
   resources: {}
@@ -998,7 +996,7 @@ dapp:
         - name: graph-node-tcp # Renamed to distinguish from graphQLCheck
           endpoint: "graph-node-combined:8020" # Status API port (TCP check)
         - name: blockscout # Add Blockscout if needed, determine correct service/port
-          endpoint: "blockscout-frontend-svc:80"
+          endpoint: "blockscout-frontend:80"
 
     # Specific check for GraphQL endpoint readiness (e.g., The Graph subgraph)
     graphQLCheck:

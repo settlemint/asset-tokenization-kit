@@ -1,8 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { authRouter } from "@/orpc/procedures/auth.router";
+import { systemRouter } from "@/orpc/procedures/system.router";
 import {
   IdentityListInputSchema,
   IdentityListOutputSchema,
@@ -33,9 +31,6 @@ const IDENTITY_LIST_QUERY = theGraphGraphql(`
         isContract
         contractName
       }
-      registryStorage {
-        id
-      }
       deployedInTransaction
       claims {
         id
@@ -61,7 +56,6 @@ const IdentityListGraphSchema = z.object({
             contractName: z.string().nullish(),
           })
           .nullish(),
-        registryStorage: z.object({ id: z.string() }).nullish(),
         deployedInTransaction: z.string().nullish(),
         claims: z
           .array(
@@ -89,9 +83,7 @@ const resolveOrderBy = (orderBy: string | undefined): IdentityOrderField => {
   return "id";
 };
 
-export const identityList = authRouter.system.identity.list
-  .use(systemMiddleware)
-  .use(theGraphMiddleware)
+export const identityList = systemRouter.system.identity.list
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.identityList,
@@ -102,6 +94,7 @@ export const identityList = authRouter.system.identity.list
   .handler(async ({ input, context }) => {
     const parsedInput = IdentityListInputSchema.parse(input);
     const { limit, offset, orderDirection, orderBy, filters } = parsedInput;
+    const { system } = context;
 
     const first = limit ?? 50;
     const skip = offset;
@@ -109,28 +102,24 @@ export const identityList = authRouter.system.identity.list
     const graphOrderDirection: "asc" | "desc" =
       orderDirection === "desc" ? "desc" : "asc";
 
-    const whereFilters: Record<string, unknown> = {};
+    type IdentityListWhere = VariablesOf<typeof IDENTITY_LIST_QUERY>["where"];
+    const whereFilters: IdentityListWhere = {
+      identityFactory: system.identityFactory.id,
+    };
+
     if (filters?.accountId) {
       whereFilters.account = filters.accountId.toLowerCase();
     }
     if (typeof filters?.isContract === "boolean") {
       whereFilters.isContract = filters.isContract;
     }
-    if (filters?.registryStorageId) {
-      whereFilters.registryStorage = filters.registryStorageId.toLowerCase();
-    }
-
-    type IdentityListWhere = VariablesOf<typeof IDENTITY_LIST_QUERY>["where"];
 
     const variables: VariablesOf<typeof IDENTITY_LIST_QUERY> = {
       first,
       skip,
       orderBy: graphOrderBy,
       orderDirection: graphOrderDirection,
-      where:
-        Object.keys(whereFilters).length > 0
-          ? (whereFilters as IdentityListWhere)
-          : undefined,
+      where: Object.keys(whereFilters).length > 0 ? whereFilters : undefined,
     };
 
     const response = await context.theGraphClient?.query(IDENTITY_LIST_QUERY, {
@@ -163,7 +152,6 @@ export const identityList = authRouter.system.identity.list
         claimsCount: claims.length,
         activeClaimsCount,
         revokedClaimsCount,
-        registryStorageId: identity.registryStorage?.id,
         deployedInTransaction: identity.deployedInTransaction ?? "",
       };
     });

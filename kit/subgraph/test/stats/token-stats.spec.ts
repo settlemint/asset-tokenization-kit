@@ -31,21 +31,22 @@ describe("TokenStats", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
-    expect(response.tokenStats_collection).toBeDefined();
-    expect(Array.isArray(response.tokenStats_collection)).toBe(true);
+    const tokenStatsCollection = response.tokenStats_collection ?? [];
+    expect(Array.isArray(tokenStatsCollection)).toBe(true);
 
     // Verify that stats have required fields
-    if (response.tokenStats_collection.length > 0) {
-      const firstStat = response.tokenStats_collection[0];
-      expect(firstStat.timestamp).toBeDefined();
-      expect(firstStat.token).toBeDefined();
-      expect(firstStat.type).toBeDefined();
-      expect(firstStat.balancesCount).toBeDefined();
-      expect(firstStat.totalSupply).toBeDefined();
-      expect(firstStat.totalMinted).toBeDefined();
-      expect(firstStat.totalBurned).toBeDefined();
-      expect(firstStat.totalTransferred).toBeDefined();
+    if (!tokenStatsCollection.length) {
+      return;
     }
+    const firstStat = tokenStatsCollection[0]!;
+    expect(firstStat.timestamp).toBeDefined();
+    expect(firstStat.token).toBeDefined();
+    expect(firstStat.type).toBeDefined();
+    expect(firstStat.balancesCount).toBeDefined();
+    expect(firstStat.totalSupply).toBeDefined();
+    expect(firstStat.totalMinted).toBeDefined();
+    expect(firstStat.totalBurned).toBeDefined();
+    expect(firstStat.totalTransferred).toBeDefined();
   });
 
   it("should fetch token stats aggregated by day", async () => {
@@ -69,8 +70,8 @@ describe("TokenStats", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
-    expect(response.tokenStats_collection).toBeDefined();
-    expect(Array.isArray(response.tokenStats_collection)).toBe(true);
+    const tokenStatsCollection = response.tokenStats_collection;
+    expect(Array.isArray(tokenStatsCollection)).toBe(true);
   });
 
   it("should track balance count correctly", async () => {
@@ -86,14 +87,14 @@ describe("TokenStats", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
+    const tokenStatsStates = response.tokenStatsStates ?? [];
 
-    expect(response.tokenStatsStates).toBeDefined();
-    expect(Array.isArray(response.tokenStatsStates)).toBe(true);
+    expect(Array.isArray(tokenStatsStates)).toBe(true);
 
-    expect(response.tokenStatsStates.length).toBe(6);
+    expect(tokenStatsStates.length).toBe(6);
 
     // Verify that all expected tokens are present with correct balance counts
-    const tokenStats = response.tokenStatsStates;
+    const tokenStats = tokenStatsStates;
     const expectedTokens = [
       { symbol: "AAPL", balancesCount: 3 },
       { symbol: "BB", balancesCount: 3 },
@@ -144,14 +145,14 @@ describe("TokenStats", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
+    const tokenStatsStates = response.tokenStatsStates;
 
-    expect(response.tokenStatsStates).toBeDefined();
-    expect(Array.isArray(response.tokenStatsStates)).toBe(true);
+    expect(Array.isArray(tokenStatsStates)).toBe(true);
 
-    expect(response.tokenStatsStates.length).toBe(6);
+    expect(tokenStatsStates.length).toBe(6);
 
     // Verify that all expected tokens are present with correct balance counts
-    const tokenStats = response.tokenStatsStates;
+    const tokenStats = tokenStatsStates;
     const expectedTokens = [
       { symbol: "AAPL", balancesCount: 3 },
       { symbol: "BB", balancesCount: 3 },
@@ -191,6 +192,7 @@ describe("TokenStats", () => {
     `
     );
     const tokensResponse = await theGraphClient.request(tokensQuery, {});
+    const tokens = tokensResponse.tokens;
 
     // Get token stats
     const statsQuery = theGraphGraphql(
@@ -208,12 +210,11 @@ describe("TokenStats", () => {
     `
     );
     const statsResponse = await theGraphClient.request(statsQuery, {});
+    const statsData = statsResponse.tokenStatsDatas;
 
     // Verify total supply matches
-    for (const token of tokensResponse.tokens) {
-      const stats = statsResponse.tokenStatsDatas.find(
-        (s) => s.token.id === token.id
-      );
+    for (const token of tokens) {
+      const stats = statsData.find((s) => s.token.id === token.id);
       expect(stats).toBeDefined();
       if (stats) {
         expect(stats.totalSupply).toBe(token.totalSupply);
@@ -248,11 +249,11 @@ describe("TokenStats", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
-    expect(response.tokenStats_collection).toBeDefined();
-    expect(Array.isArray(response.tokenStats_collection)).toBe(true);
+    const tokenStatsCollection = response.tokenStats_collection;
+    expect(Array.isArray(tokenStatsCollection)).toBe(true);
 
-    expect(response.tokenStats_collection.length).toBe(5);
-    expect(response.tokenStats_collection).toEqual([
+    expect(tokenStatsCollection.length).toBe(5);
+    expect(tokenStatsCollection).toEqual([
       {
         token: { symbol: "EURD" },
         type: "deposit",

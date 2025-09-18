@@ -13,10 +13,9 @@ export function handleIdentityCreated(event: IdentityCreated): void {
     identity.deployedInTransaction = event.transaction.hash;
   }
   const account = fetchAccount(event.params.wallet);
-  account.identity = identity.id;
-  account.save();
   identity.account = account.id;
   identity.isContract = false;
+  identity.identityFactory = event.address;
   identity.save();
   // Record the event that created the identity for the account
   // needs to be after creating the account as we map the involved accounts in the event
@@ -31,11 +30,11 @@ export function handleContractIdentityCreated(
     identity.deployedInTransaction = event.transaction.hash;
   }
   const account = fetchAccount(event.params.contractAddress);
-  account.identity = identity.id;
-  account.save();
   identity.account = account.id;
   identity.isContract = true;
+  identity.identityFactory = event.address;
   identity.save();
+
   // Record the event that created the identity for the account
   // needs to be after creating the account as we map the involved accounts in the event
   fetchEvent(event, "ContractIdentityCreated");

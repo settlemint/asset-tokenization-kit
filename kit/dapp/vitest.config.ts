@@ -11,9 +11,9 @@ export default defineConfig({
     pool: "forks",
     poolOptions: {
       forks: {
-        // Run max 16 tests in parallell
-        // WHY? Because postgress only allows a limited amount of connections
-        // As we use a single database for all tests and underlying services we need to limit the number of forks
+        // Limit the number of parallel test workers to avoid exceeding the PostgreSQL
+        // connection limit. Integration tests spin up services that connect to the
+        // database, and running too many in parallel can exhaust the connection pool.
         maxForks: 16,
       },
     },
@@ -27,13 +27,15 @@ export default defineConfig({
     coverage: {
       all: true,
       provider: "v8",
-      reporter: ["text", "json", "json-summary", "lcov"],
+      reporter: ["text-summary", "json", "json-summary", "lcov"],
       reportOnFailure: true,
       reportsDirectory: "./coverage",
       enabled: process.env.CI ? true : false,
+      include: ["src/**/*.{ts,tsx,js,jsx}", "src/**/*.mjs"],
       exclude: [
         "**/node_modules/**",
         "**/dist/**",
+        "**/.next/**",
         "**/.nitro/**",
         "**/public/**",
         "**/src/**/*.gen.ts",

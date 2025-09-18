@@ -55,7 +55,7 @@ describe("System Addons", () => {
     );
     const response = await theGraphClient.request(query);
     expect(response.systems.length).toBe(1);
-    expect(response.systems[0].systemAddonRegistry?.systemAddons.length).toBe(
+    expect(response.systems[0]?.systemAddonRegistry?.systemAddons.length).toBe(
       5
     );
     expect(response.systems).toEqual([

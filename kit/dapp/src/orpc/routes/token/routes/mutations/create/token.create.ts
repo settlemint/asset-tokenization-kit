@@ -2,7 +2,6 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { ClaimTopic } from "@/orpc/helpers/claims/create-claim";
 import { issueClaim } from "@/orpc/helpers/claims/issue-claim";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { userIdentityMiddleware } from "@/orpc/middlewares/system/user-identity.middleware";
 import type { baseRouter } from "@/orpc/procedures/base.router";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
@@ -28,7 +27,7 @@ const logger = createLogger();
  * Includes accessControl field for role management.
  */
 const FIND_TOKEN_FOR_TRANSACTION_QUERY = theGraphGraphql(`
-  query findTokenForTransaction($deployedInTransaction: Bytes) {
+  query findTokenForTransaction($deployedInTransaction: Bytes, $identityFactory: String) {
     tokens(where: {deployedInTransaction: $deployedInTransaction}) {
       id
       name
@@ -36,7 +35,7 @@ const FIND_TOKEN_FOR_TRANSACTION_QUERY = theGraphGraphql(`
       decimals
       type
       account {
-        identity {
+        identities(where: {identityFactory: $identityFactory}, first: 1) {
           id
         }
       }
@@ -54,11 +53,11 @@ const TokenQueryResultSchema = z.object({
       decimals: z.number(),
       type: z.string(),
       account: z.object({
-        identity: z
-          .object({
+        identities: z.array(
+          z.object({
             id: ethereumAddress,
           })
-          .optional(),
+        ),
       }),
     })
   ),
@@ -73,7 +72,6 @@ export const create = systemRouter.token.create
       },
     })
   )
-  .use(userIdentityMiddleware)
   .handler(async ({ input, context, errors }) => {
     const tokenFactory = getTokenFactory(context, input.type);
     if (!tokenFactory) {
@@ -106,6 +104,7 @@ export const create = systemRouter.token.create
     const queryVariables: VariablesOf<typeof FIND_TOKEN_FOR_TRANSACTION_QUERY> =
       {
         deployedInTransaction: transactionHash,
+        identityFactory: context.system.identityFactory.id,
       };
 
     const result = await context.theGraphClient.query(
@@ -155,7 +154,7 @@ async function issueClaims(
   const sender = context.auth.user;
 
   // Get the token's identity contract address from the graph data
-  const tokenOnchainID = token.account.identity?.id;
+  const tokenOnchainID = token.account.identities[0]?.id;
 
   if (!tokenOnchainID) {
     const errorMessage = `Token at address ${token.id} does not have an associated identity contract`;
@@ -165,7 +164,7 @@ async function issueClaims(
     });
   }
 
-  const userIdentity = context.userIdentity?.address;
+  const userIdentity = context.system.userIdentity?.address;
   if (!userIdentity) {
     const errorMessage = `Account at address ${context.auth.user.wallet} does not have an associated identity contract`;
     logger.error(errorMessage);

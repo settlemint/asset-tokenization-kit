@@ -91,9 +91,9 @@ export function useOnboardingNavigation() {
               queryKey: orpc.system.read.key(),
               refetchType: "all",
             }),
-            // Invalidate account data for identity
+            // Invalidate identity data
             queryClient.invalidateQueries({
-              queryKey: orpc.account.me.key(),
+              queryKey: orpc.system.identity.me.key(),
               refetchType: "all",
             }),
           ]);

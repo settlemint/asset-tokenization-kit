@@ -2,9 +2,7 @@ import { kycProfiles, user } from "@/lib/db/schema";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { authRouter } from "@/orpc/procedures/auth.router";
+import { systemRouter } from "@/orpc/procedures/system.router";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import {
   buildUserWithIdentity,
@@ -23,45 +21,56 @@ import {
 } from "drizzle-orm";
 import { z } from "zod";
 
-// GraphQL query to fetch multiple accounts by wallet addresses
-const READ_ACCOUNTS_QUERY = theGraphGraphql(`
-  query ReadAccountsQuery($walletAddresses: [Bytes!]!) {
-    accounts(where: { id_in: $walletAddresses }) {
+// GraphQL query to fetch multiple identities by wallet addresses
+const READ_IDENTITIES_QUERY = theGraphGraphql(`
+  query ReadIdentitiesQuery($walletAddresses: [String!]!, $identityFactory: String!, $registryStorage: String!) {
+    identities(where: {
+      account_in: $walletAddresses,
+      identityFactory: $identityFactory
+    }) {
       id
-      country
-      identity {
+      account {
         id
-        claims {
-          id
-          name
-          revoked
-          issuer { id }
-          values { key value }
-        }
+      }
+      claims {
+        id
+        name
+        revoked
+        issuer { id }
+        values { key value }
+      }
+      registered(where: { registryStorage: $registryStorage }) {
+        id
+        country
       }
     }
   }
 `);
 
-// Response schema for accounts query
-const AccountsResponseSchema = z.object({
-  accounts: z.array(
+// Response schema for identities query
+const IdentitiesResponseSchema = z.object({
+  identities: z.array(
     z.object({
       id: z.string(),
-      country: z.number().nullable().optional(),
-      identity: z
-        .object({
+      account: z.object({
+        id: z.string(),
+      }),
+      claims: z.array(
+        z.object({
           id: z.string(),
-          claims: z.array(
-            z.object({
-              id: z.string(),
-              name: z.string(),
-              revoked: z.boolean(),
-              issuer: z.object({ id: ethereumAddress }),
-              values: z.array(z.object({ key: z.string(), value: z.string() })),
-            })
-          ),
+          name: z.string(),
+          revoked: z.boolean(),
+          issuer: z.object({ id: ethereumAddress }),
+          values: z.array(z.object({ key: z.string(), value: z.string() })),
         })
+      ),
+      registered: z
+        .array(
+          z.object({
+            id: z.string(),
+            country: z.number(),
+          })
+        )
         .nullable()
         .optional(),
     })
@@ -143,9 +152,7 @@ type QueryResultRow = {
  * - **Large Datasets**: Handles pagination for thousands of users
  * - **Performance**: Slower than user.search due to TheGraph integration
  */
-export const list = authRouter.user.list
-  .use(systemMiddleware)
-  .use(theGraphMiddleware)
+export const list = systemRouter.user.list
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.userList,
@@ -239,19 +246,29 @@ export const list = authRouter.user.list
     // - Identity managers to see all claims for full system oversight
     // - KYC/AML issuers to see only relevant claims for their workflows
     // - Clean, role-appropriate user interfaces without information overload
-    let accountsData: z.infer<typeof AccountsResponseSchema> = { accounts: [] };
+    let identitiesData: z.infer<typeof IdentitiesResponseSchema> = {
+      identities: [],
+    };
     if (walletAddresses.length > 0) {
-      accountsData = await context.theGraphClient.query(READ_ACCOUNTS_QUERY, {
-        input: { walletAddresses },
-        output: AccountsResponseSchema,
-      });
+      identitiesData = await context.theGraphClient.query(
+        READ_IDENTITIES_QUERY,
+        {
+          input: {
+            walletAddresses,
+            identityFactory: context.system.identityFactory.id.toLowerCase(),
+            registryStorage:
+              context.system.identityRegistryStorage.id.toLowerCase(),
+          },
+          output: IdentitiesResponseSchema,
+        }
+      );
     }
 
-    // Create a map for quick account lookups
-    const accountsMap = new Map(
-      accountsData.accounts.map((account) => [
-        account.id.toLowerCase(),
-        account,
+    // Create a map for quick identity lookups by account address
+    const identitiesMap = new Map(
+      identitiesData.identities.map((identity) => [
+        identity.account.id.toLowerCase(),
+        identity,
       ])
     );
 
@@ -268,16 +285,16 @@ export const list = authRouter.user.list
         });
       }
 
-      // Look up account data for this user
-      const account = accountsMap.get(u.wallet.toLowerCase());
-      const identity = account?.identity;
+      // Look up identity data for this user
+      const identity = identitiesMap.get(u.wallet.toLowerCase());
+      const registeredEntry = identity?.registered?.[0];
 
       return buildUserWithIdentity({
         userData: u,
         kyc,
         identity: identity?.id,
         claims: identity?.claims ?? [],
-        isRegistered: !!identity,
+        isRegistered: !!registeredEntry,
         context,
       });
     });

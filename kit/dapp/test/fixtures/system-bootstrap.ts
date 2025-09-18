@@ -227,8 +227,8 @@ export async function setupDefaultAdminRoles(orpClient: OrpcClient) {
 export async function setupTrustedClaimIssuers(orpClient: OrpcClient) {
   const topics = await orpClient.system.claimTopics.topicList({});
   const trustedIssuers = await orpClient.system.trustedIssuers.list({});
-  const adminAccount = await orpClient.account.me({});
-  if (!trustedIssuers.some((t) => t.id === adminAccount?.identity)) {
+  const adminIdentity = await orpClient.system.identity.me({});
+  if (!trustedIssuers.some((t) => t.id === adminIdentity?.id)) {
     logger.info("Making admin a trusted issuer of all topics");
     // Make admin a trusted issuer of all topics
     await orpClient.system.trustedIssuers.create({
@@ -236,13 +236,13 @@ export async function setupTrustedClaimIssuers(orpClient: OrpcClient) {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
       },
-      issuerAddress: adminAccount?.identity ?? "",
+      issuerAddress: adminIdentity?.id ?? "",
       claimTopicIds: topics.map((t) => t.topicId),
     });
   }
   const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
-  const issuerAccount = await issuerOrpcClient.account.me({});
-  if (!trustedIssuers.some((t) => t.id === issuerAccount?.identity)) {
+  const issuerIdentity = await issuerOrpcClient.system.identity.me({});
+  if (!trustedIssuers.some((t) => t.id === issuerIdentity?.id)) {
     logger.info("Making issuer a trusted issuer of asset related topics");
     // Make issuer a trusted issuer of asset related topics
     await orpClient.system.trustedIssuers.create({
@@ -250,7 +250,7 @@ export async function setupTrustedClaimIssuers(orpClient: OrpcClient) {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
       },
-      issuerAddress: issuerAccount?.identity ?? "",
+      issuerAddress: issuerIdentity?.id ?? "",
       claimTopicIds: topics
         .filter((topic) =>
           ["collateral", "assetClassification", "basePrice", "isin"].includes(
