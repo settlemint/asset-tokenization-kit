@@ -7,7 +7,7 @@ dependencies:
   version: '*'
 - name: network
   repository: oci://ghcr.io/settlemint/network-bootstrapper
-  version: 1.0.16
+  version: 1.0.18
 - name: erpc
   repository: ""
   version: '*'
@@ -29,5 +29,5 @@ dependencies:
 - name: dapp
   repository: ""
   version: '*'
-digest: sha256:f5bd55be19c1372988d8f5f30cf4169aadf1119a8651f6f7781dc9a2226367fb
-generated: "2025-09-18T17:08:29.299172+02:00"
+digest: sha256:c8ed6f658f22f5cb7fbdebd6428fa0705da3733ac7a4553d4af9dbac3473066a
+generated: "2025-09-18T18:45:38.580338+02:00"

@@ -1,74 +1,110 @@
 # Default values for postgresql chart
 # This is a YAML-formatted file.
 
-# Image configuration
+# -- (object) Image configuration
 image:
+  # -- (string) Image registry
   registry: docker.io
+  # -- (string) Image repository
   repository: postgres
+  # -- (string) Image tag
   tag: "17.6-alpine"
+  # -- (string) Image pull policy
   pullPolicy: IfNotPresent
 
-# PostgreSQL configuration
+# -- (object) PostgreSQL configuration
 postgresql:
-  # Default superuser
+  # -- (string) Default superuser username
   username: postgres
+  # -- (string) Default superuser password
   password: atk
+  # -- (string) Default database name
   database: postgres
 
-# Resource configuration
+# -- (object) Resource configuration
 resources:
+  # -- (object) Resource requests
   requests:
+    # -- (string) Memory request
     memory: "256Mi"
+    # -- (string) CPU request
     cpu: "100m"
+  # -- (object) Resource limits
   limits:
+    # -- (string) Memory limit
     memory: "1Gi"
+    # -- (string) CPU limit
     cpu: "500m"
 
-# Persistence configuration
+# -- (object) Persistence configuration
 persistence:
+  # -- (bool) Enable persistence
   enabled: true
+  # -- (string) Storage class
   storageClass: ""
+  # -- (list) Access modes
   accessModes:
     - ReadWriteOnce
+  # -- (string) Storage size
   size: 8Gi
 
-# Service configuration
+# -- (object) Service configuration
 service:
+  # -- (string) Service type
   type: ClusterIP
+  # -- (int) Service port
   port: 5432
+  # -- (int) Target port
   targetPort: 5432
 
-# Security context
+# -- (object) Pod security context
 podSecurityContext:
+  # -- (int) File system group
   fsGroup: 999
+  # -- (bool) Run as non-root
   runAsNonRoot: true
+  # -- (object) Seccomp profile
   seccompProfile:
     type: RuntimeDefault
 
+# -- (object) Container security context
 securityContext:
+  # -- (int) Run as user
   runAsUser: 999
+  # -- (int) Run as group
   runAsGroup: 999
+  # -- (bool) Run as non-root
   runAsNonRoot: true
+  # -- (bool) Allow privilege escalation
   allowPrivilegeEscalation: false
+  # -- (object) Security capabilities
   capabilities:
+    # -- (list) Capabilities to drop
     drop:
       - ALL
+  # -- (object) Seccomp profile
   seccompProfile:
     type: RuntimeDefault
 
-# Pod disruption budget
+# -- Pod disruption budget configuration (object)
 podDisruptionBudget:
+  # -- Enable pod disruption budget (bool)
   enabled: false
+  # -- Minimum number of available pods (int)
   minAvailable: 1
 
-# Node selector and affinity
+# -- Node labels for pod assignment (object)
 nodeSelector: {}
+# -- Tolerations for pod assignment (list)
 tolerations: []
+# -- Affinity for pod assignment (object)
 affinity: {}
 
-# Init databases and users
+# -- Database initialization configuration (object)
 initdb:
+  # -- (object) Database initialization scripts
   scripts:
+    # -- (string) SQL script to create databases and users for all ATK services
     create_databases.sql: |
       -- Create databases and users for all ATK services
       CREATE DATABASE blockscout;
@@ -105,25 +141,37 @@ initdb:
       \c txsigner;
       GRANT ALL ON SCHEMA public TO txsigner;
 
-# PostgreSQL configuration
+# -- PostgreSQL configuration parameters (object)
 postgresql_conf:
+  # -- Maximum number of concurrent connections (int)
   max_connections: 1000
+  # -- Amount of memory dedicated to PostgreSQL to use for caching data (string)
   shared_buffers: 256MB
+  # -- Planner's assumption about the effective size of the disk cache (string)
   effective_cache_size: 1GB
+  # -- (string) Specifies the maximum amount of memory for maintenance operations
   maintenance_work_mem: 64MB
+  # -- (float) Target for completion of checkpoint processing
   checkpoint_completion_target: 0.9
+  # -- (string) Amount of memory used in shared memory for WAL data
   wal_buffers: 16MB
+  # -- (int) Default statistics target for table columns
   default_statistics_target: 100
+  # -- (float) Planner's assumption about the cost of a non-sequentially-fetched disk page
   random_page_cost: 1.1
+  # -- (int) Number of concurrent disk I/O operations
   effective_io_concurrency: 200
+  # -- (string) Amount of memory to be used by internal sort operations and hash tables
   work_mem: 4MB
+  # -- (string) Minimum size to which the WAL will shrink
   min_wal_size: 1GB
+  # -- (string) Maximum size to which the WAL will grow during automatic checkpoints
   max_wal_size: 4GB
 
-# Common labels
+# -- (object) Common labels to add to all PostgreSQL resources
 commonLabels:
   kots.io/app-slug: settlemint-atk
   app.kubernetes.io/managed-by: helm
 
-# Full name override
+# -- String to fully override common.names.fullname (string)
 fullnameOverride: postgresql

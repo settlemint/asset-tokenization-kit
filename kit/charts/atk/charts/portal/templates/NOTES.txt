@@ -9,9 +9,11 @@ APP VERSION: {{ .Chart.AppVersion }}
 {{- $redisConfig := ((include "atk.datastores.redis" (dict "context" $ctx "chartKey" "portal" "local" (default (dict) .Values.config.redis))) | fromYaml) | default (dict) -}}
 {{- $redisHost := default "redis" (index $redisConfig "host") -}}
 {{- $redisPort := printf "%v" (default 6379 (index $redisConfig "port")) -}}
+{{- $networkId := trim (include "portal.networkId" .) -}}
+{{- $networkName := trim (include "portal.networkName" .) -}}
 Portal Configuration:
-  - Network ID: {{ .Values.config.network.networkId }}
-  - Network Name: {{ .Values.config.network.networkName }}
+  - Network ID: {{ default "" $networkId }}
+  - Network Name: {{ default "" $networkName }}
   - Node RPC URL: {{ .Values.config.network.nodeRpcUrl }}
   - PostgreSQL: Connected
   - Redis: {{ $redisHost }}:{{ $redisPort }}

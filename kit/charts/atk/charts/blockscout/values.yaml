@@ -1,264 +1,491 @@
 # Default values for blockscout chart.
 # This chart is a local implementation of the blockscout-stack chart
 
+# -- (string) String to fully override common.names.fullname
 fullnameOverride: blockscout
 
+# -- (list) Global Docker registry secret names as an array
 imagePullSecrets: []
 
+# -- (object) Service account for Blockscout pods
 serviceAccount:
+  # -- (bool) Specifies whether a ServiceAccount should be created
   create: true
+  # -- (object) Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
   annotations: {}
+  # -- (string) The name of the ServiceAccount to use
   name: ""
 
+# -- (object) Blockscout configuration
 config:
+  # -- (object) Network configuration
   network:
+    # -- (int) Network ID
     id: 53771311147
+    # -- (string) Network name
     name: Asset Tokenization Kit
+    # -- (string) Network short name
     shortname: ATK
+    # -- (string) Network icon URL
     icon: ""
+    # -- (string) Network dark mode icon URL
     icon_dark: ""
+    # -- (string) Network logo URL
     logo: ""
+    # -- (string) Network dark mode logo URL
     logo_dark: ""
+    # -- (object) Network currency configuration
     currency:
+      # -- (string) Currency name
       name: Native Token
+      # -- (string) Currency symbol
       symbol: NT
+      # -- (int) Currency decimals
       decimals: 18
+      # -- (bool) Enable dual token support
       dualToken: false
+  # -- (object) Account configuration
   account:
+    # -- (bool) Enable account functionality
     enabled: false
+  # -- (bool) Enable testnet mode
   testnet: false
+  # -- (object) Prometheus configuration
   prometheus:
+    # -- (bool) Enable Prometheus metrics
     enabled: false
+    # -- (object) Blackbox exporter configuration
     blackbox:
+      # -- (bool) Enable blackbox exporter
       enabled: false
 
+# -- Blockscout backend configuration (object)
 blockscout:
+  # -- Enable Blockscout backend deployment (bool)
   enabled: true
+  # -- Number of Blockscout backend replicas to deploy (int)
   replicaCount: 1
+  # -- Annotations for Blockscout backend deployment (object)
   annotations: {}
 
+  # -- Annotations for Blockscout backend pods (object)
   podAnnotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "4000"
     prometheus.io/path: "/metrics"
 
+  # -- Blockscout backend image configuration (object)
   image:
+    # -- Blockscout backend image repository (object)
     repository: ghcr.io/blockscout/blockscout
+    # -- Blockscout backend image tag (immutable tags are recommended)
     tag: "9.0.2"
+    # -- (string) Blockscout backend image pull policy
     pullPolicy: IfNotPresent
 
+  # -- (object) Init container configuration for database migrations
   init:
+    # -- (bool) Enable init container
     enabled: true
+    # -- (list) Init container command
     command: ["/bin/sh"]
+    # -- (list) Init container arguments
     args:
       - -c
       - |
         echo "Running database migrations..."
         bin/blockscout eval "Elixir.Explorer.ReleaseTasks.create_and_migrate()"
 
+  # -- (object) TCP-based dependency checks for Blockscout
+  initContainer:
+    tcpCheck:
+      enabled: true
+      image:
+        repository: ghcr.io/settlemint/btp-waitforit
+        tag: v7.7.10
+        pullPolicy: IfNotPresent
+      timeout: 120
+      resources:
+        limits:
+          cpu: 100m
+          memory: 64Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
+      dependencies:
+        - name: postgresql
+          endpoint: "{{ include \"atk.postgresql.endpoint\" (dict \"context\" $) }}"
+
+  # -- (list) Additional init containers appended verbatim
+  extraInitContainers: []
+
+  # -- (object) Separate API configuration
   separateApi:
+    # -- (bool) Enable separate API deployment
     enabled: false
+    # -- (int) Number of separate API replicas
     replicaCount: 1
 
+  # -- (object) Service parameters for Blockscout backend
   service:
+    # -- (string) Blockscout backend service type
     type: ClusterIP
+    # -- (int) Blockscout backend service HTTP port
     port: 80
 
+  # -- (object) Ingress parameters for Blockscout backend
   ingress:
+    # -- (bool) Enable ingress record generation for Blockscout backend
     enabled: true
+    # -- (string) IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
     className: "atk-nginx"
+    # -- (string) Default host for the ingress record
     hostname: explorer.k8s.orb.local
+    # -- (object) Additional annotations for the Ingress resource
     annotations: {}
+    # -- (list) TLS configuration for the ingress
     tls: []
 
+  # -- (object) OpenShift Route parameters for Blockscout backend
   openShiftRoute:
+    # -- (bool) Enable OpenShift route creation for Blockscout backend
     enabled: false
+    # -- (object) Additional annotations for the OpenShift route resource
     annotations: {}
+    # -- (string) Hostname exposed via the OpenShift route
     host: explorer.k8s.orb.local
+    # -- (string) HTTP path exposed via the OpenShift route
     path: /api
+    # -- (string) Wildcard policy to apply to the route
     wildcardPolicy: None
+    # -- (object) Service port configuration for the route target
     port:
+      # -- (string) Service target port name
       targetPort: http
+    # -- (object) Primary service weight configuration
     to:
+      # -- (int) Weight assigned to the Blockscout backend service backend
       weight: 100
+    # -- (list) Additional backends for weighted routing
     alternateBackends: []
+    # -- (object) TLS configuration for the OpenShift route
     tls: null
 
+  # -- (object) Blockscout backend containers resource requests and limits
   resources: {}
 
-  # Pod security context
+  # -- (object) Pod Security Context configuration for Blockscout backend
   podSecurityContext:
+    # -- (int) Group ID for filesystem ownership
     fsGroup: 1001
+    # -- (int) User ID to run the entrypoint of the container process
     runAsUser: 1001
+    # -- (int) Group ID to run the entrypoint of the container process
     runAsGroup: 1001
+    # -- (bool) Indicates that the container must run as a non-root user
     runAsNonRoot: true
 
-  # Container security context
+  # -- Container Security Context configuration for Blockscout backend (object)
   containerSecurityContext:
+    # -- (int) User ID to run the entrypoint of the container process
     runAsUser: 1001
+    # -- (int) Group ID to run the entrypoint of the container process
     runAsGroup: 1001
+    # -- (bool) Indicates that the container must run as a non-root user
     runAsNonRoot: true
+    # -- (bool) Controls whether a process can gain more privileges than its parent process
     allowPrivilegeEscalation: false
+    # -- (object) Linux capabilities to drop
     capabilities:
       drop:
       - ALL
+    # -- (bool) Mount the container's root filesystem as read-only
     readOnlyRootFilesystem: false
 
-  # Init container security context
+  # -- Init container Security Context configuration for Blockscout backend (object)
   initContainerSecurityContext:
+    # -- (int) User ID to run the entrypoint of the container process
     runAsUser: 1001
+    # -- (int) Group ID to run the entrypoint of the container process
     runAsGroup: 1001
+    # -- (bool) Indicates that the container must run as a non-root user
     runAsNonRoot: true
+    # -- (bool) Controls whether a process can gain more privileges than its parent process
     allowPrivilegeEscalation: false
+    # -- (object) Linux capabilities to drop
     capabilities:
       drop:
       - ALL
+    # -- (bool) Mount the container's root filesystem as read-only
     readOnlyRootFilesystem: false
 
+  # -- (object) Node labels for pod assignment
   nodeSelector: {}
+  # -- (list) Tolerations for pod assignment
   tolerations: []
+  # -- (object) Affinity for pod assignment
   affinity: {}
 
+  # -- (object) Configure Blockscout backend containers' liveness probe
   livenessProbe:
+    # -- (bool) Enable livenessProbe on Blockscout backend containers
     enabled: true
+    # -- (int) Initial delay seconds for livenessProbe
     initialDelaySeconds: 100
+    # -- (int) Period seconds for livenessProbe
     periodSeconds: 100
+    # -- (int) Timeout seconds for livenessProbe
     timeoutSeconds: 30
+    # -- (int) Success threshold for livenessProbe
     successThreshold: 1
+    # -- (int) Failure threshold for livenessProbe
     failureThreshold: 5
 
+  # -- (object) Configure Blockscout backend containers' readiness probe
   readinessProbe:
+    # -- (bool) Enable readinessProbe on Blockscout backend containers
     enabled: true
+    # -- (int) Initial delay seconds for readinessProbe
     initialDelaySeconds: 30
+    # -- (int) Period seconds for readinessProbe
     periodSeconds: 10
+    # -- (int) Timeout seconds for readinessProbe
     timeoutSeconds: 30
+    # -- (int) Success threshold for readinessProbe
     successThreshold: 1
+    # -- (int) Failure threshold for readinessProbe
     failureThreshold: 5
 
+  # -- (object) Environment variables for Blockscout backend
   env:
+    # -- (string) Network type (mainnet/testnet)
     NETWORK: "mainnet"
+    # -- (string) Subnetwork name
     SUBNETWORK: "ATK"
+    # -- (string) Ethereum JSON-RPC variant
     ETHEREUM_JSONRPC_VARIANT: besu
+    # -- (string) Show transactions chart
     SHOW_TXS_CHART: 'true'
+    # -- (string) Enable transaction statistics
     TXS_STATS_ENABLED: 'true'
+    # -- (string) Other explorers configuration
     OTHER_EXPLORERS: '{}'
+    # -- (string) Supported chains configuration
     SUPPORTED_CHAINS: '{}'
+    # -- (string) Enable admin panel
     ADMIN_PANEL_ENABLED: 'true'
+    # -- (string) Emission format
     EMISSION_FORMAT: 'DEFAULT'
+    # -- (string) Fetch rewards method
     FETCH_REWARDS_WAY: 'trace_block'
+    # -- (string) Disable exchange rates
     DISABLE_EXCHANGE_RATES: 'true'
+    # -- (string) Use SSL for database connection
     ECTO_USE_SSL: 'false'
+    # -- (string) Database pool size
     POOL_SIZE: '10'
+    # -- (string) API database pool size
     POOL_SIZE_API: '10'
+    # -- (string) Database adapter timeout
     ECTO_ADAPTER_TIMEOUT: '60000'
+    # -- (string) Database timeout
     DATABASE_TIMEOUT: '60000'
+    # -- (string) Mix environment
     MIX_ENV: 'prod'
+    # -- (string) GraphQL API maximum complexity
     API_GRAPHQL_MAX_COMPLEXITY: '1000'
+    # -- (string) IPFS gateway URL
     IPFS_GATEWAY_URL: 'https://ipfs.io/ipfs'
+    # -- (string) IPFS public gateway URL
     IPFS_PUBLIC_GATEWAY_URL: 'https://ipfs.io/ipfs'
+    # -- (string) API URL
     API_URL: https://explorer.k8s.orb.local
+    # -- (string) Web application URL
     WEBAPP_URL: https://explorer.k8s.orb.local
+    # -- (string) Database connection URL
     DATABASE_URL: postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable
+    # -- (string) Ethereum JSON-RPC HTTP URL
     ETHEREUM_JSONRPC_HTTP_URL: http://erpc:4000/settlemint/evm/53771311147
+    # -- (string) Ethereum JSON-RPC trace URL
     ETHEREUM_JSONRPC_TRACE_URL: http://erpc:4000/settlemint/evm/53771311147
+    # -- (string) Secret key base for Phoenix application
     SECRET_KEY_BASE: atk
+    # -- (string) Timezone data directory
     TZDATA_DIR: /tmp/tzdata
 
+# -- (object) Blockscout frontend configuration
 frontend:
+  # -- (bool) Enable Blockscout frontend deployment
   enabled: true
+  # -- (int) Number of Blockscout frontend replicas to deploy
   replicaCount: 1
 
+  # -- (object) Annotations for Blockscout frontend pods
   podAnnotations: {}
 
+  # -- (object) Blockscout frontend image configuration
   image:
+    # -- (string) Blockscout frontend image repository
     repository: ghcr.io/blockscout/frontend
+    # -- (string) Blockscout frontend image tag (immutable tags are recommended)
     tag: "v2.3.3"
+    # -- (string) Blockscout frontend image pull policy
     pullPolicy: IfNotPresent
 
+  # -- (object) Service parameters for Blockscout frontend
   service:
+    # -- (string) Blockscout frontend service type
     type: ClusterIP
+    # -- (int) Blockscout frontend service HTTP port
     port: 80
 
+  # -- (object) Ingress parameters for Blockscout frontend
   ingress:
+    # -- (bool) Enable ingress record generation for Blockscout frontend
     enabled: true
+    # -- (string) IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
     className: "atk-nginx"
+    # -- (string) Default host for the ingress record
     hostname: explorer.k8s.orb.local
+    # -- (object) Additional annotations for the Ingress resource
     annotations: {}
+    # -- (list) TLS configuration for the ingress
     tls: []
 
+  # -- (object) OpenShift Route parameters for Blockscout frontend
   openShiftRoute:
+    # -- (bool) Enable OpenShift route creation for Blockscout frontend
     enabled: false
+    # -- (object) Additional annotations for the OpenShift route resource
     annotations: {}
+    # -- (string) Hostname exposed via the OpenShift route
     host: explorer.k8s.orb.local
+    # -- (string) HTTP path exposed via the OpenShift route
     path: /
+    # -- (string) Wildcard policy to apply to the route
     wildcardPolicy: None
+    # -- (object) Service port configuration for the route target
     port:
+      # -- (string) Service target port name
       targetPort: http
+    # -- (object) Primary service weight configuration
     to:
+      # -- (int) Weight assigned to the Blockscout frontend service backend
       weight: 100
+    # -- (list) Additional backends for weighted routing
     alternateBackends: []
+    # -- (object) TLS configuration for the OpenShift route
     tls: null
 
+  # -- (object) Blockscout frontend containers resource requests and limits
   resources: {}
 
-  # Pod security context
+  # -- (object) Pod Security Context configuration for Blockscout frontend
   podSecurityContext:
+    # -- (int) Group ID for filesystem ownership
     fsGroup: 1001
+    # -- (int) User ID to run the entrypoint of the container process
     runAsUser: 1001
+    # -- (int) Group ID to run the entrypoint of the container process
     runAsGroup: 1001
+    # -- (bool) Indicates that the container must run as a non-root user
     runAsNonRoot: true
 
-  # Container security context
+  # -- (object) Container Security Context configuration for Blockscout frontend
   containerSecurityContext:
+    # -- (int) User ID to run the entrypoint of the container process
     runAsUser: 1001
+    # -- (int) Group ID to run the entrypoint of the container process
     runAsGroup: 1001
+    # -- (bool) Indicates that the container must run as a non-root user
     runAsNonRoot: true
+    # -- (bool) Controls whether a process can gain more privileges than its parent process
     allowPrivilegeEscalation: false
+    # -- (object) Linux capabilities to drop
     capabilities:
       drop:
       - ALL
+    # -- (bool) Mount the container's root filesystem as read-only
     readOnlyRootFilesystem: false
 
+  # -- (object) Node labels for pod assignment
   nodeSelector: {}
+  # -- (list) Tolerations for pod assignment
   tolerations: []
+  # -- (object) Affinity for pod assignment
   affinity: {}
 
+  # -- (object) Configure Blockscout frontend containers' liveness probe
   livenessProbe:
+    # -- (bool) Enable livenessProbe on Blockscout frontend containers
     enabled: true
+    # -- (int) Initial delay seconds for livenessProbe
     initialDelaySeconds: 30
+    # -- (int) Period seconds for livenessProbe
     periodSeconds: 10
+    # -- (int) Timeout seconds for livenessProbe
     timeoutSeconds: 5
+    # -- (int) Success threshold for livenessProbe
     successThreshold: 1
+    # -- (int) Failure threshold for livenessProbe
     failureThreshold: 5
 
+  # -- (object) Configure Blockscout frontend containers' readiness probe
   readinessProbe:
+    # -- (bool) Enable readinessProbe on Blockscout frontend containers
     enabled: true
+    # -- (int) Initial delay seconds for readinessProbe
     initialDelaySeconds: 30
+    # -- (int) Period seconds for readinessProbe
     periodSeconds: 5
+    # -- (int) Timeout seconds for readinessProbe
     timeoutSeconds: 3
+    # -- (int) Success threshold for readinessProbe
     successThreshold: 1
+    # -- (int) Failure threshold for readinessProbe
     failureThreshold: 5
 
+  # -- (object) Environment variables for Blockscout frontend
   env:
+    # -- (string) Enable account support in frontend
     NEXT_PUBLIC_IS_ACCOUNT_SUPPORTED: 'false'
+    # -- (string) Enable testnet mode in frontend
     NEXT_PUBLIC_IS_TESTNET: 'false'
+    # -- (string) Ad banner provider configuration
     NEXT_PUBLIC_AD_BANNER_PROVIDER: 'none'
+    # -- (string) Ad text provider configuration
     NEXT_PUBLIC_AD_TEXT_PROVIDER: 'none'
+    # -- (string) Enable beacon chain support
     NEXT_PUBLIC_HAS_BEACON_CHAIN: 'false'
+    # -- (string) Transaction interpretation provider
     NEXT_PUBLIC_TRANSACTION_INTERPRETATION_PROVIDER: 'blockscout'
+    # -- (string) Homepage charts configuration
     NEXT_PUBLIC_HOMEPAGE_CHARTS: '["daily_txs"]'
+    # -- (string) Homepage stats configuration
     NEXT_PUBLIC_HOMEPAGE_STATS: '["total_blocks","average_block_time","total_txs","wallet_addresses","gas_tracker"]'
+    # -- (string) Promote Blockscout in title
     NEXT_PUBLIC_PROMOTE_BLOCKSCOUT_IN_TITLE: 'false'
+    # -- (string) Enable OpenGraph enhanced data
     NEXT_PUBLIC_OG_ENHANCED_DATA_ENABLED: 'true'
+    # -- (string) Enable SEO enhanced data
     NEXT_PUBLIC_SEO_ENHANCED_DATA_ENABLED: 'true'
+    # -- (string) Enable contract audit reports
     NEXT_PUBLIC_HAS_CONTRACT_AUDIT_REPORTS: 'true'
+    # -- (string) Font family for headings
     NEXT_PUBLIC_FONT_FAMILY_HEADING: "{'name':'Figtree','url':'https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap'}"
+    # -- (string) Font family for body text
     NEXT_PUBLIC_FONT_FAMILY_BODY: "{'name':'Figtree','url':'https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap'}"
 
+# -- (object) Blockscout stats configuration
 stats:
+  # -- (bool) Enable Blockscout stats deployment
   enabled: false
+  # -- (object) Ingress configuration for stats
   ingress:
+    # -- (string) Hostname for stats ingress
     hostname: ""
 
+# -- (object) Blockscout redirect configuration
 redirect:
+  # -- (bool) Enable Blockscout redirect deployment
   enabled: false

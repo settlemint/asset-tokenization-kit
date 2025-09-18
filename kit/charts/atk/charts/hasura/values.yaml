@@ -1,43 +1,78 @@
 # https://github.com/hasura/helm-charts/blob/main/charts/graphql-engine/values.yaml
+# -- (object) Hasura GraphQL Engine configuration
 graphql-engine:
+  # -- (string) String to partially override common.names.fullname template (will maintain the release name)
   nameOverride: hasura
+  # -- (int) Number of Hasura replicas to deploy
   replicas: 1
+  # -- (object) Hasura image configuration
   image:
+    # -- (string) Hasura image repository
     repository: docker.io/hasura/graphql-engine
+  # -- (object) Labels to add to all Hasura resources
   labels:
     app.kubernetes.io/instance: atk
     kots.io/app-slug: settlemint-atk
     app.kubernetes.io/part-of: settlemint-atk
     app.kubernetes.io/managed-by: helm
     app.kubernetes.io/component: hasura
+  # -- (object) Ingress parameters for Hasura
   ingress:
+    # -- (bool) Enable ingress record generation for Hasura
     enabled: true
+    # -- (string) IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
     ingressClassName: "atk-nginx"
+    # -- (string) Default host for the ingress record
     hostName: "hasura.k8s.orb.local"
+  # -- (object) OpenShift Route parameters for Hasura
   openShiftRoute:
+    # -- (bool) Enable OpenShift route creation for Hasura
     enabled: false
+    # -- (object) Additional annotations for the OpenShift route resource
     annotations: {}
+    # -- (string) Hostname exposed via the OpenShift route
     host: hasura.k8s.orb.local
+    # -- (string) HTTP path exposed via the OpenShift route
     path: /
+    # -- (string) Wildcard policy to apply to the route
     wildcardPolicy: None
+    # -- (object) Service port configuration for the route target
     port:
+      # -- (string) Service target port name (must exist on the Hasura service)
       targetPort: http
+    # -- (object) Primary service weight configuration
     to:
+      # -- (int) Weight assigned to the Hasura service backend
       weight: 100
+    # -- (list) Additional backends for weighted routing
     alternateBackends: []
+    # -- (object) TLS configuration for the OpenShift route
     tls: null
+  # -- (object) Hasura GraphQL Engine configuration
   config:
+    # -- (bool) Enable metadata-only mode
     metadataOnly: false
+    # -- (bool) Enable internal console assets
     enableInternalConsoleAssets: true
+    # -- (bool) Enable development mode
     devMode: true
+  # -- (object) Hasura secret configuration
   secret:
+    # -- (bool) Enable secret creation
     enabled: true
+    # -- (string) Admin secret for Hasura console
     adminSecret: "atk"
+    # -- (string) Redis URL for caching
     redisUrl: "redis://default:atk@redis:6379"
+    # -- (string) Redis URL for rate limiting
     rateLimitRedisUrl: "redis://default:atk@redis:6379"
+    # -- (string) Metadata database URL
     metadataDbUrl: "postgresql://hasura:atk@postgresql:5432/hasura"
+    # -- (object) Additional secrets for Hasura
     extraSecrets:
+      # -- (string) Default database URL
       DEFAULT_DB_URL: "postgresql://hasura:atk@postgresql:5432/hasura"
+  # -- (list) Additional environment variables for Hasura
   extraEnvs:
     - name: HASURA_GRAPHQL_PG_CONNECTIONS
       value: "10"
@@ -46,6 +81,7 @@ graphql-engine:
         secretKeyRef:
           key: DEFAULT_DB_URL
           name: atk-secrets
+  # -- (list) Init containers for Hasura
   initContainers:
     - name: wait-for-postgresql
       image: ghcr.io/settlemint/btp-waitforit:v7.7.10
@@ -62,30 +98,51 @@ graphql-engine:
         requests:
           cpu: 10m
           memory: 32Mi
+  # -- (object) Global configuration for Hasura
   global:
+    # -- (list) Global Docker registry secret names as an array
     imagePullSecrets: []
+  # -- (object) PostgreSQL configuration (disabled, using external PostgreSQL)
   postgres:
+    # -- (bool) Enable embedded PostgreSQL
     enabled: false
 
+# -- (object) Busybox image configuration for utility tasks
 busybox:
+  # -- (string) Busybox image registry
   registry: docker.io
+  # -- (string) Busybox image repository
   repository: busybox
+  # -- (string) Busybox image tag
   tag: 1.37
+  # -- (string) Busybox image pull policy
   pullPolicy: IfNotPresent
 
+# -- (object) Git image configuration for repository operations
 git:
+  # -- (object) Git image configuration
   image:
+    # -- (string) Git image registry
     registry: docker.io
+    # -- (string) Git image repository
     repository: alpine/git
+    # -- (string) Git image tag
     tag: v2.49.1
+    # -- (string) Git image pull policy
     pullPolicy: IfNotPresent
 
+# -- (object) Job configuration for Hasura metadata operations
 job:
+  # -- (object) Workspace configuration for jobs
   workspace:
-    # -- Configure the persistent volume claim for the job workspace
+    # -- (bool) Configure the persistent volume claim for the job workspace
     enabled: true # Set to false to use emptyDir instead of PVC
+    # -- (string) Size of the workspace volume
     size: 1Gi
+    # -- (string) Storage class for the workspace volume (uses default if empty)
     storageClass: "" # Optional: specify storage class, otherwise use default
+    # -- (string) Access mode for the workspace volume
     accessMode: ReadWriteOnce
 
+# -- (list) Global Docker registry secret names as an array
 imagePullSecrets: []

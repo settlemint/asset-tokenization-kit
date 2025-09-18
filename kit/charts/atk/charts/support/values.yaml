@@ -1,55 +1,80 @@
 # Our simple PostgreSQL chart configuration
+# -- PostgreSQL configuration (object)
 postgresql:
+  # -- Enable PostgreSQL deployment (bool)
   enabled: true
+  # -- String to fully override common.names.fullname (string)
   fullnameOverride: postgresql
 
-  # Image configuration
+  # -- (object) PostgreSQL image configuration
   image:
+    # -- (string) PostgreSQL image registry
     registry: docker.io
+    # -- (string) PostgreSQL image repository
     repository: postgres
+    # -- (string) PostgreSQL image tag (immutable tags are recommended)
     tag: "17.6-alpine"
+    # -- (string) PostgreSQL image pull policy
     pullPolicy: IfNotPresent
 
-  # Image pull secrets
+  # -- Global Docker registry secret names as an array (list)
   imagePullSecrets: []
 
-  # PostgreSQL configuration
+  # -- PostgreSQL authentication configuration (object)
   postgresql:
+    # -- PostgreSQL username (string)
     username: postgres
+    # -- PostgreSQL password (string)
     password: atk
+    # -- PostgreSQL database name (string)
     database: postgres
 
-  # Resource configuration for development
+  # -- Resource configuration for development (object)
   resources:
+    # -- Resource requests (object)
     requests:
+      # -- Memory request (string)
       memory: "256Mi"
+      # -- CPU request (string)
       cpu: "100m"
+    # -- Resource limits (object)
     limits:
+      # -- Memory limit (string)
       memory: "1Gi"
+      # -- CPU limit (string)
       cpu: "500m"
 
-  # Persistence configuration
+  # -- Persistence configuration (object)
   persistence:
+    # -- Enable persistent volume for PostgreSQL (bool)
     enabled: true
+    # -- (string) Storage class for persistent volume (uses default if empty)
     storageClass: ""
+    # -- (list) Access modes for persistent volume
     accessModes:
       - ReadWriteOnce
+    # -- Size of the persistent volume (string)
     size: 8Gi
 
-  # Service configuration
+  # -- (object) Service configuration
   service:
+    # -- (string) PostgreSQL service type
     type: ClusterIP
+    # -- (int) PostgreSQL service port
     port: 5432
+    # -- (int) PostgreSQL service target port
     targetPort: 5432
 
-  # Common labels
+  # -- (object) Common labels to add to all PostgreSQL resources
   commonLabels:
     kots.io/app-slug: settlemint-atk
     app.kubernetes.io/managed-by: helm
 
-  # Database initialization scripts (same as before)
+  # -- (object) Database initialization scripts
   initdb:
+    # -- (object) Database initialization scripts
     scripts:
+      # -- (string) SQL script to create databases and users for all ATK services
       create_databases.sql: |
         -- Create databases and users for all ATK services
         CREATE DATABASE blockscout;
@@ -86,68 +111,113 @@ postgresql:
         \c txsigner;
         GRANT ALL ON SCHEMA public TO txsigner;
 
-  # PostgreSQL configuration tuned for development
+  # -- PostgreSQL configuration tuned for development (object)
   postgresql_conf:
+    # -- (int) Maximum number of concurrent connections
     max_connections: 1000
+    # -- (string) Amount of memory dedicated to PostgreSQL to use for caching data
     shared_buffers: 256MB
+    # -- (string) Planner's assumption about the effective size of the disk cache
     effective_cache_size: 1GB
+    # -- (string) Specifies the maximum amount of memory for maintenance operations
     maintenance_work_mem: 64MB
+    # -- (float) Target for completion of checkpoint processing
     checkpoint_completion_target: 0.9
+    # -- (string) Amount of memory used in shared memory for WAL data
     wal_buffers: 16MB
+    # -- (int) Default statistics target for table columns
     default_statistics_target: 100
+    # -- (float) Planner's assumption about the cost of a non-sequentially-fetched disk page
     random_page_cost: 1.1
+    # -- (int) Number of concurrent disk I/O operations
     effective_io_concurrency: 200
+    # -- (string) Amount of memory to be used by internal sort operations and hash tables
     work_mem: 4MB
+    # -- (string) Minimum size to which the WAL will shrink
     min_wal_size: 1GB
+    # -- (string) Maximum size to which the WAL will grow during automatic checkpoints
     max_wal_size: 4GB
 
 
 # https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
+# -- Ingress NGINX configuration (object)
 ingress-nginx:
+  # -- Enable Ingress NGINX deployment (bool)
   enabled: true
+  # -- (object) Global configuration
   global:
+    # -- (object) Global image configuration
     image:
+      # -- (string) Global image registry
       registry: registry.k8s.io
+  # -- String to fully override common.names.fullname (string)
   fullnameOverride: 'ingress-nginx'
+  # -- Global Docker registry secret names as an array (list)
   imagePullSecrets: []
+  # -- Default backend configuration (object)
   defaultBackend:
+    # -- Enable default backend (bool)
     enabled: false
+  # -- Controller configuration (object)
   controller:
+    # -- (bool) Allow snippet annotations in Ingress objects
     allowSnippetAnnotations: true
+    # -- (int) User ID to run the controller process
     runAsUser: 2016
+    # -- Admission webhooks configuration (object)
     admissionWebhooks:
+      # -- Enable admission webhooks (bool)
       enabled: false
+    # -- Number of controller replicas (int)
     replicaCount: 1
+    # -- Autoscaling configuration (object)
     autoscaling:
+      # -- Enable autoscaling (bool)
       enabled: false
+      # -- Minimum number of replicas (int)
       minReplicas: 2
+      # -- Maximum number of replicas (int)
       maxReplicas: 10
+      # -- (int) Target CPU utilization percentage
       targetCPUUtilizationPercentage: 80
+      # -- (int) Target memory utilization percentage
       targetMemoryUtilizationPercentage: 80
+      # -- Autoscaling behavior configuration (object)
       behaviour:
+        # -- (object) Scale down behavior
         scaleDown:
+          # -- (int) Stabilization window for scale down
           stabilizationWindowSeconds: 300
+          # -- (list) Scale down policies
           policies:
             - type: Pods
               value: 1
               periodSeconds: 180
+        # -- (object) Scale up behavior
         scaleUp:
+          # -- (int) Stabilization window for scale up
           stabilizationWindowSeconds: 0
+          # -- (list) Scale up policies
           policies:
             - type: Pods
               value: 2
               periodSeconds: 60
+    # -- (object) Update strategy configuration
     updateStrategy:
       type: RollingUpdate
       rollingUpdate:
         maxSurge: "100%"
         maxUnavailable: "0%"
+    # -- (object) Resource configuration
     resources: {}
+    # -- (object) Pod labels
     podLabels:
       kots.io/app-slug: settlemint-atk
+    # -- (object) Pod annotations
     podAnnotations:
       prometheus.io/scrape: "true"
       prometheus.io/port: "10254"
+    # -- (object) Affinity configuration
     affinity:
       podAntiAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
@@ -164,6 +234,7 @@ ingress-nginx:
                     values:
                       - ingress-nginx
               topologyKey: kubernetes.io/hostname
+    # -- (object) NGINX configuration
     config:
       proxy-body-size: '500M'
       http2-push-preload: 'true'
@@ -230,11 +301,14 @@ ingress-nginx:
       proxy_next_upstream: 'error timeout http_500 http_502 http_503 http_504'
       proxy_next_upstream_timeout: '30'
       proxy_next_upstream_tries: '3'
+    # -- (object) Extra arguments for the controller
     extraArgs:
       enable-ssl-passthrough: 'true'
+    # -- (object) Service configuration
     service:
       externalTrafficPolicy: "Local" # Use if not ClusterIP
       type: LoadBalancer # Or ClusterIP if there is an external LB
+      # -- (object) Service annotations
       annotations:
         external-dns.alpha.kubernetes.io/hostname: 'settlemint.local, *.settlemint.local'
         external-dns.alpha.kubernetes.io/cloudflare-proxied: 'true'
@@ -245,20 +319,25 @@ ingress-nginx:
         service.beta.kubernetes.io/azure-load-balancer-disable-tcp-reset: 'true'
         service.beta.kubernetes.io/azure-load-balancer-tcp-idle-timeout: '30'
         service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: '/healthz'
+    # -- (object) Ingress class resource configuration
     ingressClassResource:
-      # -- If you run more than one platform versions on a single cluster, you need to make sure these are unique
+      # -- (string) If you run more than one platform versions on a single cluster, you need to make sure these are unique
       name: atk-nginx
       enabled: true
       default: false
       controllerValue: 'k8s.io/atk-nginx'
+    # -- (string) Ingress class name
     ingressClass: atk-nginx
+    # -- (object) OpenTelemetry configuration
     opentelemetry:
       enabled: true
       image:
         registry: registry.k8s.io
+    # -- (object) Patch configuration
     patch:
       image:
         registry: registry.k8s.io
+    # -- (object) Metrics configuration
     metrics:
       enabled: true
       service:
@@ -269,86 +348,134 @@ ingress-nginx:
           prometheus.io/port: '10254'
 
 # https://github.com/stakater/Reloader/tree/master/deployments/kubernetes/chart/reloader
+# -- Reloader configuration (object)
 reloader:
+  # -- Enable Reloader deployment (bool)
   enabled: true
+  # -- String to fully override common.names.fullname (string)
   fullnameOverride: 'reloader'
+  # -- Global configuration (object)
   global:
+    # -- Global Docker registry secret names as an array (list)
     imagePullSecrets: []
+  # -- (object) Reloader image configuration
   image:
+    # -- (string) Reloader image name
     name: stakater/reloader
+    # -- (string) Reloader image repository
     repository: ghcr.io/stakater/reloader
+  # -- Reloader specific configuration (object)
   reloader:
+    # -- Enable auto reload for all resources (bool)
     autoReloadAll: true
+    # -- (bool) Watch resources globally across namespaces
     watchGlobally: false
+    # -- (bool) Enable read-only root filesystem
     readOnlyRootFileSystem: true
+    # -- (bool) Reload on resource creation
     reloadOnCreate: false
+    # -- (bool) Sync after restart
     syncAfterRestart: true
+    # -- (object) Security context configuration
     securityContext:
-      # -- Specifies the security capabilities for the container. Here, all capabilities are dropped.
+      # -- (object) Specifies the security capabilities for the container. Here, all capabilities are dropped.
       capabilities:
         drop:
           - ALL
-      # -- If true, the root filesystem of the container is read-only.
+      # -- (bool) If true, the root filesystem of the container is read-only.
       readOnlyRootFilesystem: false
-      # -- Ensures the container runs as a non-root user.
+      # -- (bool) Ensures the container runs as a non-root user.
       runAsNonRoot: true
-      # -- The user ID to run the container as. Change this for OpenShift or specific requirements.
+      # -- (int) The user ID to run the container as. Change this for OpenShift or specific requirements.
       runAsUser: 2016
       allowPrivilegeEscalation: false
+    # -- (object) Container security context configuration
     containerSecurityContext:
       capabilities:
         drop:
           - ALL
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
+    # -- (object) Deployment configuration
     deployment:
       labels:
         kots.io/app-slug: settlemint-atk
 
+# -- MinIO configuration (object)
 minio:
+  # -- Enable MinIO deployment (bool)
   enabled: true
+  # -- (object) MinIO image configuration
   image:
+    # -- (string) MinIO image repository
     repository: docker.io/minio/minio
+    # -- (string) MinIO image tag (immutable tags are recommended)
     tag: RELEASE.2025-07-18T21-56-31Z
+  # -- String to fully override common.names.fullname (string)
   fullnameOverride: 'minio'
+  # -- MinIO deployment mode (string)
   mode: standalone
+  # -- Number of MinIO replicas (int)
   replicas: 1
+  # -- Persistence configuration (object)
   persistence:
+    # -- Enable persistent volume for MinIO (bool)
     enabled: true
+    # -- Size of the persistent volume (string)
     size: 1Gi
+  # -- MinIO root user credentials (string)
   rootUser: "admin"
+  # -- MinIO root user password (string)
   rootPassword: "atk-password"
+  # -- MinIO resource requests and limits (object)
   resources:
+    # -- Resource requests (object)
     requests:
+      # -- Memory request (string)
       memory: 256Mi
+      # -- CPU request (string)
       cpu: 100m
+    # -- Resource limits (object)
     limits:
+      # -- Memory limit (string)
       memory: 512Mi
+      # -- CPU limit (string)
       cpu: 200m
 
-  # Automatic bucket creation
+  # -- (list) Automatic bucket creation
   buckets:
+    # -- (object) ATK bucket configuration
     - name: atk
       policy: none
       purge: false
 
-  # Automatic user/service account creation
+  # -- (list) Automatic user/service account creation
   users:
+    # -- (object) ATK service user configuration
     - accessKey: atk-service
       secretKey: atk-service-secret
       policy: readwrite
 
-  # Ingress configuration
+  # -- Ingress configuration for MinIO API (object)
   ingress:
+    # -- (bool) Enable ingress for MinIO API
     enabled: true
+    # -- (string) IngressClass for MinIO API
     ingressClassName: atk-nginx
+    # -- (string) Path for MinIO API ingress
     path: /
+    # -- (list) Hosts for MinIO API ingress
     hosts:
       - minio.k8s.orb.local
 
+  # -- Console ingress configuration (object)
   consoleIngress:
+    # -- (bool) Enable ingress for MinIO console
     enabled: true
+    # -- (string) IngressClass for MinIO console
     ingressClassName: atk-nginx
+    # -- (string) Path for MinIO console ingress
     path: /
+    # -- (list) Hosts for MinIO console ingress
     hosts:
       - minio-console.k8s.orb.local

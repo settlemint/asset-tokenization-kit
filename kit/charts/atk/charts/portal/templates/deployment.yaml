@@ -55,10 +55,7 @@ spec:
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tolerations "context" $) | nindent 8 }}
       {{- end }}
       {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck "chartKey" "portal") }}
-      {{- $legacyInit := "" }}
-      {{- if .Values.initContainers }}
-        {{- $legacyInit = include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) }}
-      {{- end }}
+      {{- $extraInit := .Values.extraInitContainers | default (list) }}
       initContainers:
         - name: copy-artifacts
           image: "{{ .Values.global.artifacts.image.registry }}/{{ .Values.global.artifacts.image.repository }}:{{ .Values.global.artifacts.image.tag }}"
@@ -91,8 +88,8 @@ spec:
         {{- if $waitForIt }}
 {{ $waitForIt | nindent 8 }}
         {{- end }}
-        {{- if $legacyInit }}
-{{ $legacyInit | nindent 8 }}
+        {{- if gt (len $extraInit) 0 }}
+{{ toYaml $extraInit | nindent 8 }}
         {{- end }}
       containers:
         - name: portal

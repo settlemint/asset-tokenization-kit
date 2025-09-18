@@ -86,3 +86,26 @@ Using common helper with chart-specific alias.
 {{ include "atk.common.tplvalues.render" . }}
 {{- end }}
 
+{{/*
+Resolve the effective network ID, preferring chart overrides and falling back to global.chainId.
+*/}}
+{{- define "portal.networkId" -}}
+{{- $values := default (dict) .Values -}}
+{{- $config := default (dict) (index $values "config") -}}
+{{- $network := default (dict) (index $config "network") -}}
+{{- $global := default (dict) (index $values "global") -}}
+{{- $id := coalesce (index $network "networkId") (index $global "chainId") -}}
+{{- if $id -}}{{- printf "%v" $id -}}{{- end -}}
+{{- end }}
+
+{{/*
+Resolve the effective network name, preferring chart overrides and falling back to global.chainName.
+*/}}
+{{- define "portal.networkName" -}}
+{{- $values := default (dict) .Values -}}
+{{- $config := default (dict) (index $values "config") -}}
+{{- $network := default (dict) (index $config "network") -}}
+{{- $global := default (dict) (index $values "global") -}}
+{{- $name := coalesce (index $network "networkName") (index $global "chainName") -}}
+{{- if $name -}}{{- printf "%v" $name -}}{{- end -}}
+{{- end }}
