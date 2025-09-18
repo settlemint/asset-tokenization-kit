@@ -280,10 +280,12 @@ describe("bond-status types", () => {
         createdBy: {
           id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
         },
-        account: {
-          identity: {
-            id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-          },
+        identity: {
+          id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          account:
+            "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          claims: [],
+          registered: undefined,
         },
         redeemable: null,
         bond: {
@@ -390,10 +392,12 @@ describe("bond-status types", () => {
         createdBy: {
           id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
         },
-        account: {
-          identity: {
-            id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-          },
+        identity: {
+          id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          account:
+            "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          claims: [],
+          registered: undefined,
         },
         redeemable: null,
         bond: {
@@ -499,10 +503,12 @@ describe("bond-status types", () => {
         createdBy: {
           id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
         },
-        account: {
-          identity: {
-            id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-          },
+        identity: {
+          id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          account:
+            "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          claims: [],
+          registered: undefined,
         },
         redeemable: null,
         bond: {
@@ -610,10 +616,12 @@ describe("bond-status types", () => {
         createdBy: {
           id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
         },
-        account: {
-          identity: {
-            id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-          },
+        identity: {
+          id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          account:
+            "0x0000000000000000000000000000000000000000" as `0x${string}`,
+          claims: [],
+          registered: undefined,
         },
         redeemable: null,
         bond: {

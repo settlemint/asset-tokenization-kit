@@ -28,19 +28,20 @@ describe("TokenCollateralStats", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
-    expect(response.tokenCollateralStats_collection).toBeDefined();
-    expect(Array.isArray(response.tokenCollateralStats_collection)).toBe(true);
+    const collateralStats = response.tokenCollateralStats_collection;
+    expect(collateralStats && Array.isArray(collateralStats)).toBe(true);
 
     // Verify that stats have required fields
-    if (response.tokenCollateralStats_collection.length > 0) {
-      const firstStat = response.tokenCollateralStats_collection[0];
-      expect(firstStat.timestamp).toBeDefined();
-      expect(firstStat.token).toBeDefined();
-      expect(firstStat.expiryTimestamp).toBeDefined();
-      expect(firstStat.collateral).toBeDefined();
-      expect(firstStat.collateralAvailable).toBeDefined();
-      expect(firstStat.collateralUsed).toBeDefined();
+    if (!collateralStats.length) {
+      return;
     }
+    const firstStat = collateralStats[0]!;
+    expect(firstStat.timestamp).toBeDefined();
+    expect(firstStat.token).toBeDefined();
+    expect(firstStat.expiryTimestamp).toBeDefined();
+    expect(firstStat.collateral).toBeDefined();
+    expect(firstStat.collateralAvailable).toBeDefined();
+    expect(firstStat.collateralUsed).toBeDefined();
   });
 
   it("should fetch token collateral stats aggregated by day", async () => {
@@ -65,8 +66,8 @@ describe("TokenCollateralStats", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
-    expect(response.tokenCollateralStats_collection).toBeDefined();
-    expect(Array.isArray(response.tokenCollateralStats_collection)).toBe(true);
+    const collateralStats = response.tokenCollateralStats_collection;
+    expect(collateralStats && Array.isArray(collateralStats)).toBe(true);
   });
 
   it("should track collateral data correctly", async () => {
@@ -91,11 +92,11 @@ describe("TokenCollateralStats", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
+    const collateralStatsData = response.tokenCollateralStatsDatas;
 
-    expect(response.tokenCollateralStatsDatas).toBeDefined();
-    expect(Array.isArray(response.tokenCollateralStatsDatas)).toBe(true);
+    expect(Array.isArray(collateralStatsData)).toBe(true);
 
-    const tetherStats = response.tokenCollateralStatsDatas.find(
+    const tetherStats = collateralStatsData.find(
       (stat) => stat.token.symbol === "USDT"
     );
 
@@ -132,6 +133,7 @@ describe("TokenCollateralStats", () => {
     `
     );
     const tokensResponse = await theGraphClient.request(query, {});
+    const tokens = tokensResponse.tokens ?? [];
 
     // Get latest collateral stats
     const statsQuery = theGraphGraphql(
@@ -151,13 +153,12 @@ describe("TokenCollateralStats", () => {
     `
     );
     const statsResponse = await theGraphClient.request(statsQuery, {});
+    const statsData = statsResponse.tokenCollateralStatsDatas ?? [];
 
     // Verify collateral utilization calculations
-    for (const token of tokensResponse.tokens) {
+    for (const token of tokens) {
       if (token.collateral?.collateralExact) {
-        const stats = statsResponse.tokenCollateralStatsDatas.find(
-          (s) => s.token.id === token.id
-        );
+        const stats = statsData.find((s) => s.token.id === token.id);
 
         if (stats) {
           // Verify collateral amount matches

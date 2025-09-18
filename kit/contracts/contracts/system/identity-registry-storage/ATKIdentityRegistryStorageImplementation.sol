@@ -274,7 +274,7 @@ contract ATKIdentityRegistryStorageImplementation is
         // Store the index (plus one, for 1-based indexing) in the `_identityWalletsIndex` map for O(1) removal later.
         _identityWalletsIndex[_userAddress] = _identityWallets.length;
 
-        emit IdentityStored(_userAddress, _identity);
+        emit IdentityStored(_userAddress, _identity, _country);
         emit CountryModified(_userAddress, _country);
     }
 
@@ -340,7 +340,8 @@ contract ATKIdentityRegistryStorageImplementation is
     /// -   The new `_identity` contract address is not the zero address.
     /// If both checks pass, it updates the `identityContract` field within the `Identity` struct stored for the
     /// `_userAddress` in the `_identities` mapping.
-    /// Finally, it emits an `IdentityModified` event, providing both the old and new `IIdentity` contract addresses.
+    /// Finally, it emits an `IdentityModified` event, providing the user address alongside the old and new
+    /// `IIdentity` contract addresses.
     /// @param _userAddress The user's external wallet address whose associated `IIdentity` contract is to be updated.
     /// @param _identity The new `IIdentity` contract address to associate with the `_userAddress`.
     /// @dev Reverts with:
@@ -360,12 +361,12 @@ contract ATKIdentityRegistryStorageImplementation is
         IIdentity oldIdentity = IIdentity(_identities[_userAddress].identityContract);
         _identities[_userAddress].identityContract = address(_identity);
 
-        emit IdentityModified(oldIdentity, _identity);
+        emit IdentityModified(_userAddress, oldIdentity, _identity);
     }
 
     /// @inheritdoc IERC3643IdentityRegistryStorage
     /// @notice Modifies the country code associated with an existing identity record.
-    /// @dev This function can only be called by an address holding the `STORAGE_MODIFIER_ROLE`.
+    /// @dev This function can only be called by an address holding the `SYSTEM_MANAGER_ROLE` or `IDENTITY_REGISTRY_MODULE_ROLE`.
     /// It first checks if an identity record exists for the given `_userAddress`. If not, it reverts.
     /// If the identity exists, it updates the `country` field within the `Identity` struct stored for the
     /// `_userAddress` in the `_identities` mapping with the new `_country` code.

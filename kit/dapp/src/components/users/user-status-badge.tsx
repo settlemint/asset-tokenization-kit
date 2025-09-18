@@ -1,19 +1,26 @@
 import { Badge } from "@/components/ui/badge";
+import type { Identity } from "@/orpc/routes/system/identity/routes/identity.read.schema";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { useTranslation } from "react-i18next";
 
 interface UserStatusBadgeProps {
   user: User;
+  identity?: Identity;
+  isRegistered?: boolean;
 }
 
 /**
  * Status badge component for user registration status
  * Displays the current state of user registration and connection with accessibility support
  */
-export function UserStatusBadge({ user }: UserStatusBadgeProps) {
+export function UserStatusBadge({
+  user,
+  isRegistered,
+  identity,
+}: UserStatusBadgeProps) {
   const { t } = useTranslation("user");
 
-  if (user.isRegistered) {
+  if (isRegistered || identity?.registered) {
     return (
       <Badge
         variant="default"

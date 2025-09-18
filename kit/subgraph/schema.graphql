@@ -9,18 +9,14 @@ type Account @entity(immutable: false) {
   isContract: Boolean!
   # Optional human-readable name when this address is a known contract
   contractName: String
-  # Reference to the identity contract associated with this account (for compliance)
-  identity: Identity
-  # ISO country code where the account holder is registered (for compliance)
-  country: Int
   # List of all token balances held by this account
   balances: [TokenBalance!]! @derivedFrom(field: "account")
-  # Whether this account has been marked as lost (for recovery purposes)
-  isLost: Boolean!
-  # Reference to the new account created to recover this lost account
-  recoveredAccount: Account
   # Statistical data for this account (aggregated metrics)
   stats: AccountStatsState @derivedFrom(field: "account")
+  # List of all identities associated with this account
+  identities: [Identity!]! @derivedFrom(field: "account")
+  # List of all registered identities associated with this account
+  registeredIdentities: [RegisteredIdentity!]! @derivedFrom(field: "account")
 }
 
 type Event @entity(immutable: true) {
@@ -352,8 +348,8 @@ type IdentityRegistryStorage @entity(immutable: false) {
   deployedInTransaction: Bytes!
   # List of identity registries using this storage
   registries: [IdentityRegistry!]! @derivedFrom(field: "identityRegistryStorage")
-  # List of identities stored in this registry
-  identities: [Identity!]! @derivedFrom(field: "registryStorage")
+  # List of registered identities stored in this storage
+  registeredIdentities: [RegisteredIdentity!]! @derivedFrom(field: "registryStorage")
 }
 
 type IdentityFactory @entity(immutable: false) {
@@ -361,6 +357,8 @@ type IdentityFactory @entity(immutable: false) {
   id: Bytes!
   # Account representation of the factory contract
   account: Account!
+  # List of identities created by this factory
+  identities: [Identity!]! @derivedFrom(field: "identityFactory")
   # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
 }
@@ -383,18 +381,38 @@ type IdentityRegistry @entity(immutable: false) {
 type Identity @entity(immutable: false) {
   # Unique identifier - identity contract address
   id: Bytes!
-  # Storage registry containing this identity
-  registryStorage: IdentityRegistryStorage
+  # Whether this identity is a smart contract
+  isContract: Boolean!
+  # Address of the identity factory that created this identity
+  identityFactory: IdentityFactory!
+  # Account associated with this identity
+  account: Account!
+  # Transaction hash where this was deployed
+  deployedInTransaction: Bytes!
   # List of claims associated with this identity
   claims: [IdentityClaim!]! @derivedFrom(field: "identity")
   # List of cryptographic keys for this identity
   keys: [IdentityKey!]! @derivedFrom(field: "identity")
-  # Account associated with this identity
-  account: Account
-  # Whether this identity is a smart contract
-  isContract: Boolean
-  # Transaction hash where this was deployed
-  deployedInTransaction: Bytes!
+  # Registered entries associated with this identity
+  registered: [RegisteredIdentity!]! @derivedFrom(field: "identity")
+}
+
+
+type RegisteredIdentity @entity(immutable: false) {
+  # Unique identifier - identity registry storage + account address
+  id: Bytes!
+  # Account associated with this registered entry
+  account: Account!
+  # Registry storage containing this registered entry
+  registryStorage: IdentityRegistryStorage!
+  # Identity associated with this registered entry
+  identity: Identity!
+  # Country associated with this registered entry
+  country: Int!
+  # Reference to the new identity created to recover this lost registered entry
+  recoveredIdentity: RegisteredIdentity
+  # Whether this registered entry has been marked as lost (for recovery purposes)
+  isLost: Boolean!
 }
 
 type IdentityKey @entity(immutable: false) {
@@ -1708,4 +1726,3 @@ type TokenDistributionStats
   totalValueSegment5Exact: BigInt!
     @aggregate(fn: "last", arg: "totalValueSegment5Exact")
 }
-

@@ -24,8 +24,8 @@ describe("Identity create", () => {
         verificationType: "PINCODE",
       },
     });
-    expect(result.id).toBe(wallet);
-    expect(result.identity).toBeDefined();
+    expect(result.account).toBe(wallet);
+    expect(result.id).toBeDefined();
   });
 
   test("investor cannot create an identity for another user", async () => {
@@ -73,7 +73,12 @@ describe("Identity create", () => {
       },
       wallet,
     });
-    expect(result.id).toBe(wallet);
-    expect(result.identity).toBeDefined();
-  }, 100_000);
+    expect(result.id).toBeDefined();
+    expect(result.account).toBe(wallet);
+
+    const initialUser = await client.system.identity.search({
+      wallet,
+    });
+    expect(initialUser?.registered).toBeUndefined();
+  });
 });

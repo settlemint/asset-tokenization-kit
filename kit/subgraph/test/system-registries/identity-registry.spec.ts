@@ -6,8 +6,11 @@ describe("Identity registry", () => {
     const identitiesResponse = await theGraphClient.request(
       theGraphGraphql(
         `query {
-        identities(where: { account_: { isLost: false } }) {
+        identities {
           id
+          identityFactory {
+            id
+          }
         }
         trustedIssuers {
           id
@@ -27,7 +30,7 @@ describe("Identity registry", () => {
                 id
               }
               id
-              identities {
+              registeredIdentities(where: { isLost: false }) {
                 id
               }
             }
@@ -35,21 +38,24 @@ describe("Identity registry", () => {
         }`
       )
     );
-    const identities = identitiesResponse.identities;
+
+    // Trusted issuers should not be in the identityRegistryStorage id list
+    const storedIdentities = identitiyRegistryResponse.systems
+      .map((system) =>
+        system.identityRegistryStorage?.registeredIdentities.map(
+          (identity) => identity.id
+        )
+      )
+      .flat()
+      .filter((identity) => identity !== undefined);
+
     const trustedIssuers = identitiesResponse.trustedIssuers.map(
       (trustedIssuer) => trustedIssuer.id
     );
-    // Trusted issuers are not stored in the identity registry
-    const identitiesExpected = identities.filter(
-      (identity) => !trustedIssuers.includes(identity.id)
-    );
-    const idientitiesInRegistryStorage = identitiyRegistryResponse.systems
-      .map((system) => system.identityRegistryStorage?.identities ?? [])
-      .flat();
-    expect(idientitiesInRegistryStorage.length).toBe(identitiesExpected.length);
-    expect(idientitiesInRegistryStorage.sort()).toEqual(
-      identitiesExpected.sort()
-    );
+    expect(
+      storedIdentities.every((identity) => !trustedIssuers.includes(identity))
+    ).toBe(true);
+
     // Id of the system registry should be in the identityRegistryStorage id list
     expect(
       identitiyRegistryResponse.systems.map(

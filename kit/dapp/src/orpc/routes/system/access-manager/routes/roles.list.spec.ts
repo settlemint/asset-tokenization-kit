@@ -17,7 +17,7 @@ describe("Access Manager - Roles List ORPC routes (integration)", () => {
     adminClient = getOrpcClient(adminHeaders);
 
     // Ensure there is at least one role to list by granting a role to admin
-    const me = await adminClient.account.me({});
+    const me = await adminClient.system.identity.me({});
     if (me) {
       await adminClient.system.accessManager.grantRole({
         walletVerification: {

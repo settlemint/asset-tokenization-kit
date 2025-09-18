@@ -147,10 +147,11 @@ const mockToken = {
   pausable: { paused: false },
   capped: null,
   createdBy: { id: "0xowner" },
-  account: {
-    identity: {
-      id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
-    },
+  identity: {
+    id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+    account: "0x0000000000000000000000000000000000000000" as `0x${string}`,
+    claims: [],
+    registered: undefined,
   },
   complianceModuleConfigs: [],
   redeemable: null,

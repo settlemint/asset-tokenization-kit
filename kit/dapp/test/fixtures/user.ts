@@ -287,7 +287,7 @@ export async function registerUserIdentity(
 ) {
   // Check if identity already exists
   try {
-    const account = await adminClient.account.read(
+    const identity = await adminClient.system.identity.search(
       { wallet },
       {
         context: {
@@ -295,7 +295,7 @@ export async function registerUserIdentity(
         },
       }
     );
-    if (account?.identity) {
+    if (identity?.account) {
       console.log(`Identity already exists for wallet ${wallet}`);
       return;
     }

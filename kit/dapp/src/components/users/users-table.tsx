@@ -12,10 +12,11 @@ import { createStrictColumnHelper } from "@/components/data-table/utils/typed-co
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { UserStatusBadge } from "@/components/users/user-status-badge";
 import { orpc } from "@/orpc/orpc-client";
+import { UserWithIdentity } from "@/orpc/routes/user/routes/user.list.schema";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { toast } from "sonner";
 
-const columnHelper = createStrictColumnHelper<User>();
+const columnHelper = createStrictColumnHelper<UserWithIdentity>();
 
 /**
  * Users table component for displaying and managing platform users
@@ -90,7 +91,12 @@ export function UsersTable() {
         columnHelper.display({
           id: "status",
           header: t("management.table.columns.status"),
-          cell: ({ row }) => <UserStatusBadge user={row.original} />,
+          cell: ({ row }) => (
+            <UserStatusBadge
+              user={row.original}
+              isRegistered={row.original.isRegistered}
+            />
+          ),
           meta: {
             displayName: t("management.table.columns.status"),
             type: "option",
@@ -124,7 +130,7 @@ export function UsersTable() {
             },
           },
         }),
-      ] as ColumnDef<User>[]),
+      ] as ColumnDef<UserWithIdentity>[]),
     [t]
   );
 

@@ -1,6 +1,4 @@
-import { me } from "@/orpc/routes/account/routes/account.me";
 import { search } from "@/orpc/routes/account/routes/account.search";
-import { read } from "./routes/account.read";
 
 /**
  * Account router module.
@@ -10,19 +8,13 @@ import { read } from "./routes/account.read";
  * in the main ORPC router.
  *
  * Current routes:
- * - create: POST /account/create - Create a wallet for the authenticated user
- * - read: GET /account/read - Retrieve account information and identity claims
+ * - search: GET /account/search - Search accounts by various criteria
  *
- * The router is designed to be extended with additional account management
- * endpoints such as identity claim updates, account verification, and
- * compliance-related operations.
+ * Note: Identity-related functionality has been moved to the system.identity namespace.
  * @see {@link ./account.contract} - Type-safe contract definitions
- * @see {@link ./account.create} - Wallet creation implementation
- * @see {@link ./account.read} - Account information retrieval
+ * @see {@link ./account.search} - Account search implementation
  */
 const routes = {
-  read,
-  me,
   search,
 };
 

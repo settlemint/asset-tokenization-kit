@@ -1,4 +1,4 @@
-import { Address } from "@graphprotocol/graph-ts";
+import { store } from "@graphprotocol/graph-ts";
 import {
   CountryModified as CountryModifiedEvent,
   IdentityModified as IdentityModifiedEvent,
@@ -9,33 +9,31 @@ import {
   IdentityWalletMarkedAsLost as IdentityWalletMarkedAsLostEvent,
   WalletRecoveryLinked as WalletRecoveryLinkedEvent,
 } from "../../generated/templates/IdentityRegistryStorage/IdentityRegistryStorage";
-import { fetchAccount } from "../account/fetch/account";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentityRegistry } from "../identity-registry/fetch/identity-registry";
-import { fetchIdentity } from "../identity/fetch/identity";
+import { fetchRegisteredIdentity } from "../registered-identity/fetch/registered-identity";
 import { fetchIdentityRegistryStorage } from "./fetch/identity-registry-storage";
 
 export function handleCountryModified(event: CountryModifiedEvent): void {
   fetchEvent(event, "CountryModified");
-  const account = fetchAccount(event.params._identityWallet);
-  account.country = event.params._country;
-  account.save();
+  const registeredIdentity = fetchRegisteredIdentity(
+    event.address,
+    event.params._identityWallet
+  );
+
+  registeredIdentity.country = event.params._country;
+  registeredIdentity.save();
 }
 
 export function handleIdentityModified(event: IdentityModifiedEvent): void {
   fetchEvent(event, "IdentityModified");
+  const registeredIdentity = fetchRegisteredIdentity(
+    event.address,
+    event.params._investorAddress
+  );
 
-  const oldIdentity = fetchIdentity(event.params._oldIdentity);
-  const newIdentity = fetchIdentity(event.params._newIdentity);
-
-  if (oldIdentity.account) {
-    const account = fetchAccount(Address.fromBytes(oldIdentity.account!));
-    account.identity = newIdentity.id;
-    account.save();
-
-    newIdentity.account = oldIdentity.account;
-    newIdentity.save();
-  }
+  registeredIdentity.identity = event.params._newIdentity;
+  registeredIdentity.save();
 }
 
 export function handleIdentityRegistryBound(
@@ -63,38 +61,53 @@ export function handleIdentityRegistryUnbound(
 
 export function handleIdentityStored(event: IdentityStoredEvent): void {
   fetchEvent(event, "IdentityStored");
-  const identityRegistryStorage = fetchIdentityRegistryStorage(event.address);
-  const identity = fetchIdentity(event.params._identity);
-  identity.registryStorage = identityRegistryStorage.id;
-  const account = fetchAccount(event.params._investorAddress);
-  account.identity = identity.id;
-  account.save();
-  identity.account = account.id;
-  identity.save();
+  const registeredIdentity = fetchRegisteredIdentity(
+    event.address,
+    event.params._investorAddress
+  );
+  registeredIdentity.identity = event.params._identity;
+  registeredIdentity.country = event.params._country;
+
+  registeredIdentity.save();
 }
 
 export function handleIdentityUnstored(event: IdentityUnstoredEvent): void {
   fetchEvent(event, "IdentityUnstored");
-  const identity = fetchIdentity(event.params._identity);
-  identity.registryStorage = null;
-  identity.save();
+  const registeredIdentity = fetchRegisteredIdentity(
+    event.address,
+    event.params._investorAddress
+  );
+
+  store.remove("RegisteredIdentity", registeredIdentity.id.toHexString());
 }
 
 export function handleIdentityWalletMarkedAsLost(
   event: IdentityWalletMarkedAsLostEvent
 ): void {
   fetchEvent(event, "IdentityWalletMarkedAsLost");
-  const account = fetchAccount(event.params.userWallet);
-  account.isLost = true;
-  account.save();
+  const registeredIdentity = fetchRegisteredIdentity(
+    event.address,
+    event.params.userWallet
+  );
+  registeredIdentity.isLost = true;
+  registeredIdentity.save();
 }
 
 export function handleWalletRecoveryLinked(
   event: WalletRecoveryLinkedEvent
 ): void {
   fetchEvent(event, "WalletRecoveryLinked");
-  const lostAccount = fetchAccount(event.params.lostWallet);
-  const newAccount = fetchAccount(event.params.newWallet);
-  lostAccount.recoveredAccount = newAccount.id;
-  lostAccount.save();
+  const oldRegisteredIdentity = fetchRegisteredIdentity(
+    event.address,
+    event.params.lostWallet
+  );
+  const recoveredRegisteredIdentity = fetchRegisteredIdentity(
+    event.address,
+    event.params.newWallet
+  );
+
+  oldRegisteredIdentity.isLost = true;
+  oldRegisteredIdentity.recoveredIdentity = recoveredRegisteredIdentity.id;
+
+  oldRegisteredIdentity.save();
 }

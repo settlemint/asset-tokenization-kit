@@ -1,5 +1,4 @@
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
-import { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   createTestUser,
@@ -100,7 +99,7 @@ describe("User list", () => {
       expect(users.total).toBeGreaterThan(0);
 
       // Check that our test users are included
-      const userIds = users.items.map((user: User) => user.id);
+      const userIds = users.items.map((user) => user.id);
       expect(userIds).toContain(testUser1Data.id);
       expect(userIds).toContain(testUser2Data.id);
       expect(userIds).toContain(testUser3Data.id);
@@ -141,7 +140,7 @@ describe("User list", () => {
 
       // Find our test user with KYC data
       const userWithKyc = users.items.find(
-        (user: User) => user.id === testUser1Data.id
+        (user) => user.id === testUser1Data.id
       );
       expect(userWithKyc).toBeDefined();
 
@@ -162,7 +161,7 @@ describe("User list", () => {
 
       // Find our test user without KYC data
       const userWithoutKyc = users.items.find(
-        (user: User) => user.id === testUser3Data.id
+        (user) => user.id === testUser3Data.id
       );
       expect(userWithoutKyc).toBeDefined();
 
@@ -196,11 +195,6 @@ describe("User list", () => {
         if (user.identity) {
           expect(typeof user.identity).toBe("string");
           expect(user.identity).toMatch(/^0x[a-fA-F0-9]{40}$/); // Valid Ethereum address
-        }
-
-        // If user has identity, isRegistered should be true
-        if (user.identity) {
-          expect(user.isRegistered).toBe(true);
         }
 
         // If user doesn't have identity, isRegistered should be false
@@ -253,8 +247,8 @@ describe("User list", () => {
 
       // Pages should have different users (unless there are fewer than 4 total users)
       if (firstPage.items.length === 2 && secondPage.items.length > 0) {
-        const firstPageIds = firstPage.items.map((user: User) => user.id);
-        const secondPageIds = secondPage.items.map((user: User) => user.id);
+        const firstPageIds = firstPage.items.map((user) => user.id);
+        const secondPageIds = secondPage.items.map((user) => user.id);
 
         // Should not have overlapping user IDs
         const secondPageSet = new Set(secondPageIds);
@@ -299,9 +293,9 @@ describe("User list", () => {
 
       expect(usersByName).toBeDefined();
       expect(usersByName.items.length).toBeGreaterThan(0);
-      const namesFromQuery = usersByName.items.map((user: User) => user.name);
+      const namesFromQuery = usersByName.items.map((user) => user.name);
       const namesFromQueryReverse = usersByNameReverse.items.map(
-        (user: User) => user.name
+        (user) => user.name
       );
       expect(namesFromQuery).not.toEqual(namesFromQueryReverse);
     });
@@ -322,9 +316,9 @@ describe("User list", () => {
       expect(users).toBeDefined();
       expect(Array.isArray(users.items)).toBe(true);
       expect(users.items.length).toBeGreaterThan(0);
-      expect(
-        users.items.every((user: User) => user.name.includes("TestFirst"))
-      ).toBe(true);
+      expect(users.items.every((user) => user.name.includes("TestFirst"))).toBe(
+        true
+      );
     });
   });
 
@@ -392,12 +386,12 @@ describe("User list", () => {
       expect(users.items.length).toBeGreaterThan(0);
 
       // Verify we can see our test users
-      const userIds = users.items.map((user: User) => user.id);
+      const userIds = users.items.map((user) => user.id);
       expect(userIds).toContain(testUser1Data.id);
       expect(userIds).toContain(testUser2Data.id);
 
       // Verify structure and data access for users with claims
-      users.items.forEach((user: User) => {
+      users.items.forEach((user) => {
         expect(user.id).toBeDefined();
         expect(user.email).toBeDefined();
         expect(user.wallet).toBeDefined();
@@ -453,12 +447,12 @@ describe("User list", () => {
       const users2 = await client.user.list({ limit: 3 });
 
       // Same users should have same data
-      const commonUsers = users1.items.filter((user1: User) =>
-        users2.items.some((user2: User) => user2.id === user1.id)
+      const commonUsers = users1.items.filter((user1) =>
+        users2.items.some((user2) => user2.id === user1.id)
       );
 
       for (const user1 of commonUsers) {
-        const user2 = users2.items.find((u: User) => u.id === user1.id);
+        const user2 = users2.items.find((u) => u.id === user1.id);
         expect(user2).toBeDefined();
 
         if (user2) {

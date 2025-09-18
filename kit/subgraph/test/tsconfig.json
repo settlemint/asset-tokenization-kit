@@ -1,0 +1,21 @@
+{
+  "extends": "../tools/tsconfig.json",
+  "compilerOptions": {
+    "plugins": [
+      {
+        "name": "gql.tada/ts-plugin",
+        "trackFieldUsage": false,
+        "shouldCheckForColocatedFragments": false,
+        "schema": "../the-graph-schema.graphql",
+        "tadaOutputLocation": "../the-graph-env.d.ts",
+        "tadaTurboLocation": "../the-graph-cache.d.ts"
+      }
+    ]
+  },
+  "include": [
+    "./**/*.ts",
+    "../the-graph-env.d.ts",
+    "../the-graph-cache.d.ts",
+    "../the-graph-schema.graphql"
+  ]
+}
