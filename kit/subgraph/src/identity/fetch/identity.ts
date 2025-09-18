@@ -9,7 +9,6 @@ export function fetchIdentity(address: Address): Identity {
 
   if (!identity) {
     identity = new Identity(address);
-
     identity.deployedInTransaction = Bytes.empty();
     identity.identityFactory = Address.zero();
     identity.account = Address.zero();

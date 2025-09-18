@@ -1,34 +1,47 @@
 ## Provide a name in place of minio for `app:` labels
 ##
+# -- (string) String to partially override common.names.fullname template (will maintain the release name)
 nameOverride: ""
 
 ## Provide a name to substitute for the full names of resources
 ##
+# -- (string) String to fully override common.names.fullname
 fullnameOverride: ""
 
 ## set kubernetes cluster domain where minio is running
 ##
+# -- (string) Kubernetes cluster domain where minio is running
 clusterDomain: cluster.local
 
 ## Set default image, imageTag, and imagePullPolicy. mode is used to indicate the
 ##
+# -- (object) MinIO image configuration
 image:
+  # -- (string) MinIO image repository
   repository: docker.io/minio/minio
+  # -- (string) MinIO image tag (immutable tags are recommended)
   tag: RELEASE.2025-07-23T15-54-02Z
+  # -- (string) MinIO image pull policy
   pullPolicy: IfNotPresent
 
+# -- Global Docker registry secret names as an array (list)
 imagePullSecrets: []
 # - name: "image-pull-secret"
 
 ## Set default image, imageTag, and imagePullPolicy for the `mc` (the minio
 ## client used to create a default bucket).
 ##
+# -- (object) MinIO client image configuration
 mcImage:
+  # -- (string) MinIO client image repository
   repository: docker.io/minio/minio
+  # -- (string) MinIO client image tag
   tag: RELEASE.2025-07-23T15-54-02Z
+  # -- (string) MinIO client image pull policy
   pullPolicy: IfNotPresent
 
 ## minio mode, i.e. standalone or distributed
+# -- (string) MinIO mode (standalone or distributed)
 mode: distributed ## other supported values are "standalone"
 
 ## Additional labels to include with deployment or statefulset

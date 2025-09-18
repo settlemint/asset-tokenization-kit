@@ -35,9 +35,10 @@ spec:
       {{- if .Values.topologySpreadConstraints }}
       topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.topologySpreadConstraints "context" $) | nindent 8 }}
       {{- end }}
-      {{- with .Values.podSecurityContext }}
+      {{- $podSecurityContext := (include "atk.securityContext.pod" (dict "context" $ "local" .Values.podSecurityContext "chartKey" "portal")) | fromYaml }}
+      {{- if $podSecurityContext }}
       securityContext:
-        {{- toYaml . | nindent 8 }}
+        {{- toYaml $podSecurityContext | nindent 8 }}
       {{- end }}
       {{- if .Values.affinity }}
       affinity: {{- include "common.tplvalues.render" (dict "value" .Values.affinity "context" $) | nindent 8 }}
@@ -53,11 +54,8 @@ spec:
       {{- if .Values.tolerations }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tolerations "context" $) | nindent 8 }}
       {{- end }}
-      {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck) }}
-      {{- $legacyInit := "" }}
-      {{- if .Values.initContainers }}
-        {{- $legacyInit = include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) }}
-      {{- end }}
+      {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck "chartKey" "portal") }}
+      {{- $extraInit := .Values.extraInitContainers | default (list) }}
       initContainers:
         - name: copy-artifacts
           image: "{{ .Values.global.artifacts.image.registry }}/{{ .Values.global.artifacts.image.repository }}:{{ .Values.global.artifacts.image.tag }}"
@@ -77,23 +75,30 @@ spec:
           volumeMounts:
             - name: abis
               mountPath: /shared-abis
-          {{- with .Values.initContainer.copyArtifacts.securityContext }}
+          {{- $copyArtifactsSecurityContext := (include "atk.securityContext.container" (dict
+            "context" $
+            "local" (default (dict) .Values.initContainer.copyArtifacts.securityContext)
+            "chartKey" "portal"
+          )) | fromYaml }}
+          {{- if $copyArtifactsSecurityContext }}
+          # Ensure the artifacts image runs with numeric IDs derived from global defaults
           securityContext:
-            {{- toYaml . | nindent 12 }}
+            {{- toYaml $copyArtifactsSecurityContext | nindent 12 }}
           {{- end }}
         {{- if $waitForIt }}
 {{ $waitForIt | nindent 8 }}
         {{- end }}
-        {{- if $legacyInit }}
-{{ $legacyInit | nindent 8 }}
+        {{- if gt (len $extraInit) 0 }}
+{{ toYaml $extraInit | nindent 8 }}
         {{- end }}
       containers:
         - name: portal
           image: {{ include "common.images.image" (dict "imageRoot" .Values.image "global" .Values.global) }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- with .Values.containerSecurityContext }}
+          {{- $containerSecurityContext := (include "atk.securityContext.container" (dict "context" $ "local" .Values.containerSecurityContext "chartKey" "portal")) | fromYaml }}
+          {{- if $containerSecurityContext }}
           securityContext:
-            {{- toYaml . | nindent 12 }}
+            {{- toYaml $containerSecurityContext | nindent 12 }}
           {{- end }}
           {{- if .Values.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" $) | nindent 12 }}

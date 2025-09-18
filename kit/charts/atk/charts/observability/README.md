@@ -27,273 +27,46 @@ A Helm chart for the observability components
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| alloy.alloy.configMap.content | string | `"logging {\n  level  = \"info\"\n  format = \"logfmt\"\n}\n\ndiscovery.kubernetes \"kubernetes_nodes\" {\n  role = \"node\"\n}\n\ndiscovery.relabel \"kubernetes_nodes_cadvisor\" {\n  targets = discovery.kubernetes.kubernetes_nodes.targets\n\n  rule {\n    target_label = \"__address__\"\n    replacement  = \"kubernetes.default.svc:443\"\n  }\n\n  rule {\n    source_labels = [\"__meta_kubernetes_node_name\"]\n    regex         = \"(.+)\"\n    target_label  = \"__metrics_path__\"\n    replacement   = \"/api/v1/nodes/$1/proxy/metrics/cadvisor\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_uid\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_id\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_name\"\n    action      = \"labeldrop\"\n  }\n}\n\ndiscovery.relabel \"kubernetes_nodes\" {\n  targets = discovery.kubernetes.kubernetes_nodes.targets\n\n  rule {\n    target_label = \"__address__\"\n    replacement  = \"kubernetes.default.svc:443\"\n  }\n\n  rule {\n    source_labels = [\"__meta_kubernetes_node_name\"]\n    regex         = \"(.+)\"\n    target_label  = \"__metrics_path__\"\n    replacement   = \"/api/v1/nodes/$1/proxy/metrics\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_uid\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_id\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_name\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    replacement  = \"{{ .Values.clustername | default \"settlemint\" }}\"\n    target_label = \"cluster_name\"\n  }\n}\n\n\nprometheus.scrape \"kubernetes_nodes_cadvisor\" {\n  targets         = discovery.relabel.kubernetes_nodes_cadvisor.output\n  forward_to      = [{{if .Values.endpoints.internal.prometheus.enabled }}prometheus.remote_write.btp_metrics.receiver{{ end }}{{if .Values.endpoints.external.prometheus.enabled }}{{if .Values.endpoints.internal.prometheus.enabled }},{{ end }}prometheus.remote_write.btp_metrics_external.receiver{{ end }}]\n  job_name        = \"kubernetes-nodes-cadvisor\"\n  scrape_interval = \"15s\"\n  scheme          = \"https\"\n\n  authorization {\n    type             = \"Bearer\"\n    credentials_file = \"/var/run/secrets/kubernetes.io/serviceaccount/token\"\n  }\n\n  tls_config {\n    ca_file              = \"/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\"\n    insecure_skip_verify = true\n  }\n}\n\nprometheus.scrape \"kubernetes_nodes\" {\n  targets         = discovery.relabel.kubernetes_nodes.output\n  forward_to      = [{{if .Values.endpoints.internal.prometheus.enabled }}prometheus.remote_write.btp_metrics.receiver{{ end }}{{if .Values.endpoints.external.prometheus.enabled }}{{if .Values.endpoints.internal.prometheus.enabled }},{{ end }}prometheus.remote_write.btp_metrics_external.receiver{{ end }}]\n  job_name        = \"kubernetes-nodes\"\n  scrape_interval = \"15s\"\n  scheme          = \"https\"\n\n  authorization {\n    type             = \"Bearer\"\n    credentials_file = \"/var/run/secrets/kubernetes.io/serviceaccount/token\"\n  }\n\n  tls_config {\n    ca_file              = \"/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\"\n    insecure_skip_verify = true\n  }\n}\n\n{{- if .Values.endpoints.internal.prometheus.enabled }}\nprometheus.remote_write \"btp_metrics\" {\n    endpoint {\n        url = {{ .Values.endpoints.internal.prometheus.url | quote }}\n    }\n}\n{{- end }}\n\n{{- if .Values.endpoints.external.prometheus.enabled }}\nprometheus.remote_write \"btp_metrics_external\" {\n    endpoint {\n        url = {{ .Values.endpoints.external.prometheus.url | quote }}\n\n        {{- if and .Values.endpoints.external.prometheus.basicAuth.username .Values.endpoints.external.prometheus.basicAuth.password }}\n        basic_auth {\n          username = {{ .Values.endpoints.external.prometheus.basicAuth.username | quote }}\n          password = {{ .Values.endpoints.external.prometheus.basicAuth.password | quote }}\n        }\n        {{- end }}\n    }\n}\n{{- end }}\n\ndiscovery.kubernetes \"kubernetes_pods\" {\n  role = \"pod\"\n\n\n  selectors {\n    role  = \"pod\"\n    label = \"app.kubernetes.io/instance={{ .Release.Name }}\"\n  }\n\n}\n\ndiscovery.relabel \"kubernetes_pods\" {\n  targets = discovery.kubernetes.kubernetes_pods.targets\n\n  rule {\n    source_labels = [\"__meta_kubernetes_pod_annotation_prometheus_io_scheme\"]\n    regex         = \"(https?)\"\n    target_label  = \"__scheme__\"\n  }\n\n  rule {\n    source_labels = [\"__meta_kubernetes_pod_annotation_prometheus_io_path\"]\n    regex         = \"(.+)\"\n    target_label  = \"__metrics_path__\"\n  }\n\n  rule {\n    source_labels = [\"__address__\", \"__meta_kubernetes_pod_annotation_prometheus_io_port\"]\n    regex         = \"(.+?)(?::\\\\d+)?;(\\\\d+)\"\n    target_label  = \"__address__\"\n    replacement   = \"$1:$2\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_annotation_prometheus_io_param_(.+)\"\n    replacement = \"__param_$1\"\n    action      = \"labelmap\"\n  }\n\n  rule {\n    source_labels = [\"__meta_kubernetes_pod_label_app_kubernetes_io_component\"]\n    target_label  = \"component\"\n  }\n\n  rule {\n    source_labels = [\"__meta_kubernetes_namespace\"]\n    target_label  = \"namespace\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_uid\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_id\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_name\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    replacement  = \"{{ .Values.clustername | default \"settlemint\" }}\"\n    target_label = \"cluster_name\"\n  }\n\n}\n\nprometheus.scrape \"kubernetes_pods\" {\n  targets         = discovery.relabel.kubernetes_pods.output\n  forward_to      = [{{if .Values.endpoints.internal.prometheus.enabled }}prometheus.remote_write.btp_metrics.receiver{{ end }}{{if .Values.endpoints.external.prometheus.enabled }}{{if .Values.endpoints.internal.prometheus.enabled }},{{ end }}prometheus.remote_write.btp_metrics_external.receiver{{ end }}]\n  job_name        = \"kubernetes-pods\"\n  honor_labels    = true\n  scrape_interval = \"15s\"\n}\n\nloki.source.kubernetes \"kubernetes_pods\" {\n  targets    = discovery.relabel.kubernetes_pods.output\n  forward_to = [{{ if .Values.endpoints.internal.loki.enabled }}loki.process.redact_tokens.receiver{{ end }}{{ if .Values.endpoints.external.loki.enabled }}{{ if .Values.endpoints.internal.loki.enabled }},{{ end }}loki.process.redact_tokens_external.receiver{{ end }}]\n}\n\n{{- if .Values.endpoints.internal.loki.enabled }}\nloki.process \"redact_tokens\" {\n  forward_to = [loki.secretfilter.secret_filter.receiver]\n  stage.replace {\n    expression = \"(?i)sm_\\\\S+_[0-9a-zA-Z]{3}([0-9a-zA-Z]+)\"\n    replace = \"****\"\n  }\n}\n\nloki.secretfilter \"secret_filter\" {\n  forward_to  = [loki.write.btp_logs.receiver]\n  redact_with = \"<ALLOY-REDACTED-SECRET:$SECRET_NAME:$SECRET_HASH>\"\n}\n\nloki.write \"btp_logs\" {\n  endpoint {\n    url = {{ .Values.endpoints.internal.loki.url | quote }}\n  }\n}\n{{- end }}\n\n{{- if .Values.endpoints.external.loki.enabled }}\nloki.process \"redact_tokens_external\" {\n  forward_to = [loki.secretfilter.secret_filter_external.receiver]\n  stage.replace {\n    expression = \"(?i)sm_\\\\S+_[0-9a-zA-Z]{3}([0-9a-zA-Z]+)\"\n    replace = \"****\"\n  }\n}\n\nloki.secretfilter \"secret_filter_external\" {\n  forward_to  = [loki.write.btp_logs_external.receiver]\n  redact_with = \"<ALLOY-REDACTED-SECRET:$SECRET_NAME:$SECRET_HASH>\"\n}\n\nloki.write \"btp_logs_external\" {\n  endpoint {\n    url = {{ .Values.endpoints.external.loki.url | quote }}\n\n    {{- if and .Values.endpoints.external.loki.basicAuth.username .Values.endpoints.external.loki.basicAuth.password }}\n    basic_auth {\n      username = {{ .Values.endpoints.external.loki.basicAuth.username | quote }}\n      password = {{ .Values.endpoints.external.loki.basicAuth.password | quote }}\n    }\n    {{- end }}\n  }\n}\n{{- end }}\n\notelcol.receiver.otlp \"atk_traces\" {\n  grpc {\n    endpoint = \"0.0.0.0:4317\"\n  }\n\n  http {\n    endpoint = \"0.0.0.0:4318\"\n  }\n\n  output {\n    traces  = [otelcol.processor.batch.atk_traces.input]\n  }\n}\n\notelcol.processor.batch \"atk_traces\" {\n  send_batch_size = 16384\n  send_batch_max_size = 16384\n  timeout = \"2s\"\n\n  output {\n    traces  = [{{ if .Values.endpoints.internal.otel.enabled }}otelcol.exporter.otlphttp.atk_traces_internal.input{{ end }}{{ if .Values.endpoints.external.otel.enabled }}{{ if .Values.endpoints.internal.otel.enabled }},{{ end }}otelcol.exporter.otlphttp.atk_traces_external.input{{ end }}]\n  }\n}\n\n{{- if .Values.endpoints.internal.otel.enabled }}\notelcol.exporter.otlphttp \"atk_traces_internal\" {\n  client {\n    endpoint = {{ .Values.endpoints.internal.otel.url | quote }}\n    tls {\n      insecure             = true\n      insecure_skip_verify = true\n    }\n  }\n}\n{{- end }}\n\n{{- if .Values.endpoints.external.otel.enabled }}\notelcol.exporter.otlp \"atk_traces_external\" {\n  client {\n    endpoint = {{ .Values.endpoints.external.otel.url | quote }}\n\n\n    {{- if and .Values.endpoints.external.otel.basicAuth.username .Values.endpoints.external.otel.basicAuth.password }}\n    auth     = otelcol.auth.basic.atk_traces_external.handler\n    {{- end }}\n  }\n}\n\n{{- if and .Values.endpoints.external.otel.basicAuth.username .Values.endpoints.external.otel.basicAuth.password }}\notelcol.auth.basic \"atk_traces_external\" {\n  username = {{ .Values.endpoints.external.otel.basicAuth.username | quote }}\n  password = {{ .Values.endpoints.external.otel.basicAuth.password | quote }}\n}\n{{- end }}\n\n{{- end }}\n"` |  |
-| alloy.alloy.enableReporting | bool | `false` |  |
-| alloy.alloy.extraPorts[0].name | string | `"otel-grpc"` |  |
-| alloy.alloy.extraPorts[0].port | int | `4317` |  |
-| alloy.alloy.extraPorts[0].protocol | string | `"TCP"` |  |
-| alloy.alloy.extraPorts[0].targetPort | int | `4317` |  |
-| alloy.alloy.extraPorts[1].name | string | `"otel-http"` |  |
-| alloy.alloy.extraPorts[1].port | int | `4318` |  |
-| alloy.alloy.extraPorts[1].protocol | string | `"TCP"` |  |
-| alloy.alloy.extraPorts[1].targetPort | int | `4318` |  |
-| alloy.alloy.resources | object | `{}` |  |
-| alloy.alloy.stabilityLevel | string | `"experimental"` |  |
-| alloy.clustername | string | `""` |  |
-| alloy.configReloader.image.registry | string | `"ghcr.io"` |  |
-| alloy.controller.type | string | `"deployment"` |  |
-| alloy.crds.create | bool | `false` |  |
-| alloy.enabled | bool | `true` |  |
-| alloy.endpoints.external.loki.basicAuth.password | string | `nil` |  |
-| alloy.endpoints.external.loki.basicAuth.username | string | `nil` |  |
-| alloy.endpoints.external.loki.enabled | bool | `false` |  |
-| alloy.endpoints.external.loki.url | string | `""` |  |
-| alloy.endpoints.external.otel.basicAuth.password | string | `nil` |  |
-| alloy.endpoints.external.otel.basicAuth.username | string | `nil` |  |
-| alloy.endpoints.external.otel.enabled | bool | `false` |  |
-| alloy.endpoints.external.otel.url | string | `""` |  |
-| alloy.endpoints.external.prometheus.basicAuth.password | string | `nil` |  |
-| alloy.endpoints.external.prometheus.basicAuth.username | string | `nil` |  |
-| alloy.endpoints.external.prometheus.enabled | bool | `false` |  |
-| alloy.endpoints.external.prometheus.url | string | `""` |  |
-| alloy.endpoints.internal.loki.enabled | bool | `true` |  |
-| alloy.endpoints.internal.loki.url | string | `"http://logs:3100/loki/api/v1/push"` |  |
-| alloy.endpoints.internal.otel.enabled | bool | `true` |  |
-| alloy.endpoints.internal.otel.url | string | `"http://tempo:4318"` |  |
-| alloy.endpoints.internal.prometheus.enabled | bool | `true` |  |
-| alloy.endpoints.internal.prometheus.url | string | `"http://metrics:8428/api/v1/write"` |  |
-| alloy.fullnameOverride | string | `"alloy"` |  |
-| alloy.global.image.pullSecrets | list | `[]` |  |
-| alloy.image.registry | string | `"docker.io"` |  |
-| grafana.adminPassword | string | `"atk"` |  |
-| grafana.adminUser | string | `"settlemint"` |  |
-| grafana.datasources."datasources.yaml".apiVersion | int | `1` |  |
-| grafana.datasources."datasources.yaml".datasources[0].access | string | `"proxy"` |  |
-| grafana.datasources."datasources.yaml".datasources[0].isDefault | bool | `true` |  |
-| grafana.datasources."datasources.yaml".datasources[0].name | string | `"Prometheus"` |  |
-| grafana.datasources."datasources.yaml".datasources[0].type | string | `"prometheus"` |  |
-| grafana.datasources."datasources.yaml".datasources[0].uid | string | `"prometheus"` |  |
-| grafana.datasources."datasources.yaml".datasources[0].url | string | `"http://metrics:8428"` |  |
-| grafana.datasources."datasources.yaml".datasources[1].access | string | `"proxy"` |  |
-| grafana.datasources."datasources.yaml".datasources[1].isDefault | bool | `false` |  |
-| grafana.datasources."datasources.yaml".datasources[1].jsonData.derivedFields[0].datasourceUid | string | `"tempo"` |  |
-| grafana.datasources."datasources.yaml".datasources[1].jsonData.derivedFields[0].matcherRegex | string | `"^.*?traceI[d|D]=(\\w+).*$"` |  |
-| grafana.datasources."datasources.yaml".datasources[1].jsonData.derivedFields[0].name | string | `"traceId"` |  |
-| grafana.datasources."datasources.yaml".datasources[1].jsonData.derivedFields[0].url | string | `"$${__value.raw}"` |  |
-| grafana.datasources."datasources.yaml".datasources[1].jsonData.maxLines | int | `1000` |  |
-| grafana.datasources."datasources.yaml".datasources[1].jsonData.timeout | int | `60` |  |
-| grafana.datasources."datasources.yaml".datasources[1].name | string | `"Loki"` |  |
-| grafana.datasources."datasources.yaml".datasources[1].type | string | `"loki"` |  |
-| grafana.datasources."datasources.yaml".datasources[1].uid | string | `"loki"` |  |
-| grafana.datasources."datasources.yaml".datasources[1].url | string | `"http://logs:3100"` |  |
-| grafana.datasources."datasources.yaml".datasources[2].access | string | `"proxy"` |  |
-| grafana.datasources."datasources.yaml".datasources[2].database | string | `"thegraph"` |  |
-| grafana.datasources."datasources.yaml".datasources[2].isDefault | bool | `false` |  |
-| grafana.datasources."datasources.yaml".datasources[2].jsonData.postgresVersion | int | `15` |  |
-| grafana.datasources."datasources.yaml".datasources[2].jsonData.sslmode | string | `"disable"` |  |
-| grafana.datasources."datasources.yaml".datasources[2].jsonData.timescaledb | bool | `false` |  |
-| grafana.datasources."datasources.yaml".datasources[2].name | string | `"PostgreSQL"` |  |
-| grafana.datasources."datasources.yaml".datasources[2].secureJsonData.password | string | `"atk"` |  |
-| grafana.datasources."datasources.yaml".datasources[2].type | string | `"postgres"` |  |
-| grafana.datasources."datasources.yaml".datasources[2].uid | string | `"postgres"` |  |
-| grafana.datasources."datasources.yaml".datasources[2].url | string | `"postgresql:5432"` |  |
-| grafana.datasources."datasources.yaml".datasources[2].user | string | `"thegraph"` |  |
-| grafana.enabled | bool | `true` |  |
-| grafana.fullnameOverride | string | `"grafana"` |  |
-| grafana.global.imagePullSecrets | list | `[]` |  |
-| grafana.global.imageRegistry | string | `"docker.io"` |  |
-| grafana.ingress.enabled | bool | `true` |  |
-| grafana.ingress.hosts[0] | string | `"grafana.k8s.orb.local"` |  |
-| grafana.ingress.ingressClassName | string | `"atk-nginx"` |  |
-| grafana.initChownData.enabled | bool | `false` |  |
-| grafana.persistence.enabled | bool | `false` |  |
-| grafana.persistence.size | string | `"1Gi"` |  |
-| grafana.plugins[0] | string | `"https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip;grafana-lokiexplore-app"` |  |
-| grafana.podLabels."app.kubernetes.io/managed-by" | string | `"helm"` |  |
-| grafana.podLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
-| grafana.sidecar.alerts.enabled | bool | `false` |  |
-| grafana.sidecar.alerts.label | string | `"grafana_alert"` |  |
-| grafana.sidecar.alerts.labelValue | string | `"1"` |  |
-| grafana.sidecar.alerts.searchNamespace | string | `"ALL"` |  |
-| grafana.sidecar.alerts.slackChannel | string | `""` |  |
-| grafana.sidecar.alerts.slackUrl | string | `""` |  |
-| grafana.sidecar.alerts.slackUsername | string | `""` |  |
-| grafana.sidecar.dashboards.enabled | bool | `true` |  |
-| grafana.sidecar.dashboards.folderAnnotation | string | `"grafana_folder"` |  |
-| grafana.sidecar.dashboards.provider.allowUiUpdates | bool | `true` |  |
-| grafana.sidecar.dashboards.provider.foldersFromFilesStructure | bool | `true` |  |
-| grafana.sidecar.dashboards.searchNamespace | string | `"ALL"` |  |
-| grafana.sidecar.datasources.enabled | bool | `true` |  |
-| grafana.sidecar.datasources.initDatasources | bool | `true` |  |
-| grafana.sidecar.plugins.enabled | bool | `true` |  |
-| kube-state-metrics.customLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
-| kube-state-metrics.enabled | bool | `true` |  |
-| kube-state-metrics.fullnameOverride | string | `"kube-state-metrics"` |  |
-| kube-state-metrics.image.registry | string | `"registry.k8s.io"` |  |
-| kube-state-metrics.imagePullSecrets | list | `[]` |  |
-| kube-state-metrics.metricLabelsAllowlist[0] | string | `"pods=[*]"` |  |
-| kube-state-metrics.metricLabelsAllowlist[1] | string | `"ingresses=[*]"` |  |
-| kube-state-metrics.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
-| loki.backend.replicas | int | `0` |  |
-| loki.bloomCompactor.replicas | int | `0` |  |
-| loki.bloomGateway.replicas | int | `0` |  |
-| loki.chunksCache.allocatedMemory | int | `1024` |  |
-| loki.chunksCache.enabled | bool | `false` |  |
-| loki.chunksCache.writebackSizeLimit | string | `"100MB"` |  |
-| loki.compactor.replicas | int | `0` |  |
-| loki.deploymentMode | string | `"SingleBinary"` |  |
-| loki.distributor.replicas | int | `0` |  |
-| loki.enabled | bool | `true` |  |
-| loki.fullnameOverride | string | `"logs"` |  |
-| loki.gateway.affinity.podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution | string | `nil` |  |
-| loki.gateway.ingress.annotations."nginx.ingress.kubernetes.io/auth-realm" | string | `"Authentication Required - Logs"` |  |
-| loki.gateway.ingress.annotations."nginx.ingress.kubernetes.io/auth-secret" | string | `"observability-logs"` |  |
-| loki.gateway.ingress.annotations."nginx.ingress.kubernetes.io/auth-type" | string | `"basic"` |  |
-| loki.gateway.ingress.annotations."nginx.ingress.kubernetes.io/client-body-buffer-size" | string | `"500m"` |  |
-| loki.gateway.ingress.annotations."nginx.ingress.kubernetes.io/proxy-body-size" | string | `"500m"` |  |
-| loki.gateway.ingress.annotations."nginx.ingress.kubernetes.io/proxy-read-timeout" | string | `"3600"` |  |
-| loki.gateway.ingress.annotations."nginx.ingress.kubernetes.io/proxy-send-timeout" | string | `"3600"` |  |
-| loki.gateway.ingress.enabled | bool | `false` |  |
-| loki.gateway.ingress.hosts[0].host | string | `"logs.settlemint.local"` |  |
-| loki.gateway.ingress.hosts[0].paths[0].path | string | `"/"` |  |
-| loki.gateway.ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
-| loki.gateway.ingress.ingressClassName | string | `"atk-nginx"` |  |
-| loki.global.image.registry | string | `"docker.io"` |  |
-| loki.imagePullSecrets | list | `[]` |  |
-| loki.indexGateway.replicas | int | `0` |  |
-| loki.ingester.replicas | int | `0` |  |
-| loki.loki.auth_enabled | bool | `false` |  |
-| loki.loki.commonConfig.replication_factor | int | `1` |  |
-| loki.loki.compactor.compaction_interval | string | `"60m"` |  |
-| loki.loki.compactor.delete_request_store | string | `"filesystem"` |  |
-| loki.loki.compactor.retention_delete_delay | string | `"2h"` |  |
-| loki.loki.compactor.retention_delete_worker_count | int | `150` |  |
-| loki.loki.compactor.retention_enabled | bool | `true` |  |
-| loki.loki.compactor.working_directory | string | `"/var/loki/retention"` |  |
-| loki.loki.ingester.chunk_encoding | string | `"snappy"` |  |
-| loki.loki.limits_config.allow_structured_metadata | bool | `true` |  |
-| loki.loki.limits_config.cardinality_limit | int | `200000` |  |
-| loki.loki.limits_config.ingestion_burst_size_mb | int | `1000` |  |
-| loki.loki.limits_config.ingestion_rate_mb | int | `1000` |  |
-| loki.loki.limits_config.max_entries_limit_per_query | int | `1000000` |  |
-| loki.loki.limits_config.max_global_streams_per_user | int | `10000` |  |
-| loki.loki.limits_config.max_label_name_length | int | `10240` |  |
-| loki.loki.limits_config.max_label_names_per_series | int | `300` |  |
-| loki.loki.limits_config.max_label_value_length | int | `20480` |  |
-| loki.loki.limits_config.max_line_size | int | `100982429` |  |
-| loki.loki.limits_config.max_query_parallelism | int | `2` |  |
-| loki.loki.limits_config.max_query_series | int | `10000` |  |
-| loki.loki.limits_config.per_stream_rate_limit | string | `"512M"` |  |
-| loki.loki.limits_config.per_stream_rate_limit_burst | string | `"1024M"` |  |
-| loki.loki.limits_config.reject_old_samples | bool | `true` |  |
-| loki.loki.limits_config.reject_old_samples_max_age | string | `"24h"` |  |
-| loki.loki.limits_config.retention_period | string | `"168h"` |  |
-| loki.loki.limits_config.split_queries_by_interval | string | `"15m"` |  |
-| loki.loki.limits_config.volume_enabled | bool | `true` |  |
-| loki.loki.pattern_receiver.enabled | bool | `true` |  |
-| loki.loki.querier.max_concurrent | int | `2` |  |
-| loki.loki.schemaConfig.configs[0].from | string | `"2024-04-01"` |  |
-| loki.loki.schemaConfig.configs[0].index.period | string | `"24h"` |  |
-| loki.loki.schemaConfig.configs[0].index.prefix | string | `"loki_index_"` |  |
-| loki.loki.schemaConfig.configs[0].object_store | string | `"filesystem"` |  |
-| loki.loki.schemaConfig.configs[0].schema | string | `"v13"` |  |
-| loki.loki.schemaConfig.configs[0].store | string | `"tsdb"` |  |
-| loki.loki.server.grpc_server_max_recv_msg_size | int | `100982429` |  |
-| loki.loki.server.grpc_server_max_send_msg_size | int | `100982429` |  |
-| loki.loki.storage.type | string | `"filesystem"` |  |
-| loki.loki.tracing.enabled | bool | `true` |  |
-| loki.lokiCanary.enabled | bool | `false` |  |
-| loki.memcached.image.repository | string | `"docker.io/library/memcached"` |  |
-| loki.memcachedExporter.image.repository | string | `"docker.io/prom/memcached-exporter"` |  |
-| loki.minio.enabled | bool | `false` |  |
-| loki.querier.replicas | int | `0` |  |
-| loki.queryFrontend.replicas | int | `0` |  |
-| loki.queryScheduler.replicas | int | `0` |  |
-| loki.read.replicas | int | `0` |  |
-| loki.resultsCache.enabled | bool | `false` |  |
+| alloy | object | `{"alloy":{"configMap":{"content":"logging {\n  level  = \"info\"\n  format = \"logfmt\"\n}\n\ndiscovery.kubernetes \"kubernetes_nodes\" {\n  role = \"node\"\n}\n\ndiscovery.relabel \"kubernetes_nodes_cadvisor\" {\n  targets = discovery.kubernetes.kubernetes_nodes.targets\n\n  rule {\n    target_label = \"__address__\"\n    replacement  = \"kubernetes.default.svc:443\"\n  }\n\n  rule {\n    source_labels = [\"__meta_kubernetes_node_name\"]\n    regex         = \"(.+)\"\n    target_label  = \"__metrics_path__\"\n    replacement   = \"/api/v1/nodes/$1/proxy/metrics/cadvisor\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_uid\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_id\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_name\"\n    action      = \"labeldrop\"\n  }\n}\n\ndiscovery.relabel \"kubernetes_nodes\" {\n  targets = discovery.kubernetes.kubernetes_nodes.targets\n\n  rule {\n    target_label = \"__address__\"\n    replacement  = \"kubernetes.default.svc:443\"\n  }\n\n  rule {\n    source_labels = [\"__meta_kubernetes_node_name\"]\n    regex         = \"(.+)\"\n    target_label  = \"__metrics_path__\"\n    replacement   = \"/api/v1/nodes/$1/proxy/metrics\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_uid\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_id\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_name\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    replacement  = \"{{ .Values.clustername | default \"settlemint\" }}\"\n    target_label = \"cluster_name\"\n  }\n}\n\n\nprometheus.scrape \"kubernetes_nodes_cadvisor\" {\n  targets         = discovery.relabel.kubernetes_nodes_cadvisor.output\n  forward_to      = [{{if .Values.endpoints.internal.prometheus.enabled }}prometheus.remote_write.btp_metrics.receiver{{ end }}{{if .Values.endpoints.external.prometheus.enabled }}{{if .Values.endpoints.internal.prometheus.enabled }},{{ end }}prometheus.remote_write.btp_metrics_external.receiver{{ end }}]\n  job_name        = \"kubernetes-nodes-cadvisor\"\n  scrape_interval = \"15s\"\n  scheme          = \"https\"\n\n  authorization {\n    type             = \"Bearer\"\n    credentials_file = \"/var/run/secrets/kubernetes.io/serviceaccount/token\"\n  }\n\n  tls_config {\n    ca_file              = \"/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\"\n    insecure_skip_verify = true\n  }\n}\n\nprometheus.scrape \"kubernetes_nodes\" {\n  targets         = discovery.relabel.kubernetes_nodes.output\n  forward_to      = [{{if .Values.endpoints.internal.prometheus.enabled }}prometheus.remote_write.btp_metrics.receiver{{ end }}{{if .Values.endpoints.external.prometheus.enabled }}{{if .Values.endpoints.internal.prometheus.enabled }},{{ end }}prometheus.remote_write.btp_metrics_external.receiver{{ end }}]\n  job_name        = \"kubernetes-nodes\"\n  scrape_interval = \"15s\"\n  scheme          = \"https\"\n\n  authorization {\n    type             = \"Bearer\"\n    credentials_file = \"/var/run/secrets/kubernetes.io/serviceaccount/token\"\n  }\n\n  tls_config {\n    ca_file              = \"/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\"\n    insecure_skip_verify = true\n  }\n}\n\n{{- if .Values.endpoints.internal.prometheus.enabled }}\nprometheus.remote_write \"btp_metrics\" {\n    endpoint {\n        url = {{ .Values.endpoints.internal.prometheus.url | quote }}\n    }\n}\n{{- end }}\n\n{{- if .Values.endpoints.external.prometheus.enabled }}\nprometheus.remote_write \"btp_metrics_external\" {\n    endpoint {\n        url = {{ .Values.endpoints.external.prometheus.url | quote }}\n\n        {{- if and .Values.endpoints.external.prometheus.basicAuth.username .Values.endpoints.external.prometheus.basicAuth.password }}\n        basic_auth {\n          username = {{ .Values.endpoints.external.prometheus.basicAuth.username | quote }}\n          password = {{ .Values.endpoints.external.prometheus.basicAuth.password | quote }}\n        }\n        {{- end }}\n    }\n}\n{{- end }}\n\ndiscovery.kubernetes \"kubernetes_pods\" {\n  role = \"pod\"\n\n\n  selectors {\n    role  = \"pod\"\n    label = \"app.kubernetes.io/instance={{ .Release.Name }}\"\n  }\n\n}\n\ndiscovery.relabel \"kubernetes_pods\" {\n  targets = discovery.kubernetes.kubernetes_pods.targets\n\n  rule {\n    source_labels = [\"__meta_kubernetes_pod_annotation_prometheus_io_scheme\"]\n    regex         = \"(https?)\"\n    target_label  = \"__scheme__\"\n  }\n\n  rule {\n    source_labels = [\"__meta_kubernetes_pod_annotation_prometheus_io_path\"]\n    regex         = \"(.+)\"\n    target_label  = \"__metrics_path__\"\n  }\n\n  rule {\n    source_labels = [\"__address__\", \"__meta_kubernetes_pod_annotation_prometheus_io_port\"]\n    regex         = \"(.+?)(?::\\\\d+)?;(\\\\d+)\"\n    target_label  = \"__address__\"\n    replacement   = \"$1:$2\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_annotation_prometheus_io_param_(.+)\"\n    replacement = \"__param_$1\"\n    action      = \"labelmap\"\n  }\n\n  rule {\n    source_labels = [\"__meta_kubernetes_pod_label_app_kubernetes_io_component\"]\n    target_label  = \"component\"\n  }\n\n  rule {\n    source_labels = [\"__meta_kubernetes_namespace\"]\n    target_label  = \"namespace\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_uid\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_id\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_name\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    replacement  = \"{{ .Values.clustername | default \"settlemint\" }}\"\n    target_label = \"cluster_name\"\n  }\n\n}\n\nprometheus.scrape \"kubernetes_pods\" {\n  targets         = discovery.relabel.kubernetes_pods.output\n  forward_to      = [{{if .Values.endpoints.internal.prometheus.enabled }}prometheus.remote_write.btp_metrics.receiver{{ end }}{{if .Values.endpoints.external.prometheus.enabled }}{{if .Values.endpoints.internal.prometheus.enabled }},{{ end }}prometheus.remote_write.btp_metrics_external.receiver{{ end }}]\n  job_name        = \"kubernetes-pods\"\n  honor_labels    = true\n  scrape_interval = \"15s\"\n}\n\nloki.source.kubernetes \"kubernetes_pods\" {\n  targets    = discovery.relabel.kubernetes_pods.output\n  forward_to = [{{ if .Values.endpoints.internal.loki.enabled }}loki.process.redact_tokens.receiver{{ end }}{{ if .Values.endpoints.external.loki.enabled }}{{ if .Values.endpoints.internal.loki.enabled }},{{ end }}loki.process.redact_tokens_external.receiver{{ end }}]\n}\n\n{{- if .Values.endpoints.internal.loki.enabled }}\nloki.process \"redact_tokens\" {\n  forward_to = [loki.secretfilter.secret_filter.receiver]\n  stage.replace {\n    expression = \"(?i)sm_\\\\S+_[0-9a-zA-Z]{3}([0-9a-zA-Z]+)\"\n    replace = \"****\"\n  }\n}\n\nloki.secretfilter \"secret_filter\" {\n  forward_to  = [loki.write.btp_logs.receiver]\n  redact_with = \"<ALLOY-REDACTED-SECRET:$SECRET_NAME:$SECRET_HASH>\"\n}\n\nloki.write \"btp_logs\" {\n  endpoint {\n    url = {{ .Values.endpoints.internal.loki.url | quote }}\n  }\n}\n{{- end }}\n\n{{- if .Values.endpoints.external.loki.enabled }}\nloki.process \"redact_tokens_external\" {\n  forward_to = [loki.secretfilter.secret_filter_external.receiver]\n  stage.replace {\n    expression = \"(?i)sm_\\\\S+_[0-9a-zA-Z]{3}([0-9a-zA-Z]+)\"\n    replace = \"****\"\n  }\n}\n\nloki.secretfilter \"secret_filter_external\" {\n  forward_to  = [loki.write.btp_logs_external.receiver]\n  redact_with = \"<ALLOY-REDACTED-SECRET:$SECRET_NAME:$SECRET_HASH>\"\n}\n\nloki.write \"btp_logs_external\" {\n  endpoint {\n    url = {{ .Values.endpoints.external.loki.url | quote }}\n\n    {{- if and .Values.endpoints.external.loki.basicAuth.username .Values.endpoints.external.loki.basicAuth.password }}\n    basic_auth {\n      username = {{ .Values.endpoints.external.loki.basicAuth.username | quote }}\n      password = {{ .Values.endpoints.external.loki.basicAuth.password | quote }}\n    }\n    {{- end }}\n  }\n}\n{{- end }}\n\notelcol.receiver.otlp \"atk_traces\" {\n  grpc {\n    endpoint = \"0.0.0.0:4317\"\n  }\n\n  http {\n    endpoint = \"0.0.0.0:4318\"\n  }\n\n  output {\n    traces  = [otelcol.processor.batch.atk_traces.input]\n  }\n}\n\notelcol.processor.batch \"atk_traces\" {\n  send_batch_size = 16384\n  send_batch_max_size = 16384\n  timeout = \"2s\"\n\n  output {\n    traces  = [{{ if .Values.endpoints.internal.otel.enabled }}otelcol.exporter.otlphttp.atk_traces_internal.input{{ end }}{{ if .Values.endpoints.external.otel.enabled }}{{ if .Values.endpoints.internal.otel.enabled }},{{ end }}otelcol.exporter.otlphttp.atk_traces_external.input{{ end }}]\n  }\n}\n\n{{- if .Values.endpoints.internal.otel.enabled }}\notelcol.exporter.otlphttp \"atk_traces_internal\" {\n  client {\n    endpoint = {{ .Values.endpoints.internal.otel.url | quote }}\n    tls {\n      insecure             = true\n      insecure_skip_verify = true\n    }\n  }\n}\n{{- end }}\n\n{{- if .Values.endpoints.external.otel.enabled }}\notelcol.exporter.otlp \"atk_traces_external\" {\n  client {\n    endpoint = {{ .Values.endpoints.external.otel.url | quote }}\n\n\n    {{- if and .Values.endpoints.external.otel.basicAuth.username .Values.endpoints.external.otel.basicAuth.password }}\n    auth     = otelcol.auth.basic.atk_traces_external.handler\n    {{- end }}\n  }\n}\n\n{{- if and .Values.endpoints.external.otel.basicAuth.username .Values.endpoints.external.otel.basicAuth.password }}\notelcol.auth.basic \"atk_traces_external\" {\n  username = {{ .Values.endpoints.external.otel.basicAuth.username | quote }}\n  password = {{ .Values.endpoints.external.otel.basicAuth.password | quote }}\n}\n{{- end }}\n\n{{- end }}\n"},"enableReporting":false,"extraPorts":[{"name":"otel-grpc","port":4317,"protocol":"TCP","targetPort":4317},{"name":"otel-http","port":4318,"protocol":"TCP","targetPort":4318}],"resources":{},"stabilityLevel":"experimental"},"clustername":"","configReloader":{"image":{"registry":"ghcr.io"}},"controller":{"type":"deployment"},"crds":{"create":false},"enabled":true,"endpoints":{"external":{"loki":{"basicAuth":{"password":null,"username":null},"enabled":false,"url":""},"otel":{"basicAuth":{"password":null,"username":null},"enabled":false,"url":""},"prometheus":{"basicAuth":{"password":null,"username":null},"enabled":false,"url":""}},"internal":{"loki":{"enabled":true,"url":"http://logs:3100/loki/api/v1/push"},"otel":{"enabled":true,"url":"http://tempo:4318"},"prometheus":{"enabled":true,"url":"http://metrics:8428/api/v1/write"}}},"fullnameOverride":"alloy","global":{"image":{"pullSecrets":[]}},"image":{"registry":"docker.io"}}` | Alloy configuration |
+| grafana | object | `{"adminPassword":"atk","adminUser":"settlemint","datasources":{"datasources.yaml":{"apiVersion":1,"datasources":[{"access":"proxy","isDefault":true,"name":"Prometheus","type":"prometheus","uid":"prometheus","url":"http://metrics:8428"},{"access":"proxy","isDefault":false,"jsonData":{"derivedFields":[{"datasourceUid":"tempo","matcherRegex":"^.*?traceI[d|D]=(\\w+).*$","name":"traceId","url":"$${__value.raw}"}],"maxLines":1000,"timeout":60},"name":"Loki","type":"loki","uid":"loki","url":"http://logs:3100"},{"access":"proxy","database":"thegraph","isDefault":false,"jsonData":{"postgresVersion":15,"sslmode":"disable","timescaledb":false},"name":"PostgreSQL","secureJsonData":{"password":"atk"},"type":"postgres","uid":"postgres","url":"postgresql:5432","user":"thegraph"}]}},"enabled":true,"fullnameOverride":"grafana","global":{"imagePullSecrets":[],"imageRegistry":"docker.io"},"ingress":{"enabled":true,"hosts":["grafana.k8s.orb.local"],"ingressClassName":"atk-nginx"},"initChownData":{"enabled":false},"persistence":{"enabled":false,"size":"1Gi"},"plugins":["https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip;grafana-lokiexplore-app"],"podLabels":{"app.kubernetes.io/managed-by":"helm","kots.io/app-slug":"settlemint-atk"},"sidecar":{"alerts":{"enabled":false,"label":"grafana_alert","labelValue":"1","searchNamespace":"ALL","slackChannel":"","slackUrl":"","slackUsername":""},"dashboards":{"enabled":true,"folderAnnotation":"grafana_folder","provider":{"allowUiUpdates":true,"foldersFromFilesStructure":true},"searchNamespace":"ALL"},"datasources":{"enabled":true,"initDatasources":true},"plugins":{"enabled":true}}}` | Grafana configuration |
+| kube-state-metrics | object | `{"customLabels":{"kots.io/app-slug":"settlemint-atk"},"enabled":true,"fullnameOverride":"kube-state-metrics","image":{"registry":"registry.k8s.io"},"imagePullSecrets":[],"metricLabelsAllowlist":["pods=[*]","ingresses=[*]"],"podAnnotations":{"prometheus.io/scrape":"true"}}` | Kube State Metrics configuration |
+| kube-state-metrics.customLabels | object | `{"kots.io/app-slug":"settlemint-atk"}` | Custom labels to add to all resources |
+| kube-state-metrics.enabled | bool | `true` | Enable kube-state-metrics deployment |
+| kube-state-metrics.fullnameOverride | string | `"kube-state-metrics"` | String to fully override common.names.fullname (string) |
+| kube-state-metrics.image | object | `{"registry":"registry.k8s.io"}` | Kube state metrics image configuration |
+| kube-state-metrics.image.registry | string | `"registry.k8s.io"` | Kube state metrics image registry |
+| kube-state-metrics.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array (list) |
+| kube-state-metrics.metricLabelsAllowlist | list | `["pods=[*]","ingresses=[*]"]` | Allow list for metric labels |
+| kube-state-metrics.podAnnotations | object | `{"prometheus.io/scrape":"true"}` | Annotations for kube-state-metrics pods |
+| loki | object | `{"backend":{"replicas":0},"bloomCompactor":{"replicas":0},"bloomGateway":{"replicas":0},"chunksCache":{"allocatedMemory":1024,"enabled":false,"writebackSizeLimit":"100MB"},"compactor":{"replicas":0},"deploymentMode":"SingleBinary","distributor":{"replicas":0},"enabled":true,"fullnameOverride":"logs","gateway":{"affinity":{"podAntiAffinity":{"requiredDuringSchedulingIgnoredDuringExecution":null}},"ingress":{"annotations":{"nginx.ingress.kubernetes.io/auth-realm":"Authentication Required - Logs","nginx.ingress.kubernetes.io/auth-secret":"observability-logs","nginx.ingress.kubernetes.io/auth-type":"basic","nginx.ingress.kubernetes.io/client-body-buffer-size":"500m","nginx.ingress.kubernetes.io/proxy-body-size":"500m","nginx.ingress.kubernetes.io/proxy-read-timeout":"3600","nginx.ingress.kubernetes.io/proxy-send-timeout":"3600"},"enabled":false,"hosts":[{"host":"logs.settlemint.local","paths":[{"path":"/","pathType":"Prefix"}]}],"ingressClassName":"atk-nginx"}},"global":{"image":{"registry":"docker.io"}},"imagePullSecrets":[],"indexGateway":{"replicas":0},"ingester":{"replicas":0},"loki":{"auth_enabled":false,"commonConfig":{"replication_factor":1},"compactor":{"compaction_interval":"60m","delete_request_store":"filesystem","retention_delete_delay":"2h","retention_delete_worker_count":150,"retention_enabled":true,"working_directory":"/var/loki/retention"},"ingester":{"chunk_encoding":"snappy"},"limits_config":{"allow_structured_metadata":true,"cardinality_limit":200000,"ingestion_burst_size_mb":1000,"ingestion_rate_mb":1000,"max_entries_limit_per_query":1000000,"max_global_streams_per_user":10000,"max_label_name_length":10240,"max_label_names_per_series":300,"max_label_value_length":20480,"max_line_size":100982429,"max_query_parallelism":2,"max_query_series":10000,"per_stream_rate_limit":"512M","per_stream_rate_limit_burst":"1024M","reject_old_samples":true,"reject_old_samples_max_age":"24h","retention_period":"168h","split_queries_by_interval":"15m","volume_enabled":true},"pattern_receiver":{"enabled":true},"querier":{"max_concurrent":2},"schemaConfig":{"configs":[{"from":"2024-04-01","index":{"period":"24h","prefix":"loki_index_"},"object_store":"filesystem","schema":"v13","store":"tsdb"}]},"server":{"grpc_server_max_recv_msg_size":100982429,"grpc_server_max_send_msg_size":100982429},"storage":{"type":"filesystem"},"tracing":{"enabled":true}},"lokiCanary":{"enabled":false},"memcached":{"image":{"repository":"docker.io/library/memcached"}},"memcachedExporter":{"image":{"repository":"docker.io/prom/memcached-exporter"}},"minio":{"enabled":false},"querier":{"replicas":0},"queryFrontend":{"replicas":0},"queryScheduler":{"replicas":0},"read":{"replicas":0},"resultsCache":{"enabled":false},"sidecar":{"image":{"repository":"docker.io/kiwigrid/k8s-sidecar"}},"singleBinary":{"persistence":{"size":"10Gi"},"replicas":1,"resources":{}},"test":{"enabled":false},"write":{"replicas":0}}` | Loki configuration |
 | loki.sidecar.image.repository | string | `"docker.io/kiwigrid/k8s-sidecar"` | The Docker registry and image for the k8s sidecar |
-| loki.singleBinary.persistence.size | string | `"10Gi"` |  |
-| loki.singleBinary.replicas | int | `1` |  |
-| loki.singleBinary.resources | object | `{}` |  |
-| loki.test.enabled | bool | `false` |  |
-| loki.write.replicas | int | `0` |  |
-| metrics-server.enabled | bool | `true` |  |
-| metrics-server.fullnameOverride | string | `"metrics-server"` |  |
-| metrics-server.image.repository | string | `"registry.k8s.io/metrics-server/metrics-server"` |  |
-| metrics-server.imagePullSecrets | list | `[]` |  |
-| metrics-server.podLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
-| metrics-server.server.persistentVolume.enabled | bool | `false` |  |
-| metrics-server.service.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
-| prometheus-node-exporter.enabled | bool | `true` |  |
-| prometheus-node-exporter.fullnameOverride | string | `"node-exporter"` |  |
-| prometheus-node-exporter.global.imageRegistry | string | `"quay.io"` |  |
-| prometheus-node-exporter.image.registry | string | `"quay.io"` |  |
-| prometheus-node-exporter.imagePullSecrets | list | `[]` |  |
-| prometheus-node-exporter.kubeRBACProxy.image.registry | string | `"quay.io"` |  |
-| prometheus-node-exporter.nameOverride | string | `"node-exporter"` |  |
-| prometheus-node-exporter.podAnnotations."cluster-autoscaler.kubernetes.io/safe-to-evict" | string | `"true"` |  |
-| prometheus-node-exporter.podAnnotations."prometheus.io/port" | string | `"9100"` |  |
-| prometheus-node-exporter.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
-| prometheus-node-exporter.podLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
-| tempo.enabled | bool | `true` |  |
-| tempo.fullnameOverride | string | `"tempo"` |  |
-| tempo.persistence.enabled | bool | `true` |  |
-| tempo.persistence.size | string | `"10Gi"` |  |
-| tempo.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
-| tempo.podAnnotations."prometheus.io/port" | string | `"3100"` |  |
-| tempo.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
-| tempo.podLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
-| tempo.securityContext.fsGroup | int | `65532` |  |
-| tempo.securityContext.runAsGroup | int | `65532` |  |
-| tempo.securityContext.runAsNonRoot | bool | `true` |  |
-| tempo.securityContext.runAsUser | int | `65532` |  |
-| tempo.tempo.metricsGenerator.enabled | bool | `true` |  |
-| tempo.tempo.metricsGenerator.remoteWriteUrl | string | `"http://o11y-metrics:8428/api/v1/write"` |  |
-| tempo.tempo.overrides.defaults.global.max_bytes_per_trace | int | `20000000` |  |
-| tempo.tempo.overrides.defaults.ingestion.max_traces_per_user | int | `100000` |  |
-| tempo.tempo.overrides.defaults.ingestion.rate_limit_bytes | int | `30000000` |  |
-| tempo.tempo.pullSecrets | list | `[]` |  |
-| tempo.tempo.reportingEnabled | bool | `false` |  |
-| tempo.tempo.repository | string | `"docker.io/grafana/tempo"` |  |
-| tempo.tempo.retention | string | `"168h"` |  |
-| tempo.tempoQuery.ingress.annotations."nginx.ingress.kubernetes.io/auth-type" | string | `"basic"` |  |
-| tempo.tempoQuery.ingress.annotations."nginx.ingress.kubernetes.io/client-body-buffer-size" | string | `"500m"` |  |
-| tempo.tempoQuery.ingress.annotations."nginx.ingress.kubernetes.io/proxy-body-size" | string | `"500m"` |  |
-| tempo.tempoQuery.ingress.annotations."nginx.ingress.kubernetes.io/proxy-read-timeout" | string | `"3600"` |  |
-| tempo.tempoQuery.ingress.annotations."nginx.ingress.kubernetes.io/proxy-send-timeout" | string | `"3600"` |  |
-| tempo.tempoQuery.ingress.enabled | bool | `false` |  |
-| tempo.tempoQuery.ingress.hosts[0] | string | `"traces.k8s.orb.local"` |  |
-| tempo.tempoQuery.ingress.ingressClassName | string | `"atk-nginx"` |  |
-| tempo.tempoQuery.ingress.pathType | string | `"Prefix"` |  |
-| tempo.tempoQuery.pullSecrets | list | `[]` |  |
-| tempo.tempoQuery.repository | string | `"docker.io/grafana/tempo-query"` |  |
-| victoria-metrics-single.enabled | bool | `true` |  |
-| victoria-metrics-single.global.image.registry | string | `"docker.io"` |  |
-| victoria-metrics-single.global.imagePullSecrets | list | `[]` |  |
-| victoria-metrics-single.server.extraArgs."search.maxQueryLen" | int | `163840` |  |
-| victoria-metrics-single.server.fullnameOverride | string | `"metrics"` |  |
-| victoria-metrics-single.server.ingress.annotations."nginx.ingress.kubernetes.io/auth-realm" | string | `"Authentication Required - Metrics"` |  |
-| victoria-metrics-single.server.ingress.annotations."nginx.ingress.kubernetes.io/auth-secret" | string | `"observability-metrics"` |  |
-| victoria-metrics-single.server.ingress.annotations."nginx.ingress.kubernetes.io/auth-type" | string | `"basic"` |  |
-| victoria-metrics-single.server.ingress.annotations."nginx.ingress.kubernetes.io/client-body-buffer-size" | string | `"500m"` |  |
-| victoria-metrics-single.server.ingress.annotations."nginx.ingress.kubernetes.io/proxy-body-size" | string | `"500m"` |  |
-| victoria-metrics-single.server.ingress.annotations."nginx.ingress.kubernetes.io/proxy-read-timeout" | string | `"3600"` |  |
-| victoria-metrics-single.server.ingress.annotations."nginx.ingress.kubernetes.io/proxy-send-timeout" | string | `"3600"` |  |
-| victoria-metrics-single.server.ingress.enabled | bool | `false` |  |
-| victoria-metrics-single.server.ingress.hosts[0].name | string | `"metrics.settlemint.local"` |  |
-| victoria-metrics-single.server.ingress.hosts[0].path | string | `"/"` |  |
-| victoria-metrics-single.server.ingress.hosts[0].port | string | `"http"` |  |
-| victoria-metrics-single.server.ingress.ingressClassName | string | `"atk-nginx"` |  |
-| victoria-metrics-single.server.ingress.pathType | string | `"Prefix"` |  |
-| victoria-metrics-single.server.persistentVolume.size | string | `"10Gi"` |  |
-| victoria-metrics-single.server.persistentVolume.storageClass | string | `""` |  |
-| victoria-metrics-single.server.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
-| victoria-metrics-single.server.podAnnotations."prometheus.io/port" | string | `"8428"` |  |
-| victoria-metrics-single.server.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
-| victoria-metrics-single.server.podLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
-| victoria-metrics-single.server.resources | object | `{}` |  |
-| victoria-metrics-single.server.retentionPeriod | int | `1` |  |
-| victoria-metrics-single.server.service.annotations."prometheus.io/path" | string | `"/metrics"` |  |
-| victoria-metrics-single.server.service.annotations."prometheus.io/port" | string | `"8428"` |  |
-| victoria-metrics-single.server.service.annotations."prometheus.io/scrape" | string | `"true"` |  |
-| victoria-metrics-single.server.service.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
+| metrics-server | object | `{"enabled":true,"fullnameOverride":"metrics-server","image":{"repository":"registry.k8s.io/metrics-server/metrics-server"},"imagePullSecrets":[],"podLabels":{"kots.io/app-slug":"settlemint-atk"},"server":{"persistentVolume":{"enabled":false}},"service":{"labels":{"kots.io/app-slug":"settlemint-atk"}}}` | Kubernetes Metrics Server configuration |
+| metrics-server.enabled | bool | `true` | Enable metrics server deployment |
+| metrics-server.fullnameOverride | string | `"metrics-server"` | String to fully override common.names.fullname (string) |
+| metrics-server.image | object | `{"repository":"registry.k8s.io/metrics-server/metrics-server"}` | Metrics server image configuration |
+| metrics-server.image.repository | string | `"registry.k8s.io/metrics-server/metrics-server"` | Metrics server image repository |
+| metrics-server.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array (list) |
+| metrics-server.podLabels | object | `{"kots.io/app-slug":"settlemint-atk"}` | Additional labels for metrics server pods |
+| metrics-server.server | object | `{"persistentVolume":{"enabled":false}}` | Server configuration |
+| metrics-server.server.persistentVolume | object | `{"enabled":false}` | Persistent volume configuration |
+| metrics-server.server.persistentVolume.enabled | bool | `false` | Enable persistent volume for metrics server |
+| metrics-server.service | object | `{"labels":{"kots.io/app-slug":"settlemint-atk"}}` | Service configuration |
+| metrics-server.service.labels | object | `{"kots.io/app-slug":"settlemint-atk"}` | Additional labels for metrics server service |
+| prometheus-node-exporter | object | `{"enabled":true,"fullnameOverride":"node-exporter","global":{"imageRegistry":"quay.io"},"image":{"registry":"quay.io"},"imagePullSecrets":[],"kubeRBACProxy":{"image":{"registry":"quay.io"}},"nameOverride":"node-exporter","podAnnotations":{"cluster-autoscaler.kubernetes.io/safe-to-evict":"true","prometheus.io/port":"9100","prometheus.io/scrape":"true"},"podLabels":{"kots.io/app-slug":"settlemint-atk"}}` | Prometheus Node Exporter configuration |
+| tempo | object | `{"enabled":true,"fullnameOverride":"tempo","persistence":{"enabled":true,"size":"10Gi"},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"3100","prometheus.io/scrape":"true"},"podLabels":{"kots.io/app-slug":"settlemint-atk"},"securityContext":{"fsGroup":65532,"runAsGroup":65532,"runAsNonRoot":true,"runAsUser":65532},"tempo":{"metricsGenerator":{"enabled":true,"remoteWriteUrl":"http://o11y-metrics:8428/api/v1/write"},"overrides":{"defaults":{"global":{"max_bytes_per_trace":20000000},"ingestion":{"max_traces_per_user":100000,"rate_limit_bytes":30000000}}},"pullSecrets":[],"reportingEnabled":false,"repository":"docker.io/grafana/tempo","retention":"168h"},"tempoQuery":{"ingress":{"annotations":{"nginx.ingress.kubernetes.io/auth-type":"basic","nginx.ingress.kubernetes.io/client-body-buffer-size":"500m","nginx.ingress.kubernetes.io/proxy-body-size":"500m","nginx.ingress.kubernetes.io/proxy-read-timeout":"3600","nginx.ingress.kubernetes.io/proxy-send-timeout":"3600"},"enabled":false,"hosts":["traces.k8s.orb.local"],"ingressClassName":"atk-nginx","pathType":"Prefix"},"pullSecrets":[],"repository":"docker.io/grafana/tempo-query"}}` | Tempo configuration |
+| victoria-metrics-single | object | `{"enabled":true,"global":{"image":{"registry":"docker.io"},"imagePullSecrets":[]},"server":{"extraArgs":{"search.maxQueryLen":163840},"fullnameOverride":"metrics","ingress":{"annotations":{"nginx.ingress.kubernetes.io/auth-realm":"Authentication Required - Metrics","nginx.ingress.kubernetes.io/auth-secret":"observability-metrics","nginx.ingress.kubernetes.io/auth-type":"basic","nginx.ingress.kubernetes.io/client-body-buffer-size":"500m","nginx.ingress.kubernetes.io/proxy-body-size":"500m","nginx.ingress.kubernetes.io/proxy-read-timeout":"3600","nginx.ingress.kubernetes.io/proxy-send-timeout":"3600"},"enabled":false,"hosts":[{"name":"metrics.settlemint.local","path":"/","port":"http"}],"ingressClassName":"atk-nginx","pathType":"Prefix"},"persistentVolume":{"size":"10Gi","storageClass":""},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"8428","prometheus.io/scrape":"true"},"podLabels":{"kots.io/app-slug":"settlemint-atk"},"resources":{},"retentionPeriod":1,"service":{"annotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"8428","prometheus.io/scrape":"true"},"labels":{"kots.io/app-slug":"settlemint-atk"}}}}` | Victoria Metrics Single configuration |
+| victoria-metrics-single.enabled | bool | `true` | Enable Victoria Metrics Single deployment |
+| victoria-metrics-single.global | object | `{"image":{"registry":"docker.io"},"imagePullSecrets":[]}` | Global configuration |
+| victoria-metrics-single.global.image | object | `{"registry":"docker.io"}` | Global image configuration |
+| victoria-metrics-single.global.image.registry | string | `"docker.io"` | Global image registry |
+| victoria-metrics-single.global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array (list) |
+| victoria-metrics-single.server | object | `{"extraArgs":{"search.maxQueryLen":163840},"fullnameOverride":"metrics","ingress":{"annotations":{"nginx.ingress.kubernetes.io/auth-realm":"Authentication Required - Metrics","nginx.ingress.kubernetes.io/auth-secret":"observability-metrics","nginx.ingress.kubernetes.io/auth-type":"basic","nginx.ingress.kubernetes.io/client-body-buffer-size":"500m","nginx.ingress.kubernetes.io/proxy-body-size":"500m","nginx.ingress.kubernetes.io/proxy-read-timeout":"3600","nginx.ingress.kubernetes.io/proxy-send-timeout":"3600"},"enabled":false,"hosts":[{"name":"metrics.settlemint.local","path":"/","port":"http"}],"ingressClassName":"atk-nginx","pathType":"Prefix"},"persistentVolume":{"size":"10Gi","storageClass":""},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"8428","prometheus.io/scrape":"true"},"podLabels":{"kots.io/app-slug":"settlemint-atk"},"resources":{},"retentionPeriod":1,"service":{"annotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"8428","prometheus.io/scrape":"true"},"labels":{"kots.io/app-slug":"settlemint-atk"}}}` | Victoria Metrics server configuration |
+| victoria-metrics-single.server.extraArgs | object | `{"search.maxQueryLen":163840}` | Extra arguments for Victoria Metrics server |
+| victoria-metrics-single.server.extraArgs."search.maxQueryLen" | int | `163840` | Maximum query length |
+| victoria-metrics-single.server.fullnameOverride | string | `"metrics"` | String to fully override common.names.fullname (string) |
+| victoria-metrics-single.server.ingress | object | `{"annotations":{"nginx.ingress.kubernetes.io/auth-realm":"Authentication Required - Metrics","nginx.ingress.kubernetes.io/auth-secret":"observability-metrics","nginx.ingress.kubernetes.io/auth-type":"basic","nginx.ingress.kubernetes.io/client-body-buffer-size":"500m","nginx.ingress.kubernetes.io/proxy-body-size":"500m","nginx.ingress.kubernetes.io/proxy-read-timeout":"3600","nginx.ingress.kubernetes.io/proxy-send-timeout":"3600"},"enabled":false,"hosts":[{"name":"metrics.settlemint.local","path":"/","port":"http"}],"ingressClassName":"atk-nginx","pathType":"Prefix"}` | Ingress configuration for Victoria Metrics |
+| victoria-metrics-single.server.persistentVolume | object | `{"size":"10Gi","storageClass":""}` | Persistent volume configuration |
+| victoria-metrics-single.server.persistentVolume.size | string | `"10Gi"` | Size of the persistent volume |
+| victoria-metrics-single.server.persistentVolume.storageClass | string | `""` | Storage class for persistent volume (uses default if empty) |
+| victoria-metrics-single.server.resources | object | `{}` | Resource requests and limits for Victoria Metrics server |
+| victoria-metrics-single.server.retentionPeriod | int | `1` | Data retention period in months |

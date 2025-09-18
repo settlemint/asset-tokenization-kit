@@ -13,6 +13,7 @@ export function fetchComplianceModuleRegistry(
     complianceModuleRegistry = new ComplianceModuleRegistry(address);
     complianceModuleRegistry.account = fetchAccount(address).id;
     complianceModuleRegistry.deployedInTransaction = Bytes.empty();
+    complianceModuleRegistry.system = Address.zero();
     complianceModuleRegistry.save();
     ComplianceModuleRegistryTemplate.create(address);
     setAccountContractName(address, "Compliance Module Registry");

@@ -35,9 +35,10 @@ spec:
       {{- if .Values.topologySpreadConstraints }}
       topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.topologySpreadConstraints "context" $) | nindent 8 }}
       {{- end }}
-      {{- with .Values.podSecurityContext }}
+      {{- $podSecurityContext := (include "erpc.securityContext.pod" (dict "context" $)) | fromYaml }}
+      {{- if $podSecurityContext }}
       securityContext:
-        {{- toYaml . | nindent 8 }}
+        {{- toYaml $podSecurityContext | nindent 8 }}
       {{- end }}
       {{- if .Values.affinity }}
       affinity: {{- include "common.tplvalues.render" (dict "value" .Values.affinity "context" $) | nindent 8 }}
@@ -54,9 +55,15 @@ spec:
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tolerations "context" $) | nindent 8 }}
       {{- end }}
       {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck) }}
-      {{- if $waitForIt }}
+      {{- $extraInit := .Values.extraInitContainers | default (list) }}
+      {{- if or $waitForIt (gt (len $extraInit) 0) }}
       initContainers:
+        {{- if $waitForIt }}
 {{ $waitForIt | nindent 8 }}
+        {{- end }}
+        {{- if gt (len $extraInit) 0 }}
+{{ toYaml $extraInit | nindent 8 }}
+        {{- end }}
       {{- end }}
       containers:
         - name: erpc
@@ -65,9 +72,10 @@ spec:
           {{- if .Values.workingDir }}
           workingDir: {{ .Values.workingDir | quote }}
           {{- end }}
-          {{- with .Values.containerSecurityContext }}
+          {{- $containerSecurityContext := (include "erpc.securityContext.container" (dict "context" $)) | fromYaml }}
+          {{- if $containerSecurityContext }}
           securityContext:
-            {{- toYaml . | nindent 12 }}
+            {{- toYaml $containerSecurityContext | nindent 12 }}
           {{- end }}
           {{- if .Values.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" $) | nindent 12 }}

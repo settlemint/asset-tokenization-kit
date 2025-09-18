@@ -66,46 +66,61 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.frontend.resources | nindent 12 }}
+          {{- $apiHost := .Values.blockscout.ingress.hostname }}
+          {{- if and .Values.blockscout.openShiftRoute.enabled .Values.blockscout.openShiftRoute.host }}
+            {{- $apiHost = .Values.blockscout.openShiftRoute.host }}
+          {{- end }}
+          {{- $appHost := .Values.frontend.ingress.hostname }}
+          {{- if and .Values.frontend.openShiftRoute.enabled .Values.frontend.openShiftRoute.host }}
+            {{- $appHost = .Values.frontend.openShiftRoute.host }}
+          {{- end }}
+          {{- $statsHost := "" }}
+          {{- if .Values.stats.enabled }}
+            {{- $statsHost = .Values.stats.ingress.hostname }}
+          {{- end }}
+          {{- $skipEnv := dict "NEXT_PUBLIC_API_HOST" true "NEXT_PUBLIC_API_PROTOCOL" true "NEXT_PUBLIC_APP_HOST" true "NEXT_PUBLIC_APP_PROTOCOL" true }}
           env:
-          - name: NEXT_PUBLIC_API_HOST
-            value: {{ .Values.blockscout.ingress.hostname | quote }}
-          - name: NEXT_PUBLIC_API_PROTOCOL
-            value: {{ .Values.frontend.env.NEXT_PUBLIC_API_PROTOCOL | default "https" | quote }}
-          - name: API_HOST
-            value: "blockscout-blockscout"
-          - name: API_PORT
-            value: "80"
-          - name: API_PROTOCOL
-            value: "http"
-          - name: NEXT_PUBLIC_STATS_API_HOST
-            value: {{ if .Values.stats.enabled }}{{ .Values.stats.ingress.hostname | quote }}{{ else }}""{{ end }}
-          - name: NEXT_PUBLIC_NETWORK_NAME
-            value: {{ .Values.config.network.name | quote }}
-          - name: NEXT_PUBLIC_NETWORK_SHORT_NAME
-            value: {{ .Values.config.network.shortname | quote }}
-          - name: NEXT_PUBLIC_NETWORK_ID
-            value: {{ .Values.config.network.id | quote }}
-          - name: NEXT_PUBLIC_NETWORK_CURRENCY_NAME
-            value: {{ .Values.config.network.currency.name | quote }}
-          - name: NEXT_PUBLIC_NETWORK_CURRENCY_SYMBOL
-            value: {{ .Values.config.network.currency.symbol | quote }}
-          - name: NEXT_PUBLIC_NETWORK_CURRENCY_DECIMALS
-            value: {{ .Values.config.network.currency.decimals | quote }}
-          - name: NEXT_PUBLIC_NETWORK_ICON
-            value: {{ .Values.config.network.icon | quote }}
-          - name: NEXT_PUBLIC_NETWORK_ICON_DARK
-            value: {{ .Values.config.network.icon_dark | quote }}
-          - name: NEXT_PUBLIC_NETWORK_LOGO
-            value: {{ .Values.config.network.logo | quote }}
-          - name: NEXT_PUBLIC_NETWORK_LOGO_DARK
-            value: {{ .Values.config.network.logo_dark | quote }}
-          - name: NEXT_PUBLIC_APP_HOST
-            value: {{ .Values.frontend.ingress.hostname | quote }}
-          - name: NEXT_PUBLIC_APP_PROTOCOL
-            value: {{ .Values.frontend.env.NEXT_PUBLIC_APP_PROTOCOL | default "https" | quote }}
+            - name: NEXT_PUBLIC_API_HOST
+              value: {{ $apiHost | quote }}
+            - name: NEXT_PUBLIC_API_PROTOCOL
+              value: {{ .Values.frontend.env.NEXT_PUBLIC_API_PROTOCOL | default "https" | quote }}
+            - name: API_HOST
+              value: {{ "blockscout-blockscout" | quote }}
+            - name: API_PORT
+              value: {{ "80" | quote }}
+            - name: API_PROTOCOL
+              value: {{ "http" | quote }}
+            - name: NEXT_PUBLIC_STATS_API_HOST
+              value: {{ $statsHost | quote }}
+            - name: NEXT_PUBLIC_NETWORK_NAME
+              value: {{ .Values.config.network.name | quote }}
+            - name: NEXT_PUBLIC_NETWORK_SHORT_NAME
+              value: {{ .Values.config.network.shortname | quote }}
+            - name: NEXT_PUBLIC_NETWORK_ID
+              value: {{ .Values.config.network.id | quote }}
+            - name: NEXT_PUBLIC_NETWORK_CURRENCY_NAME
+              value: {{ .Values.config.network.currency.name | quote }}
+            - name: NEXT_PUBLIC_NETWORK_CURRENCY_SYMBOL
+              value: {{ .Values.config.network.currency.symbol | quote }}
+            - name: NEXT_PUBLIC_NETWORK_CURRENCY_DECIMALS
+              value: {{ .Values.config.network.currency.decimals | quote }}
+            - name: NEXT_PUBLIC_NETWORK_ICON
+              value: {{ .Values.config.network.icon | quote }}
+            - name: NEXT_PUBLIC_NETWORK_ICON_DARK
+              value: {{ .Values.config.network.icon_dark | quote }}
+            - name: NEXT_PUBLIC_NETWORK_LOGO
+              value: {{ .Values.config.network.logo | quote }}
+            - name: NEXT_PUBLIC_NETWORK_LOGO_DARK
+              value: {{ .Values.config.network.logo_dark | quote }}
+            - name: NEXT_PUBLIC_APP_HOST
+              value: {{ $appHost | quote }}
+            - name: NEXT_PUBLIC_APP_PROTOCOL
+              value: {{ .Values.frontend.env.NEXT_PUBLIC_APP_PROTOCOL | default "https" | quote }}
           {{- range $key, $value := .Values.frontend.env }}
-          - name: {{ $key }}
-            value: {{ $value | quote }}
+            {{- if not (hasKey $skipEnv $key) }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
           {{- end }}
           envFrom:
             - secretRef:

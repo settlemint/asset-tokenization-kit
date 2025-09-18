@@ -1,111 +1,101 @@
-# -- Global Docker image registry
+# -- (object) Global Docker image registry
 global:
-  # -- Global Docker image registry
+  # -- (string) Global Docker image registry
   imageRegistry: ""
-  # -- Global Docker registry secret names as an array
+  # -- (list) Global Docker registry secret names as an array
   imagePullSecrets: []
-  # -- Global StorageClass for Persistent Volume(s)
+  # -- (string) Global StorageClass for Persistent Volume(s)
   storageClass: ""
-  # -- Global labels to add to all objects
+  # -- (object) Global labels to add to all objects
   labels: {}
 
-# -- String to fully override common.names.fullname
+# -- (string) String to fully override common.names.fullname
 fullnameOverride: "portal"
 
-# -- String to partially override common.names.fullname template (will maintain the release name)
+# -- (string) String to partially override common.names.fullname template (will maintain the release name)
 nameOverride: ""
 
-# -- Labels to add to all deployed objects
+# -- (object) Labels to add to all deployed objects
 commonLabels: {}
 
-# -- Annotations to add to all deployed objects
+# -- (object) Annotations to add to all deployed objects
 commonAnnotations: {}
 
-# -- Portal image
+# -- (object) Portal image
 image:
-  # -- Portal image registry
+  # -- (string) Portal image registry
   registry: ghcr.io
-  # -- Portal image repository
+  # -- (string) Portal image repository
   repository: settlemint/btp-scs-portal
-  # -- Portal image tag (immutable tags are recommended)
+  # -- (string) Portal image tag (immutable tags are recommended)
   tag: "8.6.7"
-  # -- Portal image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
+  # -- (string) Portal image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
   digest: ""
-  # -- Portal image pull policy
+  # -- (string) Portal image pull policy
   pullPolicy: IfNotPresent
-  # -- Portal image pull secrets
+  # -- (list) Portal image pull secrets
   pullSecrets: []
 
-# -- Number of Portal replicas to deploy
+# -- (int) Number of Portal replicas to deploy
 replicaCount: 1
 
-# -- Update strategy configuration for Portal deployment
+# -- (object) Update strategy configuration for Portal deployment
 updateStrategy:
-  # -- Portal deployment strategy type
+  # -- (string) Portal deployment strategy type
   type: RollingUpdate
-  # -- Portal deployment rolling update configuration parameters
+  # -- (object) Portal deployment rolling update configuration parameters
   rollingUpdate: {}
 
-# -- Alternate scheduler
+# -- (string) Alternate scheduler
 schedulerName: ""
 
-# -- Portal pods' priority class name
+# -- (string) Portal pods' priority class name
 priorityClassName: ""
 
-# -- Topology Spread Constraints for pod assignment
+# -- (list) Topology Spread Constraints for pod assignment
 topologySpreadConstraints: []
 
-# -- Extra labels for Portal pods
-podLabels: {}
+# -- (object) Extra labels for Portal pods
+podLabels:
+  app.kubernetes.io/component: portal
 
-# -- Annotations for Portal pods
-podAnnotations: {}
+# -- (object) Annotations for Portal pods
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "3000"
+  prometheus.io/path: "/portal-metrics"
 
-# -- Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+# -- (string) Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 podAffinityPreset: ""
 
-# -- Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+# -- (string) Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 podAntiAffinityPreset: soft
 
-# -- Node affinity preset configuration
+# -- (object) Node affinity preset configuration
 nodeAffinityPreset:
-  # -- Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+  # -- (string) Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
   type: ""
-  # -- Node label key to match. Ignored if `affinity` is set
+  # -- (string) Node label key to match. Ignored if `affinity` is set
   key: ""
-  # -- Node label values to match. Ignored if `affinity` is set
+  # -- (list) Node label values to match. Ignored if `affinity` is set
   values: []
 
-# -- Affinity for pod assignment
+# -- (object) Affinity for pod assignment
 affinity: {}
 
-# -- Node labels for pod assignment
+# -- (object) Node labels for pod assignment
 nodeSelector: {}
 
-# -- Tolerations for pod assignment
+# -- (list) Tolerations for pod assignment
 tolerations: []
 
-# -- Pod Security Context configuration
-podSecurityContext:
-  fsGroup: 1001
-  runAsNonRoot: true
-  seccompProfile:
-    type: RuntimeDefault
+# -- (object) Pod Security Context configuration (overrides global.securityContexts.pod)
+podSecurityContext: {}
 
-# -- Container Security Context configuration
-containerSecurityContext:
-  runAsUser: 1001
-  runAsGroup: 1001
-  runAsNonRoot: true
-  allowPrivilegeEscalation: false
-  readOnlyRootFilesystem: false
-  capabilities:
-    drop:
-      - ALL
-  seccompProfile:
-    type: RuntimeDefault
+# -- (object) Container Security Context configuration (overrides global.securityContexts.container)
+containerSecurityContext: {}
 
-# -- Portal containers resource requests and limits
+# -- (object) Portal containers resource requests and limits
 resources: {}
   # limits:
   #   cpu: 100m
@@ -114,119 +104,78 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
-# -- Configure Portal containers' liveness probe
+# -- (object) Configure Portal containers' liveness probe
 livenessProbe:
-  # -- Enable livenessProbe on Portal containers
+  # -- (bool) Enable livenessProbe on Portal containers
   enabled: true
-  # -- Initial delay seconds for livenessProbe
+  # -- (int) Initial delay seconds for livenessProbe
   initialDelaySeconds: 10
-  # -- Period seconds for livenessProbe
+  # -- (int) Period seconds for livenessProbe
   periodSeconds: 10
-  # -- Timeout seconds for livenessProbe
+  # -- (int) Timeout seconds for livenessProbe
   timeoutSeconds: 5
-  # -- Failure threshold for livenessProbe
+  # -- (int) Failure threshold for livenessProbe
   failureThreshold: 3
-  # -- Success threshold for livenessProbe
+  # -- (int) Success threshold for livenessProbe
   successThreshold: 1
-  # -- TCP socket parameters for livenessProbe
+  # -- (object) TCP socket parameters for livenessProbe
   tcpSocket:
-    # -- Port for tcpSocket livenessProbe
+    # -- (string) Port for tcpSocket livenessProbe
     port: http
 
-# -- Configure Portal containers' readiness probe
+# -- (object) Configure Portal containers' readiness probe
 readinessProbe:
-  # -- Enable readinessProbe on Portal containers
+  # -- (bool) Enable readinessProbe on Portal containers
   enabled: true
-  # -- Initial delay seconds for readinessProbe
+  # -- (int) Initial delay seconds for readinessProbe
   initialDelaySeconds: 5
-  # -- Period seconds for readinessProbe
+  # -- (int) Period seconds for readinessProbe
   periodSeconds: 10
-  # -- Timeout seconds for readinessProbe
+  # -- (int) Timeout seconds for readinessProbe
   timeoutSeconds: 5
-  # -- Failure threshold for readinessProbe
+  # -- (int) Failure threshold for readinessProbe
   failureThreshold: 3
-  # -- Success threshold for readinessProbe
+  # -- (int) Success threshold for readinessProbe
   successThreshold: 1
-  # -- TCP socket parameters for readinessProbe
+  # -- (object) TCP socket parameters for readinessProbe
   tcpSocket:
-    # -- Port for tcpSocket readinessProbe
+    # -- (string) Port for tcpSocket readinessProbe
     port: http
 
-# -- Configure Portal containers' startup probe
+# -- (object) Configure Portal containers' startup probe
 startupProbe:
-  # -- Enable startupProbe on Portal containers
+  # -- (bool) Enable startupProbe on Portal containers
   enabled: false
-  # -- Initial delay seconds for startupProbe
+  # -- (int) Initial delay seconds for startupProbe
   initialDelaySeconds: 30
-  # -- Period seconds for startupProbe
+  # -- (int) Period seconds for startupProbe
   periodSeconds: 10
-  # -- Timeout seconds for startupProbe
+  # -- (int) Timeout seconds for startupProbe
   timeoutSeconds: 5
-  # -- Failure threshold for startupProbe
+  # -- (int) Failure threshold for startupProbe
   failureThreshold: 10
-  # -- Success threshold for startupProbe
+  # -- (int) Success threshold for startupProbe
   successThreshold: 1
 
-# -- lifecycleHooks for the Portal container(s) to automate configuration before or after startup
+# -- (object) lifecycleHooks for the Portal container(s) to automate configuration before or after startup
 lifecycleHooks: {}
 
-# -- Optionally specify extra list of additional volumes for the Portal pod(s)
+# -- (list) Optionally specify extra list of additional volumes for the Portal pod(s)
 extraVolumes: []
 
-# -- Optionally specify extra list of additional volumeMounts for the Portal container(s)
+# -- (list) Optionally specify extra list of additional volumeMounts for the Portal container(s)
 extraVolumeMounts: []
 
-# -- Array with extra environment variables to add to Portal nodes
+# -- (list) Array with extra environment variables to add to Portal nodes
 extraEnvVars: []
 
-# -- Name of existing ConfigMap containing extra env vars for Portal nodes
+# -- (string) Name of existing ConfigMap containing extra env vars for Portal nodes
 extraEnvVarsCM: ""
 
-# -- Name of existing Secret containing extra env vars for Portal nodes
+# -- (string) Name of existing Secret containing extra env vars for Portal nodes
 extraEnvVarsSecret: ""
 
-# Legacy `initContainers` overrides remain supported for backward compatibility.
 initContainer:
-  # Copy artifacts init container settings
-  copyArtifacts:
-    resources:
-      limits:
-        cpu: 100m
-        memory: 128Mi
-      requests:
-        cpu: 50m
-        memory: 64Mi
-    # Security context for the copy-artifacts container
-    # Can be overridden for different environments (e.g., OpenShift)
-    securityContext:
-      runAsUser: 1001
-      runAsGroup: 1001
-      runAsNonRoot: true
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      seccompProfile:
-        type: RuntimeDefault
-
-  # Generic TCP check settings
-  tcpCheck:
-    enabled: true
-    image:
-      repository: ghcr.io/settlemint/btp-waitforit
-      tag: v7.7.10
-      pullPolicy: IfNotPresent
-    timeout: 120 # Timeout in seconds for each dependency check
-    resources:
-      limits:
-        cpu: 100m
-        memory: 64Mi
-      requests:
-        cpu: 10m
-        memory: 32Mi
-      dependencies:
-        - name: postgresql
-          endpoint: "postgresql:5432"
   copyArtifacts:
     resources:
       limits:
@@ -235,91 +184,161 @@ initContainer:
       requests:
         cpu: 25m
         memory: 64Mi
+    securityContext: {}
 
-# -- Service parameters
+  tcpCheck:
+    enabled: true
+    image:
+      repository: ghcr.io/settlemint/btp-waitforit
+      tag: v7.7.10
+      pullPolicy: IfNotPresent
+    timeout: 120
+    resources:
+      limits:
+        cpu: 100m
+        memory: 64Mi
+      requests:
+        cpu: 10m
+        memory: 32Mi
+    dependencies:
+      - name: postgresql
+        endpoint: "postgresql:5432"
+
+extraInitContainers: []
+
+# -- (object) Service parameters
 service:
-  # -- Portal service type
+  # -- (string) Portal service type
   type: ClusterIP
-  # -- Portal service HTTP port
+  # -- (int) Portal service HTTP port
   port: 3000
-  # -- Portal service GraphQL port
+  # -- (int) Portal service GraphQL port
   graphqlPort: 3001
-  # -- Node port for HTTP
+  # -- (string) Node port for HTTP
   nodePort: ""
-  # -- Node port for GraphQL
+  # -- (string) Node port for GraphQL
   graphqlNodePort: ""
-  # -- Portal service Cluster IP
+  # -- (string) Portal service Cluster IP
   clusterIP: ""
-  # -- Portal service Load Balancer IP
+  # -- (string) Portal service Load Balancer IP
   loadBalancerIP: ""
-  # -- Portal service Load Balancer sources
+  # -- (list) Portal service Load Balancer sources
   loadBalancerSourceRanges: []
-  # -- Portal service external traffic policy
+  # -- (string) Portal service external traffic policy
   externalTrafficPolicy: Cluster
-  # -- Additional custom annotations for Portal service
+  # -- (object) Additional custom annotations for Portal service
   annotations: {}
-  # -- Extra ports to expose in the Portal service (normally used with the `sidecar` value)
+  # -- (list) Extra ports to expose in the Portal service (normally used with the `sidecar` value)
   extraPorts: []
-  # -- Session Affinity for Kubernetes service, can be "None" or "ClientIP"
+  # -- (string) Session Affinity for Kubernetes service, can be "None" or "ClientIP"
   sessionAffinity: None
-  # -- Additional settings for the sessionAffinity
+  # -- (object) Additional settings for the sessionAffinity
   sessionAffinityConfig: {}
 
-# -- Ingress parameters
+# -- (object) Ingress parameters
 ingress:
-  # -- Enable ingress record generation for Portal
+  # -- (bool) Enable ingress record generation for Portal
   enabled: true
-  # -- Ingress path type
+  # -- (string) Ingress path type
   pathType: ImplementationSpecific
-  # -- Force Ingress API version (automatically detected if not set)
+  # -- (string) Force Ingress API version (automatically detected if not set)
   apiVersion: ""
-  # -- Default host for the ingress record
+  # -- (string) Default host for the ingress record
   hostname: portal.k8s.orb.local
-  # -- IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
+  # -- (string) IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
   ingressClassName: "atk-nginx"
-  # -- Default path for the ingress record
+  # -- (string) Default path for the ingress record
   path: /
-  # -- Additional path for GraphQL endpoint
+  # -- (string) Additional path for GraphQL endpoint
   graphqlPath: /graphql
-  # -- Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
+  # -- (object) Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
   annotations: {}
-  # -- Enable TLS configuration for the host defined at `ingress.hostname` parameter
+  # -- (bool) Enable TLS configuration for the host defined at `ingress.hostname` parameter
   tls: false
-  # -- Create a TLS secret for this ingress record using self-signed certificates generated by Helm
+  # -- (bool) Create a TLS secret for this ingress record using self-signed certificates generated by Helm
   selfSigned: false
-  # -- An array with additional hostname(s) to be covered with the ingress record
+  # -- (list) An array with additional hostname(s) to be covered with the ingress record
   extraHosts: []
-  # -- An array with additional arbitrary paths that may need to be added to the ingress under the main host
+  # -- (list) An array with additional arbitrary paths that may need to be added to the ingress under the main host
   extraPaths: []
-  # -- TLS configuration for additional hostname(s) to be covered with this ingress record
+  # -- (list) TLS configuration for additional hostname(s) to be covered with this ingress record
   extraTls: []
-  # -- Custom TLS certificates as secrets
+  # -- (list) Custom TLS certificates as secrets
   secrets: []
-  # -- Additional rules to be covered with this ingress record
+  # -- (list) Additional rules to be covered with this ingress record
   extraRules: []
 
-# -- Service account for Portal pods
-serviceAccount:
-  # -- Specifies whether a ServiceAccount should be created
-  create: true
-  # -- The name of the ServiceAccount to use.
-  name: ""
-  # -- Automount service account token for the deployment controller service account
-  automountServiceAccountToken: false
-  # -- Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
+# -- (object) OpenShift Route parameters
+openShiftRoute:
+  # -- (bool) Enable OpenShift route creation for Portal
+  enabled: false
+  # -- (object) Additional annotations for the OpenShift route resource
   annotations: {}
-  # -- Extra labels to be added to the service account
+  # -- (string) Hostname exposed via the OpenShift route
+  host: portal.k8s.orb.local
+  # -- (string) HTTP path exposed via the OpenShift route
+  path: /
+  # -- (string) Wildcard policy to apply to the route
+  wildcardPolicy: None
+  # -- (object) Service port configuration for the route target
+  port:
+    # -- (string) Service target port name (must exist on the Portal service)
+    targetPort: http
+  # -- (object) Primary service weight configuration
+  to:
+    # -- (int) Weight assigned to the Portal service backend
+    weight: 100
+  # -- (list) Additional backends for weighted routing
+  alternateBackends: []
+  # -- (object) TLS configuration for the OpenShift route
+  tls: null
+  # -- (object) GraphQL route specific configuration
+  graphql:
+    # -- (bool) Enable a dedicated route for the GraphQL endpoint
+    enabled: true
+    # -- (object) Additional annotations for the GraphQL route resource
+    annotations: {}
+    # -- (string) Hostname exposed via the GraphQL route (defaults to openShiftRoute.host when empty)
+    host: ""
+    # -- (string) HTTP path exposed via the GraphQL route (defaults to ingress.graphqlPath)
+    path: ""
+    # -- (string) Wildcard policy to apply to the GraphQL route (defaults to openShiftRoute.wildcardPolicy)
+    wildcardPolicy: ""
+    # -- (object) Service port configuration for the GraphQL route target
+    port:
+      # -- (string) Service target port name (defaults to `graphql`)
+      targetPort: ""
+    # -- (object) Primary service weight configuration for the GraphQL route
+    to:
+      # -- (string) Weight assigned to the Portal service backend (defaults to openShiftRoute.to.weight)
+      weight: ""
+    # -- (list) Additional backends for weighted routing (same structure as openShiftRoute.alternateBackends)
+    alternateBackends: []
+    # -- (object) TLS configuration for the GraphQL route
+    tls: null
+
+# -- (object) Service account for Portal pods
+serviceAccount:
+  # -- (bool) Specifies whether a ServiceAccount should be created
+  create: true
+  # -- (string) The name of the ServiceAccount to use.
+  name: ""
+  # -- (bool) Automount service account token for the deployment controller service account
+  automountServiceAccountToken: false
+  # -- (object) Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
+  annotations: {}
+  # -- (object) Extra labels to be added to the service account
   labels: {}
 
-# -- Autoscaling configuration for Portal
+# -- (object) Autoscaling configuration for Portal
 autoscaling:
-  # -- Enable autoscaling for Portal
+  # -- (bool) Enable autoscaling for Portal
   enabled: false
-  # -- Maximum number of Portal replicas
+  # -- (int) Maximum number of Portal replicas
   maxReplicas: 3
-  # -- Minimum number of Portal replicas
+  # -- (int) Minimum number of Portal replicas
   minReplicas: 1
-  # -- Built-in metrics configuration
+  # -- (list) Built-in metrics configuration
   builtInMetrics:
     - type: Resource
       resource:
@@ -333,29 +352,29 @@ autoscaling:
         target:
           type: Utilization
           averageUtilization: 80
-  # -- Custom metrics configuration
+  # -- (list) Custom metrics configuration
   customMetrics: []
 
-# -- Pod disruption budget configuration
+# -- (object) Pod disruption budget configuration
 pdb:
-  # -- If true, create a pod disruption budget for pods.
+  # -- (bool) If true, create a pod disruption budget for pods.
   enabled: false
-  # -- Minimum number/percentage of pods that should remain scheduled
+  # -- (string) Minimum number/percentage of pods that should remain scheduled
   minAvailable: ""
-  # -- Maximum number/percentage of pods that may be made unavailable. Defaults to 1 if both pdb.minAvailable and pdb.maxUnavailable are empty.
+  # -- (string) Maximum number/percentage of pods that may be made unavailable. Defaults to 1 if both pdb.minAvailable and pdb.maxUnavailable are empty.
   maxUnavailable: ""
 
-# -- Network policies configuration
+# -- (object) Network policies configuration
 networkPolicy:
-  # -- Enable creation of NetworkPolicy resources
+  # -- (bool) Enable creation of NetworkPolicy resources
   enabled: false
-  # -- The Policy model to apply
+  # -- (bool) The Policy model to apply
   allowExternal: true
-  # -- Allow the pod to access any range of port and all destinations.
+  # -- (bool) Allow the pod to access any range of port and all destinations.
   allowExternalEgress: true
-  # -- Allow access from pods with client label set to "true". Ignored if `networkPolicy.allowExternal` is true.
+  # -- (bool) Allow access from pods with client label set to "true". Ignored if `networkPolicy.allowExternal` is true.
   addExternalClientAccess: true
-  # -- Add extra ingress rules to the NetworkPolicy
+  # -- (list) Add extra ingress rules to the NetworkPolicy
   extraIngress:
     - from:
         - namespaceSelector:
@@ -370,7 +389,7 @@ networkPolicy:
           port: 3000  # HTTP port
         - protocol: TCP
           port: 3001  # GraphQL port
-  # -- Add extra egress rules to the NetworkPolicy (ignored if allowExternalEgress=true)
+  # -- (list) Add extra egress rules to the NetworkPolicy (ignored if allowExternalEgress=true)
   extraEgress:
     # Allow DNS resolution
     - to:
@@ -403,51 +422,43 @@ networkPolicy:
       ports:
         - protocol: TCP
           port: 443
-  # -- Ingress rules configuration
+  # -- (object) Ingress rules configuration
   ingressRules:
-    # -- Access restrictions configuration
+    # -- (object) Access restrictions configuration
     accessOnlyFrom:
-      # -- Enable ingress rule that makes Portal only accessible from a particular origin.
+      # -- (bool) Enable ingress rule that makes Portal only accessible from a particular origin.
       enabled: false
-      # -- Namespace selector label that is allowed to access Portal. This label will be used to identified allowed namespace(s).
+      # -- (object) Namespace selector label that is allowed to access Portal. This label will be used to identified allowed namespace(s).
       namespaceSelector: {}
-      # -- Pods selector label that is allowed to access Portal. This label will be used to identified allowed pod(s).
+      # -- (object) Pods selector label that is allowed to access Portal. This label will be used to identified allowed pod(s).
       podSelector: {}
 
-# -- Test parameters
+# -- (object) Test parameters
 tests:
-  # -- Image for test pods
+  # -- (object) Image for test pods
   image:
-    # -- Test image registry
+    # -- (string) Test image registry
     registry: docker.io
-    # -- Test image repository
+    # -- (string) Test image repository
     repository: busybox
-    # -- Test image tag
+    # -- (string) Test image tag
     tag: 1.37.0
-    # -- Test image pull policy
+    # -- (string) Test image pull policy
     pullPolicy: IfNotPresent
 
-# -- Portal configuration
+# -- (object) Portal configuration
 config:
-  # -- Network configuration
+  # -- (object) Network configuration
   network:
-    # -- Network ID
-    networkId: "53771311147"
-    # -- Network name
-    networkName: "ATK"
-    # -- Node RPC URL
+    # -- (string) Network ID (defaults to global.chainId when unset)
+    networkId:
+    # -- (string) Network name (defaults to global.chainName when unset)
+    networkName:
+    # -- (string) Node RPC URL
     nodeRpcUrl: "http://txsigner:3000"
 
-  # -- PostgreSQL connection string
-  postgresql: "postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"
+  # -- (object) PostgreSQL overrides merged with global.datastores.portal.postgresql
+  postgresql: {}
 
-  # -- Redis configuration
-  redis:
-    # -- Redis host
-    host: "redis"
-    # -- Redis port
-    port: 6379
-    # -- Redis username
-    username: "default"
-    # -- Redis password
-    password: "atk"
+  # -- (object) Redis overrides merged with global.datastores.portal.redis
+  redis: {}

@@ -13,6 +13,7 @@ export function fetchIdentityRegistryStorage(
     identityRegistryStorage = new IdentityRegistryStorage(address);
     identityRegistryStorage.account = fetchAccount(address).id;
     identityRegistryStorage.deployedInTransaction = Bytes.empty();
+    identityRegistryStorage.system = Address.zero();
     identityRegistryStorage.save();
     IdentityRegistryStorageTemplate.create(address);
     setAccountContractName(address, "Identity Registry Storage");
