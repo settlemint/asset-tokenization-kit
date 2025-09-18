@@ -241,6 +241,11 @@ export const RawTokenSchema = z.object({
               transfer: z
                 .boolean()
                 .describe("Whether the user can execute the transfer action"),
+              forcedTransfer: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenForcedTransfer action"
+                ),
               unpause: z
                 .boolean()
                 .describe("Whether the user can execute the unpause action"),
