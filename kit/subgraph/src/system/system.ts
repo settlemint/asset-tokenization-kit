@@ -49,6 +49,7 @@ export function handleBootstrapped(event: Bootstrapped): void {
   if (identityRegistryStorage.deployedInTransaction.equals(Bytes.empty())) {
     identityRegistryStorage.deployedInTransaction = event.transaction.hash;
   }
+  identityRegistryStorage.system = system.id;
   identityRegistryStorage.save();
 
   const trustedIssuersRegistry = fetchTrustedIssuersRegistry(
@@ -57,6 +58,7 @@ export function handleBootstrapped(event: Bootstrapped): void {
   if (trustedIssuersRegistry.deployedInTransaction.equals(Bytes.empty())) {
     trustedIssuersRegistry.deployedInTransaction = event.transaction.hash;
   }
+  trustedIssuersRegistry.system = system.id;
   trustedIssuersRegistry.save();
 
   // Create the Trusted Issuers Meta Registry entity and instantiate its template
@@ -103,6 +105,7 @@ export function handleBootstrapped(event: Bootstrapped): void {
   if (complianceModuleRegistry.deployedInTransaction.equals(Bytes.empty())) {
     complianceModuleRegistry.deployedInTransaction = event.transaction.hash;
   }
+  complianceModuleRegistry.system = system.id;
   complianceModuleRegistry.save();
 
   const systemAddonRegistry = fetchSystemAddonRegistry(

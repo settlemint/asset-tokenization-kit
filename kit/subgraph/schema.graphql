@@ -346,6 +346,8 @@ type Compliance @entity(immutable: false) {
 type IdentityRegistryStorage @entity(immutable: false) {
   # Unique identifier - storage contract address
   id: Bytes!
+  # System this storage belongs to
+  system: System!
   # Account representation of the storage contract
   account: Account!
   # Transaction hash where this was deployed
@@ -384,7 +386,7 @@ type Identity @entity(immutable: false) {
   # Unique identifier - identity contract address
   id: Bytes!
   # Storage registry containing this identity
-  registryStorage: IdentityRegistryStorage
+  registryStorage: IdentityRegistryStorage!
   # List of claims associated with this identity
   claims: [IdentityClaim!]! @derivedFrom(field: "identity")
   # List of cryptographic keys for this identity
@@ -483,7 +485,7 @@ type TrustedIssuersRegistry @entity(immutable: false) {
   # List of trusted issuers in this registry
   trustedIssuers: [TrustedIssuer!]! @derivedFrom(field: "registry")
   # System this registry belongs to
-  system: System
+  system: System!
   # Token this registry belongs to
   token: Token
   # System-wide registry reference
@@ -526,6 +528,8 @@ type TrustedIssuer @entity(immutable: false) {
 type ComplianceModuleRegistry @entity(immutable: false) {
   # Unique identifier - registry contract address
   id: Bytes!
+  # System this registry belongs to
+  system: System!
   # Account representation of the registry contract
   account: Account!
   # Transaction hash where this was deployed
@@ -547,7 +551,7 @@ type ComplianceModule @entity(immutable: false) {
   # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
   # Registry this module belongs to
-  complianceModuleRegistry: ComplianceModuleRegistry
+  complianceModuleRegistry: ComplianceModuleRegistry!
   # Token-specific configurations
   tokenConfigs: [TokenComplianceModuleConfig!]! @derivedFrom(field: "complianceModule")
   # Global configurations

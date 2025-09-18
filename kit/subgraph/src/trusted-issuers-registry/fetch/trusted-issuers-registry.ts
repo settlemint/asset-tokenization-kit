@@ -13,6 +13,7 @@ export function fetchTrustedIssuersRegistry(
     trustedIssuersRegistry = new TrustedIssuersRegistry(address);
     trustedIssuersRegistry.account = fetchAccount(address).id;
     trustedIssuersRegistry.deployedInTransaction = Bytes.empty();
+    trustedIssuersRegistry.system = Address.zero();
     trustedIssuersRegistry.save();
     TrustedIssuersRegistryTemplate.create(address);
     setAccountContractName(address, "Trusted Issuers Registry");
