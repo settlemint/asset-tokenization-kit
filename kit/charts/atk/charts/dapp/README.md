@@ -39,7 +39,7 @@ A Helm chart for the ATK DApp frontend
 | initContainer.graphQLCheck.retries | int | `10` |  |
 | initContainer.graphQLCheck.retryDelaySeconds | int | `10` |  |
 | initContainer.graphQLCheck.url | string | `"http://graph-node-combined:8000/subgraphs/name/kit"` |  |
-| initContainer.tcpCheck.dependencies[0].endpoint | string | `"postgresql:5432"` |  |
+| initContainer.tcpCheck.dependencies[0].endpoint | string | `"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $) }}"` |  |
 | initContainer.tcpCheck.dependencies[0].name | string | `"postgres"` |  |
 | initContainer.tcpCheck.dependencies[1].endpoint | string | `"hasura:8080"` |  |
 | initContainer.tcpCheck.dependencies[1].name | string | `"hasura"` |  |
@@ -57,7 +57,7 @@ A Helm chart for the ATK DApp frontend
 | initContainer.tcpCheck.resources.limits.memory | string | `"64Mi"` |  |
 | initContainer.tcpCheck.resources.requests.cpu | string | `"50m"` |  |
 | initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
-| initContainer.tcpCheck.timeout | int | `5` |  |
+| initContainer.tcpCheck.timeout | int | `120` |  |
 | job.enabled | bool | `true` |  |
 | job.image.pullPolicy | string | `"IfNotPresent"` |  |
 | job.image.repository | string | `"docker.io/node"` |  |

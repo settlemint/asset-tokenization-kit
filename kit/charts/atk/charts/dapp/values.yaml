@@ -210,7 +210,7 @@ initContainer:
       repository: ghcr.io/settlemint/btp-waitforit
       tag: v7.7.10
       pullPolicy: IfNotPresent
-    timeout: 5 # Timeout in seconds for each dependency check
+    timeout: 120 # Timeout in seconds for each dependency check
     resources:
       limits:
         cpu: 100m
@@ -221,7 +221,7 @@ initContainer:
     dependencies:
       # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
       - name: postgres
-        endpoint: "postgresql:5432"
+        endpoint: "{{ include \"atk.postgresql.endpoint\" (dict \"context\" $) }}"
       - name: hasura
         endpoint: "hasura:8080"
       - name: portal

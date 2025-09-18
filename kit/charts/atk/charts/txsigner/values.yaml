@@ -478,4 +478,4 @@ initContainer:
         memory: 32Mi
       dependencies:
         - name: postgresql
-          endpoint: "postgresql:5432"
+          endpoint: "{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"txsigner\") }}"
