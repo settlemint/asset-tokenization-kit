@@ -11,7 +11,8 @@
     "publish:remote": "bun run tools/graph-deploy.ts --remote",
     "test:codegen:gql-tada": "bash tools/codegen-gql-tada.sh",
     "test:integration": "bun run test:codegen:gql-tada && bun test --preload ./test/scripts/setup.ts",
-    "test:ci": "bun run test:integration"
+    "test:ci": "bun run test:integration",
+    "typecheck": "bun run test:codegen:gql-tada && bunx --bun tsc --project test/tsconfig.json"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.97.1",

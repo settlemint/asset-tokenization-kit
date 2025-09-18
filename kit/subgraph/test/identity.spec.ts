@@ -7,7 +7,7 @@ describe("Identity", () => {
       `query {
         tokens {
           account {
-            identity {
+            identities {
               id
             }
           }
@@ -18,7 +18,7 @@ describe("Identity", () => {
     const response = await theGraphClient.request(query);
     expect(response.tokens.length).toBe(6);
     expect(
-      response.tokens.every((token) => token.account.identity !== null)
+      response.tokens.every((token) => token.account.identities.length > 0)
     ).toBe(true);
   });
 

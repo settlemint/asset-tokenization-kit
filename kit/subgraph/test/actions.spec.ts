@@ -35,20 +35,20 @@ describe("Actions", () => {
     const action = response.actions[0];
 
     // Verify action structure
-    expect(action.id).toBeDefined();
-    expect(action.name).toBeDefined();
-    expect(action.target).toBeDefined();
-    expect(action.createdAt).toBeDefined();
-    expect(action.activeAt).toBeDefined();
-    expect(action.executed).toBeDefined();
-    expect(typeof action.executed).toBe("boolean");
+    expect(action?.id).toBeDefined();
+    expect(action?.name).toBeDefined();
+    expect(action?.target).toBeDefined();
+    expect(action?.createdAt).toBeDefined();
+    expect(action?.activeAt).toBeDefined();
+    expect(action?.executed).toBeDefined();
+    expect(typeof action?.executed).toBe("boolean");
 
     // Verify executor relationship
-    expect(action.executor).toBeDefined();
-    expect(action.executor.id).toBeDefined();
-    expect(Array.isArray(action.executor.executors)).toBe(true);
-    expect(Array.isArray(action.executor.actions)).toBe(true);
-    expect(action.executor.executors.length).toBeGreaterThan(0);
+    expect(action?.executor).toBeDefined();
+    expect(action?.executor.id).toBeDefined();
+    expect(Array.isArray(action?.executor.executors)).toBe(true);
+    expect(Array.isArray(action?.executor.actions)).toBe(true);
+    expect(action?.executor.executors.length).toBeGreaterThan(0);
   });
 
   it("should fetch XvP Settlement approval actions", async () => {

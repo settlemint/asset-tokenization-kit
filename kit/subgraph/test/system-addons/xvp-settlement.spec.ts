@@ -48,24 +48,24 @@ describe("XVP Settlements", () => {
     const settlement = response.xvPSettlements[0];
 
     // Verify settlement structure
-    expect(settlement.id).toBeDefined();
-    expect(settlement.executed).toBe(false); // Should not be executed by default
-    expect(settlement.cancelled).toBe(false);
-    expect(settlement.autoExecute).toBe(false); // Script sets this to false
+    expect(settlement?.id).toBeDefined();
+    expect(settlement?.executed).toBe(false); // Should not be executed by default
+    expect(settlement?.cancelled).toBe(false);
+    expect(settlement?.autoExecute).toBe(false); // Script sets this to false
 
     // Derive participants from flows (unique from/to addresses)
     const participantAddresses = new Set();
-    settlement.flows.forEach((flow) => {
+    settlement?.flows.forEach((flow) => {
       participantAddresses.add(flow.from.id);
       participantAddresses.add(flow.to.id);
     });
     expect(participantAddresses.size).toBe(2); // Two participants in the swap
 
-    expect(settlement.flows.length).toBe(2); // Two flows (bidirectional)
-    expect(settlement.approvals.length).toBe(2); // Approvals should be created for both participants
+    expect(settlement?.flows.length).toBe(2); // Two flows (bidirectional)
+    expect(settlement?.approvals.length).toBe(2); // Approvals should be created for both participants
 
     // Verify flows structure
-    settlement.flows.forEach((flow) => {
+    settlement?.flows.forEach((flow) => {
       expect(flow.asset).toBeDefined();
       expect(flow.asset.symbol).toBeDefined();
       expect(flow.from.id).toBeDefined();
@@ -75,7 +75,7 @@ describe("XVP Settlements", () => {
     });
 
     // Verify approvals structure - different scenarios may have different approval states
-    settlement.approvals.forEach((approval) => {
+    settlement?.approvals.forEach((approval) => {
       expect(approval.account.id).toBeDefined();
       expect(typeof approval.approved).toBe("boolean"); // Can be true or false depending on scenario
       // If approved, should have timestamp; if not approved, should be null

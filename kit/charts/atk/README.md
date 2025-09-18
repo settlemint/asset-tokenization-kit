@@ -14,145 +14,21 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | besu-network | * |
 |  | blockscout | * |
+|  | dapp | * |
 |  | erpc | * |
 |  | graph-node | * |
 |  | hasura | * |
 |  | observability | * |
 |  | portal | * |
 |  | support | * |
-| file://./charts/dapp | dapp | * |
-| file://./charts/txsigner | txsigner | * |
+|  | txsigner | * |
+| oci://ghcr.io/settlemint/network-bootstrapper | network | 1.0.13 |
 
 ## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| besu-network.besu-genesis.cleanupJob.resources.limits.cpu | string | `"250m"` |  |
-| besu-network.besu-genesis.cleanupJob.resources.limits.memory | string | `"256Mi"` |  |
-| besu-network.besu-genesis.cleanupJob.resources.requests.cpu | string | `"75m"` |  |
-| besu-network.besu-genesis.cleanupJob.resources.requests.memory | string | `"128Mi"` |  |
-| besu-network.besu-genesis.configServer.image.pullPolicy | string | `"IfNotPresent"` |  |
-| besu-network.besu-genesis.configServer.image.repository | string | `"docker.io/nginx"` |  |
-| besu-network.besu-genesis.configServer.image.tag | string | `"1.29.1-alpine"` |  |
-| besu-network.besu-genesis.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
-| besu-network.besu-genesis.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| besu-network.besu-genesis.containerSecurityContext.runAsGroup | int | `1000` |  |
-| besu-network.besu-genesis.containerSecurityContext.runAsNonRoot | bool | `true` |  |
-| besu-network.besu-genesis.containerSecurityContext.runAsUser | int | `1000` |  |
-| besu-network.besu-genesis.containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| besu-network.besu-genesis.image.pullPolicy | string | `"IfNotPresent"` |  |
-| besu-network.besu-genesis.image.repository | string | `"ghcr.io/settlemint/quorum-genesis-tool"` |  |
-| besu-network.besu-genesis.image.tag | string | `"sha-49c40f5"` |  |
-| besu-network.besu-genesis.initContainerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
-| besu-network.besu-genesis.initContainerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| besu-network.besu-genesis.initContainerSecurityContext.runAsGroup | int | `1001` |  |
-| besu-network.besu-genesis.initContainerSecurityContext.runAsNonRoot | bool | `true` |  |
-| besu-network.besu-genesis.initContainerSecurityContext.runAsUser | int | `1001` |  |
-| besu-network.besu-genesis.initContainerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| besu-network.besu-genesis.initJob.copyArtifacts.resources.limits.cpu | string | `"200m"` |  |
-| besu-network.besu-genesis.initJob.copyArtifacts.resources.limits.memory | string | `"256Mi"` |  |
-| besu-network.besu-genesis.initJob.copyArtifacts.resources.requests.cpu | string | `"50m"` |  |
-| besu-network.besu-genesis.initJob.copyArtifacts.resources.requests.memory | string | `"128Mi"` |  |
-| besu-network.besu-genesis.initJob.resources.limits.cpu | string | `"500m"` |  |
-| besu-network.besu-genesis.initJob.resources.limits.memory | string | `"512Mi"` |  |
-| besu-network.besu-genesis.initJob.resources.requests.cpu | string | `"150m"` |  |
-| besu-network.besu-genesis.initJob.resources.requests.memory | string | `"256Mi"` |  |
-| besu-network.besu-genesis.podSecurityContext.fsGroup | int | `1000` |  |
-| besu-network.besu-genesis.podSecurityContext.runAsNonRoot | bool | `true` |  |
-| besu-network.besu-genesis.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| besu-network.besu-genesis.volumePermissionsSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
-| besu-network.besu-genesis.volumePermissionsSecurityContext.capabilities.add[0] | string | `"CHOWN"` |  |
-| besu-network.besu-genesis.volumePermissionsSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| besu-network.besu-genesis.volumePermissionsSecurityContext.runAsNonRoot | bool | `false` |  |
-| besu-network.besu-genesis.volumePermissionsSecurityContext.runAsUser | int | `0` |  |
-| besu-network.besu-genesis.volumePermissionsSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| besu-network.besu-node.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
-| besu-network.besu-node.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| besu-network.besu-node.containerSecurityContext.runAsGroup | int | `1000` |  |
-| besu-network.besu-node.containerSecurityContext.runAsNonRoot | bool | `true` |  |
-| besu-network.besu-node.containerSecurityContext.runAsUser | int | `1000` |  |
-| besu-network.besu-node.containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| besu-network.besu-node.hooks.image.pullPolicy | string | `"IfNotPresent"` |  |
-| besu-network.besu-node.hooks.image.repository | string | `"ghcr.io/settlemint/quorum-genesis-tool"` |  |
-| besu-network.besu-node.hooks.image.tag | string | `"sha-49c40f5"` |  |
-| besu-network.besu-node.hooks.preDelete.resources.limits.cpu | string | `"300m"` |  |
-| besu-network.besu-node.hooks.preDelete.resources.limits.memory | string | `"256Mi"` |  |
-| besu-network.besu-node.hooks.preDelete.resources.requests.cpu | string | `"100m"` |  |
-| besu-network.besu-node.hooks.preDelete.resources.requests.memory | string | `"128Mi"` |  |
-| besu-network.besu-node.hooks.preInstall.resources.limits.cpu | string | `"500m"` |  |
-| besu-network.besu-node.hooks.preInstall.resources.limits.memory | string | `"512Mi"` |  |
-| besu-network.besu-node.hooks.preInstall.resources.requests.cpu | string | `"150m"` |  |
-| besu-network.besu-node.hooks.preInstall.resources.requests.memory | string | `"256Mi"` |  |
-| besu-network.besu-node.initContainerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
-| besu-network.besu-node.initContainerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| besu-network.besu-node.initContainerSecurityContext.runAsGroup | int | `1001` |  |
-| besu-network.besu-node.initContainerSecurityContext.runAsNonRoot | bool | `true` |  |
-| besu-network.besu-node.initContainerSecurityContext.runAsUser | int | `1001` |  |
-| besu-network.besu-node.initContainerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| besu-network.besu-node.initContainers.checkConnection.image.pullPolicy | string | `"IfNotPresent"` |  |
-| besu-network.besu-node.initContainers.checkConnection.image.repository | string | `"docker.io/curlimages/curl"` |  |
-| besu-network.besu-node.initContainers.checkConnection.image.tag | string | `"8.16.0"` |  |
-| besu-network.besu-node.initContainers.testConnection.image.pullPolicy | string | `"IfNotPresent"` |  |
-| besu-network.besu-node.initContainers.testConnection.image.repository | string | `"docker.io/busybox"` |  |
-| besu-network.besu-node.initContainers.testConnection.image.tag | string | `"1.37"` |  |
-| besu-network.besu-node.initContainers.volumePermissions.resources.limits.cpu | string | `"100m"` |  |
-| besu-network.besu-node.initContainers.volumePermissions.resources.limits.memory | string | `"64Mi"` |  |
-| besu-network.besu-node.initContainers.volumePermissions.resources.requests.cpu | string | `"20m"` |  |
-| besu-network.besu-node.initContainers.volumePermissions.resources.requests.memory | string | `"32Mi"` |  |
-| besu-network.besu-node.initContainers.waitForGenesis.resources.limits.cpu | string | `"150m"` |  |
-| besu-network.besu-node.initContainers.waitForGenesis.resources.limits.memory | string | `"128Mi"` |  |
-| besu-network.besu-node.initContainers.waitForGenesis.resources.requests.cpu | string | `"25m"` |  |
-| besu-network.besu-node.initContainers.waitForGenesis.resources.requests.memory | string | `"64Mi"` |  |
-| besu-network.besu-node.node.image.pullPolicy | string | `"IfNotPresent"` |  |
-| besu-network.besu-node.node.image.repository | string | `"docker.io/hyperledger/besu"` |  |
-| besu-network.besu-node.node.image.tag | string | `"25.8.0"` |  |
-| besu-network.besu-node.podSecurityContext.fsGroup | int | `1000` |  |
-| besu-network.besu-node.podSecurityContext.runAsNonRoot | bool | `true` |  |
-| besu-network.besu-node.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| besu-network.besu-node.tessera.image.pullPolicy | string | `"IfNotPresent"` |  |
-| besu-network.besu-node.tessera.image.repository | string | `"docker.io/quorumengineering/tessera"` |  |
-| besu-network.besu-node.tessera.image.tag | string | `"24.4"` |  |
-| besu-network.besu-node.volumePermissionsFix | list | `[]` |  |
-| besu-network.besu-node.volumePermissionsSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
-| besu-network.besu-node.volumePermissionsSecurityContext.capabilities.add[0] | string | `"CHOWN"` |  |
-| besu-network.besu-node.volumePermissionsSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| besu-network.besu-node.volumePermissionsSecurityContext.runAsNonRoot | bool | `false` |  |
-| besu-network.besu-node.volumePermissionsSecurityContext.runAsUser | int | `0` |  |
-| besu-network.besu-node.volumePermissionsSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| besu-network.besu-rpc-1.enabled | bool | `true` |  |
-| besu-network.besu-rpc-1.resources | object | `{}` |  |
-| besu-network.besu-rpc-1.storage.pvcSizeLimit | string | `"5Gi"` |  |
-| besu-network.besu-rpc-1.storage.sizeLimit | string | `"5Gi"` |  |
-| besu-network.besu-rpc-1.volumePermissionsFix | list | `[]` |  |
-| besu-network.besu-rpc-2.enabled | bool | `false` |  |
-| besu-network.besu-rpc-2.resources | object | `{}` |  |
-| besu-network.besu-rpc-2.storage.pvcSizeLimit | string | `"5Gi"` |  |
-| besu-network.besu-rpc-2.storage.sizeLimit | string | `"5Gi"` |  |
-| besu-network.besu-rpc-2.volumePermissionsFix | list | `[]` |  |
-| besu-network.besu-validator-1.enabled | bool | `true` |  |
-| besu-network.besu-validator-1.resources | object | `{}` |  |
-| besu-network.besu-validator-1.storage.pvcSizeLimit | string | `"5Gi"` |  |
-| besu-network.besu-validator-1.storage.sizeLimit | string | `"5Gi"` |  |
-| besu-network.besu-validator-1.volumePermissionsFix | list | `[]` |  |
-| besu-network.besu-validator-2.enabled | bool | `false` |  |
-| besu-network.besu-validator-2.resources | object | `{}` |  |
-| besu-network.besu-validator-2.storage.pvcSizeLimit | string | `"5Gi"` |  |
-| besu-network.besu-validator-2.storage.sizeLimit | string | `"5Gi"` |  |
-| besu-network.besu-validator-2.volumePermissionsFix | list | `[]` |  |
-| besu-network.besu-validator-3.enabled | bool | `false` |  |
-| besu-network.besu-validator-3.resources | object | `{}` |  |
-| besu-network.besu-validator-3.storage.pvcSizeLimit | string | `"5Gi"` |  |
-| besu-network.besu-validator-3.storage.sizeLimit | string | `"5Gi"` |  |
-| besu-network.besu-validator-3.volumePermissionsFix | list | `[]` |  |
-| besu-network.besu-validator-4.enabled | bool | `false` |  |
-| besu-network.besu-validator-4.resources | object | `{}` |  |
-| besu-network.besu-validator-4.storage.pvcSizeLimit | string | `"5Gi"` |  |
-| besu-network.besu-validator-4.storage.sizeLimit | string | `"5Gi"` |  |
-| besu-network.besu-validator-4.volumePermissionsFix | list | `[]` |  |
-| besu-network.enabled | bool | `true` |  |
-| besu-network.rawGenesisConfig.blockchain.nodes.count | int | `1` |  |
 | blockscout.blockscout-stack.blockscout.env.API_URL | string | `"https://explorer.k8s.orb.local"` |  |
 | blockscout.blockscout-stack.blockscout.env.DATABASE_URL | string | `"postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"` |  |
 | blockscout.blockscout-stack.blockscout.env.WEBAPP_URL | string | `"https://explorer.k8s.orb.local"` |  |
@@ -245,14 +121,14 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | erpc.config.database.evmJsonRpcCache.policies[0].network | string | `"*"` |  |
 | erpc.config.logLevel | string | `"info"` |  |
 | erpc.config.projects[0].id | string | `"settlemint"` |  |
-| erpc.config.projects[0].upstreams[0].endpoint | string | `"http://besu-node-rpc-1:8545"` |  |
+| erpc.config.projects[0].upstreams[0].endpoint | string | `"http://besu-node-rpc-0.besu-node-rpc:8545"` |  |
 | erpc.config.projects[0].upstreams[0].evm.chainId | int | `53771311147` |  |
 | erpc.config.projects[0].upstreams[0].failsafe.timeout.duration | string | `"30s"` |  |
-| erpc.config.projects[0].upstreams[0].id | string | `"besu-node-rpc-1"` |  |
-| erpc.config.projects[0].upstreams[1].endpoint | string | `"http://besu-node-validator-1:8545"` |  |
+| erpc.config.projects[0].upstreams[0].id | string | `"besu-node-rpc-0"` |  |
+| erpc.config.projects[0].upstreams[1].endpoint | string | `"http://besu-node-rpc-1.besu-node-rpc:8545"` |  |
 | erpc.config.projects[0].upstreams[1].evm.chainId | int | `53771311147` |  |
 | erpc.config.projects[0].upstreams[1].failsafe.timeout.duration | string | `"30s"` |  |
-| erpc.config.projects[0].upstreams[1].id | string | `"besu-node-validator-1"` |  |
+| erpc.config.projects[0].upstreams[1].id | string | `"besu-node-rpc-1"` |  |
 | erpc.config.server.httpHostV4 | string | `"0.0.0.0"` |  |
 | erpc.config.server.httpPort | int | `4000` |  |
 | erpc.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
@@ -296,8 +172,6 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | global.artifacts.image.tag | string | `"2.0.0-main.91391"` |  |
 | global.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | global.networkPolicy.enabled | bool | `false` |  |
-| global.openshift.enabled | bool | `false` |  |
-| global.openshift.fsGroup | int | `1000640000` |  |
 | graph-node.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
 | graph-node.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | graph-node.containerSecurityContext.runAsGroup | int | `1000` |  |
@@ -312,7 +186,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | graph-node.env.PRIMARY_SUBGRAPH_DATA_PGUSER | string | `"thegraph"` |  |
 | graph-node.image.pullPolicy | string | `"IfNotPresent"` |  |
 | graph-node.image.repository | string | `"docker.io/graphprotocol/graph-node"` |  |
-| graph-node.image.tag | string | `"v0.40.1"` |  |
+| graph-node.image.tag | string | `"v0.40.2"` |  |
 | graph-node.ingress.annotations."nginx.ingress.kubernetes.io/rewrite-target" | string | `"/$1"` |  |
 | graph-node.ingress.annotations."nginx.ingress.kubernetes.io/use-regex" | string | `"true"` |  |
 | graph-node.ingress.className | string | `"atk-nginx"` |  |
@@ -390,6 +264,34 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | hasura.graphql-engine.secret.metadataDbUrl | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
 | hasura.graphql-engine.secret.rateLimitRedisUrl | string | `"redis://default:atk@redis:6379/0"` |  |
 | hasura.graphql-engine.secret.redisUrl | string | `"redis://default:atk@redis:6379/0"` |  |
+| network.enabled | bool | `true` |  |
+| network.network-bootstrapper.podSecurityContext.fsGroup | int | `1000` |  |
+| network.network-bootstrapper.podSecurityContext.fsGroupChangePolicy | string | `"Always"` |  |
+| network.network-bootstrapper.podSecurityContext.runAsGroup | int | `1000` |  |
+| network.network-bootstrapper.podSecurityContext.runAsNonRoot | bool | `true` |  |
+| network.network-bootstrapper.podSecurityContext.runAsUser | int | `1000` |  |
+| network.network-bootstrapper.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| network.network-bootstrapper.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| network.network-bootstrapper.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| network.network-bootstrapper.securityContext.runAsGroup | int | `1000` |  |
+| network.network-bootstrapper.securityContext.runAsNonRoot | bool | `true` |  |
+| network.network-bootstrapper.securityContext.runAsUser | int | `1000` |  |
+| network.network-bootstrapper.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| network.network-bootstrapper.settings.chainId | string | `"53771311147"` |  |
+| network.network-nodes.persistence.enabled | bool | `true` |  |
+| network.network-nodes.persistence.size | string | `"20Gi"` |  |
+| network.network-nodes.podSecurityContext.fsGroup | int | `1000` |  |
+| network.network-nodes.podSecurityContext.fsGroupChangePolicy | string | `"Always"` |  |
+| network.network-nodes.podSecurityContext.runAsGroup | int | `1000` |  |
+| network.network-nodes.podSecurityContext.runAsNonRoot | bool | `true` |  |
+| network.network-nodes.podSecurityContext.runAsUser | int | `1000` |  |
+| network.network-nodes.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| network.network-nodes.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| network.network-nodes.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| network.network-nodes.securityContext.runAsGroup | int | `1000` |  |
+| network.network-nodes.securityContext.runAsNonRoot | bool | `true` |  |
+| network.network-nodes.securityContext.runAsUser | int | `1000` |  |
+| network.network-nodes.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | observability.alloy.alloy.resources | object | `{}` |  |
 | observability.alloy.configReloader.image.registry | string | `"quay.io"` |  |
 | observability.alloy.configReloader.image.repository | string | `"prometheus-operator/prometheus-config-reloader"` | Repository to get config reloader image from. |

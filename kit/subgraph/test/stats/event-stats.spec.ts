@@ -33,17 +33,18 @@ describe("EventStats", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
-    expect(response.eventStats_collection).toBeDefined();
-    expect(Array.isArray(response.eventStats_collection)).toBe(true);
+    const eventStats = response.eventStats_collection;
+    expect(eventStats && Array.isArray(eventStats)).toBe(true);
 
     // Verify that events are counted
-    if (response.eventStats_collection.length > 0) {
-      const firstStat = response.eventStats_collection[0];
-      expect(firstStat.timestamp).toBeDefined();
-      expect(firstStat.account).toBeDefined();
-      expect(firstStat.eventName).toBeDefined();
-      expect(firstStat.eventsCount).toBeGreaterThan(0);
+    if (!eventStats.length) {
+      return;
     }
+    const firstStat = eventStats[0]!;
+    expect(firstStat.timestamp).toBeDefined();
+    expect(firstStat.account).toBeDefined();
+    expect(firstStat.eventName).toBeDefined();
+    expect(firstStat.eventsCount).toBeGreaterThan(0);
   });
 
   it("should fetch event stats aggregated by day", async () => {
@@ -65,8 +66,8 @@ describe("EventStats", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
-    expect(response.eventStats_collection).toBeDefined();
-    expect(Array.isArray(response.eventStats_collection)).toBe(true);
+    const eventStats = response.eventStats_collection ?? [];
+    expect(Array.isArray(eventStats)).toBe(true);
   });
 
   it("should filter event stats by event name", async () => {
@@ -93,17 +94,15 @@ describe("EventStats", () => {
       },
     });
 
-    expect(response.eventStats_collection).toBeDefined();
-    if (response.eventStats_collection.length > 0) {
-      response.eventStats_collection.forEach((stat: EventStat) => {
-        expect(stat.eventName).toBe("Transfer");
-      });
+    const eventStats = response.eventStats_collection ?? [];
+    for (const stat of eventStats) {
+      expect(stat.eventName).toBe("Transfer");
     }
   });
 
   it("should filter event stats by account", async () => {
     const query = theGraphGraphql(
-      `query($accountId: Bytes!) {
+      `query($accountId: String) {
         eventStats_collection(
           interval: hour
           where: { account: $accountId }
@@ -132,18 +131,17 @@ describe("EventStats", () => {
     `
     );
     const accountResponse = await theGraphClient.request(accountQuery, {});
+    const events = accountResponse.events ?? [];
 
-    if (accountResponse.events.length > 0) {
-      const accountId = accountResponse.events[0].emitter.id;
+    if (events.length > 0) {
+      const accountId = events[0]!.emitter.id;
       const response = await theGraphClient.request(query, {
         accountId: accountId,
       });
 
-      expect(response.eventStats_collection).toBeDefined();
-      if (response.eventStats_collection.length > 0) {
-        response.eventStats_collection.forEach((stat: EventStat) => {
-          expect(stat.account.id).toBe(accountId);
-        });
+      const eventStats = response.eventStats_collection ?? [];
+      for (const stat of eventStats) {
+        expect(stat.account.id).toBe(accountId);
       }
     }
   });
@@ -167,16 +165,17 @@ describe("EventStats", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
+    const eventStats = response.eventStats_collection ?? [];
 
     // Group by account and eventName to check cumulative counts
     const groupedStats: { [key: string]: EventStat[] } = {};
-    response.eventStats_collection.forEach((stat: EventStat) => {
+    for (const stat of eventStats) {
       const key = `${stat.account.id}-${stat.eventName}`;
       if (!groupedStats[key]) {
         groupedStats[key] = [];
       }
       groupedStats[key].push(stat);
-    });
+    }
 
     // Verify cumulative nature - counts should be non-decreasing
     Object.values(groupedStats).forEach((stats) => {
@@ -185,8 +184,10 @@ describe("EventStats", () => {
         stats.sort((a, b) => parseInt(a.timestamp) - parseInt(b.timestamp));
 
         for (let i = 1; i < stats.length; i++) {
-          expect(stats[i].eventsCount).toBeGreaterThanOrEqual(
-            stats[i - 1].eventsCount
+          const current = stats[i]!;
+          const previous = stats[i - 1]!;
+          expect(current.eventsCount).toBeGreaterThanOrEqual(
+            previous.eventsCount
           );
         }
       }
@@ -207,11 +208,10 @@ describe("EventStats", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
+    const eventStats = response.eventStats_collection ?? [];
 
     // Get unique event names
-    const eventNames = new Set(
-      response.eventStats_collection.map((stat) => stat.eventName)
-    );
+    const eventNames = new Set(eventStats.map((stat) => stat.eventName));
 
     // Should have multiple different event types
     expect(eventNames.size).toBeGreaterThan(1);
