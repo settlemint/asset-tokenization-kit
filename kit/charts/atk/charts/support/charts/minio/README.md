@@ -20,7 +20,7 @@ A simple MinIO deployment for development environments
 | bucketRoot | string | `""` |  |
 | buckets | list | `[]` |  |
 | certsPath | string | `"/etc/minio/certs/"` |  |
-| clusterDomain | string | `"cluster.local"` | Kubernetes cluster domain where minio is running (string) |
+| clusterDomain | string | `"cluster.local"` | Kubernetes cluster domain where minio is running |
 | configPathmc | string | `"/etc/minio/mc/"` |  |
 | consoleIngress.annotations | object | `{}` |  |
 | consoleIngress.enabled | bool | `false` |  |
@@ -63,11 +63,11 @@ A simple MinIO deployment for development environments
 | extraSecret | string | `nil` |  |
 | extraVolumeMounts | list | `[]` |  |
 | extraVolumes | list | `[]` |  |
-| fullnameOverride | string | `""` | String to fully override common.names.fullname (string) |
+| fullnameOverride | string | `""` | String to fully override common.names.fullname |
 | ignoreChartChecksums | bool | `false` |  |
-| image | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/minio/minio","tag":"RELEASE.2025-07-23T15-54-02Z"}` | MinIO image configuration (object) |
-| image.pullPolicy | string | `"IfNotPresent"` | MinIO image pull policy (object) |
-| image.repository | string | `"docker.io/minio/minio"` | MinIO image repository (object) |
+| image | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/minio/minio","tag":"RELEASE.2025-07-23T15-54-02Z"}` | MinIO image configuration |
+| image.pullPolicy | string | `"IfNotPresent"` | MinIO image pull policy |
+| image.repository | string | `"docker.io/minio/minio"` | MinIO image repository |
 | image.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` | MinIO image tag (immutable tags are recommended) |
 | imagePullSecrets | list | `[]` | Global Docker registry secret names as an array (list) |
 | ingress.annotations | object | `{}` |  |
@@ -97,10 +97,10 @@ A simple MinIO deployment for development environments
 | makeUserJob.securityContext.enabled | bool | `false` |  |
 | makeUserJob.securityContext.runAsGroup | int | `1000` |  |
 | makeUserJob.securityContext.runAsUser | int | `1000` |  |
-| mcImage | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/minio/minio","tag":"RELEASE.2025-07-23T15-54-02Z"}` | MinIO client image configuration (object) |
-| mcImage.pullPolicy | string | `"IfNotPresent"` | MinIO client image pull policy (object) |
-| mcImage.repository | string | `"docker.io/minio/minio"` | MinIO client image repository (object) |
-| mcImage.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` | MinIO client image tag (object) |
+| mcImage | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/minio/minio","tag":"RELEASE.2025-07-23T15-54-02Z"}` | MinIO client image configuration |
+| mcImage.pullPolicy | string | `"IfNotPresent"` | MinIO client image pull policy |
+| mcImage.repository | string | `"docker.io/minio/minio"` | MinIO client image repository |
+| mcImage.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` | MinIO client image tag |
 | metrics.serviceMonitor.additionalLabels | object | `{}` |  |
 | metrics.serviceMonitor.annotations | object | `{}` |  |
 | metrics.serviceMonitor.enabled | bool | `false` |  |

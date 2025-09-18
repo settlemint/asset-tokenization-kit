@@ -94,41 +94,41 @@ The command removes all the Kubernetes components associated with the chart and 
 | commonAnnotations | object | `{}` | Annotations to add to all deployed objects (object) |
 | commonLabels | object | `{}` | Labels to add to all deployed objects (object) |
 | config | object | `{"allowedContracts":[],"allowedMethods":[],"audit":{"enabled":true,"retentionDays":30},"chainId":"53771311147","cors":{"enabled":false,"headers":["Content-Type","Authorization"],"methods":["GET","POST"],"origins":[]},"debug":false,"derivationPath":"","existingSecret":"","existingSecretKey":"private-key","extraSecretEnv":{},"gas":{"fixedPrice":20,"limit":3000000,"multiplier":1.1,"priceStrategy":"estimator"},"hsm":{"module":"","pin":"","slot":""},"kms":{"keyId":"","provider":"","region":""},"logLevel":"info","metricsPort":3001,"mnemonic":"","mode":"standalone","nonce":{"maxPending":10,"strategy":"sequential"},"port":3000,"privateKey":"","queue":{"maxSize":1000,"processingInterval":1000},"rateLimit":{"enabled":true,"maxRequestsPerHour":1000,"maxRequestsPerMinute":60},"rpcUrl":"http://erpc:4000","signingStrategy":"local"}` | TxSigner configuration (object) |
-| config.allowedContracts | list | `[]` | Allowed contracts for interaction (string) |
-| config.allowedMethods | list | `[]` | Allowed methods for execution (string) |
-| config.audit | object | `{"enabled":true,"retentionDays":30}` | Audit logging (string) |
-| config.audit.enabled | bool | `true` | Enable audit logging (bool) |
-| config.audit.retentionDays | int | `30` | Audit log retention days (string) |
-| config.chainId | string | `"53771311147"` | Chain ID for the network (object) |
+| config.allowedContracts | list | `[]` | Allowed contracts for interaction |
+| config.allowedMethods | list | `[]` | Allowed methods for execution |
+| config.audit | object | `{"enabled":true,"retentionDays":30}` | Audit logging |
+| config.audit.enabled | bool | `true` | Enable audit logging |
+| config.audit.retentionDays | int | `30` | Audit log retention days |
+| config.chainId | string | `"53771311147"` | Chain ID for the network |
 | config.cors | object | `{"enabled":false,"headers":["Content-Type","Authorization"],"methods":["GET","POST"],"origins":[]}` | CORS configuration (object) |
-| config.cors.enabled | bool | `false` | Enable CORS (bool) |
-| config.cors.headers | list | `["Content-Type","Authorization"]` | Allowed headers (string) |
-| config.cors.methods | list | `["GET","POST"]` | Allowed methods (string) |
-| config.cors.origins | list | `[]` | Allowed origins (string) |
-| config.debug | bool | `false` | Enable debug mode (bool) |
-| config.derivationPath | string | `""` | Derivation path to use for the private key (string) |
-| config.existingSecret | string | `""` | Use existing secret for private key (string) |
-| config.existingSecretKey | string | `"private-key"` | Key within the existing secret (string) |
-| config.extraSecretEnv | object | `{}` | Additional secret environment variables to add to the txsigner (list) |
+| config.cors.enabled | bool | `false` | Enable CORS |
+| config.cors.headers | list | `["Content-Type","Authorization"]` | Allowed headers |
+| config.cors.methods | list | `["GET","POST"]` | Allowed methods |
+| config.cors.origins | list | `[]` | Allowed origins |
+| config.debug | bool | `false` | Enable debug mode |
+| config.derivationPath | string | `""` | Derivation path to use for the private key |
+| config.existingSecret | string | `""` | Use existing secret for private key |
+| config.existingSecretKey | string | `"private-key"` | Key within the existing secret |
+| config.extraSecretEnv | object | `{}` | Additional secret environment variables to add to the txsigner |
 | config.gas | object | `{"fixedPrice":20,"limit":3000000,"multiplier":1.1,"priceStrategy":"estimator"}` | Gas configuration (object) |
 | config.gas.fixedPrice | int | `20` | Fixed gas price in Gwei (if priceStrategy is fixed) |
-| config.gas.limit | int | `3000000` | Gas limit (string) |
-| config.gas.multiplier | float | `1.1` | Gas price multiplier for estimator strategy (object) |
+| config.gas.limit | int | `3000000` | Gas limit |
+| config.gas.multiplier | float | `1.1` | Gas price multiplier for estimator strategy |
 | config.gas.priceStrategy | string | `"estimator"` | Gas price strategy (fixed, oracle, estimator) |
 | config.hsm | object | `{"module":"","pin":"","slot":""}` | HSM configuration (if signingStrategy is hsm) |
-| config.hsm.module | string | `""` | HSM module path (string) |
-| config.hsm.pin | string | `""` | HSM PIN (string) |
-| config.hsm.slot | string | `""` | HSM slot (string) |
+| config.hsm.module | string | `""` | HSM module path |
+| config.hsm.pin | string | `""` | HSM PIN |
+| config.hsm.slot | string | `""` | HSM slot |
 | config.kms | object | `{"keyId":"","provider":"","region":""}` | KMS configuration (if signingStrategy is kms) |
-| config.kms.keyId | string | `""` | KMS key ID (string) |
+| config.kms.keyId | string | `""` | KMS key ID |
 | config.kms.provider | string | `""` | KMS provider (aws, azure, gcp) |
-| config.kms.region | string | `""` | KMS region (string) |
-| config.logLevel | string | `"info"` | Log level for TxSigner (string) |
+| config.kms.region | string | `""` | KMS region |
+| config.logLevel | string | `"info"` | Log level for TxSigner |
 | config.metricsPort | int | `3001` | Port for the metrics server (int) |
-| config.mnemonic | string | `""` | Mnemonic to use for the private key (string) |
+| config.mnemonic | string | `""` | Mnemonic to use for the private key |
 | config.mode | string | `"standalone"` | Operation mode (standalone or integrated) |
-| config.nonce | object | `{"maxPending":10,"strategy":"sequential"}` | Nonce management (string) |
-| config.nonce.maxPending | int | `10` | Maximum pending transactions (int) |
+| config.nonce | object | `{"maxPending":10,"strategy":"sequential"}` | Nonce management |
+| config.nonce.maxPending | int | `10` | Maximum pending transactions |
 | config.nonce.strategy | string | `"sequential"` | Nonce management strategy (sequential, parallel) |
 | config.port | int | `3000` | Port for the HTTP server (int) |
 | config.privateKey | string | `""` | Private key for local signing (use with caution, prefer secrets) |
@@ -139,42 +139,42 @@ The command removes all the Kubernetes components associated with the chart and 
 | config.rateLimit.enabled | bool | `true` | Enable rate limiting (bool) |
 | config.rateLimit.maxRequestsPerHour | int | `1000` | Maximum requests per hour (int) |
 | config.rateLimit.maxRequestsPerMinute | int | `60` | Maximum requests per minute (int) |
-| config.rpcUrl | string | `"http://erpc:4000"` | RPC endpoint URL (string) |
+| config.rpcUrl | string | `"http://erpc:4000"` | RPC endpoint URL |
 | config.signingStrategy | string | `"local"` | Signing strategy (local, kms, hsm) |
 | containerSecurityContext | object | `{}` | Container Security Context configuration (object) |
 | extraEnvVars | list | `[]` | Array with extra environment variables to add to TxSigner nodes (list) |
-| extraEnvVarsCM | string | `""` | Name of existing ConfigMap containing extra env vars for TxSigner nodes (list) |
-| extraEnvVarsSecret | string | `""` | Name of existing Secret containing extra env vars for TxSigner nodes (list) |
-| extraInitContainers | list | `[]` |  |
+| extraEnvVarsCM | string | `""` | Name of existing ConfigMap containing extra env vars for TxSigner nodes |
+| extraEnvVarsSecret | string | `""` | Name of existing Secret containing extra env vars for TxSigner nodes |
+| extraInitContainers | list | `[]` | Additional init containers |
 | extraVolumeMounts | list | `[{"mountPath":"/signer/.cache","name":"tx-signer-cache"}]` | Optionally specify extra list of additional volumeMounts for the TxSigner container(s) |
 | extraVolumes | list | `[{"emptyDir":{},"name":"tx-signer-cache"}]` | Optionally specify extra list of additional volumes for the TxSigner pod(s) |
 | fullnameOverride | string | `"txsigner"` | String to fully override common.names.fullname (string) |
-| global | object | `{"imagePullSecrets":[],"imageRegistry":"","storageClass":""}` | Global Docker image registry (object) |
-| global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array (list) |
-| global.imageRegistry | string | `""` | Global Docker image registry (object) |
+| global | object | `{"imagePullSecrets":[],"imageRegistry":"","storageClass":""}` | Global Docker image registry |
+| global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |
+| global.imageRegistry | string | `""` | Global Docker image registry |
 | global.storageClass | string | `""` | Global StorageClass for Persistent Volume(s) |
-| image | object | `{"digest":"","pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"ghcr.io","repository":"settlemint/btp-signer","tag":"7.15.13"}` | TxSigner image (object) |
-| image.digest | string | `""` | TxSigner image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag (object) |
-| image.pullPolicy | string | `"IfNotPresent"` | TxSigner image pull policy (object) |
+| image | object | `{"digest":"","pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"ghcr.io","repository":"settlemint/btp-signer","tag":"7.15.13"}` | TxSigner image |
+| image.digest | string | `""` | TxSigner image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag |
+| image.pullPolicy | string | `"IfNotPresent"` | TxSigner image pull policy |
 | image.pullSecrets | list | `[]` | TxSigner image pull secrets (list) |
-| image.registry | string | `"ghcr.io"` | TxSigner image registry (object) |
-| image.repository | string | `"settlemint/btp-signer"` | TxSigner image repository (object) |
+| image.registry | string | `"ghcr.io"` | TxSigner image registry |
+| image.repository | string | `"settlemint/btp-signer"` | TxSigner image repository |
 | image.tag | string | `"7.15.13"` | TxSigner image tag (immutable tags are recommended) |
 | ingress | object | `{"annotations":{},"apiVersion":"","enabled":true,"extraHosts":[],"extraPaths":[],"extraRules":[],"extraTls":[],"hostname":"txsigner.k8s.orb.local","ingressClassName":"atk-nginx","path":"/","pathType":"ImplementationSpecific","secrets":[],"selfSigned":false,"tls":false}` | Ingress parameters (object) |
-| ingress.annotations | object | `{}` | Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations. (bool) |
+| ingress.annotations | object | `{}` | Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations. |
 | ingress.apiVersion | string | `""` | Force Ingress API version (automatically detected if not set) |
 | ingress.enabled | bool | `true` | Enable ingress record generation for TxSigner (bool) |
 | ingress.extraHosts | list | `[]` | An array with additional hostname(s) to be covered with the ingress record |
-| ingress.extraPaths | list | `[]` | An array with additional arbitrary paths that may need to be added to the ingress under the main host (list) |
+| ingress.extraPaths | list | `[]` | An array with additional arbitrary paths that may need to be added to the ingress under the main host |
 | ingress.extraRules | list | `[]` | Additional rules to be covered with this ingress record (list) |
 | ingress.extraTls | list | `[]` | TLS configuration for additional hostname(s) to be covered with this ingress record |
-| ingress.hostname | string | `"txsigner.k8s.orb.local"` | Default host for the ingress record (object) |
+| ingress.hostname | string | `"txsigner.k8s.orb.local"` | Default host for the ingress record |
 | ingress.ingressClassName | string | `"atk-nginx"` | IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+) |
-| ingress.path | string | `"/"` | Default path for the ingress record (object) |
-| ingress.pathType | string | `"ImplementationSpecific"` | Ingress path type (object) |
+| ingress.path | string | `"/"` | Default path for the ingress record |
+| ingress.pathType | string | `"ImplementationSpecific"` | Ingress path type |
 | ingress.secrets | list | `[]` | Custom TLS certificates as secrets (list) |
-| ingress.selfSigned | bool | `false` | Create a TLS secret for this ingress record using self-signed certificates generated by Helm (bool) |
-| ingress.tls | bool | `false` | Enable TLS configuration for the host defined at `ingress.hostname` parameter (bool) |
+| ingress.selfSigned | bool | `false` | Create a TLS secret for this ingress record using self-signed certificates generated by Helm |
+| ingress.tls | bool | `false` | Enable TLS configuration for the host defined at `ingress.hostname` parameter |
 | initContainer | object | `{"tcpCheck":{"dependencies":[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"txsigner\") }}","name":"postgresql"}],"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}},"timeout":120}}` | Init container configuration |
 | lifecycleHooks | object | `{}` | lifecycleHooks for the TxSigner container(s) to automate configuration before or after startup |
 | livenessProbe | object | `{"enabled":true,"failureThreshold":30,"initialDelaySeconds":1,"periodSeconds":10,"successThreshold":1,"tcpSocket":{"port":"http"},"timeoutSeconds":5}` | Configure TxSigner containers' liveness probe (object) |
@@ -184,18 +184,18 @@ The command removes all the Kubernetes components associated with the chart and 
 | livenessProbe.periodSeconds | int | `10` | Period seconds for livenessProbe (int) |
 | livenessProbe.successThreshold | int | `1` | Success threshold for livenessProbe (int) |
 | livenessProbe.tcpSocket | object | `{"port":"http"}` | TCP socket parameters for livenessProbe (object) |
-| livenessProbe.tcpSocket.port | string | `"http"` | Port for tcpSocket livenessProbe (int) |
+| livenessProbe.tcpSocket.port | string | `"http"` | Port for tcpSocket livenessProbe |
 | livenessProbe.timeoutSeconds | int | `5` | Timeout seconds for livenessProbe (int) |
 | networkPolicy | object | `{"addExternalClientAccess":true,"allowExternal":true,"allowExternalEgress":true,"enabled":false,"extraEgress":[{"ports":[{"port":53,"protocol":"UDP"}],"to":[{"namespaceSelector":{},"podSelector":{"matchLabels":{"k8s-app":"kube-dns"}}}]},{"ports":[{"port":8545,"protocol":"TCP"}],"to":[{"podSelector":{"matchLabels":{"app.kubernetes.io/name":"besu-statefulset"}}}]},{"ports":[{"port":443,"protocol":"TCP"}],"to":[{"namespaceSelector":{}}]}],"extraIngress":[{"from":[{"podSelector":{"matchLabels":{"app.kubernetes.io/name":"dapp"}}},{"podSelector":{"matchLabels":{"app.kubernetes.io/name":"portal"}}},{"podSelector":{"matchLabels":{"app.kubernetes.io/name":"ingress-nginx"}}},{"podSelector":{}}],"ports":[{"port":3000,"protocol":"TCP"},{"port":3001,"protocol":"TCP"}]}],"ingressRules":{"accessOnlyFrom":{"enabled":false,"namespaceSelector":{},"podSelector":{}}}}` | Network policies configuration (object) |
-| networkPolicy.addExternalClientAccess | bool | `true` | Allow access from pods with client label set to "true". Ignored if `networkPolicy.allowExternal` is true. (bool) |
-| networkPolicy.allowExternal | bool | `true` | The Policy model to apply (string) |
-| networkPolicy.allowExternalEgress | bool | `true` | Allow the pod to access any range of port and all destinations. (int) |
+| networkPolicy.addExternalClientAccess | bool | `true` | Allow access from pods with client label set to "true". Ignored if `networkPolicy.allowExternal` is true. |
+| networkPolicy.allowExternal | bool | `true` | The Policy model to apply |
+| networkPolicy.allowExternalEgress | bool | `true` | Allow the pod to access any range of port and all destinations. |
 | networkPolicy.enabled | bool | `false` | Enable creation of NetworkPolicy resources (bool) |
 | networkPolicy.extraEgress | list | `[{"ports":[{"port":53,"protocol":"UDP"}],"to":[{"namespaceSelector":{},"podSelector":{"matchLabels":{"k8s-app":"kube-dns"}}}]},{"ports":[{"port":8545,"protocol":"TCP"}],"to":[{"podSelector":{"matchLabels":{"app.kubernetes.io/name":"besu-statefulset"}}}]},{"ports":[{"port":443,"protocol":"TCP"}],"to":[{"namespaceSelector":{}}]}]` | Add extra egress rules to the NetworkPolicy (ignored if allowExternalEgress=true) |
 | networkPolicy.extraIngress | list | `[{"from":[{"podSelector":{"matchLabels":{"app.kubernetes.io/name":"dapp"}}},{"podSelector":{"matchLabels":{"app.kubernetes.io/name":"portal"}}},{"podSelector":{"matchLabels":{"app.kubernetes.io/name":"ingress-nginx"}}},{"podSelector":{}}],"ports":[{"port":3000,"protocol":"TCP"},{"port":3001,"protocol":"TCP"}]}]` | Add extra ingress rules to the NetworkPolicy (list) |
-| networkPolicy.ingressRules | object | `{"accessOnlyFrom":{"enabled":false,"namespaceSelector":{},"podSelector":{}}}` | Ingress rules configuration (list) |
-| networkPolicy.ingressRules.accessOnlyFrom | object | `{"enabled":false,"namespaceSelector":{},"podSelector":{}}` | Access restrictions configuration (object) |
-| networkPolicy.ingressRules.accessOnlyFrom.enabled | bool | `false` | Enable ingress rule that makes TxSigner only accessible from a particular origin. (bool) |
+| networkPolicy.ingressRules | object | `{"accessOnlyFrom":{"enabled":false,"namespaceSelector":{},"podSelector":{}}}` | Ingress rules configuration |
+| networkPolicy.ingressRules.accessOnlyFrom | object | `{"enabled":false,"namespaceSelector":{},"podSelector":{}}` | Access restrictions configuration |
+| networkPolicy.ingressRules.accessOnlyFrom.enabled | bool | `false` | Enable ingress rule that makes TxSigner only accessible from a particular origin. |
 | networkPolicy.ingressRules.accessOnlyFrom.namespaceSelector | object | `{}` | Namespace selector label that is allowed to access TxSigner. This label will be used to identified allowed namespace(s). |
 | networkPolicy.ingressRules.accessOnlyFrom.podSelector | object | `{}` | Pods selector label that is allowed to access TxSigner. This label will be used to identified allowed pod(s). |
 | nodeAffinityPreset | object | `{"key":"","type":"","values":[]}` | Node affinity preset configuration (object) |
@@ -204,16 +204,16 @@ The command removes all the Kubernetes components associated with the chart and 
 | nodeAffinityPreset.values | list | `[]` | Node label values to match. Ignored if `affinity` is set (object) |
 | nodeSelector | object | `{}` | Node labels for pod assignment (object) |
 | pdb | object | `{"enabled":false,"maxUnavailable":"","minAvailable":""}` | Pod disruption budget configuration (object) |
-| pdb.enabled | bool | `false` | If true, create a pod disruption budget for pods. (bool) |
-| pdb.maxUnavailable | string | `""` | Maximum number/percentage of pods that may be made unavailable. Defaults to 1 if both pdb.minAvailable and pdb.maxUnavailable are empty. (int) |
-| pdb.minAvailable | string | `""` | Minimum number/percentage of pods that should remain scheduled (int) |
-| podAffinityPreset | string | `""` | Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard` (object) |
+| pdb.enabled | bool | `false` | If true, create a pod disruption budget for pods. |
+| pdb.maxUnavailable | string | `""` | Maximum number/percentage of pods that may be made unavailable. Defaults to 1 if both pdb.minAvailable and pdb.maxUnavailable are empty. |
+| pdb.minAvailable | string | `""` | Minimum number/percentage of pods that should remain scheduled |
+| podAffinityPreset | string | `""` | Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard` |
 | podAnnotations | object | `{"prometheus.io/path":"/metrics","prometheus.io/port":"3001","prometheus.io/scrape":"true"}` | Annotations for TxSigner pods (object) |
-| podAnnotations."prometheus.io/path" | string | `"/metrics"` | Prometheus metrics path (list) |
-| podAnnotations."prometheus.io/port" | string | `"3001"` | Prometheus metrics port (int) |
-| podAnnotations."prometheus.io/scrape" | string | `"true"` | Enable prometheus scraping (bool) |
-| podAntiAffinityPreset | string | `"soft"` | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard` (object) |
-| podLabels | object | `{}` | Extra labels for TxSigner pods (list) |
+| podAnnotations."prometheus.io/path" | string | `"/metrics"` | Prometheus metrics path |
+| podAnnotations."prometheus.io/port" | string | `"3001"` | Prometheus metrics port |
+| podAnnotations."prometheus.io/scrape" | string | `"true"` | Enable prometheus scraping |
+| podAntiAffinityPreset | string | `"soft"` | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard` |
+| podLabels | object | `{}` | Extra labels for TxSigner pods |
 | podSecurityContext | object | `{}` | Pod Security Context configuration (object) |
 | priorityClassName | string | `""` | TxSigner pods' priority class name (string) |
 | readinessProbe | object | `{"enabled":true,"failureThreshold":60,"initialDelaySeconds":1,"periodSeconds":5,"successThreshold":1,"tcpSocket":{"port":"http"},"timeoutSeconds":5}` | Configure TxSigner containers' readiness probe (object) |
@@ -223,31 +223,31 @@ The command removes all the Kubernetes components associated with the chart and 
 | readinessProbe.periodSeconds | int | `5` | Period seconds for readinessProbe (int) |
 | readinessProbe.successThreshold | int | `1` | Success threshold for readinessProbe (int) |
 | readinessProbe.tcpSocket | object | `{"port":"http"}` | TCP socket parameters for readinessProbe (object) |
-| readinessProbe.tcpSocket.port | string | `"http"` | Port for tcpSocket readinessProbe (int) |
+| readinessProbe.tcpSocket.port | string | `"http"` | Port for tcpSocket readinessProbe |
 | readinessProbe.timeoutSeconds | int | `5` | Timeout seconds for readinessProbe (int) |
 | replicaCount | int | `1` | Number of TxSigner replicas to deploy (int) |
 | resources | object | `{}` | TxSigner containers resource requests and limits (object) |
 | schedulerName | string | `""` | Alternate scheduler (string) |
 | service | object | `{"annotations":{},"clusterIP":"","externalTrafficPolicy":"Cluster","extraPorts":[],"loadBalancerIP":"","loadBalancerSourceRanges":[],"metricsNodePort":"","metricsPort":3001,"nodePort":"","port":3000,"sessionAffinity":"None","sessionAffinityConfig":{},"type":"ClusterIP"}` | Service parameters (object) |
-| service.annotations | object | `{}` | Additional custom annotations for TxSigner service (list) |
-| service.clusterIP | string | `""` | TxSigner service Cluster IP (object) |
-| service.externalTrafficPolicy | string | `"Cluster"` | TxSigner service external traffic policy (object) |
+| service.annotations | object | `{}` | Additional custom annotations for TxSigner service |
+| service.clusterIP | string | `""` | TxSigner service Cluster IP |
+| service.externalTrafficPolicy | string | `"Cluster"` | TxSigner service external traffic policy |
 | service.extraPorts | list | `[]` | Extra ports to expose in the TxSigner service (normally used with the `sidecar` value) |
-| service.loadBalancerIP | string | `""` | TxSigner service Load Balancer IP (object) |
+| service.loadBalancerIP | string | `""` | TxSigner service Load Balancer IP |
 | service.loadBalancerSourceRanges | list | `[]` | TxSigner service Load Balancer sources (list) |
-| service.metricsNodePort | string | `""` | Node port for metrics (int) |
-| service.metricsPort | int | `3001` | TxSigner service metrics port (int) |
-| service.nodePort | string | `""` | Node port for HTTP (int) |
-| service.port | int | `3000` | TxSigner service HTTP port (int) |
-| service.sessionAffinity | string | `"None"` | Session Affinity for Kubernetes service, can be "None" or "ClientIP" (object) |
-| service.sessionAffinityConfig | object | `{}` | Additional settings for the sessionAffinity (list) |
-| service.type | string | `"ClusterIP"` | TxSigner service type (object) |
-| serviceAccount | object | `{"annotations":{},"automountServiceAccountToken":false,"create":true,"labels":{},"name":""}` | Service account for TxSigner pods (int) |
-| serviceAccount.annotations | object | `{}` | Annotations for service account. Evaluated as a template. Only used if `create` is `true`. (bool) |
-| serviceAccount.automountServiceAccountToken | bool | `false` | Automount service account token for the deployment controller service account (bool) |
-| serviceAccount.create | bool | `true` | Specifies whether a ServiceAccount should be created (bool) |
-| serviceAccount.labels | object | `{}` | Extra labels to be added to the service account (int) |
-| serviceAccount.name | string | `""` | The name of the ServiceAccount to use. (int) |
+| service.metricsNodePort | string | `""` | Node port for metrics |
+| service.metricsPort | int | `3001` | TxSigner service metrics port |
+| service.nodePort | string | `""` | Node port for HTTP |
+| service.port | int | `3000` | TxSigner service HTTP port |
+| service.sessionAffinity | string | `"None"` | Session Affinity for Kubernetes service, can be "None" or "ClientIP" |
+| service.sessionAffinityConfig | object | `{}` | Additional settings for the sessionAffinity |
+| service.type | string | `"ClusterIP"` | TxSigner service type |
+| serviceAccount | object | `{"annotations":{},"automountServiceAccountToken":false,"create":true,"labels":{},"name":""}` | Service account for TxSigner pods |
+| serviceAccount.annotations | object | `{}` | Annotations for service account. Evaluated as a template. Only used if `create` is `true`. |
+| serviceAccount.automountServiceAccountToken | bool | `false` | Automount service account token for the deployment controller service account |
+| serviceAccount.create | bool | `true` | Specifies whether a ServiceAccount should be created |
+| serviceAccount.labels | object | `{}` | Extra labels to be added to the service account |
+| serviceAccount.name | string | `""` | The name of the ServiceAccount to use. |
 | startupProbe | object | `{"enabled":false,"failureThreshold":10,"initialDelaySeconds":30,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}` | Configure TxSigner containers' startup probe (object) |
 | startupProbe.enabled | bool | `false` | Enable startupProbe on TxSigner containers (bool) |
 | startupProbe.failureThreshold | int | `10` | Failure threshold for startupProbe (int) |
@@ -256,16 +256,16 @@ The command removes all the Kubernetes components associated with the chart and 
 | startupProbe.successThreshold | int | `1` | Success threshold for startupProbe (int) |
 | startupProbe.timeoutSeconds | int | `5` | Timeout seconds for startupProbe (int) |
 | tests | object | `{"image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"busybox","tag":"1.37.0"}}` | Test parameters (object) |
-| tests.image | object | `{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"busybox","tag":"1.37.0"}` | Image for test pods (object) |
-| tests.image.pullPolicy | string | `"IfNotPresent"` | Test image pull policy (object) |
-| tests.image.registry | string | `"docker.io"` | Test image registry (object) |
-| tests.image.repository | string | `"busybox"` | Test image repository (object) |
-| tests.image.tag | string | `"1.37.0"` | Test image tag (object) |
+| tests.image | object | `{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"busybox","tag":"1.37.0"}` | Image for test pods |
+| tests.image.pullPolicy | string | `"IfNotPresent"` | Test image pull policy |
+| tests.image.registry | string | `"docker.io"` | Test image registry |
+| tests.image.repository | string | `"busybox"` | Test image repository |
+| tests.image.tag | string | `"1.37.0"` | Test image tag |
 | tolerations | list | `[]` | Tolerations for pod assignment (list) |
 | topologySpreadConstraints | list | `[]` | Topology Spread Constraints for pod assignment (list) |
-| updateStrategy | object | `{"rollingUpdate":{},"type":"RollingUpdate"}` | Update strategy configuration for TxSigner deployment (object) |
-| updateStrategy.rollingUpdate | object | `{}` | TxSigner deployment rolling update configuration parameters (object) |
-| updateStrategy.type | string | `"RollingUpdate"` | TxSigner deployment strategy type (object) |
+| updateStrategy | object | `{"rollingUpdate":{},"type":"RollingUpdate"}` | Update strategy configuration for TxSigner deployment |
+| updateStrategy.rollingUpdate | object | `{}` | TxSigner deployment rolling update configuration parameters |
+| updateStrategy.type | string | `"RollingUpdate"` | TxSigner deployment strategy type |
 
 ## Configuration and installation details
 
