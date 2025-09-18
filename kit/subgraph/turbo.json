@@ -41,6 +41,9 @@
     },
     "artifacts": {
       "dependsOn": ["compile", "translate"]
+    },
+    "typecheck": {
+      "dependsOn": ["publish"]
     }
   }
 }
