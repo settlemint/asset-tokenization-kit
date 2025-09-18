@@ -345,43 +345,46 @@ hasura:
 
 # Blockscout configuration for OpenShift
 blockscout:
-  blockscout-stack:
-    blockscout:
-      podSecurityContext:
-        fsGroup: null
-        runAsUser: null
-        runAsGroup: null
-        runAsNonRoot: true
-        seccompProfile:
-          type: RuntimeDefault
+  blockscout:
+    podSecurityContext:
+      fsGroup: null
+      runAsUser: null
+      runAsGroup: null
+      runAsNonRoot: true
 
-      containerSecurityContext:
-        runAsNonRoot: true
-        runAsUser: null
-        runAsGroup: null
-        allowPrivilegeEscalation: false
-        capabilities:
-          drop:
-          - ALL
-        seccompProfile:
-          type: RuntimeDefault
+    containerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: null
+      runAsGroup: null
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false
 
-    frontend:
-      podSecurityContext:
-        fsGroup: null
-        runAsUser: null
-        runAsGroup: null
-        runAsNonRoot: true
-        seccompProfile:
-          type: RuntimeDefault
+    initContainerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: null
+      runAsGroup: null
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false
 
-      containerSecurityContext:
-        runAsNonRoot: true
-        runAsUser: null
-        runAsGroup: null
-        allowPrivilegeEscalation: false
-        capabilities:
-          drop:
-          - ALL
-        seccompProfile:
-          type: RuntimeDefault
+  frontend:
+    podSecurityContext:
+      fsGroup: null
+      runAsUser: null
+      runAsGroup: null
+      runAsNonRoot: true
+
+    containerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: null
+      runAsGroup: null
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false

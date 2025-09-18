@@ -267,6 +267,32 @@ blockscout:
       repository: ghcr.io/blockscout/blockscout
       tag: "9.0.2"
       pullPolicy: IfNotPresent
+    # Pod security context
+    podSecurityContext:
+      fsGroup: 1001
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+    # Container security context
+    containerSecurityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false
+    # Init container security context
+    initContainerSecurityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false
     # Add an extra init container to wait for PostgreSQL
     init:
       enabled: true
@@ -303,6 +329,22 @@ blockscout:
       repository: ghcr.io/blockscout/frontend
       tag: "v2.3.3"
       pullPolicy: IfNotPresent
+    # Pod security context
+    podSecurityContext:
+      fsGroup: 1001
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+    # Container security context
+    containerSecurityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false
 
 graph-node:
   enabled: true

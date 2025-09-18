@@ -32,23 +32,17 @@ spec:
     spec:
       {{- include "atk.common.imagePullSecrets" . | nindent 6 }}
       serviceAccountName: {{ include "blockscout.serviceAccountName" . }}
+      {{- with .Values.blockscout.podSecurityContext }}
       securityContext:
-        runAsUser: 1001
-        runAsGroup: 1001
-        runAsNonRoot: true
-        fsGroup: 1001
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- if and .Values.blockscout.init.enabled (not .Values.blockscout.separateApi.enabled) }}
       initContainers:
         - name: init-migrations
+          {{- with .Values.blockscout.initContainerSecurityContext }}
           securityContext:
-            runAsUser: 1001
-            runAsGroup: 1001
-            runAsNonRoot: true
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-              - ALL
-            readOnlyRootFilesystem: false
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: "{{ .Values.blockscout.image.repository }}:{{ .Values.blockscout.image.tag }}"
           resources:
             {{- toYaml .Values.blockscout.resources | nindent 12 }}
@@ -91,15 +85,10 @@ spec:
       {{- end }}
       containers:
         - name: blockscout
+          {{- with .Values.blockscout.containerSecurityContext }}
           securityContext:
-            runAsUser: 1001
-            runAsGroup: 1001
-            runAsNonRoot: true
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-              - ALL
-            readOnlyRootFilesystem: false
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: "{{ .Values.blockscout.image.repository }}:{{ .Values.blockscout.image.tag }}"
           imagePullPolicy: {{ .Values.blockscout.image.pullPolicy }}
           {{- if and .Values.blockscout.separateApi.enabled .Values.blockscout.init.enabled }}
