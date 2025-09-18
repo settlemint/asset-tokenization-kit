@@ -10,12 +10,6 @@ global:
   networkPolicy:
     # Enable NetworkPolicies across all services
     enabled: false
-  # OpenShift compatibility settings
-  openshift:
-    # Enable OpenShift-specific security context configurations
-    enabled: false
-    # Default fsGroup for OpenShift (typically in the range 1000640000-1000649999)
-    fsGroup: 1000640000
   # Artifacts container configuration
   artifacts:
     # Image containing contract ABIs and genesis files
@@ -27,53 +21,36 @@ global:
 network:
   enabled: true
   network-bootstrapper:
+    podSecurityContext:
+      fsGroup: 1000
+      fsGroupChangePolicy: Always
+      runAsGroup: 1000
+      runAsUser: 1000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      seccompProfile:
+        type: RuntimeDefault
     settings:
       chainId: "53771311147"
-besu-network:
-  enabled: false
-  # Besu network images
-  besu-genesis:
-    image:
-      repository: ghcr.io/settlemint/quorum-genesis-tool
-      tag: "sha-49c40f5"
-      pullPolicy: IfNotPresent
-    configServer:
-      image:
-        repository: docker.io/nginx
-        tag: "1.29.1-alpine"
-        pullPolicy: IfNotPresent
-    initJob:
-      resources:
-        limits:
-          cpu: 500m
-          memory: 512Mi
-        requests:
-          cpu: 150m
-          memory: 256Mi
-      copyArtifacts:
-        resources:
-          limits:
-            cpu: 200m
-            memory: 256Mi
-          requests:
-            cpu: 50m
-            memory: 128Mi
-    cleanupJob:
-      resources:
-        limits:
-          cpu: 250m
-          memory: 256Mi
-        requests:
-          cpu: 75m
-          memory: 128Mi
-    # Pod security context for genesis jobs
+  network-nodes:
     podSecurityContext:
       fsGroup: 1000
+      fsGroupChangePolicy: Always
+      runAsGroup: 1000
+      runAsUser: 1000
       runAsNonRoot: true
       seccompProfile:
         type: RuntimeDefault
-    # Container security context for genesis jobs
-    containerSecurityContext:
+    securityContext:
       runAsNonRoot: true
       runAsUser: 1000
       runAsGroup: 1000
@@ -83,177 +60,9 @@ besu-network:
         - ALL
       seccompProfile:
         type: RuntimeDefault
-    # Init container security context
-    initContainerSecurityContext:
-      runAsNonRoot: true
-      runAsUser: 1001
-      runAsGroup: 1001
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-        - ALL
-      seccompProfile:
-        type: RuntimeDefault
-    # Volume permissions init container security context (needs root to fix permissions)
-    volumePermissionsSecurityContext:
-      runAsUser: 0
-      runAsNonRoot: false  # This container needs root to fix permissions
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-        - ALL
-        add:
-        - CHOWN
-      seccompProfile:
-        type: RuntimeDefault
-  besu-node:
-    node:
-      image:
-        repository: docker.io/hyperledger/besu
-        tag: "25.8.0"
-        pullPolicy: IfNotPresent
-    tessera:
-      image:
-        repository: docker.io/quorumengineering/tessera
-        tag: "24.4"
-        pullPolicy: IfNotPresent
-    # Disable root-based volume permission fixer; OpenShift/SCC-compatible clusters
-    # enforce non-root pods, so we skip the helper init container entirely.
-    volumePermissionsFix: []
-    hooks:
-      image:
-        repository: ghcr.io/settlemint/quorum-genesis-tool
-        tag: "sha-49c40f5"
-        pullPolicy: IfNotPresent
-      preInstall:
-        resources:
-          limits:
-            cpu: 500m
-            memory: 512Mi
-          requests:
-            cpu: 150m
-            memory: 256Mi
-      preDelete:
-        resources:
-          limits:
-            cpu: 300m
-            memory: 256Mi
-          requests:
-            cpu: 100m
-            memory: 128Mi
-    initContainers:
-      testConnection:
-        image:
-          repository: docker.io/busybox
-          tag: "1.37"
-          pullPolicy: IfNotPresent
-      checkConnection:
-        image:
-          repository: docker.io/curlimages/curl
-          tag: "8.16.0"
-          pullPolicy: IfNotPresent
-      waitForGenesis:
-        resources:
-          limits:
-            cpu: 150m
-            memory: 128Mi
-          requests:
-            cpu: 25m
-            memory: 64Mi
-      volumePermissions:
-        resources:
-          limits:
-            cpu: 100m
-            memory: 64Mi
-          requests:
-            cpu: 20m
-            memory: 32Mi
-    # Pod security context for besu nodes
-    podSecurityContext:
-      fsGroup: 1000
-      runAsNonRoot: true
-      seccompProfile:
-        type: RuntimeDefault
-    # Container security context for besu nodes
-    containerSecurityContext:
-      runAsNonRoot: true
-      runAsUser: 1000
-      runAsGroup: 1000
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-        - ALL
-      seccompProfile:
-        type: RuntimeDefault
-    # Init container security context
-    initContainerSecurityContext:
-      runAsNonRoot: true
-      runAsUser: 1001
-      runAsGroup: 1001
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-        - ALL
-      seccompProfile:
-        type: RuntimeDefault
-    # Volume permissions init container security context (needs root to fix permissions)
-    volumePermissionsSecurityContext:
-      runAsUser: 0
-      runAsNonRoot: false  # This container needs root to fix permissions
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-        - ALL
-        add:
-        - CHOWN
-      seccompProfile:
-        type: RuntimeDefault
-  besu-validator-1:
-    enabled: true
-    storage:
-      sizeLimit: "5Gi"
-      pvcSizeLimit: "5Gi"
-    resources: {}
-    volumePermissionsFix: []
-  besu-validator-2:
-    enabled: false
-    storage:
-      sizeLimit: "5Gi"
-      pvcSizeLimit: "5Gi"
-    resources: {}
-    volumePermissionsFix: []
-  besu-validator-3:
-    enabled: false
-    storage:
-      sizeLimit: "5Gi"
-      pvcSizeLimit: "5Gi"
-    resources: {}
-    volumePermissionsFix: []
-  besu-validator-4:
-    enabled: false
-    storage:
-      sizeLimit: "5Gi"
-      pvcSizeLimit: "5Gi"
-    resources: {}
-    volumePermissionsFix: []
-  besu-rpc-1:
-    enabled: true
-    storage:
-      sizeLimit: "5Gi"
-      pvcSizeLimit: "5Gi"
-    resources: {}
-    volumePermissionsFix: []
-  besu-rpc-2:
-    enabled: false
-    storage:
-      sizeLimit: "5Gi"
-      pvcSizeLimit: "5Gi"
-    resources: {}
-    volumePermissionsFix: []
-  rawGenesisConfig:
-    blockchain:
-      nodes:
-        count: 1
+    persistence:
+      enabled: true
+      size: 20Gi
 
 erpc:
   enabled: true
