@@ -4,8 +4,6 @@ import type { Context } from "@/orpc/context/context";
 import { getAccountsWithRoles } from "@/orpc/helpers/access-control-helpers";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import {
   buildUserWithIdentity,
@@ -84,8 +82,6 @@ type QueryResultRow = {
  * List of admins
  */
 export const adminList = systemRouter.user.adminList
-  .use(systemMiddleware)
-  .use(theGraphMiddleware)
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: { any: ["identityManager", "claimIssuer"] },

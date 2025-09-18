@@ -2,8 +2,6 @@ import { kycProfiles, user } from "@/lib/db/schema";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import {
@@ -155,8 +153,6 @@ type QueryResultRow = {
  * - **Performance**: Slower than user.search due to TheGraph integration
  */
 export const list = systemRouter.user.list
-  .use(systemMiddleware)
-  .use(theGraphMiddleware)
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.userList,

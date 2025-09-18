@@ -114,7 +114,7 @@ function RouteComponent() {
         <DetailGridItem
           label={t("user:fields.onChainIdentity")}
           info={t("user:fields.onChainIdentityInfo")}
-          value={identity?.id}
+          value={identity.id}
           type="address"
           showPrettyName={false}
           emptyValue={t("user:fields.noIdentityRegistered")}

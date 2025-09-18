@@ -80,9 +80,7 @@ export const identitySearch = systemRouter.system.identity.search
       input: {
         userAddress: wallet?.toLowerCase() || null,
         identityAddress: address?.toLowerCase() || null,
-        identityFactory: wallet
-          ? system.identityFactory.id.toLowerCase()
-          : null,
+        identityFactory: system.identityFactory.id.toLowerCase(),
         registryStorage: system.identityRegistryStorage.id.toLowerCase(),
       },
       output: IdentitySearchResponseSchema,

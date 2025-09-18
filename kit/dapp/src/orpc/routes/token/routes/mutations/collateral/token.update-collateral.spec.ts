@@ -6,7 +6,6 @@ import {
   DEFAULT_INVESTOR,
   DEFAULT_PINCODE,
   getUserData,
-  registerUserIdentity,
   signInWithUser,
 } from "@test/fixtures/user";
 import { from } from "dnum";
@@ -24,7 +23,6 @@ describe("Token update collateral", () => {
     if (!adminData.wallet) {
       throw new Error("Default admin does not have a wallet");
     }
-    await registerUserIdentity(adminClient, adminData.wallet);
 
     // First create a stablecoin to use as denomination asset
     const stablecoinData = {

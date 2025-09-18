@@ -37,7 +37,7 @@ export function buildUserWithoutWallet({
     name:
       kyc?.firstName && kyc.lastName
         ? `${kyc.firstName} ${kyc.lastName}`
-        : (userData.name ?? ""),
+        : userData.name,
     email: userData.email,
     role: getUserRole(userData.role),
     roles,
