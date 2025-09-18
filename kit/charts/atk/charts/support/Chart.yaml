@@ -16,14 +16,11 @@ dependencies:
     condition: ingress-nginx.enabled
   - name: postgresql
     version: "*"
-    repository: file://./charts/postgresql
   - name: redis
     version: "*"
-    repository: file://./charts/redis
   - name: reloader
     version: 2.2.3
     repository: https://stakater.github.io/stakater-charts
   - name: minio
     version: "*"
-    repository: file://./charts/minio
     condition: minio.enabled
