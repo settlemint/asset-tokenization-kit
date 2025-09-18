@@ -100,7 +100,7 @@ export const updateCollateral = tokenRouter.token.updateCollateral
       });
     }
 
-    const userIdentity = context.userIdentity?.address;
+    const userIdentity = context.system.userIdentity?.address;
     if (!userIdentity) {
       const errorMessage = `Account at address ${context.auth.user.wallet} does not have an associated identity contract`;
       logger.error(errorMessage);

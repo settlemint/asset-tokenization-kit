@@ -76,7 +76,7 @@ export const Route = createFileRoute(
  * including header, breadcrumbs, tabs, and renders child routes through Outlet.
  */
 function RouteComponent() {
-  const { user: loaderUser } = Route.useLoaderData();
+  const { user: loaderUser, identity: loaderIdentity } = Route.useLoaderData();
   const { userId } = Route.useParams();
   const { t } = useTranslation(["user", "common"]);
 
@@ -87,7 +87,14 @@ function RouteComponent() {
     })
   );
 
+  const { data: queriedIdentity } = useQuery(
+    Route.useRouteContext().orpc.system.identity.read.queryOptions({
+      input: { wallet: loaderUser.wallet ?? "" },
+    })
+  );
+
   const user = queriedUser ?? loaderUser;
+  const identity = queriedIdentity ?? loaderIdentity;
   const displayName = getUserDisplayName(user);
 
   // Generate tab configuration based on user data
@@ -113,7 +120,7 @@ function RouteComponent() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h1 className="text-3xl font-bold tracking-tight">{displayName}</h1>
-            <UserStatusBadge user={user} />
+            <UserStatusBadge identity={identity} user={user} />
           </div>
           {/* Future: Add ManageUserDropdown here */}
         </div>

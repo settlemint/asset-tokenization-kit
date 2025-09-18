@@ -1,8 +1,8 @@
 import type { Context } from "@/orpc/context/context";
 import { mapUserRoles } from "@/orpc/helpers/role-validation";
-import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import type { IdentityClaim } from "@atk/zod/claim";
 import { getUserRole } from "@atk/zod/user-roles";
+import { UserWithIdentity } from "../routes/user.list.schema";
 
 export interface UserData {
   id: string;
@@ -27,7 +27,7 @@ export function buildUserWithoutWallet({
   userData: UserData;
   kyc: KycData | null;
   context: Required<Pick<Context, "system">>;
-}): User {
+}) {
   const roles = mapUserRoles(
     userData.wallet,
     context.system?.systemAccessManager?.accessControl
@@ -37,7 +37,7 @@ export function buildUserWithoutWallet({
     name:
       kyc?.firstName && kyc.lastName
         ? `${kyc.firstName} ${kyc.lastName}`
-        : userData.name,
+        : (userData.name ?? ""),
     email: userData.email,
     role: getUserRole(userData.role),
     roles,
@@ -49,7 +49,7 @@ export function buildUserWithoutWallet({
     isRegistered: false,
     createdAt: userData.createdAt?.toISOString(),
     lastLoginAt: userData.lastLoginAt?.toISOString(),
-  } as User;
+  } as UserWithIdentity;
 }
 
 export function buildUserWithIdentity({
@@ -66,7 +66,7 @@ export function buildUserWithIdentity({
   claims: IdentityClaim[];
   isRegistered: boolean;
   context: Required<Pick<Context, "system">>;
-}): User {
+}) {
   const roles = mapUserRoles(
     userData.wallet,
     context.system?.systemAccessManager?.accessControl
@@ -88,5 +88,5 @@ export function buildUserWithIdentity({
     isRegistered,
     createdAt: userData.createdAt?.toISOString(),
     lastLoginAt: userData.lastLoginAt?.toISOString(),
-  } as User;
+  } as UserWithIdentity;
 }

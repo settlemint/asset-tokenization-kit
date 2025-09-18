@@ -3,14 +3,14 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { Context } from "@/orpc/context/context";
 import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { baseRouter } from "@/orpc/procedures/base.router";
-import { IdentityResponseSchema } from "@/orpc/routes/system/identity/routes/identity.read.schema";
 import {
   TokenSchema,
   type Token,
 } from "@/orpc/routes/token/routes/token.read.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import type { AccessControlRoles } from "@atk/zod/access-control-roles";
-import { isEthereumAddress } from "@atk/zod/ethereum-address";
+import { identityClaim } from "@atk/zod/claim";
+import { ethereumAddress, isEthereumAddress } from "@atk/zod/ethereum-address";
 import { satisfiesRoleRequirement } from "@atk/zod/role-requirement";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import countries from "i18n-iso-countries";
@@ -161,7 +161,25 @@ export const tokenMiddleware = baseRouter.middleware<
     },
     output: z.object({
       token: TokenSchema.omit({ identity: true }).extend({
-        account: IdentityResponseSchema.optional(),
+        account: z.object({
+          identities: z
+            .array(
+              z.object({
+                id: ethereumAddress,
+                claims: z.array(identityClaim),
+                registered: z
+                  .array(
+                    z.object({
+                      country: z.number(),
+                    })
+                  )
+                  .nullable()
+                  .optional(),
+              })
+            )
+            .nullable()
+            .optional(),
+        }),
       }),
     }),
   });
@@ -176,7 +194,7 @@ export const tokenMiddleware = baseRouter.middleware<
     identity: identity
       ? {
           id: identity.id,
-          account: identity.account.id,
+          account: identity.id,
           claims: identity.claims,
           registered: identity.registered?.[0]
             ? {

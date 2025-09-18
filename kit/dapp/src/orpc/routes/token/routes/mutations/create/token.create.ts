@@ -27,13 +27,18 @@ const logger = createLogger();
  * Includes accessControl field for role management.
  */
 const FIND_TOKEN_FOR_TRANSACTION_QUERY = theGraphGraphql(`
-  query findTokenForTransaction($deployedInTransaction: Bytes) {
+  query findTokenForTransaction($deployedInTransaction: Bytes, $identityFactory: String) {
     tokens(where: {deployedInTransaction: $deployedInTransaction}) {
       id
       name
       symbol
       decimals
       type
+      account {
+        identities(where: {identityFactory: $identityFactory}, first: 1) {
+          id
+        }
+      }
     }
   }
 `);
@@ -48,11 +53,11 @@ const TokenQueryResultSchema = z.object({
       decimals: z.number(),
       type: z.string(),
       account: z.object({
-        identity: z
-          .object({
+        identities: z.array(
+          z.object({
             id: ethereumAddress,
           })
-          .optional(),
+        ),
       }),
     })
   ),
@@ -99,6 +104,7 @@ export const create = systemRouter.token.create
     const queryVariables: VariablesOf<typeof FIND_TOKEN_FOR_TRANSACTION_QUERY> =
       {
         deployedInTransaction: transactionHash,
+        identityFactory: context.system.identityFactory.id,
       };
 
     const result = await context.theGraphClient.query(
@@ -148,7 +154,7 @@ async function issueClaims(
   const sender = context.auth.user;
 
   // Get the token's identity contract address from the graph data
-  const tokenOnchainID = token.account.identity?.id;
+  const tokenOnchainID = token.account.identities[0]?.id;
 
   if (!tokenOnchainID) {
     const errorMessage = `Token at address ${token.id} does not have an associated identity contract`;

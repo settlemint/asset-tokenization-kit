@@ -1,5 +1,8 @@
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { UserSchema } from "@/orpc/routes/user/routes/user.me.schema";
+import { identityClaim } from "@atk/zod/claim";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { accessControlRoles } from "@atk/zod/src/access-control-roles";
 import { z } from "zod";
 
 /**
@@ -18,6 +21,32 @@ export const UserListInputSchema = ListSchema.extend({
     .optional(),
 });
 
+export const UserWithIdentitySchema = UserSchema.extend({
+  /**
+   * User's on-chain identity address.
+   * Present if the user has an on-chain identity.
+   */
+  identity: ethereumAddress.optional(),
+
+  /**
+   * User's identity claims from the blockchain.
+   * Empty array if user has no identity or claims.
+   */
+  claims: z.array(identityClaim).default([]),
+
+  /**
+   * Whether the user is registered in the identity registry.
+   * True if user has an identity and is registered.
+   */
+  isRegistered: z.boolean().default(false),
+
+  /**
+   * User's blockchain roles.
+   * Record mapping role names to boolean values indicating if user has that role.
+   */
+  roles: accessControlRoles,
+});
+
 /**
  * Paginated response schema for user listing.
  *
@@ -26,7 +55,7 @@ export const UserListInputSchema = ListSchema.extend({
  */
 export const UserListOutputSchema = z.object({
   /** Array of users for the current page */
-  items: UserSchema.array(),
+  items: UserWithIdentitySchema.array(),
   /** Total number of users across all pages */
   total: z.number(),
   /** Current limit applied */
@@ -36,3 +65,4 @@ export const UserListOutputSchema = z.object({
 });
 
 export type UserList = z.infer<typeof UserListOutputSchema>;
+export type UserWithIdentity = z.infer<typeof UserWithIdentitySchema>;

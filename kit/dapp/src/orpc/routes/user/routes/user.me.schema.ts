@@ -83,7 +83,6 @@ export const UserSchema = z.object({
    */
   lastName: z.string().optional(),
 
-
   /**
    * User account creation timestamp.
    * When the user first registered in the system.
@@ -148,6 +147,10 @@ export const UserMeSchema = z.object({
  * the application, ensuring consistency with the validation schema.
  */
 export type CurrentUser = z.infer<typeof UserMeSchema>;
+
+/**
+ * Extended user schema for list operations that includes identity information.
+ */
 
 /**
  * TypeScript type derived from the UserSchema.

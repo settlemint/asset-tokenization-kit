@@ -77,6 +77,6 @@ describe("Identity create", () => {
     const initialUser = await client.system.identity.search({
       account: wallet,
     });
-    expect(initialUser?.registered).toBe(false);
+    expect(initialUser?.registered).toBeUndefined();
   });
 });

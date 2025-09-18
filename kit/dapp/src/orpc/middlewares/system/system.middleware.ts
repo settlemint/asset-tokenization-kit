@@ -145,7 +145,7 @@ export const systemMiddleware = baseRouter.middleware<
     },
     userIdentity: userIdentity
       ? {
-          address: userIdentity?.id,
+          address: userIdentity.id,
           registered: registeredIdentity
             ? {
                 isRegistered: true,
