@@ -17,11 +17,7 @@ interface ISMARTIdentityRegistryStorage is IERC3643IdentityRegistryStorage {
     /// @param _investorAddress is the address of the investor's wallet.
     /// @param _identity is the address of the Identity smart contract (onchainID).
     /// @param _country is the numeric country code associated with the investor.
-    event IdentityStored(
-        address indexed _investorAddress,
-        IIdentity indexed _identity,
-        uint16 indexed _country
-    );
+    event IdentityStored(address indexed _investorAddress, IIdentity indexed _identity, uint16 indexed _country);
 
     /// @notice Emitted when an Identity is removed from the storage contract
     /// @dev This event is emitted when an Identity is removed from the storage contract.
@@ -35,9 +31,7 @@ interface ISMARTIdentityRegistryStorage is IERC3643IdentityRegistryStorage {
     /// @param _oldIdentity is the old Identity contract's address to update.
     /// @param _newIdentity is the new Identity contract's.
     event IdentityModified(
-        address indexed _investorAddress,
-        IIdentity indexed _oldIdentity,
-        IIdentity indexed _newIdentity
+        address indexed _investorAddress, IIdentity indexed _oldIdentity, IIdentity indexed _newIdentity
     );
 
     /// @notice Emitted when an Identity's country has been updated
