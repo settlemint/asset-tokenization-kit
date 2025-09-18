@@ -4,9 +4,10 @@ import {
   BigInt,
   Bytes,
   crypto,
+  log,
   store,
 } from "@graphprotocol/graph-ts";
-import { Token } from "../../generated/schema";
+import { Identity, Token, TopicScheme } from "../../generated/schema";
 import {
   Approved,
   ClaimAdded,
@@ -20,15 +21,18 @@ import {
   KeyRemoved,
 } from "../../generated/templates/Identity/ClaimIssuer";
 import { fetchEvent } from "../event/fetch/event";
+import { fetchIdentityRegistryStorage } from "../identity-registry-storage/fetch/identity-registry-storage";
 import { updateAccountStatsForPriceChange } from "../stats/account-stats";
 import { updateSystemStatsForPriceChange } from "../stats/system-stats";
 import { updateTokenTypeStatsForPriceChange } from "../stats/token-type-stats";
+import { fetchSystem } from "../system/fetch/system";
 import {
   isCollateralClaim,
   updateCollateral,
 } from "../token-extensions/collateral/utils/collateral-utils";
 import { fetchToken, fetchTokenByIdentity } from "../token/fetch/token";
 import { getTokenBasePrice, updateBasePrice } from "../token/utils/token-utils";
+import { fetchTopicScheme } from "../topic-scheme-registry/fetch/topic-scheme";
 import { fetchIdentity } from "./fetch/identity";
 import { fetchIdentityClaim } from "./fetch/identity-claim";
 import { fetchIdentityKey } from "./fetch/identity-key";
@@ -111,7 +115,11 @@ export function handleClaimAdded(event: ClaimAdded): void {
   identityClaim.save();
 
   // Decode claim data and create IdentityClaimValue entities
-  decodeClaimValues(identityClaim, event.params.topic, event.params.data);
+  const topicScheme = getTopicSchemeFromIdentity(event.params.topic, identity);
+  if (!topicScheme) {
+    return;
+  }
+  decodeClaimValues(identityClaim, topicScheme!, event.params.data);
 
   if (isCollateralClaim(identityClaim)) {
     updateCollateral(identityClaim);
@@ -158,7 +166,11 @@ export function handleClaimChanged(event: ClaimChanged): void {
     : BigDecimal.zero();
 
   // Decode claim data and create IdentityClaimValue entities
-  decodeClaimValues(identityClaim, event.params.topic, event.params.data);
+  const topicScheme = getTopicSchemeFromIdentity(event.params.topic, identity);
+  if (!topicScheme) {
+    return;
+  }
+  decodeClaimValues(identityClaim, topicScheme!, event.params.data);
 
   if (isCollateralClaim(identityClaim)) {
     updateCollateral(identityClaim);
@@ -317,4 +329,33 @@ export function handleClaimRevoked(event: ClaimRevoked): void {
       break;
     }
   }
+}
+
+function getTopicSchemeFromIdentity(
+  topic: BigInt,
+  identity: Identity
+): TopicScheme | null {
+  const registryStorageId = identity.registryStorage;
+  if (!registryStorageId) {
+    log.error(
+      "Identity registry storage not found for identity, cannot get topic scheme",
+      [identity.id.toHexString()]
+    );
+    return null;
+  }
+
+  const identityRegistryStorage = fetchIdentityRegistryStorage(
+    Address.fromBytes(registryStorageId!)
+  );
+  const system = fetchSystem(Address.fromBytes(identityRegistryStorage.system));
+  const topicSchemeRegistryId = system.topicSchemeRegistry;
+  if (!topicSchemeRegistryId) {
+    log.error(
+      "Topic scheme registry not found for system, cannot get topic scheme",
+      [system.id.toHexString()]
+    );
+    return null;
+  }
+
+  return fetchTopicScheme(topic, Address.fromBytes(topicSchemeRegistryId!));
 }
