@@ -49,12 +49,12 @@ Kubernetes: `>=1.21.0-0`
 
 ## Connection Requirements
 
-Configure Redis connectivity via the `global.erpc.datastores.redis` section (or override per-chart with `redis`).
+Configure Redis connectivity via the `global.datastores.erpc.redis` section (or override per-chart with `redis`).
 
 | Purpose | Values path | Default |
 | --- | --- | --- |
-| Cache connector | `global.erpc.datastores.redis.cacheDb` | `redis://default:atk@redis:6379/0` |
-| Shared state connector | `global.erpc.datastores.redis.sharedStateDb` | `redis://default:atk@redis:6379/1` |
+| Cache connector | `global.datastores.erpc.redis.cacheDb` | `redis://default:atk@redis:6379/0` |
+| Shared state connector | `global.datastores.erpc.redis.sharedStateDb` | `redis://default:atk@redis:6379/1` |
 
 Update the host, port, credentials, and database numbers to match your external Redis deployment.
 
@@ -115,8 +115,8 @@ The command removes all the Kubernetes components associated with the chart and 
 | extraVolumeMounts | list | `[]` | Optionally specify extra list of additional volumeMounts for the eRPC container(s) |
 | extraVolumes | list | `[]` | Optionally specify extra list of additional volumes for the eRPC pod(s) |
 | fullnameOverride | string | `"erpc"` | String to fully override common.names.fullname |
-| global | object | `{"erpc":{"datastores":{"redis":{"cacheDb":0,"cacheQuery":"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50","host":"redis","password":"atk","port":6379,"sharedStateDb":1,"sharedStateQuery":"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=20","username":"default"}}},"imagePullSecrets":[],"imageRegistry":"","securityContexts":{"container":{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":false,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337,"seccompProfile":{"type":"RuntimeDefault"}},"pod":{"fsGroup":101337,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}},"storageClass":""}` | Global Docker image registry |
-| global.erpc.datastores.redis | object | `{"cacheDb":0,"cacheQuery":"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50","host":"redis","password":"atk","port":6379,"sharedStateDb":1,"sharedStateQuery":"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=20","username":"default"}` | Default Redis connection settings shared across eRPC components |
+| global | object | `{"datastores":{"default":{"redis":{"db":0,"host":"redis","password":"atk","port":6379,"query":"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50","username":"default"}},"erpc":{"redis":{"cacheDb":0,"cacheQuery":"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50","sharedStateDb":1,"sharedStateQuery":"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=20"}}},"imagePullSecrets":[],"imageRegistry":"","securityContexts":{"container":{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":false,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337,"seccompProfile":{"type":"RuntimeDefault"}},"pod":{"fsGroup":101337,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}},"storageClass":""}` | Global Docker image registry |
+| global.datastores.erpc.redis.cacheDb | int | `0` | Default Redis connection settings shared across eRPC components |
 | global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |
 | global.imageRegistry | string | `""` | Global Docker image registry |
 | global.securityContexts.container | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":false,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337,"seccompProfile":{"type":"RuntimeDefault"}}` | Container security context defaults shared across charts |
@@ -208,7 +208,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | readinessProbe.periodSeconds | int | `10` | Period seconds for readinessProbe |
 | readinessProbe.successThreshold | int | `1` | Success threshold for readinessProbe |
 | readinessProbe.timeoutSeconds | int | `5` | Timeout seconds for readinessProbe |
-| redis | object | `{}` | Redis parameters for cache/shared state connectivity (overrides global.erpc.datastores.redis) |
+| redis | object | `{}` | Redis parameters for cache/shared state connectivity (overrides global.datastores.erpc.redis) |
 | replicaCount | int | `1` | Number of eRPC replicas to deploy |
 | resources | object | `{}` | eRPC containers resource requests and limits |
 | runtime | object | `{"gc":{"enabled":true,"gogc":30,"gomemlimitOverride":"","gomemlimitRatio":0.85}}` | Runtime tuning |

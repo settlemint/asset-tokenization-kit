@@ -415,16 +415,8 @@ config:
     # -- Node RPC URL
     nodeRpcUrl: "http://txsigner:3000"
 
-  # -- PostgreSQL connection string
-  postgresql: "postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"
+  # -- PostgreSQL overrides merged with global.datastores.portal.postgresql
+  postgresql: {}
 
-  # -- Redis configuration
-  redis:
-    # -- Redis host
-    host: "redis"
-    # -- Redis port
-    port: 6379
-    # -- Redis username
-    username: "default"
-    # -- Redis password
-    password: "atk"
+  # -- Redis overrides merged with global.datastores.portal.redis
+  redis: {}

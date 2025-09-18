@@ -116,27 +116,11 @@ Parameters: host, port, username, password, db, query (without leading '?').
 {{- end }}
 
 {{/*
-Merge global and chart-specific Redis configuration for eRPC.
+Merge global default, eRPC overrides, and chart-level Redis configuration.
 */}}
 {{- define "erpc.redis.config" -}}
-{{- $context := .context | default . -}}
-{{- $global := dict -}}
-{{- if and $context.Values.global (hasKey $context.Values.global "erpc") -}}
-  {{- $erpcGlobal := index $context.Values.global "erpc" -}}
-  {{- if and $erpcGlobal (hasKey $erpcGlobal "datastores") -}}
-    {{- $datastores := index $erpcGlobal "datastores" -}}
-    {{- if and $datastores (hasKey $datastores "redis") -}}
-      {{- $global = index $datastores "redis" -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
-{{- $local := default (dict) $context.Values.redis -}}
-{{- $merged := include "common.tplvalues.merge" (dict "values" (list $global $local) "context" $context) -}}
-{{- if $merged -}}
-{{- $merged -}}
-{{- else -}}
-{{- toYaml dict -}}
-{{- end -}}
+{{- $ctx := .context | default . -}}
+{{ include "atk.datastores.redis" (dict "context" $ctx "chartKey" "erpc" "local" (default (dict) $ctx.Values.redis)) }}
 {{- end }}
 
 {{/*

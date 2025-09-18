@@ -25,14 +25,18 @@ global:
           - ALL
       seccompProfile:
         type: RuntimeDefault
-  erpc:
-    datastores:
-      # -- Default Redis connection settings shared across eRPC components
+  datastores:
+    default:
       redis:
         host: redis
         port: 6379
         username: default
         password: atk
+        db: 0
+        query: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"
+    erpc:
+      redis:
+        # -- Default Redis connection settings shared across eRPC components
         cacheDb: 0
         sharedStateDb: 1
         cacheQuery: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"
@@ -63,7 +67,7 @@ image:
   # -- eRPC image pull secrets
   pullSecrets: []
 
-# -- Redis parameters for cache/shared state connectivity (overrides global.erpc.datastores.redis)
+# -- Redis parameters for cache/shared state connectivity (overrides global.datastores.erpc.redis)
 redis: {}
 
 # -- Number of eRPC replicas to deploy

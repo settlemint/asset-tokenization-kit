@@ -52,9 +52,9 @@ Kubernetes: `>=1.21.0-0`
 
 ## Connection Requirements
 
-TxSigner reads its database credentials from the `txsigner.postgresqlConnection` values block. Update
-that section with the hostname, port, database, username, password, and SSL mode for your external
-PostgreSQL instance.
+TxSigner inherits its default database credentials from the `global.datastores.txsigner.postgresql`
+configuration. Override individual connection fields by customizing `global.datastores.txsigner.postgresql`
+or providing chart-level overrides under `txsigner.postgresql`.
 
 ## Installing the Chart
 
@@ -214,7 +214,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | podAntiAffinityPreset | string | `"soft"` | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard` |
 | podLabels | object | `{}` | Extra labels for TxSigner pods |
 | podSecurityContext | object | `{}` | Pod Security Context configuration |
-| postgresql | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` | PostgreSQL connection string |
 | priorityClassName | string | `""` | TxSigner pods' priority class name |
 | readinessProbe | object | `{"enabled":true,"failureThreshold":60,"initialDelaySeconds":1,"periodSeconds":5,"successThreshold":1,"tcpSocket":{"port":"http"},"timeoutSeconds":5}` | Configure TxSigner containers' readiness probe |
 | readinessProbe.enabled | bool | `true` | Enable readinessProbe on TxSigner containers |

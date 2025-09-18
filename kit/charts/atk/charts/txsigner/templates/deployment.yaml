@@ -80,6 +80,18 @@ spec:
         {{- if .Values.lifecycleHooks }}
         lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" $) | nindent 10 }}
         {{- end }}
+        {{- $postgresLocal := default (dict) .Values.postgresql -}}
+        {{- $postgresConfig := ((include "atk.datastores.postgresql" (dict "context" . "chartKey" "txsigner" "local" $postgresLocal)) | fromYaml) | default (dict) -}}
+        {{- $postgresUrl := "" -}}
+        {{- if and $postgresConfig (hasKey $postgresConfig "url") -}}
+          {{- $maybe := index $postgresConfig "url" -}}
+          {{- if $maybe -}}
+            {{- $postgresUrl = printf "%v" $maybe -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if eq (trim $postgresUrl) "" -}}
+          {{- $postgresUrl = include "atk.datastores.postgresql.url" (dict "context" . "chartKey" "txsigner" "local" $postgresLocal) -}}
+        {{- end -}}
         env:
         - name: TX_SIGNER_PORT
           value: {{ .Values.config.port | quote }}
@@ -95,9 +107,9 @@ spec:
           value: {{ .Values.config.debug | quote }}
         - name: TX_SIGNER_SIGNING_STRATEGY
           value: {{ .Values.config.signingStrategy | quote }}
-        {{- if .Values.postgresql }}
+        {{- if ne (trim $postgresUrl) "" }}
         - name: DATABASE_URL
-          value: {{ .Values.postgresql | quote }}
+          value: {{ $postgresUrl | quote }}
         {{- end }}
         {{- if eq .Values.config.signingStrategy "local" }}
         {{- if .Values.config.existingSecret }}

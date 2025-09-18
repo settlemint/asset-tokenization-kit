@@ -458,9 +458,6 @@ config:
   # -- Additional secret environment variables to add to the txsigner
   extraSecretEnv: {}
 
-# -- PostgreSQL connection string
-postgresql: "postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"
-
 # -- Init containers configuration
 # Legacy `initContainers` overrides remain supported for backward compatibility.
 initContainer:

@@ -39,12 +39,12 @@
 
 ## Connection Requirements
 
-Configure Redis connectivity via the `global.erpc.datastores.redis` section (or override per-chart with `redis`).
+Configure Redis connectivity via the `global.datastores.erpc.redis` section (or override per-chart with `redis`).
 
 | Purpose | Values path | Default |
 | --- | --- | --- |
-| Cache connector | `global.erpc.datastores.redis.cacheDb` | `redis://default:atk@redis:6379/0` |
-| Shared state connector | `global.erpc.datastores.redis.sharedStateDb` | `redis://default:atk@redis:6379/1` |
+| Cache connector | `global.datastores.erpc.redis.cacheDb` | `redis://default:atk@redis:6379/0` |
+| Shared state connector | `global.datastores.erpc.redis.sharedStateDb` | `redis://default:atk@redis:6379/1` |
 
 Update the host, port, credentials, and database numbers to match your external Redis deployment.
 

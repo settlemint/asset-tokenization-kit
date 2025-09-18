@@ -14,19 +14,19 @@ environment.
 | Service | Values path | Default host | Default port | Default database | Default username | Default password | Default SSL mode |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Blockscout | `blockscout.postgresql` | `postgresql` | `5432` | `blockscout` | `blockscout` | `atk` | `disable` |
-| Graph Node | `graph-node.postgresql` | `postgresql` | `5432` | `thegraph` | `thegraph` | `atk` | `disable` |
+| Graph Node | `global.datastores.graphNode.postgresql` | `postgresql` | `5432` | `thegraph` | `thegraph` | `atk` | `disable` |
 | Hasura | `hasura.postgresql` | `postgresql` | `5432` | `hasura` | `hasura` | `atk` | `disable` |
-| Portal | `portal.config.postgresqlConnection` | `postgresql` | `5432` | `portal` | `portal` | `atk` | `disable` |
-| TxSigner | `txsigner.postgresqlConnection` | `postgresql` | `5432` | `txsigner` | `txsigner` | `atk` | `disable` |
+| Portal | `global.datastores.portal.postgresql` | `postgresql` | `5432` | `portal` | `portal` | `atk` | `disable` |
+| TxSigner | `global.datastores.txsigner.postgresql` | `postgresql` | `5432` | `txsigner` | `txsigner` | `atk` | `disable` |
 
 ### Redis Targets
 | Service | Values path | Default host | Default port | Default database | Default username | Default password |
 | --- | --- | --- | --- | --- | --- | --- |
-| eRPC Cache | `global.erpc.datastores.redis.cacheDb` | `redis` | `6379` | `0` | `default` | `atk` |
-| eRPC Shared State | `global.erpc.datastores.redis.sharedStateDb` | `redis` | `6379` | `1` | `default` | `atk` |
+| eRPC Cache | `global.datastores.erpc.redis.cacheDb` | `redis` | `6379` | `0` | `default` | `atk` |
+| eRPC Shared State | `global.datastores.erpc.redis.sharedStateDb` | `redis` | `6379` | `1` | `default` | `atk` |
 | Hasura Cache | `hasura.redis.primary` | `redis` | `6379` | `2` | `default` | `atk` |
 | Hasura Rate Limit | `hasura.redis.rateLimit` | `redis` | `6379` | `3` | `default` | `atk` |
-| Portal | `portal.config.redis` | `redis` | `6379` | `4` | `default` | `atk` |
+| Portal | `global.datastores.portal.redis` | `redis` | `6379` | `4` | `default` | `atk` |
 
 Each service uses its own logical database to avoid key collisions. When pointing to an external
 Redis or PostgreSQL deployment, update the appropriate values paths listed above.
@@ -226,14 +226,35 @@ The following table lists the configurable parameters of this chart and their de
 | global.artifacts.image.registry | string | `"ghcr.io"` |  |
 | global.artifacts.image.repository | string | `"settlemint/asset-tokenization-kit-artifacts"` |  |
 | global.artifacts.image.tag | string | `"2.0.0-main.91391"` |  |
-| global.erpc.datastores.redis.cacheDb | int | `0` |  |
-| global.erpc.datastores.redis.cacheQuery | string | `"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"` |  |
-| global.erpc.datastores.redis.host | string | `"redis"` |  |
-| global.erpc.datastores.redis.password | string | `"atk"` |  |
-| global.erpc.datastores.redis.port | int | `6379` |  |
-| global.erpc.datastores.redis.sharedStateDb | int | `1` |  |
-| global.erpc.datastores.redis.sharedStateQuery | string | `"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=20"` |  |
-| global.erpc.datastores.redis.username | string | `"default"` |  |
+| global.datastores.default.postgresql.database | string | `"postgres"` |  |
+| global.datastores.default.postgresql.host | string | `"postgresql"` |  |
+| global.datastores.default.postgresql.password | string | `"atk"` |  |
+| global.datastores.default.postgresql.port | int | `5432` |  |
+| global.datastores.default.postgresql.sslMode | string | `"disable"` |  |
+| global.datastores.default.postgresql.username | string | `"postgres"` |  |
+| global.datastores.default.redis.db | int | `0` |  |
+| global.datastores.default.redis.host | string | `"redis"` |  |
+| global.datastores.default.redis.password | string | `"atk"` |  |
+| global.datastores.default.redis.port | int | `6379` |  |
+| global.datastores.default.redis.query | string | `"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"` |  |
+| global.datastores.default.redis.username | string | `"default"` |  |
+| global.datastores.erpc.redis.cacheDb | int | `0` |  |
+| global.datastores.erpc.redis.sharedStateDb | int | `1` |  |
+| global.datastores.graphNode.postgresql.database | string | `"thegraph"` |  |
+| global.datastores.graphNode.postgresql.password | string | `"atk"` |  |
+| global.datastores.graphNode.postgresql.username | string | `"thegraph"` |  |
+| global.datastores.hasura.postgresql.database | string | `"hasura"` |  |
+| global.datastores.hasura.postgresql.password | string | `"atk"` |  |
+| global.datastores.hasura.postgresql.username | string | `"hasura"` |  |
+| global.datastores.hasura.redis.primary.db | int | `2` |  |
+| global.datastores.hasura.redis.rateLimit.db | int | `3` |  |
+| global.datastores.portal.postgresql.database | string | `"portal"` |  |
+| global.datastores.portal.postgresql.password | string | `"atk"` |  |
+| global.datastores.portal.postgresql.username | string | `"portal"` |  |
+| global.datastores.portal.redis.db | int | `4` |  |
+| global.datastores.txsigner.postgresql.database | string | `"txsigner"` |  |
+| global.datastores.txsigner.postgresql.password | string | `"atk"` |  |
+| global.datastores.txsigner.postgresql.username | string | `"txsigner"` |  |
 | global.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | global.networkPolicy.enabled | bool | `false` |  |
 | global.securityContexts.container.allowPrivilegeEscalation | bool | `false` |  |
@@ -246,11 +267,6 @@ The following table lists the configurable parameters of this chart and their de
 | global.securityContexts.pod.runAsNonRoot | bool | `true` |  |
 | global.securityContexts.pod.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | graph-node.enabled | bool | `true` |  |
-| graph-node.env.PRIMARY_SUBGRAPH_DATA_PGDATABASE | string | `"thegraph"` |  |
-| graph-node.env.PRIMARY_SUBGRAPH_DATA_PGHOST | string | `"postgresql"` |  |
-| graph-node.env.PRIMARY_SUBGRAPH_DATA_PGPASSWORD | string | `"atk"` |  |
-| graph-node.env.PRIMARY_SUBGRAPH_DATA_PGPORT | int | `5432` |  |
-| graph-node.env.PRIMARY_SUBGRAPH_DATA_PGUSER | string | `"thegraph"` |  |
 | graph-node.image.pullPolicy | string | `"IfNotPresent"` |  |
 | graph-node.image.repository | string | `"docker.io/graphprotocol/graph-node"` |  |
 | graph-node.image.tag | string | `"v0.40.2"` |  |
@@ -298,13 +314,6 @@ The following table lists the configurable parameters of this chart and their de
 | graph-node.postgresReadinessCheck.resources.limits.memory | string | `"96Mi"` |  |
 | graph-node.postgresReadinessCheck.resources.requests.cpu | string | `"25m"` |  |
 | graph-node.postgresReadinessCheck.resources.requests.memory | string | `"48Mi"` |  |
-| graph-node.postgresql.database | string | `"thegraph"` |  |
-| graph-node.postgresql.endpoint | string | `"postgresql:5432"` |  |
-| graph-node.postgresql.host | string | `"postgresql"` |  |
-| graph-node.postgresql.password | string | `"atk"` |  |
-| graph-node.postgresql.port | int | `5432` |  |
-| graph-node.postgresql.url | string | `"postgresql://thegraph:atk@postgresql:5432/thegraph?sslmode=disable"` |  |
-| graph-node.postgresql.username | string | `"thegraph"` |  |
 | hasura.enabled | bool | `true` |  |
 | hasura.graphql-engine.image.pullPolicy | string | `"IfNotPresent"` |  |
 | hasura.graphql-engine.image.repository | string | `"docker.io/hasura/graphql-engine"` |  |
@@ -432,21 +441,9 @@ The following table lists the configurable parameters of this chart and their de
 | observability.victoria-metrics-single.server.persistentVolume.size | string | `"10Gi"` |  |
 | observability.victoria-metrics-single.server.persistentVolume.storageClass | string | `""` |  |
 | observability.victoria-metrics-single.server.resources | object | `{}` |  |
-| portal.config.postgresql | string | `"postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"` |  |
-| portal.config.postgresqlConnection.database | string | `"portal"` |  |
-| portal.config.postgresqlConnection.endpoint | string | `"postgresql:5432"` |  |
-| portal.config.postgresqlConnection.host | string | `"postgresql"` |  |
-| portal.config.postgresqlConnection.password | string | `"atk"` |  |
-| portal.config.postgresqlConnection.port | int | `5432` |  |
-| portal.config.postgresqlConnection.sslMode | string | `"disable"` |  |
-| portal.config.postgresqlConnection.url | string | `"postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"` |  |
-| portal.config.postgresqlConnection.username | string | `"portal"` |  |
-| portal.config.redis.db | int | `4` |  |
-| portal.config.redis.host | string | `"redis"` |  |
-| portal.config.redis.password | string | `"atk"` |  |
-| portal.config.redis.port | int | `6379` |  |
-| portal.config.redis.url | string | `"redis://default:atk@redis:6379/4"` |  |
-| portal.config.redis.username | string | `"default"` |  |
+| portal.config.network.networkId | string | `"53771311147"` | Network ID |
+| portal.config.network.networkName | string | `"ATK"` | Network name |
+| portal.config.network.nodeRpcUrl | string | `"http://txsigner:3000"` | Node RPC URL |
 | portal.enabled | bool | `true` |  |
 | portal.image.pullPolicy | string | `"IfNotPresent"` |  |
 | portal.image.registry | string | `"ghcr.io"` |  |
@@ -531,15 +528,6 @@ The following table lists the configurable parameters of this chart and their de
 | txsigner.initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` |  |
 | txsigner.initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
 | txsigner.initContainer.tcpCheck.timeout | int | `120` |  |
-| txsigner.postgresql | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
-| txsigner.postgresqlConnection.database | string | `"txsigner"` |  |
-| txsigner.postgresqlConnection.endpoint | string | `"postgresql:5432"` |  |
-| txsigner.postgresqlConnection.host | string | `"postgresql"` |  |
-| txsigner.postgresqlConnection.password | string | `"atk"` |  |
-| txsigner.postgresqlConnection.port | int | `5432` |  |
-| txsigner.postgresqlConnection.sslMode | string | `"disable"` |  |
-| txsigner.postgresqlConnection.url | string | `"postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"` |  |
-| txsigner.postgresqlConnection.username | string | `"txsigner"` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |
 | txsigner.test.image.pullPolicy | string | `"IfNotPresent"` |  |

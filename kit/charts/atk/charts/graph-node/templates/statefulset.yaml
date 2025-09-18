@@ -30,6 +30,12 @@ spec:
         {{- toYaml $podSecurityContext | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- $pgLocal := default (dict) .Values.postgresql -}}
+      {{- $pgConfig := ((include "atk.datastores.postgresql" (dict "context" $ "chartKey" "graphNode" "local" $pgLocal)) | fromYaml) | default (dict) -}}
+      {{- $pgHost := default "postgresql" (index $pgConfig "host") -}}
+      {{- $pgPortValue := default 5432 (index $pgConfig "port") -}}
+      {{- $pgPort := printf "%v" $pgPortValue -}}
+      {{- $pgDatabase := default "thegraph" (index $pgConfig "database") -}}
       initContainers:
         - name: combined-init
           image: {{ include "graph-node.initContainerImage" . }}
@@ -47,6 +53,18 @@ spec:
             {{- range $key, $val := .Values.env }}
             - name: {{ $key | quote }}
               value: {{ $val | quote }}
+            {{- end }}
+            {{- if not (hasKey .Values.env "PRIMARY_SUBGRAPH_DATA_PGHOST") }}
+            - name: "PRIMARY_SUBGRAPH_DATA_PGHOST"
+              value: {{ $pgHost | quote }}
+            {{- end }}
+            {{- if not (hasKey .Values.env "PRIMARY_SUBGRAPH_DATA_PGPORT") }}
+            - name: "PRIMARY_SUBGRAPH_DATA_PGPORT"
+              value: {{ $pgPort | quote }}
+            {{- end }}
+            {{- if not (hasKey .Values.env "PRIMARY_SUBGRAPH_DATA_PGDATABASE") }}
+            - name: "PRIMARY_SUBGRAPH_DATA_PGDATABASE"
+              value: {{ $pgDatabase | quote }}
             {{- end }}
             {{- range $key, $val := .Values.secretEnv }}
             {{- if $val.key }}
@@ -94,8 +112,8 @@ spec:
 
               # Function to test PostgreSQL connection
               test_postgres() {
-                pg_isready -h {{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGHOST }} -p {{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGPORT }} -U "$PGUSER" && \
-                psql -h {{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGHOST }} -p {{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGPORT }} -U "$PGUSER" -d {{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGDATABASE }} -c "SELECT 1;" > /dev/null 2>&1
+                pg_isready -h {{ $pgHost }} -p {{ $pgPort }} -U "$PGUSER" && \
+                psql -h {{ $pgHost }} -p {{ $pgPort }} -U "$PGUSER" -d {{ $pgDatabase }} -c "SELECT 1;" > /dev/null 2>&1
               }
 
               # Wait with exponential backoff
@@ -181,6 +199,18 @@ spec:
             {{- range $key, $val := .Values.env }}
             - name: {{ $key | quote }}
               value: {{ $val | quote }}
+            {{- end }}
+            {{- if not (hasKey .Values.env "PRIMARY_SUBGRAPH_DATA_PGHOST") }}
+            - name: "PRIMARY_SUBGRAPH_DATA_PGHOST"
+              value: {{ $pgHost | quote }}
+            {{- end }}
+            {{- if not (hasKey .Values.env "PRIMARY_SUBGRAPH_DATA_PGPORT") }}
+            - name: "PRIMARY_SUBGRAPH_DATA_PGPORT"
+              value: {{ $pgPort | quote }}
+            {{- end }}
+            {{- if not (hasKey .Values.env "PRIMARY_SUBGRAPH_DATA_PGDATABASE") }}
+            - name: "PRIMARY_SUBGRAPH_DATA_PGDATABASE"
+              value: {{ $pgDatabase | quote }}
             {{- end }}
             {{- range $key, $val := .Values.secretEnv }}
             {{- if $val.key }}

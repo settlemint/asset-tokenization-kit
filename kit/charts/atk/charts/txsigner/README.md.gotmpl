@@ -44,9 +44,9 @@ TxSigner is a secure transaction signing service for blockchain applications tha
 
 ## Connection Requirements
 
-TxSigner reads its database credentials from the `txsigner.postgresqlConnection` values block. Update
-that section with the hostname, port, database, username, password, and SSL mode for your external
-PostgreSQL instance.
+TxSigner inherits its default database credentials from the `global.datastores.txsigner.postgresql`
+configuration. Override individual connection fields by customizing `global.datastores.txsigner.postgresql`
+or providing chart-level overrides under `txsigner.postgresql`.
 
 ## Installing the Chart
 
