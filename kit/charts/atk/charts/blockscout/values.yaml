@@ -71,6 +71,19 @@ blockscout:
     annotations: {}
     tls: []
 
+  openShiftRoute:
+    enabled: false
+    annotations: {}
+    host: explorer.k8s.orb.local
+    path: /api
+    wildcardPolicy: None
+    port:
+      targetPort: http
+    to:
+      weight: 100
+    alternateBackends: []
+    tls: null
+
   resources: {}
 
   # Pod security context
@@ -173,6 +186,19 @@ frontend:
     annotations: {}
     tls: []
 
+  openShiftRoute:
+    enabled: false
+    annotations: {}
+    host: explorer.k8s.orb.local
+    path: /
+    wildcardPolicy: None
+    port:
+      targetPort: http
+    to:
+      weight: 100
+    alternateBackends: []
+    tls: null
+
   resources: {}
 
   # Pod security context
@@ -214,8 +240,6 @@ frontend:
     failureThreshold: 5
 
   env:
-    NEXT_PUBLIC_API_PROTOCOL: https
-    NEXT_PUBLIC_APP_PROTOCOL: https
     NEXT_PUBLIC_IS_ACCOUNT_SUPPORTED: 'false'
     NEXT_PUBLIC_IS_TESTNET: 'false'
     NEXT_PUBLIC_AD_BANNER_PROVIDER: 'none'
