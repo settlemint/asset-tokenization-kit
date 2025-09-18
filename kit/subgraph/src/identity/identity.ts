@@ -21,7 +21,7 @@ import {
   KeyRemoved,
 } from "../../generated/templates/Identity/ClaimIssuer";
 import { fetchEvent } from "../event/fetch/event";
-import { fetchIdentityRegistryStorage } from "../identity-registry-storage/fetch/identity-registry-storage";
+import { fetchIdentityFactory } from "../identity-factory/fetch/identity-factory";
 import { updateAccountStatsForPriceChange } from "../stats/account-stats";
 import { updateSystemStatsForPriceChange } from "../stats/system-stats";
 import { updateTokenTypeStatsForPriceChange } from "../stats/token-type-stats";
@@ -335,19 +335,19 @@ function getTopicSchemeFromIdentity(
   topic: BigInt,
   identity: Identity
 ): TopicScheme | null {
-  const registryStorageId = identity.registryStorage;
-  if (!registryStorageId) {
+  const identityFactoryId = identity.identityFactory;
+  if (!identityFactoryId) {
     log.error(
-      "Identity registry storage not found for identity: {}, cannot get topic scheme",
+      "Identity factory not found for identity: {}, cannot get topic scheme",
       [identity.id.toHexString()]
     );
     return null;
   }
 
-  const identityRegistryStorage = fetchIdentityRegistryStorage(
-    Address.fromBytes(registryStorageId)
+  const identityFactory = fetchIdentityFactory(
+    Address.fromBytes(identityFactoryId)
   );
-  const system = fetchSystem(Address.fromBytes(identityRegistryStorage.system));
+  const system = fetchSystem(Address.fromBytes(identityFactory.system));
   const topicSchemeRegistryId = system.topicSchemeRegistry;
   if (!topicSchemeRegistryId) {
     log.error(

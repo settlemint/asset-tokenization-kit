@@ -80,6 +80,7 @@ export function handleBootstrapped(event: Bootstrapped): void {
   if (identityFactory.deployedInTransaction.equals(Bytes.empty())) {
     identityFactory.deployedInTransaction = event.transaction.hash;
   }
+  identityFactory.system = system.id;
   identityFactory.save();
 
   const topicSchemeRegistry = fetchTopicSchemeRegistry(

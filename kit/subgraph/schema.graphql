@@ -357,6 +357,8 @@ type IdentityRegistryStorage @entity(immutable: false) {
 type IdentityFactory @entity(immutable: false) {
   # Unique identifier - factory contract address
   id: Bytes!
+  # System this factory belongs to
+  system: System!
   # Account representation of the factory contract
   account: Account!
   # List of identities created by this factory
