@@ -118,9 +118,11 @@ describe("Identity list (integration)", () => {
       );
       expect(typeof identity.deployedInTransaction).toBe("string");
 
-      expect(identity.account.id).toMatch(/^0x[a-fA-F0-9]{40}$/);
-      if (identity.account.contractName) {
-        expect(typeof identity.account.contractName).toBe("string");
+      if (identity.account) {
+        expect(identity.account.id).toMatch(/^0x[a-fA-F0-9]{40}$/);
+        if (identity.account.contractName) {
+          expect(typeof identity.account.contractName).toBe("string");
+        }
       }
     }
   });
@@ -141,7 +143,8 @@ describe("Identity list (integration)", () => {
     expect(identity!.id.toLowerCase()).toBe(
       targetIdentityAddress.toLowerCase()
     );
-    expect(identity?.account.id.toLowerCase()).toBe(
+    expect(identity?.account).toBeDefined();
+    expect(identity?.account?.id.toLowerCase()).toBe(
       targetUserData.wallet?.toLowerCase()
     );
   });

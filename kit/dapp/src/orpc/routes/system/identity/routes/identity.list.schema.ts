@@ -38,8 +38,8 @@ export const IdentityListOutputSchema = z.object({
   items: z.array(
     z.object({
       id: ethereumAddress,
-      account: IdentityAccountSchema,
-      isContract: z.boolean(),
+      account: IdentityAccountSchema.nullable(),
+      isContract: z.boolean().nullable(),
       claimsCount: z.number().int().nonnegative(),
       activeClaimsCount: z.number().int().nonnegative(),
       revokedClaimsCount: z.number().int().nonnegative(),

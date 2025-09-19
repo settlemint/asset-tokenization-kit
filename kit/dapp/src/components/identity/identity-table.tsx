@@ -79,9 +79,13 @@ export function IdentityTable() {
         columnHelper.accessor(
           (row: IdentityRow) =>
             [
-              row.account.contractName,
-              row.account.id,
-              row.isContract ? "contract" : "account",
+              row.account?.contractName,
+              row.account?.id,
+              row.isContract === true
+                ? "contract"
+                : row.isContract === false
+                  ? "account"
+                  : "",
             ]
               .filter(Boolean)
               .join(" "),
@@ -104,7 +108,15 @@ export function IdentityTable() {
           cell: ({ row }: CellContext<IdentityRow, unknown>) => {
             const { account, isContract } = row.original;
 
-            if (isContract) {
+            if (!account) {
+              return (
+                <span className="text-muted-foreground">
+                  {t("identityTable.fallback.noEntity")}
+                </span>
+              );
+            }
+
+            if (isContract === true) {
               return (
                 <div className="flex flex-col gap-1">
                   {account.contractName && (
@@ -138,7 +150,12 @@ export function IdentityTable() {
         }),
         // Hidden accessor column for filtering by entity type
         columnHelper.accessor(
-          (row: IdentityRow) => (row.isContract ? "contract" : "account"),
+          (row: IdentityRow) =>
+            row.isContract === true
+              ? "contract"
+              : row.isContract === false
+                ? "account"
+                : "",
           {
             id: "type_filter",
             header: "",
@@ -165,6 +182,9 @@ export function IdentityTable() {
           header: t("identityTable.columns.type"),
           cell: ({ row }: CellContext<IdentityRow, unknown>) => {
             const isContract = row.original.isContract;
+            if (isContract === null || isContract === undefined) {
+              return <span className="text-muted-foreground">—</span>;
+            }
             return <IdentityTypeBadge isContract={isContract} />;
           },
           meta: {

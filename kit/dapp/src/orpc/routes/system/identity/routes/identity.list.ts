@@ -134,10 +134,16 @@ export const identityList = systemRouter.system.identity.list
       const revokedClaimsCount = claims.filter((claim) => claim.revoked).length;
       const activeClaimsCount = claims.length - revokedClaimsCount;
 
+      // Pass through nullable account aligned with subgraph
+      const account = identity.account ?? null;
+
+      // Align with subgraph: isContract can be null
+      const isContract = identity.isContract ?? null;
+
       return {
         id: identity.id,
-        account: identity.account,
-        isContract: identity.isContract ?? false,
+        account,
+        isContract,
         claimsCount: claims.length,
         activeClaimsCount,
         revokedClaimsCount,
