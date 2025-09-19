@@ -86,20 +86,6 @@ function IdentityDetailPage() {
           <IdentityTypeBadge isContract={isContract} />
         </DetailGridItem>
 
-        <DetailGridItem
-          label={t("identities:fields.createdAt")}
-          info={t("identities:fields.createdAtInfo")}
-          value={new Date().toISOString()}
-          type="date"
-        />
-
-        <DetailGridItem
-          label={t("identities:fields.lastModified")}
-          info={t("identities:fields.lastModifiedInfo")}
-          value={new Date().toISOString()}
-          type="date"
-          dateOptions={{ relative: true }}
-        />
       </DetailGrid>
 
       <DetailGrid title={t("identities:details.summary.total")}>

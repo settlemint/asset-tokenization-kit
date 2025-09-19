@@ -97,11 +97,7 @@
     "registrationStatus": "Registration Status",
     "registrationStatusInfo": "Whether this identity is registered on-chain",
     "linkedEntity": "Linked entity",
-    "linkedEntityInfo": "The entity associated with this identity",
-    "createdAt": "Created At",
-    "createdAtInfo": "When this identity was first registered",
-    "lastModified": "Last Modified",
-    "lastModifiedInfo": "When this identity was last updated"
+    "linkedEntityInfo": "The entity associated with this identity"
   },
   "claimsTable": {
     "columns": {
