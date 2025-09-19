@@ -45,14 +45,20 @@ interface ChartYaml {
 }
 
 function normalizeBaseVersion(version: string): string {
-  const main = version.split("-")[0].split("+")[0];
+  const [preReleasePart] = version.split("-");
+  const [buildStripped] = (preReleasePart ?? version).split("+");
+  const candidate = (buildStripped ?? version).trim();
   const semverPattern = /^[0-9]+\.[0-9]+\.[0-9]+$/;
-  if (semverPattern.test(main)) {
-    return main;
+
+  if (candidate && semverPattern.test(candidate)) {
+    return candidate;
   }
 
   return version;
 }
+
+let versionEnvExported = false;
+let versionOutputExported = false;
 
 /**
  * Reads and parses the root package.json file
@@ -144,13 +150,17 @@ export async function getVersionInfo(
   const packageJson = await readRootPackageJson(startPath);
   const baseVersion = normalizeBaseVersion(packageJson.version);
 
-  return generateVersionInfo(
+  const info = generateVersionInfo(
     refSlug,
     refName,
     shaShort,
     baseVersion,
     buildId
   );
+
+  await ensureVersionEnv(info);
+
+  return info;
 }
 
 /**
@@ -166,22 +176,33 @@ export async function getVersionInfoWithLogging(
   logger.info(`TAG=${result.tag}`);
   logger.info(`VERSION=${result.version}`);
 
-  process.env.TAG = result.tag;
-  process.env.VERSION = result.version;
-  await exportVersionInfoForGitHub(result);
-
   return result;
 }
 
-async function exportVersionInfoForGitHub(info: VersionInfo): Promise<void> {
-  const envFile = process.env.GITHUB_ENV;
-  if (!envFile) return;
+async function ensureVersionEnv(info: VersionInfo): Promise<void> {
+  process.env.TAG = info.tag;
+  process.env.VERSION = info.version;
 
-  try {
-    await appendFile(envFile, `TAG=${info.tag}\nVERSION=${info.version}\n`);
-    logger.info(`Exported version info to ${envFile}`);
-  } catch (error) {
-    logger.warn("Failed to export version info to GITHUB_ENV", error);
+  const envFile = process.env.GITHUB_ENV;
+  if (envFile && !versionEnvExported) {
+    try {
+      await appendFile(envFile, `TAG=${info.tag}\nVERSION=${info.version}\n`);
+      logger.info(`Exported version info to ${envFile}`);
+      versionEnvExported = true;
+    } catch (error) {
+      logger.warn("Failed to export version info to GITHUB_ENV", error);
+    }
+  }
+
+  const outputFile = process.env.GITHUB_OUTPUT;
+  if (outputFile && !versionOutputExported) {
+    try {
+      await appendFile(outputFile, `tag=${info.tag}\nversion=${info.version}\n`);
+      logger.info(`Exported version info to ${outputFile}`);
+      versionOutputExported = true;
+    } catch (error) {
+      logger.warn("Failed to export version info to GITHUB_OUTPUT", error);
+    }
   }
 }
 
