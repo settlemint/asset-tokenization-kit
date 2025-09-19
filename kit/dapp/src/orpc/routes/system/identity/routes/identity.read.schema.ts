@@ -78,18 +78,29 @@ export const IdentitySchema = z.object({
  * GraphQL response schema for identity queries by wallet
  */
 export const IdentityByWalletResponseSchema = z.object({
-  identities: z
-    .array(
-      z.object({
-        id: ethereumAddress,
-        account: z.object({
+  identityFactory: z
+    .object({
+      id: ethereumAddress,
+      identities: z.array(
+        z.object({
           id: ethereumAddress,
-          country: z.number().nullable().optional(),
-          contractName: z.string().nullable().optional(),
-        }),
-        claims: z.array(identityClaim),
-      })
-    )
+          account: z.object({
+            id: ethereumAddress,
+            contractName: z.string().nullable().optional(),
+          }),
+          registered: z
+            .array(
+              z.object({
+                id: z.string(),
+                country: z.number(),
+              })
+            )
+            .nullable()
+            .optional(),
+          claims: z.array(identityClaim),
+        })
+      ),
+    })
     .nullable()
     .optional(),
 });
@@ -103,9 +114,17 @@ export const IdentityByIdResponseSchema = z.object({
       id: ethereumAddress,
       account: z.object({
         id: ethereumAddress,
-        country: z.number().nullable().optional(),
         contractName: z.string().nullable().optional(),
       }),
+      registered: z
+        .array(
+          z.object({
+            id: z.string(),
+            country: z.number(),
+          })
+        )
+        .nullable()
+        .optional(),
       claims: z.array(identityClaim),
     })
     .nullable()

@@ -37,6 +37,9 @@ export async function setup() {
     const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
     await bootstrapSystem(orpClient);
 
+    // Create identities first, before any operations that need to query them
+    await createAndRegisterUserIdentities(orpClient);
+
     await Promise.all([
       bootstrapTokenFactories(orpClient),
       bootstrapAddons(orpClient),
@@ -46,7 +49,6 @@ export async function setup() {
       })(),
       setupDefaultIssuerRoles(orpClient),
       setDefaultSystemSettings(orpClient),
-      createAndRegisterUserIdentities(orpClient),
     ]);
 
     stopApi();

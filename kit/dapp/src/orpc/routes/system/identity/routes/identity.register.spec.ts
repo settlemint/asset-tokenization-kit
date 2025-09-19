@@ -61,7 +61,7 @@ describe("Identity register", () => {
       country: "BE",
       wallet: wallet2,
     });
-    expect(result.account).toBe(wallet2);
+    expect(result.account?.id).toBe(wallet2);
 
     const postRegistrationIdentity = await client.system.identity.read({ wallet: wallet2 });
     expect(postRegistrationIdentity.registered).toEqual({

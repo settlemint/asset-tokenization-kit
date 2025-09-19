@@ -16,33 +16,32 @@ import countries from "i18n-iso-countries";
 const READ_IDENTITY_BY_WALLET_QUERY = theGraphGraphql(`
   query ReadIdentityByWalletQuery(
     $userAddress: String!
-    $identityFactory: String!
+    $identityFactory: ID!
     $registryStorage: String!
   ) {
-    identities(
-      where: {
-        identityFactory: $identityFactory
-        account: $userAddress
-        registryStorage: $registryStorage
-      }
-      first: 1
-    ) {
+    identityFactory(id: $identityFactory) {
       id
-      account {
+      identities(where: { account: $userAddress }, first: 1) {
         id
-        country
-        contractName
-      }
-      claims {
-        id
-        name
-        revoked
-        issuer {
+        account {
           id
+          contractName
         }
-        values {
-          key
-          value
+        registered(where: { registryStorage: $registryStorage }) {
+          id
+          country
+        }
+        claims {
+          id
+          name
+          revoked
+          issuer {
+            id
+          }
+          values {
+            key
+            value
+          }
         }
       }
     }
@@ -53,13 +52,17 @@ const READ_IDENTITY_BY_WALLET_QUERY = theGraphGraphql(`
 const READ_IDENTITY_BY_ID_QUERY = theGraphGraphql(`
   query ReadIdentityByIdQuery(
     $identityId: ID!
+    $registryStorage: String!
   ) {
     identity(id: $identityId) {
       id
       account {
         id
-        country
         contractName
+      }
+      registered(where: { registryStorage: $registryStorage }) {
+        id
+        country
       }
       claims {
         id
@@ -124,7 +127,7 @@ export const identityRead = systemRouter.system.identity.read
         output: IdentityByWalletResponseSchema,
       });
 
-      identity = result.identities?.[0];
+      identity = result.identityFactory?.identities?.[0];
     } else {
       identifier = input.identityId;
 
@@ -132,6 +135,7 @@ export const identityRead = systemRouter.system.identity.read
       const result = await theGraphClient.query(READ_IDENTITY_BY_ID_QUERY, {
         input: {
           identityId: input.identityId.toLowerCase(),
+          registryStorage: system.identityRegistryStorage.id.toLowerCase(),
         },
         output: IdentityByIdResponseSchema,
       });
@@ -170,7 +174,9 @@ export const identityRead = systemRouter.system.identity.read
       });
     }
 
-    const accountCountry = identity.account.country;
+    // Extract country from registered identity (first registration record)
+    const registeredIdentity = identity.registered?.[0];
+    const accountCountry = registeredIdentity?.country;
 
     // Determine if this is a contract or account based on contractName
     const isContract = Boolean(identity.account.contractName);
