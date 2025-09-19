@@ -1,5 +1,4 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-// import type { Context } from "@/orpc/context/context";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { getAddress } from "viem";

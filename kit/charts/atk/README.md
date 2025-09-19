@@ -82,7 +82,6 @@ The following table lists the configurable parameters of this chart and their de
 | global.artifacts.image.pullPolicy | string | `"IfNotPresent"` |  |
 | global.artifacts.image.registry | string | `"ghcr.io"` |  |
 | global.artifacts.image.repository | string | `"settlemint/asset-tokenization-kit-artifacts"` |  |
-| global.artifacts.image.tag | string | `"2.0.0-main.91391"` |  |
 | global.chainId | string | `"53771311147"` |  |
 | global.chainName | string | `"ATK"` |  |
 | global.datastores.blockscout.postgresql.database | string | `"blockscout"` |  |

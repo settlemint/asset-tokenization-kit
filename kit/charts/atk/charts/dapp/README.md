@@ -18,10 +18,10 @@ A Helm chart for the ATK DApp frontend
 | env | list | `[]` | Environment variables defined directly in the deployment |
 | extraInitContainers | list | `[]` | Additional init containers appended verbatim to the deployment pod spec |
 | fullnameOverride | string | `"dapp"` | String to fully override dapp.fullname template |
-| image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/asset-tokenization-kit","tag":"2.0.0-main1e32acb7f"}` | dApp image configuration |
+| image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/asset-tokenization-kit","tag":""}` | dApp image configuration |
 | image.pullPolicy | string | `"IfNotPresent"` | dApp image pull policy |
 | image.repository | string | `"ghcr.io/settlemint/asset-tokenization-kit"` | dApp image repository |
-| image.tag | string | `"2.0.0-main1e32acb7f"` | dApp image tag (defaults to chart appVersion) |
+| image.tag | string | `""` | dApp image tag (defaults to chart appVersion) |
 | ingress | object | `{"annotations":{},"className":"atk-nginx","enabled":false,"hosts":[{"host":"dapp.local","paths":[{"path":"/((?:sm_|bpaas-)[^/]+)?/?(.*)","pathType":"ImplementationSpecific"}]}],"tls":[]}` | Ingress configuration |
 | ingress.annotations | object | `{}` | Additional annotations for the Ingress resource |
 | ingress.className | string | `"atk-nginx"` | IngressClass that will be used to implement the Ingress |
