@@ -67,10 +67,6 @@ function IdentityProgressContent({
       title={t("identityProgress.title")}
       description={t("identityProgress.description")}
       steps={steps}
-      cta={{
-        label: t("identityProgress.cta.label"),
-        href: "/onboarding/identity",
-      }}
     />
   );
 }
