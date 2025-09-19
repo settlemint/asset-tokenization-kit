@@ -29,6 +29,8 @@
   --color-sm-inset-shadow: var(--sm-inset-shadow);
   --color-sm-muted: var(--sm-muted);
   --color-sm-border: var(--sm-border);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
   --shadow-inset-button: inset 0 -3px 3px 0 var(--sm-inset-shadow);
   /* shadcn colors */
   --radius-sm: calc(var(--radius) - 4px);
