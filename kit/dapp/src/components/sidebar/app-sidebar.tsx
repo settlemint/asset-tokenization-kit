@@ -13,7 +13,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { HomeIcon } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
@@ -25,7 +25,9 @@ import { useTranslation } from "react-i18next";
  */
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { t } = useTranslation("navigation");
-  const navigate = useNavigate();
+  const isHomeActive = useRouterState({
+    select: (state) => state.location.pathname === "/",
+  });
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -36,15 +38,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarGroup className="mt-6">
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton
-                onClick={() => {
-                  void navigate({
-                    to: "/",
-                  });
-                }}
-              >
-                <HomeIcon />
-                <span>{t("home")}</span>
+              <SidebarMenuButton asChild isActive={isHomeActive}>
+                <Link
+                  to="/"
+                  aria-current={isHomeActive ? "page" : undefined}
+                  className={isHomeActive ? "font-semibold" : undefined}
+                >
+                  <HomeIcon />
+                  <span>{t("home")}</span>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

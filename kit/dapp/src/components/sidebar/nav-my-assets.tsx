@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { WalletIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -20,6 +20,9 @@ import { useTranslation } from "react-i18next";
  */
 export function NavMyAssets() {
   const { t } = useTranslation("navigation");
+  const isMyAssetsActive = useRouterState({
+    select: (state) => state.location.pathname.startsWith("/my-assets"),
+  });
   const { data: system } = useSuspenseQuery(
     orpc.system.read.queryOptions({
       input: { id: "default" },
@@ -35,13 +38,11 @@ export function NavMyAssets() {
       <SidebarGroupLabel>{t("myAssets")}</SidebarGroupLabel>
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton asChild>
+          <SidebarMenuButton asChild isActive={isMyAssetsActive}>
             <Link
               to="/my-assets"
-              activeProps={{
-                "data-active": true,
-                className: "font-semibold",
-              }}
+              aria-current={isMyAssetsActive ? "page" : undefined}
+              className={isMyAssetsActive ? "font-semibold" : undefined}
             >
               <WalletIcon />
               <span>{t("myAssets")}</span>
