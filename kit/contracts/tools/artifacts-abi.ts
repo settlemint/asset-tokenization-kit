@@ -167,8 +167,10 @@ class AbiCollector {
       const content = await file.text();
       const parsed = JSON.parse(content);
 
-      // Write the entire artifact to portal directory using Bun's file API
-      await Bun.write(abiFile.outputPath, JSON.stringify(parsed, null, 2));
+      const sanitized = this.selectAbiDocs(parsed);
+
+      // Persist ABI-focused artifact so portal bundles exclude deployment bytecode payloads
+      await Bun.write(abiFile.outputPath, JSON.stringify(sanitized, null, 2));
 
       this.collectedCount++;
       logger.debug(`Successfully copied ${abiFile.contractName} artifact`);
@@ -176,6 +178,28 @@ class AbiCollector {
       this.failedCount++;
       logger.error(`Failed to copy ${abiFile.contractName}: ${error}`);
     }
+  }
+
+  private selectAbiDocs(artifact: unknown): Record<string, unknown> {
+    if (Array.isArray(artifact)) {
+      return { abi: artifact };
+    }
+
+    if (!artifact || typeof artifact !== "object") {
+      return {};
+    }
+
+    const source = artifact as Record<string, unknown>;
+    const allowedKeys = ["abi", "devdoc", "userdoc"] as const;
+    const result: Record<string, unknown> = {};
+
+    for (const key of allowedKeys) {
+      if (key in source && source[key] !== undefined) {
+        result[key] = source[key];
+      }
+    }
+
+    return result;
   }
 
   async initializePortalDir(): Promise<void> {
