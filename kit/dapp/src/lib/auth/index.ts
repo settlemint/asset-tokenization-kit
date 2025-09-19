@@ -67,7 +67,9 @@ const options = {
    * Trusted origins for CORS configuration.
    * Only included if APP_URL is defined to prevent development issues.
    */
-  ...(env.APP_URL && { trustedOrigins: [env.APP_URL] }),
+  ...(env.APP_URL && {
+    trustedOrigins: [env.APP_URL],
+  }),
 
   /**
    * Database adapter configuration using Drizzle ORM.

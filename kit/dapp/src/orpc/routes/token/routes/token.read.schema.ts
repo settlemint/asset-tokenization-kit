@@ -304,6 +304,10 @@ export const TokenReadResponseSchema = z.object({
         .array(
           z.object({
             id: ethereumAddress,
+            account: z.object({
+              id: ethereumAddress,
+              contractName: z.string().nullable().optional(),
+            }),
             claims: z.array(identityClaim),
             registered: z
               .array(

@@ -37,6 +37,10 @@ const READ_TOKEN_QUERY = theGraphGraphql(
           first: 1
         ) {
           id
+          account {
+            id
+            contractName
+          }
           claims {
             id
             name
@@ -163,6 +167,14 @@ export const tokenMiddleware = baseRouter.middleware<
 
   const token = result.token;
   const identity = token.account?.identities?.[0];
+  const identityAccount = identity?.account ?? undefined;
+
+  if (!identityAccount) {
+    throw errors.INTERNAL_SERVER_ERROR({
+      message: "Token identity found without linked account",
+      data: { tokenId: token.id, identityId: identity?.id },
+    });
+  }
 
   const userRoles = mapUserRoles(auth.user.wallet, token.accessControl);
 
@@ -171,7 +183,11 @@ export const tokenMiddleware = baseRouter.middleware<
     identity: identity
       ? {
           id: identity.id,
-          account: token.id,
+          account: {
+            id: identityAccount.id,
+            contractName: identityAccount.contractName ?? null,
+          },
+          isContract: Boolean(identity.account?.contractName),
           claims: identity.claims,
           registered: identity.registered?.[0]
             ? {

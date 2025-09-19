@@ -66,8 +66,13 @@ export const forcedTransfer = tokenRouter.token.forcedTransfer
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const { contract, recipients, amounts, from: owners, walletVerification } =
-      input;
+    const {
+      contract,
+      recipients,
+      amounts,
+      from: owners,
+      walletVerification,
+    } = input;
     const sender = context.auth.user;
     const isBatch = recipients.length > 1;
 
