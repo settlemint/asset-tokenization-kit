@@ -35,6 +35,7 @@ const SEARCH_IDENTITY_QUERY = theGraphGraphql(`
       id
       account {
         id
+        contractName
       }
       registered(
         where: { registryStorage: $registryStorage }
@@ -95,10 +96,16 @@ export const identitySearch = systemRouter.system.identity.search
 
     const registeredEntry = identity.registered?.[0];
 
+    // Determine if this is a contract or account based on contractName
+    const isContract = Boolean(identity.account.contractName);
+
     const resultIdentity: IdentitySearchResult = {
       id: identity.id,
-      account: { id: identity.account.id },
-      isContract: false,
+      account: { 
+        id: identity.account.id,
+        contractName: identity.account.contractName ?? null,
+      },
+      isContract,
       registered: registeredEntry
         ? {
             isRegistered: true,

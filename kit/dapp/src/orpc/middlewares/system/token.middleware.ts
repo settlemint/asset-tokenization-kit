@@ -37,6 +37,10 @@ const READ_TOKEN_QUERY = theGraphGraphql(
           first: 1
         ) {
           id
+          account {
+            id
+            contractName
+          }
           claims {
             id
             name
@@ -172,7 +176,7 @@ export const tokenMiddleware = baseRouter.middleware<
       ? {
           id: identity.id,
           account: { id: token.id },
-          isContract: true,
+          isContract: Boolean(identity.account?.contractName),
           claims: identity.claims,
           registered: identity.registered?.[0]
             ? {

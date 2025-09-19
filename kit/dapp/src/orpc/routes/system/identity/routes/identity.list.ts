@@ -129,27 +129,27 @@ export const identityList = systemRouter.system.identity.list
 
     const identities = response?.identities ?? [];
 
-    const items = identities.map((identity) => {
-      const claims = identity.claims ?? [];
-      const revokedClaimsCount = claims.filter((claim) => claim.revoked).length;
-      const activeClaimsCount = claims.length - revokedClaimsCount;
-      const account = identity.account
-        ? {
-            id: identity.account.id,
-            contractName: identity.account.contractName ?? undefined,
-          }
-        : { id: identity.id };
+    const items = identities
+      .filter((identity) => identity.account) // Skip identities without valid account relationship
+      .map((identity) => {
+        const claims = identity.claims ?? [];
+        const revokedClaimsCount = claims.filter((claim) => claim.revoked).length;
+        const activeClaimsCount = claims.length - revokedClaimsCount;
+        const account = {
+          id: identity.account!.id, // Safe to use ! because of filter above
+          contractName: identity.account!.contractName ?? undefined,
+        };
 
-      return {
-        id: identity.id,
-        account,
-        isContract: identity.isContract ?? false,
-        claimsCount: claims.length,
-        activeClaimsCount,
-        revokedClaimsCount,
-        deployedInTransaction: identity.deployedInTransaction ?? "",
-      };
-    });
+        return {
+          id: identity.id,
+          account,
+          isContract: identity.isContract ?? false,
+          claimsCount: claims.length,
+          activeClaimsCount,
+          revokedClaimsCount,
+          deployedInTransaction: identity.deployedInTransaction ?? "",
+        };
+      });
 
     return IdentityListOutputSchema.parse({
       items,
