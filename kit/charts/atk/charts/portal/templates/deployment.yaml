@@ -56,9 +56,14 @@ spec:
       {{- end }}
       {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck "chartKey" "portal") }}
       {{- $extraInit := .Values.extraInitContainers | default (list) }}
+      {{- $artifactsImage := .Values.global.artifacts.image | default (dict) }}
+      {{- $artifactsRegistry := $artifactsImage.registry | default "ghcr.io" }}
+      {{- $artifactsRepository := $artifactsImage.repository | default "settlemint/asset-tokenization-kit-artifacts" }}
+      {{- $chartVersion := $.Chart.AppVersion | default .Chart.AppVersion }}
+      {{- $artifactsTag := $artifactsImage.tag | default $chartVersion }}
       initContainers:
         - name: copy-artifacts
-          image: "{{ .Values.global.artifacts.image.registry }}/{{ .Values.global.artifacts.image.repository }}:{{ .Values.global.artifacts.image.tag }}"
+          image: "{{ $artifactsRegistry }}/{{ $artifactsRepository }}:{{ $artifactsTag }}"
           imagePullPolicy: {{ .Values.global.artifacts.image.pullPolicy }}
           command:
             - /bin/sh

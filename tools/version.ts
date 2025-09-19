@@ -2,6 +2,7 @@
 
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { Glob } from "bun";
+import { appendFile } from "fs/promises";
 import { relative } from "path";
 import { parse, stringify } from "yaml";
 import { findTurboRoot } from "./root";
@@ -42,6 +43,22 @@ interface ChartYaml {
   }>;
   [key: string]: unknown;
 }
+
+function normalizeBaseVersion(version: string): string {
+  const [preReleasePart] = version.split("-");
+  const [buildStripped] = (preReleasePart ?? version).split("+");
+  const candidate = (buildStripped ?? version).trim();
+  const semverPattern = /^[0-9]+\.[0-9]+\.[0-9]+$/;
+
+  if (candidate && semverPattern.test(candidate)) {
+    return candidate;
+  }
+
+  return version;
+}
+
+let versionEnvExported = false;
+let versionOutputExported = false;
 
 /**
  * Reads and parses the root package.json file
@@ -131,14 +148,19 @@ export async function getVersionInfo(
   } = params;
 
   const packageJson = await readRootPackageJson(startPath);
+  const baseVersion = normalizeBaseVersion(packageJson.version);
 
-  return generateVersionInfo(
+  const info = generateVersionInfo(
     refSlug,
     refName,
     shaShort,
-    packageJson.version,
+    baseVersion,
     buildId
   );
+
+  await ensureVersionEnv(info);
+
+  return info;
 }
 
 /**
@@ -157,17 +179,42 @@ export async function getVersionInfoWithLogging(
   return result;
 }
 
+async function ensureVersionEnv(info: VersionInfo): Promise<void> {
+  process.env.TAG = info.tag;
+  process.env.VERSION = info.version;
+
+  const envFile = process.env.GITHUB_ENV;
+  if (envFile && !versionEnvExported) {
+    try {
+      await appendFile(envFile, `TAG=${info.tag}\nVERSION=${info.version}\n`);
+      logger.info(`Exported version info to ${envFile}`);
+      versionEnvExported = true;
+    } catch (error) {
+      logger.warn("Failed to export version info to GITHUB_ENV", error);
+    }
+  }
+
+  const outputFile = process.env.GITHUB_OUTPUT;
+  if (outputFile && !versionOutputExported) {
+    try {
+      await appendFile(outputFile, `tag=${info.tag}\nversion=${info.version}\n`);
+      logger.info(`Exported version info to ${outputFile}`);
+      versionOutputExported = true;
+    } catch (error) {
+      logger.warn("Failed to export version info to GITHUB_OUTPUT", error);
+    }
+  }
+}
+
 /**
- * Updates workspace dependencies in a dependencies object
- * @param deps - Dependencies object to update
+ * Counts workspace protocol dependencies so release logs stay informative without mutating them
+ * @param deps - Dependencies object to inspect
  * @param depType - Type of dependencies (for logging)
- * @param newVersion - New version to use
- * @returns Number of workspace dependencies updated
+ * @returns Number of workspace protocol dependencies detected
  */
-function updateWorkspaceDependencies(
+function countWorkspaceDependencies(
   deps: Record<string, string> | undefined,
-  depType: string,
-  newVersion: string
+  depType: string
 ): number {
   if (!deps) return 0;
 
@@ -175,14 +222,13 @@ function updateWorkspaceDependencies(
   for (const [depName, depVersion] of Object.entries(deps)) {
     // Skip @atk/* packages - not published to npm
     if (depVersion === "workspace:*" && !depName.startsWith("@atk/")) {
-      deps[depName] = newVersion;
       workspaceCount++;
     }
   }
 
   if (workspaceCount > 0) {
     logger.info(
-      `    Updated ${workspaceCount} workspace:* references in ${depType}`
+      `    Found ${workspaceCount} workspace:* references in ${depType}`
     );
   }
 
@@ -222,7 +268,6 @@ function updateChartDependencies(
 
 /**
  * Updates all package.json files in the workspace with the new version using glob pattern
- * Also replaces "workspace:*" references with the actual version
  * @param startPath - Starting path for finding package.json files (defaults to current working directory)
  * @returns Promise that resolves when all updates are complete
  */
@@ -285,31 +330,27 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
         packageJson.version = newVersion;
         hasChanges = true;
 
-        // Update workspace dependencies in all dependency types
-        const workspaceUpdates = [
-          updateWorkspaceDependencies(
+        // Count workspace protocol dependencies across dependency groups without mutating them
+        const workspaceReferences = [
+          countWorkspaceDependencies(
             packageJson.dependencies as Record<string, string>,
-            "dependencies",
-            newVersion
+            "dependencies"
           ),
-          updateWorkspaceDependencies(
+          countWorkspaceDependencies(
             packageJson.devDependencies as Record<string, string>,
-            "devDependencies",
-            newVersion
+            "devDependencies"
           ),
-          updateWorkspaceDependencies(
+          countWorkspaceDependencies(
             packageJson.peerDependencies as Record<string, string>,
-            "peerDependencies",
-            newVersion
+            "peerDependencies"
           ),
-          updateWorkspaceDependencies(
+          countWorkspaceDependencies(
             packageJson.optionalDependencies as Record<string, string>,
-            "optionalDependencies",
-            newVersion
+            "optionalDependencies"
           ),
         ];
 
-        const totalWorkspaceUpdates = workspaceUpdates.reduce(
+        const totalWorkspaceReferences = workspaceReferences.reduce(
           (sum, count) => sum + count,
           0
         );
@@ -322,10 +363,8 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
           );
 
           logger.info(`    Updated version: ${oldVersion} -> ${newVersion}`);
-          if (totalWorkspaceUpdates > 0) {
-            logger.info(
-              `    Updated ${totalWorkspaceUpdates} total workspace:* references`
-            );
+          if (totalWorkspaceReferences > 0) {
+            logger.info(`    Found ${totalWorkspaceReferences} total workspace:* references`);
           }
           updatedCount++;
         } else {

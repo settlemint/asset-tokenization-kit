@@ -1,4 +1,5 @@
 import { baseRouter } from "../procedures/base.router";
+import settingsRouter from "./settings/settings.router";
 
 /**
  * Main ORPC router configuration.
@@ -79,12 +80,11 @@ export const router = baseRouter.router({
   /**
    * Settings-related API procedures.
    *
-   * Lazy-loaded module containing settings management operations.
+   * The settings router is not lazy-loaded to avoid issues with circular dependencies.
+   * The system router calls procedures from the settings router, which sometimes leads to errors (Cannot access 'default' before initialization.)
    * @see {@link ./settings/settings.router} - Settings router implementation
    */
-  settings: baseRouter.settings.lazy(
-    async () => import("./settings/settings.router")
-  ),
+  settings: settingsRouter,
 
   /**
    * Token-related API procedures.

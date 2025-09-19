@@ -1,6 +1,6 @@
 import { auth, type Session, type SessionUser } from "@/lib/auth";
 import type { Context } from "@/orpc/context/context";
-import { baseRouter } from "../../procedures/base.router";
+import { baseRouter } from "@/orpc/procedures/base.router";
 
 /**
  * Session middleware for optional authentication context.

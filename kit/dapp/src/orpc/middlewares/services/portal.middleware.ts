@@ -33,6 +33,7 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import type { Context } from "@/orpc/context/context";
 import { getVerificationId } from "@/orpc/helpers/get-verification-id";
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
+import { baseRouter } from "@/orpc/procedures/base.router";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import {
   ethereumHash,
@@ -48,7 +49,6 @@ import { getOperationAST, print } from "graphql";
 import type { Variables } from "graphql-request";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
-import { baseRouter } from "../../procedures/base.router";
 
 const GET_TRANSACTION_QUERY = portalGraphql(`
   query GetTransaction($transactionHash: String!) {
