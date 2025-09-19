@@ -44,7 +44,7 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
       }
     );
 
-    await client.token.updateCollateral({
+    const result = await client.token.updateCollateral({
       contract: testToken.id,
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
@@ -53,6 +53,9 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
       amount: COLLATERAL,
       expiryDays: 30,
     });
+    expect(toNumber(result.collateral?.collateral ?? from(0))).toBe(
+      toNumber(COLLATERAL)
+    );
 
     const admin = await getUserData(DEFAULT_ADMIN);
     await client.token.mint({
