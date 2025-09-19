@@ -24,7 +24,7 @@ describe("Identity create", () => {
         verificationType: "PINCODE",
       },
     });
-    expect(result.account?.id).toBe(wallet);
+    expect(result.account.id).toBe(wallet);
     expect(result.id).toBeDefined();
   });
 
@@ -74,7 +74,7 @@ describe("Identity create", () => {
       wallet,
     });
     expect(result.id).toBeDefined();
-    expect(result.account?.id).toBe(wallet);
+    expect(result.account.id).toBe(wallet);
 
     const initialUser = await client.system.identity.search({
       wallet,

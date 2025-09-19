@@ -4,7 +4,6 @@ import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { Badge } from "@/components/ui/badge";
-import { Web3Address } from "@/components/web3/web3-address";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import type { CellContext, ColumnDef } from "@tanstack/table-core";
 import { Shield } from "lucide-react";
@@ -47,26 +46,13 @@ function ClaimsPage() {
   const columns = useMemo(
     (): ColumnDef<ClaimRow>[] =>
       withAutoFeatures([
-        // Hidden accessor for claim name filtering
         columnHelper.accessor("name", {
-          id: "name_filter",
-          header: "",
+          id: "name",
+          header: t("claimsTable.columns.claimName"),
           enableHiding: false,
           meta: {
             displayName: t("claimsTable.columns.claimName"),
             type: "text",
-          },
-        }),
-        // Visible claim name display column
-        columnHelper.display({
-          id: "name",
-          header: t("claimsTable.columns.claimName"),
-          cell: ({ row }: CellContext<ClaimRow, string>) => (
-            <span className="font-medium">{row.original.name}</span>
-          ),
-          meta: {
-            displayName: t("claimsTable.columns.claimName"),
-            type: "none",
           },
         }),
         // Hidden accessor for status filtering
@@ -104,39 +90,13 @@ function ClaimsPage() {
             type: "none",
           },
         }),
-        // Hidden accessor for issuer filtering
         columnHelper.accessor("issuer.id", {
-          id: "issuer_filter",
-          header: "",
+          id: "issuer",
+          header: t("claimsTable.columns.issuer"),
           enableHiding: false,
           meta: {
             displayName: t("claimsTable.columns.issuer"),
-            type: "text",
-          },
-        }),
-        // Visible issuer display column
-        columnHelper.display({
-          id: "issuer",
-          header: t("claimsTable.columns.issuer"),
-          cell: ({
-            row,
-          }: CellContext<
-            ClaimRow,
-            {
-              id: Address;
-            }
-          >) => (
-            <Web3Address
-              address={row.original.issuer.id}
-              size="small"
-              copyToClipboard
-              showBadge
-              showPrettyName={false}
-            />
-          ),
-          meta: {
-            displayName: t("claimsTable.columns.issuer"),
-            type: "none",
+            type: "address",
           },
         }),
       ] as ColumnDef<ClaimRow>[]),
@@ -157,9 +117,7 @@ function ClaimsPage() {
           enableViewOptions: true,
         }}
         initialColumnVisibility={{
-          name_filter: false,
           status_filter: false,
-          issuer_filter: false,
         }}
         customEmptyState={{
           icon: Shield,

@@ -4,16 +4,10 @@ import { isoCountryCode } from "@atk/zod/iso-country-code";
 import { z } from "zod";
 
 /**
- * Wallet metadata returned with an identity item.
+ * Account metadata returned with an identity item.
+ * Contains the address and optional contract metadata.
  */
 export const IdentityAccountSchema = z.object({
-  id: ethereumAddress,
-});
-
-/**
- * Contract metadata returned with an identity item.
- */
-export const IdentityContractSchema = z.object({
   id: ethereumAddress,
   contractName: z.string().nullable().optional(),
 });
@@ -47,14 +41,14 @@ export const IdentitySchema = z.object({
   id: ethereumAddress,
 
   /**
-   * The account associated with this identity (may be null if linked to a contract)
+   * The account associated with this identity (always present)
    */
-  account: IdentityAccountSchema.nullable(),
+  account: IdentityAccountSchema,
 
   /**
-   * The contract associated with this identity (may be null if linked to an account)
+   * Whether this identity represents a smart contract
    */
-  contract: IdentityContractSchema.nullable(),
+  isContract: z.boolean(),
 
   /**
    * The registered identity.
@@ -132,9 +126,36 @@ export const IdentityByIdResponseSchema = z.object({
 });
 
 /**
+ * GraphQL response schema for unified identity queries (both wallet and ID)
+ */
+export const IdentityUnifiedResponseSchema = z.object({
+  identities: z
+    .array(
+      z.object({
+        id: ethereumAddress,
+        account: z.object({
+          id: ethereumAddress,
+          contractName: z.string().nullable().optional(),
+        }),
+        registered: z
+          .array(
+            z.object({
+              id: z.string(),
+              country: z.number(),
+            })
+          )
+          .nullable()
+          .optional(),
+        claims: z.array(identityClaim),
+      })
+    )
+    .nullable()
+    .optional(),
+});
+
+/**
  * Type definitions
  */
 export type IdentityReadInput = z.infer<typeof IdentityReadSchema>;
 export type Identity = z.infer<typeof IdentitySchema>;
 export type IdentityAccount = z.infer<typeof IdentityAccountSchema>;
-export type IdentityContract = z.infer<typeof IdentityContractSchema>;

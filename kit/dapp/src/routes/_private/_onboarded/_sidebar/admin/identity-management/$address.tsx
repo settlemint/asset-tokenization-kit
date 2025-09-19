@@ -56,7 +56,7 @@ export const Route = createFileRoute(
         ? identity.registered.isRegistered
         : false,
       account: identity.account,
-      contract: identity.contract,
+      isContract: identity.isContract,
     };
 
     return {

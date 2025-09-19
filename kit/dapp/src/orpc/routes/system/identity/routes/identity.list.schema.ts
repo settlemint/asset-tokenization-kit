@@ -23,16 +23,10 @@ export const IdentityListInputSchema = ListSchema.extend({
 });
 
 /**
- * Wallet metadata returned with an identity item.
+ * Account metadata returned with an identity item.
+ * Contains the address and optional contract metadata.
  */
 export const IdentityAccountSchema = z.object({
-  id: ethereumAddress,
-});
-
-/**
- * Contract metadata returned with an identity item.
- */
-export const IdentityContractSchema = z.object({
   id: ethereumAddress,
   contractName: z.string().nullable().optional(),
 });
@@ -44,8 +38,8 @@ export const IdentityListOutputSchema = z.object({
   items: z.array(
     z.object({
       id: ethereumAddress,
-      account: IdentityAccountSchema.nullable(),
-      contract: IdentityContractSchema.nullable(),
+      account: IdentityAccountSchema,
+      isContract: z.boolean(),
       claimsCount: z.number().int().nonnegative(),
       activeClaimsCount: z.number().int().nonnegative(),
       revokedClaimsCount: z.number().int().nonnegative(),
@@ -60,4 +54,4 @@ export const IdentityListOutputSchema = z.object({
 export type IdentityListFilters = z.infer<typeof IdentityListFiltersSchema>;
 export type IdentityListInput = z.infer<typeof IdentityListInputSchema>;
 export type IdentityListOutput = z.infer<typeof IdentityListOutputSchema>;
-export type IdentityContract = z.infer<typeof IdentityContractSchema>;
+export type IdentityContract = z.infer<typeof IdentityAccountSchema>;

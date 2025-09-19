@@ -104,7 +104,7 @@ const mockToken = {
     },
     claims: [],
     registered: undefined,
-    contract: null,
+    isContract: false,
   },
   complianceModuleConfigs: [],
   redeemable: null,

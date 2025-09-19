@@ -285,7 +285,7 @@ describe("bond-status types", () => {
           account: {
             id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
           },
-          contract: null,
+          isContract: false,
           claims: [],
           registered: undefined,
         },
@@ -399,7 +399,7 @@ describe("bond-status types", () => {
           account: {
             id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
           },
-          contract: null,
+          isContract: false,
           claims: [],
           registered: undefined,
         },
@@ -512,7 +512,7 @@ describe("bond-status types", () => {
           account: {
             id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
           },
-          contract: null,
+          isContract: false,
           claims: [],
           registered: undefined,
         },
@@ -627,7 +627,7 @@ describe("bond-status types", () => {
           account: {
             id: "0x0000000000000000000000000000000000000000" as `0x${string}`,
           },
-          contract: null,
+          isContract: false,
           claims: [],
           registered: undefined,
         },

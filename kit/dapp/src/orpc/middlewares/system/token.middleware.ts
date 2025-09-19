@@ -171,8 +171,8 @@ export const tokenMiddleware = baseRouter.middleware<
     identity: identity
       ? {
           id: identity.id,
-          account: null,
-          contract: { id: token.id },
+          account: { id: token.id },
+          isContract: true,
           claims: identity.claims,
           registered: identity.registered?.[0]
             ? {

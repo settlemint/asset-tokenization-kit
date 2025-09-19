@@ -98,7 +98,7 @@ export const identitySearch = systemRouter.system.identity.search
     const resultIdentity: IdentitySearchResult = {
       id: identity.id,
       account: { id: identity.account.id },
-      contract: null,
+      isContract: false,
       registered: registeredEntry
         ? {
             isRegistered: true,

@@ -44,10 +44,10 @@ describe("Identity read (integration)", () => {
 
       expect(result).toBeDefined();
       expect(result.id).toMatch(/^0x[a-fA-F0-9]{40}$/);
-      expect(result.account?.id.toLowerCase()).toBe(
+      expect(result.account.id.toLowerCase()).toBe(
         targetUserData.wallet.toLowerCase()
       );
-      expect(result.contract).toBeNull();
+      expect(result.isContract).toBe(false);
       expect(result.claims).toHaveLength(0); // No claims yet in basic test
       expect(result.registered).toEqual({
         isRegistered: true,
@@ -62,10 +62,10 @@ describe("Identity read (integration)", () => {
 
       expect(result).toBeDefined();
       expect(result.id).toMatch(/^0x[a-fA-F0-9]{40}$/);
-      expect(result.account?.id.toLowerCase()).toBe(
+      expect(result.account.id.toLowerCase()).toBe(
         targetUserData.wallet.toLowerCase()
       );
-      expect(result.contract).toBeNull();
+      expect(result.isContract).toBe(false);
       expect(result.claims).toHaveLength(0); // No claims yet in basic test
     });
 
@@ -118,10 +118,10 @@ describe("Identity read (integration)", () => {
 
       expect(result).toBeDefined();
       expect(result.id.toLowerCase()).toBe(identityByWallet.id.toLowerCase());
-      expect(result.account?.id.toLowerCase()).toBe(
+      expect(result.account.id.toLowerCase()).toBe(
         targetUserData.wallet.toLowerCase()
       );
-      expect(result.contract).toBeNull();
+      expect(result.isContract).toBe(false);
       expect(result.claims).toHaveLength(0); // No claims yet in basic test
     });
 
@@ -137,10 +137,10 @@ describe("Identity read (integration)", () => {
 
       expect(result).toBeDefined();
       expect(result.id.toLowerCase()).toBe(identityByWallet.id.toLowerCase());
-      expect(result.account?.id.toLowerCase()).toBe(
+      expect(result.account.id.toLowerCase()).toBe(
         targetUserData.wallet.toLowerCase()
       );
-      expect(result.contract).toBeNull();
+      expect(result.isContract).toBe(false);
       expect(result.claims).toHaveLength(0); // No claims yet in basic test
     });
 
@@ -187,18 +187,7 @@ describe("Identity read (integration)", () => {
       });
 
       expect(result.id).toMatch(/^0x[a-fA-F0-9]{40}$/);
-
-      if (result.account) {
-        expect(result.contract).toBeNull();
-        expect(result.account.id).toMatch(/^0x[a-fA-F0-9]{40}$/);
-      }
-
-      if (result.contract) {
-        expect(result.account).toBeNull();
-        expect(result.contract.id).toMatch(/^0x[a-fA-F0-9]{40}$/);
-      }
-
-      expect(result.account || result.contract).toBeTruthy();
+      expect(result.account.id).toMatch(/^0x[a-fA-F0-9]{40}$/);
 
       expect(Array.isArray(result.claims)).toBe(true);
       for (const claim of result.claims) {

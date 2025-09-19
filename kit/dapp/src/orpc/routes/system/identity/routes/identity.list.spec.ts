@@ -118,21 +118,10 @@ describe("Identity list (integration)", () => {
       );
       expect(typeof identity.deployedInTransaction).toBe("string");
 
-      // Validate account/contract relationship
-      if (identity.account) {
-        expect(identity.contract).toBeNull();
-        expect(identity.account.id).toMatch(/^0x[a-fA-F0-9]{40}$/);
+      expect(identity.account.id).toMatch(/^0x[a-fA-F0-9]{40}$/);
+      if (identity.account.contractName) {
+        expect(typeof identity.account.contractName).toBe("string");
       }
-      if (identity.contract) {
-        expect(identity.account).toBeNull();
-        expect(identity.contract.id).toMatch(/^0x[a-fA-F0-9]{40}$/);
-        if (identity.contract.contractName) {
-          expect(typeof identity.contract.contractName).toBe("string");
-        }
-      }
-
-      // At least one of account or contract should be present
-      expect(identity.account || identity.contract).toBeTruthy();
     }
   });
 
@@ -152,10 +141,9 @@ describe("Identity list (integration)", () => {
     expect(identity!.id.toLowerCase()).toBe(
       targetIdentityAddress.toLowerCase()
     );
-    expect(identity!.account?.id.toLowerCase()).toBe(
+    expect(identity?.account.id.toLowerCase()).toBe(
       targetUserData.wallet?.toLowerCase()
     );
-    expect(identity!.contract).toBeNull();
   });
 
   it("rejects users without identity permissions", async () => {

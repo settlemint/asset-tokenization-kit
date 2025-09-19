@@ -30,10 +30,8 @@ function IdentityDetailPage() {
   const { t } = useTranslation(["identities", "common"]);
 
   // Determine entity type and entity information
-  const isContract = Boolean(claimsData.contract);
-  const entityAddress = isContract
-    ? claimsData.contract?.id
-    : claimsData.account?.id;
+  const isContract = claimsData.isContract;
+  const entityAddress = claimsData.account.id;
 
   return (
     <>
@@ -59,16 +57,16 @@ function IdentityDetailPage() {
         >
           {entityAddress ? (
             <div className="flex flex-col gap-1">
-              {isContract && claimsData.contract?.contractName && (
+              {isContract && claimsData.account.contractName && (
                 <span className="font-medium">
-                  {claimsData.contract.contractName}
+                  {claimsData.account.contractName}
                 </span>
               )}
               <Web3Address
                 address={entityAddress}
                 size="small"
                 copyToClipboard
-                showBadge={!isContract || !claimsData.contract?.contractName}
+                showBadge={!isContract || !claimsData.account.contractName}
                 showPrettyName={false}
               />
             </div>

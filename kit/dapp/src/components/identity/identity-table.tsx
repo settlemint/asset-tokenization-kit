@@ -79,11 +79,9 @@ export function IdentityTable() {
         columnHelper.accessor(
           (row: IdentityRow) =>
             [
-              row.contract?.contractName,
-              row.contract?.id,
-              row.account?.id,
-              row.contract ? "contract" : undefined,
-              row.account ? "account" : undefined,
+              row.account.contractName,
+              row.account.id,
+              row.isContract ? "contract" : "account",
             ]
               .filter(Boolean)
               .join(" "),
@@ -104,41 +102,33 @@ export function IdentityTable() {
           id: "linkedEntity",
           header: t("identityTable.columns.entity"),
           cell: ({ row }: CellContext<IdentityRow, unknown>) => {
-            const { contract, account } = row.original;
+            const { account, isContract } = row.original;
 
-            if (contract) {
+            if (isContract) {
               return (
                 <div className="flex flex-col gap-1">
-                  {contract.contractName && (
-                    <span className="font-medium">{contract.contractName}</span>
+                  {account.contractName && (
+                    <span className="font-medium">{account.contractName}</span>
                   )}
                   <Web3Address
-                    address={contract.id}
+                    address={account.id}
                     size="small"
                     copyToClipboard
-                    showBadge={!contract.contractName}
+                    showBadge={!account.contractName}
                     showPrettyName={false}
                   />
                 </div>
               );
             }
 
-            if (account) {
-              return (
-                <Web3Address
-                  address={account.id}
-                  size="small"
-                  copyToClipboard
-                  showBadge
-                  showPrettyName={false}
-                />
-              );
-            }
-
             return (
-              <span className="text-muted-foreground text-sm">
-                {t(`identityTable.fallback.noEntity`)}
-              </span>
+              <Web3Address
+                address={account.id}
+                size="small"
+                copyToClipboard
+                showBadge
+                showPrettyName={false}
+              />
             );
           },
           meta: {
@@ -148,7 +138,7 @@ export function IdentityTable() {
         }),
         // Hidden accessor column for filtering by entity type
         columnHelper.accessor(
-          (row: IdentityRow) => (row.contract ? "contract" : "account"),
+          (row: IdentityRow) => (row.isContract ? "contract" : "account"),
           {
             id: "type_filter",
             header: "",
@@ -174,7 +164,7 @@ export function IdentityTable() {
           id: "type",
           header: t("identityTable.columns.type"),
           cell: ({ row }: CellContext<IdentityRow, unknown>) => {
-            const isContract = !!row.original.contract;
+            const isContract = row.original.isContract;
             return <IdentityTypeBadge isContract={isContract} />;
           },
           meta: {

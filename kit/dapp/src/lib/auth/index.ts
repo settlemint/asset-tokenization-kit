@@ -68,11 +68,7 @@ const options = {
    * Only included if APP_URL is defined to prevent development issues.
    */
   ...(env.APP_URL && {
-    trustedOrigins: [
-      env.APP_URL,
-      "http://localhost:3000",
-      "http://localhost:3001",
-    ],
+    trustedOrigins: [env.APP_URL],
   }),
 
   /**

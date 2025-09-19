@@ -133,22 +133,17 @@ export const identityList = systemRouter.system.identity.list
       const claims = identity.claims ?? [];
       const revokedClaimsCount = claims.filter((claim) => claim.revoked).length;
       const activeClaimsCount = claims.length - revokedClaimsCount;
-      const account =
-        identity.account && !identity.account.isContract
-          ? { id: identity.account.id }
-          : null;
-      const contract =
-        identity.account && identity.account.isContract
-          ? {
-              id: identity.account.id,
-              contractName: identity.account.contractName ?? undefined,
-            }
-          : null;
+      const account = identity.account
+        ? {
+            id: identity.account.id,
+            contractName: identity.account.contractName ?? undefined,
+          }
+        : { id: identity.id };
 
       return {
         id: identity.id,
         account,
-        contract,
+        isContract: identity.isContract ?? false,
         claimsCount: claims.length,
         activeClaimsCount,
         revokedClaimsCount,
