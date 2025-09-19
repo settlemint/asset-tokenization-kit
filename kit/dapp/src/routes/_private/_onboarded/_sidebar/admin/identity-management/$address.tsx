@@ -45,53 +45,30 @@ export const Route = createFileRoute(
    * Loader function to fetch identity data from ORPC API
    */
   loader: async ({ params: { address } }) => {
-    try {
-      const identity = await client.system.identity.read({
-        wallet: address as `0x${string}`,
-      });
+    const identity = await client.system.identity.read({
+      identityId: address,
+    });
 
-      const claimsData = {
-        claims: identity.claims,
-        identity: identity.id,
-        isRegistered: identity.registered
-          ? identity.registered.isRegistered
-          : false,
-        account: identity.account,
-        contract: identity.contract,
-      };
+    const claimsData = {
+      claims: identity.claims,
+      identity: identity.id,
+      isRegistered: identity.registered
+        ? identity.registered.isRegistered
+        : false,
+      account: identity.account,
+      contract: identity.contract,
+    };
 
-      return {
-        claimsData,
-        breadcrumb: [
-          createI18nBreadcrumbMetadata("identityManagement"),
-          {
-            title: `${address.slice(0, 6)}...${address.slice(-4)}`,
-            href: `/admin/identity-management/${address}`,
-          },
-        ],
-      };
-    } catch {
-      // Handle errors - identity not found, permission denied, etc.
-      // Return fallback data structure for non-existent identities
-      const fallbackClaimsData = {
-        claims: [],
-        identity: address,
-        isRegistered: false,
-        account: { id: address as `0x${string}` },
-        contract: null,
-      };
-
-      return {
-        claimsData: fallbackClaimsData,
-        breadcrumb: [
-          createI18nBreadcrumbMetadata("identityManagement"),
-          {
-            title: `${address.slice(0, 6)}...${address.slice(-4)}`,
-            href: `/admin/identity-management/${address}`,
-          },
-        ],
-      };
-    }
+    return {
+      claimsData,
+      breadcrumb: [
+        createI18nBreadcrumbMetadata("identityManagement"),
+        {
+          title: `${address.slice(0, 6)}...${address.slice(-4)}`,
+          href: `/admin/identity-management/${address}`,
+        },
+      ],
+    };
   },
   errorComponent: DefaultCatchBoundary,
   component: RouteComponent,
