@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+rm -rf node_modules
+rm -Rf kit/contracts/dependencies
+
 # Clean git files, excluding env files and turbo config
 git clean -fdX -e '.env' -e '.env.*' -e '!.env' -e '!.env.*' -e '.turbo/config.json'
 
