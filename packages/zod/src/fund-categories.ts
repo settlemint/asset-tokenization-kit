@@ -1,23 +1,57 @@
 /**
  * Fund Category Validation Utilities
  *
- * This module provides Zod schemas for validating investment fund categories,
- * which classify different types of pooled investment vehicles based on their
- * structure, strategy, and regulatory framework.
+ * This module provides Zod schemas for validating fund categories,
+ * ensuring they match the canonical enumerations used across the platform.
  * @module FundCategoryValidation
  */
 import { z } from "zod";
 
 /**
- * Available investment fund categories.
- * @remarks
- * Major fund types supported by the platform:
- * - `mutual`: Mutual funds - open-ended pooled investments for retail investors
- * - `hedge`: Hedge funds - alternative investments for qualified investors
- * - `etf`: Exchange-Traded Funds - traded on exchanges like stocks
- * - `index`: Index funds - passive funds tracking market indices
+ * Canonical fund categories supported by the platform.
+ *
+ * Possible values are:
+ * - "ACTIVIST"
+ * - "COMMODITY_TRADING"
+ * - "CONVERTIBLE_ARBITRAGE"
+ * - "CREDIT"
+ * - "CURRENCY_FX"
+ * - "DISTRESSED_DEBT"
+ * - "EMERGING_MARKETS"
+ * - "EQUITY_HEDGE"
+ * - "EVENT_DRIVEN"
+ * - "FIXED_INCOME_ARBITRAGE"
+ * - "FUND_OF_FUNDS"
+ * - "GLOBAL_MACRO"
+ * - "HIGH_FREQUENCY_TRADING"
+ * - "MANAGED_FUTURES_CTA"
+ * - "MARKET_NEUTRAL"
+ * - "MERGER_ARBITRAGE"
+ * - "MULTI_STRATEGY"
+ * - "PRIVATE_EQUITY"
+ * - "VENTURE_CAPITAL"
  */
-export const fundCategories = ["mutual", "hedge", "etf", "index"] as const;
+export const fundCategories = [
+  "ACTIVIST",
+  "COMMODITY_TRADING",
+  "CONVERTIBLE_ARBITRAGE",
+  "CREDIT",
+  "CURRENCY_FX",
+  "DISTRESSED_DEBT",
+  "EMERGING_MARKETS",
+  "EQUITY_HEDGE",
+  "EVENT_DRIVEN",
+  "FIXED_INCOME_ARBITRAGE",
+  "FUND_OF_FUNDS",
+  "GLOBAL_MACRO",
+  "HIGH_FREQUENCY_TRADING",
+  "MANAGED_FUTURES_CTA",
+  "MARKET_NEUTRAL",
+  "MERGER_ARBITRAGE",
+  "MULTI_STRATEGY",
+  "PRIVATE_EQUITY",
+  "VENTURE_CAPITAL",
+] as const;
 
 /**
  * Creates a Zod schema that validates fund categories.
@@ -27,13 +61,11 @@ export const fundCategories = ["mutual", "hedge", "etf", "index"] as const;
  * const schema = fundCategory();
  *
  * // Valid categories
- * schema.parse("mutual"); // Traditional mutual fund
- * schema.parse("hedge");  // Alternative investment fund
- * schema.parse("etf");    // Exchange-traded fund
- * schema.parse("index");  // Passive index fund
+ * schema.parse("ACTIVIST");
+ * schema.parse("VENTURE_CAPITAL");
  *
  * // Invalid category
- * schema.parse("reit"); // Throws ZodError
+ * schema.parse("mutual"); // Throws ZodError
  * ```
  */
 export const fundCategory = () =>
@@ -51,15 +83,10 @@ export type FundCategory = z.infer<ReturnType<typeof fundCategory>>;
  * @returns `true` if the value is a valid fund category, `false` otherwise
  * @example
  * ```typescript
- * const fundType: unknown = "etf";
+ * const fundType: unknown = "EVENT_DRIVEN";
  * if (isFundCategory(fundType)) {
  *   // TypeScript knows fundType is FundCategory
  *   console.log(`Valid fund category: ${fundType}`);
- *
- *   // Apply category-specific logic
- *   if (fundType === "hedge") {
- *     enforceAccreditedInvestorRequirements();
- *   }
  * }
  * ```
  */
@@ -75,15 +102,11 @@ export function isFundCategory(value: unknown): value is FundCategory {
  * @example
  * ```typescript
  * try {
- *   const category = getFundCategory("mutual"); // Returns "mutual"
- *   const invalid = getFundCategory("private"); // Throws Error
+ *   const category = getFundCategory("CREDIT"); // Returns "CREDIT"
+ *   const invalid = getFundCategory("mutual"); // Throws Error
  * } catch (error) {
  *   console.error("Invalid fund category provided");
  * }
- *
- * // Use in fund creation
- * const fundType = getFundCategory(request.category);
- * createFund(fundType, fundDetails);
  * ```
  */
 export function getFundCategory(value: unknown): FundCategory {
