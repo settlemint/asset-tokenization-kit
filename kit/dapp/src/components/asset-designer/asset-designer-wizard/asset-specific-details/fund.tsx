@@ -8,6 +8,8 @@ import { useTranslation } from "react-i18next";
 
 export const fundFields: KeysOfUnion<AssetDesignerFormInputData>[] = [
   "managementFeeBps",
+  "class",
+  "category",
 ];
 
 export const FundFields = withForm({
@@ -18,6 +20,32 @@ export const FundFields = withForm({
 
     return (
       <>
+        <form.AppField
+          name="category"
+          children={(field) => (
+            <field.AssetCategorySelectField
+              label={t("form.fields.category.label")}
+              description={t("form.fields.category.description", {
+                type: t(`asset-types:types.fund.nameLowercaseSingular`),
+              })}
+              required={isRequiredField("category")}
+              assetType="fund"
+            />
+          )}
+        />
+        <form.AppField
+          name="class"
+          children={(field) => (
+            <field.AssetClassSelectField
+              label={t("form.fields.class.label")}
+              description={t("form.fields.class.description", {
+                type: t(`asset-types:types.fund.nameLowercaseSingular`),
+              })}
+              required={isRequiredField("class")}
+              assetType="fund"
+            />
+          )}
+        />
         <div>
           <form.AppField
             name="managementFeeBps"
