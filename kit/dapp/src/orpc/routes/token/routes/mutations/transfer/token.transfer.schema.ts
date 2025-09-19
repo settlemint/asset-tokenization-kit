@@ -6,7 +6,7 @@ import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { z } from "zod";
 
 /**
- * Schema for unified token transfer operation (supports standard, transferFrom, and forced transfer)
+ * Schema for token transfers initiated by the holder (standard) or via allowance (transferFrom).
  */
 export const TokenTransferSchema = MutationInputSchemaWithContract.extend({
   recipients: z
@@ -34,55 +34,59 @@ export const TokenTransferSchema = MutationInputSchemaWithContract.extend({
     ])
     .optional()
     .describe(
-      "Address(es) to transfer from (for transferFrom and forced transfer)"
+      "Address(es) to transfer from when using allowance-based transfers"
     ),
   transferType: z
-    .enum(["standard", "transferFrom", "forced"])
+    .enum(["standard", "transferFrom"])
     .optional()
     .default("standard")
     .describe(
-      "Type of transfer: standard (sender to recipient), transferFrom (using allowance), or forced (custodian)"
+      "Type of transfer: standard (sender to recipient) or transferFrom (using allowance)"
     ),
-})
-  .refine(
-    (data) => {
-      // Ensure arrays have the same length after transformation
-      const recipientsLength = data.recipients.length;
-      const amountsLength = data.amounts.length;
-      const fromLength = data.from?.length ?? 0;
+}).superRefine((data, ctx) => {
+  const recipientsLength = data.recipients.length;
+  const amountsLength = data.amounts.length;
 
-      // Standard transfer: recipients and amounts must match
-      if (data.transferType === "standard") {
-        return recipientsLength === amountsLength;
-      }
-
-      // transferFrom and forced: from, recipients, and amounts must all match
-      // (all remaining cases since transferType is an enum with only 3 values)
-      return fromLength === recipientsLength && fromLength === amountsLength;
-    },
-    {
-      message:
-        "Number of recipients, amounts, and from addresses must match based on transfer type",
-      path: ["amounts"],
+  if (data.transferType === "standard") {
+    if (recipientsLength !== amountsLength) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["amounts"],
+        message: "Recipients and amounts must have the same length",
+      });
     }
-  )
-  .refine(
-    (data) => {
-      // For transferFrom and forced transfers, 'from' is required
-      if (
-        (data.transferType === "transferFrom" ||
-          data.transferType === "forced") &&
-        !data.from
-      ) {
-        return false;
-      }
-      return true;
-    },
-    {
-      message: "tokens:validation.transfer.fromRequired",
+
+    if (data.from && data.from.length > 0) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["from"],
+        message: "From addresses are not allowed for standard transfers",
+      });
+    }
+    return;
+  }
+
+  if (!data.from || data.from.length === 0) {
+    ctx.addIssue({
+      code: "custom",
       path: ["from"],
-    }
-  );
+      message: "tokens:validation.transfer.fromRequired",
+    });
+    return;
+  }
+
+  if (
+    data.from.length !== recipientsLength ||
+    data.from.length !== amountsLength
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["amounts"],
+      message:
+        "Number of from addresses, recipients, and amounts must match for transferFrom",
+    });
+  }
+});
 
 // Note: Old separate schemas removed since we consolidated into TokenTransferSchema
 
@@ -97,7 +101,7 @@ export const TokenTransferOutputSchema = BaseMutationOutputSchema.extend({
         "Total amount of tokens transferred"
       ),
       transferType: z
-        .enum(["standard", "transferFrom", "forced"])
+        .enum(["standard", "transferFrom"])
         .describe("Type of transfer performed"),
       recipients: z
         .array(ethereumAddress)
@@ -108,7 +112,7 @@ export const TokenTransferOutputSchema = BaseMutationOutputSchema.extend({
       from: z
         .array(ethereumAddress)
         .optional()
-        .describe("Source addresses for transferFrom/forced transfers"),
+        .describe("Source addresses for transferFrom operations"),
       tokenName: z.string().optional().describe("Name of the token"),
       tokenSymbol: z.string().optional().describe("Symbol of the token"),
     })

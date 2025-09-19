@@ -7,7 +7,7 @@ export const tokenTransferContract = baseContract
     method: "POST",
     path: "/token/{contract}/transfer",
     description:
-      "Transfer tokens (standard, transferFrom, or forced) to one or more addresses",
+      "Transfer tokens using the holder's balance or via allowance (transferFrom)",
     successDescription: "Tokens transferred successfully",
     tags: ["token"],
   })
