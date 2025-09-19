@@ -14,7 +14,6 @@ sources:
   - https://github.com/settlemint/starterkit-asset-tokenization
 deprecated: false
 kubeVersion: ">=1.21.0-0"
-engine: gotpl
 keywords:
   - portal
   - graphql

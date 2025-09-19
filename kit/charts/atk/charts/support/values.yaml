@@ -160,6 +160,10 @@ ingress-nginx:
     enabled: false
   # -- Controller configuration (object)
   controller:
+    image:
+      image: ingress-nginx/controller
+      digest: ""
+      digestChroot: ""
     # -- (bool) Allow snippet annotations in Ingress objects
     allowSnippetAnnotations: true
     # -- (int) User ID to run the controller process

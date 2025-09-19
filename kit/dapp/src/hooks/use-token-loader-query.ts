@@ -50,7 +50,7 @@ export function useTokenLoaderQuery() {
   // Prefer fresh queried data but preserve fields only available from loader (e.g., identity claims)
   const asset = {
     ...loaderAsset,
-    ...(queriedAsset ?? {}),
+    ...queriedAsset,
     identity: loaderAsset.identity ?? queriedAsset?.identity,
   };
   return {

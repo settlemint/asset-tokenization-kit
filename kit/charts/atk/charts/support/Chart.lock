@@ -3,16 +3,16 @@ dependencies:
   repository: https://kubernetes.github.io/ingress-nginx
   version: 4.13.2
 - name: postgresql
-  repository: file://./charts/postgresql
-  version: 0.1.0
+  repository: ""
+  version: '*'
 - name: redis
-  repository: file://./charts/redis
-  version: 0.1.0
+  repository: ""
+  version: '*'
 - name: reloader
   repository: https://stakater.github.io/stakater-charts
   version: 2.2.3
 - name: minio
-  repository: file://./charts/minio
-  version: 0.1.0
-digest: sha256:83b2606f0239882bb8278cf8b3ab1910e5c89a43d4883964e147797d38f83adc
-generated: "2025-09-17T14:31:11.826259+03:00"
+  repository: ""
+  version: '*'
+digest: sha256:1d74e8f5adf999f9098eba54b1e6998d975fd2c161e0f07cc6852fc7e930d96b
+generated: "2025-09-19T07:12:15.272633+02:00"
