@@ -13,7 +13,7 @@ import { AssetWalletDistributionChart } from "@/components/stats/charts/asset-wa
 import { useTokenLoaderQuery } from "@/hooks/use-token-loader-query";
 import { parseClaim } from "@/lib/utils/claims/parse-claim";
 import { orpc } from "@/orpc/orpc-client";
-import { EquityCategory } from "@atk/zod/equity-categories";
+import type { EquityCategory } from "@atk/zod/equity-categories";
 import type { EquityClass } from "@atk/zod/equity-classes";
 import type { FundCategory } from "@atk/zod/fund-categories";
 import type { FundClass } from "@atk/zod/fund-classes";

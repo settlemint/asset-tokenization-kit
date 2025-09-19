@@ -14,9 +14,9 @@ import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-gr
 import { getSystemContext } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
+import { AddonFactoryTypeIdEnum } from "@atk/zod/addon-types";
 import { AssetFactoryTypeIdEnum } from "@atk/zod/asset-types";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
-import { AddonFactoryTypeIdEnum } from "@atk/zod/src/addon-types";
 import type { VerificationType } from "@atk/zod/verification-type";
 import { VerificationType as VerificationTypeEnum } from "@atk/zod/verification-type";
 import { call } from "@orpc/server";

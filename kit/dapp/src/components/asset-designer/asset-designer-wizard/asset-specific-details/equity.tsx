@@ -17,7 +17,6 @@ export const EquityFields = withForm({
 
     return (
       <>
-        {" "}
         <form.AppField
           name="category"
           children={(field) => (

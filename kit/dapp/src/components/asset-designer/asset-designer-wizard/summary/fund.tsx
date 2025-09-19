@@ -7,7 +7,7 @@ import { withForm } from "@/hooks/use-app-form";
 import { formatValue } from "@/lib/utils/format-value";
 import { basisPointsToPercentage } from "@atk/zod/basis-points";
 import type { FundCategory } from "@atk/zod/fund-categories";
-import { FundClass } from "@atk/zod/src/fund-classes";
+import type { FundClass } from "@atk/zod/fund-classes";
 import { useStore } from "@tanstack/react-store";
 import { DollarSign } from "lucide-react";
 import { useTranslation } from "react-i18next";
