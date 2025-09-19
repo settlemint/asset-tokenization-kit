@@ -85,7 +85,6 @@ function IdentityDetailPage() {
         >
           <IdentityTypeBadge isContract={isContract} />
         </DetailGridItem>
-
       </DetailGrid>
 
       <DetailGrid title={t("identities:details.summary.total")}>

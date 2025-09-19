@@ -4,7 +4,6 @@ import {
   createTestUser,
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
-  DEFAULT_ISSUER,
   getUserData,
   registerUserIdentity,
   signInWithUser,
@@ -13,7 +12,6 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 describe("Identity read (integration)", () => {
   let adminClient: ReturnType<typeof getOrpcClient>;
-  let issuerClient: ReturnType<typeof getOrpcClient>;
   let investorClient: ReturnType<typeof getOrpcClient>;
   let targetTestUser: Awaited<ReturnType<typeof createTestUser>>;
   let targetUserData: Awaited<ReturnType<typeof getUserData>>;
@@ -24,9 +22,6 @@ describe("Identity read (integration)", () => {
 
     const adminHeaders = await signInWithUser(DEFAULT_ADMIN);
     adminClient = getOrpcClient(adminHeaders);
-
-    const issuerHeaders = await signInWithUser(DEFAULT_ISSUER);
-    issuerClient = getOrpcClient(issuerHeaders);
 
     const investorHeaders = await signInWithUser(DEFAULT_INVESTOR);
     investorClient = getOrpcClient(investorHeaders);
