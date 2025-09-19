@@ -7,11 +7,15 @@ import { createToken } from "@test/fixtures/token";
 import {
   DEFAULT_ADMIN,
   DEFAULT_PINCODE,
+  getUserData,
   signInWithUser,
 } from "@test/fixtures/user";
 import { TEST_CONSTANTS } from "@test/helpers/test-helpers";
-import { from } from "dnum";
+import { divide, from, multiply, subtract, toNumber } from "dnum";
 import { beforeAll, describe, expect, it } from "vitest";
+
+const COLLATERAL = from("10", 18);
+const MINT_AMOUNT = from("1", 18);
 
 describe.concurrent("Token Stats: Collateral Ratio", () => {
   let testToken: Awaited<ReturnType<typeof createToken>>;
@@ -19,14 +23,42 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
   beforeAll(async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
-    testToken = await createToken(client, {
-      name: "Test Token Collateral Ratio",
-      symbol: "TTCR",
-      decimals: 18,
-      type: "stablecoin",
-      countryCode: "056",
-      initialModulePairs: [],
-      basePrice: from("1.00", 2),
+    testToken = await createToken(
+      client,
+      {
+        name: "Test Token Collateral Ratio",
+        symbol: "TTCR",
+        decimals: 18,
+        type: "stablecoin",
+        countryCode: "056",
+        initialModulePairs: [],
+        basePrice: from("1.00", 2),
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+      },
+      {
+        unpause: true,
+        grantRole: ["supplyManagement", "governance"],
+      }
+    );
+
+    await client.token.updateCollateral({
+      contract: testToken.id,
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
+      amount: COLLATERAL,
+      expiryDays: 30,
+    });
+
+    const admin = await getUserData(DEFAULT_ADMIN);
+    await client.token.mint({
+      contract: testToken.id,
+      recipients: [admin.wallet],
+      amounts: [MINT_AMOUNT],
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
@@ -64,7 +96,7 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
       );
     });
 
-    it("returns zero values for newly created tokens", async () => {
+    it("returns correct values for test token", async () => {
       const headers = await signInWithUser(DEFAULT_ADMIN);
       const client = getOrpcClient(headers);
 
@@ -73,13 +105,18 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
       });
 
       // Business expectation: new tokens have no collateral yet
-      expect(result.totalCollateral).toBe(0);
-      expect(result.collateralRatio).toBe(0);
+      expect(result.totalCollateral).toBe(toNumber(COLLATERAL));
+      const expectedRatio = toNumber(
+        multiply(divide(MINT_AMOUNT, COLLATERAL, 3), 100, 1)
+      );
+      expect(result.collateralRatio).toBe(expectedRatio);
       expect(result.buckets).toHaveLength(2);
 
       const [available, used] = result.buckets;
-      expect(available?.value).toBe(0);
-      expect(used?.value).toBe(0);
+      expect(available?.value).toBe(
+        toNumber(subtract(COLLATERAL, MINT_AMOUNT))
+      );
+      expect(used?.value).toBe(toNumber(MINT_AMOUNT));
     });
   });
 
