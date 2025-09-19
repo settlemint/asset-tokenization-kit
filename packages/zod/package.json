@@ -10,9 +10,12 @@
     "test:ci": "bun test:coverage"
   },
   "exports": {
+    "./package.json": "./package.json",
     "./*": {
+      "types": "./src/*.ts",
       "import": "./src/*.ts",
-      "types": "./src/*.ts"
+      "require": "./src/*.ts",
+      "default": "./src/*.ts"
     }
   },
   "devDependencies": {

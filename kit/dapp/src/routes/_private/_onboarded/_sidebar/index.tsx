@@ -14,9 +14,7 @@
  * @see {@link https://tanstack.com/query/latest/docs/react/guides/suspense} - React Query suspense mode
  */
 
-import { useSettings } from "@/hooks/use-settings";
-import { orpc } from "@/orpc/orpc-client";
-import { useQuery } from "@tanstack/react-query";
+import { IdentityProgress } from "@/components/dashboard/identity-progress/identity-progress";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
@@ -53,46 +51,10 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
  */
 function Home() {
   const { user } = Route.useLoaderData();
-  const [systemAddress] = useSettings("SYSTEM_ADDRESS");
-
-  // Get system details using the system address from settings
-  const { data: systemDetails, isLoading: isLoadingSystem } = useQuery(
-    orpc.system.read.queryOptions({
-      input: { id: systemAddress ?? "" },
-      enabled: Boolean(systemAddress),
-    })
-  );
 
   return (
     <div className="p-6 space-y-8">
-      <div className="mb-8">
-        <h3 className="text-xl font-semibold mb-2">{user.name}</h3>
-        <div className="mb-4 p-4 rounded-lg bg-muted">
-          <h4 className="font-medium mb-2">Debug Info:</h4>
-          <pre className="text-sm">
-            {JSON.stringify(
-              {
-                wallet: user.wallet,
-                userId: user.id,
-                systemAddress: systemAddress,
-              },
-              null,
-              2
-            )}
-          </pre>
-        </div>
-        {isLoadingSystem ? (
-          <div className="text-sm">Loading system details...</div>
-        ) : systemDetails ? (
-          <pre className="text-sm bg-muted p-4 rounded-lg">
-            {JSON.stringify(systemDetails, null, 2)}
-          </pre>
-        ) : (
-          <div className="text-sm text-muted-foreground">
-            No system found at address: {systemAddress}
-          </div>
-        )}
-      </div>
+      <IdentityProgress user={user} />
     </div>
   );
 }
