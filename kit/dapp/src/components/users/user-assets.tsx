@@ -7,29 +7,27 @@ import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { TransferAssetSheet } from "@/components/manage-dropdown/sheets/transfer-asset-sheet";
 import { formatValue } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenBalance } from "@/orpc/routes/user/routes/user.assets.schema";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
+import { from, greaterThan } from "dnum";
 import {
   Coins,
   Copy,
-  Eye,
   Hash,
   Lock,
   Package,
+  Send,
   Type,
   Unlock,
   Wallet,
 } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-
-const logger = createLogger();
 
 const columnHelper = createStrictColumnHelper<TokenBalance>();
 
@@ -65,6 +63,27 @@ export function UserAssetsTable() {
   const routePath = router.state.matches.at(-1)?.pathname;
 
   const { data: assets } = useSuspenseQuery(orpc.user.assets.queryOptions());
+  const [isTransferSheetOpen, setTransferSheetOpen] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState<TokenBalance | null>(null);
+
+  const openTransferSheet = useCallback(
+    (asset: TokenBalance) => {
+      setSelectedAsset(asset);
+      setTransferSheetOpen(true);
+    },
+    [setSelectedAsset, setTransferSheetOpen]
+  );
+
+  const handleTransferSheetOpenChange = useCallback(
+    (open: boolean) => {
+      setTransferSheetOpen(open);
+      if (!open) {
+        setSelectedAsset(null);
+      }
+    },
+    [setSelectedAsset, setTransferSheetOpen]
+  );
+
   /**
    * Creates action items for each row in the table
    *
@@ -73,27 +92,24 @@ export function UserAssetsTable() {
    * @returns {ActionItem[]} Array of action items including view details, copy address, and view on etherscan
    */
   const createRowActions = useCallback(
-    (row: { original: TokenBalance }): ActionItem[] => [
-      {
-        label: t("user-assets:actions.viewTokenDetails"),
-        icon: <Eye className="h-4 w-4" />,
-        onClick: () => {
-          logger.debug("View token details onClick triggered");
-          // Navigate to a token details page if it exists
-          // This would need to be implemented based on your routing structure
-          toast.info(t("user-assets:actions.tokenDetailsNotImplemented"));
+    (row: { original: TokenBalance }): ActionItem[] => {
+      const hasTransferableBalance = greaterThan(
+        row.original.available,
+        from(0n, row.original.token.decimals)
+      );
+
+      return [
+        {
+          label: t("user-assets:actions.transfer.label"),
+          icon: <Send className="h-4 w-4" />,
+          onClick: () => {
+            openTransferSheet(row.original);
+          },
+          disabled: !hasTransferableBalance,
         },
-      },
-      {
-        label: t("user-assets:actions.copyAddress"),
-        icon: <Copy className="h-4 w-4" />,
-        onClick: () => {
-          void navigator.clipboard.writeText(row.original.token.id);
-          toast.success(t("user-assets:actions.addressCopied"));
-        },
-      },
-    ],
-    [t]
+      ];
+    },
+    [openTransferSheet, t]
   );
 
   /**
@@ -208,42 +224,52 @@ export function UserAssetsTable() {
 
   return (
     <ComponentErrorBoundary componentName="User Assets Table">
-      <DataTable
-        name="user-assets"
-        data={assets}
-        columns={columns}
-        urlState={{
-          enabled: true,
-          enableUrlPersistence: true,
-          routePath,
-          defaultPageSize: 20,
-          enableGlobalFilter: true,
-          enableRowSelection: true,
-          debounceMs: 300,
-        }}
-        initialColumnVisibility={{
-          name: false,
-        }}
-        advancedToolbar={{
-          enableGlobalSearch: true,
-          enableFilters: true,
-          enableExport: true,
-          enableViewOptions: true,
-          placeholder: t("user-assets:searchPlaceholder"),
-        }}
-        bulkActions={{
-          enabled: false,
-        }}
-        pagination={{
-          enablePagination: true,
-        }}
-        initialSorting={INITIAL_SORTING}
-        customEmptyState={{
-          title: t("user-assets:emptyState.title"),
-          description: t("user-assets:emptyState.description"),
-          icon: Package,
-        }}
-      />
+      <>
+        <DataTable
+          name="user-assets"
+          data={assets}
+          columns={columns}
+          urlState={{
+            enabled: true,
+            enableUrlPersistence: true,
+            routePath,
+            defaultPageSize: 20,
+            enableGlobalFilter: true,
+            enableRowSelection: true,
+            debounceMs: 300,
+          }}
+          initialColumnVisibility={{
+            name: false,
+          }}
+          advancedToolbar={{
+            enableGlobalSearch: true,
+            enableFilters: true,
+            enableExport: true,
+            enableViewOptions: true,
+            placeholder: t("user-assets:searchPlaceholder"),
+          }}
+          bulkActions={{
+            enabled: false,
+          }}
+          pagination={{
+            enablePagination: true,
+          }}
+          initialSorting={INITIAL_SORTING}
+          customEmptyState={{
+            title: t("user-assets:emptyState.title"),
+            description: t("user-assets:emptyState.description"),
+            icon: Package,
+          }}
+        />
+
+        {selectedAsset ? (
+          <TransferAssetSheet
+            open={isTransferSheetOpen}
+            onOpenChange={handleTransferSheetOpenChange}
+            asset={selectedAsset}
+          />
+        ) : null}
+      </>
     </ComponentErrorBoundary>
   );
 }

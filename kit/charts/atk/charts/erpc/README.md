@@ -49,12 +49,12 @@ Kubernetes: `>=1.21.0-0`
 
 ## Connection Requirements
 
-Configure the Redis endpoints used for caching in the `erpc.redis` section of the values file.
+Configure Redis connectivity via the `global.datastores.erpc.redis` section (or override per-chart with `redis`).
 
 | Purpose | Values path | Default |
 | --- | --- | --- |
-| Cache connector | `erpc.redis.cacheDb` | `redis://default:atk@redis:6379/0` |
-| Shared state connector | `erpc.redis.sharedStateDb` | `redis://default:atk@redis:6379/1` |
+| Cache connector | `global.datastores.erpc.redis.cacheDb` | `redis://default:atk@redis:6379/0` |
+| Shared state connector | `global.datastores.erpc.redis.sharedStateDb` | `redis://default:atk@redis:6379/1` |
 
 Update the host, port, credentials, and database numbers to match your external Redis deployment.
 
@@ -95,14 +95,14 @@ The command removes all the Kubernetes components associated with the chart and 
 | autoscaling.minReplicas | int | `1` | Minimum number of eRPC replicas |
 | commonAnnotations | object | `{}` | Annotations to add to all deployed objects |
 | commonLabels | object | `{}` | Labels to add to all deployed objects |
-| config | object | `{"database":{"evmJsonRpcCache":{"compression":{"algorithm":"zstd","enabled":true,"threshold":1024,"zstdLevel":"default"},"connectors":[{"driver":"redis","id":"redis-cache","redis":{"uri":"{{ include \"erpc.redis.uri\" (dict \"host\" .Values.redis.host \"port\" .Values.redis.port \"username\" .Values.redis.username \"password\" .Values.redis.password \"db\" .Values.redis.cacheDb \"query\" .Values.redis.cacheQuery) }}"}}],"policies":[{"connector":"redis-cache","finality":"finalized","method":"*","network":"*","ttl":0},{"connector":"redis-cache","finality":"unfinalized","method":"*","network":"*","ttl":"5s"},{"connector":"redis-cache","finality":"realtime","method":"*","network":"*","ttl":"5s"}]},"sharedState":{"clusterKey":"atk-erpc-shared","connector":{"driver":"redis","redis":{"uri":"{{ include \"erpc.redis.uri\" (dict \"host\" .Values.redis.host \"port\" .Values.redis.port \"username\" .Values.redis.username \"password\" .Values.redis.password \"db\" .Values.redis.sharedStateDb \"query\" .Values.redis.sharedStateQuery) }}"}},"fallbackTimeout":"5s","lockTtl":"30s"}},"logLevel":"info","metrics":{"enabled":true,"hostV4":"0.0.0.0","port":4001},"projects":[],"server":{"httpHostV4":"0.0.0.0","httpPort":4000,"waitAfterShutdown":"30s","waitBeforeShutdown":"30s"}}` | eRPC configuration |
-| config.database | object | `{"evmJsonRpcCache":{"compression":{"algorithm":"zstd","enabled":true,"threshold":1024,"zstdLevel":"default"},"connectors":[{"driver":"redis","id":"redis-cache","redis":{"uri":"{{ include \"erpc.redis.uri\" (dict \"host\" .Values.redis.host \"port\" .Values.redis.port \"username\" .Values.redis.username \"password\" .Values.redis.password \"db\" .Values.redis.cacheDb \"query\" .Values.redis.cacheQuery) }}"}}],"policies":[{"connector":"redis-cache","finality":"finalized","method":"*","network":"*","ttl":0},{"connector":"redis-cache","finality":"unfinalized","method":"*","network":"*","ttl":"5s"},{"connector":"redis-cache","finality":"realtime","method":"*","network":"*","ttl":"5s"}]},"sharedState":{"clusterKey":"atk-erpc-shared","connector":{"driver":"redis","redis":{"uri":"{{ include \"erpc.redis.uri\" (dict \"host\" .Values.redis.host \"port\" .Values.redis.port \"username\" .Values.redis.username \"password\" .Values.redis.password \"db\" .Values.redis.sharedStateDb \"query\" .Values.redis.sharedStateQuery) }}"}},"fallbackTimeout":"5s","lockTtl":"30s"}}` | Database configuration for caching |
+| config | object | `{"database":{"evmJsonRpcCache":{"compression":{"algorithm":"zstd","enabled":true,"threshold":1024,"zstdLevel":"default"},"connectors":[{"driver":"redis","id":"redis-cache","redis":{"uri":"{{ include \"erpc.redis.uriFor\" (dict \"context\" $ \"dbKey\" \"cacheDb\" \"queryKey\" \"cacheQuery\") }}"}}],"policies":[{"connector":"redis-cache","finality":"finalized","method":"*","network":"*","ttl":0},{"connector":"redis-cache","finality":"unfinalized","method":"*","network":"*","ttl":"5s"},{"connector":"redis-cache","finality":"realtime","method":"*","network":"*","ttl":"5s"}]},"sharedState":{"clusterKey":"atk-erpc-shared","connector":{"driver":"redis","redis":{"uri":"{{ include \"erpc.redis.uriFor\" (dict \"context\" $ \"dbKey\" \"sharedStateDb\" \"queryKey\" \"sharedStateQuery\") }}"}},"fallbackTimeout":"5s","lockTtl":"30s"}},"logLevel":"info","metrics":{"enabled":true,"hostV4":"0.0.0.0","port":4001},"projects":[{"id":"settlemint","networks":[{"architecture":"evm","directiveDefaults":{"retryEmpty":true},"evm":{"integrity":{"enforceGetLogsBlockRange":true,"enforceHighestBlock":true}},"failsafe":[{"hedge":{"maxCount":1,"maxDelay":"4s","minDelay":"200ms","quantile":0.9},"matchMethod":"eth_getLogs","retry":{"backoffFactor":2,"backoffMaxDelay":"10s","delay":"500ms","jitter":"300ms","maxAttempts":3},"timeout":{"duration":"45s"}},{"matchMethod":"trace_*|debug_*|arbtrace_*","retry":{"maxAttempts":1},"timeout":{"duration":"90s"}},{"matchMethod":"eth_getBlock*|eth_getTransaction*","retry":{"backoffFactor":1.5,"backoffMaxDelay":"3s","delay":"200ms","jitter":"150ms","maxAttempts":2},"timeout":{"duration":"6s"}},{"hedge":{"delay":"250ms","maxCount":1},"matchFinality":["unfinalized","realtime"],"matchMethod":"*","retry":{"delay":"150ms","jitter":"150ms","maxAttempts":2},"timeout":{"duration":"4s"}},{"matchFinality":["finalized"],"matchMethod":"*","retry":{"backoffFactor":1.8,"backoffMaxDelay":"8s","delay":"400ms","jitter":"250ms","maxAttempts":4},"timeout":{"duration":"20s"}},{"hedge":{"maxCount":2,"maxDelay":"2s","minDelay":"120ms","quantile":0.95},"matchMethod":"*","retry":{"backoffFactor":1.4,"backoffMaxDelay":"5s","delay":"300ms","jitter":"200ms","maxAttempts":3},"timeout":{"duration":"12s"}}]}],"upstreams":[{"endpoint":"http://besu-node-rpc-0.besu-node-rpc:8545","evm":{},"failsafe":[{"circuitBreaker":{"failureThresholdCapacity":80,"failureThresholdCount":40,"halfOpenAfter":"120s","successThresholdCapacity":10,"successThresholdCount":3},"matchMethod":"*"}],"id":"besu-node-rpc-0"},{"endpoint":"http://besu-node-rpc-1.besu-node-rpc:8545","evm":{},"failsafe":[{"circuitBreaker":{"failureThresholdCapacity":80,"failureThresholdCount":40,"halfOpenAfter":"120s","successThresholdCapacity":10,"successThresholdCount":3},"matchMethod":"*"}],"id":"besu-node-rpc-1"}]}],"server":{"httpHostV4":"0.0.0.0","httpPort":4000,"waitAfterShutdown":"30s","waitBeforeShutdown":"30s"}}` | eRPC configuration |
+| config.database | object | `{"evmJsonRpcCache":{"compression":{"algorithm":"zstd","enabled":true,"threshold":1024,"zstdLevel":"default"},"connectors":[{"driver":"redis","id":"redis-cache","redis":{"uri":"{{ include \"erpc.redis.uriFor\" (dict \"context\" $ \"dbKey\" \"cacheDb\" \"queryKey\" \"cacheQuery\") }}"}}],"policies":[{"connector":"redis-cache","finality":"finalized","method":"*","network":"*","ttl":0},{"connector":"redis-cache","finality":"unfinalized","method":"*","network":"*","ttl":"5s"},{"connector":"redis-cache","finality":"realtime","method":"*","network":"*","ttl":"5s"}]},"sharedState":{"clusterKey":"atk-erpc-shared","connector":{"driver":"redis","redis":{"uri":"{{ include \"erpc.redis.uriFor\" (dict \"context\" $ \"dbKey\" \"sharedStateDb\" \"queryKey\" \"sharedStateQuery\") }}"}},"fallbackTimeout":"5s","lockTtl":"30s"}}` | Database configuration for caching |
 | config.logLevel | string | `"info"` | Log level for eRPC |
 | config.metrics | object | `{"enabled":true,"hostV4":"0.0.0.0","port":4001}` | Metrics endpoint configuration |
-| config.projects | list | `[]` | Array of project configurations (will be overridden by parent chart) |
+| config.projects | list | `[{"id":"settlemint","networks":[{"architecture":"evm","directiveDefaults":{"retryEmpty":true},"evm":{"integrity":{"enforceGetLogsBlockRange":true,"enforceHighestBlock":true}},"failsafe":[{"hedge":{"maxCount":1,"maxDelay":"4s","minDelay":"200ms","quantile":0.9},"matchMethod":"eth_getLogs","retry":{"backoffFactor":2,"backoffMaxDelay":"10s","delay":"500ms","jitter":"300ms","maxAttempts":3},"timeout":{"duration":"45s"}},{"matchMethod":"trace_*|debug_*|arbtrace_*","retry":{"maxAttempts":1},"timeout":{"duration":"90s"}},{"matchMethod":"eth_getBlock*|eth_getTransaction*","retry":{"backoffFactor":1.5,"backoffMaxDelay":"3s","delay":"200ms","jitter":"150ms","maxAttempts":2},"timeout":{"duration":"6s"}},{"hedge":{"delay":"250ms","maxCount":1},"matchFinality":["unfinalized","realtime"],"matchMethod":"*","retry":{"delay":"150ms","jitter":"150ms","maxAttempts":2},"timeout":{"duration":"4s"}},{"matchFinality":["finalized"],"matchMethod":"*","retry":{"backoffFactor":1.8,"backoffMaxDelay":"8s","delay":"400ms","jitter":"250ms","maxAttempts":4},"timeout":{"duration":"20s"}},{"hedge":{"maxCount":2,"maxDelay":"2s","minDelay":"120ms","quantile":0.95},"matchMethod":"*","retry":{"backoffFactor":1.4,"backoffMaxDelay":"5s","delay":"300ms","jitter":"200ms","maxAttempts":3},"timeout":{"duration":"12s"}}]}],"upstreams":[{"endpoint":"http://besu-node-rpc-0.besu-node-rpc:8545","evm":{},"failsafe":[{"circuitBreaker":{"failureThresholdCapacity":80,"failureThresholdCount":40,"halfOpenAfter":"120s","successThresholdCapacity":10,"successThresholdCount":3},"matchMethod":"*"}],"id":"besu-node-rpc-0"},{"endpoint":"http://besu-node-rpc-1.besu-node-rpc:8545","evm":{},"failsafe":[{"circuitBreaker":{"failureThresholdCapacity":80,"failureThresholdCount":40,"halfOpenAfter":"120s","successThresholdCapacity":10,"successThresholdCount":3},"matchMethod":"*"}],"id":"besu-node-rpc-1"}]}]` | Array of project configurations (will be overridden by parent chart)    Chain IDs default from .Values.global.chainId when omitted (see configmap template). |
 | config.server | object | `{"httpHostV4":"0.0.0.0","httpPort":4000,"waitAfterShutdown":"30s","waitBeforeShutdown":"30s"}` | Server configuration |
 | configMountPath | string | `"/erpc.yaml"` | Path where the rendered configuration file will be mounted |
-| containerSecurityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":false,"runAsGroup":1001,"runAsNonRoot":true,"runAsUser":1001,"seccompProfile":{"type":"RuntimeDefault"}}` | Container Security Context configuration |
+| containerSecurityContext | object | `{}` | Container Security Context configuration (overrides global.securityContexts.container) |
 | envSecret | object | `{"defaultMode":420,"enabled":false,"mountPath":"/.env","name":"","subPath":""}` | .env Secret mount configuration |
 | envSecret.defaultMode | int | `420` | File mode applied to the mounted Secret (decimal 420 = 0644) |
 | envSecret.enabled | bool | `false` | Enable mounting a Secret containing a .env file |
@@ -112,10 +112,11 @@ The command removes all the Kubernetes components associated with the chart and 
 | extraEnvVars | list | `[]` | Array with extra environment variables to add to eRPC nodes |
 | extraEnvVarsCM | string | `""` | Name of existing ConfigMap containing extra env vars for eRPC nodes |
 | extraEnvVarsSecret | string | `""` | Name of existing Secret containing extra env vars for eRPC nodes |
+| extraInitContainers | list | `[]` | Additional init containers appended verbatim to the workload spec |
 | extraVolumeMounts | list | `[]` | Optionally specify extra list of additional volumeMounts for the eRPC container(s) |
 | extraVolumes | list | `[]` | Optionally specify extra list of additional volumes for the eRPC pod(s) |
 | fullnameOverride | string | `"erpc"` | String to fully override common.names.fullname |
-| global | object | `{"imagePullSecrets":[],"imageRegistry":"","storageClass":""}` | Global Docker image registry |
+| global | object | `{"datastores":{},"imagePullSecrets":[],"imageRegistry":"","securityContexts":{},"storageClass":""}` | Global Docker image registry |
 | global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |
 | global.imageRegistry | string | `""` | Global Docker image registry |
 | global.storageClass | string | `""` | Global StorageClass for Persistent Volume(s) |
@@ -143,7 +144,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | ingress.tls | bool | `false` | Enable TLS configuration for the host defined at `ingress.hostname` parameter |
 | initContainer.tcpCheck.dependencies[0].endpoint | string | `"besu-node-rpc-0.besu-node-rpc:8545"` |  |
 | initContainer.tcpCheck.dependencies[0].name | string | `"besu-rpc"` |  |
-| initContainer.tcpCheck.dependencies[1].endpoint | string | `"{{ printf \"%s:%d\" .Values.redis.host (int .Values.redis.port) }}"` |  |
+| initContainer.tcpCheck.dependencies[1].endpoint | string | `"{{ include \"erpc.redis.endpoint\" (dict \"context\" $) }}"` |  |
 | initContainer.tcpCheck.dependencies[1].name | string | `"redis"` |  |
 | initContainer.tcpCheck.enabled | bool | `true` |  |
 | initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -182,6 +183,18 @@ The command removes all the Kubernetes components associated with the chart and 
 | nodeAffinityPreset.type | string | `""` | Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard` |
 | nodeAffinityPreset.values | list | `[]` | Node label values to match. Ignored if `affinity` is set |
 | nodeSelector | object | `{}` | Node labels for pod assignment |
+| openShiftRoute | object | `{"alternateBackends":[],"annotations":{},"enabled":false,"host":"besu.k8s.orb.local","path":"/","port":{"targetPort":"http"},"tls":null,"to":{"weight":100},"wildcardPolicy":"None"}` | OpenShift Route parameters |
+| openShiftRoute.alternateBackends | list | `[]` | Additional backends for weighted routing |
+| openShiftRoute.annotations | object | `{}` | Additional annotations for the OpenShift route resource |
+| openShiftRoute.enabled | bool | `false` | Enable OpenShift route creation for eRPC |
+| openShiftRoute.host | string | `"besu.k8s.orb.local"` | Hostname exposed via the OpenShift route |
+| openShiftRoute.path | string | `"/"` | HTTP path exposed via the OpenShift route |
+| openShiftRoute.port | object | `{"targetPort":"http"}` | Service port configuration for the route target |
+| openShiftRoute.port.targetPort | string | `"http"` | Service target port name (must exist on the eRPC service) |
+| openShiftRoute.tls | string | `nil` | TLS configuration for the OpenShift route |
+| openShiftRoute.to | object | `{"weight":100}` | Primary service weight configuration |
+| openShiftRoute.to.weight | int | `100` | Weight assigned to the eRPC service backend |
+| openShiftRoute.wildcardPolicy | string | `"None"` | Wildcard policy applied to the route |
 | pdb | object | `{"enabled":false,"maxUnavailable":"","minAvailable":""}` | Pod disruption budget configuration |
 | pdb.enabled | bool | `false` | If true, create a pod disruption budget for pods. |
 | pdb.maxUnavailable | string | `""` | Maximum number/percentage of pods that may be made unavailable. Defaults to 1 if both pdb.minAvailable and pdb.maxUnavailable are empty. |
@@ -192,8 +205,8 @@ The command removes all the Kubernetes components associated with the chart and 
 | podAnnotations."prometheus.io/port" | string | `"4001"` | Prometheus metrics port |
 | podAnnotations."prometheus.io/scrape" | string | `"true"` | Enable prometheus scraping |
 | podAntiAffinityPreset | string | `"soft"` | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard` |
-| podLabels | object | `{}` | Extra labels for eRPC pods |
-| podSecurityContext | object | `{"fsGroup":1001,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Pod Security Context configuration |
+| podLabels | object | `{"app.kubernetes.io/component":"erpc"}` | Extra labels for eRPC pods |
+| podSecurityContext | object | `{}` | Pod Security Context configuration (overrides global.securityContexts.pod) |
 | priorityClassName | string | `""` | eRPC pods' priority class name |
 | readinessProbe | object | `{"enabled":true,"failureThreshold":3,"httpGet":{"path":"/healthcheck","port":"http"},"initialDelaySeconds":5,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}` | Configure eRPC containers' readiness probe |
 | readinessProbe.enabled | bool | `true` | Enable readinessProbe on eRPC containers |
@@ -205,15 +218,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | readinessProbe.periodSeconds | int | `10` | Period seconds for readinessProbe |
 | readinessProbe.successThreshold | int | `1` | Success threshold for readinessProbe |
 | readinessProbe.timeoutSeconds | int | `5` | Timeout seconds for readinessProbe |
-| redis | object | `{"cacheDb":0,"cacheQuery":"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50","host":"redis","password":"atk","port":6379,"sharedStateDb":1,"sharedStateQuery":"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=20","username":"default"}` | Redis parameters for cache/shared state connectivity |
-| redis.cacheDb | int | `0` | Database index for the EVM cache connector |
-| redis.cacheQuery | string | `"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"` | Additional query parameters for the cache connector (omit leading '?') |
-| redis.host | string | `"redis"` | Hostname of the Redis service used by eRPC |
-| redis.password | string | `"atk"` | Optional password for Redis authentication |
-| redis.port | int | `6379` | Port of the Redis service used by eRPC |
-| redis.sharedStateDb | int | `1` | Database index for the shared state connector |
-| redis.sharedStateQuery | string | `"dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=20"` | Additional query parameters for the shared state connector (omit leading '?') |
-| redis.username | string | `"default"` | Optional username for Redis authentication |
+| redis | object | `{}` | Redis parameters for cache/shared state connectivity (overrides global.datastores.erpc.redis) |
 | replicaCount | int | `1` | Number of eRPC replicas to deploy |
 | resources | object | `{}` | eRPC containers resource requests and limits |
 | runtime | object | `{"gc":{"enabled":true,"gogc":30,"gomemlimitOverride":"","gomemlimitRatio":0.85}}` | Runtime tuning |

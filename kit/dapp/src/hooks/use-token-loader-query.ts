@@ -47,8 +47,12 @@ export function useTokenLoaderQuery() {
     })
   );
 
-  // Use queried data if available, otherwise fall back to loader data
-  const asset = queriedAsset ?? loaderAsset;
+  // Prefer fresh queried data but preserve fields only available from loader (e.g., identity claims)
+  const asset = {
+    ...loaderAsset,
+    ...queriedAsset,
+    identity: loaderAsset.identity ?? queriedAsset?.identity,
+  };
   return {
     asset,
     isLoading,

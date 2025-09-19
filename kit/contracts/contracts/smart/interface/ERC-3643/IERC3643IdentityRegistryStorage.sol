@@ -27,9 +27,7 @@ event IdentityUnstored(address indexed _investorAddress, IIdentity indexed _iden
 /// @param _oldIdentity is the old Identity contract's address to update.
 /// @param _newIdentity is the new Identity contract's.
 event IdentityModified(
-    address indexed _investorAddress,
-    IIdentity indexed _oldIdentity,
-    IIdentity indexed _newIdentity
+    address indexed _investorAddress, IIdentity indexed _oldIdentity, IIdentity indexed _newIdentity
 );
 
 /// @notice Emitted when an Identity's country has been updated

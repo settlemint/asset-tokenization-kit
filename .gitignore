@@ -43,7 +43,6 @@ yarn-error.log*
 .specstory
 bun.lockb
 kit/charts/**/*.tgz
-kit/charts/atk/charts/portal/abis/**
 # SpecStory explanation file
 .specstory/.what-is-this.md
 .claude/settings.local.json

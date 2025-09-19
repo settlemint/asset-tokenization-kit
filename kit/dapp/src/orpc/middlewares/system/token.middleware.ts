@@ -216,6 +216,7 @@ export const tokenMiddleware = baseRouter.middleware<
             setCap: false,
             setYieldSchedule: false,
             transfer: false,
+            forcedTransfer: false,
             unpause: false,
             updateCollateral: false,
             withdrawDenominationAsset: false,

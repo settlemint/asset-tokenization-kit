@@ -29,7 +29,8 @@ export const TOKEN_PERMISSIONS: Record<
   setCap: "supplyManagement",
   setYieldSchedule: "governance",
   withdrawDenominationAsset: "supplyManagement",
-  transfer: { any: [] }, // TODO: requires custodian on a forced transfer (would generate a dedicated endpoint )
+  transfer: { any: [] },
+  forcedTransfer: "custodian",
   unpause: "emergency",
   updateCollateral: "governance",
   freezePartial: "custodian",

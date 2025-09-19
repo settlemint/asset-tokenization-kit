@@ -1,163 +1,136 @@
-# -- Global Docker image registry
+# -- (object) Global Docker image registry
 global:
-  # -- Global Docker image registry
+  # -- (string) Global Docker image registry
   imageRegistry: ""
-  # -- Global Docker registry secret names as an array
+  # -- (list) Global Docker registry secret names as an array
   imagePullSecrets: []
-  # -- Global StorageClass for Persistent Volume(s)
+  # -- (string) Global StorageClass for Persistent Volume(s)
   storageClass: ""
+  securityContexts: {}
+  datastores: {}
 
-# -- String to fully override common.names.fullname
+# -- (string) String to fully override common.names.fullname
 fullnameOverride: "erpc"
 
-# -- Labels to add to all deployed objects
+# -- (object) Labels to add to all deployed objects
 commonLabels: {}
 
-# -- Annotations to add to all deployed objects
+# -- (object) Annotations to add to all deployed objects
 commonAnnotations: {}
 
 
-# -- eRPC image
+# -- (object) eRPC image
 image:
-  # -- eRPC image registry
+  # -- (string) eRPC image registry
   registry: ghcr.io
-  # -- eRPC image repository
+  # -- (string) eRPC image repository
   repository: erpc/erpc
-  # -- eRPC image tag (immutable tags are recommended)
+  # -- (string) eRPC image tag (immutable tags are recommended)
   tag: "0.0.56"
-  # -- eRPC image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
+  # -- (string) eRPC image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
   digest: ""
-  # -- eRPC image pull policy
+  # -- (string) eRPC image pull policy
   pullPolicy: IfNotPresent
-  # -- eRPC image pull secrets
+  # -- (list) eRPC image pull secrets
   pullSecrets: []
 
-# -- Redis parameters for cache/shared state connectivity
-redis:
-  # -- Hostname of the Redis service used by eRPC
-  host: redis
-  # -- Port of the Redis service used by eRPC
-  port: 6379
-  # -- Optional username for Redis authentication
-  username: default
-  # -- Optional password for Redis authentication
-  password: atk
-  # -- Database index for the EVM cache connector
-  cacheDb: 0
-  # -- Database index for the shared state connector
-  sharedStateDb: 1
-  # -- Additional query parameters for the cache connector (omit leading '?')
-  cacheQuery: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"
-  # -- Additional query parameters for the shared state connector (omit leading '?')
-  sharedStateQuery: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=20"
+# -- (object) Redis parameters for cache/shared state connectivity (overrides global.datastores.erpc.redis)
+redis: {}
 
-# -- Number of eRPC replicas to deploy
+# -- (int) Number of eRPC replicas to deploy
 replicaCount: 1
 
-# -- Update strategy configuration for eRPC deployment
+# -- (object) Update strategy configuration for eRPC deployment
 updateStrategy:
-  # -- eRPC deployment strategy type
+  # -- (string) eRPC deployment strategy type
   type: RollingUpdate
-  # -- eRPC deployment rolling update configuration parameters
+  # -- (object) eRPC deployment rolling update configuration parameters
   rollingUpdate: {}
 
-# -- Alternate scheduler
+# -- (string) Alternate scheduler
 schedulerName: ""
 
-# -- eRPC pods' priority class name
+# -- (string) eRPC pods' priority class name
 priorityClassName: ""
 
-# -- Topology Spread Constraints for pod assignment
+# -- (list) Topology Spread Constraints for pod assignment
 topologySpreadConstraints: []
 
-# -- Extra labels for eRPC pods
-podLabels: {}
+# -- (object) Extra labels for eRPC pods
+podLabels:
+  app.kubernetes.io/component: erpc
 
-# -- Annotations for eRPC pods
+# -- (object) Annotations for eRPC pods
 podAnnotations:
-  # -- Enable prometheus scraping
+  # -- (string) Enable prometheus scraping
   prometheus.io/scrape: "true"
-  # -- Prometheus metrics port
+  # -- (string) Prometheus metrics port
   prometheus.io/port: "4001"
-  # -- Prometheus metrics path
+  # -- (string) Prometheus metrics path
   prometheus.io/path: "/metrics"
 
-# -- Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+# -- (string) Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 podAffinityPreset: ""
 
-# -- Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+# -- (string) Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 podAntiAffinityPreset: soft
 
-# -- Node affinity preset configuration
+# -- (object) Node affinity preset configuration
 nodeAffinityPreset:
-  # -- Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+  # -- (string) Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
   type: ""
-  # -- Node label key to match. Ignored if `affinity` is set
+  # -- (string) Node label key to match. Ignored if `affinity` is set
   key: ""
-  # -- Node label values to match. Ignored if `affinity` is set
+  # -- (list) Node label values to match. Ignored if `affinity` is set
   values: []
 
-# -- Affinity for pod assignment
+# -- (object) Affinity for pod assignment
 affinity: {}
 
-# -- Node labels for pod assignment
+# -- (object) Node labels for pod assignment
 nodeSelector: {}
 
-# -- Tolerations for pod assignment
+# -- (list) Tolerations for pod assignment
 tolerations: []
 
-# -- Pod Security Context configuration
-podSecurityContext:
-  fsGroup: 1001
-  runAsNonRoot: true
-  seccompProfile:
-    type: RuntimeDefault
+# -- (object) Pod Security Context configuration (overrides global.securityContexts.pod)
+podSecurityContext: {}
 
-# -- Container Security Context configuration
-containerSecurityContext:
-  runAsUser: 1001
-  runAsGroup: 1001
-  runAsNonRoot: true
-  allowPrivilegeEscalation: false
-  readOnlyRootFilesystem: false
-  capabilities:
-    drop:
-      - ALL
-  seccompProfile:
-    type: RuntimeDefault
+# -- (object) Container Security Context configuration (overrides global.securityContexts.container)
+containerSecurityContext: {}
 
-# -- Runtime tuning
+# -- (object) Runtime tuning
 runtime:
   gc:
-    # -- Enable automatic Go GC tuning based on container limits
+    # -- (bool) Enable automatic Go GC tuning based on container limits
     enabled: true
-    # -- Triggers garbage collection when heap grows by this percentage
+    # -- (int) Triggers garbage collection when heap grows by this percentage
     gogc: 30
-    # -- Fraction of the pod memory limit used to derive GOMEMLIMIT (set to 1.0 for 100%)
+    # -- (float) Fraction of the pod memory limit used to derive GOMEMLIMIT (set to 1.0 for 100%)
     gomemlimitRatio: 0.85
-    # -- Absolute fallback for GOMEMLIMIT (takes precedence when set, e.g. "2GiB")
+    # -- (string) Absolute fallback for GOMEMLIMIT (takes precedence when set, e.g. "2GiB")
     gomemlimitOverride: ""
 
-# -- Working directory for the eRPC container
+# -- (string) Working directory for the eRPC container
 workingDir: "/"
 
-# -- Path where the rendered configuration file will be mounted
+# -- (string) Path where the rendered configuration file will be mounted
 configMountPath: "/erpc.yaml"
 
-# -- .env Secret mount configuration
+# -- (object) .env Secret mount configuration
 envSecret:
-  # -- Enable mounting a Secret containing a .env file
+  # -- (bool) Enable mounting a Secret containing a .env file
   enabled: false
-  # -- Name of the Secret containing the .env data (required when enabled)
+  # -- (string) Name of the Secret containing the .env data (required when enabled)
   name: ""
-  # -- Path where the .env file will be mounted
+  # -- (string) Path where the .env file will be mounted
   mountPath: "/.env"
-  # -- Optional subPath within the Secret to mount (defaults to the key named `.env`)
+  # -- (string) Optional subPath within the Secret to mount (defaults to the key named `.env`)
   subPath: ""
-  # -- File mode applied to the mounted Secret (decimal 420 = 0644)
+  # -- (int) File mode applied to the mounted Secret (decimal 420 = 0644)
   defaultMode: 420
 
-# -- eRPC containers resource requests and limits
+# -- (object) eRPC containers resource requests and limits
 resources: {}
   # limits:
   #   cpu: 100m
@@ -166,79 +139,79 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
-# -- Configure eRPC containers' liveness probe
+# -- (object) Configure eRPC containers' liveness probe
 livenessProbe:
-  # -- Enable livenessProbe on eRPC containers
+  # -- (bool) Enable livenessProbe on eRPC containers
   enabled: true
-  # -- Initial delay seconds for livenessProbe
+  # -- (int) Initial delay seconds for livenessProbe
   initialDelaySeconds: 10
-  # -- Period seconds for livenessProbe
+  # -- (int) Period seconds for livenessProbe
   periodSeconds: 10
-  # -- Timeout seconds for livenessProbe
+  # -- (int) Timeout seconds for livenessProbe
   timeoutSeconds: 5
-  # -- Failure threshold for livenessProbe
+  # -- (int) Failure threshold for livenessProbe
   failureThreshold: 3
-  # -- Success threshold for livenessProbe
+  # -- (int) Success threshold for livenessProbe
   successThreshold: 1
-  # -- HTTP get parameters for livenessProbe
+  # -- (object) HTTP get parameters for livenessProbe
   httpGet:
-    # -- Path for httpGet livenessProbe
+    # -- (string) Path for httpGet livenessProbe
     path: /healthcheck
-    # -- Port for httpGet livenessProbe
+    # -- (string) Port for httpGet livenessProbe
     port: http
 
-# -- Configure eRPC containers' readiness probe
+# -- (object) Configure eRPC containers' readiness probe
 readinessProbe:
-  # -- Enable readinessProbe on eRPC containers
+  # -- (bool) Enable readinessProbe on eRPC containers
   enabled: true
-  # -- Initial delay seconds for readinessProbe
+  # -- (int) Initial delay seconds for readinessProbe
   initialDelaySeconds: 5
-  # -- Period seconds for readinessProbe
+  # -- (int) Period seconds for readinessProbe
   periodSeconds: 10
-  # -- Timeout seconds for readinessProbe
+  # -- (int) Timeout seconds for readinessProbe
   timeoutSeconds: 5
-  # -- Failure threshold for readinessProbe
+  # -- (int) Failure threshold for readinessProbe
   failureThreshold: 3
-  # -- Success threshold for readinessProbe
+  # -- (int) Success threshold for readinessProbe
   successThreshold: 1
-  # -- HTTP get parameters for readinessProbe
+  # -- (object) HTTP get parameters for readinessProbe
   httpGet:
-    # -- Path for httpGet readinessProbe
+    # -- (string) Path for httpGet readinessProbe
     path: /healthcheck
-    # -- Port for httpGet readinessProbe
+    # -- (string) Port for httpGet readinessProbe
     port: http
 
-# -- Configure eRPC containers' startup probe
+# -- (object) Configure eRPC containers' startup probe
 startupProbe:
-  # -- Enable startupProbe on eRPC containers
+  # -- (bool) Enable startupProbe on eRPC containers
   enabled: false
-  # -- Initial delay seconds for startupProbe
+  # -- (int) Initial delay seconds for startupProbe
   initialDelaySeconds: 30
-  # -- Period seconds for startupProbe
+  # -- (int) Period seconds for startupProbe
   periodSeconds: 10
-  # -- Timeout seconds for startupProbe
+  # -- (int) Timeout seconds for startupProbe
   timeoutSeconds: 5
-  # -- Failure threshold for startupProbe
+  # -- (int) Failure threshold for startupProbe
   failureThreshold: 10
-  # -- Success threshold for startupProbe
+  # -- (int) Success threshold for startupProbe
   successThreshold: 1
 
-# -- lifecycleHooks for the eRPC container(s) to automate configuration before or after startup
+# -- (object) lifecycleHooks for the eRPC container(s) to automate configuration before or after startup
 lifecycleHooks: {}
 
-# -- Optionally specify extra list of additional volumes for the eRPC pod(s)
+# -- (list) Optionally specify extra list of additional volumes for the eRPC pod(s)
 extraVolumes: []
 
-# -- Optionally specify extra list of additional volumeMounts for the eRPC container(s)
+# -- (list) Optionally specify extra list of additional volumeMounts for the eRPC container(s)
 extraVolumeMounts: []
 
-# -- Array with extra environment variables to add to eRPC nodes
+# -- (list) Array with extra environment variables to add to eRPC nodes
 extraEnvVars: []
 
-# -- Name of existing ConfigMap containing extra env vars for eRPC nodes
+# -- (string) Name of existing ConfigMap containing extra env vars for eRPC nodes
 extraEnvVarsCM: ""
 
-# -- Name of existing Secret containing extra env vars for eRPC nodes
+# -- (string) Name of existing Secret containing extra env vars for eRPC nodes
 extraEnvVarsSecret: ""
 
 initContainer:
@@ -262,90 +235,118 @@ initContainer:
       - name: besu-rpc
         endpoint: "besu-node-rpc-0.besu-node-rpc:8545"
       - name: redis
-        endpoint: '{{ printf "%s:%d" .Values.redis.host (int .Values.redis.port) }}'
+        endpoint: '{{ include "erpc.redis.endpoint" (dict "context" $) }}'
 
-# -- Service parameters
+# -- (list) Additional init containers appended verbatim to the workload spec
+extraInitContainers: []
+
+# -- (object) Service parameters
 service:
-  # -- eRPC service type
+  # -- (string) eRPC service type
   type: ClusterIP
-  # -- eRPC service HTTP port
+  # -- (int) eRPC service HTTP port
   port: 4000
-  # -- eRPC service metrics port
+  # -- (int) eRPC service metrics port
   metricsPort: 4001
-  # -- Node port for HTTP
+  # -- (string) Node port for HTTP
   nodePort: ""
-  # -- Node port for metrics
+  # -- (string) Node port for metrics
   metricsNodePort: ""
-  # -- eRPC service Cluster IP
+  # -- (string) eRPC service Cluster IP
   clusterIP: ""
-  # -- eRPC service Load Balancer IP
+  # -- (string) eRPC service Load Balancer IP
   loadBalancerIP: ""
-  # -- eRPC service Load Balancer sources
+  # -- (list) eRPC service Load Balancer sources
   loadBalancerSourceRanges: []
-  # -- eRPC service external traffic policy
+  # -- (string) eRPC service external traffic policy
   externalTrafficPolicy: Cluster
-  # -- Additional custom annotations for eRPC service
+  # -- (object) Additional custom annotations for eRPC service
   annotations: {}
-  # -- Extra ports to expose in the eRPC service (normally used with the `sidecar` value)
+  # -- (list) Extra ports to expose in the eRPC service (normally used with the `sidecar` value)
   extraPorts: []
-  # -- Session Affinity for Kubernetes service, can be "None" or "ClientIP"
+  # -- (string) Session Affinity for Kubernetes service, can be "None" or "ClientIP"
   sessionAffinity: None
-  # -- Additional settings for the sessionAffinity
+  # -- (object) Additional settings for the sessionAffinity
   sessionAffinityConfig: {}
 
-# -- Ingress parameters
+# -- (object) Ingress parameters
 ingress:
-  # -- Enable ingress record generation for eRPC
+  # -- (bool) Enable ingress record generation for eRPC
   enabled: true
-  # -- Ingress path type
+  # -- (string) Ingress path type
   pathType: ImplementationSpecific
-  # -- Force Ingress API version (automatically detected if not set)
+  # -- (string) Force Ingress API version (automatically detected if not set)
   apiVersion: ""
-  # -- Default host for the ingress record
+  # -- (string) Default host for the ingress record
   hostname: besu.k8s.orb.local
-  # -- IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
+  # -- (string) IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
   ingressClassName: "atk-nginx"
-  # -- Default path for the ingress record
+  # -- (string) Default path for the ingress record
   path: /
-  # -- Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
+  # -- (object) Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
   annotations: {}
-  # -- Enable TLS configuration for the host defined at `ingress.hostname` parameter
+  # -- (bool) Enable TLS configuration for the host defined at `ingress.hostname` parameter
   tls: false
-  # -- Create a TLS secret for this ingress record using self-signed certificates generated by Helm
+  # -- (bool) Create a TLS secret for this ingress record using self-signed certificates generated by Helm
   selfSigned: false
-  # -- An array with additional hostname(s) to be covered with the ingress record
+  # -- (list) An array with additional hostname(s) to be covered with the ingress record
   extraHosts: []
-  # -- An array with additional arbitrary paths that may need to be added to the ingress under the main host
+  # -- (list) An array with additional arbitrary paths that may need to be added to the ingress under the main host
   extraPaths: []
-  # -- TLS configuration for additional hostname(s) to be covered with this ingress record
+  # -- (list) TLS configuration for additional hostname(s) to be covered with this ingress record
   extraTls: []
-  # -- Custom TLS certificates as secrets
+  # -- (list) Custom TLS certificates as secrets
   secrets: []
-  # -- Additional rules to be covered with this ingress record
+  # -- (list) Additional rules to be covered with this ingress record
   extraRules: []
+
+# -- OpenShift Route parameters
+openShiftRoute:
+  # -- Enable OpenShift route creation for eRPC
+  enabled: false
+  # -- Additional annotations for the OpenShift route resource
+  annotations: {}
+  # -- Hostname exposed via the OpenShift route
+  host: besu.k8s.orb.local
+  # -- HTTP path exposed via the OpenShift route
+  path: /
+  # -- Wildcard policy applied to the route
+  wildcardPolicy: None
+  # -- Service port configuration for the route target
+  port:
+    # -- Service target port name (must exist on the eRPC service)
+    targetPort: http
+  # -- Primary service weight configuration
+  to:
+    # -- Weight assigned to the eRPC service backend
+    weight: 100
+  # -- Additional backends for weighted routing
+  alternateBackends: []
+  # -- TLS configuration for the OpenShift route
+  tls: null
 
 # -- Service account for eRPC pods
 serviceAccount:
-  # -- Specifies whether a ServiceAccount should be created
+  # -- (bool) Specifies whether a ServiceAccount should be created
   create: true
-  # -- The name of the ServiceAccount to use.
+  # -- (string) The name of the ServiceAccount to use.
   name: ""
-  # -- Automount service account token for the deployment controller service account
+  # -- (bool) Automount service account token for the deployment controller service account
   automountServiceAccountToken: false
-  # -- Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
+  # -- (object) Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
   annotations: {}
-  # -- Extra labels to be added to the service account
+  # -- (object) Extra labels to be added to the service account
   labels: {}
 
-# -- Autoscaling configuration for eRPC
+# -- (object) Autoscaling configuration for eRPC
 autoscaling:
-  # -- Enable autoscaling for eRPC
+  # -- (bool) Enable autoscaling for eRPC
   enabled: false
-  # -- Maximum number of eRPC replicas
+  # -- (int) Maximum number of eRPC replicas
   maxReplicas: 3
-  # -- Minimum number of eRPC replicas
+  # -- (int) Minimum number of eRPC replicas
   minReplicas: 1
-  # -- Built-in metrics configuration
+  # -- (list) Built-in metrics configuration
   builtInMetrics:
     - type: Resource
       resource:
@@ -359,29 +360,29 @@ autoscaling:
         target:
           type: Utilization
           averageUtilization: 80
-  # -- Custom metrics configuration
+  # -- (list) Custom metrics configuration
   customMetrics: []
 
-# -- Pod disruption budget configuration
+# -- (object) Pod disruption budget configuration
 pdb:
-  # -- If true, create a pod disruption budget for pods.
+  # -- (bool) If true, create a pod disruption budget for pods.
   enabled: false
-  # -- Minimum number/percentage of pods that should remain scheduled
+  # -- (string) Minimum number/percentage of pods that should remain scheduled
   minAvailable: ""
-  # -- Maximum number/percentage of pods that may be made unavailable. Defaults to 1 if both pdb.minAvailable and pdb.maxUnavailable are empty.
+  # -- (string) Maximum number/percentage of pods that may be made unavailable. Defaults to 1 if both pdb.minAvailable and pdb.maxUnavailable are empty.
   maxUnavailable: ""
 
-# -- Network policies configuration
+# -- (object) Network policies configuration
 networkPolicy:
-  # -- Enable creation of NetworkPolicy resources
+  # -- (bool) Enable creation of NetworkPolicy resources
   enabled: false
-  # -- The Policy model to apply
+  # -- (bool) The Policy model to apply
   allowExternal: true
-  # -- Allow the pod to access any range of port and all destinations.
+  # -- (bool) Allow the pod to access any range of port and all destinations.
   allowExternalEgress: true
-  # -- Allow access from pods with client label set to "true". Ignored if `networkPolicy.allowExternal` is true.
+  # -- (bool) Allow access from pods with client label set to "true". Ignored if `networkPolicy.allowExternal` is true.
   addExternalClientAccess: true
-  # -- Add extra ingress rules to the NetworkPolicy
+  # -- (list) Add extra ingress rules to the NetworkPolicy
   extraIngress:
     - from:
         - podSelector:
@@ -399,7 +400,7 @@ networkPolicy:
           port: 4000  # RPC port
         - protocol: TCP
           port: 4001  # Metrics port
-  # -- Add extra egress rules to the NetworkPolicy (ignored if allowExternalEgress=true)
+  # -- (list) Add extra egress rules to the NetworkPolicy (ignored if allowExternalEgress=true)
   extraEgress:
     # Allow DNS resolution
     - to:
@@ -418,55 +419,155 @@ networkPolicy:
       ports:
         - protocol: TCP
           port: 8545  # RPC
-  # -- Ingress rules configuration
+  # -- (object) Ingress rules configuration
   ingressRules:
-    # -- Access restrictions configuration
+    # -- (object) Access restrictions configuration
     accessOnlyFrom:
-      # -- Enable ingress rule that makes eRPC only accessible from a particular origin.
+      # -- (bool) Enable ingress rule that makes eRPC only accessible from a particular origin.
       enabled: false
-      # -- Namespace selector label that is allowed to access eRPC. This label will be used to identified allowed namespace(s).
+      # -- (object) Namespace selector label that is allowed to access eRPC. This label will be used to identified allowed namespace(s).
       namespaceSelector: {}
-      # -- Pods selector label that is allowed to access eRPC. This label will be used to identified allowed pod(s).
+      # -- (object) Pods selector label that is allowed to access eRPC. This label will be used to identified allowed pod(s).
       podSelector: {}
 
-# -- Test parameters
+# -- (object) Test parameters
 tests:
-  # -- Image for test pods
+  # -- (object) Image for test pods
   image:
-    # -- Test image registry
+    # -- (string) Test image registry
     registry: docker.io
-    # -- Test image repository
+    # -- (string) Test image repository
     repository: busybox
-    # -- Test image tag
+    # -- (string) Test image tag
     tag: 1.37.0
-    # -- Test image pull policy
+    # -- (string) Test image pull policy
     pullPolicy: IfNotPresent
 
-# -- eRPC configuration
+# -- (object) eRPC configuration
 config:
-  # -- Log level for eRPC
+  # -- (string) Log level for eRPC
   logLevel: info
-  # -- Server configuration
+  # -- (object) Server configuration
   server:
     httpHostV4: 0.0.0.0
     httpPort: 4000
     waitBeforeShutdown: 30s
     waitAfterShutdown: 30s
-  # -- Metrics endpoint configuration
+  # -- (object) Metrics endpoint configuration
   metrics:
     enabled: true
     hostV4: 0.0.0.0
     port: 4001
-  # -- Array of project configurations (will be overridden by parent chart)
-  projects: []
-  # -- Database configuration for caching
+  # -- (list) Array of project configurations (will be overridden by parent chart)
+  #    Chain IDs default from .Values.global.chainId when omitted (see configmap template).
+  projects:
+    - id: settlemint
+      networks:
+        - architecture: evm
+          evm:
+            integrity:
+              enforceHighestBlock: true
+              enforceGetLogsBlockRange: true
+          directiveDefaults:
+            retryEmpty: true
+          failsafe:
+            - matchMethod: "eth_getLogs"
+              timeout:
+                duration: 45s
+              retry:
+                maxAttempts: 3
+                delay: 500ms
+                backoffFactor: 2
+                backoffMaxDelay: 10s
+                jitter: 300ms
+              hedge:
+                quantile: 0.9
+                minDelay: 200ms
+                maxDelay: 4s
+                maxCount: 1
+            - matchMethod: "trace_*|debug_*|arbtrace_*"
+              timeout:
+                duration: 90s
+              retry:
+                maxAttempts: 1
+            - matchMethod: "eth_getBlock*|eth_getTransaction*"
+              timeout:
+                duration: 6s
+              retry:
+                maxAttempts: 2
+                delay: 200ms
+                backoffFactor: 1.5
+                backoffMaxDelay: 3s
+                jitter: 150ms
+            - matchMethod: "*"
+              matchFinality:
+                - unfinalized
+                - realtime
+              timeout:
+                duration: 4s
+              retry:
+                maxAttempts: 2
+                delay: 150ms
+                jitter: 150ms
+              hedge:
+                delay: 250ms
+                maxCount: 1
+            - matchMethod: "*"
+              matchFinality:
+                - finalized
+              timeout:
+                duration: 20s
+              retry:
+                maxAttempts: 4
+                delay: 400ms
+                backoffFactor: 1.8
+                backoffMaxDelay: 8s
+                jitter: 250ms
+            - matchMethod: "*"
+              timeout:
+                duration: 12s
+              retry:
+                maxAttempts: 3
+                delay: 300ms
+                backoffFactor: 1.4
+                backoffMaxDelay: 5s
+                jitter: 200ms
+              hedge:
+                quantile: 0.95
+                minDelay: 120ms
+                maxDelay: 2s
+                maxCount: 2
+      upstreams:
+        - id: besu-node-rpc-0
+          endpoint: http://besu-node-rpc-0.besu-node-rpc:8545
+          evm: {}
+          failsafe:
+            - matchMethod: "*"
+              circuitBreaker:
+                failureThresholdCount: 40
+                failureThresholdCapacity: 80
+                halfOpenAfter: 120s
+                successThresholdCount: 3
+                successThresholdCapacity: 10
+        - id: besu-node-rpc-1
+          endpoint: http://besu-node-rpc-1.besu-node-rpc:8545
+          evm: {}
+          failsafe:
+            - matchMethod: "*"
+              circuitBreaker:
+                failureThresholdCount: 40
+                failureThresholdCapacity: 80
+                halfOpenAfter: 120s
+                successThresholdCount: 3
+                successThresholdCapacity: 10
+  # -- (object) Database configuration for caching
   database:
     evmJsonRpcCache:
       connectors:
         - id: redis-cache
           driver: redis
           redis:
-            uri: '{{ include "erpc.redis.uri" (dict "host" .Values.redis.host "port" .Values.redis.port "username" .Values.redis.username "password" .Values.redis.password "db" .Values.redis.cacheDb "query" .Values.redis.cacheQuery) }}'
+            uri: '{{ include "erpc.redis.uriFor" (dict "context" $ "dbKey" "cacheDb" "queryKey" "cacheQuery") }}'
       compression:
         enabled: true
         algorithm: zstd
@@ -493,6 +594,6 @@ config:
       connector:
         driver: redis
         redis:
-          uri: '{{ include "erpc.redis.uri" (dict "host" .Values.redis.host "port" .Values.redis.port "username" .Values.redis.username "password" .Values.redis.password "db" .Values.redis.sharedStateDb "query" .Values.redis.sharedStateQuery) }}'
+          uri: '{{ include "erpc.redis.uriFor" (dict "context" $ "dbKey" "sharedStateDb" "queryKey" "sharedStateQuery") }}'
       fallbackTimeout: 5s
       lockTtl: 30s

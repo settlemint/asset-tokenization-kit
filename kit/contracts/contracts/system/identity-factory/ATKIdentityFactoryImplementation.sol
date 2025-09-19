@@ -355,13 +355,7 @@ contract ATKIdentityFactoryImplementation is
     /// @param _walletAddress The address of the wallet for which to create an identity.
     /// @param _initialManagerAddress The address to be set as the initial management key in the proxy's constructor.
     /// @return address The address of the newly deployed `ATKIdentityProxy`.
-    function _createWalletIdentity(
-        address _walletAddress,
-        address _initialManagerAddress
-    )
-        private
-        returns (address)
-    {
+    function _createWalletIdentity(address _walletAddress, address _initialManagerAddress) private returns (address) {
         (bytes32 saltBytes, string memory saltString) = _calculateSalt(WALLET_SALT_PREFIX, _walletAddress);
 
         if (_saltTakenByteSalt[saltBytes]) revert SaltAlreadyTaken(saltString);

@@ -8,146 +8,65 @@ A Helm chart for the ATK DApp frontend
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| affinity | object | `{}` |  |
-| annotations | object | `{}` |  |
-| autoscaling.enabled | bool | `false` |  |
-| autoscaling.maxReplicas | int | `10` |  |
-| autoscaling.minReplicas | int | `1` |  |
-| autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
-| env | list | `[]` |  |
-| fullnameOverride | string | `"dapp"` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"ghcr.io/settlemint/asset-tokenization-kit"` |  |
-| image.tag | string | `"2.0.0-main1e32acb7f"` |  |
-| ingress.annotations | object | `{}` |  |
-| ingress.className | string | `"atk-nginx"` |  |
-| ingress.enabled | bool | `false` |  |
-| ingress.hosts[0].host | string | `"dapp.local"` |  |
-| ingress.hosts[0].paths[0].path | string | `"/((?:sm_|bpaas-)[^/]+)?/?(.*)"` |  |
-| ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
-| ingress.tls | list | `[]` |  |
-| initContainer.graphQLCheck.enabled | bool | `true` |  |
-| initContainer.graphQLCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
-| initContainer.graphQLCheck.image.registry | string | `"docker.io"` |  |
-| initContainer.graphQLCheck.image.repository | string | `"curlimages/curl"` |  |
-| initContainer.graphQLCheck.image.tag | string | `"8.16.0"` |  |
-| initContainer.graphQLCheck.name | string | `"wait-for-graphql"` |  |
-| initContainer.graphQLCheck.query | string | `"{ _meta { hasIndexingErrors block { number } } }"` |  |
-| initContainer.graphQLCheck.resources.limits.memory | string | `"64Mi"` |  |
-| initContainer.graphQLCheck.resources.requests.cpu | string | `"10m"` |  |
-| initContainer.graphQLCheck.resources.requests.memory | string | `"12Mi"` |  |
-| initContainer.graphQLCheck.retries | int | `10` |  |
-| initContainer.graphQLCheck.retryDelaySeconds | int | `10` |  |
-| initContainer.graphQLCheck.url | string | `"http://graph-node-combined:8000/subgraphs/name/kit"` |  |
-| initContainer.tcpCheck.dependencies[0].endpoint | string | `"postgresql:5432"` |  |
-| initContainer.tcpCheck.dependencies[0].name | string | `"postgres"` |  |
-| initContainer.tcpCheck.dependencies[1].endpoint | string | `"hasura:8080"` |  |
-| initContainer.tcpCheck.dependencies[1].name | string | `"hasura"` |  |
-| initContainer.tcpCheck.dependencies[2].endpoint | string | `"portal:3001"` |  |
-| initContainer.tcpCheck.dependencies[2].name | string | `"portal"` |  |
-| initContainer.tcpCheck.dependencies[3].endpoint | string | `"graph-node-combined:8020"` |  |
-| initContainer.tcpCheck.dependencies[3].name | string | `"graph-node-tcp"` |  |
-| initContainer.tcpCheck.dependencies[4].endpoint | string | `"blockscout-frontend-svc:80"` |  |
-| initContainer.tcpCheck.dependencies[4].name | string | `"blockscout"` |  |
-| initContainer.tcpCheck.enabled | bool | `true` |  |
-| initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
-| initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
-| initContainer.tcpCheck.image.tag | string | `"v7.7.10"` |  |
-| initContainer.tcpCheck.resources.limits.cpu | string | `"100m"` |  |
-| initContainer.tcpCheck.resources.limits.memory | string | `"64Mi"` |  |
-| initContainer.tcpCheck.resources.requests.cpu | string | `"50m"` |  |
-| initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` |  |
-| initContainer.tcpCheck.timeout | int | `5` |  |
-| job.enabled | bool | `true` |  |
-| job.image.pullPolicy | string | `"IfNotPresent"` |  |
-| job.image.repository | string | `"docker.io/node"` |  |
-| job.image.tag | string | `"23.11.1-slim"` |  |
-| job.imagePullSecrets | list | `[]` |  |
-| job.initContainer.cloneRepo.image.pullPolicy | string | `"IfNotPresent"` |  |
-| job.initContainer.cloneRepo.image.registry | string | `"docker.io"` |  |
-| job.initContainer.cloneRepo.image.repository | string | `"alpine/git"` |  |
-| job.initContainer.cloneRepo.image.tag | string | `"v2.49.1"` |  |
-| job.initContainer.hasuraCheck.endpoint | string | `"hasura:8080"` |  |
-| job.initContainer.hasuraCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
-| job.initContainer.hasuraCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
-| job.initContainer.hasuraCheck.image.tag | string | `"v7.7.10"` |  |
-| job.initContainer.hasuraCheck.timeout | int | `5` |  |
-| job.podAnnotations | object | `{}` |  |
-| job.podSecurityContext | object | `{}` |  |
-| job.resources | object | `{}` |  |
-| job.securityContext | object | `{}` |  |
-| job.workspace.size | string | `"1Gi"` |  |
-| job.workspace.storageClass | string | `""` |  |
-| nameOverride | string | `"dapp"` |  |
-| networkPolicy.egress[0].ports[0].port | int | `53` |  |
-| networkPolicy.egress[0].ports[0].protocol | string | `"UDP"` |  |
-| networkPolicy.egress[0].to[0].namespaceSelector | object | `{}` |  |
-| networkPolicy.egress[0].to[0].podSelector.matchLabels.k8s-app | string | `"kube-dns"` |  |
-| networkPolicy.egress[1].ports[0].port | int | `5432` |  |
-| networkPolicy.egress[1].ports[0].protocol | string | `"TCP"` |  |
-| networkPolicy.egress[1].to[0].podSelector.matchLabels."app.kubernetes.io/name" | string | `"postgresql-ha"` |  |
-| networkPolicy.egress[2].ports[0].port | int | `8080` |  |
-| networkPolicy.egress[2].ports[0].protocol | string | `"TCP"` |  |
-| networkPolicy.egress[2].to[0].podSelector.matchLabels."app.kubernetes.io/name" | string | `"graphql-engine"` |  |
-| networkPolicy.egress[3].ports[0].port | int | `3000` |  |
-| networkPolicy.egress[3].ports[0].protocol | string | `"TCP"` |  |
-| networkPolicy.egress[3].ports[1].port | int | `3001` |  |
-| networkPolicy.egress[3].ports[1].protocol | string | `"TCP"` |  |
-| networkPolicy.egress[3].to[0].podSelector.matchLabels."app.kubernetes.io/name" | string | `"portal"` |  |
-| networkPolicy.egress[4].ports[0].port | int | `4000` |  |
-| networkPolicy.egress[4].ports[0].protocol | string | `"TCP"` |  |
-| networkPolicy.egress[4].to[0].podSelector.matchLabels."app.kubernetes.io/name" | string | `"erpc"` |  |
-| networkPolicy.egress[5].ports[0].port | int | `443` |  |
-| networkPolicy.egress[5].ports[0].protocol | string | `"TCP"` |  |
-| networkPolicy.egress[5].to[0].namespaceSelector | object | `{}` |  |
-| networkPolicy.enabled | bool | `false` |  |
-| networkPolicy.ingress[0].from[0].namespaceSelector.matchLabels."kubernetes.io/metadata.name" | string | `"ingress-nginx"` |  |
-| networkPolicy.ingress[0].ports[0].port | int | `3000` |  |
-| networkPolicy.ingress[0].ports[0].protocol | string | `"TCP"` |  |
-| networkPolicy.ingress[1].from[0].podSelector | object | `{}` |  |
-| networkPolicy.ingress[1].ports[0].port | int | `3000` |  |
-| networkPolicy.ingress[1].ports[0].protocol | string | `"TCP"` |  |
-| nodeSelector | object | `{}` |  |
-| podAnnotations | object | `{}` |  |
-| podDisruptionBudget.enabled | bool | `false` |  |
-| podDisruptionBudget.minAvailable | int | `1` |  |
-| podLabels | object | `{}` |  |
-| podSecurityContext.fsGroup | int | `2016` |  |
-| podSecurityContext.runAsNonRoot | bool | `true` |  |
-| podSecurityContext.runAsUser | int | `2016` |  |
-| probes.liveness.failureThreshold | int | `10` |  |
-| probes.liveness.initialDelaySeconds | int | `10` |  |
-| probes.liveness.periodSeconds | int | `15` |  |
-| probes.liveness.successThreshold | int | `1` |  |
-| probes.liveness.timeoutSeconds | int | `3` |  |
-| probes.readiness.failureThreshold | int | `10` |  |
-| probes.readiness.initialDelaySeconds | int | `5` |  |
-| probes.readiness.periodSeconds | int | `10` |  |
-| probes.readiness.successThreshold | int | `1` |  |
-| probes.readiness.timeoutSeconds | int | `3` |  |
-| replicaCount | int | `1` |  |
+| affinity | object | `{}` | Affinity for pod assignment |
+| annotations | object | `{}` | Additional annotations for the deployment metadata |
+| autoscaling | object | `{"enabled":false,"maxReplicas":10,"minReplicas":1,"targetCPUUtilizationPercentage":80}` | Autoscaling configuration (optional) |
+| autoscaling.enabled | bool | `false` | Enable autoscaling |
+| autoscaling.maxReplicas | int | `10` | Maximum number of replicas |
+| autoscaling.minReplicas | int | `1` | Minimum number of replicas |
+| autoscaling.targetCPUUtilizationPercentage | int | `80` | Target CPU utilization percentage for autoscaling |
+| env | list | `[]` | Environment variables defined directly in the deployment |
+| extraInitContainers | list | `[]` | Additional init containers appended verbatim to the deployment pod spec |
+| fullnameOverride | string | `"dapp"` | String to fully override dapp.fullname template |
+| image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/asset-tokenization-kit","tag":"2.0.0-main1e32acb7f"}` | dApp image configuration |
+| image.pullPolicy | string | `"IfNotPresent"` | dApp image pull policy |
+| image.repository | string | `"ghcr.io/settlemint/asset-tokenization-kit"` | dApp image repository |
+| image.tag | string | `"2.0.0-main1e32acb7f"` | dApp image tag (defaults to chart appVersion) |
+| ingress | object | `{"annotations":{},"className":"atk-nginx","enabled":false,"hosts":[{"host":"dapp.local","paths":[{"path":"/((?:sm_|bpaas-)[^/]+)?/?(.*)","pathType":"ImplementationSpecific"}]}],"tls":[]}` | Ingress configuration |
+| ingress.annotations | object | `{}` | Additional annotations for the Ingress resource |
+| ingress.className | string | `"atk-nginx"` | IngressClass that will be used to implement the Ingress |
+| ingress.enabled | bool | `false` | Enable ingress controller resource |
+| ingress.hosts | list | `[{"host":"dapp.local","paths":[{"path":"/((?:sm_|bpaas-)[^/]+)?/?(.*)","pathType":"ImplementationSpecific"}]}]` | Ingress host configuration |
+| ingress.tls | list | `[]` | TLS configuration for the ingress |
+| initContainer | object | `{"graphQLCheck":{"enabled":true,"image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"curlimages/curl","tag":"8.16.0"},"name":"wait-for-graphql","query":"{ _meta { hasIndexingErrors block { number } } }","resources":{"limits":{"memory":"64Mi"},"requests":{"cpu":"10m","memory":"12Mi"}},"retries":10,"retryDelaySeconds":10,"url":"http://graph-node-combined:8000/subgraphs/name/kit"},"tcpCheck":{"dependencies":[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $) }}","name":"postgres"},{"endpoint":"hasura:8080","name":"hasura"},{"endpoint":"portal:3001","name":"portal"},{"endpoint":"graph-node-combined:8020","name":"graph-node"},{"endpoint":"blockscout-blockscout:80","name":"blockscout"}],"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"50m","memory":"32Mi"}},"timeout":120}}` | Init container configuration |
+| nameOverride | string | `"dapp"` | String to partially override dapp.fullname template |
+| networkPolicy | object | `{"egress":[{"ports":[{"port":53,"protocol":"UDP"}],"to":[{"namespaceSelector":{},"podSelector":{"matchLabels":{"k8s-app":"kube-dns"}}}]},{"ports":[{"port":5432,"protocol":"TCP"}],"to":[{"podSelector":{"matchLabels":{"app.kubernetes.io/name":"postgresql-ha"}}}]},{"ports":[{"port":8080,"protocol":"TCP"}],"to":[{"podSelector":{"matchLabels":{"app.kubernetes.io/name":"graphql-engine"}}}]},{"ports":[{"port":3000,"protocol":"TCP"},{"port":3001,"protocol":"TCP"}],"to":[{"podSelector":{"matchLabels":{"app.kubernetes.io/name":"portal"}}}]},{"ports":[{"port":4000,"protocol":"TCP"}],"to":[{"podSelector":{"matchLabels":{"app.kubernetes.io/name":"erpc"}}}]},{"ports":[{"port":443,"protocol":"TCP"}],"to":[{"namespaceSelector":{}}]}],"enabled":false,"ingress":[{"from":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"ingress-nginx"}}}],"ports":[{"port":3000,"protocol":"TCP"}]},{"from":[{"podSelector":{}}],"ports":[{"port":3000,"protocol":"TCP"}]}]}` | NetworkPolicy configuration |
+| networkPolicy.egress | list | `[{"ports":[{"port":53,"protocol":"UDP"}],"to":[{"namespaceSelector":{},"podSelector":{"matchLabels":{"k8s-app":"kube-dns"}}}]},{"ports":[{"port":5432,"protocol":"TCP"}],"to":[{"podSelector":{"matchLabels":{"app.kubernetes.io/name":"postgresql-ha"}}}]},{"ports":[{"port":8080,"protocol":"TCP"}],"to":[{"podSelector":{"matchLabels":{"app.kubernetes.io/name":"graphql-engine"}}}]},{"ports":[{"port":3000,"protocol":"TCP"},{"port":3001,"protocol":"TCP"}],"to":[{"podSelector":{"matchLabels":{"app.kubernetes.io/name":"portal"}}}]},{"ports":[{"port":4000,"protocol":"TCP"}],"to":[{"podSelector":{"matchLabels":{"app.kubernetes.io/name":"erpc"}}}]},{"ports":[{"port":443,"protocol":"TCP"}],"to":[{"namespaceSelector":{}}]}]` | Egress rules for the network policy |
+| networkPolicy.enabled | bool | `false` | Enable network policy |
+| networkPolicy.ingress | list | `[{"from":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"ingress-nginx"}}}],"ports":[{"port":3000,"protocol":"TCP"}]},{"from":[{"podSelector":{}}],"ports":[{"port":3000,"protocol":"TCP"}]}]` | Ingress rules for the network policy |
+| nodeSelector | object | `{}` | Node selector for pod assignment |
+| openShiftRoute.alternateBackends | list | `[]` | Additional backends for weighted routing |
+| openShiftRoute.annotations | object | `{}` | Additional annotations for the OpenShift route resource |
+| openShiftRoute.enabled | bool | `false` | Enable OpenShift route creation for DApp |
+| openShiftRoute.host | string | `"dapp.k8s.orb.local"` | Hostname exposed via the OpenShift route |
+| openShiftRoute.path | string | `"/"` | HTTP path exposed via the OpenShift route |
+| openShiftRoute.port | object | `{"targetPort":"http"}` | Service port configuration for the route target |
+| openShiftRoute.port.targetPort | string | `"http"` | Service target port name (must exist on the DApp service) |
+| openShiftRoute.tls | string | `nil` | TLS configuration for the route (optional) Set to null for no TLS (HTTP only) Or specify configuration for TLS termination |
+| openShiftRoute.to | object | `{"weight":100}` | Primary service weight configuration |
+| openShiftRoute.to.weight | int | `100` | Weight assigned to the DApp service backend |
+| openShiftRoute.wildcardPolicy | string | `"None"` | Wildcard policy to apply to the route |
+| podAnnotations | object | `{}` | Annotations for dApp pods |
+| podDisruptionBudget | object | `{"enabled":false,"minAvailable":1}` | PodDisruptionBudget configuration |
+| podDisruptionBudget.enabled | bool | `false` | Enable pod disruption budget |
+| podDisruptionBudget.minAvailable | int | `1` | Minimum number of pods that must be available during disruption. Can be an integer or percentage (e.g., "50%") |
+| podLabels | object | `{"app.kubernetes.io/component":"dapp","kots.io/app-slug":"settlemint-atk"}` | Additional labels for the deployment pod metadata |
+| podSecurityContext | object | `{}` | Pod security context configuration |
+| probes | object | `{"liveness":{"failureThreshold":10,"httpGet":{"path":"/","port":"http","scheme":"HTTP"},"initialDelaySeconds":10,"periodSeconds":15,"successThreshold":1,"timeoutSeconds":3},"readiness":{"failureThreshold":10,"httpGet":{"path":"/","port":"http","scheme":"HTTP"},"initialDelaySeconds":5,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":3}}` | Liveness and Readiness probes configuration |
+| probes.liveness | object | `{"failureThreshold":10,"httpGet":{"path":"/","port":"http","scheme":"HTTP"},"initialDelaySeconds":10,"periodSeconds":15,"successThreshold":1,"timeoutSeconds":3}` | Liveness probe configuration |
+| probes.readiness | object | `{"failureThreshold":10,"httpGet":{"path":"/","port":"http","scheme":"HTTP"},"initialDelaySeconds":5,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":3}` | Readiness probe configuration |
+| replicaCount | int | `1` | Number of dApp replicas to deploy |
 | resources | object | `{}` |  |
-| secretEnv.BETTER_AUTH_URL | string | `"https://dapp.local"` |  |
-| secretEnv.NEXTAUTH_URL | string | `"https://dapp.local"` |  |
-| secretEnv.NEXT_PUBLIC_APP_ID | string | `"dapp"` |  |
-| secretEnv.OTEL_EXPORTER_OTLP_ENDPOINT | string | `"http://o11y-alloy.btp-platform.svc.cluster.local:4318/v1/traces"` |  |
-| secretEnv.OTEL_EXPORTER_OTLP_PROTOCOL | string | `"http"` |  |
-| secretEnv.SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT | string | `"https://explorer.local/"` |  |
-| secretEnv.SETTLEMINT_HASURA_ADMIN_SECRET | string | `"dummy-secret"` |  |
-| secretEnv.SETTLEMINT_HASURA_DATABASE_URL | string | `"postgresql://user:pass@host:port/db"` |  |
-| secretEnv.SETTLEMINT_HASURA_ENDPOINT | string | `"https://hasura.local/v1/graphql"` |  |
-| secretEnv.SETTLEMINT_HD_PRIVATE_KEY | string | `"dummy-key"` |  |
-| secretEnv.SETTLEMINT_INSTANCE | string | `"standalone"` |  |
-| secretEnv.SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT | string | `"https://portal.local/graphql"` |  |
-| secretEnv.SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS | string | `"[\"https://graph.local/subgraphs/name/kit\"]"` |  |
-| securityContext.allowPrivilegeEscalation | bool | `false` |  |
-| securityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| service.annotations | object | `{}` |  |
-| service.port | int | `3000` |  |
-| service.type | string | `"ClusterIP"` |  |
-| serviceAccount.annotations | object | `{}` |  |
-| serviceAccount.create | bool | `false` |  |
-| serviceAccount.name | string | `""` |  |
-| tolerations | list | `[]` |  |
-| volumeMounts | list | `[]` |  |
-| volumes | list | `[]` |  |
+| secretEnv | object | `{"BETTER_AUTH_URL":"https://dapp.local","NEXTAUTH_URL":"https://dapp.local","NEXT_PUBLIC_APP_ID":"dapp","OTEL_EXPORTER_OTLP_ENDPOINT":"http://alloy:4318/v1/traces","OTEL_EXPORTER_OTLP_PROTOCOL":"http","SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT":"http://txsigner:3000","SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT":"http://blockscout-frontend-svc/","SETTLEMINT_HASURA_ADMIN_SECRET":"atk","SETTLEMINT_HASURA_DATABASE_URL":"{{ include \"atk.datastores.postgresql.url\" (dict \"context\" $ \"chartKey\" \"hasura\") }}","SETTLEMINT_HASURA_ENDPOINT":"http://hasura:8080/v1/graphql","SETTLEMINT_HD_PRIVATE_KEY":"atk-hd-private-key","SETTLEMINT_INSTANCE":"standalone","SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT":"http://portal:3001/graphql","SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS":"[\"http://graph-node-combined:8000/subgraphs/name/kit\"]"}` | Environment variables sourced from a secret. These will be created in the secret.yaml template |
+| securityContext | object | `{}` | Container security context configuration |
+| service | object | `{"annotations":{},"port":3000,"type":"ClusterIP"}` | Service configuration |
+| service.annotations | object | `{}` | Service annotations |
+| service.port | int | `3000` | Service port |
+| service.type | string | `"ClusterIP"` | Service type |
+| serviceAccount | object | `{"annotations":{},"create":false,"name":""}` | Service account configuration |
+| serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
+| serviceAccount.create | bool | `false` | Specifies whether a service account should be created |
+| serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
+| tolerations | list | `[]` | Tolerations for pod assignment |
+| volumeMounts | list | `[]` | Additional volume mounts for the main container |
+| volumes | list | `[]` | Additional volumes for the deployment |

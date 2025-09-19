@@ -1,50 +1,87 @@
 # https://github.com/kubernetes-sigs/metrics-server/blob/master/charts/metrics-server/values.yaml
+# -- (object) Kubernetes Metrics Server configuration
 metrics-server:
+  # -- (bool) Enable metrics server deployment
   enabled: true
+  # -- Global Docker registry secret names as an array (list)
   imagePullSecrets: []
+  # -- (object) Metrics server image configuration
   image:
+    # -- (string) Metrics server image repository
     repository: registry.k8s.io/metrics-server/metrics-server
+  # -- String to fully override common.names.fullname (string)
   fullnameOverride: metrics-server
+  # -- (object) Service configuration
   service:
+    # -- (object) Additional labels for metrics server service
     labels:
       kots.io/app-slug: settlemint-atk
+  # -- (object) Server configuration
   server:
+    # -- (object) Persistent volume configuration
     persistentVolume:
+      # -- (bool) Enable persistent volume for metrics server
       enabled: false
+  # -- (object) Additional labels for metrics server pods
   podLabels:
     kots.io/app-slug: settlemint-atk
 
 # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-state-metrics/values.yaml
+# -- (object) Kube State Metrics configuration
 kube-state-metrics:
+  # -- (bool) Enable kube-state-metrics deployment
   enabled: true
+  # -- Global Docker registry secret names as an array (list)
   imagePullSecrets: []
+  # -- (object) Kube state metrics image configuration
   image:
+    # -- (string) Kube state metrics image registry
     registry: registry.k8s.io
+  # -- String to fully override common.names.fullname (string)
   fullnameOverride: kube-state-metrics
+  # -- (object) Custom labels to add to all resources
   customLabels:
     kots.io/app-slug: settlemint-atk
+  # -- (object) Annotations for kube-state-metrics pods
   podAnnotations:
     prometheus.io/scrape: "true"
+  # -- (list) Allow list for metric labels
   metricLabelsAllowlist:
     - pods=[*]
     - ingresses=[*]
 
 # https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metrics-single/values.yaml
+# -- (object) Victoria Metrics Single configuration
 victoria-metrics-single:
+  # -- (bool) Enable Victoria Metrics Single deployment
   enabled: true
+  # -- (object) Global configuration
   global:
+    # -- (object) Global image configuration
     image:
+      # -- (string) Global image registry
       registry: docker.io
+    # -- Global Docker registry secret names as an array (list)
     imagePullSecrets: []
+  # -- (object) Victoria Metrics server configuration
   server:
+    # -- (object) Extra arguments for Victoria Metrics server
     extraArgs:
+      # -- (int) Maximum query length
       search.maxQueryLen: 163840
+    # -- String to fully override common.names.fullname (string)
     fullnameOverride: metrics
+    # -- (int) Data retention period in months
     retentionPeriod: 1
+    # -- (object) Persistent volume configuration
     persistentVolume:
+      # -- (string) Storage class for persistent volume (uses default if empty)
       storageClass: ""
+      # -- (string) Size of the persistent volume
       size: 10Gi
+    # -- (object) Resource requests and limits for Victoria Metrics server
     resources: {}
+    # -- (object) Ingress configuration for Victoria Metrics
     ingress:
       enabled: false
       annotations:
@@ -76,6 +113,7 @@ victoria-metrics-single:
         kots.io/app-slug: settlemint-atk
 
 # https://github.com/grafana/loki/blob/main/production/helm/loki/values.yaml
+# -- (object) Loki configuration
 loki:
   enabled: true
   imagePullSecrets: []
@@ -220,11 +258,12 @@ loki:
 
   sidecar:
     image:
-      # -- The Docker registry and image for the k8s sidecar
+      # -- (string) The Docker registry and image for the k8s sidecar
       repository: docker.io/kiwigrid/k8s-sidecar
 
 
 # https://github.com/grafana/alloy/blob/main/operations/helm/charts/alloy/values.yaml
+# -- (object) Alloy configuration
 alloy:
   enabled: true
   image:
@@ -613,6 +652,7 @@ alloy:
         {{- end }}
 
 # https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
+# -- (object) Grafana configuration
 grafana:
   enabled: true
   podLabels:
@@ -699,6 +739,7 @@ grafana:
 
 
 # https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus-node-exporter/values.yaml
+# -- (object) Prometheus Node Exporter configuration
 prometheus-node-exporter:
   enabled: true
   image:
@@ -719,6 +760,7 @@ prometheus-node-exporter:
     kots.io/app-slug: settlemint-atk
 
 # https://github.com/grafana/helm-charts/blob/main/charts/tempo/values.yaml
+# -- (object) Tempo configuration
 tempo:
   enabled: true
   fullnameOverride: tempo

@@ -1,4 +1,4 @@
-import { Bytes, ethereum } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
 import {
   ComplianceModuleParameters,
   ExpressionNode,
@@ -6,8 +6,8 @@ import {
 import { getEncodedTypeId } from "../../type-identifier/type-identifier";
 import {
   DecodedExpressionNode,
-  createExpressionNodeEntities,
   clearExpressionNodeEntities,
+  createExpressionNodeEntities,
 } from "../shared/expression-nodes";
 
 export function isIdentityVerificationComplianceModule(typeId: Bytes): boolean {
@@ -18,7 +18,8 @@ export function isIdentityVerificationComplianceModule(typeId: Bytes): boolean {
 
 export function decodeExpressionParams(
   complianceModuleParameters: ComplianceModuleParameters,
-  data: Bytes
+  data: Bytes,
+  topicSchemeRegistry: Bytes
 ): void {
   // Clear existing expression nodes using shared utility
   clearExpressionNodeEntities(complianceModuleParameters.id);
@@ -89,6 +90,7 @@ export function decodeExpressionParams(
     nodes,
     (node: ExpressionNode, baseId: Bytes) => {
       node.parameters = baseId;
-    }
+    },
+    topicSchemeRegistry
   );
 }

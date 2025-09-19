@@ -32,16 +32,25 @@ spec:
     spec:
       {{- include "atk.common.imagePullSecrets" . | nindent 6 }}
       serviceAccountName: {{ include "blockscout.serviceAccountName" . }}
-      {{- with .Values.blockscout.podSecurityContext }}
+      {{- $podSecurityContext := (include "blockscout.securityContext.pod" (dict "context" $ "local" .Values.blockscout.podSecurityContext)) | fromYaml }}
+      {{- if $podSecurityContext }}
       securityContext:
-        {{- toYaml . | nindent 8 }}
+        {{- toYaml $podSecurityContext | nindent 8 }}
       {{- end }}
-      {{- if and .Values.blockscout.init.enabled (not .Values.blockscout.separateApi.enabled) }}
+      {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.blockscout.initContainer.tcpCheck "chartKey" "blockscout") }}
+      {{- $extraInit := .Values.blockscout.extraInitContainers | default (list) }}
+      {{- $migrationsEnabled := and .Values.blockscout.init.enabled (not .Values.blockscout.separateApi.enabled) }}
+      {{- if or $waitForIt $migrationsEnabled (gt (len $extraInit) 0) }}
       initContainers:
+        {{- if $waitForIt }}
+{{ $waitForIt | nindent 8 }}
+        {{- end }}
+        {{- if $migrationsEnabled }}
         - name: init-migrations
-          {{- with .Values.blockscout.initContainerSecurityContext }}
+          {{- $initContainerSecurityContext := (include "blockscout.securityContext.container" (dict "context" $ "local" .Values.blockscout.initContainerSecurityContext)) | fromYaml }}
+          {{- if $initContainerSecurityContext }}
           securityContext:
-            {{- toYaml . | nindent 12 }}
+            {{- toYaml $initContainerSecurityContext | nindent 12 }}
           {{- end }}
           image: "{{ .Values.blockscout.image.repository }}:{{ .Values.blockscout.image.tag }}"
           resources:
@@ -52,11 +61,15 @@ spec:
           {{- with .Values.blockscout.init.args }}
           args: {{ . | toYaml | nindent 12 }}
           {{- end }}
+          {{- $blockscoutHost := .Values.blockscout.ingress.hostname -}}
+          {{- if and .Values.blockscout.openShiftRoute.enabled .Values.blockscout.openShiftRoute.host -}}
+            {{- $blockscoutHost = .Values.blockscout.openShiftRoute.host -}}
+          {{- end }}
           env:
           - name: PORT
             value: "4000"
           - name: CHAIN_ID
-            value: {{ .Values.config.network.id | quote }}
+            value: {{ include "blockscout.chainId" . | quote }}
           {{- if and .Values.config.network.currency.symbol (not .Values.config.network.currency.dualToken) }}
           - name: COIN
             value: {{ .Values.config.network.currency.symbol | quote }}
@@ -75,19 +88,26 @@ spec:
           - name: API_V2_ENABLED
             value: "true"
           {{- end }}
-          {{- if .Values.blockscout.ingress.enabled }}
           - name: BLOCKSCOUT_HOST
-            value: {{ .Values.blockscout.ingress.hostname | quote }}
-          {{- end }}
+            {{- if or .Values.blockscout.ingress.enabled .Values.blockscout.openShiftRoute.enabled }}
+            value: {{ $blockscoutHost | quote }}
+            {{- else }}
+            value: ""
+            {{- end }}
           envFrom:
             - secretRef:
                 name: {{ include "blockscout.fullname" . }}-blockscout-env
+        {{- end }}
+        {{- if gt (len $extraInit) 0 }}
+{{ toYaml $extraInit | nindent 8 }}
+        {{- end }}
       {{- end }}
       containers:
         - name: blockscout
-          {{- with .Values.blockscout.containerSecurityContext }}
+          {{- $containerSecurityContext := (include "blockscout.securityContext.container" (dict "context" $ "local" .Values.blockscout.containerSecurityContext)) | fromYaml }}
+          {{- if $containerSecurityContext }}
           securityContext:
-            {{- toYaml . | nindent 12 }}
+            {{- toYaml $containerSecurityContext | nindent 12 }}
           {{- end }}
           image: "{{ .Values.blockscout.image.repository }}:{{ .Values.blockscout.image.tag }}"
           imagePullPolicy: {{ .Values.blockscout.image.pullPolicy }}
@@ -140,11 +160,15 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.blockscout.resources | nindent 12 }}
+          {{- $blockscoutHost := .Values.blockscout.ingress.hostname -}}
+          {{- if and .Values.blockscout.openShiftRoute.enabled .Values.blockscout.openShiftRoute.host -}}
+            {{- $blockscoutHost = .Values.blockscout.openShiftRoute.host -}}
+          {{- end }}
           env:
           - name: PORT
             value: "4000"
           - name: CHAIN_ID
-            value: {{ .Values.config.network.id | quote }}
+            value: {{ include "blockscout.chainId" . | quote }}
           {{- if and .Values.config.network.currency.symbol (not .Values.config.network.currency.dualToken) }}
           - name: COIN
             value: {{ .Values.config.network.currency.symbol | quote }}
@@ -163,9 +187,9 @@ spec:
           - name: API_V2_ENABLED
             value: "true"
           {{- end }}
-          {{- if .Values.blockscout.ingress.enabled }}
+          {{- if or .Values.blockscout.ingress.enabled .Values.blockscout.openShiftRoute.enabled }}
           - name: BLOCKSCOUT_HOST
-            value: {{ .Values.blockscout.ingress.hostname | quote }}
+            value: {{ $blockscoutHost | quote }}
           {{- end }}
           envFrom:
             - secretRef:
