@@ -1,7 +1,8 @@
 import { DetailGrid } from "@/components/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
-import { Badge } from "@/components/ui/badge";
+import { IdentityStatusBadge } from "@/components/identity/identity-status-badge";
+import { IdentityTypeBadge } from "@/components/identity/identity-type-badge";
 import { Web3Address } from "@/components/web3/web3-address";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
@@ -30,7 +31,6 @@ function IdentityDetailPage() {
 
   // Determine entity type and entity information
   const isContract = Boolean(claimsData.contract);
-  const entityType = isContract ? "contract" : "account";
   const entityAddress = isContract
     ? claimsData.contract?.id
     : claimsData.account?.id;
@@ -50,16 +50,12 @@ function IdentityDetailPage() {
           label={t("identities:fields.registrationStatus")}
           info={t("identities:fields.registrationStatusInfo")}
         >
-          <Badge variant={claimsData.isRegistered ? "default" : "secondary"}>
-            {claimsData.isRegistered
-              ? t("identities:status.registered")
-              : t("identities:status.notRegistered")}
-          </Badge>
+          <IdentityStatusBadge isRegistered={claimsData.isRegistered} />
         </DetailGridItem>
 
         <DetailGridItem
-          label={t("identities:fields.linkedAccount")}
-          info={t("identities:fields.linkedAccountInfo")}
+          label={t("identities:fields.linkedEntity")}
+          info={t("identities:fields.linkedEntityInfo")}
         >
           {entityAddress ? (
             <div className="flex flex-col gap-1">
@@ -85,18 +81,9 @@ function IdentityDetailPage() {
 
         <DetailGridItem
           label={t("identities:identityTable.columns.type")}
-          info={t("identities:fields.linkedAccountInfo")}
+          info={t("identities:fields.linkedEntityInfo")}
         >
-          <Badge
-            variant="outline"
-            className={
-              isContract
-                ? "bg-[oklch(0.7675_0.0982_182.83)]/20 text-[oklch(0.7675_0.0982_182.83)] border-[oklch(0.7675_0.0982_182.83)]/30"
-                : "bg-sm-accent/20 text-sm-accent border-sm-accent/30"
-            }
-          >
-            {t(`identities:identityTable.types.${entityType}`)}
-          </Badge>
+          <IdentityTypeBadge isContract={isContract} />
         </DetailGridItem>
 
         <DetailGridItem

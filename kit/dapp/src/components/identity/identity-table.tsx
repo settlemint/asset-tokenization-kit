@@ -3,7 +3,7 @@ import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
-import { Badge } from "@/components/ui/badge";
+import { IdentityTypeBadge } from "@/components/identity/identity-type-badge";
 import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { IdentityListOutput } from "@/orpc/routes/system/identity/routes/identity.list.schema";
@@ -59,7 +59,7 @@ export function IdentityTable() {
         columnHelper.display({
           id: "identityId",
           header: t("identityTable.columns.id"),
-          cell: ({ row }: CellContext<IdentityRow, string>) => (
+          cell: ({ row }) => (
             <Web3Address
               address={row.original.id}
               size="small"
@@ -175,22 +175,7 @@ export function IdentityTable() {
           header: t("identityTable.columns.type"),
           cell: ({ row }: CellContext<IdentityRow, unknown>) => {
             const isContract = !!row.original.contract;
-            const label = t(
-              isContract
-                ? "identityTable.types.contract"
-                : "identityTable.types.account"
-            );
-
-            // Use SettleMint brand colors for distinction
-            const brandColorClasses = isContract
-              ? "bg-[oklch(0.7675_0.0982_182.83)]/20 text-[oklch(0.7675_0.0982_182.83)] border-[oklch(0.7675_0.0982_182.83)]/30"
-              : "bg-sm-accent/20 text-sm-accent border-sm-accent/30";
-
-            return (
-              <Badge variant="outline" className={brandColorClasses}>
-                {label}
-              </Badge>
-            );
+            return <IdentityTypeBadge isContract={isContract} />;
           },
           meta: {
             displayName: t("identityTable.columns.type"),

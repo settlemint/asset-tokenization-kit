@@ -56,7 +56,10 @@ Defines the type-safe API contract:
 ```typescript
 // account/account.contract.ts
 import { oc } from "@orpc/contract";
-import { IdentitySchema, IdentityReadSchema } from "./routes/identity.read.schema";
+import {
+  IdentitySchema,
+  IdentityReadSchema,
+} from "./routes/identity.read.schema";
 
 export const identityContract = {
   read: oc
@@ -99,10 +102,13 @@ export const IdentityReadSchema = z.object({
 export const IdentitySchema = z.object({
   id: ethereumAddress,
   account: ethereumAddress,
-  registered: z.object({
-    isRegistered: z.literal(true),
-    country: isoCountryCode,
-  }).or(z.literal(false)).optional(),
+  registered: z
+    .object({
+      isRegistered: z.literal(true),
+      country: isoCountryCode,
+    })
+    .or(z.literal(false))
+    .optional(),
   claims: z.array(identityClaim).default([]),
 });
 ```
@@ -114,10 +120,7 @@ Implement the business logic:
 ```typescript
 // identity/routes/identity.read.ts
 import { systemRouter } from "@/orpc/procedures/system.router";
-import {
-  IdentityReadSchema,
-  IdentitySchema,
-} from "./identity.read.schema";
+import { IdentityReadSchema, IdentitySchema } from "./identity.read.schema";
 
 export const read = systemRouter.system.identity.read
   .use(hasuraMiddleware)
