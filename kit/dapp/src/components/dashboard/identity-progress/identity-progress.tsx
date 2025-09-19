@@ -1,5 +1,4 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSettings } from "@/hooks/use-settings";
 import { orpc } from "@/orpc/orpc-client";
 import type { CurrentUser } from "@/orpc/routes/user/routes/user.me.schema";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -13,32 +12,24 @@ interface IdentityProgressProps {
 }
 
 export function IdentityProgress({ user }: IdentityProgressProps) {
-  const [systemAddress] = useSettings("SYSTEM_ADDRESS");
-
   return (
     <Suspense fallback={<IdentityProgressSkeleton />}>
-      <IdentityProgressContent user={user} systemAddress={systemAddress} />
+      <IdentityProgressContent user={user} />
     </Suspense>
   );
 }
 
 interface IdentityProgressContentProps {
   user: CurrentUser;
-  systemAddress: string | null | undefined;
 }
 
-function IdentityProgressContent({
-  user,
-  systemAddress,
-}: IdentityProgressContentProps) {
+function IdentityProgressContent({ user }: IdentityProgressContentProps) {
   const { t } = useTranslation("onboarding");
-  const targetSystemId = systemAddress ?? "default";
-
-  const systemQuery = orpc.system.read.queryOptions({
-    input: { id: targetSystemId },
-  });
-
-  const { data: systemDetails } = useSuspenseQuery(systemQuery);
+  const { data: systemDetails } = useSuspenseQuery(
+    orpc.system.read.queryOptions({
+      input: { id: "default" },
+    })
+  );
 
   const identityRegistered = !!systemDetails?.userIdentity?.registered;
   const personalInfoCompleted = user.onboardingState.identity;

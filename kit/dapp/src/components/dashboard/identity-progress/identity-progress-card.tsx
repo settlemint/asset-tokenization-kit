@@ -36,7 +36,8 @@ export function IdentityProgressCard({
 }: IdentityProgressCardProps) {
   const totalSteps = steps.length;
   const completedSteps = steps.filter((step) => step.completed).length;
-  const progress = Math.round((completedSteps / totalSteps) * 100);
+  const progress =
+    totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
 
   return (
     <Card className="border-border/60 bg-muted/50">
@@ -70,9 +71,7 @@ export function IdentityProgressCard({
                   aria-hidden="true"
                   className={cn(
                     "mt-0.5 h-5 w-5",
-                    step.completed
-                      ? "text-success"
-                      : "text-muted-foreground"
+                    step.completed ? "text-success" : "text-muted-foreground"
                   )}
                 />
                 <div className="space-y-1">
