@@ -200,6 +200,7 @@ jobs:
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
         with:
           branch: chore/release-assets/${{ github.ref_name }}
+          base: main
           commit-message: "chore(release): sync generated assets [skip ci]"
           committer: "SettleMint Release Bot <support@settlemint.com>"
           add-paths: |
