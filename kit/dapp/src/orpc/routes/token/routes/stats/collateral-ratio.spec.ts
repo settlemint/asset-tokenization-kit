@@ -51,7 +51,7 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
         verificationType: "PINCODE",
       },
       amount: COLLATERAL,
-      expiryDays: 30,
+      expiryDays: 365,
     });
     expect(toNumber(result.collateral?.collateral ?? from(0))).toBe(
       toNumber(COLLATERAL)
