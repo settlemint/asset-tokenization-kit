@@ -17,8 +17,7 @@ dependencies:
     version: 2.0.0-alpha.7
     condition: observability.enabled
   - name: network
-    version: 1.0.18
-    repository: oci://ghcr.io/settlemint/network-bootstrapper
+    version: 2.0.0-alpha.7
     condition: network.enabled
   - name: erpc
     version: 2.0.0-alpha.7

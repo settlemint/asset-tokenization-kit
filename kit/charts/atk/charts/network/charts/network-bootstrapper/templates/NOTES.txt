@@ -1,0 +1,18 @@
+Thanks for installing the network bootstrapper chart!
+
+{{- $jobName := include "network-bootstrapper.fullname" . -}}
+{{- $namespace := .Release.Namespace -}}
+To generate the network configuration, monitor the job status:
+
+  kubectl -n {{ $namespace }} wait --for=condition=complete job/{{ $jobName }}
+
+Once the job completes you can review the output:
+
+  kubectl -n {{ $namespace }} logs job/{{ $jobName }}
+
+If `settings.outputType` is set to `kubernetes`, inspect the generated ConfigMaps and Secrets:
+
+  kubectl -n {{ $namespace }} get configmaps
+  kubectl -n {{ $namespace }} get secrets
+
+Refer to the chart documentation for additional post-processing steps tailored to your deployment.

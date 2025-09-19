@@ -1,0 +1,54 @@
+{{- if .Values.networkPolicy.enabled }}
+{{- $root := . -}}
+{{- $np := .Values.networkPolicy | default (dict) -}}
+{{- $labels := get $np "labels" | default (dict) -}}
+{{- $annotations := get $np "annotations" | default (dict) -}}
+{{- $podSelector := get $np "podSelector" | default (dict) -}}
+{{- $hasCustomSelector := gt (len $podSelector) 0 -}}
+{{- $ingress := get $np "ingress" | default (list) -}}
+{{- $egress := get $np "egress" | default (list) -}}
+{{- $policyTypes := get $np "policyTypes" | default (list) -}}
+{{- if not $policyTypes }}
+  {{- if gt (len $ingress) 0 }}
+    {{- $policyTypes = append $policyTypes "Ingress" -}}
+  {{- end }}
+  {{- if gt (len $egress) 0 }}
+    {{- $policyTypes = append $policyTypes "Egress" -}}
+  {{- end }}
+  {{- if eq (len $policyTypes) 0 }}
+    {{- $policyTypes = list "Ingress" "Egress" -}}
+  {{- end }}
+{{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "nodes.fullname" $root }}
+  labels:
+    {{- include "nodes.labels" $root | nindent 4 }}
+    {{- with $labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with $annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  podSelector:
+    {{- if $hasCustomSelector }}
+    {{- toYaml $podSelector | nindent 4 }}
+    {{- else }}
+    matchLabels:
+      {{- include "nodes.selectorLabels" $root | nindent 6 }}
+    {{- end }}
+  policyTypes:
+    {{- toYaml $policyTypes | nindent 4 }}
+  {{- if gt (len $ingress) 0 }}
+  ingress:
+    {{- toYaml $ingress | nindent 4 }}
+  {{- end }}
+  {{- if gt (len $egress) 0 }}
+  egress:
+    {{- toYaml $egress | nindent 4 }}
+  {{- end }}
+{{- end }}

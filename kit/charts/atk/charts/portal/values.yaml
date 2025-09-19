@@ -6,14 +6,15 @@ global:
   imagePullSecrets: []
   # -- (string) Global StorageClass for Persistent Volume(s)
   storageClass: ""
-  # -- (object) Global labels to add to all objects
-  labels: {}
+  labels:
+    kots.io/app-slug: settlemint-atk
   artifacts:
     # Image containing contract ABIs and genesis files
     image:
       registry: ghcr.io
       repository: settlemint/asset-tokenization-kit-artifacts
       pullPolicy: IfNotPresent
+      tag: ""
 
 # -- (string) String to fully override common.names.fullname
 fullnameOverride: "portal"

@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "nodes.fullname" . }}-config
+  labels:
+    {{- include "nodes.labels" . | nindent 4 }}
+{{- $persistence := .Values.persistence | default (dict) }}
+{{- $persistenceEnabled := default false (get $persistence "enabled") }}
+{{- $mountPath := default "" (get $persistence "mountPath") }}
+{{- $privateKeyFilename := default "privateKey" .Values.config.privateKeyFilename }}
+{{- $logFormat := default "plain" .Values.config.logFormat }}
+data:
+  config.toml: |-
+    data-path="/data"
+    genesis-file="/etc/besu/genesis.json"
+    logging={{ .Values.config.logging | quote }}
+    node-private-key-file={{ printf "/data/%s" $privateKeyFilename | quote }}
+    data-storage-format={{ .Values.config.dataStorageFormat | quote }}
+    bonsai-limit-trie-logs-enabled={{ .Values.config.bonsaiLimitTrieLogsEnabled }}
+    cache-last-blocks={{ .Values.config.cacheLastBlocks | int }}
+    min-gas-price={{ .Values.config.minGasPrice | int }}
+    tx-pool={{ .Values.config.txPool.type | quote }}
+    tx-pool-max-size={{ .Values.config.txPool.maxSize | int }}
+    tx-pool-no-local-priority={{ .Values.config.txPool.noLocalPriority }}
+    tx-pool-limit-by-account-percentage={{ .Values.config.txPool.limitByAccountPercentage | int }}
+    tx-pool-enable-save-restore={{ .Values.config.txPool.enableSaveRestore }}
+    p2p-enabled={{ .Values.config.p2p.enabled }}
+    discovery-enabled={{ .Values.config.p2p.discoveryEnabled }}
+    static-nodes-file={{ .Values.config.p2p.staticNodesFile | quote }}
+    p2p-interface={{ .Values.config.p2p.interface | quote }}
+    p2p-port={{ .Values.service.ports.rlpx | int }}
+    max-peers={{ .Values.config.p2p.maxPeers | int }}
+    rpc-tx-feecap={{ .Values.config.rpc.txFeecap | int }}
+    sync-min-peers={{ .Values.config.sync.minPeers | int }}
+    sync-mode={{ .Values.config.sync.mode | quote }}
+    remote-connections-limit-enabled={{ .Values.config.remoteConnectionsLimitEnabled }}
+    random-peer-priority-enabled={{ .Values.config.randomPeerPriorityEnabled }}
+    receipt-compaction-enabled={{ .Values.config.receiptCompactionEnabled }}
+    host-allowlist={{ .Values.config.hostAllowlist | toJson }}
+    rpc-http-enabled={{ .Values.config.http.enabled }}
+    rpc-http-host={{ .Values.config.http.host | quote }}
+    rpc-http-port={{ .Values.service.ports.rpc | int }}
+    rpc-http-api={{ .Values.config.http.api | toJson }}
+    rpc-http-cors-origins={{ .Values.config.http.corsOrigins | toJson }}
+    rpc-http-authentication-enabled={{ .Values.config.http.authenticationEnabled }}
+    revert-reason-enabled={{ .Values.config.revertReasonEnabled }}
+    rpc-http-max-active-connections={{ .Values.config.http.maxActiveConnections | int }}
+    rpc-ws-max-active-connections={{ .Values.config.ws.maxActiveConnections | int }}
+    rpc-http-max-request-content-length={{ .Values.config.http.maxRequestContentLength | int }}
+    rpc-ws-max-frame-size={{ .Values.config.ws.maxFrameSize | int }}
+    rpc-http-max-batch-size={{ .Values.config.http.maxBatchSize | int }}
+    graphql-http-enabled={{ .Values.config.graphql.enabled }}
+    graphql-http-host={{ .Values.config.graphql.host | quote }}
+    graphql-http-port={{ .Values.service.ports.graphql | int }}
+    graphql-http-cors-origins={{ .Values.config.graphql.corsOrigins | toJson }}
+    rpc-ws-enabled={{ .Values.config.ws.enabled }}
+    rpc-ws-host={{ .Values.config.ws.host | quote }}
+    rpc-ws-port={{ .Values.service.ports.ws | int }}
+    rpc-ws-api={{ .Values.config.ws.api | toJson }}
+    rpc-ws-authentication-enabled={{ .Values.config.ws.authenticationEnabled }}
+    metrics-enabled={{ .Values.config.metrics.enabled }}
+    metrics-host={{ .Values.config.metrics.host | quote }}
+    metrics-port={{ .Values.service.ports.metrics | int }}
+    metrics-category={{ .Values.config.metrics.categories | toJson }}
+  {{- if eq $logFormat "json" }}
+  log-config.xml: |-
+    <?xml version="1.0" encoding="UTF-8"?>
+    <Configuration status="INFO" monitorInterval="5">
+      <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+          <JsonLayout compact="false" eventEol="true" properties="true" stacktrace="true">
+            <KeyValuePair key="container" value="${hostName}" />
+          </JsonLayout>
+        </Console>
+      </Appenders>
+      <Loggers>
+        <Root level="{{ .Values.config.logging }}">
+          <AppenderRef ref="Console" />
+        </Root>
+      </Loggers>
+    </Configuration>
+  {{- end }}

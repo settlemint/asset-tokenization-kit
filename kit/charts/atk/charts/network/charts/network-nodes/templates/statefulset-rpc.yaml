@@ -1,0 +1,250 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "nodes.fullname" . }}-rpc
+  labels:
+    {{- include "nodes.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rpc
+spec:
+  {{- $root := . }}
+  {{- $globalValues := default (dict) .Values.global }}
+  {{- $globalNodes := default (dict) (get $globalValues "networkNodes") }}
+  {{- $genesisConfigMapName := default "besu-genesis" (get $globalNodes "genesisConfigMapName") }}
+  {{- $staticNodesConfigMapName := default "besu-static-nodes" (get $globalNodes "staticNodesConfigMapName") }}
+  {{- $persistence := .Values.persistence | default (dict) }}
+  {{- $persistenceEnabled := default false (get $persistence "enabled") }}
+  {{- $existingClaim := default "" (get $persistence "existingClaim") }}
+  {{- $volumeName := default "data" (get $persistence "volumeName") }}
+  {{- $mountPath := default "" (get $persistence "mountPath") }}
+  {{- $subPath := get $persistence "subPath" }}
+  {{- $readOnly := default false (get $persistence "readOnly") }}
+  {{- $storageClass := get $persistence "storageClass" }}
+  {{- $size := default "" (get $persistence "size") }}
+  {{- $accessModes := default (list "ReadWriteOnce") (get $persistence "accessModes") }}
+  {{- $volumeMode := get $persistence "volumeMode" }}
+  {{- $claimAnnotations := default (dict) (get $persistence "annotations") }}
+  {{- $claimSelector := default (dict) (get $persistence "selector") }}
+  {{- $retention := default (dict) (get $persistence "retention") }}
+  {{- $whenDeleted := default "" (get $retention "whenDeleted") }}
+  {{- $whenScaled := default "" (get $retention "whenScaled") }}
+  {{- $useExistingClaim := and $persistenceEnabled (ne $existingClaim "") }}
+  {{- $useClaimTemplate := and $persistenceEnabled (not $useExistingClaim) }}
+  {{- $privateKeyFilename := default "privateKey" .Values.config.privateKeyFilename }}
+  {{- $shouldMountPersistence := $persistenceEnabled }}
+  {{- $rpcReplicaBudget := .Values.rpcReplicaCount | int }}
+  {{- $priorityClasses := .Values.priorityClassNames | default (dict) }}
+  {{- $rpcPriorityClass := default "" (get $priorityClasses "rpc") }}
+  {{- $initConfig := default (dict) .Values.initContainer }}
+  {{- $globalInitConfig := default (dict) (get $globalValues "initContainer") }}
+  {{- $globalTcpDefaults := default (dict) (get $globalInitConfig "tcpCheck") }}
+  {{- $chartTcpOverrides := default (dict) (get $initConfig "tcpCheck") }}
+  {{- $tcpCheckConfig := mergeOverwrite (deepCopy $globalTcpDefaults) $chartTcpOverrides }}
+  {{- $globalExtraInit := default (list) (get $globalValues "extraInitContainers") }}
+  {{- $chartExtraInit := default (list) .Values.extraInitContainers }}
+  {{- $extraInitContainers := concat $globalExtraInit $chartExtraInit }}
+  {{- $tcpEnabled := default false (get $tcpCheckConfig "enabled") }}
+  {{- $hasExtraInit := gt (len $extraInitContainers) 0 }}
+  {{- $securityContexts := dict -}}
+  {{- include "nodes.securityContexts" (dict "ctx" . "dest" $securityContexts) -}}
+  {{- $podSecurityContext := index $securityContexts "pod" }}
+  {{- $containerSecurityContext := index $securityContexts "container" }}
+  podManagementPolicy: Parallel
+  replicas: {{ .Values.rpcReplicaCount }}
+  serviceName: {{ include "nodes.fullname" . }}-rpc
+  {{- if and $useClaimTemplate (or (ne $whenDeleted "") (ne $whenScaled "")) }}
+  persistentVolumeClaimRetentionPolicy:
+    {{- if ne $whenDeleted "" }}
+    whenDeleted: {{ $whenDeleted }}
+    {{- end }}
+    {{- if ne $whenScaled "" }}
+    whenScaled: {{ $whenScaled }}
+    {{- end }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "nodes.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: rpc
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "nodes.labels" . | nindent 8 }}
+        app.kubernetes.io/component: rpc
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "nodes.serviceAccountName" . }}
+      {{- if $rpcPriorityClass }}
+      priorityClassName: {{ $rpcPriorityClass | quote }}
+      {{- end }}
+      {{- if $podSecurityContext }}
+      securityContext:
+        {{- toYaml $podSecurityContext | nindent 8 }}
+      {{- end }}
+      {{- if or $tcpEnabled $hasExtraInit }}
+      initContainers:
+{{- include "nodes.tcpCheckInitContainer" (dict "context" $root "config" $tcpCheckConfig "indent" 8) }}
+{{- include "nodes.extraInitContainers" (dict "context" $root "containers" $extraInitContainers "indent" 8) }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+{{- $log4jEnv := include "nodes.log4jEnv" . }}
+{{- if $log4jEnv }}
+{{ $log4jEnv | nindent 12 }}
+{{- end }}
+          {{- if $containerSecurityContext }}
+          securityContext:
+            {{- toYaml $containerSecurityContext | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /bin/sh
+            - -c
+          # Advertise the pod IP so peers see a reachable address.
+          args:
+            - |
+              exec
+              /opt/besu/bin/besu \
+                --config-file=/etc/besu/config.toml \
+                --Xdns-enabled=true \
+                --Xdns-update-enabled=true \
+                --min-gas-price={{ .Values.config.minGasPrice }} \
+                --p2p-host=${POD_IP}
+          ports:
+            - name: json-rpc
+              containerPort: {{ .Values.service.ports.rpc }}
+              protocol: TCP
+            - name: ws
+              containerPort: {{ .Values.service.ports.ws }}
+              protocol: TCP
+            - name: graphql
+              containerPort: {{ .Values.service.ports.graphql }}
+              protocol: TCP
+            - name: rlpx
+              containerPort: {{ .Values.service.ports.rlpx }}
+              protocol: TCP
+            - name: discovery
+              containerPort: {{ .Values.service.ports.discovery }}
+              protocol: UDP
+            - name: metrics
+              containerPort: {{ .Values.service.ports.metrics }}
+              protocol: TCP
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- $extraMounts := .Values.volumeMounts | default (list) }}
+          volumeMounts:
+            - name: besu-config
+              mountPath: /etc/besu/config.toml
+              subPath: config.toml
+              readOnly: true
+{{- $log4jMount := include "nodes.log4jVolumeMount" . }}
+{{- if $log4jMount }}
+{{ $log4jMount | nindent 12 }}
+{{- end }}
+            - name: besu-genesis
+              mountPath: /etc/besu/genesis.json
+              subPath: genesis.json
+              readOnly: true
+            - name: besu-static-nodes
+              mountPath: /etc/besu/static-nodes.json
+              subPath: static-nodes.json
+              readOnly: true
+            {{- if $shouldMountPersistence }}
+            - name: {{ $volumeName }}
+              mountPath: /data
+              {{- if $subPath }}
+              subPath: {{ $subPath }}
+              {{- end }}
+              {{- if $readOnly }}
+              readOnly: true
+              {{- end }}
+            {{- end }}
+            {{- with $extraMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      {{- $extraVolumes := .Values.volumes | default (list) }}
+      volumes:
+        - name: besu-config
+          configMap:
+            name: {{ include "nodes.fullname" . }}-config
+        - name: besu-genesis
+          configMap:
+            name: {{ $genesisConfigMapName }}
+        - name: besu-static-nodes
+          configMap:
+            name: {{ $staticNodesConfigMapName }}
+        {{- if $useExistingClaim }}
+        - name: {{ $volumeName }}
+          persistentVolumeClaim:
+            claimName: {{ $existingClaim }}
+        {{- end }}
+        {{- with $extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  {{- if $useClaimTemplate }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ $volumeName }}
+        {{- if gt (len $claimAnnotations) 0 }}
+        annotations:
+          {{- toYaml $claimAnnotations | nindent 10 }}
+        {{- end }}
+      spec:
+        accessModes:
+          {{- range $accessModes }}
+          - {{ . }}
+          {{- end }}
+        {{- if $storageClass }}
+        storageClassName: {{ $storageClass | quote }}
+        {{- end }}
+        {{- if $volumeMode }}
+        volumeMode: {{ $volumeMode }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ required "persistence.size must be set when persistence.enabled is true and persistence.existingClaim is not defined" $size }}
+        {{- if gt (len $claimSelector) 0 }}
+        selector:
+          {{- toYaml $claimSelector | nindent 10 }}
+        {{- end }}
+  {{- end }}

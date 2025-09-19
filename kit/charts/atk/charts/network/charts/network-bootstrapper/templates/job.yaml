@@ -1,0 +1,158 @@
+{{- $artifactSource := default "generated" .Values.artifacts.source -}}
+{{- if eq $artifactSource "generated" }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "network-bootstrapper.fullname" . }}
+  labels:
+    {{- include "network-bootstrapper.labels" . | nindent 4 }}
+spec:
+  backoffLimit: 3
+  completions: 1
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "network-bootstrapper.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      restartPolicy: Never
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "network-bootstrapper.serviceAccountName" . }}
+      {{- $securityContexts := dict -}}
+      {{- include "network-bootstrapper.securityContexts" (dict "ctx" . "dest" $securityContexts) -}}
+      {{- $podSecurityContext := index $securityContexts "pod" }}
+      {{- $containerSecurityContext := index $securityContexts "container" }}
+      {{- if $podSecurityContext }}
+      securityContext:
+        {{- toYaml $podSecurityContext | nindent 8 }}
+      {{- end }}
+      {{- $globalValues := default (dict) .Values.global }}
+      {{- $initConfig := default (dict) .Values.initContainer }}
+      {{- $globalInitConfig := default (dict) (get $globalValues "initContainer") }}
+      {{- $globalTcpDefaults := default (dict) (get $globalInitConfig "tcpCheck") }}
+      {{- $chartTcpOverrides := default (dict) (get $initConfig "tcpCheck") }}
+      {{- $tcpCheckConfig := mergeOverwrite (deepCopy $globalTcpDefaults) $chartTcpOverrides }}
+      {{- $globalExtraInit := default (list) (get $globalValues "extraInitContainers") }}
+      {{- $chartExtraInit := default (list) .Values.extraInitContainers }}
+      {{- $extraInitContainers := concat $globalExtraInit $chartExtraInit }}
+      {{- $tcpEnabled := default false (get $tcpCheckConfig "enabled") }}
+      {{- $hasExtraInit := gt (len $extraInitContainers) 0 }}
+      {{- if or $tcpEnabled $hasExtraInit }}
+      initContainers:
+{{- include "network-bootstrapper.tcpCheckInitContainer" (dict "context" . "config" $tcpCheckConfig "indent" 8) }}
+{{- include "network-bootstrapper.extraInitContainers" (dict "context" . "containers" $extraInitContainers "indent" 8) }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- if $containerSecurityContext }}
+          securityContext:
+            {{- toYaml $containerSecurityContext | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - generate
+            {{- $clusterDomain := default "svc.cluster.local" .Values.settings.clusterDomain }}
+            {{- $defaultStaticPort := default 30303 .Values.settings.defaultStaticNodePort }}
+            {{- $defaultStaticDiscovery := default 30303 .Values.settings.defaultStaticNodeDiscoveryPort }}
+            {{- $resolvedStaticDomain := default $clusterDomain .Values.settings.staticNodeDomain }}
+            {{- $resolvedStaticPort := default $defaultStaticPort .Values.settings.staticNodePort }}
+            {{- $resolvedStaticDiscovery := default $defaultStaticDiscovery .Values.settings.staticNodeDiscoveryPort }}
+            {{- $settingsValues := default (dict) .Values.settings }}
+            {{- $globalNodes := default (dict) (get $globalValues "networkNodes") }}
+            {{- $localChainId := get $settingsValues "chainId" }}
+            {{- $globalChainId := get $globalValues "chainId" }}
+            {{- $localChainIdBlank := and (kindIs "string" $localChainId) (eq (trim $localChainId) "") }}
+            {{- $globalChainIdBlank := and (kindIs "string" $globalChainId) (eq (trim $globalChainId) "") }}
+            {{- $localChainIdSet := and (not (kindIs "invalid" $localChainId)) (not $localChainIdBlank) (not (empty $localChainId)) }}
+            {{- $globalChainIdSet := and (not (kindIs "invalid" $globalChainId)) (not $globalChainIdBlank) (not (empty $globalChainId)) }}
+            {{- $resolvedChainId := ternary $localChainId $globalChainId $localChainIdSet }}
+            {{- $autoNames := dict "service" "besu-node" "podPrefix" "besu-node-validator" }}
+            {{- with (index $.Subcharts "network-nodes") }}
+              {{- $service := include "nodes.fullname" . }}
+              {{- $_ := set $autoNames "service" $service }}
+              {{- $_ := set $autoNames "podPrefix" (printf "%s-validator" $service) }}
+            {{- end }}
+            {{- $serviceOverride := coalesce .Values.settings.staticNodeServiceName (get $globalNodes "serviceName") }}
+            {{- $resolvedServiceName := default (index $autoNames "service") $serviceOverride }}
+            {{- $podOverride := coalesce .Values.settings.staticNodePodPrefix (get $globalNodes "podPrefix") }}
+            {{- $resolvedPodPrefix := default (index $autoNames "podPrefix") $podOverride }}
+            {{- $resolvedGenesisName := default "besu-genesis" (default (get $globalNodes "genesisConfigMapName") .Values.settings.genesisConfigMapName) }}
+            {{- $resolvedStaticNodesName := default "besu-static-nodes" (default (get $globalNodes "staticNodesConfigMapName") .Values.settings.staticNodesConfigMapName) }}
+            {{- $resolvedFaucetPrefix := default "besu-faucet" (default (get $globalNodes "faucetArtifactPrefix") .Values.settings.faucetArtifactPrefix) }}
+            {{- with .Values.settings.validators }}
+            - --validators={{ . }}
+            {{- end }}
+            - --static-node-namespace={{ default .Release.Namespace .Values.settings.staticNodeNamespace }}
+            {{- if $resolvedStaticDomain }}
+            - --static-node-domain={{ $resolvedStaticDomain }}
+            {{- end }}
+            - --static-node-port={{ $resolvedStaticPort }}
+            - --static-node-discovery-port={{ $resolvedStaticDiscovery }}
+            - --static-node-service-name={{ $resolvedServiceName }}
+            - --static-node-pod-prefix={{ $resolvedPodPrefix }}
+            - --genesis-configmap-name={{ $resolvedGenesisName }}
+            - --static-nodes-configmap-name={{ $resolvedStaticNodesName }}
+            - --faucet-artifact-prefix={{ $resolvedFaucetPrefix }}
+            {{- with .Values.settings.allocations }}
+            - --allocations={{ . }}
+            {{- end }}
+            {{- with .Values.settings.outputType }}
+            - --outputType={{ . }}
+            {{- end }}
+            {{- with .Values.settings.consensus }}
+            - --consensus={{ . }}
+            {{- end }}
+            {{- if or $localChainIdSet $globalChainIdSet }}
+            - --chain-id={{ $resolvedChainId }}
+            {{- end }}
+            {{- with .Values.settings.secondsPerBlock }}
+            - --seconds-per-block={{ . }}
+            {{- end }}
+            {{- with .Values.settings.gasLimit }}
+            - --gas-limit={{ . }}
+            {{- end }}
+            {{- with .Values.settings.gasPrice }}
+            - --gas-price={{ . }}
+            {{- end }}
+            {{- with .Values.settings.evmStackSize }}
+            - --evm-stack-size={{ . }}
+            {{- end }}
+            {{- with .Values.settings.contractSizeLimit }}
+            - --contract-size-limit={{ . }}
+            {{- end }}
+            - --accept-defaults
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

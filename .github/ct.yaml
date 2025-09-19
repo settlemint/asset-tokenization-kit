@@ -1,0 +1,5 @@
+chart-dirs:
+  - kit/charts
+remote: origin
+target-branch: main
+check-version-increment: false
