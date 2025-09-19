@@ -12,7 +12,6 @@ global:
     image:
       registry: ghcr.io
       repository: settlemint/asset-tokenization-kit-artifacts
-      tag: 2.0.0-main.91391
       pullPolicy: IfNotPresent
   chainId: "53771311147"
   chainName: "ATK"
