@@ -89,7 +89,7 @@ A Helm chart for Graph Node
 | podAnnotations | object | `{"prometheus.io/path":"/metrics","prometheus.io/port":"8040","prometheus.io/scrape":"true"}` | Annotations for the `Pod` |
 | podDisruptionBudget | object | `{"enabled":false}` | Pod disruption budget |
 | podDisruptionBudget.enabled | bool | `false` | Enable pod disruption budget |
-| podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
+| podSecurityContext | object | `{}` | Pod-wide security context |
 | postgresReadinessCheck | object | `{"enabled":true,"image":"docker.io/postgres:17.6-alpine","initialWaitTime":2,"maxRetries":30,"maxWaitTime":30,"randomDelayRange":{"max":30,"min":5},"resources":{"limits":{"cpu":"100m","memory":"96Mi"},"requests":{"cpu":"25m","memory":"48Mi"}}}` | PostgreSQL readiness check configuration |
 | postgresReadinessCheck.enabled | bool | `true` | Enable PostgreSQL readiness check init container |
 | postgresReadinessCheck.image | string | `"docker.io/postgres:17.6-alpine"` | Docker image for PostgreSQL readiness check |

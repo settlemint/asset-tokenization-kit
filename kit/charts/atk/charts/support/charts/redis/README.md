@@ -25,7 +25,7 @@ A simple Redis deployment for development environments
 | config.maxmemory | string | `"256mb"` | Maximum memory Redis can use |
 | config.maxmemoryPolicy | string | `"allkeys-lru"` | Memory eviction policy |
 | config.save | string | `""` | Save DB to disk (RDB persistence) |
-| containerSecurityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":false,"runAsGroup":999,"runAsNonRoot":true,"runAsUser":999,"seccompProfile":{"type":"RuntimeDefault"}}` | Container security context (object) |
+| containerSecurityContext | object | `{}` | Container security context (object) |
 | fullnameOverride | string | `""` | String to fully override common.names.fullname (string) |
 | global | object | `{"imagePullSecrets":[],"imageRegistry":"","storageClass":""}` | Global Docker image registry |
 | global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |
@@ -58,7 +58,7 @@ A simple Redis deployment for development environments
 | persistence.storageClass | string | `""` | Storage class for the PVC |
 | podAnnotations | object | `{}` | Pod annotations (object) |
 | podLabels | object | `{}` | Pod labels (object) |
-| podSecurityContext | object | `{"fsGroup":999,"runAsNonRoot":true,"runAsUser":999,"seccompProfile":{"type":"RuntimeDefault"}}` | Pod security context (object) |
+| podSecurityContext | object | `{}` | Pod security context (object) |
 | readinessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":5,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}` | Readiness probe configuration |
 | readinessProbe.enabled | bool | `true` | Enable readiness probe (bool) |
 | readinessProbe.failureThreshold | int | `3` | Failure threshold (int) |

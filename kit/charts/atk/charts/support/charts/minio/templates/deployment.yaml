@@ -53,9 +53,10 @@ spec:
       {{- if .Values.runtimeClassName }}
       runtimeClassName: "{{ .Values.runtimeClassName }}"
       {{- end }}
-      {{- if and .Values.securityContext.enabled .Values.persistence.enabled }}
+      {{- $podSecurityContext := (include "minio.securityContext.pod" (dict "context" $)) | fromYaml }}
+      {{- if $podSecurityContext }}
       securityContext:
-        {{ omit .Values.securityContext "enabled" | toYaml | nindent 8 }}
+        {{- toYaml $podSecurityContext | nindent 8 }}
       {{- end }}
       {{ if .Values.serviceAccount.create }}
       serviceAccountName: {{ .Values.serviceAccount.name }}
@@ -168,10 +169,10 @@ spec:
               value: {{ tpl $val $ | quote }}
             {{- end }}
           resources: {{- toYaml .Values.resources | nindent 12 }}
-          {{- if and .Values.securityContext.enabled .Values.persistence.enabled }}
-          {{- with .Values.containerSecurityContext }}
-          securityContext: {{ toYaml . | nindent 12}}
-          {{- end }}
+          {{- $containerSecurityContext := (include "minio.securityContext.container" (dict "context" $)) | fromYaml }}
+          {{- if $containerSecurityContext }}
+          securityContext:
+            {{- toYaml $containerSecurityContext | nindent 12 }}
           {{- end }}
         {{- with .Values.extraContainers }}
           {{- if eq (typeOf .) "string" }}

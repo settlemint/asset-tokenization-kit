@@ -104,25 +104,10 @@ podAnnotations: {}
 podLabels: {}
 
 # -- Pod security context (object)
-podSecurityContext:
-  fsGroup: 999
-  runAsNonRoot: true
-  runAsUser: 999
-  seccompProfile:
-    type: RuntimeDefault
+podSecurityContext: {}
 
 # -- Container security context (object)
-containerSecurityContext:
-  allowPrivilegeEscalation: false
-  capabilities:
-    drop:
-      - ALL
-  readOnlyRootFilesystem: false
-  runAsNonRoot: true
-  runAsUser: 999
-  runAsGroup: 999
-  seccompProfile:
-    type: RuntimeDefault
+containerSecurityContext: {}
 
 # -- (object) Liveness probe configuration
 livenessProbe:
