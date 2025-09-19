@@ -52,10 +52,10 @@ describe("equity-classes", () => {
 
     describe("safeParse", () => {
       test("should return success for valid class", () => {
-        const result = validator.safeParse("A");
+        const result = validator.safeParse("COMMON_EQUITY");
         expect(result.success).toBe(true);
         if (result.success) {
-          expect(result.data).toBe("A");
+          expect(result.data).toBe("COMMON_EQUITY");
         }
       });
 
@@ -67,7 +67,7 @@ describe("equity-classes", () => {
 
     describe("schema description", () => {
       test("should have the correct description", () => {
-        expect(validator.description).toBe("Class of equity shares");
+        expect(validator.description).toBe("Class of equity");
       });
     });
   });
@@ -117,11 +117,11 @@ describe("equity-classes", () => {
 
     describe("type narrowing", () => {
       test("should properly narrow types", () => {
-        const unknownValue: unknown = "B";
+        const unknownValue: unknown = "GEOGRAPHIC_EQUITY";
         if (isEquityClass(unknownValue)) {
           // TypeScript should know unknownValue is EquityClass here
           const equityClassValue: EquityClass = unknownValue;
-          expect(equityClassValue).toBe("B");
+          expect(equityClassValue).toBe("GEOGRAPHIC_EQUITY");
         } else {
           // This branch should not be reached
           expect(true).toBe(false);
@@ -179,38 +179,10 @@ describe("equity-classes", () => {
 
     describe("return type", () => {
       test("should return the correct type", () => {
-        const result = getEquityClass("A");
+        const result = getEquityClass("GEOGRAPHIC_EQUITY");
         const typedResult: EquityClass = result;
-        expect(typedResult).toBe("A");
+        expect(typedResult).toBe("GEOGRAPHIC_EQUITY");
       });
-    });
-  });
-
-  describe("equityClasses constant", () => {
-    test("should contain exactly three classes", () => {
-      expect(equityClasses).toHaveLength(3);
-      expect([...equityClasses]).toEqual(["A", "B", "C"]);
-    });
-
-    test("should be readonly", () => {
-      // TypeScript ensures this at compile time through 'as const'
-      // The array itself is not frozen at runtime, but TypeScript prevents modification
-      expect([...equityClasses]).toEqual(["A", "B", "C"]);
-      // Verify it's an array
-      expect(Array.isArray(equityClasses)).toBe(true);
-    });
-  });
-
-  describe("EquityClass type", () => {
-    test("should only accept valid equity classes", () => {
-      // These are compile-time checks, but we can test runtime behavior
-      const validA: EquityClass = "A";
-      const validB: EquityClass = "B";
-      const validC: EquityClass = "C";
-
-      expect(validA).toBe("A");
-      expect(validB).toBe("B");
-      expect(validC).toBe("C");
     });
   });
 

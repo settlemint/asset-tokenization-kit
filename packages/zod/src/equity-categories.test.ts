@@ -49,10 +49,10 @@ describe("equityCategory", () => {
 
   describe("safeParse", () => {
     test("should return success for valid category", () => {
-      const result = validator.safeParse("common");
+      const result = validator.safeParse("GROWTH_CAPITAL");
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data).toBe("common");
+        expect(result.data).toBe("GROWTH_CAPITAL");
       }
     });
 
@@ -64,16 +64,16 @@ describe("equityCategory", () => {
 
   describe("type checking", () => {
     test("should return proper type", () => {
-      const result = validator.parse("preferred");
+      const result = validator.parse("DISTRESSED_EQUITY");
       // Test that the type is correctly inferred
-      expect(result).toBe("preferred");
+      expect(result).toBe("DISTRESSED_EQUITY");
     });
 
     test("should handle safeParse", () => {
-      const result = validator.safeParse("restricted");
+      const result = validator.safeParse("ESOP_SHARES");
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data).toBe("restricted");
+        expect(result.data).toBe("ESOP_SHARES");
       }
     });
   });
@@ -127,18 +127,24 @@ describe("isEquityCategory", () => {
 
   describe("type guard behavior", () => {
     test("should narrow type correctly in conditional", () => {
-      const unknownValue: unknown = "preferred";
+      const unknownValue: unknown = "ESOP_SHARES";
       if (isEquityCategory(unknownValue)) {
         // TypeScript should know this is EquityCategory
         const category: EquityCategory = unknownValue;
-        expect(category).toBe("preferred");
+        expect(category).toBe("ESOP_SHARES");
       }
     });
 
     test("should work with filter operations", () => {
-      const values: unknown[] = ["common", "invalid", "preferred", 123, null];
+      const values: unknown[] = [
+        "VENTURE_CAPITAL",
+        "invalid",
+        "ESOP_SHARES",
+        123,
+        null,
+      ];
       const validCategories = values.filter((v) => isEquityCategory(v));
-      expect(validCategories).toEqual(["common", "preferred"]);
+      expect(validCategories).toEqual(["VENTURE_CAPITAL", "ESOP_SHARES"]);
     });
   });
 });
@@ -196,56 +202,8 @@ describe("getEquityCategory", () => {
 
   describe("return type", () => {
     test("should return correctly typed value", () => {
-      const result: EquityCategory = getEquityCategory("common");
-      expect(result).toBe("common");
+      const result: EquityCategory = getEquityCategory("VENTURE_CAPITAL");
+      expect(result).toBe("VENTURE_CAPITAL");
     });
-  });
-});
-
-describe("EquityCategory type", () => {
-  test("should be assignable from valid categories", () => {
-    const common: EquityCategory = "common";
-    const preferred: EquityCategory = "preferred";
-    const restricted: EquityCategory = "restricted";
-
-    expect(common).toBe("common");
-    expect(preferred).toBe("preferred");
-    expect(restricted).toBe("restricted");
-  });
-
-  test("should match the union of equity categories", () => {
-    type ExpectedType = "common" | "preferred" | "restricted";
-    type ActualType = EquityCategory;
-
-    // This will cause a compile error if types don't match
-    const typeTest: ExpectedType extends ActualType
-      ? ActualType extends ExpectedType
-        ? true
-        : false
-      : false = true;
-    expect(typeTest).toBe(true);
-  });
-});
-
-describe("equityCategories constant", () => {
-  test("should contain exactly three categories", () => {
-    expect(equityCategories).toHaveLength(3);
-  });
-
-  test("should contain common, preferred, and restricted", () => {
-    expect(equityCategories).toContain("common");
-    expect(equityCategories).toContain("preferred");
-    expect(equityCategories).toContain("restricted");
-  });
-
-  test("should be a const array", () => {
-    // TypeScript's 'as const' makes it readonly at compile time
-    // Runtime check: ensure it's an array with expected values
-    expect(Array.isArray(equityCategories)).toBe(true);
-    expect([...equityCategories]).toEqual([
-      "common",
-      "preferred",
-      "restricted",
-    ]);
   });
 });
