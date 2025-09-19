@@ -8,6 +8,12 @@ global:
   storageClass: ""
   # -- (object) Global labels to add to all objects
   labels: {}
+  artifacts:
+    # Image containing contract ABIs and genesis files
+    image:
+      registry: ghcr.io
+      repository: settlemint/asset-tokenization-kit-artifacts
+      pullPolicy: IfNotPresent
 
 # -- (string) String to fully override common.names.fullname
 fullnameOverride: "portal"

@@ -5,6 +5,12 @@
 global:
   # -- (object) Global labels to add to all resources
   labels: {}
+  artifacts:
+    # Image containing contract ABIs and genesis files
+    image:
+      registry: ghcr.io
+      repository: settlemint/asset-tokenization-kit-artifacts
+      pullPolicy: IfNotPresent
 
 # -- (string) String to partially override common.names.fullname template (will maintain the release name)
 nameOverride: ""
