@@ -101,7 +101,7 @@ export const identitySearch = systemRouter.system.identity.search
 
     const resultIdentity: IdentitySearchResult = {
       id: identity.id,
-      account: { 
+      account: {
         id: identity.account.id,
         contractName: identity.account.contractName ?? null,
       },
