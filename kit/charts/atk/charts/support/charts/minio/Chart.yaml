@@ -2,8 +2,8 @@ apiVersion: v2
 name: minio
 description: A simple MinIO deployment for development environments
 type: application
-version: 0.1.0
-appVersion: "RELEASE.2025-07-23T15-54-02Z"
+version: 2.0.0-alpha.7
+appVersion: 2.0.0-alpha.7
 icon: https://console.settlemint.com/android-chrome-512x512.png
 maintainers:
   - name: SettleMint
