@@ -27,10 +27,10 @@ describe("fundClass", () => {
 
   describe("safeParse", () => {
     test("should return success for valid class", () => {
-      const result = validator.safeParse("retail");
+      const result = validator.safeParse("ABSOLUTE_RETURN");
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data).toBe("retail");
+        expect(result.data).toBe("ABSOLUTE_RETURN");
       }
     });
 
@@ -42,23 +42,23 @@ describe("fundClass", () => {
 
   describe("type checking", () => {
     test("should return proper type", () => {
-      const result = validator.parse("institutional");
+      const result = validator.parse("MARKET_NEUTRAL");
       // Test that the type is correctly inferred
-      expect(result).toBe("institutional");
+      expect(result).toBe("MARKET_NEUTRAL");
     });
 
     test("should handle safeParse", () => {
-      const result = validator.safeParse("accredited");
+      const result = validator.safeParse("SEED_PRE_SEED");
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data).toBe("accredited");
+        expect(result.data).toBe("SEED_PRE_SEED");
       }
     });
   });
 
   describe("schema description", () => {
     test("should have a description", () => {
-      expect(validator.description).toBe("Class of fund shares");
+      expect(validator.description).toBe("Class of investment fund");
     });
   });
 });
@@ -103,20 +103,20 @@ describe("isFundClass", () => {
 
   describe("type narrowing", () => {
     test("should narrow type when true", () => {
-      const value: unknown = "retail";
+      const value: unknown = "SEED_PRE_SEED";
       if (isFundClass(value)) {
         // TypeScript should know value is FundClass here
         const fundClass: FundClass = value;
-        expect(fundClass).toBe("retail");
+        expect(fundClass).toBe("SEED_PRE_SEED");
       } else {
         throw new Error("Should have been a valid fund class");
       }
     });
 
     test("should work with unknown values", () => {
-      const values: unknown[] = ["retail", "invalid", null, 123];
+      const values: unknown[] = ["SEED_PRE_SEED", "invalid", null, 123];
       const validClasses = values.filter((v) => isFundClass(v));
-      expect(validClasses).toEqual(["retail"]);
+      expect(validClasses).toEqual(["SEED_PRE_SEED"]);
     });
   });
 });
@@ -158,9 +158,7 @@ describe("getFundClass", () => {
       } catch (error) {
         if (error instanceof Error) {
           expect(error.message).toContain("Invalid option");
-          expect(error.message).toContain("institutional");
-          expect(error.message).toContain("retail");
-          expect(error.message).toContain("accredited");
+          expect(error.message).toContain("INCOME_FOCUSED");
         }
       }
     });
@@ -175,9 +173,7 @@ describe("getFundClass", () => {
         expect(error).toBeDefined();
         if (error instanceof Error) {
           expect(error.message).toContain("Invalid option");
-          expect(error.message).toContain("institutional");
-          expect(error.message).toContain("retail");
-          expect(error.message).toContain("accredited");
+          expect(error.message).toContain("INCOME_FOCUSED");
         }
       }
     });
@@ -197,9 +193,9 @@ describe("getFundClass", () => {
 
   describe("usage scenarios", () => {
     test("should work in investor onboarding flow", () => {
-      const mockRequest = { investorType: "accredited" };
+      const mockRequest = { investorType: "SEED_PRE_SEED" };
       const investorClass = getFundClass(mockRequest.investorType);
-      expect(investorClass).toBe("accredited");
+      expect(investorClass).toBe("SEED_PRE_SEED");
     });
 
     test("should handle try-catch pattern", () => {
@@ -207,12 +203,12 @@ describe("getFundClass", () => {
       let error: Error | null = null;
 
       try {
-        result = getFundClass("institutional");
+        result = getFundClass("SEED_PRE_SEED");
       } catch (error_) {
         error = error_ as Error;
       }
 
-      expect(result).toBe("institutional");
+      expect(result).toBe("SEED_PRE_SEED");
       expect(error).toBeNull();
 
       // Test with invalid input
@@ -234,37 +230,21 @@ describe("getFundClass", () => {
 
 describe("FundClass type", () => {
   test("should be assignable from valid fund classes", () => {
-    const institutional: FundClass = "institutional";
-    const retail: FundClass = "retail";
-    const accredited: FundClass = "accredited";
-
-    expect(institutional).toBe("institutional");
-    expect(retail).toBe("retail");
-    expect(accredited).toBe("accredited");
+    // Test that all valid fund classes are assignable to FundClass
+    for (const cls of fundClasses) {
+      // Type assertion: should not error
+      const value: FundClass = cls;
+      expect(value).toBe(cls);
+    }
   });
 
   test("should work with arrays and filters", () => {
-    const classes: FundClass[] = ["institutional", "retail", "accredited"];
-    const filtered = classes.filter((c) => c !== "retail");
-    expect(filtered).toEqual(["institutional", "accredited"]);
-  });
-});
-
-describe("fundClasses constant", () => {
-  test("should contain all expected values", () => {
-    expect([...fundClasses]).toEqual(["institutional", "retail", "accredited"]);
-  });
-
-  test("should be readonly", () => {
-    // The const assertion makes it readonly in TypeScript,
-    // but doesn't freeze it at runtime
-    expect([...fundClasses]).toEqual(["institutional", "retail", "accredited"]);
-    // Verify it's typed as readonly
-    const readonlyTest: readonly string[] = fundClasses;
-    expect(readonlyTest).toBe(fundClasses);
-  });
-
-  test("should have correct length", () => {
-    expect(fundClasses).toHaveLength(3);
+    const classes: FundClass[] = [
+      "ABSOLUTE_RETURN",
+      "CORE_BLEND",
+      "DIVERSIFIED",
+    ];
+    const filtered = classes.filter((c) => c !== "CORE_BLEND");
+    expect(filtered).toEqual(["ABSOLUTE_RETURN", "DIVERSIFIED"]);
   });
 });

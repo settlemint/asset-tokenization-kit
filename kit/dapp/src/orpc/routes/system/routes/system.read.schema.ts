@@ -1,12 +1,14 @@
 import type { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
-import { accessControlRoles } from "@atk/zod/access-control-roles";
+import {
+  accessControlRoles,
+  accessControlSchema,
+} from "@atk/zod/access-control-roles";
+import { addonFactoryTypeId } from "@atk/zod/addon-types";
+import { assetFactoryTypeId } from "@atk/zod/asset-types";
+import { complianceTypeId } from "@atk/zod/compliance";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { ethereumHex } from "@atk/zod/ethereum-hex";
 import { isoCountryCode } from "@atk/zod/iso-country-code";
-import { accessControlSchema } from "@atk/zod/src/access-control-roles";
-import { addonFactoryTypeId } from "@atk/zod/src/addon-types";
-import { assetFactoryTypeId } from "@atk/zod/src/asset-types";
-import { complianceTypeId } from "@atk/zod/src/compliance";
 import { z } from "zod";
 
 /**

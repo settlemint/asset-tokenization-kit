@@ -54,7 +54,7 @@ describe("useAssetDesignerSteps", () => {
     });
 
     describe("Equity asset", () => {
-      it("should NOT include assetSpecificConfig step for equity", () => {
+      it("should include assetSpecificConfig step for equity", () => {
         const { result } = renderHook(() =>
           useAssetDesignerSteps({ type: "equity" })
         );
@@ -64,12 +64,13 @@ describe("useAssetDesignerSteps", () => {
         );
 
         expect(configureGroup).toBeDefined();
-        expect(configureGroup!.steps).toHaveLength(1);
+        expect(configureGroup!.steps).toHaveLength(2);
 
         const assetSpecificStep = configureGroup!.steps.find(
           (s) => s.id === "assetSpecificConfig"
         );
-        expect(assetSpecificStep).toBeUndefined();
+        expect(assetSpecificStep).toBeDefined();
+        expect(assetSpecificStep!.step).toBe(4);
       });
     });
 

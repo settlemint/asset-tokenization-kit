@@ -85,6 +85,8 @@ describe("Token freeze partial", () => {
         initialModulePairs: [],
         basePrice: from("1.00", 2),
         countryCode: "056",
+        class: "INVESTMENT_STYLE_EQUITY",
+        category: "CONVERTIBLE_PREFERRED_STOCK",
       },
       {
         grantRole: ["supplyManagement", "custodian", "governance"],

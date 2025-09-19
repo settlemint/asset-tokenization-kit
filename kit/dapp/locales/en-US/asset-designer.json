@@ -44,6 +44,14 @@
         "label": "Maximum limit",
         "placeholder": "e.g., 1000000"
       },
+      "category": {
+        "description": "The category of the {{type}}",
+        "label": "Category"
+      },
+      "class": {
+        "description": "The class of the {{type}}",
+        "label": "Class"
+      },
       "countryCode": {
         "description": "Choose where your {{type}} will be registered",
         "label": "Country"

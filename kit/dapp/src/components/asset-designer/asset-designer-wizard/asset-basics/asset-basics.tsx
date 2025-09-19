@@ -13,7 +13,7 @@ import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
 import type { KeysOfUnion } from "@/lib/utils/union";
 import { orpc } from "@/orpc/orpc-client";
-import { getAssetExtensionsForType } from "@atk/zod/src/asset-extensions";
+import { getAssetExtensionsForType } from "@atk/zod/asset-extensions";
 import { useQuery } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
 import { from } from "dnum";

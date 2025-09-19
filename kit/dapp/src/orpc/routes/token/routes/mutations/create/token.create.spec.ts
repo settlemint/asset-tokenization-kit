@@ -84,6 +84,8 @@ describe("Token create", () => {
       },
       ...fundData,
       countryCode: "056",
+      class: "ABSOLUTE_RETURN",
+      category: "MERGER_ARBITRAGE",
     });
 
     expect(result).toBeDefined();
@@ -259,6 +261,8 @@ describe("Token create", () => {
       },
       ...equityData,
       countryCode: "056",
+      class: "COMMON_EQUITY",
+      category: "VENTURE_CAPITAL",
     });
 
     expect(result).toBeDefined();
