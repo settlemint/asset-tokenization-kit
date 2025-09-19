@@ -61,3 +61,19 @@ Return the proper Redis image name
 {{- $tag := .Values.image.tag -}}
 {{- printf "%s/%s:%s" $registry $repository $tag -}}
 {{- end -}}
+
+{{/*
+Merge pod-level security context defaults with chart overrides.
+*/}}
+{{- define "redis.securityContext.pod" -}}
+{{- $ctx := .context | default . -}}
+{{ include "atk.securityContext.pod" (dict "context" $ctx "local" (default (dict) $ctx.Values.podSecurityContext)) }}
+{{- end }}
+
+{{/*
+Merge container-level security context defaults with chart overrides.
+*/}}
+{{- define "redis.securityContext.container" -}}
+{{- $ctx := .context | default . -}}
+{{ include "atk.securityContext.container" (dict "context" $ctx "local" (default (dict) $ctx.Values.containerSecurityContext)) }}
+{{- end }}
