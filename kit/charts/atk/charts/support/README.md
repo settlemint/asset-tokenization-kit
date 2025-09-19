@@ -14,9 +14,9 @@ A Helm chart for the supporting components
 
 | Repository | Name | Version |
 |------------|------|---------|
-| file://./charts/minio | minio | * |
-| file://./charts/postgresql | postgresql | * |
-| file://./charts/redis | redis | * |
+|  | minio | * |
+|  | postgresql | * |
+|  | redis | * |
 | https://kubernetes.github.io/ingress-nginx | ingress-nginx | 4.13.2 |
 | https://stakater.github.io/stakater-charts | reloader | 2.2.3 |
 
@@ -67,7 +67,7 @@ A Helm chart for the supporting components
 | ingress-nginx.global.image | object | `{"registry":"registry.k8s.io"}` | Global image configuration |
 | ingress-nginx.global.image.registry | string | `"registry.k8s.io"` | Global image registry |
 | ingress-nginx.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array (list) |
-| minio | object | `{"buckets":[{"name":"atk","policy":"none","purge":false}],"consoleIngress":{"enabled":true,"hosts":["minio-console.k8s.orb.local"],"ingressClassName":"atk-nginx","path":"/"},"enabled":true,"fullnameOverride":"minio","image":{"repository":"docker.io/minio/minio","tag":"RELEASE.2025-07-18T21-56-31Z"},"ingress":{"enabled":true,"hosts":["minio.k8s.orb.local"],"ingressClassName":"atk-nginx","path":"/"},"mode":"standalone","persistence":{"enabled":true,"size":"1Gi"},"replicas":1,"resources":{"limits":{"cpu":"200m","memory":"512Mi"},"requests":{"cpu":"100m","memory":"256Mi"}},"rootPassword":"atk-password","rootUser":"admin","users":[{"accessKey":"atk-service","policy":"readwrite","secretKey":"atk-service-secret"}]}` | MinIO configuration (object) |
+| minio | object | `{"buckets":[{"name":"atk","policy":"none","purge":false}],"consoleIngress":{"enabled":true,"hosts":["minio-console.k8s.orb.local"],"ingressClassName":"atk-nginx","path":"/"},"enabled":true,"fullnameOverride":"minio","image":{"repository":"docker.io/minio/minio","tag":"RELEASE.2025-07-23T15-54-02Z"},"ingress":{"enabled":true,"hosts":["minio.k8s.orb.local"],"ingressClassName":"atk-nginx","path":"/"},"mode":"standalone","persistence":{"enabled":true,"size":"1Gi"},"replicas":1,"resources":{"limits":{"cpu":"200m","memory":"512Mi"},"requests":{"cpu":"100m","memory":"256Mi"}},"rootPassword":"atk-password","rootUser":"admin","users":[{"accessKey":"atk-service","policy":"readwrite","secretKey":"atk-service-secret"}]}` | MinIO configuration (object) |
 | minio.buckets | list | `[{"name":"atk","policy":"none","purge":false}]` | Automatic bucket creation |
 | minio.buckets[0] | object | `{"name":"atk","policy":"none","purge":false}` | ATK bucket configuration |
 | minio.consoleIngress | object | `{"enabled":true,"hosts":["minio-console.k8s.orb.local"],"ingressClassName":"atk-nginx","path":"/"}` | Console ingress configuration (object) |
@@ -77,9 +77,9 @@ A Helm chart for the supporting components
 | minio.consoleIngress.path | string | `"/"` | Path for MinIO console ingress |
 | minio.enabled | bool | `true` | Enable MinIO deployment (bool) |
 | minio.fullnameOverride | string | `"minio"` | String to fully override common.names.fullname (string) |
-| minio.image | object | `{"repository":"docker.io/minio/minio","tag":"RELEASE.2025-07-18T21-56-31Z"}` | MinIO image configuration |
+| minio.image | object | `{"repository":"docker.io/minio/minio","tag":"RELEASE.2025-07-23T15-54-02Z"}` | MinIO image configuration |
 | minio.image.repository | string | `"docker.io/minio/minio"` | MinIO image repository |
-| minio.image.tag | string | `"RELEASE.2025-07-18T21-56-31Z"` | MinIO image tag (immutable tags are recommended) |
+| minio.image.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` | MinIO image tag (immutable tags are recommended) |
 | minio.ingress | object | `{"enabled":true,"hosts":["minio.k8s.orb.local"],"ingressClassName":"atk-nginx","path":"/"}` | Ingress configuration for MinIO API (object) |
 | minio.ingress.enabled | bool | `true` | Enable ingress for MinIO API |
 | minio.ingress.hosts | list | `["minio.k8s.orb.local"]` | Hosts for MinIO API ingress |
