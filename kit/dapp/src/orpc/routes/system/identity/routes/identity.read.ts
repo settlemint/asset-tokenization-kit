@@ -101,7 +101,13 @@ export const identityRead = systemRouter.system.identity.read
         return context.system?.systemAccessManager?.accessControl;
       },
       alwaysAllowIf: (context, input) => {
+        // Always allow if reading by wallet address and it's the user's own wallet
         if ("wallet" in input && input.wallet === context.auth?.user.wallet) {
+          return true;
+        }
+        // For identity ID queries, we can't determine ownership at middleware level
+        // Permission check happens in the handler after querying the identity
+        if ("identityId" in input) {
           return true;
         }
         return false;
@@ -197,15 +203,13 @@ export const identityRead = systemRouter.system.identity.read
           }
         : undefined,
       claims:
-        identity.claims
-          .filter((claim) => !claim.revoked)
-          .map((claim) => ({
-            id: claim.id,
-            name: claim.name,
-            revoked: claim.revoked,
-            issuer: claim.issuer,
-            values: claim.values,
-          })) ?? [],
+        identity.claims.map((claim) => ({
+          id: claim.id,
+          name: claim.name,
+          revoked: claim.revoked,
+          issuer: claim.issuer,
+          values: claim.values,
+        })) ?? [],
     };
 
     // Return the comprehensive identity information
