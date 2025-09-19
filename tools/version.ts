@@ -44,6 +44,16 @@ interface ChartYaml {
   [key: string]: unknown;
 }
 
+function normalizeBaseVersion(version: string): string {
+  const main = version.split("-")[0].split("+")[0];
+  const semverPattern = /^[0-9]+\.[0-9]+\.[0-9]+$/;
+  if (semverPattern.test(main)) {
+    return main;
+  }
+
+  return version;
+}
+
 /**
  * Reads and parses the root package.json file
  * @param startPath - Starting path for finding the monorepo root
@@ -132,12 +142,13 @@ export async function getVersionInfo(
   } = params;
 
   const packageJson = await readRootPackageJson(startPath);
+  const baseVersion = normalizeBaseVersion(packageJson.version);
 
   return generateVersionInfo(
     refSlug,
     refName,
     shaShort,
-    packageJson.version,
+    baseVersion,
     buildId
   );
 }
@@ -175,7 +186,7 @@ async function exportVersionInfoForGitHub(info: VersionInfo): Promise<void> {
 }
 
 /**
- * Counts workspace protocol dependencies so they remain untouched
+ * Counts workspace protocol dependencies so release logs stay informative without mutating them
  * @param deps - Dependencies object to inspect
  * @param depType - Type of dependencies (for logging)
  * @returns Number of workspace protocol dependencies detected
@@ -196,7 +207,7 @@ function countWorkspaceDependencies(
 
   if (workspaceCount > 0) {
     logger.info(
-      `    Found ${workspaceCount} workspace:* references in ${depType}; leaving unchanged`
+      `    Found ${workspaceCount} workspace:* references in ${depType}`
     );
   }
 
@@ -298,7 +309,7 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
         packageJson.version = newVersion;
         hasChanges = true;
 
-        // Count workspace protocol dependencies in all dependency types
+        // Count workspace protocol dependencies across dependency groups without mutating them
         const workspaceReferences = [
           countWorkspaceDependencies(
             packageJson.dependencies as Record<string, string>,
@@ -332,9 +343,7 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
 
           logger.info(`    Updated version: ${oldVersion} -> ${newVersion}`);
           if (totalWorkspaceReferences > 0) {
-            logger.info(
-              `    Detected ${totalWorkspaceReferences} total workspace:* references`
-            );
+            logger.info(`    Found ${totalWorkspaceReferences} total workspace:* references`);
           }
           updatedCount++;
         } else {
