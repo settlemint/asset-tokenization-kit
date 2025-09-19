@@ -1,5 +1,7 @@
 import { AddressInputField } from "@/components/form/address-fields/address-input-field";
 import { AddressSelectField } from "@/components/form/address-fields/address-select-field";
+import { AssetCategorySelectField } from "@/components/form/asset-classification/asset-category-select-field";
+import { AssetClassSelectField } from "@/components/form/asset-classification/asset-class-select-field";
 import { BigIntField } from "@/components/form/bigint-field";
 import { CheckboxField } from "@/components/form/checkbox-field";
 import { CountrySelectField } from "@/components/form/country-select-field";
@@ -32,6 +34,8 @@ export const { useAppForm, withForm } = createFormHook({
     AddressInputField,
     AddressSelectField,
     DnumField,
+    AssetClassSelectField,
+    AssetCategorySelectField,
   },
   formComponents: {
     StepSubmitButton,

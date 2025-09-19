@@ -1,47 +1,58 @@
 /**
  * Equity Class Validation Utilities
  *
- * This module provides Zod schemas for validating equity share classes,
- * which differentiate shares with varying voting rights, dividend preferences,
- * and control structures within a company.
+ * This module provides Zod schemas for validating equity classes,
+ * which represent standardized groupings of equity instruments
+ * based on rights, structure, and investment style.
  * @module EquityClassValidation
  */
 import { z } from "zod";
 
 /**
- * Available equity share classes.
- * @remarks
- * Standard classification system for multi-class share structures:
- * - `A`: Typically common shares with standard voting rights
- * - `B`: Often shares with enhanced voting rights or founder shares
- * - `C`: Usually non-voting or limited voting shares
+ * Canonical equity classes used across the platform.
+ * These values match the SettleMint asset taxonomy.
  *
- * Note: Actual rights vary by company charter and jurisdiction
+ * - COMMON_EQUITY: Standard common shares
+ * - PREFERRED_EQUITY: Shares with preference in dividends or liquidation
+ * - MARKET_CAPITALIZATION_EQUITY: Grouped by company size (large, mid, small cap)
+ * - GEOGRAPHIC_EQUITY: Grouped by region or country
+ * - SECTOR_INDUSTRY_EQUITY: Grouped by sector/industry
+ * - INVESTMENT_STYLE_EQUITY: Growth, value, blend, etc.
+ * - INVESTMENT_STAGE_PRIVATE_EQUITY: Early, late, venture, etc.
+ * - SPECIAL_CLASSES_EQUITY: Dual class, tracking, etc.
  */
-export const equityClasses = ["A", "B", "C"] as const;
+export const equityClasses = [
+  "COMMON_EQUITY",
+  "PREFERRED_EQUITY",
+  "MARKET_CAPITALIZATION_EQUITY",
+  "GEOGRAPHIC_EQUITY",
+  "SECTOR_INDUSTRY_EQUITY",
+  "INVESTMENT_STYLE_EQUITY",
+  "INVESTMENT_STAGE_PRIVATE_EQUITY",
+  "SPECIAL_CLASSES_EQUITY",
+] as const;
 
 /**
- * Creates a Zod schema that validates equity share classes.
+ * Creates a Zod schema that validates equity classes.
  * @returns A Zod enum schema for equity class validation
  * @example
  * ```typescript
  * const schema = equityClass();
  *
  * // Valid classes
- * schema.parse("A"); // Class A shares
- * schema.parse("B"); // Class B shares
- * schema.parse("C"); // Class C shares
+ * schema.parse("COMMON_EQUITY");
+ * schema.parse("PREFERRED_EQUITY");
  *
  * // Invalid class
- * schema.parse("D"); // Throws ZodError
- * schema.parse("Common"); // Throws ZodError - use categories for this
+ * schema.parse("A"); // Throws ZodError
+ * schema.parse("Class B"); // Throws ZodError
  * ```
  */
 export const equityClass = () =>
-  z.enum(equityClasses).describe("Class of equity shares");
+  z.enum(equityClasses).describe("Class of equity");
 
 /**
- * Type representing a validated equity share class.
+ * Type representing a validated equity class.
  * Ensures type safety.
  */
 export type EquityClass = z.infer<ReturnType<typeof equityClass>>;
@@ -52,15 +63,10 @@ export type EquityClass = z.infer<ReturnType<typeof equityClass>>;
  * @returns `true` if the value is a valid equity class, `false` otherwise
  * @example
  * ```typescript
- * const shareClass: unknown = "B";
- * if (isEquityClass(shareClass)) {
- *   // TypeScript knows shareClass is EquityClass
- *   console.log(`Valid share class: ${shareClass}`);
- *
- *   // Apply class-specific logic
- *   if (shareClass === "B") {
- *     applyEnhancedVotingRights();
- *   }
+ * const cls: unknown = "MARKET_CAPITALIZATION_EQUITY";
+ * if (isEquityClass(cls)) {
+ *   // TypeScript knows cls is EquityClass
+ *   console.log(`Valid equity class: ${cls}`);
  * }
  * ```
  */
@@ -76,15 +82,11 @@ export function isEquityClass(value: unknown): value is EquityClass {
  * @example
  * ```typescript
  * try {
- *   const shareClass = getEquityClass("A"); // Returns "A" as EquityClass
- *   const invalid = getEquityClass("X"); // Throws Error
+ *   const cls = getEquityClass("COMMON_EQUITY"); // Returns "COMMON_EQUITY"
+ *   const invalid = getEquityClass("A"); // Throws Error
  * } catch (error) {
  *   console.error("Invalid equity class provided");
  * }
- *
- * // Use in share issuance
- * const classOfShares = getEquityClass(request.shareClass);
- * mintShares(investor, classOfShares, amount);
  * ```
  */
 export function getEquityClass(value: unknown): EquityClass {

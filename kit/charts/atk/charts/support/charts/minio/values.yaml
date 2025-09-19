@@ -282,12 +282,7 @@ topologySpreadConstraints: []
 
 ## Add stateful containers to have security context, if enabled MinIO will run as this
 ## user and group NOTE: securityContext is only enabled if persistence.enabled=true
-securityContext:
-  enabled: true
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
-  fsGroupChangePolicy: "OnRootMismatch"
+securityContext: {}
 
 containerSecurityContext:
   readOnlyRootFilesystem: false
@@ -363,10 +358,7 @@ policies: []
 #
 ## Additional Annotations for the Kubernetes Job makePolicyJob
 makePolicyJob:
-  securityContext:
-    enabled: false
-    runAsUser: 1000
-    runAsGroup: 1000
+  securityContext: {}
   resources:
     requests:
       memory: 128Mi
@@ -392,10 +384,7 @@ users:
 
 ## Additional Annotations for the Kubernetes Job makeUserJob
 makeUserJob:
-  securityContext:
-    enabled: false
-    runAsUser: 1000
-    runAsGroup: 1000
+  securityContext: {}
   resources:
     requests:
       memory: 128Mi
@@ -431,10 +420,7 @@ svcaccts: []
   #           - "s3:ListMultipartUploadParts"
 
 makeServiceAccountJob:
-  securityContext:
-    enabled: false
-    runAsUser: 1000
-    runAsGroup: 1000
+  securityContext: {}
   resources:
     requests:
       memory: 128Mi
@@ -467,10 +453,7 @@ buckets: []
 
 ## Additional Annotations for the Kubernetes Job makeBucketJob
 makeBucketJob:
-  securityContext:
-    enabled: false
-    runAsUser: 1000
-    runAsGroup: 1000
+  securityContext: {}
   resources:
     requests:
       memory: 128Mi
@@ -484,10 +467,7 @@ customCommands:
 
 ## Additional Annotations for the Kubernetes Job customCommandJob
 customCommandJob:
-  securityContext:
-    enabled: false
-    runAsUser: 1000
-    runAsGroup: 1000
+  securityContext: {}
   resources:
     requests:
       memory: 128Mi
@@ -508,11 +488,7 @@ customCommandJob:
 postJob:
   podAnnotations: {}
   annotations: {}
-  securityContext:
-    enabled: false
-    runAsUser: 1000
-    runAsGroup: 1000
-    fsGroup: 1000
+  securityContext: {}
   nodeSelector: {}
   tolerations: []
   affinity: {}

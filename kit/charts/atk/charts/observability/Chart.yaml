@@ -2,8 +2,8 @@ apiVersion: v2
 name: observability
 description: A Helm chart for the observability components
 type: application
-version: 0.1.0
-appVersion: "0.1.0"
+version: 2.0.0-alpha.7
+appVersion: 2.0.0-alpha.7
 icon: https://console.settlemint.com/android-chrome-512x512.png
 maintainers:
   - name: SettleMint
@@ -35,7 +35,7 @@ dependencies:
     repository: https://grafana.github.io/helm-charts
     condition: loki.enabled
   - name: prometheus-node-exporter
-    version: 4.47.3
+    version: 4.48.0
     repository: https://prometheus-community.github.io/helm-charts
     condition: prometheus-node-exporter.enabled
   - name: tempo

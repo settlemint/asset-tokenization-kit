@@ -7,6 +7,10 @@ import {
   bondFields,
 } from "@/components/asset-designer/asset-designer-wizard/asset-specific-details/bond";
 import {
+  equityFields,
+  EquityFields,
+} from "@/components/asset-designer/asset-designer-wizard/asset-specific-details/equity";
+import {
   FundFields,
   fundFields,
 } from "@/components/asset-designer/asset-designer-wizard/asset-specific-details/fund";
@@ -34,6 +38,9 @@ export const AssetSpecificDetails = withForm({
       if (type === "fund") {
         return fundFields;
       }
+      if (type === "equity") {
+        return equityFields;
+      }
       return [];
     }, [type]);
 
@@ -60,6 +67,7 @@ export const AssetSpecificDetails = withForm({
       >
         {type === "bond" && <BondFields form={form} />}
         {type === "fund" && <FundFields form={form} />}
+        {type === "equity" && <EquityFields form={form} />}
       </FormStepLayout>
     );
   },

@@ -112,11 +112,7 @@ nodeSelector: {}
 tolerations: []
 
 # -- (object) Pod-wide security context
-podSecurityContext:
-  runAsNonRoot: true
-  runAsUser: 101337
-  runAsGroup: 101337
-  fsGroup: 101337
+podSecurityContext: {}
 
 # -- (object) Container-level security context overrides
 containerSecurityContext: {}

@@ -17,23 +17,26 @@ export const Route = createFileRoute(
 });
 
 function IdentityManagementPage() {
-  const { t } = useTranslation("navigation");
-  const { t: tClaims } = useTranslation("claims");
+  const { t } = useTranslation(["identities", "navigation"]);
 
   return (
     <div className="container mx-auto p-6">
       <RouterBreadcrumb />
       <div className="mb-8 mt-4">
-        <h1 className="text-3xl font-bold">{t("identityManagement")}</h1>
+        <h1 className="text-3xl font-bold">
+          {t("navigation:identityManagement")}
+        </h1>
         <p className="text-muted-foreground mt-2">
-          {tClaims("page.description")}
+          {t("identities:page.description")}
         </p>
       </div>
 
       <Suspense
         fallback={
           <div className="rounded-lg border bg-card p-6">
-            <p className="text-muted-foreground">{tClaims("page.loading")}</p>
+            <p className="text-muted-foreground">
+              {t("identities:page.loading")}
+            </p>
           </div>
         }
       >

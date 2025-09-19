@@ -1,6 +1,6 @@
 # observability
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 2.0.0-alpha.7](https://img.shields.io/badge/Version-2.0.0--alpha.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.7](https://img.shields.io/badge/AppVersion-2.0.0--alpha.7-informational?style=flat-square)
 
 A Helm chart for the observability components
 
@@ -20,7 +20,7 @@ A Helm chart for the observability components
 | https://grafana.github.io/helm-charts | tempo | 1.23.3 |
 | https://kubernetes-sigs.github.io/metrics-server/ | metrics-server | 3.13.0 |
 | https://prometheus-community.github.io/helm-charts | kube-state-metrics | 6.3.0 |
-| https://prometheus-community.github.io/helm-charts | prometheus-node-exporter | 4.47.3 |
+| https://prometheus-community.github.io/helm-charts | prometheus-node-exporter | 4.48.0 |
 | https://victoriametrics.github.io/helm-charts/ | victoria-metrics-single | 0.24.6 |
 
 ## Values

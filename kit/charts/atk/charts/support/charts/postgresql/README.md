@@ -1,6 +1,6 @@
 # postgresql
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 17.5](https://img.shields.io/badge/AppVersion-17.5-informational?style=flat-square)
+![Version: 2.0.0-alpha.7](https://img.shields.io/badge/Version-2.0.0--alpha.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.7](https://img.shields.io/badge/AppVersion-2.0.0--alpha.7-informational?style=flat-square)
 
 A simple PostgreSQL Helm chart for ATK development
 
@@ -34,10 +34,7 @@ A simple PostgreSQL Helm chart for ATK development
 | podDisruptionBudget | object | `{"enabled":false,"minAvailable":1}` | Pod disruption budget configuration (object) |
 | podDisruptionBudget.enabled | bool | `false` | Enable pod disruption budget (bool) |
 | podDisruptionBudget.minAvailable | int | `1` | Minimum number of available pods (int) |
-| podSecurityContext | object | `{"fsGroup":999,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Pod security context |
-| podSecurityContext.fsGroup | int | `999` | File system group |
-| podSecurityContext.runAsNonRoot | bool | `true` | Run as non-root |
-| podSecurityContext.seccompProfile | object | `{"type":"RuntimeDefault"}` | Seccomp profile |
+| podSecurityContext | object | `{}` | Pod security context |
 | postgresql | object | `{"database":"postgres","password":"atk","username":"postgres"}` | PostgreSQL configuration |
 | postgresql.database | string | `"postgres"` | Default database name |
 | postgresql.password | string | `"atk"` | Default superuser password |
@@ -62,14 +59,7 @@ A simple PostgreSQL Helm chart for ATK development
 | resources.requests | object | `{"cpu":"100m","memory":"256Mi"}` | Resource requests |
 | resources.requests.cpu | string | `"100m"` | CPU request |
 | resources.requests.memory | string | `"256Mi"` | Memory request |
-| securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"runAsGroup":999,"runAsNonRoot":true,"runAsUser":999,"seccompProfile":{"type":"RuntimeDefault"}}` | Container security context |
-| securityContext.allowPrivilegeEscalation | bool | `false` | Allow privilege escalation |
-| securityContext.capabilities | object | `{"drop":["ALL"]}` | Security capabilities |
-| securityContext.capabilities.drop | list | `["ALL"]` | Capabilities to drop |
-| securityContext.runAsGroup | int | `999` | Run as group |
-| securityContext.runAsNonRoot | bool | `true` | Run as non-root |
-| securityContext.runAsUser | int | `999` | Run as user |
-| securityContext.seccompProfile | object | `{"type":"RuntimeDefault"}` | Seccomp profile |
+| securityContext | object | `{}` | Container security context |
 | service | object | `{"port":5432,"targetPort":5432,"type":"ClusterIP"}` | Service configuration |
 | service.port | int | `5432` | Service port |
 | service.targetPort | int | `5432` | Target port |

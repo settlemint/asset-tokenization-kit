@@ -201,3 +201,19 @@ otherwise it generates a random value.
     {{- include "minio.getValueFromSecret" (dict "Namespace" .Release.Namespace "Name" (include "minio.fullname" .) "Length" 40 "Key" "rootPassword") }}
   {{- end }}
 {{- end -}}
+
+{{/*
+Merge pod-level security context defaults with chart overrides.
+*/}}
+{{- define "minio.securityContext.pod" -}}
+{{- $ctx := .context | default . -}}
+{{ include "atk.securityContext.pod" (dict "context" $ctx "local" (default (dict) $ctx.Values.securityContext) "chartKey" "support.minio") }}
+{{- end }}
+
+{{/*
+Merge container-level security context defaults with chart overrides.
+*/}}
+{{- define "minio.securityContext.container" -}}
+{{- $ctx := .context | default . -}}
+{{ include "atk.securityContext.container" (dict "context" $ctx "local" (default (dict) $ctx.Values.containerSecurityContext) "chartKey" "support.minio") }}
+{{- end }}

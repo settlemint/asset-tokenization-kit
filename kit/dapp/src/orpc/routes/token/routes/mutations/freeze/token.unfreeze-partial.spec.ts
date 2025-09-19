@@ -86,6 +86,8 @@ describe("Token unfreeze partial", () => {
         initialModulePairs: [],
         basePrice: from("1.00", 2),
         countryCode: "056",
+        class: "INVESTMENT_STYLE_EQUITY",
+        category: "DOMESTIC_EQUITY",
       },
       {
         grantRole: ["supplyManagement", "custodian", "governance"],

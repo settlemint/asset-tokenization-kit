@@ -19,6 +19,7 @@ import { recoverTokens } from "@/orpc/routes/token/routes/mutations/recovery/tok
 import { redeem } from "@/orpc/routes/token/routes/mutations/redeem/token.redeem";
 import { mature } from "@/orpc/routes/token/routes/mutations/mature/token.mature";
 import { transfer } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer";
+import { forcedTransfer } from "@/orpc/routes/token/routes/mutations/transfer/token.forced-transfer";
 import { setYieldSchedule } from "@/orpc/routes/token/routes/mutations/yield/token.set-yield-schedule";
 import { statsBondStatus } from "@/orpc/routes/token/routes/stats/bond-status";
 import { statsCollateralRatio } from "@/orpc/routes/token/routes/stats/collateral-ratio";
@@ -50,6 +51,7 @@ const routes = {
   mint,
   burn,
   transfer,
+  forcedTransfer,
   approve,
   redeem,
   mature,

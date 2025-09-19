@@ -23,24 +23,24 @@ export function PercentageProgressBar({
   let indicatorBgClass = "bg-muted-foreground";
 
   if (percentageNumber > 0) {
-    rootBgClass = "bg-success/20";
-    indicatorBgClass = "bg-success";
+    rootBgClass = "bg-sm-state-success-background/20";
+    indicatorBgClass = "bg-sm-state-success-background";
 
     if (mode === "standard") {
       if (percentageNumber > errorThreshold) {
         rootBgClass = "bg-destructive/20";
         indicatorBgClass = "bg-destructive";
       } else if (percentageNumber > warningThreshold) {
-        rootBgClass = "bg-warning/20";
-        indicatorBgClass = "bg-warning";
+        rootBgClass = "bg-sm-state-warning-background/20";
+        indicatorBgClass = "bg-sm-state-warning-background";
       }
     } else {
       if (percentageNumber < errorThreshold) {
         rootBgClass = "bg-destructive/20";
         indicatorBgClass = "bg-destructive";
       } else if (percentageNumber < warningThreshold) {
-        rootBgClass = "bg-warning/20";
-        indicatorBgClass = "bg-warning";
+        rootBgClass = "bg-sm-state-warning-background/20";
+        indicatorBgClass = "bg-sm-state-warning-background";
       }
     }
   }

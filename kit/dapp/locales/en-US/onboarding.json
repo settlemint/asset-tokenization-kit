@@ -127,6 +127,23 @@
       "title": "Secure your wallet"
     }
   },
+  "identityProgress": {
+    "title": "Get ready to invest",
+  "description": "Complete these steps to access your assets.",
+    "steps": {
+      "personalInfo": {
+        "title": "Personal details saved",
+        "description": "Your profile information is locked in."
+      },
+    "registry": {
+      "title": "Identity review in progress",
+      "description": "An admin is reviewing your identity. Check back for updates."
+    }
+  },
+    "cta": {
+      "label": "Review personal info"
+    }
+  },
   "system": {
     "admin-role-explanation": "By doing this, you'll become the initial administrator of the system and gain full control over its foundational components. Later, you'll be able to invite additional admins to help manage operations.",
     "bootstrap-contracts-header": "Bootstrapping the system includes deploying these critical smart contracts:",

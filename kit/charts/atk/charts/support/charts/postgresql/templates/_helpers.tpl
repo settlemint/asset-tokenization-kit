@@ -84,3 +84,19 @@ PostgreSQL port
 {{- define "postgresql.port" -}}
 {{ .Values.service.port }}
 {{- end }}
+
+{{/*
+Merge pod-level security context defaults with chart overrides.
+*/}}
+{{- define "postgresql.securityContext.pod" -}}
+{{- $ctx := .context | default . -}}
+{{ include "atk.securityContext.pod" (dict "context" $ctx "local" (default (dict) $ctx.Values.podSecurityContext)) }}
+{{- end }}
+
+{{/*
+Merge container-level security context defaults with chart overrides.
+*/}}
+{{- define "postgresql.securityContext.container" -}}
+{{- $ctx := .context | default . -}}
+{{ include "atk.securityContext.container" (dict "context" $ctx "local" (default (dict) $ctx.Values.securityContext)) }}
+{{- end }}

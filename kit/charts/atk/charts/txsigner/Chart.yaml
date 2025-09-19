@@ -1,21 +1,28 @@
 apiVersion: v2
 name: txsigner
-description: |
-  TxSigner is a secure transaction signing service for blockchain applications that provides
-  automated transaction signing, key management, and transaction queuing capabilities. It offers
-  a secure environment for managing private keys and signing transactions with support for
-  multiple signing strategies, rate limiting, and comprehensive audit logging for production-grade
+description: >
+  TxSigner is a secure transaction signing service for blockchain applications
+  that provides
+
+  automated transaction signing, key management, and transaction queuing
+  capabilities. It offers
+
+  a secure environment for managing private keys and signing transactions with
+  support for
+
+  multiple signing strategies, rate limiting, and comprehensive audit logging
+  for production-grade
+
   blockchain infrastructure.
 type: application
-version: 0.1.1
-appVersion: "1.16.0"
+version: 2.0.0-alpha.7
+appVersion: 2.0.0-alpha.7
 icon: https://console.settlemint.com/android-chrome-512x512.png
 home: https://github.com/settlemint/starterkit-asset-tokenization
 sources:
   - https://github.com/settlemint/starterkit-asset-tokenization
 deprecated: false
 kubeVersion: ">=1.21.0-0"
-engine: gotpl
 keywords:
   - ethereum
   - blockchain

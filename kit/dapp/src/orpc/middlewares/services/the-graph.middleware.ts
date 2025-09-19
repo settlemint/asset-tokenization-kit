@@ -49,6 +49,7 @@
  */
 import { theGraphClient } from "@/lib/settlemint/the-graph";
 import type { Context } from "@/orpc/context/context";
+import { baseRouter } from "@/orpc/procedures/base.router";
 import type { TadaDocumentNode } from "gql.tada";
 import { print } from "graphql";
 import {
@@ -57,7 +58,6 @@ import {
   type Variables,
 } from "graphql-request";
 import { z } from "zod";
-import { baseRouter } from "../../procedures/base.router";
 
 /**
  * Creates a validated TheGraph client with advanced querying capabilities

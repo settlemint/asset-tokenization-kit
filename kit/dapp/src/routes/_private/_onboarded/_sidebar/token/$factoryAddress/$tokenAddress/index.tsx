@@ -14,6 +14,10 @@ import { AssetWalletDistributionChart } from "@/components/stats/charts/asset-wa
 import { useTokenLoaderQuery } from "@/hooks/use-token-loader-query";
 import { parseClaim } from "@/lib/utils/claims/parse-claim";
 import { orpc } from "@/orpc/orpc-client";
+import type { EquityCategory } from "@atk/zod/equity-categories";
+import type { EquityClass } from "@atk/zod/equity-classes";
+import type { FundCategory } from "@atk/zod/fund-categories";
+import type { FundClass } from "@atk/zod/fund-classes";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { from } from "dnum";
@@ -113,6 +117,10 @@ function RouteComponent() {
     currencyCode: string;
     decimals: string;
   }>(asset.identity?.claims, "basePrice");
+  const assetClassificationClaim = parseClaim<{
+    category: string;
+    class: string;
+  }>(asset.identity?.claims, "assetClassification");
 
   // Collateral ratio from ORPC stats API
   const { data: collateralStats } = useQuery(
@@ -235,6 +243,39 @@ function RouteComponent() {
               value={asset.stats?.totalValueInBaseCurrency ?? from("0")}
               type="currency"
               currency={{ assetSymbol: basePriceClaim.currencyCode }}
+            />
+          </>
+        )}
+
+        {assetClassificationClaim && (
+          <>
+            <DetailGridItem
+              label={t("tokens:fields.category")}
+              info={t("tokens:fields.categoryInfo")}
+              value={
+                asset.type === "equity"
+                  ? t(
+                      `tokens:assetClassification.equity.categories.${assetClassificationClaim.category.toLowerCase() as Lowercase<EquityCategory>}`
+                    )
+                  : t(
+                      `tokens:assetClassification.funds.categories.${assetClassificationClaim.category.toLowerCase() as Lowercase<FundCategory>}`
+                    )
+              }
+              type="text"
+            />
+            <DetailGridItem
+              label={t("tokens:fields.class")}
+              info={t("tokens:fields.classInfo")}
+              value={
+                asset.type === "equity"
+                  ? t(
+                      `tokens:assetClassification.equity.classes.${assetClassificationClaim.class.toLowerCase() as Lowercase<EquityClass>}`
+                    )
+                  : t(
+                      `tokens:assetClassification.funds.classes.${assetClassificationClaim.class.toLowerCase() as Lowercase<FundClass>}`
+                    )
+              }
+              type="text"
             />
           </>
         )}

@@ -224,6 +224,26 @@ async function issueClaims(
         portalClient: context.portalClient,
       });
     })(),
+    (async () => {
+      if (!("class" in input && "category" in input)) {
+        return;
+      }
+      // ISSUE ASSET CLASSIFICATION CLAIM: Add asset classification claim to token's identity contract
+      await issueClaim({
+        user: sender,
+        issuer: userIdentity,
+        walletVerification: input.walletVerification,
+        identity: tokenOnchainID,
+        claim: {
+          topic: ClaimTopic.assetClassification,
+          data: {
+            class: input.class,
+            category: input.category,
+          },
+        },
+        portalClient: context.portalClient,
+      });
+    })(),
   ]);
 
   // If any of the claims failed, throw an error

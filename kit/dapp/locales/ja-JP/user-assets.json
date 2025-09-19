@@ -5,7 +5,28 @@
     "copyAddress": "アドレスをコピー",
     "tokenDetailsNotImplemented": "トークン詳細表示はまだ実装されていません",
     "viewOnBlockExplorer": "ブロックエクスプローラーで表示",
-    "viewTokenDetails": "トークン詳細を表示"
+    "viewTokenDetails": "トークン詳細を表示",
+    "transfer": {
+      "label": "Transfer",
+      "title": "Transfer Tokens",
+      "description": "Send tokens to one or more recipient addresses. This action requires verification.",
+      "submit": "Confirm Transfer",
+      "reviewTitle": "Review Transfer",
+      "fromLabel": "From",
+      "recipientLabel": "Recipient",
+      "recipientDescription": "Select or enter the address that will receive these tokens.",
+      "amountLabel": "Amount",
+      "amountDescription": "Enter the number of tokens to transfer.",
+      "availableLabel": "Current Available",
+      "remainingLabel": "Available After Transfer",
+      "availableMessage": "You can transfer up to {{amount}} {{symbol}}.",
+      "amountRequired": "Add an amount greater than zero to keep going.",
+      "exceedsAvailable": "Amount exceeds your available balance.",
+      "recipientsTitle": "Recipients",
+      "addRecipient": "Add recipient",
+      "totalLabel": "Total",
+      "overAvailable": "Lower the total so it stays within your available balance."
+    }
   },
   "bulkActions": {
     "addressesCopied": "{{count}}個のトークンアドレスをクリップボードにコピーしました",

@@ -1,8 +1,8 @@
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { UserSchema } from "@/orpc/routes/user/routes/user.me.schema";
+import { accessControlRoles } from "@atk/zod/access-control-roles";
 import { identityClaim } from "@atk/zod/claim";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import { accessControlRoles } from "@atk/zod/src/access-control-roles";
 import { z } from "zod";
 
 /**

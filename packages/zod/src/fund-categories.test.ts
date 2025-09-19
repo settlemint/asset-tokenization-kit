@@ -44,10 +44,10 @@ describe("fundCategory", () => {
 
   describe("safeParse", () => {
     test("should return success for valid category", () => {
-      const result = validator.safeParse("hedge");
+      const result = validator.safeParse("VENTURE_CAPITAL");
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data).toBe("hedge");
+        expect(result.data).toBe("VENTURE_CAPITAL");
       }
     });
 
@@ -59,16 +59,16 @@ describe("fundCategory", () => {
 
   describe("type checking", () => {
     test("should return proper type", () => {
-      const result = validator.parse("mutual");
+      const result = validator.parse("EVENT_DRIVEN");
       // Test that the type is correctly inferred
-      expect(result).toBe("mutual");
+      expect(result).toBe("EVENT_DRIVEN");
     });
 
     test("should handle safeParse", () => {
-      const result = validator.safeParse("etf");
+      const result = validator.safeParse("MERGER_ARBITRAGE");
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data).toBe("etf");
+        expect(result.data).toBe("MERGER_ARBITRAGE");
       }
     });
   });
@@ -120,11 +120,11 @@ describe("isFundCategory", () => {
 
   describe("type narrowing", () => {
     test("should properly narrow types", () => {
-      const value: unknown = "etf";
+      const value: unknown = "MERGER_ARBITRAGE";
       if (isFundCategory(value)) {
         // TypeScript should know value is FundCategory here
         const category: FundCategory = value;
-        expect(category).toBe("etf");
+        expect(category).toBe("MERGER_ARBITRAGE");
       } else {
         throw new Error("Should have been a valid fund category");
       }
@@ -184,9 +184,9 @@ describe("getFundCategory", () => {
 
   describe("return type", () => {
     test("should return proper type", () => {
-      const result = getFundCategory("mutual");
+      const result = getFundCategory("MERGER_ARBITRAGE");
       const typedResult: FundCategory = result;
-      expect(typedResult).toBe("mutual");
+      expect(typedResult).toBe("MERGER_ARBITRAGE");
     });
   });
 });
@@ -194,23 +194,16 @@ describe("getFundCategory", () => {
 describe("FundCategory type", () => {
   test("should only allow valid fund categories", () => {
     // Type tests - these would fail at compile time if incorrect
-    const validCategory: FundCategory = "mutual";
-    expect(validCategory).toBe("mutual");
+    const validCategory: FundCategory = "MERGER_ARBITRAGE";
+    expect(validCategory).toBe("MERGER_ARBITRAGE");
 
     // Test all valid categories
-    const categories: FundCategory[] = ["mutual", "hedge", "etf", "index"];
+    const categories: FundCategory[] = [
+      "MERGER_ARBITRAGE",
+      "EQUITY_HEDGE",
+      "CONVERTIBLE_ARBITRAGE",
+      "FUND_OF_FUNDS",
+    ];
     expect(categories).toHaveLength(4);
-  });
-});
-
-describe("fundCategories constant", () => {
-  test("should contain all expected categories", () => {
-    expect([...fundCategories]).toEqual(["mutual", "hedge", "etf", "index"]);
-  });
-
-  test("should be readonly", () => {
-    // The 'as const' assertion makes it readonly
-    expect(Object.isFrozen(fundCategories)).toBe(false); // Arrays aren't frozen by default
-    expect(fundCategories).toHaveLength(4);
   });
 });

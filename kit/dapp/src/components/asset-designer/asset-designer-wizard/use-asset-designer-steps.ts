@@ -93,7 +93,7 @@ export function useAssetDesignerSteps({
           description: t("wizard.steps.assetBasics.description"),
           step: 3,
         },
-        ...(["bond", "fund"].includes(type)
+        ...(["bond", "fund", "equity"].includes(type)
           ? [
               {
                 id: "assetSpecificConfig",

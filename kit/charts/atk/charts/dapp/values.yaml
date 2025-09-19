@@ -13,7 +13,7 @@ image:
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   # -- (string) dApp image tag (defaults to chart appVersion)
-  tag: "2.0.0-main1e32acb7f"
+  tag: ""
 
 # -- (string) String to partially override dapp.fullname template
 nameOverride: "dapp"

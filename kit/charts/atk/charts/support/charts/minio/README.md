@@ -1,6 +1,6 @@
 # minio
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: RELEASE.2025-07-23T15-54-02Z](https://img.shields.io/badge/AppVersion-RELEASE.2025--07--23T15--54--02Z-informational?style=flat-square)
+![Version: 2.0.0-alpha.7](https://img.shields.io/badge/Version-2.0.0--alpha.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.7](https://img.shields.io/badge/AppVersion-2.0.0--alpha.7-informational?style=flat-square)
 
 A simple MinIO deployment for development environments
 
@@ -43,9 +43,7 @@ A simple MinIO deployment for development environments
 | customCommandJob.extraVolumeMounts | list | `[]` |  |
 | customCommandJob.extraVolumes | list | `[]` |  |
 | customCommandJob.resources.requests.memory | string | `"128Mi"` |  |
-| customCommandJob.securityContext.enabled | bool | `false` |  |
-| customCommandJob.securityContext.runAsGroup | int | `1000` |  |
-| customCommandJob.securityContext.runAsUser | int | `1000` |  |
+| customCommandJob.securityContext | object | `{}` |  |
 | customCommands | string | `nil` |  |
 | deploymentUpdate.maxSurge | string | `"100%"` |  |
 | deploymentUpdate.maxUnavailable | int | `0` |  |
@@ -79,24 +77,16 @@ A simple MinIO deployment for development environments
 | ingress.tls | list | `[]` |  |
 | makeBucketJob.exitCommand | string | `""` |  |
 | makeBucketJob.resources.requests.memory | string | `"128Mi"` |  |
-| makeBucketJob.securityContext.enabled | bool | `false` |  |
-| makeBucketJob.securityContext.runAsGroup | int | `1000` |  |
-| makeBucketJob.securityContext.runAsUser | int | `1000` |  |
+| makeBucketJob.securityContext | object | `{}` |  |
 | makePolicyJob.exitCommand | string | `""` |  |
 | makePolicyJob.resources.requests.memory | string | `"128Mi"` |  |
-| makePolicyJob.securityContext.enabled | bool | `false` |  |
-| makePolicyJob.securityContext.runAsGroup | int | `1000` |  |
-| makePolicyJob.securityContext.runAsUser | int | `1000` |  |
+| makePolicyJob.securityContext | object | `{}` |  |
 | makeServiceAccountJob.exitCommand | string | `""` |  |
 | makeServiceAccountJob.resources.requests.memory | string | `"128Mi"` |  |
-| makeServiceAccountJob.securityContext.enabled | bool | `false` |  |
-| makeServiceAccountJob.securityContext.runAsGroup | int | `1000` |  |
-| makeServiceAccountJob.securityContext.runAsUser | int | `1000` |  |
+| makeServiceAccountJob.securityContext | object | `{}` |  |
 | makeUserJob.exitCommand | string | `""` |  |
 | makeUserJob.resources.requests.memory | string | `"128Mi"` |  |
-| makeUserJob.securityContext.enabled | bool | `false` |  |
-| makeUserJob.securityContext.runAsGroup | int | `1000` |  |
-| makeUserJob.securityContext.runAsUser | int | `1000` |  |
+| makeUserJob.securityContext | object | `{}` |  |
 | mcImage | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/minio/minio","tag":"RELEASE.2025-07-23T15-54-02Z"}` | MinIO client image configuration |
 | mcImage.pullPolicy | string | `"IfNotPresent"` | MinIO client image pull policy |
 | mcImage.repository | string | `"docker.io/minio/minio"` | MinIO client image repository |
@@ -152,10 +142,7 @@ A simple MinIO deployment for development environments
 | postJob.annotations | object | `{}` |  |
 | postJob.nodeSelector | object | `{}` |  |
 | postJob.podAnnotations | object | `{}` |  |
-| postJob.securityContext.enabled | bool | `false` |  |
-| postJob.securityContext.fsGroup | int | `1000` |  |
-| postJob.securityContext.runAsGroup | int | `1000` |  |
-| postJob.securityContext.runAsUser | int | `1000` |  |
+| postJob.securityContext | object | `{}` |  |
 | postJob.tolerations | list | `[]` |  |
 | priorityClassName | string | `""` |  |
 | replicas | int | `16` |  |
@@ -163,11 +150,7 @@ A simple MinIO deployment for development environments
 | rootPassword | string | `""` |  |
 | rootUser | string | `""` |  |
 | runtimeClassName | string | `""` |  |
-| securityContext.enabled | bool | `true` |  |
-| securityContext.fsGroup | int | `1000` |  |
-| securityContext.fsGroupChangePolicy | string | `"OnRootMismatch"` |  |
-| securityContext.runAsGroup | int | `1000` |  |
-| securityContext.runAsUser | int | `1000` |  |
+| securityContext | object | `{}` |  |
 | service.annotations | object | `{}` |  |
 | service.clusterIP | string | `nil` |  |
 | service.externalIPs | list | `[]` |  |

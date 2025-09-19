@@ -4,7 +4,6 @@ import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permiss
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { read } from "@/orpc/routes/token/routes/token.read";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { AssetExtensionEnum } from "@atk/zod/asset-extensions";
 import { call } from "@orpc/server";
 
 const TOKEN_TRANSFER_MUTATION = portalGraphql(`
@@ -57,32 +56,6 @@ const TOKEN_TRANSFER_FROM_MUTATION = portalGraphql(`
   }
 `);
 
-const TOKEN_FORCED_TRANSFER_MUTATION = portalGraphql(`
-  mutation TokenForcedTransfer(
-    $challengeId: String
-    $challengeResponse: String
-    $address: String!
-    $from: String!
-    $owner: String!
-    $to: String!
-    $amount: String!
-  ) {
-    forcedTransfer: ISMARTCustodianForcedTransfer(
-      address: $address
-      from: $from
-      challengeId: $challengeId
-      challengeResponse: $challengeResponse
-      input: {
-        from: $owner
-        to: $to
-        amount: $amount
-      }
-    ) {
-      transactionHash
-    }
-  }
-`);
-
 const TOKEN_BATCH_TRANSFER_MUTATION = portalGraphql(`
   mutation TokenBatchTransfer(
     $challengeId: String
@@ -109,32 +82,6 @@ const TOKEN_BATCH_TRANSFER_MUTATION = portalGraphql(`
 
 // Note: There is no batchTransferFrom in ERC3643 - transferFrom operations must be done individually
 
-const TOKEN_BATCH_FORCED_TRANSFER_MUTATION = portalGraphql(`
-  mutation TokenBatchForcedTransfer(
-    $challengeId: String
-    $challengeResponse: String
-    $address: String!
-    $from: String!
-    $fromList: [String!]!
-    $toList: [String!]!
-    $amounts: [String!]!
-  ) {
-    batchForcedTransfer: ISMARTCustodianBatchForcedTransfer(
-      address: $address
-      from: $from
-      challengeId: $challengeId
-      challengeResponse: $challengeResponse
-      input: {
-        fromList: $fromList
-        toList: $toList
-        amounts: $amounts
-      }
-    ) {
-      transactionHash
-    }
-  }
-`);
-
 export const transfer = tokenRouter.token.transfer
   .use(
     tokenPermissionMiddleware({
@@ -155,20 +102,6 @@ export const transfer = tokenRouter.token.transfer
     // Determine if this is a batch operation
     const isBatch = recipients.length > 1;
 
-    // For forced transfers, check custodian interface;
-    if (transferType === "forced") {
-      const supportsCustodian = context.token.extensions.includes(
-        AssetExtensionEnum.CUSTODIAN
-      );
-      if (!supportsCustodian) {
-        throw errors.TOKEN_INTERFACE_NOT_SUPPORTED({
-          data: {
-            requiredInterfaces: ["CUSTODIAN"],
-          },
-        });
-      }
-    }
-
     const sender = auth.user;
     // Choose the appropriate mutation based on transfer type and batch operation
     if (isBatch) {
@@ -188,38 +121,6 @@ export const transfer = tokenRouter.token.transfer
             address: contract,
             from: sender.wallet,
             recipients,
-            amounts: amounts.map((a) => a.toString()),
-          },
-          {
-            sender: sender,
-            code: walletVerification.secretVerificationCode,
-            type: walletVerification.verificationType,
-          }
-        );
-      } else if (transferType === "forced") {
-        // Forced batch transfer is supported
-        if (!from || from.length === 0) {
-          throw errors.INPUT_VALIDATION_FAILED({
-            message: "Missing required from addresses for forced transfer",
-            data: { errors: ["Missing required from addresses"] },
-          });
-        }
-        // Validate all arrays have matching lengths
-        validateBatchArrays(
-          {
-            from,
-            recipients,
-            amounts,
-          },
-          "batch forced transfer"
-        );
-        await context.portalClient.mutate(
-          TOKEN_BATCH_FORCED_TRANSFER_MUTATION,
-          {
-            address: contract,
-            from: sender.wallet,
-            fromList: from,
-            toList: recipients,
             amounts: amounts.map((a) => a.toString()),
           },
           {
@@ -286,29 +187,10 @@ export const transfer = tokenRouter.token.transfer
           }
         );
       } else {
-        // CASE 3: Forced transfer - administrative override requiring owner parameter
-        // WHY: Forced transfers move tokens from specified owner without consent
-        if (!owner) {
-          throw errors.INPUT_VALIDATION_FAILED({
-            message: "Missing owner for forced transfer",
-            data: { errors: ["Invalid input data"] },
-          });
-        }
-        await context.portalClient.mutate(
-          TOKEN_FORCED_TRANSFER_MUTATION,
-          {
-            address: contract,
-            from: sender.wallet,
-            owner,
-            to,
-            amount: amount.toString(),
-          },
-          {
-            sender: sender,
-            code: walletVerification.secretVerificationCode,
-            type: walletVerification.verificationType,
-          }
-        );
+        throw errors.INPUT_VALIDATION_FAILED({
+          message: "Unsupported transfer type",
+          data: { errors: ["Invalid transfer type"] },
+        });
       }
     }
 

@@ -241,6 +241,11 @@ export const RawTokenSchema = z.object({
               transfer: z
                 .boolean()
                 .describe("Whether the user can execute the transfer action"),
+              forcedTransfer: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenForcedTransfer action"
+                ),
               unpause: z
                 .boolean()
                 .describe("Whether the user can execute the unpause action"),
@@ -299,6 +304,10 @@ export const TokenReadResponseSchema = z.object({
         .array(
           z.object({
             id: ethereumAddress,
+            account: z.object({
+              id: ethereumAddress,
+              contractName: z.string().nullable().optional(),
+            }),
             claims: z.array(identityClaim),
             registered: z
               .array(

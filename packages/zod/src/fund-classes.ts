@@ -1,44 +1,90 @@
 /**
  * Fund Class Validation Utilities
  *
- * This module provides Zod schemas for validating fund share classes,
- * which differentiate investor types based on qualification requirements,
- * minimum investments, and fee structures.
+ * This module provides Zod schemas for validating fund classes,
+ * which represent standardized groupings of investment fund strategies
+ * and styles (not investor share classes).
  * @module FundClassValidation
  */
 import { z } from "zod";
 
 /**
- * Available fund share classes based on investor qualification.
- * @remarks
- * Investor classifications for fund participation:
- * - `institutional`: For large institutional investors (pension funds, endowments)
- * - `retail`: For individual retail investors with standard requirements
- * - `accredited`: For qualified investors meeting income/asset thresholds
+ * Canonical fund classes used across the platform.
+ * These values match the SettleMint asset taxonomy for fund strategies and styles.
+ *
+ * - ABSOLUTE_RETURN: Seeks positive returns regardless of market direction
+ * - CORE_BLEND: Combines core and blend strategies
+ * - DIVERSIFIED: Broadly diversified across assets or strategies
+ * - EARLY_STAGE: Focused on early-stage investments
+ * - FACTOR_BASED: Uses factor investing (value, momentum, etc.)
+ * - GROWTH_FOCUSED: Emphasizes growth opportunities
+ * - INCOME_FOCUSED: Prioritizes income generation
+ * - LARGE_CAP: Focused on large capitalization assets
+ * - LONG_EQUITY: Long-only equity strategies
+ * - LONG_SHORT_EQUITY: Combines long and short equity positions
+ * - MARKET_NEUTRAL: Seeks to neutralize market risk
+ * - MID_CAP: Focused on mid capitalization assets
+ * - MOMENTUM_ORIENTED: Uses momentum-based strategies
+ * - OPPORTUNISTIC: Flexible, opportunistic allocation
+ * - PRE_SERIES_B: Pre-Series B stage investments
+ * - QUANTITATIVE_ALGORITHMIC: Quant/algorithmic strategies
+ * - REGIONAL: Focused on specific regions
+ * - SECTOR_SPECIFIC: Focused on specific sectors
+ * - SEED_PRE_SEED: Seed and pre-seed stage investments
+ * - SERIES_B_LATE_STAGE: Series B and later stage investments
+ * - SHORT_EQUITY: Short-only equity strategies
+ * - SMALL_CAP: Focused on small capitalization assets
+ * - TACTICAL_ASSET_ALLOCATION: Tactical allocation across assets
+ * - VALUE_FOCUSED: Value investing strategies
  */
-export const fundClasses = ["institutional", "retail", "accredited"] as const;
+export const fundClasses = [
+  "ABSOLUTE_RETURN",
+  "CORE_BLEND",
+  "DIVERSIFIED",
+  "EARLY_STAGE",
+  "FACTOR_BASED",
+  "GROWTH_FOCUSED",
+  "INCOME_FOCUSED",
+  "LARGE_CAP",
+  "LONG_EQUITY",
+  "LONG_SHORT_EQUITY",
+  "MARKET_NEUTRAL",
+  "MID_CAP",
+  "MOMENTUM_ORIENTED",
+  "OPPORTUNISTIC",
+  "PRE_SERIES_B",
+  "QUANTITATIVE_ALGORITHMIC",
+  "REGIONAL",
+  "SECTOR_SPECIFIC",
+  "SEED_PRE_SEED",
+  "SERIES_B_LATE_STAGE",
+  "SHORT_EQUITY",
+  "SMALL_CAP",
+  "TACTICAL_ASSET_ALLOCATION",
+  "VALUE_FOCUSED",
+] as const;
 
 /**
- * Creates a Zod schema that validates fund share classes.
+ * Creates a Zod schema that validates fund classes.
  * @returns A Zod enum schema for fund class validation
  * @example
  * ```typescript
  * const schema = fundClass();
  *
  * // Valid classes
- * schema.parse("institutional"); // Large investor class
- * schema.parse("retail");        // Public investor class
- * schema.parse("accredited");    // Qualified investor class
+ * schema.parse("ABSOLUTE_RETURN");
+ * schema.parse("LONG_SHORT_EQUITY");
+ * schema.parse("VALUE_FOCUSED");
  *
  * // Invalid class
- * schema.parse("premium"); // Throws ZodError
+ * schema.parse("institutional"); // Throws ZodError
  * ```
  */
 export const fundClass = () =>
-  z.enum(fundClasses).describe("Class of fund shares");
+  z.enum(fundClasses).describe("Class of investment fund");
 
 /**
- * Type representing a validated fund share class.
+ * Type representing a validated fund class.
  * Ensures type safety.
  */
 export type FundClass = z.infer<ReturnType<typeof fundClass>>;
@@ -49,17 +95,10 @@ export type FundClass = z.infer<ReturnType<typeof fundClass>>;
  * @returns `true` if the value is a valid fund class, `false` otherwise
  * @example
  * ```typescript
- * const shareClass: unknown = "retail";
- * if (isFundClass(shareClass)) {
- *   // TypeScript knows shareClass is FundClass
- *   console.log(`Valid fund class: ${shareClass}`);
- *
- *   // Apply class-specific logic
- *   if (shareClass === "institutional") {
- *     applyInstitutionalFeeStructure();
- *   } else if (shareClass === "accredited") {
- *     verifyAccreditedStatus();
- *   }
+ * const cls: unknown = "LONG_SHORT_EQUITY";
+ * if (isFundClass(cls)) {
+ *   // TypeScript knows cls is FundClass
+ *   console.log(`Valid fund class: ${cls}`);
  * }
  * ```
  */
@@ -75,15 +114,11 @@ export function isFundClass(value: unknown): value is FundClass {
  * @example
  * ```typescript
  * try {
- *   const shareClass = getFundClass("institutional"); // Returns "institutional"
- *   const invalid = getFundClass("vip"); // Throws Error
+ *   const cls = getFundClass("ABSOLUTE_RETURN"); // Returns "ABSOLUTE_RETURN"
+ *   const invalid = getFundClass("institutional"); // Throws Error
  * } catch (error) {
  *   console.error("Invalid fund class provided");
  * }
- *
- * // Use in investor onboarding
- * const investorClass = getFundClass(request.investorType);
- * allocateFundShares(investor, investorClass, amount);
  * ```
  */
 export function getFundClass(value: unknown): FundClass {
