@@ -47,7 +47,7 @@ graph TB
     style A fill:#e1f5fe,stroke:#01579b,stroke-width:3px
     style D fill:#f3e5f5,stroke:#4a148c,stroke-width:3px
     style G fill:#e8f5e8,stroke:#1b5e20,stroke-width:3px
-    style J fill:#fff3e0,stroke:#e65100,stroke-width:3px
+    style J fill:#fff3e0,stroke:#e65100,stroke-width:3px,color:#000000
 ```
 
 ## 📱 Component Architecture
@@ -273,7 +273,7 @@ graph LR
     F --> J
     
     style A fill:#ffcdd2,stroke:#d32f2f
-    style E fill:#fff9c4,stroke:#f57f17
+    style E fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
     style H fill:#c8e6c9,stroke:#388e3c
 ```
 
@@ -570,7 +570,7 @@ graph LR
     
     style A fill:#bbdefb,stroke:#1976d2
     style E fill:#e8f5e8,stroke:#2e7d32
-    style H fill:#fff9c4,stroke:#f57f17
+    style H fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
 ```
 
 ### Chart Implementation

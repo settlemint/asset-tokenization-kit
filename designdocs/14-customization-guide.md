@@ -41,7 +41,7 @@ graph LR
     H --> L
     
     style A fill:#ffcdd2,stroke:#d32f2f,stroke-width:3px
-    style E fill:#fff9c4,stroke:#f57f17
+    style E fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
     style I fill:#c8e6c9,stroke:#388e3c
 ```
 
@@ -989,7 +989,7 @@ graph LR
     
     style A fill:#bbdefb,stroke:#1976d2
     style E fill:#c8e6c9,stroke:#388e3c
-    style I fill:#fff9c4,stroke:#f57f17
+    style I fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
 ```
 
 ### Integration Implementation

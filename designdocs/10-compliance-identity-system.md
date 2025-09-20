@@ -49,7 +49,7 @@ graph TB
     
     style A fill:#c8e6c9,stroke:#388e3c,stroke-width:3px
     style D fill:#bbdefb,stroke:#1976d2,stroke-width:3px
-    style H fill:#fff3e0,stroke:#ef6c00,stroke-width:3px
+    style H fill:#fff3e0,stroke:#ef6c00,color:#000000,stroke-width:3px
     style L fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
 ```
 
@@ -308,7 +308,7 @@ graph LR
     
     style A fill:#c8e6c9,stroke:#388e3c
     style D fill:#bbdefb,stroke:#1976d2
-    style H fill:#fff3e0,stroke:#ef6c00
+    style H fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
 ```
 
 ### Identity Verification Module

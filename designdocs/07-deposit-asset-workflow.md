@@ -47,7 +47,7 @@ classDiagram
     style ATKDepositImplementation fill:#f8bbd9,stroke:#c2185b,stroke-width:3px
     style SMARTUpgradeable fill:#e3f2fd,stroke:#1565c0
     style SMARTCustodianUpgradeable fill:#f3e5f5,stroke:#7b1fa2
-    style SMARTPausableUpgradeable fill:#fff3e0,stroke:#ef6c00
+    style SMARTPausableUpgradeable fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
 ```
 
 ## 🚀 Deposit Creation Workflow
@@ -183,8 +183,8 @@ flowchart TD
     
     B --> E{🔍 Deposit Type?}
     
-    E -->|📊 Simple Interest| F[💰 P × R × T]
-    E -->|📈 Compound Interest| G[💰 P × (1 + R)^T]
+    E -->|📊 Simple Interest| F[💰 P times R times T]
+    E -->|📈 Compound Interest| G[💰 P times 1 plus R power T]
     
     F --> H[💎 Mint Interest Tokens]
     G --> H
@@ -195,7 +195,7 @@ flowchart TD
     
     style A fill:#c8e6c9,stroke:#388e3c
     style B fill:#bbdefb,stroke:#1976d2
-    style H fill:#fff9c4,stroke:#f57f17
+    style H fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
 ```
 
 ### Deposit Implementation
@@ -323,7 +323,7 @@ flowchart LR
     F --> I
     
     style A fill:#ffcdd2,stroke:#d32f2f
-    style D fill:#fff3e0,stroke:#ef6c00
+    style D fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
     style G fill:#e8f5e8,stroke:#2e7d32
 ```
 
@@ -427,7 +427,7 @@ flowchart TD
     style A fill:#f8bbd9,stroke:#c2185b
     style B fill:#c8e6c9,stroke:#388e3c
     style C fill:#bbdefb,stroke:#1976d2
-    style D fill:#fff9c4,stroke:#f57f17
+    style D fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
 ```
 
 ### Time Deposit Variations

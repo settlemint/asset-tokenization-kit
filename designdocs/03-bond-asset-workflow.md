@@ -48,7 +48,7 @@ classDiagram
     style ATKBondImplementation fill:#ffcdd2,stroke:#d32f2f,stroke-width:3px
     style SMARTUpgradeable fill:#c8e6c9,stroke:#388e3c
     style SMARTYieldUpgradeable fill:#bbdefb,stroke:#1976d2
-    style SMARTRedeemableUpgradeable fill:#fff9c4,stroke:#f57f17
+    style SMARTRedeemableUpgradeable fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
 ```
 
 ## 🚀 Bond Creation Workflow
@@ -183,7 +183,7 @@ flowchart TD
     style A fill:#e8f5e8,stroke:#2e7d32
     style C fill:#e8f5e8,stroke:#2e7d32
     style D fill:#ffcdd2,stroke:#d32f2f
-    style E fill:#fff3e0,stroke:#ef6c00
+    style E fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
 ```
 
 ### Phase 3: Maturity Process
@@ -312,7 +312,7 @@ graph LR
     F --> H
     
     style A fill:#ffcdd2,stroke:#d32f2f
-    style C fill:#fff9c4,stroke:#f57f17
+    style C fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
     style F fill:#e8f5e8,stroke:#2e7d32
 ```
 

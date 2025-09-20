@@ -704,7 +704,7 @@ graph LR
     
     style A fill:#bbdefb,stroke:#1976d2
     style E fill:#c8e6c9,stroke:#388e3c
-    style I fill:#fff9c4,stroke:#f57f17
+    style I fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
 ```
 
 ### Monitoring Implementation
@@ -906,7 +906,7 @@ flowchart LR
     
     style A fill:#ffcdd2,stroke:#d32f2f
     style E fill:#c8e6c9,stroke:#388e3c
-    style I fill:#fff3e0,stroke:#ef6c00
+    style I fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
 ```
 
 ### Security Configuration
@@ -1037,7 +1037,7 @@ graph TD
     
     style A fill:#bbdefb,stroke:#1976d2
     style E fill:#c8e6c9,stroke:#388e3c
-    style I fill:#fff9c4,stroke:#f57f17
+    style I fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
 ```
 
 ### Backup Implementation

@@ -142,7 +142,7 @@ graph TD
     style A fill:#e1f5fe,stroke:#01579b
     style B fill:#ffcdd2,stroke:#d32f2f
     style C fill:#c8e6c9,stroke:#388e3c
-    style D fill:#fff3e0,stroke:#ef6c00
+    style D fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
     style E fill:#f3e5f5,stroke:#7b1fa2
 ```
 

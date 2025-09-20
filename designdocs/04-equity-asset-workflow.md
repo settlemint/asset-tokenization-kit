@@ -46,7 +46,7 @@ classDiagram
     
     style ATKEquityImplementation fill:#c8e6c9,stroke:#388e3c,stroke-width:3px
     style SMARTUpgradeable fill:#e3f2fd,stroke:#1565c0
-    style IVotes fill:#fff3e0,stroke:#ef6c00
+    style IVotes fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
     style ERC20VotesUpgradeable fill:#f3e5f5,stroke:#7b1fa2
 ```
 
@@ -161,7 +161,7 @@ flowchart TD
     
     style A fill:#e8f5e8,stroke:#2e7d32
     style C fill:#bbdefb,stroke:#1976d2
-    style D fill:#fff9c4,stroke:#f57f17
+    style D fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
     style H fill:#ffcdd2,stroke:#d32f2f
 ```
 
@@ -336,7 +336,7 @@ flowchart LR
     
     style A fill:#c8e6c9,stroke:#388e3c
     style D fill:#bbdefb,stroke:#1976d2
-    style G fill:#fff9c4,stroke:#f57f17
+    style G fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
 ```
 
 ## 📈 Voting Power Dynamics

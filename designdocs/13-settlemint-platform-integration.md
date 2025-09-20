@@ -89,7 +89,7 @@ graph LR
     
     style A fill:#bbdefb,stroke:#1976d2
     style E fill:#c8e6c9,stroke:#388e3c
-    style H fill:#fff9c4,stroke:#f57f17
+    style H fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
 ```
 
 ### SDK Usage Examples
@@ -543,7 +543,7 @@ graph LR
     
     style A fill:#e8f5e8,stroke:#1b5e20
     style E fill:#bbdefb,stroke:#1976d2
-    style I fill:#fff9c4,stroke:#f57f17
+    style I fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
 ```
 
 ### Analytics Implementation

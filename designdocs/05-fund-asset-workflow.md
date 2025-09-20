@@ -45,7 +45,7 @@ classDiagram
     
     style ATKFundImplementation fill:#bbdefb,stroke:#1976d2,stroke-width:3px
     style SMARTUpgradeable fill:#e3f2fd,stroke:#1565c0
-    style IVotes fill:#fff3e0,stroke:#ef6c00
+    style IVotes fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
     style ERC20VotesUpgradeable fill:#f3e5f5,stroke:#7b1fa2
 ```
 
@@ -161,7 +161,7 @@ flowchart TD
     J --> L
     K --> L
     
-    style A fill:#fff3e0,stroke:#ef6c00
+    style A fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
     style D fill:#c8e6c9,stroke:#388e3c
     style H fill:#ffcdd2,stroke:#d32f2f
     style L fill:#e3f2fd,stroke:#1565c0
@@ -418,7 +418,7 @@ flowchart TD
     
     style D fill:#c8e6c9,stroke:#388e3c
     style F fill:#bbdefb,stroke:#1976d2
-    style A fill:#fff9c4,stroke:#f57f17
+    style A fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
     style C fill:#ffcdd2,stroke:#d32f2f
 ```
 

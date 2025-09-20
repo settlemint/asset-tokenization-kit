@@ -528,7 +528,7 @@ graph LR
     
     style A fill:#e8f5e8,stroke:#1b5e20
     style E fill:#bbdefb,stroke:#1976d2
-    style I fill:#fff3e0,stroke:#ef6c00
+    style I fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
 ```
 
 ### Aggregation Implementation

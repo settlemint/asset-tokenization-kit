@@ -462,7 +462,7 @@ flowchart LR
     
     style A fill:#c8e6c9,stroke:#388e3c
     style E fill:#bbdefb,stroke:#1976d2
-    style I fill:#fff3e0,stroke:#ef6c00
+    style I fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
 ```
 
 ### Identity API Implementation
