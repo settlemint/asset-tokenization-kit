@@ -50,9 +50,9 @@ graph TB
     M --> N
     N --> O
     
-    style D fill:#e1f5fe,stroke:#01579b,stroke-width:3px
-    style H fill:#f3e5f5,stroke:#4a148c,stroke-width:3px
-    style L fill:#e8f5e8,stroke:#1b5e20,stroke-width:3px
+    style D fill:#e1f5fe,stroke:#01579b,color:#000000,stroke-width:3px
+    style H fill:#f3e5f5,stroke:#4a148c,color:#000000,stroke-width:3px
+    style L fill:#e8f5e8,stroke:#1b5e20,color:#000000,stroke-width:3px
 ```
 
 ## 🔧 ORPC Implementation
@@ -139,11 +139,11 @@ graph TD
     E --> S[📈 Market Data]
     E --> T[👥 User Analytics]
     
-    style A fill:#e1f5fe,stroke:#01579b
-    style B fill:#ffcdd2,stroke:#d32f2f
-    style C fill:#c8e6c9,stroke:#388e3c
-    style D fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
-    style E fill:#f3e5f5,stroke:#7b1fa2
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000
+    style B fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style C fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style D fill:#fff3e0,stroke:#ef6c00,color:#000000
+    style E fill:#f3e5f5,stroke:#7b1fa2,color:#000000
 ```
 
 ### Type-safe Procedures

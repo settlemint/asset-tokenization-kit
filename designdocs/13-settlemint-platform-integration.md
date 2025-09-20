@@ -49,10 +49,10 @@ graph TB
     K --> O
     L --> P
     
-    style A fill:#e1f5fe,stroke:#01579b,stroke-width:3px
-    style E fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
-    style I fill:#e8f5e8,stroke:#1b5e20,stroke-width:3px
-    style M fill:#fff3e0,stroke:#e65100,stroke-width:3px
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000,stroke-width:3px
+    style E fill:#f3e5f5,stroke:#7b1fa2,color:#000000,stroke-width:3px
+    style I fill:#e8f5e8,stroke:#1b5e20,color:#000000,stroke-width:3px
+    style M fill:#fff3e0,stroke:#e65100,color:#000000,stroke-width:3px
 ```
 
 ## 🔧 SettleMint SDK Integration
@@ -87,9 +87,9 @@ graph LR
     E --> I
     F --> J
     
-    style A fill:#bbdefb,stroke:#1976d2
-    style E fill:#c8e6c9,stroke:#388e3c
-    style H fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
+    style A fill:#bbdefb,stroke:#1976d2,color:#000000
+    style E fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style H fill:#fff9c4,stroke:#f57f17,color:#000000
 ```
 
 ### SDK Usage Examples
@@ -187,10 +187,10 @@ graph TB
     M --> O
     N --> P
     
-    style A fill:#e1f5fe,stroke:#01579b
-    style E fill:#f3e5f5,stroke:#7b1fa2
-    style I fill:#e8f5e8,stroke:#1b5e20
-    style M fill:#fff3e0,stroke:#e65100
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000
+    style E fill:#f3e5f5,stroke:#7b1fa2,color:#000000
+    style I fill:#e8f5e8,stroke:#1b5e20,color:#000000
+    style M fill:#fff3e0,stroke:#e65100,color:#000000
 ```
 
 ### Helm Chart Configuration
@@ -439,9 +439,9 @@ flowchart LR
     G --> K
     H --> L
     
-    style A fill:#ffcdd2,stroke:#d32f2f
-    style E fill:#c8e6c9,stroke:#388e3c
-    style I fill:#bbdefb,stroke:#1976d2
+    style A fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style E fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style I fill:#bbdefb,stroke:#1976d2,color:#000000
 ```
 
 ### Security Configuration
@@ -541,9 +541,9 @@ graph LR
     G --> K
     H --> L
     
-    style A fill:#e8f5e8,stroke:#1b5e20
-    style E fill:#bbdefb,stroke:#1976d2
-    style I fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
+    style A fill:#e8f5e8,stroke:#1b5e20,color:#000000
+    style E fill:#bbdefb,stroke:#1976d2,color:#000000
+    style I fill:#fff9c4,stroke:#f57f17,color:#000000
 ```
 
 ### Analytics Implementation
@@ -675,9 +675,9 @@ graph LR
     K --> N
     L --> O
     
-    style D fill:#bbdefb,stroke:#1976d2
-    style H fill:#c8e6c9,stroke:#388e3c
-    style L fill:#fff3e0,stroke:#e65100
+    style D fill:#bbdefb,stroke:#1976d2,color:#000000
+    style H fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style L fill:#fff3e0,stroke:#e65100,color:#000000
 ```
 
 ### Pipeline Configuration
@@ -800,9 +800,9 @@ graph TB
     G --> K
     H --> L
     
-    style A fill:#e1f5fe,stroke:#01579b
-    style E fill:#f3e5f5,stroke:#7b1fa2
-    style I fill:#e8f5e8,stroke:#1b5e20
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000
+    style E fill:#f3e5f5,stroke:#7b1fa2,color:#000000
+    style I fill:#e8f5e8,stroke:#1b5e20,color:#000000
 ```
 
 ### Multi-chain Configuration

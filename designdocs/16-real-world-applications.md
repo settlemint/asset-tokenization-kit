@@ -51,10 +51,10 @@ graph LR
     K --> O
     L --> P
     
-    style A fill:#e1f5fe,stroke:#01579b
-    style E fill:#f3e5f5,stroke:#7b1fa2
-    style I fill:#e8f5e8,stroke:#1b5e20
-    style M fill:#fff3e0,stroke:#e65100
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000
+    style E fill:#f3e5f5,stroke:#7b1fa2,color:#000000
+    style I fill:#e8f5e8,stroke:#1b5e20,color:#000000
+    style M fill:#fff3e0,stroke:#e65100,color:#000000
 ```
 
 #### Implementation Example: Corporate Bond Platform
@@ -343,9 +343,9 @@ graph LR
     G --> K
     H --> L
     
-    style A fill:#bbdefb,stroke:#1976d2
-    style E fill:#c8e6c9,stroke:#388e3c
-    style I fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
+    style A fill:#bbdefb,stroke:#1976d2,color:#000000
+    style E fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style I fill:#fff9c4,stroke:#f57f17,color:#000000
 ```
 
 #### DeFi Integration Implementation
@@ -480,10 +480,10 @@ graph TB
     N --> S
     O --> T
     
-    style A fill:#e1f5fe,stroke:#01579b,stroke-width:3px
-    style F fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
-    style K fill:#e8f5e8,stroke:#1b5e20,stroke-width:3px
-    style P fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000,stroke-width:3px
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000,stroke-width:3px
+    style F fill:#f3e5f5,stroke:#7b1fa2,color:#000000,stroke-width:3px
+    style K fill:#e8f5e8,stroke:#1b5e20,color:#000000,stroke-width:3px
+    style P fill:#fff3e0,stroke:#ef6c00,color:#000000,stroke-width:3px
 ```
 
 ### Digital Banking Product Suite
@@ -538,10 +538,10 @@ graph LR
     N --> S
     O --> T
     
-    style A fill:#c8e6c9,stroke:#388e3c
-    style F fill:#bbdefb,stroke:#1976d2
-    style K fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
-    style P fill:#ffcdd2,stroke:#d32f2f
+    style A fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style F fill:#bbdefb,stroke:#1976d2,color:#000000
+    style K fill:#fff9c4,stroke:#f57f17,color:#000000
+    style P fill:#ffcdd2,stroke:#d32f2f,color:#000000
 ```
 
 ### Banking Integration Architecture
@@ -777,9 +777,9 @@ graph TB
     G --> K
     H --> L
     
-    style A fill:#e1f5fe,stroke:#01579b
-    style E fill:#f3e5f5,stroke:#7b1fa2
-    style I fill:#e8f5e8,stroke:#1b5e20
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000
+    style E fill:#f3e5f5,stroke:#7b1fa2,color:#000000
+    style I fill:#e8f5e8,stroke:#1b5e20,color:#000000
 ```
 
 #### Trade Finance Implementation
@@ -901,9 +901,9 @@ flowchart TD
     M --> N
     N --> O
     
-    style A fill:#c8e6c9,stroke:#388e3c,stroke-width:3px
-    style D fill:#bbdefb,stroke:#1976d2
-    style G fill:#ffcdd2,stroke:#d32f2f
+    style A fill:#c8e6c9,stroke:#388e3c,color:#000000,stroke-width:3px
+    style D fill:#bbdefb,stroke:#1976d2,color:#000000
+    style G fill:#ffcdd2,stroke:#d32f2f,color:#000000
 ```
 
 #### Carbon Credit Implementation
@@ -1026,9 +1026,9 @@ graph LR
     G --> K
     H --> L
     
-    style A fill:#e8f5e8,stroke:#1b5e20
-    style E fill:#bbdefb,stroke:#1976d2
-    style I fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
+    style A fill:#e8f5e8,stroke:#1b5e20,color:#000000
+    style E fill:#bbdefb,stroke:#1976d2,color:#000000
+    style I fill:#fff9c4,stroke:#f57f17,color:#000000
 ```
 
 ## 🎨 Frontend Customization Examples
@@ -1228,10 +1228,10 @@ graph TB
     N --> S
     O --> T
     
-    style A fill:#e1f5fe,stroke:#01579b,stroke-width:3px
-    style F fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000,stroke-width:3px
-    style K fill:#c8e6c9,stroke:#388e3c,stroke-width:3px
-    style P fill:#bbdefb,stroke:#1976d2,stroke-width:3px
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000,stroke-width:3px
+    style F fill:#fff9c4,stroke:#f57f17,color:#000000,stroke-width:3px
+    style K fill:#c8e6c9,stroke:#388e3c,color:#000000,stroke-width:3px
+    style P fill:#bbdefb,stroke:#1976d2,color:#000000,stroke-width:3px
 ```
 
 ### Investment Banking Digital Platform
@@ -1286,10 +1286,10 @@ flowchart LR
     N --> S
     O --> T
     
-    style A fill:#e1f5fe,stroke:#01579b
-    style F fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
-    style K fill:#ffcdd2,stroke:#d32f2f
-    style P fill:#c8e6c9,stroke:#388e3c
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000
+    style F fill:#fff9c4,stroke:#f57f17,color:#000000
+    style K fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style P fill:#c8e6c9,stroke:#388e3c,color:#000000
 ```
 
 ### Private Banking & Wealth Management
@@ -1344,10 +1344,10 @@ graph TB
     N --> S
     O --> T
     
-    style A fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
-    style F fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000,stroke-width:3px
-    style K fill:#ffcdd2,stroke:#d32f2f,stroke-width:3px
-    style P fill:#e8f5e8,stroke:#1b5e20,stroke-width:3px
+    style A fill:#f3e5f5,stroke:#7b1fa2,color:#000000,stroke-width:3px
+    style F fill:#fff9c4,stroke:#f57f17,color:#000000,stroke-width:3px
+    style K fill:#ffcdd2,stroke:#d32f2f,color:#000000,stroke-width:3px
+    style P fill:#e8f5e8,stroke:#1b5e20,color:#000000,stroke-width:3px
 ```
 
 ### Credit Union & Community Banking
@@ -1429,9 +1429,9 @@ graph LR
     I --> N
     J --> O
     
-    style A fill:#e8f5e8,stroke:#1b5e20
-    style F fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
-    style K fill:#bbdefb,stroke:#1976d2
+    style A fill:#e8f5e8,stroke:#1b5e20,color:#000000
+    style F fill:#fff3e0,stroke:#ef6c00,color:#000000
+    style K fill:#bbdefb,stroke:#1976d2,color:#000000
 ```
 
 ### RegTech & Compliance Automation
@@ -1484,9 +1484,405 @@ flowchart TD
     P --> R
     Q --> S
     
-    style A fill:#e1f5fe,stroke:#01579b
-    style J fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
-    style O fill:#c8e6c9,stroke:#388e3c
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000
+    style J fill:#fff9c4,stroke:#f57f17,color:#000000
+    style O fill:#c8e6c9,stroke:#388e3c,color:#000000
 ```
 
-This comprehensive guide demonstrates how the Asset Tokenization Kit can be applied to diverse real-world scenarios, from traditional banking integration to innovative DeFi applications, specialized use cases like carbon credits and supply chain finance, and advanced financial institution solutions including CBDC implementation, investment banking digitization, and comprehensive regulatory compliance automation.
+## 💳 Advanced Tokenized Deposit Solutions
+
+### Comprehensive Fiat-to-Token Infrastructure
+
+The Asset Tokenization Kit provides sophisticated tokenized deposit solutions with seamless fiat conversion, collateral management, and advanced fund transfer capabilities for traditional and digital banking operations.
+
+```mermaid
+graph TB
+    subgraph "💰 Fiat Integration Layer"
+        A[🏦 Traditional Bank Accounts]
+        B[💳 Payment Processors]
+        C[💱 Currency Exchange]
+        D[🔄 Real-time Settlement]
+        E[📊 Liquidity Management]
+    end
+    
+    subgraph "🔄 Conversion Engine"
+        F[💱 Fiat-to-Token Gateway]
+        G[📊 Exchange Rate Oracle]
+        H[⚖️ Collateral Manager]
+        I[🔒 Escrow System]
+        J[✅ Settlement Automation]
+    end
+    
+    subgraph "🪙 Tokenized Deposits"
+        K[💳 Digital Deposit Certificates]
+        L[🏦 Tokenized Savings]
+        M[📋 Programmable CDs]
+        N[💼 Corporate Treasury Tokens]
+        O[🌍 Multi-currency Deposits]
+    end
+    
+    subgraph "🔐 Collateral & Security"
+        P[🔒 Collateral Locking]
+        Q[📊 Real-time Valuation]
+        R[🛡️ Insurance Integration]
+        S[🔍 Risk Monitoring]
+        T[⚡ Liquidation Engine]
+    end
+    
+    A --> F
+    B --> G
+    C --> H
+    D --> I
+    E --> J
+    F --> K
+    G --> L
+    H --> M
+    I --> N
+    J --> O
+    K --> P
+    L --> Q
+    M --> R
+    N --> S
+    O --> T
+    
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000,stroke-width:3px
+    style F fill:#fff9c4,stroke:#f57f17,color:#000000,stroke-width:3px
+    style K fill:#c8e6c9,stroke:#388e3c,color:#000000,stroke-width:3px
+    style P fill:#ffcdd2,stroke:#d32f2f,color:#000000,stroke-width:3px
+```
+
+### Fiat-to-Token Conversion Engine
+
+```mermaid
+sequenceDiagram
+    participant C as 👤 Customer
+    participant B as 🏦 Bank
+    participant G as 💱 Conversion Gateway
+    participant O as 📊 Price Oracle
+    participant E as 🔒 Escrow Contract
+    participant T as 🪙 Token Contract
+    participant V as 🔍 Validator Network
+    
+    C->>B: 💰 Initiate Fiat Deposit
+    B->>G: 🔄 Request Token Conversion
+    G->>O: 📊 Get Current Exchange Rate
+    O-->>G: 💱 USD/Token Rate
+    
+    G->>E: 🔒 Lock Fiat Collateral
+    E->>E: ✅ Validate Collateral
+    E-->>G: 🔐 Collateral Secured
+    
+    G->>V: 🔍 Request Validation
+    V->>V: ✅ Multi-sig Validation
+    V-->>G: ✅ Conversion Approved
+    
+    G->>T: 💎 Mint Deposit Tokens
+    T->>T: 📊 Update Supply
+    T->>C: 📜 Transfer Tokens
+    
+    G->>B: 📊 Update Account Balance
+    B->>C: 📧 Confirmation Notification
+    
+    Note over E: 🔒 Collateral Remains Locked
+    Note over T: 💰 Tokens Represent Fiat Value
+```
+
+### Enterprise Treasury Tokenization
+
+```mermaid
+graph TB
+    subgraph "🏢 Corporate Treasury"
+        A[💰 Cash Positioning]
+        B[📊 Liquidity Forecasting]
+        C[💱 FX Risk Management]
+        D[📈 Investment Management]
+        E[🔄 Working Capital Optimization]
+    end
+    
+    subgraph "🪙 Tokenized Treasury Operations"
+        F[💳 Digital Cash Accounts]
+        G[🔄 Automated Sweeps]
+        H[💱 Multi-currency Tokens]
+        I[📊 Yield Optimization]
+        J[🔒 Collateral Management]
+    end
+    
+    subgraph "⚡ Real-time Operations"
+        K[📊 Real-time Reporting]
+        L[🚨 Risk Monitoring]
+        M[🔄 Automated Rebalancing]
+        N[💸 Payment Automation]
+        O[📋 Compliance Tracking]
+    end
+    
+    subgraph "🌍 Global Integration"
+        P[🏦 Multi-bank Connectivity]
+        Q[💱 FX Market Integration]
+        R[📊 Market Data Feeds]
+        S[⚖️ Regulatory Reporting]
+        T[🔍 Audit Integration]
+    end
+    
+    A --> F
+    B --> G
+    C --> H
+    D --> I
+    E --> J
+    F --> K
+    G --> L
+    H --> M
+    I --> N
+    J --> O
+    K --> P
+    L --> Q
+    M --> R
+    N --> S
+    O --> T
+    
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000,stroke-width:3px
+    style F fill:#fff9c4,stroke:#f57f17,color:#000000,stroke-width:3px
+    style K fill:#c8e6c9,stroke:#388e3c,color:#000000,stroke-width:3px
+    style P fill:#f3e5f5,stroke:#7b1fa2,color:#000000,stroke-width:3px
+```
+
+### Advanced Tokenized Deposit Implementation
+
+```typescript
+// Comprehensive tokenized deposit platform
+export class AdvancedTokenizedDepositPlatform {
+  constructor(
+    private conversionEngine: FiatConversionEngine,
+    private collateralManager: CollateralManager,
+    private complianceEngine: ComplianceEngine
+  ) {}
+  
+  // Create tokenized deposit with full fiat backing
+  async createTokenizedDeposit(params: TokenizedDepositParams) {
+    // 1. Validate fiat deposit and customer eligibility
+    const validation = await this.validateDepositRequest({
+      customerId: params.customerId,
+      fiatAmount: params.fiatAmount,
+      currency: params.currency,
+      depositTerm: params.term,
+      accountType: params.accountType,
+      kycLevel: params.kycLevel,
+      jurisdictionCompliance: params.jurisdiction
+    });
+    
+    if (!validation.approved) {
+      throw new Error(`Deposit validation failed: ${validation.reason}`);
+    }
+    
+    // 2. Lock fiat collateral with multiple security layers
+    const collateralLock = await this.collateralManager.lockFiatCollateral({
+      amount: params.fiatAmount,
+      currency: params.currency,
+      lockDuration: params.term,
+      collateralType: params.collateralType,
+      custodianBank: params.custodianBank,
+      insuranceProvider: params.insuranceProvider,
+      fdicsInsured: params.fdicsInsured,
+      multiSigRequired: params.multiSigRequired,
+      auditTrail: true
+    });
+    
+    // 3. Calculate precise token conversion with slippage protection
+    const conversionRate = await this.conversionEngine.getOptimalConversionRate({
+      fromCurrency: params.currency,
+      toToken: params.tokenSymbol,
+      amount: params.fiatAmount,
+      maxSlippage: params.maxSlippage || 0.001, // 0.1%
+      oracleSources: ['CHAINLINK', 'BAND', 'TELLOR', 'BANK_RATES'],
+      conversionWindow: params.conversionWindow || 300 // 5 minutes
+    });
+    
+    // 4. Deploy enhanced deposit token contract
+    const depositTokenAddress = await this.deployEnhancedDepositToken({
+      name: `${params.bankName} ${params.currency} Enhanced Deposit`,
+      symbol: params.tokenSymbol,
+      decimals: 18,
+      backingAsset: params.currency,
+      collateralRatio: params.collateralRatio || 1.0,
+      interestRate: params.interestRate,
+      compoundingFrequency: params.compoundingFrequency,
+      maturityDate: params.maturityDate,
+      collateralReference: collateralLock.lockId,
+      features: params.features // AUTO_COMPOUND, FLEXIBLE_TERMS, etc.
+    });
+    
+    // 5. Mint tokens with full audit trail
+    const tokenAmount = this.calculateTokenAmount(
+      params.fiatAmount,
+      conversionRate.rate,
+      18, // decimals
+      params.conversionFees
+    );
+    
+    const mintTx = await this.mintDepositTokens({
+      tokenAddress: depositTokenAddress,
+      recipient: params.customerId,
+      amount: tokenAmount,
+      collateralProof: collateralLock.proof,
+      conversionRate: conversionRate.rate,
+      auditMetadata: {
+        originalFiatAmount: params.fiatAmount,
+        conversionTimestamp: Date.now(),
+        oracleProof: conversionRate.proof,
+        complianceChecks: validation.checks
+      }
+    });
+    
+    // 6. Set up sophisticated interest accrual
+    await this.setupAdvancedInterestAccrual({
+      tokenAddress: depositTokenAddress,
+      accrualMethod: params.accrualMethod, // SIMPLE, COMPOUND, CONTINUOUS
+      accrualFrequency: params.accrualFrequency,
+      interestToken: params.interestPaymentToken,
+      taxWithholding: params.taxWithholding,
+      reinvestmentOptions: params.reinvestmentOptions
+    });
+    
+    // 7. Configure flexible redemption mechanisms
+    await this.setupFlexibleRedemption({
+      tokenAddress: depositTokenAddress,
+      redemptionMethods: [
+        'INSTANT_FIAT_CONVERSION',
+        'SCHEDULED_CONVERSION',
+        'PARTIAL_REDEMPTION',
+        'TOKEN_TRANSFER',
+        'COLLATERAL_SUBSTITUTION'
+      ],
+      conversionFees: params.conversionFees,
+      redemptionLimits: params.redemptionLimits,
+      penaltyStructure: params.penaltyStructure
+    });
+    
+    return {
+      depositTokenAddress,
+      collateralLockId: collateralLock.lockId,
+      tokenAmount,
+      conversionRate: conversionRate.rate,
+      mintTransaction: mintTx,
+      features: {
+        instantLiquidity: params.features.includes('INSTANT_LIQUIDITY'),
+        collateralSubstitution: params.features.includes('COLLATERAL_SUBSTITUTION'),
+        crossChainTransfer: params.features.includes('CROSS_CHAIN'),
+        programmablePayments: params.features.includes('PROGRAMMABLE_PAYMENTS')
+      }
+    };
+  }
+  
+  // Real-time collateral monitoring and management
+  async setupCollateralMonitoring(params: CollateralMonitoringParams) {
+    // 1. Deploy collateral monitoring system
+    const monitoringSystem = await this.deployCollateralMonitor({
+      collateralAssets: params.collateralAssets,
+      monitoringFrequency: params.frequency || 60, // seconds
+      riskThresholds: params.riskThresholds,
+      alertMechanisms: params.alertMechanisms
+    });
+    
+    // 2. Set up real-time valuation feeds
+    const valuationFeeds = await this.setupValuationFeeds({
+      assetTypes: params.collateralAssets.map(a => a.type),
+      priceSources: params.priceSources,
+      updateFrequency: params.valuationFrequency || 30, // seconds
+      fallbackMechanisms: params.fallbackSources
+    });
+    
+    // 3. Configure automated risk responses
+    await this.configureRiskResponses({
+      monitoringSystem,
+      responses: [
+        {
+          trigger: 'COLLATERAL_RATIO_BELOW_THRESHOLD',
+          action: 'MARGIN_CALL',
+          parameters: { gracePeriod: 24 * 60 * 60 } // 24 hours
+        },
+        {
+          trigger: 'CRITICAL_COLLATERAL_RATIO',
+          action: 'AUTOMATED_LIQUIDATION',
+          parameters: { liquidationPercentage: 0.5 } // 50%
+        },
+        {
+          trigger: 'PRICE_VOLATILITY_SPIKE',
+          action: 'INCREASE_MONITORING_FREQUENCY',
+          parameters: { newFrequency: 10 } // 10 seconds
+        },
+        {
+          trigger: 'REGULATORY_ALERT',
+          action: 'COMPLIANCE_FREEZE',
+          parameters: { freezeDuration: 60 * 60 } // 1 hour
+        }
+      ]
+    });
+    
+    return {
+      monitoringSystem,
+      valuationFeeds,
+      riskManagementActive: true,
+      monitoredAssets: params.collateralAssets.length
+    };
+  }
+}
+```
+
+### Cross-Border Deposit Tokenization
+
+```mermaid
+flowchart LR
+    subgraph "🌍 Global Deposit Network"
+        A[🇺🇸 USD Deposits]
+        B[🇪🇺 EUR Deposits]
+        C[🇬🇧 GBP Deposits]
+        D[🇯🇵 JPY Deposits]
+        E[🇨🇭 CHF Deposits]
+    end
+    
+    subgraph "💱 Conversion Matrix"
+        F[💱 USD/EUR]
+        G[💱 USD/GBP]
+        H[💱 EUR/JPY]
+        I[💱 GBP/CHF]
+        J[💱 Cross-rate Engine]
+    end
+    
+    subgraph "🔒 Collateral Pools"
+        K[🏦 USD Collateral Pool]
+        L[🏦 EUR Collateral Pool]
+        M[🏦 GBP Collateral Pool]
+        N[🏦 JPY Collateral Pool]
+        O[🏦 CHF Collateral Pool]
+    end
+    
+    subgraph "🪙 Unified Token System"
+        P[🪙 Global Deposit Token]
+        Q[📊 Multi-currency Balance]
+        R[🔄 Instant Conversion]
+        S[💸 Cross-border Transfers]
+        T[📋 Unified Reporting]
+    end
+    
+    A --> F
+    B --> G
+    C --> H
+    D --> I
+    E --> J
+    F --> K
+    G --> L
+    H --> M
+    I --> N
+    J --> O
+    K --> P
+    L --> Q
+    M --> R
+    N --> S
+    O --> T
+    
+    style A fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style F fill:#bbdefb,stroke:#1976d2,color:#000000
+    style K fill:#fff9c4,stroke:#f57f17,color:#000000
+    style P fill:#f3e5f5,stroke:#7b1fa2,color:#000000
+```
+
+This comprehensive guide demonstrates how the Asset Tokenization Kit can be applied to diverse real-world scenarios, from traditional banking integration to innovative DeFi applications, specialized use cases like carbon credits and supply chain finance, advanced financial institution solutions including CBDC implementation, investment banking digitization, comprehensive regulatory compliance automation, and sophisticated tokenized deposit systems with fiat conversion, collateral management, and institutional-grade liquidity solutions.

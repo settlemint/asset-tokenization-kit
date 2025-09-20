@@ -42,10 +42,10 @@ classDiagram
     ATKStableCoinImplementation --|> SMARTCollateralUpgradeable
     ATKStableCoinImplementation --|> SMARTRedeemableUpgradeable
     
-    style ATKStableCoinImplementation fill:#fff9c4,stroke:#f57f17,color:#000000,stroke-width:3px,color:#000000
-    style SMARTUpgradeable fill:#e3f2fd,stroke:#1565c0
-    style SMARTCollateralUpgradeable fill:#f3e5f5,stroke:#7b1fa2
-    style SMARTRedeemableUpgradeable fill:#e8f5e8,stroke:#2e7d32
+    style ATKStableCoinImplementation fill:#fff9c4,stroke:#f57f17,color:#000000,stroke-width:3px
+    style SMARTUpgradeable fill:#e3f2fd,stroke:#1565c0,color:#000000
+    style SMARTCollateralUpgradeable fill:#f3e5f5,stroke:#7b1fa2,color:#000000
+    style SMARTRedeemableUpgradeable fill:#e8f5e8,stroke:#2e7d32,color:#000000
 ```
 
 ## 🚀 Stablecoin Creation Workflow
@@ -161,11 +161,11 @@ flowchart TD
     E --> N[🔑 Issuer Signature]
     E --> O[📋 Audit Trail]
     
-    style A fill:#fff9c4,stroke:#f57f17,color:#000000,stroke-width:3px,color:#000000
-    style B fill:#e8f5e8,stroke:#2e7d32
-    style C fill:#bbdefb,stroke:#1976d2
-    style D fill:#ffcdd2,stroke:#d32f2f
-    style E fill:#f3e5f5,stroke:#7b1fa2
+    style A fill:#fff9c4,stroke:#f57f17,color:#000000,stroke-width:3px
+    style B fill:#e8f5e8,stroke:#2e7d32,color:#000000
+    style C fill:#bbdefb,stroke:#1976d2,color:#000000
+    style D fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style E fill:#f3e5f5,stroke:#7b1fa2,color:#000000
 ```
 
 ### Collateral Validation Process
@@ -294,11 +294,11 @@ flowchart TD
     H --> M[⏰ Wait for Collateral]
     M --> F
     
-    style A fill:#e8f5e8,stroke:#2e7d32
-    style C fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
-    style G fill:#bbdefb,stroke:#1976d2
-    style D fill:#ffcdd2,stroke:#d32f2f
-    style H fill:#ffecb3,stroke:#f57c00
+    style A fill:#e8f5e8,stroke:#2e7d32,color:#000000
+    style C fill:#fff9c4,stroke:#f57f17,color:#000000
+    style G fill:#bbdefb,stroke:#1976d2,color:#000000
+    style D fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style H fill:#ffecb3,stroke:#f57c00,color:#000000
 ```
 
 ### Collateral-backed Redemption
@@ -381,9 +381,9 @@ graph LR
     G --> K
     H --> L
     
-    style A fill:#c8e6c9,stroke:#388e3c
-    style E fill:#bbdefb,stroke:#1976d2
-    style I fill:#ffcdd2,stroke:#d32f2f
+    style A fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style E fill:#bbdefb,stroke:#1976d2,color:#000000
+    style I fill:#ffcdd2,stroke:#d32f2f,color:#000000
 ```
 
 ### Monitoring Implementation

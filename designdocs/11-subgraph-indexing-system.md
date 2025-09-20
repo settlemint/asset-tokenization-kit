@@ -46,9 +46,9 @@ graph TB
     K --> L
     L --> M
     
-    style D fill:#e1f5fe,stroke:#01579b,stroke-width:3px
-    style H fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
-    style K fill:#e8f5e8,stroke:#1b5e20,stroke-width:3px
+    style D fill:#e1f5fe,stroke:#01579b,color:#000000,stroke-width:3px
+    style H fill:#f3e5f5,stroke:#7b1fa2,color:#000000,stroke-width:3px
+    style K fill:#e8f5e8,stroke:#1b5e20,color:#000000,stroke-width:3px
 ```
 
 ## 📋 Entity Schema Design
@@ -152,9 +152,9 @@ graph LR
     F --> I
     G --> J
     
-    style A fill:#e1f5fe,stroke:#01579b
-    style D fill:#f3e5f5,stroke:#7b1fa2
-    style H fill:#e8f5e8,stroke:#1b5e20
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000
+    style D fill:#f3e5f5,stroke:#7b1fa2,color:#000000
+    style H fill:#e8f5e8,stroke:#1b5e20,color:#000000
 ```
 
 ## 🔄 Event Handler Implementation
@@ -526,9 +526,9 @@ graph LR
     G --> K
     H --> L
     
-    style A fill:#e8f5e8,stroke:#1b5e20
-    style E fill:#bbdefb,stroke:#1976d2
-    style I fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
+    style A fill:#e8f5e8,stroke:#1b5e20,color:#000000
+    style E fill:#bbdefb,stroke:#1976d2,color:#000000
+    style I fill:#fff3e0,stroke:#ef6c00,color:#000000
 ```
 
 ### Aggregation Implementation

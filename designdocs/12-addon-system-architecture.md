@@ -61,10 +61,10 @@ graph TB
     Q --> R
     R --> S
     
-    style A fill:#e1f5fe,stroke:#01579b,stroke-width:3px
-    style D fill:#ffcdd2,stroke:#d32f2f,stroke-width:3px
-    style H fill:#c8e6c9,stroke:#388e3c,stroke-width:3px
-    style L fill:#bbdefb,stroke:#1976d2,stroke-width:3px
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000,stroke-width:3px
+    style D fill:#ffcdd2,stroke:#d32f2f,color:#000000,stroke-width:3px
+    style H fill:#c8e6c9,stroke:#388e3c,color:#000000,stroke-width:3px
+    style L fill:#bbdefb,stroke:#1976d2,color:#000000,stroke-width:3px
     style P fill:#fff9c4,stroke:#f57f17,color:#000000,stroke-width:3px
 ```
 
@@ -187,9 +187,9 @@ graph TD
     J --> K
     K --> L
     
-    style A fill:#ffcdd2,stroke:#d32f2f
-    style E fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
-    style I fill:#f3e5f5,stroke:#7b1fa2
+    style A fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style E fill:#fff3e0,stroke:#ef6c00,color:#000000
+    style I fill:#f3e5f5,stroke:#7b1fa2,color:#000000
 ```
 
 ### Merkle Airdrop Implementation
@@ -316,9 +316,9 @@ graph LR
     E --> H
     F --> I
     
-    style A fill:#c8e6c9,stroke:#388e3c,stroke-width:3px
-    style D fill:#bbdefb,stroke:#1976d2
-    style G fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
+    style A fill:#c8e6c9,stroke:#388e3c,color:#000000,stroke-width:3px
+    style D fill:#bbdefb,stroke:#1976d2,color:#000000
+    style G fill:#fff3e0,stroke:#ef6c00,color:#000000
 ```
 
 ### Vault Implementation
@@ -588,8 +588,8 @@ graph TD
     K --> L
     
     style A fill:#fff9c4,stroke:#f57f17,color:#000000,stroke-width:3px
-    style I fill:#c8e6c9,stroke:#388e3c
-    style K fill:#bbdefb,stroke:#1976d2
+    style I fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style K fill:#bbdefb,stroke:#1976d2,color:#000000
 ```
 
 ### Yield Schedule Implementation
@@ -867,10 +867,10 @@ graph LR
     K --> O
     L --> P
     
-    style A fill:#ffcdd2,stroke:#d32f2f
-    style E fill:#c8e6c9,stroke:#388e3c
-    style I fill:#bbdefb,stroke:#1976d2
-    style M fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
+    style A fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style E fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style I fill:#bbdefb,stroke:#1976d2,color:#000000
+    style M fill:#fff9c4,stroke:#f57f17,color:#000000
 ```
 
 ### Analytics Implementation

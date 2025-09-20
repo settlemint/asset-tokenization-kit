@@ -47,10 +47,10 @@ graph TB
     J --> N
     K --> O
     
-    style A fill:#c8e6c9,stroke:#388e3c,stroke-width:3px
-    style D fill:#bbdefb,stroke:#1976d2,stroke-width:3px
+    style A fill:#c8e6c9,stroke:#388e3c,color:#000000,stroke-width:3px
+    style D fill:#bbdefb,stroke:#1976d2,color:#000000,stroke-width:3px
     style H fill:#fff3e0,stroke:#ef6c00,color:#000000,stroke-width:3px
-    style L fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
+    style L fill:#f3e5f5,stroke:#7b1fa2,color:#000000,stroke-width:3px
 ```
 
 ## 🔑 OnChain Identity Implementation
@@ -82,9 +82,9 @@ flowchart TD
     I --> M
     J --> N
     
-    style A fill:#e1f5fe,stroke:#01579b,stroke-width:3px
-    style C fill:#f3e5f5,stroke:#7b1fa2
-    style L fill:#c8e6c9,stroke:#388e3c
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000,stroke-width:3px
+    style C fill:#f3e5f5,stroke:#7b1fa2,color:#000000
+    style L fill:#c8e6c9,stroke:#388e3c,color:#000000
 ```
 
 ### Identity Contract Structure
@@ -306,9 +306,9 @@ graph LR
     F --> I
     G --> J
     
-    style A fill:#c8e6c9,stroke:#388e3c
-    style D fill:#bbdefb,stroke:#1976d2
-    style H fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
+    style A fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style D fill:#bbdefb,stroke:#1976d2,color:#000000
+    style H fill:#fff3e0,stroke:#ef6c00,color:#000000
 ```
 
 ### Identity Verification Module
@@ -417,9 +417,9 @@ flowchart TD
     J -->|✅ Yes| H
     J -->|❌ No| F
     
-    style A fill:#e8f5e8,stroke:#2e7d32
-    style H fill:#c8e6c9,stroke:#388e3c
-    style F fill:#ffcdd2,stroke:#d32f2f
+    style A fill:#e8f5e8,stroke:#2e7d32,color:#000000
+    style H fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style F fill:#ffcdd2,stroke:#d32f2f,color:#000000
 ```
 
 ```solidity
@@ -706,9 +706,9 @@ graph LR
     G --> K
     H --> L
     
-    style A fill:#bbdefb,stroke:#1976d2
-    style E fill:#c8e6c9,stroke:#388e3c
-    style I fill:#ffcdd2,stroke:#d32f2f
+    style A fill:#bbdefb,stroke:#1976d2,color:#000000
+    style E fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style I fill:#ffcdd2,stroke:#d32f2f,color:#000000
 ```
 
 ### Compliance Analytics

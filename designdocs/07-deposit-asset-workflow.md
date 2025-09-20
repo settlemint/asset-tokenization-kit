@@ -44,10 +44,10 @@ classDiagram
     ATKDepositImplementation --|> SMARTCustodianUpgradeable
     ATKDepositImplementation --|> SMARTPausableUpgradeable
     
-    style ATKDepositImplementation fill:#f8bbd9,stroke:#c2185b,stroke-width:3px
-    style SMARTUpgradeable fill:#e3f2fd,stroke:#1565c0
-    style SMARTCustodianUpgradeable fill:#f3e5f5,stroke:#7b1fa2
-    style SMARTPausableUpgradeable fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
+    style ATKDepositImplementation fill:#f8bbd9,stroke:#c2185b,color:#000000,stroke-width:3px
+    style SMARTUpgradeable fill:#e3f2fd,stroke:#1565c0,color:#000000
+    style SMARTCustodianUpgradeable fill:#f3e5f5,stroke:#7b1fa2,color:#000000
+    style SMARTPausableUpgradeable fill:#fff3e0,stroke:#ef6c00,color:#000000
 ```
 
 ## 🚀 Deposit Creation Workflow
@@ -193,9 +193,9 @@ flowchart TD
     H --> J[📊 Record Transaction]
     H --> K[📡 Emit Interest Event]
     
-    style A fill:#c8e6c9,stroke:#388e3c
-    style B fill:#bbdefb,stroke:#1976d2
-    style H fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
+    style A fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style B fill:#bbdefb,stroke:#1976d2,color:#000000
+    style H fill:#fff9c4,stroke:#f57f17,color:#000000
 ```
 
 ### Deposit Implementation
@@ -322,9 +322,9 @@ flowchart LR
     E --> H
     F --> I
     
-    style A fill:#ffcdd2,stroke:#d32f2f
-    style D fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
-    style G fill:#e8f5e8,stroke:#2e7d32
+    style A fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style D fill:#fff3e0,stroke:#ef6c00,color:#000000
+    style G fill:#e8f5e8,stroke:#2e7d32,color:#000000
 ```
 
 ### Advanced Custodian Functions
@@ -424,10 +424,10 @@ flowchart TD
     F --> I[🏧 ATM Integration]
     G --> J[📱 Mobile Banking]
     
-    style A fill:#f8bbd9,stroke:#c2185b
-    style B fill:#c8e6c9,stroke:#388e3c
-    style C fill:#bbdefb,stroke:#1976d2
-    style D fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
+    style A fill:#f8bbd9,stroke:#c2185b,color:#000000
+    style B fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style C fill:#bbdefb,stroke:#1976d2,color:#000000
+    style D fill:#fff9c4,stroke:#f57f17,color:#000000
 ```
 
 ### Time Deposit Variations

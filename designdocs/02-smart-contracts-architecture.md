@@ -56,10 +56,10 @@ graph TD
     N --> O
     O --> P
     
-    style A fill:#ffebee,stroke:#c62828,stroke-width:3px
-    style B fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px
-    style M fill:#e3f2fd,stroke:#1565c0,stroke-width:3px
-    style J fill:#fff3e0,stroke:#ef6c00,color:#000000,stroke-width:3px,color:#000000
+    style A fill:#ffebee,stroke:#c62828,color:#000000,stroke-width:3px
+    style B fill:#e8f5e8,stroke:#2e7d32,color:#000000,stroke-width:3px
+    style M fill:#e3f2fd,stroke:#1565c0,color:#000000,stroke-width:3px
+    style J fill:#fff3e0,stroke:#ef6c00,color:#000000,stroke-width:3px
 ```
 
 ## 🏭 System Contracts
@@ -75,10 +75,10 @@ flowchart LR
     C -->|🔗 Initialize| D[🔐 AccessManager]
     C -->|🔗 Bootstrap| E[📦 Core Modules]
     
-    style A fill:#e1f5fe
-    style B fill:#ffebee,stroke:#c62828
-    style C fill:#e8f5e8,stroke:#2e7d32
-    style D fill:#f3e5f5,stroke:#7b1fa2
+    style A fill:#e1f5fe,color:#000000
+    style B fill:#ffebee,stroke:#c62828,color:#000000
+    style C fill:#e8f5e8,stroke:#2e7d32,color:#000000
+    style D fill:#f3e5f5,stroke:#7b1fa2,color:#000000
     style E fill:#fff8e1,stroke:#f57f17,color:#000000
 ```
 
@@ -147,9 +147,9 @@ graph TB
     E --> G
     F --> G
     
-    style A fill:#e8f5e8,stroke:#2e7d32
-    style B fill:#e3f2fd,stroke:#1565c0
-    style G fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
+    style A fill:#e8f5e8,stroke:#2e7d32,color:#000000
+    style B fill:#e3f2fd,stroke:#1565c0,color:#000000
+    style G fill:#fff3e0,stroke:#ef6c00,color:#000000
 ```
 
 ### OnChain Identity Features
@@ -207,11 +207,11 @@ graph LR
     E --> G
     E --> I
     
-    style A fill:#ffcdd2,stroke:#d32f2f
-    style B fill:#c8e6c9,stroke:#388e3c
-    style C fill:#bbdefb,stroke:#1976d2
-    style D fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
-    style E fill:#f8bbd9,stroke:#c2185b
+    style A fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style B fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style C fill:#bbdefb,stroke:#1976d2,color:#000000
+    style D fill:#fff9c4,stroke:#f57f17,color:#000000
+    style E fill:#f8bbd9,stroke:#c2185b,color:#000000
 ```
 
 ### Bond Contract Deep Dive
@@ -313,9 +313,9 @@ graph TB
     H --> I
     I --> J
     
-    style A fill:#e8f5e8,stroke:#2e7d32
-    style D fill:#ffecb3,stroke:#f57c00
-    style H fill:#e1f5fe,stroke:#0277bd
+    style A fill:#e8f5e8,stroke:#2e7d32,color:#000000
+    style D fill:#ffecb3,stroke:#f57c00,color:#000000
+    style H fill:#e1f5fe,stroke:#0277bd,color:#000000
 ```
 
 ### Compliance Modules
@@ -392,10 +392,10 @@ graph LR
     G --> D
     J --> G
     
-    style A fill:#ffcdd2,stroke:#d32f2f
-    style D fill:#c8e6c9,stroke:#388e3c
-    style G fill:#bbdefb,stroke:#1976d2
-    style J fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
+    style A fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style D fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style G fill:#bbdefb,stroke:#1976d2,color:#000000
+    style J fill:#fff9c4,stroke:#f57f17,color:#000000
 ```
 
 ### Multi-sig Vault Features
@@ -461,9 +461,9 @@ graph TB
     H --> L
     I --> M
     
-    style A fill:#ffebee,stroke:#c62828
-    style F fill:#e8f5e8,stroke:#2e7d32
-    style J fill:#e3f2fd,stroke:#1565c0
+    style A fill:#ffebee,stroke:#c62828,color:#000000
+    style F fill:#e8f5e8,stroke:#2e7d32,color:#000000
+    style J fill:#e3f2fd,stroke:#1565c0,color:#000000
 ```
 
 ## 📊 Events and Monitoring
@@ -504,10 +504,10 @@ graph LR
     I --> L
     J --> M
     
-    style A fill:#e8f5e8,stroke:#2e7d32
-    style E fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
-    style H fill:#e3f2fd,stroke:#1565c0
-    style K fill:#ffebee,stroke:#c62828
+    style A fill:#e8f5e8,stroke:#2e7d32,color:#000000
+    style E fill:#fff3e0,stroke:#ef6c00,color:#000000
+    style H fill:#e3f2fd,stroke:#1565c0,color:#000000
+    style K fill:#ffebee,stroke:#c62828,color:#000000
 ```
 
 ## 🔄 Upgrade Patterns

@@ -44,10 +44,10 @@ classDiagram
     ATKEquityImplementation --|> IVotes
     ATKEquityImplementation --|> ERC20VotesUpgradeable
     
-    style ATKEquityImplementation fill:#c8e6c9,stroke:#388e3c,stroke-width:3px
-    style SMARTUpgradeable fill:#e3f2fd,stroke:#1565c0
-    style IVotes fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
-    style ERC20VotesUpgradeable fill:#f3e5f5,stroke:#7b1fa2
+    style ATKEquityImplementation fill:#c8e6c9,stroke:#388e3c,color:#000000,stroke-width:3px
+    style SMARTUpgradeable fill:#e3f2fd,stroke:#1565c0,color:#000000
+    style IVotes fill:#fff3e0,stroke:#ef6c00,color:#000000
+    style ERC20VotesUpgradeable fill:#f3e5f5,stroke:#7b1fa2,color:#000000
 ```
 
 ## 🚀 Equity Creation Workflow
@@ -159,10 +159,10 @@ flowchart TD
     H --> I
     I --> J
     
-    style A fill:#e8f5e8,stroke:#2e7d32
-    style C fill:#bbdefb,stroke:#1976d2
-    style D fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
-    style H fill:#ffcdd2,stroke:#d32f2f
+    style A fill:#e8f5e8,stroke:#2e7d32,color:#000000
+    style C fill:#bbdefb,stroke:#1976d2,color:#000000
+    style D fill:#fff9c4,stroke:#f57f17,color:#000000
+    style H fill:#ffcdd2,stroke:#d32f2f,color:#000000
 ```
 
 ### Voting Power Calculation
@@ -334,9 +334,9 @@ flowchart LR
     E --> H
     F --> I
     
-    style A fill:#c8e6c9,stroke:#388e3c
-    style D fill:#bbdefb,stroke:#1976d2
-    style G fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
+    style A fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style D fill:#bbdefb,stroke:#1976d2,color:#000000
+    style G fill:#fff9c4,stroke:#f57f17,color:#000000
 ```
 
 ## 📈 Voting Power Dynamics

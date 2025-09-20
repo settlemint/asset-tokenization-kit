@@ -60,11 +60,11 @@ graph TB
     O --> S
     P --> T
     
-    style A fill:#e1f5fe,stroke:#01579b,stroke-width:3px
-    style E fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
-    style I fill:#e8f5e8,stroke:#1b5e20,stroke-width:3px
-    style M fill:#ffcdd2,stroke:#d32f2f,stroke-width:3px
-    style Q fill:#fff3e0,stroke:#e65100,stroke-width:3px
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000,stroke-width:3px
+    style E fill:#f3e5f5,stroke:#7b1fa2,color:#000000,stroke-width:3px
+    style I fill:#e8f5e8,stroke:#1b5e20,color:#000000,stroke-width:3px
+    style M fill:#ffcdd2,stroke:#d32f2f,color:#000000,stroke-width:3px
+    style Q fill:#fff3e0,stroke:#e65100,color:#000000,stroke-width:3px
 ```
 
 ## 📋 Smart Contract Testing
@@ -841,10 +841,10 @@ flowchart TD
     J --> K
     M --> N
     
-    style A fill:#ffcdd2,stroke:#d32f2f,stroke-width:3px
-    style F fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
-    style I fill:#e8f5e8,stroke:#1b5e20
-    style L fill:#bbdefb,stroke:#1976d2
+    style A fill:#ffcdd2,stroke:#d32f2f,color:#000000,stroke-width:3px
+    style F fill:#fff3e0,stroke:#ef6c00,color:#000000
+    style I fill:#e8f5e8,stroke:#1b5e20,color:#000000
+    style L fill:#bbdefb,stroke:#1976d2,color:#000000
 ```
 
 ### Security Test Implementation

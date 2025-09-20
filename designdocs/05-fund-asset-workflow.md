@@ -43,10 +43,10 @@ classDiagram
     ATKFundImplementation --|> IVotes
     ATKFundImplementation --|> ERC20VotesUpgradeable
     
-    style ATKFundImplementation fill:#bbdefb,stroke:#1976d2,stroke-width:3px
-    style SMARTUpgradeable fill:#e3f2fd,stroke:#1565c0
-    style IVotes fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
-    style ERC20VotesUpgradeable fill:#f3e5f5,stroke:#7b1fa2
+    style ATKFundImplementation fill:#bbdefb,stroke:#1976d2,color:#000000,stroke-width:3px
+    style SMARTUpgradeable fill:#e3f2fd,stroke:#1565c0,color:#000000
+    style IVotes fill:#fff3e0,stroke:#ef6c00,color:#000000
+    style ERC20VotesUpgradeable fill:#f3e5f5,stroke:#7b1fa2,color:#000000
 ```
 
 ## 🚀 Fund Creation Workflow
@@ -161,10 +161,10 @@ flowchart TD
     J --> L
     K --> L
     
-    style A fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
-    style D fill:#c8e6c9,stroke:#388e3c
-    style H fill:#ffcdd2,stroke:#d32f2f
-    style L fill:#e3f2fd,stroke:#1565c0
+    style A fill:#fff3e0,stroke:#ef6c00,color:#000000
+    style D fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style H fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style L fill:#e3f2fd,stroke:#1565c0,color:#000000
 ```
 
 ### Fee Collection Implementation
@@ -312,9 +312,9 @@ flowchart LR
     E --> H
     F --> I
     
-    style A fill:#c8e6c9,stroke:#388e3c
-    style D fill:#bbdefb,stroke:#1976d2
-    style G fill:#ffcdd2,stroke:#d32f2f
+    style A fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style D fill:#bbdefb,stroke:#1976d2,color:#000000
+    style G fill:#ffcdd2,stroke:#d32f2f,color:#000000
 ```
 
 ### Voting Implementation
@@ -416,10 +416,10 @@ flowchart TD
     L --> C
     M --> C
     
-    style D fill:#c8e6c9,stroke:#388e3c
-    style F fill:#bbdefb,stroke:#1976d2
-    style A fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
-    style C fill:#ffcdd2,stroke:#d32f2f
+    style D fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style F fill:#bbdefb,stroke:#1976d2,color:#000000
+    style A fill:#fff9c4,stroke:#f57f17,color:#000000
+    style C fill:#ffcdd2,stroke:#d32f2f,color:#000000
 ```
 
 ### Performance Metrics

@@ -44,10 +44,10 @@ graph TB
     I --> L
     J --> M
     
-    style A fill:#e1f5fe,stroke:#01579b,stroke-width:3px
-    style D fill:#f3e5f5,stroke:#4a148c,stroke-width:3px
-    style G fill:#e8f5e8,stroke:#1b5e20,stroke-width:3px
-    style J fill:#fff3e0,stroke:#e65100,stroke-width:3px,color:#000000
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000,stroke-width:3px
+    style D fill:#f3e5f5,stroke:#4a148c,color:#000000,stroke-width:3px
+    style G fill:#e8f5e8,stroke:#1b5e20,color:#000000,stroke-width:3px
+    style J fill:#fff3e0,stroke:#e65100,color:#000000,stroke-width:3px
 ```
 
 ## 📱 Component Architecture
@@ -92,10 +92,10 @@ graph TD
     P --> R
     Q --> S
     
-    style A fill:#e1f5fe,stroke:#01579b
-    style G fill:#f3e5f5,stroke:#4a148c
-    style K fill:#e8f5e8,stroke:#1b5e20
-    style P fill:#fff3e0,stroke:#e65100
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000
+    style G fill:#f3e5f5,stroke:#4a148c,color:#000000
+    style K fill:#e8f5e8,stroke:#1b5e20,color:#000000
+    style P fill:#fff3e0,stroke:#e65100,color:#000000
 ```
 
 ### Component Structure
@@ -272,9 +272,9 @@ graph LR
     E --> I
     F --> J
     
-    style A fill:#ffcdd2,stroke:#d32f2f
-    style E fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
-    style H fill:#c8e6c9,stroke:#388e3c
+    style A fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style E fill:#fff9c4,stroke:#f57f17,color:#000000
+    style H fill:#c8e6c9,stroke:#388e3c,color:#000000
 ```
 
 ### Component Variants
@@ -440,10 +440,10 @@ graph TD
     B --> M
     B --> N
     
-    style A fill:#e1f5fe,stroke:#01579b
-    style B fill:#f3e5f5,stroke:#4a148c
-    style G fill:#e8f5e8,stroke:#1b5e20
-    style I fill:#c8e6c9,stroke:#388e3c
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000
+    style B fill:#f3e5f5,stroke:#4a148c,color:#000000
+    style G fill:#e8f5e8,stroke:#1b5e20,color:#000000
+    style I fill:#c8e6c9,stroke:#388e3c,color:#000000
 ```
 
 ### Form State Management
@@ -568,9 +568,9 @@ graph LR
     F --> J
     G --> K
     
-    style A fill:#bbdefb,stroke:#1976d2
-    style E fill:#e8f5e8,stroke:#2e7d32
-    style H fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
+    style A fill:#bbdefb,stroke:#1976d2,color:#000000
+    style E fill:#e8f5e8,stroke:#2e7d32,color:#000000
+    style H fill:#fff9c4,stroke:#f57f17,color:#000000
 ```
 
 ### Chart Implementation
@@ -740,9 +740,9 @@ flowchart LR
     E --> J
     E --> K
     
-    style A fill:#e1f5fe,stroke:#01579b
-    style E fill:#f3e5f5,stroke:#4a148c
-    style H fill:#c8e6c9,stroke:#388e3c
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000
+    style E fill:#f3e5f5,stroke:#4a148c,color:#000000
+    style H fill:#c8e6c9,stroke:#388e3c,color:#000000
 ```
 
 ### Translation Implementation

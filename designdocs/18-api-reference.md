@@ -43,9 +43,9 @@ graph TB
     K --> L
     L --> M
     
-    style A fill:#e1f5fe,stroke:#01579b,stroke-width:3px
-    style E fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
-    style J fill:#e8f5e8,stroke:#1b5e20,stroke-width:3px
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000,stroke-width:3px
+    style E fill:#f3e5f5,stroke:#7b1fa2,color:#000000,stroke-width:3px
+    style J fill:#e8f5e8,stroke:#1b5e20,color:#000000,stroke-width:3px
 ```
 
 ## 🏭 Asset Management API
@@ -460,9 +460,9 @@ flowchart LR
     G --> K
     H --> L
     
-    style A fill:#c8e6c9,stroke:#388e3c
-    style E fill:#bbdefb,stroke:#1976d2
-    style I fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
+    style A fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style E fill:#bbdefb,stroke:#1976d2,color:#000000
+    style I fill:#fff3e0,stroke:#ef6c00,color:#000000
 ```
 
 ### Identity API Implementation

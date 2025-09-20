@@ -45,10 +45,10 @@ classDiagram
     ATKBondImplementation --|> SMARTYieldUpgradeable
     ATKBondImplementation --|> SMARTRedeemableUpgradeable
     
-    style ATKBondImplementation fill:#ffcdd2,stroke:#d32f2f,stroke-width:3px
-    style SMARTUpgradeable fill:#c8e6c9,stroke:#388e3c
-    style SMARTYieldUpgradeable fill:#bbdefb,stroke:#1976d2
-    style SMARTRedeemableUpgradeable fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
+    style ATKBondImplementation fill:#ffcdd2,stroke:#d32f2f,color:#000000,stroke-width:3px
+    style SMARTUpgradeable fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style SMARTYieldUpgradeable fill:#bbdefb,stroke:#1976d2,color:#000000
+    style SMARTRedeemableUpgradeable fill:#fff9c4,stroke:#f57f17,color:#000000
 ```
 
 ## 🚀 Bond Creation Workflow
@@ -180,10 +180,10 @@ flowchart TD
     B --> G
     B --> H
     
-    style A fill:#e8f5e8,stroke:#2e7d32
-    style C fill:#e8f5e8,stroke:#2e7d32
-    style D fill:#ffcdd2,stroke:#d32f2f
-    style E fill:#fff3e0,stroke:#ef6c00,color:#000000,color:#000000
+    style A fill:#e8f5e8,stroke:#2e7d32,color:#000000
+    style C fill:#e8f5e8,stroke:#2e7d32,color:#000000
+    style D fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style E fill:#fff3e0,stroke:#ef6c00,color:#000000
 ```
 
 ### Phase 3: Maturity Process
@@ -272,12 +272,12 @@ flowchart TD
     J --> M[📊 Update Records]
     J --> N[📡 Emit Event]
     
-    style A fill:#e8f5e8,stroke:#2e7d32
-    style C fill:#ffcdd2,stroke:#d32f2f
-    style J fill:#bbdefb,stroke:#1976d2
-    style D fill:#ffcdd2,stroke:#d32f2f
-    style F fill:#ffcdd2,stroke:#d32f2f
-    style I fill:#ffcdd2,stroke:#d32f2f
+    style A fill:#e8f5e8,stroke:#2e7d32,color:#000000
+    style C fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style J fill:#bbdefb,stroke:#1976d2,color:#000000
+    style D fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style F fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style I fill:#ffcdd2,stroke:#d32f2f,color:#000000
 ```
 
 ## 📈 Yield Integration
@@ -311,9 +311,9 @@ graph LR
     E --> G
     F --> H
     
-    style A fill:#ffcdd2,stroke:#d32f2f
-    style C fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
-    style F fill:#e8f5e8,stroke:#2e7d32
+    style A fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style C fill:#fff9c4,stroke:#f57f17,color:#000000
+    style F fill:#e8f5e8,stroke:#2e7d32,color:#000000
 ```
 
 ## 🔧 API Integration

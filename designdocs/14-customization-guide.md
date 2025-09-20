@@ -40,9 +40,9 @@ graph LR
     G --> K
     H --> L
     
-    style A fill:#ffcdd2,stroke:#d32f2f,stroke-width:3px
-    style E fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
-    style I fill:#c8e6c9,stroke:#388e3c
+    style A fill:#ffcdd2,stroke:#d32f2f,color:#000000,stroke-width:3px
+    style E fill:#fff9c4,stroke:#f57f17,color:#000000
+    style I fill:#c8e6c9,stroke:#388e3c,color:#000000
 ```
 
 ### Custom Theme Implementation
@@ -426,9 +426,9 @@ flowchart TD
     M --> N
     K --> O
     
-    style A fill:#e1f5fe,stroke:#01579b
-    style C fill:#f3e5f5,stroke:#7b1fa2
-    style F fill:#e8f5e8,stroke:#1b5e20
+    style A fill:#e1f5fe,stroke:#01579b,color:#000000
+    style C fill:#f3e5f5,stroke:#7b1fa2,color:#000000
+    style F fill:#e8f5e8,stroke:#1b5e20,color:#000000
 ```
 
 ### Custom Asset Implementation
@@ -987,9 +987,9 @@ graph LR
     G --> K
     H --> L
     
-    style A fill:#bbdefb,stroke:#1976d2
-    style E fill:#c8e6c9,stroke:#388e3c
-    style I fill:#fff9c4,stroke:#f57f17,color:#000000,color:#000000
+    style A fill:#bbdefb,stroke:#1976d2,color:#000000
+    style E fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style I fill:#fff9c4,stroke:#f57f17,color:#000000
 ```
 
 ### Integration Implementation
