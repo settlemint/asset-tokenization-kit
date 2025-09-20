@@ -1,0 +1,26 @@
+# This parent chart does not define additional values; override subchart defaults here when packaging composite releases.
+
+# -- (object) Global configuration shared across subcharts.
+global:
+  # -- (object) Defaults consumed by Besu network node workloads.
+  networkNodes:
+    # -- (string) Kubernetes Service name fronting validator pods to align bootstrapper static-nodes output.
+    serviceName: ""
+    # -- (string) StatefulSet prefix used for validator pod hostnames.
+    podPrefix: ""
+    # -- (string) ConfigMap name storing the generated genesis.json artifact.
+    genesisConfigMapName: besu-genesis
+    # -- (string) ConfigMap name storing static-nodes.json entries.
+    staticNodesConfigMapName: besu-static-nodes
+    # -- (string) Prefix used for faucet ConfigMaps and Secrets.
+    faucetArtifactPrefix: besu-faucet
+  # -- (int) Chain ID applied when charts omit explicit overrides.
+  chainId:
+  # -- (object) Shared pod- and container-level security contexts applied when subcharts omit explicit overrides.
+  securityContexts:
+    # -- (object) Pod security context inherited by subcharts when set.
+    pod: {}
+    # -- (object) Container security context inherited by subcharts when set.
+    container: {}
+  labels:
+    kots.io/app-slug: settlemint-atk

@@ -1,36 +1,7 @@
 # Global values shared across all subcharts
 global:
-  labels:
-    kots.io/app-slug: settlemint-atk
-  # NetworkPolicy configuration
-  networkPolicy:
-    # Enable NetworkPolicies across all services
-    enabled: false
-  # Artifacts container configuration
-  artifacts:
-    # Image containing contract ABIs and genesis files
-    image:
-      registry: ghcr.io
-      repository: settlemint/asset-tokenization-kit-artifacts
-      pullPolicy: IfNotPresent
   chainId: "53771311147"
   chainName: "ATK"
-  # securityContexts:
-  #   pod:
-  #     fsGroup: 101337
-  #     runAsNonRoot: true
-  #     seccompProfile:
-  #       type: RuntimeDefault
-  #   container:
-  #     runAsNonRoot: true
-  #     runAsUser: 101337
-  #     runAsGroup: 101337
-  #     allowPrivilegeEscalation: false
-  #     capabilities:
-  #       drop:
-  #         - ALL
-  #     seccompProfile:
-  #       type: RuntimeDefault
   datastores:
     default:
       redis:
@@ -79,6 +50,10 @@ network:
   network-bootstrapper:
     image:
       repository: ghcr.io/settlemint/network-bootstrapper
+    artifacts:
+      predeployed:
+        image:
+          registry: ghcr.io
     initContainer:
       tcpCheck:
         image:
@@ -265,6 +240,7 @@ txsigner:
       image:
         repository: ghcr.io/settlemint/btp-waitforit
   ingress:
+    enabled: false
     hostname: txsigner.k8s.orb.local
 
 # DApp Frontend Configuration

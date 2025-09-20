@@ -116,7 +116,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | extraVolumeMounts | list | `[]` | Optionally specify extra list of additional volumeMounts for the eRPC container(s) |
 | extraVolumes | list | `[]` | Optionally specify extra list of additional volumes for the eRPC pod(s) |
 | fullnameOverride | string | `"erpc"` | String to fully override common.names.fullname |
-| global | object | `{"datastores":{},"imagePullSecrets":[],"imageRegistry":"","securityContexts":{},"storageClass":""}` | Global Docker image registry |
+| global | object | `{"datastores":{},"imagePullSecrets":[],"imageRegistry":"","labels":{"kots.io/app-slug":"settlemint-atk"},"securityContexts":{},"storageClass":""}` | Global Docker image registry |
 | global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |
 | global.imageRegistry | string | `""` | Global Docker image registry |
 | global.storageClass | string | `""` | Global StorageClass for Persistent Volume(s) |

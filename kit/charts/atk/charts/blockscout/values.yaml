@@ -13,6 +13,8 @@ global:
   securityContexts: {}
   # -- (object) Shared datastore definitions
   datastores: {}
+  labels:
+    kots.io/app-slug: settlemint-atk
 
 # -- (string) String to fully override common.names.fullname
 fullnameOverride: blockscout

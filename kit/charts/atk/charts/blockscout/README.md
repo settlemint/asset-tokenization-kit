@@ -1,6 +1,6 @@
 # blockscout
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 9.0.2](https://img.shields.io/badge/AppVersion-9.0.2-informational?style=flat-square)
+![Version: 2.0.0-alpha.7](https://img.shields.io/badge/Version-2.0.0--alpha.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.7](https://img.shields.io/badge/AppVersion-2.0.0--alpha.7-informational?style=flat-square)
 
 A Helm chart for Blockscout blockchain explorer stack
 
@@ -198,7 +198,7 @@ A Helm chart for Blockscout blockchain explorer stack
 | frontend.service.type | string | `"ClusterIP"` | Blockscout frontend service type |
 | frontend.tolerations | list | `[]` | Tolerations for pod assignment |
 | fullnameOverride | string | `"blockscout"` | String to fully override common.names.fullname |
-| global | object | `{"datastores":{},"imagePullSecrets":[],"imageRegistry":"","securityContexts":{},"storageClass":""}` | Global Docker image registry and security defaults |
+| global | object | `{"datastores":{},"imagePullSecrets":[],"imageRegistry":"","labels":{"kots.io/app-slug":"settlemint-atk"},"securityContexts":{},"storageClass":""}` | Global Docker image registry and security defaults |
 | global.datastores | object | `{}` | Shared datastore definitions |
 | global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |
 | global.imageRegistry | string | `""` | Global Docker image registry |

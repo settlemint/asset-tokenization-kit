@@ -6,8 +6,8 @@ global:
   imagePullSecrets: []
   # -- (string) Global StorageClass for Persistent Volume(s)
   storageClass: ""
-  # -- (object) Global labels to add to all objects
-  labels: {}
+  labels:
+    kots.io/app-slug: settlemint-atk
 
 # -- (string) String to fully override common.names.fullname
 fullnameOverride: "portal"
@@ -176,7 +176,18 @@ extraEnvVarsCM: ""
 extraEnvVarsSecret: ""
 
 initContainer:
-  copyArtifacts:
+  downloadAbi:
+    # -- (bool) Enable the ABI download init container that syncs ConfigMaps via network-bootstrapper.
+    enabled: true
+    # -- (string) Directory where ABI files are written before being shared with the portal container.
+    outputDirectory: /shared-abis
+    image:
+      # -- (string) OCI image hosting the network-bootstrapper CLI.
+      repository: ghcr.io/settlemint/network-bootstrapper
+      # -- (string) Image tag for the network-bootstrapper CLI.
+      tag: "1.1.9"
+      # -- (string) Image pull policy for the ABI download init container.
+      pullPolicy: IfNotPresent
     resources:
       limits:
         cpu: 150m
@@ -205,6 +216,11 @@ initContainer:
         endpoint: "postgresql:5432"
 
 extraInitContainers: []
+
+# -- (object) RBAC configuration controlling whether Role/RoleBinding resources are rendered.
+rbac:
+  # -- (bool) Create Role/RoleBinding granting the portal access to ABI ConfigMaps.
+  create: true
 
 # -- (object) Service parameters
 service:
@@ -324,7 +340,7 @@ serviceAccount:
   # -- (string) The name of the ServiceAccount to use.
   name: ""
   # -- (bool) Automount service account token for the deployment controller service account
-  automountServiceAccountToken: false
+  automountServiceAccountToken: true
   # -- (object) Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
   annotations: {}
   # -- (object) Extra labels to be added to the service account

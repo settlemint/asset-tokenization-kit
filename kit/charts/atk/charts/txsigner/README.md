@@ -149,7 +149,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | extraVolumeMounts | list | `[{"mountPath":"/signer/.cache","name":"tx-signer-cache"}]` | Optionally specify extra list of additional volumeMounts for the TxSigner container(s) |
 | extraVolumes | list | `[{"emptyDir":{},"name":"tx-signer-cache"}]` | Optionally specify extra list of additional volumes for the TxSigner pod(s) |
 | fullnameOverride | string | `"txsigner"` | String to fully override common.names.fullname (string) |
-| global | object | `{"imagePullSecrets":[],"imageRegistry":"","storageClass":""}` | Global Docker image registry |
+| global | object | `{"imagePullSecrets":[],"imageRegistry":"","labels":{"kots.io/app-slug":"settlemint-atk"},"storageClass":""}` | Global Docker image registry |
 | global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |
 | global.imageRegistry | string | `""` | Global Docker image registry |
 | global.storageClass | string | `""` | Global StorageClass for Persistent Volume(s) |
@@ -160,10 +160,10 @@ The command removes all the Kubernetes components associated with the chart and 
 | image.registry | string | `"ghcr.io"` | TxSigner image registry |
 | image.repository | string | `"settlemint/btp-signer"` | TxSigner image repository |
 | image.tag | string | `"7.15.13"` | TxSigner image tag (immutable tags are recommended) |
-| ingress | object | `{"annotations":{},"apiVersion":"","enabled":true,"extraHosts":[],"extraPaths":[],"extraRules":[],"extraTls":[],"hostname":"txsigner.k8s.orb.local","ingressClassName":"atk-nginx","path":"/","pathType":"ImplementationSpecific","secrets":[],"selfSigned":false,"tls":false}` | Ingress parameters (object) |
+| ingress | object | `{"annotations":{},"apiVersion":"","enabled":false,"extraHosts":[],"extraPaths":[],"extraRules":[],"extraTls":[],"hostname":"txsigner.k8s.orb.local","ingressClassName":"atk-nginx","path":"/","pathType":"ImplementationSpecific","secrets":[],"selfSigned":false,"tls":false}` | Ingress parameters (object) |
 | ingress.annotations | object | `{}` | Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations. |
 | ingress.apiVersion | string | `""` | Force Ingress API version (automatically detected if not set) |
-| ingress.enabled | bool | `true` | Enable ingress record generation for TxSigner (bool) |
+| ingress.enabled | bool | `false` | Enable ingress record generation for TxSigner (bool) |
 | ingress.extraHosts | list | `[]` | An array with additional hostname(s) to be covered with the ingress record |
 | ingress.extraPaths | list | `[]` | An array with additional arbitrary paths that may need to be added to the ingress under the main host |
 | ingress.extraRules | list | `[]` | Additional rules to be covered with this ingress record (list) |

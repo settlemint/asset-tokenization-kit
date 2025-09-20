@@ -1,0 +1,30 @@
+{{- $namespace := .Release.Namespace -}}
+{{- $fullname := include "nodes.fullname" . -}}
+Thank you for deploying the {{ .Chart.Name }} chart!
+
+This release creates two StatefulSets (validators and RPC nodes) plus matching Services to expose Besu endpoints.
+
+Pods and Services
+-----------------
+List the pods created by this release:
+
+  kubectl -n {{ $namespace }} get pods -l app.kubernetes.io/instance={{ .Release.Name }}
+
+Validators publish peer-to-peer interfaces via `svc/{{ $fullname }}` while RPC nodes expose JSON-RPC via `svc/{{ $fullname }}-rpc`.
+
+Accessing RPC Endpoints
+-----------------------
+Port-forward the RPC service to access JSON-RPC locally:
+
+  kubectl -n {{ $namespace }} port-forward svc/{{ $fullname }}-rpc 8545:{{ .Values.service.ports.rpc }}
+
+Optional: forward WebSockets or GraphQL by selecting the corresponding service port names (`ws`, `graphql`).
+
+Observability
+-------------
+Metrics are available on the `metrics` port of each service. Example scrape using `curl`:
+
+  kubectl -n {{ $namespace }} port-forward svc/{{ $fullname }} 9545:{{ .Values.service.ports.metrics }}
+  curl -s http://127.0.0.1:9545/metrics
+
+When finished, cancel any port-forward sessions with Ctrl+C.

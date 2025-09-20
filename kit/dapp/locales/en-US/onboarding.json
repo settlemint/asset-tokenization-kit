@@ -129,17 +129,17 @@
   },
   "identityProgress": {
     "title": "Get ready to invest",
-  "description": "Complete these steps to access your assets.",
+    "description": "Complete these steps to access your assets.",
     "steps": {
       "personalInfo": {
         "title": "Personal details saved",
         "description": "Your profile information is locked in."
       },
-    "registry": {
-      "title": "Identity review in progress",
-      "description": "An admin is reviewing your identity. Check back for updates."
-    }
-  },
+      "registry": {
+        "title": "Identity review in progress",
+        "description": "An admin is reviewing your identity. Check back for updates."
+      }
+    },
     "cta": {
       "label": "Review personal info"
     }

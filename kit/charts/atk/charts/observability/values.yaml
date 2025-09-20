@@ -1,8 +1,12 @@
+global:
+  labels:
+    kots.io/app-slug: settlemint-atk
+
 # https://github.com/kubernetes-sigs/metrics-server/blob/master/charts/metrics-server/values.yaml
 # -- (object) Kubernetes Metrics Server configuration
 metrics-server:
   # -- (bool) Enable metrics server deployment
-  enabled: true
+  enabled: false
   # -- Global Docker registry secret names as an array (list)
   imagePullSecrets: []
   # -- (object) Metrics server image configuration

@@ -1,0 +1,127 @@
+{{- $artifactSource := default "generated" .Values.artifacts.source -}}
+{{- if eq $artifactSource "external" }}
+{{- $root := . -}}
+{{- $external := .Values.artifacts.external | default (dict) -}}
+{{- $genesis := get $external "genesis" -}}
+{{- $staticNodes := default (list) (get $external "staticNodes") -}}
+{{- $validators := default (list) (get $external "validators") -}}
+{{- $faucet := default (dict) (get $external "faucet") -}}
+{{- $validatorCount := len $validators -}}
+{{- if not $genesis }}{{ fail "artifacts.external.genesis must be provided when artifacts.source is 'external'." }}{{- end }}
+{{- if eq (len $staticNodes) 0 }}{{ fail "artifacts.external.staticNodes must include at least one enode when artifacts.source is 'external'." }}{{- end }}
+{{- if eq $validatorCount 0 }}{{ fail "artifacts.external.validators must include at least one entry when artifacts.source is 'external'." }}{{- end }}
+{{- if eq (len $faucet) 0 }}{{ fail "artifacts.external.faucet must be provided when artifacts.source is 'external'." }}{{- end }}
+{{- if empty (get $faucet "address") }}{{ fail "artifacts.external.faucet.address must be set when artifacts.source is 'external'." }}{{- end }}
+{{- if empty (get $faucet "publicKey") }}{{ fail "artifacts.external.faucet.publicKey must be set when artifacts.source is 'external'." }}{{- end }}
+{{- if empty (get $faucet "privateKey") }}{{ fail "artifacts.external.faucet.privateKey must be set when artifacts.source is 'external'." }}{{- end }}
+{{- $faucetAddress := get $faucet "address" -}}
+{{- $faucetPublicKey := get $faucet "publicKey" -}}
+{{- $faucetPrivateKey := get $faucet "privateKey" -}}
+{{- $globalValues := default (dict) .Values.global -}}
+{{- $globalReplicaCount := -1 -}}
+{{- if and (kindIs "map" $globalValues) (hasKey $globalValues "network") -}}
+  {{- $networkGlobal := index $globalValues "network" -}}
+  {{- if and (kindIs "map" $networkGlobal) (hasKey $networkGlobal "validatorReplicaCount") -}}
+    {{- $globalReplicaCount = (index $networkGlobal "validatorReplicaCount" | int) -}}
+  {{- end -}}
+{{- end -}}
+{{- if and (eq $globalReplicaCount -1) (kindIs "map" $globalValues) (hasKey $globalValues "validatorReplicaCount") -}}
+  {{- $globalReplicaCount = (index $globalValues "validatorReplicaCount" | int) -}}
+{{- end -}}
+{{- if eq $globalReplicaCount -1 -}}
+  {{- fail (printf "artifacts.external.validators has %d entries. Set global.validatorReplicaCount (or global.network.validatorReplicaCount) to this value and align network-nodes.validatorReplicaCount." $validatorCount) -}}
+{{- end -}}
+{{- if ne $globalReplicaCount $validatorCount -}}
+  {{- fail (printf "artifacts.external.validators has %d entries but the configured validator replica count is %d. Update global.validatorReplicaCount (or global.network.validatorReplicaCount) and network-nodes.validatorReplicaCount to match." $validatorCount $globalReplicaCount) -}}
+{{- end -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: besu-genesis
+  labels:
+    {{- include "network-bootstrapper.labels" . | nindent 4 }}
+data:
+  genesis.json: |-
+{{ toPrettyJson $genesis | indent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: besu-static-nodes
+  labels:
+    {{- include "network-bootstrapper.labels" . | nindent 4 }}
+data:
+  static-nodes.json: |-
+{{ toPrettyJson $staticNodes | indent 4 }}
+{{- range $index, $validator := $validators }}
+{{- $requiredAddress := required (printf "artifacts.external.validators[%d].address must be set." $index) $validator.address }}
+{{- $requiredPublicKey := required (printf "artifacts.external.validators[%d].publicKey must be set." $index) $validator.publicKey }}
+{{- $requiredPrivateKey := required (printf "artifacts.external.validators[%d].privateKey must be set." $index) $validator.privateKey }}
+{{- $requiredEnode := required (printf "artifacts.external.validators[%d].enode must be set." $index) $validator.enode }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "besu-node-validator-%d-address" $index }}
+  labels:
+    {{- include "network-bootstrapper.labels" $root | nindent 4 }}
+data:
+  address: {{ $requiredAddress | quote }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "besu-node-validator-%d-enode" $index }}
+  labels:
+    {{- include "network-bootstrapper.labels" $root | nindent 4 }}
+data:
+  enode: {{ $requiredEnode | quote }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "besu-node-validator-%d-pubkey" $index }}
+  labels:
+    {{- include "network-bootstrapper.labels" $root | nindent 4 }}
+data:
+  publicKey: {{ $requiredPublicKey | quote }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ printf "besu-node-validator-%d-private-key" $index }}
+  labels:
+    {{- include "network-bootstrapper.labels" $root | nindent 4 }}
+type: Opaque
+stringData:
+  privateKey: {{ $requiredPrivateKey | quote }}
+{{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: besu-faucet-address
+  labels:
+    {{- include "network-bootstrapper.labels" . | nindent 4 }}
+data:
+  address: {{ $faucetAddress | quote }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: besu-faucet-pubkey
+  labels:
+    {{- include "network-bootstrapper.labels" . | nindent 4 }}
+data:
+  publicKey: {{ $faucetPublicKey | quote }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: besu-faucet-private-key
+  labels:
+    {{- include "network-bootstrapper.labels" . | nindent 4 }}
+type: Opaque
+stringData:
+  privateKey: {{ $faucetPrivateKey | quote }}
+{{- end }}

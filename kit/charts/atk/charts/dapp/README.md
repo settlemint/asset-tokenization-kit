@@ -1,6 +1,6 @@
 # dapp
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 2.0.0-alpha.7](https://img.shields.io/badge/Version-2.0.0--alpha.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.7](https://img.shields.io/badge/AppVersion-2.0.0--alpha.7-informational?style=flat-square)
 
 A Helm chart for the ATK DApp frontend
 
@@ -18,6 +18,7 @@ A Helm chart for the ATK DApp frontend
 | env | list | `[]` | Environment variables defined directly in the deployment |
 | extraInitContainers | list | `[]` | Additional init containers appended verbatim to the deployment pod spec |
 | fullnameOverride | string | `"dapp"` | String to fully override dapp.fullname template |
+| global.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/asset-tokenization-kit","tag":""}` | dApp image configuration |
 | image.pullPolicy | string | `"IfNotPresent"` | dApp image pull policy |
 | image.repository | string | `"ghcr.io/settlemint/asset-tokenization-kit"` | dApp image repository |
