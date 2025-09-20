@@ -11,9 +11,8 @@ spec:
   {{- $globalNodes := default (dict) (get $globalValues "networkNodes") }}
   {{- $genesisConfigMapName := default "besu-genesis" (get $globalNodes "genesisConfigMapName") }}
   {{- $staticNodesConfigMapName := default "besu-static-nodes" (get $globalNodes "staticNodesConfigMapName") }}
-  {{- $genesisFilePath := default "/etc/besu/genesis.json" .Values.config.genesisFile }}
+  {{- $genesisFilePath := default "/runtime/besu/genesis.json" .Values.config.genesisFile }}
   {{- $genesisDir := dir $genesisFilePath }}
-  {{- $genesisFileName := base $genesisFilePath }}
   {{- $persistence := .Values.persistence | default (dict) }}
   {{- $persistenceEnabled := default false (get $persistence "enabled") }}
   {{- $existingClaim := default "" (get $persistence "existingClaim") }}
@@ -189,8 +188,10 @@ spec:
 {{ $log4jMount | nindent 12 }}
 {{- end }}
             - name: besu-genesis-runtime
-              mountPath: {{ $genesisFilePath }}
-              subPath: {{ $genesisFileName }}
+              mountPath: {{ $genesisDir }}
+            - name: besu-genesis-runtime
+              mountPath: /etc/besu/genesis.json
+              subPath: genesis.json
               readOnly: true
             - name: besu-static-nodes
               mountPath: /etc/besu/static-nodes.json

@@ -32,9 +32,8 @@ spec:
   {{- $genesisConfigMapName := default "besu-genesis" (get $globalNodes "genesisConfigMapName") }}
   {{- $staticNodesConfigMapName := default "besu-static-nodes" (get $globalNodes "staticNodesConfigMapName") }}
   {{- $validatorPodPrefix := default "besu-node-validator" (get $globalNodes "podPrefix") }}
-  {{- $genesisFilePath := default "/etc/besu/genesis.json" .Values.config.genesisFile }}
+  {{- $genesisFilePath := default "/runtime/besu/genesis.json" .Values.config.genesisFile }}
   {{- $genesisDir := dir $genesisFilePath }}
-  {{- $genesisFileName := base $genesisFilePath }}
   {{- $validatorReplicaBudget := (include "nodes.validatorReplicaCount" . | int) }}
   {{- $priorityClasses := .Values.priorityClassNames | default (dict) }}
   {{- $validatorPriorityClass := default "" (get $priorityClasses "validator") }}
@@ -190,8 +189,10 @@ spec:
 {{ $log4jMount | nindent 12 }}
 {{- end }}
             - name: besu-genesis-runtime
-              mountPath: {{ $genesisFilePath }}
-              subPath: {{ $genesisFileName }}
+              mountPath: {{ $genesisDir }}
+            - name: besu-genesis-runtime
+              mountPath: /etc/besu/genesis.json
+              subPath: genesis.json
               readOnly: true
             - name: besu-static-nodes
               mountPath: /etc/besu/static-nodes.json
@@ -214,7 +215,7 @@ spec:
             {{- with $extraMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
-{{- $extraVolumes := .Values.volumes | default (list) }}
+      {{- $extraVolumes := .Values.volumes | default (list) }}
       volumes:
         - name: besu-config
           configMap:
