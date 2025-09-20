@@ -19,7 +19,7 @@ image:
   # -- (string) Image pull policy controlling when Kubernetes fetches updated image layers.
   pullPolicy: IfNotPresent
   # -- (string) Image tag override; leave empty to inherit the chart appVersion.
-  tag: "1.1.2"
+  tag: "1.1.9"
 
 # -- (list) Image pull secrets enabling access to private registries.
 imagePullSecrets: []
@@ -177,7 +177,7 @@ settings:
 
 # Artifact sourcing controls for bootstrap data used by the nodes chart.
 artifacts:
-  # -- (string) Determines how Besu network artifacts are populated. Use `generated` to run the job or `external` to supply values manually.
+  # -- (string) Determines how Besu network artifacts are populated. Use `generated` to render the bootstrap Job on fresh installs or `external` to supply values manually.
   source: generated
   external:
     # -- (object) Besu genesis document rendered into the `besu-genesis` ConfigMap when `source` equals `external`.

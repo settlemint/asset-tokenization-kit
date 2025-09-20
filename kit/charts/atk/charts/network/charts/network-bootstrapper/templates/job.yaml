@@ -1,5 +1,5 @@
 {{- $artifactSource := default "generated" .Values.artifacts.source -}}
-{{- if eq $artifactSource "generated" }}
+{{- if and (eq $artifactSource "generated") (not .Release.IsUpgrade) }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -56,6 +56,9 @@ spec:
       {{- $allocationsVolumeName := "genesis-allocations" }}
       {{- $allocationsVolumeMountPath := "/genesis" }}
       {{- $allocationsFilePath := printf "%s/genesis-allocations.json" $allocationsVolumeMountPath }}
+      {{- $abiVolumeName := "contract-abis" }}
+      {{- $abiVolumeMountPath := "/abis" }}
+      {{- $abiSourcePath := "/artifacts/abis/asset-tokenization-3643" }}
       {{- $copyGenesis := eq $artifactSource "generated" }}
       {{- if or $copyGenesis (or $tcpEnabled $hasExtraInit) }}
       initContainers:
@@ -72,9 +75,22 @@ spec:
               cp /artifacts/genesis/genesis-allocations.json {{ $allocationsFilePath }}
               # Stash the file so the bootstrapper mounts a pre-seeded genesis
               chmod 644 {{ $allocationsFilePath }}
+              # Stage contract ABIs so the bootstrapper can publish matching ConfigMaps
+              ABI_SRC_DIR="{{ $abiSourcePath }}"
+              echo "Copying ABI artifacts from ${ABI_SRC_DIR}"
+              if [ -d "${ABI_SRC_DIR}" ]; then
+                mkdir -p {{ $abiVolumeMountPath }}
+                cp -a "${ABI_SRC_DIR}/." {{ $abiVolumeMountPath }}/
+                find {{ $abiVolumeMountPath }} -type f -name '*.json' -exec chmod 644 {} +
+                echo "ABI artifacts staged under {{ $abiVolumeMountPath }}"
+              else
+                echo "ABI source directory ${ABI_SRC_DIR} not found; skipping ABI staging"
+              fi
           volumeMounts:
             - name: {{ $allocationsVolumeName }}
               mountPath: {{ $allocationsVolumeMountPath }}
+            - name: {{ $abiVolumeName }}
+              mountPath: {{ $abiVolumeMountPath }}
         {{- end }}
 {{ include "network-bootstrapper.tcpCheckInitContainer" (dict "context" . "config" $tcpCheckConfig "indent" 8) }}
 {{ include "network-bootstrapper.extraInitContainers" (dict "context" . "containers" $extraInitContainers "indent" 8) }}
@@ -136,6 +152,7 @@ spec:
             - --static-nodes-configmap-name={{ $resolvedStaticNodesName }}
             - --faucet-artifact-prefix={{ $resolvedFaucetPrefix }}
             - --allocations={{ $resolvedAllocations }}
+            - --abi-directory={{ $abiVolumeMountPath }}
             {{- with .Values.settings.outputType }}
             - --outputType={{ . }}
             {{- end }}
@@ -169,11 +186,16 @@ spec:
             - name: {{ $allocationsVolumeName }}
               mountPath: {{ $allocationsVolumeMountPath }}
               readOnly: true
+            - name: {{ $abiVolumeName }}
+              mountPath: {{ $abiVolumeMountPath }}
+              readOnly: true
             {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
       volumes:
         - name: {{ $allocationsVolumeName }}
+          emptyDir: {}
+        - name: {{ $abiVolumeName }}
           emptyDir: {}
         {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
