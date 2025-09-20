@@ -1,33 +1,33 @@
 dependencies:
 - name: support
   repository: ""
-  version: '*'
+  version: 2.0.0-alpha.7
 - name: observability
   repository: ""
-  version: '*'
+  version: 2.0.0-alpha.7
 - name: network
   repository: oci://ghcr.io/settlemint/network-bootstrapper
   version: 1.0.18
 - name: erpc
   repository: ""
-  version: '*'
+  version: 2.0.0-alpha.7
 - name: blockscout
   repository: ""
-  version: '*'
+  version: 2.0.0-alpha.7
 - name: graph-node
   repository: ""
-  version: '*'
+  version: 2.0.0-alpha.7
 - name: portal
   repository: ""
-  version: '*'
+  version: 2.0.0-alpha.7
 - name: hasura
   repository: ""
-  version: '*'
+  version: 2.0.0-alpha.7
 - name: txsigner
   repository: ""
-  version: '*'
+  version: 2.0.0-alpha.7
 - name: dapp
   repository: ""
-  version: '*'
-digest: sha256:c8ed6f658f22f5cb7fbdebd6428fa0705da3733ac7a4553d4af9dbac3473066a
-generated: "2025-09-18T18:45:38.580338+02:00"
+  version: 2.0.0-alpha.7
+digest: sha256:6e494d0b1f10b219bb704f95b60313d10cde027749ef142343c0166f679d2cd1
+generated: "2025-09-19T22:24:45.696931+02:00"
