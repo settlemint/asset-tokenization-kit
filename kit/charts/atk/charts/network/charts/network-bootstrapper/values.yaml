@@ -19,7 +19,7 @@ image:
   # -- (string) Image pull policy controlling when Kubernetes fetches updated image layers.
   pullPolicy: IfNotPresent
   # -- (string) Image tag override; leave empty to inherit the chart appVersion.
-  tag: "1.0.18"
+  tag: "1.1.2"
 
 # -- (list) Image pull secrets enabling access to private registries.
 imagePullSecrets: []

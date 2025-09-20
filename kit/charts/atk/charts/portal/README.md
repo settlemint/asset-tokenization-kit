@@ -110,10 +110,9 @@ The following table lists the configurable parameters of the Portal chart and th
 | extraVolumeMounts | list | `[]` | Optionally specify extra list of additional volumeMounts for the Portal container(s) |
 | extraVolumes | list | `[]` | Optionally specify extra list of additional volumes for the Portal pod(s) |
 | fullnameOverride | string | `"portal"` | String to fully override common.names.fullname |
-| global | object | `{"artifacts":{"image":{"pullPolicy":"IfNotPresent","registry":"ghcr.io","repository":"settlemint/asset-tokenization-kit-artifacts"}},"imagePullSecrets":[],"imageRegistry":"","labels":{},"storageClass":""}` | Global Docker image registry |
+| global | object | `{"artifacts":{"image":{"pullPolicy":"IfNotPresent","registry":"ghcr.io","repository":"settlemint/asset-tokenization-kit-artifacts","tag":""}},"imagePullSecrets":[],"imageRegistry":"","labels":{"kots.io/app-slug":"settlemint-atk"},"storageClass":""}` | Global Docker image registry |
 | global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |
 | global.imageRegistry | string | `""` | Global Docker image registry |
-| global.labels | object | `{}` | Global labels to add to all objects |
 | global.storageClass | string | `""` | Global StorageClass for Persistent Volume(s) |
 | image | object | `{"digest":"","pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"ghcr.io","repository":"settlemint/btp-scs-portal","tag":"8.6.7"}` | Portal image |
 | image.digest | string | `""` | Portal image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag |

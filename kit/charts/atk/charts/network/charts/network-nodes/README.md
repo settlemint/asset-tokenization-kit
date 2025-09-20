@@ -1,6 +1,6 @@
 # network-nodes
 
-![Version: 1.0.18](https://img.shields.io/badge/Version-1.0.18-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.18](https://img.shields.io/badge/AppVersion-1.0.18-informational?style=flat-square)
+![Version: 2.0.0-alpha.7](https://img.shields.io/badge/Version-2.0.0--alpha.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.7](https://img.shields.io/badge/AppVersion-2.0.0--alpha.7-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -15,13 +15,10 @@ A Helm chart for Kubernetes
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
-| artifacts.image.pullPolicy | string | `"IfNotPresent"` |  |
-| artifacts.image.registry | string | `"ghcr.io"` |  |
-| artifacts.image.repository | string | `nil` |  |
-| artifacts.image.tag | string | `""` |  |
 | config.bonsaiLimitTrieLogsEnabled | bool | `false` | Emit Bonsai limit trie logs for debugging state transitions. |
 | config.cacheLastBlocks | int | `1024` | Number of recent blocks cached in memory. |
 | config.dataStorageFormat | string | `"FOREST"` | Ledger storage backend (FOREST or BONSAI). |
+| config.genesisFile | string | `"/etc/besu/genesis.json"` | Filesystem path where Besu loads the merged genesis JSON produced at runtime. |
 | config.graphql.corsOrigins | list | `["all"]` | Allowed CORS origins for GraphQL requests. |
 | config.graphql.enabled | bool | `true` | Enable the GraphQL API server. |
 | config.graphql.host | string | `"0.0.0.0"` | Network interface for the GraphQL server. |
@@ -66,10 +63,6 @@ A Helm chart for Kubernetes
 | config.ws.maxFrameSize | int | `2097152` | Maximum WebSocket frame size in bytes. |
 | extraInitContainers | list | `[]` | Additional init containers appended verbatim to both StatefulSets. |
 | fullnameOverride | string | `"besu-node"` | Override for the fully qualified release name used in resource naming. |
-| global.artifacts.image.pullPolicy | string | `nil` |  |
-| global.artifacts.image.registry | string | `nil` |  |
-| global.artifacts.image.repository | string | `nil` |  |
-| global.artifacts.image.tag | string | `nil` |  |
 | global.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | httpRoute.annotations | object | `{}` |  |
 | httpRoute.enabled | bool | `false` | Enable rendering of an HTTPRoute resource. |
@@ -88,6 +81,12 @@ A Helm chart for Kubernetes
 | ingress.enabled | bool | `false` | Enable creation of an Ingress resource. |
 | ingress.hosts | list | `[{"host":"chart-example.local","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | Hostname and path routing rules for the Ingress. |
 | ingress.tls | list | `[]` | TLS configuration for Ingress hosts. |
+| initContainer.compileGenesis.enabled | bool | `true` | Enable the compile-genesis init container that merges allocation ConfigMaps into the runtime genesis file. |
+| initContainer.compileGenesis.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy for the compile-genesis init container. |
+| initContainer.compileGenesis.image.repository | string | `"ghcr.io/settlemint/network-bootstrapper"` | OCI image hosting the network-bootstrapper CLI used for genesis compilation. |
+| initContainer.compileGenesis.image.tag | string | `"1.1.2"` | Image tag for the network-bootstrapper CLI. |
+| initContainer.compileGenesis.outputPath | string | `""` | Filesystem path populated with the compiled genesis JSON. Leave empty to mirror config.genesisFile. |
+| initContainer.compileGenesis.resources | object | `{}` | Optional Kubernetes resource requests/limits for the compile-genesis init container. |
 | initContainer.tcpCheck.dependencies | list | `[]` | TCP dependencies expressed as name/endpoint pairs (host:port strings). |
 | initContainer.tcpCheck.enabled | bool | `false` | Enable a tcp-check init container before Besu pods start. |
 | initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy for the tcp-check init container. |
@@ -158,6 +157,7 @@ A Helm chart for Kubernetes
 | podSecurityContext | object | `{}` |  |
 | priorityClassNames.rpc | string | `""` | PriorityClass name assigned to RPC pods. Leave empty to inherit namespace defaults. |
 | priorityClassNames.validator | string | `""` | PriorityClass name assigned to validator pods. Leave empty to inherit namespace defaults. |
+| rbac.create | bool | `true` | Create Role and RoleBinding granting pods read access to ConfigMaps/Secrets. |
 | readinessProbe | string | `nil` |  |
 | resources | object | `{}` |  |
 | rpcReplicaCount | int | `2` | Number of RPC node replicas provisioned via StatefulSet. |

@@ -18,6 +18,7 @@ A Helm chart for the ATK DApp frontend
 | env | list | `[]` | Environment variables defined directly in the deployment |
 | extraInitContainers | list | `[]` | Additional init containers appended verbatim to the deployment pod spec |
 | fullnameOverride | string | `"dapp"` | String to fully override dapp.fullname template |
+| global.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/asset-tokenization-kit","tag":""}` | dApp image configuration |
 | image.pullPolicy | string | `"IfNotPresent"` | dApp image pull policy |
 | image.repository | string | `"ghcr.io/settlemint/asset-tokenization-kit"` | dApp image repository |

@@ -11,6 +11,9 @@ spec:
   {{- $globalNodes := default (dict) (get $globalValues "networkNodes") }}
   {{- $genesisConfigMapName := default "besu-genesis" (get $globalNodes "genesisConfigMapName") }}
   {{- $staticNodesConfigMapName := default "besu-static-nodes" (get $globalNodes "staticNodesConfigMapName") }}
+  {{- $genesisFilePath := default "/etc/besu/genesis.json" .Values.config.genesisFile }}
+  {{- $genesisDir := dir $genesisFilePath }}
+  {{- $genesisFileName := base $genesisFilePath }}
   {{- $persistence := .Values.persistence | default (dict) }}
   {{- $persistenceEnabled := default false (get $persistence "enabled") }}
   {{- $existingClaim := default "" (get $persistence "existingClaim") }}
@@ -39,11 +42,14 @@ spec:
   {{- $globalTcpDefaults := default (dict) (get $globalInitConfig "tcpCheck") }}
   {{- $chartTcpOverrides := default (dict) (get $initConfig "tcpCheck") }}
   {{- $tcpCheckConfig := mergeOverwrite (deepCopy $globalTcpDefaults) $chartTcpOverrides }}
+  {{- $compileGenesisConfig := mergeOverwrite (deepCopy (default (dict) (get $globalInitConfig "compileGenesis"))) (default (dict) (get $initConfig "compileGenesis")) }}
   {{- $globalExtraInit := default (list) (get $globalValues "extraInitContainers") }}
   {{- $chartExtraInit := default (list) .Values.extraInitContainers }}
   {{- $extraInitContainers := concat $globalExtraInit $chartExtraInit }}
   {{- $tcpEnabled := default false (get $tcpCheckConfig "enabled") }}
+  {{- $compileGenesisEnabled := default false (get $compileGenesisConfig "enabled") }}
   {{- $hasExtraInit := gt (len $extraInitContainers) 0 }}
+  {{- $needsInitContainers := or $compileGenesisEnabled (or $tcpEnabled $hasExtraInit) }}
   {{- $securityContexts := dict -}}
   {{- include "nodes.securityContexts" (dict "ctx" . "dest" $securityContexts) -}}
   {{- $podSecurityContext := index $securityContexts "pod" }}
@@ -89,8 +95,21 @@ spec:
       securityContext:
         {{- toYaml $podSecurityContext | nindent 8 }}
       {{- end }}
-      {{- if or $tcpEnabled $hasExtraInit }}
+      {{- if $needsInitContainers }}
       initContainers:
+        {{- if $compileGenesisEnabled }}
+{{ include "nodes.compileGenesisInitContainer" (dict
+  "context" $root
+  "config" $compileGenesisConfig
+  "indent" 8
+  "genesisConfigMapName" $genesisConfigMapName
+  "configMapVolumeName" "besu-genesis"
+  "configMapMountPath" "/bootstrap/genesis"
+  "outputVolumeName" "besu-genesis-runtime"
+  "outputMountPath" $genesisDir
+  "genesisFilePath" $genesisFilePath
+) }}
+        {{- end }}
 {{- include "nodes.tcpCheckInitContainer" (dict "context" $root "config" $tcpCheckConfig "indent" 8) }}
 {{- include "nodes.extraInitContainers" (dict "context" $root "containers" $extraInitContainers "indent" 8) }}
       {{- end }}
@@ -169,9 +188,9 @@ spec:
 {{- if $log4jMount }}
 {{ $log4jMount | nindent 12 }}
 {{- end }}
-            - name: besu-genesis
-              mountPath: /etc/besu/genesis.json
-              subPath: genesis.json
+            - name: besu-genesis-runtime
+              mountPath: {{ $genesisFilePath }}
+              subPath: {{ $genesisFileName }}
               readOnly: true
             - name: besu-static-nodes
               mountPath: /etc/besu/static-nodes.json
@@ -198,6 +217,8 @@ spec:
         - name: besu-genesis
           configMap:
             name: {{ $genesisConfigMapName }}
+        - name: besu-genesis-runtime
+          emptyDir: {}
         - name: besu-static-nodes
           configMap:
             name: {{ $staticNodesConfigMapName }}

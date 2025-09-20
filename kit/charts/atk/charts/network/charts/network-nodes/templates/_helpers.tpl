@@ -121,6 +121,44 @@ Resolve the number of validator replicas, falling back to global overrides when 
 {{- end }}
 
 {{/*
+Render a compile-genesis init container when enabled.
+*/}}
+{{- define "nodes.compileGenesisInitContainer" -}}
+{{- $ctx := index . "context" -}}
+{{- $cfg := default (dict) (index . "config") -}}
+{{- $indent := index . "indent" | default 2 -}}
+{{- $enabled := default false (get $cfg "enabled") -}}
+{{- if $enabled -}}
+{{- $genesisConfigMapName := default "besu-genesis" (index . "genesisConfigMapName") -}}
+{{- $configMapVolumeName := index . "configMapVolumeName" -}}
+{{- $configMapMountPath := index . "configMapMountPath" -}}
+{{- $outputVolumeName := index . "outputVolumeName" -}}
+{{- $outputMountPath := index . "outputMountPath" -}}
+{{- $genesisFilePath := default "" (index . "genesisFilePath") -}}
+{{- $image := default (dict) (get $cfg "image") -}}
+{{- $repository := default "ghcr.io/settlemint/network-bootstrapper" (get $image "repository") -}}
+{{- $tag := default "1.1.2" (get $image "tag") -}}
+{{- $pullPolicy := default "IfNotPresent" (get $image "pullPolicy") -}}
+{{- $defaultOutput := ternary $genesisFilePath (printf "%s/genesis.json" $outputMountPath) (ne $genesisFilePath "") -}}
+{{- $outputPath := default $defaultOutput (get $cfg "outputPath") -}}
+{{- $resources := get $cfg "resources" -}}
+{{- $args := list "compile-genesis" (printf "--genesis-configmap-name=%s" $genesisConfigMapName) (printf "--output-path=%s" $outputPath) -}}
+{{- $container := dict
+  "name" "compile-genesis"
+  "image" (printf "%s:%s" $repository $tag)
+  "imagePullPolicy" $pullPolicy
+  "args" $args
+  "volumeMounts" (list
+    (dict "name" $configMapVolumeName "mountPath" $configMapMountPath "readOnly" true)
+    (dict "name" $outputVolumeName "mountPath" $outputMountPath)
+  )
+-}}
+{{- if $resources }}{{- $_ := set $container "resources" $resources }}{{- end -}}
+{{ toYaml (list $container) | nindent $indent }}
+{{- end -}}
+{{- end }}
+
+{{/*
 Render a tcp-check init container when enabled.
 */}}
 {{- define "nodes.tcpCheckInitContainer" -}}

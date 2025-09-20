@@ -36,6 +36,13 @@ spec:
         {{- toYaml $podSecurityContext | nindent 8 }}
       {{- end }}
       {{- $globalValues := default (dict) .Values.global }}
+      {{- $globalArtifacts := default (dict) (get $globalValues "artifacts") }}
+      {{- $artifactsImage := default (dict) (get $globalArtifacts "image") }}
+      {{- $artifactsRegistry := default "ghcr.io" (get $artifactsImage "registry") }}
+      {{- $artifactsRepository := default "settlemint/asset-tokenization-kit-artifacts" (get $artifactsImage "repository") }}
+      {{- $chartVersion := $.Chart.AppVersion | default .Chart.AppVersion }}
+      {{- $artifactsTag := default $chartVersion (get $artifactsImage "tag") }}
+      {{- $artifactsPullPolicy := default "IfNotPresent" (get $artifactsImage "pullPolicy") }}
       {{- $initConfig := default (dict) .Values.initContainer }}
       {{- $globalInitConfig := default (dict) (get $globalValues "initContainer") }}
       {{- $globalTcpDefaults := default (dict) (get $globalInitConfig "tcpCheck") }}
@@ -46,10 +53,31 @@ spec:
       {{- $extraInitContainers := concat $globalExtraInit $chartExtraInit }}
       {{- $tcpEnabled := default false (get $tcpCheckConfig "enabled") }}
       {{- $hasExtraInit := gt (len $extraInitContainers) 0 }}
-      {{- if or $tcpEnabled $hasExtraInit }}
+      {{- $allocationsVolumeName := "genesis-allocations" }}
+      {{- $allocationsVolumeMountPath := "/genesis" }}
+      {{- $allocationsFilePath := printf "%s/genesis-allocations.json" $allocationsVolumeMountPath }}
+      {{- $copyGenesis := eq $artifactSource "generated" }}
+      {{- if or $copyGenesis (or $tcpEnabled $hasExtraInit) }}
       initContainers:
-{{- include "network-bootstrapper.tcpCheckInitContainer" (dict "context" . "config" $tcpCheckConfig "indent" 8) }}
-{{- include "network-bootstrapper.extraInitContainers" (dict "context" . "containers" $extraInitContainers "indent" 8) }}
+        {{- if $copyGenesis }}
+        - name: copy-genesis
+          image: "{{ $artifactsRegistry }}/{{ $artifactsRepository }}:{{ $artifactsTag }}"
+          imagePullPolicy: {{ $artifactsPullPolicy }}
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              set -euo pipefail
+              echo "Copying genesis allocations from artifacts image"
+              cp /artifacts/genesis/genesis-allocations.json {{ $allocationsFilePath }}
+              # Stash the file so the bootstrapper mounts a pre-seeded genesis
+              chmod 644 {{ $allocationsFilePath }}
+          volumeMounts:
+            - name: {{ $allocationsVolumeName }}
+              mountPath: {{ $allocationsVolumeMountPath }}
+        {{- end }}
+{{ include "network-bootstrapper.tcpCheckInitContainer" (dict "context" . "config" $tcpCheckConfig "indent" 8) }}
+{{ include "network-bootstrapper.extraInitContainers" (dict "context" . "containers" $extraInitContainers "indent" 8) }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -68,6 +96,10 @@ spec:
             {{- $resolvedStaticPort := default $defaultStaticPort .Values.settings.staticNodePort }}
             {{- $resolvedStaticDiscovery := default $defaultStaticDiscovery .Values.settings.staticNodeDiscoveryPort }}
             {{- $settingsValues := default (dict) .Values.settings }}
+            {{- $allocationsOverride := get $settingsValues "allocations" }}
+            {{- $allocationsOverrideBlank := and (kindIs "string" $allocationsOverride) (eq (trim $allocationsOverride) "") }}
+            {{- $allocationsOverrideSet := and (not (kindIs "invalid" $allocationsOverride)) (not $allocationsOverrideBlank) (not (empty $allocationsOverride)) }}
+            {{- $resolvedAllocations := ternary $allocationsOverride $allocationsFilePath $allocationsOverrideSet }}
             {{- $globalNodes := default (dict) (get $globalValues "networkNodes") }}
             {{- $localChainId := get $settingsValues "chainId" }}
             {{- $globalChainId := get $globalValues "chainId" }}
@@ -103,9 +135,7 @@ spec:
             - --genesis-configmap-name={{ $resolvedGenesisName }}
             - --static-nodes-configmap-name={{ $resolvedStaticNodesName }}
             - --faucet-artifact-prefix={{ $resolvedFaucetPrefix }}
-            {{- with .Values.settings.allocations }}
-            - --allocations={{ . }}
-            {{- end }}
+            - --allocations={{ $resolvedAllocations }}
             {{- with .Values.settings.outputType }}
             - --outputType={{ . }}
             {{- end }}
@@ -135,14 +165,19 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.volumeMounts }}
           volumeMounts:
+            - name: {{ $allocationsVolumeName }}
+              mountPath: {{ $allocationsVolumeMountPath }}
+              readOnly: true
+            {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
-          {{- end }}
-      {{- with .Values.volumes }}
+            {{- end }}
       volumes:
+        - name: {{ $allocationsVolumeName }}
+          emptyDir: {}
+        {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

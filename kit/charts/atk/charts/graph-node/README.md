@@ -38,8 +38,8 @@ A Helm chart for Graph Node
 | extraVolumeMounts | list | `[]` | Additional volume mounts |
 | extraVolumes | list | `[]` | Additional volumes |
 | fullnameOverride | string | `"graph-node"` | Override the full resource name. Set to "graph-node" for backward compatibility with existing ATK deployments that reference "graph-node-combined" service name |
-| global | object | `{"artifacts":{"image":{"pullPolicy":"IfNotPresent","registry":"ghcr.io","repository":"settlemint/asset-tokenization-kit-artifacts"}},"labels":{}}` | Global configuration |
-| global.labels | object | `{}` | Global labels to add to all resources |
+| global | object | `{"artifacts":{"image":{"pullPolicy":"IfNotPresent","registry":"ghcr.io","repository":"settlemint/asset-tokenization-kit-artifacts","tag":""}},"labels":{"kots.io/app-slug":"settlemint-atk"}}` | Global configuration |
+| graph-node.graphNodeDefaults.env.SUBGRAPH | string | `"kit:QmRU9F9d7kuDVVzqVF5ig1SibWSEWLYvurR8yz7dyrEUnx"` |  |
 | image | object | `{"pullPolicy":"IfNotPresent","repository":"graphprotocol/graph-node","tag":"v0.40.2"}` | Graph Node image configuration |
 | image.pullPolicy | string | `"IfNotPresent"` | Graph Node image pull policy |
 | image.repository | string | `"graphprotocol/graph-node"` | Image for Graph Node |

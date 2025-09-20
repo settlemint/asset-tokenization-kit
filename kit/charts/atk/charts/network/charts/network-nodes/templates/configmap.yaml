@@ -9,10 +9,11 @@ metadata:
 {{- $mountPath := default "" (get $persistence "mountPath") }}
 {{- $privateKeyFilename := default "privateKey" .Values.config.privateKeyFilename }}
 {{- $logFormat := default "plain" .Values.config.logFormat }}
+{{- $genesisFilePath := default "/etc/besu/genesis.json" .Values.config.genesisFile }}
 data:
   config.toml: |-
     data-path="/data"
-    genesis-file="/etc/besu/genesis.json"
+    genesis-file={{ $genesisFilePath | quote }}
     logging={{ .Values.config.logging | quote }}
     node-private-key-file={{ printf "/data/%s" $privateKeyFilename | quote }}
     data-storage-format={{ .Values.config.dataStorageFormat | quote }}

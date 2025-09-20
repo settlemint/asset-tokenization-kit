@@ -40,6 +40,11 @@ serviceAccount:
   # -- (string) Existing ServiceAccount name to reuse when creation is disabled.
   name: ""
 
+# RBAC configuration controlling Role/RoleBinding creation for accessing Besu artifacts.
+rbac:
+  # -- (bool) Create Role and RoleBinding granting pods read access to ConfigMaps/Secrets.
+  create: true
+
 # Pod annotations merged onto all Besu pods.
 podAnnotations:
   # -- (string) Enables Prometheus scraping of the Besu metrics endpoint.
@@ -209,6 +214,8 @@ service:
 
 # Core Besu configuration persisted as besu.conf for both validators and RPC nodes.
 config:
+  # -- (string) Filesystem path where Besu loads the merged genesis JSON produced at runtime.
+  genesisFile: /etc/besu/genesis.json
   # -- (string) Log verbosity level for Besu components.
   logging: INFO
   # -- (string) Log output format. Supports "plain" (default) or "json".
@@ -557,6 +564,20 @@ initContainer:
         memory: 32Mi
     # -- (list) TCP dependencies expressed as name/endpoint pairs (host:port strings).
     dependencies: []
+  compileGenesis:
+    # -- (bool) Enable the compile-genesis init container that merges allocation ConfigMaps into the runtime genesis file.
+    enabled: true
+    image:
+      # -- (string) OCI image hosting the network-bootstrapper CLI used for genesis compilation.
+      repository: ghcr.io/settlemint/network-bootstrapper
+      # -- (string) Image tag for the network-bootstrapper CLI.
+      tag: 1.1.2
+      # -- (string) Image pull policy for the compile-genesis init container.
+      pullPolicy: IfNotPresent
+    # -- (string) Filesystem path populated with the compiled genesis JSON. Leave empty to mirror config.genesisFile.
+    outputPath: ""
+    # -- (object) Optional Kubernetes resource requests/limits for the compile-genesis init container.
+    resources: {}
 
 # -- (list) Additional init containers appended verbatim to both StatefulSets.
 extraInitContainers: []
