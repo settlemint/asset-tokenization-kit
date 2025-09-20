@@ -1,5 +1,12 @@
 import { baseRouter } from "../procedures/base.router";
+import accountRouter from "./account/account.router";
+import actionsRouter from "./actions/actions.router";
+import exchangeRatesRouter from "./exchange-rates/exchange-rates.router";
+import fixedYieldScheduleRouter from "./fixed-yield-schedule/fixed-yield-schedule.router";
 import settingsRouter from "./settings/settings.router";
+import systemRouter from "./system/system.router";
+import tokenRouter from "./token/token.router";
+import userRouter from "./user/user.router";
 
 /**
  * Main ORPC router configuration.
@@ -17,65 +24,43 @@ export const router = baseRouter.router({
   /**
    * Account-related API procedures.
    *
-   * Lazy-loaded module containing account management operations.
+   * Eagerly loaded module containing account management operations.
    * Accounts represent blockchain wallet addresses and their associated
-   * identity claims within the ERC-3643 compliance framework. This module
-   * provides endpoints for creating wallets and querying account information
-   * including verified identity attributes.
-   * @see {@link ./account/account.router} - Account router implementation
+   * identity claims within the ERC-3643 compliance framework.
    */
-  account: baseRouter.account.lazy(
-    async () => import("./account/account.router")
-  ),
+  account: accountRouter,
 
   /**
    * Actions-related API procedures.
    *
-   * Lazy-loaded module containing actions management operations.
+   * Eagerly loaded module containing actions management operations.
    * Actions represent time-bound, executable tasks that users can perform on assets.
    * This module provides endpoints for listing and reading action details,
    * with automatic filtering to only show actions accessible to the authenticated user.
    *
-   * **Architecture Decision**: Actions are implemented as a top-level namespace
-   * rather than nested under tokens (e.g., /tokens/{id}/actions) for several reasons:
-   * - Actions are domain entities that can target various resources, not just tokens
-   * - Provides unified "my actions" view for users across all entities
-   * - Enables efficient querying without multiple API calls
-   * - Maintains consistent authorization model with centralized user filtering
-   * - Future-proof for actions targeting accounts, systems, compliance modules, etc.
+   * **Architecture Decision**: This router is not lazy-loaded because several other
+   * namespaces (for example, the token routes) directly re-use the actions route
+   * handlers. Keeping it eagerly loaded prevents circular evaluation issues during
+   * the server build that otherwise manifest as `ReferenceError: Cannot access
+   * 'router$1' before initialization` when the bundle executes.
    *
    * @see {@link ./actions/actions.router} - Actions router implementation
    */
-  actions: baseRouter.actions.lazy(
-    async () => import("./actions/actions.router")
-  ),
+  actions: actionsRouter,
 
   /**
    * Exchange rates API procedures.
    *
-   * Lazy-loaded module containing foreign exchange rate management operations.
-   * Provides real-time currency conversion rates with automatic synchronization
-   * from external providers, manual rate overrides, and historical data access
-   * for analytics and charting.
-   * @see {@link ./exchange-rates/exchange-rates.router} - Exchange rates router implementation
+   * Eagerly loaded module containing foreign exchange rate management operations.
    */
-  exchangeRates: baseRouter.exchangeRates.lazy(
-    async () => import("./exchange-rates/exchange-rates.router")
-  ),
+  exchangeRates: exchangeRatesRouter,
 
   /**
    * Fixed yield schedule API procedures.
    *
-   * Lazy-loaded module containing fixed yield schedule management operations.
-   * Provides access to yield schedule configuration, tracking metrics, period
-   * management, and denomination asset details for tokenized assets with
-   * yield-bearing capabilities. This module enables comprehensive yield
-   * schedule data retrieval for client applications.
-   * @see {@link ./fixed-yield-schedule/fixed-yield-schedule.router} - Fixed yield schedule router implementation
+   * Eagerly loaded module containing fixed yield schedule management operations.
    */
-  fixedYieldSchedule: baseRouter.fixedYieldSchedule.lazy(
-    async () => import("./fixed-yield-schedule/fixed-yield-schedule.router")
-  ),
+  fixedYieldSchedule: fixedYieldScheduleRouter,
 
   /**
    * Settings-related API procedures.
@@ -89,28 +74,22 @@ export const router = baseRouter.router({
   /**
    * Token-related API procedures.
    *
-   * Lazy-loaded module containing token management operations.
-   * @see {@link ./token/token.router} - Token router implementation
+   * Eagerly loaded module containing token management operations.
    */
-  token: baseRouter.token.lazy(async () => import("./token/token.router")),
+  token: tokenRouter,
 
   /**
    * System-related API procedures.
    *
-   * Lazy-loaded module containing SMART system management operations.
-   * Systems are the foundational contracts that orchestrate the deployment
-   * and management of tokenized assets, including compliance rules, identity
-   * verification, and access control. This module provides endpoints for
-   * querying and managing these system contracts.
-   * @see {@link ./system/system.router} - System router implementation
+   * Eagerly loaded module containing SMART system management operations.
    */
-  system: baseRouter.system.lazy(async () => import("./system/system.router")),
+  system: systemRouter,
 
   /**
    * User-related API procedures.
    *
-   * Lazy-loaded module containing user-related operations such as
+   * Eagerly loaded module containing user-related operations such as
    * querying and managing user-related resources.
    */
-  user: baseRouter.user.lazy(async () => import("./user/user.router")),
+  user: userRouter,
 });
