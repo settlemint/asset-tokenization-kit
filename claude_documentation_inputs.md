@@ -118,6 +118,8 @@ Create and maintain these 30 Markdown files in `kit/docs/content/docs/` that spe
 
 **CRITICAL**: This section documents the complete file structure of the `kit/` directory with explanations for what each file and directory contains. This serves as a comprehensive reference for documentation writers to understand the actual codebase structure.
 
+**IMPORTANT**: When regenerating documentation, ALWAYS update this folder structure section AND the corresponding "Complete File Structure" section in `01-system-overview.md` to reflect the current state of the codebase. Both sections must be kept in sync to ensure accuracy.
+
 ```
 kit/
 ├── charts/                                    # Kubernetes Helm charts for deployment
@@ -599,6 +601,7 @@ Follow this structure for all user-facing documentation with emphasis on visual 
 - **Cross-references** between related sections
 - **Consistent terminology** throughout all documents
 - **Structured information presentation** using tables and diagrams
+- **NO specific version numbers** - avoid mentioning specific versions for technology components (e.g., use "Next.js" instead of "Next.js 15", "React" instead of "React 19") to facilitate easier maintenance and automatic updates
 
 ### Code Documentation
 - **Always link to actual code files** using relative paths
@@ -1151,6 +1154,7 @@ Documentation is complete and successful when:
 4. **Validate Documentation Sync File** - Ensure all status updates are accurate
 5. **Validate Mermaid Diagrams** - Check all Mermaid diagrams for syntax correctness and proper rendering
 6. **Update Diagram Statistics** - Record total diagram count and validation results
+7. **Update File Structure** - Refresh the complete folder structure in both the system overview documentation (01-system-overview.md) and this claude_documentation_inputs.md file to reflect any changes in the actual codebase
 
 ### Documentation Completion Validation:
 

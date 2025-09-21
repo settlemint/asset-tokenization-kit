@@ -39,7 +39,7 @@ graph TB
         end
         
         subgraph "Application Services"
-            Frontend[Frontend Application<br/>Next.js 15 dApp<br/>• React 19 components<br/>• TanStack ecosystem<br/>• Wallet integration]
+            Frontend[Frontend Application<br/>Next.js dApp<br/>• React components<br/>• TanStack ecosystem<br/>• Wallet integration]
             
             API[API Server<br/>ORPC Backend<br/>• Type-safe procedures<br/>• Authentication<br/>• Business logic]
             
@@ -117,7 +117,7 @@ The architecture provides complete separation of concerns while maintaining tigh
 
 | Component | Minimum Requirements | Recommended Requirements | Notes |
 |-----------|---------------------|-------------------------|-------|
-| **Operating System** | macOS 12+, Ubuntu 20.04+, Windows 11 | Latest stable versions | WSL2 required for Windows |
+| **Operating System** | macOS, Ubuntu, Windows | Latest stable versions | WSL2 required for Windows |
 | **CPU** | 4 cores, 2.5 GHz | 8+ cores, 3.0+ GHz | Parallel builds and services |
 | **Memory** | 16 GB RAM | 32+ GB RAM | Docker containers and compilation |
 | **Storage** | 50 GB available | 100+ GB SSD | Fast I/O for development |
@@ -127,11 +127,11 @@ The architecture provides complete separation of concerns while maintaining tigh
 
 | Software | Version | Installation Method | Verification Command |
 |----------|---------|-------------------|---------------------|
-| **Node.js** | 20.x LTS | [nodejs.org](https://nodejs.org) | `node --version` |
-| **Bun** | 1.2.19+ | `curl -fsSL https://bun.sh/install \| bash` | `bun --version` |
-| **Docker** | 24.0+ | [docker.com](https://docker.com) | `docker --version` |
-| **Docker Compose** | 2.20+ | Included with Docker Desktop | `docker compose version` |
-| **Git** | 2.40+ | System package manager | `git --version` |
+| **Node.js** | LTS | [nodejs.org](https://nodejs.org) | `node --version` |
+| **Bun** | Latest | `curl -fsSL https://bun.sh/install \| bash` | `bun --version` |
+| **Docker** | Latest | [docker.com](https://docker.com) | `docker --version` |
+| **Docker Compose** | Latest | Included with Docker Desktop | `docker compose version` |
+| **Git** | Latest | System package manager | `git --version` |
 
 ### Initial Setup Process
 
@@ -585,7 +585,7 @@ The development environment provides comprehensive data storage infrastructure:
 graph TB
     subgraph "Database Infrastructure"
         subgraph "PostgreSQL Configuration"
-            PGMain[PostgreSQL 17.6<br/>Primary Database<br/>• Application data<br/>• User accounts<br/>• System state]
+            PGMain[PostgreSQL<br/>Primary Database<br/>• Application data<br/>• User accounts<br/>• System state]
             
             PGConfig[Database Configuration<br/>Optimized Settings<br/>• Connection pooling<br/>• Performance tuning<br/>• Development logging]
             

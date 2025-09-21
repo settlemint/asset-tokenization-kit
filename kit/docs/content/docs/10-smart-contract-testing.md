@@ -335,7 +335,7 @@ graph TB
 | Vulnerability Type | Risk Level | Test Coverage | Detection Method | Mitigation Strategy |
 |-------------------|------------|---------------|------------------|-------------------|
 | **Reentrancy** | High | 100% | Automated testing | ReentrancyGuard |
-| **Integer Overflow** | Medium | 100% | Static analysis | SafeMath/Solidity 0.8+ |
+| **Integer Overflow** | Medium | 100% | Static analysis | SafeMath/Solidity latest |
 | **Access Control** | High | 100% | Automated testing | OpenZeppelin AccessControl |
 | **Front-running** | Medium | 80% | Manual testing | Commit-reveal schemes |
 | **Flash Loan Attacks** | Medium | 90% | Scenario testing | Economic barriers |

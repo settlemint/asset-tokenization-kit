@@ -192,7 +192,7 @@ graph TB
 
 ## Tailwind CSS Implementation
 
-The styling system leverages Tailwind CSS 4.x for utility-first styling with comprehensive customization:
+The styling system leverages Tailwind CSS for utility-first styling with comprehensive customization:
 
 ### Tailwind Configuration
 

@@ -166,6 +166,12 @@ Documentation Version: v2.0.0-alpha.7
 - Verified consistent styling across all diagrams
 - Fixed parentheses syntax issues in node labels
 - Final validation: All 173 diagrams render correctly
+- Removed technology version numbers for easier maintenance
+- Updated version references to "Latest" for future-proofing
+- Added instruction to avoid specific version numbers in claude_documentation_inputs.md
+- Renamed claude_instructions.md to claude_documentation_inputs.md
+- Added complete folder structure to system overview documentation (01-system-overview.md)
+- Added instruction to update file structures in both system overview and claude_documentation_inputs.md
 
 ## 🔧 Maintenance Protocols
 

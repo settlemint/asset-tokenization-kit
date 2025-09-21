@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-The Next.js dApp Architecture provides a modern, scalable frontend application built on Next.js 15 with App Router, React 19, and the TanStack ecosystem for state management, routing, and form handling. This architecture delivers a comprehensive user interface for asset tokenization, featuring sophisticated onboarding workflows, asset management interfaces, compliance dashboards, and administrative tools, all optimized for performance, accessibility, and user experience.
+The Next.js dApp Architecture provides a modern, scalable frontend application built on Next.js with App Router, React, and the TanStack ecosystem for state management, routing, and form handling. This architecture delivers a comprehensive user interface for asset tokenization, featuring sophisticated onboarding workflows, asset management interfaces, compliance dashboards, and administrative tools, all optimized for performance, accessibility, and user experience.
 
 The application leverages cutting-edge web technologies including Server Components, streaming, and advanced caching strategies to deliver exceptional performance while maintaining type safety and developer experience. The modular component architecture enables rapid feature development and customization while ensuring consistency and maintainability across the entire application.
 
@@ -10,7 +10,7 @@ The application leverages cutting-edge web technologies including Server Compone
 
 - [Executive Summary](#executive-summary)
 - [Application Architecture](#application-architecture)
-- [Next.js 15 App Router](#nextjs-15-app-router)
+- [Next.js App Router](#nextjs-app-router)
 - [TanStack Router Integration](#tanstack-router-integration)
 - [Authentication System](#authentication-system)
 - [Onboarding Flow Architecture](#onboarding-flow-architecture)
@@ -31,7 +31,7 @@ The Next.js dApp follows a modern, scalable architecture that separates concerns
 graph TB
     subgraph "Next.js dApp Architecture"
         subgraph "Presentation Layer"
-            AppRouter[App Router<br/>Next.js 15 Routing<br/>• File-based routing<br/>• Server Components<br/>• Streaming support]
+            AppRouter[App Router<br/>Next.js Routing<br/>• File-based routing<br/>• Server Components<br/>• Streaming support]
             
             PageComponents[Page Components<br/>Route Components<br/>• Layout components<br/>• Page-specific logic<br/>• Data fetching]
             
@@ -110,9 +110,9 @@ graph TB
 
 The architecture demonstrates clear separation of concerns with unidirectional data flow and well-defined integration points between layers.
 
-## Next.js 15 App Router
+## Next.js App Router
 
-The application leverages Next.js 15's App Router for modern, performant routing with Server Components and streaming capabilities:
+The application leverages Next.js App Router for modern, performant routing with Server Components and streaming capabilities:
 
 ```mermaid
 graph TB

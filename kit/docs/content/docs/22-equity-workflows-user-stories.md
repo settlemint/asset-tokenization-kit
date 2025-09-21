@@ -704,4 +704,4 @@ Administrative workflows support equity management, governance oversight, and op
 - **Corporate Governance**: [https://www.oecd.org/corporate/](https://www.oecd.org/corporate/) - Corporate governance principles
 - **Shareholder Rights**: [https://www.sec.gov/investor](https://www.sec.gov/investor) - Investor protection
 - **Proxy Voting**: [https://www.proxyinsight.com](https://www.proxyinsight.com) - Proxy voting insights
-- **ERC20Votes**: [https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20Votes](https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC20Votes) - Voting implementation
+- **ERC20Votes**: [https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Votes](https://docs.openzeppelin.com/contracts/api/token/erc20#ERC20Votes) - Voting implementation

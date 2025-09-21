@@ -28,7 +28,7 @@ These documents detail the smart contract layer, including asset implementations
 
 These documents cover the Next.js frontend application, including architecture, components, and user experience design.
 
-- **[11 - Next.js dApp Architecture](./11-nextjs-dapp-architecture.md)** - Next.js 15 App Router, TanStack Router, authentication, and onboarding flows
+- **[11 - Next.js dApp Architecture](./11-nextjs-dapp-architecture.md)** - Next.js App Router, TanStack Router, authentication, and onboarding flows
 - **[12 - UI Component System](./12-ui-component-system.md)** - Radix UI components, Tailwind CSS, theming, and responsive design patterns
 - **[13 - Asset Management Interface](./13-asset-management-interface.md)** - Asset Designer wizard, token management, compliance configuration, and admin panels
 - **[14 - Form & State Management](./14-form-state-management.md)** - TanStack Form validation, TanStack Query data fetching, and state synchronization
@@ -76,14 +76,14 @@ These documents explain real-world banking and financial system integration patt
 
 - **🏦 Asset Tokenization**: Bond, Equity, Fund, StableCoin, and Deposit token implementations with complete user workflows and regulatory compliance
 - **⚖️ Regulatory Compliance**: Built-in KYC/AML, identity verification, and compliance modules with automated reporting and multi-jurisdictional support
-- **🎨 Modern Frontend**: Next.js 15 with TanStack ecosystem, Radix UI components, and comprehensive accessibility features
+- **🎨 Modern Frontend**: Next.js with TanStack ecosystem, Radix UI components, and comprehensive accessibility features
 - **🔐 Enterprise Security**: Multi-signature wallets, role-based access control, and comprehensive audit trails with institutional-grade security
 - **🚀 Scalable Architecture**: Microservices, event sourcing, and cloud-native deployment with banking integration and high availability
 - **💰 Banking Integration**: Core banking system integration, payment rails, fiat-token bridge architecture, and comprehensive financial services
 
 ## 📋 Prerequisites
 
-- **Node.js 20+** and **Bun package manager** for development environment
+- **Node.js** and **Bun package manager** for development environment
 - **Docker and Docker Compose** for local service orchestration
 - **Basic understanding of blockchain and smart contracts** for technical implementation
 - **Familiarity with React and TypeScript** for frontend development
@@ -119,7 +119,7 @@ This documentation serves multiple stakeholder groups with varying technical bac
 | Layer | Primary Technologies | Purpose | Documentation |
 |-------|---------------------|---------|---------------|
 | **Blockchain** | Solidity, Foundry, Hardhat | Smart contract development | [06-10] |
-| **Frontend** | Next.js 15, React 19, TanStack | User interface | [11-15] |
+| **Frontend** | Next.js, React, TanStack | User interface | [11-15] |
 | **Backend** | ORPC, Drizzle ORM, PostgreSQL | API and data layer | [16-20] |
 | **Infrastructure** | Docker, Kubernetes, Helm | Deployment and operations | [04-05] |
 | **Integration** | Banking APIs, Payment Rails | Financial system integration | [26-30] |
@@ -146,7 +146,7 @@ This documentation serves multiple stakeholder groups with varying technical bac
 
 This documentation is actively maintained and updated to reflect the evolving codebase. For the latest updates and improvements:
 
-- **Version**: v2.0.0-alpha.7
+- **Version**: Latest
 - **Last Updated**: September 21, 2025
 - **Update Frequency**: Continuous with code changes
 - **Feedback**: [GitHub Issues](https://github.com/settlemint/asset-tokenization-kit/issues)
@@ -160,4 +160,4 @@ This documentation is actively maintained and updated to reflect the evolving co
 
 ---
 
-*This documentation covers the actual implementation of the Asset Tokenization Kit codebase v2.0.0-alpha.7. All diagrams, specifications, and implementation details reflect the current working system.*
+*This documentation covers the actual implementation of the Asset Tokenization Kit codebase. All diagrams, specifications, and implementation details reflect the current working system.*
