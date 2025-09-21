@@ -72,11 +72,10 @@ install_jq() {
 
 install_foundry() {
   log "Installing Foundry toolchain (forge/cast/anvil)"
-  curl -fsSL https://foundry.paradigm.xyz | bash >/dev/null
-
+  curl -fsSL https://foundry.paradigm.xyz | bash
+  source /root/.bashrc
   if [[ -x "${FOUNDRY_BIN}/foundryup" ]]; then
-    "${FOUNDRY_BIN}/foundryup" --install >/dev/null
-    export PATH="${FOUNDRY_BIN}:${PATH}"
+    "${FOUNDRY_BIN}/foundryup"
     if ! command -v forge >/dev/null 2>&1; then
       log "Foundry installation did not make forge available"
       exit 1
