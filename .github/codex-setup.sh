@@ -73,7 +73,7 @@ install_jq() {
 install_foundry() {
   log "Installing Foundry toolchain (forge/cast/anvil)"
   curl -fsSL https://foundry.paradigm.xyz | bash
-  source /root/.bashrc
+  export PATH="${FOUNDRY_BIN}:${PATH}"
   if [[ -x "${FOUNDRY_BIN}/foundryup" ]]; then
     "${FOUNDRY_BIN}/foundryup"
     if ! command -v forge >/dev/null 2>&1; then
