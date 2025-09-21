@@ -59,6 +59,11 @@ spec:
       {{- $abiVolumeName := "contract-abis" }}
       {{- $abiVolumeMountPath := "/abis" }}
       {{- $abiSourcePath := "/artifacts/abis/asset-tokenization-3643" }}
+      {{- $subgraphVolumeName := "subgraph-hash" }}
+      {{- $subgraphVolumeMountPath := "/subgraph" }}
+      {{- $subgraphSourcePath := "/artifacts/asset-tokenization-3643/subgraph/subgraph-hash.txt" }}
+      {{- $subgraphFilePath := printf "%s/subgraph-hash.txt" $subgraphVolumeMountPath }}
+      {{- $subgraphFallback := default "" .Values.subgraph.fallbackHash }}
       {{- $copyGenesis := eq $artifactSource "generated" }}
       {{- if or $copyGenesis (or $tcpEnabled $hasExtraInit) }}
       initContainers:
@@ -86,11 +91,37 @@ spec:
               else
                 echo "ABI source directory ${ABI_SRC_DIR} not found; skipping ABI staging"
               fi
+              SUBGRAPH_SRC_FILE="{{ $subgraphSourcePath }}"
+              SUBGRAPH_DEST_DIR="{{ $subgraphVolumeMountPath }}"
+              SUBGRAPH_DEST_FILE="{{ $subgraphFilePath }}"
+              SUBGRAPH_FALLBACK="{{ $subgraphFallback }}"
+              echo "Copying subgraph hash from ${SUBGRAPH_SRC_FILE}"
+              if [ -f "${SUBGRAPH_SRC_FILE}" ]; then
+                mkdir -p "${SUBGRAPH_DEST_DIR}"
+                cp "${SUBGRAPH_SRC_FILE}" "${SUBGRAPH_DEST_FILE}"
+                chmod 644 "${SUBGRAPH_DEST_FILE}"
+                echo "Subgraph hash staged under ${SUBGRAPH_DEST_FILE}"
+              else
+                if [ -n "${SUBGRAPH_FALLBACK}" ]; then
+                  echo "Subgraph hash file ${SUBGRAPH_SRC_FILE} not found; using fallback value." >&2
+                  mkdir -p "${SUBGRAPH_DEST_DIR}"
+                  printf '%s\n' "${SUBGRAPH_FALLBACK}" > "${SUBGRAPH_DEST_FILE}"
+                  chmod 644 "${SUBGRAPH_DEST_FILE}"
+                  echo "Subgraph fallback written to ${SUBGRAPH_DEST_FILE}"
+                else
+                  echo "Subgraph hash file ${SUBGRAPH_SRC_FILE} not found and no fallback configured." >&2
+                  exit 1
+                fi
+              fi
           volumeMounts:
             - name: {{ $allocationsVolumeName }}
               mountPath: {{ $allocationsVolumeMountPath }}
             - name: {{ $abiVolumeName }}
               mountPath: {{ $abiVolumeMountPath }}
+            {{- if $copyGenesis }}
+            - name: {{ $subgraphVolumeName }}
+              mountPath: {{ $subgraphVolumeMountPath }}
+            {{- end }}
         {{- end }}
 {{ include "network-bootstrapper.tcpCheckInitContainer" (dict "context" . "config" $tcpCheckConfig "indent" 8) }}
 {{ include "network-bootstrapper.extraInitContainers" (dict "context" . "containers" $extraInitContainers "indent" 8) }}
@@ -177,6 +208,9 @@ spec:
             {{- with .Values.settings.contractSizeLimit }}
             - --contract-size-limit={{ . }}
             {{- end }}
+            {{- if $copyGenesis }}
+            - --subgraph-hash-file={{ $subgraphFilePath }}
+            {{- end }}
             - --accept-defaults
           {{- with .Values.resources }}
           resources:
@@ -189,6 +223,11 @@ spec:
             - name: {{ $abiVolumeName }}
               mountPath: {{ $abiVolumeMountPath }}
               readOnly: true
+            {{- if $copyGenesis }}
+            - name: {{ $subgraphVolumeName }}
+              mountPath: {{ $subgraphVolumeMountPath }}
+              readOnly: true
+            {{- end }}
             {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -197,6 +236,10 @@ spec:
           emptyDir: {}
         - name: {{ $abiVolumeName }}
           emptyDir: {}
+        {{- if $copyGenesis }}
+        - name: {{ $subgraphVolumeName }}
+          emptyDir: {}
+        {{- end }}
         {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}

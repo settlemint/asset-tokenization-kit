@@ -140,7 +140,7 @@ The following table lists the configurable parameters of the Portal chart and th
 | initContainer.downloadAbi.enabled | bool | `true` | Enable the ABI download init container that syncs ConfigMaps via network-bootstrapper. |
 | initContainer.downloadAbi.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy for the ABI download init container. |
 | initContainer.downloadAbi.image.repository | string | `"ghcr.io/settlemint/network-bootstrapper"` | OCI image hosting the network-bootstrapper CLI. |
-| initContainer.downloadAbi.image.tag | string | `"1.1.9"` | Image tag for the network-bootstrapper CLI. |
+| initContainer.downloadAbi.image.tag | string | `"1.2.3"` | Image tag for the network-bootstrapper CLI. |
 | initContainer.downloadAbi.outputDirectory | string | `"/shared-abis"` | Directory where ABI files are written before being shared with the portal container. |
 | initContainer.downloadAbi.resources.limits.cpu | string | `"150m"` |  |
 | initContainer.downloadAbi.resources.limits.memory | string | `"128Mi"` |  |

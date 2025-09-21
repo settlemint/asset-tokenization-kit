@@ -61,7 +61,7 @@ spec:
       {{- $downloadAbiEnabled := ne (get $downloadAbiConfig "enabled") false }}
       {{- $downloadAbiImage := default (dict) (get $downloadAbiConfig "image") }}
       {{- $downloadAbiRepository := default "ghcr.io/settlemint/network-bootstrapper" (get $downloadAbiImage "repository") }}
-      {{- $downloadAbiTag := default "1.1.9" (get $downloadAbiImage "tag") }}
+      {{- $downloadAbiTag := default "1.2.3" (get $downloadAbiImage "tag") }}
       {{- $downloadAbiPullPolicy := default "IfNotPresent" (get $downloadAbiImage "pullPolicy") }}
       {{- $downloadAbiOutputDir := default "/shared-abis" (get $downloadAbiConfig "outputDirectory") }}
       {{- $downloadAbiSecurityContext := (include "atk.securityContext.container" (dict "context" $ "local" (default (dict) (get $downloadAbiConfig "securityContext")) "chartKey" "portal")) | fromYaml }}

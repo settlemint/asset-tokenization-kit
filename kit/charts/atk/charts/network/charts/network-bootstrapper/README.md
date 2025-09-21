@@ -32,7 +32,7 @@ A Helm chart for Kubernetes
 | global.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy controlling when Kubernetes fetches updated image layers. |
 | image.repository | string | `"ghcr.io/settlemint/network-bootstrapper"` | OCI registry path hosting the network bootstrapper image. |
-| image.tag | string | `"1.1.9"` | Image tag override; leave empty to inherit the chart appVersion. |
+| image.tag | string | `"1.2.3"` | Image tag override; leave empty to inherit the chart appVersion. |
 | imagePullSecrets | list | `[]` | Image pull secrets enabling access to private registries. |
 | initContainer.tcpCheck.dependencies | list | `[]` | TCP dependencies expressed as name/endpoint pairs (host:port strings). |
 | initContainer.tcpCheck.enabled | bool | `false` | Enable a tcp-check init container before the bootstrapper job starts. |
@@ -78,6 +78,8 @@ A Helm chart for Kubernetes
 | settings.staticNodeServiceName | string | `nil` | Headless Service name used when constructing static node hostnames. |
 | settings.staticNodesConfigMapName | string | `nil` | ConfigMap name storing the generated static-nodes.json payload. |
 | settings.validators | int | `nil` | Number of validator identities to generate (default 4). |
+| subgraph | object | `{"fallbackHash":"QmRU9F9d7kuDVVzqVF5ig1SibWSEWLYvurR8yz7dyrEUnx"}` | Subgraph handling controls for fallback scenarios. |
+| subgraph.fallbackHash | string | `"QmRU9F9d7kuDVVzqVF5ig1SibWSEWLYvurR8yz7dyrEUnx"` | IPFS hash used when the artifacts image does not contain subgraph metadata. |
 | tolerations | list | `[]` | Tolerations allowing the bootstrapper pod onto tainted nodes. |
 | volumeMounts | list | `[]` | Extra volume mounts applied to the bootstrapper container. |
 | volumes | list | `[]` | Additional volumes attached to the bootstrapper pod. |

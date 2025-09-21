@@ -145,7 +145,6 @@ env:
   GRAPH_STORE_WRITE_BATCH_SIZE: '0'
   GRAPH_MAX_GAS_PER_HANDLER: '1_000_000_000_000_000'
   GRAPH_MAX_SPEC_VERSION: '1.2.0'
-  SUBGRAPH: kit:QmbA53S3UUeoxdNQV9PGUDN7WAgFcHT6qU9FiH8QXXGv3z
   GRAPH_ETHEREUM_REQUEST_RETRIES: '10'
   GRAPH_ETHEREUM_BLOCK_BATCH_SIZE: '100'
   GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE: '1000'
@@ -156,6 +155,10 @@ env:
   GRAPH_STATIC_FILTERS_THRESHOLD: '10000'
   GRAPH_IPFS_TIMEOUT: '30'
   GRAPH_ETHEREUM_BLOCK_INGESTOR_MAX_CONCURRENT_JSON_RPC_CALLS: '100'
+# -- (object) Subgraph configuration shared with the bootstrap process
+subgraph:
+  # -- (string) ConfigMap providing the deployed subgraph hash
+  configMapName: besu-subgraph
 # -- (object) Environment variables from secrets
 secretEnv:
   PRIMARY_SUBGRAPH_DATA_PGUSER:
@@ -386,5 +389,5 @@ extraVolumeMounts: []
 terminationGracePeriodSeconds: 60
 graph-node:
   graphNodeDefaults:
-    env:
-      SUBGRAPH: kit:QmRU9F9d7kuDVVzqVF5ig1SibWSEWLYvurR8yz7dyrEUnx
+    subgraph:
+      configMapName: besu-subgraph

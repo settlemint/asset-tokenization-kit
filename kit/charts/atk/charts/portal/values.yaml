@@ -185,7 +185,7 @@ initContainer:
       # -- (string) OCI image hosting the network-bootstrapper CLI.
       repository: ghcr.io/settlemint/network-bootstrapper
       # -- (string) Image tag for the network-bootstrapper CLI.
-      tag: "1.1.9"
+      tag: "1.2.3"
       # -- (string) Image pull policy for the ABI download init container.
       pullPolicy: IfNotPresent
     resources:

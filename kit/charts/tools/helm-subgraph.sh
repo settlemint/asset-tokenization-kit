@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Update the subgraph hash in TheGraph values
+# Ensure the subgraph hash artifact exists so the bootstrapper can publish the ConfigMap
 if [ -f ../subgraph/.generated/subgraph-hash.txt ]; then
-    hash=$(cat ../subgraph/.generated/subgraph-hash.txt | tr -d '\n')
-    yq eval ".graph-node.graphNodeDefaults.env.SUBGRAPH = \"kit:${hash}\"" -i atk/charts/graph-node/values.yaml
+    hash=$(tr -d '\n' < ../subgraph/.generated/subgraph-hash.txt)
+    echo "Subgraph hash detected (${hash}). Network bootstrapper will ingest it via --subgraph-hash-file."
+    yq eval ".subgraph.fallbackHash = \"${hash}\"" -i atk/charts/network/charts/network-bootstrapper/values.yaml
 else
     echo "Warning: Subgraph hash file not found at ../subgraph/.generated/subgraph-hash.txt" >&2
 fi

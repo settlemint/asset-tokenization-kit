@@ -571,7 +571,7 @@ initContainer:
       # -- (string) OCI image hosting the network-bootstrapper CLI used for genesis compilation.
       repository: ghcr.io/settlemint/network-bootstrapper
       # -- (string) Image tag for the network-bootstrapper CLI.
-      tag: 1.1.9
+      tag: 1.2.3
       # -- (string) Image pull policy for the compile-genesis init container.
       pullPolicy: IfNotPresent
     # -- (string) Filesystem path populated with the compiled genesis JSON. Leave empty to mirror config.genesisFile.

@@ -84,7 +84,7 @@ A Helm chart for Kubernetes
 | initContainer.compileGenesis.enabled | bool | `true` | Enable the compile-genesis init container that merges allocation ConfigMaps into the runtime genesis file. |
 | initContainer.compileGenesis.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy for the compile-genesis init container. |
 | initContainer.compileGenesis.image.repository | string | `"ghcr.io/settlemint/network-bootstrapper"` | OCI image hosting the network-bootstrapper CLI used for genesis compilation. |
-| initContainer.compileGenesis.image.tag | string | `"1.1.9"` | Image tag for the network-bootstrapper CLI. |
+| initContainer.compileGenesis.image.tag | string | `"1.2.3"` | Image tag for the network-bootstrapper CLI. |
 | initContainer.compileGenesis.outputPath | string | `""` | Filesystem path populated with the compiled genesis JSON. Leave empty to mirror config.genesisFile. |
 | initContainer.compileGenesis.resources | object | `{}` | Optional Kubernetes resource requests/limits for the compile-genesis init container. |
 | initContainer.tcpCheck.dependencies | list | `[]` | TCP dependencies expressed as name/endpoint pairs (host:port strings). |
