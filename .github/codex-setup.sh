@@ -39,6 +39,29 @@ run_with_privilege() {
   return 1
 }
 
+run_with_retry() {
+  local max_attempts=$1
+  shift
+  local attempt=1
+  local delay=2
+
+  while (( attempt <= max_attempts )); do
+    if "$@"; then
+      return 0
+    fi
+
+    log "Command failed (attempt ${attempt}/${max_attempts}): $*"
+    if (( attempt == max_attempts )); then
+      break
+    fi
+
+    sleep "$delay"
+    attempt=$((attempt + 1))
+  done
+
+  return 1
+}
+
 install_jq() {
   if command -v jq >/dev/null 2>&1; then
     log "jq already installed"
@@ -174,8 +197,19 @@ install_dependencies() {
 
   log "Installing project dependencies with bun install"
   rm -Rf node_modules
-  rm -Rf bun.lock
-  bun install
+  bun install --ignore-scripts
+
+  log "Running dependency bootstrap tasks"
+
+  if ! run_with_retry 3 bun run --cwd kit/contracts tools/dependencies.ts; then
+    log "Failed to install contract dependencies"
+    exit 1
+  fi
+
+  if ! run_with_retry 3 bun run --cwd kit/charts tools/dependencies.ts; then
+    log "Failed to install chart dependencies"
+    exit 1
+  fi
 
   log "Generating project artifacts via turbo"
   bun run artifacts
