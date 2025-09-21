@@ -203,33 +203,33 @@ The user management schema handles user accounts, authentication, and profile in
 graph TB
     subgraph "User Management Schema"
         subgraph "Core User Data"
-            Users[users<br/>User Accounts<br/>• id (UUID)<br/>• email (unique)<br/>• username<br/>• created_at<br/>• updated_at<br/>• status]
+            Users[users<br/>User Accounts<br/>• id UUID<br/>• email unique<br/>• username<br/>• created_at<br/>• updated_at<br/>• status]
             
-            UserProfiles[user_profiles<br/>Profile Information<br/>• user_id (FK)<br/>• first_name<br/>• last_name<br/>• phone<br/>• address<br/>• preferences]
+            UserProfiles[user_profiles<br/>Profile Information<br/>• user_id FK<br/>• first_name<br/>• last_name<br/>• phone<br/>• address<br/>• preferences]
             
-            UserSettings[user_settings<br/>User Preferences<br/>• user_id (FK)<br/>• theme<br/>• language<br/>• notifications<br/>• privacy_settings]
+            UserSettings[user_settings<br/>User Preferences<br/>• user_id FK<br/>• theme<br/>• language<br/>• notifications<br/>• privacy_settings]
         end
         
         subgraph "Authentication Data"
-            Sessions[sessions<br/>User Sessions<br/>• id (UUID)<br/>• user_id (FK)<br/>• token<br/>• expires_at<br/>• created_at<br/>• ip_address]
+            Sessions[sessions<br/>User Sessions<br/>• id UUID<br/>• user_id FK<br/>• token<br/>• expires_at<br/>• created_at<br/>• ip_address]
             
-            Accounts[accounts<br/>OAuth Accounts<br/>• id (UUID)<br/>• user_id (FK)<br/>• provider<br/>• provider_id<br/>• access_token<br/>• refresh_token]
+            Accounts[accounts<br/>OAuth Accounts<br/>• id UUID<br/>• user_id FK<br/>• provider<br/>• provider_id<br/>• access_token<br/>• refresh_token]
             
-            Verifications[verifications<br/>Email/Phone Verification<br/>• id (UUID)<br/>• user_id (FK)<br/>• type<br/>• token<br/>• expires_at<br/>• verified_at]
+            Verifications[verifications<br/>Email/Phone Verification<br/>• id UUID<br/>• user_id FK<br/>• type<br/>• token<br/>• expires_at<br/>• verified_at]
         end
         
         subgraph "Role and Permission"
-            UserRoles[user_roles<br/>Role Assignments<br/>• user_id (FK)<br/>• role<br/>• assigned_at<br/>• assigned_by<br/>• expires_at<br/>• status]
+            UserRoles[user_roles<br/>Role Assignments<br/>• user_id FK<br/>• role<br/>• assigned_at<br/>• assigned_by<br/>• expires_at<br/>• status]
             
-            Permissions[permissions<br/>Permission Definitions<br/>• id (UUID)<br/>• name<br/>• description<br/>• resource<br/>• action<br/>• conditions]
+            Permissions[permissions<br/>Permission Definitions<br/>• id UUID<br/>• name<br/>• description<br/>• resource<br/>• action<br/>• conditions]
             
-            RolePermissions[role_permissions<br/>Role-Permission Mapping<br/>• role<br/>• permission_id (FK)<br/>• granted_at<br/>• granted_by<br/>• conditions]
+            RolePermissions[role_permissions<br/>Role-Permission Mapping<br/>• role<br/>• permission_id FK<br/>• granted_at<br/>• granted_by<br/>• conditions]
         end
         
         subgraph "Onboarding State"
-            OnboardingState[onboarding_state<br/>Onboarding Progress<br/>• user_id (FK)<br/>• step<br/>• completed<br/>• data<br/>• completed_at<br/>• metadata]
+            OnboardingState[onboarding_state<br/>Onboarding Progress<br/>• user_id FK<br/>• step<br/>• completed<br/>• data<br/>• completed_at<br/>• metadata]
             
-            OnboardingSteps[onboarding_steps<br/>Step Definitions<br/>• id (UUID)<br/>• name<br/>• description<br/>• order<br/>• required<br/>• validation_rules]
+            OnboardingSteps[onboarding_steps<br/>Step Definitions<br/>• id UUID<br/>• name<br/>• description<br/>• order<br/>• required<br/>• validation_rules]
         end
     end
     
@@ -299,35 +299,35 @@ The asset management schema handles tokenized assets, their configuration, and o
 graph TB
     subgraph "Asset Management Schema"
         subgraph "Asset Core Data"
-            Assets[assets<br/>Asset Registry<br/>• id (UUID)<br/>• contract_address<br/>• asset_type<br/>• name, symbol<br/>• created_at<br/>• status]
+            Assets[assets<br/>Asset Registry<br/>• id UUID<br/>• contract_address<br/>• asset_type<br/>• name, symbol<br/>• created_at<br/>• status]
             
-            AssetMetadata[asset_metadata<br/>Extended Information<br/>• asset_id (FK)<br/>• description<br/>• documentation<br/>• legal_info<br/>• regulatory_info]
+            AssetMetadata[asset_metadata<br/>Extended Information<br/>• asset_id FK<br/>• description<br/>• documentation<br/>• legal_info<br/>• regulatory_info]
             
-            AssetConfiguration[asset_configuration<br/>Asset Settings<br/>• asset_id (FK)<br/>• configuration_data<br/>• extension_settings<br/>• compliance_rules<br/>• operational_params]
+            AssetConfiguration[asset_configuration<br/>Asset Settings<br/>• asset_id FK<br/>• configuration_data<br/>• extension_settings<br/>• compliance_rules<br/>• operational_params]
         end
         
         subgraph "Asset Operations"
-            AssetOperations[asset_operations<br/>Operation History<br/>• id (UUID)<br/>• asset_id (FK)<br/>• operation_type<br/>• parameters<br/>• executed_at<br/>• executed_by]
+            AssetOperations[asset_operations<br/>Operation History<br/>• id UUID<br/>• asset_id FK<br/>• operation_type<br/>• parameters<br/>• executed_at<br/>• executed_by]
             
-            AssetTransactions[asset_transactions<br/>Blockchain Transactions<br/>• id (UUID)<br/>• asset_id (FK)<br/>• transaction_hash<br/>• operation_type<br/>• status<br/>• block_number]
+            AssetTransactions[asset_transactions<br/>Blockchain Transactions<br/>• id UUID<br/>• asset_id FK<br/>• transaction_hash<br/>• operation_type<br/>• status<br/>• block_number]
             
-            AssetEvents[asset_events<br/>Contract Events<br/>• id (UUID)<br/>• asset_id (FK)<br/>• event_type<br/>• event_data<br/>• block_number<br/>• transaction_hash]
+            AssetEvents[asset_events<br/>Contract Events<br/>• id UUID<br/>• asset_id FK<br/>• event_type<br/>• event_data<br/>• block_number<br/>• transaction_hash]
         end
         
         subgraph "Asset Ownership"
-            AssetHolders[asset_holders<br/>Token Ownership<br/>• asset_id (FK)<br/>• holder_address<br/>• balance<br/>• percentage<br/>• updated_at<br/>• verified]
+            AssetHolders[asset_holders<br/>Token Ownership<br/>• asset_id FK<br/>• holder_address<br/>• balance<br/>• percentage<br/>• updated_at<br/>• verified]
             
-            OwnershipHistory[ownership_history<br/>Historical Ownership<br/>• id (UUID)<br/>• asset_id (FK)<br/>• holder_address<br/>• balance<br/>• timestamp<br/>• transaction_hash]
+            OwnershipHistory[ownership_history<br/>Historical Ownership<br/>• id UUID<br/>• asset_id FK<br/>• holder_address<br/>• balance<br/>• timestamp<br/>• transaction_hash]
             
-            AssetPermissions[asset_permissions<br/>Access Control<br/>• asset_id (FK)<br/>• user_id (FK)<br/>• permission_type<br/>• granted_at<br/>• granted_by<br/>• expires_at]
+            AssetPermissions[asset_permissions<br/>Access Control<br/>• asset_id FK<br/>• user_id FK<br/>• permission_type<br/>• granted_at<br/>• granted_by<br/>• expires_at]
         end
         
         subgraph "Asset Performance"
-            AssetMetrics[asset_metrics<br/>Performance Data<br/>• asset_id (FK)<br/>• metric_type<br/>• value<br/>• calculated_at<br/>• period<br/>• benchmark]
+            AssetMetrics[asset_metrics<br/>Performance Data<br/>• asset_id FK<br/>• metric_type<br/>• value<br/>• calculated_at<br/>• period<br/>• benchmark]
             
-            AssetReports[asset_reports<br/>Generated Reports<br/>• id (UUID)<br/>• asset_id (FK)<br/>• report_type<br/>• report_data<br/>• generated_at<br/>• generated_by]
+            AssetReports[asset_reports<br/>Generated Reports<br/>• id UUID<br/>• asset_id FK<br/>• report_type<br/>• report_data<br/>• generated_at<br/>• generated_by]
             
-            AssetAnalytics[asset_analytics<br/>Analytics Data<br/>• asset_id (FK)<br/>• analytics_type<br/>• data<br/>• timestamp<br/>• aggregation_period]
+            AssetAnalytics[asset_analytics<br/>Analytics Data<br/>• asset_id FK<br/>• analytics_type<br/>• data<br/>• timestamp<br/>• aggregation_period]
         end
     end
     
@@ -410,27 +410,27 @@ The compliance and identity schema manages regulatory compliance, identity verif
 graph TB
     subgraph "Compliance and Identity Schema"
         subgraph "Identity Management"
-            Identities[identities<br/>OnchainID Mapping<br/>• user_id (FK)<br/>• onchain_id<br/>• verification_status<br/>• verified_at<br/>• issuer<br/>• claims_hash]
+            Identities[identities<br/>OnchainID Mapping<br/>• user_id FK<br/>• onchain_id<br/>• verification_status<br/>• verified_at<br/>• issuer<br/>• claims_hash]
             
-            IdentityClaims[identity_claims<br/>Verification Claims<br/>• id (UUID)<br/>• identity_id (FK)<br/>• claim_type<br/>• claim_data<br/>• issued_at<br/>• expires_at<br/>• revoked_at]
+            IdentityClaims[identity_claims<br/>Verification Claims<br/>• id UUID<br/>• identity_id FK<br/>• claim_type<br/>• claim_data<br/>• issued_at<br/>• expires_at<br/>• revoked_at]
             
-            VerificationProviders[verification_providers<br/>KYC/AML Providers<br/>• id (UUID)<br/>• name<br/>• provider_type<br/>• api_config<br/>• status<br/>• trust_level]
+            VerificationProviders[verification_providers<br/>KYC/AML Providers<br/>• id UUID<br/>• name<br/>• provider_type<br/>• api_config<br/>• status<br/>• trust_level]
         end
         
         subgraph "Compliance Rules"
-            ComplianceRules[compliance_rules<br/>Regulatory Rules<br/>• id (UUID)<br/>• rule_type<br/>• jurisdiction<br/>• parameters<br/>• active<br/>• created_at<br/>• updated_at]
+            ComplianceRules[compliance_rules<br/>Regulatory Rules<br/>• id UUID<br/>• rule_type<br/>• jurisdiction<br/>• parameters<br/>• active<br/>• created_at<br/>• updated_at]
             
-            AssetCompliance[asset_compliance<br/>Asset Rule Mapping<br/>• asset_id (FK)<br/>• rule_id (FK)<br/>• parameters<br/>• active<br/>• configured_at<br/>• configured_by]
+            AssetCompliance[asset_compliance<br/>Asset Rule Mapping<br/>• asset_id FK<br/>• rule_id FK<br/>• parameters<br/>• active<br/>• configured_at<br/>• configured_by]
             
-            ComplianceModules[compliance_modules<br/>Module Registry<br/>• id (UUID)<br/>• module_name<br/>• version<br/>• contract_address<br/>• capabilities<br/>• status]
+            ComplianceModules[compliance_modules<br/>Module Registry<br/>• id UUID<br/>• module_name<br/>• version<br/>• contract_address<br/>• capabilities<br/>• status]
         end
         
         subgraph "Violation Management"
-            ComplianceViolations[compliance_violations<br/>Violation Tracking<br/>• id (UUID)<br/>• asset_id (FK)<br/>• user_id (FK)<br/>• violation_type<br/>• details<br/>• detected_at<br/>• resolved_at]
+            ComplianceViolations[compliance_violations<br/>Violation Tracking<br/>• id UUID<br/>• asset_id FK<br/>• user_id FK<br/>• violation_type<br/>• details<br/>• detected_at<br/>• resolved_at]
             
-            ViolationResolutions[violation_resolutions<br/>Resolution Tracking<br/>• violation_id (FK)<br/>• resolution_type<br/>• resolution_data<br/>• resolved_by<br/>• resolved_at<br/>• notes]
+            ViolationResolutions[violation_resolutions<br/>Resolution Tracking<br/>• violation_id FK<br/>• resolution_type<br/>• resolution_data<br/>• resolved_by<br/>• resolved_at<br/>• notes]
             
-            RegulatoryReports[regulatory_reports<br/>Compliance Reporting<br/>• id (UUID)<br/>• report_type<br/>• jurisdiction<br/>• period<br/>• report_data<br/>• generated_at<br/>• submitted_at]
+            RegulatoryReports[regulatory_reports<br/>Compliance Reporting<br/>• id UUID<br/>• report_type<br/>• jurisdiction<br/>• period<br/>• report_data<br/>• generated_at<br/>• submitted_at]
         end
     end
     
@@ -503,27 +503,27 @@ The audit and logging schema provides comprehensive tracking of all system activ
 graph TB
     subgraph "Audit and Logging Schema"
         subgraph "System Audit"
-            SystemEvents[system_events<br/>System Activity<br/>• id (UUID)<br/>• event_type<br/>• event_data<br/>• timestamp<br/>• source<br/>• severity]
+            SystemEvents[system_events<br/>System Activity<br/>• id UUID<br/>• event_type<br/>• event_data<br/>• timestamp<br/>• source<br/>• severity]
             
-            SystemChanges[system_changes<br/>Configuration Changes<br/>• id (UUID)<br/>• table_name<br/>• record_id<br/>• change_type<br/>• old_values<br/>• new_values<br/>• changed_at<br/>• changed_by]
+            SystemChanges[system_changes<br/>Configuration Changes<br/>• id UUID<br/>• table_name<br/>• record_id<br/>• change_type<br/>• old_values<br/>• new_values<br/>• changed_at<br/>• changed_by]
             
-            SystemErrors[system_errors<br/>Error Tracking<br/>• id (UUID)<br/>• error_type<br/>• error_message<br/>• stack_trace<br/>• context<br/>• occurred_at<br/>• resolved_at]
+            SystemErrors[system_errors<br/>Error Tracking<br/>• id UUID<br/>• error_type<br/>• error_message<br/>• stack_trace<br/>• context<br/>• occurred_at<br/>• resolved_at]
         end
         
         subgraph "User Audit"
-            UserActions[user_actions<br/>User Activity<br/>• id (UUID)<br/>• user_id (FK)<br/>• action_type<br/>• resource<br/>• details<br/>• timestamp<br/>• ip_address<br/>• user_agent]
+            UserActions[user_actions<br/>User Activity<br/>• id UUID<br/>• user_id FK<br/>• action_type<br/>• resource<br/>• details<br/>• timestamp<br/>• ip_address<br/>• user_agent]
             
-            LoginHistory[login_history<br/>Authentication History<br/>• id (UUID)<br/>• user_id (FK)<br/>• login_method<br/>• ip_address<br/>• user_agent<br/>• timestamp<br/>• success<br/>• failure_reason]
+            LoginHistory[login_history<br/>Authentication History<br/>• id UUID<br/>• user_id FK<br/>• login_method<br/>• ip_address<br/>• user_agent<br/>• timestamp<br/>• success<br/>• failure_reason]
             
-            AccessLogs[access_logs<br/>Resource Access<br/>• id (UUID)<br/>• user_id (FK)<br/>• resource<br/>• action<br/>• result<br/>• timestamp<br/>• details]
+            AccessLogs[access_logs<br/>Resource Access<br/>• id UUID<br/>• user_id FK<br/>• resource<br/>• action<br/>• result<br/>• timestamp<br/>• details]
         end
         
         subgraph "Transaction Audit"
-            TransactionLogs[transaction_logs<br/>Financial Transactions<br/>• id (UUID)<br/>• asset_id (FK)<br/>• user_id (FK)<br/>• transaction_type<br/>• amount<br/>• timestamp<br/>• blockchain_hash]
+            TransactionLogs[transaction_logs<br/>Financial Transactions<br/>• id UUID<br/>• asset_id FK<br/>• user_id FK<br/>• transaction_type<br/>• amount<br/>• timestamp<br/>• blockchain_hash]
             
-            ComplianceLogs[compliance_logs<br/>Compliance Events<br/>• id (UUID)<br/>• asset_id (FK)<br/>• user_id (FK)<br/>• compliance_check<br/>• result<br/>• details<br/>• timestamp]
+            ComplianceLogs[compliance_logs<br/>Compliance Events<br/>• id UUID<br/>• asset_id FK<br/>• user_id FK<br/>• compliance_check<br/>• result<br/>• details<br/>• timestamp]
             
-            AuditTrail[audit_trail<br/>Complete Audit Trail<br/>• id (UUID)<br/>• entity_type<br/>• entity_id<br/>• action<br/>• old_state<br/>• new_state<br/>• timestamp<br/>• actor]
+            AuditTrail[audit_trail<br/>Complete Audit Trail<br/>• id UUID<br/>• entity_type<br/>• entity_id<br/>• action<br/>• old_state<br/>• new_state<br/>• timestamp<br/>• actor]
         end
     end
     

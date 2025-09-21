@@ -325,11 +325,11 @@ graph TB
         end
         
         subgraph "Task Orchestration"
-            DevTasks[Development Tasks<br/>Parallel Execution<br/>• dev (persistent)<br/>• watch (persistent)<br/>• Hot reloading]
+            DevTasks[Development Tasks<br/>Parallel Execution<br/>• dev persistent<br/>• watch persistent<br/>• Hot reloading]
             
             BuildTasks[Build Tasks<br/>Dependency Order<br/>• compile<br/>• codegen<br/>• build artifacts]
             
-            TestTasks[Testing Tasks<br/>Parallel Execution<br/>• test (unit)<br/>• test:integration<br/>• test:e2e]
+            TestTasks[Testing Tasks<br/>Parallel Execution<br/>• test unit<br/>• test:integration<br/>• test:e2e]
         end
     end
     

@@ -48,9 +48,9 @@ graph TB
     end
     
     subgraph "Data Layer"
-        PostgreSQL[(PostgreSQL<br/>Application Data)]
-        Redis[(Redis<br/>Session & Cache)]
-        MinIO[(MinIO<br/>File Storage)]
+        PostgreSQL[PostgreSQL<br/>Application Data]
+        Redis[Redis<br/>Session & Cache]
+        MinIO[MinIO<br/>File Storage]
         Subgraph[TheGraph Subgraph<br/>Blockchain Indexing]
     end
     

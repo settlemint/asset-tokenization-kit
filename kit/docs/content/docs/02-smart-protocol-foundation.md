@@ -92,9 +92,9 @@ The SMART Protocol implements the ERC-3643 standard for security tokens, providi
 graph TB
     subgraph "ERC-3643 Implementation"
         subgraph "Core Interfaces"
-            ERC20[ERC-20 Interface<br/>Standard Token Functions<br/>• transfer()<br/>• approve()<br/>• balanceOf()]
+            ERC20[ERC-20 Interface<br/>Standard Token Functions<br/>• transfer<br/>• approve<br/>• balanceOf]
             
-            ERC3643[ERC-3643 Interface<br/>Security Token Standard<br/>• canTransfer()<br/>• transferWithData()<br/>• compliance verification]
+            ERC3643[ERC-3643 Interface<br/>Security Token Standard<br/>• canTransfer<br/>• transferWithData<br/>• compliance verification]
         end
         
         subgraph "Identity Management"
@@ -361,7 +361,7 @@ graph TB
         end
         
         subgraph "Module Interface"
-            IComplianceModule[IComplianceModule Interface<br/>Standard Interface<br/>• canCompute()<br/>• moduleTransferAction()<br/>• Standard events]
+            IComplianceModule[IComplianceModule Interface<br/>Standard Interface<br/>• canCompute<br/>• moduleTransferAction<br/>• Standard events]
         end
     end
     
