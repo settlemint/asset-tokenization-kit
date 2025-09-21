@@ -70,6 +70,43 @@ install_jq() {
   exit 1
 }
 
+
+install_helm() {
+  if command -v helm >/dev/null 2>&1; then
+    local helm_version
+    helm_version="$(helm version --short 2>/dev/null || true)"
+    if [[ -n "${helm_version}" ]]; then
+      log "Helm detected (${helm_version})"
+    else
+      log "Helm detected"
+    fi
+    return
+  fi
+
+  if command -v brew >/dev/null 2>&1; then
+    log "Installing Helm via Homebrew"
+    if brew install helm >/dev/null; then
+      log "Helm installation complete via Homebrew"
+      return
+    fi
+    log "Failed to install Helm with Homebrew"
+  fi
+
+  ensure_command curl || {
+    log "curl is required to install Helm"
+    exit 1
+  }
+
+  log "Installing Helm via official installation script"
+  if run_with_privilege bash -c "curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash" >/dev/null; then
+    log "Helm installation complete via official script"
+    return
+  fi
+
+  log "Failed to install Helm via official script"
+  exit 1
+}
+
 install_foundry() {
   log "Installing Foundry toolchain (forge/cast/anvil)"
   curl -fsSL https://foundry.paradigm.xyz | bash
@@ -133,8 +170,11 @@ install_dependencies() {
   log "Ensuring required CLI tooling is available"
   install_jq
   ensure_foundry
+  install_helm
 
   log "Installing project dependencies with bun install"
+  rm -Rf node_modules
+  rm -Rf bun.lock
   bun install
 
   log "Generating project artifacts via turbo"
