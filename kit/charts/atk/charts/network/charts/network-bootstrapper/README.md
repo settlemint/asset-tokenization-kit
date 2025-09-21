@@ -32,7 +32,7 @@ A Helm chart for Kubernetes
 | global.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy controlling when Kubernetes fetches updated image layers. |
 | image.repository | string | `"ghcr.io/settlemint/network-bootstrapper"` | OCI registry path hosting the network bootstrapper image. |
-| image.tag | string | `"1.1.5"` | Image tag override; leave empty to inherit the chart appVersion. |
+| image.tag | string | `"1.1.9"` | Image tag override; leave empty to inherit the chart appVersion. |
 | imagePullSecrets | list | `[]` | Image pull secrets enabling access to private registries. |
 | initContainer.tcpCheck.dependencies | list | `[]` | TCP dependencies expressed as name/endpoint pairs (host:port strings). |
 | initContainer.tcpCheck.enabled | bool | `false` | Enable a tcp-check init container before the bootstrapper job starts. |
