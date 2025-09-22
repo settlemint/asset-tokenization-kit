@@ -23,56 +23,34 @@ export function AssetWalletDistributionChart({
 }: AssetWalletDistributionChartProps) {
   const { t } = useTranslation("stats");
 
-  // Memoize the data transformation function to prevent unnecessary re-creation
-  const selectTransform = useMemo(
-    () =>
-      (response: {
-        buckets: Array<{ range: string; count: number }>;
-        totalHolders: number;
-      }) => {
-        // Handle empty data case
-        if (!response.buckets?.length || response.totalHolders === 0) {
-          return {
-            chartData: [],
-            chartConfig: {
-              count: {
-                label: t("charts.walletDistribution.holders"),
-                color: "var(--chart-1)",
-              },
-            },
-            dataKeys: ["count"],
-            totalHolders: 0,
-          };
-        }
-
-        // Configure chart colors and labels
-        const config: ChartConfig = {
-          count: {
-            label: t("charts.walletDistribution.holders"),
-            color: "var(--chart-1)",
-          },
-        };
-
-        return {
-          chartData: response.buckets,
-          chartConfig: config,
-          dataKeys: ["count"],
-          totalHolders: response.totalHolders,
-        };
-      },
-    [t]
-  );
-
-  // Fetch and transform wallet distribution data with optimized caching
-  const {
-    data: { chartData, chartConfig, dataKeys },
-  } = useSuspenseQuery(
+  // Fetch wallet distribution data with optimized caching
+  const { data } = useSuspenseQuery(
     orpc.token.statsWalletDistribution.queryOptions({
       input: { tokenAddress: assetAddress },
-      select: selectTransform,
       ...CHART_QUERY_OPTIONS,
     })
   );
+
+  // Use the buckets data directly
+  const chartData = useMemo(() => {
+    if (!data.buckets?.length || data.totalHolders === 0) {
+      return [];
+    }
+    return data.buckets;
+  }, [data.buckets, data.totalHolders]);
+
+  // Configure chart colors and labels
+  const chartConfig: ChartConfig = useMemo(
+    () => ({
+      count: {
+        label: t("charts.walletDistribution.holders"),
+        color: "var(--chart-1)",
+      },
+    }),
+    [t]
+  );
+
+  const dataKeys = ["count"];
 
   return (
     <ComponentErrorBoundary componentName="Asset Wallet Distribution Chart">

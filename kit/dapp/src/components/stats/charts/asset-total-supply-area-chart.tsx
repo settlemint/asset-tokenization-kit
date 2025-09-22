@@ -26,59 +26,38 @@ export function AssetTotalSupplyAreaChart({
 }: AssetTotalSupplyAreaChartProps) {
   const { t } = useTranslation("stats");
 
-  // Memoize the data transformation function to prevent unnecessary re-creation
-  const selectTransform = useMemo(
-    () =>
-      (response: {
-        totalSupplyHistory?: Array<{ timestamp: number; totalSupply: string }>;
-      }) => {
-        // Handle empty data case
-        if (!response.totalSupplyHistory?.length) {
-          return {
-            chartData: [],
-            chartConfig: {
-              totalSupply: {
-                label: t("charts.totalSupply.label"),
-                color: "var(--chart-1)",
-              },
-            },
-            dataKeys: ["totalSupply"],
-          };
-        }
-
-        // Transform the response data to chart format using safe conversion
-        const transformedData = response.totalSupplyHistory.map((item) => ({
-          timestamp: format(new Date(item.timestamp * 1000), "MMM dd"),
-          totalSupply: safeToNumber(item.totalSupply),
-        }));
-
-        // Configure chart colors and labels
-        const config: ChartConfig = {
-          totalSupply: {
-            label: t("charts.totalSupply.label"),
-            color: "var(--chart-1)",
-          },
-        };
-
-        return {
-          chartData: transformedData,
-          chartConfig: config,
-          dataKeys: ["totalSupply"],
-        };
-      },
-    [t]
-  );
-
-  // Fetch and transform total supply history data with optimized caching
-  const {
-    data: { chartData, chartConfig, dataKeys },
-  } = useSuspenseQuery(
+  // Fetch total supply history data with optimized caching
+  const { data } = useSuspenseQuery(
     orpc.token.statsTotalSupply.queryOptions({
       input: { tokenAddress: assetAddress, days: timeRange },
-      select: selectTransform,
       ...CHART_QUERY_OPTIONS,
     })
   );
+
+  // Transform the response data to chart format using safe conversion
+  const chartData = useMemo(() => {
+    if (!data.totalSupplyHistory?.length) {
+      return [];
+    }
+
+    return data.totalSupplyHistory.map((item) => ({
+      timestamp: format(new Date(item.timestamp * 1000), "MMM dd"),
+      totalSupply: safeToNumber(item.totalSupply),
+    }));
+  }, [data.totalSupplyHistory]);
+
+  // Configure chart colors and labels
+  const chartConfig: ChartConfig = useMemo(
+    () => ({
+      totalSupply: {
+        label: t("charts.totalSupply.label"),
+        color: "var(--chart-1)",
+      },
+    }),
+    [t]
+  );
+
+  const dataKeys = ["totalSupply"];
 
   return (
     <ComponentErrorBoundary componentName="Asset Total Supply Chart">

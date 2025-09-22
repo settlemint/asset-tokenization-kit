@@ -25,6 +25,7 @@ import {
   Truck,
   Vault,
 } from "lucide-react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -44,31 +45,33 @@ export function NavAddons() {
     })
   );
 
-  // Pre-group addons by category using select function
-  // This reduces re-renders when addon data changes in ways that don't affect grouping
-  const { data: groupedAddons } = useSuspenseQuery(
+  // Fetch all addons
+  const { data: addons } = useSuspenseQuery(
     orpc.system.addon.list.queryOptions({
       input: {},
-      select: (addons) => ({
-        hasAddons: addons.length > 0,
-        distribution: addons.filter(
-          (addon) =>
-            getAddonCategoryFromFactoryTypeId(addon.typeId) === "distribution"
-        ),
-        exchange: addons.filter(
-          (addon) =>
-            getAddonCategoryFromFactoryTypeId(addon.typeId) === "exchange"
-        ),
-        custody: addons.filter(
-          (addon) =>
-            getAddonCategoryFromFactoryTypeId(addon.typeId) === "custody"
-        ),
-        income: addons.filter(
-          (addon) =>
-            getAddonCategoryFromFactoryTypeId(addon.typeId) === "income"
-        ),
-      }),
     })
+  );
+
+  // Group addons by category
+  const groupedAddons = useMemo(
+    () => ({
+      hasAddons: addons.length > 0,
+      distribution: addons.filter(
+        (addon) =>
+          getAddonCategoryFromFactoryTypeId(addon.typeId) === "distribution"
+      ),
+      exchange: addons.filter(
+        (addon) =>
+          getAddonCategoryFromFactoryTypeId(addon.typeId) === "exchange"
+      ),
+      custody: addons.filter(
+        (addon) => getAddonCategoryFromFactoryTypeId(addon.typeId) === "custody"
+      ),
+      income: addons.filter(
+        (addon) => getAddonCategoryFromFactoryTypeId(addon.typeId) === "income"
+      ),
+    }),
+    [addons]
   );
 
   // Check if any addon in a category is active
