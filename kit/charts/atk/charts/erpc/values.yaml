@@ -8,6 +8,8 @@ global:
   storageClass: ""
   securityContexts: {}
   datastores: {}
+  labels:
+    kots.io/app-slug: settlemint-atk
 
 # -- (string) String to fully override common.names.fullname
 fullnameOverride: "erpc"

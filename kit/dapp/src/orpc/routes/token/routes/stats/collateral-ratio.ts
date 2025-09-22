@@ -1,7 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { bigDecimal } from "@atk/zod/bigdecimal";
-import { divide, greaterThan, toNumber } from "dnum";
+import { divide, greaterThan, multiply, toNumber } from "dnum";
 import { z } from "zod";
 
 /**
@@ -10,9 +10,8 @@ import { z } from "zod";
  */
 const TOKEN_COLLATERAL_STATS_QUERY = theGraphGraphql(`
   query TokenCollateralStats($tokenId: String!) {
-    tokenCollateralStats_collection(
+    tokenCollateralStatsDatas(
       where: { token: $tokenId }
-      interval: hour
       orderBy: timestamp
       orderDirection: desc
       first: 1
@@ -26,7 +25,7 @@ const TOKEN_COLLATERAL_STATS_QUERY = theGraphGraphql(`
 
 // Schema for the GraphQL response
 const TokenCollateralStatsResponseSchema = z.object({
-  tokenCollateralStats_collection: z.array(
+  tokenCollateralStatsDatas: z.array(
     z.object({
       collateral: bigDecimal(),
       collateralAvailable: bigDecimal(),
@@ -78,7 +77,7 @@ export const statsCollateralRatio =
       }
     );
 
-    const stats = response.tokenCollateralStats_collection[0];
+    const stats = response.tokenCollateralStatsDatas[0];
 
     // Handle case where no collateral data exists
     if (!stats) {
@@ -103,7 +102,10 @@ export const statsCollateralRatio =
 
     // Calculate collateral ratio (used/total * 100)
     const collateralRatio = greaterThan(stats.collateral, 0)
-      ? toNumber(divide(stats.collateralUsed, stats.collateral)) * 100
+      ? // Accurate to 1 decimal
+        toNumber(
+          multiply(divide(stats.collateralUsed, stats.collateral, 3), 100, 1)
+        )
       : 0;
 
     return {

@@ -7,37 +7,17 @@
 # The only difference is in the values - OpenShift doesn't set runAsUser/runAsGroup/fsGroup
 # because OpenShift assigns these automatically based on the project's UID range.
 
-# Network bootstrapper security context overrides for OpenShift
-network:
-  network-bootstrapper:
-    podSecurityContext:
-      fsGroup: null
-      fsGroupChangePolicy: Always
-      runAsNonRoot: true
-      runAsUser: null
-      runAsGroup: null
-      seccompProfile:
-        type: RuntimeDefault
-    securityContext:
-      runAsNonRoot: true
-      runAsUser: null
-      runAsGroup: null
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      seccompProfile:
-        type: RuntimeDefault
-  network-nodes:
-    podSecurityContext:
+# Global security contexts for OpenShift
+global:
+  securityContexts:
+    pod:
       fsGroup: null
       runAsUser: null
       runAsGroup: null
-      fsGroupChangePolicy: Always
       runAsNonRoot: true
       seccompProfile:
         type: RuntimeDefault
-    securityContext:
+    container:
       runAsNonRoot: true
       runAsUser: null
       runAsGroup: null
@@ -50,36 +30,6 @@ network:
 
 # Graph Node security contexts for OpenShift
 graph-node:
-  podSecurityContext:
-    fsGroup: null
-    runAsUser: null
-    runAsGroup: null
-    runAsNonRoot: true
-    seccompProfile:
-      type: RuntimeDefault
-
-  containerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: null
-    runAsGroup: null
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-        - ALL
-    seccompProfile:
-      type: RuntimeDefault
-
-  initContainerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: null
-    runAsGroup: null
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-        - ALL
-    seccompProfile:
-      type: RuntimeDefault
-
   ingress:
     enabled: false
 
@@ -126,86 +76,8 @@ graph-node:
 portal:
   ingress:
     enabled: false
-
-  openShiftRoute:
-    enabled: true
-    host: portal.apps-crc.testing
-    path: /
-    tls: null
-    graphql:
-      enabled: true
-      host: portal.apps-crc.testing
-      path: /graphql
-
-  podSecurityContext:
-    fsGroup: null
-    runAsUser: null
-    runAsGroup: null
-    runAsNonRoot: true
-    seccompProfile:
-      type: RuntimeDefault
-
-  containerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: null
-    runAsGroup: null
-    allowPrivilegeEscalation: false
-    readOnlyRootFilesystem: false
-    capabilities:
-      drop:
-        - ALL
-    seccompProfile:
-      type: RuntimeDefault
-
-  initContainerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: null
-    runAsGroup: null
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-        - ALL
-    seccompProfile:
-      type: RuntimeDefault
-
-  initContainer:
-    copyArtifacts:
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: null
-        runAsGroup: null
-        allowPrivilegeEscalation: false
-        capabilities:
-          drop:
-            - ALL
-        seccompProfile:
-          type: RuntimeDefault
-
 # Transaction Signer security contexts for OpenShift
 txsigner:
-  podSecurityContext:
-    fsGroup: null
-    runAsUser: null
-    runAsGroup: null
-    runAsNonRoot: true
-    seccompProfile:
-      type: RuntimeDefault
-
-  containerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: null
-    runAsGroup: null
-
-  initContainerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: null
-    runAsGroup: null
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop: [ALL]
-    seccompProfile:
-      type: RuntimeDefault
-
   openShiftRoute:
     enabled: true
     host: txsigner.apps-crc.testing
@@ -224,37 +96,6 @@ erpc:
     wildcardPolicy: None
     tls: null
 
-  podSecurityContext:
-    fsGroup: null
-    runAsUser: null
-    runAsGroup: null
-    runAsNonRoot: true
-    seccompProfile:
-      type: RuntimeDefault
-
-  containerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: null
-    runAsGroup: null
-    allowPrivilegeEscalation: false
-    readOnlyRootFilesystem: false
-    capabilities:
-      drop:
-        - ALL
-    seccompProfile:
-      type: RuntimeDefault
-
-  initContainerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: null
-    runAsGroup: null
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-        - ALL
-    seccompProfile:
-      type: RuntimeDefault
-
 # DApp security contexts for OpenShift
 dapp:
   ingress:
@@ -266,109 +107,29 @@ dapp:
     path: /
     tls: null
 
-  podSecurityContext:
-    fsGroup: null
-    runAsUser: null
-    runAsGroup: null
-    runAsNonRoot: true
-    seccompProfile:
-      type: RuntimeDefault
-
-  securityContext:
-    runAsNonRoot: true
-    runAsUser: null
-    runAsGroup: null
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-        - ALL
-    seccompProfile:
-      type: RuntimeDefault
-
-  initContainerSecurityContext:
-    runAsNonRoot: true
-    runAsUser: null
-    runAsGroup: null
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-        - ALL
-    seccompProfile:
-      type: RuntimeDefault
-
 # Support services security contexts for OpenShift
 support:
-  # PostgreSQL security contexts for OpenShift
+  # PostgreSQL - clear default security contexts to use global ones
   postgresql:
-    podSecurityContext:
-      fsGroup: null
-      runAsUser: null
-      runAsNonRoot: true
-      seccompProfile:
-        type: RuntimeDefault
+    podSecurityContext: {}
+    securityContext: {}
 
-    securityContext:
-      runAsUser: null
-      runAsGroup: null
-      runAsNonRoot: true
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      seccompProfile:
-        type: RuntimeDefault
-
-  # Redis security contexts for OpenShift
+  # Redis - clear default security contexts to use global ones
   redis:
-    podSecurityContext:
-      fsGroup: null
-      runAsNonRoot: true
-      runAsUser: null
-      seccompProfile:
-        type: RuntimeDefault
-
-    containerSecurityContext:
-      runAsUser: null
-      runAsGroup: null
-      runAsNonRoot: true
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      readOnlyRootFilesystem: false
-      seccompProfile:
-        type: RuntimeDefault
+    podSecurityContext: {}
+    containerSecurityContext: {}
 
   # Nginx Ingress Controller adjustments for OpenShift (if used)
   ingress-nginx:
     enabled: false
-    controller:
-      podSecurityContext:
-        fsGroup: null
-        runAsUser: null
-        runAsGroup: null
-        runAsNonRoot: true
-        seccompProfile:
-          type: RuntimeDefault
-      containerSecurityContext:
-        runAsNonRoot: true
-        runAsUser: null
-        runAsGroup: null
-        allowPrivilegeEscalation: false
-        capabilities:
-          drop:
-            - ALL
-          add:
-            - NET_BIND_SERVICE
-        seccompProfile:
-          type: RuntimeDefault
+
   reloader:
     reloader:
       deployment:
         securityContext:
           runAsUser: null
   minio:
-    securityContext:
+    ingress:
       enabled: false
 
 observability:
@@ -400,6 +161,9 @@ observability:
       runAsUser: null
       runAsGroup: null
       fsGroup: null
+  metrics-server:
+    securityContext:
+      runAsUser: null
 
 # Hasura configuration for OpenShift
 hasura:
@@ -412,25 +176,6 @@ hasura:
       host: hasura.apps-crc.testing
       path: /
       wildcardPolicy: None
-
-    podSecurityContext:
-      runAsNonRoot: true
-      fsGroup: null
-      runAsUser: null
-      runAsGroup: null
-      seccompProfile:
-        type: RuntimeDefault
-
-    containerSecurityContext:
-      runAsNonRoot: true
-      runAsUser: null
-      runAsGroup: null
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      seccompProfile:
-        type: RuntimeDefault
 
 # Blockscout configuration for OpenShift
 blockscout:
@@ -448,32 +193,6 @@ blockscout:
       API_URL: https://explorer.apps-crc.testing
       WEBAPP_URL: https://explorer.apps-crc.testing
 
-    podSecurityContext:
-      fsGroup: null
-      runAsUser: null
-      runAsGroup: null
-      runAsNonRoot: true
-
-    containerSecurityContext:
-      runAsNonRoot: true
-      runAsUser: null
-      runAsGroup: null
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      readOnlyRootFilesystem: false
-
-    initContainerSecurityContext:
-      runAsNonRoot: true
-      runAsUser: null
-      runAsGroup: null
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      readOnlyRootFilesystem: false
-
   frontend:
     ingress:
       enabled: false
@@ -483,19 +202,3 @@ blockscout:
       host: explorer.apps-crc.testing
       path: /
       wildcardPolicy: None
-
-    podSecurityContext:
-      fsGroup: null
-      runAsUser: null
-      runAsGroup: null
-      runAsNonRoot: true
-
-    containerSecurityContext:
-      runAsNonRoot: true
-      runAsUser: null
-      runAsGroup: null
-      allowPrivilegeEscalation: false
-      capabilities:
-        drop:
-          - ALL
-      readOnlyRootFilesystem: false

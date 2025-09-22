@@ -2,8 +2,8 @@ apiVersion: v2
 name: postgresql
 description: A simple PostgreSQL Helm chart for ATK development
 type: application
-version: 0.1.0
-appVersion: "17.5"
+version: 2.0.0-alpha.8
+appVersion: 2.0.0-alpha.8
 icon: https://console.settlemint.com/android-chrome-512x512.png
 maintainers:
   - name: SettleMint

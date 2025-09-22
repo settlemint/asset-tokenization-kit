@@ -1,5 +1,6 @@
 import { assetDesignerFormOptions } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
 import { BondSummaryFields } from "@/components/asset-designer/asset-designer-wizard/summary/bond";
+import { EquitySummaryFields } from "@/components/asset-designer/asset-designer-wizard/summary/equity";
 import { FundSummaryFields } from "@/components/asset-designer/asset-designer-wizard/summary/fund";
 import {
   FormSummaryCard,
@@ -110,6 +111,7 @@ export const Summary = withForm({
 
         {values.type === "bond" && <BondSummaryFields form={form} />}
         {values.type === "fund" && <FundSummaryFields form={form} />}
+        {values.type === "equity" && <EquitySummaryFields form={form} />}
 
         {values.initialModulePairs && values.initialModulePairs.length > 0 && (
           <FormSummaryCard

@@ -1,4 +1,9 @@
 # https://github.com/hasura/helm-charts/blob/main/charts/graphql-engine/values.yaml
+
+global:
+  labels:
+    kots.io/app-slug: settlemint-atk
+
 # -- (object) Hasura GraphQL Engine configuration
 graphql-engine:
   # -- (string) String to partially override common.names.fullname template (will maintain the release name)

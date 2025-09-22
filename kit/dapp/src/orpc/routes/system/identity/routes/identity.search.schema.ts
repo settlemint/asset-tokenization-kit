@@ -39,6 +39,7 @@ export const IdentitySearchResponseSchema = z.object({
         id: ethereumAddress,
         account: z.object({
           id: ethereumAddress,
+          contractName: z.string().nullable().optional(),
         }),
         registered: z
           .array(

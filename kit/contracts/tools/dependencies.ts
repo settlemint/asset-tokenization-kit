@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { $ } from "bun";
 import { join } from "node:path";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { getKitProjectPath } from "../../../tools/root";
 
 /**
@@ -96,8 +96,13 @@ async function installSoldeerDependencies(projectDir: string): Promise<void> {
     await $`forge soldeer install`.cwd(projectDir).quiet();
     logger.info("Soldeer dependencies installed");
   } catch (error) {
-    logger.error(`Failed to install dependencies: ${error}`);
-    throw error;
+    try {
+      await $`~/.foundry/bin/forge soldeer install`.cwd(projectDir).quiet();
+      logger.info("Soldeer dependencies installed");
+    } catch (error) {
+      logger.error(`Failed to install dependencies: ${error}`, error);
+      throw error;
+    }
   }
 }
 

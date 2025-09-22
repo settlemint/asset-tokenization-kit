@@ -54,8 +54,6 @@ runs:
 
     - name: Install Foundry
       uses: foundry-rs/foundry-toolchain@v1
-      with:
-        version: v1.3.1
 
     - name: Install Helm Docs
       shell: bash
@@ -69,3 +67,12 @@ runs:
 
     - name: Install Helm
       uses: azure/setup-helm@v4
+
+    - name: Set up Python
+
+      uses: actions/setup-python@v6
+      with:
+        check-latest: true
+
+    - name: Set up chart-testing
+      uses: helm/chart-testing-action@v2.7.0

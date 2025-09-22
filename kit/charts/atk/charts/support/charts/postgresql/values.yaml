@@ -58,33 +58,10 @@ service:
   targetPort: 5432
 
 # -- (object) Pod security context
-podSecurityContext:
-  # -- (int) File system group
-  fsGroup: 999
-  # -- (bool) Run as non-root
-  runAsNonRoot: true
-  # -- (object) Seccomp profile
-  seccompProfile:
-    type: RuntimeDefault
+podSecurityContext: {}
 
 # -- (object) Container security context
-securityContext:
-  # -- (int) Run as user
-  runAsUser: 999
-  # -- (int) Run as group
-  runAsGroup: 999
-  # -- (bool) Run as non-root
-  runAsNonRoot: true
-  # -- (bool) Allow privilege escalation
-  allowPrivilegeEscalation: false
-  # -- (object) Security capabilities
-  capabilities:
-    # -- (list) Capabilities to drop
-    drop:
-      - ALL
-  # -- (object) Seccomp profile
-  seccompProfile:
-    type: RuntimeDefault
+securityContext: {}
 
 # -- Pod disruption budget configuration (object)
 podDisruptionBudget:

@@ -3,7 +3,7 @@ import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
-import { Badge } from "@/components/ui/badge";
+import { IdentityTypeBadge } from "@/components/identity/identity-type-badge";
 import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { IdentityListOutput } from "@/orpc/routes/system/identity/routes/identity.list.schema";
@@ -21,7 +21,7 @@ const columnHelper = createStrictColumnHelper<IdentityRow>();
 
 export function IdentityTable() {
   const router = useRouter();
-  const { t } = useTranslation("claims");
+  const { t } = useTranslation("identities");
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 20,
@@ -44,8 +44,8 @@ export function IdentityTable() {
   const handleRowClick = async (identity: IdentityRow) => {
     try {
       await router.navigate({
-        to: "/admin/identity-management/$accountId",
-        params: { accountId: identity.account?.id ?? identity.id },
+        to: "/admin/identity-management/$address",
+        params: { address: identity.id },
       });
     } catch {
       toast.error(t("identityTable.errors.navigationFailed"));
@@ -59,7 +59,7 @@ export function IdentityTable() {
         columnHelper.display({
           id: "identityId",
           header: t("identityTable.columns.id"),
-          cell: ({ row }: CellContext<IdentityRow, string>) => (
+          cell: ({ row }) => (
             <Web3Address
               address={row.original.id}
               size="small"
@@ -79,11 +79,13 @@ export function IdentityTable() {
         columnHelper.accessor(
           (row: IdentityRow) =>
             [
-              row.contract?.contractName,
-              row.contract?.id,
+              row.account?.contractName,
               row.account?.id,
-              row.contract ? "contract" : undefined,
-              row.account ? "account" : undefined,
+              row.isContract === true
+                ? "contract"
+                : row.isContract === false
+                  ? "account"
+                  : "",
             ]
               .filter(Boolean)
               .join(" "),
@@ -104,41 +106,41 @@ export function IdentityTable() {
           id: "linkedEntity",
           header: t("identityTable.columns.entity"),
           cell: ({ row }: CellContext<IdentityRow, unknown>) => {
-            const { contract, account } = row.original;
+            const { account, isContract } = row.original;
 
-            if (contract) {
+            if (!account) {
+              return (
+                <span className="text-muted-foreground">
+                  {t("identityTable.fallback.noEntity")}
+                </span>
+              );
+            }
+
+            if (isContract === true) {
               return (
                 <div className="flex flex-col gap-1">
-                  {contract.contractName && (
-                    <span className="font-medium">{contract.contractName}</span>
+                  {account.contractName && (
+                    <span className="font-medium">{account.contractName}</span>
                   )}
                   <Web3Address
-                    address={contract.id}
+                    address={account.id}
                     size="small"
                     copyToClipboard
-                    showBadge={!contract.contractName}
+                    showBadge={!account.contractName}
                     showPrettyName={false}
                   />
                 </div>
               );
             }
 
-            if (account) {
-              return (
-                <Web3Address
-                  address={account.id}
-                  size="small"
-                  copyToClipboard
-                  showBadge
-                  showPrettyName={false}
-                />
-              );
-            }
-
             return (
-              <span className="text-muted-foreground text-sm">
-                {t(`identityTable.fallback.noEntity`)}
-              </span>
+              <Web3Address
+                address={account.id}
+                size="small"
+                copyToClipboard
+                showBadge
+                showPrettyName={false}
+              />
             );
           },
           meta: {
@@ -148,7 +150,12 @@ export function IdentityTable() {
         }),
         // Hidden accessor column for filtering by entity type
         columnHelper.accessor(
-          (row: IdentityRow) => (row.contract ? "contract" : "account"),
+          (row: IdentityRow) =>
+            row.isContract === true
+              ? "contract"
+              : row.isContract === false
+                ? "account"
+                : "",
           {
             id: "type_filter",
             header: "",
@@ -174,23 +181,11 @@ export function IdentityTable() {
           id: "type",
           header: t("identityTable.columns.type"),
           cell: ({ row }: CellContext<IdentityRow, unknown>) => {
-            const isContract = !!row.original.contract;
-            const label = t(
-              isContract
-                ? "identityTable.types.contract"
-                : "identityTable.types.account"
-            );
-
-            // Use SettleMint brand colors for distinction
-            const brandColorClasses = isContract
-              ? "bg-[oklch(0.7675_0.0982_182.83)]/20 text-[oklch(0.7675_0.0982_182.83)] border-[oklch(0.7675_0.0982_182.83)]/30"
-              : "bg-sm-accent/20 text-sm-accent border-sm-accent/30";
-
-            return (
-              <Badge variant="outline" className={brandColorClasses}>
-                {label}
-              </Badge>
-            );
+            const isContract = row.original.isContract;
+            if (isContract === null || isContract === undefined) {
+              return <span className="text-muted-foreground">—</span>;
+            }
+            return <IdentityTypeBadge isContract={isContract} />;
           },
           meta: {
             displayName: t("identityTable.columns.type"),

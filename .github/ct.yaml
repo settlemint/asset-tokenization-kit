@@ -1,0 +1,5 @@
+chart-dirs:
+  - kit/charts/atk
+remote: origin
+target-branch: main
+check-version-increment: false

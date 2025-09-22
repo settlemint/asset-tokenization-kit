@@ -431,12 +431,14 @@ export function TransferAssetSheet({
                       {hasAmountInput &&
                         allAmountsProvided &&
                         (!allAmountsPositive || !withinAvailable) && (
-                        <div className="text-xs text-destructive">
-                          {allAmountsPositive
-                            ? t("user-assets:actions.transfer.overAvailable")
-                            : t("user-assets:actions.transfer.amountRequired")}
-                        </div>
-                      )}
+                          <div className="text-xs text-destructive">
+                            {allAmountsPositive
+                              ? t("user-assets:actions.transfer.overAvailable")
+                              : t(
+                                  "user-assets:actions.transfer.amountRequired"
+                                )}
+                          </div>
+                        )}
                     </CardContent>
                   </Card>
                 </CardContent>

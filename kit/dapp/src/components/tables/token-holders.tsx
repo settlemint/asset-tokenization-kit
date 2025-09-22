@@ -13,7 +13,7 @@ import { BurnSheet } from "@/components/manage-dropdown/sheets/burn-sheet";
 import { Badge } from "@/components/ui/badge";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { AssetBalance } from "@atk/zod/src/asset-balance";
+import { AssetBalance } from "@atk/zod/asset-balance";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";

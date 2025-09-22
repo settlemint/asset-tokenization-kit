@@ -1,14 +1,21 @@
 apiVersion: v2
 name: erpc
-description: |
-  eRPC is a fault-tolerant EVM RPC proxy and permanent caching solution that provides
-  high availability, load balancing, and intelligent request routing for Ethereum
+description: >
+  eRPC is a fault-tolerant EVM RPC proxy and permanent caching solution that
+  provides
+
+  high availability, load balancing, and intelligent request routing for
+  Ethereum
+
   and EVM-compatible blockchain networks. It offers advanced caching mechanisms,
-  automatic failover, and comprehensive monitoring for production-grade blockchain
+
+  automatic failover, and comprehensive monitoring for production-grade
+  blockchain
+
   infrastructure.
 type: application
-version: 0.1.1
-appVersion: "0.0.50"
+version: 2.0.0-alpha.8
+appVersion: 2.0.0-alpha.8
 icon: https://console.settlemint.com/android-chrome-512x512.png
 home: https://erpc.cloud/
 sources:

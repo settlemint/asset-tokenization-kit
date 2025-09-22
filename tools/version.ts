@@ -44,6 +44,22 @@ interface ChartYaml {
   [key: string]: unknown;
 }
 
+function normalizeBaseVersion(version: string): string {
+  const [preReleasePart] = version.split("-");
+  const [buildStripped] = (preReleasePart ?? version).split("+");
+  const candidate = (buildStripped ?? version).trim();
+  const semverPattern = /^[0-9]+\.[0-9]+\.[0-9]+$/;
+
+  if (candidate && semverPattern.test(candidate)) {
+    return candidate;
+  }
+
+  return version;
+}
+
+let versionEnvExported = false;
+let versionOutputExported = false;
+
 /**
  * Reads and parses the root package.json file
  * @param startPath - Starting path for finding the monorepo root
@@ -132,14 +148,19 @@ export async function getVersionInfo(
   } = params;
 
   const packageJson = await readRootPackageJson(startPath);
+  const baseVersion = normalizeBaseVersion(packageJson.version);
 
-  return generateVersionInfo(
+  const info = generateVersionInfo(
     refSlug,
     refName,
     shaShort,
-    packageJson.version,
+    baseVersion,
     buildId
   );
+
+  await ensureVersionEnv(info);
+
+  return info;
 }
 
 /**
@@ -155,27 +176,38 @@ export async function getVersionInfoWithLogging(
   logger.info(`TAG=${result.tag}`);
   logger.info(`VERSION=${result.version}`);
 
-  process.env.TAG = result.tag;
-  process.env.VERSION = result.version;
-  await exportVersionInfoForGitHub(result);
-
   return result;
 }
 
-async function exportVersionInfoForGitHub(info: VersionInfo): Promise<void> {
-  const envFile = process.env.GITHUB_ENV;
-  if (!envFile) return;
+async function ensureVersionEnv(info: VersionInfo): Promise<void> {
+  process.env.TAG = info.tag;
+  process.env.VERSION = info.version;
 
-  try {
-    await appendFile(envFile, `TAG=${info.tag}\nVERSION=${info.version}\n`);
-    logger.info(`Exported version info to ${envFile}`);
-  } catch (error) {
-    logger.warn("Failed to export version info to GITHUB_ENV", error);
+  const envFile = process.env.GITHUB_ENV;
+  if (envFile && !versionEnvExported) {
+    try {
+      await appendFile(envFile, `TAG=${info.tag}\nVERSION=${info.version}\n`);
+      logger.info(`Exported version info to ${envFile}`);
+      versionEnvExported = true;
+    } catch (error) {
+      logger.warn("Failed to export version info to GITHUB_ENV", error);
+    }
+  }
+
+  const outputFile = process.env.GITHUB_OUTPUT;
+  if (outputFile && !versionOutputExported) {
+    try {
+      await appendFile(outputFile, `tag=${info.tag}\nversion=${info.version}\n`);
+      logger.info(`Exported version info to ${outputFile}`);
+      versionOutputExported = true;
+    } catch (error) {
+      logger.warn("Failed to export version info to GITHUB_OUTPUT", error);
+    }
   }
 }
 
 /**
- * Counts workspace protocol dependencies so they remain untouched
+ * Counts workspace protocol dependencies so release logs stay informative without mutating them
  * @param deps - Dependencies object to inspect
  * @param depType - Type of dependencies (for logging)
  * @returns Number of workspace protocol dependencies detected
@@ -196,7 +228,7 @@ function countWorkspaceDependencies(
 
   if (workspaceCount > 0) {
     logger.info(
-      `    Found ${workspaceCount} workspace:* references in ${depType}; leaving unchanged`
+      `    Found ${workspaceCount} workspace:* references in ${depType}`
     );
   }
 
@@ -298,7 +330,7 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
         packageJson.version = newVersion;
         hasChanges = true;
 
-        // Count workspace protocol dependencies in all dependency types
+        // Count workspace protocol dependencies across dependency groups without mutating them
         const workspaceReferences = [
           countWorkspaceDependencies(
             packageJson.dependencies as Record<string, string>,
@@ -332,9 +364,7 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
 
           logger.info(`    Updated version: ${oldVersion} -> ${newVersion}`);
           if (totalWorkspaceReferences > 0) {
-            logger.info(
-              `    Detected ${totalWorkspaceReferences} total workspace:* references`
-            );
+            logger.info(`    Found ${totalWorkspaceReferences} total workspace:* references`);
           }
           updatedCount++;
         } else {

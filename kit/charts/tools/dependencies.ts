@@ -125,7 +125,7 @@ async function updateHelmDependencies(chartDir: string, maxRetries = 3): Promise
   logger.info(`Updating dependencies for ${chartName}...`);
 
   let lastError: Error | unknown;
-  
+
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       await $`helm dependency update`.cwd(chartDir).quiet();
@@ -142,7 +142,7 @@ async function updateHelmDependencies(chartDir: string, maxRetries = 3): Promise
       }
     }
   }
-  
+
   throw lastError;
 }
 
