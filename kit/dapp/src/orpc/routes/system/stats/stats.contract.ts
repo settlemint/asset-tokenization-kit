@@ -1,6 +1,10 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import { StatsAssetsOutputSchema } from "@/orpc/routes/system/stats/routes/assets.schema";
 import {
+  StatsPortfolioInputSchema,
+  StatsPortfolioOutputSchema,
+} from "@/orpc/routes/system/stats/routes/portfolio.schema";
+import {
   StatsTransactionCountInputSchema,
   StatsTransactionCountOutputSchema,
 } from "@/orpc/routes/system/stats/routes/transaction-count.schema";
@@ -53,9 +57,21 @@ const statsValue = baseContract
   })
   .output(StatsValueOutputSchema);
 
+const statsPortfolio = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/portfolio",
+    description: "Retrieve system-wide portfolio statistics",
+    successDescription: "System portfolio statistics retrieved successfully",
+    tags: ["stats", "system"],
+  })
+  .input(StatsPortfolioInputSchema)
+  .output(StatsPortfolioOutputSchema);
+
 export const statsContract = {
   assets: statsAssets,
   transactionCount: statsTransactionCount,
   transactionHistory: statsTransactionHistory,
   value: statsValue,
+  portfolio: statsPortfolio,
 };
