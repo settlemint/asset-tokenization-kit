@@ -1288,18 +1288,6 @@ type AccountStatsState @entity(immutable: false) {
   id: Bytes!
   # Reference to the account
   account: Account!
-  # Total token value across all holdings (human-readable)
-  totalValue: BigDecimal!
-  # Total token value across all holdings (exact units)
-  totalValueExact: BigInt!
-  # Total frozen balance across all holdings (human-readable)
-  totalFrozen: BigDecimal!
-  # Total frozen balance across all holdings (exact units)
-  totalFrozenExact: BigInt!
-  # Total available balance across all holdings (human-readable)
-  totalAvailable: BigDecimal!
-  # Total available balance across all holdings (exact units)
-  totalAvailableExact: BigInt!
   # Total value of all tokens held by account in base FIAT currency
   totalValueInBaseCurrency: BigDecimal!
   # Number of different token balances
@@ -1313,18 +1301,6 @@ type AccountStatsData @entity(timeseries: true) {
   timestamp: Timestamp!
   # Reference to the account
   account: Account!
-  # Total token value across all holdings (human-readable)
-  totalValue: BigDecimal!
-  # Total token value across all holdings (exact units)
-  totalValueExact: BigInt!
-  # Total frozen balance across all holdings (human-readable)
-  totalFrozen: BigDecimal!
-  # Total frozen balance across all holdings (exact units)
-  totalFrozenExact: BigInt!
-  # Total available balance across all holdings (human-readable)
-  totalAvailable: BigDecimal!
-  # Total available balance across all holdings (exact units)
-  totalAvailableExact: BigInt!
   # Total value of all tokens held in base FIAT currency
   totalValueInBaseCurrency: BigDecimal!
   # Number of different token balances
@@ -1339,18 +1315,6 @@ type AccountStats
   timestamp: Timestamp!
   # Reference to the account
   account: Account!
-  # Last total token value across all holdings for the period (human-readable)
-  totalValue: BigDecimal! @aggregate(fn: "last", arg: "totalValue")
-  # Last total token value across all holdings for the period (exact units)
-  totalValueExact: BigInt! @aggregate(fn: "last", arg: "totalValueExact")
-  # Last total frozen balance across all holdings for the period (human-readable)
-  totalFrozen: BigDecimal! @aggregate(fn: "last", arg: "totalFrozen")
-  # Last total frozen balance across all holdings for the period (exact units)
-  totalFrozenExact: BigInt! @aggregate(fn: "last", arg: "totalFrozenExact")
-  # Last total available balance across all holdings for the period (human-readable)
-  totalAvailable: BigDecimal! @aggregate(fn: "last", arg: "totalAvailable")
-  # Last total available balance across all holdings for the period (exact units)
-  totalAvailableExact: BigInt! @aggregate(fn: "last", arg: "totalAvailableExact")
   # Last value of all tokens in base FIAT currency for the period
   totalValueInBaseCurrency: BigDecimal!
     @aggregate(fn: "last", arg: "totalValueInBaseCurrency")
@@ -1365,18 +1329,6 @@ type AccountSystemStatsState @entity(immutable: false) {
   account: Account!
   # System this statistic belongs to
   system: System!
-  # Total token value across all holdings in this system (human-readable)
-  totalValue: BigDecimal!
-  # Total token value across all holdings in this system (exact units)
-  totalValueExact: BigInt!
-  # Total frozen balance across all holdings in this system (human-readable)
-  totalFrozen: BigDecimal!
-  # Total frozen balance across all holdings in this system (exact units)
-  totalFrozenExact: BigInt!
-  # Total available balance across all holdings in this system (human-readable)
-  totalAvailable: BigDecimal!
-  # Total available balance across all holdings in this system (exact units)
-  totalAvailableExact: BigInt!
   # Total value of all tokens held in base FIAT currency scoped to the system
   totalValueInBaseCurrency: BigDecimal!
   # Number of different token balances scoped to the system
@@ -1392,18 +1344,6 @@ type AccountSystemStatsData @entity(timeseries: true) {
   account: Account!
   # System this statistic belongs to
   system: System!
-  # Total token value across all holdings in this system (human-readable)
-  totalValue: BigDecimal!
-  # Total token value across all holdings in this system (exact units)
-  totalValueExact: BigInt!
-  # Total frozen balance across all holdings in this system (human-readable)
-  totalFrozen: BigDecimal!
-  # Total frozen balance across all holdings in this system (exact units)
-  totalFrozenExact: BigInt!
-  # Total available balance across all holdings in this system (human-readable)
-  totalAvailable: BigDecimal!
-  # Total available balance across all holdings in this system (exact units)
-  totalAvailableExact: BigInt!
   # Total value of all tokens held in base FIAT currency scoped to the system
   totalValueInBaseCurrency: BigDecimal!
   # Number of different token balances scoped to the system
@@ -1423,18 +1363,6 @@ type AccountSystemStats
   account: Account!
   # System this statistic belongs to
   system: System!
-  # Last total token value across all holdings for the period scoped to the system (human-readable)
-  totalValue: BigDecimal! @aggregate(fn: "last", arg: "totalValue")
-  # Last total token value across all holdings for the period scoped to the system (exact units)
-  totalValueExact: BigInt! @aggregate(fn: "last", arg: "totalValueExact")
-  # Last total frozen balance across all holdings for the period scoped to the system (human-readable)
-  totalFrozen: BigDecimal! @aggregate(fn: "last", arg: "totalFrozen")
-  # Last total frozen balance across all holdings for the period scoped to the system (exact units)
-  totalFrozenExact: BigInt! @aggregate(fn: "last", arg: "totalFrozenExact")
-  # Last total available balance across all holdings for the period scoped to the system (human-readable)
-  totalAvailable: BigDecimal! @aggregate(fn: "last", arg: "totalAvailable")
-  # Last total available balance across all holdings for the period scoped to the system (exact units)
-  totalAvailableExact: BigInt! @aggregate(fn: "last", arg: "totalAvailableExact")
   # Last value of all tokens in base FIAT currency for the period scoped to the system
   totalValueInBaseCurrency: BigDecimal!
     @aggregate(fn: "last", arg: "totalValueInBaseCurrency")
@@ -1453,18 +1381,6 @@ type AccountTokenFactoryStatsState @entity(immutable: false) {
   tokenFactory: TokenFactory!
   # Number of token balances belonging to this factory
   tokenBalancesCount: Int!
-  # Total token value across all holdings of this factory (human-readable)
-  totalValue: BigDecimal!
-  # Total token value across all holdings of this factory (exact units)
-  totalValueExact: BigInt!
-  # Total frozen balance for this factory (human-readable)
-  totalFrozen: BigDecimal!
-  # Total frozen balance for this factory (exact units)
-  totalFrozenExact: BigInt!
-  # Total available balance for this factory (human-readable)
-  totalAvailable: BigDecimal!
-  # Total available balance for this factory (exact units)
-  totalAvailableExact: BigInt!
   # Total value of this factory in base FIAT currency
   totalValueInBaseCurrency: BigDecimal!
 }
@@ -1482,18 +1398,6 @@ type AccountTokenFactoryStatsData @entity(timeseries: true) {
   tokenFactory: TokenFactory!
   # Number of token balances belonging to this factory
   tokenBalancesCount: Int!
-  # Total token value across all holdings of this factory (human-readable)
-  totalValue: BigDecimal!
-  # Total token value across all holdings of this factory (exact units)
-  totalValueExact: BigInt!
-  # Total frozen balance for this factory (human-readable)
-  totalFrozen: BigDecimal!
-  # Total frozen balance for this factory (exact units)
-  totalFrozenExact: BigInt!
-  # Total available balance for this factory (human-readable)
-  totalAvailable: BigDecimal!
-  # Total available balance for this factory (exact units)
-  totalAvailableExact: BigInt!
   # Total value of this factory in base FIAT currency
   totalValueInBaseCurrency: BigDecimal!
 }
@@ -1514,19 +1418,6 @@ type AccountTokenFactoryStats
   # Last number of token balances for the period
   tokenBalancesCount: Int!
     @aggregate(fn: "last", arg: "tokenBalancesCount")
-  # Last total token value for the period (human-readable)
-  totalValue: BigDecimal! @aggregate(fn: "last", arg: "totalValue")
-  # Last total token value for the period (exact units)
-  totalValueExact: BigInt! @aggregate(fn: "last", arg: "totalValueExact")
-  # Last total frozen balance for the period (human-readable)
-  totalFrozen: BigDecimal! @aggregate(fn: "last", arg: "totalFrozen")
-  # Last total frozen balance for the period (exact units)
-  totalFrozenExact: BigInt! @aggregate(fn: "last", arg: "totalFrozenExact")
-  # Last total available balance for the period (human-readable)
-  totalAvailable: BigDecimal! @aggregate(fn: "last", arg: "totalAvailable")
-  # Last total available balance for the period (exact units)
-  totalAvailableExact: BigInt!
-    @aggregate(fn: "last", arg: "totalAvailableExact")
   # Last base currency value for the period
   totalValueInBaseCurrency: BigDecimal!
     @aggregate(fn: "last", arg: "totalValueInBaseCurrency")
