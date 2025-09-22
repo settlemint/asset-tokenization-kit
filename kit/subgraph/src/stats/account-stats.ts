@@ -212,6 +212,7 @@ function fetchAccountSystemStatsState(
     state.system = system.id;
     state.totalValueInBaseCurrency = BigDecimal.zero();
     state.balancesCount = 0;
+    state.save();
   }
   return state;
 }
@@ -235,6 +236,7 @@ function fetchAccountTokenFactoryStatsState(
     state.tokenFactory = tokenFactory.id;
     state.tokenBalancesCount = 0;
     state.totalValueInBaseCurrency = BigDecimal.zero();
+    state.save();
   }
 
   return state;
