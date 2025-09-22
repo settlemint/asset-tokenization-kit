@@ -105,7 +105,7 @@ export const statsPortfolioDetails =
     const userAddress = context.auth.user.wallet;
     const systemId = context.system.id.toLowerCase();
     const accountId = userAddress.toLowerCase();
-    const accountSystemId = `${accountId}-${systemId}`;
+    const accountSystemId = `${accountId}${systemId}`; // TODO: @snigdha920 fix id
 
     // Fetch portfolio total value
     const accountSystemStatsResponse = await context.theGraphClient.query(

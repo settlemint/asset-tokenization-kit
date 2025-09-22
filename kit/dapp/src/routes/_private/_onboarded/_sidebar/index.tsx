@@ -15,6 +15,7 @@
  */
 
 import { IdentityProgress } from "@/components/dashboard/identity-progress/identity-progress";
+import { PortfolioDetails } from "@/components/dashboard/portfolio-details/portfolio-details";
 import { PortfolioValueAreaChart } from "@/components/stats/charts/portfolio-value-area-chart";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -59,7 +60,10 @@ function Home() {
     <div className="p-6 space-y-8">
       <IdentityProgress user={user} />
       {system.userIdentity?.registered && (
-        <PortfolioValueAreaChart interval="day" timeRange={30} />
+        <>
+          <PortfolioValueAreaChart interval="day" timeRange={30} />
+          <PortfolioDetails />
+        </>
       )}
     </div>
   );
