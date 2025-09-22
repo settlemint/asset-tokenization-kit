@@ -13,13 +13,10 @@ type Account @entity(immutable: false) {
   balances: [TokenBalance!]! @derivedFrom(field: "account")
   # Statistical data for this account scoped globally across all systems (aggregated metrics)
   stats: AccountStatsState @derivedFrom(field: "account")
-  # Token factory type statistics scoped globally across all systems
-  tokenTypeStats: [AccountTokenTypeStatsState!]!
-    @derivedFrom(field: "account")
   # Statistical data for this account scoped per system
   systemStats: [AccountSystemStatsState!]! @derivedFrom(field: "account")
-  # Token factory type statistics scoped per system for this account
-  systemTokenTypeStats: [AccountSystemTokenTypeStatsState!]!
+  # Token factory statistics
+  tokenFactoryStats: [AccountTokenFactoryStatsState!]!
     @derivedFrom(field: "account")
   # List of all identities associated with this account.
   identities: [Identity!]! @derivedFrom(field: "account")
@@ -1445,34 +1442,34 @@ type AccountSystemStats
   balancesCount: Int! @aggregate(fn: "last", arg: "balancesCount")
 }
 
-type AccountTokenTypeStatsState @entity(immutable: false) {
-  # Composite identifier - account ID, system ID and token factory type ID combined
+type AccountTokenFactoryStatsState @entity(immutable: false) {
+  # Composite identifier - account ID, token factory ID combined
   id: Bytes!
   # Reference to the account
   account: Account!
   # System this statistic is associated with
   system: System!
-  # Token factory type identifier (e.g., "ATKBondFactory")
-  tokenFactoryTypeId: String!
-  # Number of token balances belonging to this factory type
+  # Token factory
+  tokenFactory: TokenFactory!
+  # Number of token balances belonging to this factory
   tokenBalancesCount: Int!
-  # Total token value across all holdings of this factory type (human-readable)
+  # Total token value across all holdings of this factory (human-readable)
   totalValue: BigDecimal!
-  # Total token value across all holdings of this factory type (exact units)
+  # Total token value across all holdings of this factory (exact units)
   totalValueExact: BigInt!
-  # Total frozen balance for this factory type (human-readable)
+  # Total frozen balance for this factory (human-readable)
   totalFrozen: BigDecimal!
-  # Total frozen balance for this factory type (exact units)
+  # Total frozen balance for this factory (exact units)
   totalFrozenExact: BigInt!
-  # Total available balance for this factory type (human-readable)
+  # Total available balance for this factory (human-readable)
   totalAvailable: BigDecimal!
-  # Total available balance for this factory type (exact units)
+  # Total available balance for this factory (exact units)
   totalAvailableExact: BigInt!
-  # Total value of this factory type in base FIAT currency
+  # Total value of this factory in base FIAT currency
   totalValueInBaseCurrency: BigDecimal!
 }
 
-type AccountTokenTypeStatsData @entity(timeseries: true) {
+type AccountTokenFactoryStatsData @entity(timeseries: true) {
   # Unique identifier for timeseries entry
   id: Int8!
   # Timestamp of this data point
@@ -1481,30 +1478,30 @@ type AccountTokenTypeStatsData @entity(timeseries: true) {
   account: Account!
   # System this statistic is associated with
   system: System!
-  # Token factory type identifier (e.g., "ATKBondFactory")
-  tokenFactoryTypeId: String!
-  # Number of token balances belonging to this factory type
+  # Token factory
+  tokenFactory: TokenFactory!
+  # Number of token balances belonging to this factory
   tokenBalancesCount: Int!
-  # Total token value across all holdings of this factory type (human-readable)
+  # Total token value across all holdings of this factory (human-readable)
   totalValue: BigDecimal!
-  # Total token value across all holdings of this factory type (exact units)
+  # Total token value across all holdings of this factory (exact units)
   totalValueExact: BigInt!
-  # Total frozen balance for this factory type (human-readable)
+  # Total frozen balance for this factory (human-readable)
   totalFrozen: BigDecimal!
-  # Total frozen balance for this factory type (exact units)
+  # Total frozen balance for this factory (exact units)
   totalFrozenExact: BigInt!
-  # Total available balance for this factory type (human-readable)
+  # Total available balance for this factory (human-readable)
   totalAvailable: BigDecimal!
-  # Total available balance for this factory type (exact units)
+  # Total available balance for this factory (exact units)
   totalAvailableExact: BigInt!
-  # Total value of this factory type in base FIAT currency
+  # Total value of this factory in base FIAT currency
   totalValueInBaseCurrency: BigDecimal!
 }
 
-type AccountTokenTypeStats
+type AccountTokenFactoryStats
   @aggregation(
     intervals: ["hour", "day"],
-    source: "AccountTokenTypeStatsData"
+    source: "AccountTokenFactoryStatsData"
   ) {
   # Unique identifier for aggregated entry
   id: Int8!
@@ -1537,98 +1534,7 @@ type AccountTokenTypeStats
     @aggregate(fn: "last", arg: "totalValueInBaseCurrency")
 }
 
-type AccountSystemTokenTypeStatsState @entity(immutable: false) {
-  # Composite identifier - account ID, system ID and token factory type ID combined
-  id: Bytes!
-  # Reference to the account
-  account: Account!
-  # System this statistic belongs to
-  system: System!
-  # Token factory type identifier (e.g., "ATKBondFactory")
-  tokenFactoryTypeId: String!
-  # Number of token balances belonging to this factory type within the system
-  tokenBalancesCount: Int!
-  # Total token value across all holdings of this factory type within the system (human-readable)
-  totalValue: BigDecimal!
-  # Total token value across all holdings of this factory type within the system (exact units)
-  totalValueExact: BigInt!
-  # Total frozen balance for this factory type within the system (human-readable)
-  totalFrozen: BigDecimal!
-  # Total frozen balance for this factory type within the system (exact units)
-  totalFrozenExact: BigInt!
-  # Total available balance for this factory type within the system (human-readable)
-  totalAvailable: BigDecimal!
-  # Total available balance for this factory type within the system (exact units)
-  totalAvailableExact: BigInt!
-  # Total value of this factory type in base FIAT currency within the system
-  totalValueInBaseCurrency: BigDecimal!
-}
 
-type AccountSystemTokenTypeStatsData @entity(timeseries: true) {
-  # Unique identifier for timeseries entry
-  id: Int8!
-  # Timestamp of this data point
-  timestamp: Timestamp!
-  # Reference to the account
-  account: Account!
-  # System this statistic belongs to
-  system: System!
-  # Token factory type identifier (e.g., "ATKBondFactory")
-  tokenFactoryTypeId: String!
-  # Number of token balances belonging to this factory type within the system
-  tokenBalancesCount: Int!
-  # Total token value across all holdings of this factory type within the system (human-readable)
-  totalValue: BigDecimal!
-  # Total token value across all holdings of this factory type within the system (exact units)
-  totalValueExact: BigInt!
-  # Total frozen balance for this factory type within the system (human-readable)
-  totalFrozen: BigDecimal!
-  # Total frozen balance for this factory type within the system (exact units)
-  totalFrozenExact: BigInt!
-  # Total available balance for this factory type within the system (human-readable)
-  totalAvailable: BigDecimal!
-  # Total available balance for this factory type within the system (exact units)
-  totalAvailableExact: BigInt!
-  # Total value of this factory type in base FIAT currency within the system
-  totalValueInBaseCurrency: BigDecimal!
-}
-
-type AccountSystemTokenTypeStats
-  @aggregation(
-    intervals: ["hour", "day"],
-    source: "AccountSystemTokenTypeStatsData"
-  ) {
-  # Unique identifier for aggregated entry
-  id: Int8!
-  # Timestamp of aggregation period
-  timestamp: Timestamp!
-  # Reference to the account
-  account: Account!
-  # System this statistic belongs to
-  system: System!
-  # Token factory type identifier (e.g., "ATKBondFactory")
-  tokenFactoryTypeId: String!
-  # Last number of token balances for the period within the system
-  tokenBalancesCount: Int!
-    @aggregate(fn: "last", arg: "tokenBalancesCount")
-  # Last total token value for the period within the system (human-readable)
-  totalValue: BigDecimal! @aggregate(fn: "last", arg: "totalValue")
-  # Last total token value for the period within the system (exact units)
-  totalValueExact: BigInt! @aggregate(fn: "last", arg: "totalValueExact")
-  # Last total frozen balance for the period within the system (human-readable)
-  totalFrozen: BigDecimal! @aggregate(fn: "last", arg: "totalFrozen")
-  # Last total frozen balance for the period within the system (exact units)
-  totalFrozenExact: BigInt!
-    @aggregate(fn: "last", arg: "totalFrozenExact")
-  # Last total available balance for the period within the system (human-readable)
-  totalAvailable: BigDecimal! @aggregate(fn: "last", arg: "totalAvailable")
-  # Last total available balance for the period within the system (exact units)
-  totalAvailableExact: BigInt!
-    @aggregate(fn: "last", arg: "totalAvailableExact")
-  # Last base currency value for the period within the system
-  totalValueInBaseCurrency: BigDecimal!
-    @aggregate(fn: "last", arg: "totalValueInBaseCurrency")
-}
 
 type EventStatsData @entity(timeseries: true) {
   # Unique identifier for timeseries entry
