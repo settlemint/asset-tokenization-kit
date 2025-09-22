@@ -1511,8 +1511,6 @@ type AccountTokenFactoryStats
   account: Account!
   # System this statistic is associated with
   system: System!
-  # Token factory type identifier (e.g., "ATKBondFactory")
-  tokenFactoryTypeId: String!
   # Last number of token balances for the period
   tokenBalancesCount: Int!
     @aggregate(fn: "last", arg: "tokenBalancesCount")
