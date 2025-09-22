@@ -24,7 +24,7 @@ export function fetchTokenBalance(
     tokenBalance.save();
 
     // Increase account stats balance count
-    increaseAccountStatsBalanceCount(Address.fromBytes(account.id));
+    increaseAccountStatsBalanceCount(Address.fromBytes(account.id), token);
 
     // Increase token stats balance count
     increaseTokenStatsBalanceCount(Address.fromBytes(token.id));

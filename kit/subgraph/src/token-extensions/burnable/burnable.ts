@@ -26,6 +26,7 @@ export function handleBurnCompleted(event: BurnCompleted): void {
   );
 
   const amountDelta = toBigDecimal(event.params.amount, token.decimals).neg();
+  const amountDeltaExact = event.params.amount.neg();
 
   // Update system stats (negative delta for burn)
   const totalSystemValueInBaseCurrency = updateSystemStatsForSupplyChange(
@@ -41,7 +42,11 @@ export function handleBurnCompleted(event: BurnCompleted): void {
   );
 
   // Update account stats (negative delta for burn)
-  updateAccountStatsForBalanceChange(event.params.from, token, amountDelta);
+  updateAccountStatsForBalanceChange(
+    event.params.from,
+    token,
+    amountDeltaExact
+  );
 
   // Update token stats
   trackTokenStats(token, eventEntry);
