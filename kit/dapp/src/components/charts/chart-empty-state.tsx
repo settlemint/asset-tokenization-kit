@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PieChart as PieChartIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { ChartUpdateInfo } from "./chart-update-info";
 
 interface ChartEmptyStateProps {
   title: string;
@@ -19,6 +20,7 @@ interface ChartEmptyStateProps {
   isLoading?: boolean;
   emptyMessage?: string;
   emptyDescription?: string;
+  interval?: "hour" | "day";
 }
 
 export function ChartEmptyState({
@@ -29,6 +31,7 @@ export function ChartEmptyState({
   isLoading = false,
   emptyMessage,
   emptyDescription,
+  interval = "hour",
 }: ChartEmptyStateProps) {
   const { t } = useTranslation("stats");
 
@@ -36,7 +39,10 @@ export function ChartEmptyState({
     return (
       <Card className={className}>
         <CardHeader>
-          <Skeleton className="h-6 w-48" />
+          <div className="flex items-center gap-2 mb-2">
+            <Skeleton className="h-6 w-48" />
+            <ChartUpdateInfo interval={interval} />
+          </div>
           {description && <Skeleton className="h-4 w-64" />}
         </CardHeader>
         <CardContent>
@@ -60,7 +66,10 @@ export function ChartEmptyState({
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <div className="flex items-center gap-2">
+          <CardTitle>{title}</CardTitle>
+          <ChartUpdateInfo interval={interval} />
+        </div>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent>

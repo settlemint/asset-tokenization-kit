@@ -43,6 +43,7 @@ function PortfolioDetailsContent() {
       <PortfolioSummaryCard
         totalValue={portfolioData.totalValue}
         totalTokenFactories={portfolioData.totalTokenFactories}
+        totalAssetsHeld={portfolioData.totalAssetsHeld}
         hasAssets={hasAssets}
       />
       <PortfolioBreakdown

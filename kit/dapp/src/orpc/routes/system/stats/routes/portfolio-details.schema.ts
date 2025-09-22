@@ -18,6 +18,7 @@ export const StatsPortfolioDetailsOutputSchema = z.object({
     .int()
     .min(0)
     .describe("Number of token factories with balances"),
+  totalAssetsHeld: z.number().int().min(0).describe("Number of assets held"),
   tokenFactoryBreakdown: z.array(
     z.object({
       tokenFactoryId: ethereumAddress.describe("Factory contract address"),

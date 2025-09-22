@@ -112,14 +112,19 @@ export function PortfolioValueAreaChart({
     return params;
   }, [interval, from, to, timeRange]);
 
-  // Fetch and transform portfolio value data with optimized caching
-  const { data } = useQuery(
+  // Fetch portfolio value data with optimized caching
+  const { data: rawData } = useQuery(
     orpc.system.stats.portfolio.queryOptions({
       input,
-      select: selectTransform,
       ...CHART_QUERY_OPTIONS,
     })
   );
+
+  // Transform the data using the memoized function
+  const data = useMemo(() => {
+    if (!rawData) return undefined;
+    return selectTransform(rawData);
+  }, [rawData, selectTransform]);
 
   const { chartData, chartConfig, dataKeys } = data ?? {
     chartData: [],

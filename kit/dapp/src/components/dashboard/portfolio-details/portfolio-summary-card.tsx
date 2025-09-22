@@ -15,12 +15,14 @@ import { useTranslation } from "react-i18next";
 interface PortfolioSummaryCardProps {
   totalValue: Dnum;
   totalTokenFactories: number;
+  totalAssetsHeld: number;
   hasAssets: boolean;
 }
 
 export function PortfolioSummaryCard({
   totalValue,
   totalTokenFactories,
+  totalAssetsHeld,
   hasAssets,
 }: PortfolioSummaryCardProps) {
   const { t } = useTranslation("stats");
@@ -61,9 +63,6 @@ export function PortfolioSummaryCard({
     maximumFractionDigits: 2,
   }).format(toNumber(totalValue));
 
-  // Calculate unique asset types from totalTokenFactories
-  const assetTypes = totalTokenFactories;
-
   return (
     <Card>
       <CardHeader>
@@ -96,9 +95,9 @@ export function PortfolioSummaryCard({
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Briefcase className="h-4 w-4" />
-              {t("charts.portfolio.summary.assetTypes")}
+              {t("charts.portfolio.summary.totalAssets")}
             </div>
-            <div className="text-2xl font-bold">{assetTypes}</div>
+            <div className="text-2xl font-bold">{totalAssetsHeld}</div>
           </div>
         </div>
       </CardContent>

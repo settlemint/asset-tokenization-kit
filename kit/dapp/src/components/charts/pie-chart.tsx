@@ -17,6 +17,7 @@ import {
 import { ReactNode, useMemo } from "react";
 import { Cell, Pie, PieChart } from "recharts";
 import { ChartEmptyState } from "./chart-empty-state";
+import { ChartUpdateInfo } from "./chart-update-info";
 
 interface PieChartProps {
   title: string;
@@ -29,6 +30,7 @@ interface PieChartProps {
   footer?: ReactNode;
   emptyMessage?: string;
   emptyDescription?: string;
+  interval?: "hour" | "day";
 }
 
 export function PieChartComponent({
@@ -42,6 +44,7 @@ export function PieChartComponent({
   className,
   emptyMessage,
   emptyDescription,
+  interval = "hour",
 }: PieChartProps) {
   // Filter data to only show non-zero values
   const filteredData = useMemo(
@@ -58,6 +61,7 @@ export function PieChartComponent({
         footer={footer}
         emptyMessage={emptyMessage}
         emptyDescription={emptyDescription}
+        interval={interval}
       />
     );
   }
@@ -65,7 +69,10 @@ export function PieChartComponent({
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <div className="flex items-center gap-2">
+          <CardTitle>{title}</CardTitle>
+          <ChartUpdateInfo interval={interval} />
+        </div>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent>

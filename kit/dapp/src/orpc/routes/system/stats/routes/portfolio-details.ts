@@ -105,7 +105,7 @@ export const statsPortfolioDetails =
     const userAddress = context.auth.user.wallet;
     const systemId = context.system.id.toLowerCase();
     const accountId = userAddress.toLowerCase();
-    const accountSystemId = `${accountId}${systemId}`; // TODO: @snigdha920 fix id
+    const accountSystemId = `${accountId}${systemId.slice(2)}`;
 
     // Fetch portfolio total value
     const accountSystemStatsResponse = await context.theGraphClient.query(
@@ -153,9 +153,14 @@ export const statsPortfolioDetails =
         }
       );
 
+    // Get total balances count from account system stats
+    const totalAssetsHeld =
+      accountSystemStatsResponse.accountSystemStatsState?.balancesCount ?? 0;
+
     return {
       totalValue,
       totalTokenFactories: tokenFactoryBreakdown.length,
+      totalAssetsHeld,
       tokenFactoryBreakdown,
     };
   });

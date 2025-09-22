@@ -61,8 +61,8 @@ function Home() {
       <IdentityProgress user={user} />
       {system.userIdentity?.registered && (
         <>
-          <PortfolioValueAreaChart interval="day" timeRange={30} />
           <PortfolioDetails />
+          <PortfolioValueAreaChart interval="day" timeRange={30} />
         </>
       )}
     </div>
