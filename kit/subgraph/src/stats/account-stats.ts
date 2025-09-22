@@ -1,4 +1,4 @@
-import { Address, BigDecimal } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import {
   AccountStatsData,
   AccountStatsState,
@@ -9,6 +9,7 @@ import { fetchAccount } from "../account/fetch/account";
 import { fetchBond } from "../token-assets/bond/fetch/bond";
 import { fetchToken } from "../token/fetch/token";
 import { getTokenBasePrice } from "../token/utils/token-utils";
+import { toBigDecimal } from "../utils/token-decimals";
 
 /**
  * Increase the balance count for an account
@@ -21,12 +22,7 @@ export function increaseAccountStatsBalanceCount(
   state.balancesCount = state.balancesCount + 1;
   state.save();
 
-  // Create timeseries entry
-  trackAccountStats(
-    accountAddress,
-    state.totalValueInBaseCurrency,
-    state.balancesCount
-  );
+  trackAccountStats(state);
 }
 
 /**
@@ -40,12 +36,7 @@ export function decreaseAccountStatsBalanceCount(
   state.balancesCount = state.balancesCount - 1;
   state.save();
 
-  // Create timeseries entry
-  trackAccountStats(
-    accountAddress,
-    state.totalValueInBaseCurrency,
-    state.balancesCount
-  );
+  trackAccountStats(state);
 }
 
 /**
@@ -55,9 +46,20 @@ export function decreaseAccountStatsBalanceCount(
 export function updateAccountStatsForBalanceChange(
   accountAddress: Address,
   token: Token,
-  balanceDelta: BigDecimal
+  balanceDeltaExact: BigInt
 ): void {
+  if (balanceDeltaExact.equals(BigInt.zero())) {
+    return;
+  }
+
   const state = fetchAccountStatsState(accountAddress);
+  const balanceDelta = toBigDecimal(balanceDeltaExact, token.decimals);
+
+  state.totalValueExact = state.totalValueExact.plus(balanceDeltaExact);
+  state.totalValue = state.totalValue.plus(balanceDelta);
+  state.totalAvailableExact =
+    state.totalAvailableExact.plus(balanceDeltaExact);
+  state.totalAvailable = state.totalAvailable.plus(balanceDelta);
 
   let valueDelta = BigDecimal.zero();
 
@@ -71,22 +73,38 @@ export function updateAccountStatsForBalanceChange(
     valueDelta = balanceDelta.times(bond.faceValue).times(basePrice);
   } else {
     const basePrice = getTokenBasePrice(token.basePriceClaim);
-    // Calculate value delta = balanceDelta * basePric
     valueDelta = balanceDelta.times(basePrice);
   }
 
-  // Update total value
   state.totalValueInBaseCurrency =
     state.totalValueInBaseCurrency.plus(valueDelta);
 
   state.save();
 
-  // Create timeseries entry
-  trackAccountStats(
-    accountAddress,
-    state.totalValueInBaseCurrency,
-    state.balancesCount
-  );
+  trackAccountStats(state);
+}
+
+export function updateAccountStatsForTokensFrozen(
+  accountAddress: Address,
+  token: Token,
+  frozenDeltaExact: BigInt
+): void {
+  if (frozenDeltaExact.equals(BigInt.zero())) {
+    return;
+  }
+
+  const state = fetchAccountStatsState(accountAddress);
+  const frozenDelta = toBigDecimal(frozenDeltaExact, token.decimals);
+
+  state.totalFrozenExact = state.totalFrozenExact.plus(frozenDeltaExact);
+  state.totalFrozen = state.totalFrozen.plus(frozenDelta);
+  state.totalAvailableExact =
+    state.totalAvailableExact.minus(frozenDeltaExact);
+  state.totalAvailable = state.totalAvailable.minus(frozenDelta);
+
+  state.save();
+
+  trackAccountStats(state);
 }
 
 /**
@@ -117,11 +135,7 @@ export function updateAccountStatsForPriceChange(
   state.save();
 
   // Create timeseries entry
-  trackAccountStats(
-    accountAddress,
-    state.totalValueInBaseCurrency,
-    state.balancesCount
-  );
+  trackAccountStats(state);
 }
 
 /**
@@ -133,6 +147,12 @@ function fetchAccountStatsState(accountAddress: Address): AccountStatsState {
   if (!state) {
     state = new AccountStatsState(accountAddress);
     state.account = fetchAccount(accountAddress).id;
+    state.totalValue = BigDecimal.zero();
+    state.totalValueExact = BigInt.zero();
+    state.totalFrozen = BigDecimal.zero();
+    state.totalFrozenExact = BigInt.zero();
+    state.totalAvailable = BigDecimal.zero();
+    state.totalAvailableExact = BigInt.zero();
     state.totalValueInBaseCurrency = BigDecimal.zero();
     state.balancesCount = 0;
     state.save();
@@ -144,17 +164,19 @@ function fetchAccountStatsState(accountAddress: Address): AccountStatsState {
 /**
  * Track account statistics in timeseries
  */
-function trackAccountStats(
-  accountAddress: Address,
-  totalValue: BigDecimal,
-  balancesCount: i32
-): void {
+export function trackAccountStats(state: AccountStatsState): void {
   // Create timeseries entry - ID is auto-generated for timeseries entities
   const accountStats = new AccountStatsData(1);
 
-  accountStats.account = fetchAccount(accountAddress).id;
-  accountStats.totalValueInBaseCurrency = totalValue;
-  accountStats.balancesCount = balancesCount;
+  accountStats.account = state.account;
+  accountStats.totalValue = state.totalValue;
+  accountStats.totalValueExact = state.totalValueExact;
+  accountStats.totalFrozen = state.totalFrozen;
+  accountStats.totalFrozenExact = state.totalFrozenExact;
+  accountStats.totalAvailable = state.totalAvailable;
+  accountStats.totalAvailableExact = state.totalAvailableExact;
+  accountStats.totalValueInBaseCurrency = state.totalValueInBaseCurrency;
+  accountStats.balancesCount = state.balancesCount;
 
   accountStats.save();
 }

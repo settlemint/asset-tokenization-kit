@@ -6,7 +6,10 @@ import {
   TokensUnfrozen,
 } from "../../../generated/templates/Custodian/Custodian";
 import { fetchEvent } from "../../event/fetch/event";
-import { updateAccountStatsForBalanceChange } from "../../stats/account-stats";
+import {
+  updateAccountStatsForBalanceChange,
+  updateAccountStatsForTokensFrozen,
+} from "../../stats/account-stats";
 import { trackTokenStats } from "../../stats/token-stats";
 import {
   decreaseTokenBalanceFrozen,
@@ -17,7 +20,6 @@ import {
   moveTokenBalanceToNewAccount,
 } from "../../token-balance/utils/token-balance-utils";
 import { fetchToken } from "../../token/fetch/token";
-import { toBigDecimal } from "../../utils/token-decimals";
 
 export function handleAddressFrozen(event: AddressFrozen): void {
   fetchEvent(event, "AddressFrozen");
@@ -48,18 +50,17 @@ export function handleForcedTransfer(event: ForcedTransfer): void {
     event.block.timestamp
   );
 
-  // Calculate amount delta
-  const amountDelta = toBigDecimal(event.params.amount, token.decimals);
+  const amountExact = event.params.amount;
 
   // Update account stats for sender (negative delta)
   updateAccountStatsForBalanceChange(
     event.params.from,
     token,
-    amountDelta.neg()
+    amountExact.neg()
   );
 
   // Update account stats for receiver (positive delta)
-  updateAccountStatsForBalanceChange(event.params.to, token, amountDelta);
+  updateAccountStatsForBalanceChange(event.params.to, token, amountExact);
 
   // Update token stats for forced transfer
   trackTokenStats(token, eventEntry);
@@ -87,6 +88,12 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     event.params.amount,
     event.block.timestamp
   );
+
+  updateAccountStatsForTokensFrozen(
+    event.params.user,
+    token,
+    event.params.amount
+  );
 }
 
 export function handleTokensUnfrozen(event: TokensUnfrozen): void {
@@ -97,5 +104,11 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
     event.params.user,
     event.params.amount,
     event.block.timestamp
+  );
+
+  updateAccountStatsForTokensFrozen(
+    event.params.user,
+    token,
+    event.params.amount.neg()
   );
 }
