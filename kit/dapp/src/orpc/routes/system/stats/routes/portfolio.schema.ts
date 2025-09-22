@@ -1,12 +1,11 @@
-import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { z } from "zod";
 
 /**
  * Input schema for portfolio endpoint
  */
 export const StatsPortfolioInputSchema = z.object({
-  from: ethereumAddress.optional(),
-  to: ethereumAddress.optional(),
+  from: z.string().optional().describe("Start timestamp (ISO string)"),
+  to: z.string().optional().describe("End timestamp (ISO string)"),
   interval: z.enum(["hour", "day"]).default("day"),
 });
 

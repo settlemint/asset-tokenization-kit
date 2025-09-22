@@ -1,13 +1,15 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { systemRouter } from "@/orpc/procedures/system.router";
+import { getUnixTime } from "date-fns";
 import { z } from "zod";
 
 /**
  * GraphQL query to fetch hourly portfolio data
  */
 const PORTFOLIO_HOURLY_QUERY = theGraphGraphql(`
-  query PortfolioHistoryHourly($accountId: ID!, $systemId: ID!, $from: Timestamp, $to: Timestamp) {
-    accountSystemStats: accountSystemStatsHour(
+  query PortfolioHistoryHourly($accountId: String!, $systemId: String!, $from: Timestamp, $to: Timestamp) {
+    accountSystemStats: accountSystemStats_collection(
+      interval: hour
       where: {
         account: $accountId,
         system: $systemId,
@@ -26,8 +28,9 @@ const PORTFOLIO_HOURLY_QUERY = theGraphGraphql(`
  * GraphQL query to fetch daily portfolio data
  */
 const PORTFOLIO_DAILY_QUERY = theGraphGraphql(`
-  query PortfolioHistoryDaily($accountId: ID!, $systemId: ID!, $from: Timestamp, $to: Timestamp) {
-    accountSystemStats: accountSystemStatsDay(
+  query PortfolioHistoryDaily($accountId: String!, $systemId: String!, $from: Timestamp, $to: Timestamp) {
+    accountSystemStats: accountSystemStats_collection(
+      interval: day
       where: {
         account: $accountId,
         system: $systemId,
@@ -103,11 +106,11 @@ export const statsPortfolio = systemRouter.system.stats.portfolio.handler(
     };
 
     if (input.from) {
-      variables.from = input.from;
+      variables.from = getUnixTime(input.from).toString();
     }
 
     if (input.to) {
-      variables.to = input.to;
+      variables.to = getUnixTime(input.to).toString();
     }
 
     const query =
