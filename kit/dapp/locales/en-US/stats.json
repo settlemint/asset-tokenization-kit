@@ -72,6 +72,15 @@
       "available": "Available collateral",
       "used": "Used collateral",
       "ratio": "Collateralization: {{ratio}}%"
+    },
+    "portfolioValue": {
+      "title": "Your portfolio value",
+      "description": "Track how your investments have performed over the last {{days}} days",
+      "label": "Value",
+      "empty": {
+        "title": "No data to show yet",
+        "description": "Start investing to see your portfolio performance over time"
+      }
     }
   },
   "title": "Statistics",
