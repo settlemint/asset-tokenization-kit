@@ -79,7 +79,30 @@
       "label": "Value",
       "empty": {
         "title": "No data to show yet",
-        "description": "Start investing to see your portfolio performance over time"
+        "description": "You'll see your portfolio value here once you receive your first assets"
+      }
+    },
+    "portfolio": {
+      "summary": {
+        "title": "Portfolio Summary",
+        "description": "Overview of your total portfolio value and holdings",
+        "totalValue": "Total Value",
+        "assetTypes": "Asset Types",
+        "assetFactories": "Asset Factories"
+      },
+      "breakdown": {
+        "title": "Portfolio Breakdown",
+        "description": "Detailed breakdown of your assets by type and factory",
+        "detailsTitle": "Asset Details",
+        "assetType": "Asset Type",
+        "factory": "Factory",
+        "value": "Value",
+        "percentage": "Percentage",
+        "assets": "Assets"
+      },
+      "empty": {
+        "summary": "You'll see your portfolio summary here once you receive your first assets",
+        "breakdown": "Your asset breakdown will appear here when you receive assets"
       }
     }
   },

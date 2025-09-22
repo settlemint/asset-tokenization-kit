@@ -4,7 +4,7 @@ import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
 import { safeToNumber } from "@/lib/utils/format-value/safe-to-number";
 import { orpc } from "@/orpc/orpc-client";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { format } from "date-fns/format";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -113,15 +113,19 @@ export function PortfolioValueAreaChart({
   }, [interval, from, to, timeRange]);
 
   // Fetch and transform portfolio value data with optimized caching
-  const {
-    data: { chartData, chartConfig, dataKeys },
-  } = useSuspenseQuery(
+  const { data } = useQuery(
     orpc.system.stats.portfolio.queryOptions({
       input,
       select: selectTransform,
       ...CHART_QUERY_OPTIONS,
     })
   );
+
+  const { chartData, chartConfig, dataKeys } = data ?? {
+    chartData: [],
+    chartConfig: {},
+    dataKeys: [],
+  };
 
   return (
     <ComponentErrorBoundary componentName="Portfolio Value Chart">
