@@ -27,11 +27,11 @@ export function BondYieldDistributionChart({
   const chartConfig = {
     totalYield: {
       label: t("charts.yieldDistribution.totalYield"),
-      color: "hsl(var(--chart-1))",
+      color: "var(--chart-1)", // Primary blue for total yield
     },
     claimed: {
       label: t("charts.yieldDistribution.claimed"),
-      color: "hsl(var(--chart-3))",
+      color: "var(--chart-3)", // Tertiary orange for claimed yield
     },
   } satisfies ChartConfig;
 
