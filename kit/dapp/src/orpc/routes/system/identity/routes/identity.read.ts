@@ -117,18 +117,14 @@ export const identityRead = systemRouter.system.identity.read
     // For identity ID queries, check if the user has permission to view this identity
     // This happens after the query to avoid duplicate queries in the middleware
     if (identity && "identityId" in input && context.auth?.user.wallet) {
-      const accessControl =
-        context.system?.systemAccessManager?.accessControl;
+      const accessControl = context.system?.systemAccessManager?.accessControl;
       const userWallet = context.auth.user.wallet.toLowerCase();
       const hasPermission = SYSTEM_PERMISSIONS.identityRead.any.some((role) =>
         hasRole(userWallet, role, accessControl)
       );
 
       // If user doesn't have the read permission, only allow if it's their own identity
-      if (
-        !hasPermission &&
-        identity.account.id.toLowerCase() !== userWallet
-      ) {
+      if (!hasPermission && identity.account.id.toLowerCase() !== userWallet) {
         throw errors.FORBIDDEN({
           message: `You don't have permission to view this identity`,
         });
