@@ -72,6 +72,14 @@
       "available": "Available collateral",
       "used": "Used collateral",
       "ratio": "Collateralization: {{ratio}}%"
+    },
+    "yieldDistribution": {
+      "title": "Yield Distribution",
+      "description": "Total yield generated and claimed over time",
+      "totalYield": "Total Yield",
+      "claimed": "Claimed",
+      "noData": "No yield distribution data available",
+      "error": "Error loading yield distribution data"
     }
   },
   "title": "Statistics",
