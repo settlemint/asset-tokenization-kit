@@ -1,7 +1,5 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { authRouter } from "@/orpc/procedures/auth.router";
+import { systemRouter } from "@/orpc/procedures/system.router";
 import { type AssetType, assetType } from "@atk/zod/asset-types";
 import { z } from "zod";
 
@@ -57,10 +55,8 @@ const AssetCountResponseSchema = z.object({
  * ```
  */
 
-export const statsAssets = authRouter.system.stats.assets
-  .use(systemMiddleware)
-  .use(theGraphMiddleware)
-  .handler(async ({ context }) => {
+export const statsAssets = systemRouter.system.stats.assets.handler(
+  async ({ context }) => {
     // System context is guaranteed by systemMiddleware
     const { system } = context;
     // Fetch asset count data in a single query
@@ -94,4 +90,5 @@ export const statsAssets = authRouter.system.stats.assets
       totalAssets,
       assetBreakdown,
     };
-  });
+  }
+);

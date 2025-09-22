@@ -11,9 +11,14 @@ type Account @entity(immutable: false) {
   contractName: String
   # List of all token balances held by this account
   balances: [TokenBalance!]! @derivedFrom(field: "account")
-  # Statistical data for this account (aggregated metrics)
+  # Statistical data for this account across all systems (aggregated metrics)
   stats: AccountStatsState @derivedFrom(field: "account")
-  # List of all identities associated with this account
+  # Statistical data for this account per system
+  systemStats: [AccountSystemStatsState!]! @derivedFrom(field: "account")
+  # Statistical data for this account per token factory
+  tokenFactoryStats: [AccountTokenFactoryStatsState!]!
+    @derivedFrom(field: "account")
+  # List of all identities associated with this account.
   identities: [Identity!]! @derivedFrom(field: "account")
   # List of all registered identities associated with this account
   registeredIdentities: [RegisteredIdentity!]! @derivedFrom(field: "account")
@@ -1316,6 +1321,109 @@ type AccountStats
   # Last count of different token balances for the period
   balancesCount: Int! @aggregate(fn: "last", arg: "balancesCount")
 }
+
+type AccountSystemStatsState @entity(immutable: false) {
+  # Composite identifier - account ID and system ID combined
+  id: Bytes!
+  # Reference to the account
+  account: Account!
+  # System this statistic belongs to
+  system: System!
+  # Total value of all tokens held in base FIAT currency scoped to the system
+  totalValueInBaseCurrency: BigDecimal!
+  # Number of different token balances scoped to the system
+  balancesCount: Int!
+}
+
+type AccountSystemStatsData @entity(timeseries: true) {
+  # Unique identifier for timeseries entry
+  id: Int8!
+  # Timestamp of this data point
+  timestamp: Timestamp!
+  # Reference to the account
+  account: Account!
+  # System this statistic belongs to
+  system: System!
+  # Total value of all tokens held in base FIAT currency scoped to the system
+  totalValueInBaseCurrency: BigDecimal!
+  # Number of different token balances scoped to the system
+  balancesCount: Int!
+}
+
+type AccountSystemStats
+  @aggregation(
+    intervals: ["hour", "day"],
+    source: "AccountSystemStatsData"
+  ) {
+  # Unique identifier for aggregated entry
+  id: Int8!
+  # Timestamp of aggregation period
+  timestamp: Timestamp!
+  # Reference to the account
+  account: Account!
+  # System this statistic belongs to
+  system: System!
+  # Last value of all tokens in base FIAT currency for the period scoped to the system
+  totalValueInBaseCurrency: BigDecimal!
+    @aggregate(fn: "last", arg: "totalValueInBaseCurrency")
+  # Last count of different token balances for the period scoped to the system
+  balancesCount: Int! @aggregate(fn: "last", arg: "balancesCount")
+}
+
+type AccountTokenFactoryStatsState @entity(immutable: false) {
+  # Composite identifier - account ID, token factory ID combined
+  id: Bytes!
+  # Reference to the account
+  account: Account!
+  # System this statistic is associated with
+  system: System!
+  # Token factory
+  tokenFactory: TokenFactory!
+  # Number of token balances belonging to this factory
+  tokenBalancesCount: Int!
+  # Total value of this factory in base FIAT currency
+  totalValueInBaseCurrency: BigDecimal!
+}
+
+type AccountTokenFactoryStatsData @entity(timeseries: true) {
+  # Unique identifier for timeseries entry
+  id: Int8!
+  # Timestamp of this data point
+  timestamp: Timestamp!
+  # Reference to the account
+  account: Account!
+  # System this statistic is associated with
+  system: System!
+  # Token factory
+  tokenFactory: TokenFactory!
+  # Number of token balances belonging to this factory
+  tokenBalancesCount: Int!
+  # Total value of this factory in base FIAT currency
+  totalValueInBaseCurrency: BigDecimal!
+}
+
+type AccountTokenFactoryStats
+  @aggregation(
+    intervals: ["hour", "day"],
+    source: "AccountTokenFactoryStatsData"
+  ) {
+  # Unique identifier for aggregated entry
+  id: Int8!
+  # Timestamp of aggregation period
+  timestamp: Timestamp!
+  # Reference to the account
+  account: Account!
+  # System this statistic is associated with
+  system: System!
+  # Last number of token balances for the period
+  tokenBalancesCount: Int!
+    @aggregate(fn: "last", arg: "tokenBalancesCount")
+  # Last base currency value for the period
+  totalValueInBaseCurrency: BigDecimal!
+    @aggregate(fn: "last", arg: "totalValueInBaseCurrency")
+}
+
+
 
 type EventStatsData @entity(timeseries: true) {
   # Unique identifier for timeseries entry

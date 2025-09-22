@@ -1,51 +1,83 @@
-import { Address, BigDecimal } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import {
   AccountStatsData,
   AccountStatsState,
+  AccountSystemStatsData,
+  AccountSystemStatsState,
+  AccountTokenFactoryStatsData,
+  AccountTokenFactoryStatsState,
   Token,
   TokenBalance,
 } from "../../generated/schema";
 import { fetchAccount } from "../account/fetch/account";
+import { fetchSystem } from "../system/fetch/system";
 import { fetchBond } from "../token-assets/bond/fetch/bond";
+import { fetchTokenFactory } from "../token-factory/fetch/token-factory";
 import { fetchToken } from "../token/fetch/token";
-import { getTokenBasePrice } from "../token/utils/token-utils";
+import {
+  getTokenBasePrice,
+  getTokenSystemAddress,
+} from "../token/utils/token-utils";
+import { toBigDecimal } from "../utils/token-decimals";
 
 /**
  * Increase the balance count for an account
  * @param accountAddress - The address of the account to increase the balance count for
+ * @param token - Token used to determine the system scope
  */
 export function increaseAccountStatsBalanceCount(
-  accountAddress: Address
+  accountAddress: Address,
+  token: Token
 ): void {
   const state = fetchAccountStatsState(accountAddress);
-  state.balancesCount = state.balancesCount + 1;
-  state.save();
-
-  // Create timeseries entry
-  trackAccountStats(
+  const systemState = fetchAccountSystemStatsState(accountAddress, token);
+  const tokenFactoryState = fetchAccountTokenFactoryStatsState(
     accountAddress,
-    state.totalValueInBaseCurrency,
-    state.balancesCount
+    token
   );
+
+  state.balancesCount = state.balancesCount + 1;
+  systemState.balancesCount = systemState.balancesCount + 1;
+  tokenFactoryState.tokenBalancesCount =
+    tokenFactoryState.tokenBalancesCount + 1;
+
+  state.save();
+  systemState.save();
+  tokenFactoryState.save();
+
+  trackAccountStats(state);
+  trackAccountSystemStats(systemState);
+  trackAccountTokenFactoryStats(tokenFactoryState);
 }
 
 /**
  * Decrease the balance count for an account
  * @param accountAddress - The address of the account to decrease the balance count for
+ * @param token - Token used to determine the system scope
  */
 export function decreaseAccountStatsBalanceCount(
-  accountAddress: Address
+  accountAddress: Address,
+  token: Token
 ): void {
   const state = fetchAccountStatsState(accountAddress);
-  state.balancesCount = state.balancesCount - 1;
-  state.save();
-
-  // Create timeseries entry
-  trackAccountStats(
+  const systemState = fetchAccountSystemStatsState(accountAddress, token);
+  const tokenFactoryState = fetchAccountTokenFactoryStatsState(
     accountAddress,
-    state.totalValueInBaseCurrency,
-    state.balancesCount
+    token
   );
+
+  state.balancesCount = state.balancesCount - 1;
+  systemState.balancesCount = systemState.balancesCount - 1;
+  tokenFactoryState.tokenBalancesCount =
+    tokenFactoryState.tokenBalancesCount - 1;
+
+  state.save();
+  systemState.save();
+  tokenFactoryState.save();
+
+  trackAccountStats(state);
+  trackAccountSystemStats(systemState);
+  trackAccountTokenFactoryStats(tokenFactoryState);
 }
 
 /**
@@ -55,9 +87,19 @@ export function decreaseAccountStatsBalanceCount(
 export function updateAccountStatsForBalanceChange(
   accountAddress: Address,
   token: Token,
-  balanceDelta: BigDecimal
+  balanceDeltaExact: BigInt
 ): void {
+  if (balanceDeltaExact.equals(BigInt.zero())) {
+    return;
+  }
+
   const state = fetchAccountStatsState(accountAddress);
+  const systemState = fetchAccountSystemStatsState(accountAddress, token);
+  const tokenFactoryState = fetchAccountTokenFactoryStatsState(
+    accountAddress,
+    token
+  );
+  const balanceDelta = toBigDecimal(balanceDeltaExact, token.decimals);
 
   let valueDelta = BigDecimal.zero();
 
@@ -71,22 +113,25 @@ export function updateAccountStatsForBalanceChange(
     valueDelta = balanceDelta.times(bond.faceValue).times(basePrice);
   } else {
     const basePrice = getTokenBasePrice(token.basePriceClaim);
-    // Calculate value delta = balanceDelta * basePric
     valueDelta = balanceDelta.times(basePrice);
   }
 
-  // Update total value
   state.totalValueInBaseCurrency =
     state.totalValueInBaseCurrency.plus(valueDelta);
 
-  state.save();
+  systemState.totalValueInBaseCurrency =
+    systemState.totalValueInBaseCurrency.plus(valueDelta);
 
-  // Create timeseries entry
-  trackAccountStats(
-    accountAddress,
-    state.totalValueInBaseCurrency,
-    state.balancesCount
-  );
+  tokenFactoryState.totalValueInBaseCurrency =
+    tokenFactoryState.totalValueInBaseCurrency.plus(valueDelta);
+
+  state.save();
+  systemState.save();
+  tokenFactoryState.save();
+
+  trackAccountStats(state);
+  trackAccountSystemStats(systemState);
+  trackAccountTokenFactoryStats(tokenFactoryState);
 }
 
 /**
@@ -95,12 +140,11 @@ export function updateAccountStatsForBalanceChange(
  */
 export function updateAccountStatsForPriceChange(
   accountAddress: Address,
+  token: Token,
   tokenBalance: TokenBalance,
   oldPrice: BigDecimal,
   newPrice: BigDecimal
 ): void {
-  const state = fetchAccountStatsState(accountAddress);
-
   // Calculate value delta
   const oldValue = oldPrice.times(tokenBalance.value);
   const newValue = newPrice.times(tokenBalance.value);
@@ -110,18 +154,31 @@ export function updateAccountStatsForPriceChange(
     return;
   }
 
+  const state = fetchAccountStatsState(accountAddress);
+  const systemState = fetchAccountSystemStatsState(accountAddress, token);
+  const tokenFactoryState = fetchAccountTokenFactoryStatsState(
+    accountAddress,
+    token
+  );
+
   // Update total value
   state.totalValueInBaseCurrency =
     state.totalValueInBaseCurrency.plus(valueDelta);
 
+  systemState.totalValueInBaseCurrency =
+    systemState.totalValueInBaseCurrency.plus(valueDelta);
+
+  tokenFactoryState.totalValueInBaseCurrency =
+    tokenFactoryState.totalValueInBaseCurrency.plus(valueDelta);
+
   state.save();
+  systemState.save();
+  tokenFactoryState.save();
 
   // Create timeseries entry
-  trackAccountStats(
-    accountAddress,
-    state.totalValueInBaseCurrency,
-    state.balancesCount
-  );
+  trackAccountStats(state);
+  trackAccountSystemStats(systemState);
+  trackAccountTokenFactoryStats(tokenFactoryState);
 }
 
 /**
@@ -141,20 +198,90 @@ function fetchAccountStatsState(accountAddress: Address): AccountStatsState {
   return state;
 }
 
+function fetchAccountSystemStatsState(
+  accountAddress: Address,
+  token: Token
+): AccountSystemStatsState {
+  const systemAddress = getTokenSystemAddress(token);
+  const system = fetchSystem(systemAddress);
+  const id = accountAddress.concat(system.id);
+  let state = AccountSystemStatsState.load(id);
+  if (!state) {
+    state = new AccountSystemStatsState(id);
+    state.account = fetchAccount(accountAddress).id;
+    state.system = system.id;
+    state.totalValueInBaseCurrency = BigDecimal.zero();
+    state.balancesCount = 0;
+    state.save();
+  }
+  return state;
+}
+
+function fetchAccountTokenFactoryStatsState(
+  accountAddress: Address,
+  token: Token
+): AccountTokenFactoryStatsState {
+  const tokenFactory = fetchTokenFactory(
+    Address.fromBytes(token.tokenFactory!)
+  );
+  const systemAddress = getTokenSystemAddress(token);
+  const system = fetchSystem(systemAddress);
+
+  const id = accountAddress.concat(tokenFactory.id);
+  let state = AccountTokenFactoryStatsState.load(id);
+  if (!state) {
+    state = new AccountTokenFactoryStatsState(id);
+    state.account = fetchAccount(accountAddress).id;
+    state.system = system.id;
+    state.tokenFactory = tokenFactory.id;
+    state.tokenBalancesCount = 0;
+    state.totalValueInBaseCurrency = BigDecimal.zero();
+    state.save();
+  }
+
+  return state;
+}
+
 /**
  * Track account statistics in timeseries
  */
-function trackAccountStats(
-  accountAddress: Address,
-  totalValue: BigDecimal,
-  balancesCount: i32
-): void {
+function trackAccountStats(state: AccountStatsState): void {
   // Create timeseries entry - ID is auto-generated for timeseries entities
   const accountStats = new AccountStatsData(1);
 
-  accountStats.account = fetchAccount(accountAddress).id;
-  accountStats.totalValueInBaseCurrency = totalValue;
-  accountStats.balancesCount = balancesCount;
+  accountStats.account = state.account;
+  accountStats.totalValueInBaseCurrency = state.totalValueInBaseCurrency;
+  accountStats.balancesCount = state.balancesCount;
 
   accountStats.save();
+}
+
+/**
+ * Track account system statistics in timeseries
+ */
+function trackAccountSystemStats(state: AccountSystemStatsState): void {
+  // Create timeseries entry - ID is auto-generated for timeseries entities
+  const accountSystemStats = new AccountSystemStatsData(1);
+  accountSystemStats.account = state.account;
+  accountSystemStats.system = state.system;
+  accountSystemStats.totalValueInBaseCurrency = state.totalValueInBaseCurrency;
+  accountSystemStats.balancesCount = state.balancesCount;
+  accountSystemStats.save();
+}
+
+/**
+ * Track account token factory statistics in timeseries
+ */
+function trackAccountTokenFactoryStats(
+  state: AccountTokenFactoryStatsState
+): void {
+  // Create timeseries entry - ID is auto-generated for timeseries entities
+  const accountTokenFactoryStats = new AccountTokenFactoryStatsData(1);
+  accountTokenFactoryStats.account = state.account;
+  accountTokenFactoryStats.tokenFactory = state.tokenFactory;
+  accountTokenFactoryStats.system = state.system;
+  accountTokenFactoryStats.tokenBalancesCount = state.tokenBalancesCount;
+  accountTokenFactoryStats.totalValueInBaseCurrency =
+    state.totalValueInBaseCurrency;
+  accountTokenFactoryStats.save();
 }
