@@ -58,7 +58,7 @@ spec:
       {{- $allocationsFilePath := printf "%s/genesis-allocations.json" $allocationsVolumeMountPath }}
       {{- $abiVolumeName := "contract-abis" }}
       {{- $abiVolumeMountPath := "/abis" }}
-      {{- $abiSourcePath := "/artifacts/abis/asset-tokenization-3643" }}
+      {{- $abiSourcePath := "/artifacts/asset-tokenization-3643/abi/" }}
       {{- $subgraphVolumeName := "subgraph-hash" }}
       {{- $subgraphVolumeMountPath := "/subgraph" }}
       {{- $subgraphSourcePath := "/artifacts/asset-tokenization-3643/subgraph/subgraph-hash.txt" }}
@@ -77,7 +77,7 @@ spec:
             - |
               set -euo pipefail
               echo "Copying genesis allocations from artifacts image"
-              cp /artifacts/genesis/genesis-allocations.json {{ $allocationsFilePath }}
+              cp /artifacts/asset-tokenization-3643/genesis/genesis-allocations.json {{ $allocationsFilePath }}
               # Stash the file so the bootstrapper mounts a pre-seeded genesis
               chmod 644 {{ $allocationsFilePath }}
               # Stage contract ABIs so the bootstrapper can publish matching ConfigMaps
