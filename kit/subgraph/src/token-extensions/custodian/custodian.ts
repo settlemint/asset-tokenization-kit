@@ -6,10 +6,7 @@ import {
   TokensUnfrozen,
 } from "../../../generated/templates/Custodian/Custodian";
 import { fetchEvent } from "../../event/fetch/event";
-import {
-  updateAccountStatsForBalanceChange,
-  updateAccountStatsForTokensFrozen,
-} from "../../stats/account-stats";
+import { updateAccountStatsForBalanceChange } from "../../stats/account-stats";
 import { trackTokenStats } from "../../stats/token-stats";
 import {
   decreaseTokenBalanceFrozen,
@@ -88,12 +85,6 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     event.params.amount,
     event.block.timestamp
   );
-
-  updateAccountStatsForTokensFrozen(
-    event.params.user,
-    token,
-    event.params.amount
-  );
 }
 
 export function handleTokensUnfrozen(event: TokensUnfrozen): void {
@@ -104,11 +95,5 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
     event.params.user,
     event.params.amount,
     event.block.timestamp
-  );
-
-  updateAccountStatsForTokensFrozen(
-    event.params.user,
-    token,
-    event.params.amount.neg()
   );
 }

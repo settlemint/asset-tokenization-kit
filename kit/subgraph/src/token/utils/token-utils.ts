@@ -135,16 +135,3 @@ export function getTokenSystemAddress(token: Token): Address {
 
   return Address.fromBytes(tokenFactoryRegistry.system);
 }
-
-export function getTokenTypeId(token: Token): string {
-  if (!token.tokenFactory) {
-    return "";
-  }
-
-  const tokenFactory = TokenFactory.load(token.tokenFactory!);
-  if (!tokenFactory) {
-    return "";
-  }
-
-  return tokenFactory.typeId;
-}

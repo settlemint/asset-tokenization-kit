@@ -11,11 +11,11 @@ type Account @entity(immutable: false) {
   contractName: String
   # List of all token balances held by this account
   balances: [TokenBalance!]! @derivedFrom(field: "account")
-  # Statistical data for this account scoped globally across all systems (aggregated metrics)
+  # Statistical data for this account across all systems (aggregated metrics)
   stats: AccountStatsState @derivedFrom(field: "account")
-  # Statistical data for this account scoped per system
+  # Statistical data for this account per system
   systemStats: [AccountSystemStatsState!]! @derivedFrom(field: "account")
-  # Token factory statistics
+  # Statistical data for this account per token factory
   tokenFactoryStats: [AccountTokenFactoryStatsState!]!
     @derivedFrom(field: "account")
   # List of all identities associated with this account.

@@ -134,34 +134,6 @@ export function updateAccountStatsForBalanceChange(
   trackAccountTokenFactoryStats(tokenFactoryState);
 }
 
-export function updateAccountStatsForTokensFrozen(
-  accountAddress: Address,
-  token: Token,
-  frozenDeltaExact: BigInt
-): void {
-  if (frozenDeltaExact.equals(BigInt.zero())) {
-    return;
-  }
-
-  const state = fetchAccountStatsState(accountAddress);
-  const systemState = fetchAccountSystemStatsState(accountAddress, token);
-  const tokenFactoryState = fetchAccountTokenFactoryStatsState(
-    accountAddress,
-    token
-  );
-
-  // No fields to update for frozen tokens since we removed the meaningless aggregated fields
-  // We only track base currency value and balance count now
-
-  state.save();
-  systemState.save();
-  tokenFactoryState.save();
-
-  trackAccountStats(state);
-  trackAccountSystemStats(systemState);
-  trackAccountTokenFactoryStats(tokenFactoryState);
-}
-
 /**
  * Update account stats when base price changes
  * This recalculates the value difference for accounts holding the token
