@@ -205,6 +205,9 @@ function removeTokenBalance(tokenBalance: TokenBalance): void {
   );
 
   store.remove("TokenBalance", tokenBalance.id.toHexString());
-  decreaseAccountStatsBalanceCount(Address.fromBytes(tokenBalance.account));
+  decreaseAccountStatsBalanceCount(
+    Address.fromBytes(tokenBalance.account),
+    token
+  );
   decreaseTokenStatsBalanceCount(Address.fromBytes(tokenBalance.token));
 }

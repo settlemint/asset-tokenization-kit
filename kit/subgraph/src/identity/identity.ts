@@ -69,6 +69,7 @@ function updateAccountStatsForAllTokenHolders(
       // Update account stats for this holder
       updateAccountStatsForPriceChange(
         Address.fromBytes(balance.account),
+        token,
         balance,
         oldPrice,
         newPrice
@@ -89,6 +90,7 @@ function updateAccountStatsForAllTokenHolders(
         // Update account stats for this holder
         updateAccountStatsForPriceChange(
           Address.fromBytes(bondBalance.account),
+          bondToken,
           bondBalance,
           oldPrice.times(bond.faceValue),
           newPrice.times(bond.faceValue)

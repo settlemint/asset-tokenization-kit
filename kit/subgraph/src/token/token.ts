@@ -98,6 +98,7 @@ export function handleMintCompleted(event: MintCompleted): void {
     event.block.timestamp
   );
 
+  const amountDeltaExact = event.params.amount;
   const amountDelta = toBigDecimal(event.params.amount, token.decimals);
 
   // Update system stats
@@ -114,7 +115,7 @@ export function handleMintCompleted(event: MintCompleted): void {
   );
 
   // Update account stats
-  updateAccountStatsForBalanceChange(event.params.to, token, amountDelta);
+  updateAccountStatsForBalanceChange(event.params.to, token, amountDeltaExact);
 
   // Update token stats
   trackTokenStats(token, eventEntry);
@@ -170,18 +171,17 @@ export function handleTransferCompleted(event: TransferCompleted): void {
     event.block.timestamp
   );
 
-  // Calculate amount delta
-  const amountDelta = toBigDecimal(event.params.amount, token.decimals);
+  const amountExact = event.params.amount;
 
   // Update account stats for sender (negative delta)
   updateAccountStatsForBalanceChange(
     event.params.from,
     token,
-    amountDelta.neg()
+    amountExact.neg()
   );
 
   // Update account stats for receiver (positive delta)
-  updateAccountStatsForBalanceChange(event.params.to, token, amountDelta);
+  updateAccountStatsForBalanceChange(event.params.to, token, amountExact);
 
   // Update token stats for transfer
   trackTokenStats(token, eventEntry);
