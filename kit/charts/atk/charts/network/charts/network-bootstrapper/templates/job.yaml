@@ -85,7 +85,7 @@ spec:
               echo "Copying ABI artifacts from ${ABI_SRC_DIR}"
               if [ -d "${ABI_SRC_DIR}" ]; then
                 mkdir -p {{ $abiVolumeMountPath }}
-                cp -a "${ABI_SRC_DIR}/." {{ $abiVolumeMountPath }}/
+                cp -r "${ABI_SRC_DIR}/." {{ $abiVolumeMountPath }}/
                 find {{ $abiVolumeMountPath }} -type f -name '*.json' -exec chmod 644 {} +
                 echo "ABI artifacts staged under {{ $abiVolumeMountPath }}"
               else
