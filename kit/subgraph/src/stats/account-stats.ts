@@ -1,24 +1,22 @@
-import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import {
   AccountStatsData,
   AccountStatsState,
   AccountSystemStatsData,
   AccountSystemStatsState,
-  AccountSystemTokenTypeStatsData,
-  AccountSystemTokenTypeStatsState,
-  AccountTokenTypeStatsData,
-  AccountTokenTypeStatsState,
+  AccountTokenFactoryStatsData,
+  AccountTokenFactoryStatsState,
   Token,
   TokenBalance,
 } from "../../generated/schema";
 import { fetchAccount } from "../account/fetch/account";
 import { fetchSystem } from "../system/fetch/system";
 import { fetchBond } from "../token-assets/bond/fetch/bond";
+import { fetchTokenFactory } from "../token-factory/fetch/token-factory";
 import { fetchToken } from "../token/fetch/token";
 import {
   getTokenBasePrice,
   getTokenSystemAddress,
-  getTokenTypeId,
 } from "../token/utils/token-utils";
 import { toBigDecimal } from "../utils/token-decimals";
 
@@ -31,37 +29,25 @@ export function increaseAccountStatsBalanceCount(
   accountAddress: Address,
   token: Token
 ): void {
-  const systemAddress = getTokenSystemAddress(token);
-  const tokenTypeId = getTokenTypeId(token);
-
   const state = fetchAccountStatsState(accountAddress);
-  const systemState = fetchAccountSystemStatsState(accountAddress, systemAddress);
-  const systemTokenTypeState = fetchAccountSystemTokenTypeStatsState(
+  const systemState = fetchAccountSystemStatsState(accountAddress, token);
+  const tokenFactoryState = fetchAccountTokenFactoryStatsState(
     accountAddress,
-    systemAddress,
-    tokenTypeId
-  );
-  const tokenTypeState = fetchAccountTokenTypeStatsState(
-    accountAddress,
-    tokenTypeId
+    token
   );
 
   state.balancesCount = state.balancesCount + 1;
   systemState.balancesCount = systemState.balancesCount + 1;
-  systemTokenTypeState.tokenBalancesCount =
-    systemTokenTypeState.tokenBalancesCount + 1;
-  tokenTypeState.tokenBalancesCount =
-    tokenTypeState.tokenBalancesCount + 1;
+  tokenFactoryState.tokenBalancesCount =
+    tokenFactoryState.tokenBalancesCount + 1;
 
   state.save();
   systemState.save();
-  systemTokenTypeState.save();
-  tokenTypeState.save();
+  tokenFactoryState.save();
 
   trackAccountStats(state);
   trackAccountSystemStats(systemState);
-  trackAccountSystemTokenTypeStats(systemTokenTypeState);
-  trackAccountTokenTypeStats(tokenTypeState);
+  trackAccountTokenFactoryStats(tokenFactoryState);
 }
 
 /**
@@ -73,37 +59,25 @@ export function decreaseAccountStatsBalanceCount(
   accountAddress: Address,
   token: Token
 ): void {
-  const systemAddress = getTokenSystemAddress(token);
-  const tokenTypeId = getTokenTypeId(token);
-
   const state = fetchAccountStatsState(accountAddress);
-  const systemState = fetchAccountSystemStatsState(accountAddress, systemAddress);
-  const systemTokenTypeState = fetchAccountSystemTokenTypeStatsState(
+  const systemState = fetchAccountSystemStatsState(accountAddress, token);
+  const tokenFactoryState = fetchAccountTokenFactoryStatsState(
     accountAddress,
-    systemAddress,
-    tokenTypeId
-  );
-  const tokenTypeState = fetchAccountTokenTypeStatsState(
-    accountAddress,
-    tokenTypeId
+    token
   );
 
   state.balancesCount = state.balancesCount - 1;
   systemState.balancesCount = systemState.balancesCount - 1;
-  systemTokenTypeState.tokenBalancesCount =
-    systemTokenTypeState.tokenBalancesCount - 1;
-  tokenTypeState.tokenBalancesCount =
-    tokenTypeState.tokenBalancesCount - 1;
+  tokenFactoryState.tokenBalancesCount =
+    tokenFactoryState.tokenBalancesCount - 1;
 
   state.save();
   systemState.save();
-  systemTokenTypeState.save();
-  tokenTypeState.save();
+  tokenFactoryState.save();
 
   trackAccountStats(state);
   trackAccountSystemStats(systemState);
-  trackAccountSystemTokenTypeStats(systemTokenTypeState);
-  trackAccountTokenTypeStats(tokenTypeState);
+  trackAccountTokenFactoryStats(tokenFactoryState);
 }
 
 /**
@@ -118,22 +92,12 @@ export function updateAccountStatsForBalanceChange(
   if (balanceDeltaExact.equals(BigInt.zero())) {
     return;
   }
-  const systemAddress = getTokenSystemAddress(token);
-  const tokenTypeId = getTokenTypeId(token);
 
   const state = fetchAccountStatsState(accountAddress);
-  const systemState = fetchAccountSystemStatsState(
+  const systemState = fetchAccountSystemStatsState(accountAddress, token);
+  const tokenFactoryState = fetchAccountTokenFactoryStatsState(
     accountAddress,
-    systemAddress
-  );
-  const systemTokenTypeState = fetchAccountSystemTokenTypeStatsState(
-    accountAddress,
-    systemAddress,
-    tokenTypeId
-  );
-  const tokenTypeState = fetchAccountTokenTypeStatsState(
-    accountAddress,
-    tokenTypeId
+    token
   );
   const balanceDelta = toBigDecimal(balanceDeltaExact, token.decimals);
 
@@ -149,22 +113,14 @@ export function updateAccountStatsForBalanceChange(
     systemState.totalAvailableExact.plus(balanceDeltaExact);
   systemState.totalAvailable = systemState.totalAvailable.plus(balanceDelta);
 
-  systemTokenTypeState.totalValueExact =
-    systemTokenTypeState.totalValueExact.plus(balanceDeltaExact);
-  systemTokenTypeState.totalValue =
-    systemTokenTypeState.totalValue.plus(balanceDelta);
-  systemTokenTypeState.totalAvailableExact =
-    systemTokenTypeState.totalAvailableExact.plus(balanceDeltaExact);
-  systemTokenTypeState.totalAvailable =
-    systemTokenTypeState.totalAvailable.plus(balanceDelta);
-
-  tokenTypeState.totalValueExact =
-    tokenTypeState.totalValueExact.plus(balanceDeltaExact);
-  tokenTypeState.totalValue = tokenTypeState.totalValue.plus(balanceDelta);
-  tokenTypeState.totalAvailableExact =
-    tokenTypeState.totalAvailableExact.plus(balanceDeltaExact);
-  tokenTypeState.totalAvailable =
-    tokenTypeState.totalAvailable.plus(balanceDelta);
+  tokenFactoryState.totalValueExact =
+    tokenFactoryState.totalValueExact.plus(balanceDeltaExact);
+  tokenFactoryState.totalValue =
+    tokenFactoryState.totalValue.plus(balanceDelta);
+  tokenFactoryState.totalAvailableExact =
+    tokenFactoryState.totalAvailableExact.plus(balanceDeltaExact);
+  tokenFactoryState.totalAvailable =
+    tokenFactoryState.totalAvailable.plus(balanceDelta);
 
   let valueDelta = BigDecimal.zero();
 
@@ -187,21 +143,16 @@ export function updateAccountStatsForBalanceChange(
   systemState.totalValueInBaseCurrency =
     systemState.totalValueInBaseCurrency.plus(valueDelta);
 
-  systemTokenTypeState.totalValueInBaseCurrency =
-    systemTokenTypeState.totalValueInBaseCurrency.plus(valueDelta);
-
-  tokenTypeState.totalValueInBaseCurrency =
-    tokenTypeState.totalValueInBaseCurrency.plus(valueDelta);
+  tokenFactoryState.totalValueInBaseCurrency =
+    tokenFactoryState.totalValueInBaseCurrency.plus(valueDelta);
 
   state.save();
   systemState.save();
-  systemTokenTypeState.save();
-  tokenTypeState.save();
+  tokenFactoryState.save();
 
   trackAccountStats(state);
   trackAccountSystemStats(systemState);
-  trackAccountSystemTokenTypeStats(systemTokenTypeState);
-  trackAccountTokenTypeStats(tokenTypeState);
+  trackAccountTokenFactoryStats(tokenFactoryState);
 }
 
 export function updateAccountStatsForTokensFrozen(
@@ -212,22 +163,12 @@ export function updateAccountStatsForTokensFrozen(
   if (frozenDeltaExact.equals(BigInt.zero())) {
     return;
   }
-  const systemAddress = getTokenSystemAddress(token);
-  const tokenTypeId = getTokenTypeId(token);
 
   const state = fetchAccountStatsState(accountAddress);
-  const systemState = fetchAccountSystemStatsState(
+  const systemState = fetchAccountSystemStatsState(accountAddress, token);
+  const tokenFactoryState = fetchAccountTokenFactoryStatsState(
     accountAddress,
-    systemAddress
-  );
-  const systemTokenTypeState = fetchAccountSystemTokenTypeStatsState(
-    accountAddress,
-    systemAddress,
-    tokenTypeId
-  );
-  const tokenTypeState = fetchAccountTokenTypeStatsState(
-    accountAddress,
-    tokenTypeId
+    token
   );
   const frozenDelta = toBigDecimal(frozenDeltaExact, token.decimals);
 
@@ -243,31 +184,22 @@ export function updateAccountStatsForTokensFrozen(
     systemState.totalAvailableExact.minus(frozenDeltaExact);
   systemState.totalAvailable = systemState.totalAvailable.minus(frozenDelta);
 
-  systemTokenTypeState.totalFrozenExact =
-    systemTokenTypeState.totalFrozenExact.plus(frozenDeltaExact);
-  systemTokenTypeState.totalFrozen =
-    systemTokenTypeState.totalFrozen.plus(frozenDelta);
-  systemTokenTypeState.totalAvailableExact =
-    systemTokenTypeState.totalAvailableExact.minus(frozenDeltaExact);
-  systemTokenTypeState.totalAvailable =
-    systemTokenTypeState.totalAvailable.minus(frozenDelta);
-
-  tokenTypeState.totalFrozenExact =
-    tokenTypeState.totalFrozenExact.plus(frozenDeltaExact);
-  tokenTypeState.totalFrozen = tokenTypeState.totalFrozen.plus(frozenDelta);
-  tokenTypeState.totalAvailableExact =
-    tokenTypeState.totalAvailableExact.minus(frozenDeltaExact);
-  tokenTypeState.totalAvailable = tokenTypeState.totalAvailable.minus(frozenDelta);
+  tokenFactoryState.totalFrozenExact =
+    tokenFactoryState.totalFrozenExact.plus(frozenDeltaExact);
+  tokenFactoryState.totalFrozen =
+    tokenFactoryState.totalFrozen.plus(frozenDelta);
+  tokenFactoryState.totalAvailableExact =
+    tokenFactoryState.totalAvailableExact.minus(frozenDeltaExact);
+  tokenFactoryState.totalAvailable =
+    tokenFactoryState.totalAvailable.minus(frozenDelta);
 
   state.save();
   systemState.save();
-  systemTokenTypeState.save();
-  tokenTypeState.save();
+  tokenFactoryState.save();
 
   trackAccountStats(state);
   trackAccountSystemStats(systemState);
-  trackAccountSystemTokenTypeStats(systemTokenTypeState);
-  trackAccountTokenTypeStats(tokenTypeState);
+  trackAccountTokenFactoryStats(tokenFactoryState);
 }
 
 /**
@@ -290,22 +222,11 @@ export function updateAccountStatsForPriceChange(
     return;
   }
 
-  const systemAddress = getTokenSystemAddress(token);
-  const tokenTypeId = getTokenTypeId(token);
-
   const state = fetchAccountStatsState(accountAddress);
-  const systemState = fetchAccountSystemStatsState(
+  const systemState = fetchAccountSystemStatsState(accountAddress, token);
+  const tokenFactoryState = fetchAccountTokenFactoryStatsState(
     accountAddress,
-    systemAddress
-  );
-  const systemTokenTypeState = fetchAccountSystemTokenTypeStatsState(
-    accountAddress,
-    systemAddress,
-    tokenTypeId
-  );
-  const tokenTypeState = fetchAccountTokenTypeStatsState(
-    accountAddress,
-    tokenTypeId
+    token
   );
 
   // Update total value
@@ -315,22 +236,17 @@ export function updateAccountStatsForPriceChange(
   systemState.totalValueInBaseCurrency =
     systemState.totalValueInBaseCurrency.plus(valueDelta);
 
-  systemTokenTypeState.totalValueInBaseCurrency =
-    systemTokenTypeState.totalValueInBaseCurrency.plus(valueDelta);
-
-  tokenTypeState.totalValueInBaseCurrency =
-    tokenTypeState.totalValueInBaseCurrency.plus(valueDelta);
+  tokenFactoryState.totalValueInBaseCurrency =
+    tokenFactoryState.totalValueInBaseCurrency.plus(valueDelta);
 
   state.save();
   systemState.save();
-  systemTokenTypeState.save();
-  tokenTypeState.save();
+  tokenFactoryState.save();
 
   // Create timeseries entry
   trackAccountStats(state);
   trackAccountSystemStats(systemState);
-  trackAccountSystemTokenTypeStats(systemTokenTypeState);
-  trackAccountTokenTypeStats(tokenTypeState);
+  trackAccountTokenFactoryStats(tokenFactoryState);
 }
 
 /**
@@ -358,8 +274,9 @@ function fetchAccountStatsState(accountAddress: Address): AccountStatsState {
 
 function fetchAccountSystemStatsState(
   accountAddress: Address,
-  systemAddress: Address
+  token: Token
 ): AccountSystemStatsState {
+  const systemAddress = getTokenSystemAddress(token);
   const id = accountAddress.concat(systemAddress);
   let state = AccountSystemStatsState.load(id);
   if (!state) {
@@ -378,16 +295,20 @@ function fetchAccountSystemStatsState(
   return state;
 }
 
-function fetchAccountTokenTypeStatsState(
+function fetchAccountTokenFactoryStatsState(
   accountAddress: Address,
-  tokenTypeId: string
-): AccountTokenTypeStatsState {
-  const id = accountAddress.concat(Bytes.fromUTF8(tokenTypeId));
-  let state = AccountTokenTypeStatsState.load(id);
+  token: Token
+): AccountTokenFactoryStatsState {
+  const tokenFactory = fetchTokenFactory(token.tokenFactory!);
+  const tokenFactoryAddress = tokenFactory.id;
+  const systemAddress = getTokenSystemAddress(token);
+  const system = fetchSystem(systemAddress);
+
+  const id = accountAddress.concat(tokenFactoryAddress);
+  let state = AccountTokenFactoryStatsState.load(id);
   if (!state) {
-    state = new AccountTokenTypeStatsState(id);
+    state = new AccountTokenFactoryStatsState(id);
     state.account = fetchAccount(accountAddress).id;
-    state.tokenFactoryTypeId = tokenTypeId;
     state.tokenBalancesCount = 0;
     state.totalValue = BigDecimal.zero();
     state.totalValueExact = BigInt.zero();
@@ -398,32 +319,9 @@ function fetchAccountTokenTypeStatsState(
     state.totalValueInBaseCurrency = BigDecimal.zero();
   }
 
-  return state;
-}
+  state.system = system.id;
+  state.tokenFactory = tokenFactoryAddress;
 
-function fetchAccountSystemTokenTypeStatsState(
-  accountAddress: Address,
-  systemAddress: Address,
-  tokenTypeId: string
-): AccountSystemTokenTypeStatsState {
-  const id = accountAddress
-    .concat(systemAddress)
-    .concat(Bytes.fromUTF8(tokenTypeId));
-  let state = AccountSystemTokenTypeStatsState.load(id);
-  if (!state) {
-    state = new AccountSystemTokenTypeStatsState(id);
-    state.account = fetchAccount(accountAddress).id;
-    state.system = fetchSystem(systemAddress).id;
-    state.tokenFactoryTypeId = tokenTypeId;
-    state.tokenBalancesCount = 0;
-    state.totalValue = BigDecimal.zero();
-    state.totalValueExact = BigInt.zero();
-    state.totalFrozen = BigDecimal.zero();
-    state.totalFrozenExact = BigInt.zero();
-    state.totalAvailable = BigDecimal.zero();
-    state.totalAvailableExact = BigInt.zero();
-    state.totalValueInBaseCurrency = BigDecimal.zero();
-  }
   return state;
 }
 
@@ -467,44 +365,24 @@ function trackAccountSystemStats(state: AccountSystemStatsState): void {
 }
 
 /**
- * Track account system token type statistics in timeseries
+ * Track account token factory statistics in timeseries
  */
-function trackAccountSystemTokenTypeStats(
-  state: AccountSystemTokenTypeStatsState
+function trackAccountTokenFactoryStats(
+  state: AccountTokenFactoryStatsState
 ): void {
   // Create timeseries entry - ID is auto-generated for timeseries entities
-  const accountSystemTokenTypeStats = new AccountSystemTokenTypeStatsData(1);
-  accountSystemTokenTypeStats.account = state.account;
-  accountSystemTokenTypeStats.system = state.system;
-  accountSystemTokenTypeStats.tokenFactoryTypeId = state.tokenFactoryTypeId;
-  accountSystemTokenTypeStats.tokenBalancesCount = state.tokenBalancesCount;
-  accountSystemTokenTypeStats.totalValue = state.totalValue;
-  accountSystemTokenTypeStats.totalValueExact = state.totalValueExact;
-  accountSystemTokenTypeStats.totalFrozen = state.totalFrozen;
-  accountSystemTokenTypeStats.totalFrozenExact = state.totalFrozenExact;
-  accountSystemTokenTypeStats.totalAvailable = state.totalAvailable;
-  accountSystemTokenTypeStats.totalAvailableExact = state.totalAvailableExact;
-  accountSystemTokenTypeStats.totalValueInBaseCurrency =
+  const accountTokenFactoryStats = new AccountTokenFactoryStatsData(1);
+  accountTokenFactoryStats.account = state.account;
+  accountTokenFactoryStats.tokenFactory = state.tokenFactory;
+  accountTokenFactoryStats.system = state.system;
+  accountTokenFactoryStats.tokenBalancesCount = state.tokenBalancesCount;
+  accountTokenFactoryStats.totalValue = state.totalValue;
+  accountTokenFactoryStats.totalValueExact = state.totalValueExact;
+  accountTokenFactoryStats.totalFrozen = state.totalFrozen;
+  accountTokenFactoryStats.totalFrozenExact = state.totalFrozenExact;
+  accountTokenFactoryStats.totalAvailable = state.totalAvailable;
+  accountTokenFactoryStats.totalAvailableExact = state.totalAvailableExact;
+  accountTokenFactoryStats.totalValueInBaseCurrency =
     state.totalValueInBaseCurrency;
-  accountSystemTokenTypeStats.save();
-}
-
-/**
- * Track account token type statistics in timeseries
- */
-function trackAccountTokenTypeStats(state: AccountTokenTypeStatsState): void {
-  // Create timeseries entry - ID is auto-generated for timeseries entities
-  const accountTokenTypeStats = new AccountTokenTypeStatsData(1);
-  accountTokenTypeStats.account = state.account;
-  accountTokenTypeStats.tokenFactoryTypeId = state.tokenFactoryTypeId;
-  accountTokenTypeStats.tokenBalancesCount = state.tokenBalancesCount;
-  accountTokenTypeStats.totalValue = state.totalValue;
-  accountTokenTypeStats.totalValueExact = state.totalValueExact;
-  accountTokenTypeStats.totalFrozen = state.totalFrozen;
-  accountTokenTypeStats.totalFrozenExact = state.totalFrozenExact;
-  accountTokenTypeStats.totalAvailable = state.totalAvailable;
-  accountTokenTypeStats.totalAvailableExact = state.totalAvailableExact;
-  accountTokenTypeStats.totalValueInBaseCurrency =
-    state.totalValueInBaseCurrency;
-  accountTokenTypeStats.save();
+  accountTokenFactoryStats.save();
 }
