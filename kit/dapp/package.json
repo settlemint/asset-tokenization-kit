@@ -56,7 +56,7 @@
     "languine": "3.1.4",
     "minimatch": "10.0.3",
     "typescript": "5.9.2",
-    "vite": "7.1.6",
+    "vite": "7.1.7",
     "vite-bundle-analyzer": "1.2.3",
     "vite-tsconfig-paths": "5.1.4",
     "vitest": "3.2.4"
