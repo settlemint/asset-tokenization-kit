@@ -277,12 +277,13 @@ function fetchAccountSystemStatsState(
   token: Token
 ): AccountSystemStatsState {
   const systemAddress = getTokenSystemAddress(token);
-  const id = accountAddress.concat(systemAddress);
+  const system = fetchSystem(systemAddress);
+  const id = accountAddress.concat(system.id);
   let state = AccountSystemStatsState.load(id);
   if (!state) {
     state = new AccountSystemStatsState(id);
     state.account = fetchAccount(accountAddress).id;
-    state.system = fetchSystem(systemAddress).id;
+    state.system = system.id;
     state.totalValue = BigDecimal.zero();
     state.totalValueExact = BigInt.zero();
     state.totalFrozen = BigDecimal.zero();
@@ -299,16 +300,19 @@ function fetchAccountTokenFactoryStatsState(
   accountAddress: Address,
   token: Token
 ): AccountTokenFactoryStatsState {
-  const tokenFactory = fetchTokenFactory(token.tokenFactory!);
-  const tokenFactoryAddress = tokenFactory.id;
+  const tokenFactory = fetchTokenFactory(
+    Address.fromBytes(token.tokenFactory!)
+  );
   const systemAddress = getTokenSystemAddress(token);
   const system = fetchSystem(systemAddress);
 
-  const id = accountAddress.concat(tokenFactoryAddress);
+  const id = accountAddress.concat(tokenFactory.id);
   let state = AccountTokenFactoryStatsState.load(id);
   if (!state) {
     state = new AccountTokenFactoryStatsState(id);
     state.account = fetchAccount(accountAddress).id;
+    state.system = system.id;
+    state.tokenFactory = tokenFactory.id;
     state.tokenBalancesCount = 0;
     state.totalValue = BigDecimal.zero();
     state.totalValueExact = BigInt.zero();
@@ -318,9 +322,6 @@ function fetchAccountTokenFactoryStatsState(
     state.totalAvailableExact = BigInt.zero();
     state.totalValueInBaseCurrency = BigDecimal.zero();
   }
-
-  state.system = system.id;
-  state.tokenFactory = tokenFactoryAddress;
 
   return state;
 }
