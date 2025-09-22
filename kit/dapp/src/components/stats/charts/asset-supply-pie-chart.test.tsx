@@ -41,19 +41,13 @@ describe("AssetSupplyPieChart", () => {
     const { useSuspenseQuery } = await import("@tanstack/react-query");
     vi.mocked(useSuspenseQuery).mockReturnValue(
       createMockSuspenseQueryResult({
-        chartData: [
-          { assetType: "bond", totalSupply: 150 },
-          { assetType: "equity", totalSupply: 75 },
-          { assetType: "fund", totalSupply: 50 },
-          { assetType: "stablecoin", totalSupply: 25 },
-          { assetType: "deposit", totalSupply: 100 },
-        ],
-        activeChartConfig: {
-          bond: { label: "Bonds", color: "var(--chart-1)" },
-          equity: { label: "Equity", color: "var(--chart-3)" },
-          fund: { label: "Funds", color: "var(--chart-4)" },
-          stablecoin: { label: "Stablecoins", color: "var(--chart-5)" },
-          deposit: { label: "Deposits", color: "var(--chart-6)" },
+        totalAssets: 400,
+        assetBreakdown: {
+          bond: 150,
+          equity: 75,
+          fund: 50,
+          stablecoin: 25,
+          deposit: 100,
         },
       })
     );
@@ -73,8 +67,14 @@ describe("AssetSupplyPieChart", () => {
     const { useSuspenseQuery } = await import("@tanstack/react-query");
     vi.mocked(useSuspenseQuery).mockReturnValue(
       createMockSuspenseQueryResult({
-        chartData: [],
-        activeChartConfig: {},
+        totalAssets: 0,
+        assetBreakdown: {
+          bond: 0,
+          equity: 0,
+          fund: 0,
+          stablecoin: 0,
+          deposit: 0,
+        },
       })
     );
 
