@@ -6,6 +6,8 @@ global:
   imagePullSecrets: []
   # -- (string) Global StorageClass for Persistent Volume(s)
   storageClass: ""
+  labels:
+    kots.io/app-slug: settlemint-atk
 
 # -- String to fully override common.names.fullname (string)
 fullnameOverride: "txsigner"
@@ -208,7 +210,7 @@ service:
 # -- Ingress parameters (object)
 ingress:
   # -- Enable ingress record generation for TxSigner (bool)
-  enabled: true
+  enabled: false
   # -- (string) Ingress path type
   pathType: ImplementationSpecific
   # -- (string) Force Ingress API version (automatically detected if not set)

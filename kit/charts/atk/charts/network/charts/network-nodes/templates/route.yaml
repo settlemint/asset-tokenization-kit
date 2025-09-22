@@ -1,0 +1,44 @@
+{{- /* OpenShift Route for exposing the node service when enabled. */ -}}
+{{- if .Values.openShiftRoute.enabled -}}
+{{- $fullName := include "nodes.fullname" . -}}
+{{- $routeValues := .Values.openShiftRoute -}}
+{{- $targetPort := default "http" (dig "port" "targetPort" $routeValues) -}}
+{{- $weight := default 100 (dig "to" "weight" $routeValues) -}}
+{{- $wildcard := default "None" $routeValues.wildcardPolicy -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "nodes.labels" . | nindent 4 }}
+  {{- with $routeValues.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  to:
+    kind: Service
+    name: {{ $fullName }}
+    {{- if ne $weight 100 }}
+    weight: {{ $weight }}
+    {{- end }}
+  {{- with $routeValues.alternateBackends }}
+  alternateBackends:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  port:
+    targetPort: {{ $targetPort }}
+  {{- with $routeValues.host }}
+  host: {{ . | quote }}
+  {{- end }}
+  {{- with $routeValues.path }}
+  path: {{ . | quote }}
+  {{- end }}
+  {{- if $wildcard }}
+  wildcardPolicy: {{ $wildcard }}
+  {{- end }}
+  {{- with $routeValues.tls }}
+  tls:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

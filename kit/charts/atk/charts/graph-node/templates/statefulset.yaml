@@ -129,6 +129,11 @@ spec:
                   name: {{ $pgSecretName | quote }}
                   key: "PGPASSWORD"
             {{- end }}
+          {{- with .Values.subgraph.configMapName }}
+          envFrom:
+            - configMapRef:
+                name: {{ . | quote }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:

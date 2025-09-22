@@ -79,9 +79,6 @@ The following table lists the configurable parameters of this chart and their de
 | erpc.openShiftRoute.host | string | `"rpc.k8s.orb.local"` |  |
 | erpc.resources | object | `{}` |  |
 | erpc.tests.image.registry | string | `"docker.io"` |  |
-| global.artifacts.image.pullPolicy | string | `"IfNotPresent"` |  |
-| global.artifacts.image.registry | string | `"ghcr.io"` |  |
-| global.artifacts.image.repository | string | `"settlemint/asset-tokenization-kit-artifacts"` |  |
 | global.chainId | string | `"53771311147"` |  |
 | global.chainName | string | `"ATK"` |  |
 | global.datastores.blockscout.postgresql.database | string | `"blockscout"` |  |
@@ -111,8 +108,6 @@ The following table lists the configurable parameters of this chart and their de
 | global.datastores.txsigner.postgresql.database | string | `"txsigner"` |  |
 | global.datastores.txsigner.postgresql.password | string | `"atk"` |  |
 | global.datastores.txsigner.postgresql.username | string | `"txsigner"` |  |
-| global.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
-| global.networkPolicy.enabled | bool | `false` |  |
 | graph-node.enabled | bool | `true` |  |
 | graph-node.image.repository | string | `"docker.io/graphprotocol/graph-node"` |  |
 | graph-node.ingress.annotations."nginx.ingress.kubernetes.io/rewrite-target" | string | `"/$1"` |  |
@@ -175,6 +170,7 @@ The following table lists the configurable parameters of this chart and their de
 | hasura.redis.rateLimit.url | string | `"redis://default:atk@redis:6379/3"` |  |
 | hasura.redis.rateLimit.username | string | `"default"` |  |
 | network.enabled | bool | `true` |  |
+| network.network-bootstrapper.artifacts.predeployed.image.registry | string | `"ghcr.io"` |  |
 | network.network-bootstrapper.image.repository | string | `"ghcr.io/settlemint/network-bootstrapper"` |  |
 | network.network-bootstrapper.initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
 | network.network-nodes.image.repository | string | `"docker.io/hyperledger/besu"` |  |
@@ -248,6 +244,7 @@ The following table lists the configurable parameters of this chart and their de
 | txsigner.config.mnemonic | string | `"gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"` |  |
 | txsigner.enabled | bool | `true` |  |
 | txsigner.image.registry | string | `"ghcr.io"` |  |
+| txsigner.ingress.enabled | bool | `false` |  |
 | txsigner.ingress.hostname | string | `"txsigner.k8s.orb.local"` |  |
 | txsigner.initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
 | txsigner.resources | object | `{}` |  |
@@ -268,8 +265,8 @@ The following table lists the configurable parameters of this chart and their de
 |  | erpc | 2.0.0-alpha.7 |
 |  | graph-node | 2.0.0-alpha.7 |
 |  | hasura | 2.0.0-alpha.7 |
+|  | network | 2.0.0-alpha.7 |
 |  | observability | 2.0.0-alpha.7 |
 |  | portal | 2.0.0-alpha.7 |
 |  | support | 2.0.0-alpha.7 |
 |  | txsigner | 2.0.0-alpha.7 |
-| oci://ghcr.io/settlemint/network-bootstrapper | network | 1.0.18 |

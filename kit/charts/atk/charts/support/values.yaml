@@ -1,3 +1,7 @@
+global:
+  labels:
+    kots.io/app-slug: settlemint-atk
+
 # Our simple PostgreSQL chart configuration
 # -- PostgreSQL configuration (object)
 postgresql:

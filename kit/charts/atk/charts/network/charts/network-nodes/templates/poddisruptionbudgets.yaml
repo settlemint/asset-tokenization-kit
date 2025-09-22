@@ -1,0 +1,49 @@
+{{- $root := . -}}
+{{- $pdbValues := .Values.podDisruptionBudgets | default (dict) -}}
+{{- $components := list
+  (dict "name" "validator" "config" (default (dict) (get $pdbValues "validator")))
+  (dict "name" "rpc" "config" (default (dict) (get $pdbValues "rpc")))
+-}}
+{{- range $component := $components }}
+  {{- $cfg := $component.config -}}
+  {{- if and $cfg (get $cfg "enabled") }}
+  {{- $minRaw := get $cfg "minAvailable" -}}
+  {{- $hasMin := and (hasKey $cfg "minAvailable") (ne $minRaw nil) (not (and (kindIs "string" $minRaw) (eq $minRaw ""))) -}}
+  {{- $maxRaw := get $cfg "maxUnavailable" -}}
+  {{- $hasMax := and (hasKey $cfg "maxUnavailable") (ne $maxRaw nil) (not (and (kindIs "string" $maxRaw) (eq $maxRaw ""))) -}}
+  {{- $effectiveHasMin := and $hasMin (not $hasMax) -}}
+  {{- if not (or $effectiveHasMin $hasMax) }}
+    {{- fail (printf "podDisruptionBudgets.%s requires minAvailable or maxUnavailable" $component.name) -}}
+  {{- end }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "nodes.fullname" $root }}-{{ $component.name }}
+  labels:
+    {{- include "nodes.labels" $root | nindent 4 }}
+    app.kubernetes.io/component: {{ $component.name }}
+    {{- with (get $cfg "labels") }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with (get $cfg "annotations") }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if $effectiveHasMin }}
+  minAvailable: {{ $minRaw }}
+  {{- end }}
+  {{- if $hasMax }}
+  maxUnavailable: {{ $maxRaw }}
+  {{- end }}
+  {{- $policy := get $cfg "unhealthyPodEvictionPolicy" -}}
+  {{- if and $policy (ne $policy "") }}
+  unhealthyPodEvictionPolicy: {{ $policy }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "nodes.selectorLabels" $root | nindent 6 }}
+      app.kubernetes.io/component: {{ $component.name }}
+  {{- end }}
+{{- end }}

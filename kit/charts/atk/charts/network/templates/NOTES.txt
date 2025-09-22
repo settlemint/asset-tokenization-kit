@@ -1,0 +1,45 @@
+{{- $namespace := .Release.Namespace -}}
+{{- $release := .Release.Name -}}
+Thanks for installing the {{ .Chart.Name }} chart!
+
+This umbrella release wires together:
+- the `network-bootstrapper` job that generates genesis artefacts and static node definitions, and
+- the `network-nodes` StatefulSets that launch Besu validator and RPC nodes.
+
+Bootstrapper Workflow
+---------------------
+1. Wait for the bootstrapper job to finish producing outputs:
+
+   kubectl -n {{ $namespace }} wait --for=condition=complete job -l app.kubernetes.io/name=network-bootstrapper,app.kubernetes.io/instance={{ $release }}
+
+2. Stream the job logs to review the generated configuration or troubleshoot failures:
+
+   kubectl -n {{ $namespace }} logs job -l app.kubernetes.io/name=network-bootstrapper,app.kubernetes.io/instance={{ $release }}
+
+3. When `settings.outputType` is `kubernetes`, fetch the generated artefacts:
+
+   kubectl -n {{ $namespace }} get configmaps -l app.kubernetes.io/name=network-bootstrapper,app.kubernetes.io/instance={{ $release }}
+   kubectl -n {{ $namespace }} get secrets -l app.kubernetes.io/name=network-bootstrapper,app.kubernetes.io/instance={{ $release }}
+
+Besu Node Operations
+--------------------
+1. Confirm the validator and RPC pods are healthy:
+
+   kubectl -n {{ $namespace }} get pods -l app.kubernetes.io/name=besu-node,app.kubernetes.io/instance={{ $release }}
+
+2. Port-forward the shared validator service (P2P) or the RPC service for local access (Ctrl+C to stop):
+
+   kubectl -n {{ $namespace }} port-forward svc/besu-node 8545:8545
+   kubectl -n {{ $namespace }} port-forward svc/besu-node-rpc 8545:8545
+
+3. Expose metrics locally for scraping or ad-hoc inspection:
+
+   kubectl -n {{ $namespace }} port-forward svc/besu-node 9545:9545
+
+Next Steps
+----------
+- Inspect all resources created by this release:
+
+   kubectl -n {{ $namespace }} get all -l app.kubernetes.io/instance={{ $release }}
+
+- Apply network policies, ingress controllers, or secrets required by your environment before opening the network to external peers.

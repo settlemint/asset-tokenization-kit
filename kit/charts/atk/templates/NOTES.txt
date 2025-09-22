@@ -69,8 +69,10 @@ SETTLEMINT_MINIO_SECRET_KEY=atk-service-secret
 ========================================================================
 
 {{- if and .Values.txsigner.enabled (not .Values.txsigner.ingress.enabled) }}
+
 Notes:
 - Transaction Signer is enabled but not exposed via ingress. To use it
-  for signing transactions, either enable ingress for txsigner or use
-  the regular RPC endpoint which will handle transactions internally.
+  for signing transactions, either send your transactions with the portal (REST/GraphQL)
+  or enable the ingress for txsigner (secure this ingress!) to send eth_sendTransaction calls.
+
 {{- end }}

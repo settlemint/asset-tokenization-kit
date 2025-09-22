@@ -11,7 +11,6 @@
   "scripts": {
     "reset": "orb delete k8s --force  && orb start k8s ",
     "dependencies": "bun run tools/dependencies.ts",
-    "xlint": "ct lint --chart-dirs . --check-version-increment=false --target-branch main --all ",
     "compile": "helm template atk --output-dir dist --include-crds",
     "package:harbor": "bun run tools/package-harbor.ts",
     "package:pack": "helm package atk --destination . ",
@@ -29,8 +28,8 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@aws-sdk/client-ecr": "3.891.0",
-    "@aws-sdk/client-marketplace-catalog": "3.891.0",
+    "@aws-sdk/client-ecr": "3.893.0",
+    "@aws-sdk/client-marketplace-catalog": "3.893.0",
     "contracts": "workspace:*",
     "subgraph": "workspace:*",
     "@settlemint/sdk-utils": "2.6.2"

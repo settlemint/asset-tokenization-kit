@@ -198,7 +198,7 @@ A Helm chart for Blockscout blockchain explorer stack
 | frontend.service.type | string | `"ClusterIP"` | Blockscout frontend service type |
 | frontend.tolerations | list | `[]` | Tolerations for pod assignment |
 | fullnameOverride | string | `"blockscout"` | String to fully override common.names.fullname |
-| global | object | `{"datastores":{},"imagePullSecrets":[],"imageRegistry":"","securityContexts":{},"storageClass":""}` | Global Docker image registry and security defaults |
+| global | object | `{"datastores":{},"imagePullSecrets":[],"imageRegistry":"","labels":{"kots.io/app-slug":"settlemint-atk"},"securityContexts":{},"storageClass":""}` | Global Docker image registry and security defaults |
 | global.datastores | object | `{}` | Shared datastore definitions |
 | global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |
 | global.imageRegistry | string | `""` | Global Docker image registry |

@@ -54,48 +54,48 @@ spec:
       {{- if .Values.tolerations }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tolerations "context" $) | nindent 8 }}
       {{- end }}
-      {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck "chartKey" "portal") }}
+      {{- $initContainerConfig := .Values.initContainer | default (dict) }}
+      {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" (get $initContainerConfig "tcpCheck") "chartKey" "portal") }}
       {{- $extraInit := .Values.extraInitContainers | default (list) }}
-      {{- $artifactsImage := .Values.global.artifacts.image | default (dict) }}
-      {{- $artifactsRegistry := $artifactsImage.registry | default "ghcr.io" }}
-      {{- $artifactsRepository := $artifactsImage.repository | default "settlemint/asset-tokenization-kit-artifacts" }}
-      {{- $chartVersion := $.Chart.AppVersion | default .Chart.AppVersion }}
-      {{- $artifactsTag := $artifactsImage.tag | default $chartVersion }}
+      {{- $downloadAbiConfig := default (dict) (get $initContainerConfig "downloadAbi") }}
+      {{- $downloadAbiEnabled := ne (get $downloadAbiConfig "enabled") false }}
+      {{- $downloadAbiImage := default (dict) (get $downloadAbiConfig "image") }}
+      {{- $downloadAbiRepository := default "ghcr.io/settlemint/network-bootstrapper" (get $downloadAbiImage "repository") }}
+      {{- $downloadAbiTag := default "1.2.3" (get $downloadAbiImage "tag") }}
+      {{- $downloadAbiPullPolicy := default "IfNotPresent" (get $downloadAbiImage "pullPolicy") }}
+      {{- $downloadAbiOutputDir := default "/shared-abis" (get $downloadAbiConfig "outputDirectory") }}
+      {{- $downloadAbiSecurityContext := (include "atk.securityContext.container" (dict "context" $ "local" (default (dict) (get $downloadAbiConfig "securityContext")) "chartKey" "portal")) | fromYaml }}
+      {{- $hasWaitForIt := gt (len (trim $waitForIt)) 0 }}
+      {{- $hasExtraInit := gt (len $extraInit) 0 }}
+      {{- if or $downloadAbiEnabled (or $hasWaitForIt $hasExtraInit) }}
       initContainers:
-        - name: copy-artifacts
-          image: "{{ $artifactsRegistry }}/{{ $artifactsRepository }}:{{ $artifactsTag }}"
-          imagePullPolicy: {{ .Values.global.artifacts.image.pullPolicy }}
-          command:
-            - /bin/sh
-            - -c
-            - |
-              echo "Copying ABIs from artifacts container..."
-              cp -a /artifacts/abis/asset-tokenization-3643/. /shared-abis/
-              echo "ABIs copied successfully"
-              ls -la /shared-abis/
-          {{- with .Values.initContainer.copyArtifacts.resources }}
+        {{- if $downloadAbiEnabled }}
+        - name: download-abis
+          # Sync contract ABIs from ConfigMaps seeded by the network bootstrapper job
+          image: "{{ $downloadAbiRepository }}:{{ $downloadAbiTag }}"
+          imagePullPolicy: {{ $downloadAbiPullPolicy }}
+          args:
+            - download-abi
+            - --output-directory={{ $downloadAbiOutputDir }}
+          {{- with get $downloadAbiConfig "resources" }}
           resources:
 {{ toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
             - name: abis
-              mountPath: /shared-abis
-          {{- $copyArtifactsSecurityContext := (include "atk.securityContext.container" (dict
-            "context" $
-            "local" (default (dict) .Values.initContainer.copyArtifacts.securityContext)
-            "chartKey" "portal"
-          )) | fromYaml }}
-          {{- if $copyArtifactsSecurityContext }}
-          # Ensure the artifacts image runs with numeric IDs derived from global defaults
+              mountPath: {{ $downloadAbiOutputDir }}
+          {{- if $downloadAbiSecurityContext }}
           securityContext:
-            {{- toYaml $copyArtifactsSecurityContext | nindent 12 }}
+            {{- toYaml $downloadAbiSecurityContext | nindent 12 }}
           {{- end }}
-        {{- if $waitForIt }}
+        {{- end }}
+        {{- if $hasWaitForIt }}
 {{ $waitForIt | nindent 8 }}
         {{- end }}
-        {{- if gt (len $extraInit) 0 }}
+        {{- if $hasExtraInit }}
 {{ toYaml $extraInit | nindent 8 }}
         {{- end }}
+      {{- end }}
       containers:
         - name: portal
           image: {{ include "common.images.image" (dict "imageRoot" .Values.image "global" .Values.global) }}

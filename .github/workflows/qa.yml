@@ -36,6 +36,11 @@ jobs:
       HARBOR_PASS: ""
       PAT_TOKEN: ""
       NPM_TOKEN: ""
+      RUNS_ON_PUSH_OR_ACTIVE_PR: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
+      RUNS_ON_PUSH_PR_OR_REVIEW: ${{ github.event_name == 'push' || github.event_name == 'pull_request_review' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
+      IS_ACTIVE_PR: ${{ github.event_name == 'pull_request' && github.event.pull_request.draft == false }}
+      IS_PR_OR_REVIEW: ${{ github.event_name == 'pull_request' || github.event_name == 'pull_request_review' }}
+      IS_ACTIVE_PR_EVENT: ${{ (github.event_name == 'pull_request' || github.event_name == 'pull_request_review') && github.event.pull_request.draft == false }}
     steps:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v7
@@ -62,9 +67,7 @@ jobs:
 
       # Label QA as running and notify Slack (only for non-draft PRs)
       - name: Label QA as running
-        if: |
-          github.event_name == 'pull_request' &&
-          github.event.pull_request.draft == false
+        if: ${{ fromJSON(env.IS_ACTIVE_PR) }}
         uses: ./.github/actions/build-status-labeler
         with:
           pr_number: ${{ github.event.pull_request.number }}
@@ -72,9 +75,7 @@ jobs:
 
       # Initial Slack notification - creates or updates message
       - name: Send Slack notification for QA starting
-        if: |
-          github.event_name == 'pull_request' &&
-          github.event.pull_request.draft == false
+        if: ${{ fromJSON(env.IS_ACTIVE_PR) }}
         uses: ./.github/actions/slack-pr-notifier
         with:
           pr_number: ${{ github.event.pull_request.number }}
@@ -88,10 +89,7 @@ jobs:
 
       # Setup dependencies for QA (skip for draft PRs)
       - name: Setup dependencies
-        if: |
-          github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
-          github.event_name == 'pull_request_review'
+        if: ${{ fromJSON(env.RUNS_ON_PUSH_PR_OR_REVIEW) }}
         uses: ./.github/actions/setup-dependencies
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -99,9 +97,7 @@ jobs:
 
       # Login to Docker registries (only when running QA)
       - name: Login to GitHub Container Registry
-        if: |
-          github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) }}
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -109,9 +105,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to Harbor
-        if: |
-          github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) }}
         uses: docker/login-action@v3
         with:
           registry: harbor.settlemint.com
@@ -119,33 +113,25 @@ jobs:
           password: ${{ env.HARBOR_PASS }}
 
       - name: Connect to SettleMint
-        if: |
-          github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) }}
         uses: settlemint/settlemint-action@main
         with:
           instance: local
 
       - name: Generate artifacts
-        if: |
-          github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) }}
         run: |
           bunx turbo run artifacts --concurrency=100%
         env:
           BUILD_ID: ${{ github.run_number }}${{ github.run_attempt }}
 
       - name: Run the backend services
-        if: |
-          github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) }}
         run: |
           bun dev:up
 
       - name: Verify subgraph SystemFactory address
-        if: |
-          github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) }}
         run: |
           echo "Checking SystemFactory address in subgraph.yaml..."
           EXPECTED_ADDRESS="0x5e771e1417100000000000000000000000020088"
@@ -164,9 +150,7 @@ jobs:
 
       - name: CI tests
         id: qa-tests
-        if: |
-          github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) }}
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             echo "Running Turbo for PR"
@@ -178,10 +162,48 @@ jobs:
         env:
           BUILD_ID: ${{ github.run_number }}.${{ github.run_attempt }}
 
+      - name: Determine chart changes
+        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) }}
+        id: ct-changed
+        env:
+          CT_CONFIG: .github/ct.yaml
+        run: |
+          changed=$(ct list-changed --config "$CT_CONFIG")
+          if [[ -n "$changed" ]]; then
+            printf "changed=true\n" >> "$GITHUB_OUTPUT"
+            echo "$changed"
+          else
+            printf "changed=false\n" >> "$GITHUB_OUTPUT"
+            echo "No chart changes detected"
+          fi
+
+      - name: Run chart-testing (lint)
+        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) && steps.ct-changed.outputs.changed == 'true' }}
+        env:
+          CT_CONFIG: .github/ct.yaml
+        run: ct lint --config "$CT_CONFIG" --validate-yaml=false
+
+      - name: Configure Namespace access
+        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) && steps.ct-changed.outputs.changed == 'true' }}
+        id: nscloud
+        uses: namespacelabs/nscloud-setup@v0
+
+      - name: Provision Namespace Kubernetes cluster
+        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) && steps.ct-changed.outputs.changed == 'true' }}
+        uses: namespacelabs/nscloud-cluster-action@v0
+        with:
+          wait-kube-system: "true"
+          machine-shape: "8x32"
+          duration: "20m"
+
+      - name: Run chart-testing (install)
+        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) && steps.ct-changed.outputs.changed == 'true' }}
+        env:
+          CT_CONFIG: .github/ct.yaml
+        run: ct install --config "$CT_CONFIG" --skip-clean-up
+
       - name: Store predeployed output
-        if: |
-          github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) }}
         uses: namespace-actions/upload-artifact@v1
         with:
           name: predeployed-output
@@ -212,6 +234,7 @@ jobs:
           body: |-
             Automated release asset synchronization for `${{ github.ref_name }}`.
             Generated by the QA workflow.
+
 
       # Label QA results (PR only)
       - name: Label QA build status
@@ -259,9 +282,7 @@ jobs:
       # Check PR review status (PR and PR review events only)
       - name: Check PR review status
         id: pr-review-check
-        if: |
-          always() &&
-          (github.event_name == 'pull_request' || github.event_name == 'pull_request_review')
+        if: ${{ always() && fromJSON(env.IS_PR_OR_REVIEW) }}
         uses: ./.github/actions/pr-review-check
         with:
           pr_number: ${{ github.event.pull_request.number }}
@@ -273,9 +294,7 @@ jobs:
       # Apply final PR status label (PR and PR review events only)
       - name: Label PR final status
         id: label-final-status
-        if: |
-          always() &&
-          (github.event_name == 'pull_request' || github.event_name == 'pull_request_review')
+        if: ${{ always() && fromJSON(env.IS_PR_OR_REVIEW) }}
         uses: ./.github/actions/pr-status-labeler
         with:
           pr_number: ${{ github.event.pull_request.number }}
@@ -285,11 +304,7 @@ jobs:
 
       # Consolidated Slack notification - updates existing message or creates one if needed
       - name: Update Slack notification with final status
-        if: |
-          always() &&
-          steps.label-final-status.conclusion == 'success' &&
-          (github.event_name == 'pull_request' || github.event_name == 'pull_request_review') &&
-          github.event.pull_request.draft == false
+        if: ${{ always() && steps.label-final-status.conclusion == 'success' && fromJSON(env.IS_PR_OR_REVIEW) && fromJSON(env.IS_ACTIVE_PR_EVENT) }}
         uses: ./.github/actions/slack-pr-notifier
         with:
           pr_number: ${{ github.event.pull_request.number }}
@@ -303,9 +318,7 @@ jobs:
 
       # Manage auto-merge (PR and PR review events only)
       - name: Manage auto-merge
-        if: |
-          always() &&
-          (github.event_name == 'pull_request' || github.event_name == 'pull_request_review')
+        if: ${{ always() && fromJSON(env.IS_PR_OR_REVIEW) }}
         uses: ./.github/actions/auto-merge
         with:
           pr_number: ${{ github.event.pull_request.number }}
