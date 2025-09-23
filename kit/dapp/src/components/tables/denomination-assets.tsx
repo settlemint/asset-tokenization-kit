@@ -98,7 +98,7 @@ export function DenominationAssetTable({
   // Copy to clipboard utility
   const copyToClipboard = useCallback(
     (text: string) => {
-      navigator.clipboard.writeText(text);
+      void navigator.clipboard.writeText(text);
       toast.success(t("actions.addressCopied"));
     },
     [t]
@@ -107,13 +107,13 @@ export function DenominationAssetTable({
   // Navigate to external explorer
   const openInExplorer = useCallback((address: string) => {
     const explorerUrl = `https://etherscan.io/address/${address}`;
-    window.open(explorerUrl, "_blank");
+    void window.open(explorerUrl, "_blank");
   }, []);
 
   // Navigate to token details
   const navigateToToken = useCallback(
     (factoryAddress: string, tokenAddress: string) => {
-      router.navigate({
+      void router.navigate({
         to: "/token/$factoryAddress/$tokenAddress",
         params: {
           factoryAddress: factoryAddress as EthereumAddress,

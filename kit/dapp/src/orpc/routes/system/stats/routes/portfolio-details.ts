@@ -3,6 +3,7 @@ import { systemRouter } from "@/orpc/procedures/system.router";
 import {
   assetFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
+  type AssetFactoryTypeId,
 } from "@atk/zod/asset-types";
 import { bigDecimal } from "@atk/zod/bigdecimal";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
@@ -140,26 +141,43 @@ export const statsPortfolioDetails =
               value: ReturnType<typeof from>;
             }
         )
-        .reduce((acc, { factory, value }) => {
-          const existing = acc.get(factory.id);
-          const newValue = existing ? add(existing.totalValue, value) : value;
-          acc.set(factory.id, {
-            tokenFactoryId: factory.id,
-            tokenFactoryName: factory.name,
-            tokenFactoryTypeId: factory.typeId as any,
-            assetType: getAssetTypeFromFactoryTypeId(factory.typeId as any),
-            totalValue: newValue,
-            tokenBalancesCount: 0,
-          });
-          return acc;
-        }, new Map<string, any>());
+        .reduce(
+          (acc, { factory, value }) => {
+            const existing = acc.get(factory.id);
+            const newValue = existing ? add(existing.totalValue, value) : value;
+            acc.set(factory.id, {
+              tokenFactoryId: factory.id,
+              tokenFactoryName: factory.name,
+              tokenFactoryTypeId: factory.typeId as AssetFactoryTypeId,
+              assetType: getAssetTypeFromFactoryTypeId(
+                factory.typeId as AssetFactoryTypeId
+              ),
+              totalValue: newValue,
+              tokenBalancesCount: 0,
+            });
+            return acc;
+          },
+          new Map<
+            string,
+            {
+              tokenFactoryId: string;
+              tokenFactoryName: string;
+              tokenFactoryTypeId: AssetFactoryTypeId;
+              assetType: ReturnType<typeof getAssetTypeFromFactoryTypeId>;
+              totalValue: ReturnType<typeof from>;
+              tokenBalancesCount: number;
+            }
+          >()
+        );
 
-    const tokenFactoryBreakdownArray = [...tokenFactoryBreakdown.values()].map((entry) => ({
-      ...entry,
-      percentage: eq(totalValue, from(0))
-        ? 0
-        : toNumber(div(multiply(entry.totalValue, from(100)), totalValue)),
-    }));
+    const tokenFactoryBreakdownArray = [...tokenFactoryBreakdown.values()].map(
+      (entry) => ({
+        ...entry,
+        percentage: eq(totalValue, from(0))
+          ? 0
+          : toNumber(div(multiply(entry.totalValue, from(100)), totalValue)),
+      })
+    );
 
     // Get total balances count from account system stats
     const totalAssetsHeld =
