@@ -85,12 +85,14 @@ export function updateTokenDistributionStats(
     );
     // Top balance didn't change - just update the current account's segment
     // Calculate old and new percentages based on top balance
-    const oldPercentage = oldBalance.gt(BigInt.zero())
-      ? oldBalance.toBigDecimal().div(oldTopBalance.toBigDecimal())
-      : BigDecimal.zero();
-    const newPercentage = newBalance.gt(BigInt.zero())
-      ? newBalance.toBigDecimal().div(newTopBalance.toBigDecimal())
-      : BigDecimal.zero();
+    const oldPercentage =
+      oldBalance.gt(BigInt.zero()) && oldTopBalance.gt(BigInt.zero())
+        ? oldBalance.toBigDecimal().div(oldTopBalance.toBigDecimal())
+        : BigDecimal.zero();
+    const newPercentage =
+      newBalance.gt(BigInt.zero()) && newTopBalance.gt(BigInt.zero())
+        ? newBalance.toBigDecimal().div(newTopBalance.toBigDecimal())
+        : BigDecimal.zero();
 
     // Determine segment changes
     const oldSegment = oldBalance.le(BigInt.zero())
@@ -247,7 +249,7 @@ function calculateTop5HoldersPercentage(
   state: TokenDistributionStatsState,
   token: Token
 ): BigDecimal {
-  if (token.totalSupplyExact.equals(BigInt.zero())) {
+  if (token.totalSupplyExact.le(BigInt.zero())) {
     return BigDecimal.zero();
   }
 
@@ -263,12 +265,17 @@ function calculateTop5HoldersPercentage(
     }
   }
 
-  const percentage = token.totalSupplyExact.gt(BigInt.zero())
-    ? totalBalanceTopHolders
-        .toBigDecimal()
-        .div(token.totalSupplyExact.toBigDecimal())
-    : BigDecimal.zero();
-  return percentage.times(BigDecimal.fromString("100"));
+  const totalSupply = token.totalSupplyExact.toBigDecimal();
+  if (totalSupply.equals(BigDecimal.zero())) {
+    return BigDecimal.zero();
+  }
+
+  const percentage = totalBalanceTopHolders
+    .toBigDecimal()
+    .div(totalSupply)
+    .times(BigDecimal.fromString("100"));
+
+  return percentage;
 }
 
 /**
@@ -394,6 +401,14 @@ function recalculateAllSegments(
   token: Token,
   newTopBalance: BigInt
 ): void {
+  if (newTopBalance.le(BigInt.zero())) {
+    log.info(
+      "[TokenDistributionStats] Token {} - Skipping segment recalculation due to non-positive top balance",
+      [token.symbol]
+    );
+    return;
+  }
+
   log.info(
     "[TokenDistributionStats] Token {} - Recalculating all segments due to top balance change: {}",
     [token.symbol, newTopBalance.toString()]

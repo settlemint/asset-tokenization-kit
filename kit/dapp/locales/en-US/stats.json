@@ -72,6 +72,39 @@
       "available": "Available collateral",
       "used": "Used collateral",
       "ratio": "Collateralization: {{ratio}}%"
+    },
+    "portfolioValue": {
+      "title": "Portfolio value",
+      "description": "Track how your investments have performed over the last {{days}} days",
+      "label": "Value",
+      "empty": {
+        "title": "No data to show yet",
+        "description": "You'll see your portfolio value here once you receive your first assets"
+      }
+    },
+    "portfolio": {
+      "summary": {
+        "title": "Portfolio Summary",
+        "description": "View your total portfolio value and holdings",
+        "totalValue": "Total Value",
+        "assetFactories": "Asset Types",
+        "totalAssets": "Total Assets"
+      },
+      "breakdown": {
+        "title": "Portfolio Breakdown",
+        "description": "Detailed breakdown of your assets by type",
+        "chartTitle": "Asset allocation",
+        "detailsTitle": "Allocation Details",
+        "assetType": "Asset Type",
+        "factory": "Factory",
+        "value": "Value",
+        "percentage": "Percentage",
+        "assets": "Assets"
+      },
+      "empty": {
+        "summary": "Your portfolio summary will appear here when you receive assets",
+        "breakdown": "Your asset breakdown will appear here when you receive assets"
+      }
     }
   },
   "title": "Statistics",
