@@ -11,32 +11,32 @@ maintainers:
     url: https://settlemint.com
 dependencies:
   - name: support
-    version: 2.0.0-alpha.8
+    version: 2.0.0-alpha.9
     condition: support.enabled
   - name: observability
-    version: 2.0.0-alpha.8
+    version: 2.0.0-alpha.9
     condition: observability.enabled
   - name: network
-    version: 2.0.0-alpha.8
+    version: 2.0.0-alpha.9
     condition: network.enabled
   - name: erpc
-    version: 2.0.0-alpha.8
+    version: 2.0.0-alpha.9
     condition: erpc.enabled
   - name: blockscout
-    version: 2.0.0-alpha.8
+    version: 2.0.0-alpha.9
     condition: blockscout.enabled
   - name: graph-node
-    version: 2.0.0-alpha.8
+    version: 2.0.0-alpha.9
     condition: graph-node.enabled
   - name: portal
-    version: 2.0.0-alpha.8
+    version: 2.0.0-alpha.9
     condition: portal.enabled
   - name: hasura
-    version: 2.0.0-alpha.8
+    version: 2.0.0-alpha.9
     condition: hasura.enabled
   - name: txsigner
-    version: 2.0.0-alpha.8
+    version: 2.0.0-alpha.9
     condition: txsigner.enabled
   - name: dapp
-    version: 2.0.0-alpha.8
+    version: 2.0.0-alpha.9
     condition: dapp.enabled

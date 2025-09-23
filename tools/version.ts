@@ -236,22 +236,36 @@ function countWorkspaceDependencies(
 }
 
 /**
- * Updates chart dependencies with version "*"
+ * Updates chart dependencies that track the main chart version.
  * @param dependencies - Chart dependencies array to update
  * @param newVersion - New version to use
+ * @param previousVersions - Versions considered in sync with the parent chart
  * @returns Number of chart dependencies updated
  */
 function updateChartDependencies(
   dependencies:
     | Array<{ name: string; version: string; [key: string]: unknown }>
     | undefined,
-  newVersion: string
+  newVersion: string,
+  previousVersions: Array<string | undefined> = []
 ): number {
   if (!dependencies) return 0;
 
+  const versionsToUpdate = new Set(
+    previousVersions.filter((version): version is string => Boolean(version))
+  );
+
   let dependencyCount = 0;
   for (const dep of dependencies) {
-    if (dep.version === "*") {
+    const matchesWildcard = dep.version === "*";
+    const matchesPreviousVersion =
+      versionsToUpdate.size > 0 && versionsToUpdate.has(dep.version);
+
+    if (!matchesWildcard && !matchesPreviousVersion) {
+      continue;
+    }
+
+    if (dep.version !== newVersion) {
       dep.version = newVersion;
       dependencyCount++;
     }
@@ -259,7 +273,7 @@ function updateChartDependencies(
 
   if (dependencyCount > 0) {
     logger.info(
-      `    Updated ${dependencyCount} "*" version references in chart dependencies`
+      `    Updated ${dependencyCount} chart dependency version references to ${newVersion}`
     );
   }
 
@@ -448,7 +462,8 @@ async function updateChartVersions(): Promise<void> {
         // Update chart dependencies with version "*"
         const dependencyUpdates = updateChartDependencies(
           chart.dependencies,
-          newVersion
+          newVersion,
+          [oldVersion, oldAppVersion]
         );
 
         if (dependencyUpdates > 0) {
