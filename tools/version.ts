@@ -3,7 +3,7 @@
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { Glob } from "bun";
 import { appendFile } from "fs/promises";
-import { relative } from "path";
+import { dirname, join, relative } from "path";
 import { parse, stringify } from "yaml";
 import { findTurboRoot } from "./root";
 
@@ -33,6 +33,7 @@ interface PackageJson {
 }
 
 interface ChartYaml {
+  name?: string;
   version: string;
   appVersion: string;
   dependencies?: Array<{
@@ -236,10 +237,56 @@ function countWorkspaceDependencies(
 }
 
 /**
+ * Discovers local subchart names for the provided chart.
+ * @param chartPath - Path to the parent Chart.yaml file
+ */
+async function discoverLocalChartNames(chartPath: string): Promise<Set<string>> {
+  const localChartNames = new Set<string>();
+  const chartDir = dirname(chartPath);
+  const localChartsDir = join(chartDir, "charts");
+
+  try {
+    const glob = new Glob("**/Chart.yaml");
+
+    for await (const relativePath of glob.scan(localChartsDir)) {
+      const resolvedPath = join(localChartsDir, relativePath);
+      const subChartFile = Bun.file(resolvedPath);
+
+      if (!(await subChartFile.exists())) {
+        continue;
+      }
+
+      try {
+        const parsed = parse(await subChartFile.text()) as ChartYaml;
+        if (parsed?.name) {
+          localChartNames.add(parsed.name);
+        }
+      } catch (error) {
+        logger.debug?.(
+          `      Skipping invalid local chart metadata at ${resolvedPath}:`,
+          error
+        );
+      }
+    }
+  } catch (error) {
+    const { code } = error as NodeJS.ErrnoException;
+    if (code && code !== "ENOENT") {
+      logger.debug?.(
+        `      Failed to scan local charts for ${chartPath}:`,
+        error
+      );
+    }
+  }
+
+  return localChartNames;
+}
+
+/**
  * Updates chart dependencies that track the main chart version.
  * @param dependencies - Chart dependencies array to update
  * @param newVersion - New version to use
  * @param previousVersions - Versions considered in sync with the parent chart
+ * @param localChartNames - Names of local charts bundled with the parent chart
  * @returns Number of chart dependencies updated
  */
 function updateChartDependencies(
@@ -247,7 +294,8 @@ function updateChartDependencies(
     | Array<{ name: string; version: string; [key: string]: unknown }>
     | undefined,
   newVersion: string,
-  previousVersions: Array<string | undefined> = []
+  previousVersions: Array<string | undefined> = [],
+  localChartNames: Set<string> = new Set()
 ): number {
   if (!dependencies) return 0;
 
@@ -260,8 +308,13 @@ function updateChartDependencies(
     const matchesWildcard = dep.version === "*";
     const matchesPreviousVersion =
       versionsToUpdate.size > 0 && versionsToUpdate.has(dep.version);
+    const isLocalChart = localChartNames.has(dep.name);
 
-    if (!matchesWildcard && !matchesPreviousVersion) {
+    const shouldUpdate =
+      matchesWildcard ||
+      (isLocalChart && (matchesPreviousVersion || dep.version !== newVersion));
+
+    if (!shouldUpdate) {
       continue;
     }
 
@@ -447,6 +500,7 @@ async function updateChartVersions(): Promise<void> {
 
         const oldVersion = chart.version;
         const oldAppVersion = chart.appVersion;
+        const localChartNames = await discoverLocalChartNames(chartPath);
         let hasChanges = false;
 
         // Update the version fields
@@ -459,11 +513,12 @@ async function updateChartVersions(): Promise<void> {
           hasChanges = true;
         }
 
-        // Update chart dependencies with version "*"
+        // Update chart dependencies that mirror bundled subcharts
         const dependencyUpdates = updateChartDependencies(
           chart.dependencies,
           newVersion,
-          [oldVersion, oldAppVersion]
+          [oldVersion, oldAppVersion],
+          localChartNames
         );
 
         if (dependencyUpdates > 0) {
