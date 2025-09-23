@@ -69,14 +69,14 @@
   "dependencies": {
     "@types/js-yaml": "4.0.9",
     "js-yaml": "4.1.0",
-    "lefthook": "1.13.1"
+    "lefthook": "1.13.3"
   },
   "devDependencies": {
     "@prettier/plugin-oxc": "0.0.4",
     "@settlemint/sdk-cli": "2.6.2",
     "@settlemint/sdk-utils": "2.6.2",
     "@types/lodash": "4.17.20",
-    "@typescript/native-preview": "7.0.0-dev.20250921.1",
+    "@typescript/native-preview": "7.0.0-dev.20250923.1",
     "graphql": "16.11.0",
     "prettier": "3.6.2",
     "turbo": "2.5.6",

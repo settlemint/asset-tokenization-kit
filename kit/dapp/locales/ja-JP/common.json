@@ -47,5 +47,19 @@
   "dates": {
     "today": "今日",
     "yesterday": "昨日"
+  },
+  "chart": {
+    "update": {
+      "refreshing": "更新中...",
+      "inOneMinute": "1分後に更新",
+      "inMinutes": "{{count}}分後に更新",
+      "inOneHour": "1時間後に更新",
+      "inHours": "{{count}}時間後に更新",
+      "tomorrow": "明日更新",
+      "soon": "まもなく更新",
+      "info": "チャート更新情報",
+      "lastUpdated": "最終更新",
+      "nextUpdate": "次回更新"
+    }
   }
 }

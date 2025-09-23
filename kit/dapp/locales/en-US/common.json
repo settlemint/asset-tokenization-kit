@@ -51,6 +51,20 @@
     "today": "Today",
     "yesterday": "Yesterday"
   },
+  "chart": {
+    "update": {
+      "refreshing": "Refreshing...",
+      "inOneMinute": "Updates in 1 minute",
+      "inMinutes": "Updates in {{count}} minutes",
+      "inOneHour": "Updates in 1 hour",
+      "inHours": "Updates in {{count}} hours",
+      "tomorrow": "Updates tomorrow",
+      "soon": "Updates soon",
+      "info": "Chart update information",
+      "lastUpdated": "Last updated",
+      "nextUpdate": "Next update"
+    }
+  },
   "roles": {
     "addonmanager": {
       "title": "Addon Manager",

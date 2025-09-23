@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/chart";
 import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
 import { ChartEmptyState } from "./chart-empty-state";
+import { ChartUpdateInfo } from "./chart-update-info";
 
 export type AreaChartData = Record<string, string | number>;
 
@@ -31,6 +32,7 @@ export interface AreaChartComponentProps {
   yTickFormatter?: (value: string) => string;
   emptyMessage?: string;
   emptyDescription?: string;
+  interval?: "hour" | "day";
 }
 
 /**
@@ -59,6 +61,7 @@ export function AreaChartComponent({
   yTickFormatter,
   emptyMessage,
   emptyDescription,
+  interval,
 }: AreaChartComponentProps) {
   // Simple formatter function - React Compiler will optimize this
   const legendFormatter = (value: string): string => {
@@ -75,6 +78,7 @@ export function AreaChartComponent({
         className={className}
         emptyMessage={emptyMessage}
         emptyDescription={emptyDescription}
+        interval={interval}
       />
     );
   }
@@ -82,7 +86,10 @@ export function AreaChartComponent({
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <div className="flex items-center gap-2">
+          <CardTitle>{title}</CardTitle>
+          {interval && <ChartUpdateInfo interval={interval} />}
+        </div>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent>
