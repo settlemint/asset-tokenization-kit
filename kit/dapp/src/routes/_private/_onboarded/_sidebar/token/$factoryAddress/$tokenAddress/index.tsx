@@ -7,6 +7,7 @@ import { PercentageProgressBar } from "@/components/percentage-progress/percenta
 import { TokenRelatedActions } from "@/components/related/token-related-actions";
 import { AssetBondStatusProgressChart } from "@/components/stats/charts/asset-bond-status-progress-chart";
 import { AssetCollateralRatioChart } from "@/components/stats/charts/asset-collateral-ratio-chart";
+import { BondYieldCoverageChart } from "@/components/charts/bond-yield-coverage-chart";
 import { AssetSupplyChangesAreaChart } from "@/components/stats/charts/asset-supply-changes-area-chart";
 import { AssetTotalSupplyAreaChart } from "@/components/stats/charts/asset-total-supply-area-chart";
 import { AssetTotalVolumeAreaChart } from "@/components/stats/charts/asset-total-volume-area-chart";
@@ -346,6 +347,15 @@ function RouteComponent() {
           {asset.bond && (
             <Suspense fallback={<ChartSkeleton />}>
               <AssetBondStatusProgressChart assetAddress={asset.id} />
+            </Suspense>
+          )}
+          {asset.bond && asset.extensions.includes("YIELD") && (
+            <Suspense fallback={<ChartSkeleton />}>
+              <BondYieldCoverageChart
+                assetAddress={asset.id}
+                title="Yield Coverage"
+                description="Shows how well underlying assets cover yield payments"
+              />
             </Suspense>
           )}
           {asset.collateral && (

@@ -4,15 +4,15 @@ dependencies:
   version: 4.13.2
 - name: postgresql
   repository: ""
-  version: 2.0.0-alpha.8
+  version: 2.0.0-alpha.9
 - name: redis
   repository: ""
-  version: 2.0.0-alpha.8
+  version: 2.0.0-alpha.9
 - name: reloader
   repository: https://stakater.github.io/stakater-charts
   version: 2.2.3
 - name: minio
   repository: ""
-  version: 2.0.0-alpha.8
-digest: sha256:6fd4765011a9db91d9f1bd1ab8487bc83910cd6b05e082842e017de6cbc723b0
-generated: "2025-09-22T12:52:53.343198+03:00"
+  version: 2.0.0-alpha.9
+digest: sha256:3b20d8d5d824d151e3db9da3476fa7870bef136f4540ee97243524174a8793f8
+generated: "2025-09-23T17:36:46.797636+02:00"
