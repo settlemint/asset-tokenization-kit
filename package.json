@@ -69,7 +69,7 @@
   "dependencies": {
     "@types/js-yaml": "4.0.9",
     "js-yaml": "4.1.0",
-    "lefthook": "1.13.3"
+    "lefthook": "1.13.4"
   },
   "devDependencies": {
     "@prettier/plugin-oxc": "0.0.4",
