@@ -67,14 +67,12 @@ export function handleIdentityRegistryUnbound(
 export function handleIdentityStored(event: IdentityStoredEvent): void {
   fetchEvent(event, "IdentityStored");
 
-  // Ensure the Identity entity exists before creating the RegisteredIdentity
-  fetchIdentity(event.params._identity);
-
   const registeredIdentity = fetchRegisteredIdentity(
     event.address,
     event.params._investorAddress
   );
-  registeredIdentity.identity = event.params._identity;
+  const identity = fetchIdentity(event.params._identity);
+  registeredIdentity.identity = identity.id;
   registeredIdentity.country = event.params._country;
 
   registeredIdentity.save();

@@ -46,10 +46,7 @@ export function handleTrustedIssuersRegistrySet(
 export function handleIdentityRegistered(event: IdentityRegistered): void {
   fetchEvent(event, "IdentityRegistered");
 
-  // Ensure the Identity entity exists before the IdentityStored event is processed
-  fetchIdentity(event.params._identity);
-
   // Note: The actual RegisteredIdentity creation is handled by the IdentityStored
   // event from the IdentityRegistryStorage contract, which provides the storage
-  // contract address directly. This handler just ensures the Identity entity exists.
+  // contract address directly and ensures the Identity entity exists.
 }
