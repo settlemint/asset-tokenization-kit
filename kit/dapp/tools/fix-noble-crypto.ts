@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /**
  * Fix crypto import in Nitro output for @noble/hashes compatibility
  *
@@ -8,16 +6,18 @@
  * problematic import with a working polyfill.
  */
 
-import { readFileSync, writeFileSync, existsSync, readdirSync } from "fs";
-import { fileURLToPath } from "url";
+import {
+  readFileSync,
+  writeFileSync,
+  existsSync,
+  readdirSync,
+  type Dirent,
+} from "fs";
 import { dirname, join } from "path";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 // Base directory for @noble packages
 const nobleDir = join(
-  __dirname,
+  import.meta.dirname,
   "../.output/server/node_modules/.nitro/@noble/"
 );
 
@@ -25,6 +25,13 @@ const nobleDir = join(
 const oldImport = "import { crypto } from '@noble/hashes/crypto';";
 const newExport =
   "export const crypto = typeof globalThis === 'object' && 'crypto' in globalThis ? globalThis.crypto : undefined;";
+
+type ProcessStatus = "fixed" | "not_needed" | "not_found";
+
+interface ProcessedVersion {
+  version: string;
+  status: ProcessStatus;
+}
 
 console.log("🔧 Fixing crypto import in @noble/hashes...");
 
@@ -37,14 +44,16 @@ if (!existsSync(nobleDir)) {
 }
 
 let fixedCount = 0;
-let processedVersions = [];
+const processedVersions: ProcessedVersion[] = [];
 
 try {
   // Find all @noble/hashes versions
   const entries = readdirSync(nobleDir, { withFileTypes: true });
   const hashesVersions = entries
-    .filter((entry) => entry.isDirectory() && entry.name.startsWith("hashes@"))
-    .map((entry) => entry.name);
+    .filter(
+      (entry: Dirent) => entry.isDirectory() && entry.name.startsWith("hashes@")
+    )
+    .map((entry: Dirent) => entry.name);
 
   if (hashesVersions.length === 0) {
     console.log("ℹ️  No @noble/hashes versions found");
@@ -88,12 +97,14 @@ try {
   // Summary
   console.log("\n📋 Summary:");
   for (const { version, status } of processedVersions) {
-    const statusEmoji = {
+    const statusEmoji: Record<ProcessStatus, string> = {
       fixed: "🔧",
       not_needed: "✅",
       not_found: "⚠️",
-    }[status];
-    console.log(`  ${statusEmoji} ${version}: ${status.replace("_", " ")}`);
+    };
+    console.log(
+      `  ${statusEmoji[status]} ${version}: ${status.replace("_", " ")}`
+    );
   }
 
   if (fixedCount > 0) {
@@ -103,7 +114,8 @@ try {
   } else {
     console.log("\n✅ No fixes needed - all versions are compatible");
   }
-} catch (error) {
-  console.error("❌ Error fixing crypto import:", error.message);
+} catch (error: unknown) {
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  console.error("❌ Error fixing crypto import:", errorMessage);
   process.exit(1);
 }
