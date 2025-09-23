@@ -2,6 +2,8 @@
 global:
   chainId: "53771311147"
   chainName: "ATK"
+  # Global labels to be added to all resources
+  labels: {}
   datastores:
     default:
       redis:
@@ -232,7 +234,9 @@ txsigner:
       registry: docker.io
   # Configuration for the txsigner subchart
   config:
-    mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
+    mnemonic:
+      "gate yellow grunt wrestle disease obtain mixed nature mansion tape
+      purchase awful"
     derivationPath: "m/44'/60'/0'/0/0"
   resources: {}
   initContainer:
