@@ -1,12 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppForm } from "@/hooks/use-app-form";
 import { useCountries } from "@/hooks/use-countries";
-import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { isoCountryCode } from "@atk/zod/iso-country-code";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -14,6 +10,8 @@ import { z } from "zod";
 import { ActionFormSheet } from "../core/action-form-sheet";
 import { createActionFormStore } from "../core/action-form-sheet.store";
 import type { ManagedIdentity } from "../manage-identity-dropdown";
+import { ConfirmRegisterView } from "./register-identity/ConfirmRegisterView";
+import { useRegisterIdentity } from "./register-identity/useRegisterIdentity";
 
 const RegisterIdentityFormSchema = z.object({
   country: isoCountryCode,
@@ -37,13 +35,25 @@ export function RegisterIdentitySheet({
 }: RegisterIdentitySheetProps) {
   const { t } = useTranslation("identities");
   const { t: tCommon } = useTranslation("common");
-  const queryClient = useQueryClient();
-  const router = useRouter();
   const { getCountryOptions } = useCountries();
   const sheetStoreRef = useRef(createActionFormStore({ hasValuesStep: true }));
   const ownerWallet = useMemo(
     () => getEthereumAddress(identity.account.id),
     [identity.account.id]
+  );
+
+  const resetSheet = () => {
+    form.reset({
+      country: "",
+      verification: undefined,
+    });
+    sheetStoreRef.current.setState((state) => ({ ...state, step: "values" }));
+    onOpenChange(false);
+  };
+
+  const { mutateAsync: registerIdentity, isPending } = useRegisterIdentity(
+    identity.identity,
+    resetSheet
   );
 
   const form = useAppForm({
@@ -64,30 +74,6 @@ export function RegisterIdentitySheet({
     }
   }, [open, form]);
 
-  const { mutateAsync: registerIdentity, isPending } = useMutation(
-    orpc.system.identity.register.mutationOptions({
-      onSuccess: async (_, variables) => {
-        const resolvedWallet = variables.wallet ?? identity.account.id;
-        await Promise.all([
-          queryClient.invalidateQueries({
-            queryKey: orpc.system.identity.read.queryKey({
-              input: { identityId: identity.identity },
-            }),
-          }),
-          queryClient.invalidateQueries({
-            queryKey: orpc.system.identity.read.queryKey({
-              input: { wallet: resolvedWallet },
-            }),
-          }),
-          queryClient.invalidateQueries({
-            queryKey: orpc.system.read.queryKey({ input: { id: "default" } }),
-          }),
-        ]);
-        await router.invalidate();
-      },
-    })
-  );
-
   const countryOptions = useMemo(
     () => getCountryOptions("alpha2"),
     [getCountryOptions]
@@ -107,25 +93,19 @@ export function RegisterIdentitySheet({
     }
 
     const { country } = parseResult.data;
-    const resolvedWallet = ownerWallet;
 
-    const action = registerIdentity({
-      country,
-      wallet: resolvedWallet,
-      walletVerification: verification,
-    }).then(() => {
-      sheetStoreRef.current.setState((state) => ({
-        ...state,
-        step: "values",
-      }));
-      onOpenChange(false);
-    });
-
-    toast.promise(action, {
-      loading: tCommon("deploying"),
-      success: t("register.success"),
-      error: (error: Error) => error.message,
-    });
+    toast.promise(
+      registerIdentity({
+        country,
+        wallet: ownerWallet,
+        walletVerification: verification,
+      }),
+      {
+        loading: tCommon("deploying"),
+        success: t("register.success"),
+        error: (error: Error) => error.message,
+      }
+    );
   };
 
   return (
@@ -141,32 +121,11 @@ export function RegisterIdentitySheet({
           : tCommon("none");
 
         const confirmView = (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">
-                {t("register.confirm.title")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-sm">
-              <div className="flex flex-col gap-1">
-                <span className="text-muted-foreground text-xs uppercase tracking-wide">
-                  {t("register.form.country")}
-                </span>
-                <span className="font-medium">{displayCountry}</span>
-              </div>
-              <div className="flex flex-col gap-1">
-                <span className="text-muted-foreground text-xs uppercase tracking-wide">
-                  {t("register.form.walletAddress")}
-                </span>
-                <span className="font-mono text-xs break-all">
-                  {ownerWallet}
-                </span>
-              </div>
-              <p className="text-muted-foreground text-xs">
-                {t("register.confirm.description")}
-              </p>
-            </CardContent>
-          </Card>
+          <ConfirmRegisterView
+            countryLabel={displayCountry}
+            ownerWallet={ownerWallet}
+            t={t}
+          />
         );
 
         return (
