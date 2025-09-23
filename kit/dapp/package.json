@@ -12,7 +12,7 @@
     "posttypecheck": "bun gql-tada check",
     "watch": "tsgo --noEmit --watch",
     "build": "vite build --logLevel=error",
-    "prestart": "node tools/fix-noble-crypto.mjs",
+    "postbuild": "bun run tools/fix-noble-crypto.mjs",
     "start": "bun run .output/server/index.mjs",
     "shadcn": "bunx shadcn@canary",
     "codegen:settlemint": "settlemint codegen",
