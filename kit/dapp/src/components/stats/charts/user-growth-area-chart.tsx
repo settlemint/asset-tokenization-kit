@@ -3,6 +3,7 @@ import { ComponentErrorBoundary } from "@/components/error/component-error-bound
 import { type ChartConfig } from "@/components/ui/chart";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 const chartConfig = {
@@ -23,18 +24,20 @@ const dataKeys = ["users"];
 export function UserGrowthAreaChart() {
   const { t } = useTranslation("stats");
 
-  // Fetch and transform user growth data with select function
-  // This reduces re-renders when other parts of the API response change
-  const { data: chartData } = useSuspenseQuery(
+  // Fetch user growth data
+  const { data: metrics } = useSuspenseQuery(
     orpc.user.statsGrowthOverTime.queryOptions({
       input: { timeRange: 30 }, // 30 days of data
-      select: (metrics) =>
-        metrics.userGrowth.map((dataPoint) => ({
-          timestamp: dataPoint.timestamp,
-          users: dataPoint.users,
-        })),
     })
   );
+
+  // Transform the data for the chart
+  const chartData = useMemo(() => {
+    return metrics.userGrowth.map((dataPoint) => ({
+      timestamp: dataPoint.timestamp,
+      users: dataPoint.users,
+    }));
+  }, [metrics.userGrowth]);
 
   return (
     <ComponentErrorBoundary componentName="User Growth Chart">

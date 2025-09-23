@@ -41,22 +41,12 @@ describe("AssetCollateralRatioChart", () => {
     const { useSuspenseQuery } = await import("@tanstack/react-query");
     vi.mocked(useSuspenseQuery).mockReturnValue(
       createMockSuspenseQueryResult({
-        chartData: [
+        buckets: [
           { name: "collateralAvailable", value: 750 },
           { name: "collateralUsed", value: 250 },
         ],
-        chartConfig: {
-          collateralAvailable: {
-            label: "Available",
-            color: "var(--chart-1)",
-          },
-          collateralUsed: {
-            label: "Used",
-            color: "var(--chart-2)",
-          },
-        },
         totalCollateral: 1000,
-        collateralRatio: 300,
+        collateralRatio: 25, // 250/1000 * 100
       })
     );
 
@@ -77,17 +67,7 @@ describe("AssetCollateralRatioChart", () => {
     const { useSuspenseQuery } = await import("@tanstack/react-query");
     vi.mocked(useSuspenseQuery).mockReturnValue(
       createMockSuspenseQueryResult({
-        chartData: [],
-        chartConfig: {
-          collateralAvailable: {
-            label: "Available",
-            color: "var(--chart-1)",
-          },
-          collateralUsed: {
-            label: "Used",
-            color: "var(--chart-2)",
-          },
-        },
+        buckets: [],
         totalCollateral: 0,
         collateralRatio: 0,
       })
