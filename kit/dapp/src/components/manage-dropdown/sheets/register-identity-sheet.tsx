@@ -68,7 +68,7 @@ export function RegisterIdentitySheet({
       });
       sheetStoreRef.current.setState((state) => ({ ...state, step: "values" }));
     }
-  }, [open, ownerWallet, form]);
+  }, [open, form]);
 
   const { mutateAsync: registerIdentity, isPending } = useMutation(
     orpc.system.identity.register.mutationOptions({
