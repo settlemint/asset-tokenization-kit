@@ -13,7 +13,6 @@ import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
 import { formatValue } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -30,7 +29,8 @@ import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-const logger = createLogger();
+// logger reserved for future debug
+// const logger = createLogger();
 
 /**
  * GraphQL query result for bonds using this denomination asset
@@ -38,7 +38,7 @@ const logger = createLogger();
 interface DenominationAssetBond {
   id: string;
   token: {
-    id: string;
+    id: EthereumAddress;
     name: string;
     symbol: string;
     decimals: number;
@@ -47,7 +47,7 @@ interface DenominationAssetBond {
       paused: boolean;
     };
     factory: {
-      id: string;
+      id: EthereumAddress;
       name: string;
     };
   };
@@ -79,13 +79,7 @@ interface DenominationAssetTableProps {
 export function DenominationAssetTable({
   tokenAddress,
 }: DenominationAssetTableProps) {
-  const { t } = useTranslation([
-    "tokens",
-    "assets",
-    "common",
-    "data-table",
-    "stats",
-  ]);
+  const { t } = useTranslation("tokens");
   const router = useRouter();
 
   // Fetch bonds that use this token as denomination asset
@@ -105,7 +99,7 @@ export function DenominationAssetTable({
   const copyToClipboard = useCallback(
     (text: string) => {
       navigator.clipboard.writeText(text);
-      toast.success(t("common:copied"));
+      toast.success(t("actions.addressCopied"));
     },
     [t]
   );
@@ -118,7 +112,7 @@ export function DenominationAssetTable({
 
   // Navigate to token details
   const navigateToToken = useCallback(
-    (factoryAddress: string, tokenAddress: string) => {
+    (factoryAddress: EthereumAddress, tokenAddress: EthereumAddress) => {
       router.navigate({
         to: "/token/$factoryAddress/$tokenAddress",
         params: { factoryAddress, tokenAddress },
@@ -130,16 +124,15 @@ export function DenominationAssetTable({
   // Column definitions
   const columns = useMemo<ColumnDef<Bond>[]>(() => {
     const baseColumns: ColumnDef<Bond>[] = [
-      // Selection column for bulk actions
       createSelectionColumn<Bond>(),
 
       // Asset Name
-      columnHelper.accessor("token.name", {
+      columnHelper.display({
         id: "name",
-        header: ({ column }) => (
+        header: (
           <div className="flex items-center gap-2">
             <Package className="h-4 w-4" />
-            {t("tokens:fields.name")}
+            {t("fields.name")}
           </div>
         ),
         cell: ({ row }) => {
@@ -158,87 +151,85 @@ export function DenominationAssetTable({
       }),
 
       // Factory
-      columnHelper.accessor("token.factory.name", {
+      columnHelper.display({
         id: "factory",
-        header: ({ column }) => (
+        header: (
           <div className="flex items-center gap-2">
             <Type className="h-4 w-4" />
-            {t("tokens:fields.factory")}
+            Factory
           </div>
         ),
-        cell: ({ getValue }) => <span className="text-sm">{getValue()}</span>,
+        cell: ({ row }) => (
+          <span className="text-sm">{row.original.token.factory.name}</span>
+        ),
       }),
 
       // Face Value
-      columnHelper.accessor("faceValue", {
+      columnHelper.display({
         id: "faceValue",
-        header: () => (
+        header: (
           <div className="flex items-center gap-2">
             <Coins className="h-4 w-4" />
-            {t("tokens:fields.faceValue")}
+            {t("fields.faceValue")}
           </div>
         ),
-        cell: ({ getValue }) => {
-          const value = getValue();
-          return (
-            <span className="font-mono text-sm">
-              {formatValue(value, { type: "bigint", decimals: 18 })}
-            </span>
-          );
-        },
+        cell: ({ row }) => (
+          <span className="font-mono text-sm">
+            {formatValue(row.original.faceValue, { type: "number" })}
+          </span>
+        ),
       }),
 
       // Total Supply
-      columnHelper.accessor("token.totalSupply", {
+      columnHelper.display({
         id: "totalSupply",
-        header: () => (
+        header: (
           <div className="flex items-center gap-2">
             <Hash className="h-4 w-4" />
-            {t("tokens:fields.totalSupply")}
+            {t("fields.totalSupply")}
           </div>
         ),
-        cell: ({ getValue, row }) => {
-          const value = getValue();
-          const decimals = row.original.token.decimals;
-          return (
-            <span className="font-mono text-sm">
-              {formatValue(value, { type: "bigint", decimals })}
-            </span>
-          );
-        },
+        cell: ({ row }) => (
+          <span className="font-mono text-sm">
+            {formatValue(row.original.token.totalSupply, {
+              type: "currency",
+              currency: { assetSymbol: row.original.token.symbol },
+            })}
+          </span>
+        ),
       }),
 
       // Maturity Date
-      columnHelper.accessor("maturityDate", {
+      columnHelper.display({
         id: "maturityDate",
-        header: () => (
+        header: (
           <div className="flex items-center gap-2">
-            {t("tokens:fields.maturityDate")}
+            {t("fields.maturityDate")}
           </div>
         ),
-        cell: ({ getValue }) => {
-          const value = getValue();
-          return (
-            <span className="text-sm">
-              {formatValue(value, { type: "date", includeTime: true })}
-            </span>
-          );
-        },
+        cell: ({ row }) => (
+          <span className="text-sm">
+            {formatValue(row.original.maturityDate, {
+              type: "date",
+              dateOptions: { includeTime: true },
+            })}
+          </span>
+        ),
       }),
 
       // Status
-      columnHelper.accessor("token.pausable.paused", {
+      columnHelper.display({
         id: "status",
-        header: () => t("tokens:fields.status"),
-        cell: ({ getValue, row }) => {
-          const paused = getValue();
+        header: t("fields.status"),
+        cell: ({ row }) => {
+          const paused = row.original.token.pausable.paused;
           const isMatured = row.original.isMatured;
           return (
             <div className="flex items-center gap-2">
               <TokenStatusBadge paused={paused} />
               {isMatured && (
                 <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
-                  {t("tokens:status.matured")}
+                  {t("status.matured")}
                 </span>
               )}
             </div>
@@ -249,27 +240,27 @@ export function DenominationAssetTable({
       // Actions
       columnHelper.display({
         id: "actions",
-        header: () => t("data-table:actions"),
+        header: () => t("columns.actions"),
         cell: ({ row }) => {
           const bond = row.original;
           const actions: ActionItem[] = [
             {
-              label: t("common:view"),
-              icon: Eye,
+              label: t("actions.viewDetails"),
+              icon: <Eye className="h-4 w-4" />,
               onClick: () => {
                 navigateToToken(bond.token.factory.id, bond.token.id);
               },
             },
             {
-              label: t("common:copyAddress"),
-              icon: Copy,
+              label: t("actions.copyAddress"),
+              icon: <Copy className="h-4 w-4" />,
               onClick: () => {
                 copyToClipboard(bond.token.id);
               },
             },
             {
-              label: t("common:viewOnExplorer"),
-              icon: ExternalLink,
+              label: t("actions.viewOnEtherscan"),
+              icon: <ExternalLink className="h-4 w-4" />,
               onClick: () => {
                 openInExplorer(bond.token.id);
               },
@@ -285,18 +276,7 @@ export function DenominationAssetTable({
   }, [t, copyToClipboard, openInExplorer, navigateToToken]);
 
   // Bulk actions configuration
-  const bulkActions = useBulkActions<Bond>({
-    actions: [
-      {
-        label: t("common:copyAddresses"),
-        icon: Copy,
-        onClick: (selectedRows) => {
-          const addresses = selectedRows.map((row) => row.original.token.id);
-          copyToClipboard(addresses.join("\n"));
-        },
-      },
-    ],
-  });
+  const { actions, actionGroups } = useBulkActions<Bond>({});
 
   if (error) {
     throw error;
@@ -305,14 +285,22 @@ export function DenominationAssetTable({
   return (
     <ComponentErrorBoundary>
       <DataTable
+        name="denomination-assets"
         data={bonds}
         columns={columns}
         isLoading={isLoading}
         initialSorting={INITIAL_SORTING}
-        bulkActions={bulkActions}
+        bulkActions={{
+          enabled: true,
+          actions,
+          actionGroups,
+          position: "bottom",
+          showSelectionCount: true,
+          enableSelectAll: true,
+        }}
         meta={{
-          title: t("tokens:tabs.denominationAsset"),
-          description: t("tokens:descriptions.denominationAssetTable"),
+          title: t("tabs.denominationAsset"),
+          description: t("descriptions.denominationAssetTable"),
         }}
       />
     </ComponentErrorBoundary>
