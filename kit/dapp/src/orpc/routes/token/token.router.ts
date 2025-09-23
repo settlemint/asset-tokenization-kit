@@ -28,6 +28,7 @@ import { statsTotalSupply } from "@/orpc/routes/token/routes/stats/total-supply"
 import { statsVolume } from "@/orpc/routes/token/routes/stats/volume";
 import { statsWalletDistribution } from "@/orpc/routes/token/routes/stats/wallet-distribution";
 import { actions } from "@/orpc/routes/token/routes/token.actions";
+import { denominationAssets } from "@/orpc/routes/token/routes/token.denomination-assets";
 import { events } from "@/orpc/routes/token/routes/token.events";
 import { holder } from "@/orpc/routes/token/routes/token.holder";
 import { holders } from "@/orpc/routes/token/routes/token.holders";
@@ -38,6 +39,7 @@ import { search } from "@/orpc/routes/token/routes/token.search";
 const routes = {
   actions,
   create,
+  denominationAssets,
   events,
   grantRole,
   revokeRole,
