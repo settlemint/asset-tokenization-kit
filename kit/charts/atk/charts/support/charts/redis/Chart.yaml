@@ -2,8 +2,8 @@ apiVersion: v2
 name: redis
 description: A simple Redis deployment for development environments
 type: application
-version: 2.0.0-alpha.8
-appVersion: 2.0.0-alpha.8
+version: 2.0.0-alpha.9
+appVersion: 2.0.0-alpha.9
 icon: https://redis.io/docs/about/images/redis-logo.png
 maintainers:
   - name: SettleMint

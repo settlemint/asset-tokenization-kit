@@ -2,8 +2,8 @@ apiVersion: v2
 name: atk
 description: A Helm chart for the SettleMint Asset Tokenization Kit
 type: application
-version: 2.0.0-alpha.8
-appVersion: 2.0.0-alpha.8
+version: 2.0.0-alpha.9
+appVersion: 2.0.0-alpha.9
 icon: https://console.settlemint.com/android-chrome-512x512.png
 maintainers:
   - name: SettleMint
