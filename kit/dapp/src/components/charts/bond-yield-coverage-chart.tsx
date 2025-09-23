@@ -92,7 +92,7 @@ function BondYieldCoverageChartLoader({
         color: "var(--muted)",
       },
     }),
-    [t, data]
+    [data]
   );
 
   if (isLoading) {
