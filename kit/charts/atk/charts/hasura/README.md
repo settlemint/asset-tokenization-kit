@@ -1,6 +1,6 @@
 # hasura
 
-![Version: 2.0.0-alpha.8](https://img.shields.io/badge/Version-2.0.0--alpha.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.8](https://img.shields.io/badge/AppVersion-2.0.0--alpha.8-informational?style=flat-square)
+![Version: 2.0.0-alpha.8](https://img.shields.io/badge/Version-2.0.0--alpha.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.48.3](https://img.shields.io/badge/AppVersion-v2.48.3-informational?style=flat-square)
 
 A Helm chart for Hasura GraphQL Engine
 
@@ -57,30 +57,38 @@ A Helm chart for Hasura GraphQL Engine
 | database.idleTimeout | int | `180` | Idle timeout (seconds) |
 | database.txIsolation | string | `"read-committed"` | Transaction isolation level (read-committed, repeatable-read, serializable) |
 | database.usePreparedStatements | bool | `true` | Use prepared statements |
-| events | object | `{"fetchInterval":10,"httpPoolSize":100}` | Events configuration |
+| events | object | `{"fetchInterval":10}` | Events configuration |
 | events.fetchInterval | int | `10` | Fetch interval for events (seconds) |
-| events.httpPoolSize | int | `100` | HTTP pool size for events |
 | extraEnvFrom | list | `[]` | Additional environment variables from secrets/configmaps |
 | extraEnvs | list | `[]` | Additional environment variables |
 | fullnameOverride | string | `""` | Override fullname for the chart |
-| healthChecks | object | `{"livenessProbe":{"enabled":true,"failureThreshold":3,"initialDelaySeconds":30,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5},"readinessProbe":{"enabled":true,"failureThreshold":3,"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5},"startupProbe":{"enabled":false,"failureThreshold":30,"initialDelaySeconds":0,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}}` | Health check configuration |
-| healthChecks.livenessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":30,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}` | Liveness probe configuration |
+| healthChecks | object | `{"livenessProbe":{"enabled":true,"failureThreshold":3,"httpGet":{"path":"/healthz","port":"http"},"initialDelaySeconds":30,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5},"readinessProbe":{"enabled":true,"failureThreshold":3,"httpGet":{"path":"/healthz","port":"http"},"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5},"startupProbe":{"enabled":false,"failureThreshold":30,"httpGet":{"path":"/healthz","port":"http"},"initialDelaySeconds":0,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}}` | Health check configuration |
+| healthChecks.livenessProbe | object | `{"enabled":true,"failureThreshold":3,"httpGet":{"path":"/healthz","port":"http"},"initialDelaySeconds":30,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}` | Liveness probe configuration |
 | healthChecks.livenessProbe.enabled | bool | `true` | Enable liveness probe |
 | healthChecks.livenessProbe.failureThreshold | int | `3` | Failure threshold |
+| healthChecks.livenessProbe.httpGet | object | `{"path":"/healthz","port":"http"}` | HTTP GET configuration |
+| healthChecks.livenessProbe.httpGet.path | string | `"/healthz"` | Path for health check |
+| healthChecks.livenessProbe.httpGet.port | string | `"http"` | Port name or number |
 | healthChecks.livenessProbe.initialDelaySeconds | int | `30` | Initial delay seconds |
 | healthChecks.livenessProbe.periodSeconds | int | `10` | Period seconds |
 | healthChecks.livenessProbe.successThreshold | int | `1` | Success threshold |
 | healthChecks.livenessProbe.timeoutSeconds | int | `5` | Timeout seconds |
-| healthChecks.readinessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}` | Readiness probe configuration |
+| healthChecks.readinessProbe | object | `{"enabled":true,"failureThreshold":3,"httpGet":{"path":"/healthz","port":"http"},"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}` | Readiness probe configuration |
 | healthChecks.readinessProbe.enabled | bool | `true` | Enable readiness probe |
 | healthChecks.readinessProbe.failureThreshold | int | `3` | Failure threshold |
+| healthChecks.readinessProbe.httpGet | object | `{"path":"/healthz","port":"http"}` | HTTP GET configuration |
+| healthChecks.readinessProbe.httpGet.path | string | `"/healthz"` | Path for health check |
+| healthChecks.readinessProbe.httpGet.port | string | `"http"` | Port name or number |
 | healthChecks.readinessProbe.initialDelaySeconds | int | `10` | Initial delay seconds |
 | healthChecks.readinessProbe.periodSeconds | int | `10` | Period seconds |
 | healthChecks.readinessProbe.successThreshold | int | `1` | Success threshold |
 | healthChecks.readinessProbe.timeoutSeconds | int | `5` | Timeout seconds |
-| healthChecks.startupProbe | object | `{"enabled":false,"failureThreshold":30,"initialDelaySeconds":0,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}` | Startup probe configuration |
+| healthChecks.startupProbe | object | `{"enabled":false,"failureThreshold":30,"httpGet":{"path":"/healthz","port":"http"},"initialDelaySeconds":0,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}` | Startup probe configuration |
 | healthChecks.startupProbe.enabled | bool | `false` | Enable startup probe |
 | healthChecks.startupProbe.failureThreshold | int | `30` | Failure threshold |
+| healthChecks.startupProbe.httpGet | object | `{"path":"/healthz","port":"http"}` | HTTP GET configuration |
+| healthChecks.startupProbe.httpGet.path | string | `"/healthz"` | Path for health check |
+| healthChecks.startupProbe.httpGet.port | string | `"http"` | Port name or number |
 | healthChecks.startupProbe.initialDelaySeconds | int | `0` | Initial delay seconds |
 | healthChecks.startupProbe.periodSeconds | int | `10` | Period seconds |
 | healthChecks.startupProbe.successThreshold | int | `1` | Success threshold |
@@ -155,10 +163,10 @@ A Helm chart for Hasura GraphQL Engine
 | service.port | int | `8080` | Service port |
 | service.targetPort | int | `8080` | Target port |
 | service.type | string | `"ClusterIP"` | Service type |
-| serviceAccount | object | `{"annotations":{},"automount":true,"create":true,"name":""}` | Service account configuration |
+| serviceAccount | object | `{"annotations":{},"automount":false,"create":false,"name":""}` | Service account configuration |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
-| serviceAccount.automount | bool | `true` | Automatically mount ServiceAccount's API credentials |
-| serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
+| serviceAccount.automount | bool | `false` | Automatically mount ServiceAccount's API credentials |
+| serviceAccount.create | bool | `false` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `""` | The name of the service account to use |
 | tolerations | list | `[]` | Tolerations |
 | topologySpreadConstraints | object | `[]` | Topology spread constraints |

@@ -25,9 +25,9 @@ imagePullSecrets: []
 # -- (object) Service account configuration
 serviceAccount:
   # -- (bool) Specifies whether a service account should be created
-  create: true
+  create: false
   # -- (bool) Automatically mount ServiceAccount's API credentials
-  automount: true
+  automount: false
   # -- (object) Annotations to add to the service account
   annotations: {}
   # -- (string) The name of the service account to use
@@ -121,8 +121,6 @@ actions:
 
 # -- (object) Events configuration
 events:
-  # -- (int) HTTP pool size for events
-  httpPoolSize: 100
   # -- (int) Fetch interval for events (seconds)
   fetchInterval: 10
 
@@ -220,6 +218,12 @@ healthChecks:
   livenessProbe:
     # -- (bool) Enable liveness probe
     enabled: true
+    # -- (object) HTTP GET configuration
+    httpGet:
+      # -- (string) Path for health check
+      path: /healthz
+      # -- (string) Port name or number
+      port: http
     # -- (int) Initial delay seconds
     initialDelaySeconds: 30
     # -- (int) Period seconds
@@ -234,6 +238,12 @@ healthChecks:
   readinessProbe:
     # -- (bool) Enable readiness probe
     enabled: true
+    # -- (object) HTTP GET configuration
+    httpGet:
+      # -- (string) Path for health check
+      path: /healthz
+      # -- (string) Port name or number
+      port: http
     # -- (int) Initial delay seconds
     initialDelaySeconds: 10
     # -- (int) Period seconds
@@ -248,6 +258,12 @@ healthChecks:
   startupProbe:
     # -- (bool) Enable startup probe
     enabled: false
+    # -- (object) HTTP GET configuration
+    httpGet:
+      # -- (string) Path for health check
+      path: /healthz
+      # -- (string) Port name or number
+      port: http
     # -- (int) Initial delay seconds
     initialDelaySeconds: 0
     # -- (int) Period seconds

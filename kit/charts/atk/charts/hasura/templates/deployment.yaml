@@ -163,8 +163,6 @@ spec:
             {{- end }}
 
             # Events
-            - name: HASURA_GRAPHQL_EVENTS_HTTP_POOL_SIZE
-              value: {{ .Values.events.httpPoolSize | quote }}
             - name: HASURA_GRAPHQL_EVENTS_FETCH_INTERVAL
               value: {{ .Values.events.fetchInterval | quote }}
 
@@ -191,8 +189,8 @@ spec:
           {{- if .Values.healthChecks.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
-              path: /healthz
-              port: http
+              path: {{ .Values.healthChecks.livenessProbe.httpGet.path }}
+              port: {{ .Values.healthChecks.livenessProbe.httpGet.port }}
             initialDelaySeconds: {{ .Values.healthChecks.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.healthChecks.livenessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.healthChecks.livenessProbe.timeoutSeconds }}
@@ -202,8 +200,8 @@ spec:
           {{- if .Values.healthChecks.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
-              path: /healthz
-              port: http
+              path: {{ .Values.healthChecks.readinessProbe.httpGet.path }}
+              port: {{ .Values.healthChecks.readinessProbe.httpGet.port }}
             initialDelaySeconds: {{ .Values.healthChecks.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.healthChecks.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.healthChecks.readinessProbe.timeoutSeconds }}
@@ -213,8 +211,8 @@ spec:
           {{- if .Values.healthChecks.startupProbe.enabled }}
           startupProbe:
             httpGet:
-              path: /healthz
-              port: http
+              path: {{ .Values.healthChecks.startupProbe.httpGet.path }}
+              port: {{ .Values.healthChecks.startupProbe.httpGet.port }}
             initialDelaySeconds: {{ .Values.healthChecks.startupProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.healthChecks.startupProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.healthChecks.startupProbe.timeoutSeconds }}
