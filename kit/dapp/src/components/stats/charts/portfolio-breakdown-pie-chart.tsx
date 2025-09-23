@@ -1,3 +1,4 @@
+import { ASSET_COLORS } from "@/components/assets/asset-colors";
 import { PieChartComponent } from "@/components/charts/pie-chart";
 import { type ChartConfig } from "@/components/ui/chart";
 import type { StatsPortfolioDetailsOutput } from "@/orpc/routes/system/stats/routes/portfolio-details.schema";
@@ -11,14 +12,6 @@ interface PortfolioBreakdownPieChartProps {
   interval?: "hour" | "day";
 }
 
-const CHART_COLORS = [
-  "var(--chart-1)",
-  "var(--chart-2)",
-  "var(--chart-3)",
-  "var(--chart-4)",
-  "var(--chart-5)",
-];
-
 export function PortfolioBreakdownPieChart({
   breakdown,
   hasAssets,
@@ -31,24 +24,20 @@ export function PortfolioBreakdownPieChart({
       return { chartData: [], chartConfig: {} };
     }
 
-    const data = breakdown.map((item, index) => ({
+    const data = breakdown.map((item) => ({
       assetType: item.assetType,
       value: toNumber(item.totalValue),
       percentage: item.percentage,
-      fill: CHART_COLORS[index % CHART_COLORS.length] ?? "var(--chart-1)",
+      fill: ASSET_COLORS[item.assetType],
     }));
 
-    const config: ChartConfig = breakdown.reduce<ChartConfig>(
-      (acc, item, index) => {
-        acc[item.assetType] = {
-          label:
-            item.assetType.charAt(0).toUpperCase() + item.assetType.slice(1),
-          color: CHART_COLORS[index % CHART_COLORS.length] ?? "var(--chart-1)",
-        };
-        return acc;
-      },
-      {}
-    );
+    const config: ChartConfig = breakdown.reduce<ChartConfig>((acc, item) => {
+      acc[item.assetType] = {
+        label: item.assetType.charAt(0).toUpperCase() + item.assetType.slice(1),
+        color: ASSET_COLORS[item.assetType],
+      };
+      return acc;
+    }, {});
 
     return { chartData: data, chartConfig: config };
   }, [breakdown, hasAssets]);
