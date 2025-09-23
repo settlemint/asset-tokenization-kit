@@ -24,7 +24,6 @@ import {
   Eye,
   Hash,
   Package,
-  PauseCircle,
   Type,
 } from "lucide-react";
 import { useCallback, useMemo } from "react";
@@ -96,8 +95,7 @@ export function DenominationAssetTable({
     error,
   } = useSuspenseQuery(
     orpc.token.denominationAssets.queryOptions({
-      input: {},
-      params: { factoryAddress: "0x", tokenAddress },
+      input: { tokenAddress },
     })
   );
 
@@ -258,18 +256,23 @@ export function DenominationAssetTable({
             {
               label: t("common:view"),
               icon: Eye,
-              onClick: () =>
-                { navigateToToken(bond.token.factory.id, bond.token.id); },
+              onClick: () => {
+                navigateToToken(bond.token.factory.id, bond.token.id);
+              },
             },
             {
               label: t("common:copyAddress"),
               icon: Copy,
-              onClick: () => { copyToClipboard(bond.token.id); },
+              onClick: () => {
+                copyToClipboard(bond.token.id);
+              },
             },
             {
               label: t("common:viewOnExplorer"),
               icon: ExternalLink,
-              onClick: () => { openInExplorer(bond.token.id); },
+              onClick: () => {
+                openInExplorer(bond.token.id);
+              },
             },
           ];
 
