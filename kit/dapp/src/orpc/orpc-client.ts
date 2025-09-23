@@ -41,7 +41,7 @@ const logger = createLogger();
  */
 const getORPCClient = createIsomorphicFn()
   .server(async () => {
-    const router = await import("./routes/router");
+    const { router } = await import("./routes/router");
     return createRouterClient(router, {
       context: () => {
         try {
