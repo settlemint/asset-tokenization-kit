@@ -1,5 +1,10 @@
 # Hasura GraphQL Engine Helm Chart Values
 
+# -- (object) Global configuration
+global:
+  # -- (object) Global labels to apply to all resources
+  labels: {}
+
 # -- (int) Number of Hasura replicas to deploy
 replicaCount: 1
 

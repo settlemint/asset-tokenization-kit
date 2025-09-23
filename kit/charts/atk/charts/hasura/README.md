@@ -62,6 +62,8 @@ A Helm chart for Hasura GraphQL Engine
 | extraEnvFrom | list | `[]` | Additional environment variables from secrets/configmaps |
 | extraEnvs | list | `[]` | Additional environment variables |
 | fullnameOverride | string | `""` | Override fullname for the chart |
+| global | object | `{"labels":{}}` | Global configuration |
+| global.labels | object | `{}` | Global labels to apply to all resources |
 | healthChecks | object | `{"livenessProbe":{"enabled":true,"failureThreshold":3,"httpGet":{"path":"/healthz","port":"http"},"initialDelaySeconds":30,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5},"readinessProbe":{"enabled":true,"failureThreshold":3,"httpGet":{"path":"/healthz","port":"http"},"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5},"startupProbe":{"enabled":false,"failureThreshold":30,"httpGet":{"path":"/healthz","port":"http"},"initialDelaySeconds":0,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}}` | Health check configuration |
 | healthChecks.livenessProbe | object | `{"enabled":true,"failureThreshold":3,"httpGet":{"path":"/healthz","port":"http"},"initialDelaySeconds":30,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}` | Liveness probe configuration |
 | healthChecks.livenessProbe.enabled | bool | `true` | Enable liveness probe |
