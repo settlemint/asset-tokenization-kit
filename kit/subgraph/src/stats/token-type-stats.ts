@@ -250,9 +250,18 @@ function getPercentageOfTotalSupply(
   totalValueInBaseCurrency: BigDecimal,
   totalSystemValueInBaseCurrency: BigDecimal
 ): BigDecimal {
-  const percentage = totalSystemValueInBaseCurrency.gt(BigDecimal.zero())
-    ? totalValueInBaseCurrency.div(totalSystemValueInBaseCurrency)
-    : BigDecimal.zero();
+  if (totalSystemValueInBaseCurrency.le(BigDecimal.zero())) {
+    log.info(
+      "Skipping percentage calculation due to non-positive total system value: {}",
+      [totalSystemValueInBaseCurrency.toString()]
+    );
+    return BigDecimal.zero();
+  }
+
+  const percentage = totalValueInBaseCurrency
+    .div(totalSystemValueInBaseCurrency)
+    .times(BigDecimal.fromString("100"));
+
   log.info(
     "totalValueInBaseCurrency: {}, totalSystemValueInBaseCurrency: {}, percentage: {}",
     [
@@ -261,5 +270,6 @@ function getPercentageOfTotalSupply(
       percentage.toString(),
     ]
   );
-  return percentage.times(BigDecimal.fromString("100"));
+
+  return percentage;
 }
