@@ -2,12 +2,12 @@ import { formatValue } from "@/lib/utils/format-value/index";
 import { orpc } from "@/orpc/orpc-client";
 import type { FiatCurrency } from "@atk/zod/fiat-currency";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import type { Dnum } from "dnum";
+import { type Dnum } from "dnum";
 import { Briefcase, Building2, TrendingUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { EmptyState } from "@/components/dashboard/empty-state";
-import { StatCard } from "@/components/stat-card";
+import { StatCard } from "@/components/stats/widgets/stat-widget";
 
 interface PortfolioSummaryCardProps {
   totalValue: Dnum;
