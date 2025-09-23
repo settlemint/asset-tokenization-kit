@@ -10,8 +10,8 @@ import {
   WalletRecoveryLinked as WalletRecoveryLinkedEvent,
 } from "../../generated/templates/IdentityRegistryStorage/IdentityRegistryStorage";
 import { fetchEvent } from "../event/fetch/event";
-import { fetchIdentity } from "../identity/fetch/identity";
 import { fetchIdentityRegistry } from "../identity-registry/fetch/identity-registry";
+import { fetchIdentity } from "../identity/fetch/identity";
 import { fetchRegisteredIdentity } from "../registered-identity/fetch/registered-identity";
 import { fetchIdentityRegistryStorage } from "./fetch/identity-registry-storage";
 
@@ -30,14 +30,14 @@ export function handleIdentityModified(event: IdentityModifiedEvent): void {
   fetchEvent(event, "IdentityModified");
 
   // Ensure the new Identity entity exists before updating the RegisteredIdentity
-  fetchIdentity(event.params._newIdentity);
+  const identity = fetchIdentity(event.params._newIdentity);
 
   const registeredIdentity = fetchRegisteredIdentity(
     event.address,
     event.params._investorAddress
   );
 
-  registeredIdentity.identity = event.params._newIdentity;
+  registeredIdentity.identity = identity.id;
   registeredIdentity.save();
 }
 
