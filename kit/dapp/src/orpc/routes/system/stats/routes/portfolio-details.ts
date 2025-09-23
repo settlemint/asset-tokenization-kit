@@ -134,7 +134,7 @@ export const statsPortfolioDetails =
     const tokenFactoryBreakdown =
       tokenFactoryBreakdownResponse.accountTokenFactoryStatsStates.map(
         (factoryStats) => {
-          const factoryValue = from(factoryStats.totalValueInBaseCurrency);
+          const factoryValue = factoryStats.totalValueInBaseCurrency;
           const percentage = eq(totalValue, from(0))
             ? 0
             : toNumber(div(multiply(factoryValue, from(100)), totalValue));
