@@ -21,26 +21,31 @@ import { useTranslation } from "react-i18next";
 export function useAssetClass() {
   const { t } = useTranslation(["asset-class"]);
 
-  // Pre-group factories by asset class using select function
-  const { data: groupedFactories } = useSuspenseQuery(
+  // Fetch all factories
+  const { data: factories } = useSuspenseQuery(
     orpc.system.factory.list.queryOptions({
       input: {},
-      select: (factories) => ({
-        hasFactories: factories.length > 0,
-        fixedIncome: factories.filter(
-          (factory) =>
-            getAssetClassFromFactoryTypeId(factory.typeId) === "fixedIncome"
-        ),
-        flexibleIncome: factories.filter(
-          (factory) =>
-            getAssetClassFromFactoryTypeId(factory.typeId) === "flexibleIncome"
-        ),
-        cashEquivalent: factories.filter(
-          (factory) =>
-            getAssetClassFromFactoryTypeId(factory.typeId) === "cashEquivalent"
-        ),
-      }),
     })
+  );
+
+  // Group factories by asset class
+  const groupedFactories = useMemo(
+    () => ({
+      hasFactories: factories.length > 0,
+      fixedIncome: factories.filter(
+        (factory) =>
+          getAssetClassFromFactoryTypeId(factory.typeId) === "fixedIncome"
+      ),
+      flexibleIncome: factories.filter(
+        (factory) =>
+          getAssetClassFromFactoryTypeId(factory.typeId) === "flexibleIncome"
+      ),
+      cashEquivalent: factories.filter(
+        (factory) =>
+          getAssetClassFromFactoryTypeId(factory.typeId) === "cashEquivalent"
+      ),
+    }),
+    [factories]
   );
 
   // Create asset classes with translations and factories

@@ -38,13 +38,16 @@ describe("UserGrowthAreaChart", () => {
   it("should render chart with user growth data", async () => {
     const { useSuspenseQuery } = await import("@tanstack/react-query");
     vi.mocked(useSuspenseQuery).mockReturnValue(
-      createMockSuspenseQueryResult([
-        { timestamp: "2024-01-01", users: 100 },
-        { timestamp: "2024-01-02", users: 125 },
-        { timestamp: "2024-01-03", users: 150 },
-        { timestamp: "2024-01-04", users: 180 },
-        { timestamp: "2024-01-05", users: 200 },
-      ])
+      createMockSuspenseQueryResult({
+        userGrowth: [
+          { timestamp: "2024-01-01", users: 100 },
+          { timestamp: "2024-01-02", users: 125 },
+          { timestamp: "2024-01-03", users: 150 },
+          { timestamp: "2024-01-04", users: 180 },
+          { timestamp: "2024-01-05", users: 200 },
+        ],
+        timeRangeDays: 30,
+      })
     );
 
     renderWithProviders(<UserGrowthAreaChart />);
@@ -61,7 +64,10 @@ describe("UserGrowthAreaChart", () => {
   it("should show empty state when no user data exists", async () => {
     const { useSuspenseQuery } = await import("@tanstack/react-query");
     vi.mocked(useSuspenseQuery).mockReturnValue(
-      createMockSuspenseQueryResult([])
+      createMockSuspenseQueryResult({
+        userGrowth: [],
+        timeRangeDays: 30,
+      })
     );
 
     renderWithProviders(<UserGrowthAreaChart />);

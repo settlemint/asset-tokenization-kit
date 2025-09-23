@@ -22,66 +22,56 @@ export function AssetCollateralRatioChart({
 }: AssetCollateralRatioChartProps) {
   const { t } = useTranslation("stats");
 
-  // Memoize the data transformation function to prevent unnecessary re-creation
-  const selectTransform = useMemo(
-    () =>
-      (response: {
-        buckets: Array<{ name: string; value: number }>;
-        totalCollateral: number;
-        collateralRatio: number;
-      }) => {
-        // Handle empty data case
-        if (!response.buckets?.length || response.totalCollateral === 0) {
-          return {
-            chartData: [],
-            chartConfig: {
-              collateralAvailable: {
-                label: t("charts.collateralRatio.available"),
-                color: "var(--chart-1)",
-              },
-              collateralUsed: {
-                label: t("charts.collateralRatio.used"),
-                color: "var(--chart-2)",
-              },
-            },
-            totalCollateral: 0,
-            collateralRatio: 0,
-          };
-        }
-
-        // Configure chart colors and labels
-        const config: ChartConfig = {
-          collateralAvailable: {
-            label: t("charts.collateralRatio.available"),
-            color: "var(--chart-1)",
-          },
-          collateralUsed: {
-            label: t("charts.collateralRatio.used"),
-            color: "var(--chart-2)",
-          },
-        };
-
-        return {
-          chartData: response.buckets,
-          chartConfig: config,
-          totalCollateral: response.totalCollateral,
-          collateralRatio: response.collateralRatio,
-        };
-      },
-    [t]
-  );
-
-  // Fetch and transform collateral ratio data with optimized caching
-  const {
-    data: { chartData, chartConfig, totalCollateral, collateralRatio },
-  } = useSuspenseQuery(
+  // Fetch collateral ratio data
+  const { data: response } = useSuspenseQuery(
     orpc.token.statsCollateralRatio.queryOptions({
       input: { tokenAddress: assetAddress },
-      select: selectTransform,
       staleTime: 5 * 60 * 1000, // 5 minutes - reduce API calls
       gcTime: 10 * 60 * 1000, // 10 minutes - cache retention
     })
   );
+
+  // Transform data with memoization
+  const { chartData, chartConfig, totalCollateral, collateralRatio } =
+    useMemo(() => {
+      // Handle empty data case
+      if (!response.buckets?.length || response.totalCollateral === 0) {
+        return {
+          chartData: [],
+          chartConfig: {
+            collateralAvailable: {
+              label: t("charts.collateralRatio.available"),
+              color: "var(--chart-1)",
+            },
+            collateralUsed: {
+              label: t("charts.collateralRatio.used"),
+              color: "var(--chart-2)",
+            },
+          },
+          totalCollateral: 0,
+          collateralRatio: 0,
+        };
+      }
+
+      // Configure chart colors and labels
+      const config: ChartConfig = {
+        collateralAvailable: {
+          label: t("charts.collateralRatio.available"),
+          color: "var(--chart-1)",
+        },
+        collateralUsed: {
+          label: t("charts.collateralRatio.used"),
+          color: "var(--chart-2)",
+        },
+      };
+
+      return {
+        chartData: response.buckets,
+        chartConfig: config,
+        totalCollateral: response.totalCollateral,
+        collateralRatio: response.collateralRatio,
+      };
+    }, [response, t]);
 
   // Don't render if no collateral data
   if (totalCollateral === 0) {

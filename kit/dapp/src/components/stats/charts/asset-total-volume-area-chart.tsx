@@ -27,59 +27,38 @@ export function AssetTotalVolumeAreaChart({
 }: AssetTotalVolumeAreaChartProps) {
   const { t } = useTranslation("stats");
 
-  // Memoize the data transformation function to prevent unnecessary re-creation
-  const selectTransform = useMemo(
-    () =>
-      (response: {
-        volumeHistory?: Array<{ timestamp: number; totalVolume: string }>;
-      }) => {
-        // Handle empty data case
-        if (!response.volumeHistory?.length) {
-          return {
-            chartData: [],
-            chartConfig: {
-              totalVolume: {
-                label: t("charts.totalVolume.label"),
-                color: "var(--chart-1)",
-              },
-            },
-            dataKeys: ["totalVolume"],
-          };
-        }
-
-        // Transform the response data to chart format using safe conversion
-        const transformedData = response.volumeHistory.map((item) => ({
-          timestamp: format(new Date(item.timestamp * 1000), "MMM dd"),
-          totalVolume: safeToNumber(item.totalVolume),
-        }));
-
-        // Configure chart colors and labels
-        const config: ChartConfig = {
-          totalVolume: {
-            label: t("charts.totalVolume.label"),
-            color: "var(--chart-1)",
-          },
-        };
-
-        return {
-          chartData: transformedData,
-          chartConfig: config,
-          dataKeys: ["totalVolume"],
-        };
-      },
-    [t]
-  );
-
-  // Fetch and transform total volume history data with optimized caching
-  const {
-    data: { chartData, chartConfig, dataKeys },
-  } = useSuspenseQuery(
+  // Fetch total volume history data with optimized caching
+  const { data } = useSuspenseQuery(
     orpc.token.statsVolume.queryOptions({
       input: { tokenAddress: assetAddress, days: timeRange },
-      select: selectTransform,
       ...CHART_QUERY_OPTIONS,
     })
   );
+
+  // Transform the response data to chart format using safe conversion
+  const chartData = useMemo(() => {
+    if (!data.volumeHistory?.length) {
+      return [];
+    }
+
+    return data.volumeHistory.map((item) => ({
+      timestamp: format(new Date(item.timestamp * 1000), "MMM dd"),
+      totalVolume: safeToNumber(item.totalVolume),
+    }));
+  }, [data.volumeHistory]);
+
+  // Configure chart colors and labels
+  const chartConfig: ChartConfig = useMemo(
+    () => ({
+      totalVolume: {
+        label: t("charts.totalVolume.label"),
+        color: "var(--chart-1)",
+      },
+    }),
+    [t]
+  );
+
+  const dataKeys = ["totalVolume"];
 
   return (
     <ComponentErrorBoundary componentName="Asset Total Volume Chart">

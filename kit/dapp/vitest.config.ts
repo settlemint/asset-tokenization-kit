@@ -14,7 +14,7 @@ export default defineConfig({
         // Limit the number of parallel test workers to avoid exceeding the PostgreSQL
         // connection limit. Integration tests spin up services that connect to the
         // database, and running too many in parallel can exhaust the connection pool.
-        maxForks: 16,
+        maxForks: process.env.CI ? 16 : undefined,
       },
     },
     reporters: process.env.CLAUDECODE
