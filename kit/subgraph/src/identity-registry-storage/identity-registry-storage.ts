@@ -11,6 +11,7 @@ import {
 } from "../../generated/templates/IdentityRegistryStorage/IdentityRegistryStorage";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentityRegistry } from "../identity-registry/fetch/identity-registry";
+import { fetchIdentity } from "../identity/fetch/identity";
 import { fetchRegisteredIdentity } from "../registered-identity/fetch/registered-identity";
 import { fetchIdentityRegistryStorage } from "./fetch/identity-registry-storage";
 
@@ -27,12 +28,16 @@ export function handleCountryModified(event: CountryModifiedEvent): void {
 
 export function handleIdentityModified(event: IdentityModifiedEvent): void {
   fetchEvent(event, "IdentityModified");
+
+  // Ensure the new Identity entity exists before updating the RegisteredIdentity
+  const identity = fetchIdentity(event.params._newIdentity);
+
   const registeredIdentity = fetchRegisteredIdentity(
     event.address,
     event.params._investorAddress
   );
 
-  registeredIdentity.identity = event.params._newIdentity;
+  registeredIdentity.identity = identity.id;
   registeredIdentity.save();
 }
 
@@ -61,11 +66,13 @@ export function handleIdentityRegistryUnbound(
 
 export function handleIdentityStored(event: IdentityStoredEvent): void {
   fetchEvent(event, "IdentityStored");
+
   const registeredIdentity = fetchRegisteredIdentity(
     event.address,
     event.params._investorAddress
   );
-  registeredIdentity.identity = event.params._identity;
+  const identity = fetchIdentity(event.params._identity);
+  registeredIdentity.identity = identity.id;
   registeredIdentity.country = event.params._country;
 
   registeredIdentity.save();
