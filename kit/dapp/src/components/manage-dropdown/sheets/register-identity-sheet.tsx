@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { ActionFormSheet } from "../core/action-form-sheet";
 import { createActionFormStore } from "../core/action-form-sheet.store";
+import type { ManagedIdentity } from "../manage-identity-dropdown";
 
 const RegisterIdentityFormSchema = z.object({
   country: isoCountryCode,
@@ -26,14 +27,7 @@ const normalizeCountryCode = (value: unknown) => {
 interface RegisterIdentitySheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  identity: {
-    identity: string;
-    account: {
-      id: string;
-      contractName?: string | null;
-    };
-    isRegistered: boolean;
-  };
+  identity: ManagedIdentity;
 }
 
 export function RegisterIdentitySheet({

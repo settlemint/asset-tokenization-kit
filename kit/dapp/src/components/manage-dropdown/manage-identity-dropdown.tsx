@@ -25,7 +25,7 @@ interface ManagedIdentityAccount {
   contractName?: string | null;
 }
 
-interface ManagedIdentity {
+export interface ManagedIdentity {
   identity: string;
   account: ManagedIdentityAccount;
   isRegistered: boolean;
