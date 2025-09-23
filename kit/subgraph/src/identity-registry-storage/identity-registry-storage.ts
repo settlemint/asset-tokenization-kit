@@ -10,6 +10,7 @@ import {
   WalletRecoveryLinked as WalletRecoveryLinkedEvent,
 } from "../../generated/templates/IdentityRegistryStorage/IdentityRegistryStorage";
 import { fetchEvent } from "../event/fetch/event";
+import { fetchIdentity } from "../identity/fetch/identity";
 import { fetchIdentityRegistry } from "../identity-registry/fetch/identity-registry";
 import { fetchRegisteredIdentity } from "../registered-identity/fetch/registered-identity";
 import { fetchIdentityRegistryStorage } from "./fetch/identity-registry-storage";
@@ -27,6 +28,10 @@ export function handleCountryModified(event: CountryModifiedEvent): void {
 
 export function handleIdentityModified(event: IdentityModifiedEvent): void {
   fetchEvent(event, "IdentityModified");
+
+  // Ensure the new Identity entity exists before updating the RegisteredIdentity
+  fetchIdentity(event.params._newIdentity);
+
   const registeredIdentity = fetchRegisteredIdentity(
     event.address,
     event.params._investorAddress
@@ -61,6 +66,10 @@ export function handleIdentityRegistryUnbound(
 
 export function handleIdentityStored(event: IdentityStoredEvent): void {
   fetchEvent(event, "IdentityStored");
+
+  // Ensure the Identity entity exists before creating the RegisteredIdentity
+  fetchIdentity(event.params._identity);
+
   const registeredIdentity = fetchRegisteredIdentity(
     event.address,
     event.params._investorAddress
