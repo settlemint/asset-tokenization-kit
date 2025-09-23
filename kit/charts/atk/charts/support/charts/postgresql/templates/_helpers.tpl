@@ -87,16 +87,17 @@ PostgreSQL port
 
 {{/*
 Merge pod-level security context defaults with chart overrides.
+OpenShift assigns its own UID/primary group, so strip runAs fields unless
+the chart overrides them explicitly.
 */}}
 {{- define "postgresql.securityContext.pod" -}}
-{{- $ctx := .context | default . -}}
-{{ include "atk.securityContext.pod" (dict "context" $ctx "local" (default (dict) $ctx.Values.podSecurityContext)) }}
+{{ include "atk.securityContext.pod" (dict "context" (.context | default .) "local" (default (dict) (.context | default .).Values.podSecurityContext)) }}
 {{- end }}
 
 {{/*
 Merge container-level security context defaults with chart overrides.
+Allow explicit overrides while defaulting to OpenShift-managed UIDs.
 */}}
 {{- define "postgresql.securityContext.container" -}}
-{{- $ctx := .context | default . -}}
-{{ include "atk.securityContext.container" (dict "context" $ctx "local" (default (dict) $ctx.Values.securityContext)) }}
+{{ include "atk.securityContext.container" (dict "context" (.context | default .) "local" (default (dict) (.context | default .).Values.securityContext)) }}
 {{- end }}

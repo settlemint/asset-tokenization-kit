@@ -7,7 +7,7 @@ The following endpoints are now available:
   Blockchain JSON-RPC: https://{{ (index .Values.erpc.ingress.hosts 0).host | default "rpc.k8s.orb.local" }}
   Blockchain Explorer: https://{{ .Values.blockscout.frontend.ingress.hostname | default "explorer.k8s.orb.local" }}
              The Graph: https://{{ (index .Values "graph-node" "ingress" "hosts" 0).host | default "graph.k8s.orb.local" }}
-                Hasura: https://{{ (index .Values "hasura" "graphql-engine" "ingress" "hostName" ) | default "hasura.k8s.orb.local" }}
+                Hasura: https://{{ .Values.hasura.ingress.hostName | default "hasura.k8s.orb.local" }}
                Grafana: https://{{ (index .Values "observability" "grafana" "ingress" "hosts" 0 ) | default "grafana.k8s.orb.local" }}
 {{- if .Values.dapp.enabled }}
                   DApp: https://{{ (index .Values.dapp.ingress.hosts 0).host | default "dapp.k8s.orb.local" }}
@@ -24,9 +24,9 @@ Configuration Details:
   Instance Type: standalone
   Blockchain RPC: {{- if and .Values.txsigner.enabled .Values.txsigner.ingress.enabled }} https://{{ .Values.txsigner.ingress.hostname | default "txsigner.k8s.orb.local" }}{{- else }} https://{{ (index .Values.erpc.ingress.hosts 0).host | default "rpc.k8s.orb.local" }}{{- end }}
   Load Balancer: https://{{ (index .Values.erpc.ingress.hosts 0).host | default "rpc.k8s.orb.local" }}
-  Hasura GraphQL: https://{{ (index .Values "hasura" "graphql-engine" "ingress" "hostName" ) | default "hasura.k8s.orb.local" }}/v1/graphql
+  Hasura GraphQL: https://{{ .Values.hasura.ingress.hostName | default "hasura.k8s.orb.local" }}/v1/graphql
   Hasura Admin Secret: {{ .Values.dapp.secretEnv.SETTLEMINT_HASURA_ADMIN_SECRET | default "atk" }}
-  Database URL: {{ printf "postgresql://hasura:atk@postgresql.%s:5432/hasura" (include "atk.extractDomain" (dict "url" (index .Values "hasura" "graphql-engine" "ingress" "hostName" | default "hasura.k8s.orb.local"))) }}
+  Database URL: {{ printf "postgresql://hasura:atk@postgresql.%s:5432/hasura" (include "atk.extractDomain" (dict "url" (.Values.hasura.ingress.hostName | default "hasura.k8s.orb.local"))) }}
   The Graph Endpoint: https://{{ (index .Values "graph-node" "ingress" "hosts" 0).host | default "graph.k8s.orb.local" }}
   Subgraph Names: kit
 {{- if .Values.portal.enabled }}
@@ -48,7 +48,7 @@ Create the following files in your project root directory:
 SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT={{- if and .Values.txsigner.enabled .Values.txsigner.ingress.enabled }}https://{{ .Values.txsigner.ingress.hostname | default "txsigner.k8s.orb.local" }}{{- else }}https://{{ (index .Values.erpc.ingress.hosts 0).host | default "rpc.k8s.orb.local" }}{{- end }}
 SETTLEMINT_BLOCKCHAIN_NODE_OR_LOAD_BALANCER_JSON_RPC_ENDPOINT=https://{{ (index .Values.erpc.ingress.hosts 0).host | default "rpc.k8s.orb.local" }}
 SETTLEMINT_BLOCKSCOUT_GRAPHQL_ENDPOINT=https://{{ .Values.blockscout.frontend.ingress.hostname | default "explorer.k8s.orb.local" }}/api/v1/graphql
-SETTLEMINT_HASURA_ENDPOINT=https://{{ (index .Values "hasura" "graphql-engine" "ingress" "hostName" ) | default "hasura.k8s.orb.local" }}/v1/graphql
+SETTLEMINT_HASURA_ENDPOINT=https://{{ .Values.hasura.ingress.hostName | default "hasura.k8s.orb.local" }}/v1/graphql
 SETTLEMINT_INSTANCE=standalone
 SETTLEMINT_IPFS_API_ENDPOINT=https://ipfs.console.settlemint.com
 SETTLEMINT_MINIO_ACCESS_KEY=atk-service
@@ -63,7 +63,7 @@ SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS=["https://{{ (index .Values "graph-node"
 
 === .env.local ===
 SETTLEMINT_HASURA_ADMIN_SECRET={{ .Values.dapp.secretEnv.SETTLEMINT_HASURA_ADMIN_SECRET | default "atk" }}
-SETTLEMINT_HASURA_DATABASE_URL={{ printf "postgresql://hasura:atk@postgresql.%s:5432/hasura" (include "atk.extractDomain" (dict "url" (index .Values "hasura" "graphql-engine" "ingress" "hostName" | default "hasura.k8s.orb.local"))) }}
+SETTLEMINT_HASURA_DATABASE_URL={{ printf "postgresql://hasura:atk@postgresql.%s:5432/hasura" (include "atk.extractDomain" (dict "url" (.Values.hasura.ingress.hostName | default "hasura.k8s.orb.local"))) }}
 SETTLEMINT_MINIO_SECRET_KEY=atk-service-secret
 
 ========================================================================
