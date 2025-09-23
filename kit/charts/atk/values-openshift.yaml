@@ -109,15 +109,15 @@ dapp:
 
 # Support services security contexts for OpenShift
 support:
-  # PostgreSQL - clear default security contexts to use global ones
-  postgresql:
-    podSecurityContext: {}
-    securityContext: {}
+  # PostgreSQL configuration for OpenShift
+  # postgresql:
+  #   podSecurityContext: {}
+  #   securityContext: {}
 
   # Redis - clear default security contexts to use global ones
-  redis:
-    podSecurityContext: {}
-    containerSecurityContext: {}
+  # redis:
+  #   podSecurityContext: {}
+  #   containerSecurityContext: {}
 
   # Nginx Ingress Controller adjustments for OpenShift (if used)
   ingress-nginx:
@@ -167,15 +167,29 @@ observability:
 
 # Hasura configuration for OpenShift
 hasura:
-  graphql-engine:
-    ingress:
-      enabled: false
+  # -- (object) Ingress configuration
+  ingress:
+    # -- (bool) Disable ingress in OpenShift (using routes instead)
+    enabled: false
 
-    openShiftRoute:
-      enabled: true
-      host: hasura.apps-crc.testing
-      path: /
-      wildcardPolicy: None
+  # -- (object) OpenShift Route configuration
+  openShiftRoute:
+    # -- (bool) Enable OpenShift route
+    enabled: true
+    # -- (string) Route hostname
+    host: hasura.apps-crc.testing
+    # -- (string) Route path
+    path: /
+    # -- (string) Wildcard policy
+    wildcardPolicy: None
+    # -- (object) TLS configuration
+    tls: null
+    # -- (object) Service weight configuration
+    to:
+      # -- (int) Weight for the service
+      weight: 100
+    # -- (list) Alternate backends
+    alternateBackends: []
 
 # Blockscout configuration for OpenShift
 blockscout:
@@ -202,3 +216,12 @@ blockscout:
       host: explorer.apps-crc.testing
       path: /
       wildcardPolicy: None
+    podSecurityContext:
+      fsGroup: null
+      runAsUser: null
+      runAsGroup: null
+    containerSecurityContext:
+      runAsUser: null
+      runAsGroup: null
+      fsGroup: null
+

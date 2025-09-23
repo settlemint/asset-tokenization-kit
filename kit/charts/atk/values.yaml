@@ -2,6 +2,8 @@
 global:
   chainId: "53771311147"
   chainName: "ATK"
+  # Global labels to be added to all resources
+  labels: {}
   datastores:
     default:
       redis:
@@ -44,6 +46,14 @@ global:
         database: "blockscout"
         username: "blockscout"
         password: "atk"
+    hasura:
+      postgresql:
+        database: "hasura"
+        username: "hasura"
+        password: "atk"
+      redis:
+        cacheDb: 2
+        rateLimitDb: 3
 
 network:
   enabled: true
@@ -156,60 +166,18 @@ graph-node:
 
 hasura:
   enabled: true
-  postgresql:
-    host: "postgresql"
-    port: 5432
-    database: "hasura"
-    username: "hasura"
-    password: "atk"
-    sslMode: "disable"
-    endpoint: "postgresql:5432"
-    url: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
-  redis:
-    primary:
-      host: "redis"
-      port: 6379
-      username: "default"
-      password: "atk"
-      db: 2
-      url: "redis://default:atk@redis:6379/2"
-    rateLimit:
-      host: "redis"
-      port: 6379
-      username: "default"
-      password: "atk"
-      db: 3
-      url: "redis://default:atk@redis:6379/3"
-  graphql-engine:
-    ingress:
-      hostName: hasura.k8s.orb.local
-    openShiftRoute:
-      enabled: false
-      host: hasura.k8s.orb.local
-    image:
-      repository: docker.io/hasura/graphql-engine
-    initContainers:
-      - name: wait-for-postgresql
-        image: ghcr.io/settlemint/btp-waitforit:v7.7.10
-        imagePullPolicy: IfNotPresent
-        command:
-          - /usr/bin/wait-for-it
-          - "postgresql:5432"
-          - -t
-          - "120"
-        resources:
-          limits:
-            cpu: 100m
-            memory: 64Mi
-          requests:
-            cpu: 10m
-            memory: 32Mi
-    secret:
-      metadataDbUrl: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
-      extraSecrets:
-        DEFAULT_DB_URL: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
-      redisUrl: "redis://default:atk@redis:6379/2"
-      rateLimitRedisUrl: "redis://default:atk@redis:6379/3"
+  # Override the fullname to be just "hasura" instead of "atk-hasura"
+  fullnameOverride: "hasura"
+  # Image configuration
+  image:
+    registry: docker.io
+    repository: hasura/graphql-engine
+    tag: v2.48.3
+    pullPolicy: IfNotPresent
+
+  # Ingress configuration
+  ingress:
+    hostName: hasura.k8s.orb.local
 
 portal:
   enabled: true
@@ -232,7 +200,9 @@ txsigner:
       registry: docker.io
   # Configuration for the txsigner subchart
   config:
-    mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
+    mnemonic:
+      "gate yellow grunt wrestle disease obtain mixed nature mansion tape
+      purchase awful"
     derivationPath: "m/44'/60'/0'/0/0"
   resources: {}
   initContainer:

@@ -39,6 +39,7 @@ import { statsSupplyChangesContract } from "@/orpc/routes/token/routes/stats/sup
 import { statsTotalSupplyContract } from "@/orpc/routes/token/routes/stats/total-supply.contract";
 import { statsVolumeContract } from "@/orpc/routes/token/routes/stats/volume.contract";
 import { statsWalletDistributionContract } from "@/orpc/routes/token/routes/stats/wallet-distribution.contract";
+import { statsYieldCoverageContract } from "@/orpc/routes/token/routes/stats/yield-coverage.contract";
 
 export const tokenContract = {
   // Mutations
@@ -82,6 +83,7 @@ export const tokenContract = {
   statsSupplyChanges: statsSupplyChangesContract,
   statsVolume: statsVolumeContract,
   statsWalletDistribution: statsWalletDistributionContract,
+  statsYieldCoverage: statsYieldCoverageContract,
 };
 
 // Extract mutation keys for permissions

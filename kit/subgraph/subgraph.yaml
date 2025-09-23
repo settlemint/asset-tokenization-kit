@@ -326,6 +326,9 @@ templates:
           handler: handleTopicSchemeRegistrySet
         - event: TrustedIssuersRegistrySet(indexed address,indexed address)
           handler: handleTrustedIssuersRegistrySet
+        - event: IdentityRegistered(indexed address,indexed address,indexed
+            address,uint16)
+          handler: handleIdentityRegistered
       file: ./src/identity-registry/identity-registry.ts
   - kind: ethereum
     name: Custodian

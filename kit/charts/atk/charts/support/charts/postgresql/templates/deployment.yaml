@@ -20,17 +20,17 @@ spec:
         {{- end }}
     spec:
       {{- include "atk.common.imagePullSecrets" . | nindent 6 }}
-      {{- $podSecurityContext := (include "postgresql.securityContext.pod" (dict "context" $)) | fromYaml }}
+      {{- $podSecurityContext := include "postgresql.securityContext.pod" (dict "context" $) }}
       {{- if $podSecurityContext }}
       securityContext:
-        {{- toYaml $podSecurityContext | nindent 8 }}
+{{- $podSecurityContext | nindent 8 }}
       {{- end }}
       containers:
         - name: postgresql
-          {{- $containerSecurityContext := (include "postgresql.securityContext.container" (dict "context" $)) | fromYaml }}
+          {{- $containerSecurityContext := include "postgresql.securityContext.container" (dict "context" $) }}
           {{- if $containerSecurityContext }}
           securityContext:
-            {{- toYaml $containerSecurityContext | nindent 12 }}
+{{- $containerSecurityContext | nindent 12 }}
           {{- end }}
           image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
