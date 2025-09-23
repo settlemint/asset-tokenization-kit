@@ -1,4 +1,26 @@
 {
+  "manage": "管理",
+  "actions": {
+    "registerIdentity": {
+      "label": "アイデンティティを登録",
+      "title": "アイデンティティを登録",
+      "description": "国情報を指定して、このアイデンティティをアイデンティティレジストリに登録します"
+    },
+    "viewEvents": "イベントを表示"
+  },
+  "register": {
+    "form": {
+      "country": "国",
+      "countryInfo": "このアイデンティティ登録の対象となる国を選択してください",
+      "walletAddress": "ウォレットアドレス",
+      "walletAddressInfo": "登録するウォレットアドレス（デフォルトはアイデンティティ所有者）"
+    },
+    "success": "アイデンティティの登録が完了しました",
+    "confirm": {
+      "title": "アイデンティティ登録を確認",
+      "description": "登録を進める前に登録内容を確認してください"
+    }
+  },
   "status": {
     "pending": "保留中",
     "verified": "検証済み",

@@ -1,4 +1,26 @@
 {
+  "manage": "Verwalten",
+  "actions": {
+    "registerIdentity": {
+      "label": "Identität registrieren",
+      "title": "Identität registrieren",
+      "description": "Registrieren Sie diese Identität im Identitätsregister mit Länderinformationen"
+    },
+    "viewEvents": "Ereignisse anzeigen"
+  },
+  "register": {
+    "form": {
+      "country": "Land",
+      "countryInfo": "Wählen Sie das Land für diese Identitätsregistrierung aus",
+      "walletAddress": "Wallet-Adresse",
+      "walletAddressInfo": "Zu registrierende Wallet-Adresse (standardmäßig der Identitätsinhaber)"
+    },
+    "success": "Identität erfolgreich registriert",
+    "confirm": {
+      "title": "Identitätsregistrierung bestätigen",
+      "description": "Bitte überprüfen Sie die Registrierungsdetails, bevor Sie fortfahren"
+    }
+  },
   "status": {
     "pending": "Ausstehend",
     "verified": "Verifiziert",

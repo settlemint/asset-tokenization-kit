@@ -1,6 +1,8 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
+import { IdentityStatusBadge } from "@/components/identity/identity-status-badge";
+import { ManageIdentityDropdown } from "@/components/manage-dropdown/manage-identity-dropdown";
 import { getIdentityTabConfiguration } from "@/components/tab-navigation/identity-tab-configuration";
 import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
 import { client } from "@/orpc/orpc-client";
@@ -81,6 +83,7 @@ export const Route = createFileRoute(
  * including header, breadcrumbs, tabs, and renders child routes through Outlet.
  */
 function RouteComponent() {
+  const { claimsData } = Route.useLoaderData();
   const { address } = Route.useParams();
   const { t } = useTranslation(["identities", "common"]);
 
@@ -113,8 +116,9 @@ function RouteComponent() {
             <h1 className="text-3xl font-bold tracking-tight">
               {displayAddress}
             </h1>
+            <IdentityStatusBadge isRegistered={claimsData.isRegistered} />
           </div>
-          {/* Future: Add ManageIdentityDropdown here */}
+          <ManageIdentityDropdown identity={claimsData} />
         </div>
       </div>
 
