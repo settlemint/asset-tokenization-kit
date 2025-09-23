@@ -6,8 +6,8 @@ import type { Dnum } from "dnum";
 import { Briefcase, Building2, TrendingUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { EmptyState } from "./empty-state";
-import { StatCard } from "./stat-card";
+import { EmptyState } from "@/components/dashboard/empty-state";
+import { StatCard } from "@/components/stat-card";
 
 interface PortfolioSummaryCardProps {
   totalValue: Dnum;

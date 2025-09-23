@@ -7,8 +7,8 @@ import { Suspense } from "react";
 
 import { PortfolioBreakdown } from "./portfolio-breakdown";
 import { PortfolioSummaryCard } from "./portfolio-summary-card";
-import { SectionSubtitle } from "./section-subtitle";
-import { SectionTitle } from "./section-title";
+import { SectionSubtitle } from "@/components/dashboard/section-subtitle";
+import { SectionTitle } from "@/components/dashboard/section-title";
 
 /**
  * Portfolio Details Component
