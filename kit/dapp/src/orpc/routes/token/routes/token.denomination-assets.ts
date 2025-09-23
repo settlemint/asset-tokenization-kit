@@ -98,7 +98,7 @@ const TokensByIdsResponseSchema = z.object({
  * Retrieves all bonds that use the specified token as their denomination asset
  */
 export const denominationAssets = tokenRouter.token.denominationAssets.handler(
-  async ({ context }) => {
+  async ({ context, errors }) => {
     const response = await context.theGraphClient.query(
       DENOMINATION_ASSETS_QUERY,
       {
@@ -127,11 +127,18 @@ export const denominationAssets = tokenRouter.token.denominationAssets.handler(
       tokensResp.tokens.map((t) => [t.id.toLowerCase(), t])
     );
 
-    return bonds
-      .map((b) => ({
+    const merged = bonds.map((b) => {
+      const tokenDetails = tokenMap.get(b.id.toLowerCase());
+      if (!tokenDetails) {
+        throw errors.NOT_FOUND({ message: "Token details not found for bond" });
+      }
+      const result = {
         ...b,
-        token: tokenMap.get(b.id.toLowerCase()) ?? undefined,
-      }))
-      .filter((b) => Boolean((b as unknown as { token?: unknown }).token));
+        token: tokenDetails,
+      };
+      return DenominationAssetBondSchema.parse(result);
+    });
+
+    return merged;
   }
 );

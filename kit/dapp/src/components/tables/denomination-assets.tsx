@@ -38,7 +38,7 @@ import { toast } from "sonner";
 interface DenominationAssetBond {
   id: string;
   token: {
-    id: EthereumAddress;
+    id: string;
     name: string;
     symbol: string;
     decimals: number;
@@ -47,7 +47,7 @@ interface DenominationAssetBond {
       paused: boolean;
     };
     factory: {
-      id: EthereumAddress;
+      id: string;
       name: string;
     };
   };
@@ -112,7 +112,7 @@ export function DenominationAssetTable({
 
   // Navigate to token details
   const navigateToToken = useCallback(
-    (factoryAddress: EthereumAddress, tokenAddress: EthereumAddress) => {
+    (factoryAddress: string, tokenAddress: string) => {
       router.navigate({
         to: "/token/$factoryAddress/$tokenAddress",
         params: { factoryAddress, tokenAddress },
