@@ -76,6 +76,15 @@
       "available": "Verfügbare Sicherheiten",
       "used": "Verwendete Sicherheiten",
       "ratio": "Besicherung: {{ratio}}%"
+    },
+    "portfolioValue": {
+      "title": "Ihr Portfoliowert",
+      "description": "Verfolgen Sie die Entwicklung Ihrer Investitionen der letzten {{days}} Tage",
+      "label": "Wert",
+      "empty": {
+        "title": "Noch keine Daten verfügbar",
+        "description": "Beginnen Sie mit dem Investieren, um Ihre Portfolio-Performance zu verfolgen"
+      }
     }
   },
   "title": "Statistiken",

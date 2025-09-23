@@ -27,6 +27,8 @@ export interface FormatValueOptions {
 
   dateOptions?: FormatDateOptions;
   multiOptionOptions?: FormatMultiOptionOptions;
+
+  className?: string;
 }
 
 export interface FormatValueProps {

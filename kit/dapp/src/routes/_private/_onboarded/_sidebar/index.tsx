@@ -15,6 +15,7 @@
  */
 
 import { IdentityProgress } from "@/components/dashboard/identity-progress/identity-progress";
+import { PortfolioDetails } from "@/components/dashboard/portfolio-details/portfolio-details";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
@@ -36,8 +37,10 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
     // User data should be loaded in parent _private route, but we need to ensure it exists
     // to handle cache misses, invalidation, or direct navigation
     const user = await queryClient.ensureQueryData(orpc.user.me.queryOptions());
-
-    return { user };
+    const system = await queryClient.ensureQueryData(
+      orpc.system.read.queryOptions({ input: { id: "default" } })
+    );
+    return { user, system };
   },
   component: Home,
 });
@@ -50,11 +53,16 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
  * React Suspense boundaries for loading states.
  */
 function Home() {
-  const { user } = Route.useLoaderData();
+  const { user, system } = Route.useLoaderData();
 
   return (
     <div className="p-6 space-y-8">
       <IdentityProgress user={user} />
+      {system.userIdentity?.registered && (
+        <>
+          <PortfolioDetails />
+        </>
+      )}
     </div>
   );
 }
