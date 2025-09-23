@@ -77,14 +77,16 @@ spec:
             {{- end }}
 
             # Database configuration
-            {{- if .Values.database.connectionUrl }}
+            {{- $dbUrl := include "hasura.databaseUrl" . }}
+            {{- if $dbUrl }}
             - name: HASURA_GRAPHQL_DATABASE_URL
-              value: {{ .Values.database.connectionUrl }}
+              value: {{ $dbUrl }}
             {{- end }}
 
-            {{- if .Values.metadata.databaseUrl }}
+            {{- $metadataUrl := include "hasura.metadataUrl" . }}
+            {{- if $metadataUrl }}
             - name: HASURA_GRAPHQL_METADATA_DATABASE_URL
-              value: {{ .Values.metadata.databaseUrl }}
+              value: {{ $metadataUrl }}
             {{- end }}
 
             # Database pool settings
@@ -168,11 +170,13 @@ spec:
 
             # Redis configuration
             {{- if .Values.redis.enabled }}
-            {{- if .Values.redis.cacheUrl }}
+            {{- $redisCacheUrl := include "hasura.redisCacheUrl" . }}
+            {{- $redisRateLimitUrl := include "hasura.redisRateLimitUrl" . }}
+            {{- if $redisCacheUrl }}
             - name: HASURA_GRAPHQL_REDIS_URL
-              value: {{ .Values.redis.cacheUrl }}
+              value: {{ $redisCacheUrl }}
             - name: HASURA_GRAPHQL_RATE_LIMIT_REDIS_URL
-              value: {{ .Values.redis.rateLimitUrl | default .Values.redis.cacheUrl }}
+              value: {{ $redisRateLimitUrl | default $redisCacheUrl }}
             - name: HASURA_GRAPHQL_CACHE_MAX_TTL
               value: {{ .Values.redis.cacheTtl | quote }}
             {{- end }}

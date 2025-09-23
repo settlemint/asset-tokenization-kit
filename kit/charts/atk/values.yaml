@@ -44,6 +44,14 @@ global:
         database: "blockscout"
         username: "blockscout"
         password: "atk"
+    hasura:
+      postgresql:
+        database: "hasura"
+        username: "hasura"
+        password: "atk"
+      redis:
+        cacheDb: 2
+        rateLimitDb: 3
 
 network:
   enabled: true

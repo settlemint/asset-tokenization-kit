@@ -101,6 +101,11 @@ The following table lists the configurable parameters of this chart and their de
 | global.datastores.graphNode.postgresql.database | string | `"thegraph"` |  |
 | global.datastores.graphNode.postgresql.password | string | `"atk"` |  |
 | global.datastores.graphNode.postgresql.username | string | `"thegraph"` |  |
+| global.datastores.hasura.postgresql.database | string | `"hasura"` |  |
+| global.datastores.hasura.postgresql.password | string | `"atk"` |  |
+| global.datastores.hasura.postgresql.username | string | `"hasura"` |  |
+| global.datastores.hasura.redis.cacheDb | int | `2` |  |
+| global.datastores.hasura.redis.rateLimitDb | int | `3` |  |
 | global.datastores.portal.postgresql.database | string | `"portal"` |  |
 | global.datastores.portal.postgresql.password | string | `"atk"` |  |
 | global.datastores.portal.postgresql.username | string | `"portal"` |  |

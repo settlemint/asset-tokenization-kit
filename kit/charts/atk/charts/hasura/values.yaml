@@ -69,8 +69,20 @@ config:
 
 # -- (object) Database configuration
 database:
-  # -- (string) Database connection string (can be set via secret)
-  connectionUrl: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
+  # -- (string) Database connection string (overrides auto-generated URL)
+  connectionUrl: ""
+  # -- (string) Database host (uses global datastores if not set)
+  host: ""
+  # -- (int) Database port (uses global datastores if not set)
+  port: ""
+  # -- (string) Database username (uses global datastores if not set)
+  username: ""
+  # -- (string) Database password (uses global datastores if not set)
+  password: ""
+  # -- (string) Database name (uses global datastores if not set)
+  database: ""
+  # -- (string) SSL mode (uses global datastores if not set)
+  sslMode: ""
   # -- (int) Maximum connections
   connections: 50
   # -- (int) Idle timeout (seconds)
@@ -138,17 +150,29 @@ cronTriggers:
 redis:
   # -- (bool) Enable Redis integration
   enabled: true
-  # -- (string) Redis URL for query caching
-  cacheUrl: "redis://default:atk@redis:6379/2"
+  # -- (string) Redis URL for query caching (overrides auto-generated URL)
+  cacheUrl: ""
+  # -- (string) Redis URL for rate limiting (overrides auto-generated URL)
+  rateLimitUrl: ""
+  # -- (string) Redis host (uses global datastores if not set)
+  host: ""
+  # -- (int) Redis port (uses global datastores if not set)
+  port: ""
+  # -- (string) Redis username (uses global datastores if not set)
+  username: ""
+  # -- (string) Redis password (uses global datastores if not set)
+  password: ""
+  # -- (int) Redis database index for caching (uses global datastores if not set)
+  cacheDb: ""
+  # -- (int) Redis database index for rate limiting (uses global datastores if not set)
+  rateLimitDb: ""
   # -- (int) Cache TTL in seconds
   cacheTtl: 60
-  # -- (string) Redis URL for rate limiting
-  rateLimitUrl: "redis://default:atk@redis:6379/3"
 
 # -- (object) Metadata database configuration
 metadata:
   # -- (string) Metadata database URL (defaults to main database if not set)
-  databaseUrl: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
+  databaseUrl: ""
 
 # -- (list) Additional environment variables
 extraEnvs: []
