@@ -369,28 +369,17 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
           distribution before diving into individual records. This is particularly
           important for compliance reporting where holder count thresholds may
           trigger regulatory requirements (e.g., SEC filing requirements).
-          
-          Only display count when there are actual holders with non-zero balances.
-          The subgraph removes balance entries when they reach zero to optimize
-          storage, so a count of 0 means no active holders.
         */}
-        {holders.length > 0 && (
-          <div className="flex items-center gap-2">
-            <UserCircle className="h-5 w-5 text-muted-foreground" />
-            <p className="text-sm font-medium">
-              {t("tokens:holders.totalHolders", { count: holders.length })}
-            </p>
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          <UserCircle className="h-5 w-5 text-muted-foreground" />
+          <p className="text-sm font-medium">
+            {t("tokens:holders.totalHolders", { count: holders.length })}
+          </p>
+        </div>
         <DataTable
           name="token-holders"
           data={holders}
           columns={columns}
-          customEmptyState={{
-            icon: UserCircle,
-            title: t("tokens:holders.emptyState.title"),
-            description: t("tokens:holders.emptyState.description"),
-          }}
           urlState={{
             enabled: true,
             routePath,

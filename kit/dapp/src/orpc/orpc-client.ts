@@ -11,13 +11,11 @@
  * @see {@link ./routes/router} - Main router with all endpoints
  */
 
-import type { contract } from "@/orpc/routes/contract";
 import { bigDecimalSerializer } from "@atk/zod/bigdecimal";
 import { bigIntSerializer } from "@atk/zod/bigint";
 import { timestampSerializer } from "@atk/zod/timestamp";
 import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
-import type { ContractRouterClient } from "@orpc/contract";
 import type { RouterClient } from "@orpc/server";
 import { createRouterClient } from "@orpc/server";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
@@ -43,7 +41,6 @@ const logger = createLogger();
  */
 const getORPCClient = createIsomorphicFn()
   .server(async () => {
-    // Import router here to avoid the client loading server code
     const { router } = await import("./routes/router");
     return createRouterClient(router, {
       context: () => {
@@ -86,42 +83,6 @@ const getORPCClient = createIsomorphicFn()
     return createORPCClient(link);
   });
 
-/**
- * The main ORPC client instance used throughout the application.
- *
- * This client is fully type-safe and provides access to all API endpoints
- * defined in the contract. It automatically handles JSON serialization
- * and deserialization for all requests and responses.
- * @example
- * ```typescript
- * // Fetch current user
- * const user = await client.user.me();
- *
- * // Track a transaction
- * const result = await client.transaction.track({
- *   operation: 'issue',
- *   assetId: '123',
- *   transactionId: 'abc'
- * });
- * ```
- */
-export const client = getORPCClient() as ContractRouterClient<typeof contract>;
+export const client = await getORPCClient();
 
-/**
- * TanStack Query utilities for the ORPC client.
- *
- * Provides React hooks and utilities for data fetching with:
- * - Automatic caching and background refetching
- * - Optimistic updates
- * - Request deduplication
- * - Error and loading states
- * @example
- * ```typescript
- * // In a React component
- * const { data, isLoading } = orpc.user.me.useQuery();
- *
- * // Prefetch data
- * await orpc.user.me.prefetch();
- * ```
- */
 export const orpc = createTanstackQueryUtils(client);
