@@ -15,6 +15,7 @@
     "postbuild": "bun run tools/fix-noble-crypto.ts",
     "start": "bun run .output/server/index.mjs",
     "shadcn": "bunx shadcn@canary",
+    "settlemint:connect:local": "settlemint connect --instance local",
     "codegen:settlemint": "settlemint codegen",
     "codegen:interface-ids": "bun run ./tools/generate-interface-ids.ts",
     "format": "prettier --experimental-cli --write .",
