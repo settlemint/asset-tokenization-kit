@@ -5,10 +5,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { formatValue } from "@/lib/utils/format-value/index";
 import { orpc } from "@/orpc/orpc-client";
+import type { FiatCurrency } from "@atk/zod/fiat-currency";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import type { Dnum } from "dnum";
-import { toNumber } from "dnum";
 import { Briefcase, Building2, TrendingUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -56,13 +57,6 @@ export function PortfolioSummaryCard({
     );
   }
 
-  const formattedTotalValue = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: baseCurrency ?? "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(toNumber(totalValue));
-
   return (
     <Card>
       <CardHeader>
@@ -81,7 +75,12 @@ export function PortfolioSummaryCard({
               <TrendingUp className="h-4 w-4" />
               {t("charts.portfolio.summary.totalValue")}
             </div>
-            <div className="text-2xl font-bold">{formattedTotalValue}</div>
+            <div className="text-2xl font-bold">
+              {formatValue(totalValue, {
+                type: "currency",
+                currency: baseCurrency as FiatCurrency,
+              })}
+            </div>
           </div>
 
           <div className="space-y-2">

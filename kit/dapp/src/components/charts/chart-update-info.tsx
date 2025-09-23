@@ -4,12 +4,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  formatTimeUntilNextUpdate,
-  getChartLastUpdateTime,
-  getChartNextUpdateTime,
-} from "@/lib/utils/chart-update-time";
+import { useChartUpdateTime } from "@/hooks/use-chart-update-time";
+import { formatDate } from "@/lib/utils/date";
 import { Clock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface ChartUpdateInfoProps {
   interval: "hour" | "day";
@@ -30,9 +28,10 @@ export function ChartUpdateInfo({
   interval,
   className = "",
 }: ChartUpdateInfoProps) {
-  const lastUpdateTime = getChartLastUpdateTime(interval);
-  const nextUpdateTime = getChartNextUpdateTime(interval);
-  const nextUpdateText = formatTimeUntilNextUpdate(nextUpdateTime, interval);
+  const { t } = useTranslation("common");
+  const { getChartUpdateInfo } = useChartUpdateTime();
+  const { lastUpdate, nextUpdate, timeUntilUpdate } =
+    getChartUpdateInfo(interval);
 
   return (
     <TooltipProvider>
@@ -41,19 +40,19 @@ export function ChartUpdateInfo({
           <button
             type="button"
             className={`inline-flex items-center justify-center rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground ${className}`}
-            aria-label="Chart update information"
+            aria-label={t("chart.update.info")}
           >
             <Clock className="h-4 w-4" />
           </button>
         </TooltipTrigger>
         <TooltipContent>
           <div className="space-y-1">
-            <p className="text-sm font-medium">{nextUpdateText}</p>
+            <p className="text-sm font-medium">{timeUntilUpdate}</p>
             <p className="text-xs text-muted-foreground">
-              Last updated: {lastUpdateTime.toLocaleString()}
+              {t("chart.update.lastUpdated")}: {formatDate(lastUpdate)}
             </p>
             <p className="text-xs text-muted-foreground">
-              Next update: {nextUpdateTime.toLocaleString()}
+              {t("chart.update.nextUpdate")}: {formatDate(nextUpdate)}
             </p>
           </div>
         </TooltipContent>
