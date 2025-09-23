@@ -1,5 +1,5 @@
 import { bigDecimal } from "@atk/zod/bigdecimal";
-import { toNumber } from "dnum";
+import { isDnum, toNumber } from "dnum";
 
 /**
  * Helper function to safely convert a value to a number for formatting
@@ -23,6 +23,10 @@ export function safeToNumber(value: unknown): number {
       const num = Number(value);
       return Number.isNaN(num) ? 0 : num;
     }
+  }
+
+  if (isDnum(value)) {
+    return toNumber(value);
   }
 
   // For other types, use Number conversion

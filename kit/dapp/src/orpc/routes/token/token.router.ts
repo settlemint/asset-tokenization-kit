@@ -27,6 +27,7 @@ import { statsSupplyChanges } from "@/orpc/routes/token/routes/stats/supply-chan
 import { statsTotalSupply } from "@/orpc/routes/token/routes/stats/total-supply";
 import { statsVolume } from "@/orpc/routes/token/routes/stats/volume";
 import { statsWalletDistribution } from "@/orpc/routes/token/routes/stats/wallet-distribution";
+import { statsYieldDistribution } from "@/orpc/routes/token/routes/stats/yield-distribution";
 import { actions } from "@/orpc/routes/token/routes/token.actions";
 import { events } from "@/orpc/routes/token/routes/token.events";
 import { holder } from "@/orpc/routes/token/routes/token.holder";
@@ -72,6 +73,7 @@ const routes = {
   statsSupplyChanges,
   statsVolume,
   statsWalletDistribution,
+  statsYieldDistribution,
 };
 
 export default routes;

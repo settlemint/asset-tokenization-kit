@@ -47,5 +47,19 @@
   "dates": {
     "today": "Heute",
     "yesterday": "Gestern"
+  },
+  "chart": {
+    "update": {
+      "refreshing": "Wird aktualisiert...",
+      "inOneMinute": "Aktualisierung in 1 Minute",
+      "inMinutes": "Aktualisierung in {{count}} Minuten",
+      "inOneHour": "Aktualisierung in 1 Stunde",
+      "inHours": "Aktualisierung in {{count}} Stunden",
+      "tomorrow": "Aktualisierung morgen",
+      "soon": "Aktualisierung in Kürze",
+      "info": "Diagramm-Aktualisierungsinformationen",
+      "lastUpdated": "Zuletzt aktualisiert",
+      "nextUpdate": "Nächste Aktualisierung"
+    }
   }
 }

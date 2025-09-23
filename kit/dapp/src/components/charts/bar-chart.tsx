@@ -14,6 +14,7 @@ import {
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
 import { ChartEmptyState } from "./chart-empty-state";
+import { ChartUpdateInfo } from "./chart-update-info";
 
 export type BarChartData = Record<string, string | number>;
 
@@ -30,6 +31,7 @@ export interface BarChartComponentProps {
   className?: string;
   emptyMessage?: string;
   emptyDescription?: string;
+  interval?: "hour" | "day";
 }
 
 // Static bar radius configuration hoisted outside component
@@ -58,6 +60,7 @@ export function BarChartComponent({
   className,
   emptyMessage,
   emptyDescription,
+  interval,
 }: BarChartComponentProps) {
   // Simple formatter function - React Compiler will optimize this
   const legendFormatter = (value: string): string => {
@@ -80,6 +83,7 @@ export function BarChartComponent({
         className={className}
         emptyMessage={emptyMessage}
         emptyDescription={emptyDescription}
+        interval={interval}
       />
     );
   }
@@ -87,7 +91,10 @@ export function BarChartComponent({
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <div className="flex items-center gap-2">
+          <CardTitle>{title}</CardTitle>
+          {interval && <ChartUpdateInfo interval={interval} />}
+        </div>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent>
