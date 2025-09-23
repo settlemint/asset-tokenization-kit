@@ -1,4 +1,26 @@
 {
+  "manage": "إدارة",
+  "actions": {
+    "registerIdentity": {
+      "label": "تسجيل الهوية",
+      "title": "تسجيل الهوية",
+      "description": "سجّل هذه الهوية في سجل الهوية مع معلومات الدولة"
+    },
+    "viewEvents": "عرض الأحداث"
+  },
+  "register": {
+    "form": {
+      "country": "البلد",
+      "countryInfo": "اختر البلد لعملية تسجيل الهوية هذه",
+      "walletAddress": "عنوان المحفظة",
+      "walletAddressInfo": "عنوان المحفظة للتسجيل (افتراضيًا مالك الهوية)"
+    },
+    "success": "تم تسجيل الهوية بنجاح",
+    "confirm": {
+      "title": "تأكيد تسجيل الهوية",
+      "description": "يرجى مراجعة تفاصيل التسجيل قبل المتابعة"
+    }
+  },
   "status": {
     "pending": "معلق",
     "verified": "تم التحقق",

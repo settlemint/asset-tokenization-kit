@@ -1,4 +1,26 @@
 {
+  "manage": "Manage",
+  "actions": {
+    "registerIdentity": {
+      "label": "Register identity",
+      "title": "Register identity",
+      "description": "Register this identity in the identity registry with country information"
+    },
+    "viewEvents": "View events"
+  },
+  "register": {
+    "form": {
+      "country": "Country",
+      "countryInfo": "Select the country for this identity registration",
+      "walletAddress": "Wallet address",
+      "walletAddressInfo": "Wallet address to register (defaults to identity owner)"
+    },
+    "success": "Identity registered successfully",
+    "confirm": {
+      "title": "Confirm identity registration",
+      "description": "Please review the registration details before proceeding"
+    }
+  },
   "status": {
     "pending": "Pending",
     "verified": "Verified",
