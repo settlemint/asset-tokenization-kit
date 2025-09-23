@@ -16,7 +16,6 @@
 
 import { IdentityProgress } from "@/components/dashboard/identity-progress/identity-progress";
 import { PortfolioDetails } from "@/components/dashboard/portfolio-details/portfolio-details";
-import { PortfolioValueAreaChart } from "@/components/stats/charts/portfolio-value-area-chart";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
@@ -62,7 +61,6 @@ function Home() {
       {system.userIdentity?.registered && (
         <>
           <PortfolioDetails />
-          <PortfolioValueAreaChart interval="day" timeRange={30} />
         </>
       )}
     </div>

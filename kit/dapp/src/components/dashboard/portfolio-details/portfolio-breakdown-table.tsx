@@ -75,9 +75,6 @@ export function PortfolioBreakdownTable({
 
   return (
     <div className="space-y-4">
-      <h4 className="text-sm font-medium text-muted-foreground">
-        {t("charts.portfolio.breakdown.detailsTitle")}
-      </h4>
       <DataTable
         name="portfolio-breakdown"
         columns={columns}
