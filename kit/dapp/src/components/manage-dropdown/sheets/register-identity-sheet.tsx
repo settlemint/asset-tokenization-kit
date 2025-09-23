@@ -1,8 +1,11 @@
 import { useAppForm } from "@/hooks/use-app-form";
 import { useCountries } from "@/hooks/use-countries";
+import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { isoCountryCode } from "@atk/zod/iso-country-code";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -11,7 +14,6 @@ import { ActionFormSheet } from "../core/action-form-sheet";
 import { createActionFormStore } from "../core/action-form-sheet.store";
 import type { ManagedIdentity } from "../manage-identity-dropdown";
 import { ConfirmRegisterView } from "./register-identity/ConfirmRegisterView";
-import { useRegisterIdentity } from "./register-identity/useRegisterIdentity";
 
 const RegisterIdentityFormSchema = z.object({
   country: isoCountryCode,
@@ -36,6 +38,8 @@ export function RegisterIdentitySheet({
   const { t } = useTranslation("identities");
   const { t: tCommon } = useTranslation("common");
   const { getCountryOptions } = useCountries();
+  const queryClient = useQueryClient();
+  const router = useRouter();
   const sheetStoreRef = useRef(createActionFormStore({ hasValuesStep: true }));
   const ownerWallet = useMemo(
     () => getEthereumAddress(identity.account.id),
@@ -51,9 +55,35 @@ export function RegisterIdentitySheet({
     onOpenChange(false);
   };
 
-  const { mutateAsync: registerIdentity, isPending } = useRegisterIdentity(
-    identity.identity,
-    resetSheet
+  const { mutateAsync: registerIdentity, isPending } = useMutation(
+    orpc.system.identity.register.mutationOptions({
+      onSuccess: async (_, variables) => {
+        const invalidationPromises = [
+          queryClient.invalidateQueries({
+            queryKey: orpc.system.identity.read.queryKey({
+              input: { identityId: identity.identity },
+            }),
+          }),
+          queryClient.invalidateQueries({
+            queryKey: orpc.system.read.queryKey({ input: { id: "default" } }),
+          }),
+        ];
+
+        if (variables.wallet) {
+          invalidationPromises.push(
+            queryClient.invalidateQueries({
+              queryKey: orpc.system.identity.read.queryKey({
+                input: { wallet: variables.wallet },
+              }),
+            })
+          );
+        }
+
+        await Promise.all(invalidationPromises);
+        await router.invalidate();
+        resetSheet();
+      },
+    })
   );
 
   const form = useAppForm({
