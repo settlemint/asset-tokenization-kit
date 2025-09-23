@@ -20,6 +20,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import type { Dnum } from "dnum";
 import {
   AlertCircle,
+  Calendar,
   CircleCheck,
   CircleX,
   Coins,
@@ -38,8 +39,12 @@ import { toast } from "sonner";
 const columnHelper = createStrictColumnHelper<AssetBalance>();
 
 /**
- * Initial sorting configuration for the holders table
- * Sorts holders by lastUpdatedAt in descending order by default
+ * Default sorting configuration prioritizes most recently active holders.
+ *
+ * We sort by lastUpdatedAt descending to show holders with recent token activity first,
+ * which is more relevant for compliance monitoring and operational insights than
+ * alphabetical or balance-based sorting. This helps administrators quickly identify
+ * active participants in the token ecosystem.
  */
 const INITIAL_SORTING = [
   {
@@ -85,22 +90,37 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
     })
   );
 
-  // Extract holders data with proper null checking
+  // Extract holders data with defensive null checking to prevent runtime errors
+  // The API may return partial data during loading states or network issues
   const holders = holdersResponse.token?.balances ?? [];
 
+  // Token state determines available actions for security and compliance
   const isPaused = token.pausable?.paused ?? false;
+  // Burn operations require explicit permission AND token must not be paused
+  // This dual-check prevents unauthorized token destruction and operations during emergency pauses
   const canBurn = (token.userPermissions?.actions?.burn ?? false) && !isPaused;
+
+  // Burn target state manages the modal for burning tokens from specific holders
+  // Stores both address and available balance to pre-populate the burn form
   const [burnTarget, setBurnTarget] = useState<{
     address: `0x${string}`;
     available?: Dnum;
   } | null>(null);
 
   /**
-   * Creates action items for each row in the table
+   * Generates contextual actions for each holder row based on permissions and state.
+   *
+   * Action availability is determined by:
+   * - User permissions (burn capability)
+   * - Token state (paused/active)
+   * - Holder balance (must have available tokens to burn)
+   *
+   * This approach ensures users only see actionable options, reducing confusion
+   * and preventing invalid operations that would fail.
    *
    * @param {Object} row - The table row object
    * @param {AssetBalance} row.original - The original holder data for the row
-   * @returns {ActionItem[]} Array of action items
+   * @returns {ActionItem[]} Array of contextually appropriate action items
    */
   const createRowActions = useCallback(
     (row: { original: AssetBalance }): ActionItem[] => [
@@ -120,6 +140,9 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
           toast.success(t("tokens:holders.actions.addressCopied"));
         },
       },
+      // Burn action only appears when user has permission, token isn't paused,
+      // and holder has available (non-frozen) tokens to burn
+      // This prevents UI clutter and invalid burn attempts
       ...(canBurn && row.original.available[0] > 0n
         ? [
             {
@@ -145,7 +168,15 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
   );
 
   /**
-   * Handles the freeze bulk action for selected holders
+   * Handles bulk freeze operations for compliance and risk management.
+   *
+   * Freezing multiple accounts simultaneously is essential for:
+   * - Emergency response to security incidents
+   * - Compliance enforcement across related accounts
+   * - Batch processing of regulatory actions
+   *
+   * Currently shows notification for demo purposes; production would
+   * integrate with smart contract freeze functions.
    *
    * @param {AssetBalance[]} selectedHolders - Array of holders selected for freezing
    * @returns {void}
@@ -162,7 +193,15 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
   );
 
   /**
-   * Handles the unfreeze bulk action for selected holders
+   * Handles bulk unfreeze operations for account restoration.
+   *
+   * Bulk unfreezing allows efficient restoration of accounts after:
+   * - Resolution of compliance issues
+   * - Completion of investigation processes
+   * - Lifting of temporary restrictions
+   *
+   * Batch operations reduce administrative overhead and ensure
+   * consistent timing across related accounts.
    *
    * @param {AssetBalance[]} selectedHolders - Array of holders selected for unfreezing
    * @returns {void}
@@ -178,18 +217,28 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
     [t]
   );
 
+  // Map generic bulk action handlers to domain-specific freeze operations
+  // Using onArchive for freeze and onDuplicate for unfreeze leverages existing
+  // bulk action infrastructure while maintaining semantic clarity
   const { actions, actionGroups } = useBulkActions<AssetBalance>({
     onArchive: handleFreeze,
     onDuplicate: handleUnfreeze,
   });
 
   /**
-   * Defines the column configuration for the holders table
+   * Column definitions optimized for token compliance and operational monitoring.
    *
-   * Includes columns for value, available balance, frozen balance, and frozen status.
-   * Uses withAutoFeatures to enhance columns with automatic filtering and sorting capabilities.
+   * Column order prioritizes:
+   * 1. Identity (address) - Primary identifier for compliance tracking
+   * 2. Financial data (balances) - Core operational metrics
+   * 3. Temporal data (last activity) - Risk and compliance indicators
+   * 4. Status - Immediate visual compliance state
+   * 5. Actions - Context-sensitive operations
    *
-   * @returns {ColumnDef<AssetBalance>[]} Array of column definitions for the table
+   * withAutoFeatures adds intelligent filtering, sorting, and export capabilities
+   * without manual configuration, reducing maintenance overhead.
+   *
+   * @returns {ColumnDef<AssetBalance>[]} Fully configured column definitions
    */
   const columns = useMemo(
     () =>
@@ -230,6 +279,25 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
             icon: Lock,
           },
         }),
+        columnHelper.accessor("lastUpdatedAt", {
+          header: t("tokens:holders.columns.lastActivity"),
+          meta: {
+            displayName: t("tokens:holders.columns.lastActivity"),
+            type: "date",
+            icon: Calendar,
+          },
+          // Last Activity tracks when a holder's balance was last modified
+          // Critical for compliance reporting and detecting dormant accounts
+          // Helps identify accounts that may need KYC renewal or compliance review
+        }),
+        /**
+         * Status column displays frozen state with visual badges.
+         *
+         * Using display column instead of accessor because isFrozen is computed
+         * from the frozen balance amount, not a direct field. The badge design
+         * provides immediate visual feedback for compliance officers reviewing
+         * account restrictions.
+         */
         columnHelper.display({
           id: "isFrozen",
           header: t("tokens:holders.columns.status"),
@@ -293,39 +361,70 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
           }
         />
       )}
-      <DataTable
-        name="token-holders"
-        data={holders}
-        columns={columns}
-        urlState={{
-          enabled: true,
-          routePath,
-          enableUrlPersistence: true,
-          defaultPageSize: 20,
-          enableGlobalFilter: true,
-          enableRowSelection: true,
-          debounceMs: 300,
-        }}
-        advancedToolbar={{
-          enableGlobalSearch: false,
-          enableFilters: true,
-          enableExport: true,
-          enableViewOptions: true,
-          placeholder: t("tokens:holders.searchPlaceholder"),
-        }}
-        bulkActions={{
-          enabled: true,
-          actions,
-          actionGroups,
-          position: "bottom",
-          showSelectionCount: true,
-          enableSelectAll: true,
-        }}
-        pagination={{
-          enablePagination: true,
-        }}
-        initialSorting={INITIAL_SORTING}
-      />
+      <div className="space-y-4">
+        {/* 
+          Total holders display provides immediate context for token distribution.
+          
+          Showing holder count upfront helps users understand the scale of token
+          distribution before diving into individual records. This is particularly
+          important for compliance reporting where holder count thresholds may
+          trigger regulatory requirements (e.g., SEC filing requirements).
+        */}
+        <div className="flex items-center gap-2">
+          <UserCircle className="h-5 w-5 text-muted-foreground" />
+          <p className="text-sm font-medium">
+            {t("tokens:holders.totalHolders", { count: holders.length })}
+          </p>
+        </div>
+        <DataTable
+          name="token-holders"
+          data={holders}
+          columns={columns}
+          urlState={{
+            enabled: true,
+            routePath,
+            enableUrlPersistence: true,
+            // Page size of 20 balances performance with usability
+            // Large holder lists can impact rendering performance, while too small
+            // a page size creates excessive pagination for operational use
+            defaultPageSize: 20,
+            enableGlobalFilter: true,
+            enableRowSelection: true,
+            // 300ms debounce reduces API calls during rapid typing
+            // Critical for holder searches which may query large datasets
+            debounceMs: 300,
+          }}
+          advancedToolbar={{
+            // Global search disabled in favor of column-specific filters
+            // Holder data benefits from precise filtering (by balance range, status)
+            // rather than broad text search across all fields
+            enableGlobalSearch: false,
+            enableFilters: true,
+            // Export enables compliance reporting and backup procedures
+            enableExport: true,
+            enableViewOptions: true,
+            placeholder: t("tokens:holders.searchPlaceholder"),
+          }}
+          bulkActions={{
+            enabled: true,
+            actions,
+            actionGroups,
+            // Bottom position keeps actions visible during long scrolling sessions
+            // Important for administrators processing large holder lists
+            position: "bottom",
+            showSelectionCount: true,
+            // Select all enabled for batch compliance operations
+            // Allows efficient freeze/unfreeze of multiple accounts
+            enableSelectAll: true,
+          }}
+          pagination={{
+            // Pagination essential for large holder lists to maintain performance
+            // Token holder lists can grow to thousands of entries
+            enablePagination: true,
+          }}
+          initialSorting={INITIAL_SORTING}
+        />
+      </div>
     </ComponentErrorBoundary>
   );
 }

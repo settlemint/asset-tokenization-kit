@@ -27,73 +27,44 @@ export function AssetSupplyChangesAreaChart({
 }: AssetSupplyChangesAreaChartProps) {
   const { t } = useTranslation("stats");
 
-  // Memoize the data transformation function to prevent unnecessary re-creation
-  const selectTransform = useMemo(
-    () =>
-      (response: {
-        supplyChangesHistory?: Array<{
-          timestamp: number;
-          totalMinted: string;
-          totalBurned: string;
-        }>;
-      }) => {
-        // Handle empty data case
-        if (!response.supplyChangesHistory?.length) {
-          return {
-            chartData: [],
-            chartConfig: {
-              totalMinted: {
-                label: t("charts.supplyChanges.minted"),
-                color: "var(--chart-1)", // Green for minted
-              },
-              totalBurned: {
-                label: t("charts.supplyChanges.burned"),
-                color: "var(--chart-3)", // Red for burned
-              },
-            },
-            dataKeys: ["totalMinted", "totalBurned"],
-          };
-        }
-
-        // Transform the response data to chart format using safe conversion
-        // Convert burned amounts to negative values for visualization
-        const transformedData = response.supplyChangesHistory.map((item) => ({
-          timestamp: format(new Date(item.timestamp * 1000), "MMM dd"),
-          totalMinted: safeToNumber(item.totalMinted),
-          totalBurned: -safeToNumber(item.totalBurned), // Negative for burned amounts
-        }));
-
-        // Configure chart colors and labels
-        const config: ChartConfig = {
-          totalMinted: {
-            label: t("charts.supplyChanges.minted"),
-            color: "var(--chart-1)", // Green for minted
-          },
-          totalBurned: {
-            label: t("charts.supplyChanges.burned"),
-            color: "var(--chart-3)", // Red for burned
-          },
-        };
-
-        return {
-          chartData: transformedData,
-          chartConfig: config,
-          dataKeys: ["totalMinted", "totalBurned"],
-        };
-      },
-    [t]
-  );
-
-  // Fetch and transform supply changes history data with optimized caching
-  const {
-    data: { chartData, chartConfig, dataKeys },
-  } = useSuspenseQuery(
+  // Fetch supply changes history data with optimized caching
+  const { data } = useSuspenseQuery(
     orpc.token.statsSupplyChanges.queryOptions({
       input: { tokenAddress: assetAddress, days: timeRange },
-      select: selectTransform,
       ...CHART_QUERY_OPTIONS,
     })
   );
+
+  // Transform the response data to chart format using safe conversion
+  const chartData = useMemo(() => {
+    if (!data.supplyChangesHistory?.length) {
+      return [];
+    }
+
+    // Convert burned amounts to negative values for visualization
+    return data.supplyChangesHistory.map((item) => ({
+      timestamp: format(new Date(item.timestamp * 1000), "MMM dd"),
+      totalMinted: safeToNumber(item.totalMinted),
+      totalBurned: -safeToNumber(item.totalBurned), // Negative for burned amounts
+    }));
+  }, [data.supplyChangesHistory]);
+
+  // Configure chart colors and labels
+  const chartConfig: ChartConfig = useMemo(
+    () => ({
+      totalMinted: {
+        label: t("charts.supplyChanges.minted"),
+        color: "var(--chart-1)", // Green for minted
+      },
+      totalBurned: {
+        label: t("charts.supplyChanges.burned"),
+        color: "var(--chart-3)", // Red for burned
+      },
+    }),
+    [t]
+  );
+
+  const dataKeys = ["totalMinted", "totalBurned"];
 
   return (
     <ComponentErrorBoundary componentName="Asset Supply Changes Chart">
