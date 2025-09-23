@@ -1,0 +1,249 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hasura.fullname" . }}
+  labels:
+    {{- include "hasura.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "hasura.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "hasura.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "hasura.serviceAccountName" . }}
+      {{- $podSecurityContext := include "hasura.podSecurityContext" . | fromYaml }}
+      {{- if $podSecurityContext }}
+      securityContext:
+        {{- toYaml $podSecurityContext | nindent 8 }}
+      {{- end }}
+      {{- with .Values.initContainers }}
+      initContainers:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- $containerSecurityContext := include "hasura.containerSecurityContext" . | fromYaml }}
+          {{- if $containerSecurityContext }}
+          securityContext:
+            {{- toYaml $containerSecurityContext | nindent 12 }}
+          {{- end }}
+          image: {{ include "hasura.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.config.serverPort }}
+              protocol: TCP
+          env:
+            # Core configuration
+            - name: HASURA_GRAPHQL_SERVER_PORT
+              value: {{ .Values.config.serverPort | quote }}
+            - name: HASURA_GRAPHQL_ENABLE_CONSOLE
+              value: {{ .Values.config.enableConsole | quote }}
+            - name: HASURA_GRAPHQL_DEV_MODE
+              value: {{ .Values.config.devMode | quote }}
+            - name: HASURA_GRAPHQL_ENABLE_TELEMETRY
+              value: {{ .Values.config.enableTelemetry | quote }}
+            - name: HASURA_GRAPHQL_LOG_LEVEL
+              value: {{ .Values.config.logLevel }}
+            - name: HASURA_GRAPHQL_CONSOLE_ASSETS_DIR
+              value: {{ ternary "/srv/console-assets" "" .Values.config.enableConsoleAssets | quote }}
+
+            # Metrics configuration
+            {{- if .Values.monitoring.enabled }}
+            - name: HASURA_GRAPHQL_ENABLED_APIS
+              value: "metadata,graphql,config,metrics"
+            {{- if .Values.monitoring.metricsSecret }}
+            - name: HASURA_GRAPHQL_METRICS_SECRET
+              value: {{ .Values.monitoring.metricsSecret }}
+            {{- end }}
+            {{- end }}
+
+            # Database configuration
+            {{- if .Values.database.connectionUrl }}
+            - name: HASURA_GRAPHQL_DATABASE_URL
+              value: {{ .Values.database.connectionUrl }}
+            {{- end }}
+
+            {{- if .Values.metadata.databaseUrl }}
+            - name: HASURA_GRAPHQL_METADATA_DATABASE_URL
+              value: {{ .Values.metadata.databaseUrl }}
+            {{- end }}
+
+            # Database pool settings
+            - name: HASURA_GRAPHQL_PG_CONNECTIONS
+              value: {{ .Values.database.connections | quote }}
+            - name: HASURA_GRAPHQL_PG_TIMEOUT
+              value: {{ .Values.database.idleTimeout | quote }}
+            - name: HASURA_GRAPHQL_PG_CONN_LIFETIME
+              value: {{ .Values.database.connLifetime | quote }}
+            - name: HASURA_GRAPHQL_USE_PREPARED_STATEMENTS
+              value: {{ .Values.database.usePreparedStatements | quote }}
+            {{- if .Values.database.txIsolation }}
+            - name: HASURA_GRAPHQL_TX_ISOLATION
+              value: {{ .Values.database.txIsolation }}
+            {{- end }}
+
+            # Admin secret
+            {{- if .Values.adminSecret.enabled }}
+            - name: HASURA_GRAPHQL_ADMIN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "hasura.secretName" . }}
+                  key: {{ .Values.adminSecret.existingSecretKey }}
+            {{- end }}
+
+            # CORS configuration
+            - name: HASURA_GRAPHQL_CORS_DOMAIN
+              value: {{ .Values.config.corsDomain | quote }}
+            - name: HASURA_GRAPHQL_DISABLE_CORS
+              value: {{ .Values.config.disableCors | quote }}
+
+            # WebSocket configuration
+            - name: HASURA_GRAPHQL_WS_READ_COOKIE
+              value: "false"
+            - name: HASURA_GRAPHQL_WEBSOCKET_KEEPALIVE
+              value: {{ .Values.config.wsKeepAlive | quote }}
+
+            # Permissions
+            - name: HASURA_GRAPHQL_ENABLE_REMOTE_SCHEMA_PERMISSIONS
+              value: {{ .Values.config.enableRemoteSchemaPermissions | quote }}
+            - name: HASURA_GRAPHQL_ENABLE_ALLOWLIST
+              value: {{ .Values.config.enableAllowlist | quote }}
+            - name: HASURA_GRAPHQL_INFER_FUNCTION_PERMISSIONS
+              value: {{ .Values.config.inferFunctionPermissions | quote }}
+            - name: HASURA_GRAPHQL_SCHEMA_SYNC_POLL_INTERVAL
+              value: "10"
+
+            # Unauthorized role
+            {{- if .Values.unauthorizedRole }}
+            - name: HASURA_GRAPHQL_UNAUTHORIZED_ROLE
+              value: {{ .Values.unauthorizedRole }}
+            {{- end }}
+
+            # Auth webhook
+            {{- if .Values.authHook.enabled }}
+            - name: HASURA_GRAPHQL_AUTH_HOOK
+              value: {{ .Values.authHook.url }}
+            - name: HASURA_GRAPHQL_AUTH_HOOK_MODE
+              value: {{ .Values.authHook.mode }}
+            {{- end }}
+
+            # JWT configuration
+            {{- range $index, $jwtSecret := .Values.jwtSecrets }}
+            - name: HASURA_GRAPHQL_JWT_SECRET_{{ $index }}
+              value: {{ $jwtSecret | toJson | quote }}
+            {{- end }}
+
+            # Actions
+            {{- if .Values.actions.baseUrl }}
+            - name: HASURA_GRAPHQL_ACTION_BASE_URL
+              value: {{ .Values.actions.baseUrl }}
+            {{- end }}
+            {{- if .Values.actions.handlerWebhookBaseUrl }}
+            - name: HASURA_GRAPHQL_ACTION_HANDLER_WEBHOOK_BASEURL
+              value: {{ .Values.actions.handlerWebhookBaseUrl }}
+            {{- end }}
+
+            # Events
+            - name: HASURA_GRAPHQL_EVENTS_HTTP_POOL_SIZE
+              value: {{ .Values.events.httpPoolSize | quote }}
+            - name: HASURA_GRAPHQL_EVENTS_FETCH_INTERVAL
+              value: {{ .Values.events.fetchInterval | quote }}
+
+            # Redis configuration
+            {{- if .Values.redis.enabled }}
+            {{- if .Values.redis.cacheUrl }}
+            - name: HASURA_GRAPHQL_REDIS_URL
+              value: {{ .Values.redis.cacheUrl }}
+            - name: HASURA_GRAPHQL_RATE_LIMIT_REDIS_URL
+              value: {{ .Values.redis.rateLimitUrl | default .Values.redis.cacheUrl }}
+            - name: HASURA_GRAPHQL_CACHE_MAX_TTL
+              value: {{ .Values.redis.cacheTtl | quote }}
+            {{- end }}
+            {{- end }}
+
+            # Extra environment variables
+            {{- with .Values.extraEnvs }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.extraEnvFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.healthChecks.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: {{ .Values.healthChecks.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthChecks.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthChecks.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.healthChecks.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.healthChecks.livenessProbe.failureThreshold }}
+          {{- end }}
+          {{- if .Values.healthChecks.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: {{ .Values.healthChecks.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthChecks.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthChecks.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.healthChecks.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.healthChecks.readinessProbe.failureThreshold }}
+          {{- end }}
+          {{- if .Values.healthChecks.startupProbe.enabled }}
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: {{ .Values.healthChecks.startupProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthChecks.startupProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthChecks.startupProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.healthChecks.startupProbe.successThreshold }}
+            failureThreshold: {{ .Values.healthChecks.startupProbe.failureThreshold }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

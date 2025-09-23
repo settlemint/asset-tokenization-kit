@@ -1,153 +1,379 @@
-# https://github.com/hasura/helm-charts/blob/main/charts/graphql-engine/values.yaml
+# Hasura GraphQL Engine Helm Chart Values
 
-global:
-  labels:
-    kots.io/app-slug: settlemint-atk
+# -- (int) Number of Hasura replicas to deploy
+replicaCount: 1
 
-# -- (object) Hasura GraphQL Engine configuration
-graphql-engine:
-  # -- (string) String to partially override common.names.fullname template (will maintain the release name)
-  nameOverride: hasura
-  # -- (int) Number of Hasura replicas to deploy
-  replicas: 1
-  # -- (object) Hasura image configuration
-  image:
-    # -- (string) Hasura image repository
-    repository: docker.io/hasura/graphql-engine
-  # -- (object) Labels to add to all Hasura resources
-  labels:
-    app.kubernetes.io/instance: atk
-    kots.io/app-slug: settlemint-atk
-    app.kubernetes.io/part-of: settlemint-atk
-    app.kubernetes.io/managed-by: helm
-    app.kubernetes.io/component: hasura
-  # -- (object) Ingress parameters for Hasura
-  ingress:
-    # -- (bool) Enable ingress record generation for Hasura
-    enabled: true
-    # -- (string) IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
-    ingressClassName: "atk-nginx"
-    # -- (string) Default host for the ingress record
-    hostName: "hasura.k8s.orb.local"
-  # -- (object) OpenShift Route parameters for Hasura
-  openShiftRoute:
-    # -- (bool) Enable OpenShift route creation for Hasura
-    enabled: false
-    # -- (object) Additional annotations for the OpenShift route resource
-    annotations: {}
-    # -- (string) Hostname exposed via the OpenShift route
-    host: hasura.k8s.orb.local
-    # -- (string) HTTP path exposed via the OpenShift route
-    path: /
-    # -- (string) Wildcard policy to apply to the route
-    wildcardPolicy: None
-    # -- (object) Service port configuration for the route target
-    port:
-      # -- (string) Service target port name (must exist on the Hasura service)
-      targetPort: http
-    # -- (object) Primary service weight configuration
-    to:
-      # -- (int) Weight assigned to the Hasura service backend
-      weight: 100
-    # -- (list) Additional backends for weighted routing
-    alternateBackends: []
-    # -- (object) TLS configuration for the OpenShift route
-    tls: null
-  # -- (object) Hasura GraphQL Engine configuration
-  config:
-    # -- (bool) Enable metadata-only mode
-    metadataOnly: false
-    # -- (bool) Enable internal console assets
-    enableInternalConsoleAssets: true
-    # -- (bool) Enable development mode
-    devMode: true
-  # -- (object) Hasura secret configuration
-  secret:
-    # -- (bool) Enable secret creation
-    enabled: true
-    # -- (string) Admin secret for Hasura console
-    adminSecret: "atk"
-    # -- (string) Redis URL for caching
-    redisUrl: "redis://default:atk@redis:6379"
-    # -- (string) Redis URL for rate limiting
-    rateLimitRedisUrl: "redis://default:atk@redis:6379"
-    # -- (string) Metadata database URL
-    metadataDbUrl: "postgresql://hasura:atk@postgresql:5432/hasura"
-    # -- (object) Additional secrets for Hasura
-    extraSecrets:
-      # -- (string) Default database URL
-      DEFAULT_DB_URL: "postgresql://hasura:atk@postgresql:5432/hasura"
-  # -- (list) Additional environment variables for Hasura
-  extraEnvs:
-    - name: HASURA_GRAPHQL_PG_CONNECTIONS
-      value: "10"
-    - name: HASURA_GRAPHQL_DATABASE_URL
-      valueFrom:
-        secretKeyRef:
-          key: DEFAULT_DB_URL
-          name: atk-secrets
-  # -- (list) Init containers for Hasura
-  initContainers:
-    - name: wait-for-postgresql
-      image: ghcr.io/settlemint/btp-waitforit:v7.7.10
-      imagePullPolicy: IfNotPresent
-      command:
-        - /usr/bin/wait-for-it
-        - postgresql:5432
-        - -t
-        - "120"
-      resources:
-        limits:
-          cpu: 100m
-          memory: 64Mi
-        requests:
-          cpu: 10m
-          memory: 32Mi
-  # -- (object) Global configuration for Hasura
-  global:
-    # -- (list) Global Docker registry secret names as an array
-    imagePullSecrets: []
-  # -- (object) PostgreSQL configuration (disabled, using external PostgreSQL)
-  postgres:
-    # -- (bool) Enable embedded PostgreSQL
-    enabled: false
+# -- (string) Override name for the chart
+nameOverride: ""
+# -- (string) Override fullname for the chart
+fullnameOverride: ""
 
-# -- (object) Busybox image configuration for utility tasks
-busybox:
-  # -- (string) Busybox image registry
+# -- (object) Hasura image configuration
+image:
+  # -- (string) Hasura image registry
   registry: docker.io
-  # -- (string) Busybox image repository
-  repository: busybox
-  # -- (string) Busybox image tag
-  tag: 1.37
-  # -- (string) Busybox image pull policy
+  # -- (string) Hasura image repository
+  repository: hasura/graphql-engine
+  # -- (string) Hasura image tag
+  tag: v2.48.3
+  # -- (string) Hasura image pull policy
   pullPolicy: IfNotPresent
 
-# -- (object) Git image configuration for repository operations
-git:
-  # -- (object) Git image configuration
-  image:
-    # -- (string) Git image registry
-    registry: docker.io
-    # -- (string) Git image repository
-    repository: alpine/git
-    # -- (string) Git image tag
-    tag: v2.49.1
-    # -- (string) Git image pull policy
-    pullPolicy: IfNotPresent
-
-# -- (object) Job configuration for Hasura metadata operations
-job:
-  # -- (object) Workspace configuration for jobs
-  workspace:
-    # -- (bool) Configure the persistent volume claim for the job workspace
-    enabled: true # Set to false to use emptyDir instead of PVC
-    # -- (string) Size of the workspace volume
-    size: 1Gi
-    # -- (string) Storage class for the workspace volume (uses default if empty)
-    storageClass: "" # Optional: specify storage class, otherwise use default
-    # -- (string) Access mode for the workspace volume
-    accessMode: ReadWriteOnce
-
-# -- (list) Global Docker registry secret names as an array
+# -- (list) Docker registry secret names as an array
 imagePullSecrets: []
+
+# -- (object) Service account configuration
+serviceAccount:
+  # -- (bool) Specifies whether a service account should be created
+  create: true
+  # -- (bool) Automatically mount ServiceAccount's API credentials
+  automount: true
+  # -- (object) Annotations to add to the service account
+  annotations: {}
+  # -- (string) The name of the service account to use
+  name: ""
+
+# -- (object) Hasura configuration options
+config:
+  # -- (bool) Enable console
+  enableConsole: true
+  # -- (bool) Enable development mode
+  devMode: false
+  # -- (bool) Enable console assets (for offline usage)
+  enableConsoleAssets: true
+  # -- (bool) Enable telemetry
+  enableTelemetry: false
+  # -- (string) Log level (debug, info, warn, error)
+  logLevel: info
+  # -- (int) Server port
+  serverPort: 8080
+  # -- (bool) Enable remote schema permissions
+  enableRemoteSchemaPermissions: false
+  # -- (bool) Enable allowlist
+  enableAllowlist: false
+  # -- (string) CORS domain configuration
+  corsDomain: "*"
+  # -- (bool) Disable CORS
+  disableCors: false
+  # -- (int) WebSocket keepalive interval (seconds)
+  wsKeepAlive: 5
+  # -- (bool) Infer function permissions
+  inferFunctionPermissions: true
+  # -- (bool) Enable schema introspection for specified roles
+  schemaIntrospectionDisabled: false
+
+# -- (object) Database configuration
+database:
+  # -- (string) Database connection string (can be set via secret)
+  connectionUrl: ""
+  # -- (int) Maximum connections
+  connections: 50
+  # -- (int) Idle timeout (seconds)
+  idleTimeout: 180
+  # -- (int) Connection lifetime (seconds)
+  connLifetime: 600
+  # -- (bool) Use prepared statements
+  usePreparedStatements: true
+  # -- (string) Transaction isolation level (read-committed, repeatable-read, serializable)
+  txIsolation: "read-committed"
+  # -- (bool) Enable connection pooling
+  enablePooling: true
+
+# -- (object) Admin secret configuration
+adminSecret:
+  # -- (bool) Create admin secret
+  enabled: true
+  # -- (string) Admin secret key (auto-generated if empty)
+  key: ""
+  # -- (string) Use existing secret
+  existingSecret: ""
+  # -- (string) Key in existing secret
+  existingSecretKey: "admin-secret"
+
+# -- (object) JWT secrets configuration
+jwtSecrets: []
+  # - type: ""
+  #   jwkUrl: ""
+  #   audience: ""
+  #   issuer: ""
+  #   claimsNamespace: ""
+  #   claimsFormat: ""
+  #   claimsMap: ""
+
+# -- (object) Unauthorized role configuration
+unauthorizedRole: "anonymous"
+
+# -- (object) Authentication webhook configuration
+authHook:
+  # -- (bool) Enable auth webhook
+  enabled: false
+  # -- (string) Webhook URL
+  url: ""
+  # -- (string) Webhook mode (GET or POST)
+  mode: "POST"
+
+# -- (object) Action configuration
+actions:
+  # -- (string) Action base URL
+  baseUrl: ""
+  # -- (string) Action handler webhook base URL
+  handlerWebhookBaseUrl: ""
+
+# -- (object) Events configuration
+events:
+  # -- (int) HTTP pool size for events
+  httpPoolSize: 100
+  # -- (int) Fetch interval for events (seconds)
+  fetchInterval: 10
+
+# -- (object) Cron triggers configuration
+cronTriggers:
+  # -- (bool) Include webhook secret in cron triggers
+  includeInMetadata: false
+
+# -- (object) Redis configuration for caching and rate limiting
+redis:
+  # -- (bool) Enable Redis integration
+  enabled: false
+  # -- (string) Redis URL for query caching
+  cacheUrl: ""
+  # -- (int) Cache TTL in seconds
+  cacheTtl: 60
+  # -- (string) Redis URL for rate limiting
+  rateLimitUrl: ""
+
+# -- (object) Metadata database configuration
+metadata:
+  # -- (string) Metadata database URL (defaults to main database if not set)
+  databaseUrl: ""
+
+# -- (list) Additional environment variables
+extraEnvs: []
+  # - name: HASURA_GRAPHQL_EXPERIMENTAL_FEATURES
+  #   value: "naming_convention"
+
+# -- (list) Additional environment variables from secrets/configmaps
+extraEnvFrom: []
+  # - secretRef:
+  #     name: my-secret
+  # - configMapRef:
+  #     name: my-configmap
+
+# -- (object) Service configuration
+service:
+  # -- (string) Service type
+  type: ClusterIP
+  # -- (int) Service port
+  port: 8080
+  # -- (int) Target port
+  targetPort: 8080
+  # -- (string) Node port (if type is NodePort)
+  nodePort: ""
+  # -- (object) Additional service annotations
+  annotations: {}
+  # -- (object) Additional service labels
+  labels: {}
+
+# -- (object) Ingress configuration
+ingress:
+  # -- (bool) Enable ingress
+  enabled: true
+  # -- (string) Ingress class name
+  className: "atk-nginx"
+  # -- (object) Ingress annotations
+  annotations: {}
+  # -- (string) Ingress hostname
+  hostName: "hasura.k8s.orb.local"
+  # -- (string) Ingress path
+  path: /
+  # -- (string) Ingress path type
+  pathType: Prefix
+  # -- (list) Additional hosts
+  extraHosts: []
+  # -- (list) TLS configuration
+  tls: []
+
+# -- (object) OpenShift Route configuration
+openShiftRoute:
+  # -- (bool) Enable OpenShift route
+  enabled: false
+  # -- (object) Route annotations
+  annotations: {}
+  # -- (string) Route hostname
+  host: hasura.k8s.orb.local
+  # -- (string) Route path
+  path: /
+  # -- (string) Wildcard policy
+  wildcardPolicy: None
+  # -- (object) TLS configuration
+  tls: null
+  # -- (object) Service weight configuration
+  to:
+    # -- (int) Weight for the service
+    weight: 100
+  # -- (list) Alternate backends
+  alternateBackends: []
+
+# -- (object) Health check configuration
+healthChecks:
+  # -- (object) Liveness probe configuration
+  livenessProbe:
+    # -- (bool) Enable liveness probe
+    enabled: true
+    # -- (int) Initial delay seconds
+    initialDelaySeconds: 30
+    # -- (int) Period seconds
+    periodSeconds: 10
+    # -- (int) Timeout seconds
+    timeoutSeconds: 5
+    # -- (int) Success threshold
+    successThreshold: 1
+    # -- (int) Failure threshold
+    failureThreshold: 3
+  # -- (object) Readiness probe configuration
+  readinessProbe:
+    # -- (bool) Enable readiness probe
+    enabled: true
+    # -- (int) Initial delay seconds
+    initialDelaySeconds: 10
+    # -- (int) Period seconds
+    periodSeconds: 10
+    # -- (int) Timeout seconds
+    timeoutSeconds: 5
+    # -- (int) Success threshold
+    successThreshold: 1
+    # -- (int) Failure threshold
+    failureThreshold: 3
+  # -- (object) Startup probe configuration
+  startupProbe:
+    # -- (bool) Enable startup probe
+    enabled: false
+    # -- (int) Initial delay seconds
+    initialDelaySeconds: 0
+    # -- (int) Period seconds
+    periodSeconds: 10
+    # -- (int) Timeout seconds
+    timeoutSeconds: 5
+    # -- (int) Success threshold
+    successThreshold: 1
+    # -- (int) Failure threshold
+    failureThreshold: 30
+
+# -- (object) Resource limits and requests
+resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 250m
+  #   memory: 256Mi
+
+# -- (object) Horizontal pod autoscaler configuration
+autoscaling:
+  # -- (bool) Enable HPA
+  enabled: false
+  # -- (int) Minimum replicas
+  minReplicas: 1
+  # -- (int) Maximum replicas
+  maxReplicas: 10
+  # -- (int) Target CPU utilization percentage
+  targetCPUUtilizationPercentage: 80
+  # -- (int) Target memory utilization percentage
+  targetMemoryUtilizationPercentage: 80
+
+# -- (list) Init containers
+initContainers: []
+  # - name: wait-for-postgres
+  #   image: busybox:1.28
+  #   command: ['sh', '-c', 'until nc -z postgres 5432; do echo waiting for postgres; sleep 2; done;']
+
+# -- (object) Pod annotations
+podAnnotations: {}
+
+# -- (object) Pod labels
+podLabels: {}
+
+# -- (object) Pod security context
+podSecurityContext: {}
+  # fsGroup: 2000
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# -- (object) Container security context
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# -- (object) Node selector
+nodeSelector: {}
+
+# -- (list) Tolerations
+tolerations: []
+
+# -- (object) Pod affinity
+affinity: {}
+
+# -- (object) Pod disruption budget
+podDisruptionBudget:
+  # -- (bool) Enable PDB
+  enabled: false
+  # -- (int) Minimum available pods
+  minAvailable: 1
+  # -- (int) Maximum unavailable pods
+  maxUnavailable: ""
+
+# -- (object) Volume mounts for the container
+volumeMounts: []
+  # - name: config
+  #   mountPath: /etc/hasura
+
+# -- (list) Volumes for the pod
+volumes: []
+  # - name: config
+  #   configMap:
+  #     name: hasura-config
+
+# -- (object) Monitoring configuration
+monitoring:
+  # -- (bool) Enable Prometheus monitoring
+  enabled: false
+  # -- (string) Secret for metrics endpoint (optional)
+  metricsSecret: ""
+  # -- (object) Service monitor configuration
+  serviceMonitor:
+    # -- (bool) Create ServiceMonitor resource
+    enabled: false
+    # -- (string) Monitoring namespace
+    namespace: ""
+    # -- (object) Additional labels for ServiceMonitor
+    labels: {}
+    # -- (int) Scrape interval
+    interval: 30s
+    # -- (int) Scrape timeout
+    scrapeTimeout: 10s
+    # -- (string) Metrics path
+    path: /v1/metrics
+
+# -- (object) Network policy configuration
+networkPolicy:
+  # -- (bool) Enable network policy
+  enabled: false
+  # -- (list) Pod selector match labels
+  podSelector: {}
+  # -- (list) Ingress rules
+  ingress: []
+  # -- (list) Egress rules
+  egress: []
+
+# -- (object) Priority class configuration
+priorityClassName: ""
+
+# -- (object) Topology spread constraints
+topologySpreadConstraints: []
+
+# -- (object) Labels to add to all resources
+labels: {}

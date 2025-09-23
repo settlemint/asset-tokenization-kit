@@ -1,6 +1,6 @@
 # atk
 
-![Version: 2.0.0-alpha.7](https://img.shields.io/badge/Version-2.0.0--alpha.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.7](https://img.shields.io/badge/AppVersion-2.0.0--alpha.7-informational?style=flat-square)
+![Version: 2.0.0-alpha.8](https://img.shields.io/badge/Version-2.0.0--alpha.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.8](https://img.shields.io/badge/AppVersion-2.0.0--alpha.8-informational?style=flat-square)
 
 A Helm chart for the SettleMint Asset Tokenization Kit
 
@@ -129,46 +129,65 @@ The following table lists the configurable parameters of this chart and their de
 | graph-node.initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |
 | graph-node.openShiftRoute.enabled | bool | `false` |  |
 | graph-node.openShiftRoute.host | string | `"graph.k8s.orb.local"` |  |
+| hasura.adminSecret.enabled | bool | `true` |  |
+| hasura.adminSecret.existingSecret | string | `""` |  |
+| hasura.adminSecret.existingSecretKey | string | `"admin-secret"` |  |
+| hasura.adminSecret.key | string | `"atk"` |  |
+| hasura.config.corsDomain | string | `"*"` |  |
+| hasura.config.devMode | bool | `true` |  |
+| hasura.config.disableCors | bool | `false` |  |
+| hasura.config.enableAllowlist | bool | `false` |  |
+| hasura.config.enableConsole | bool | `true` |  |
+| hasura.config.enableConsoleAssets | bool | `true` |  |
+| hasura.config.enableRemoteSchemaPermissions | bool | `false` |  |
+| hasura.config.enableTelemetry | bool | `false` |  |
+| hasura.config.inferFunctionPermissions | bool | `true` |  |
+| hasura.config.logLevel | string | `"info"` |  |
+| hasura.config.schemaIntrospectionDisabled | bool | `false` |  |
+| hasura.config.serverPort | int | `8080` |  |
+| hasura.config.wsKeepAlive | int | `5` |  |
+| hasura.database.connLifetime | int | `600` |  |
+| hasura.database.connectionUrl | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
+| hasura.database.connections | int | `50` |  |
+| hasura.database.enablePooling | bool | `true` |  |
+| hasura.database.idleTimeout | int | `180` |  |
+| hasura.database.txIsolation | string | `"read-committed"` |  |
+| hasura.database.usePreparedStatements | bool | `true` |  |
 | hasura.enabled | bool | `true` |  |
-| hasura.graphql-engine.image.repository | string | `"docker.io/hasura/graphql-engine"` |  |
-| hasura.graphql-engine.ingress.hostName | string | `"hasura.k8s.orb.local"` |  |
-| hasura.graphql-engine.initContainers[0].command[0] | string | `"/usr/bin/wait-for-it"` |  |
-| hasura.graphql-engine.initContainers[0].command[1] | string | `"postgresql:5432"` |  |
-| hasura.graphql-engine.initContainers[0].command[2] | string | `"-t"` |  |
-| hasura.graphql-engine.initContainers[0].command[3] | string | `"120"` |  |
-| hasura.graphql-engine.initContainers[0].image | string | `"ghcr.io/settlemint/btp-waitforit:v7.7.10"` |  |
-| hasura.graphql-engine.initContainers[0].imagePullPolicy | string | `"IfNotPresent"` |  |
-| hasura.graphql-engine.initContainers[0].name | string | `"wait-for-postgresql"` |  |
-| hasura.graphql-engine.initContainers[0].resources.limits.cpu | string | `"100m"` |  |
-| hasura.graphql-engine.initContainers[0].resources.limits.memory | string | `"64Mi"` |  |
-| hasura.graphql-engine.initContainers[0].resources.requests.cpu | string | `"10m"` |  |
-| hasura.graphql-engine.initContainers[0].resources.requests.memory | string | `"32Mi"` |  |
-| hasura.graphql-engine.openShiftRoute.enabled | bool | `false` |  |
-| hasura.graphql-engine.openShiftRoute.host | string | `"hasura.k8s.orb.local"` |  |
-| hasura.graphql-engine.secret.extraSecrets.DEFAULT_DB_URL | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
-| hasura.graphql-engine.secret.metadataDbUrl | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
-| hasura.graphql-engine.secret.rateLimitRedisUrl | string | `"redis://default:atk@redis:6379/3"` |  |
-| hasura.graphql-engine.secret.redisUrl | string | `"redis://default:atk@redis:6379/2"` |  |
-| hasura.postgresql.database | string | `"hasura"` |  |
-| hasura.postgresql.endpoint | string | `"postgresql:5432"` |  |
-| hasura.postgresql.host | string | `"postgresql"` |  |
-| hasura.postgresql.password | string | `"atk"` |  |
-| hasura.postgresql.port | int | `5432` |  |
-| hasura.postgresql.sslMode | string | `"disable"` |  |
-| hasura.postgresql.url | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
-| hasura.postgresql.username | string | `"hasura"` |  |
-| hasura.redis.primary.db | int | `2` |  |
-| hasura.redis.primary.host | string | `"redis"` |  |
-| hasura.redis.primary.password | string | `"atk"` |  |
-| hasura.redis.primary.port | int | `6379` |  |
-| hasura.redis.primary.url | string | `"redis://default:atk@redis:6379/2"` |  |
-| hasura.redis.primary.username | string | `"default"` |  |
-| hasura.redis.rateLimit.db | int | `3` |  |
-| hasura.redis.rateLimit.host | string | `"redis"` |  |
-| hasura.redis.rateLimit.password | string | `"atk"` |  |
-| hasura.redis.rateLimit.port | int | `6379` |  |
-| hasura.redis.rateLimit.url | string | `"redis://default:atk@redis:6379/3"` |  |
-| hasura.redis.rateLimit.username | string | `"default"` |  |
+| hasura.extraEnvs[0].name | string | `"HASURA_GRAPHQL_PG_CONNECTIONS"` |  |
+| hasura.extraEnvs[0].value | string | `"10"` |  |
+| hasura.fullnameOverride | string | `"hasura"` |  |
+| hasura.image.pullPolicy | string | `"IfNotPresent"` |  |
+| hasura.image.registry | string | `"docker.io"` |  |
+| hasura.image.repository | string | `"hasura/graphql-engine"` |  |
+| hasura.image.tag | string | `"v2.48.3"` |  |
+| hasura.ingress.className | string | `"atk-nginx"` |  |
+| hasura.ingress.enabled | bool | `true` |  |
+| hasura.ingress.hostName | string | `"hasura.k8s.orb.local"` |  |
+| hasura.initContainers[0].command[0] | string | `"/usr/bin/wait-for-it"` |  |
+| hasura.initContainers[0].command[1] | string | `"postgresql:5432"` |  |
+| hasura.initContainers[0].command[2] | string | `"-t"` |  |
+| hasura.initContainers[0].command[3] | string | `"120"` |  |
+| hasura.initContainers[0].image | string | `"ghcr.io/settlemint/btp-waitforit:v7.7.10"` |  |
+| hasura.initContainers[0].imagePullPolicy | string | `"IfNotPresent"` |  |
+| hasura.initContainers[0].name | string | `"wait-for-postgresql"` |  |
+| hasura.initContainers[0].resources.limits.cpu | string | `"100m"` |  |
+| hasura.initContainers[0].resources.limits.memory | string | `"64Mi"` |  |
+| hasura.initContainers[0].resources.requests.cpu | string | `"10m"` |  |
+| hasura.initContainers[0].resources.requests.memory | string | `"32Mi"` |  |
+| hasura.metadata.databaseUrl | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
+| hasura.openShiftRoute.enabled | bool | `false` |  |
+| hasura.openShiftRoute.host | string | `"hasura.k8s.orb.local"` |  |
+| hasura.openShiftRoute.path | string | `"/"` |  |
+| hasura.openShiftRoute.wildcardPolicy | string | `"None"` |  |
+| hasura.redis.cacheTtl | int | `60` |  |
+| hasura.redis.cacheUrl | string | `"redis://default:atk@redis:6379/2"` |  |
+| hasura.redis.enabled | bool | `true` |  |
+| hasura.redis.rateLimitUrl | string | `"redis://default:atk@redis:6379/3"` |  |
+| hasura.secret.extraSecrets.DEFAULT_DB_URL | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
+| hasura.secret.metadataDbUrl | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` |  |
+| hasura.secret.rateLimitRedisUrl | string | `"redis://default:atk@redis:6379/3"` |  |
+| hasura.secret.redisUrl | string | `"redis://default:atk@redis:6379/2"` |  |
 | network.enabled | bool | `true` |  |
 | network.network-bootstrapper.artifacts.predeployed.image.registry | string | `"ghcr.io"` |  |
 | network.network-bootstrapper.image.repository | string | `"ghcr.io/settlemint/network-bootstrapper"` |  |
@@ -260,13 +279,13 @@ The following table lists the configurable parameters of this chart and their de
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | blockscout | 2.0.0-alpha.7 |
-|  | dapp | 2.0.0-alpha.7 |
-|  | erpc | 2.0.0-alpha.7 |
-|  | graph-node | 2.0.0-alpha.7 |
-|  | hasura | 2.0.0-alpha.7 |
-|  | network | 2.0.0-alpha.7 |
-|  | observability | 2.0.0-alpha.7 |
-|  | portal | 2.0.0-alpha.7 |
-|  | support | 2.0.0-alpha.7 |
-|  | txsigner | 2.0.0-alpha.7 |
+|  | blockscout | 2.0.0-alpha.8 |
+|  | dapp | 2.0.0-alpha.8 |
+|  | erpc | 2.0.0-alpha.8 |
+|  | graph-node | 2.0.0-alpha.8 |
+|  | hasura | 2.0.0-alpha.8 |
+|  | network | 2.0.0-alpha.8 |
+|  | observability | 2.0.0-alpha.8 |
+|  | portal | 2.0.0-alpha.8 |
+|  | support | 2.0.0-alpha.8 |
+|  | txsigner | 2.0.0-alpha.8 |

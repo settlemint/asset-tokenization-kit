@@ -1,6 +1,0 @@
-dependencies:
-- name: graphql-engine
-  repository: https://hasura.github.io/helm-charts
-  version: 0.9.0
-digest: sha256:a00e6f7a2346521c5cb4389ff54b009012378b22d6acfac2d1b1a15902c0b992
-generated: "2025-07-29T03:18:35.774167791Z"

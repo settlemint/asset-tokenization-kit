@@ -64,16 +64,16 @@ Return the proper Redis image name
 
 {{/*
 Merge pod-level security context defaults with chart overrides.
+OpenShift-managed workloads need to avoid pinning runAs fields unless explicitly set.
 */}}
 {{- define "redis.securityContext.pod" -}}
-{{- $ctx := .context | default . -}}
-{{ include "atk.securityContext.pod" (dict "context" $ctx "local" (default (dict) $ctx.Values.podSecurityContext)) }}
+{{ include "atk.securityContext.pod" (dict "context" (.context | default .) "local" (default (dict) (.context | default .).Values.podSecurityContext)) }}
 {{- end }}
 
 {{/*
 Merge container-level security context defaults with chart overrides.
+Only keep runAs overrides when the chart values request them explicitly.
 */}}
 {{- define "redis.securityContext.container" -}}
-{{- $ctx := .context | default . -}}
-{{ include "atk.securityContext.container" (dict "context" $ctx "local" (default (dict) $ctx.Values.containerSecurityContext)) }}
+{{ include "atk.securityContext.container" (dict "context" (.context | default .) "local" (default (dict) (.context | default .).Values.containerSecurityContext)) }}
 {{- end }}

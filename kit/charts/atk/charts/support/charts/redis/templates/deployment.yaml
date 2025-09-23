@@ -31,19 +31,19 @@ spec:
         {{- end }}
     spec:
       {{- include "atk.common.imagePullSecrets" . | nindent 6 }}
-      {{- $podSecurityContext := (include "redis.securityContext.pod" (dict "context" $)) | fromYaml }}
+      {{- $podSecurityContext := include "redis.securityContext.pod" (dict "context" $) }}
       {{- if $podSecurityContext }}
       securityContext:
-        {{- toYaml $podSecurityContext | nindent 8 }}
+{{- $podSecurityContext | nindent 8 }}
       {{- end }}
       containers:
         - name: redis
           image: {{ include "redis.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- $containerSecurityContext := (include "redis.securityContext.container" (dict "context" $)) | fromYaml }}
+          {{- $containerSecurityContext := include "redis.securityContext.container" (dict "context" $) }}
           {{- if $containerSecurityContext }}
           securityContext:
-            {{- toYaml $containerSecurityContext | nindent 12 }}
+{{- $containerSecurityContext | nindent 12 }}
           {{- end }}
           command:
             - redis-server
