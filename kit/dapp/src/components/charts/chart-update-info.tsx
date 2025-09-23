@@ -5,7 +5,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useChartUpdateTime } from "@/hooks/use-chart-update-time";
-import { formatDate } from "@/lib/utils/date";
+import { formatValue } from "@/lib/utils/format-value";
 import { Clock } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -47,12 +47,24 @@ export function ChartUpdateInfo({
         </TooltipTrigger>
         <TooltipContent>
           <div className="space-y-1">
-            <p className="text-sm font-medium">{timeUntilUpdate}</p>
-            <p className="text-xs text-muted-foreground">
-              {t("chart.update.lastUpdated")}: {formatDate(lastUpdate)}
+            <p className="text-sm font-medium text-foreground">
+              {timeUntilUpdate}
             </p>
-            <p className="text-xs text-muted-foreground">
-              {t("chart.update.nextUpdate")}: {formatDate(nextUpdate)}
+            <p className="text-xs text-foreground/80">
+              {t("chart.update.lastUpdated")}:{" "}
+              {formatValue(lastUpdate, {
+                type: "date",
+                dateOptions: { includeTime: true },
+                className: "text-xs",
+              })}
+            </p>
+            <p className="text-xs text-foreground/80">
+              {t("chart.update.nextUpdate")}:{" "}
+              {formatValue(nextUpdate, {
+                type: "date",
+                dateOptions: { includeTime: true },
+                className: "text-xs",
+              })}
             </p>
           </div>
         </TooltipContent>

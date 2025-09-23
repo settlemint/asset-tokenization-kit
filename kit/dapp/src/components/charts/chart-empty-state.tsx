@@ -31,7 +31,7 @@ export function ChartEmptyState({
   isLoading = false,
   emptyMessage,
   emptyDescription,
-  interval = "hour",
+  interval,
 }: ChartEmptyStateProps) {
   const { t } = useTranslation("stats");
 
@@ -41,7 +41,7 @@ export function ChartEmptyState({
         <CardHeader>
           <div className="flex items-center gap-2 mb-2">
             <Skeleton className="h-6 w-48" />
-            <ChartUpdateInfo interval={interval} />
+            {interval && <ChartUpdateInfo interval={interval} />}
           </div>
           {description && <Skeleton className="h-4 w-64" />}
         </CardHeader>
@@ -68,7 +68,7 @@ export function ChartEmptyState({
       <CardHeader>
         <div className="flex items-center gap-2">
           <CardTitle>{title}</CardTitle>
-          <ChartUpdateInfo interval={interval} />
+          {interval && <ChartUpdateInfo interval={interval} />}
         </div>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>

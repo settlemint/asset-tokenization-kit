@@ -140,6 +140,7 @@ export function PortfolioValueAreaChart({
           days: timeRange,
           interval,
         })}
+        interval={interval}
         data={chartData}
         config={chartConfig}
         dataKeys={dataKeys}

@@ -44,7 +44,7 @@ export function PieChartComponent({
   className,
   emptyMessage,
   emptyDescription,
-  interval = "hour",
+  interval,
 }: PieChartProps) {
   // Filter data to only show non-zero values
   const filteredData = useMemo(
@@ -71,7 +71,7 @@ export function PieChartComponent({
       <CardHeader>
         <div className="flex items-center gap-2">
           <CardTitle>{title}</CardTitle>
-          <ChartUpdateInfo interval={interval} />
+          {interval && <ChartUpdateInfo interval={interval} />}
         </div>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>

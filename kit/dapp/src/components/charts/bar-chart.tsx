@@ -60,7 +60,7 @@ export function BarChartComponent({
   className,
   emptyMessage,
   emptyDescription,
-  interval = "hour",
+  interval,
 }: BarChartComponentProps) {
   // Simple formatter function - React Compiler will optimize this
   const legendFormatter = (value: string): string => {
@@ -93,7 +93,7 @@ export function BarChartComponent({
       <CardHeader>
         <div className="flex items-center gap-2">
           <CardTitle>{title}</CardTitle>
-          <ChartUpdateInfo interval={interval} />
+          {interval && <ChartUpdateInfo interval={interval} />}
         </div>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
