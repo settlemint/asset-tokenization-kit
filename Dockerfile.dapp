@@ -18,6 +18,8 @@ ENV NODE_ENV=production
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN bun run --cwd kit/dapp build
+# Fix crypto import in Nitro output for @noble/hashes compatibility
+RUN cd kit/dapp && node tools/fix-noble-crypto.mjs
 
 # RUNTIME
 FROM oven/bun:1.2.22-slim AS runtime
