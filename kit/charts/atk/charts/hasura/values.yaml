@@ -38,7 +38,7 @@ config:
   # -- (bool) Enable console
   enableConsole: true
   # -- (bool) Enable development mode
-  devMode: false
+  devMode: true
   # -- (bool) Enable console assets (for offline usage)
   enableConsoleAssets: true
   # -- (bool) Enable telemetry
@@ -65,7 +65,7 @@ config:
 # -- (object) Database configuration
 database:
   # -- (string) Database connection string (can be set via secret)
-  connectionUrl: ""
+  connectionUrl: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
   # -- (int) Maximum connections
   connections: 50
   # -- (int) Idle timeout (seconds)
@@ -84,7 +84,7 @@ adminSecret:
   # -- (bool) Create admin secret
   enabled: true
   # -- (string) Admin secret key (auto-generated if empty)
-  key: ""
+  key: "atk"
   # -- (string) Use existing secret
   existingSecret: ""
   # -- (string) Key in existing secret
@@ -132,18 +132,18 @@ cronTriggers:
 # -- (object) Redis configuration for caching and rate limiting
 redis:
   # -- (bool) Enable Redis integration
-  enabled: false
+  enabled: true
   # -- (string) Redis URL for query caching
-  cacheUrl: ""
+  cacheUrl: "redis://default:atk@redis:6379/2"
   # -- (int) Cache TTL in seconds
   cacheTtl: 60
   # -- (string) Redis URL for rate limiting
-  rateLimitUrl: ""
+  rateLimitUrl: "redis://default:atk@redis:6379/3"
 
 # -- (object) Metadata database configuration
 metadata:
   # -- (string) Metadata database URL (defaults to main database if not set)
-  databaseUrl: ""
+  databaseUrl: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
 
 # -- (list) Additional environment variables
 extraEnvs: []
@@ -298,10 +298,22 @@ autoscaling:
   targetMemoryUtilizationPercentage: 80
 
 # -- (list) Init containers
-initContainers: []
-  # - name: wait-for-postgres
-  #   image: busybox:1.28
-  #   command: ['sh', '-c', 'until nc -z postgres 5432; do echo waiting for postgres; sleep 2; done;']
+initContainers:
+  - name: wait-for-postgresql
+    image: ghcr.io/settlemint/btp-waitforit:v7.7.10
+    imagePullPolicy: IfNotPresent
+    command:
+      - /usr/bin/wait-for-it
+      - "postgresql:5432"
+      - -t
+      - "120"
+    resources:
+      limits:
+        cpu: 100m
+        memory: 64Mi
+      requests:
+        cpu: 10m
+        memory: 32Mi
 
 # -- (object) Pod annotations
 podAnnotations: {}

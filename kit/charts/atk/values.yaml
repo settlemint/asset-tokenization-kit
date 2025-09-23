@@ -165,92 +165,9 @@ hasura:
     tag: v2.48.3
     pullPolicy: IfNotPresent
 
-  # Database configuration
-  database:
-    connectionUrl: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
-    connections: 50
-    idleTimeout: 180
-    connLifetime: 600
-    usePreparedStatements: true
-    txIsolation: "read-committed"
-    enablePooling: true
-
-  # Metadata database configuration
-  metadata:
-    databaseUrl: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
-
-  # Admin secret configuration
-  adminSecret:
-    enabled: true
-    key: "atk"
-    existingSecret: ""
-    existingSecretKey: "admin-secret"
-
-  # Hasura configuration
-  config:
-    enableConsole: true
-    devMode: true
-    enableConsoleAssets: true
-    enableTelemetry: false
-    logLevel: info
-    serverPort: 8080
-    enableRemoteSchemaPermissions: false
-    enableAllowlist: false
-    corsDomain: "*"
-    disableCors: false
-    wsKeepAlive: 5
-    inferFunctionPermissions: true
-    schemaIntrospectionDisabled: false
-
-  # Redis configuration
-  redis:
-    enabled: true
-    cacheUrl: "redis://default:atk@redis:6379/2"
-    cacheTtl: 60
-    rateLimitUrl: "redis://default:atk@redis:6379/3"
-
-  # Extra environment variables
-  extraEnvs:
-    - name: HASURA_GRAPHQL_PG_CONNECTIONS
-      value: "10"
-
   # Ingress configuration
   ingress:
-    enabled: true
-    className: "atk-nginx"
     hostName: hasura.k8s.orb.local
-
-  # OpenShift route configuration
-  openShiftRoute:
-    enabled: false
-    host: hasura.k8s.orb.local
-    path: /
-    wildcardPolicy: None
-
-  # Init containers
-  initContainers:
-    - name: wait-for-postgresql
-      image: ghcr.io/settlemint/btp-waitforit:v7.7.10
-      imagePullPolicy: IfNotPresent
-      command:
-        - /usr/bin/wait-for-it
-        - "postgresql:5432"
-        - -t
-        - "120"
-      resources:
-        limits:
-          cpu: 100m
-          memory: 64Mi
-        requests:
-          cpu: 10m
-          memory: 32Mi
-
-  secret:
-    metadataDbUrl: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
-    extraSecrets:
-      DEFAULT_DB_URL: "postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"
-    redisUrl: "redis://default:atk@redis:6379/2"
-    rateLimitRedisUrl: "redis://default:atk@redis:6379/3"
 
 portal:
   enabled: true

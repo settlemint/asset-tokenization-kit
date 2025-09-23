@@ -17,11 +17,11 @@ A Helm chart for Hasura GraphQL Engine
 | actions | object | `{"baseUrl":"","handlerWebhookBaseUrl":""}` | Action configuration |
 | actions.baseUrl | string | `""` | Action base URL |
 | actions.handlerWebhookBaseUrl | string | `""` | Action handler webhook base URL |
-| adminSecret | object | `{"enabled":true,"existingSecret":"","existingSecretKey":"admin-secret","key":""}` | Admin secret configuration |
+| adminSecret | object | `{"enabled":true,"existingSecret":"","existingSecretKey":"admin-secret","key":"atk"}` | Admin secret configuration |
 | adminSecret.enabled | bool | `true` | Create admin secret |
 | adminSecret.existingSecret | string | `""` | Use existing secret |
 | adminSecret.existingSecretKey | string | `"admin-secret"` | Key in existing secret |
-| adminSecret.key | string | `""` | Admin secret key (auto-generated if empty) |
+| adminSecret.key | string | `"atk"` | Admin secret key (auto-generated if empty) |
 | affinity | object | `{}` | Pod affinity |
 | authHook | object | `{"enabled":false,"mode":"POST","url":""}` | Authentication webhook configuration |
 | authHook.enabled | bool | `false` | Enable auth webhook |
@@ -33,9 +33,9 @@ A Helm chart for Hasura GraphQL Engine
 | autoscaling.minReplicas | int | `1` | Minimum replicas |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` | Target CPU utilization percentage |
 | autoscaling.targetMemoryUtilizationPercentage | int | `80` | Target memory utilization percentage |
-| config | object | `{"corsDomain":"*","devMode":false,"disableCors":false,"enableAllowlist":false,"enableConsole":true,"enableConsoleAssets":true,"enableRemoteSchemaPermissions":false,"enableTelemetry":false,"inferFunctionPermissions":true,"logLevel":"info","schemaIntrospectionDisabled":false,"serverPort":8080,"wsKeepAlive":5}` | Hasura configuration options |
+| config | object | `{"corsDomain":"*","devMode":true,"disableCors":false,"enableAllowlist":false,"enableConsole":true,"enableConsoleAssets":true,"enableRemoteSchemaPermissions":false,"enableTelemetry":false,"inferFunctionPermissions":true,"logLevel":"info","schemaIntrospectionDisabled":false,"serverPort":8080,"wsKeepAlive":5}` | Hasura configuration options |
 | config.corsDomain | string | `"*"` | CORS domain configuration |
-| config.devMode | bool | `false` | Enable development mode |
+| config.devMode | bool | `true` | Enable development mode |
 | config.disableCors | bool | `false` | Disable CORS |
 | config.enableAllowlist | bool | `false` | Enable allowlist |
 | config.enableConsole | bool | `true` | Enable console |
@@ -49,9 +49,9 @@ A Helm chart for Hasura GraphQL Engine
 | config.wsKeepAlive | int | `5` | WebSocket keepalive interval (seconds) |
 | cronTriggers | object | `{"includeInMetadata":false}` | Cron triggers configuration |
 | cronTriggers.includeInMetadata | bool | `false` | Include webhook secret in cron triggers |
-| database | object | `{"connLifetime":600,"connectionUrl":"","connections":50,"enablePooling":true,"idleTimeout":180,"txIsolation":"read-committed","usePreparedStatements":true}` | Database configuration |
+| database | object | `{"connLifetime":600,"connectionUrl":"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable","connections":50,"enablePooling":true,"idleTimeout":180,"txIsolation":"read-committed","usePreparedStatements":true}` | Database configuration |
 | database.connLifetime | int | `600` | Connection lifetime (seconds) |
-| database.connectionUrl | string | `""` | Database connection string (can be set via secret) |
+| database.connectionUrl | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` | Database connection string (can be set via secret) |
 | database.connections | int | `50` | Maximum connections |
 | database.enablePooling | bool | `true` | Enable connection pooling |
 | database.idleTimeout | int | `180` | Idle timeout (seconds) |
@@ -108,11 +108,11 @@ A Helm chart for Hasura GraphQL Engine
 | ingress.path | string | `"/"` | Ingress path |
 | ingress.pathType | string | `"Prefix"` | Ingress path type |
 | ingress.tls | list | `[]` | TLS configuration |
-| initContainers | list | `[]` | Init containers |
+| initContainers | list | `[{"command":["/usr/bin/wait-for-it","postgresql:5432","-t","120"],"image":"ghcr.io/settlemint/btp-waitforit:v7.7.10","imagePullPolicy":"IfNotPresent","name":"wait-for-postgresql","resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}}]` | Init containers |
 | jwtSecrets | object | `[]` | JWT secrets configuration |
 | labels | object | `{}` | Labels to add to all resources |
-| metadata | object | `{"databaseUrl":""}` | Metadata database configuration |
-| metadata.databaseUrl | string | `""` | Metadata database URL (defaults to main database if not set) |
+| metadata | object | `{"databaseUrl":"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"}` | Metadata database configuration |
+| metadata.databaseUrl | string | `"postgresql://hasura:atk@postgresql:5432/hasura?sslmode=disable"` | Metadata database URL (defaults to main database if not set) |
 | monitoring | object | `{"enabled":false,"metricsSecret":"","serviceMonitor":{"enabled":false,"interval":"30s","labels":{},"namespace":"","path":"/v1/metrics","scrapeTimeout":"10s"}}` | Monitoring configuration |
 | monitoring.enabled | bool | `false` | Enable Prometheus monitoring |
 | monitoring.metricsSecret | string | `""` | Secret for metrics endpoint (optional) |
@@ -148,11 +148,11 @@ A Helm chart for Hasura GraphQL Engine
 | podLabels | object | `{}` | Pod labels |
 | podSecurityContext | object | `{}` | Pod security context |
 | priorityClassName | object | `""` | Priority class configuration |
-| redis | object | `{"cacheTtl":60,"cacheUrl":"","enabled":false,"rateLimitUrl":""}` | Redis configuration for caching and rate limiting |
+| redis | object | `{"cacheTtl":60,"cacheUrl":"redis://default:atk@redis:6379/2","enabled":true,"rateLimitUrl":"redis://default:atk@redis:6379/3"}` | Redis configuration for caching and rate limiting |
 | redis.cacheTtl | int | `60` | Cache TTL in seconds |
-| redis.cacheUrl | string | `""` | Redis URL for query caching |
-| redis.enabled | bool | `false` | Enable Redis integration |
-| redis.rateLimitUrl | string | `""` | Redis URL for rate limiting |
+| redis.cacheUrl | string | `"redis://default:atk@redis:6379/2"` | Redis URL for query caching |
+| redis.enabled | bool | `true` | Enable Redis integration |
+| redis.rateLimitUrl | string | `"redis://default:atk@redis:6379/3"` | Redis URL for rate limiting |
 | replicaCount | int | `1` | Number of Hasura replicas to deploy |
 | resources | object | `{}` | Resource limits and requests |
 | securityContext | object | `{}` | Container security context |
