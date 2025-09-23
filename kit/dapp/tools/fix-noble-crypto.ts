@@ -7,13 +7,13 @@
  */
 
 import {
-  readFileSync,
-  writeFileSync,
   existsSync,
   readdirSync,
+  readFileSync,
+  writeFileSync,
   type Dirent,
 } from "fs";
-import { dirname, join } from "path";
+import { join } from "path";
 
 // Base directory for @noble packages
 const nobleDir = join(
