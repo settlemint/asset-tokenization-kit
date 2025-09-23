@@ -61,7 +61,6 @@ export function RegisterIdentitySheet({
       country: "",
       verification: undefined,
     },
-    onSubmit: () => {},
   });
 
   useEffect(() => {
