@@ -2,6 +2,8 @@
 global:
   chainId: "53771311147"
   chainName: "ATK"
+  # Global labels to be added to all resources
+  labels: {}
   datastores:
     default:
       redis:

@@ -237,6 +237,9 @@ helm.sh/chart: {{ include "atk.common.chart" $context }}
 app.kubernetes.io/version: {{ $context.Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ $context.Release.Service }}
+{{- if $context.Values.global.labels }}
+{{ toYaml $context.Values.global.labels }}
+{{- end }}
 {{- with $customLabels }}
 {{ toYaml . }}
 {{- end }}

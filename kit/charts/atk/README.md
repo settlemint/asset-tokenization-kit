@@ -113,6 +113,7 @@ The following table lists the configurable parameters of this chart and their de
 | global.datastores.txsigner.postgresql.database | string | `"txsigner"` |  |
 | global.datastores.txsigner.postgresql.password | string | `"atk"` |  |
 | global.datastores.txsigner.postgresql.username | string | `"txsigner"` |  |
+| global.labels | object | `{}` |  |
 | graph-node.enabled | bool | `true` |  |
 | graph-node.image.repository | string | `"docker.io/graphprotocol/graph-node"` |  |
 | graph-node.ingress.annotations."nginx.ingress.kubernetes.io/rewrite-target" | string | `"/$1"` |  |

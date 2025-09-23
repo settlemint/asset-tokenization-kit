@@ -20,7 +20,7 @@ spec:
       {{- end }}
       labels:
         app: {{ include "blockscout.fullname" . }}-frontend
-        {{- include "blockscout.selectorLabels" . | nindent 8 }}
+        {{- include "blockscout.labels" . | nindent 8 }}
     spec:
       {{- include "atk.common.imagePullSecrets" . | nindent 6 }}
       serviceAccountName: {{ include "blockscout.serviceAccountName" . }}
