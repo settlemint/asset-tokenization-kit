@@ -115,7 +115,10 @@ export function DenominationAssetTable({
     (factoryAddress: string, tokenAddress: string) => {
       router.navigate({
         to: "/token/$factoryAddress/$tokenAddress",
-        params: { factoryAddress, tokenAddress },
+        params: {
+          factoryAddress: factoryAddress as EthereumAddress,
+          tokenAddress: tokenAddress as EthereumAddress,
+        },
       });
     },
     [router]
@@ -129,7 +132,7 @@ export function DenominationAssetTable({
       // Asset Name
       columnHelper.display({
         id: "name",
-        header: (
+        header: () => (
           <div className="flex items-center gap-2">
             <Package className="h-4 w-4" />
             {t("fields.name")}
@@ -153,7 +156,7 @@ export function DenominationAssetTable({
       // Factory
       columnHelper.display({
         id: "factory",
-        header: (
+        header: () => (
           <div className="flex items-center gap-2">
             <Type className="h-4 w-4" />
             Factory
@@ -167,7 +170,7 @@ export function DenominationAssetTable({
       // Face Value
       columnHelper.display({
         id: "faceValue",
-        header: (
+        header: () => (
           <div className="flex items-center gap-2">
             <Coins className="h-4 w-4" />
             {t("fields.faceValue")}
@@ -183,7 +186,7 @@ export function DenominationAssetTable({
       // Total Supply
       columnHelper.display({
         id: "totalSupply",
-        header: (
+        header: () => (
           <div className="flex items-center gap-2">
             <Hash className="h-4 w-4" />
             {t("fields.totalSupply")}
@@ -202,7 +205,7 @@ export function DenominationAssetTable({
       // Maturity Date
       columnHelper.display({
         id: "maturityDate",
-        header: (
+        header: () => (
           <div className="flex items-center gap-2">
             {t("fields.maturityDate")}
           </div>
@@ -297,10 +300,6 @@ export function DenominationAssetTable({
           position: "bottom",
           showSelectionCount: true,
           enableSelectAll: true,
-        }}
-        meta={{
-          title: t("tabs.denominationAsset"),
-          description: t("descriptions.denominationAssetTable"),
         }}
       />
     </ComponentErrorBoundary>

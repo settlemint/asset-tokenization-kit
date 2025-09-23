@@ -50,7 +50,7 @@ const DenominationAssetsResponseSchema = z.object({
  * GraphQL query to fetch bonds that use a specific token as denomination asset
  */
 const DENOMINATION_ASSETS_QUERY = theGraphGraphql(`
-  query DenominationAssets($tokenAddress: String!) {
+  query DenominationAssets($tokenAddress: ID!) {
     token(id: $tokenAddress) {
       denominationAssetForBond {
         id
@@ -75,7 +75,7 @@ const TOKENS_BY_IDS_QUERY = theGraphGraphql(`
       decimals
       totalSupply
       pausable { paused }
-      factory { id name }
+      factory: tokenFactory { id name }
     }
   }
 `);
