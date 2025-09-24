@@ -1376,8 +1376,6 @@ type AccountSystemStats
     @aggregate(fn: "last", arg: "totalValueInBaseCurrency")
   # Last count of different token balances for the period scoped to the system
   balancesCount: Int! @aggregate(fn: "last", arg: "balancesCount")
-  # Last admin status for the period scoped to the system
-  isAdmin: Boolean! @aggregate(fn: "last", arg: "isAdmin")
 }
 
 type AccountTokenFactoryStatsState @entity(immutable: false) {

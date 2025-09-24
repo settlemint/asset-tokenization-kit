@@ -5,11 +5,11 @@ import { z } from "zod";
 const IDENTITY_COUNT_QUERY = theGraphGraphql(`
   query IdentityCount($systemId: ID!) {
     system(id: $systemId) {
-      identityRegistry {
-        activeUserIdentitiesCount
-      }
-      identityFactory {
+      identityStats {
         userIdentitiesCreatedCount
+        activeUserIdentitiesCount
+        removedUserIdentitiesCount
+        pendingUserIdentitiesCount
       }
     }
   }
@@ -19,14 +19,12 @@ const IDENTITY_COUNT_QUERY = theGraphGraphql(`
 const IdentityCountResponseSchema = z.object({
   system: z
     .object({
-      identityFactory: z
+      identityStats: z
         .object({
           userIdentitiesCreatedCount: z.number(),
-        })
-        .nullable(),
-      identityRegistry: z
-        .object({
           activeUserIdentitiesCount: z.number(),
+          removedUserIdentitiesCount: z.number(),
+          pendingUserIdentitiesCount: z.number(),
         })
         .nullable(),
     })
@@ -44,14 +42,15 @@ export const statsIdentityCount =
     });
 
     const userIdentitiesCreatedCount =
-      response.system?.identityFactory?.userIdentitiesCreatedCount ?? 0;
+      response.system?.identityStats?.userIdentitiesCreatedCount ?? 0;
     const activeUserIdentitiesCount =
-      response.system?.identityRegistry?.activeUserIdentitiesCount ?? 0;
+      response.system?.identityStats?.activeUserIdentitiesCount ?? 0;
+    const pendingRegistrationsCount =
+      response.system?.identityStats?.pendingUserIdentitiesCount ?? 0;
 
     return {
       userIdentitiesCreatedCount,
       activeUserIdentitiesCount,
-      pendingIdentitiesCount:
-        userIdentitiesCreatedCount - activeUserIdentitiesCount,
+      pendingRegistrationsCount,
     };
   });

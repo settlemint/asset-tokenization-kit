@@ -6,7 +6,7 @@ import { z } from "zod";
 export const StatsIdentityCountOutputSchema = z.object({
   userIdentitiesCreatedCount: z.number(),
   activeUserIdentitiesCount: z.number(),
-  pendingIdentitiesCount: z.number(),
+  pendingRegistrationsCount: z.number(),
 });
 
 export type StatsIdentityCountOutput = z.infer<

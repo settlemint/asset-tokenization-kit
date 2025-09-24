@@ -191,7 +191,6 @@ export function updateIsAdmin(
   );
   systemState.isAdmin = true;
   systemState.save();
-  trackAccountSystemStats(systemState);
 }
 
 /**
