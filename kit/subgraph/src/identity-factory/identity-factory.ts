@@ -24,7 +24,7 @@ export function handleIdentityCreated(event: IdentityCreated): void {
   const system = identityFactory.system;
 
   // Track identity creation statistics
-  trackIdentityCreated(Address.fromBytes(system), false);
+  trackIdentityCreated(event.params.wallet, Address.fromBytes(system), false);
 
   // Record the event that created the identity for the account
   // needs to be after creating the account as we map the involved accounts in the event
@@ -48,7 +48,11 @@ export function handleContractIdentityCreated(
   const system = identityFactory.system;
 
   // Track identity creation statistics
-  trackIdentityCreated(Address.fromBytes(system), true);
+  trackIdentityCreated(
+    event.params.contractAddress,
+    Address.fromBytes(system),
+    true
+  );
 
   // Record the event that created the identity for the account
   // needs to be after creating the account as we map the involved accounts in the event

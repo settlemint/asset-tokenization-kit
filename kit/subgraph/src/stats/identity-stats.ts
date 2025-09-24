@@ -11,12 +11,23 @@ import { fetchAccountSystemStatsStateForSystem } from "./account-stats";
  * @param isContract - Whether the created identity is a contract
  */
 export function trackIdentityCreated(
+  accountAddress: Address,
   systemAddress: Address,
   isContract: boolean
 ): void {
   const state = fetchIdentityStatsState(systemAddress);
 
-  incrementPendingIdentitiesCount(state, isContract);
+  const account = fetchAccountSystemStatsStateForSystem(
+    accountAddress,
+    systemAddress
+  );
+
+  // If the account is already an admin, the pending registration count should not be incremented since it will never be decremented again
+  // Why? Because pending registration count is only decremented when the account is granted a role in the system for the first time
+  if (!account.isAdmin) {
+    incrementPendingIdentitiesCount(state, isContract);
+  }
+
   incrementIdentitiesCreatedCount(state, isContract);
   state.save();
 
@@ -42,6 +53,9 @@ export function trackIdentityRegistered(
     systemAddress
   );
 
+  // If the account is an admin, the pending registration count was already decremented in the trackRoleGranted function
+  // when the account was granted the admin role
+  // So we don't need to decrement it again
   if (!account.isAdmin) {
     decrementPendingIdentitiesCount(state, isContract);
   }
@@ -57,8 +71,13 @@ export function trackIdentityRegistered(
 export function trackRoleGranted(
   accountAddress: Address,
   systemAddress: Address,
-  isContract: boolean
+  isContract: boolean,
+  isFirstRoleGrant: boolean
 ): void {
+  // Do nothing, the pending registration count was already decremented when this user became an admin for the first time in this system
+  if (!isFirstRoleGrant) {
+    return;
+  }
   const state = fetchIdentityStatsState(systemAddress);
 
   const accountHasRegisteredIdentity = hasRegisteredIdentity(
@@ -173,7 +192,9 @@ export function decrementPendingIdentitiesCount(
   if (isContract && state.pendingContractIdentitiesCount > 0) {
     state.pendingContractIdentitiesCount =
       state.pendingContractIdentitiesCount - 1;
-  } else if (!isContract && state.pendingUserIdentitiesCount > 0) {
+  } else {
+    // Intentionally enabled decrementing the count below 0 to track bugs
+    // This should never happen, but it's better to track it than to let it go unnoticed
     state.pendingUserIdentitiesCount = state.pendingUserIdentitiesCount - 1;
   }
 }

@@ -6,7 +6,10 @@ import {
 } from "../../generated/templates/AccessControl/AccessControl";
 import { fetchAccount } from "../account/fetch/account";
 import { fetchEvent } from "../event/fetch/event";
-import { updateIsAdmin } from "../stats/account-stats";
+import {
+  fetchAccountSystemStatsStateForSystem,
+  updateIsAdmin,
+} from "../stats/account-stats";
 import { trackRoleGranted } from "../stats/identity-stats";
 import { fetchAccessControl } from "./fetch/accesscontrol";
 import { getRoleConfigFromBytes } from "./utils/role";
@@ -44,9 +47,21 @@ export function handleRoleGranted(event: RoleGranted): void {
 
     const systemAddress = Address.fromBytes(accessControl.system);
     const roleHolderAddress = Address.fromBytes(roleHolder.id);
-    updateIsAdmin(roleHolderAddress, systemAddress);
+    const systemStats = fetchAccountSystemStatsStateForSystem(
+      roleHolderAddress,
+      systemAddress
+    );
+    const isFirstRoleGrant = !systemStats.isAdmin;
+    if (isFirstRoleGrant) {
+      updateIsAdmin(roleHolderAddress, systemAddress);
+    }
 
-    trackRoleGranted(roleHolderAddress, systemAddress, roleHolder.isContract);
+    trackRoleGranted(
+      roleHolderAddress,
+      systemAddress,
+      roleHolder.isContract,
+      isFirstRoleGrant
+    );
   }
   accessControl.save();
 }

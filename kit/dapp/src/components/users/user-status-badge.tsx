@@ -7,6 +7,7 @@ interface UserStatusBadgeProps {
   user: User;
   identity?: Partial<Identity>;
   isRegistered?: boolean;
+  isAdmin?: boolean | null;
 }
 
 /**
@@ -17,6 +18,7 @@ export function UserStatusBadge({
   user,
   isRegistered,
   identity,
+  isAdmin,
 }: UserStatusBadgeProps) {
   const { t } = useTranslation("user");
 
@@ -35,13 +37,20 @@ export function UserStatusBadge({
   const hasIdentity = identity?.id;
   if (user.wallet && !hasIdentity) {
     return (
-      <Badge
-        variant="secondary"
-        className="bg-gray-500 hover:bg-gray-600 text-white"
-        aria-label={t("management.table.status.identityNeededAriaLabel")}
-      >
-        {t("management.table.status.identityNeeded")}
-      </Badge>
+      <div className="flex items-center gap-2">
+        <Badge
+          variant="secondary"
+          className="bg-gray-500 hover:bg-gray-600 text-white"
+          aria-label={t("management.table.status.identityNeededAriaLabel")}
+        >
+          {t("management.table.status.identityNeeded")}
+        </Badge>
+        {isAdmin && (
+          <Badge variant="default" className="bg-blue-500 hover:bg-blue-600">
+            {t("management.table.status.admin")}
+          </Badge>
+        )}
+      </div>
     );
   }
 
@@ -49,23 +58,49 @@ export function UserStatusBadge({
   const isIdentityRegistered = isRegistered ?? identity?.registered;
   if (!isIdentityRegistered) {
     return (
-      <Badge
-        variant="secondary"
-        className="bg-yellow-500 hover:bg-yellow-600 text-white"
-        aria-label={t("management.table.status.pendingRegistrationAriaLabel")}
-      >
-        {t("management.table.status.pendingRegistration")}
-      </Badge>
+      <div className="flex items-center gap-2">
+        {isAdmin && (
+          <Badge variant="default" className="bg-blue-500 hover:bg-blue-600">
+            {t("management.table.status.admin")}
+          </Badge>
+        )}
+        {isAdmin ? (
+          <Badge
+            variant="secondary"
+            className="bg-blue-500 hover:bg-blue-600"
+            aria-label={t("management.table.status.notRegisteredAriaLabel")}
+          >
+            {t("management.table.status.notRegistered")}
+          </Badge>
+        ) : (
+          <Badge
+            variant="secondary"
+            className="bg-yellow-500 hover:bg-yellow-600 text-white"
+            aria-label={t(
+              "management.table.status.pendingRegistrationAriaLabel"
+            )}
+          >
+            {t("management.table.status.pendingRegistration")}
+          </Badge>
+        )}
+      </div>
     );
   }
 
   return (
-    <Badge
-      variant="default"
-      className="bg-green-500 hover:bg-green-600"
-      aria-label={t("management.table.status.registeredAriaLabel")}
-    >
-      {t("management.table.status.registered")}
-    </Badge>
+    <div className="flex items-center gap-2">
+      <Badge
+        variant="default"
+        className="bg-green-500 hover:bg-green-600"
+        aria-label={t("management.table.status.registeredAriaLabel")}
+      >
+        {t("management.table.status.registered")}
+      </Badge>
+      {isAdmin && (
+        <Badge variant="default" className="bg-blue-500 hover:bg-blue-600">
+          {t("management.table.status.admin")}
+        </Badge>
+      )}
+    </div>
   );
 }

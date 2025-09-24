@@ -66,7 +66,7 @@
     "description": "Current system identity status and registrations",
     "totalIdentities": "Total Identities",
     "activeRegistrations": "Active Registrations",
-    "pendingIdentities": "Pending identities",
+    "pendingRegistrations": "Pending identities",
     "chartTitle": "Active registrations",
     "chartDescription": "Daily trends of active identity registrations over the last 7 days",
     "emptyStateMessage": "No registrations yet",
