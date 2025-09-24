@@ -1,6 +1,10 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import { StatsAssetsOutputSchema } from "@/orpc/routes/system/stats/routes/assets.schema";
 import {
+  StatsIdentityCountInputSchema,
+  StatsIdentityCountOutputSchema,
+} from "@/orpc/routes/system/stats/routes/identity-count.schema";
+import {
   StatsPortfolioDetailsInputSchema,
   StatsPortfolioDetailsOutputSchema,
 } from "@/orpc/routes/system/stats/routes/portfolio-details.schema";
@@ -27,6 +31,18 @@ const statsAssets = baseContract
     tags: ["stats", "system"],
   })
   .output(StatsAssetsOutputSchema);
+
+const statsIdentityCount = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/identity-count",
+    description: "Retrieve count of identities created by the identity factory",
+    successDescription:
+      "Identity factory creation count statistics retrieved successfully",
+    tags: ["stats", "system", "identity"],
+  })
+  .input(StatsIdentityCountInputSchema)
+  .output(StatsIdentityCountOutputSchema);
 
 const statsTransactionCount = baseContract
   .route({
@@ -85,6 +101,7 @@ const statsPortfolioDetails = baseContract
 
 export const statsContract = {
   assets: statsAssets,
+  identityCount: statsIdentityCount,
   transactionCount: statsTransactionCount,
   transactionHistory: statsTransactionHistory,
   value: statsValue,
