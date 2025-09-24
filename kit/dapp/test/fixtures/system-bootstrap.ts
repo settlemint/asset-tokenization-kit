@@ -229,7 +229,9 @@ export async function setupTrustedClaimIssuers(orpClient: OrpcClient) {
   const trustedIssuers = await orpClient.system.trustedIssuers.list({});
   const adminIdentity = await orpClient.system.identity.me({});
   if (!trustedIssuers.some((t) => t.id === adminIdentity?.id)) {
-    logger.info("Making admin a trusted issuer of all topics");
+    logger.info("Making admin a trusted issuer of all topics", {
+      topics: topics.map((t) => t.name),
+    });
     // Make admin a trusted issuer of all topics
     await orpClient.system.trustedIssuers.create({
       walletVerification: {
