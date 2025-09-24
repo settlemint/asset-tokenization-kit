@@ -7,13 +7,15 @@ import { createToken } from "@test/fixtures/token";
 import {
   DEFAULT_ADMIN,
   DEFAULT_PINCODE,
+  getUserData,
   signInWithUser,
 } from "@test/fixtures/user";
 import { TEST_CONSTANTS } from "@test/helpers/test-helpers";
-import { from, toNumber } from "dnum";
+import { divide, from, multiply, subtract, toNumber } from "dnum";
 import { beforeAll, describe, expect, it } from "vitest";
 
 const COLLATERAL = from("10", 18);
+const MINT_AMOUNT = from("5", 18);
 
 describe.concurrent("Token Stats: Collateral Ratio", () => {
   let testToken: Awaited<ReturnType<typeof createToken>>;
@@ -54,6 +56,17 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
     expect(toNumber(result.collateral?.collateral ?? from(0))).toBe(
       toNumber(COLLATERAL)
     );
+
+    const admin = await getUserData(DEFAULT_ADMIN);
+    await client.token.mint({
+      contract: testToken.id,
+      recipients: [admin.wallet],
+      amounts: [MINT_AMOUNT],
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
+    });
   });
 
   describe("Business logic", () => {
@@ -94,13 +107,18 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
         tokenAddress: testToken.id,
       });
 
-      // Business expectation: new tokens have no collateral yet
       expect(result.totalCollateral).toBe(toNumber(COLLATERAL));
-      expect(result.collateralRatio).toBe(0);
+      const expectedRatio = toNumber(
+        multiply(divide(MINT_AMOUNT, COLLATERAL, 3), 100, 1)
+      );
+      expect(result.collateralRatio).toBe(expectedRatio);
       expect(result.buckets).toHaveLength(2);
 
       const [available, used] = result.buckets;
-      expect(available?.value).toBe(toNumber(COLLATERAL));
+      expect(available?.value).toBe(
+        toNumber(subtract(COLLATERAL, MINT_AMOUNT))
+      );
+      expect(used?.value).toBe(toNumber(MINT_AMOUNT));
       expect(used?.value).toBe(0);
     });
   });
