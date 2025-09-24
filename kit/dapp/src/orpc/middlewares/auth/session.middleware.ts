@@ -48,13 +48,7 @@ export const sessionMiddleware = baseRouter.middleware<
     });
   }
 
-  const headers = new Headers();
-  for (const [key, value] of Object.entries(context.headers)) {
-    if (value) {
-      headers.append(key, value);
-    }
-  }
-
+  const headers = getHeaders(context.headers);
   const session = await auth.api.getSession({
     headers,
   });
@@ -67,3 +61,16 @@ export const sessionMiddleware = baseRouter.middleware<
     },
   });
 });
+
+function getHeaders(contextHeaders: Context["headers"]) {
+  if (contextHeaders instanceof Headers) {
+    return contextHeaders;
+  }
+  const headers = new Headers();
+  for (const [key, value] of Object.entries(contextHeaders)) {
+    if (value) {
+      headers.append(key, Array.isArray(value) ? value.join(",") : value);
+    }
+  }
+  return headers;
+}
