@@ -2,7 +2,7 @@ import { router } from "@/orpc/routes/router";
 import { createRouterClient, RouterClient } from "@orpc/server";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { createIsomorphicFn } from "@tanstack/react-start";
-import { getHeaders } from "@tanstack/react-start/server";
+import { getRequestHeaders } from "@tanstack/react-start/server";
 
 const logger = createLogger();
 
@@ -21,7 +21,7 @@ const createORPCServerClient = createIsomorphicFn().server(() => {
   globalThis.$client = createRouterClient(router, {
     context: () => {
       try {
-        const headers = getHeaders();
+        const headers = getRequestHeaders();
         return {
           headers,
         };
@@ -33,7 +33,7 @@ const createORPCServerClient = createIsomorphicFn().server(() => {
           { error }
         );
         return {
-          headers: {} as ReturnType<typeof getHeaders>,
+          headers: {} as ReturnType<typeof getRequestHeaders>,
         };
       }
     },

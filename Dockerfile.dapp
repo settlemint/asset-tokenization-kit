@@ -11,6 +11,7 @@ COPY kit/dapp/package.json kit/dapp/
 COPY kit/contracts/package.json kit/contracts/
 COPY kit/subgraph/package.json kit/subgraph/
 RUN bun install --ignore-scripts
+RUN bun add srvx
 
 # BUILD
 FROM base AS builder
@@ -24,8 +25,8 @@ FROM oven/bun:1.2.22-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/kit/dapp/.nitro ./.nitro
-COPY --from=builder /app/kit/dapp/.output ./.output
+COPY --from=builder /app/kit/dapp/dist/client ./client
+COPY --from=builder /app/kit/dapp/dist/server ./server
 COPY --from=builder /app/kit/dapp/drizzle ./drizzle
 EXPOSE 3000
-CMD ["bun", ".output/server/index.mjs"]
+CMD ["bun","--bun", "srvx", "--prod", "--port=3000", "--static=../client", "./server/server.js"]
