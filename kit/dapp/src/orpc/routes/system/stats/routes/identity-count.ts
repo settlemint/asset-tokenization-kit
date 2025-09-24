@@ -11,7 +11,6 @@ const IDENTITY_COUNT_QUERY = theGraphGraphql(`
       identityFactory {
         userIdentitiesCreatedCount
       }
-      adminsCount
     }
   }
 `);
@@ -30,7 +29,6 @@ const IdentityCountResponseSchema = z.object({
           activeUserIdentitiesCount: z.number(),
         })
         .nullable(),
-      adminsCount: z.number(),
     })
     .nullable(),
 });
