@@ -326,7 +326,7 @@ export function TransferAssetSheet({
                                     >
                                       {(field) => (
                                         <field.AddressSelectField
-                                          scope="all"
+                                          scope="user"
                                           label={t(
                                             "user-assets:actions.transfer.recipientLabel"
                                           )}

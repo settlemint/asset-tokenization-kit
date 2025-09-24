@@ -2,6 +2,7 @@
  * @vitest-environment node
  */
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
+import { getAnvilTimeMilliseconds } from "@/test/anvil";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
@@ -11,6 +12,7 @@ import {
   signInWithUser,
 } from "@test/fixtures/user";
 import { TEST_CONSTANTS } from "@test/helpers/test-helpers";
+import { addYears } from "date-fns";
 import { divide, from, multiply, subtract, toNumber } from "dnum";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -44,6 +46,8 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
       }
     );
 
+    const anvilTime = await getAnvilTimeMilliseconds();
+    const oneYearFromNow = addYears(new Date(anvilTime), 1);
     const result = await client.token.updateCollateral({
       contract: testToken.id,
       walletVerification: {
@@ -51,7 +55,7 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
         verificationType: "PINCODE",
       },
       amount: COLLATERAL,
-      expiryDays: 365,
+      expiryTimestamp: oneYearFromNow,
     });
     expect(toNumber(result.collateral?.collateral ?? from(0))).toBe(
       toNumber(COLLATERAL)

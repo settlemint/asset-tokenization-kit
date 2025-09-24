@@ -5,6 +5,7 @@ import { useCollateralValues } from "@/hooks/use-collateral-values";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addDays } from "date-fns";
 import {
   Dnum,
   format,
@@ -181,10 +182,12 @@ export function CollateralSheet({
             isSubmitting={isPending}
             store={sheetStoreRef.current}
             onSubmit={(verification) => {
+              const expiryTimestamp = addDays(new Date(), expiryDays);
+
               const promise = updateCollateral({
                 contract: asset.id,
                 amount: newAmount,
-                expiryDays,
+                expiryTimestamp,
                 walletVerification: verification,
               });
 

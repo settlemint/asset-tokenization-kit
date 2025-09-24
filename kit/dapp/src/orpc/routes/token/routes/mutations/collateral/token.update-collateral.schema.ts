@@ -1,5 +1,6 @@
 import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
 import { apiBigInt } from "@atk/zod/bigint";
+import { timestamp } from "@atk/zod/timestamp";
 import { z } from "zod";
 
 export const TokenUpdateCollateralInputSchema =
@@ -7,11 +8,9 @@ export const TokenUpdateCollateralInputSchema =
     amount: apiBigInt.describe(
       "The new collateral amount that will back the token"
     ),
-    expiryDays: z
-      .number()
-      .min(1, "Expiry must be at least 1 day")
-      .max(365, "Expiry cannot exceed 365 days")
-      .describe("Number of days until the collateral claim expires"),
+    expiryTimestamp: timestamp().describe(
+      "The expiry timestamp of the collateral"
+    ),
   });
 
 export type TokenUpdateCollateralInput = z.infer<

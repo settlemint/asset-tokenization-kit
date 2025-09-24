@@ -76,15 +76,11 @@ export const updateCollateral = tokenRouter.token.updateCollateral
   )
   .handler(async ({ input, context, errors }) => {
     // INPUT EXTRACTION: Destructure collateral parameters from validated input
-    const { contract, walletVerification, amount, expiryDays } = input;
+    const { contract, walletVerification, amount, expiryTimestamp } = input;
     const { auth } = context;
 
     // AUTHENTICATED ISSUER: Extract user information for claim issuance
     const sender = auth.user;
-
-    // EXPIRY CALCULATION: Convert days to Unix timestamp
-    const currentTime = Math.floor(Date.now() / 1000);
-    const expiryTimestamp = BigInt(currentTime + expiryDays * 24 * 60 * 60);
 
     // ACCESS TOKEN DATA: Get token information from context (already loaded by token middleware)
     const tokenData = context.token;
@@ -119,7 +115,7 @@ export const updateCollateral = tokenRouter.token.updateCollateral
         topic: ClaimTopic.collateral,
         data: {
           amount: amount,
-          expiryTimestamp,
+          expiryTimestamp: BigInt(Math.floor(expiryTimestamp.getTime() / 1000)),
         },
       },
       portalClient: context.portalClient,

@@ -368,7 +368,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                                   <form.AppField name={`recipient_${entry.id}`}>
                                     {(field) => (
                                       <field.AddressSelectField
-                                        scope="all"
+                                        scope="user"
                                         label={t(
                                           "tokens:actions.mint.form.addressLabel"
                                         )}
