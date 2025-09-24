@@ -102,7 +102,10 @@ vi.mock("@/hooks/use-app-form", () => ({
           props: React.InputHTMLAttributes<HTMLInputElement>
         ) => React.ReactElement;
         DnumField: (
-          props: React.InputHTMLAttributes<HTMLInputElement>
+          props: React.InputHTMLAttributes<HTMLInputElement> & {
+            startAddon?: string;
+            endAddon?: string;
+          }
         ) => React.ReactElement;
       }) => React.ReactNode;
     }) => (
@@ -114,7 +117,18 @@ vi.mock("@/hooks/use-app-form", () => ({
           AddressInputField: (props) => (
             <input data-testid="address-input" {...props} />
           ),
-          DnumField: (props) => <input data-testid="dnum-input" {...props} />,
+          DnumField: (props) => {
+            // Strip addon-only props so the stubbed input mirrors DOM expectations without React warnings.
+            const {
+              endAddon: _endAddon,
+              startAddon: _startAddon,
+              ...rest
+            } = props as React.InputHTMLAttributes<HTMLInputElement> & {
+              startAddon?: string;
+              endAddon?: string;
+            };
+            return <input data-testid="dnum-input" {...rest} />;
+          },
         })}
       </div>
     ),
@@ -205,7 +219,18 @@ describe("BurnSheet", () => {
             AddressInputField: (props) => (
               <input data-testid="address-input" {...props} />
             ),
-            DnumField: (props) => <input data-testid="dnum-input" {...props} />,
+            DnumField: (props) => {
+              // Strip addon-only props so the stubbed input mirrors DOM expectations without React warnings.
+              const {
+                endAddon: _endAddon,
+                startAddon: _startAddon,
+                ...rest
+              } = props as React.InputHTMLAttributes<HTMLInputElement> & {
+                startAddon?: string;
+                endAddon?: string;
+              };
+              return <input data-testid="dnum-input" {...rest} />;
+            },
           })}
         </div>
       ),
@@ -272,7 +297,18 @@ describe("BurnSheet", () => {
             AddressInputField: (props) => (
               <input data-testid="address-input" {...props} />
             ),
-            DnumField: (props) => <input data-testid="dnum-input" {...props} />,
+            DnumField: (props) => {
+              // Strip addon-only props so the stubbed input mirrors DOM expectations without React warnings.
+              const {
+                endAddon: _endAddon,
+                startAddon: _startAddon,
+                ...rest
+              } = props as React.InputHTMLAttributes<HTMLInputElement> & {
+                startAddon?: string;
+                endAddon?: string;
+              };
+              return <input data-testid="dnum-input" {...rest} />;
+            },
           })}
         </div>
       ),
@@ -328,7 +364,18 @@ describe("BurnSheet", () => {
             AddressInputField: (props) => (
               <input data-testid="address-input" {...props} />
             ),
-            DnumField: (props) => <input data-testid="dnum-input" {...props} />,
+            DnumField: (props) => {
+              // Strip addon-only props so the stubbed input mirrors DOM expectations without React warnings.
+              const {
+                endAddon: _endAddon,
+                startAddon: _startAddon,
+                ...rest
+              } = props as React.InputHTMLAttributes<HTMLInputElement> & {
+                startAddon?: string;
+                endAddon?: string;
+              };
+              return <input data-testid="dnum-input" {...rest} />;
+            },
           })}
         </div>
       ),
@@ -389,7 +436,18 @@ describe("BurnSheet", () => {
             AddressInputField: (props) => (
               <input data-testid="address-input" {...props} />
             ),
-            DnumField: (props) => <input data-testid="dnum-input" {...props} />,
+            DnumField: (props) => {
+              // Strip addon-only props so the stubbed input mirrors DOM expectations without React warnings.
+              const {
+                endAddon: _endAddon,
+                startAddon: _startAddon,
+                ...rest
+              } = props as React.InputHTMLAttributes<HTMLInputElement> & {
+                startAddon?: string;
+                endAddon?: string;
+              };
+              return <input data-testid="dnum-input" {...rest} />;
+            },
           })}
         </div>
       ),

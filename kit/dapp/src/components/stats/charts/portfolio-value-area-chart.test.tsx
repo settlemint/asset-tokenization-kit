@@ -3,25 +3,56 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PortfolioValueAreaChart } from "./portfolio-value-area-chart";
 
+const mockPortfolioResponse = {
+  data: [
+    {
+      timestamp: `${Date.UTC(2024, 0, 1) / 1000}`,
+      totalValueInBaseCurrency: "1000",
+    },
+    {
+      timestamp: `${Date.UTC(2024, 0, 2) / 1000}`,
+      totalValueInBaseCurrency: "1100",
+    },
+  ],
+};
+
+const mockBaseCurrency = "EUR";
+
 // Mock the ORPC client
 vi.mock("@/orpc/orpc-client", () => ({
   orpc: {
     system: {
       stats: {
         portfolio: {
-          queryOptions: vi.fn(() => ({
-            queryKey: ["system", "stats", "portfolio"],
-            queryFn: vi.fn(),
-          })),
+          queryOptions: vi.fn(
+            ({
+              enabled,
+              input: _input,
+              ...rest
+            }: { enabled?: boolean; input?: unknown } = {}) => ({
+              ...rest,
+              enabled,
+              queryKey: ["system", "stats", "portfolio"],
+              queryFn: vi.fn(() => Promise.resolve(mockPortfolioResponse)),
+            })
+          ),
         },
       },
     },
     settings: {
       read: {
-        queryOptions: vi.fn(() => ({
-          queryKey: ["settings", "read"],
-          queryFn: vi.fn(),
-        })),
+        queryOptions: vi.fn(
+          ({
+            enabled,
+            input: _input,
+            ...rest
+          }: { enabled?: boolean; input?: unknown } = {}) => ({
+            ...rest,
+            enabled,
+            queryKey: ["settings", "read"],
+            queryFn: vi.fn(() => Promise.resolve(mockBaseCurrency)),
+          })
+        ),
       },
     },
   },
@@ -92,10 +123,13 @@ vi.mock("@tanstack/react-query", async () => {
       if (options.queryKey?.includes("portfolio")) {
         return {
           data: {
-            chartData: [
-              { timestamp: "Jan 01", portfolioValue: 1000 },
-              { timestamp: "Jan 02", portfolioValue: 1100 },
-            ],
+            chartData: mockPortfolioResponse.data.map((item) => ({
+              timestamp: "Jan 01",
+              portfolioValue: Number.parseInt(
+                item.totalValueInBaseCurrency,
+                10
+              ),
+            })),
             chartConfig: {
               portfolioValue: {
                 label: "Portfolio value",
@@ -109,7 +143,7 @@ vi.mock("@tanstack/react-query", async () => {
       // Mock settings query for base currency
       if (options.queryKey?.includes("settings")) {
         return {
-          data: "EUR",
+          data: mockBaseCurrency,
         };
       }
       return { data: null };
