@@ -375,6 +375,7 @@ export function IssueClaimSheet({
         form={form as ReturnType<typeof useAppForm>}
         topics={topics ?? []}
         values={typedValues}
+        formFields={formFields}
         userCanIssueTopic={userCanIssueTopic}
         onTopicChange={(topic: string) => {
           // When topic changes, regenerate form with appropriate initial values
