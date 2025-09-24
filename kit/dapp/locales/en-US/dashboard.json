@@ -108,6 +108,14 @@
     "subtitle": "Here's what's happening with your assets today",
     "title": "Welcome back, {{name}}"
   },
+  "assetOverview": {
+    "title": "Assets Overview",
+    "subtitle": "Track and analyze your tokenized assets",
+    "emptyState": {
+      "title": "No assets yet",
+      "description": "Design your first tokenized asset to get started"
+    }
+  },
   "widgets": {
     "alerts": {
       "dismiss": "Dismiss",

@@ -14,6 +14,7 @@
  * @see {@link https://tanstack.com/query/latest/docs/react/guides/suspense} - React Query suspense mode
  */
 
+import { AssetOverviewSection } from "@/components/dashboard/asset-overview-section";
 import { IdentityProgress } from "@/components/dashboard/identity-progress/identity-progress";
 import { PortfolioDetails } from "@/components/dashboard/portfolio-details/portfolio-details";
 import { createFileRoute } from "@tanstack/react-router";
@@ -63,6 +64,7 @@ function Home() {
           <PortfolioDetails />
         </>
       )}
+      {system.userPermissions?.roles.tokenManager && <AssetOverviewSection />}
     </div>
   );
 }
