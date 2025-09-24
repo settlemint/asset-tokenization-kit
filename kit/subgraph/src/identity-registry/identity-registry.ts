@@ -67,23 +67,8 @@ export function handleIdentityRegistered(event: IdentityRegistered): void {
 
 export function handleIdentityRemoved(event: IdentityRemoved): void {
   fetchEvent(event, "IdentityRemoved");
-
-  // Decrement active identities count
-  const identityRegistry = fetchIdentityRegistry(event.address);
-  const identity = fetchIdentity(event.params._identity);
-  if (identity.isContract) {
-    identityRegistry.activeContractIdentitiesCount =
-      identityRegistry.activeContractIdentitiesCount - 1;
-  } else {
-    identityRegistry.activeUserIdentitiesCount =
-      identityRegistry.activeUserIdentitiesCount - 1;
-  }
-  identityRegistry.save();
 }
 
 export function handleIdentityRecovered(event: IdentityRecovered): void {
   fetchEvent(event, "IdentityRecovered");
-
-  // Identity recovery doesn't change the total count - it replaces one identity with another
-  // The old identity is marked as lost and a new identity is registered, maintaining the same count
 }

@@ -1,4 +1,4 @@
-import { Bytes } from "@graphprotocol/graph-ts";
+import { Address, Bytes } from "@graphprotocol/graph-ts";
 import {
   ContractIdentityCreated,
   IdentityCreated,
@@ -6,6 +6,7 @@ import {
 import { fetchAccount } from "../account/fetch/account";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentity } from "../identity/fetch/identity";
+import { trackIdentityCreated } from "../stats/identity-stats";
 import { fetchIdentityFactory } from "./fetch/identity-factory";
 
 export function handleIdentityCreated(event: IdentityCreated): void {
@@ -19,11 +20,11 @@ export function handleIdentityCreated(event: IdentityCreated): void {
   identity.identityFactory = event.address;
   identity.save();
 
-  // Increment the identity factory's created count
   const identityFactory = fetchIdentityFactory(event.address);
-  identityFactory.userIdentitiesCreatedCount =
-    identityFactory.userIdentitiesCreatedCount + 1;
-  identityFactory.save();
+  const system = identityFactory.system;
+
+  // Track identity creation statistics
+  trackIdentityCreated(Address.fromBytes(system), false);
 
   // Record the event that created the identity for the account
   // needs to be after creating the account as we map the involved accounts in the event
@@ -43,11 +44,11 @@ export function handleContractIdentityCreated(
   identity.identityFactory = event.address;
   identity.save();
 
-  // Increment the identity factory's created count
   const identityFactory = fetchIdentityFactory(event.address);
-  identityFactory.contractIdentitiesCreatedCount =
-    identityFactory.contractIdentitiesCreatedCount + 1;
-  identityFactory.save();
+  const system = identityFactory.system;
+
+  // Track identity creation statistics
+  trackIdentityCreated(Address.fromBytes(system), true);
 
   // Record the event that created the identity for the account
   // needs to be after creating the account as we map the involved accounts in the event

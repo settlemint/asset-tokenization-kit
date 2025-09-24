@@ -198,6 +198,24 @@ function fetchAccountStatsState(accountAddress: Address): AccountStatsState {
   return state;
 }
 
+export function fetchAccountSystemStatsStateForSystem(
+  accountAddress: Address,
+  systemAddress: Address
+): AccountSystemStatsState {
+  const system = fetchSystem(systemAddress);
+  const id = accountAddress.concat(system.id);
+  let state = AccountSystemStatsState.load(id);
+  if (!state) {
+    state = new AccountSystemStatsState(id);
+    state.account = fetchAccount(accountAddress).id;
+    state.system = system.id;
+    state.totalValueInBaseCurrency = BigDecimal.zero();
+    state.balancesCount = 0;
+    state.save();
+  }
+  return state;
+}
+
 function fetchAccountSystemStatsState(
   accountAddress: Address,
   token: Token
