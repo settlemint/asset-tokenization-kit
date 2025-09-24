@@ -1,3 +1,29 @@
+/**
+ * @fileoverview Issue Claim Sheet Component
+ *
+ * This component implements dynamic form generation and validation for issuing claims
+ * to managed identities. It demonstrates the complete flow from topic selection to
+ * claim issuance using the claim-schema-builder utility.
+ *
+ * ## Form Generation Flow
+ *
+ * 1. **Topic Selection**: User selects a claim topic from available options
+ * 2. **Schema Resolution**: System determines appropriate Zod schema via getSchemaForClaim()
+ * 3. **Field Generation**: Schema is converted to form fields using generateFormFields()
+ * 4. **Form Rendering**: Dynamic form is rendered based on field configurations
+ * 5. **Value Transformation**: Form values are processed and validated
+ * 6. **Claim Construction**: Final claim data is built using buildClaimData()
+ * 7. **Submission**: Claim is issued to the target identity
+ *
+ * ## Key Integration Points
+ *
+ * - `getSchemaForClaim()`: Resolves the correct validation schema
+ * - `generateFormFields()`: Creates form field configurations
+ * - `buildClaimData()`: Validates and formats claim data for submission
+ *
+ * @see {@link /kit/dapp/src/lib/utils/claims/claim-schema-builder.ts}
+ */
+
 import { useAppForm } from "@/hooks/use-app-form";
 import {
   buildClaimData,
@@ -9,6 +35,7 @@ import type { ClaimData } from "@/orpc/routes/system/identity/claims/routes/clai
 import { IssueableClaimTopicSchema } from "@/orpc/routes/system/identity/claims/routes/claims.issue.schema";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useStore } from "@tanstack/react-form";
 import { useRouter } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -30,8 +57,17 @@ export type IssueClaimFormData = z.infer<typeof IssueClaimFormSchema>;
 
 export type IssueClaimTopic = IssueClaimFormData["topic"];
 
+type ClaimFormFields = ReturnType<typeof generateFormFields>;
+
 /**
  * Creates initial form values dynamically based on the selected topic
+ *
+ * This function demonstrates the schema resolution process:
+ * 1. Gets the appropriate schema using getSchemaForClaim()
+ * 2. Generates form fields using generateFormFields()
+ * 3. Creates default values based on field types
+ *
+ * This ensures the form is properly initialized when a topic changes.
  */
 const createInitialValues = (
   topic?: string,
@@ -43,9 +79,13 @@ const createInitialValues = (
 
   if (topic) {
     try {
+      // Step 1: Resolve schema for the topic (predefined or custom signature)
       const schema = getSchemaForClaim(topic, signature);
       if (schema) {
+        // Step 2: Generate form field configurations from the schema
         const fields = generateFormFields(schema);
+
+        // Step 3: Create appropriate default values based on field types
         for (const field of fields) {
           switch (field.type) {
             case "boolean":
@@ -118,27 +158,42 @@ const transformFieldValue = (value: unknown, fieldType: string): unknown => {
 
 /**
  * Builds a claim payload from form values using the schema-driven approach
+ *
+ * This function demonstrates the complete validation and transformation flow:
+ * 1. Resolves form fields from schema if not provided
+ * 2. Transforms form values based on field types (datetime, numbers, etc.)
+ * 3. Uses buildClaimData() to validate and format the final claim
+ *
+ * The transformation step is crucial for handling datetime inputs (converted to timestamps)
+ * and ensuring proper data types for blockchain submission.
  */
 const buildClaimPayload = (
   values: Record<string, unknown>,
   topic: string,
-  signature?: string
+  signature?: string,
+  fields?: ClaimFormFields
 ): ClaimData | null => {
   if (!topic) {
     return null;
   }
 
   try {
-    const schema = getSchemaForClaim(topic, signature);
-    if (!schema) {
+    // Step 1: Resolve form fields if not provided (lazy evaluation)
+    const resolvedFields =
+      fields ??
+      (() => {
+        const schema = getSchemaForClaim(topic, signature);
+        return schema ? generateFormFields(schema) : null;
+      })();
+
+    if (!resolvedFields) {
       return null;
     }
 
-    const fields = generateFormFields(schema);
     const transformedValues: Record<string, unknown> = {};
 
-    // Transform field values based on their types
-    for (const field of fields) {
+    // Step 2: Transform field values based on their types (datetime → timestamp, etc.)
+    for (const field of resolvedFields) {
       const rawValue = values[field.name];
       const transformedValue = transformFieldValue(rawValue, field.type);
 
@@ -147,7 +202,7 @@ const buildClaimPayload = (
       }
     }
 
-    // Use the schema-driven buildClaimData function
+    // Step 3: Use the schema-driven buildClaimData function for validation and formatting
     return buildClaimData(topic, transformedValues, signature);
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -212,8 +267,63 @@ export function IssueClaimSheet({
 
   const form = useAppForm({
     defaultValues: createInitialValues(),
-    onSubmit: () => {},
   });
+
+  const formValues = useStore(form.store, (state) => state.values);
+
+  const typedValues = useMemo(
+    () => IssueClaimFormSchema.parse(formValues),
+    [formValues]
+  );
+
+  const selectedTopic: IssueClaimTopic =
+    typedValues.topic === "" ? "" : (typedValues.topic as IssueClaimTopic);
+
+  const selectedTopicData = useMemo(
+    () => topics?.find((topic) => topic.name === selectedTopic),
+    [topics, selectedTopic]
+  );
+
+  // Dynamic form field generation based on selected topic
+  // This demonstrates the real-time schema resolution and field generation
+  const formFields = useMemo<ClaimFormFields>(() => {
+    if (!selectedTopic || !selectedTopicData) return [];
+
+    // Resolve schema: predefined schemas take precedence over custom signatures
+    const schema = getSchemaForClaim(
+      selectedTopic,
+      selectedTopicData.signature
+    );
+
+    // Generate form field configurations from the schema
+    return schema ? generateFormFields(schema) : [];
+  }, [selectedTopic, selectedTopicData]);
+
+  // Real-time claim payload validation and construction
+  // This updates whenever form values change, providing immediate feedback
+  const claimPayload = useMemo(
+    () =>
+      buildClaimPayload(
+        formValues,
+        selectedTopic,
+        selectedTopicData?.signature,
+        formFields
+      ),
+    [formValues, selectedTopic, selectedTopicData?.signature, formFields]
+  );
+
+  const userCanIssueTopic = useMemo(
+    () =>
+      Boolean(
+        selectedTopic &&
+          trustedIssuers?.some((issuer) =>
+            issuer.claimTopics.some((topic) => topic.name === selectedTopic)
+          )
+      ),
+    [selectedTopic, trustedIssuers]
+  );
+
+  const canProceed = Boolean(claimPayload) && userCanIssueTopic;
 
   const resetFormState = useCallback(() => {
     form.reset(createInitialValues());
@@ -232,78 +342,53 @@ export function IssueClaimSheet({
   }, [open, resetFormState]);
 
   return (
-    <form.Subscribe selector={(state) => state.values}>
-      {(values) => {
-        const typedValues = IssueClaimFormSchema.parse(values);
-        const selectedTopic: IssueClaimTopic =
-          typedValues.topic === ""
-            ? ""
-            : (typedValues.topic as IssueClaimTopic);
-        const selectedTopicData = topics?.find(
-          (topic) => topic.name === selectedTopic
-        );
-        const claimPayload = buildClaimPayload(
-          values,
-          selectedTopic,
-          selectedTopicData?.signature
-        );
-        const userCanIssueTopic = Boolean(
-          selectedTopic &&
-            trustedIssuers?.some((issuer) =>
-              issuer.claimTopics.some((topic) => topic.name === selectedTopic)
-            )
-        );
+    <ActionFormSheet
+      open={open}
+      onOpenChange={handleClose}
+      title={t("actions.issueClaim.title")}
+      description={t("actions.issueClaim.description", {
+        identity: identity.account.contractName || targetAddress,
+      })}
+      submitLabel={t("actions.issueClaim.submit")}
+      isSubmitting={isPending}
+      hasValuesStep
+      disabled={({ isDirty }) => !isDirty || !canProceed || isPending}
+      canContinue={() => canProceed}
+      onSubmit={async (verification) => {
+        if (!claimPayload) {
+          return;
+        }
 
-        const canProceed = Boolean(claimPayload) && userCanIssueTopic;
-
-        return (
-          <ActionFormSheet
-            open={open}
-            onOpenChange={handleClose}
-            title={t("actions.issueClaim.title")}
-            description={t("actions.issueClaim.description", {
-              identity: identity.account.contractName || targetAddress,
-            })}
-            submitLabel={t("actions.issueClaim.submit")}
-            isSubmitting={isPending}
-            hasValuesStep
-            disabled={({ isDirty }) => !isDirty || !canProceed || isPending}
-            canContinue={() => canProceed}
-            onSubmit={async (verification) => {
-              if (!claimPayload) {
-                return;
-              }
-
-              await issueClaim({
-                targetIdentityAddress: targetAddress,
-                claim: claimPayload,
-                walletVerification: verification,
-              });
-            }}
-            store={sheetStoreRef.current}
-            showAssetDetailsOnConfirm={false}
-          >
-            <IssueClaimFormView
-              form={form as ReturnType<typeof useAppForm>}
-              topics={topics ?? []}
-              values={typedValues}
-              userCanIssueTopic={userCanIssueTopic}
-              onTopicChange={(topic: string) => {
-                const topicData = topics?.find((t) => t.name === topic);
-                form.reset(createInitialValues(topic, topicData?.signature));
-              }}
-              toDateTimeValue={toDateTimeInputValue}
-              fromDateTimeValue={fromDateTimeInput}
-            />
-
-            <ConfirmIssueClaimView
-              targetIdentity={targetAddress}
-              topic={selectedTopic}
-              claim={claimPayload}
-            />
-          </ActionFormSheet>
-        );
+        await issueClaim({
+          targetIdentityAddress: targetAddress,
+          claim: claimPayload,
+          walletVerification: verification,
+        });
       }}
-    </form.Subscribe>
+      store={sheetStoreRef.current}
+      showAssetDetailsOnConfirm={false}
+      confirm={
+        <ConfirmIssueClaimView
+          targetIdentity={targetAddress}
+          topic={selectedTopic}
+          claim={claimPayload}
+        />
+      }
+    >
+      <IssueClaimFormView
+        form={form as ReturnType<typeof useAppForm>}
+        topics={topics ?? []}
+        values={typedValues}
+        userCanIssueTopic={userCanIssueTopic}
+        onTopicChange={(topic: string) => {
+          // When topic changes, regenerate form with appropriate initial values
+          // This triggers the entire schema resolution → field generation flow
+          const topicData = topics?.find((t) => t.name === topic);
+          form.reset(createInitialValues(topic, topicData?.signature));
+        }}
+        toDateTimeValue={toDateTimeInputValue}
+        fromDateTimeValue={fromDateTimeInput}
+      />
+    </ActionFormSheet>
   );
 }
