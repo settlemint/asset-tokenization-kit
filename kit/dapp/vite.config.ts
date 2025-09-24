@@ -1,8 +1,17 @@
+// import { nitroV2Plugin as nitro } from "@tanstack/nitro-v2-vite-plugin";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
+// import { nitro } from "nitro/vite";
+import { devtools } from "@tanstack/devtools-vite";
+import { config } from "dotenv";
 import { defineConfig } from "vite";
 import { analyzer } from "vite-bundle-analyzer";
 import tsConfigPaths from "vite-tsconfig-paths";
+
+config({
+  path: [".env", ".env.local"],
+  quiet: true,
+});
 
 export default defineConfig({
   build: {
@@ -41,8 +50,21 @@ export default defineConfig({
     port: 3000,
   },
   plugins: [
+    devtools(),
     tsConfigPaths(),
     tanstackStart(),
+    // nitro({
+    //   preset: "bun",
+    //   compatibilityDate: "2025-09-24",
+    //   typescript: {
+    //     tsconfigPath: "./tsconfig.json",
+    //   },
+    //   esbuild: {
+    //     options: {
+    //       target: "ES2023",
+    //     },
+    //   },
+    // }),
     viteReact({
       babel: {
         plugins: [["babel-plugin-react-compiler", {}]],
