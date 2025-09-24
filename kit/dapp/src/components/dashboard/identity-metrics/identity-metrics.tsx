@@ -33,7 +33,7 @@ export function IdentityMetrics() {
           icon={UserCheck}
         />
         <StatCard
-          title={t("identityMetrics.pendingRegistrations")}
+          title={t("identityMetrics.pendingIdentities")}
           value={data.pendingIdentitiesCount}
           icon={Clock}
         />

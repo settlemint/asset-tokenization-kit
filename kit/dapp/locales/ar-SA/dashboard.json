@@ -66,7 +66,7 @@
     "description": "الحالة الحالية لهويات النظام والتسجيلات",
     "totalIdentities": "إجمالي الهويات",
     "activeRegistrations": "التسجيلات النشطة",
-    "pendingRegistrations": "التسجيلات المعلقة"
+    "pendingIdentities": "التسجيلات المعلقة"
   },
   "filters": {
     "apply": "تطبيق الفلاتر",
