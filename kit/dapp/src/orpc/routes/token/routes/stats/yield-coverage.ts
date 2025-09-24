@@ -128,8 +128,8 @@ export const statsYieldCoverage = tokenRouter.token.statsYieldCoverage.handler(
         yieldCoverage: 0,
         hasYieldSchedule: false,
         isRunning: false,
-        totalUnclaimedYield: [0n, 0] as [bigint, number],
-        denominationAssetBalance: [0n, 0] as [bigint, number],
+        totalUnclaimedYield: from(0),
+        denominationAssetBalance: from(0),
       };
     }
 
@@ -170,14 +170,8 @@ export const statsYieldCoverage = tokenRouter.token.statsYieldCoverage.handler(
       yieldCoverage: Number.isFinite(yieldCoverage) ? yieldCoverage : 0,
       hasYieldSchedule: true,
       isRunning,
-      totalUnclaimedYield: [totalUnclaimedYield[0], totalUnclaimedYield[1]] as [
-        bigint,
-        number,
-      ],
-      denominationAssetBalance: [
-        denominationAssetBalance[0],
-        denominationAssetBalance[1],
-      ] as [bigint, number],
+      totalUnclaimedYield,
+      denominationAssetBalance,
     };
   }
 );

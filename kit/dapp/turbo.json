@@ -1,8 +1,12 @@
 {
   "extends": ["//"],
   "tasks": {
+    "settlemint:connect:local": {
+      "cache": false
+    },
     "codegen:settlemint": {
       "cache": true,
+      "dependsOn": ["settlemint:connect:local"],
       "inputs": ["tsconfig.json", ".dev-reset", "../subgraph/schema.graphql"],
       "outputs": [
         "src/lib/settlemint/**",
