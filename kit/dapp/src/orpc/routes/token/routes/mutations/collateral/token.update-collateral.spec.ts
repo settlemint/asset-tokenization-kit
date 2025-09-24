@@ -49,6 +49,7 @@ describe("Token update collateral", () => {
 
     const amountExact = from("1000000", stablecoinToken.decimals);
     const thirtyDaysFromNow = addDays(new Date(), 30);
+    thirtyDaysFromNow.setMilliseconds(0);
 
     const result = await client.token.updateCollateral({
       contract: stablecoinToken.id,
