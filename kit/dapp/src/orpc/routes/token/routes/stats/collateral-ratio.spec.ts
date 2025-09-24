@@ -119,7 +119,6 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
         toNumber(subtract(COLLATERAL, MINT_AMOUNT))
       );
       expect(used?.value).toBe(toNumber(MINT_AMOUNT));
-      expect(used?.value).toBe(0);
     });
   });
 
