@@ -20,7 +20,7 @@ image:
   # -- (string) Hasura image repository
   repository: hasura/graphql-engine
   # -- (string) Hasura image tag
-  tag: v2.48.3
+  tag: v2.48.5
   # -- (string) Hasura image pull policy
   pullPolicy: IfNotPresent
 

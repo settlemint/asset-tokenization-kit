@@ -1,3 +1,4 @@
+import { bigDecimal } from "@atk/zod/bigdecimal";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { z } from "zod";
 
@@ -27,10 +28,10 @@ export const StatsYieldCoverageOutputSchema = z.object({
   isRunning: z.boolean(),
 
   /** Total unclaimed yield amount that needs coverage */
-  totalUnclaimedYield: z.tuple([z.bigint(), z.number()]),
+  totalUnclaimedYield: bigDecimal(),
 
   /** Available denomination asset balance for yield coverage */
-  denominationAssetBalance: z.tuple([z.bigint(), z.number()]),
+  denominationAssetBalance: bigDecimal(),
 });
 
 /**
