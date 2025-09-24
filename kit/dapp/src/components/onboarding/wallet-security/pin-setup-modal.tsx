@@ -18,7 +18,7 @@ import { toast } from "sonner";
 
 interface PinSetupModalProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange: (open: false) => void;
 }
 
 export function PinSetupModal({ open, onOpenChange }: PinSetupModalProps) {

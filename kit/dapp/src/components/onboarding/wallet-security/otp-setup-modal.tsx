@@ -26,7 +26,7 @@ import { toast } from "sonner";
 
 interface OtpSetupModalProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange: (open: false) => void;
 }
 
 const logger = createLogger();
