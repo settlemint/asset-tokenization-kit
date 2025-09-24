@@ -25,6 +25,7 @@ import { tokenSetYieldScheduleContract } from "@/orpc/routes/token/routes/mutati
 
 // Query contracts
 import { tokenActionsContract } from "@/orpc/routes/token/routes/token.actions.contract";
+import { tokenDenominationAssetsContract } from "@/orpc/routes/token/routes/token.denomination-assets.contract";
 import { tokenEventsContract } from "@/orpc/routes/token/routes/token.events.contract";
 import { tokenHolderContract } from "@/orpc/routes/token/routes/token.holder.contract";
 import { tokenHoldersContract } from "@/orpc/routes/token/routes/token.holders.contract";
@@ -69,6 +70,7 @@ export const tokenContract = {
 
   // Queries
   actions: tokenActionsContract,
+  denominationAssets: tokenDenominationAssetsContract,
   list: tokenListContract,
   read: tokenReadContract,
   search: tokenSearchContract,

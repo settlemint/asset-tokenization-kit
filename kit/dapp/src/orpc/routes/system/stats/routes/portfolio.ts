@@ -7,12 +7,11 @@ import { z } from "zod";
  * GraphQL query to fetch hourly portfolio data
  */
 const PORTFOLIO_HOURLY_QUERY = theGraphGraphql(`
-  query PortfolioHistoryHourly($accountId: String!, $systemId: String!, $from: Timestamp, $to: Timestamp) {
-    accountSystemStats: accountSystemStats_collection(
+  query PortfolioHistoryHourly($accountId: String!, $from: Timestamp, $to: Timestamp) {
+    accountStats: accountStats_collection(
       interval: hour
       where: {
         account: $accountId,
-        system: $systemId,
         timestamp_gte: $from,
         timestamp_lte: $to
       }
@@ -28,12 +27,11 @@ const PORTFOLIO_HOURLY_QUERY = theGraphGraphql(`
  * GraphQL query to fetch daily portfolio data
  */
 const PORTFOLIO_DAILY_QUERY = theGraphGraphql(`
-  query PortfolioHistoryDaily($accountId: String!, $systemId: String!, $from: Timestamp, $to: Timestamp) {
-    accountSystemStats: accountSystemStats_collection(
+  query PortfolioHistoryDaily($accountId: String!, $from: Timestamp, $to: Timestamp) {
+    accountStats: accountStats_collection(
       interval: day
       where: {
         account: $accountId,
-        system: $systemId,
         timestamp_gte: $from,
         timestamp_lte: $to
       }
@@ -52,7 +50,7 @@ const PortfolioDataItem = z.object({
 });
 
 const PortfolioResponseSchema = z.object({
-  accountSystemStats: z.array(PortfolioDataItem),
+  accountStats: z.array(PortfolioDataItem),
 });
 
 /**
@@ -97,12 +95,10 @@ export const statsPortfolio = systemRouter.system.stats.portfolio.handler(
     // Build query variables
     const variables: {
       accountId: string;
-      systemId: string;
       from?: string;
       to?: string;
     } = {
       accountId: userAddress.toLowerCase(),
-      systemId: context.system.id.toLowerCase(),
     };
 
     if (input.from) {
@@ -123,7 +119,7 @@ export const statsPortfolio = systemRouter.system.stats.portfolio.handler(
     });
 
     return {
-      data: portfolioData.accountSystemStats,
+      data: portfolioData.accountStats,
     };
   }
 );
