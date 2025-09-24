@@ -112,8 +112,8 @@
     "title": "Assets Overview",
     "subtitle": "Track and analyze your tokenized assets",
     "emptyState": {
-      "title": "No assets yet",
-      "description": "Design your first tokenized asset to get started"
+      "title": "Your asset overview will appear here",
+      "description": "Charts and statistics will show once you design your first tokenized asset"
     }
   },
   "widgets": {
