@@ -1,9 +1,7 @@
 import { DetailGrid } from "@/components/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
-import { IdentityStatusBadge } from "@/components/identity/identity-status-badge";
 import { IdentityTypeBadge } from "@/components/identity/identity-type-badge";
-import { Web3Address } from "@/components/web3/web3-address";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
@@ -45,37 +43,12 @@ function IdentityDetailPage() {
         />
 
         <DetailGridItem
-          label={t("identities:fields.registrationStatus")}
-          info={t("identities:fields.registrationStatusInfo")}
-        >
-          <IdentityStatusBadge isRegistered={claimsData.isRegistered} />
-        </DetailGridItem>
-
-        <DetailGridItem
           label={t("identities:fields.linkedEntity")}
           info={t("identities:fields.linkedEntityInfo")}
-        >
-          {entityAddress ? (
-            <div className="flex flex-col gap-1">
-              {isContract && claimsData.account.contractName && (
-                <span className="font-medium">
-                  {claimsData.account.contractName}
-                </span>
-              )}
-              <Web3Address
-                address={entityAddress}
-                size="small"
-                copyToClipboard
-                showBadge={!isContract || !claimsData.account.contractName}
-                showPrettyName={false}
-              />
-            </div>
-          ) : (
-            <span className="text-muted-foreground text-sm">
-              {t("common:none")}
-            </span>
-          )}
-        </DetailGridItem>
+          value={entityAddress ?? t("common:none")}
+          type="address"
+          showPrettyName={false}
+        />
 
         <DetailGridItem
           label={t("identities:identityTable.columns.type")}

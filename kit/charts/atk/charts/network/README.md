@@ -1,6 +1,6 @@
 # network
 
-![Version: 2.0.0-alpha.8](https://img.shields.io/badge/Version-2.0.0--alpha.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.8](https://img.shields.io/badge/AppVersion-2.0.0--alpha.8-informational?style=flat-square)
+![Version: 2.0.0-alpha.9](https://img.shields.io/badge/Version-2.0.0--alpha.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.9](https://img.shields.io/badge/AppVersion-2.0.0--alpha.9-informational?style=flat-square)
 
 A Helm chart for a blockchain network on Kubernetes
 
@@ -14,8 +14,8 @@ A Helm chart for a blockchain network on Kubernetes
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | network-bootstrapper | 2.0.0-alpha.8 |
-|  | network-nodes | 2.0.0-alpha.8 |
+|  | network-bootstrapper | 2.0.0-alpha.9 |
+|  | network-nodes | 2.0.0-alpha.9 |
 
 ## Values
 

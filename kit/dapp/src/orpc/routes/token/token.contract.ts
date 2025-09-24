@@ -25,6 +25,7 @@ import { tokenSetYieldScheduleContract } from "@/orpc/routes/token/routes/mutati
 
 // Query contracts
 import { tokenActionsContract } from "@/orpc/routes/token/routes/token.actions.contract";
+import { tokenDenominationAssetsContract } from "@/orpc/routes/token/routes/token.denomination-assets.contract";
 import { tokenEventsContract } from "@/orpc/routes/token/routes/token.events.contract";
 import { tokenHolderContract } from "@/orpc/routes/token/routes/token.holder.contract";
 import { tokenHoldersContract } from "@/orpc/routes/token/routes/token.holders.contract";
@@ -39,6 +40,7 @@ import { statsSupplyChangesContract } from "@/orpc/routes/token/routes/stats/sup
 import { statsTotalSupplyContract } from "@/orpc/routes/token/routes/stats/total-supply.contract";
 import { statsVolumeContract } from "@/orpc/routes/token/routes/stats/volume.contract";
 import { statsWalletDistributionContract } from "@/orpc/routes/token/routes/stats/wallet-distribution.contract";
+import { statsYieldCoverageContract } from "@/orpc/routes/token/routes/stats/yield-coverage.contract";
 import { statsYieldDistributionContract } from "@/orpc/routes/token/routes/stats/yield-distribution.contract";
 
 export const tokenContract = {
@@ -69,6 +71,7 @@ export const tokenContract = {
 
   // Queries
   actions: tokenActionsContract,
+  denominationAssets: tokenDenominationAssetsContract,
   list: tokenListContract,
   read: tokenReadContract,
   search: tokenSearchContract,
@@ -84,6 +87,7 @@ export const tokenContract = {
   statsVolume: statsVolumeContract,
   statsWalletDistribution: statsWalletDistributionContract,
   statsYieldDistribution: statsYieldDistributionContract,
+  statsYieldCoverage: statsYieldCoverageContract,
 };
 
 // Extract mutation keys for permissions

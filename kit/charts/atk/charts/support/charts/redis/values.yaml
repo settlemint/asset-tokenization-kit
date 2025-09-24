@@ -156,4 +156,3 @@ networkPolicy:
   allowedPodSelectors: []
   # -- Additional allowed namespace selectors (list)
   allowedNamespaceSelectors: []
-

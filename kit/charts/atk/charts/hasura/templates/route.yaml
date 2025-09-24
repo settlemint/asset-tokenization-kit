@@ -1,63 +1,39 @@
-{{- /* OpenShift Route for exposing the Hasura graphql-engine service when enabled. */ -}}
 {{- $hasRouteAPI := .Capabilities.APIVersions.Has "route.openshift.io/v1" -}}
-{{- $hasuraValues := index .Values "graphql-engine" -}}
-{{- $routeValues := default dict $hasuraValues.openShiftRoute -}}
-{{- if and $hasRouteAPI $routeValues $routeValues.enabled -}}
-{{- $servicePrefix := .Release.Name -}}
-{{- if and $hasuraValues $hasuraValues.global $hasuraValues.global.prefixOverride -}}
-  {{- $servicePrefix = $hasuraValues.global.prefixOverride -}}
-{{- end -}}
-{{- $serviceName := default (printf "%s-graphql-engine" $servicePrefix) $hasuraValues.nameOverride -}}
-{{- $routeName := default $serviceName $routeValues.name -}}
-{{- $targetPort := "http" -}}
-{{- with $routeValues.port }}
-  {{- with .targetPort }}
-    {{- $targetPort = . -}}
-  {{- end }}
-{{- end }}
-{{- $weight := "" -}}
-{{- with $routeValues.to }}
-  {{- with .weight }}
-    {{- $weight = . -}}
-  {{- end }}
-{{- end }}
-{{- $wildcard := default "None" $routeValues.wildcardPolicy -}}
+{{- if and $hasRouteAPI .Values.openShiftRoute.enabled -}}
+{{- $fullName := include "hasura.fullname" . -}}
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: {{ $routeName }}
+  name: {{ $fullName }}
   labels:
-    app: {{ $routeName }}
-    {{- with $hasuraValues.labels }}
-    {{- toYaml . | nindent 4 }}
-    {{- end }}
-  {{- with $routeValues.annotations }}
+    {{- include "hasura.labels" . | nindent 4 }}
+  {{- with .Values.openShiftRoute.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+  {{- with .Values.openShiftRoute.host }}
+  host: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.openShiftRoute.path }}
+  path: {{ . | quote }}
+  {{- end }}
   to:
     kind: Service
-    name: {{ $serviceName }}
-    {{- if $weight }}
-    weight: {{ int $weight }}
+    name: {{ $fullName }}
+    {{- with .Values.openShiftRoute.to.weight }}
+    weight: {{ . }}
     {{- end }}
-  {{- with $routeValues.alternateBackends }}
+  {{- with .Values.openShiftRoute.alternateBackends }}
   alternateBackends:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   port:
-    targetPort: {{ $targetPort }}
-  {{- with $routeValues.host }}
-  host: {{ . | quote }}
+    targetPort: http
+  {{- if .Values.openShiftRoute.wildcardPolicy }}
+  wildcardPolicy: {{ .Values.openShiftRoute.wildcardPolicy }}
   {{- end }}
-  {{- with $routeValues.path }}
-  path: {{ . | quote }}
-  {{- end }}
-  {{- if $wildcard }}
-  wildcardPolicy: {{ $wildcard }}
-  {{- end }}
-  {{- with $routeValues.tls }}
+  {{- with .Values.openShiftRoute.tls }}
   tls:
     {{- toYaml . | nindent 4 }}
   {{- end }}
