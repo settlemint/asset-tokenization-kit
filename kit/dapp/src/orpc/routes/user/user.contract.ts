@@ -23,6 +23,10 @@ import {
   UserAssetsResponseSchema,
 } from "@/orpc/routes/user/routes/user.assets.schema";
 import {
+  UserEventsInputSchema,
+  UserEventsResponseSchema,
+} from "@/orpc/routes/user/routes/user.events.schema";
+import {
   UserListInputSchema,
   UserListOutputSchema,
 } from "@/orpc/routes/user/routes/user.list.schema";
@@ -216,6 +220,17 @@ export const assets = baseContract
   .input(UserAssetsInputSchema)
   .output(UserAssetsResponseSchema);
 
+export const events = baseContract
+  .route({
+    method: "GET",
+    path: "/user/events",
+    description: "Get recent blockchain events for the authenticated user",
+    successDescription: "List of recent events",
+    tags: ["user", "events"],
+  })
+  .input(UserEventsInputSchema)
+  .output(UserEventsResponseSchema);
+
 /**
  * User API contract collection.
  */
@@ -223,6 +238,7 @@ export const userContract = {
   me,
   actions,
   assets,
+  events,
   search,
   list,
   adminList,
@@ -232,4 +248,8 @@ export const userContract = {
   statsUserCount,
   kyc: kycContract,
   createWallet: createWalletContract,
+};
+
+export const userRouter = {
+  user: userContract,
 };
