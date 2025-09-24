@@ -181,6 +181,19 @@ export function updateAccountStatsForPriceChange(
   trackAccountTokenFactoryStats(tokenFactoryState);
 }
 
+export function updateIsAdmin(
+  accountAddress: Address,
+  systemAddress: Address
+): void {
+  const systemState = fetchAccountSystemStatsStateForSystem(
+    accountAddress,
+    systemAddress
+  );
+  systemState.isAdmin = true;
+  systemState.save();
+  trackAccountSystemStats(systemState);
+}
+
 /**
  * Fetch or create AccountStatsState entity
  */

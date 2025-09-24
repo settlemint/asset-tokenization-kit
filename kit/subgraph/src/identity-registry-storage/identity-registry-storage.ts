@@ -83,7 +83,11 @@ export function handleIdentityStored(event: IdentityStoredEvent): void {
   registeredIdentity.country = event.params._country;
 
   registeredIdentity.save();
-  trackIdentityRegistered(Address.fromBytes(system), identity.isContract);
+  trackIdentityRegistered(
+    event.params._investorAddress,
+    Address.fromBytes(system),
+    identity.isContract
+  );
 }
 
 export function handleIdentityUnstored(event: IdentityUnstoredEvent): void {

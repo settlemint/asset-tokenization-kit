@@ -6,9 +6,8 @@ import {
 } from "../../generated/templates/AccessControl/AccessControl";
 import { fetchAccount } from "../account/fetch/account";
 import { fetchEvent } from "../event/fetch/event";
-import { hasRegisteredIdentity } from "../identity-registry-storage/utils/identity-registry-storage-utils";
-import { fetchAccountSystemStatsStateForSystem } from "../stats/account-stats";
-import { decrementPendingIdentitiesCount } from "../stats/identity-stats";
+import { updateIsAdmin } from "../stats/account-stats";
+import { trackRoleGranted } from "../stats/identity-stats";
 import { fetchAccessControl } from "./fetch/accesscontrol";
 import { getRoleConfigFromBytes } from "./utils/role";
 
@@ -43,29 +42,11 @@ export function handleRoleGranted(event: RoleGranted): void {
       Value.fromBytesArray(newValue.concat([roleHolder.id]))
     );
 
-    // Handle pending registrations tracking logic
     const systemAddress = Address.fromBytes(accessControl.system);
     const roleHolderAddress = Address.fromBytes(roleHolder.id);
+    updateIsAdmin(roleHolderAddress, systemAddress);
 
-    // Set isAdmin to true for this account in the system (always, regardless of registration status)
-    const accountSystemStats = fetchAccountSystemStatsStateForSystem(
-      roleHolderAddress,
-      systemAddress
-    );
-    accountSystemStats.isAdmin = true;
-    accountSystemStats.save();
-
-    // Check if account has registered identity in this system
-    const accountHasRegisteredIdentity = hasRegisteredIdentity(
-      roleHolderAddress,
-      systemAddress
-    );
-
-    // If no registered identity exists, decrement pending count
-    if (!accountHasRegisteredIdentity) {
-      const isContract = roleHolder.isContract;
-      decrementPendingIdentitiesCount(systemAddress, isContract);
-    }
+    trackRoleGranted(roleHolderAddress, systemAddress, roleHolder.isContract);
   }
   accessControl.save();
 }
