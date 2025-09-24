@@ -47,6 +47,7 @@
     "clean": "bash tools/clean.sh",
     "predev": "bunx settlemint connect --instance local",
     "dev": "turbo dev watch db:studio ",
+    "start": "turbo start",
     "lint": "turbo lint ",
     "format": "turbo format ",
     "test": "turbo test ",
