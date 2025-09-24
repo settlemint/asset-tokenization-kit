@@ -34,8 +34,8 @@ import { orpc } from "@/orpc/orpc-client";
 import type { ClaimData } from "@/orpc/routes/system/identity/claims/routes/claims.issue.schema";
 import { IssueableClaimTopicSchema } from "@/orpc/routes/system/identity/claims/routes/claims.issue.schema";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-form";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -78,31 +78,27 @@ const createInitialValues = (
   };
 
   if (topic) {
-    try {
-      // Step 1: Resolve schema for the topic (predefined or custom signature)
-      const schema = getSchemaForClaim(topic, signature);
-      if (schema) {
-        // Step 2: Generate form field configurations from the schema
-        const fields = generateFormFields(schema);
+    // Step 1: Resolve schema for the topic (predefined or custom signature)
+    const schema = getSchemaForClaim(topic, signature);
+    if (schema) {
+      // Step 2: Generate form field configurations from the schema
+      const fields = generateFormFields(schema);
 
-        // Step 3: Create appropriate default values based on field types
-        for (const field of fields) {
-          switch (field.type) {
-            case "boolean":
-            case "checkbox":
-              initialValues[field.name] = false;
-              break;
-            case "number":
-            case "bigint":
-              initialValues[field.name] = "";
-              break;
-            default:
-              initialValues[field.name] = "";
-          }
+      // Step 3: Create appropriate default values based on field types
+      for (const field of fields) {
+        switch (field.type) {
+          case "boolean":
+          case "checkbox":
+            initialValues[field.name] = false;
+            break;
+          case "number":
+          case "bigint":
+            initialValues[field.name] = "";
+            break;
+          default:
+            initialValues[field.name] = "";
         }
       }
-    } catch (error) {
-      console.error("Failed to create initial values:", error);
     }
   }
 

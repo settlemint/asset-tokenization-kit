@@ -1,3 +1,4 @@
+import { IssueClaimSheet } from "@/components/manage-dropdown/sheets/issue-claim-sheet";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,13 +13,12 @@ import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { satisfiesRoleRequirement } from "@atk/zod/role-requirement";
 import { useQuery } from "@tanstack/react-query";
 import type { LucideIcon } from "lucide-react";
-import { ChevronDown, UserPlus } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { ChevronDown, FilePlus, UserPlus } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 import { RegisterIdentitySheet } from "./sheets/register-identity-sheet";
 
-type Action = "registerIdentity";
+type Action = "registerIdentity" | "issueClaim";
 
 interface ManagedIdentityAccount {
   id: string;
@@ -58,7 +58,6 @@ export function ManageIdentityDropdown({
 }: ManageIdentityDropdownProps) {
   const { t } = useTranslation("identities");
   const [openAction, setOpenAction] = useState<Action | null>(null);
-  const logger = useMemo(() => createLogger(), []);
 
   const { data: system } = useQuery(
     orpc.system.read.queryOptions({
@@ -80,45 +79,12 @@ export function ManageIdentityDropdown({
     system?.userPermissions?.actions.identityRegister
   );
 
-  const canViewRegister = useMemo(
-    () =>
-      satisfiesRoleRequirement(userRoles, SYSTEM_PERMISSIONS.identityRegister),
+  const canExecuteIssueClaim = useMemo(
+    () => satisfiesRoleRequirement(userRoles, SYSTEM_PERMISSIONS.claimCreate),
     [userRoles]
   );
 
-  useEffect(() => {
-    if (!system) return;
-
-    logger.debug("ManageIdentityDropdown permissions", {
-      identityRegistered: identity.isRegistered,
-      userRoles,
-      canViewRegister,
-      actionFlag: system.userPermissions?.actions.identityRegister,
-    });
-
-    if (canViewRegister && !canExecuteRegister) {
-      logger.warn(
-        "identityRegister action flag disabled despite sufficient roles",
-        {
-          identityRegistered: identity.isRegistered,
-          systemActions: system.userPermissions?.actions,
-        }
-      );
-    }
-  }, [
-    logger,
-    system,
-    userRoles,
-    canViewRegister,
-    canExecuteRegister,
-    identity.isRegistered,
-  ]);
-
   const actions = useMemo<DropdownAction[]>(() => {
-    if (!canViewRegister) {
-      return [];
-    }
-
     return [
       {
         id: "register-identity",
@@ -127,8 +93,15 @@ export function ManageIdentityDropdown({
         openAction: "registerIdentity",
         disabled: identity.isRegistered || !canExecuteRegister,
       },
+      {
+        id: "issue-claim",
+        label: t("actions.issueClaim.title"),
+        icon: FilePlus,
+        openAction: "issueClaim",
+        disabled: !canExecuteIssueClaim,
+      },
     ];
-  }, [canViewRegister, t, identity.isRegistered, canExecuteRegister]);
+  }, [t, identity.isRegistered, canExecuteRegister, canExecuteIssueClaim]);
 
   const onActionOpenChange = (open: boolean) => {
     setOpenAction(open ? openAction : null);
@@ -173,6 +146,15 @@ export function ManageIdentityDropdown({
       <RegisterIdentitySheet
         open={isCurrentAction({
           target: "registerIdentity",
+          current: openAction,
+        })}
+        onOpenChange={onActionOpenChange}
+        identity={identity}
+      />
+
+      <IssueClaimSheet
+        open={isCurrentAction({
+          target: "issueClaim",
           current: openAction,
         })}
         onOpenChange={onActionOpenChange}
