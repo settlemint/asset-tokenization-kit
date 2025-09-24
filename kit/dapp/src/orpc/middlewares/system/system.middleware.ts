@@ -15,6 +15,7 @@ import { satisfiesRoleRequirement } from "@atk/zod/role-requirement";
 import { call } from "@orpc/server";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import countries from "i18n-iso-countries";
+import type { IncomingHttpHeaders } from "node:http";
 import { isAddress } from "viem";
 import z from "zod";
 
@@ -182,7 +183,10 @@ async function getSystemAddress(
   context: Context,
   input: unknown
 ): Promise<string | null> {
-  const systemAddressHeader = context.headers["x-system-address"];
+  const systemAddressHeader =
+    typeof context.headers?.get === "function"
+      ? context.headers.get("x-system-address")
+      : (context.headers as IncomingHttpHeaders)["x-system-address"];
   if (typeof systemAddressHeader === "string" && systemAddressHeader) {
     return systemAddressHeader;
   }
