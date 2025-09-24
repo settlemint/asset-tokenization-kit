@@ -140,7 +140,7 @@ The following table lists the configurable parameters of this chart and their de
 | hasura.image.pullPolicy | string | `"IfNotPresent"` |  |
 | hasura.image.registry | string | `"docker.io"` |  |
 | hasura.image.repository | string | `"hasura/graphql-engine"` |  |
-| hasura.image.tag | string | `"v2.48.3"` |  |
+| hasura.image.tag | string | `"v2.48.5"` |  |
 | hasura.ingress.hostName | string | `"hasura.k8s.orb.local"` |  |
 | network.enabled | bool | `true` |  |
 | network.network-bootstrapper.artifacts.predeployed.image.registry | string | `"ghcr.io"` |  |

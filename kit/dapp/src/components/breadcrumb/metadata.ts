@@ -11,8 +11,6 @@ export interface BreadcrumbMetadata {
   isI18nKey?: boolean;
   /** Optional i18n namespace (defaults to "navigation") */
   i18nNamespace?: keyof CustomTypeOptions["resources"];
-  /** Optional function to dynamically resolve the title */
-  getTitle?: () => string | Promise<string>;
   /** Whether this segment should be hidden from breadcrumbs */
   hidden?: boolean;
   /** Optional icon identifier */

@@ -1,5 +1,5 @@
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
-import react from "@vitejs/plugin-react";
+import viteReact from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import { analyzer } from "vite-bundle-analyzer";
 import tsConfigPaths from "vite-tsconfig-paths";
@@ -42,11 +42,8 @@ export default defineConfig({
   },
   plugins: [
     tsConfigPaths(),
-    tanstackStart({
-      target: "bun",
-      customViteReactPlugin: true,
-    }),
-    react({
+    tanstackStart(),
+    viteReact({
       babel: {
         plugins: [["babel-plugin-react-compiler", {}]],
       },
