@@ -62,15 +62,15 @@ export const sessionMiddleware = baseRouter.middleware<
   });
 });
 
-function getHeaders(contextHeaders: Context["headers"]) {
-  if (contextHeaders instanceof Headers) {
-    return contextHeaders;
+function getHeaders(headers: Context["headers"]) {
+  if (headers instanceof Headers) {
+    return headers;
   }
-  const headers = new Headers();
-  for (const [key, value] of Object.entries(contextHeaders)) {
+  const processedHeaders: Record<string, string> = {};
+  for (const [key, value] of Object.entries(headers)) {
     if (value) {
-      headers.append(key, Array.isArray(value) ? value.join(",") : value);
+      processedHeaders[key] = Array.isArray(value) ? value.join("; ") : value;
     }
   }
-  return headers;
+  return new Headers(processedHeaders);
 }
