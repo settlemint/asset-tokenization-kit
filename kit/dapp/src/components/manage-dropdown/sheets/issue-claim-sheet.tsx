@@ -1,10 +1,12 @@
 import { useAppForm } from "@/hooks/use-app-form";
+import {
+  buildClaimData,
+  generateFormFields,
+  getSchemaForClaim,
+} from "@/lib/utils/claims/claim-schema-builder";
 import { orpc } from "@/orpc/orpc-client";
 import type { ClaimData } from "@/orpc/routes/system/identity/claims/routes/claims.issue.schema";
-import {
-  ClaimDataSchema,
-  IssueableClaimTopicSchema,
-} from "@/orpc/routes/system/identity/claims/routes/claims.issue.schema";
+import { IssueableClaimTopicSchema } from "@/orpc/routes/system/identity/claims/routes/claims.issue.schema";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
@@ -18,78 +20,63 @@ import type { ManagedIdentity } from "../manage-identity-dropdown";
 import { ConfirmIssueClaimView } from "./issue-claim/ConfirmIssueClaimView";
 import { IssueClaimFormView } from "./issue-claim/IssueClaimFormView";
 
-const IssueClaimFormSchema = z.object({
-  topic: IssueableClaimTopicSchema.or(z.literal("")),
-  claimValue: z.string().optional(),
-  collateralAmount: z.string().optional(),
-  collateralExpiryTimestamp: z.string().optional(),
-  assetClass: z.string().optional(),
-  assetCategory: z.string().optional(),
-  issuerAddress: z.string().optional(),
-  basePriceAmount: z.string().optional(),
-  basePriceCurrencyCode: z.string().optional(),
-  basePriceDecimals: z.string().optional(),
-  contractAddress: z.string().optional(),
-  isin: z.string().optional(),
-  issuerJurisdiction: z.string().optional(),
-  licenseType: z.string().optional(),
-  licenseNumber: z.string().optional(),
-  licenseJurisdiction: z.string().optional(),
-  licenseValidUntil: z.string().optional(),
-  exemptionReference: z.string().optional(),
-  prospectusReference: z.string().optional(),
-  reportingCompliant: z.boolean().optional(),
-  reportingLastUpdated: z.string().optional(),
-});
+const IssueClaimFormSchema = z
+  .object({
+    topic: IssueableClaimTopicSchema.or(z.literal("")),
+  })
+  .catchall(z.unknown());
 
 export type IssueClaimFormData = z.infer<typeof IssueClaimFormSchema>;
 
 export type IssueClaimTopic = IssueClaimFormData["topic"];
 
-const TEXT_CLAIM_TOPICS = new Set<IssueClaimTopic>([
-  "knowYourCustomer",
-  "antiMoneyLaundering",
-  "qualifiedInstitutionalInvestor",
-  "professionalInvestor",
-  "accreditedInvestor",
-  "accreditedInvestorVerified",
-  "regulationS",
-]);
+/**
+ * Creates initial form values dynamically based on the selected topic
+ */
+const createInitialValues = (
+  topic?: string,
+  signature?: string
+): Record<string, unknown> => {
+  const initialValues: Record<string, unknown> = {
+    topic: topic || "",
+  };
 
-const createInitialValues = (): IssueClaimFormData => ({
-  topic: "",
-  claimValue: "",
-  collateralAmount: "",
-  collateralExpiryTimestamp: "",
-  assetClass: "",
-  assetCategory: "",
-  issuerAddress: "",
-  basePriceAmount: "",
-  basePriceCurrencyCode: "",
-  basePriceDecimals: "",
-  contractAddress: "",
-  isin: "",
-  issuerJurisdiction: "",
-  licenseType: "",
-  licenseNumber: "",
-  licenseJurisdiction: "",
-  licenseValidUntil: "",
-  exemptionReference: "",
-  prospectusReference: "",
-  reportingCompliant: true,
-  reportingLastUpdated: "",
-});
+  if (topic) {
+    try {
+      const schema = getSchemaForClaim(topic, signature);
+      if (schema) {
+        const fields = generateFormFields(schema);
+        for (const field of fields) {
+          switch (field.type) {
+            case "boolean":
+            case "checkbox":
+              initialValues[field.name] = false;
+              break;
+            case "number":
+            case "bigint":
+              initialValues[field.name] = "";
+              break;
+            default:
+              initialValues[field.name] = "";
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Failed to create initial values:", error);
+    }
+  }
 
-const nowInSeconds = () => Math.floor(Date.now() / 1000);
+  return initialValues;
+};
 
-const fromDateTimeInput = (value: string) => {
+const fromDateTimeInput = (value: string): string => {
   if (!value) return "";
   const ms = new Date(value).getTime();
   if (Number.isNaN(ms)) return "";
   return String(Math.floor(ms / 1000));
 };
 
-const toDateTimeInputValue = (timestamp: string | undefined) => {
+const toDateTimeInputValue = (timestamp: string | undefined): string => {
   if (!timestamp) return "";
   const seconds = Number.parseInt(timestamp, 10);
   if (Number.isNaN(seconds)) return "";
@@ -102,157 +89,70 @@ const toDateTimeInputValue = (timestamp: string | undefined) => {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
-const buildClaimPayload = (values: IssueClaimFormData): ClaimData | null => {
-  const topic = values.topic;
+/**
+ * Transforms form field values for datetime and number types
+ */
+const transformFieldValue = (value: unknown, fieldType: string): unknown => {
+  if (value === undefined || value === null || value === "") {
+    return undefined;
+  }
+
+  switch (fieldType) {
+    case "datetime":
+      return typeof value === "string" ? fromDateTimeInput(value) : value;
+    case "number":
+      if (typeof value === "string") {
+        const numValue = Number.parseInt(value, 10);
+        if (Number.isNaN(numValue)) {
+          throw new TypeError(`Invalid number: "${value}"`);
+        }
+        return numValue;
+      }
+      return value;
+    case "bigint":
+      return value; // Keep as string for large numbers
+    default:
+      return value;
+  }
+};
+
+/**
+ * Builds a claim payload from form values using the schema-driven approach
+ */
+const buildClaimPayload = (
+  values: Record<string, unknown>,
+  topic: string,
+  signature?: string
+): ClaimData | null => {
   if (!topic) {
     return null;
   }
 
-  if (TEXT_CLAIM_TOPICS.has(topic)) {
-    const claim = values.claimValue?.trim();
-    if (!claim) return null;
-    return ClaimDataSchema.parse({
-      topic,
-      data: { claim },
-    });
-  }
-
-  switch (topic) {
-    case "collateral": {
-      const amount = values.collateralAmount?.trim();
-      if (!amount) return null;
-      const expiryTimestamp =
-        values.collateralExpiryTimestamp?.trim() ||
-        String(nowInSeconds() + 86_400 * 365);
-      return ClaimDataSchema.parse({
-        topic: "collateral",
-        data: {
-          amount,
-          expiryTimestamp,
-        },
-      });
-    }
-    case "assetClassification": {
-      const assetClass = values.assetClass?.trim();
-      const category = values.assetCategory?.trim();
-      if (!assetClass || !category) return null;
-      return ClaimDataSchema.parse({
-        topic: "assetClassification",
-        data: {
-          class: assetClass,
-          category,
-        },
-      });
-    }
-    case "assetIssuer": {
-      const issuerAddress = values.issuerAddress?.trim();
-      if (!issuerAddress) return null;
-      return ClaimDataSchema.parse({
-        topic: "assetIssuer",
-        data: {
-          issuerAddress,
-        },
-      });
-    }
-    case "basePrice": {
-      const amount = values.basePriceAmount?.trim();
-      if (!amount) return null;
-      const currencyCode = values.basePriceCurrencyCode?.trim() || "USD";
-      const decimals = Number.parseInt(values.basePriceDecimals ?? "2", 10);
-      const boundedDecimals = Number.isNaN(decimals)
-        ? 2
-        : Math.min(Math.max(decimals, 0), 18);
-      return ClaimDataSchema.parse({
-        topic: "basePrice",
-        data: {
-          amount,
-          currencyCode,
-          decimals: boundedDecimals,
-        },
-      });
-    }
-    case "contractIdentity": {
-      const contractAddress = values.contractAddress?.trim();
-      if (!contractAddress) return null;
-      return ClaimDataSchema.parse({
-        topic: "contractIdentity",
-        data: {
-          contractAddress,
-        },
-      });
-    }
-    case "isin": {
-      const isin = values.isin?.trim();
-      if (!isin) return null;
-      return ClaimDataSchema.parse({
-        topic: "isin",
-        data: {
-          isin,
-        },
-      });
-    }
-    case "issuerJurisdiction": {
-      const jurisdiction = values.issuerJurisdiction?.trim();
-      if (!jurisdiction) return null;
-      return ClaimDataSchema.parse({
-        topic: "issuerJurisdiction",
-        data: {
-          jurisdiction,
-        },
-      });
-    }
-    case "issuerLicensed": {
-      const licenseType = values.licenseType?.trim();
-      const licenseNumber = values.licenseNumber?.trim();
-      const jurisdiction = values.licenseJurisdiction?.trim();
-      if (!licenseType || !licenseNumber || !jurisdiction) return null;
-      const validUntil =
-        values.licenseValidUntil?.trim() ||
-        String(nowInSeconds() + 86_400 * 365);
-      return ClaimDataSchema.parse({
-        topic: "issuerLicensed",
-        data: {
-          licenseType,
-          licenseNumber,
-          jurisdiction,
-          validUntil,
-        },
-      });
-    }
-    case "issuerProspectusExempt": {
-      const exemptionReference = values.exemptionReference?.trim();
-      if (!exemptionReference) return null;
-      return ClaimDataSchema.parse({
-        topic: "issuerProspectusExempt",
-        data: {
-          exemptionReference,
-        },
-      });
-    }
-    case "issuerProspectusFiled": {
-      const prospectusReference = values.prospectusReference?.trim();
-      if (!prospectusReference) return null;
-      return ClaimDataSchema.parse({
-        topic: "issuerProspectusFiled",
-        data: {
-          prospectusReference,
-        },
-      });
-    }
-    case "issuerReportingCompliant": {
-      const compliant = values.reportingCompliant ?? true;
-      const lastUpdated =
-        values.reportingLastUpdated?.trim() || String(nowInSeconds());
-      return ClaimDataSchema.parse({
-        topic: "issuerReportingCompliant",
-        data: {
-          compliant,
-          lastUpdated,
-        },
-      });
-    }
-    default:
+  try {
+    const schema = getSchemaForClaim(topic, signature);
+    if (!schema) {
       return null;
+    }
+
+    const fields = generateFormFields(schema);
+    const transformedValues: Record<string, unknown> = {};
+
+    // Transform field values based on their types
+    for (const field of fields) {
+      const rawValue = values[field.name];
+      const transformedValue = transformFieldValue(rawValue, field.type);
+
+      if (transformedValue !== undefined) {
+        transformedValues[field.name] = transformedValue;
+      }
+    }
+
+    // Use the schema-driven buildClaimData function
+    return buildClaimData(topic, transformedValues, signature);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(`Failed to build claim payload for topic "${topic}":`, error);
+    return null;
   }
 };
 
@@ -335,8 +235,18 @@ export function IssueClaimSheet({
     <form.Subscribe selector={(state) => state.values}>
       {(values) => {
         const typedValues = IssueClaimFormSchema.parse(values);
-        const selectedTopic = typedValues.topic;
-        const claimPayload = buildClaimPayload(typedValues);
+        const selectedTopic: IssueClaimTopic =
+          typedValues.topic === ""
+            ? ""
+            : (typedValues.topic as IssueClaimTopic);
+        const selectedTopicData = topics?.find(
+          (topic) => topic.name === selectedTopic
+        );
+        const claimPayload = buildClaimPayload(
+          values,
+          selectedTopic,
+          selectedTopicData?.signature
+        );
         const userCanIssueTopic = Boolean(
           selectedTopic &&
             trustedIssuers?.some((issuer) =>
@@ -378,11 +288,9 @@ export function IssueClaimSheet({
               topics={topics ?? []}
               values={typedValues}
               userCanIssueTopic={userCanIssueTopic}
-              onTopicChange={(topic) => {
-                form.reset({
-                  ...createInitialValues(),
-                  topic,
-                });
+              onTopicChange={(topic: string) => {
+                const topicData = topics?.find((t) => t.name === topic);
+                form.reset(createInitialValues(topic, topicData?.signature));
               }}
               toDateTimeValue={toDateTimeInputValue}
               fromDateTimeValue={fromDateTimeInput}
