@@ -69,7 +69,7 @@ function getHeaders(headers: Context["headers"]) {
   const processedHeaders: Record<string, string> = {};
   for (const [key, value] of Object.entries(headers)) {
     if (value) {
-      processedHeaders[key] = Array.isArray(value) ? value.join("; ") : value;
+      processedHeaders[key] = Array.isArray(value) ? value.join(", ") : value;
     }
   }
   return new Headers(processedHeaders);
