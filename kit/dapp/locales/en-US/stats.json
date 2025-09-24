@@ -105,6 +105,14 @@
         "summary": "Your portfolio summary will appear here when you receive assets",
         "breakdown": "Your asset breakdown will appear here when you receive assets"
       }
+    },
+    "yieldDistribution": {
+      "title": "Yield Distribution",
+      "description": "Total yield generated and claimed over time",
+      "totalYield": "Total Yield",
+      "claimed": "Claimed",
+      "noData": "No yield distribution data available",
+      "error": "Error loading yield distribution data"
     }
   },
   "title": "Statistics",

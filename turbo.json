@@ -53,6 +53,9 @@
     "codegen": {
       "dependsOn": ["dependencies", "docs"]
     },
+    "settlemint:connect:local": {
+      "cache": false
+    },
     "compile": {
       "dependsOn": ["dependencies", "codegen", "^compile"]
     },
@@ -90,6 +93,10 @@
     "db:studio": {
       "cache": false,
       "persistent": true
+    },
+    "start": {
+      "cache": false,
+      "dependsOn": ["build"]
     },
     "typecheck": {
       "dependsOn": ["codegen"]
