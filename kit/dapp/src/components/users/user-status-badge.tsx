@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 interface UserStatusBadgeProps {
   user: User;
-  identity?: Identity;
+  identity?: Partial<Identity>;
   isRegistered?: boolean;
 }
 
@@ -20,37 +20,52 @@ export function UserStatusBadge({
 }: UserStatusBadgeProps) {
   const { t } = useTranslation("user");
 
-  if (isRegistered || identity?.registered) {
+  if (!user.wallet) {
     return (
       <Badge
-        variant="default"
-        className="bg-green-500 hover:bg-green-600"
-        aria-label={t("management.table.status.registeredAriaLabel")}
+        variant="outline"
+        className="text-muted-foreground"
+        aria-label={t("management.table.status.notConnectedAriaLabel")}
       >
-        {t("management.table.status.registered")}
+        {t("management.table.status.notConnected")}
       </Badge>
     );
   }
 
-  if (user.wallet) {
+  const hasIdentity = identity?.id;
+  if (user.wallet && !hasIdentity) {
+    return (
+      <Badge
+        variant="secondary"
+        className="bg-gray-500 hover:bg-gray-600 text-white"
+        aria-label={t("management.table.status.identityNeededAriaLabel")}
+      >
+        {t("management.table.status.identityNeeded")}
+      </Badge>
+    );
+  }
+
+  // Check if registered - identity.registered can be an object {isRegistered: true, country: ...} or false
+  const isIdentityRegistered = isRegistered ?? identity?.registered;
+  if (!isIdentityRegistered) {
     return (
       <Badge
         variant="secondary"
         className="bg-yellow-500 hover:bg-yellow-600 text-white"
-        aria-label={t("management.table.status.pendingAriaLabel")}
+        aria-label={t("management.table.status.pendingRegistrationAriaLabel")}
       >
-        {t("management.table.status.pending")}
+        {t("management.table.status.pendingRegistration")}
       </Badge>
     );
   }
 
   return (
     <Badge
-      variant="outline"
-      className="text-muted-foreground"
-      aria-label={t("management.table.status.notConnectedAriaLabel")}
+      variant="default"
+      className="bg-green-500 hover:bg-green-600"
+      aria-label={t("management.table.status.registeredAriaLabel")}
     >
-      {t("management.table.status.notConnected")}
+      {t("management.table.status.registered")}
     </Badge>
   );
 }

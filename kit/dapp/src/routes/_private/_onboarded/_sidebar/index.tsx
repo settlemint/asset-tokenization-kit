@@ -55,7 +55,6 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
  */
 function Home() {
   const { user, system } = Route.useLoaderData();
-
   return (
     <div className="p-6 space-y-8">
       <IdentityProgress user={user} />

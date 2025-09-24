@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { SectionSubtitle } from "@/components/dashboard/section-subtitle";
 import { SectionTitle } from "@/components/dashboard/section-title";
+import { IdentityGrowthAreaChart } from "@/components/stats/charts/identity-growth-area-chart";
 import { StatCard } from "@/components/stats/widgets/stat-widget";
 
 export function IdentityMetrics() {
@@ -15,7 +16,7 @@ export function IdentityMetrics() {
   );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex flex-col gap-2">
         <SectionTitle>{t("identityMetrics.title")}</SectionTitle>
         <SectionSubtitle>{t("identityMetrics.description")}</SectionSubtitle>
@@ -34,9 +35,13 @@ export function IdentityMetrics() {
         />
         <StatCard
           title={t("identityMetrics.pendingIdentities")}
-          value={data.pendingIdentitiesCount}
+          value={data.pendingRegistrationsCount}
           icon={Clock}
         />
+      </div>
+
+      <div className="w-full">
+        <IdentityGrowthAreaChart />
       </div>
     </div>
   );
