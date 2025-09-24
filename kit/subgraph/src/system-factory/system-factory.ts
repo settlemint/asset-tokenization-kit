@@ -1,5 +1,6 @@
 import { Bytes } from "@graphprotocol/graph-ts";
 import { ATKSystemCreated } from "../../generated/SystemFactory/SystemFactory";
+import { fetchAccessControl } from "../access-control/fetch/accesscontrol";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchSystem } from "../system/fetch/system";
 import { fetchSystemAccessManager } from "../system/fetch/system-access-manager";
@@ -20,6 +21,10 @@ export function handleATKSystemCreated(event: ATKSystemCreated): void {
   }
   systemAccessManager.system = system.id;
   systemAccessManager.save();
+
+  const accessControl = fetchAccessControl(event.params.accessManager);
+  accessControl.system = system.id;
+  accessControl.save();
 
   system.systemAccessManager = systemAccessManager.id;
   system.save();

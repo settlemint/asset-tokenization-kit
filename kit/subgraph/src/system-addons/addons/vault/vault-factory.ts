@@ -22,6 +22,10 @@ export function handleATKVaultCreated(event: ATKVaultCreated): void {
   vault.balance = BigDecimal.fromString("0");
   vault.balanceExact = BigInt.fromI32(0);
 
+  // TODO: Set the system reference on the AccessControl for this vault
+  // This requires complex lookup through systemAddon -> systemAddonRegistry -> system
+  // For now, AccessControl defaults to zero address, but this should be improved
+
   vault.save();
 
   const identity = fetchIdentity(event.params.contractIdentity);

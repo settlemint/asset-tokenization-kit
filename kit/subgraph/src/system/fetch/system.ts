@@ -11,6 +11,7 @@ export function fetchSystem(address: Address): System {
     system = new System(address);
     system.account = fetchAccount(address).id;
     system.deployedInTransaction = Bytes.empty();
+    system.adminsCount = 0;
     system.save();
     SystemTemplate.create(address);
     setAccountContractName(address, "System");

@@ -187,6 +187,8 @@ type System @entity(immutable: false) {
   systemAccessManager: SystemAccessManager
   # Organisation identity that will be the asset issuers of the tokens created by the system
   organisationIdentity: Identity
+  # Count of accounts with admin roles in this system
+  adminsCount: Int!
   # Statistical data for the entire system
   systemStats: SystemStatsState @derivedFrom(field: "system")
   # Statistics broken down by token type

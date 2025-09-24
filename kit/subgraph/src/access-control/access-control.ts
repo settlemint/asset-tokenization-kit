@@ -4,6 +4,7 @@ import {
   RoleGranted,
   RoleRevoked,
 } from "../../generated/templates/AccessControl/AccessControl";
+import { System } from "../../generated/schema";
 import { fetchAccount } from "../account/fetch/account";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchAccessControl } from "./fetch/accesscontrol";
@@ -34,13 +35,21 @@ export function handleRoleGranted(event: RoleGranted): void {
       break;
     }
   }
+
   if (!found) {
     accessControl.set(
       roleConfig.fieldName,
       Value.fromBytesArray(newValue.concat([roleHolder.id]))
     );
+    accessControl.save();
+
+    // Increment admin count for the system
+    const system = System.load(accessControl.system);
+    if (system) {
+      system.adminsCount = system.adminsCount + 1;
+      system.save();
+    }
   }
-  accessControl.save();
 }
 
 export function handleRoleRevoked(event: RoleRevoked): void {
@@ -57,12 +66,26 @@ export function handleRoleRevoked(event: RoleRevoked): void {
   } else {
     newValue = value.toBytesArray();
   }
+
+  let wasFound = false;
   const newAdmins: Bytes[] = [];
   for (let i = 0; i < newValue.length; i++) {
     if (!newValue[i].equals(roleHolder.id)) {
       newAdmins.push(newValue[i]);
+    } else {
+      wasFound = true;
     }
   }
-  accessControl.set(roleConfig.fieldName, Value.fromBytesArray(newAdmins));
-  accessControl.save();
+
+  if (wasFound) {
+    accessControl.set(roleConfig.fieldName, Value.fromBytesArray(newAdmins));
+    accessControl.save();
+
+    // Decrement admin count for the system
+    const system = System.load(accessControl.system);
+    if (system) {
+      system.adminsCount = system.adminsCount - 1;
+      system.save();
+    }
+  }
 }
