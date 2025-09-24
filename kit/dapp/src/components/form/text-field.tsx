@@ -34,17 +34,26 @@ export function TextField({
     [field]
   );
 
+  const errorClass = React.useMemo(() => {
+    return errorClassNames({
+      isTouched: field.state.meta.isTouched,
+      errors: field.state.meta.errors,
+    });
+  }, [field.state.meta.isTouched, field.state.meta.errors]);
+
   const renderInput = React.useCallback(
-    ({ className }: { className?: string }) => (
-      <Input
-        type="text"
-        id={field.name}
-        value={field.state.value ?? ""}
-        onChange={handleChange}
-        className={cn(className, errorClassNames(field.state.meta))}
-      />
-    ),
-    [field.name, field.state.value, field.state.meta, handleChange]
+    ({ className }: { className?: string }) => {
+      return (
+        <Input
+          type="text"
+          id={field.name}
+          value={field.state.value ?? ""}
+          onChange={handleChange}
+          className={cn(className, errorClass)}
+        />
+      );
+    },
+    [field.name, field.state.value, handleChange, errorClass]
   );
 
   return (
