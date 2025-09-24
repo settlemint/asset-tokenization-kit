@@ -223,6 +223,7 @@ export function fetchAccountSystemStatsStateForSystem(
     state.system = system.id;
     state.totalValueInBaseCurrency = BigDecimal.zero();
     state.balancesCount = 0;
+    state.isAdmin = false;
     state.save();
   }
   return state;
@@ -242,6 +243,7 @@ function fetchAccountSystemStatsState(
     state.system = system.id;
     state.totalValueInBaseCurrency = BigDecimal.zero();
     state.balancesCount = 0;
+    state.isAdmin = false;
     state.save();
   }
   return state;

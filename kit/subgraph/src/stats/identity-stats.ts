@@ -1,5 +1,6 @@
 import { Address } from "@graphprotocol/graph-ts";
 import { IdentityStatsData, IdentityStatsState } from "../../generated/schema";
+import { hasIdentityInSystem } from "../identity-factory/utils/identity-factory-utils";
 import { hasRegisteredIdentity } from "../identity-registry-storage/utils/identity-registry-storage-utils";
 import { fetchSystem } from "../system/fetch/system";
 import { fetchAccountSystemStatsStateForSystem } from "./account-stats";
@@ -66,8 +67,14 @@ export function trackRoleGranted(
   );
 
   if (!accountHasRegisteredIdentity) {
-    decrementPendingIdentitiesCount(state, isContract);
-    state.save();
+    const accountHasIdentityInSystem = hasIdentityInSystem(
+      accountAddress,
+      systemAddress
+    );
+    if (accountHasIdentityInSystem) {
+      decrementPendingIdentitiesCount(state, isContract);
+      state.save();
+    }
   }
 
   // Create timeseries entry

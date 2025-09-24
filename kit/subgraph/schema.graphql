@@ -1354,8 +1354,6 @@ type AccountSystemStatsData @entity(timeseries: true) {
   totalValueInBaseCurrency: BigDecimal!
   # Number of different token balances scoped to the system
   balancesCount: Int!
-  # Whether this account has been granted any admin role in this system
-  isAdmin: Boolean!
 }
 
 type AccountSystemStats
