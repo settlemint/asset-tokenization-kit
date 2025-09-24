@@ -6,7 +6,50 @@
       "title": "Register identity",
       "description": "Register this identity in the identity registry with country information"
     },
-    "viewEvents": "View events"
+    "viewEvents": "View events",
+    "issueClaim": {
+      "title": "Issue claim",
+      "description": "Issue a claim to {{identity}}",
+      "submit": "Issue claim",
+      "success": "Claim issued successfully",
+      "error": "Failed to issue claim: {{error}}",
+      "confirmTitle": "Confirm claim issuance",
+      "confirmTargetIdentity": "Target identity",
+      "confirmClaimType": "Claim type",
+      "confirmClaimData": "Claim data",
+      "confirmWarning": "Ensure all details are correct before signing and issuing. This action may be irreversible.",
+      "notTrustedIssuer": "You are not authorized to issue this claim topic.",
+      "customClaimNotSupported": "This custom claim type is not supported in the UI.",
+      "fields": {
+        "claimTopic": "Claim topic",
+        "selectTopic": "Select a claim topic",
+        "topicDescription": "Choose the claim type to issue",
+        "claimValue": "Claim value",
+        "claimValuePlaceholder": "Enter claim value",
+        "claimValueDescription": "Provide the value for this claim.",
+        "collateralAmount": "Collateral amount (wei)",
+        "collateralAmountDescription": "Enter the collateral amount in wei.",
+        "expiryTimestamp": "Expiry timestamp",
+        "expiryTimestampDescription": "Select when this claim should expire.",
+        "assetClass": "Asset class",
+        "assetCategory": "Asset category",
+        "priceAmount": "Price amount",
+        "currencyCode": "Currency code",
+        "decimals": "Decimals",
+        "licenseType": "License type",
+        "licenseNumber": "License number",
+        "licenseJurisdiction": "License jurisdiction",
+        "validUntil": "Valid until",
+        "reportingCompliant": "Reporting compliant",
+        "reportingCompliantDescription": "Indicate whether the issuer is reporting compliant.",
+        "issuerAddress": "Issuer address",
+        "contractAddress": "Contract address",
+        "isin": "ISIN",
+        "jurisdiction": "Jurisdiction",
+        "exemptionReference": "Exemption reference",
+        "prospectusReference": "Prospectus reference"
+      }
+    }
   },
   "register": {
     "form": {
