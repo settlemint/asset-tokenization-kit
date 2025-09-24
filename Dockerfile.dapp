@@ -11,7 +11,6 @@ COPY kit/dapp/package.json kit/dapp/
 COPY kit/contracts/package.json kit/contracts/
 COPY kit/subgraph/package.json kit/subgraph/
 RUN bun install --ignore-scripts
-RUN bun add srvx
 
 # BUILD
 FROM base AS builder
@@ -28,5 +27,6 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/kit/dapp/dist/client ./client
 COPY --from=builder /app/kit/dapp/dist/server ./server
 COPY --from=builder /app/kit/dapp/drizzle ./drizzle
+RUN bun add srvx
 EXPOSE 3000
 CMD ["bun","--bun", "srvx", "--prod", "--port=3000", "--static=../client", "./server/server.js"]
