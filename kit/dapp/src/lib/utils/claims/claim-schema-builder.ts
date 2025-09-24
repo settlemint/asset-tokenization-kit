@@ -510,9 +510,7 @@ export function buildClaimData(
         data: validatedData,
       });
     }
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(`Failed to build claim data for topic "${topic}":`, error);
+  } catch {
     return null;
   }
 }
