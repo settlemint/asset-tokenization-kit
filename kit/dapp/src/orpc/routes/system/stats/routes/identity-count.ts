@@ -11,6 +11,7 @@ const IDENTITY_COUNT_QUERY = theGraphGraphql(`
       identityFactory {
         identitiesCreatedCount
       }
+      adminsCount
     }
   }
 `);
@@ -29,6 +30,7 @@ const IdentityCountResponseSchema = z.object({
           activeIdentitiesCount: z.number(),
         })
         .nullable(),
+      adminsCount: z.number(),
     })
     .nullable(),
 });
@@ -47,10 +49,12 @@ export const statsIdentityCount =
       response.system?.identityFactory?.identitiesCreatedCount ?? 0;
     const activeIdentitiesCount =
       response.system?.identityRegistry?.activeIdentitiesCount ?? 0;
+    const adminsCount = response.system?.adminsCount ?? 0;
 
     return {
       identitiesCreatedCount,
       activeIdentitiesCount,
-      pendingRegistrationsCount: 0,
+      pendingRegistrationsCount:
+        identitiesCreatedCount - activeIdentitiesCount - adminsCount,
     };
   });
