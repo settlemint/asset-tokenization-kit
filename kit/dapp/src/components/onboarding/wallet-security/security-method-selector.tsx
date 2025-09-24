@@ -183,7 +183,7 @@ export function SecurityMethodSelector() {
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
-                          setShowModal(false);
+                          setShowModal(method.key);
                         }
                       }}
                       tabIndex={0}
