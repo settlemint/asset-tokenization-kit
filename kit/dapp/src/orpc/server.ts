@@ -31,8 +31,7 @@ export function startServer(port: number) {
     req.url = url;
 
     const result = await handler.handle(req, res, {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      context: { headers: req.headers as any },
+      context: { headers: req.headers },
     });
 
     if (!result.matched) {
