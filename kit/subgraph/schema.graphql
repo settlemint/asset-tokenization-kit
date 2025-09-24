@@ -153,9 +153,6 @@ type AccessControl @entity(immutable: false) {
   saleAdmin: [Account!]!
   # Authorized signers for multi-sig operations
   signer: [Account!]!
-
-  # Reference to the system this access control belongs to
-  system: System!
 }
 
 type System @entity(immutable: false) {

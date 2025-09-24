@@ -22,9 +22,7 @@ export function handleATKSystemCreated(event: ATKSystemCreated): void {
   systemAccessManager.system = system.id;
   systemAccessManager.save();
 
-  const accessControl = fetchAccessControl(event.params.accessManager);
-  accessControl.system = system.id;
-  accessControl.save();
+  fetchAccessControl(event.params.accessManager);
 
   system.systemAccessManager = systemAccessManager.id;
   system.save();

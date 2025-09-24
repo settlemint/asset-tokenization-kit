@@ -12,7 +12,6 @@ export function fetchAccessControl(address: Address): AccessControl {
     for (let i = 0; i < Roles.length; i++) {
       accessControlEntity.set(Roles[i].fieldName, Value.fromBytesArray([]));
     }
-    accessControlEntity.system = Address.zero();
     accessControlEntity.save();
     AccessControlTemplate.create(address);
     setAccountContractName(address, "Access Control");
