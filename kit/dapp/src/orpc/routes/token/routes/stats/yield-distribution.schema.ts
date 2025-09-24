@@ -1,3 +1,4 @@
+import { bigDecimal } from "@atk/zod/bigdecimal";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { z } from "zod";
 
@@ -62,10 +63,8 @@ export const YieldDistributionPeriodSchema = z.object({
  * Response schema for the yield distribution API endpoint.
  *
  * Provides both detailed period-by-period data and aggregate totals.
- * The dual format (periods as decimals, totals as [bigint, number] tuples)
- * serves different use cases:
- * - Periods: Optimized for chart rendering and UI display
- * - Totals: Preserve precision for financial calculations and contract interactions
+ * - Periods: Optimized for chart rendering and UI display with regular numbers
+ * - Totals: Use bigDecimal to preserve precision for financial calculations
  */
 export const StatsYieldDistributionOutputSchema = z.object({
   /**
@@ -76,22 +75,21 @@ export const StatsYieldDistributionOutputSchema = z.object({
 
   /**
    * Aggregate yield generated across all periods.
-   * Returned as [bigint, decimals] tuple to preserve full precision
-   * for financial calculations while providing decimal context.
+   * Uses bigDecimal for full precision in financial calculations.
    */
-  totalYield: z.tuple([z.bigint(), z.number()]),
+  totalYield: bigDecimal(),
 
   /**
    * Total yield claimed by all holders across all periods.
-   * Tuple format maintains precision for reconciliation with blockchain state.
+   * Maintains precision for reconciliation with blockchain state.
    */
-  totalClaimed: z.tuple([z.bigint(), z.number()]),
+  totalClaimed: bigDecimal(),
 
   /**
    * Total unclaimed yield remaining across all periods.
    * Critical for displaying available yield and triggering claim actions.
    */
-  totalUnclaimed: z.tuple([z.bigint(), z.number()]),
+  totalUnclaimed: bigDecimal(),
 });
 
 /**

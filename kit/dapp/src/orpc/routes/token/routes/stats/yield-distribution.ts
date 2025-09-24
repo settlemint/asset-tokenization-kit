@@ -144,9 +144,9 @@ export const statsYieldDistribution =
         // Return empty data if no yield schedule found (token might not be a bond)
         return {
           periods: [],
-          totalYield: [...from(0)] as [bigint, number],
-          totalClaimed: [...from(0)] as [bigint, number],
-          totalUnclaimed: [...from(0)] as [bigint, number],
+          totalYield: from(0),
+          totalClaimed: from(0),
+          totalUnclaimed: from(0),
         };
       }
 
@@ -168,20 +168,12 @@ export const statsYieldDistribution =
         };
       });
 
-      // Return distribution data with totals as [bigint, number] tuples
+      // Return distribution data with totals as bigDecimal (Dnum)
       return {
         periods,
-        totalYield: [...from(schedule.totalYieldExact, decimals)] as [
-          bigint,
-          number,
-        ],
-        totalClaimed: [...from(schedule.totalClaimedExact, decimals)] as [
-          bigint,
-          number,
-        ],
-        totalUnclaimed: [
-          ...from(schedule.totalUnclaimedYieldExact, decimals),
-        ] as [bigint, number],
+        totalYield: from(schedule.totalYieldExact, decimals),
+        totalClaimed: from(schedule.totalClaimedExact, decimals),
+        totalUnclaimed: from(schedule.totalUnclaimedYieldExact, decimals),
       };
     }
   );
