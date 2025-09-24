@@ -154,6 +154,7 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
   });
 
   // Note: We now always show the Price column (cells still hide per-row when not applicable)
+  const hasAssetClassification = tokens.some((t) => t.assetClassification);
 
   /**
    * Creates contextual action items for each token row.
@@ -371,6 +372,48 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
             icon: PauseCircle,
           },
         }),
+        // Category (from assetClassification) with i18n prettified label
+        columnHelper.accessor(
+          (row) => {
+            const category = row.assetClassification?.category;
+            if (!category) return "";
+            const scope = row.type === "equity" ? "equity" : "funds";
+            const key = `assetClassification.${scope}.categories.${category.toLowerCase()}`;
+            const translated = t(key as never);
+            return translated || category;
+          },
+          {
+            id: "category",
+            header: t("fields.category"),
+            meta: {
+              displayName: t("fields.category"),
+              type: "text",
+              emptyValue: "-",
+              icon: Type,
+            },
+          }
+        ),
+        // Class (from assetClassification) with i18n prettified label
+        columnHelper.accessor(
+          (row) => {
+            const klass = row.assetClassification?.class;
+            if (!klass) return "";
+            const scope = row.type === "equity" ? "equity" : "funds";
+            const key = `assetClassification.${scope}.classes.${klass.toLowerCase()}`;
+            const translated = t(key as never);
+            return translated || klass;
+          },
+          {
+            id: "class",
+            header: t("fields.class"),
+            meta: {
+              displayName: t("fields.class"),
+              type: "text",
+              emptyValue: "-",
+              icon: Type,
+            },
+          }
+        ),
         /**
          * Price column for financial assets.
          *
@@ -558,6 +601,8 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
           name: false, // Symbol is usually sufficient for token identification
           createdAt: false, // Detailed timestamp less critical for overview
           price: true, // Always show price column; row cells decide visibility
+          category: hasAssetClassification, // Show when classification exists
+          class: hasAssetClassification, // Show when classification exists
         }}
         advancedToolbar={{
           enableGlobalSearch: false,
