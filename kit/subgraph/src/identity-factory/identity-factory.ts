@@ -6,6 +6,7 @@ import {
 import { fetchAccount } from "../account/fetch/account";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentity } from "../identity/fetch/identity";
+import { fetchIdentityFactory } from "./fetch/identity-factory";
 
 export function handleIdentityCreated(event: IdentityCreated): void {
   const identity = fetchIdentity(event.params.identity);
@@ -17,6 +18,13 @@ export function handleIdentityCreated(event: IdentityCreated): void {
   identity.isContract = false;
   identity.identityFactory = event.address;
   identity.save();
+
+  // Increment the identity factory's created count
+  const identityFactory = fetchIdentityFactory(event.address);
+  identityFactory.identitiesCreatedCount =
+    identityFactory.identitiesCreatedCount + 1;
+  identityFactory.save();
+
   // Record the event that created the identity for the account
   // needs to be after creating the account as we map the involved accounts in the event
   fetchEvent(event, "IdentityCreated");
@@ -34,6 +42,12 @@ export function handleContractIdentityCreated(
   identity.isContract = true;
   identity.identityFactory = event.address;
   identity.save();
+
+  // Increment the identity factory's created count
+  const identityFactory = fetchIdentityFactory(event.address);
+  identityFactory.identitiesCreatedCount =
+    identityFactory.identitiesCreatedCount + 1;
+  identityFactory.save();
 
   // Record the event that created the identity for the account
   // needs to be after creating the account as we map the involved accounts in the event

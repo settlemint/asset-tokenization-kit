@@ -153,6 +153,9 @@ type AccessControl @entity(immutable: false) {
   saleAdmin: [Account!]!
   # Authorized signers for multi-sig operations
   signer: [Account!]!
+
+  # Reference to the system this access control belongs to
+  system: System!
 }
 
 type System @entity(immutable: false) {
@@ -368,6 +371,8 @@ type IdentityFactory @entity(immutable: false) {
   account: Account!
   # List of identities created by this factory
   identities: [Identity!]! @derivedFrom(field: "identityFactory")
+  # Count of all identities created by this factory (both user and contract identities)
+  identitiesCreatedCount: Int!
   # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
 }
