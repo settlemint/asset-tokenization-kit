@@ -49,12 +49,6 @@ function AssetOverviewSectionContent() {
       </div>
 
       {hasAssets ? (
-        <EmptyState
-          icon={TrendingUp}
-          title={t("assetOverview.emptyState.title")}
-          description={t("assetOverview.emptyState.description")}
-        />
-      ) : (
         <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:grid-cols-2 lg:divide-x lg:divide-y-0">
           <div>
             <Suspense fallback={<ChartSkeleton />}>
@@ -71,6 +65,12 @@ function AssetOverviewSectionContent() {
             </Suspense>
           </div>
         </div>
+      ) : (
+        <EmptyState
+          icon={TrendingUp}
+          title={t("assetOverview.emptyState.title")}
+          description={t("assetOverview.emptyState.description")}
+        />
       )}
     </div>
   );
