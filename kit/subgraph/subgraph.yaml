@@ -329,6 +329,11 @@ templates:
         - event: IdentityRegistered(indexed address,indexed address,indexed
             address,uint16)
           handler: handleIdentityRegistered
+        - event: IdentityRemoved(indexed address,indexed address,indexed address)
+          handler: handleIdentityRemoved
+        - event: IdentityRecovered(indexed address,indexed address,indexed
+            address,address,address)
+          handler: handleIdentityRecovered
       file: ./src/identity-registry/identity-registry.ts
   - kind: ethereum
     name: Custodian

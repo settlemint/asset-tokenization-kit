@@ -3,6 +3,8 @@ import {
   TopicSchemeRegistrySet,
   TrustedIssuersRegistrySet,
   IdentityRegistered,
+  IdentityRemoved,
+  IdentityRecovered,
 } from "../../generated/templates/IdentityRegistry/IdentityRegistry";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentity } from "../identity/fetch/identity";
@@ -46,7 +48,30 @@ export function handleTrustedIssuersRegistrySet(
 export function handleIdentityRegistered(event: IdentityRegistered): void {
   fetchEvent(event, "IdentityRegistered");
 
+  // Increment active identities count
+  const identityRegistry = fetchIdentityRegistry(event.address);
+  identityRegistry.activeIdentitiesCount =
+    identityRegistry.activeIdentitiesCount + 1;
+  identityRegistry.save();
+
   // Note: The actual RegisteredIdentity creation is handled by the IdentityStored
   // event from the IdentityRegistryStorage contract, which provides the storage
   // contract address directly and ensures the Identity entity exists.
+}
+
+export function handleIdentityRemoved(event: IdentityRemoved): void {
+  fetchEvent(event, "IdentityRemoved");
+
+  // Decrement active identities count
+  const identityRegistry = fetchIdentityRegistry(event.address);
+  identityRegistry.activeIdentitiesCount =
+    identityRegistry.activeIdentitiesCount - 1;
+  identityRegistry.save();
+}
+
+export function handleIdentityRecovered(event: IdentityRecovered): void {
+  fetchEvent(event, "IdentityRecovered");
+
+  // Identity recovery doesn't change the total count - it replaces one identity with another
+  // The old identity is marked as lost and a new identity is registered, maintaining the same count
 }

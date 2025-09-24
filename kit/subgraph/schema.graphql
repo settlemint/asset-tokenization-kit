@@ -385,6 +385,8 @@ type IdentityRegistry @entity(immutable: false) {
   identityRegistryStorage: IdentityRegistryStorage
   # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
+  # Count of active (non-lost) registered identities in this registry
+  activeIdentitiesCount: Int!
 }
 
 type Identity @entity(immutable: false) {

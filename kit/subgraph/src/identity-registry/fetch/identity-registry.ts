@@ -12,6 +12,7 @@ export function fetchIdentityRegistry(address: Address): IdentityRegistry {
 
     identityRegistry.account = fetchAccount(address).id;
     identityRegistry.deployedInTransaction = Bytes.empty();
+    identityRegistry.activeIdentitiesCount = 0;
     identityRegistry.save();
 
     IdentityRegistryTemplate.create(address);
