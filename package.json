@@ -47,6 +47,7 @@
     "clean": "bash tools/clean.sh",
     "predev": "bunx settlemint connect --instance local",
     "dev": "turbo dev watch db:studio ",
+    "start": "turbo start",
     "lint": "turbo lint ",
     "format": "turbo format ",
     "test": "turbo test ",
@@ -69,7 +70,7 @@
   "dependencies": {
     "@types/js-yaml": "4.0.9",
     "js-yaml": "4.1.0",
-    "lefthook": "1.13.3"
+    "lefthook": "1.13.4"
   },
   "devDependencies": {
     "@prettier/plugin-oxc": "0.0.4",
@@ -79,7 +80,7 @@
     "@typescript/native-preview": "7.0.0-dev.20250923.1",
     "graphql": "16.11.0",
     "prettier": "3.6.2",
-    "turbo": "2.5.6",
+    "turbo": "2.5.8",
     "typescript": "5.9.2",
     "yaml": "2.8.1"
   },
