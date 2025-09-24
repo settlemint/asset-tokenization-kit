@@ -21,8 +21,8 @@ export function handleIdentityCreated(event: IdentityCreated): void {
 
   // Increment the identity factory's created count
   const identityFactory = fetchIdentityFactory(event.address);
-  identityFactory.identitiesCreatedCount =
-    identityFactory.identitiesCreatedCount + 1;
+  identityFactory.userIdentitiesCreatedCount =
+    identityFactory.userIdentitiesCreatedCount + 1;
   identityFactory.save();
 
   // Record the event that created the identity for the account
@@ -45,8 +45,8 @@ export function handleContractIdentityCreated(
 
   // Increment the identity factory's created count
   const identityFactory = fetchIdentityFactory(event.address);
-  identityFactory.identitiesCreatedCount =
-    identityFactory.identitiesCreatedCount + 1;
+  identityFactory.contractIdentitiesCreatedCount =
+    identityFactory.contractIdentitiesCreatedCount + 1;
   identityFactory.save();
 
   // Record the event that created the identity for the account

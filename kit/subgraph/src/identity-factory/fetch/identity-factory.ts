@@ -12,7 +12,8 @@ export function fetchIdentityFactory(address: Address): IdentityFactory {
     identityFactory.account = fetchAccount(address).id;
     identityFactory.deployedInTransaction = Bytes.empty();
     identityFactory.system = Address.zero();
-    identityFactory.identitiesCreatedCount = 0;
+    identityFactory.userIdentitiesCreatedCount = 0;
+    identityFactory.contractIdentitiesCreatedCount = 0;
     identityFactory.save();
     IdentityFactoryTemplate.create(address);
     setAccountContractName(address, "Identity Factory");

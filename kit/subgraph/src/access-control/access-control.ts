@@ -1,12 +1,12 @@
-import { Bytes, Value } from "@graphprotocol/graph-ts";
+import { Address, Bytes, Value } from "@graphprotocol/graph-ts";
 import {
   RoleAdminChanged,
   RoleGranted,
   RoleRevoked,
 } from "../../generated/templates/AccessControl/AccessControl";
-import { System } from "../../generated/schema";
 import { fetchAccount } from "../account/fetch/account";
 import { fetchEvent } from "../event/fetch/event";
+import { fetchSystem } from "../system/fetch/system";
 import { fetchAccessControl } from "./fetch/accesscontrol";
 import { getRoleConfigFromBytes } from "./utils/role";
 
@@ -44,8 +44,8 @@ export function handleRoleGranted(event: RoleGranted): void {
     accessControl.save();
 
     // Increment admin count for the system
-    const system = System.load(accessControl.system);
-    if (system) {
+    const system = fetchSystem(Address.fromBytes(accessControl.system));
+    if (!roleHolder.isContract) {
       system.adminsCount = system.adminsCount + 1;
       system.save();
     }
@@ -82,8 +82,8 @@ export function handleRoleRevoked(event: RoleRevoked): void {
     accessControl.save();
 
     // Decrement admin count for the system
-    const system = System.load(accessControl.system);
-    if (system) {
+    const system = fetchSystem(Address.fromBytes(accessControl.system));
+    if (!roleHolder.isContract) {
       system.adminsCount = system.adminsCount - 1;
       system.save();
     }

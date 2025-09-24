@@ -373,8 +373,10 @@ type IdentityFactory @entity(immutable: false) {
   account: Account!
   # List of identities created by this factory
   identities: [Identity!]! @derivedFrom(field: "identityFactory")
-  # Count of all identities created by this factory (both user and contract identities)
-  identitiesCreatedCount: Int!
+  # Count of user identities created by this factory
+  userIdentitiesCreatedCount: Int!
+  # Count of contract identities created by this factory
+  contractIdentitiesCreatedCount: Int!
   # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
 }
@@ -392,8 +394,10 @@ type IdentityRegistry @entity(immutable: false) {
   identityRegistryStorage: IdentityRegistryStorage
   # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
-  # Count of active (non-lost) registered identities in this registry
-  activeIdentitiesCount: Int!
+  # Count of active (non-lost) registered user identities in this registry
+  activeUserIdentitiesCount: Int!
+  # Count of active (non-lost) registered contract identities in this registry
+  activeContractIdentitiesCount: Int!
 }
 
 type Identity @entity(immutable: false) {

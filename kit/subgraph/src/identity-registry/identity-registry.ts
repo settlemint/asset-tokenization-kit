@@ -1,14 +1,14 @@
 import {
+  IdentityRecovered,
+  IdentityRegistered,
+  IdentityRemoved,
   IdentityStorageSet,
   TopicSchemeRegistrySet,
   TrustedIssuersRegistrySet,
-  IdentityRegistered,
-  IdentityRemoved,
-  IdentityRecovered,
 } from "../../generated/templates/IdentityRegistry/IdentityRegistry";
 import { fetchEvent } from "../event/fetch/event";
-import { fetchIdentity } from "../identity/fetch/identity";
 import { fetchIdentityRegistryStorage } from "../identity-registry-storage/fetch/identity-registry-storage";
+import { fetchIdentity } from "../identity/fetch/identity";
 import { fetchTopicSchemeRegistry } from "../topic-scheme-registry/fetch/topic-scheme-registry";
 import { fetchTrustedIssuersRegistry } from "../trusted-issuers-registry/fetch/trusted-issuers-registry";
 import { fetchIdentityRegistry } from "./fetch/identity-registry";
@@ -50,8 +50,14 @@ export function handleIdentityRegistered(event: IdentityRegistered): void {
 
   // Increment active identities count
   const identityRegistry = fetchIdentityRegistry(event.address);
-  identityRegistry.activeIdentitiesCount =
-    identityRegistry.activeIdentitiesCount + 1;
+  const identity = fetchIdentity(event.params._identity);
+  if (identity.isContract) {
+    identityRegistry.activeContractIdentitiesCount =
+      identityRegistry.activeContractIdentitiesCount + 1;
+  } else {
+    identityRegistry.activeUserIdentitiesCount =
+      identityRegistry.activeUserIdentitiesCount + 1;
+  }
   identityRegistry.save();
 
   // Note: The actual RegisteredIdentity creation is handled by the IdentityStored
@@ -64,8 +70,14 @@ export function handleIdentityRemoved(event: IdentityRemoved): void {
 
   // Decrement active identities count
   const identityRegistry = fetchIdentityRegistry(event.address);
-  identityRegistry.activeIdentitiesCount =
-    identityRegistry.activeIdentitiesCount - 1;
+  const identity = fetchIdentity(event.params._identity);
+  if (identity.isContract) {
+    identityRegistry.activeContractIdentitiesCount =
+      identityRegistry.activeContractIdentitiesCount - 1;
+  } else {
+    identityRegistry.activeUserIdentitiesCount =
+      identityRegistry.activeUserIdentitiesCount - 1;
+  }
   identityRegistry.save();
 }
 

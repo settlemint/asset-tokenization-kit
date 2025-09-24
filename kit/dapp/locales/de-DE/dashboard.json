@@ -61,6 +61,13 @@
     },
     "title": "Daten exportieren"
   },
+  "identityMetrics": {
+    "title": "Identitäts-Übersicht",
+    "description": "Aktueller Status der Systemidentitäten und Registrierungen",
+    "totalIdentities": "Gesamte Identitäten",
+    "activeRegistrations": "Aktive Registrierungen",
+    "pendingRegistrations": "Ausstehende Registrierungen"
+  },
   "filters": {
     "apply": "Filter anwenden",
     "assetType": "Asset-Typ",

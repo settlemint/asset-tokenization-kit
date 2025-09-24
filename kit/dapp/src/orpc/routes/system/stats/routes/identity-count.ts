@@ -6,10 +6,10 @@ const IDENTITY_COUNT_QUERY = theGraphGraphql(`
   query IdentityCount($systemId: ID!) {
     system(id: $systemId) {
       identityRegistry {
-        activeIdentitiesCount
+        activeUserIdentitiesCount
       }
       identityFactory {
-        identitiesCreatedCount
+        userIdentitiesCreatedCount
       }
       adminsCount
     }
@@ -22,12 +22,12 @@ const IdentityCountResponseSchema = z.object({
     .object({
       identityFactory: z
         .object({
-          identitiesCreatedCount: z.number(),
+          userIdentitiesCreatedCount: z.number(),
         })
         .nullable(),
       identityRegistry: z
         .object({
-          activeIdentitiesCount: z.number(),
+          activeUserIdentitiesCount: z.number(),
         })
         .nullable(),
       adminsCount: z.number(),
@@ -45,16 +45,15 @@ export const statsIdentityCount =
       output: IdentityCountResponseSchema,
     });
 
-    const identitiesCreatedCount =
-      response.system?.identityFactory?.identitiesCreatedCount ?? 0;
-    const activeIdentitiesCount =
-      response.system?.identityRegistry?.activeIdentitiesCount ?? 0;
-    const adminsCount = response.system?.adminsCount ?? 0;
+    const userIdentitiesCreatedCount =
+      response.system?.identityFactory?.userIdentitiesCreatedCount ?? 0;
+    const activeUserIdentitiesCount =
+      response.system?.identityRegistry?.activeUserIdentitiesCount ?? 0;
 
     return {
-      identitiesCreatedCount,
-      activeIdentitiesCount,
-      pendingRegistrationsCount:
-        identitiesCreatedCount - activeIdentitiesCount - adminsCount,
+      userIdentitiesCreatedCount,
+      activeUserIdentitiesCount,
+      pendingIdentitiesCount:
+        userIdentitiesCreatedCount - activeUserIdentitiesCount,
     };
   });

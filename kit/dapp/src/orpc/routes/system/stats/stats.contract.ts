@@ -1,9 +1,6 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import { StatsAssetsOutputSchema } from "@/orpc/routes/system/stats/routes/assets.schema";
-import {
-  StatsIdentityCountInputSchema,
-  StatsIdentityCountOutputSchema,
-} from "@/orpc/routes/system/stats/routes/identity-count.schema";
+import { StatsIdentityCountOutputSchema } from "@/orpc/routes/system/stats/routes/identity-count.schema";
 import {
   StatsPortfolioDetailsInputSchema,
   StatsPortfolioDetailsOutputSchema,
@@ -41,7 +38,6 @@ const statsIdentityCount = baseContract
       "Identity factory creation count statistics retrieved successfully",
     tags: ["stats", "system", "identity"],
   })
-  .input(StatsIdentityCountInputSchema)
   .output(StatsIdentityCountOutputSchema);
 
 const statsTransactionCount = baseContract
