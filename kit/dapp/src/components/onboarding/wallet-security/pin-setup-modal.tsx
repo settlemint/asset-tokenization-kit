@@ -18,10 +18,10 @@ import { toast } from "sonner";
 
 interface PinSetupModalProps {
   open: boolean;
-  onOpenChange: (open: false) => void;
+  onClose: () => void;
 }
 
-export function PinSetupModal({ open, onOpenChange }: PinSetupModalProps) {
+export function PinSetupModal({ open, onClose }: PinSetupModalProps) {
   const { refreshUserState } = useOnboardingNavigation();
   const { t } = useTranslation(["onboarding", "common"]);
 
@@ -75,8 +75,8 @@ export function PinSetupModal({ open, onOpenChange }: PinSetupModalProps) {
 
   const handleClose = useCallback(() => {
     form.reset();
-    onOpenChange(false);
-  }, [form, onOpenChange]);
+    onClose();
+  }, [form, onClose]);
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>

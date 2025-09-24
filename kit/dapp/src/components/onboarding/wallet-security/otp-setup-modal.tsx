@@ -26,12 +26,12 @@ import { toast } from "sonner";
 
 interface OtpSetupModalProps {
   open: boolean;
-  onOpenChange: (open: false) => void;
+  onClose: () => void;
 }
 
 const logger = createLogger();
 
-export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
+export function OtpSetupModal({ open, onClose }: OtpSetupModalProps) {
   const { t } = useTranslation("onboarding");
   const { refreshUserState } = useOnboardingNavigation();
   const [otpUri, setOtpUri] = useState<string | null>(null);
@@ -148,8 +148,8 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
     setOtpSetupError(false);
     setOtpUri(null);
     setOtpSecret(null);
-    onOpenChange(false);
-  }, [form, onOpenChange]);
+    onClose();
+  }, [form, onClose]);
 
   const handleOtpCodeChange = useCallback(
     (value: string) => {

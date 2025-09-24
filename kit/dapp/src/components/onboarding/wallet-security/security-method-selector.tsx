@@ -212,8 +212,18 @@ export function SecurityMethodSelector() {
         </div>
       </div>
 
-      <PinSetupModal open={showModal === "pin"} onOpenChange={setShowModal} />
-      {/* <OtpSetupModal open={showModal === "otp"} onOpenChange={setShowModal} /> */}
+      <PinSetupModal
+        open={showModal === "pin"}
+        onClose={() => {
+          setShowModal(false);
+        }}
+      />
+      {/* <OtpSetupModal
+        open={showModal === "otp"}
+        onClose={() => {
+          setShowModal(false);
+        }}
+      /> */}
     </FormStepLayout>
   );
 }
