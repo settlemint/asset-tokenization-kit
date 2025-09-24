@@ -194,7 +194,7 @@ export function CollateralSheet({
               toast.promise(promise, {
                 loading: t("common:saving"),
                 success: t("tokens:actions.collateral.success"),
-                error: t("common:error"),
+                error: (data) => t("common:error", { message: data.message }),
               });
 
               handleClose();

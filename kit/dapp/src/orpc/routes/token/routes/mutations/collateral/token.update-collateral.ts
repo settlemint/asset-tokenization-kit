@@ -35,6 +35,7 @@
 import { ClaimTopic } from "@/orpc/helpers/claims/create-claim";
 import { issueClaim } from "@/orpc/helpers/claims/issue-claim";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
+import { trustedIssuerMiddleware } from "@/orpc/middlewares/auth/trusted-issuer.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
@@ -72,6 +73,11 @@ export const updateCollateral = tokenRouter.token.updateCollateral
     tokenPermissionMiddleware({
       requiredRoles: TOKEN_PERMISSIONS.updateCollateral,
       requiredExtensions: ["COLLATERAL"],
+    })
+  )
+  .use(
+    trustedIssuerMiddleware({
+      selectTopic: () => ClaimTopic.collateral,
     })
   )
   .handler(async ({ input, context, errors }) => {

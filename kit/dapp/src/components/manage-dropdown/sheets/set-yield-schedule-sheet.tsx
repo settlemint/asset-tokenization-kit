@@ -133,7 +133,7 @@ export function SetYieldScheduleSheet({
     toast.promise(createAndSet(), {
       loading: t("tokens:actions.setYieldSchedule.messages.preparing"),
       success: t("tokens:actions.setYieldSchedule.messages.success"),
-      error: t("tokens:actions.setYieldSchedule.messages.failed"),
+      error: (data) => t("common:error", { message: data.message }),
     });
 
     onOpenChange(false);

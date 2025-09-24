@@ -184,7 +184,7 @@ async function getSystemAddress(
   input: unknown
 ): Promise<string | null> {
   const systemAddressHeader =
-    typeof context.headers?.get === "function"
+    context.headers instanceof Headers
       ? context.headers.get("x-system-address")
       : (context.headers as IncomingHttpHeaders)["x-system-address"];
   if (typeof systemAddressHeader === "string" && systemAddressHeader) {

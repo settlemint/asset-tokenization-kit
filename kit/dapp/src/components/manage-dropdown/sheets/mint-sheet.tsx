@@ -348,7 +348,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
               toast.promise(promise, {
                 loading: t("common:saving"),
                 success: t("common:saved"),
-                error: t("common:error"),
+                error: (data) => t("common:error", { message: data.message }),
               });
 
               handleClose();
