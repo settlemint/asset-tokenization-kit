@@ -1,5 +1,5 @@
+import { AddressSelectOrInputToggle } from "@/components/address/address-select-or-input-toggle";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import MultipleSelector from "@/components/ui/multiselect";
 import {
@@ -15,15 +15,12 @@ import { client, orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { TopicListOutput } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import type { TrustedIssuerCreateInput } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.create.schema";
-import type { UserSearchResult } from "@/orpc/routes/user/routes/user.search.schema";
 import {
   useMutation,
-  useQuery,
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import { Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -41,27 +38,7 @@ export function AddTrustedIssuerSheet({
   onOpenChange,
 }: AddTrustedIssuerSheetProps) {
   const queryClient = useQueryClient();
-  const { t } = useTranslation("claim-topics-issuers");
-  const [selectedUser, setSelectedUser] = useState<UserSearchResult | null>(
-    null
-  );
-  const [searchQuery, setSearchQuery] = useState("");
-
-  // Search users with debounced query
-  const { data: users = [] } = useQuery({
-    queryKey: orpc.user.search.queryKey({
-      input: {
-        query: searchQuery,
-        limit: 20,
-      },
-    }),
-    queryFn: () =>
-      client.user.search({
-        query: searchQuery,
-        limit: 20,
-      }),
-    enabled: open && searchQuery.length >= 2, // Only search when sheet is open and query is at least 2 characters
-  });
+  const { t } = useTranslation(["claim-topics-issuers", "common"]);
 
   // Fetch available topics for selection
   const { data: topics } = useSuspenseQuery(
@@ -73,21 +50,11 @@ export function AddTrustedIssuerSheet({
     mutationFn: (data: TrustedIssuerCreateInput) =>
       client.system.trustedIssuers.create(data),
     onSuccess: () => {
-      toast.success(t("trustedIssuers.toast.added"));
       void queryClient.invalidateQueries({
         queryKey: orpc.system.trustedIssuers.list.queryKey(),
       });
       onOpenChange(false);
       form.reset();
-      setSelectedUser(null);
-      setSearchQuery("");
-    },
-    onError: (error) => {
-      toast.error(
-        t("trustedIssuers.toast.addError", {
-          error: error.message || error.toString() || "Unknown error",
-        })
-      );
     },
   });
 
@@ -100,49 +67,37 @@ export function AddTrustedIssuerSheet({
         verificationType: "PINCODE" as const,
       } as UserVerification,
     },
-    onSubmit: async ({ value }) => {
-      try {
+    onSubmit: ({ value }) => {
+      const promise = async () => {
         const trustedIssuerIdentity = await client.system.identity.read({
           wallet: value.issuerAddress,
         });
         if (!trustedIssuerIdentity) {
           throw new Error("Trusted issuer identity not found");
         }
-        createMutation.mutate({
+
+        return createMutation.mutateAsync({
           issuerAddress: trustedIssuerIdentity.id,
           claimTopicIds: value.claimTopicIds,
           walletVerification: value.walletVerification,
         });
-      } catch (error: unknown) {
-        const errorMessage =
-          error instanceof Error ? error.message : "unknown error";
-        toast.error(
-          t("trustedIssuers.toast.addError", {
-            error: errorMessage,
-          })
-        );
-      }
+      };
+
+      toast.promise(promise, {
+        loading: t("common:saving"),
+        success: t("trustedIssuers.toast.added"),
+        error: (data) => t("common:error", { message: data.message }),
+      });
     },
   });
 
   const handleClose = () => {
     form.reset();
-    setSelectedUser(null);
-    setSearchQuery("");
     onOpenChange(false);
   };
 
   const handleSubmit = () => {
     void form.handleSubmit();
-  };
-
-  const handleUserSelect = (userWallet: string | null) => {
-    const user = users.find((u) => u.wallet === userWallet);
-    if (user && user.wallet) {
-      setSelectedUser(user);
-      form.setFieldValue("issuerAddress", user.wallet);
-      setSearchQuery(""); // Clear search after selection
-    }
   };
 
   // Create a lookup map for O(1) topic retrieval and options
@@ -168,150 +123,93 @@ export function AddTrustedIssuerSheet({
         <div className="mt-6 px-6">
           <form.AppForm>
             <div className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="user-search">
-                  {t("trustedIssuers.add.fields.selectUser.label")}
-                  <span className="text-destructive ml-1">*</span>
-                </Label>
-                {selectedUser ? (
-                  <div className="flex items-center justify-between p-3 border rounded-md bg-muted/50">
-                    <div className="flex flex-col">
-                      <span className="font-medium">{selectedUser.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {selectedUser.wallet
-                          ? `${selectedUser.wallet.slice(0, 6)}...${selectedUser.wallet.slice(-4)}`
-                          : "No wallet"}{" "}
-                        • {selectedUser.role}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedUser(null);
-                        setSearchQuery("");
-                        form.setFieldValue(
-                          "issuerAddress",
-                          "0x" as `0x${string}`
-                        );
-                      }}
-                      className="text-xs text-primary hover:underline"
-                    >
-                      Change User
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="user-search"
-                        placeholder={t(
-                          "trustedIssuers.add.fields.selectUser.placeholder"
+              <AddressSelectOrInputToggle
+                children={({ mode }) => (
+                  <>
+                    {mode === "select" && (
+                      <form.AppField
+                        name="issuerAddress"
+                        children={(field) => (
+                          <field.AddressSelectField
+                            scope="user"
+                            label={t(
+                              "trustedIssuers.add.fields.selectUser.label"
+                            )}
+                            required={true}
+                            description={t(
+                              "trustedIssuers.add.fields.selectUser.description"
+                            )}
+                          />
                         )}
-                        value={searchQuery}
-                        onChange={(e) => {
-                          setSearchQuery(e.target.value);
-                        }}
-                        className="pl-10"
                       />
-                    </div>
-                    {searchQuery.length >= 2 && users.length > 0 && (
-                      <div className="border rounded-md max-h-40 overflow-y-auto">
-                        {users.map((user) => (
-                          <div
-                            key={user.wallet || user.name}
-                            className="p-3 hover:bg-muted cursor-pointer border-b last:border-b-0"
-                            onClick={() => {
-                              handleUserSelect(user.wallet);
-                            }}
-                          >
-                            <div className="flex flex-col">
-                              <span className="font-medium">{user.name}</span>
-                              <span className="text-xs text-muted-foreground">
-                                {user.wallet
-                                  ? `${user.wallet.slice(0, 6)}...${user.wallet.slice(-4)}`
-                                  : "No wallet"}{" "}
-                                • {user.role}
-                              </span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
                     )}
-                    {searchQuery.length >= 2 && users.length === 0 && (
-                      <p className="text-sm text-muted-foreground p-2">
-                        No users found matching "{searchQuery}"
-                      </p>
-                    )}
-                  </div>
-                )}
-                <p className="text-xs text-muted-foreground">
-                  {t("trustedIssuers.add.fields.selectUser.description")}
-                </p>
-              </div>
-
-              {selectedUser && (
-                <>
-                  <div className="rounded-lg border p-4 bg-muted/50">
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-sm font-medium">
-                          {t("trustedIssuers.add.selectedUser.name")}
-                        </span>
-                        <span className="text-sm">{selectedUser.name}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm font-medium">
-                          {t("trustedIssuers.add.selectedUser.wallet")}
-                        </span>
-                        <span className="text-sm font-mono">
-                          {selectedUser.wallet?.slice(0, 6)}...
-                          {selectedUser.wallet?.slice(-4)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <form.AppField
-                    name="claimTopicIds"
-                    children={(field) => (
-                      <div className="space-y-2">
-                        <Label htmlFor="claimTopicIds">
-                          {t("trustedIssuers.add.fields.claimTopics.label")}
-                          <span className="text-destructive ml-1">*</span>
-                        </Label>
-                        <MultipleSelector
-                          value={field.state.value.map((id: string) => ({
-                            value: id,
-                            label: topicLookup.get(id) || id,
-                          }))}
-                          onChange={(options) => {
-                            field.handleChange(options.map((o) => o.value));
-                          }}
-                          defaultOptions={topicOptions}
-                          placeholder={t(
-                            "trustedIssuers.add.fields.claimTopics.placeholder"
-                          )}
-                          emptyIndicator={
-                            <p className="text-center text-sm">
-                              {t("trustedIssuers.add.fields.claimTopics.empty")}
-                            </p>
-                          }
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          {t(
-                            "trustedIssuers.add.fields.claimTopics.description"
-                          )}
-                        </p>
-                        {field.state.meta.errors.length > 0 && (
-                          <p className="text-sm text-destructive">
-                            {field.state.meta.errors[0]}
-                          </p>
+                    {mode === "manual" && (
+                      <form.AppField
+                        name="issuerAddress"
+                        children={(field) => (
+                          <field.AddressInputField
+                            label={t(
+                              "trustedIssuers.add.fields.selectUser.label"
+                            )}
+                            required={true}
+                            description={t(
+                              "trustedIssuers.add.fields.selectUser.description"
+                            )}
+                          />
                         )}
-                      </div>
+                      />
                     )}
-                  />
-                </>
+                  </>
+                )}
+              />
+
+              {form.state.values.issuerAddress && (
+                <form.AppField
+                  name="claimTopicIds"
+                  children={(field) => (
+                    <div className="space-y-2">
+                      <Label htmlFor="claimTopicIds">
+                        {t("trustedIssuers.add.fields.claimTopics.label")}
+                        <span className="text-destructive ml-1">*</span>
+                      </Label>
+                      <MultipleSelector
+                        value={field.state.value.map((id: string) => ({
+                          value: id,
+                          label: topicLookup.get(id) || id,
+                        }))}
+                        onChange={(options) => {
+                          field.handleChange(options.map((o) => o.value));
+                        }}
+                        defaultOptions={topicOptions}
+                        placeholder={t(
+                          "trustedIssuers.add.fields.claimTopics.placeholder"
+                        )}
+                        emptyIndicator={
+                          <p className="text-center text-sm">
+                            {t("trustedIssuers.add.fields.claimTopics.empty")}
+                          </p>
+                        }
+                        onSearch={(value) => {
+                          return Promise.resolve(
+                            topicOptions.filter((option) =>
+                              option.label
+                                .toLowerCase()
+                                .includes(value.toLowerCase())
+                            )
+                          );
+                        }}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        {t("trustedIssuers.add.fields.claimTopics.description")}
+                      </p>
+                      {field.state.meta.errors.length > 0 && (
+                        <p className="text-sm text-destructive">
+                          {field.state.meta.errors[0]}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                />
               )}
             </div>
 
@@ -333,7 +231,9 @@ export function AddTrustedIssuerSheet({
                     form.setFieldValue("walletVerification", verification);
                   },
                 }}
-                disabled={!selectedUser || createMutation.isPending}
+                disabled={
+                  !form.state.values.issuerAddress || createMutation.isPending
+                }
               >
                 {createMutation.isPending
                   ? t("trustedIssuers.add.actions.adding")
