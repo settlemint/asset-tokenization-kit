@@ -18,6 +18,10 @@ interface ClaimRow {
   issuer: {
     id: Address;
   };
+  values: Array<{
+    key: string;
+    value: string;
+  }>;
 }
 
 const columnHelper = createStrictColumnHelper<ClaimRow>();
@@ -97,6 +101,43 @@ function ClaimsPage() {
           meta: {
             displayName: t("claimsTable.columns.issuer"),
             type: "address",
+          },
+        }),
+        columnHelper.display({
+          id: "claimData",
+          header: t("claimsTable.columns.claimData"),
+          cell: ({ row }: CellContext<ClaimRow, unknown>) => {
+            const values = row.original.values;
+            if (!values || values.length === 0) {
+              return (
+                <span className="text-muted-foreground text-sm">
+                  {t("claimsTable.noClaimData")}
+                </span>
+              );
+            }
+
+            // Show as compact badges for better readability
+            return (
+              <div className="flex flex-wrap gap-1">
+                {values.slice(0, 2).map((item, index) => (
+                  <Badge key={index} variant="secondary" className="text-xs">
+                    {item.key}:{" "}
+                    {item.value.length > 20
+                      ? `${item.value.slice(0, 20)}...`
+                      : item.value}
+                  </Badge>
+                ))}
+                {values.length > 2 && (
+                  <Badge variant="outline" className="text-xs">
+                    +{values.length - 2} more
+                  </Badge>
+                )}
+              </div>
+            );
+          },
+          meta: {
+            displayName: t("claimsTable.columns.claimData"),
+            type: "none",
           },
         }),
       ] as ColumnDef<ClaimRow>[]),
