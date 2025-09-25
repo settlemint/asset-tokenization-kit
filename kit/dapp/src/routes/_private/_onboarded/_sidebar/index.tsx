@@ -61,11 +61,6 @@ function Home() {
     <div className="p-6 space-y-8">
       <IdentityProgress user={user} />
       {system.userIdentity?.registered && <PortfolioDetails />}
-      {system.userIdentity?.registered && (
-        <>
-          <PortfolioDetails />
-        </>
-      )}
       {system.userPermissions?.roles.tokenManager && <AssetOverviewSection />}
       {system.userPermissions?.roles.identityManager && <IdentityMetrics />}
       <LatestEvents />

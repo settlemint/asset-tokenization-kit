@@ -249,7 +249,3 @@ export const userContract = {
   kyc: kycContract,
   createWallet: createWalletContract,
 };
-
-export const userRouter = {
-  user: userContract,
-};
