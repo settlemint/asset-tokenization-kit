@@ -189,12 +189,12 @@ export function decrementPendingIdentitiesCount(
   state: IdentityStatsState,
   isContract: boolean
 ): void {
-  if (isContract && state.pendingContractIdentitiesCount > 0) {
+  // Intentionally allows decrementing the count below 0
+  // This should never happen, but it's better to track it than to let it go unnoticed
+  if (isContract) {
     state.pendingContractIdentitiesCount =
       state.pendingContractIdentitiesCount - 1;
   } else {
-    // Intentionally enabled decrementing the count below 0 to track bugs
-    // This should never happen, but it's better to track it than to let it go unnoticed
     state.pendingUserIdentitiesCount = state.pendingUserIdentitiesCount - 1;
   }
 }
