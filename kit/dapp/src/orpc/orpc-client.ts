@@ -11,6 +11,7 @@
  * @see {@link ./routes/router} - Main router with all endpoints
  */
 
+import { normalizeHeaders } from "@/orpc/context/context";
 import { bigDecimalSerializer } from "@atk/zod/bigdecimal";
 import { bigIntSerializer } from "@atk/zod/bigint";
 import { timestampSerializer } from "@atk/zod/timestamp";
@@ -46,7 +47,7 @@ const getORPCClient = createIsomorphicFn()
         try {
           const headers = getRequestHeaders();
           return {
-            headers,
+            headers: normalizeHeaders(headers),
           };
         } catch (error) {
           // Handle cases where there's no HTTP event in AsyncLocalStorage
@@ -56,7 +57,7 @@ const getORPCClient = createIsomorphicFn()
             { error }
           );
           return {
-            headers: {} as ReturnType<typeof getRequestHeaders>,
+            headers: {},
           };
         }
       },

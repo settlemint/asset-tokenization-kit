@@ -348,7 +348,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
               toast.promise(promise, {
                 loading: t("common:saving"),
                 success: t("common:saved"),
-                error: t("common:error"),
+                error: (data) => t("common:error", { message: data.message }),
               });
 
               handleClose();
@@ -368,7 +368,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                                   <form.AppField name={`recipient_${entry.id}`}>
                                     {(field) => (
                                       <field.AddressSelectField
-                                        scope="all"
+                                        scope="user"
                                         label={t(
                                           "tokens:actions.mint.form.addressLabel"
                                         )}

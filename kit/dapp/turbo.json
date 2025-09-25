@@ -4,6 +4,11 @@
     "settlemint:connect:local": {
       "cache": false
     },
+    "db:studio": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["settlemint:connect:local"]
+    },
     "codegen:settlemint": {
       "cache": true,
       "dependsOn": ["settlemint:connect:local"],

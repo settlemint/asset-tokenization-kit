@@ -1,6 +1,6 @@
 # minio
 
-![Version: 2.0.0-alpha.9](https://img.shields.io/badge/Version-2.0.0--alpha.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.9](https://img.shields.io/badge/AppVersion-2.0.0--alpha.9-informational?style=flat-square)
+![Version: 2.0.0-alpha.12](https://img.shields.io/badge/Version-2.0.0--alpha.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.12](https://img.shields.io/badge/AppVersion-2.0.0--alpha.12-informational?style=flat-square)
 
 A simple MinIO deployment for development environments
 
