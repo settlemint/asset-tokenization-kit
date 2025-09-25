@@ -455,6 +455,9 @@
   [data-slot="sidebar-menu-button"].font-bold {
     @apply bg-sidebar-accent;
   }
+  [data-slot="sidebar-inset"] {
+    @apply bg-sidebar;
+  }
 
   .AuthProvider [data-slot="separator"] {
     @apply shrink-1;

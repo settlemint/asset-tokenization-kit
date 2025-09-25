@@ -1,6 +1,64 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { authRouter } from "@/orpc/procedures/auth.router";
-import { TokensResponseSchema } from "@/orpc/routes/token/routes/token.list.schema";
+import { systemRouter } from "@/orpc/procedures/system.router";
+// TokensResponseSchema kept for reference; using permissive schema for nested claims extraction
+import { TokenListSchema } from "@/orpc/routes/token/routes/token.list.schema";
+import { z } from "zod";
+
+/**
+ * Schema for TheGraph response with nested identity claims.
+ * This provides type safety for the raw GraphQL response.
+ */
+const GraphQLTokenSchema = z
+  .object({
+    id: z.string(),
+    type: z.string().optional(),
+    createdAt: z.string().optional(),
+    name: z.string(),
+    symbol: z.string(),
+    decimals: z.number(),
+    totalSupply: z.string().optional(),
+    pausable: z
+      .object({
+        paused: z.boolean(),
+      })
+      .optional(),
+    account: z
+      .object({
+        identities: z
+          .array(
+            z.object({
+              id: z.string(),
+              claims: z
+                .array(
+                  z.object({
+                    id: z.string(),
+                    name: z.string(),
+                    revoked: z.boolean(),
+                    values: z.array(
+                      z.object({
+                        key: z.string(),
+                        value: z.string(),
+                      })
+                    ),
+                  })
+                )
+                .optional()
+                .default([]),
+            })
+          )
+          .optional()
+          .default([]),
+      })
+      .optional()
+      .nullable(),
+  })
+  .loose(); // Allow additional fields that might come from GraphQL
+
+const GraphQLResponseSchema = z.object({
+  tokens: z.array(GraphQLTokenSchema),
+});
+
+type GraphQLToken = z.infer<typeof GraphQLTokenSchema>;
 
 /**
  * GraphQL query for retrieving tokenized assets from TheGraph.
@@ -20,7 +78,7 @@ import { TokensResponseSchema } from "@/orpc/routes/token/routes/token.list.sche
  * current state or whether they have any holders.
  */
 const LIST_TOKEN_QUERY = theGraphGraphql(`
-  query ListTokenQuery($orderBy: Token_orderBy, $orderDirection: OrderDirection, $where: Token_filter) {
+  query ListTokenQuery($orderBy: Token_orderBy, $orderDirection: OrderDirection, $where: Token_filter, $identityFactory: String!) {
     tokens(
         where: $where
         orderBy: $orderBy
@@ -35,6 +93,23 @@ const LIST_TOKEN_QUERY = theGraphGraphql(`
         totalSupply
         pausable {
           paused
+        }
+        account {
+          identities(
+            where: { identityFactory: $identityFactory }
+            first: 1
+          ) {
+            id
+            claims {
+              id
+              name
+              revoked
+              values {
+                key
+                value
+              }
+            }
+          }
         }
       }
     }
@@ -79,18 +154,57 @@ const LIST_TOKEN_QUERY = theGraphGraphql(`
  * @see {@link TokenListSchema} for the response structure
  * @see {@link ListSchema} for pagination parameters
  */
-export const list = authRouter.token.list.handler(
-  async ({ input, context }) => {
+export const list = systemRouter.token.list.handler(
+  async ({ input, context, errors }) => {
+    if (!context.system?.identityFactory?.id) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: "System identity factory not found",
+      });
+    }
+
     // Manually construct GraphQL variables for pagination and filtering
     const response = await context.theGraphClient.query(LIST_TOKEN_QUERY, {
       input: {
         where: input.tokenFactory
           ? { tokenFactory_: { id: input.tokenFactory } }
           : undefined,
+        identityFactory: context.system.identityFactory.id.toLowerCase(),
       },
-      output: TokensResponseSchema,
+      // Use typed schema for the GraphQL response
+      output: GraphQLResponseSchema,
     });
 
-    return response.tokens;
+    /**
+     * Transform tokens to include identity claims for client-side processing.
+     *
+     * The client has utilities like `parseClaim` to extract specific claim data,
+     * so we just return the raw claims and let the client handle the transformation.
+     * This approach provides better separation of concerns and allows the client
+     * to use existing utilities for claim parsing.
+     */
+    const tokensWithClaims = response.tokens.map((token: GraphQLToken) => {
+      /**
+       * Extract the first identity's claims (if available)
+       * Each token account can have multiple identities, but we only process the first one.
+       */
+      const identity = token.account?.identities?.[0];
+      const claims = identity?.claims || [];
+
+      /**
+       * Return token without the account field but with claims included.
+       * This provides a cleaner API surface while making claims available for client processing.
+       */
+      const { account: _account, ...tokenWithoutAccount } = token;
+      return {
+        ...tokenWithoutAccount,
+        /**
+         * Include raw claims for client-side processing.
+         * The client can use utilities like `parseClaim` to extract specific data.
+         */
+        claims,
+      };
+    });
+
+    return TokenListSchema.parse(tokensWithClaims);
   }
 );

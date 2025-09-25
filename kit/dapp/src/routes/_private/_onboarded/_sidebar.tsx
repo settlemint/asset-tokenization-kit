@@ -47,7 +47,7 @@ function LayoutComponent() {
             <UserDropdown />
           </div>
         </header>
-        <main className="flex h-[calc(100vh-90px)] flex-col rounded-tl-xl px-8 py-4 bg-background overflow-y-auto">
+        <main className="flex h-[calc(100vh-64px)] flex-col rounded-tl-xl px-8 py-4 bg-background overflow-y-auto">
           <Outlet />
         </main>
       </SidebarInset>
