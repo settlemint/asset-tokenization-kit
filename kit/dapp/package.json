@@ -12,7 +12,7 @@
     "posttypecheck": "bun gql-tada check",
     "watch": "tsgo --noEmit --watch",
     "build": "bun --bun vite build --logLevel=error",
-    "start": "srvx --prod --port=3000 --static=../client ./dist/server/server.js",
+    "start": "bun --bun srvx --prod --port=3000 --static=../client ./dist/server/server.js",
     "shadcn": "bunx shadcn@canary",
     "settlemint:connect:local": "settlemint connect --instance local",
     "codegen:settlemint": "settlemint codegen",
