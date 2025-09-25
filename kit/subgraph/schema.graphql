@@ -834,6 +834,8 @@ type Token @entity(immutable: false) {
   distributionStats: TokenDistributionStatsState @derivedFrom(field: "token")
   # Denomination asset for bond
   denominationAssetForBond: [TokenBond!]! @derivedFrom(field: "denominationAsset")
+  # Whether the token has been launched (unpaused for the first time)
+  isLaunched: Boolean!
 }
 
 type TokenBalance @entity(immutable: false) {
@@ -1261,6 +1263,10 @@ type SystemStatsState @entity(immutable: false) {
   system: System!
   # Total value of all tokens in base FIAT currency
   totalValueInBaseCurrency: BigDecimal!
+  # Total number of tokens created
+  tokensCreatedCount: Int!
+  # Total number of tokens launched (unpaused for the first time)
+  tokensLaunchedCount: Int!
 }
 
 type SystemStatsData @entity(timeseries: true) {
@@ -1272,6 +1278,10 @@ type SystemStatsData @entity(timeseries: true) {
   system: System!
   # Total value of all tokens in base FIAT currency
   totalValueInBaseCurrency: BigDecimal!
+  # Total number of tokens created
+  tokensCreatedCount: Int!
+  # Total number of tokens launched (unpaused for the first time)
+  tokensLaunchedCount: Int!
 }
 
 type SystemStats
@@ -1285,6 +1295,12 @@ type SystemStats
   # Last value of all tokens in base FIAT currency for the period
   totalValueInBaseCurrency: BigDecimal!
     @aggregate(fn: "last", arg: "totalValueInBaseCurrency")
+  # Last count of tokens created for the period
+  tokensCreatedCount: Int!
+    @aggregate(fn: "last", arg: "tokensCreatedCount")
+  # Last count of tokens launched for the period
+  tokensLaunchedCount: Int!
+    @aggregate(fn: "last", arg: "tokensLaunchedCount")
 }
 
 type AccountStatsState @entity(immutable: false) {

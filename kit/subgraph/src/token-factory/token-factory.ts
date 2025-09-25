@@ -10,6 +10,7 @@ import { fetchAccount } from "../account/fetch/account";
 import { InterfaceIds } from "../erc165/utils/interfaceids";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentity } from "../identity/fetch/identity";
+import { updateSystemStatsForTokenCreate } from "../stats/system-stats";
 import { fetchTokenStatsState } from "../stats/token-stats";
 import { updateTokenTypeStatsForTokenCreation } from "../stats/token-type-stats";
 import { fetchBond } from "../token-assets/bond/fetch/bond";
@@ -56,6 +57,7 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   token.createdAt = event.block.timestamp;
   token.createdBy = fetchAccount(event.transaction.from).id;
   token.accessControl = fetchAccessControl(event.params.accessManager).id;
+  token.isLaunched = false;
 
   // Link the token's AccessControl to the system via the factory registry
   const accessControl = fetchAccessControl(event.params.accessManager);
@@ -104,6 +106,9 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   const identity = fetchIdentity(event.params.tokenIdentity);
   identity.isContract = true;
   identity.save();
+
+  // Update system stats for token creation
+  updateSystemStatsForTokenCreate(token);
 
   // Update token type stats for new token creation
   updateTokenTypeStatsForTokenCreation(token);
