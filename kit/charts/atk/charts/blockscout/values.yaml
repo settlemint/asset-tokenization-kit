@@ -310,7 +310,7 @@ frontend:
     # -- (string) Blockscout frontend image repository
     repository: ghcr.io/blockscout/frontend
     # -- (string) Blockscout frontend image tag (immutable tags are recommended)
-    tag: "v2.3.3"
+    tag: "v2.3.4"
     # -- (string) Blockscout frontend image pull policy
     pullPolicy: IfNotPresent
 
