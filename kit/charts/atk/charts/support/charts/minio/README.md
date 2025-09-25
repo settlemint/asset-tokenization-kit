@@ -1,6 +1,6 @@
 # minio
 
-![Version: 2.0.0-alpha.13](https://img.shields.io/badge/Version-2.0.0--alpha.13-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.13](https://img.shields.io/badge/AppVersion-2.0.0--alpha.13-informational?style=flat-square)
+![Version: 2.0.0-alpha.14](https://img.shields.io/badge/Version-2.0.0--alpha.14-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.14](https://img.shields.io/badge/AppVersion-2.0.0--alpha.14-informational?style=flat-square)
 
 A simple MinIO deployment for development environments
 
@@ -63,9 +63,9 @@ A simple MinIO deployment for development environments
 | extraVolumes | list | `[]` |  |
 | fullnameOverride | string | `""` | String to fully override common.names.fullname |
 | ignoreChartChecksums | bool | `false` |  |
-| image | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/minio/minio","tag":"RELEASE.2025-07-23T15-54-02Z"}` | MinIO image configuration |
+| image | object | `{"pullPolicy":"IfNotPresent","repository":"harbor.settlemint.com/docker.io/minio/minio","tag":"RELEASE.2025-07-23T15-54-02Z"}` | MinIO image configuration |
 | image.pullPolicy | string | `"IfNotPresent"` | MinIO image pull policy |
-| image.repository | string | `"docker.io/minio/minio"` | MinIO image repository |
+| image.repository | string | `"harbor.settlemint.com/docker.io/minio/minio"` | MinIO image repository |
 | image.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` | MinIO image tag (immutable tags are recommended) |
 | imagePullSecrets | list | `[]` | Global Docker registry secret names as an array (list) |
 | ingress.annotations | object | `{}` |  |
@@ -87,9 +87,9 @@ A simple MinIO deployment for development environments
 | makeUserJob.exitCommand | string | `""` |  |
 | makeUserJob.resources.requests.memory | string | `"128Mi"` |  |
 | makeUserJob.securityContext | object | `{}` |  |
-| mcImage | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/minio/minio","tag":"RELEASE.2025-07-23T15-54-02Z"}` | MinIO client image configuration |
+| mcImage | object | `{"pullPolicy":"IfNotPresent","repository":"harbor.settlemint.com/docker.io/minio/minio","tag":"RELEASE.2025-07-23T15-54-02Z"}` | MinIO client image configuration |
 | mcImage.pullPolicy | string | `"IfNotPresent"` | MinIO client image pull policy |
-| mcImage.repository | string | `"docker.io/minio/minio"` | MinIO client image repository |
+| mcImage.repository | string | `"harbor.settlemint.com/docker.io/minio/minio"` | MinIO client image repository |
 | mcImage.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` | MinIO client image tag |
 | metrics.serviceMonitor.additionalLabels | object | `{}` |  |
 | metrics.serviceMonitor.annotations | object | `{}` |  |
