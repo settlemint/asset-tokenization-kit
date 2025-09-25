@@ -50,9 +50,18 @@ export const sessionMiddleware = baseRouter.middleware<
 
   const headers = new Headers();
   for (const [key, value] of Object.entries(context.headers)) {
-    if (value) {
-      headers.append(key, value);
+    if (value === undefined || value === null) {
+      continue;
     }
+
+    if (Array.isArray(value)) {
+      value.forEach((item) => {
+        headers.append(key, item);
+      });
+      continue;
+    }
+
+    headers.append(key, value);
   }
 
   const session = await auth.api.getSession({

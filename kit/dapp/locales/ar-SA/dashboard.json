@@ -61,6 +61,13 @@
     },
     "title": "تصدير البيانات"
   },
+  "identityMetrics": {
+    "title": "نظرة عامة على الهوية",
+    "description": "الحالة الحالية لهويات النظام والتسجيلات",
+    "totalIdentities": "إجمالي الهويات",
+    "activeRegistrations": "التسجيلات النشطة",
+    "pendingRegistrations": "التسجيلات المعلقة"
+  },
   "filters": {
     "apply": "تطبيق الفلاتر",
     "assetType": "نوع الأصل",
@@ -107,6 +114,14 @@
   "welcome": {
     "subtitle": "إليك ما يحدث مع أصولك اليوم",
     "title": "مرحبًا بعودتك، {{name}}"
+  },
+  "assetOverview": {
+    "title": "نظرة عامة على الأصول",
+    "subtitle": "تتبع وتحليل أصولك المميزة",
+    "emptyState": {
+      "title": "ستظهر نظرة عامة على أصولك هنا",
+      "description": "ستظهر الرسوم البيانية والإحصائيات بمجرد إنشاء أول أصل مميز لك"
+    }
   },
   "widgets": {
     "alerts": {

@@ -1,4 +1,4 @@
-import { store } from "@graphprotocol/graph-ts";
+import { Address, store } from "@graphprotocol/graph-ts";
 import {
   CountryModified as CountryModifiedEvent,
   IdentityModified as IdentityModifiedEvent,
@@ -13,6 +13,10 @@ import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentityRegistry } from "../identity-registry/fetch/identity-registry";
 import { fetchIdentity } from "../identity/fetch/identity";
 import { fetchRegisteredIdentity } from "../registered-identity/fetch/registered-identity";
+import {
+  trackIdentityRegistered,
+  trackIdentityRemoved,
+} from "../stats/identity-stats";
 import { fetchIdentityRegistryStorage } from "./fetch/identity-registry-storage";
 
 export function handleCountryModified(event: CountryModifiedEvent): void {
@@ -72,20 +76,33 @@ export function handleIdentityStored(event: IdentityStoredEvent): void {
     event.params._investorAddress
   );
   const identity = fetchIdentity(event.params._identity);
+  const identityRegistryStorage = fetchIdentityRegistryStorage(event.address);
+  const system = identityRegistryStorage.system;
+
   registeredIdentity.identity = identity.id;
   registeredIdentity.country = event.params._country;
 
   registeredIdentity.save();
+  trackIdentityRegistered(
+    event.params._investorAddress,
+    Address.fromBytes(system),
+    identity.isContract
+  );
 }
 
 export function handleIdentityUnstored(event: IdentityUnstoredEvent): void {
   fetchEvent(event, "IdentityUnstored");
+
   const registeredIdentity = fetchRegisteredIdentity(
     event.address,
     event.params._investorAddress
   );
+  const identity = fetchIdentity(event.params._identity);
+  const identityRegistryStorage = fetchIdentityRegistryStorage(event.address);
+  const system = identityRegistryStorage.system;
 
   store.remove("RegisteredIdentity", registeredIdentity.id.toHexString());
+  trackIdentityRemoved(Address.fromBytes(system), identity.isContract);
 }
 
 export function handleIdentityWalletMarkedAsLost(

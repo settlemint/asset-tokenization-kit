@@ -5,10 +5,10 @@ import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense } from "react";
 
-import { PortfolioBreakdown } from "./portfolio-breakdown";
-import { PortfolioSummaryCard } from "./portfolio-summary-card";
 import { SectionSubtitle } from "@/components/dashboard/section-subtitle";
 import { SectionTitle } from "@/components/dashboard/section-title";
+import { PortfolioBreakdown } from "./portfolio-breakdown";
+import { PortfolioSummaryCard } from "./portfolio-summary-card";
 
 /**
  * Portfolio Details Component
@@ -44,11 +44,13 @@ function PortfolioDetailsContent() {
   return (
     <div className="space-y-8">
       {/* Portfolio Summary Section */}
-      <div className="space-y-3">
-        <SectionTitle>Portfolio Summary</SectionTitle>
-        <SectionSubtitle>
-          View your total portfolio value and holdings
-        </SectionSubtitle>
+      <div className="space-y-4">
+        <div className="flex flex-col gap-2">
+          <SectionTitle>Portfolio Summary</SectionTitle>
+          <SectionSubtitle>
+            View your total portfolio value and holdings
+          </SectionSubtitle>
+        </div>
         <PortfolioSummaryCard
           totalValue={portfolioData.totalValue}
           totalTokenFactories={portfolioData.totalTokenFactories}
@@ -58,11 +60,13 @@ function PortfolioDetailsContent() {
       </div>
 
       {/* Portfolio Breakdown Section */}
-      <div className="space-y-3">
-        <SectionTitle>Portfolio Breakdown</SectionTitle>
-        <SectionSubtitle>
-          Detailed breakdown of your assets by type
-        </SectionSubtitle>
+      <div className="space-y-4">
+        <div className="flex flex-col gap-2">
+          <SectionTitle>Portfolio Breakdown</SectionTitle>
+          <SectionSubtitle>
+            Detailed breakdown of your assets by type
+          </SectionSubtitle>
+        </div>
         <PortfolioBreakdown
           breakdown={portfolioData.tokenFactoryBreakdown}
           hasAssets={hasAssets}
@@ -70,9 +74,13 @@ function PortfolioDetailsContent() {
       </div>
 
       {/* Portfolio Performance Section */}
-      <div className="space-y-3">
-        <SectionTitle>Portfolio Performance</SectionTitle>
-        <SectionSubtitle>Track your portfolio value over time</SectionSubtitle>
+      <div className="space-y-4">
+        <div className="flex flex-col gap-2">
+          <SectionTitle>Portfolio Performance</SectionTitle>
+          <SectionSubtitle>
+            Track your portfolio value over time
+          </SectionSubtitle>
+        </div>
         <PortfolioValueAreaChart />
       </div>
     </div>
@@ -83,9 +91,11 @@ function PortfolioDetailsSkeleton() {
   return (
     <div className="space-y-8">
       {/* Portfolio Summary Skeleton */}
-      <div className="space-y-3">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-4 w-80" />
+      <div className="space-y-4">
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-80" />
+        </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {Array.from({ length: 3 }).map((_, index) => (
             <div
@@ -102,9 +112,11 @@ function PortfolioDetailsSkeleton() {
       </div>
 
       {/* Portfolio Breakdown Skeleton */}
-      <div className="space-y-3">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-4 w-72" />
+      <div className="space-y-4">
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-72" />
+        </div>
         <div className="rounded-xl border border-border/60 bg-muted/50 p-6 shadow-sm">
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <div className="flex h-[300px] items-center justify-center">
@@ -126,9 +138,11 @@ function PortfolioDetailsSkeleton() {
       </div>
 
       {/* Portfolio Performance Skeleton */}
-      <div className="space-y-3">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-4 w-64" />
+      <div className="space-y-4">
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-64" />
+        </div>
         <div className="rounded-xl border border-border/60 bg-muted/50 p-6 shadow-sm">
           <div className="space-y-4">
             <div className="h-[300px] flex items-end justify-between gap-2">

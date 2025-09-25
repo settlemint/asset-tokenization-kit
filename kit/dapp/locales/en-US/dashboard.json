@@ -61,6 +61,17 @@
     },
     "title": "Export your data"
   },
+  "identityMetrics": {
+    "title": "Identity Overview",
+    "description": "Current system identity status and registrations",
+    "totalIdentities": "Total Identities",
+    "activeRegistrations": "Active Registrations",
+    "pendingRegistrations": "Pending identities",
+    "chartTitle": "Active registrations",
+    "chartDescription": "Daily trends of active identity registrations over the last 7 days",
+    "emptyStateMessage": "No registrations yet",
+    "emptyStateDescription": "Identity registrations will appear here once users start the verification process"
+  },
   "filters": {
     "apply": "Apply filters",
     "assetType": "Asset type",
@@ -107,6 +118,14 @@
   "welcome": {
     "subtitle": "Today's asset activity at a glance",
     "title": "Welcome back, {{name}}"
+  },
+  "assetOverview": {
+    "title": "Assets Overview",
+    "subtitle": "Track and analyze your tokenized assets",
+    "emptyState": {
+      "title": "Your asset overview will appear here",
+      "description": "Charts and statistics will show once you design your first tokenized asset"
+    }
   },
   "widgets": {
     "alerts": {

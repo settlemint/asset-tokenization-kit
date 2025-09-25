@@ -88,7 +88,7 @@ export function PauseUnpauseConfirmationSheet({
             name: asset.name,
             symbol: asset.symbol,
           }),
-          error: t("tokens:actions.pause.messages.error"),
+          error: (data) => t("common:error", { message: data.message }),
           loading: t("tokens:actions.pause.messages.submitting"),
         }
       );
@@ -103,7 +103,7 @@ export function PauseUnpauseConfirmationSheet({
             name: asset.name,
             symbol: asset.symbol,
           }),
-          error: t("tokens:actions.unpause.messages.error"),
+          error: (data) => t("common:error", { message: data.message }),
           loading: t("tokens:actions.unpause.messages.submitting"),
         }
       );

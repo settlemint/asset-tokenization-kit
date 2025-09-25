@@ -1,4 +1,4 @@
-import { Bytes, Value } from "@graphprotocol/graph-ts";
+import { Address, Bytes, Value } from "@graphprotocol/graph-ts";
 import {
   RoleAdminChanged,
   RoleGranted,
@@ -6,6 +6,11 @@ import {
 } from "../../generated/templates/AccessControl/AccessControl";
 import { fetchAccount } from "../account/fetch/account";
 import { fetchEvent } from "../event/fetch/event";
+import {
+  fetchAccountSystemStatsStateForSystem,
+  updateIsAdmin,
+} from "../stats/account-stats";
+import { trackRoleGranted } from "../stats/identity-stats";
 import { fetchAccessControl } from "./fetch/accesscontrol";
 import { getRoleConfigFromBytes } from "./utils/role";
 
@@ -38,6 +43,24 @@ export function handleRoleGranted(event: RoleGranted): void {
     accessControl.set(
       roleConfig.fieldName,
       Value.fromBytesArray(newValue.concat([roleHolder.id]))
+    );
+
+    const systemAddress = Address.fromBytes(accessControl.system);
+    const roleHolderAddress = Address.fromBytes(roleHolder.id);
+    const systemStats = fetchAccountSystemStatsStateForSystem(
+      roleHolderAddress,
+      systemAddress
+    );
+    const isFirstRoleGrant = !systemStats.isAdmin;
+    if (isFirstRoleGrant) {
+      updateIsAdmin(roleHolderAddress, systemAddress);
+    }
+
+    trackRoleGranted(
+      roleHolderAddress,
+      systemAddress,
+      roleHolder.isContract,
+      isFirstRoleGrant
     );
   }
   accessControl.save();

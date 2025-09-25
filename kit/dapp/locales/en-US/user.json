@@ -30,9 +30,17 @@
         "registered": "Registered",
         "pending": "Pending",
         "notConnected": "Not Connected",
+        "identityNeeded": "Identity needed",
+        "notRegistered": "Not Registered",
+        "pendingRegistration": "Pending registration",
+        "admin": "Admin",
+        "adminAriaLabel": "User has any admin role in the system",
         "registeredAriaLabel": "User is registered and verified on-chain",
+        "notRegisteredAriaLabel": "User is not registered on-chain",
         "pendingAriaLabel": "User has connected wallet but is not yet registered on-chain",
-        "notConnectedAriaLabel": "User has not connected a wallet"
+        "notConnectedAriaLabel": "User has not connected a wallet",
+        "identityNeededAriaLabel": "User has wallet but no identity registered",
+        "pendingRegistrationAriaLabel": "User identity registration is pending"
       },
       "actions": {
         "viewDetails": "View Details",
