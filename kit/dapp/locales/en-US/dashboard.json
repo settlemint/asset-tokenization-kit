@@ -66,11 +66,26 @@
     "description": "Current system identity status and registrations",
     "totalIdentities": "Total Identities",
     "activeRegistrations": "Active Registrations",
-    "pendingRegistrations": "Pending identities",
+    "pendingRegistrations": "Pending Registrations",
     "chartTitle": "Active registrations",
     "chartDescription": "Daily trends of active identity registrations over the last 7 days",
     "emptyStateMessage": "No registrations yet",
     "emptyStateDescription": "Identity registrations will appear here once users start the verification process"
+  },
+  "portfolioDetails": {
+    "name": "Portfolio Details",
+    "summary": {
+      "title": "Portfolio Summary",
+      "description": "View your total portfolio value and holdings"
+    },
+    "breakdown": {
+      "title": "Portfolio Breakdown",
+      "description": "Detailed breakdown of your assets by type"
+    },
+    "performance": {
+      "title": "Portfolio Performance",
+      "description": "Track your portfolio value over time"
+    }
   },
   "filters": {
     "apply": "Apply filters",

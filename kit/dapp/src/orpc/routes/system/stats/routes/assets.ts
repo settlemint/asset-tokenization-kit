@@ -1,6 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { type AssetType, assetType } from "@atk/zod/asset-types";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { z } from "zod";
 
 /**
@@ -8,9 +9,14 @@ import { z } from "zod";
  * Optimized for the Asset Stats Widget specifically
  */
 const ASSET_COUNT_QUERY = theGraphGraphql(`
-  query ($systemAddress: Bytes!) {
+  query ($systemAddressId: ID!, $systemAddressBytes: Bytes!) {
+    systemStatsState(id: $systemAddressId) {
+      id
+      tokensCreatedCount
+      tokensLaunchedCount
+    }
     tokenTypeStatsStates(
-      where: { system_: { id: $systemAddress } }
+      where: { system_: { id: $systemAddressBytes } }
     ) {
       id
       type
@@ -21,6 +27,13 @@ const ASSET_COUNT_QUERY = theGraphGraphql(`
 
 // Schema for the GraphQL response
 const AssetCountResponseSchema = z.object({
+  systemStatsState: z
+    .object({
+      id: ethereumAddress,
+      tokensCreatedCount: z.number(),
+      tokensLaunchedCount: z.number(),
+    })
+    .nullable(),
   tokenTypeStatsStates: z.array(
     z.object({
       id: z.string(),
@@ -61,7 +74,7 @@ export const statsAssets = systemRouter.system.stats.assets.handler(
     const { system } = context;
     // Fetch asset count data in a single query
     const response = await context.theGraphClient.query(ASSET_COUNT_QUERY, {
-      input: { systemAddress: system.id },
+      input: { systemAddressId: system.id, systemAddressBytes: system.id },
       output: AssetCountResponseSchema,
     });
 
@@ -86,9 +99,18 @@ export const statsAssets = systemRouter.system.stats.assets.handler(
       }
     );
 
+    const tokensCreatedCount =
+      response.systemStatsState?.tokensCreatedCount ?? 0;
+    const tokensLaunchedCount =
+      response.systemStatsState?.tokensLaunchedCount ?? 0;
+    const pendingLaunchesCount = tokensCreatedCount - tokensLaunchedCount;
+
     return {
       totalAssets,
       assetBreakdown,
+      tokensCreatedCount,
+      tokensLaunchedCount,
+      pendingLaunchesCount,
     };
   }
 );

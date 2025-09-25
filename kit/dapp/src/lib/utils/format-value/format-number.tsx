@@ -1,4 +1,7 @@
-import { FormatValueProps } from "@/lib/utils/format-value/types";
+import {
+  FormatValueProps,
+  type FormatValueOptions,
+} from "@/lib/utils/format-value/types";
 import { format as formatDnum, isDnum } from "dnum";
 import { useTranslation } from "react-i18next";
 import { safeToNumber } from "./safe-to-number";
@@ -6,8 +9,18 @@ import { safeToNumber } from "./safe-to-number";
 export function FormatNumber({ value, options }: FormatValueProps) {
   const { i18n } = useTranslation();
   const locale = i18n.language;
-  const { displayName } = options;
 
+  const formatted = formatNumber(value, options, locale);
+
+  return <div className="tabular-nums">{formatted}</div>;
+}
+
+export function formatNumber(
+  value: unknown,
+  options: FormatValueOptions,
+  locale: string
+) {
+  const { displayName } = options;
   // Check if value is a Dnum (big decimal) first
   if (isDnum(value)) {
     // Format Dnum with locale-aware formatting
@@ -16,7 +29,7 @@ export function FormatNumber({ value, options }: FormatValueProps) {
       trailingZeros: false,
     });
 
-    return <div className="tabular-nums">{formatted}</div>;
+    return formatted;
   }
 
   // Use safe number conversion to handle large values without precision loss
@@ -45,5 +58,5 @@ export function FormatNumber({ value, options }: FormatValueProps) {
     ...(useCompact && { maximumFractionDigits: 1 }),
   }).format(numberValue);
 
-  return <div className="tabular-nums">{formatted}</div>;
+  return formatted;
 }

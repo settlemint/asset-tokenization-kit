@@ -1,8 +1,10 @@
+import { Token } from "../../../generated/schema";
 import {
   Paused,
   Unpaused,
 } from "../../../generated/templates/Pausable/Pausable";
 import { fetchEvent } from "../../event/fetch/event";
+import { updateSystemStatsForTokenLaunch } from "../../stats/system-stats";
 import { fetchPausable } from "./fetch/pausable";
 
 export function handlePaused(event: Paused): void {
@@ -17,4 +19,9 @@ export function handleUnpaused(event: Unpaused): void {
   const pausable = fetchPausable(event.address);
   pausable.paused = false;
   pausable.save();
+
+  let token = Token.load(event.address);
+  if (token) {
+    updateSystemStatsForTokenLaunch(token);
+  }
 }

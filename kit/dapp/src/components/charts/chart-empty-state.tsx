@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import { PieChart as PieChartIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -37,7 +38,7 @@ export function ChartEmptyState({
 
   if (isLoading) {
     return (
-      <Card className={className}>
+      <Card className={cn("h-full flex flex-col", className)}>
         <CardHeader>
           <div className="flex items-center gap-2 mb-2">
             <Skeleton className="h-6 w-48" />
@@ -45,8 +46,8 @@ export function ChartEmptyState({
           </div>
           {description && <Skeleton className="h-4 w-64" />}
         </CardHeader>
-        <CardContent>
-          <div className="flex h-[200px] flex-col items-center justify-center gap-4">
+        <CardContent className="flex-1 flex items-center justify-center">
+          <div className="flex flex-col items-center justify-center gap-4 text-center">
             <Skeleton className="h-32 w-32 rounded-full" />
             <div className="space-y-2">
               <Skeleton className="h-4 w-32" />
@@ -64,7 +65,7 @@ export function ChartEmptyState({
   }
 
   return (
-    <Card className={className}>
+    <Card className={cn("h-full flex flex-col", className)}>
       <CardHeader>
         <div className="flex items-center gap-2">
           <CardTitle>{title}</CardTitle>
@@ -72,8 +73,8 @@ export function ChartEmptyState({
         </div>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
-      <CardContent>
-        <div className="flex h-[200px] flex-col items-center justify-center gap-3 text-center">
+      <CardContent className="flex-1">
+        <div className="flex h-full min-h-[200px] flex-col items-center justify-center gap-3 text-center">
           <PieChartIcon className="h-8 w-8 text-muted-foreground" />
           <div className="space-y-1">
             <p className="text-sm font-medium">

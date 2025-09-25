@@ -8,6 +8,16 @@
       "description": "時間経過に伴う資産の総供給量",
       "title": "資産供給"
     },
+    "assetLifecycle": {
+      "title": "資産のローンチとデザインの比較",
+      "description": "過去{{days}}日間にデザインされた資産とローンチされた資産を比較します",
+      "createdLabel": "デザインされた資産",
+      "launchedLabel": "ローンチされた資産",
+      "empty": {
+        "title": "ライフサイクルデータはまだありません",
+        "description": "新しく資産がデザインされると、ここにデザインとローンチの推移が表示されます"
+      }
+    },
     "totalCollateral": {
       "label": "総担保"
     },
@@ -79,6 +89,10 @@
     "assets": {
       "empty": "まだ資産はありません",
       "title": "総資産"
+    },
+    "pendingLaunches": {
+      "description": "作成済み{{created}}件、ローンチ済み{{launched}}件",
+      "title": "ローンチ待ちトークン"
     },
     "common": {
       "error": "データの読み込みエラー",
