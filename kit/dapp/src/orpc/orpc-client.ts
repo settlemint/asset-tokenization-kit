@@ -23,7 +23,7 @@ import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
-import { router } from "./routes/router";
+import type { router } from "./routes/router";
 
 const logger = createLogger();
 
@@ -41,7 +41,8 @@ const logger = createLogger();
  * - Points to the `/api` endpoint relative to the current origin
  */
 const getORPCClient = createIsomorphicFn()
-  .server(() => {
+  .server(async () => {
+    const router = await import("./routes/router");
     return createRouterClient(router, {
       context: () => {
         try {
@@ -83,6 +84,9 @@ const getORPCClient = createIsomorphicFn()
     return createORPCClient(link);
   });
 
-export const client = getORPCClient();
+const clientPromise = getORPCClient();
+
+export const client =
+  clientPromise instanceof Promise ? await clientPromise : clientPromise;
 
 export const orpc = createTanstackQueryUtils(client);
