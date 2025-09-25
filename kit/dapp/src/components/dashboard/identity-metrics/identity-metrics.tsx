@@ -1,16 +1,15 @@
-import { orpc } from "@/orpc/orpc-client";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { Clock, UserCheck, Users } from "lucide-react";
-import { useTranslation } from "react-i18next";
-
 import { SectionSubtitle } from "@/components/dashboard/section-subtitle";
 import { SectionTitle } from "@/components/dashboard/section-title";
 import { IdentityGrowthAreaChart } from "@/components/stats/charts/identity-growth-area-chart";
 import { StatCard } from "@/components/stats/widgets/stat-widget";
-
+import { formatNumber } from "@/lib/utils/format-value/format-number";
+import { orpc } from "@/orpc/orpc-client";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { Clock, UserCheck, Users } from "lucide-react";
+import { useTranslation } from "react-i18next";
 export function IdentityMetrics() {
-  const { t } = useTranslation("dashboard");
-
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = i18n.language;
   const { data } = useSuspenseQuery(
     orpc.system.stats.identityCount.queryOptions()
   );
@@ -25,17 +24,35 @@ export function IdentityMetrics() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard
           title={t("identityMetrics.totalIdentities")}
-          value={data.userIdentitiesCreatedCount}
+          value={formatNumber(
+            data.userIdentitiesCreatedCount,
+            {
+              type: "number",
+            },
+            locale
+          )}
           icon={Users}
         />
         <StatCard
           title={t("identityMetrics.activeRegistrations")}
-          value={data.activeUserIdentitiesCount}
+          value={formatNumber(
+            data.activeUserIdentitiesCount,
+            {
+              type: "number",
+            },
+            locale
+          )}
           icon={UserCheck}
         />
         <StatCard
           title={t("identityMetrics.pendingRegistrations")}
-          value={data.pendingRegistrationsCount}
+          value={formatNumber(
+            data.pendingRegistrationsCount,
+            {
+              type: "number",
+            },
+            locale
+          )}
           icon={Clock}
         />
       </div>
