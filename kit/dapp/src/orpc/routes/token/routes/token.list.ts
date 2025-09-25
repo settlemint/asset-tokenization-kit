@@ -1,6 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { systemRouter } from "@/orpc/procedures/system.router";
 // TokensResponseSchema kept for reference; using permissive schema for nested claims extraction
+import { TokenListSchema } from "@/orpc/routes/token/routes/token.list.schema";
 import { z } from "zod";
 
 /**
@@ -147,7 +148,7 @@ export const list = systemRouter.token.list.handler(
             }>;
           }>;
         };
-      } & typeof token;
+      } & Record<string, unknown>;
 
       /**
        * Each token account can have multiple identities, but we only process the first one
@@ -265,6 +266,6 @@ export const list = systemRouter.token.list.handler(
       };
     });
 
-    return tokensWithPriceData;
+    return TokenListSchema.parse(tokensWithPriceData);
   }
 );
