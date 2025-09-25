@@ -15,10 +15,14 @@ import { formatValue } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
 import type { EquityCategory } from "@atk/zod/equity-categories";
+import { equityCategory } from "@atk/zod/equity-categories";
 import type { EquityClass } from "@atk/zod/equity-classes";
+import { equityClass } from "@atk/zod/equity-classes";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import type { FundCategory } from "@atk/zod/fund-categories";
+import { fundCategory } from "@atk/zod/fund-categories";
 import type { FundClass } from "@atk/zod/fund-classes";
+import { fundClass } from "@atk/zod/fund-classes";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -346,17 +350,29 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
             const category = classification?.category;
             if (!category) return "-";
 
-            // Translate based on actual token type, not assuming non-equity is funds
+            // Translate based on actual token type with validation
             if (row.original.type === "equity") {
-              return t(
-                `assetClassification.equity.categories.${category.toLowerCase() as Lowercase<EquityCategory>}`
-              );
+              // Validate the category matches expected enum values
+              const equitySchema = equityCategory();
+              const parseResult = equitySchema.safeParse(category);
+              if (parseResult.success) {
+                // Use type-safe translation key with validated enum value
+                return t(
+                  `assetClassification.equity.categories.${parseResult.data.toLowerCase() as Lowercase<EquityCategory>}`
+                );
+              }
             } else if (row.original.type === "fund") {
-              return t(
-                `assetClassification.funds.categories.${category.toLowerCase() as Lowercase<FundCategory>}`
-              );
+              // Validate the category matches expected enum values
+              const fundSchema = fundCategory();
+              const parseResult = fundSchema.safeParse(category);
+              if (parseResult.success) {
+                // Use type-safe translation key with validated enum value
+                return t(
+                  `assetClassification.funds.categories.${parseResult.data.toLowerCase() as Lowercase<FundCategory>}`
+                );
+              }
             }
-            // For other types (bond, stablecoin, deposit), return raw value
+            // For invalid/unknown categories or other token types, return raw value
             return category;
           },
           meta: {
@@ -378,17 +394,31 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
             const classificationClass = classification?.class;
             if (!classificationClass) return "-";
 
-            // Translate based on actual token type
+            // Translate based on actual token type with validation
             if (row.original.type === "equity") {
-              return t(
-                `assetClassification.equity.classes.${classificationClass.toLowerCase() as Lowercase<EquityClass>}`
-              );
+              // Validate the class matches expected enum values
+              const equityClassSchema = equityClass();
+              const parseResult =
+                equityClassSchema.safeParse(classificationClass);
+              if (parseResult.success) {
+                // Use type-safe translation key with validated enum value
+                return t(
+                  `assetClassification.equity.classes.${parseResult.data.toLowerCase() as Lowercase<EquityClass>}`
+                );
+              }
             } else if (row.original.type === "fund") {
-              return t(
-                `assetClassification.funds.classes.${classificationClass.toLowerCase() as Lowercase<FundClass>}`
-              );
+              // Validate the class matches expected enum values
+              const fundClassSchema = fundClass();
+              const parseResult =
+                fundClassSchema.safeParse(classificationClass);
+              if (parseResult.success) {
+                // Use type-safe translation key with validated enum value
+                return t(
+                  `assetClassification.funds.classes.${parseResult.data.toLowerCase() as Lowercase<FundClass>}`
+                );
+              }
             }
-            // For other types (bond, stablecoin, deposit), return raw value
+            // For invalid/unknown classes or other token types, return raw value
             return classificationClass;
           },
           meta: {
