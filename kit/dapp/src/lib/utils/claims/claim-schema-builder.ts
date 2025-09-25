@@ -317,7 +317,21 @@ function extractStringValidation(zodString: z.ZodString): {
     validation.max = longResult.error.issues[0].maximum as number;
   }
 
-  // Pattern extraction is not supported without accessing internals
+  // Extract regex patterns from ZodString checks
+  try {
+    // Access internal checks array to find regex patterns
+    const def = (
+      zodString as unknown as {
+        _def: { checks: Array<{ kind: string; regex?: RegExp }> };
+      }
+    )._def;
+    const regexCheck = def.checks?.find((check) => check.kind === "regex");
+    if (regexCheck?.regex) {
+      validation.pattern = regexCheck.regex.source;
+    }
+  } catch {
+    // Ignore errors accessing internals - fallback gracefully
+  }
 
   return validation;
 }

@@ -33,7 +33,6 @@ import {
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { ClaimData } from "@/orpc/routes/system/identity/claims/routes/claims.issue.schema";
-import { IssueableClaimTopicSchema } from "@/orpc/routes/system/identity/claims/routes/claims.issue.schema";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { useStore } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -50,7 +49,7 @@ import { IssueClaimFormView } from "./issue-claim/IssueClaimFormView";
 
 const IssueClaimFormSchema = z
   .object({
-    topic: IssueableClaimTopicSchema.or(z.literal("")),
+    topic: z.string(),
   })
   .catchall(z.unknown());
 
@@ -108,7 +107,8 @@ const createInitialValues = (
 
 const fromDateTimeInput = (value: string): string => {
   if (!value) return "";
-  const ms = new Date(value).getTime();
+  // Treat the datetime-local string as UTC to ensure consistency across timezones
+  const ms = new Date(`${value}Z`).getTime();
   if (Number.isNaN(ms)) return "";
   return String(Math.floor(ms / 1000));
 };
@@ -118,11 +118,12 @@ const toDateTimeInputValue = (timestamp: string | undefined): string => {
   const seconds = Number.parseInt(timestamp, 10);
   if (Number.isNaN(seconds)) return "";
   const date = new Date(seconds * 1000);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
+  // Use UTC methods to format the date string for the datetime-local input
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const hours = String(date.getUTCHours()).padStart(2, "0");
+  const minutes = String(date.getUTCMinutes()).padStart(2, "0");
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
@@ -268,8 +269,7 @@ export function IssueClaimSheet({
     [formValues]
   );
 
-  const selectedTopic: IssueClaimTopic =
-    typedValues.topic === "" ? "" : (typedValues.topic as IssueClaimTopic);
+  const selectedTopic: IssueClaimTopic = typedValues.topic;
 
   const selectedTopicData = useMemo(
     () => topics?.find((topic) => topic.name === selectedTopic),

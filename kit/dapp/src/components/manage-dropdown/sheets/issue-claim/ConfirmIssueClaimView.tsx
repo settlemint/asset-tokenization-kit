@@ -72,6 +72,23 @@ export function ConfirmIssueClaimView({
           : new Date(parsed * 1000).toLocaleDateString();
       } else if (key === "issuerAddress" || key === "contractAddress") {
         displayValue = shortenAddress(String(value));
+      } else if (
+        // Add keys for enum/select fields here, e.g. "status", "type", etc.
+        [
+          "licenseType",
+          "jurisdiction",
+          "exemptionReference",
+          "category",
+          "class",
+          "currencyCode",
+        ].includes(key)
+      ) {
+        // Try to localize the value using a claim-specific translation function
+        // Fallback to raw string if translation not found
+        const localized =
+          t(`fields.${key}.${value}`, { defaultValue: null }) ??
+          tCommon(`${key}.${value}`, { defaultValue: null });
+        displayValue = localized ?? String(value);
       } else {
         displayValue = Array.isArray(value) ? value.join(", ") : String(value);
       }

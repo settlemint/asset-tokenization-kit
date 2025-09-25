@@ -184,42 +184,65 @@ export function IssueClaimFormView({
       case "select":
         return (
           <form.AppField key={field.name} name={fieldName as string}>
-            {(formField) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>
-                  {field.label}
-                  {field.required ? " *" : ""}
-                </Label>
-                <Select
-                  value={(formField.state.value as string | undefined) ?? ""}
-                  onValueChange={(value) => {
-                    formField.handleChange(value);
-                  }}
-                >
-                  <SelectTrigger id={field.name}>
-                    <SelectValue
-                      placeholder={
-                        field.placeholder ||
-                        `Select ${field.label.toLowerCase()}`
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {field.validation?.options?.map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {field.description ? (
-                  <p className="text-xs text-muted-foreground">
-                    {field.description}
-                  </p>
-                ) : null}
-                {renderFieldErrors(formField.state.meta.errors)}
-              </div>
-            )}
+            {(formField) => {
+              const hasOptions =
+                field.validation?.options &&
+                field.validation.options.length > 0;
+
+              return (
+                <div className="space-y-2">
+                  <Label htmlFor={field.name}>
+                    {field.label}
+                    {field.required ? " *" : ""}
+                  </Label>
+                  <Select
+                    value={(formField.state.value as string | undefined) ?? ""}
+                    onValueChange={(value) => {
+                      formField.handleChange(value);
+                    }}
+                    disabled={!hasOptions}
+                  >
+                    <SelectTrigger id={field.name}>
+                      <SelectValue
+                        placeholder={
+                          hasOptions
+                            ? field.placeholder ||
+                              `Select ${field.label.toLowerCase()}`
+                            : "No options available"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {hasOptions ? (
+                        field.validation?.options?.map((option) => (
+                          <SelectItem key={option} value={option}>
+                            {option}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="" disabled>
+                          No options available
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                  {!hasOptions && (
+                    <Alert>
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>
+                        No options are available for this field.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                  {field.description ? (
+                    <p className="text-xs text-muted-foreground">
+                      {field.description}
+                    </p>
+                  ) : null}
+                  {renderFieldErrors(formField.state.meta.errors)}
+                </div>
+              );
+            }}
           </form.AppField>
         );
 
@@ -270,7 +293,7 @@ export function IssueClaimFormView({
               value={(field.state.value as string | undefined) ?? ""}
               onValueChange={(value) => {
                 field.handleChange(value);
-                onTopicChange(value as IssueClaimTopic);
+                onTopicChange(value);
               }}
             >
               <SelectTrigger id="claim-topic">

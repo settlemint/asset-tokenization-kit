@@ -119,19 +119,11 @@ function ClaimsPage() {
             // Show as compact badges for better readability
             return (
               <div className="flex flex-wrap gap-1">
-                {values.slice(0, 2).map((item, index) => (
+                {values.map((item, index) => (
                   <Badge key={index} variant="secondary" className="text-xs">
-                    {item.key}:{" "}
-                    {item.value.length > 20
-                      ? `${item.value.slice(0, 20)}...`
-                      : item.value}
+                    {item.key}: {item.value}
                   </Badge>
                 ))}
-                {values.length > 2 && (
-                  <Badge variant="outline" className="text-xs">
-                    +{values.length - 2} more
-                  </Badge>
-                )}
               </div>
             );
           },
