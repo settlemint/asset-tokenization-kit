@@ -14,7 +14,6 @@
  * @see {@link https://tanstack.com/router/latest} - TanStack Router documentation
  * @see {@link https://tanstack.com/router/latest/docs/framework/react/guide/data-loading} - Router with Query integration
  */
-import "@/lib/orpc.server";
 
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { NotFound } from "@/components/error/not-found";

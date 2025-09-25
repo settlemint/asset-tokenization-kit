@@ -17,9 +17,6 @@
 
 /// <reference types="vite/client" />
 
-// Initialize ORPC server client
-import "@/lib/orpc.server";
-
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { NotFound } from "@/components/error/not-found";
 import type { orpc } from "@/orpc/orpc-client";
