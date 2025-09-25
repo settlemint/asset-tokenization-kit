@@ -338,7 +338,7 @@ observability:
       persistence:
         size: 10Gi
       resources: {}
-      extraEnv: {}
+      extraEnv: []
         # Keep a little bit lower than memory limits
         # - name: GOMEMLIMIT
         #   value: 3750MiB
