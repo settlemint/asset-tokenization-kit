@@ -72,6 +72,21 @@
     "emptyStateMessage": "No registrations yet",
     "emptyStateDescription": "Identity registrations will appear here once users start the verification process"
   },
+  "portfolioDetails": {
+    "name": "Portfolio Details",
+    "summary": {
+      "title": "Portfolio Summary",
+      "description": "View your total portfolio value and holdings"
+    },
+    "breakdown": {
+      "title": "Portfolio Breakdown",
+      "description": "Detailed breakdown of your assets by type"
+    },
+    "performance": {
+      "title": "Portfolio Performance",
+      "description": "Track your portfolio value over time"
+    }
+  },
   "filters": {
     "apply": "Apply Filters",
     "assetType": "Asset Type",

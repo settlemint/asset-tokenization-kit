@@ -4,6 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense } from "react";
+import { useTranslation } from "react-i18next";
 
 import { SectionSubtitle } from "@/components/dashboard/section-subtitle";
 import { SectionTitle } from "@/components/dashboard/section-title";
@@ -21,10 +22,12 @@ import { PortfolioSummaryCard } from "./portfolio-summary-card";
  * Only shown for registered users who can receive assets.
  */
 export function PortfolioDetails() {
+  const { t } = useTranslation("dashboard");
+
   return (
     <div className="space-y-6">
       <Suspense fallback={<PortfolioDetailsSkeleton />}>
-        <ComponentErrorBoundary componentName="Portfolio Details">
+        <ComponentErrorBoundary componentName={t("portfolioDetails.name")}>
           <PortfolioDetailsContent />
         </ComponentErrorBoundary>
       </Suspense>
@@ -33,6 +36,7 @@ export function PortfolioDetails() {
 }
 
 function PortfolioDetailsContent() {
+  const { t } = useTranslation("dashboard");
   const { data: portfolioData } = useSuspenseQuery(
     orpc.system.stats.portfolioDetails.queryOptions({
       input: {},
@@ -46,9 +50,9 @@ function PortfolioDetailsContent() {
       {/* Portfolio Summary Section */}
       <div className="space-y-4">
         <div className="flex flex-col gap-2">
-          <SectionTitle>Portfolio Summary</SectionTitle>
+          <SectionTitle>{t("portfolioDetails.summary.title")}</SectionTitle>
           <SectionSubtitle>
-            View your total portfolio value and holdings
+            {t("portfolioDetails.summary.description")}
           </SectionSubtitle>
         </div>
         <PortfolioSummaryCard
@@ -62,9 +66,9 @@ function PortfolioDetailsContent() {
       {/* Portfolio Breakdown Section */}
       <div className="space-y-4">
         <div className="flex flex-col gap-2">
-          <SectionTitle>Portfolio Breakdown</SectionTitle>
+          <SectionTitle>{t("portfolioDetails.breakdown.title")}</SectionTitle>
           <SectionSubtitle>
-            Detailed breakdown of your assets by type
+            {t("portfolioDetails.breakdown.description")}
           </SectionSubtitle>
         </div>
         <PortfolioBreakdown
@@ -76,9 +80,9 @@ function PortfolioDetailsContent() {
       {/* Portfolio Performance Section */}
       <div className="space-y-4">
         <div className="flex flex-col gap-2">
-          <SectionTitle>Portfolio Performance</SectionTitle>
+          <SectionTitle>{t("portfolioDetails.performance.title")}</SectionTitle>
           <SectionSubtitle>
-            Track your portfolio value over time
+            {t("portfolioDetails.performance.description")}
           </SectionSubtitle>
         </div>
         <PortfolioValueAreaChart />

@@ -68,6 +68,21 @@
     "activeRegistrations": "Aktive Registrierungen",
     "pendingRegistrations": "Ausstehende Registrierungen"
   },
+  "portfolioDetails": {
+    "name": "Portfolio-Details",
+    "summary": {
+      "title": "Portfolioübersicht",
+      "description": "Gesamtwert und Bestände Ihres Portfolios anzeigen"
+    },
+    "breakdown": {
+      "title": "Portfolio-Aufschlüsselung",
+      "description": "Detaillierte Aufschlüsselung Ihrer Assets nach Typ"
+    },
+    "performance": {
+      "title": "Portfolio-Performance",
+      "description": "Verfolgen Sie den Wert Ihres Portfolios im Zeitverlauf"
+    }
+  },
   "filters": {
     "apply": "Filter anwenden",
     "assetType": "Asset-Typ",

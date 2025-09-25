@@ -68,6 +68,21 @@
     "activeRegistrations": "التسجيلات النشطة",
     "pendingRegistrations": "التسجيلات المعلقة"
   },
+  "portfolioDetails": {
+    "name": "تفاصيل المحفظة",
+    "summary": {
+      "title": "ملخص المحفظة",
+      "description": "اعرض إجمالي قيمة محفظتك ومقتنياتك"
+    },
+    "breakdown": {
+      "title": "تفصيل المحفظة",
+      "description": "تفصيل مفصل لأصولك حسب النوع"
+    },
+    "performance": {
+      "title": "أداء المحفظة",
+      "description": "تتبع قيمة محفظتك عبر الزمن"
+    }
+  },
   "filters": {
     "apply": "تطبيق الفلاتر",
     "assetType": "نوع الأصل",

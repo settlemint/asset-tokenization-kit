@@ -137,7 +137,7 @@ export function updateSystemStatsForTokenCreate(token: Token): void {
   const systemAddress = getTokenSystemAddress(token);
   if (systemAddress.equals(Address.zero())) {
     log.warning(
-      "system stats create skipped for token {} - system unresolved",
+      "Skipped increment tokens created count in system stats for token {} - system is not set",
       [token.id.toHexString()]
     );
     return;

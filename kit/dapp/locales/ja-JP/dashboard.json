@@ -68,6 +68,21 @@
     "activeRegistrations": "アクティブな登録",
     "pendingRegistrations": "保留中の登録"
   },
+  "portfolioDetails": {
+    "name": "ポートフォリオ詳細",
+    "summary": {
+      "title": "ポートフォリオ概要",
+      "description": "ポートフォリオの総価値と保有資産を確認できます"
+    },
+    "breakdown": {
+      "title": "ポートフォリオ内訳",
+      "description": "資産タイプごとの内訳を表示します"
+    },
+    "performance": {
+      "title": "ポートフォリオのパフォーマンス",
+      "description": "時間の経過によるポートフォリオ価値の推移を追跡します"
+    }
+  },
   "filters": {
     "apply": "フィルターを適用",
     "assetType": "資産タイプ",
