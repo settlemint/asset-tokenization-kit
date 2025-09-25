@@ -28,7 +28,7 @@ image:
   # -- (string) Portal image repository
   repository: settlemint/btp-scs-portal
   # -- (string) Portal image tag (immutable tags are recommended)
-  tag: "8.6.8"
+  tag: "8.6.9"
   # -- (string) Portal image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
   digest: ""
   # -- (string) Portal image pull policy
