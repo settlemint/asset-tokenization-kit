@@ -1,6 +1,6 @@
 # network-nodes
 
-![Version: 2.0.0-alpha.9](https://img.shields.io/badge/Version-2.0.0--alpha.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.9](https://img.shields.io/badge/AppVersion-2.0.0--alpha.9-informational?style=flat-square)
+![Version: 2.0.0-alpha.12](https://img.shields.io/badge/Version-2.0.0--alpha.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.12](https://img.shields.io/badge/AppVersion-2.0.0--alpha.12-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -74,7 +74,7 @@ A Helm chart for Kubernetes
 | httpRoute.rules[0].matches[0].path.value | string | `"/headers"` | Path value used when evaluating the request URL. |
 | image.pullPolicy | string | `"IfNotPresent"` | Kubernetes image pull policy for Besu containers. |
 | image.repository | string | `"docker.io/hyperledger/besu"` | OCI image repository hosting Hyperledger Besu. |
-| image.tag | string | `"25.8.0"` | Specific Besu image tag to deploy. |
+| image.tag | string | `"25.9.0"` | Specific Besu image tag to deploy. |
 | imagePullSecrets | list | `[]` | Image pull secrets granting registry access for the Besu image. |
 | ingress.annotations | object | `{}` |  |
 | ingress.className | string | `""` | ingressClassName assigned to the Ingress for controller selection. |

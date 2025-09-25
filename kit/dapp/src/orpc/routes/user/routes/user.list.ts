@@ -23,7 +23,7 @@ import { z } from "zod";
 
 // GraphQL query to fetch multiple identities by wallet addresses
 const READ_IDENTITIES_QUERY = theGraphGraphql(`
-  query ReadIdentitiesQuery($walletAddresses: [String!]!, $identityFactory: String!, $registryStorage: String!) {
+  query ReadIdentitiesQuery($walletAddresses: [String!]!, $identityFactory: String!, $registryStorage: String!, $systemId: String!) {
     identities(where: {
       account_in: $walletAddresses,
       identityFactory: $identityFactory
@@ -31,6 +31,9 @@ const READ_IDENTITIES_QUERY = theGraphGraphql(`
       id
       account {
         id
+        systemStats(where: { system: $systemId }) {
+          isAdmin
+        }
       }
       claims {
         id
@@ -54,6 +57,13 @@ const IdentitiesResponseSchema = z.object({
       id: z.string(),
       account: z.object({
         id: z.string(),
+        systemStats: z
+          .array(
+            z.object({
+              isAdmin: z.boolean(),
+            })
+          )
+          .nullable(),
       }),
       claims: z.array(
         z.object({
@@ -258,6 +268,7 @@ export const list = systemRouter.user.list
             identityFactory: context.system.identityFactory.id.toLowerCase(),
             registryStorage:
               context.system.identityRegistryStorage.id.toLowerCase(),
+            systemId: context.system.id.toLowerCase(),
           },
           output: IdentitiesResponseSchema,
         }
@@ -296,6 +307,7 @@ export const list = systemRouter.user.list
         claims: identity?.claims ?? [],
         isRegistered: !!registeredEntry,
         context,
+        isAdmin: identity?.account.systemStats?.[0]?.isAdmin ?? false,
       });
     });
 

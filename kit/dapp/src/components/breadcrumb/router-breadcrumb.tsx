@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Link, useRouter } from "@tanstack/react-router";
 import { Home } from "lucide-react";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import type { BreadcrumbMetadata } from "./metadata";
 
@@ -26,82 +26,9 @@ interface LoaderDataWithBreadcrumb {
 }
 
 /**
- * Hook to handle async breadcrumb titles
+ * Component for rendering a single breadcrumb item with metadata-aware titles
  */
-function useAsyncBreadcrumbTitle(
-  breadcrumbMeta: BreadcrumbMetadata | undefined,
-  fallbackTitle: string
-): string {
-  const namespace = breadcrumbMeta?.i18nNamespace ?? "navigation";
-  const { i18n } = useTranslation([namespace]);
-  const [asyncTitle, setAsyncTitle] = useState<string | null>(null);
-
-  // Create a stable key for the breadcrumb to track changes
-  const breadcrumbKey = breadcrumbMeta
-    ? `${breadcrumbMeta.title}-${breadcrumbMeta.isI18nKey ?? false}-${breadcrumbMeta.i18nNamespace ?? ""}`
-    : null;
-
-  useEffect(() => {
-    let cancelled = false;
-    const getTitle = breadcrumbMeta?.getTitle;
-    if (getTitle) {
-      // Reset async title when starting new resolution
-      setAsyncTitle(null);
-
-      // Resolve the async title
-      const resolveTitle = async () => {
-        try {
-          const title = await getTitle();
-          if (!cancelled) {
-            setAsyncTitle(title);
-          }
-        } catch {
-          // Fall back to static title or default on error
-          if (!cancelled) {
-            setAsyncTitle(breadcrumbMeta.title);
-          }
-        }
-      };
-
-      void resolveTitle();
-    }
-
-    return () => {
-      cancelled = true;
-    };
-  }, [breadcrumbKey, fallbackTitle, breadcrumbMeta]);
-
-  // Determine the title to display
-  if (breadcrumbMeta?.title) {
-    // Handle i18n keys
-    if (breadcrumbMeta.isI18nKey) {
-      // Use the i18n instance directly for dynamic keys to avoid TypeScript issues
-      // i18next handles unknown keys gracefully by returning the key itself
-      // We need to bypass TypeScript's strict typing for dynamic translation keys
-      const key = `${namespace}:${breadcrumbMeta.title}`;
-      const translatedTitle = (i18n.t as (key: string) => string)(key);
-      return translatedTitle;
-    }
-    return breadcrumbMeta.title;
-  }
-
-  // If we have an async title function
-  if (breadcrumbMeta?.getTitle && asyncTitle !== null) {
-    return asyncTitle;
-  }
-
-  // Show ellipsis while loading async title
-  if (breadcrumbMeta?.getTitle) {
-    return "...";
-  }
-
-  return fallbackTitle;
-}
-
-/**
- * Component for rendering a single breadcrumb item with async title support
- */
-function BreadcrumbItemWithAsyncTitle({
+function BreadcrumbItemWithMetadata({
   breadcrumbMeta,
   fallbackTitle,
   href,
@@ -112,8 +39,18 @@ function BreadcrumbItemWithAsyncTitle({
   href?: string;
   isCurrentPage?: boolean;
 }) {
-  const { t } = useTranslation(["navigation"]);
-  const title = useAsyncBreadcrumbTitle(breadcrumbMeta, fallbackTitle);
+  const namespace = breadcrumbMeta?.i18nNamespace ?? "navigation";
+  const { t, i18n } = useTranslation([namespace]);
+
+  let title = fallbackTitle;
+  if (breadcrumbMeta?.title) {
+    if (breadcrumbMeta.isI18nKey) {
+      const key = `${namespace}:${breadcrumbMeta.title}`;
+      title = (i18n.t as (key: string) => string)(key);
+    } else {
+      title = breadcrumbMeta.title;
+    }
+  }
 
   return (
     <BreadcrumbItem className="text-xs">
@@ -332,7 +269,7 @@ export function RouterBreadcrumb({
 
           return (
             <Fragment key={href ?? segment.title}>
-              <BreadcrumbItemWithAsyncTitle
+              <BreadcrumbItemWithMetadata
                 breadcrumbMeta={metadata}
                 fallbackTitle={segment.title}
                 href={href}

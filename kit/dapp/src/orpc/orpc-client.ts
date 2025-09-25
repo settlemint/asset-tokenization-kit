@@ -11,6 +11,7 @@
  * @see {@link ./routes/router} - Main router with all endpoints
  */
 
+import { normalizeHeaders } from "@/orpc/context/context";
 import { bigDecimalSerializer } from "@atk/zod/bigdecimal";
 import { bigIntSerializer } from "@atk/zod/bigint";
 import { timestampSerializer } from "@atk/zod/timestamp";
@@ -21,8 +22,8 @@ import { createRouterClient } from "@orpc/server";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { createIsomorphicFn } from "@tanstack/react-start";
-import { getHeaders } from "@tanstack/react-start/server";
-import type { router as AppRouter } from "./routes/router";
+import { getRequestHeaders } from "@tanstack/react-start/server";
+import { router } from "./routes/router";
 
 const logger = createLogger();
 
@@ -40,14 +41,13 @@ const logger = createLogger();
  * - Points to the `/api` endpoint relative to the current origin
  */
 const getORPCClient = createIsomorphicFn()
-  .server(async () => {
-    const { router } = await import("./routes/router");
+  .server(() => {
     return createRouterClient(router, {
       context: () => {
         try {
-          const headers = getHeaders();
+          const headers = getRequestHeaders();
           return {
-            headers,
+            headers: normalizeHeaders(headers),
           };
         } catch (error) {
           // Handle cases where there's no HTTP event in AsyncLocalStorage
@@ -57,13 +57,13 @@ const getORPCClient = createIsomorphicFn()
             { error }
           );
           return {
-            headers: {} as ReturnType<typeof getHeaders>,
+            headers: {},
           };
         }
       },
     });
   })
-  .client((): RouterClient<typeof AppRouter> => {
+  .client((): RouterClient<typeof router> => {
     const link = new RPCLink({
       url: `${globalThis.location.origin}/api/rpc`,
       async fetch(url, options) {
@@ -83,6 +83,6 @@ const getORPCClient = createIsomorphicFn()
     return createORPCClient(link);
   });
 
-export const client = await getORPCClient();
+export const client = getORPCClient();
 
 export const orpc = createTanstackQueryUtils(client);

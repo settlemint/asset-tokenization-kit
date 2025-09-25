@@ -26,12 +26,12 @@ import { toast } from "sonner";
 
 interface OtpSetupModalProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onClose: () => void;
 }
 
 const logger = createLogger();
 
-export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
+export function OtpSetupModal({ open, onClose }: OtpSetupModalProps) {
   const { t } = useTranslation("onboarding");
   const { refreshUserState } = useOnboardingNavigation();
   const [otpUri, setOtpUri] = useState<string | null>(null);
@@ -40,7 +40,7 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
 
   const { mutate: enableTwoFactor } = useMutation({
     mutationFn: async () =>
-      authClient.twoFactor.enable({
+      await authClient.twoFactor.enable({
         password: undefined,
       }),
     onSuccess: async (data) => {
@@ -90,7 +90,7 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
 
   const { mutate: verifyOtp, isPending: isVerifyingOtp } = useMutation({
     mutationFn: async (code: string) =>
-      authClient.twoFactor.verifyTotp({
+      await authClient.twoFactor.verifyTotp({
         code,
       }),
     onSuccess: async () => {
@@ -148,8 +148,8 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
     setOtpSetupError(false);
     setOtpUri(null);
     setOtpSecret(null);
-    onOpenChange(false);
-  }, [form, onOpenChange]);
+    onClose();
+  }, [form, onClose]);
 
   const handleOtpCodeChange = useCallback(
     (value: string) => {

@@ -74,6 +74,8 @@ type SystemAccessManager @entity(immutable: false) {
 type AccessControl @entity(immutable: false) {
   # Unique identifier for the access control configuration
   id: Bytes!
+  # Reference to the system this access control belongs to
+  system: System!
 
   # Core Admin Role - highest level administrative access
   admin: [Account!]!
@@ -188,6 +190,8 @@ type System @entity(immutable: false) {
   systemStats: SystemStatsState @derivedFrom(field: "system")
   # Statistics broken down by token type
   tokenTypeStats: [TokenTypeStatsState!] @derivedFrom(field: "system")
+  # Statistical data for identity metrics
+  identityStats: IdentityStatsState @derivedFrom(field: "system")
 }
 
 type VaultFactory @entity(immutable: false) {
@@ -1333,6 +1337,8 @@ type AccountSystemStatsState @entity(immutable: false) {
   totalValueInBaseCurrency: BigDecimal!
   # Number of different token balances scoped to the system
   balancesCount: Int!
+  # Whether this account has been granted any admin role in this system
+  isAdmin: Boolean!
 }
 
 type AccountSystemStatsData @entity(timeseries: true) {
@@ -1839,4 +1845,86 @@ type TokenDistributionStats
   # Segment 5: last total value for the period (exact, raw units)
   totalValueSegment5Exact: BigInt!
     @aggregate(fn: "last", arg: "totalValueSegment5Exact")
+}
+
+type IdentityStatsState @entity(immutable: false) {
+  # System contract address
+  id: Bytes!
+  # Reference to the system
+  system: System!
+  # Number of pending user identities (created but not yet registered)
+  pendingUserIdentitiesCount: Int!
+  # Number of pending contract identities (created but not yet registered)
+  pendingContractIdentitiesCount: Int!
+  # Number of user identities created
+  userIdentitiesCreatedCount: Int!
+  # Number of contract identities created
+  contractIdentitiesCreatedCount: Int!
+  # Number of active (registered) user identities
+  activeUserIdentitiesCount: Int!
+  # Number of active (registered) contract identities
+  activeContractIdentitiesCount: Int!
+  # Number of removed user identities
+  removedUserIdentitiesCount: Int!
+  # Number of removed contract identities
+  removedContractIdentitiesCount: Int!
+}
+
+type IdentityStatsData @entity(timeseries: true) {
+  # Unique identifier for timeseries entry
+  id: Int8!
+  # Timestamp of this data point
+  timestamp: Timestamp!
+  # Reference to the system
+  system: System!
+  # Number of user identities created
+  userIdentitiesCreatedCount: Int!
+  # Number of contract identities created
+  contractIdentitiesCreatedCount: Int!
+  # Number of active (registered) user identities
+  activeUserIdentitiesCount: Int!
+  # Number of active (registered) contract identities
+  activeContractIdentitiesCount: Int!
+  # Number of removed user identities
+  removedUserIdentitiesCount: Int!
+  # Number of removed contract identities
+  removedContractIdentitiesCount: Int!
+  # Number of pending user identities (created but not yet registered)
+  pendingUserIdentitiesCount: Int!
+  # Number of pending contract identities (created but not yet registered)
+  pendingContractIdentitiesCount: Int!
+}
+
+type IdentityStats
+  @aggregation(intervals: ["hour", "day"], source: "IdentityStatsData") {
+  # Unique identifier for aggregated entry
+  id: Int8!
+  # Timestamp of aggregation period
+  timestamp: Timestamp!
+  # Reference to the system
+  system: System!
+  # Last count of user identities created for the period
+  userIdentitiesCreatedCount: Int!
+    @aggregate(fn: "last", arg: "userIdentitiesCreatedCount")
+  # Last count of contract identities created for the period
+  contractIdentitiesCreatedCount: Int!
+    @aggregate(fn: "last", arg: "contractIdentitiesCreatedCount")
+  # Last count of active user identities for the period
+  activeUserIdentitiesCount: Int!
+    @aggregate(fn: "last", arg: "activeUserIdentitiesCount")
+  # Last count of active contract identities for the period
+  activeContractIdentitiesCount: Int!
+    @aggregate(fn: "last", arg: "activeContractIdentitiesCount")
+  # Last count of removed user identities for the period
+  removedUserIdentitiesCount: Int!
+    @aggregate(fn: "last", arg: "removedUserIdentitiesCount")
+  # Last count of removed contract identities for the period
+  removedContractIdentitiesCount: Int!
+    @aggregate(fn: "last", arg: "removedContractIdentitiesCount")
+  # Last count of pending user identities for the period
+  pendingUserIdentitiesCount: Int!
+    @aggregate(fn: "last", arg: "pendingUserIdentitiesCount")
+  # Last count of pending contract identities for the period
+  pendingContractIdentitiesCount: Int!
+    @aggregate(fn: "last", arg: "pendingContractIdentitiesCount")
 }

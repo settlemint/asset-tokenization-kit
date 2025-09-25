@@ -1,12 +1,22 @@
-import { useAppForm } from "@/hooks/use-app-form";
-import { formOptions } from "@tanstack/react-form";
+import { RadioField } from "@/components/form/radio-field";
+import { fieldContext, formContext } from "@/hooks/use-form-contexts";
+import { createFormHook, formOptions } from "@tanstack/react-form";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { FC } from "react";
 import { describe, expect, it } from "vitest";
 
+const { useAppForm: useTestAppForm } = createFormHook({
+  fieldComponents: {
+    RadioField,
+  },
+  formComponents: {},
+  fieldContext,
+  formContext,
+});
+
 const TestForm: FC = () => {
-  const form = useAppForm(
+  const form = useTestAppForm(
     formOptions({
       defaultValues: {
         choice: "",

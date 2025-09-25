@@ -22,7 +22,10 @@ import { fetchRedeemable } from "../token-extensions/redeemable/fetch/redeemable
 import { getTokenExtensions } from "../token-extensions/utils/token-extensions-utils";
 import { fetchYield } from "../token-extensions/yield/fetch/yield";
 import { fetchToken } from "../token/fetch/token";
-import { getTokenType } from "../token/utils/token-utils";
+import {
+  getTokenSystemAddress,
+  getTokenType,
+} from "../token/utils/token-utils";
 import { fetchTrustedIssuersRegistry } from "../trusted-issuers-registry/fetch/trusted-issuers-registry";
 import { fetchTokenFactory } from "./fetch/token-factory";
 
@@ -53,6 +56,12 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   token.createdAt = event.block.timestamp;
   token.createdBy = fetchAccount(event.transaction.from).id;
   token.accessControl = fetchAccessControl(event.params.accessManager).id;
+
+  // Link the token's AccessControl to the system via the factory registry
+  const accessControl = fetchAccessControl(event.params.accessManager);
+  const systemAddress = getTokenSystemAddress(token);
+  accessControl.system = systemAddress;
+  accessControl.save();
 
   // Set the token extensions dynamically based on detected interfaces
   token.extensions = getTokenExtensions(event.params.interfaces);

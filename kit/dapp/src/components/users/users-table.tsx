@@ -95,6 +95,8 @@ export function UsersTable() {
             <UserStatusBadge
               user={row.original}
               isRegistered={row.original.isRegistered}
+              identity={{ id: row.original.identity }}
+              isAdmin={row.original.isAdmin}
             />
           ),
           meta: {

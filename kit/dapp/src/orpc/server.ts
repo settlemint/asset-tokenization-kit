@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { normalizeHeaders } from "@/orpc/context/context";
 import { router } from "@/orpc/routes/router";
 import { bigDecimalSerializer } from "@atk/zod/bigdecimal";
 import { bigIntSerializer } from "@atk/zod/bigint";
@@ -31,7 +32,7 @@ export function startServer(port: number) {
     req.url = url;
 
     const result = await handler.handle(req, res, {
-      context: { headers: req.headers as Record<string, string | undefined> },
+      context: { headers: normalizeHeaders(req.headers) },
     });
 
     if (!result.matched) {

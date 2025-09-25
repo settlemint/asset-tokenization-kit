@@ -2,18 +2,22 @@
  * @vitest-environment node
  */
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
+import { getAnvilTimeMilliseconds } from "@/test/anvil";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
   DEFAULT_ADMIN,
   DEFAULT_PINCODE,
+  getUserData,
   signInWithUser,
 } from "@test/fixtures/user";
 import { TEST_CONSTANTS } from "@test/helpers/test-helpers";
-import { from, toNumber } from "dnum";
+import { addYears } from "date-fns";
+import { divide, from, multiply, subtract, toNumber } from "dnum";
 import { beforeAll, describe, expect, it } from "vitest";
 
 const COLLATERAL = from("10", 18);
+const MINT_AMOUNT = from("5", 18);
 
 describe.concurrent("Token Stats: Collateral Ratio", () => {
   let testToken: Awaited<ReturnType<typeof createToken>>;
@@ -42,6 +46,8 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
       }
     );
 
+    const anvilTime = await getAnvilTimeMilliseconds();
+    const oneYearFromNow = addYears(new Date(anvilTime), 1);
     const result = await client.token.updateCollateral({
       contract: testToken.id,
       walletVerification: {
@@ -49,11 +55,22 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
         verificationType: "PINCODE",
       },
       amount: COLLATERAL,
-      expiryDays: 365,
+      expiryTimestamp: oneYearFromNow,
     });
     expect(toNumber(result.collateral?.collateral ?? from(0))).toBe(
       toNumber(COLLATERAL)
     );
+
+    const admin = await getUserData(DEFAULT_ADMIN);
+    await client.token.mint({
+      contract: testToken.id,
+      recipients: [admin.wallet],
+      amounts: [MINT_AMOUNT],
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
+    });
   });
 
   describe("Business logic", () => {
@@ -94,14 +111,18 @@ describe.concurrent("Token Stats: Collateral Ratio", () => {
         tokenAddress: testToken.id,
       });
 
-      // Business expectation: new tokens have no collateral yet
       expect(result.totalCollateral).toBe(toNumber(COLLATERAL));
-      expect(result.collateralRatio).toBe(0);
+      const expectedRatio = toNumber(
+        multiply(divide(MINT_AMOUNT, COLLATERAL, 3), 100, 1)
+      );
+      expect(result.collateralRatio).toBe(expectedRatio);
       expect(result.buckets).toHaveLength(2);
 
       const [available, used] = result.buckets;
-      expect(available?.value).toBe(toNumber(COLLATERAL));
-      expect(used?.value).toBe(0);
+      expect(available?.value).toBe(
+        toNumber(subtract(COLLATERAL, MINT_AMOUNT))
+      );
+      expect(used?.value).toBe(toNumber(MINT_AMOUNT));
     });
   });
 

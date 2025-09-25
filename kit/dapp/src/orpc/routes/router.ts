@@ -12,13 +12,12 @@ import userRouter from "./user/user.router";
  * Main ORPC router configuration.
  *
  * This router serves as the root of the API route tree, organizing all
- * API endpoints into logical namespaces. It uses lazy loading to optimize
- * bundle size and startup performance by only loading route modules when
- * they are actually needed.
+ * API endpoints into logical namespaces. All route modules are eagerly loaded
+ * to ensure synchronous availability for optimal SSR performance and to avoid
+ * async import issues during server-side rendering.
  *
  * The router structure follows a hierarchical pattern where each namespace
- * (like 'planet') contains related API procedures, making the API more
- * organized and maintainable.
+ * contains related API procedures, making the API more organized and maintainable.
  */
 export const router = baseRouter.router({
   /**

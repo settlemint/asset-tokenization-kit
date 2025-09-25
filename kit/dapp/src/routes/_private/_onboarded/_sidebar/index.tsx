@@ -14,6 +14,8 @@
  * @see {@link https://tanstack.com/query/latest/docs/react/guides/suspense} - React Query suspense mode
  */
 
+import { AssetOverviewSection } from "@/components/dashboard/asset-overview-section";
+import { IdentityMetrics } from "@/components/dashboard/identity-metrics/identity-metrics";
 import { IdentityProgress } from "@/components/dashboard/identity-progress/identity-progress";
 import { PortfolioDetails } from "@/components/dashboard/portfolio-details/portfolio-details";
 import { createFileRoute } from "@tanstack/react-router";
@@ -54,7 +56,6 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
  */
 function Home() {
   const { user, system } = Route.useLoaderData();
-
   return (
     <div className="p-6 space-y-8">
       <IdentityProgress user={user} />
@@ -63,6 +64,8 @@ function Home() {
           <PortfolioDetails />
         </>
       )}
+      {system.userPermissions?.roles.tokenManager && <AssetOverviewSection />}
+      {system.userPermissions?.roles.identityManager && <IdentityMetrics />}
     </div>
   );
 }
