@@ -1,4 +1,4 @@
-import { Address, BigDecimal } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, log } from "@graphprotocol/graph-ts";
 import {
   SystemStatsData,
   SystemStatsState,
@@ -135,6 +135,14 @@ export function updateSystemStatsForTokenLaunch(token: Token): void {
  */
 export function updateSystemStatsForTokenCreate(token: Token): void {
   const systemAddress = getTokenSystemAddress(token);
+  if (systemAddress.equals(Address.zero())) {
+    log.warning(
+      "system stats create skipped for token {} - system unresolved",
+      [token.id.toHexString()]
+    );
+    return;
+  }
+
   const state = fetchSystemStatsState(systemAddress);
 
   state.tokensCreatedCount = state.tokensCreatedCount + 1;

@@ -1,5 +1,6 @@
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import { DEFAULT_ADMIN, signInWithUser } from "@test/fixtures/user";
+import { subDays } from "date-fns";
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe("system stats ORPC routes", () => {
@@ -21,6 +22,20 @@ describe("system stats ORPC routes", () => {
         stablecoin: expect.any(Number),
         deposit: expect.any(Number),
       },
+      tokensCreatedCount: expect.any(Number),
+      tokensLaunchedCount: expect.any(Number),
+      pendingLaunchesCount: expect.any(Number),
+    });
+  });
+
+  it("should fetch system asset lifecycle stats", async () => {
+    const result = await client.system.stats.assetLifecycle({
+      from: subDays(new Date(), 30),
+      to: new Date(),
+      interval: "day",
+    });
+    expect(result).toEqual({
+      data: expect.any(Array),
     });
   });
 

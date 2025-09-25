@@ -99,11 +99,18 @@ export const statsAssets = systemRouter.system.stats.assets.handler(
       }
     );
 
+    const tokensCreatedCount =
+      response.systemStatsState?.tokensCreatedCount ?? 0;
+    const tokensLaunchedCount =
+      response.systemStatsState?.tokensLaunchedCount ?? 0;
+    const pendingLaunchesCount = tokensCreatedCount - tokensLaunchedCount;
+
     return {
       totalAssets,
       assetBreakdown,
-      tokensCreatedCount: response.systemStatsState?.tokensCreatedCount ?? 0,
-      tokensLaunchedCount: response.systemStatsState?.tokensLaunchedCount ?? 0,
+      tokensCreatedCount,
+      tokensLaunchedCount,
+      pendingLaunchesCount,
     };
   }
 );

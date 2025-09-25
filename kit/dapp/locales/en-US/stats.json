@@ -12,6 +12,16 @@
       "description": "Total supply of assets over time",
       "title": "Asset supply"
     },
+    "assetLifecycle": {
+      "title": "Created and launched assets",
+      "description": "Daily trends of assets created and launched over the last {{days}} days",
+      "createdLabel": "Assets created",
+      "launchedLabel": "Assets launched",
+      "empty": {
+        "title": "No asset trends yet",
+        "description": "You'll see these trends once assets are created"
+      }
+    },
     "totalCollateral": {
       "label": "Total Collateral"
     },
@@ -120,6 +130,10 @@
     "assets": {
       "empty": "No assets yet",
       "title": "Total assets"
+    },
+    "pendingLaunches": {
+      "description": "Created {{created}}, launched {{launched}}",
+      "title": "Pending launches"
     },
     "common": {
       "error": "Error loading data",

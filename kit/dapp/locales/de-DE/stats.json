@@ -8,6 +8,16 @@
       "description": "Gesamtangebot an Vermögenswerten über die Zeit",
       "title": "Vermögensangebot"
     },
+    "assetLifecycle": {
+      "title": "Asset-Starts vs. Designs",
+      "description": "Vergleichen Sie designte und gestartete Assets der letzten {{days}} Tage",
+      "createdLabel": "Designte Assets",
+      "launchedLabel": "Gestartete Assets",
+      "empty": {
+        "title": "Noch keine Lifecycle-Daten",
+        "description": "Sobald neue Assets designt werden, erscheinen hier Trends zu Design und Start"
+      }
+    },
     "totalCollateral": {
       "label": "Gesamtes Sicherheiten"
     },
@@ -92,6 +102,10 @@
     "assets": {
       "empty": "Noch keine Vermögenswerte",
       "title": "Gesamtvermögen"
+    },
+    "pendingLaunches": {
+      "description": "Erstellt {{created}}, gestartet {{launched}}",
+      "title": "Ausstehende Starts"
     },
     "common": {
       "error": "Fehler beim Laden der Daten",

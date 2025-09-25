@@ -1,5 +1,9 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import { StatsAssetsOutputSchema } from "@/orpc/routes/system/stats/routes/assets.schema";
+import {
+  StatsAssetLifecycleInputSchema,
+  StatsAssetLifecycleOutputSchema,
+} from "@/orpc/routes/system/stats/routes/asset-lifecycle.schema";
 import { StatsIdentityCountOutputSchema } from "@/orpc/routes/system/stats/routes/identity-count.schema";
 import {
   StatsIdentityStatsOverTimeInputSchema,
@@ -32,6 +36,17 @@ const statsAssets = baseContract
     tags: ["stats", "system"],
   })
   .output(StatsAssetsOutputSchema);
+
+const statsAssetLifecycle = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/asset-lifecycle",
+    description: "Retrieve counts for created and launched assets over time",
+    successDescription: "System asset lifecycle metrics retrieved successfully",
+    tags: ["stats", "system", "assets"],
+  })
+  .input(StatsAssetLifecycleInputSchema)
+  .output(StatsAssetLifecycleOutputSchema);
 
 const statsIdentityCount = baseContract
   .route({
@@ -112,6 +127,7 @@ const statsPortfolioDetails = baseContract
 
 export const statsContract = {
   assets: statsAssets,
+  assetLifecycle: statsAssetLifecycle,
   identityCount: statsIdentityCount,
   identityStatsOverTime: statsIdentityStatsOverTime,
   transactionCount: statsTransactionCount,
