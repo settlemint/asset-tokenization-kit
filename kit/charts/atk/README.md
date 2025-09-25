@@ -166,7 +166,7 @@ The following table lists the configurable parameters of this chart and their de
 | observability.loki.memcached.image.repository | string | `"docker.io/memcached"` | Memcached Docker image repository |
 | observability.loki.memcachedExporter.image.repository | string | `"docker.io/prom/memcached-exporter"` |  |
 | observability.loki.sidecar.image.repository | string | `"docker.io/kiwigrid/k8s-sidecar"` | The Docker registry and image for the k8s sidecar |
-| observability.loki.singleBinary.extraEnv | object | `{}` |  |
+| observability.loki.singleBinary.extraEnv | list | `[]` |  |
 | observability.loki.singleBinary.persistence.size | string | `"10Gi"` |  |
 | observability.loki.singleBinary.resources | object | `{}` |  |
 | observability.metrics-server.enabled | bool | `true` |  |
