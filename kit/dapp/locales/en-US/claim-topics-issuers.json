@@ -131,7 +131,6 @@
       "fields": {
         "selectUser": {
           "label": "Select user",
-          "placeholder": "Choose a user...",
           "description": "Select a user from the existing users in the system"
         },
         "issuerAddress": {
