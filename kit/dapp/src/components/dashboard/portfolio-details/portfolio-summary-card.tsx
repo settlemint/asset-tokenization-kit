@@ -32,7 +32,7 @@ export function PortfolioSummaryCard({
       <EmptyState
         icon={TrendingUp}
         title="Your portfolio summary will appear here once you receive your first asset"
-        description="Start building your portfolio by receiving tokens or assets from issuers"
+        description="Start building your portfolio by receiving assets from issuers"
       />
     );
   }
