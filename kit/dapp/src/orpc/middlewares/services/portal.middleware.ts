@@ -726,7 +726,10 @@ export type ValidatedPortalClient = ReturnType<
  * @returns The mapped error message.
  */
 function mapPortalErrorMessage(message: string) {
-  if (message.includes("User rejected the request")) {
+  if (
+    message.includes("User rejected the request") ||
+    message.includes("Invalid challenge response")
+  ) {
     return "Invalid authentication challenge";
   }
   return extractRevertReason(message);
@@ -738,7 +741,9 @@ function mapPortalErrorMessage(message: string) {
  * @returns The revert reason.
  */
 function extractRevertReason(message: string) {
-  const match = message.match(/reverted with the following reason: (.*)/i);
+  const match =
+    message.match(/reverted with the following reason: (.*?)\s*$/i) ||
+    message.match(/reverted: (.*?):/i);
   return match && match[1] ? `Transaction reverted: ${match[1]}` : undefined;
 }
 
