@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { WarningAlert } from "@/components/ui/warning-alert";
 import { authClient } from "@/lib/auth/auth.client";
-import { Route } from "@/routes/_private/onboarding/_sidebar/wallet-recovery-codes";
 import { createLogger } from "@settlemint/sdk-utils/logging";
+import { getRouteApi } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -14,11 +14,15 @@ import { RecoveryCodesActions } from "./recovery-codes-actions";
 import { RecoveryCodesDisplay } from "./recovery-codes-display";
 import { useRecoveryCodes } from "./use-recovery-codes";
 
+const routeApi = getRouteApi(
+  "/_private/onboarding/_sidebar/wallet-recovery-codes"
+);
+
 const logger = createLogger();
 
 export function RecoveryCodes() {
   const { completeStepAndNavigate } = useOnboardingNavigation();
-  const { recoveryCodesData } = Route.useLoaderData();
+  const { recoveryCodesData } = routeApi.useLoaderData();
 
   // Log the data to see what we're getting
   logger.info("Recovery codes data received:", { data: recoveryCodesData });
