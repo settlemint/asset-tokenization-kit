@@ -10,6 +10,7 @@ import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
+import { parseClaim } from "@/lib/utils/claims/parse-claim";
 import { formatValue } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
@@ -135,7 +136,13 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
   );
 
   // Note: We now always show the Price column (cells still hide per-row when not applicable)
-  const hasAssetClassification = tokens.some((t) => t.assetClassification);
+  const hasAssetClassification = tokens.some((t) => {
+    const classification = parseClaim<{ class?: string; category?: string }>(
+      t.claims,
+      "assetClassification"
+    );
+    return classification !== undefined;
+  });
 
   /**
    * Creates contextual action items for each token row.
@@ -327,54 +334,70 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
             icon: PauseCircle,
           },
         }),
-        // Category (from assetClassification) with i18n prettified label
-        columnHelper.accessor(
-          (row) => {
-            const category = row.assetClassification?.category;
-            if (!category) return "";
-            return row.type === "equity"
-              ? t(
-                  `assetClassification.equity.categories.${category.toLowerCase() as Lowercase<EquityCategory>}`
-                )
-              : t(
-                  `assetClassification.funds.categories.${category.toLowerCase() as Lowercase<FundCategory>}`
-                );
+        // Category (from assetClassification)
+        columnHelper.display({
+          id: "category",
+          header: t("fields.category"),
+          cell: ({ row }) => {
+            const classification = parseClaim<{
+              class?: string;
+              category?: string;
+            }>(row.original.claims, "assetClassification");
+            const category = classification?.category;
+            if (!category) return "-";
+
+            // Translate based on actual token type, not assuming non-equity is funds
+            if (row.original.type === "equity") {
+              return t(
+                `assetClassification.equity.categories.${category.toLowerCase() as Lowercase<EquityCategory>}`
+              );
+            } else if (row.original.type === "fund") {
+              return t(
+                `assetClassification.funds.categories.${category.toLowerCase() as Lowercase<FundCategory>}`
+              );
+            }
+            // For other types (bond, stablecoin, deposit), return raw value
+            return category;
           },
-          {
-            id: "category",
-            header: t("fields.category"),
-            meta: {
-              displayName: t("fields.category"),
-              type: "text",
-              emptyValue: "-",
-              icon: Type,
-            },
-          }
-        ),
-        // Class (from assetClassification) with i18n prettified label
-        columnHelper.accessor(
-          (row) => {
-            const classification = row.assetClassification?.class;
-            if (!classification) return "";
-            return row.type === "equity"
-              ? t(
-                  `assetClassification.equity.classes.${classification.toLowerCase() as Lowercase<EquityClass>}`
-                )
-              : t(
-                  `assetClassification.funds.classes.${classification.toLowerCase() as Lowercase<FundClass>}`
-                );
+          meta: {
+            displayName: t("fields.category"),
+            type: "text",
+            emptyValue: "-",
+            icon: Type,
           },
-          {
-            id: "class",
-            header: t("fields.class"),
-            meta: {
-              displayName: t("fields.class"),
-              type: "text",
-              emptyValue: "-",
-              icon: Type,
-            },
-          }
-        ),
+        }),
+        // Class (from assetClassification)
+        columnHelper.display({
+          id: "class",
+          header: t("fields.class"),
+          cell: ({ row }) => {
+            const classification = parseClaim<{
+              class?: string;
+              category?: string;
+            }>(row.original.claims, "assetClassification");
+            const classificationClass = classification?.class;
+            if (!classificationClass) return "-";
+
+            // Translate based on actual token type
+            if (row.original.type === "equity") {
+              return t(
+                `assetClassification.equity.classes.${classificationClass.toLowerCase() as Lowercase<EquityClass>}`
+              );
+            } else if (row.original.type === "fund") {
+              return t(
+                `assetClassification.funds.classes.${classificationClass.toLowerCase() as Lowercase<FundClass>}`
+              );
+            }
+            // For other types (bond, stablecoin, deposit), return raw value
+            return classificationClass;
+          },
+          meta: {
+            displayName: t("fields.class"),
+            type: "text",
+            emptyValue: "-",
+            icon: Type,
+          },
+        }),
         /**
          * Price column for financial assets.
          *
@@ -409,12 +432,18 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
              * table layout where irrelevant data doesn't create visual noise.
              */
             // Show if token has classification OR explicit price present
+            const assetClassification = parseClaim<{
+              class?: string;
+              category?: string;
+            }>(row.original.claims, "assetClassification");
+            const price = parseClaim<{
+              amount?: string;
+              currencyCode?: string;
+              decimals?: number;
+            }>(row.original.claims, "basePrice");
             const hasPriceContext =
-              Boolean(row.original.assetClassification) ||
-              Boolean(row.original.price);
+              Boolean(assetClassification) || Boolean(price);
             if (hasPriceContext) {
-              const price = row.original.price;
-
               /**
                * Handle missing or incomplete price data gracefully.
                *

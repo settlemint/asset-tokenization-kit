@@ -65,74 +65,33 @@ export const TokenListSchema = z.array(
     userPermissions: true,
   }).extend({
     /**
-     * Price data extracted from the 'basePrice' identity claim.
+     * Identity claims associated with the token.
      *
-     * Why we structure price this way:
-     * 1. Flexibility: Different assets may have different pricing structures (bonds vs equities)
-     * 2. Multi-currency support: currencyCode allows for non-USD pricing
-     * 3. Precision control: decimals field ensures proper display formatting
-     * 4. Optional fields: Not all tokens have pricing data, and partial data should be handled gracefully
+     * Claims contain flexible key-value data about the token including:
+     * - basePrice: Pricing information for financial assets
+     * - assetClassification: Asset type and category information
+     * - isin: International Securities Identification Number
+     * - And other domain-specific claims
      *
-     * Design Decision: We use strings for amounts to avoid floating-point precision issues
-     * with large monetary values. The frontend handles conversion to proper numeric display.
-     *
-     * Business Logic: Price is only relevant for financial assets (those with assetClassification).
-     * Utility tokens, governance tokens, etc. typically don't have base pricing.
+     * The client uses utilities like `parseClaim` to extract specific claim data,
+     * providing better separation of concerns and reusability.
      */
-    price: z
-      .object({
-        /**
-         * Monetary amount as a string to preserve precision.
-         * Examples: "1000.50", "99.99", "1000000"
-         * Optional because price claims may exist without amount data.
-         */
-        amount: z.string().optional(),
-        /**
-         * Currency code following ISO 4217 standard.
-         * Examples: "USD", "EUR", "GBP", "ETH"
-         * Allows for multi-currency pricing and future internationalization.
-         */
-        currencyCode: z.string().optional(),
-        /**
-         * Number of decimal places for display formatting.
-         * Examples: 2 for USD cents, 18 for ETH wei, 0 for whole units
-         * Used by formatValue utility to determine precision.
-         */
-        decimals: z.number().optional(),
-      })
-      .optional(),
-
-    /**
-     * Asset classification data extracted from the 'assetClassification' identity claim.
-     *
-     * Why asset classification drives UI behavior:
-     * 1. User Experience: Only show price columns for tokens that represent financial assets
-     * 2. Data Integrity: Prevents confusion between utility tokens and investment assets
-     * 3. Regulatory Compliance: Different asset classes may have different disclosure requirements
-     * 4. Feature Gating: Enables type-specific functionality (yield for bonds, dividends for equity)
-     *
-     * Design Decision: Both fields are optional to handle partial classification data
-     * and allow for future expansion of classification schemes.
-     *
-     * This classification system aligns with traditional financial asset categorization
-     * while being flexible enough for new types of tokenized assets.
-     */
-    assetClassification: z
-      .object({
-        /**
-         * High-level asset class following traditional finance categorization.
-         * Examples: "debt", "equity", "commodity", "real_estate", "alternative"
-         * Used for major UI and business logic decisions.
-         */
-        class: z.string().optional(),
-        /**
-         * Specific asset category within the class.
-         * Examples: "corporate_bond", "common_stock", "reit", "precious_metals"
-         * Enables fine-grained features and display customization.
-         */
-        category: z.string().optional(),
-      })
-      .optional(),
+    claims: z
+      .array(
+        z.object({
+          id: z.string(),
+          name: z.string(),
+          revoked: z.boolean(),
+          values: z.array(
+            z.object({
+              key: z.string(),
+              value: z.string(),
+            })
+          ),
+        })
+      )
+      .optional()
+      .default([]),
   })
 );
 
