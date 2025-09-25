@@ -155,6 +155,15 @@
         "transfer": "{{user}} が {{amount}} {{token}} を転送しました"
       },
       "viewAll": "すべてのアクティビティを表示"
+    },
+    "latestEvents": {
+      "columns": {
+        "event": "イベント",
+        "asset": "アセット",
+        "account": "アカウント",
+        "time": "時間",
+        "transaction": "トランザクション"
+      }
     }
   }
 }
