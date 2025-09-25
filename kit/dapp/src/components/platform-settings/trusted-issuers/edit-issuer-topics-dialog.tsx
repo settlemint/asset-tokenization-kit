@@ -41,7 +41,7 @@ export function EditIssuerTopicsDialog({
   onOpenChange,
 }: EditIssuerTopicsDialogProps) {
   const queryClient = useQueryClient();
-  const { t } = useTranslation("claim-topics-issuers");
+  const { t } = useTranslation(["claim-topics-issuers", "common"]);
 
   // Fetch available topics for selection
   const { data: topics } = useSuspenseQuery(
@@ -59,18 +59,10 @@ export function EditIssuerTopicsDialog({
         issuerAddress: issuer.id,
       } as TrustedIssuerUpdateInput),
     onSuccess: () => {
-      toast.success(t("trustedIssuers.toast.updated"));
       void queryClient.invalidateQueries({
         queryKey: orpc.system.trustedIssuers.list.queryKey(),
       });
       onOpenChange(false);
-    },
-    onError: (error) => {
-      toast.error(
-        t("trustedIssuers.toast.updateError", {
-          error: error.message || error.toString() || "Unknown error",
-        })
-      );
     },
   });
 
@@ -83,7 +75,17 @@ export function EditIssuerTopicsDialog({
       } as UserVerification,
     },
     onSubmit: ({ value }) => {
-      updateMutation.mutate(value);
+      toast.promise(
+        updateMutation.mutateAsync({
+          claimTopicIds: value.claimTopicIds,
+          walletVerification: value.walletVerification,
+        }),
+        {
+          loading: t("common:saving"),
+          success: t("trustedIssuers.toast.added"),
+          error: (data) => t("common:error", { message: data.message }),
+        }
+      );
     },
   });
 

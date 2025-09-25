@@ -50,7 +50,6 @@ export function AddTrustedIssuerSheet({
     mutationFn: (data: TrustedIssuerCreateInput) =>
       client.system.trustedIssuers.create(data),
     onSuccess: () => {
-      toast.success(t("trustedIssuers.toast.added"));
       void queryClient.invalidateQueries({
         queryKey: orpc.system.trustedIssuers.list.queryKey(),
       });
@@ -86,7 +85,7 @@ export function AddTrustedIssuerSheet({
 
       toast.promise(promise, {
         loading: t("common:saving"),
-        success: t("common:saved"),
+        success: t("trustedIssuers.toast.updated"),
         error: (data) => t("common:error", { message: data.message }),
       });
     },
