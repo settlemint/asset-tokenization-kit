@@ -12,7 +12,7 @@
     "posttypecheck": "bun gql-tada check",
     "watch": "tsgo --noEmit --watch",
     "build": "bun --bun vite build --logLevel=error",
-    "start": "bun --bun srvx --prod --port=3000 --static=../client ./dist/server/server.js",
+    "start": "bun run server.ts",
     "shadcn": "bunx shadcn@canary",
     "settlemint:connect:local": "settlemint connect --instance local",
     "codegen:settlemint": "settlemint codegen",
@@ -36,6 +36,7 @@
     "knip": "knip"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "4.1.13",
     "@tanstack/nitro-v2-vite-plugin": "1.132.0",
     "@testing-library/jest-dom": "6.8.0",
     "@testing-library/react": "16.3.0",
@@ -57,13 +58,13 @@
     "knip": "5.64.0",
     "languine": "3.1.4",
     "minimatch": "10.0.3",
+    "nitro": "npm:nitro-nightly@latest",
     "subgraph": "workspace:*",
     "typescript": "5.9.2",
     "vite": "7.1.7",
     "vite-bundle-analyzer": "1.2.3",
     "vite-tsconfig-paths": "5.1.4",
-    "vitest": "3.2.4",
-    "nitro": "npm:nitro-nightly@latest"
+    "vitest": "3.2.4"
   },
   "peerDependencies": {},
   "dependencies": {
@@ -115,7 +116,6 @@
     "@settlemint/sdk-thegraph": "2.6.2",
     "@settlemint/sdk-utils": "2.6.2",
     "@settlemint/sdk-viem": "2.6.2",
-    "@tailwindcss/postcss": "4.1.13",
     "@tanstack/devtools-vite": "0.3.3",
     "@tanstack/query-async-storage-persister": "5.90.2",
     "@tanstack/query-broadcast-client-experimental": "5.90.2",
@@ -154,7 +154,6 @@
     "lucide-react": "0.544.0",
     "motion": "12.23.22",
     "next-themes": "0.4.6",
-    "postcss": "8.5.6",
     "radix-ui": "1.4.3",
     "react": "19.1.1",
     "react-day-picker": "9.11.0",
