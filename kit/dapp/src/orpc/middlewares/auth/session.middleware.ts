@@ -48,7 +48,22 @@ export const sessionMiddleware = baseRouter.middleware<
     });
   }
 
-  const headers = getHeaders(context.headers);
+  const headers = new Headers();
+  for (const [key, value] of Object.entries(context.headers)) {
+    if (value === undefined || value === null) {
+      continue;
+    }
+
+    if (Array.isArray(value)) {
+      value.forEach((item) => {
+        headers.append(key, item);
+      });
+      continue;
+    }
+
+    headers.append(key, value);
+  }
+
   const session = await auth.api.getSession({
     headers,
   });
@@ -61,14 +76,3 @@ export const sessionMiddleware = baseRouter.middleware<
     },
   });
 });
-
-function getHeaders(headers: Context["headers"]) {
-  const processedHeaders: Record<string, string> = {};
-  for (const [key, value] of Object.entries(headers)) {
-    if (value === undefined || value === null) {
-      continue;
-    }
-    processedHeaders[key] = Array.isArray(value) ? value.join(", ") : value;
-  }
-  return new Headers(processedHeaders);
-}
