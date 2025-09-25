@@ -89,10 +89,7 @@ export const issue = authRouter.system.identity.claims.issue
   .use(
     trustedIssuerMiddleware<ClaimsIssueInput>({
       selectTopics: (i) => {
-        if (i.claim.topic === "custom") {
-          return [i.claim.topicName];
-        }
-        return [i.claim.topic];
+        return [i.claim.topic === "custom" ? i.claim.topicName : i.claim.topic];
       },
     })
   )

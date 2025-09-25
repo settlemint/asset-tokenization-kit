@@ -76,17 +76,17 @@ export const create = systemRouter.token.create
   .use(
     trustedIssuerMiddleware({
       selectTopics: (input) => {
-        const topics: string[] = [];
+        const topics = new Set<string>();
         if (input.isin) {
-          topics.push(ClaimTopic.isin);
+          topics.add(ClaimTopic.isin);
         }
         if ("basePrice" in input) {
-          topics.push(ClaimTopic.basePrice);
+          topics.add(ClaimTopic.basePrice);
         }
-        if ("class" in input || "category" in input) {
-          topics.push(ClaimTopic.assetClassification);
+        if ("class" in input && "category" in input) {
+          topics.add(ClaimTopic.assetClassification);
         }
-        return topics;
+        return [...topics];
       },
     })
   )
