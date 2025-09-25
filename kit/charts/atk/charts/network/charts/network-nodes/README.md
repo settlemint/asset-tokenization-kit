@@ -1,6 +1,6 @@
 # network-nodes
 
-![Version: 2.0.0-alpha.12](https://img.shields.io/badge/Version-2.0.0--alpha.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.12](https://img.shields.io/badge/AppVersion-2.0.0--alpha.12-informational?style=flat-square)
+![Version: 2.0.0-alpha.13](https://img.shields.io/badge/Version-2.0.0--alpha.13-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.13](https://img.shields.io/badge/AppVersion-2.0.0--alpha.13-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -73,7 +73,7 @@ A Helm chart for Kubernetes
 | httpRoute.rules[0].matches[0].path.type | string | `"PathPrefix"` | Path match type (Exact, PathPrefix, or RegularExpression). |
 | httpRoute.rules[0].matches[0].path.value | string | `"/headers"` | Path value used when evaluating the request URL. |
 | image.pullPolicy | string | `"IfNotPresent"` | Kubernetes image pull policy for Besu containers. |
-| image.repository | string | `"docker.io/hyperledger/besu"` | OCI image repository hosting Hyperledger Besu. |
+| image.repository | string | `"harbor.settlemint.com/docker.io/hyperledger/besu"` | OCI image repository hosting Hyperledger Besu. |
 | image.tag | string | `"25.9.0"` | Specific Besu image tag to deploy. |
 | imagePullSecrets | list | `[]` | Image pull secrets granting registry access for the Besu image. |
 | ingress.annotations | object | `{}` |  |
@@ -83,14 +83,14 @@ A Helm chart for Kubernetes
 | ingress.tls | list | `[]` | TLS configuration for Ingress hosts. |
 | initContainer.compileGenesis.enabled | bool | `true` | Enable the compile-genesis init container that merges allocation ConfigMaps into the runtime genesis file. |
 | initContainer.compileGenesis.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy for the compile-genesis init container. |
-| initContainer.compileGenesis.image.repository | string | `"ghcr.io/settlemint/network-bootstrapper"` | OCI image hosting the network-bootstrapper CLI used for genesis compilation. |
+| initContainer.compileGenesis.image.repository | string | `"harbor.settlemint.com/ghcr.io/settlemint/network-bootstrapper"` | OCI image hosting the network-bootstrapper CLI used for genesis compilation. |
 | initContainer.compileGenesis.image.tag | string | `"1.2.3"` | Image tag for the network-bootstrapper CLI. |
 | initContainer.compileGenesis.outputPath | string | `""` | Filesystem path populated with the compiled genesis JSON. Leave empty to mirror config.genesisFile. |
 | initContainer.compileGenesis.resources | object | `{}` | Optional Kubernetes resource requests/limits for the compile-genesis init container. |
 | initContainer.tcpCheck.dependencies | list | `[]` | TCP dependencies expressed as name/endpoint pairs (host:port strings). |
 | initContainer.tcpCheck.enabled | bool | `false` | Enable a tcp-check init container before Besu pods start. |
 | initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy for the tcp-check init container. |
-| initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` | OCI image hosting the tcp-check utility. |
+| initContainer.tcpCheck.image.repository | string | `"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit"` | OCI image hosting the tcp-check utility. |
 | initContainer.tcpCheck.image.tag | string | `"v7.7.10"` | Image tag for the tcp-check utility. |
 | initContainer.tcpCheck.resources.limits.cpu | string | `"100m"` |  |
 | initContainer.tcpCheck.resources.limits.memory | string | `"64Mi"` |  |

@@ -1,6 +1,6 @@
 # hasura
 
-![Version: 2.0.0-alpha.12](https://img.shields.io/badge/Version-2.0.0--alpha.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.12](https://img.shields.io/badge/AppVersion-2.0.0--alpha.12-informational?style=flat-square)
+![Version: 2.0.0-alpha.13](https://img.shields.io/badge/Version-2.0.0--alpha.13-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.13](https://img.shields.io/badge/AppVersion-2.0.0--alpha.13-informational?style=flat-square)
 
 A Helm chart for Hasura GraphQL Engine
 
@@ -101,9 +101,9 @@ A Helm chart for Hasura GraphQL Engine
 | healthChecks.startupProbe.periodSeconds | int | `10` | Period seconds |
 | healthChecks.startupProbe.successThreshold | int | `1` | Success threshold |
 | healthChecks.startupProbe.timeoutSeconds | int | `5` | Timeout seconds |
-| image | object | `{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"hasura/graphql-engine","tag":"v2.48.5"}` | Hasura image configuration |
+| image | object | `{"pullPolicy":"IfNotPresent","registry":"harbor.settlemint.com/docker.io","repository":"hasura/graphql-engine","tag":"v2.48.5"}` | Hasura image configuration |
 | image.pullPolicy | string | `"IfNotPresent"` | Hasura image pull policy |
-| image.registry | string | `"docker.io"` | Hasura image registry |
+| image.registry | string | `"harbor.settlemint.com/docker.io"` | Hasura image registry |
 | image.repository | string | `"hasura/graphql-engine"` | Hasura image repository |
 | image.tag | string | `"v2.48.5"` | Hasura image tag |
 | imagePullSecrets | list | `[]` | Docker registry secret names as an array |
@@ -116,7 +116,7 @@ A Helm chart for Hasura GraphQL Engine
 | ingress.path | string | `"/"` | Ingress path |
 | ingress.pathType | string | `"Prefix"` | Ingress path type |
 | ingress.tls | list | `[]` | TLS configuration |
-| initContainers | list | `[{"command":["/usr/bin/wait-for-it","postgresql:5432","-t","120"],"image":"ghcr.io/settlemint/btp-waitforit:v7.7.10","imagePullPolicy":"IfNotPresent","name":"wait-for-postgresql","resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}}]` | Init containers |
+| initContainers | list | `[{"command":["/usr/bin/wait-for-it","postgresql:5432","-t","120"],"image":"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit:v7.7.10","imagePullPolicy":"IfNotPresent","name":"wait-for-postgresql","resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}}]` | Init containers |
 | jwtSecrets | object | `[]` | JWT secrets configuration |
 | labels | object | `{}` | Labels to add to all resources |
 | metadata | object | `{"databaseUrl":""}` | Metadata database configuration |
