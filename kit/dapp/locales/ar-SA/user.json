@@ -15,6 +15,10 @@
     }
   },
   "management": {
+    "page": {
+      "description": "إدارة المستخدمين والأدوار والصلاحيات لمنصتك.",
+      "loadingUsers": "جاري تحميل المستخدمين..."
+    },
     "table": {
       "status": {
         "registered": "مسجل",

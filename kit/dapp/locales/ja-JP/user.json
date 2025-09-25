@@ -15,6 +15,10 @@
     }
   },
   "management": {
+    "page": {
+      "description": "プラットフォームのユーザー、ロール、権限を管理します。",
+      "loadingUsers": "ユーザーを読み込み中..."
+    },
     "table": {
       "status": {
         "registered": "登録済み",

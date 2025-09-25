@@ -15,6 +15,10 @@
     }
   },
   "management": {
+    "page": {
+      "description": "Verwalten Sie Benutzer, Rollen und Berechtigungen für Ihre Plattform.",
+      "loadingUsers": "Benutzer werden geladen..."
+    },
     "table": {
       "status": {
         "registered": "Registriert",
