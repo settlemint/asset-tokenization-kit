@@ -46,10 +46,15 @@ export const Summary = withForm({
         description={t("wizard.steps.summary.description")}
         actions={
           <>
-            <Button variant="outline" onClick={onBack}>
+            <Button
+              disabled={form.state.isSubmitting}
+              variant="outline"
+              onClick={onBack}
+            >
               {t("form.buttons.back")}
             </Button>
             <form.VerificationButton
+              disabled={form.state.isSubmitting}
               onSubmit={onSubmit}
               walletVerification={{
                 title: t("verification.confirm-title"),

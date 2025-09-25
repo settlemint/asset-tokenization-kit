@@ -83,7 +83,7 @@ export const revoke = authRouter.system.identity.claims.revoke
   )
   .use(
     trustedIssuerMiddleware<ClaimsRevokeInput>({
-      selectTopic: (i) => i.claimTopic,
+      selectTopics: (i) => [i.claimTopic],
     })
   )
   .handler(async ({ context, input, errors }) => {
