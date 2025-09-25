@@ -12,6 +12,8 @@ export const StatsAssetsInputSchema = z.object({}).strict();
 export const StatsAssetsOutputSchema = z.object({
   totalAssets: z.number().int().min(0),
   assetBreakdown: z.record(assetType(), z.number().int().min(0)),
+  tokensCreatedCount: z.number().int().min(0),
+  tokensLaunchedCount: z.number().int().min(0),
 });
 
 export type StatsAssetsInput = z.infer<typeof StatsAssetsInputSchema>;
