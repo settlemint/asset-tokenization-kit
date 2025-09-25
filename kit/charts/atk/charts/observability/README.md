@@ -1,6 +1,6 @@
 # observability
 
-![Version: 2.0.0-alpha.9](https://img.shields.io/badge/Version-2.0.0--alpha.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.9](https://img.shields.io/badge/AppVersion-2.0.0--alpha.9-informational?style=flat-square)
+![Version: 2.0.0-alpha.12](https://img.shields.io/badge/Version-2.0.0--alpha.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.12](https://img.shields.io/badge/AppVersion-2.0.0--alpha.12-informational?style=flat-square)
 
 A Helm chart for the observability components
 
@@ -16,7 +16,7 @@ A Helm chart for the observability components
 |------------|------|---------|
 | https://grafana.github.io/helm-charts | alloy | 1.2.1 |
 | https://grafana.github.io/helm-charts | grafana | 10.0.0 |
-| https://grafana.github.io/helm-charts | loki | 6.40.0 |
+| https://grafana.github.io/helm-charts | loki | 6.41.0 |
 | https://grafana.github.io/helm-charts | tempo | 1.23.3 |
 | https://kubernetes-sigs.github.io/metrics-server/ | metrics-server | 3.13.0 |
 | https://prometheus-community.github.io/helm-charts | kube-state-metrics | 6.3.0 |

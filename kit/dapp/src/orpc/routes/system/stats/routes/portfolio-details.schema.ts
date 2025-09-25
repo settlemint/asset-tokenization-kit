@@ -8,6 +8,29 @@ import { z } from "zod";
  */
 export const StatsPortfolioDetailsInputSchema = z.object({}).strict();
 
+export const StatsPortfolioDetailsTokenFactoryBreakdownSchema = z.object({
+  tokenFactoryId: ethereumAddress.describe("Factory contract address"),
+  tokenFactoryName: z.string().describe("Human readable factory name"),
+  tokenFactoryTypeId: assetFactoryTypeId().describe(
+    "Factory type identifier (e.g., ATKBondFactory)"
+  ),
+  assetType: assetType().describe("Asset type derived from factory typeId"),
+  totalValue: bigDecimal().describe("Factory value in base currency"),
+  tokenBalancesCount: z
+    .number()
+    .int()
+    .min(0)
+    .describe("Number of tokens held from this factory"),
+  percentage: z
+    .number()
+    .min(0)
+    .max(100)
+    .describe("Percentage of total portfolio value"),
+});
+export type StatsPortfolioDetailsTokenFactoryBreakdown = z.infer<
+  typeof StatsPortfolioDetailsTokenFactoryBreakdownSchema
+>;
+
 /**
  * Output schema for portfolio details endpoint
  */
@@ -20,27 +43,7 @@ export const StatsPortfolioDetailsOutputSchema = z.object({
     .describe("Number of token factories with balances"),
   totalAssetsHeld: z.number().int().min(0).describe("Number of assets held"),
   tokenFactoryBreakdown: z.array(
-    z.object({
-      tokenFactoryId: ethereumAddress.describe("Factory contract address"),
-      tokenFactoryName: z.string().describe("Human readable factory name"),
-      tokenFactoryTypeId: assetFactoryTypeId().describe(
-        "Factory type identifier (e.g., ATKBondFactory)"
-      ),
-      assetType: assetType().describe(
-        "Asset type derived from factory typeId (e.g., bond)"
-      ),
-      totalValue: bigDecimal().describe("Factory value in base currency"),
-      tokenBalancesCount: z
-        .number()
-        .int()
-        .min(0)
-        .describe("Number of tokens held from this factory"),
-      percentage: z
-        .number()
-        .min(0)
-        .max(100)
-        .describe("Percentage of total portfolio value"),
-    })
+    StatsPortfolioDetailsTokenFactoryBreakdownSchema
   ),
 });
 

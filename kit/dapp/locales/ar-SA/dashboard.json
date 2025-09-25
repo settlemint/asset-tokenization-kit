@@ -61,6 +61,13 @@
     },
     "title": "تصدير البيانات"
   },
+  "identityMetrics": {
+    "title": "نظرة عامة على الهوية",
+    "description": "الحالة الحالية لهويات النظام والتسجيلات",
+    "totalIdentities": "إجمالي الهويات",
+    "activeRegistrations": "التسجيلات النشطة",
+    "pendingRegistrations": "التسجيلات المعلقة"
+  },
   "filters": {
     "apply": "تطبيق الفلاتر",
     "assetType": "نوع الأصل",
