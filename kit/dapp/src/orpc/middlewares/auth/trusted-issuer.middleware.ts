@@ -161,7 +161,7 @@ export const trustedIssuerMiddleware = <TInput>(options: {
         message: `You are not a trusted issuer for topic(s): ${notAuthorizedTopics.join(", ")}`,
         data: {
           requestedTopics,
-          authorizedTopics: userTrustedIssuerTopics.join(", "),
+          authorizedTopics: userTrustedIssuerTopics,
         },
       });
     }
