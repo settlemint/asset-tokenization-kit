@@ -140,6 +140,15 @@
         "transfer": "{{user}} übertrug {{amount}} {{token}}"
       },
       "viewAll": "Alle Aktivitäten anzeigen"
+    },
+    "latestEvents": {
+      "columns": {
+        "event": "Ereignis",
+        "asset": "Asset",
+        "account": "Konto",
+        "time": "Zeit",
+        "transaction": "Transaktion"
+      }
     }
   }
 }

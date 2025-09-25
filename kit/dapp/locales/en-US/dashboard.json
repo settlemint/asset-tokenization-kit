@@ -1,31 +1,31 @@
 {
   "charts": {
     "assetDistribution": {
-      "description": "Breakdown by asset type",
-      "empty": "No assets to display",
-      "title": "Asset Distribution"
+      "description": "See assets grouped by type",
+      "empty": "Add an asset to see this chart",
+      "title": "Asset mix"
     },
     "topAssets": {
       "columns": {
-        "change": "24h Change",
+        "change": "24-hr change",
         "name": "Asset",
         "rank": "#",
         "value": "Value",
         "volume": "Volume"
       },
-      "description": "Assets by return percentage",
-      "title": "Top Performing Assets"
+      "description": "Shows assets with the best returns",
+      "title": "Top assets"
     },
     "transactionVolume": {
       "axes": {
         "x": "Date",
         "y": "Transactions"
       },
-      "description": "Daily transaction count",
-      "title": "Transaction Volume"
+      "description": "Track daily transaction volume",
+      "title": "Transaction volume"
     },
     "valueOverTime": {
-      "description": "Total value over time",
+      "description": "Watch how portfolio value shifts over time",
       "periods": {
         "all": "ALL",
         "day": "24H",
@@ -34,78 +34,78 @@
         "week": "7D",
         "year": "1Y"
       },
-      "title": "Portfolio Value"
+      "title": "Portfolio value"
     }
   },
   "empty": {
-    "action": "Create Asset",
-    "subtitle": "Start by creating your first tokenized asset",
-    "title": "No data to display"
+    "action": "Create an asset",
+    "subtitle": "Create your first tokenized asset to start tracking",
+    "title": "Nothing here yet"
   },
   "errors": {
-    "loadFailed": "Failed to load dashboard data",
-    "retry": "Retry"
+    "loadFailed": "We couldn't load the dashboard",
+    "retry": "Try again"
   },
   "export": {
     "formats": {
       "csv": "CSV",
       "json": "JSON",
-      "pdf": "PDF Report",
-      "xlsx": "Excel"
+      "pdf": "PDF report",
+      "xlsx": "Excel workbook"
     },
     "sections": {
-      "all": "All Data",
-      "analytics": "Analytics Report",
-      "assets": "Assets Only",
-      "transactions": "Transactions Only"
+      "all": "Everything",
+      "analytics": "Analytics summary",
+      "assets": "Assets only",
+      "transactions": "Transactions only"
     },
-    "title": "Export Data"
+    "title": "Export your data"
   },
   "filters": {
-    "apply": "Apply Filters",
-    "assetType": "Asset Type",
-    "dateRange": "Date Range",
-    "reset": "Reset",
+    "apply": "Apply filters",
+    "assetType": "Asset type",
+    "dateRange": "Date range",
+    "reset": "Clear filters",
     "status": "Status"
   },
   "loading": {
-    "activity": "Loading activity...",
-    "charts": "Loading charts...",
-    "stats": "Loading statistics..."
+    "activity": "Loading activity",
+    "charts": "Loading charts",
+    "stats": "Loading stats"
   },
   "quickActions": {
-    "createAsset": "Create New Asset",
-    "generateReport": "Generate Report",
-    "title": "Quick Actions",
-    "transferTokens": "Transfer Tokens",
-    "viewPortfolio": "View Portfolio"
+    "createAsset": "Create an asset",
+    "generateReport": "Create a report",
+    "title": "Quick actions",
+    "transferTokens": "Transfer tokens",
+    "viewPortfolio": "Open portfolio"
   },
   "stats": {
     "activeUsers": {
-      "description": "Users in the last 30 days",
-      "title": "Active Users",
-      "trend": "{{count}} new this week"
+      "description": "Users active in the past 30 days",
+      "title": "Active users",
+      "trend": "{{count}} joined this week"
     },
     "totalAssets": {
-      "description": "Active tokenized assets",
-      "title": "Total Assets",
-      "trend": "{{percentage}}% from last month"
+      "description": "Live tokenized assets",
+      "title": "Total assets",
+      "trend": "{{percentage}}% vs last month"
     },
     "totalValue": {
-      "description": "Combined value of all assets",
-      "title": "Total Value Locked",
-      "trend": "{{percentage}}% from last month"
+      "description": "Combined value across assets",
+      "title": "Total value locked",
+      "trend": "{{percentage}}% vs last month"
     },
     "transactions": {
-      "description": "Total transactions processed",
+      "description": "Transactions completed",
       "title": "Transactions",
       "trend": "{{count}} today"
     }
   },
-  "subtitle": "Overview of your tokenized assets",
+  "subtitle": "See how your assets are doing",
   "title": "Dashboard",
   "welcome": {
-    "subtitle": "Here's what's happening with your assets today",
+    "subtitle": "Today's asset activity at a glance",
     "title": "Welcome back, {{name}}"
   },
   "widgets": {
@@ -114,24 +114,24 @@
       "title": "Alerts",
       "types": {
         "error": "Error",
-        "info": "Information",
+        "info": "Info",
         "success": "Success",
         "warning": "Warning"
       },
-      "viewDetails": "View details"
+      "viewDetails": "See details"
     },
     "pendingActions": {
-      "empty": "No pending actions",
-      "title": "Pending Actions",
+      "empty": "No pending work",
+      "title": "Pending actions",
       "types": {
-        "approval": "Approval needed",
-        "kyc": "KYC verification pending",
+        "approval": "Needs approval",
+        "kyc": "KYC review pending",
         "signature": "Signature required"
       }
     },
     "recentActivity": {
       "empty": "No recent activity",
-      "title": "Recent Activity",
+      "title": "Recent activity",
       "types": {
         "approval": "{{user}} approved {{spender}}",
         "burn": "{{amount}} {{token}} burned",
@@ -139,7 +139,118 @@
         "mint": "{{amount}} {{token}} minted",
         "transfer": "{{user}} transferred {{amount}} {{token}}"
       },
-      "viewAll": "View all activity"
+      "viewAll": "See all activity"
+    },
+    "latestEvents": {
+      "title": "Latest activity",
+      "empty": "Nothing to review yet",
+      "emptyDescription": "Your five most recent successful transactions appear here",
+      "viewAll": "See all",
+      "loading": "Loading activity",
+      "error": "We couldn't load activity",
+      "errorRetry": "Try again",
+      "types": {
+        "TransferCompleted": "Transfer completed",
+        "MintCompleted": "Assets minted",
+        "BurnCompleted": "Assets burned",
+        "Approval": "Approval granted",
+        "Paused": "Trading paused",
+        "Unpaused": "Trading resumed",
+        "RoleGranted": "Role granted",
+        "RoleRevoked": "Role revoked",
+        "RoleAdminChanged": "Admin role changed",
+        "IdentityRegistered": "Identity verified",
+        "IdentityCreated": "Identity created",
+        "IdentityModified": "Identity updated",
+        "IdentityStored": "Identity stored",
+        "IdentityUnstored": "Identity removed",
+        "ClaimAdded": "Claim added",
+        "ClaimRemoved": "Claim removed",
+        "ClaimRevoked": "Claim revoked",
+        "ClaimChanged": "Claim updated",
+        "ComplianceAdded": "Compliance added",
+        "ComplianceModuleAdded": "Rule module added",
+        "ComplianceModuleRemoved": "Rule module removed",
+        "ModuleParametersUpdated": "Module settings updated",
+        "AddressFrozen": "Account frozen",
+        "TokensFrozen": "Assets frozen",
+        "TokensUnfrozen": "Assets unfrozen",
+        "RecoverySuccess": "Assets recovered",
+        "YieldClaimed": "Yield claimed",
+        "CheckpointUpdated": "Yield checkpoint updated",
+        "YieldScheduleSet": "Yield schedule updated",
+        "FixedYieldScheduleSet": "Fixed yield set",
+        "BondCreated": "Bond issued",
+        "BondMatured": "Bond matured",
+        "BondRedeemed": "Bond redeemed",
+        "FundCreated": "Fund created",
+        "EquityCreated": "Equity issued",
+        "DepositCreated": "Deposit created",
+        "StableCoinCreated": "Stablecoin issued",
+        "ManagementFeeCollected": "Management fee collected",
+        "AirdropTokensTransferred": "Airdrop received",
+        "AirdropBatchTokensTransferred": "Batch airdrop sent",
+        "VestingInitialized": "Vesting started",
+        "BatchVestingInitialized": "Batch vesting started",
+        "VestingStrategyUpdated": "Vesting strategy updated",
+        "XvPSettlementExecuted": "Settlement executed",
+        "XvPSettlementApproved": "Settlement approved",
+        "XvPSettlementCancelled": "Settlement canceled",
+        "XvPSettlementApprovalRevoked": "Settlement approval revoked",
+        "Deposit": "Deposit to vault",
+        "ExecuteTransaction": "Transaction executed",
+        "SubmitTransactionWithSignatures": "Transaction submitted",
+        "SignaturesProvided": "Signatures provided",
+        "RequirementChanged": "Requirements changed",
+        "Bootstrapped": "System initialized",
+        "TokenAssetCreated": "Asset created",
+        "TokenImplementationUpdated": "Asset implementation updated",
+        "CapSet": "Supply cap set",
+        "Redeemed": "Assets redeemed",
+        "TrustedIssuerAdded": "Trusted issuer added",
+        "TrustedIssuerRemoved": "Trusted issuer removed",
+        "ClaimTopicsUpdated": "Claim topics updated",
+        "TopicSchemeRegistered": "Topic registered",
+        "TopicSchemeRemoved": "Topic removed",
+        "TopicSchemeUpdated": "Topic updated",
+        "IdentityRegistryBound": "Identity registry bound",
+        "IdentityRegistryUnbound": "Identity registry unbound",
+        "CountryModified": "Country updated",
+        "AddressAddedToBypassList": "Bypass list entry added",
+        "AddressRemovedFromBypassList": "Bypass list entry removed",
+        "GlobalComplianceModuleAdded": "Global module added",
+        "GlobalComplianceModuleRemoved": "Global module removed",
+        "ERC20TokenRecovered": "ERC20 tokens recovered",
+        "UpdatedTokenInformation": "Token details updated",
+        "ATKSystemCreated": "ATK system created",
+        "ATKXvPSettlementCreated": "XvP settlement created",
+        "ATKVaultCreated": "Vault created",
+        "ATKPushAirdropCreated": "Push airdrop created",
+        "ATKVestingAirdropCreated": "Vesting airdrop created",
+        "ATKTimeBoundAirdropCreated": "Time-bound airdrop created",
+        "ATKFixedYieldScheduleCreated": "Fixed yield schedule created",
+        "TokenFactoryRegistered": "Token factory registered",
+        "SystemAddonRegistered": "System addon registered",
+        "ComplianceModuleRegistered": "Compliance module registered",
+        "OwnershipTransferred": "Ownership transferred",
+        "TokensWithdrawn": "Assets withdrawn",
+        "DenominationAssetTopUp": "Denomination asset topped up",
+        "DenominationAssetWithdrawn": "Denomination asset withdrawn",
+        "DistributionCapUpdated": "Distribution cap updated"
+      },
+      "timeAgo": {
+        "justNow": "Just now",
+        "minutesAgo": "{{count}} min ago",
+        "hoursAgo": "{{count}} hr ago",
+        "daysAgo": "{{count}} days ago"
+      },
+      "columns": {
+        "event": "Event",
+        "asset": "Asset",
+        "account": "Account",
+        "time": "Time",
+        "transaction": "Transaction"
+      }
     }
   }
 }

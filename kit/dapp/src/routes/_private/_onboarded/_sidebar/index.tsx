@@ -15,6 +15,7 @@
  */
 
 import { IdentityProgress } from "@/components/dashboard/identity-progress/identity-progress";
+import { LatestEvents } from "@/components/dashboard/latest-events/latest-events";
 import { PortfolioDetails } from "@/components/dashboard/portfolio-details/portfolio-details";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -58,11 +59,8 @@ function Home() {
   return (
     <div className="p-6 space-y-8">
       <IdentityProgress user={user} />
-      {system.userIdentity?.registered && (
-        <>
-          <PortfolioDetails />
-        </>
-      )}
+      {system.userIdentity?.registered && <PortfolioDetails />}
+      <LatestEvents />
     </div>
   );
 }
