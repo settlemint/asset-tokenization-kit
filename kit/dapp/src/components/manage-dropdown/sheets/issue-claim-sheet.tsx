@@ -407,10 +407,7 @@ export function IssueClaimSheet({
                   default:
                     defaultValue = "";
                 }
-                form.setFieldValue(
-                  field.name as keyof IssueClaimFormData,
-                  defaultValue
-                );
+                form.setFieldValue(field.name, defaultValue);
               });
             }
           }

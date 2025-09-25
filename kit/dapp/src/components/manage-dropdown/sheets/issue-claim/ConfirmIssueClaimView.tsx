@@ -16,7 +16,6 @@ export function ConfirmIssueClaimView({
   topic,
   claim,
   formFields,
-  signature,
 }: ConfirmIssueClaimViewProps) {
   const { t } = useTranslation("identities");
   const { t: tComponents } = useTranslation("components");
