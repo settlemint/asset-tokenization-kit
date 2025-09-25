@@ -163,7 +163,7 @@ jobs:
           BUILD_ID: ${{ github.run_number }}.${{ github.run_attempt }}
 
       - name: Determine chart changes
-        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) }}
+        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) && !(github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')) }}
         id: ct-changed
         env:
           CT_CONFIG: .github/ct.yaml
@@ -178,18 +178,18 @@ jobs:
           fi
 
       - name: Run chart-testing (lint)
-        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) && steps.ct-changed.outputs.changed == 'true' }}
+        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) && !(github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')) && steps.ct-changed.outputs.changed == 'true' }}
         env:
           CT_CONFIG: .github/ct.yaml
         run: ct lint --config "$CT_CONFIG" --validate-yaml=false
 
       - name: Configure Namespace access
-        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) && steps.ct-changed.outputs.changed == 'true' }}
+        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) && !(github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')) && steps.ct-changed.outputs.changed == 'true' }}
         id: nscloud
         uses: namespacelabs/nscloud-setup@v0
 
       - name: Provision Namespace Kubernetes cluster
-        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) && steps.ct-changed.outputs.changed == 'true' }}
+        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) && !(github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')) && steps.ct-changed.outputs.changed == 'true' }}
         uses: namespacelabs/nscloud-cluster-action@v0
         with:
           wait-kube-system: "true"
@@ -197,7 +197,7 @@ jobs:
           duration: "20m"
 
       - name: Run chart-testing (install)
-        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) && steps.ct-changed.outputs.changed == 'true' }}
+        if: ${{ fromJSON(env.RUNS_ON_PUSH_OR_ACTIVE_PR) && !(github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')) && steps.ct-changed.outputs.changed == 'true' }}
         env:
           CT_CONFIG: .github/ct.yaml
         run: ct install --config "$CT_CONFIG" --skip-clean-up
