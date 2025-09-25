@@ -63,14 +63,12 @@ export const sessionMiddleware = baseRouter.middleware<
 });
 
 function getHeaders(headers: Context["headers"]) {
-  if (headers instanceof Headers) {
-    return headers;
-  }
   const processedHeaders: Record<string, string> = {};
   for (const [key, value] of Object.entries(headers)) {
-    if (value) {
-      processedHeaders[key] = Array.isArray(value) ? value.join(", ") : value;
+    if (value === undefined || value === null) {
+      continue;
     }
+    processedHeaders[key] = Array.isArray(value) ? value.join(", ") : value;
   }
   return new Headers(processedHeaders);
 }
