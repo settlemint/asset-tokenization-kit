@@ -7,6 +7,7 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
+import { addDays } from "date-fns";
 import { from } from "dnum";
 import { beforeAll, describe, expect, test } from "vitest";
 
@@ -46,11 +47,10 @@ describe("Token update collateral", () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
 
-    const thirtyDaysFromNow = new Date();
-    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+    const amountExact = from("1000000", stablecoinToken.decimals);
+    const thirtyDaysFromNow = addDays(new Date(), 30);
     thirtyDaysFromNow.setMilliseconds(0);
 
-    const amountExact = from("1000000", stablecoinToken.decimals);
     const result = await client.token.updateCollateral({
       contract: stablecoinToken.id,
       walletVerification: {
@@ -58,7 +58,7 @@ describe("Token update collateral", () => {
         verificationType: "PINCODE",
       },
       amount: amountExact,
-      expiryDays: 30,
+      expiryTimestamp: thirtyDaysFromNow,
     });
 
     expect(result).toBeDefined();
@@ -75,6 +75,7 @@ describe("Token update collateral", () => {
   test("cannot update collateral if not a trusted claim issuer", async () => {
     const headers = await signInWithUser(DEFAULT_INVESTOR);
     const client = getOrpcClient(headers);
+    const tomorrow = addDays(new Date(), 1);
 
     await expect(
       client.token.updateCollateral(
@@ -84,8 +85,8 @@ describe("Token update collateral", () => {
             secretVerificationCode: DEFAULT_PINCODE,
             verificationType: "PINCODE",
           },
-          amount: "1000000",
-          expiryDays: 30,
+          amount: from("10", stablecoinToken.decimals),
+          expiryTimestamp: tomorrow,
         },
         {
           context: {

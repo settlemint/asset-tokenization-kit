@@ -1,10 +1,10 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { orpc } from "@/orpc/orpc-client";
+import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { PauseUnpauseConfirmationSheet } from "./pause-unpause-confirmation-sheet";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { orpc } from "@/orpc/orpc-client";
 
 // Mock dependencies
 vi.mock("react-i18next", () => ({
@@ -463,7 +463,7 @@ describe("PauseUnpauseConfirmationSheet", () => {
           expect.any(Promise),
           expect.objectContaining({
             success: expect.stringContaining("My Token"),
-            error: expect.any(String),
+            error: expect.any(Function),
             loading: expect.any(String),
           })
         );
@@ -500,7 +500,7 @@ describe("PauseUnpauseConfirmationSheet", () => {
           expect.any(Promise),
           expect.objectContaining({
             success: expect.stringContaining("My Token"),
-            error: expect.any(String),
+            error: expect.any(Function),
             loading: expect.any(String),
           })
         );

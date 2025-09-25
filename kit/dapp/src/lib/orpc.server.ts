@@ -1,3 +1,4 @@
+import { normalizeHeaders } from "@/orpc/context/context";
 import { router } from "@/orpc/routes/router";
 import { createRouterClient, RouterClient } from "@orpc/server";
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -23,7 +24,7 @@ const createORPCServerClient = createIsomorphicFn().server(() => {
       try {
         const headers = getRequestHeaders();
         return {
-          headers,
+          headers: normalizeHeaders(headers),
         };
       } catch (error) {
         // Handle cases where there's no HTTP event in AsyncLocalStorage
@@ -33,7 +34,7 @@ const createORPCServerClient = createIsomorphicFn().server(() => {
           { error }
         );
         return {
-          headers: {} as ReturnType<typeof getRequestHeaders>,
+          headers: {},
         };
       }
     },

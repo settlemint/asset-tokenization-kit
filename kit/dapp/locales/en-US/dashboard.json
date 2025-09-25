@@ -61,6 +61,17 @@
     },
     "title": "Export Data"
   },
+  "identityMetrics": {
+    "title": "Identity Overview",
+    "description": "Current system identity status and registrations",
+    "totalIdentities": "Total Identities",
+    "activeRegistrations": "Active Registrations",
+    "pendingRegistrations": "Pending identities",
+    "chartTitle": "Active registrations",
+    "chartDescription": "Daily trends of active identity registrations over the last 7 days",
+    "emptyStateMessage": "No registrations yet",
+    "emptyStateDescription": "Identity registrations will appear here once users start the verification process"
+  },
   "filters": {
     "apply": "Apply Filters",
     "assetType": "Asset Type",

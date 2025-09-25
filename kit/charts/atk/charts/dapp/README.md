@@ -1,6 +1,6 @@
 # dapp
 
-![Version: 2.0.0-alpha.9](https://img.shields.io/badge/Version-2.0.0--alpha.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.9](https://img.shields.io/badge/AppVersion-2.0.0--alpha.9-informational?style=flat-square)
+![Version: 2.0.0-alpha.12](https://img.shields.io/badge/Version-2.0.0--alpha.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.12](https://img.shields.io/badge/AppVersion-2.0.0--alpha.12-informational?style=flat-square)
 
 A Helm chart for the ATK DApp frontend
 
@@ -47,7 +47,7 @@ A Helm chart for the ATK DApp frontend
 | openShiftRoute.to | object | `{"weight":100}` | Primary service weight configuration |
 | openShiftRoute.to.weight | int | `100` | Weight assigned to the DApp service backend |
 | openShiftRoute.wildcardPolicy | string | `"None"` | Wildcard policy to apply to the route |
-| podAnnotations | object | `{}` | Annotations for dApp pods |
+| podAnnotations | object | `{"prometheus.io/scrape":"false"}` | Annotations for dApp pods |
 | podDisruptionBudget | object | `{"enabled":false,"minAvailable":1}` | PodDisruptionBudget configuration |
 | podDisruptionBudget.enabled | bool | `false` | Enable pod disruption budget |
 | podDisruptionBudget.minAvailable | int | `1` | Minimum number of pods that must be available during disruption. Can be an integer or percentage (e.g., "50%") |

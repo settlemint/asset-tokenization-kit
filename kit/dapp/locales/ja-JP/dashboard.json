@@ -61,6 +61,13 @@
     },
     "title": "データをエクスポート"
   },
+  "identityMetrics": {
+    "title": "アイデンティティ概要",
+    "description": "現在のシステムアイデンティティの状態と登録",
+    "totalIdentities": "総アイデンティティ数",
+    "activeRegistrations": "アクティブな登録",
+    "pendingRegistrations": "保留中の登録"
+  },
   "filters": {
     "apply": "フィルターを適用",
     "assetType": "資産タイプ",
