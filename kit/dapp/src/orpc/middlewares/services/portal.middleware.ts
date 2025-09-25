@@ -738,7 +738,9 @@ function mapPortalErrorMessage(message: string) {
  * @returns The revert reason.
  */
 function extractRevertReason(message: string) {
-  const match = message.match(/reverted with the following reason: (.*)/i);
+  const match =
+    message.match(/reverted with the following reason: (.*)/i) ||
+    message.match(/reverted: (.*?):/i);
   return match && match[1] ? `Transaction reverted: ${match[1]}` : undefined;
 }
 
