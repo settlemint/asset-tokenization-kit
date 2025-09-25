@@ -1,7 +1,7 @@
 {
   "name": "@settlemint/asset-tokenization-kit",
   "description": "SettleMint Kit - Asset Tokenization",
-  "version": "2.0.0-alpha.9",
+  "version": "2.0.0-alpha.12",
   "private": false,
   "license": "FSL-1.1-MIT",
   "author": {
