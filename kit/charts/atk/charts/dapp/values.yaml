@@ -40,7 +40,9 @@ podLabels:
   app.kubernetes.io/component: dapp
   kots.io/app-slug: settlemint-atk
 # -- (object) Annotations for dApp pods
-podAnnotations: {}
+podAnnotations:
+  # Disable Prometheus scraping by default; override to "true" to expose metrics.
+  prometheus.io/scrape: "false"
 
 # -- (object) Pod security context configuration
 podSecurityContext: {}
@@ -326,4 +328,3 @@ initContainer:
 
 # -- (list) Additional init containers appended verbatim to the deployment pod spec
 extraInitContainers: []
-

@@ -17,6 +17,7 @@
  * @see {@link https://spec.openapis.org/oas/latest.html} - OpenAPI specification
  */
 
+import { normalizeHeaders } from "@/orpc/context/context";
 import { logUnexpectedError } from "@/orpc/helpers/error";
 import { router } from "@/orpc/routes/router";
 import { metadata } from "@atk/config/metadata";
@@ -112,7 +113,7 @@ export async function handle({ request }: { request: Request }) {
   const { response } = await handler.handle(request, {
     prefix: "/api",
     context: {
-      headers: getRequestHeaders(),
+      headers: normalizeHeaders(getRequestHeaders()),
     },
   });
 

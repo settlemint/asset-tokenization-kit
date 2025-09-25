@@ -214,6 +214,14 @@ jobs:
             kit/subgraph/subgraph-output.txt
             kit/subgraph/.generated/subgraph-env
 
+      - name: Update helm chart docs
+        if: |
+          github.event_name == 'push' &&
+          startsWith(github.ref, 'refs/tags/')
+        working-directory: kit/charts
+        run: |
+          bun run docs
+
       - name: Create release assets pull request
         if: |
           github.event_name == 'push' &&
