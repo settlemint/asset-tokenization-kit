@@ -1,13 +1,13 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { systemRouter } from "@/orpc/procedures/system.router";
+import type { StatsPortfolioDetailsTokenFactoryBreakdown } from "@/orpc/routes/system/stats/routes/portfolio-details.schema";
 import {
   assetFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
-  type AssetFactoryTypeId,
 } from "@atk/zod/asset-types";
 import { bigDecimal } from "@atk/zod/bigdecimal";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import { add, div, eq, from, multiply, toNumber } from "dnum";
+import { div, eq, from, multiply, toNumber } from "dnum";
 import { z } from "zod";
 
 /**
@@ -26,15 +26,17 @@ const ACCOUNT_SYSTEM_STATS_QUERY = theGraphGraphql(`
  * GraphQL query to fetch token factory breakdown data
  */
 const TOKEN_FACTORY_BREAKDOWN_QUERY = theGraphGraphql(`
-  query TokenFactoryBreakdown($accountId: String!) {
-    tokenStats_collection(
-      interval: day
-      where: { token_: { account: $accountId } }
+  query TokenFactoryBreakdown($accountId: String!, $systemId: String!) {
+    accountTokenFactoryStatsStates(
+      where: { account: $accountId, system: $systemId }
     ) {
-      totalValueInBaseCurrency: totalSupply
-      token {
-        tokenFactory { id name typeId }
+      tokenFactory {
+        id
+        name
+        typeId
       }
+      tokenBalancesCount
+      totalValueInBaseCurrency
     }
   }
 `);
@@ -51,18 +53,15 @@ const AccountSystemStatsResponseSchema = z.object({
 
 // Schema for TokenFactoryBreakdown response
 const TokenFactoryBreakdownResponseSchema = z.object({
-  tokenStats_collection: z.array(
+  accountTokenFactoryStatsStates: z.array(
     z.object({
-      totalValueInBaseCurrency: bigDecimal(),
-      token: z.object({
-        tokenFactory: z
-          .object({
-            id: ethereumAddress,
-            name: z.string(),
-            typeId: assetFactoryTypeId(),
-          })
-          .nullable(),
+      tokenFactory: z.object({
+        id: ethereumAddress,
+        name: z.string(),
+        typeId: assetFactoryTypeId(),
       }),
+      tokenBalancesCount: z.number(),
+      totalValueInBaseCurrency: bigDecimal(),
     })
   ),
 });
@@ -116,7 +115,7 @@ export const statsPortfolioDetails =
     const tokenFactoryBreakdownResponse = await context.theGraphClient.query(
       TOKEN_FACTORY_BREAKDOWN_QUERY,
       {
-        input: { accountId },
+        input: { accountId, systemId: context.system.id.toLowerCase() },
         output: TokenFactoryBreakdownResponseSchema,
       }
     );
@@ -127,57 +126,32 @@ export const statsPortfolioDetails =
       from(0);
 
     // Process token factory breakdown
-    const tokenFactoryBreakdown =
-      tokenFactoryBreakdownResponse.tokenStats_collection
-        .map((s) => ({
-          factory: s.token.tokenFactory,
-          value: s.totalValueInBaseCurrency,
-        }))
-        .filter((f) => !!f.factory)
-        .map(
-          (f) =>
-            f as {
-              factory: { id: string; name: string; typeId: string };
-              value: ReturnType<typeof from>;
-            }
-        )
-        .reduce(
-          (acc, { factory, value }) => {
-            const existing = acc.get(factory.id);
-            const newValue = existing ? add(existing.totalValue, value) : value;
-            acc.set(factory.id, {
-              tokenFactoryId: factory.id,
-              tokenFactoryName: factory.name,
-              tokenFactoryTypeId: factory.typeId as AssetFactoryTypeId,
-              assetType: getAssetTypeFromFactoryTypeId(
-                factory.typeId as AssetFactoryTypeId
+    const tokenFactoryBreakdown = new Map<
+      string,
+      StatsPortfolioDetailsTokenFactoryBreakdown
+    >();
+    tokenFactoryBreakdownResponse.accountTokenFactoryStatsStates.forEach(
+      (entry) => {
+        tokenFactoryBreakdown.set(entry.tokenFactory.id, {
+          tokenFactoryId: entry.tokenFactory.id,
+          tokenFactoryName: entry.tokenFactory.name,
+          tokenFactoryTypeId: entry.tokenFactory.typeId,
+          assetType: getAssetTypeFromFactoryTypeId(entry.tokenFactory.typeId),
+          totalValue: entry.totalValueInBaseCurrency,
+          tokenBalancesCount: entry.tokenBalancesCount,
+          percentage: eq(totalValue, from(0))
+            ? 0
+            : toNumber(
+                div(
+                  multiply(entry.totalValueInBaseCurrency, from(100)),
+                  totalValue
+                )
               ),
-              totalValue: newValue,
-              tokenBalancesCount: 0,
-            });
-            return acc;
-          },
-          new Map<
-            string,
-            {
-              tokenFactoryId: string;
-              tokenFactoryName: string;
-              tokenFactoryTypeId: AssetFactoryTypeId;
-              assetType: ReturnType<typeof getAssetTypeFromFactoryTypeId>;
-              totalValue: ReturnType<typeof from>;
-              tokenBalancesCount: number;
-            }
-          >()
-        );
-
-    const tokenFactoryBreakdownArray = [...tokenFactoryBreakdown.values()].map(
-      (entry) => ({
-        ...entry,
-        percentage: eq(totalValue, from(0))
-          ? 0
-          : toNumber(div(multiply(entry.totalValue, from(100)), totalValue)),
-      })
+        });
+      }
     );
+
+    const tokenFactoryBreakdownArray = [...tokenFactoryBreakdown.values()];
 
     // Get total balances count from account system stats
     const totalAssetsHeld =
