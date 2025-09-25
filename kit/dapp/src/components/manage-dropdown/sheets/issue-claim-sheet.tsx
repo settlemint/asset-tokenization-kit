@@ -365,9 +365,10 @@ export function IssueClaimSheet({
       showAssetDetailsOnConfirm={false}
       confirm={
         <ConfirmIssueClaimView
-          targetIdentity={targetAddress}
           topic={selectedTopic}
           claim={claimPayload}
+          formFields={formFields}
+          signature={selectedTopicData?.signature}
         />
       }
     >

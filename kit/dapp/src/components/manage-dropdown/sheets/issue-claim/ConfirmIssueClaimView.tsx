@@ -1,19 +1,22 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { FormFieldConfig } from "@/lib/utils/claims/claim-schema-builder";
 import type { ClaimData } from "@/orpc/routes/system/identity/claims/routes/claims.issue.schema";
 import { useTranslation } from "react-i18next";
 import type { IssueClaimTopic } from "../issue-claim-sheet";
 
 interface ConfirmIssueClaimViewProps {
-  targetIdentity: string;
   topic: IssueClaimTopic;
   claim: ClaimData | null;
+  formFields?: FormFieldConfig[];
+  signature?: string;
 }
 
 export function ConfirmIssueClaimView({
-  targetIdentity,
   topic,
   claim,
+  formFields,
+  signature,
 }: ConfirmIssueClaimViewProps) {
   const { t } = useTranslation("identities");
   const { t: tComponents } = useTranslation("components");
@@ -27,9 +30,30 @@ export function ConfirmIssueClaimView({
   const formatClaimData = () => {
     if (!claim || !("data" in claim)) return null;
 
-    const entries = Object.entries(
-      claim.data as Record<string, unknown>
-    ).filter(([, value]) => value !== undefined && value !== "");
+    let entries: Array<[string, unknown]>;
+
+    // Check if this is a custom claim (array format) or predefined claim (object format)
+    if (Array.isArray(claim.data)) {
+      // Custom claim - map array indices to field names using formFields
+      if (!formFields || formFields.length === 0) {
+        return null;
+      }
+
+      entries = claim.data
+        .map((value, index) => {
+          const field = formFields[index];
+          return field ? ([field.name, value] as [string, unknown]) : null;
+        })
+        .filter(
+          (entry): entry is [string, unknown] =>
+            entry !== null && entry[1] !== undefined && entry[1] !== ""
+        );
+    } else {
+      // Predefined claim - use object entries directly
+      entries = Object.entries(claim.data as Record<string, unknown>).filter(
+        ([, value]) => value !== undefined && value !== ""
+      );
+    }
 
     if (entries.length === 0) return null;
 
@@ -81,15 +105,6 @@ export function ConfirmIssueClaimView({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div>
-          <p className="mb-1 text-sm text-muted-foreground">
-            {t("actions.issueClaim.confirmTargetIdentity")}
-          </p>
-          <p className="font-mono text-sm font-medium">
-            {shortenAddress(targetIdentity)}
-          </p>
-        </div>
-
         <div>
           <p className="mb-2 text-sm text-muted-foreground">
             {t("actions.issueClaim.confirmClaimType")}
