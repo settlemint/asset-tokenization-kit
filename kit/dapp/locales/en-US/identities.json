@@ -12,6 +12,7 @@
       "description": "Issue a claim to {{identity}}",
       "submit": "Issue claim",
       "success": "Claim issued successfully",
+      "submitting": "Issuing claim...",
       "error": "Failed to issue claim: {{error}}",
       "confirmTitle": "Confirm claim issuance",
       "confirmTargetIdentity": "Target identity",

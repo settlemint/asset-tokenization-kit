@@ -31,6 +31,7 @@ import {
   getSchemaForClaim,
 } from "@/lib/utils/claims/claim-schema-builder";
 import { orpc } from "@/orpc/orpc-client";
+import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { ClaimData } from "@/orpc/routes/system/identity/claims/routes/claims.issue.schema";
 import { IssueableClaimTopicSchema } from "@/orpc/routes/system/identity/claims/routes/claims.issue.schema";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
@@ -251,12 +252,7 @@ export function IssueClaimSheet({
           queryClient.invalidateQueries({ queryKey: claimsQuery.queryKey }),
         ]);
 
-        toast.success(t("actions.issueClaim.success"));
         await router.invalidate();
-        handleClose();
-      },
-      onError: (error) => {
-        toast.error(t("actions.issueClaim.error", { error: error.message }));
       },
     })
   );
@@ -337,6 +333,25 @@ export function IssueClaimSheet({
     }
   }, [open, resetFormState]);
 
+  const handleSubmit = (verification: UserVerification) => {
+    if (!claimPayload) {
+      return;
+    }
+    const promise = issueClaim({
+      targetIdentityAddress: targetAddress,
+      claim: claimPayload,
+      walletVerification: verification,
+    });
+
+    toast.promise(promise, {
+      loading: t("actions.issueClaim.submitting"),
+      success: t("actions.issueClaim.success"),
+      error: (error: Error) =>
+        t("actions.issueClaim.error", { error: error.message }),
+    });
+    handleClose();
+  };
+
   return (
     <ActionFormSheet
       open={open}
@@ -348,19 +363,9 @@ export function IssueClaimSheet({
       submitLabel={t("actions.issueClaim.submit")}
       isSubmitting={isPending}
       hasValuesStep
-      disabled={({ isDirty }) => !isDirty || !canProceed || isPending}
+      disabled={() => !canProceed || isPending}
       canContinue={() => canProceed}
-      onSubmit={async (verification) => {
-        if (!claimPayload) {
-          return;
-        }
-
-        await issueClaim({
-          targetIdentityAddress: targetAddress,
-          claim: claimPayload,
-          walletVerification: verification,
-        });
-      }}
+      onSubmit={handleSubmit}
       store={sheetStoreRef.current}
       showAssetDetailsOnConfirm={false}
       confirm={
