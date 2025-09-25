@@ -189,6 +189,15 @@ export function AddTrustedIssuerSheet({
                             {t("trustedIssuers.add.fields.claimTopics.empty")}
                           </p>
                         }
+                        onSearch={(value) => {
+                          return Promise.resolve(
+                            topicOptions.filter((option) =>
+                              option.label
+                                .toLowerCase()
+                                .includes(value.toLowerCase())
+                            )
+                          );
+                        }}
                       />
                       <p className="text-xs text-muted-foreground">
                         {t("trustedIssuers.add.fields.claimTopics.description")}

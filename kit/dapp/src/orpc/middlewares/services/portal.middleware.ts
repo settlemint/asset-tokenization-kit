@@ -726,7 +726,10 @@ export type ValidatedPortalClient = ReturnType<
  * @returns The mapped error message.
  */
 function mapPortalErrorMessage(message: string) {
-  if (message.includes("User rejected the request")) {
+  if (
+    message.includes("User rejected the request") ||
+    message.includes("Invalid challenge response")
+  ) {
     return "Invalid authentication challenge";
   }
   return extractRevertReason(message);

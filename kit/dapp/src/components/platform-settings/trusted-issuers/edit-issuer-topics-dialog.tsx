@@ -167,6 +167,15 @@ export function EditIssuerTopicsDialog({
                     emptyIndicator={
                       <p className="text-center text-sm">No topics available</p>
                     }
+                    onSearch={(value) => {
+                      return Promise.resolve(
+                        topicOptions.filter((option) =>
+                          option.label
+                            .toLowerCase()
+                            .includes(value.toLowerCase())
+                        )
+                      );
+                    }}
                   />
                   <p className="text-xs text-muted-foreground">
                     {t("trustedIssuers.edit.fields.claimTopics.description")}
