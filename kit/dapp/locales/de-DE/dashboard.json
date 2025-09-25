@@ -115,6 +115,14 @@
     "subtitle": "Hier ist, was heute mit Ihren Assets passiert",
     "title": "Willkommen zurück, {{name}}"
   },
+  "assetOverview": {
+    "title": "Asset-Übersicht",
+    "subtitle": "Verfolgen und analysieren Sie Ihre tokenisierten Assets",
+    "emptyState": {
+      "title": "Ihre Asset-Übersicht wird hier angezeigt",
+      "description": "Diagramme und Statistiken werden angezeigt, sobald Sie Ihr erstes tokenisiertes Asset erstellen"
+    }
+  },
   "widgets": {
     "alerts": {
       "dismiss": "Schließen",
