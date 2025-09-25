@@ -73,14 +73,14 @@ export function ChartEmptyState({
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent>
-        <div className="flex h-[200px] flex-col items-center justify-center gap-2 text-center">
+        <div className="flex h-[200px] flex-col items-center justify-center gap-3 text-center">
           <PieChartIcon className="h-8 w-8 text-muted-foreground" />
           <div className="space-y-1">
-            <span className="text-sm text-muted-foreground">
+            <p className="text-sm font-medium">
               {emptyMessage ?? t("charts.common.noData")}
-            </span>
+            </p>
             {(emptyDescription ?? t("charts.common.noDataDescription")) && (
-              <p className="text-xs text-muted-foreground/80">
+              <p className="text-xs text-muted-foreground">
                 {emptyDescription ?? t("charts.common.noDataDescription")}
               </p>
             )}

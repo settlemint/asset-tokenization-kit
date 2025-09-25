@@ -115,6 +115,14 @@
     "subtitle": "今日の資産の状況は以下の通りです",
     "title": "お帰りなさい、{{name}}"
   },
+  "assetOverview": {
+    "title": "資産概要",
+    "subtitle": "トークン化された資産を追跡・分析",
+    "emptyState": {
+      "title": "資産概要がここに表示されます",
+      "description": "最初のトークン化資産を作成すると、チャートと統計が表示されます"
+    }
+  },
   "widgets": {
     "alerts": {
       "dismiss": "閉じる",
