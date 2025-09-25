@@ -19,13 +19,7 @@ export default defineConfig({
   plugins: [
     devtools(),
     tsConfigPaths(),
-    tanstackStart({
-      router: {
-        codeSplittingOptions: {
-          defaultBehavior: [],
-        },
-      },
-    }),
+    tanstackStart(),
     viteReact({
       babel: {
         plugins: [["babel-plugin-react-compiler", {}]],
