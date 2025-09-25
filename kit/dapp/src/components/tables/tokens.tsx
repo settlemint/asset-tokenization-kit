@@ -13,8 +13,11 @@ import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
 import { formatValue } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
+import type { EquityCategory } from "@atk/zod/equity-categories";
+import type { EquityClass } from "@atk/zod/equity-classes";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
-import { createLogger } from "@settlemint/sdk-utils/logging";
+import type { FundCategory } from "@atk/zod/fund-categories";
+import type { FundClass } from "@atk/zod/fund-classes";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -33,8 +36,6 @@ import {
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
-const logger = createLogger();
 
 /**
  * Represents a single token from the TokenList
@@ -133,26 +134,6 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
     })
   );
 
-  // Debug: log a small sample of tokens to verify price/classification presence
-  logger.debug("TokensTable fetched tokens", {
-    factoryAddress,
-    count: tokens.length,
-    sample: tokens.slice(0, 5).map((t) => ({
-      id: t.id,
-      price: t.price,
-      assetClassification: t.assetClassification,
-    })),
-  });
-  logger.info("TokensTable fetched tokens sample", {
-    factoryAddress,
-    count: tokens.length,
-    sample: tokens.slice(0, 5).map((t) => ({
-      id: t.id,
-      price: t.price,
-      assetClassification: t.assetClassification,
-    })),
-  });
-
   // Note: We now always show the Price column (cells still hide per-row when not applicable)
   const hasAssetClassification = tokens.some((t) => t.assetClassification);
 
@@ -183,28 +164,13 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
         label: t("actions.viewDetails"),
         icon: <Eye className="h-4 w-4" />,
         onClick: () => {
-          logger.debug("View details onClick triggered");
-          logger.debug("Navigating to:", {
+          void router.navigate({
             to: "/token/$factoryAddress/$tokenAddress",
             params: {
               factoryAddress,
               tokenAddress: row.original.id,
             },
           });
-          void (async () => {
-            try {
-              await router.navigate({
-                to: "/token/$factoryAddress/$tokenAddress",
-                params: {
-                  factoryAddress,
-                  tokenAddress: row.original.id,
-                },
-              });
-              logger.debug("Navigation completed");
-            } catch (error) {
-              logger.error("Navigation failed:", error);
-            }
-          })();
         },
       },
       {
@@ -337,11 +303,6 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
           id: "totalSupply",
           header: t("columns.totalSupply"),
           cell: ({ row }) => {
-            logger.info("TokensTable price cell", {
-              tokenId: row.original.id,
-              price: row.original.price,
-              assetClassification: row.original.assetClassification,
-            });
             return formatValue(row.original.totalSupply, {
               type: "currency",
               currency: { assetSymbol: row.original.symbol },
@@ -371,10 +332,13 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
           (row) => {
             const category = row.assetClassification?.category;
             if (!category) return "";
-            const scope = row.type === "equity" ? "equity" : "funds";
-            const key = `assetClassification.${scope}.categories.${category.toLowerCase()}`;
-            const translated = t(key as never);
-            return translated || category;
+            return row.type === "equity"
+              ? t(
+                  `assetClassification.equity.categories.${category.toLowerCase() as Lowercase<EquityCategory>}`
+                )
+              : t(
+                  `assetClassification.funds.categories.${category.toLowerCase() as Lowercase<FundCategory>}`
+                );
           },
           {
             id: "category",
@@ -390,12 +354,15 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
         // Class (from assetClassification) with i18n prettified label
         columnHelper.accessor(
           (row) => {
-            const klass = row.assetClassification?.class;
-            if (!klass) return "";
-            const scope = row.type === "equity" ? "equity" : "funds";
-            const key = `assetClassification.${scope}.classes.${klass.toLowerCase()}`;
-            const translated = t(key as never);
-            return translated || klass;
+            const classification = row.assetClassification?.class;
+            if (!classification) return "";
+            return row.type === "equity"
+              ? t(
+                  `assetClassification.equity.classes.${classification.toLowerCase() as Lowercase<EquityClass>}`
+                )
+              : t(
+                  `assetClassification.funds.classes.${classification.toLowerCase() as Lowercase<FundClass>}`
+                );
           },
           {
             id: "class",
