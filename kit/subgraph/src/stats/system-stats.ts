@@ -135,6 +135,7 @@ export function updateSystemStatsForTokenLaunch(token: Token): void {
  */
 export function updateSystemStatsForTokenCreate(token: Token): void {
   const systemAddress = getTokenSystemAddress(token);
+  // Sanity check
   if (systemAddress.equals(Address.zero())) {
     log.warning(
       "Skipped increment tokens created count in system stats for token {} - system is not set",

@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { formatNumber } from "@/lib/utils/format-value/format-number";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -18,14 +19,34 @@ import { useTranslation } from "react-i18next";
  */
 export function PendingLaunchesWidget() {
   const { t } = useTranslation("stats");
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
 
   const { data: metrics } = useSuspenseQuery(
     orpc.system.stats.assets.queryOptions({ input: {} })
   );
 
-  const pendingLaunches = metrics.pendingLaunchesCount;
-  const createdCount = metrics.tokensCreatedCount.toLocaleString();
-  const launchedCount = metrics.tokensLaunchedCount.toLocaleString();
+  const pendingLaunches = formatNumber(
+    metrics.pendingLaunchesCount,
+    {
+      type: "number",
+    },
+    locale
+  );
+  const createdCount = formatNumber(
+    metrics.tokensCreatedCount,
+    {
+      type: "number",
+    },
+    locale
+  );
+  const launchedCount = formatNumber(
+    metrics.tokensLaunchedCount,
+    {
+      type: "number",
+    },
+    locale
+  );
 
   return (
     <ComponentErrorBoundary componentName="Pending Launches Widget">
@@ -34,7 +55,7 @@ export function PendingLaunchesWidget() {
           <CardTitle>{t("widgets.pendingLaunches.title")}</CardTitle>
         </CardHeader>
         <CardContent className="font-bold text-3xl">
-          {pendingLaunches.toLocaleString()}
+          {pendingLaunches}
         </CardContent>
         <CardFooter className="text-muted-foreground text-sm">
           {t("widgets.pendingLaunches.description", {
