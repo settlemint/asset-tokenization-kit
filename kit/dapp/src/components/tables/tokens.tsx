@@ -337,12 +337,6 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
           id: "totalSupply",
           header: t("columns.totalSupply"),
           cell: ({ row }) => {
-            // Debug: log per-row price context
-            logger.debug("TokensTable price cell", {
-              tokenId: row.original.id,
-              price: row.original.price,
-              assetClassification: row.original.assetClassification,
-            });
             logger.info("TokensTable price cell", {
               tokenId: row.original.id,
               price: row.original.price,
