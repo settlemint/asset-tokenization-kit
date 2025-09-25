@@ -83,12 +83,7 @@ export function ConfirmIssueClaimView({
           "currencyCode",
         ].includes(key)
       ) {
-        // Try to localize the value using a claim-specific translation function
-        // Fallback to raw string if translation not found
-        const localized =
-          t(`fields.${key}.${value}`, { defaultValue: null }) ??
-          tCommon(`${key}.${value}`, { defaultValue: null });
-        displayValue = localized ?? String(value);
+        displayValue = String(value);
       } else {
         displayValue = Array.isArray(value) ? value.join(", ") : String(value);
       }
