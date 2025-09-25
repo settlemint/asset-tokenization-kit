@@ -18,12 +18,11 @@ import { timestampSerializer } from "@atk/zod/timestamp";
 import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
 import type { RouterClient } from "@orpc/server";
-import { createRouterClient } from "@orpc/server";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
-import { router } from "./routes/router";
+import type { router } from "./routes/router";
 
 const logger = createLogger();
 
@@ -41,14 +40,13 @@ const logger = createLogger();
  * - Points to the `/api` endpoint relative to the current origin
  */
 const getORPCClient = createIsomorphicFn()
-  .server(() => {
-    return createRouterClient(router, {
-      context: () => {
+  .server((): RouterClient<typeof router> => {
+    const link = new RPCLink({
+      url: `http://localhost:3000/api/rpc`,
+      headers: () => {
         try {
           const headers = getRequestHeaders();
-          return {
-            headers: normalizeHeaders(headers),
-          };
+          return normalizeHeaders(headers);
         } catch (error) {
           // Handle cases where there's no HTTP event in AsyncLocalStorage
           // This can happen during hydration or when there's no active request
@@ -56,12 +54,16 @@ const getORPCClient = createIsomorphicFn()
             "No HTTPEvent found in AsyncLocalStorage, using empty headers",
             { error }
           );
-          return {
-            headers: {},
-          };
+          return {};
         }
       },
+      customJsonSerializers: [
+        bigDecimalSerializer,
+        bigIntSerializer,
+        timestampSerializer,
+      ],
     });
+    return createORPCClient(link);
   })
   .client((): RouterClient<typeof router> => {
     const link = new RPCLink({
