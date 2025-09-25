@@ -44,30 +44,6 @@ global:
         # -- The email to access the registry
         email: "op://platform/dockerhub/email"
 
-# Resource configurations for development environment
-# These are reasonable defaults for OrbStack/local development
-
-# PodDisruptionBudget configurations
-# For development, we typically don't need PDBs, but for production they should be enabled
-
-# No need to configure imagePullSecrets anymore - they are automatically generated from global.imagePullCredentials
-
-# erpc imagePullSecrets are now automatically generated
-
-# blockscout uses a third-party chart that doesn't support our common helpers
-blockscout:
-  blockscout-stack:
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
-
-# graph-node imagePullSecrets are now automatically generated
-
-# hasura imagePullSecrets are now automatically generated from global
-
-# portal imagePullSecrets are now automatically generated
-
 # support services imagePullSecrets are now automatically generated
 support:
   ingress-nginx:
@@ -83,29 +59,7 @@ observability:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
-  kube-state-metrics:
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
-  victoria-metrics-single:
-    global:
-      imagePullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
   loki:
-    imagePullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
-  grafana:
-    global:
-      imagePullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
-  prometheus-node-exporter:
     imagePullSecrets:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
