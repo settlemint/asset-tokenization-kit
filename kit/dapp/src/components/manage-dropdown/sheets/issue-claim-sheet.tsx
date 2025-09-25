@@ -140,8 +140,12 @@ const transformFieldValue = (value: unknown, fieldType: string): unknown => {
       return typeof value === "string" ? fromDateTimeInput(value) : value;
     case "number":
       if (typeof value === "string") {
-        const numValue = Number.parseInt(value, 10);
-        if (Number.isNaN(numValue)) {
+        const trimmedValue = value.trim();
+        if (trimmedValue === "") {
+          return undefined;
+        }
+        const numValue = Number(trimmedValue);
+        if (Number.isNaN(numValue) || !Number.isFinite(numValue)) {
           throw new TypeError(`Invalid number: "${value}"`);
         }
         return numValue;
