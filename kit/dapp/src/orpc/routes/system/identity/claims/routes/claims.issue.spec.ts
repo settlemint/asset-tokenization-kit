@@ -133,7 +133,7 @@ describe("Claims issue (integration)", () => {
         }
       )
     ).rejects.toThrow(
-      "You are not a trusted issuer for topic: knowYourCustomer"
+      "You are not a trusted issuer for topic(s): knowYourCustomer"
     );
   });
 
