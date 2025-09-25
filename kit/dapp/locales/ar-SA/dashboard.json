@@ -170,6 +170,15 @@
         "transfer": "{{user}} نقل {{amount}} {{token}}"
       },
       "viewAll": "عرض جميع الأنشطة"
+    },
+    "latestEvents": {
+      "columns": {
+        "event": "الحدث",
+        "asset": "الأصل",
+        "account": "الحساب",
+        "time": "الوقت",
+        "transaction": "المعاملة"
+      }
     }
   }
 }

@@ -77,7 +77,7 @@ export const updateCollateral = tokenRouter.token.updateCollateral
   )
   .use(
     trustedIssuerMiddleware({
-      selectTopic: () => ClaimTopic.collateral,
+      selectTopics: () => [ClaimTopic.collateral],
     })
   )
   .handler(async ({ input, context, errors }) => {

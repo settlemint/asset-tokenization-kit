@@ -35,7 +35,7 @@ import type { JSX } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-export const AssetDesignerWizard = ({ onSubmit }: { onSubmit: () => void }) => {
+export const AssetDesignerWizard = ({ onClose }: { onClose: () => void }) => {
   const { data: factories } = useQuery(
     orpc.system.factory.list.queryOptions({ input: {} })
   );
@@ -49,6 +49,8 @@ export const AssetDesignerWizard = ({ onSubmit }: { onSubmit: () => void }) => {
   const { mutateAsync: createToken } = useMutation(
     orpc.token.create.mutationOptions({
       onSuccess: async (_result, variables) => {
+        form.reset();
+
         const tokenFactory = getFactoryAddressFromTypeId(
           factories ?? [],
           variables.type
@@ -67,6 +69,13 @@ export const AssetDesignerWizard = ({ onSubmit }: { onSubmit: () => void }) => {
             }),
           }),
         ]);
+
+        await navigate({
+          to: "/token/$factoryAddress",
+          params: { factoryAddress: tokenFactory },
+        });
+
+        onClose();
       },
     })
   );
@@ -78,12 +87,8 @@ export const AssetDesignerWizard = ({ onSubmit }: { onSubmit: () => void }) => {
     },
     onSubmit: async (values) => {
       const parsedValues = AssetDesignerFormSchema.parse(values.value);
-      const factoryAddress = getFactoryAddressFromTypeId(
-        factories ?? [],
-        parsedValues.type
-      );
-
-      toast.promise(createToken(parsedValues), {
+      const createTokenPromise = createToken(parsedValues);
+      toast.promise(createTokenPromise, {
         loading: t("messages.creating", { type: parsedValues.type }),
         success: (data) =>
           t("messages.created", {
@@ -93,16 +98,14 @@ export const AssetDesignerWizard = ({ onSubmit }: { onSubmit: () => void }) => {
             symbol: data.symbol,
           }),
         error: (error: Error) =>
-          `${t("messages.creation-failed", { type: parsedValues.type })}: ${error.message}`,
+          `${t("messages.creation-failed", { type: parsedValues.type })} ${error.message}`,
       });
-
-      await navigate({
-        to: "/token/$factoryAddress",
-        params: { factoryAddress },
+      // Return a promise so that the submitting state of the form is correctly set
+      return new Promise<void>((resolve) => {
+        void createTokenPromise.finally(() => {
+          resolve();
+        });
       });
-
-      onSubmit();
-      form.reset();
     },
   });
   const type = useStore(form.store, (state) => state.values.type);
