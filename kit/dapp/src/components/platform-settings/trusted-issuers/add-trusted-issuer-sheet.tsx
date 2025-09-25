@@ -85,7 +85,7 @@ export function AddTrustedIssuerSheet({
 
       toast.promise(promise, {
         loading: t("common:saving"),
-        success: t("trustedIssuers.toast.updated"),
+        success: t("trustedIssuers.toast.added"),
         error: (data) => t("common:error", { message: data.message }),
       });
     },

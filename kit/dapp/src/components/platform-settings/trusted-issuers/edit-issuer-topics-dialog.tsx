@@ -82,7 +82,7 @@ export function EditIssuerTopicsDialog({
         }),
         {
           loading: t("common:saving"),
-          success: t("trustedIssuers.toast.added"),
+          success: t("trustedIssuers.toast.updated"),
           error: (data) => t("common:error", { message: data.message }),
         }
       );
