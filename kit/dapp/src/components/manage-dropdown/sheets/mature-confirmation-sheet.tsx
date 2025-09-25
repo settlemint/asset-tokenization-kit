@@ -51,7 +51,7 @@ export function MatureConfirmationSheet({
           name: asset.name,
           symbol: asset.symbol,
         }),
-        error: t("tokens:actions.mature.messages.error"),
+        error: (data) => t("common:error", { message: data.message }),
         loading: t("tokens:actions.mature.messages.submitting"),
       }
     );
