@@ -1,6 +1,6 @@
 # postgresql
 
-![Version: 2.0.0-alpha.12](https://img.shields.io/badge/Version-2.0.0--alpha.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.12](https://img.shields.io/badge/AppVersion-2.0.0--alpha.12-informational?style=flat-square)
+![Version: 2.0.0-alpha.13](https://img.shields.io/badge/Version-2.0.0--alpha.13-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.13](https://img.shields.io/badge/AppVersion-2.0.0--alpha.13-informational?style=flat-square)
 
 A simple PostgreSQL Helm chart for ATK development
 
@@ -17,9 +17,9 @@ A simple PostgreSQL Helm chart for ATK development
 | affinity | object | `{}` | Affinity for pod assignment (object) |
 | commonLabels | object | `{"app.kubernetes.io/managed-by":"helm","kots.io/app-slug":"settlemint-atk"}` | Common labels to add to all PostgreSQL resources |
 | fullnameOverride | string | `"postgresql"` | String to fully override common.names.fullname (string) |
-| image | object | `{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"postgres","tag":"17.6-alpine"}` | Image configuration |
+| image | object | `{"pullPolicy":"IfNotPresent","registry":"harbor.settlemint.com/docker.io","repository":"postgres","tag":"17.6-alpine"}` | Image configuration |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
-| image.registry | string | `"docker.io"` | Image registry |
+| image.registry | string | `"harbor.settlemint.com/docker.io"` | Image registry |
 | image.repository | string | `"postgres"` | Image repository |
 | image.tag | string | `"17.6-alpine"` | Image tag |
 | initdb | object | `{"scripts":{"create_databases.sql":"-- Create databases and users for all ATK services\nCREATE DATABASE blockscout;\nCREATE USER blockscout WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE blockscout TO blockscout;\n\\c blockscout;\nGRANT ALL ON SCHEMA public TO blockscout;\n\n\\c postgres;\nCREATE DATABASE thegraph WITH ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' TEMPLATE template0;\nCREATE USER thegraph WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE thegraph TO thegraph;\n\\c thegraph;\nGRANT ALL ON SCHEMA public TO thegraph;\n\n\\c postgres;\nCREATE DATABASE hasura;\nCREATE USER hasura WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE hasura TO hasura;\n\\c hasura;\nGRANT ALL ON SCHEMA public TO hasura;\n\n\\c postgres;\nCREATE DATABASE portal;\nCREATE USER portal WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE portal TO portal;\n\\c portal;\nGRANT ALL ON SCHEMA public TO portal;\n\n\\c postgres;\nCREATE DATABASE txsigner;\nCREATE USER txsigner WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE txsigner TO txsigner;\n\\c txsigner;\nGRANT ALL ON SCHEMA public TO txsigner;\n"}}` | Database initialization configuration (object) |

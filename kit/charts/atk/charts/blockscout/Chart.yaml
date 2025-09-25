@@ -2,8 +2,8 @@ apiVersion: v2
 name: blockscout
 description: A Helm chart for Blockscout blockchain explorer stack
 type: application
-version: 2.0.0-alpha.12
-appVersion: 2.0.0-alpha.12
+version: 2.0.0-alpha.13
+appVersion: 2.0.0-alpha.13
 icon: https://console.settlemint.com/android-chrome-512x512.png
 maintainers:
   - name: SettleMint
