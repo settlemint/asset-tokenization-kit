@@ -378,10 +378,41 @@ export function IssueClaimSheet({
         formFields={formFields}
         userCanIssueTopic={userCanIssueTopic}
         onTopicChange={(topic: string) => {
-          // When topic changes, regenerate form with appropriate initial values
-          // This triggers the entire schema resolution → field generation flow
+          // When topic changes, only update the dynamic fields, not the entire form
+          // This prevents race conditions and maintains the selected topic
           const topicData = topics?.find((t) => t.name === topic);
-          form.reset(createInitialValues(topic, topicData?.signature));
+
+          // First, update the topic field value
+          form.setFieldValue("topic", topic);
+
+          // Then clear/reset only the dynamic fields for the new topic
+          if (topicData) {
+            const schema = getSchemaForClaim(topic, topicData.signature);
+            if (schema) {
+              const fields = generateFormFields(schema);
+
+              // Reset each dynamic field to its default value
+              fields.forEach((field) => {
+                let defaultValue: unknown;
+                switch (field.type) {
+                  case "boolean":
+                  case "checkbox":
+                    defaultValue = false;
+                    break;
+                  case "number":
+                  case "bigint":
+                    defaultValue = "";
+                    break;
+                  default:
+                    defaultValue = "";
+                }
+                form.setFieldValue(
+                  field.name as keyof IssueClaimFormData,
+                  defaultValue
+                );
+              });
+            }
+          }
         }}
         toDateTimeValue={toDateTimeInputValue}
         fromDateTimeValue={fromDateTimeInput}
