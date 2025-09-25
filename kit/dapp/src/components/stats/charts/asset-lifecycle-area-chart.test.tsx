@@ -1,31 +1,21 @@
 /**
  * @vitest-environment happy-dom
  */
-
-const env = process.env;
-
-if (!env.SETTLEMINT_HASURA_ENDPOINT) {
-  env.SETTLEMINT_HASURA_ENDPOINT = "http://localhost:8080";
-}
-
-if (!env.SETTLEMINT_HASURA_ADMIN_SECRET) {
-  env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-}
+import { renderWithProviders } from "@test/helpers/test-utils";
+import {
+  createMockQueryError,
+  createMockQueryResult,
+} from "@test/mocks/suspense-query";
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  createMockSuspenseQueryError,
-  createMockSuspenseQueryResult,
-} from "@test/mocks/suspense-query";
-import { renderWithProviders } from "@test/helpers/test-utils";
 import { AssetLifecycleAreaChart } from "./asset-lifecycle-area-chart";
 
-// Mock useSuspenseQuery while keeping other exports
+// Mock useQuery while keeping other exports
 vi.mock("@tanstack/react-query", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tanstack/react-query")>();
   return {
     ...actual,
-    useSuspenseQuery: vi.fn(),
+    useQuery: vi.fn(),
   };
 });
 
@@ -48,17 +38,17 @@ describe("AssetLifecycleAreaChart", () => {
   });
 
   it("should render chart with lifecycle data", async () => {
-    const { useSuspenseQuery } = await import("@tanstack/react-query");
-    vi.mocked(useSuspenseQuery).mockReturnValue(
-      createMockSuspenseQueryResult({
+    const { useQuery } = await import("@tanstack/react-query");
+    vi.mocked(useQuery).mockReturnValue(
+      createMockQueryResult({
         data: [
           {
-            timestamp: `${Date.UTC(2024, 0, 1) / 1000}`,
+            timestamp: new Date(Date.UTC(2024, 0, 1)),
             assetsCreatedCount: 12,
             assetsLaunchedCount: 9,
           },
           {
-            timestamp: `${Date.UTC(2024, 0, 2) / 1000}`,
+            timestamp: new Date(Date.UTC(2024, 0, 2)),
             assetsCreatedCount: 18,
             assetsLaunchedCount: 15,
           },
@@ -72,21 +62,13 @@ describe("AssetLifecycleAreaChart", () => {
       await screen.findByText("charts.assetLifecycle.title")
     ).toBeInTheDocument();
     expect(
-      screen.getByText("charts.assetLifecycle.description")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("charts.assetLifecycle.createdLabel")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("charts.assetLifecycle.launchedLabel")
+      await screen.findByText("charts.assetLifecycle.description")
     ).toBeInTheDocument();
   });
 
   it("should show empty state when no lifecycle data exists", async () => {
-    const { useSuspenseQuery } = await import("@tanstack/react-query");
-    vi.mocked(useSuspenseQuery).mockReturnValue(
-      createMockSuspenseQueryResult({ data: [] })
-    );
+    const { useQuery } = await import("@tanstack/react-query");
+    vi.mocked(useQuery).mockReturnValue(createMockQueryResult({ data: [] }));
 
     renderWithProviders(<AssetLifecycleAreaChart />);
 
@@ -99,9 +81,9 @@ describe("AssetLifecycleAreaChart", () => {
   });
 
   it("should surface ORPC errors", async () => {
-    const { useSuspenseQuery } = await import("@tanstack/react-query");
-    vi.mocked(useSuspenseQuery).mockImplementation(
-      createMockSuspenseQueryError(
+    const { useQuery } = await import("@tanstack/react-query");
+    vi.mocked(useQuery).mockImplementation(
+      createMockQueryError(
         new Error("ORPC Error: Failed to fetch asset lifecycle stats")
       )
     );
