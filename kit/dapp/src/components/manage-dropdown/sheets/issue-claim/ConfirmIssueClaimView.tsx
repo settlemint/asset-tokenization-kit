@@ -94,7 +94,7 @@ export function ConfirmIssueClaimView({
           className="flex justify-between border-b py-2 last:border-0"
         >
           <span className="text-sm text-muted-foreground capitalize">
-            {key.replace(/([a-z])([A-Z])/g, "$1 $2")}
+            {key.replaceAll(/([a-z])([A-Z])/g, "$1 $2")}
           </span>
           <span className="text-sm font-medium text-right">{displayValue}</span>
         </div>
