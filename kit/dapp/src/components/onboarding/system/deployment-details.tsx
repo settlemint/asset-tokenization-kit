@@ -110,6 +110,7 @@ export function DeploymentDetails() {
                     copyToClipboard
                     showFullAddress={false}
                     showBadge={false}
+                    showPrettyName={false}
                     size="small"
                     className="text-xs text-muted-foreground"
                   />
@@ -126,6 +127,7 @@ export function DeploymentDetails() {
                       copyToClipboard
                       showFullAddress={false}
                       showBadge={false}
+                      showPrettyName={false}
                       size="small"
                       className="text-xs text-muted-foreground"
                     />
@@ -143,6 +145,7 @@ export function DeploymentDetails() {
                       copyToClipboard
                       showFullAddress={false}
                       showBadge={false}
+                      showPrettyName={false}
                       size="small"
                       className="text-xs text-muted-foreground"
                     />
@@ -160,6 +163,7 @@ export function DeploymentDetails() {
                       copyToClipboard
                       showFullAddress={false}
                       showBadge={false}
+                      showPrettyName={false}
                       size="small"
                       className="text-xs text-muted-foreground"
                     />
@@ -177,6 +181,7 @@ export function DeploymentDetails() {
                       copyToClipboard
                       showFullAddress={false}
                       showBadge={false}
+                      showPrettyName={false}
                       size="small"
                       className="text-xs text-muted-foreground"
                     />

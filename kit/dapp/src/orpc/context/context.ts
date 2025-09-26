@@ -10,7 +10,6 @@ import { EthereumAddress } from "@atk/zod/ethereum-address";
 import type { getHeaders } from "@tanstack/react-start/server";
 import type { IncomingHttpHeaders } from "node:http";
 
-// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 export type SourceHeaders = IncomingHttpHeaders | ReturnType<typeof getHeaders>;
 
 export type NormalizedHeaders = Record<string, string | string[]>;
