@@ -19,7 +19,7 @@ import { postgresPool } from "@/lib/settlemint/postgres";
 import { env } from "@atk/config/env";
 import { trackAllTables } from "@settlemint/sdk-hasura";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { createServerOnlyFn } from "@tanstack/react-start";
+import { serverOnly } from "@tanstack/react-start";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import * as schemas from "./schema";
@@ -88,7 +88,7 @@ export const migrateDatabase = async () => {
  * - Enables query logging in development mode for debugging SQL queries
  * - Integrates all schema definitions for type-safe database operations
  */
-const getDb = createServerOnlyFn(() => {
+const getDb = serverOnly(() => {
   return drizzle(postgresPool, {
     /**
      * Query logging configuration.
@@ -107,7 +107,7 @@ const getDb = createServerOnlyFn(() => {
 /**
  * Creates the Drizzle ORM database instance and migrates the database to the latest version.
  */
-const getMigratedDb = createServerOnlyFn(async () => {
+const getMigratedDb = serverOnly(async () => {
   await migrateDatabase();
   return getDb();
 });

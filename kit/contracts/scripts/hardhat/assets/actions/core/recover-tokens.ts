@@ -1,4 +1,4 @@
-import { Address } from "viem";
+import type { Address } from "viem";
 import { ATKContracts } from "../../../constants/contracts";
 import type { Actor } from "../../../entities/actor";
 import type { Asset } from "../../../entities/asset";
