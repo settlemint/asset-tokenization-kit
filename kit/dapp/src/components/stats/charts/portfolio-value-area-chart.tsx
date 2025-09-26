@@ -4,17 +4,24 @@ import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
 import { safeToNumber } from "@/lib/utils/format-value/safe-to-number";
 import { orpc } from "@/orpc/orpc-client";
+import { type StatsPortfolioOutput } from "@/orpc/routes/system/stats/routes/portfolio.schema";
+import {
+  resolveStatsRange,
+  type StatsRangeInput,
+  type StatsResolvedRange,
+} from "@atk/zod/stats-range";
+import { getTimestamp } from "@atk/zod/timestamp";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { subDays, subHours } from "date-fns";
 import { format } from "date-fns/format";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-export interface PortfolioValueAreaChartProps {
-  interval?: "hour" | "day";
-  from?: string;
-  to?: string;
-  timeRange?: number; // days, default 30
-}
+import { buildChartRangeDescription } from "./chart-range-description";
+
+export type PortfolioValueAreaChartProps = {
+  range: StatsRangeInput;
+};
 
 /**
  * Portfolio Value Area Chart Component
@@ -24,10 +31,7 @@ export interface PortfolioValueAreaChartProps {
  * Uses dnum for safe BigInt handling to prevent precision loss.
  */
 export function PortfolioValueAreaChart({
-  interval = "day",
-  from,
-  to,
-  timeRange = 30,
+  range,
 }: PortfolioValueAreaChartProps) {
   const { t } = useTranslation("stats");
   const { data: baseCurrency } = useSuspenseQuery(
@@ -36,86 +40,74 @@ export function PortfolioValueAreaChart({
 
   // Memoize the data transformation function to prevent unnecessary re-creation
   const selectTransform = useMemo(
-    () =>
-      (response: {
-        data: Array<{ timestamp: string; totalValueInBaseCurrency: string }>;
-      }) => {
-        // Handle empty data case
-        if (!response.data?.length) {
-          return {
-            chartData: [],
-            chartConfig: {
-              portfolioValue: {
-                label: t("charts.portfolioValue.label"),
-                color: "var(--chart-1)",
-              },
-            },
-            dataKeys: ["portfolioValue"],
-          };
-        }
+    () => (response: StatsPortfolioOutput) => {
+      const interval = response.range.interval;
 
-        // Transform the response data to chart format using safe conversion
-        const transformedData = response.data.map((item) => {
-          const timestamp = new Date(Number.parseInt(item.timestamp) * 1000);
-          const formattedTimestamp =
-            interval === "hour"
-              ? format(timestamp, "MMM dd HH:mm")
-              : format(timestamp, "MMM dd");
-
-          return {
-            timestamp: formattedTimestamp,
-            portfolioValue: safeToNumber(item.totalValueInBaseCurrency),
-          };
-        });
-
-        // Configure chart colors and labels
-        const config: ChartConfig = {
-          portfolioValue: {
-            label: t("charts.portfolioValue.label"),
-            color: "var(--chart-1)",
-          },
-        };
-
+      // Handle empty data case
+      if (!response.data?.length) {
         return {
-          chartData: transformedData,
-          chartConfig: config,
+          chartData: [],
+          chartConfig: {
+            portfolioValue: {
+              label: t("charts.portfolioValue.label"),
+              color: "var(--chart-1)",
+            },
+          },
           dataKeys: ["portfolioValue"],
         };
-      },
-    [t, interval]
+      }
+
+      // Transform the response data to chart format using safe conversion
+      const transformedData = response.data.map((item) => {
+        const timestamp = getTimestamp(item.timestamp);
+        const formattedTimestamp =
+          interval === "hour"
+            ? format(timestamp, "MMM dd HH:mm")
+            : format(timestamp, "MMM dd");
+
+        return {
+          timestamp: formattedTimestamp,
+          portfolioValue: safeToNumber(item.totalValueInBaseCurrency),
+        };
+      });
+
+      if (transformedData.length === 1) {
+        const timestamp = getTimestamp(response.data[0]?.timestamp);
+        const backfilledTimestamp =
+          interval === "hour" ? subHours(timestamp, 1) : subDays(timestamp, 1);
+
+        transformedData.unshift({
+          timestamp:
+            interval === "hour"
+              ? format(backfilledTimestamp, "MMM dd HH:mm")
+              : format(backfilledTimestamp, "MMM dd"),
+          portfolioValue: safeToNumber(
+            response.data[0]?.totalValueInBaseCurrency
+          ),
+        });
+      }
+
+      // Configure chart colors and labels
+      const config: ChartConfig = {
+        portfolioValue: {
+          label: t("charts.portfolioValue.label"),
+          color: "var(--chart-1)",
+        },
+      };
+
+      return {
+        chartData: transformedData,
+        chartConfig: config,
+        dataKeys: ["portfolioValue"],
+      };
+    },
+    [t]
   );
-
-  // Build the input parameters
-  const input = useMemo(() => {
-    const params: { interval: "hour" | "day"; from?: string; to?: string } = {
-      interval,
-    };
-
-    if (from) {
-      params.from = from;
-    }
-
-    if (to) {
-      params.to = to;
-    }
-
-    // If no date range provided, calculate from timeRange
-    if (!from && !to && timeRange) {
-      const now = new Date();
-      const fromDate = new Date(
-        now.getTime() - timeRange * 24 * 60 * 60 * 1000
-      );
-      params.from = fromDate.toISOString();
-      params.to = now.toISOString();
-    }
-
-    return params;
-  }, [interval, from, to, timeRange]);
 
   // Fetch portfolio value data with optimized caching
   const { data: rawData } = useQuery(
     orpc.system.stats.portfolio.queryOptions({
-      input,
+      input: range,
       ...CHART_QUERY_OPTIONS,
     })
   );
@@ -132,15 +124,29 @@ export function PortfolioValueAreaChart({
     dataKeys: [],
   };
 
+  const fallbackRange = useMemo<StatsResolvedRange>(() => {
+    return resolveStatsRange(range);
+  }, [range]);
+
+  const resolvedRange = rawData?.range ?? fallbackRange;
+
+  const overRange = buildChartRangeDescription({
+    range: resolvedRange,
+    t,
+  });
+
+  const description = t("charts.portfolioValue.description", {
+    overRange,
+  });
+
+  const chartInterval = resolvedRange.interval;
+
   return (
     <ComponentErrorBoundary componentName="Portfolio Value Chart">
       <AreaChartComponent
         title={t("charts.portfolioValue.title")}
-        description={t("charts.portfolioValue.description", {
-          days: timeRange,
-          interval,
-        })}
-        interval={interval}
+        description={description}
+        interval={chartInterval}
         data={chartData}
         config={chartConfig}
         dataKeys={dataKeys}

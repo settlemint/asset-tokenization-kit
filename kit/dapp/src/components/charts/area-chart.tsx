@@ -11,6 +11,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { cn } from "@/lib/utils";
 import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
 import { ChartEmptyState } from "./chart-empty-state";
 import { ChartUpdateInfo } from "./chart-update-info";
@@ -28,6 +29,7 @@ export interface AreaChartComponentProps {
   showLegend?: boolean;
   stacked?: boolean;
   className?: string;
+  chartContainerClassName?: string;
   xTickFormatter?: (value: string) => string;
   yTickFormatter?: (value: string) => string;
   emptyMessage?: string;
@@ -57,6 +59,7 @@ export function AreaChartComponent({
   showLegend = true,
   stacked = false,
   className,
+  chartContainerClassName,
   xTickFormatter,
   yTickFormatter,
   emptyMessage,
@@ -93,7 +96,13 @@ export function AreaChartComponent({
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent>
-        <ChartContainer config={config}>
+        <ChartContainer
+          className={cn(
+            chartContainerClassName,
+            "w-full max-h-[240px] lg:max-h-[280px]"
+          )}
+          config={config}
+        >
           <AreaChart accessibilityLayer data={data}>
             <CartesianGrid vertical={false} />
             {showLegend && dataKeys.length > 1 && (

@@ -1,13 +1,12 @@
+import { PortfolioBreakdownTable } from "@/components/dashboard/portfolio-details/portfolio-breakdown-table";
+import { SectionSubtitle } from "@/components/dashboard/section-subtitle";
+import { SectionTitle } from "@/components/dashboard/section-title";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
-import { PortfolioValueAreaChart } from "@/components/stats/charts/portfolio-value-area-chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
-
-import { SectionSubtitle } from "@/components/dashboard/section-subtitle";
-import { SectionTitle } from "@/components/dashboard/section-title";
 import { PortfolioBreakdown } from "./portfolio-breakdown";
 import { PortfolioSummaryCard } from "./portfolio-summary-card";
 
@@ -61,31 +60,13 @@ function PortfolioDetailsContent() {
           totalAssetsHeld={portfolioData.totalAssetsHeld}
           hasAssets={hasAssets}
         />
-      </div>
-
-      {/* Portfolio Breakdown Section */}
-      <div className="space-y-4">
-        <div className="flex flex-col gap-2">
-          <SectionTitle>{t("portfolioDetails.breakdown.title")}</SectionTitle>
-          <SectionSubtitle>
-            {t("portfolioDetails.breakdown.description")}
-          </SectionSubtitle>
-        </div>
         <PortfolioBreakdown
           breakdown={portfolioData.tokenFactoryBreakdown}
           hasAssets={hasAssets}
         />
-      </div>
-
-      {/* Portfolio Performance Section */}
-      <div className="space-y-4">
-        <div className="flex flex-col gap-2">
-          <SectionTitle>{t("portfolioDetails.performance.title")}</SectionTitle>
-          <SectionSubtitle>
-            {t("portfolioDetails.performance.description")}
-          </SectionSubtitle>
-        </div>
-        <PortfolioValueAreaChart />
+        <PortfolioBreakdownTable
+          breakdown={portfolioData.tokenFactoryBreakdown}
+        />
       </div>
     </div>
   );

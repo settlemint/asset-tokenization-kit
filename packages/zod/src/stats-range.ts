@@ -1,4 +1,4 @@
-import { isAfter, isBefore, subDays, subHours } from "date-fns";
+import { addHours, isAfter, isBefore, subDays, subHours } from "date-fns";
 import { z } from "zod";
 import { getUnixTimeMicroseconds, timestamp } from "./timestamp";
 
@@ -20,19 +20,9 @@ const StatsRangeObjectSchema = z
     }
   });
 
-const Trailing24HoursPresetSchema = z.object({
-  preset: z.literal("trailing24Hours"),
-  interval: z.literal("hour"),
-});
-
-const Trailing7DaysPresetSchema = z.object({
-  preset: z.literal("trailing7Days"),
-  interval: z.literal("day"),
-});
-
-export const StatsRangePresetSchema = z.union([
-  Trailing24HoursPresetSchema,
-  Trailing7DaysPresetSchema,
+export const StatsRangePresetSchema = z.enum([
+  "trailing24Hours",
+  "trailing7Days",
 ]);
 
 export const StatsRangeInputSchema = StatsRangeObjectSchema.or(
@@ -41,14 +31,31 @@ export const StatsRangeInputSchema = StatsRangeObjectSchema.or(
 
 export type StatsRangeInterval = z.infer<typeof StatsIntervalSchema>;
 export type StatsRangePreset = z.infer<typeof StatsRangePresetSchema>;
-export type StatsRangePresetName = StatsRangePreset["preset"];
 export type StatsRangeObject = z.infer<typeof StatsRangeObjectSchema>;
 export type StatsRangeInput = z.infer<typeof StatsRangeInputSchema>;
+
+const PRESET_CONFIG: Record<
+  StatsRangePreset,
+  {
+    interval: StatsRangeInterval;
+    resolveFrom: (to: Date) => Date;
+  }
+> = {
+  trailing24Hours: {
+    interval: "hour",
+    resolveFrom: (to: Date) => subHours(to, 24),
+  },
+  trailing7Days: {
+    interval: "day",
+    resolveFrom: (to: Date) => subDays(to, 7),
+  },
+};
 
 export const StatsResolvedRangeSchema = z.object({
   interval: StatsIntervalSchema,
   from: timestamp(),
   to: timestamp(),
+  isPreset: z.boolean(),
 });
 
 export type StatsResolvedRange = z.infer<typeof StatsResolvedRangeSchema>;
@@ -58,15 +65,10 @@ export interface ResolveStatsRangeOptions {
   minFrom?: Date;
 }
 
-const PRESET_RESOLVERS: Record<StatsRangePresetName, (to: Date) => Date> = {
-  trailing24Hours: (to: Date) => subHours(to, 24),
-  trailing7Days: (to: Date) => subDays(to, 7),
-};
-
 export function isStatsRangePreset(
   input: StatsRangeInput
 ): input is StatsRangePreset {
-  return typeof input === "object" && input !== null && "preset" in input;
+  return typeof input === "string";
 }
 
 export function resolveStatsRange(
@@ -80,7 +82,8 @@ export function resolveStatsRange(
     const minFrom = options.minFrom ?? subHours(now, 48);
     // TODO: Replace minFrom with system.createdAt when available in context
     const to = now;
-    let from = PRESET_RESOLVERS[parsed.preset](to);
+    const { interval, resolveFrom } = PRESET_CONFIG[parsed];
+    let from = resolveFrom(to);
 
     if (isBefore(from, minFrom)) {
       from = minFrom;
@@ -91,9 +94,10 @@ export function resolveStatsRange(
     }
 
     return StatsResolvedRangeSchema.parse({
-      interval: parsed.interval,
+      interval,
       from,
-      to,
+      to: addHours(to, 5),
+      isPreset: true,
     });
   }
 
@@ -118,6 +122,7 @@ export function resolveStatsRange(
     interval: parsed.interval,
     from,
     to,
+    isPreset: false,
   });
 }
 
