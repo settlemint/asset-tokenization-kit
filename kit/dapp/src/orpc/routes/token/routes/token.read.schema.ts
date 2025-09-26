@@ -12,6 +12,7 @@ import { identityClaim } from "@atk/zod/claim";
 import { complianceTypeId } from "@atk/zod/compliance";
 import { decimals } from "@atk/zod/decimals";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { ethereumCompositeId } from "@atk/zod/ethereum-composite-id";
 import { timestamp } from "@atk/zod/timestamp";
 import { from } from "dnum";
 import { z } from "zod";
@@ -138,7 +139,7 @@ export const RawTokenSchema = z.object({
   complianceModuleConfigs: z
     .array(
       z.object({
-        id: ethereumAddress,
+        id: ethereumCompositeId,
         complianceModule: z.object({
           typeId: complianceTypeId(),
         }),
