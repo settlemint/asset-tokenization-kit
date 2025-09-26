@@ -1,6 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { systemRouter } from "@/orpc/procedures/system.router";
-import { getUnixTime } from "date-fns";
+import { buildStatsRangeQuery } from "@atk/zod/stats-range";
+import { subHours } from "date-fns";
 import { z } from "zod";
 
 /**
@@ -8,7 +9,7 @@ import { z } from "zod";
  * Optimized for the Identity Growth Chart specifically
  */
 const IDENTITY_STATS_OVER_TIME_QUERY = theGraphGraphql(`
-  query IdentityStatsOverTime($systemId: String!, $from: Timestamp!, $to: Timestamp!) {
+  query IdentityStatsOverTime($systemId: String!, $from: Timestamp!, $to: Timestamp!, $interval: Aggregation_interval!) {
     # Identity statistics over time - get aggregated daily stats from specified date
     identityStats: identityStats_collection(
       where: {
@@ -16,7 +17,7 @@ const IDENTITY_STATS_OVER_TIME_QUERY = theGraphGraphql(`
         timestamp_lte: $to
         system: $systemId
       }
-      interval: day
+      interval: $interval
       orderBy: timestamp
       orderDirection: asc
     ) {
@@ -39,10 +40,13 @@ const IdentityStatsOverTimeResponseSchema = z.object({
 export const statsIdentityStatsOverTime =
   systemRouter.system.stats.identityStatsOverTime.handler(
     async ({ context, input }) => {
-      const fromTimestamp = getUnixTime(input.fromTimestamp);
-      const toTimestamp = input.toTimestamp
-        ? getUnixTime(input.toTimestamp)
-        : getUnixTime(new Date());
+      const now = new Date();
+      const { interval, fromMicroseconds, toMicroseconds, range } =
+        buildStatsRangeQuery(input, {
+          now,
+          minFrom: subHours(now, 48),
+          // TODO: replace minFrom with context.system.createdAt when available
+        });
 
       // Fetch identity stats data
       const response = await context.theGraphClient.query(
@@ -50,14 +54,16 @@ export const statsIdentityStatsOverTime =
         {
           input: {
             systemId: context.system.id.toLowerCase(),
-            from: fromTimestamp.toString(),
-            to: toTimestamp.toString(),
+            interval,
+            from: fromMicroseconds,
+            to: toMicroseconds,
           },
           output: IdentityStatsOverTimeResponseSchema,
         }
       );
 
       return {
+        range,
         identityStats: response.identityStats,
       };
     }
