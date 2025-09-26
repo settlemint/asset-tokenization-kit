@@ -79,10 +79,9 @@ export function resolveStatsRange(
 
   if (isStatsRangePreset(input)) {
     const parsed = StatsRangePresetSchema.parse(input);
-    const minFrom = options.minFrom ?? subHours(now, 48);
-    // TODO: Replace minFrom with system.createdAt when available in context
-    const to = now;
     const { interval, resolveFrom } = PRESET_CONFIG[parsed];
+    const minFrom = options.minFrom ?? resolveFrom(now);
+    const to = now;
     let from = resolveFrom(to);
 
     if (isBefore(from, minFrom)) {

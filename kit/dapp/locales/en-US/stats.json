@@ -42,7 +42,7 @@
       "label": "Active registrations",
       "empty": {
         "title": "No registrations yet",
-        "description": "Identity registrations will appear here once users start verifying"
+        "description": "Identity registrations will appear here once identities are registered"
       }
     },
     "totalCollateral": {

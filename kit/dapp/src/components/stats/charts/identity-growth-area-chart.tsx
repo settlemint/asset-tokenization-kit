@@ -2,6 +2,7 @@ import { AreaChartComponent } from "@/components/charts/area-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
+import { formatNumber } from "@/lib/utils/format-value/format-number";
 import { orpc } from "@/orpc/orpc-client";
 import {
   resolveStatsRange,
@@ -13,7 +14,6 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns/format";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-
 import { buildChartRangeDescription } from "./chart-range-description";
 
 export type IdentityGrowthAreaChartProps = {
@@ -24,6 +24,8 @@ export function IdentityGrowthAreaChart({
   range,
 }: IdentityGrowthAreaChartProps) {
   const { t } = useTranslation("stats");
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
 
   const chartConfig: ChartConfig = useMemo(
     () => ({
@@ -96,9 +98,13 @@ export function IdentityGrowthAreaChart({
         showYAxis
         stacked={false}
         yTickFormatter={(value: string) =>
-          Number(value).toLocaleString(undefined, {
-            maximumFractionDigits: 0,
-          })
+          formatNumber(
+            value,
+            {
+              type: "number",
+            },
+            locale
+          )
         }
         emptyMessage={t("charts.identityGrowth.empty.title")}
         emptyDescription={t("charts.identityGrowth.empty.description")}
