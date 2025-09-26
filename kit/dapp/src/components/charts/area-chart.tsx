@@ -87,7 +87,7 @@ export function AreaChartComponent({
   }
 
   return (
-    <Card className={className}>
+    <Card className={cn("h-full", className)}>
       <CardHeader>
         <div className="flex items-center gap-2">
           <CardTitle>{title}</CardTitle>
@@ -95,11 +95,11 @@ export function AreaChartComponent({
         </div>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex flex-1 items-center">
         <ChartContainer
           className={cn(
-            chartContainerClassName,
-            "w-full max-h-[240px] lg:max-h-[280px]"
+            "aspect-auto w-full h-[240px] lg:h-[280px]",
+            chartContainerClassName
           )}
           config={config}
         >

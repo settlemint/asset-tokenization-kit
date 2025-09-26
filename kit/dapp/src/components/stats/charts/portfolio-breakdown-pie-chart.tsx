@@ -45,6 +45,7 @@ export function PortfolioBreakdownPieChart({
   return (
     <PieChartComponent
       title={t("charts.portfolio.breakdown.chartTitle")}
+      description={t("charts.portfolio.breakdown.chartDescription")}
       data={chartData}
       config={chartConfig}
       dataKey="value"

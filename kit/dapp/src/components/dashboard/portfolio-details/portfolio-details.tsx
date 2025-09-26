@@ -1,6 +1,7 @@
 import { PortfolioBreakdownTable } from "@/components/dashboard/portfolio-details/portfolio-breakdown-table";
 import { SectionSubtitle } from "@/components/dashboard/section-subtitle";
 import { SectionTitle } from "@/components/dashboard/section-title";
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { Skeleton } from "@/components/ui/skeleton";
 import { orpc } from "@/orpc/orpc-client";
@@ -74,72 +75,54 @@ function PortfolioDetailsContent() {
 
 function PortfolioDetailsSkeleton() {
   return (
-    <div className="space-y-8">
-      {/* Portfolio Summary Skeleton */}
+    <div className="space-y-6">
       <div className="space-y-4">
         <div className="flex flex-col gap-2">
-          <Skeleton className="h-8 w-48" />
-          <Skeleton className="h-4 w-80" />
+          <Skeleton className="h-7 w-48" />
+          <Skeleton className="h-4 w-72" />
         </div>
+
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {Array.from({ length: 3 }).map((_, index) => (
             <div
               key={index}
               className="rounded-xl border border-border/60 bg-muted/50 p-6 shadow-sm"
             >
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-8 w-32" />
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Skeleton className="h-4 w-4 rounded-full" />
+                  <Skeleton className="h-4 w-32" />
+                </div>
+                <Skeleton className="h-8 w-28" />
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Portfolio Breakdown Skeleton */}
-      <div className="space-y-4">
-        <div className="flex flex-col gap-2">
-          <Skeleton className="h-8 w-48" />
-          <Skeleton className="h-4 w-72" />
-        </div>
-        <div className="rounded-xl border border-border/60 bg-muted/50 p-6 shadow-sm">
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <div className="flex h-[300px] items-center justify-center">
-              <Skeleton className="h-48 w-48 rounded-full" />
-            </div>
-            <div className="space-y-3">
-              {Array.from({ length: 3 }).map((_, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Skeleton className="h-4 w-4 rounded-full" />
-                    <Skeleton className="h-4 w-24" />
-                  </div>
-                  <Skeleton className="h-4 w-16" />
-                </div>
-              ))}
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="rounded-xl border border-border/60 bg-muted/50 p-6 shadow-sm">
+            <div className="space-y-4">
+              <Skeleton className="h-5 w-48" />
+              <Skeleton className="h-4 w-64" />
+              <div className="flex h-64 items-center justify-center">
+                <Skeleton className="h-48 w-48 rounded-full" />
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Portfolio Performance Skeleton */}
-      <div className="space-y-4">
-        <div className="flex flex-col gap-2">
-          <Skeleton className="h-8 w-48" />
-          <Skeleton className="h-4 w-64" />
-        </div>
-        <div className="rounded-xl border border-border/60 bg-muted/50 p-6 shadow-sm">
-          <div className="space-y-4">
-            <div className="h-[300px] flex items-end justify-between gap-2">
-              {Array.from({ length: 12 }).map((_, index) => (
-                <Skeleton
-                  key={index}
-                  className="w-full"
-                  style={{ height: `${Math.random() * 200 + 50}px` }}
-                />
-              ))}
+          <div className="rounded-xl border border-border/60 bg-muted/50 p-6 shadow-sm">
+            <div className="space-y-4">
+              <Skeleton className="h-5 w-44" />
+              <Skeleton className="h-4 w-72" />
+              <Skeleton className="h-64 w-full rounded-lg" />
             </div>
           </div>
+        </div>
+
+        <div className="space-y-4">
+          <DataTableSkeleton />
         </div>
       </div>
     </div>

@@ -127,6 +127,7 @@
         "title": "Portfolio Breakdown",
         "description": "Detailed breakdown of your assets by type",
         "chartTitle": "Asset allocation",
+        "chartDescription": "See how your holdings split by asset type",
         "detailsTitle": "Allocation Details",
         "assetType": "Asset Type",
         "factory": "Factory",
