@@ -9,6 +9,7 @@ import {
 import { useSession } from "@/hooks/use-auth";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import type { TokenBalance } from "@/orpc/routes/user/routes/user.assets.schema";
 import { AssetExtensionEnum } from "@atk/zod/asset-extensions";
 import { useQuery } from "@tanstack/react-query";
 import { isAfter } from "date-fns";
@@ -21,11 +22,12 @@ import {
   Pause,
   Play,
   Plus,
+  Send,
   Shield,
   TrendingUp,
   Unlock,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ComponentType } from "react";
 import { useTranslation } from "react-i18next";
 import { CollateralSheet } from "./sheets/collateral-sheet";
 import { FreezePartialSheet } from "./sheets/freeze-partial-sheet";
@@ -33,6 +35,7 @@ import { MatureConfirmationSheet } from "./sheets/mature-confirmation-sheet";
 import { MintSheet } from "./sheets/mint-sheet";
 import { PauseUnpauseConfirmationSheet } from "./sheets/pause-unpause-confirmation-sheet";
 import { SetYieldScheduleSheet } from "./sheets/set-yield-schedule-sheet";
+import { TransferAssetSheet } from "./sheets/transfer-asset-sheet";
 import { TopUpDenominationAssetSheet } from "./sheets/top-up-denomination-asset-sheet";
 import { UnfreezePartialSheet } from "./sheets/unfreeze-partial-sheet";
 import { WithdrawDenominationAssetSheet } from "./sheets/withdraw-denomination-asset-sheet";
@@ -52,7 +55,8 @@ type Action =
   | "mature"
   | "freezePartial"
   | "unfreezePartial"
-  | "withdrawDenominationAsset";
+  | "withdrawDenominationAsset"
+  | "transfer";
 
 function isCurrentAction({
   target,
@@ -126,13 +130,58 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     0n
   );
 
+  const { data: userAssetBalanceResult } = useQuery(
+    orpc.token.holder.queryOptions({
+      input: {
+        tokenAddress: asset.id,
+        holderAddress: userWallet ?? "",
+      },
+      enabled: Boolean(userWallet),
+    })
+  );
+
+  const userHolderBalance = userAssetBalanceResult?.holder ?? null;
+
+  const transferSheetAsset = useMemo<TokenBalance | null>(() => {
+    if (!userHolderBalance) {
+      return null;
+    }
+
+    return {
+      id: asset.id,
+      value: userHolderBalance.value,
+      frozen: userHolderBalance.frozen,
+      available: userHolderBalance.available,
+      token: {
+        id: asset.id,
+        name: asset.name,
+        symbol: asset.symbol,
+        decimals: asset.decimals,
+        totalSupply: asset.totalSupply,
+      },
+    } satisfies TokenBalance;
+  }, [
+    asset.decimals,
+    asset.id,
+    asset.name,
+    asset.symbol,
+    asset.totalSupply,
+    userHolderBalance,
+  ]);
+
+  const canTransfer =
+    Boolean(asset.userPermissions?.actions?.transfer) &&
+    Boolean(userWallet) &&
+    !isPaused;
+  const hasTransferableAmount = (transferSheetAsset?.available?.[0] ?? 0n) > 0n;
+
   const actions = useMemo(() => {
     // Check if asset has pausable capability (handles both null and undefined)
     const hasPausableCapability = asset.pausable != null;
     const arr: Array<{
       id: string;
       label: string;
-      icon: React.ComponentType<{ className?: string }>;
+      icon: ComponentType<{ className?: string }>;
       openAction: Action;
       disabled: boolean;
     }> = [];
@@ -189,6 +238,16 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         icon: Unlock,
         openAction: "unfreezePartial",
         disabled: false,
+      });
+    }
+
+    if (canTransfer) {
+      arr.push({
+        id: "transfer",
+        label: t("tokens:actions.transfer.label"),
+        icon: Send,
+        openAction: "transfer",
+        disabled: !hasTransferableAmount,
       });
     }
 
@@ -278,6 +337,8 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     isPaused,
     hasWithdrawableAmount,
     hasTopUpableAmount,
+    canTransfer,
+    hasTransferableAmount,
   ]);
 
   const onActionOpenChange = (open: boolean) => {
@@ -386,6 +447,14 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         onOpenChange={onActionOpenChange}
         asset={asset}
       />
+
+      {transferSheetAsset && (
+        <TransferAssetSheet
+          open={isCurrentAction({ target: "transfer", current: openAction })}
+          onOpenChange={onActionOpenChange}
+          asset={transferSheetAsset}
+        />
+      )}
 
       {/* Change roles is available from the token tab permissions UI */}
     </>
