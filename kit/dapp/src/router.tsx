@@ -27,6 +27,10 @@ import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query
 import { parse, stringify } from "superjson";
 import { routeTree } from "./routeTree.gen";
 
+export function createRouter() {
+  return getRouter();
+}
+
 export function getRouter() {
   const queryClient = new QueryClient({
     defaultOptions: {

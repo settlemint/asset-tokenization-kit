@@ -17,7 +17,7 @@ postgresql:
     # -- (string) PostgreSQL image repository
     repository: postgres
     # -- (string) PostgreSQL image tag (immutable tags are recommended)
-    tag: "17.6-alpine"
+    tag: "18.0-alpine"
     # -- (string) PostgreSQL image pull policy
     pullPolicy: IfNotPresent
 
