@@ -11,6 +11,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { cn } from "@/lib/utils";
 import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
 import { ChartEmptyState } from "./chart-empty-state";
 import { ChartUpdateInfo } from "./chart-update-info";
@@ -28,6 +29,7 @@ export interface AreaChartComponentProps {
   showLegend?: boolean;
   stacked?: boolean;
   className?: string;
+  chartContainerClassName?: string;
   xTickFormatter?: (value: string) => string;
   yTickFormatter?: (value: string) => string;
   emptyMessage?: string;
@@ -57,6 +59,7 @@ export function AreaChartComponent({
   showLegend = true,
   stacked = false,
   className,
+  chartContainerClassName,
   xTickFormatter,
   yTickFormatter,
   emptyMessage,
@@ -84,7 +87,7 @@ export function AreaChartComponent({
   }
 
   return (
-    <Card className={className}>
+    <Card className={cn("h-full", className)}>
       <CardHeader>
         <div className="flex items-center gap-2">
           <CardTitle>{title}</CardTitle>
@@ -92,8 +95,14 @@ export function AreaChartComponent({
         </div>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={config}>
+      <CardContent className="flex flex-1 items-center">
+        <ChartContainer
+          className={cn(
+            "aspect-auto w-full h-[240px] lg:h-[280px]",
+            chartContainerClassName
+          )}
+          config={config}
+        >
           <AreaChart accessibilityLayer data={data}>
             <CartesianGrid vertical={false} />
             {showLegend && dataKeys.length > 1 && (

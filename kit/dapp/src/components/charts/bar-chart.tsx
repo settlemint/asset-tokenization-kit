@@ -11,6 +11,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { cn } from "@/lib/utils";
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
 import { ChartEmptyState } from "./chart-empty-state";
@@ -89,7 +90,7 @@ export function BarChartComponent({
   }
 
   return (
-    <Card className={className}>
+    <Card className={cn("h-full", className)}>
       <CardHeader>
         <div className="flex items-center gap-2">
           <CardTitle>{title}</CardTitle>
@@ -97,8 +98,11 @@ export function BarChartComponent({
         </div>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={config}>
+      <CardContent className="flex flex-1 items-center">
+        <ChartContainer
+          className="aspect-auto h-[240px] w-full lg:h-[280px]"
+          config={config}
+        >
           <BarChart accessibilityLayer data={filteredData}>
             <CartesianGrid vertical={false} />
             {showLegend && dataKeys.length > 1 && (

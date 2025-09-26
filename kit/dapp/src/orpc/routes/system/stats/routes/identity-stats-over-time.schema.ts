@@ -1,12 +1,8 @@
-import { timestamp } from "@atk/zod/timestamp";
+import { StatsResolvedRangeSchema } from "@atk/zod/stats-range";
 import { z } from "zod";
 
-export const StatsIdentityStatsOverTimeInputSchema = z.object({
-  fromTimestamp: timestamp().describe("Start timestamp"),
-  toTimestamp: timestamp().describe("End timestamp").optional(),
-});
-
 export const StatsIdentityStatsOverTimeOutputSchema = z.object({
+  range: StatsResolvedRangeSchema,
   identityStats: z.array(
     z.object({
       timestamp: z.string(),
@@ -15,9 +11,6 @@ export const StatsIdentityStatsOverTimeOutputSchema = z.object({
   ),
 });
 
-export type StatsIdentityStatsOverTimeInput = z.infer<
-  typeof StatsIdentityStatsOverTimeInputSchema
->;
 export type StatsIdentityStatsOverTimeOutput = z.infer<
   typeof StatsIdentityStatsOverTimeOutputSchema
 >;

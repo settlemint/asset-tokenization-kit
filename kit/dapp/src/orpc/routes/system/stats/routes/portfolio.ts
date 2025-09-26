@@ -1,39 +1,21 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { systemRouter } from "@/orpc/procedures/system.router";
-import { getUnixTime } from "date-fns";
+import { buildStatsRangeQuery } from "@atk/zod/stats-range";
+import { timestamp } from "@atk/zod/timestamp";
+import { subHours } from "date-fns";
 import { z } from "zod";
 
 /**
  * GraphQL query to fetch hourly portfolio data
  */
-const PORTFOLIO_HOURLY_QUERY = theGraphGraphql(`
-  query PortfolioHistoryHourly($accountId: String!, $from: Timestamp, $to: Timestamp) {
+const PORTFOLIO_VALUE_QUERY = theGraphGraphql(`
+  query PortfolioHistoryHourly($accountId: String!, $fromMicroseconds: Timestamp, $toMicroseconds: Timestamp, $interval: Aggregation_interval!) {
     accountStats: accountStats_collection(
-      interval: hour
+      interval: $interval
       where: {
         account: $accountId,
-        timestamp_gte: $from,
-        timestamp_lte: $to
-      }
-      orderBy: timestamp
-    ) {
-      timestamp
-      totalValueInBaseCurrency
-    }
-  }
-`);
-
-/**
- * GraphQL query to fetch daily portfolio data
- */
-const PORTFOLIO_DAILY_QUERY = theGraphGraphql(`
-  query PortfolioHistoryDaily($accountId: String!, $from: Timestamp, $to: Timestamp) {
-    accountStats: accountStats_collection(
-      interval: day
-      where: {
-        account: $accountId,
-        timestamp_gte: $from,
-        timestamp_lte: $to
+        timestamp_gte: $fromMicroseconds,
+        timestamp_lte: $toMicroseconds
       }
       orderBy: timestamp
     ) {
@@ -45,7 +27,7 @@ const PORTFOLIO_DAILY_QUERY = theGraphGraphql(`
 
 // Base schema for portfolio data items
 const PortfolioDataItem = z.object({
-  timestamp: z.string(),
+  timestamp: timestamp(),
   totalValueInBaseCurrency: z.string(),
 });
 
@@ -92,33 +74,32 @@ export const statsPortfolio = systemRouter.system.stats.portfolio.handler(
     // Get user's wallet address from auth context
     const userAddress = context.auth.user.wallet;
 
+    const now = new Date();
+    const { interval, fromMicroseconds, toMicroseconds, range } =
+      buildStatsRangeQuery(input, {
+        now,
+        minFrom: subHours(now, 48),
+        // TODO: replace minFrom with context.system.createdAt when available
+      });
+
     // Build query variables
-    const variables: {
-      accountId: string;
-      from?: string;
-      to?: string;
-    } = {
+    const variables = {
       accountId: userAddress.toLowerCase(),
-    };
+      fromMicroseconds,
+      toMicroseconds,
+      interval,
+    } as const;
 
-    if (input.from) {
-      variables.from = getUnixTime(input.from).toString();
-    }
-
-    if (input.to) {
-      variables.to = getUnixTime(input.to).toString();
-    }
-
-    const query =
-      input.interval === "hour"
-        ? PORTFOLIO_HOURLY_QUERY
-        : PORTFOLIO_DAILY_QUERY;
-    const portfolioData = await context.theGraphClient.query(query, {
-      input: variables,
-      output: PortfolioResponseSchema,
-    });
+    const portfolioData = await context.theGraphClient.query(
+      PORTFOLIO_VALUE_QUERY,
+      {
+        input: variables,
+        output: PortfolioResponseSchema,
+      }
+    );
 
     return {
+      range,
       data: portfolioData.accountStats,
     };
   }

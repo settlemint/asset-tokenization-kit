@@ -14,6 +14,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { cn } from "@/lib/utils";
 import { ReactNode, useMemo } from "react";
 import { Cell, Pie, PieChart } from "recharts";
 import { ChartEmptyState } from "./chart-empty-state";
@@ -67,7 +68,7 @@ export function PieChartComponent({
   }
 
   return (
-    <Card className={className}>
+    <Card className={cn("h-full", className)}>
       <CardHeader>
         <div className="flex items-center gap-2">
           <CardTitle>{title}</CardTitle>
@@ -75,8 +76,11 @@ export function PieChartComponent({
         </div>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={config}>
+      <CardContent className="flex flex-1 items-center justify-center">
+        <ChartContainer
+          className="aspect-auto h-[240px] w-full lg:h-[280px]"
+          config={config}
+        >
           <PieChart>
             <ChartTooltip
               cursor={false}

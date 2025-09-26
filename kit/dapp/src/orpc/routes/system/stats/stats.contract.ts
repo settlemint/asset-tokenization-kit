@@ -1,22 +1,13 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
+import { StatsAssetLifecycleOutputSchema } from "@/orpc/routes/system/stats/routes/asset-lifecycle.schema";
 import { StatsAssetsOutputSchema } from "@/orpc/routes/system/stats/routes/assets.schema";
-import {
-  StatsAssetLifecycleInputSchema,
-  StatsAssetLifecycleOutputSchema,
-} from "@/orpc/routes/system/stats/routes/asset-lifecycle.schema";
 import { StatsIdentityCountOutputSchema } from "@/orpc/routes/system/stats/routes/identity-count.schema";
-import {
-  StatsIdentityStatsOverTimeInputSchema,
-  StatsIdentityStatsOverTimeOutputSchema,
-} from "@/orpc/routes/system/stats/routes/identity-stats-over-time.schema";
+import { StatsIdentityStatsOverTimeOutputSchema } from "@/orpc/routes/system/stats/routes/identity-stats-over-time.schema";
 import {
   StatsPortfolioDetailsInputSchema,
   StatsPortfolioDetailsOutputSchema,
 } from "@/orpc/routes/system/stats/routes/portfolio-details.schema";
-import {
-  StatsPortfolioInputSchema,
-  StatsPortfolioOutputSchema,
-} from "@/orpc/routes/system/stats/routes/portfolio.schema";
+import { StatsPortfolioOutputSchema } from "@/orpc/routes/system/stats/routes/portfolio.schema";
 import {
   StatsTransactionCountInputSchema,
   StatsTransactionCountOutputSchema,
@@ -26,6 +17,7 @@ import {
   StatsTransactionHistoryOutputSchema,
 } from "@/orpc/routes/system/stats/routes/transaction-history.schema";
 import { StatsValueOutputSchema } from "@/orpc/routes/system/stats/routes/value.schema";
+import { StatsRangeInputSchema } from "@atk/zod/stats-range";
 
 const statsAssets = baseContract
   .route({
@@ -45,7 +37,7 @@ const statsAssetLifecycle = baseContract
     successDescription: "System asset lifecycle metrics retrieved successfully",
     tags: ["stats", "system", "assets"],
   })
-  .input(StatsAssetLifecycleInputSchema)
+  .input(StatsRangeInputSchema)
   .output(StatsAssetLifecycleOutputSchema);
 
 const statsIdentityCount = baseContract
@@ -67,7 +59,7 @@ const statsIdentityStatsOverTime = baseContract
     successDescription: "Identity statistics over time retrieved successfully",
     tags: ["stats", "system", "identity"],
   })
-  .input(StatsIdentityStatsOverTimeInputSchema)
+  .input(StatsRangeInputSchema)
   .output(StatsIdentityStatsOverTimeOutputSchema);
 
 const statsTransactionCount = baseContract
@@ -111,7 +103,7 @@ const statsPortfolio = baseContract
     successDescription: "System portfolio statistics retrieved successfully",
     tags: ["stats", "system"],
   })
-  .input(StatsPortfolioInputSchema)
+  .input(StatsRangeInputSchema)
   .output(StatsPortfolioOutputSchema);
 
 const statsPortfolioDetails = baseContract

@@ -14,7 +14,7 @@
  * @see {@link https://tanstack.com/query/latest/docs/react/guides/suspense} - React Query suspense mode
  */
 
-import { AssetOverviewSection } from "@/components/dashboard/asset-overview-section";
+import { AssetOverviewSection } from "@/components/dashboard/asset-overview/asset-overview-section";
 import { IdentityMetrics } from "@/components/dashboard/identity-metrics/identity-metrics";
 import { IdentityProgress } from "@/components/dashboard/identity-progress/identity-progress";
 import { LatestEvents } from "@/components/dashboard/latest-events/latest-events";

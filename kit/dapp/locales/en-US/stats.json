@@ -2,7 +2,21 @@
   "charts": {
     "common": {
       "noData": "No data available",
-      "noDataDescription": "There is currently no data to display for this chart"
+      "noDataDescription": "There is currently no data to display for this chart",
+      "intervalLabel": {
+        "hour": "Hourly",
+        "day": "Daily"
+      },
+      "range": {
+        "duration": "over the last {{duration}}",
+        "window": "from {{start}} to {{end}}"
+      },
+      "units": {
+        "hour_one": "{{count}} hour",
+        "hour_other": "{{count}} hours",
+        "day_one": "{{count}} day",
+        "day_other": "{{count}} days"
+      }
     },
     "assetActivity": {
       "description": "Asset transaction activity",
@@ -14,12 +28,21 @@
     },
     "assetLifecycle": {
       "title": "Created and launched assets",
-      "description": "Daily trends of assets created and launched over the last {{days}} days",
+      "description": "Track how asset launches keep pace with new creations {{overRange}}",
       "createdLabel": "Assets created",
       "launchedLabel": "Assets launched",
       "empty": {
         "title": "No asset trends yet",
         "description": "You'll see these trends once assets are created"
+      }
+    },
+    "identityGrowth": {
+      "title": "Identity growth",
+      "description": "Watch verified identities grow {{overRange}}",
+      "label": "Active registrations",
+      "empty": {
+        "title": "No registrations yet",
+        "description": "Identity registrations will appear here once identities are registered"
       }
     },
     "totalCollateral": {
@@ -85,7 +108,7 @@
     },
     "portfolioValue": {
       "title": "Portfolio value",
-      "description": "Track how your investments have performed over the last {{days}} days",
+      "description": "See how your portfolio value changed {{overRange}}",
       "label": "Value",
       "empty": {
         "title": "No data to show yet",
@@ -104,6 +127,7 @@
         "title": "Portfolio Breakdown",
         "description": "Detailed breakdown of your assets by type",
         "chartTitle": "Asset allocation",
+        "chartDescription": "See how your holdings split by asset type",
         "detailsTitle": "Allocation Details",
         "assetType": "Asset Type",
         "factory": "Factory",

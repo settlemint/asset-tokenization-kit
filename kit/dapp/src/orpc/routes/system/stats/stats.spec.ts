@@ -36,6 +36,12 @@ describe("system stats ORPC routes", () => {
     });
     expect(result).toEqual({
       data: expect.any(Array),
+      range: {
+        from: expect.any(Date),
+        to: expect.any(Date),
+        interval: "day",
+        isPreset: false,
+      },
     });
   });
 

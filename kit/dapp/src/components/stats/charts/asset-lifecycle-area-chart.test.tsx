@@ -8,7 +8,18 @@ import {
 } from "@test/mocks/suspense-query";
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { type StatsRangeInput } from "@atk/zod/stats-range";
+
 import { AssetLifecycleAreaChart } from "./asset-lifecycle-area-chart";
+
+const defaultFrom = new Date(Date.UTC(2024, 0, 1));
+const defaultTo = new Date(Date.UTC(2024, 0, 2));
+
+const defaultInput: StatsRangeInput = {
+  interval: "day",
+  from: defaultFrom,
+  to: defaultTo,
+};
 
 // Mock useQuery while keeping other exports
 vi.mock("@tanstack/react-query", async (importOriginal) => {
@@ -41,6 +52,12 @@ describe("AssetLifecycleAreaChart", () => {
     const { useQuery } = await import("@tanstack/react-query");
     vi.mocked(useQuery).mockReturnValue(
       createMockQueryResult({
+        range: {
+          interval: "day",
+          from: defaultFrom,
+          to: defaultTo,
+          isPreset: false,
+        },
         data: [
           {
             timestamp: new Date(Date.UTC(2024, 0, 1)),
@@ -56,7 +73,7 @@ describe("AssetLifecycleAreaChart", () => {
       })
     );
 
-    renderWithProviders(<AssetLifecycleAreaChart />);
+    renderWithProviders(<AssetLifecycleAreaChart range={defaultInput} />);
 
     expect(
       await screen.findByText("charts.assetLifecycle.title")
@@ -68,9 +85,19 @@ describe("AssetLifecycleAreaChart", () => {
 
   it("should show empty state when no lifecycle data exists", async () => {
     const { useQuery } = await import("@tanstack/react-query");
-    vi.mocked(useQuery).mockReturnValue(createMockQueryResult({ data: [] }));
+    vi.mocked(useQuery).mockReturnValue(
+      createMockQueryResult({
+        range: {
+          interval: "day",
+          from: defaultFrom,
+          to: defaultTo,
+          isPreset: false,
+        },
+        data: [],
+      })
+    );
 
-    renderWithProviders(<AssetLifecycleAreaChart />);
+    renderWithProviders(<AssetLifecycleAreaChart range={defaultInput} />);
 
     expect(
       await screen.findByText("charts.assetLifecycle.empty.title")
@@ -91,7 +118,7 @@ describe("AssetLifecycleAreaChart", () => {
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     expect(() => {
-      renderWithProviders(<AssetLifecycleAreaChart />);
+      renderWithProviders(<AssetLifecycleAreaChart range={defaultInput} />);
     }).toThrow("ORPC Error: Failed to fetch asset lifecycle stats");
 
     consoleSpy.mockRestore();
