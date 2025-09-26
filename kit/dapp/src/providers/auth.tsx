@@ -598,6 +598,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         apiKey={true}
         credentials={{
           confirmPassword: true,
+          forgotPassword: false,
         }}
         signUp={{
           fields: [],
