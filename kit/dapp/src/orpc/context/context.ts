@@ -7,12 +7,11 @@ import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-gr
 import type { System } from "@/orpc/routes/system/routes/system.read.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { EthereumAddress } from "@atk/zod/ethereum-address";
-import type { getRequestHeaders } from "@tanstack/react-start/server";
+import type { getHeaders } from "@tanstack/react-start/server";
 import type { IncomingHttpHeaders } from "node:http";
 
-export type SourceHeaders =
-  | ReturnType<typeof getRequestHeaders>
-  | IncomingHttpHeaders;
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+export type SourceHeaders = IncomingHttpHeaders | ReturnType<typeof getHeaders>;
 
 export type NormalizedHeaders = Record<string, string | string[]>;
 

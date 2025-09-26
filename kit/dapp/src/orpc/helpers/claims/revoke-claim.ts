@@ -2,7 +2,7 @@ import type { SessionUser } from "@/lib/auth";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import type { ValidatedPortalClient } from "@/orpc/middlewares/services/portal.middleware";
 import { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
-import { Address } from "viem";
+import type { Address } from "viem";
 
 /**
  * GraphQL mutation for revoking a claim from an identity contract.

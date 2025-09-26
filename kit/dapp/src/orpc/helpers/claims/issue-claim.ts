@@ -6,7 +6,7 @@ import {
 } from "@/orpc/helpers/claims/create-claim";
 import type { ValidatedPortalClient } from "@/orpc/middlewares/services/portal.middleware";
 import { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
-import { Address } from "viem";
+import type { Address } from "viem";
 
 /**
  * GraphQL mutation to add a claim to an identity contract.
