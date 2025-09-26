@@ -41,7 +41,8 @@ export function AddTopicDialog({
   const { t } = useTranslation("claim-topics-issuers");
   const { t: tErrors } = useTranslation("errors");
 
-  const normalizeName = (value: string) => value.trim().toLowerCase();
+  const normalizeName = (value: string) =>
+    value.normalize("NFKC").trim().toLowerCase();
   const getExistingTopics = (): TopicScheme[] => {
     return (
       queryClient.getQueryData(orpc.system.claimTopics.topicList.queryKey()) ??
