@@ -49,7 +49,7 @@
     "title": "Easy does it"
   },
   "resourceAlreadyExists": {
-    "description": "This already exists in the system. Try using a different name or identifier.",
+    "description": "This item already exists. Please choose a unique name or identifier.",
     "title": "Already taken"
   },
   "serviceUnavailable": {
