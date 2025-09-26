@@ -33,15 +33,17 @@ vi.mock("@/orpc/orpc-client", () => ({
               enabled,
               queryKey: ["system", "stats", "portfolio"],
               queryFn: vi.fn(() => {
-                const typedInput =
-                  typeof input === "string"
-                    ? undefined
-                    : (input as StatsRangeInput | undefined);
+                const typedInput = input as StatsRangeInput | undefined;
 
-                const interval = typedInput?.interval ?? "day";
-                const from =
-                  typedInput?.from ?? new Date("2024-01-01T00:00:00Z");
-                const to = typedInput?.to ?? new Date("2024-01-31T23:59:59Z");
+                let interval: "day" | "hour" = "day";
+                let from = new Date("2024-01-01T00:00:00Z");
+                let to = new Date("2024-01-31T23:59:59Z");
+
+                if (typedInput && typeof typedInput !== "string") {
+                  interval = typedInput.interval;
+                  from = typedInput.from;
+                  to = typedInput.to;
+                }
 
                 return Promise.resolve({
                   range: {
@@ -95,7 +97,8 @@ vi.mock("react-i18next", () => ({
       }
 
       if (key === "charts.portfolioValue.description") {
-        const overRange = String(options.overRange ?? "").trim();
+        const overRange =
+          typeof options.overRange === "string" ? options.overRange.trim() : "";
         return `See how your portfolio value changed ${overRange}`.trim();
       }
 
@@ -130,7 +133,9 @@ vi.mock("react-i18next", () => ({
       }
 
       if (key === "charts.common.range.duration") {
-        return `over the last ${String(options.duration ?? "")}`.trim();
+        const duration =
+          typeof options.duration === "string" ? options.duration : "";
+        return `over the last ${duration}`.trim();
       }
 
       if (key === "charts.common.range.window") {
