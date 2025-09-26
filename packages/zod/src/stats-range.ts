@@ -1,4 +1,4 @@
-import { addHours, isAfter, isBefore, subDays, subHours } from "date-fns";
+import { isAfter, isBefore, subDays, subHours } from "date-fns";
 import { z } from "zod";
 import { getUnixTimeMicroseconds, timestamp } from "./timestamp";
 
@@ -96,7 +96,7 @@ export function resolveStatsRange(
     return StatsResolvedRangeSchema.parse({
       interval,
       from,
-      to: addHours(to, 5),
+      to,
       isPreset: true,
     });
   }
