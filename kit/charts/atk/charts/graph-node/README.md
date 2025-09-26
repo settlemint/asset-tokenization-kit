@@ -90,9 +90,9 @@ A Helm chart for Graph Node
 | podDisruptionBudget | object | `{"enabled":false}` | Pod disruption budget |
 | podDisruptionBudget.enabled | bool | `false` | Enable pod disruption budget |
 | podSecurityContext | object | `{}` | Pod-wide security context |
-| postgresReadinessCheck | object | `{"enabled":true,"image":"docker.io/postgres:17.6-alpine","initialWaitTime":2,"maxRetries":30,"maxWaitTime":30,"randomDelayRange":{"max":30,"min":5},"resources":{"limits":{"cpu":"100m","memory":"96Mi"},"requests":{"cpu":"25m","memory":"48Mi"}}}` | PostgreSQL readiness check configuration |
+| postgresReadinessCheck | object | `{"enabled":true,"image":"docker.io/postgres:18.0-alpine","initialWaitTime":2,"maxRetries":30,"maxWaitTime":30,"randomDelayRange":{"max":30,"min":5},"resources":{"limits":{"cpu":"100m","memory":"96Mi"},"requests":{"cpu":"25m","memory":"48Mi"}}}` | PostgreSQL readiness check configuration |
 | postgresReadinessCheck.enabled | bool | `true` | Enable PostgreSQL readiness check init container |
-| postgresReadinessCheck.image | string | `"docker.io/postgres:17.6-alpine"` | Docker image for PostgreSQL readiness check |
+| postgresReadinessCheck.image | string | `"docker.io/postgres:18.0-alpine"` | Docker image for PostgreSQL readiness check |
 | postgresReadinessCheck.initialWaitTime | int | `2` | Initial wait time between retries (doubles with exponential backoff) |
 | postgresReadinessCheck.maxRetries | int | `30` | Maximum number of connection retries |
 | postgresReadinessCheck.maxWaitTime | int | `30` | Maximum wait time between retries |
