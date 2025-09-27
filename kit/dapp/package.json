@@ -51,7 +51,7 @@
     "babel-plugin-react-compiler": "19.1.0-rc.3",
     "contracts": "workspace:*",
     "dotenv": "17.2.2",
-    "drizzle-kit": "0.31.4",
+    "drizzle-kit": "0.31.5",
     "globals": "16.4.0",
     "gql.tada": "1.8.13",
     "happy-dom": "18.0.1",
