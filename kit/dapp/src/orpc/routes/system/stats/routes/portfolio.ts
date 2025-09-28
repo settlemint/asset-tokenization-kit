@@ -2,7 +2,6 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { buildStatsRangeQuery } from "@atk/zod/stats-range";
 import { timestamp } from "@atk/zod/timestamp";
-import { subHours } from "date-fns";
 import { z } from "zod";
 
 /**
@@ -78,7 +77,6 @@ export const statsPortfolio = systemRouter.system.stats.portfolio.handler(
     const { interval, fromMicroseconds, toMicroseconds, range } =
       buildStatsRangeQuery(input, {
         now,
-        minFrom: subHours(now, 48),
         // TODO: replace minFrom with context.system.createdAt when available
       });
 

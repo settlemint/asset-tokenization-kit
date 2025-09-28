@@ -2,21 +2,16 @@ import { AreaChartComponent } from "@/components/charts/area-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
-import { safeToNumber } from "@/lib/utils/format-value/safe-to-number";
+import { createTimeSeries } from "@/lib/utils/timeseries";
 import { orpc } from "@/orpc/orpc-client";
-import { type StatsPortfolioOutput } from "@/orpc/routes/system/stats/routes/portfolio.schema";
 import {
   resolveStatsRange,
   type StatsRangeInput,
   type StatsResolvedRange,
 } from "@atk/zod/stats-range";
-import { getTimestamp } from "@atk/zod/timestamp";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { subDays, subHours } from "date-fns";
-import { format } from "date-fns/format";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-
 import { buildChartRangeDescription } from "./chart-range-description";
 
 export type PortfolioValueAreaChartProps = {
@@ -33,75 +28,10 @@ export type PortfolioValueAreaChartProps = {
 export function PortfolioValueAreaChart({
   range,
 }: PortfolioValueAreaChartProps) {
-  const { t } = useTranslation("stats");
+  const { t, i18n } = useTranslation("stats");
+  const locale = i18n.language;
   const { data: baseCurrency } = useSuspenseQuery(
     orpc.settings.read.queryOptions({ input: { key: "BASE_CURRENCY" } })
-  );
-
-  // Memoize the data transformation function to prevent unnecessary re-creation
-  const selectTransform = useMemo(
-    () => (response: StatsPortfolioOutput) => {
-      const interval = response.range.interval;
-
-      // Handle empty data case
-      if (!response.data?.length) {
-        return {
-          chartData: [],
-          chartConfig: {
-            portfolioValue: {
-              label: t("charts.portfolioValue.label"),
-              color: "var(--chart-1)",
-            },
-          },
-          dataKeys: ["portfolioValue"],
-        };
-      }
-
-      // Transform the response data to chart format using safe conversion
-      const transformedData = response.data.map((item) => {
-        const timestamp = getTimestamp(item.timestamp);
-        const formattedTimestamp =
-          interval === "hour"
-            ? format(timestamp, "MMM dd HH:mm")
-            : format(timestamp, "MMM dd");
-
-        return {
-          timestamp: formattedTimestamp,
-          portfolioValue: safeToNumber(item.totalValueInBaseCurrency),
-        };
-      });
-
-      if (transformedData.length === 1) {
-        const timestamp = getTimestamp(response.data[0]?.timestamp);
-        const backfilledTimestamp =
-          interval === "hour" ? subHours(timestamp, 1) : subDays(timestamp, 1);
-
-        transformedData.unshift({
-          timestamp:
-            interval === "hour"
-              ? format(backfilledTimestamp, "MMM dd HH:mm")
-              : format(backfilledTimestamp, "MMM dd"),
-          portfolioValue: safeToNumber(
-            response.data[0]?.totalValueInBaseCurrency
-          ),
-        });
-      }
-
-      // Configure chart colors and labels
-      const config: ChartConfig = {
-        portfolioValue: {
-          label: t("charts.portfolioValue.label"),
-          color: "var(--chart-1)",
-        },
-      };
-
-      return {
-        chartData: transformedData,
-        chartConfig: config,
-        dataKeys: ["portfolioValue"],
-      };
-    },
-    [t]
   );
 
   // Fetch portfolio value data with optimized caching
@@ -112,16 +42,12 @@ export function PortfolioValueAreaChart({
     })
   );
 
-  // Transform the data using the memoized function
-  const data = useMemo(() => {
-    if (!rawData) return undefined;
-    return selectTransform(rawData);
-  }, [rawData, selectTransform]);
-
-  const { chartData, chartConfig, dataKeys } = data ?? {
-    chartData: [],
-    chartConfig: {},
-    dataKeys: [],
+  // Configure chart colors and labels
+  const chartConfig: ChartConfig = {
+    totalValueInBaseCurrency: {
+      label: t("charts.portfolioValue.label"),
+      color: "var(--chart-1)",
+    },
   };
 
   const fallbackRange = useMemo<StatsResolvedRange>(() => {
@@ -140,6 +66,18 @@ export function PortfolioValueAreaChart({
   });
 
   const chartInterval = resolvedRange.interval;
+  const timeseries = createTimeSeries(
+    rawData?.data ?? [],
+    ["totalValueInBaseCurrency"],
+    {
+      range: resolvedRange,
+      aggregation: "last",
+      accumulation: "max",
+      historical: true,
+    },
+    locale
+  );
+  const dataKeys = ["totalValueInBaseCurrency"];
 
   return (
     <ComponentErrorBoundary componentName="Portfolio Value Chart">
@@ -147,7 +85,7 @@ export function PortfolioValueAreaChart({
         title={t("charts.portfolioValue.title")}
         description={description}
         interval={chartInterval}
-        data={chartData}
+        data={timeseries}
         config={chartConfig}
         dataKeys={dataKeys}
         nameKey="timestamp"
