@@ -172,7 +172,7 @@ hasura:
   image:
     registry: docker.io
     repository: hasura/graphql-engine
-    tag: v2.48.5
+    tag: v2.48.6
     pullPolicy: IfNotPresent
 
   # Ingress configuration
