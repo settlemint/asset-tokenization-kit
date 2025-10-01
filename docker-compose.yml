@@ -183,7 +183,7 @@ services:
     volumes:
       - atk-redis:/data
   hasura:
-    image: hasura/graphql-engine:v2.48.5
+    image: hasura/graphql-engine:v2.48.6
     container_name: ${CONTAINER_PREFIX:-atk}-hasura
     restart: unless-stopped
     depends_on:
