@@ -17,7 +17,7 @@
         "graphql": "16.11.0",
         "prettier": "3.6.2",
         "turbo": "2.5.8",
-        "typescript": "5.9.2",
+        "typescript": "5.9.3",
         "yaml": "2.8.1",
       },
     },
@@ -182,7 +182,7 @@
         "languine": "3.1.4",
         "minimatch": "10.0.3",
         "subgraph": "workspace:*",
-        "typescript": "5.9.2",
+        "typescript": "5.9.3",
         "vite": "7.1.7",
         "vite-bundle-analyzer": "1.2.3",
         "vite-tsconfig-paths": "5.1.4",
@@ -197,7 +197,7 @@
         "@types/bun": "1.2.22",
       },
       "peerDependencies": {
-        "typescript": "5.9.2",
+        "typescript": "5.9.3",
       },
     },
     "kit/subgraph": {
@@ -224,7 +224,7 @@
         "@types/bun": "latest",
       },
       "peerDependencies": {
-        "typescript": "5.9.2",
+        "typescript": "5.9.3",
       },
     },
     "packages/zod": {
@@ -237,7 +237,7 @@
         "@types/bun": "latest",
       },
       "peerDependencies": {
-        "typescript": "5.9.2",
+        "typescript": "5.9.3",
       },
     },
     "tools/eslint-config": {
@@ -259,7 +259,7 @@
         "eslint-plugin-turbo": "2.5.8",
         "eslint-plugin-unicorn": "61.0.2",
         "globals": "16.4.0",
-        "typescript": "5.9.2",
+        "typescript": "5.9.3",
         "typescript-eslint": "8.44.1",
       },
     },
@@ -3793,7 +3793,7 @@
 
     "typed-array-length": ["typed-array-length@1.0.7", "", { "dependencies": { "call-bind": "^1.0.7", "for-each": "^0.3.3", "gopd": "^1.0.1", "is-typed-array": "^1.1.13", "possible-typed-array-names": "^1.0.0", "reflect.getprototypeof": "^1.0.6" } }, "sha512-3KS2b+kL7fsuk/eJZ7EQdnEmQoaho/r6KUef7hxvltNA5DR8NAUM+8wJMbJyZ4G9/7i3v5zPBIMN5aybAh2/Jg=="],
 
-    "typescript": ["typescript@5.9.2", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A=="],
+    "typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
 
     "typescript-eslint": ["typescript-eslint@8.44.1", "", { "dependencies": { "@typescript-eslint/eslint-plugin": "8.44.1", "@typescript-eslint/parser": "8.44.1", "@typescript-eslint/typescript-estree": "8.44.1", "@typescript-eslint/utils": "8.44.1" }, "peerDependencies": { "eslint": "^8.57.0 || ^9.0.0", "typescript": ">=4.8.4 <6.0.0" } }, "sha512-0ws8uWGrUVTjEeN2OM4K1pLKHK/4NiNP/vz6ns+LjT/6sqpaYzIVFajZb1fj/IDwpsrrHb3Jy0Qm5u9CPcKaeg=="],
 
