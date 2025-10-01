@@ -6,7 +6,7 @@
   "dependencies": {},
   "devDependencies": {
     "@playwright/test": "1.55.1",
-    "@types/bun": "1.2.22"
+    "@types/bun": "1.2.23"
   },
   "peerDependencies": {
     "typescript": "5.9.3"
