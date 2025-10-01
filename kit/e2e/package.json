@@ -9,7 +9,7 @@
     "@types/bun": "1.2.22"
   },
   "peerDependencies": {
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   },
   "scripts": {
     "test:e2e": "NODE_NO_WARNINGS=1 playwright test --reporter=dot",
