@@ -1,18 +1,18 @@
 dependencies:
 - name: ingress-nginx
   repository: https://kubernetes.github.io/ingress-nginx
-  version: 4.13.2
+  version: 4.13.3
 - name: postgresql
   repository: ""
-  version: 2.0.0-alpha.14
+  version: 2.0.0-alpha.15
 - name: redis
   repository: ""
-  version: 2.0.0-alpha.14
+  version: 2.0.0-alpha.15
 - name: reloader
   repository: https://stakater.github.io/stakater-charts
   version: 2.2.3
 - name: minio
   repository: ""
-  version: 2.0.0-alpha.14
-digest: sha256:ab51cae7ef267cf13950c5725164d6574b61a124f394cad33abe327f532a0ea8
-generated: "2025-09-26T11:07:53.476175+02:00"
+  version: 2.0.0-alpha.15
+digest: sha256:fcc03b1883ecbcc7319d72516bd9932f13a2c3ceb12f8617f4881df7b7eadfdd
+generated: "2025-10-01T14:41:20.386055689Z"
