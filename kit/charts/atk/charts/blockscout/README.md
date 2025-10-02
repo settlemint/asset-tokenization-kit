@@ -1,6 +1,6 @@
 # blockscout
 
-![Version: 2.0.0-alpha.15](https://img.shields.io/badge/Version-2.0.0--alpha.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.15](https://img.shields.io/badge/AppVersion-2.0.0--alpha.15-informational?style=flat-square)
+![Version: 2.0.0-alpha.14](https://img.shields.io/badge/Version-2.0.0--alpha.14-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.14](https://img.shields.io/badge/AppVersion-2.0.0--alpha.14-informational?style=flat-square)
 
 A Helm chart for Blockscout blockchain explorer stack
 
@@ -14,11 +14,11 @@ A Helm chart for Blockscout blockchain explorer stack
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| blockscout | object | `{"affinity":{},"annotations":{},"containerSecurityContext":{},"enabled":true,"env":{"ADMIN_PANEL_ENABLED":"true","API_GRAPHQL_MAX_COMPLEXITY":"1000","API_URL":"https://explorer.k8s.orb.local","DATABASE_TIMEOUT":"60000","DATABASE_URL":"","DISABLE_EXCHANGE_RATES":"true","ECTO_ADAPTER_TIMEOUT":"60000","ECTO_USE_SSL":"false","EMISSION_FORMAT":"DEFAULT","ETHEREUM_JSONRPC_HTTP_URL":"http://erpc:4000/settlemint/evm/{{ include \"blockscout.chainId\" . }}","ETHEREUM_JSONRPC_TRACE_URL":"http://erpc:4000/settlemint/evm/{{ include \"blockscout.chainId\" . }}","ETHEREUM_JSONRPC_VARIANT":"besu","FETCH_REWARDS_WAY":"trace_block","IPFS_GATEWAY_URL":"https://ipfs.io/ipfs","IPFS_PUBLIC_GATEWAY_URL":"https://ipfs.io/ipfs","MIX_ENV":"prod","NETWORK":"mainnet","OTHER_EXPLORERS":"{}","POOL_SIZE":"10","POOL_SIZE_API":"10","SECRET_KEY_BASE":"atk","SHOW_TXS_CHART":"true","SUBNETWORK":"ATK","SUPPORTED_CHAINS":"{}","TXS_STATS_ENABLED":"true","TZDATA_DIR":"/tmp/tzdata","WEBAPP_URL":"https://explorer.k8s.orb.local"},"extraInitContainers":[],"image":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/blockscout/blockscout","tag":"9.0.2"},"ingress":{"annotations":{},"className":"atk-nginx","enabled":true,"hostname":"explorer.k8s.orb.local","tls":[]},"init":{"args":["-c","echo \"Running database migrations...\"\nbin/blockscout eval \"Elixir.Explorer.ReleaseTasks.create_and_migrate()\"\n"],"command":["/bin/sh"],"enabled":true},"initContainer":{"tcpCheck":{"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"resources":{"dependencies":[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"blockscout\" \"local\" $.Values.postgresql) }}","name":"postgresql"}],"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}},"timeout":120}},"initContainerSecurityContext":{},"livenessProbe":{"enabled":true,"failureThreshold":5,"initialDelaySeconds":100,"periodSeconds":100,"successThreshold":1,"timeoutSeconds":30},"nodeSelector":{},"openShiftRoute":{"alternateBackends":[],"annotations":{},"enabled":false,"host":"explorer.k8s.orb.local","path":"/api","port":{"targetPort":"http"},"tls":null,"to":{"weight":100},"wildcardPolicy":"None"},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"4000","prometheus.io/scrape":"true"},"podSecurityContext":{},"readinessProbe":{"enabled":true,"failureThreshold":5,"initialDelaySeconds":30,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":30},"replicaCount":1,"resources":{},"separateApi":{"enabled":false,"replicaCount":1},"service":{"port":80,"type":"ClusterIP"},"tolerations":[]}` | Blockscout backend configuration |
+| blockscout | object | `{"affinity":{},"annotations":{},"containerSecurityContext":{},"enabled":true,"env":{"ADMIN_PANEL_ENABLED":"true","API_GRAPHQL_MAX_COMPLEXITY":"1000","API_URL":"https://explorer.k8s.orb.local","DATABASE_TIMEOUT":"60000","DATABASE_URL":"","DISABLE_EXCHANGE_RATES":"true","ECTO_ADAPTER_TIMEOUT":"60000","ECTO_USE_SSL":"false","EMISSION_FORMAT":"DEFAULT","ETHEREUM_JSONRPC_HTTP_URL":"http://erpc:4000/settlemint/evm/{{ include \"blockscout.chainId\" . }}","ETHEREUM_JSONRPC_TRACE_URL":"http://erpc:4000/settlemint/evm/{{ include \"blockscout.chainId\" . }}","ETHEREUM_JSONRPC_VARIANT":"besu","FETCH_REWARDS_WAY":"trace_block","IPFS_GATEWAY_URL":"https://ipfs.io/ipfs","IPFS_PUBLIC_GATEWAY_URL":"https://ipfs.io/ipfs","MIX_ENV":"prod","NETWORK":"mainnet","OTHER_EXPLORERS":"{}","POOL_SIZE":"10","POOL_SIZE_API":"10","SECRET_KEY_BASE":"atk","SHOW_TXS_CHART":"true","SUBNETWORK":"ATK","SUPPORTED_CHAINS":"{}","TXS_STATS_ENABLED":"true","TZDATA_DIR":"/tmp/tzdata","WEBAPP_URL":"https://explorer.k8s.orb.local"},"extraInitContainers":[],"image":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/blockscout/blockscout","tag":"9.0.2"},"ingress":{"annotations":{},"className":"atk-nginx","enabled":true,"hostname":"explorer.k8s.orb.local","tls":[]},"init":{"args":["-c","echo \"Running database migrations...\"\nbin/blockscout eval \"Elixir.Explorer.ReleaseTasks.create_and_migrate()\"\n"],"command":["/bin/sh"],"enabled":true},"initContainer":{"tcpCheck":{"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"resources":{"dependencies":[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"blockscout\" \"local\" $.Values.postgresql) }}","name":"postgresql"}],"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}},"timeout":120}},"initContainerSecurityContext":{},"livenessProbe":{"enabled":true,"failureThreshold":5,"initialDelaySeconds":100,"periodSeconds":100,"successThreshold":1,"timeoutSeconds":30},"nodeSelector":{},"openShiftRoute":{"alternateBackends":[],"annotations":{},"enabled":false,"host":"explorer.k8s.orb.local","path":"/api","port":{"targetPort":"http"},"tls":null,"to":{"weight":100},"wildcardPolicy":"None"},"podAnnotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"4000","prometheus.io/scrape":"true"},"podSecurityContext":{},"readinessProbe":{"enabled":true,"failureThreshold":5,"initialDelaySeconds":30,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":30},"replicaCount":1,"resources":{},"separateApi":{"enabled":false,"replicaCount":1},"service":{"port":80,"type":"ClusterIP"},"tolerations":[]}` | Blockscout backend configuration (object) |
 | blockscout.affinity | object | `{}` | Affinity for pod assignment |
-| blockscout.annotations | object | `{}` | Annotations for Blockscout backend deployment |
+| blockscout.annotations | object | `{}` | Annotations for Blockscout backend deployment (object) |
 | blockscout.containerSecurityContext | object | `{}` | Container Security Context configuration for Blockscout backend (overrides global.securityContexts.container) |
-| blockscout.enabled | bool | `true` | Enable Blockscout backend deployment |
+| blockscout.enabled | bool | `true` | Enable Blockscout backend deployment (bool) |
 | blockscout.env | object | `{"ADMIN_PANEL_ENABLED":"true","API_GRAPHQL_MAX_COMPLEXITY":"1000","API_URL":"https://explorer.k8s.orb.local","DATABASE_TIMEOUT":"60000","DATABASE_URL":"","DISABLE_EXCHANGE_RATES":"true","ECTO_ADAPTER_TIMEOUT":"60000","ECTO_USE_SSL":"false","EMISSION_FORMAT":"DEFAULT","ETHEREUM_JSONRPC_HTTP_URL":"http://erpc:4000/settlemint/evm/{{ include \"blockscout.chainId\" . }}","ETHEREUM_JSONRPC_TRACE_URL":"http://erpc:4000/settlemint/evm/{{ include \"blockscout.chainId\" . }}","ETHEREUM_JSONRPC_VARIANT":"besu","FETCH_REWARDS_WAY":"trace_block","IPFS_GATEWAY_URL":"https://ipfs.io/ipfs","IPFS_PUBLIC_GATEWAY_URL":"https://ipfs.io/ipfs","MIX_ENV":"prod","NETWORK":"mainnet","OTHER_EXPLORERS":"{}","POOL_SIZE":"10","POOL_SIZE_API":"10","SECRET_KEY_BASE":"atk","SHOW_TXS_CHART":"true","SUBNETWORK":"ATK","SUPPORTED_CHAINS":"{}","TXS_STATS_ENABLED":"true","TZDATA_DIR":"/tmp/tzdata","WEBAPP_URL":"https://explorer.k8s.orb.local"}` | Environment variables for Blockscout backend |
 | blockscout.env.ADMIN_PANEL_ENABLED | string | `"true"` | Enable admin panel |
 | blockscout.env.API_GRAPHQL_MAX_COMPLEXITY | string | `"1000"` | GraphQL API maximum complexity |
@@ -48,9 +48,9 @@ A Helm chart for Blockscout blockchain explorer stack
 | blockscout.env.TZDATA_DIR | string | `"/tmp/tzdata"` | Timezone data directory |
 | blockscout.env.WEBAPP_URL | string | `"https://explorer.k8s.orb.local"` | Web application URL |
 | blockscout.extraInitContainers | list | `[]` | Additional init containers appended verbatim |
-| blockscout.image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/blockscout/blockscout","tag":"9.0.2"}` | Blockscout backend image configuration |
+| blockscout.image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/blockscout/blockscout","tag":"9.0.2"}` | Blockscout backend image configuration (object) |
 | blockscout.image.pullPolicy | string | `"IfNotPresent"` | Blockscout backend image pull policy |
-| blockscout.image.repository | string | `"ghcr.io/blockscout/blockscout"` | Blockscout backend image repository |
+| blockscout.image.repository | string | `"ghcr.io/blockscout/blockscout"` | Blockscout backend image repository (object) |
 | blockscout.image.tag | string | `"9.0.2"` | Blockscout backend image tag (immutable tags are recommended) |
 | blockscout.ingress | object | `{"annotations":{},"className":"atk-nginx","enabled":true,"hostname":"explorer.k8s.orb.local","tls":[]}` | Ingress parameters for Blockscout backend |
 | blockscout.ingress.annotations | object | `{}` | Additional annotations for the Ingress resource |
@@ -63,23 +63,6 @@ A Helm chart for Blockscout blockchain explorer stack
 | blockscout.init.command | list | `["/bin/sh"]` | Init container command |
 | blockscout.init.enabled | bool | `true` | Enable init container |
 | blockscout.initContainer | object | `{"tcpCheck":{"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"resources":{"dependencies":[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"blockscout\" \"local\" $.Values.postgresql) }}","name":"postgresql"}],"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}},"timeout":120}}` | TCP-based dependency checks for Blockscout |
-| blockscout.initContainer.tcpCheck | object | `{"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"resources":{"dependencies":[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"blockscout\" \"local\" $.Values.postgresql) }}","name":"postgresql"}],"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}},"timeout":120}` | TCP connection check configuration |
-| blockscout.initContainer.tcpCheck.enabled | bool | `true` | Enable TCP check init container |
-| blockscout.initContainer.tcpCheck.image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"}` | TCP check container image configuration |
-| blockscout.initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` | TCP check container image pull policy |
-| blockscout.initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` | TCP check container image repository |
-| blockscout.initContainer.tcpCheck.image.tag | string | `"v7.7.10"` | TCP check container image tag |
-| blockscout.initContainer.tcpCheck.resources | object | `{"dependencies":[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"blockscout\" \"local\" $.Values.postgresql) }}","name":"postgresql"}],"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}` | TCP check container resource requests and limits |
-| blockscout.initContainer.tcpCheck.resources.dependencies | list | `[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"blockscout\" \"local\" $.Values.postgresql) }}","name":"postgresql"}]` | List of service dependencies to check |
-| blockscout.initContainer.tcpCheck.resources.dependencies[0] | string | `{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"blockscout\" \"local\" $.Values.postgresql) }}","name":"postgresql"}` | Dependency name |
-| blockscout.initContainer.tcpCheck.resources.dependencies[0].endpoint | string | `"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"blockscout\" \"local\" $.Values.postgresql) }}"` | Dependency endpoint to check |
-| blockscout.initContainer.tcpCheck.resources.limits | object | `{"cpu":"100m","memory":"64Mi"}` | Resource limits for TCP check container |
-| blockscout.initContainer.tcpCheck.resources.limits.cpu | string | `"100m"` | CPU limit for TCP check container |
-| blockscout.initContainer.tcpCheck.resources.limits.memory | string | `"64Mi"` | Memory limit for TCP check container |
-| blockscout.initContainer.tcpCheck.resources.requests | object | `{"cpu":"10m","memory":"32Mi"}` | Resource requests for TCP check container |
-| blockscout.initContainer.tcpCheck.resources.requests.cpu | string | `"10m"` | CPU request for TCP check container |
-| blockscout.initContainer.tcpCheck.resources.requests.memory | string | `"32Mi"` | Memory request for TCP check container |
-| blockscout.initContainer.tcpCheck.timeout | int | `120` | Timeout in seconds for TCP checks |
 | blockscout.initContainerSecurityContext | object | `{}` | Init container Security Context configuration for Blockscout backend (overrides global.securityContexts.container) |
 | blockscout.livenessProbe | object | `{"enabled":true,"failureThreshold":5,"initialDelaySeconds":100,"periodSeconds":100,"successThreshold":1,"timeoutSeconds":30}` | Configure Blockscout backend containers' liveness probe |
 | blockscout.livenessProbe.enabled | bool | `true` | Enable livenessProbe on Blockscout backend containers |
@@ -101,7 +84,7 @@ A Helm chart for Blockscout blockchain explorer stack
 | blockscout.openShiftRoute.to | object | `{"weight":100}` | Primary service weight configuration |
 | blockscout.openShiftRoute.to.weight | int | `100` | Weight assigned to the Blockscout backend service backend |
 | blockscout.openShiftRoute.wildcardPolicy | string | `"None"` | Wildcard policy to apply to the route |
-| blockscout.podAnnotations | object | `{"prometheus.io/path":"/metrics","prometheus.io/port":"4000","prometheus.io/scrape":"true"}` | Annotations for Blockscout backend pods |
+| blockscout.podAnnotations | object | `{"prometheus.io/path":"/metrics","prometheus.io/port":"4000","prometheus.io/scrape":"true"}` | Annotations for Blockscout backend pods (object) |
 | blockscout.podSecurityContext | object | `{}` | Pod Security Context configuration for Blockscout backend (overrides global.securityContexts.pod) |
 | blockscout.readinessProbe | object | `{"enabled":true,"failureThreshold":5,"initialDelaySeconds":30,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":30}` | Configure Blockscout backend containers' readiness probe |
 | blockscout.readinessProbe.enabled | bool | `true` | Enable readinessProbe on Blockscout backend containers |
@@ -110,7 +93,7 @@ A Helm chart for Blockscout blockchain explorer stack
 | blockscout.readinessProbe.periodSeconds | int | `10` | Period seconds for readinessProbe |
 | blockscout.readinessProbe.successThreshold | int | `1` | Success threshold for readinessProbe |
 | blockscout.readinessProbe.timeoutSeconds | int | `30` | Timeout seconds for readinessProbe |
-| blockscout.replicaCount | int | `1` | Number of Blockscout backend replicas to deploy |
+| blockscout.replicaCount | int | `1` | Number of Blockscout backend replicas to deploy (int) |
 | blockscout.resources | object | `{}` | Blockscout backend containers resource requests and limits |
 | blockscout.separateApi | object | `{"enabled":false,"replicaCount":1}` | Separate API configuration |
 | blockscout.separateApi.enabled | bool | `false` | Enable separate API deployment |
@@ -145,7 +128,6 @@ A Helm chart for Blockscout blockchain explorer stack
 | frontend.containerSecurityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":false,"runAsGroup":1001,"runAsNonRoot":true,"runAsUser":1001}` | Container Security Context configuration for Blockscout frontend |
 | frontend.containerSecurityContext.allowPrivilegeEscalation | bool | `false` | Controls whether a process can gain more privileges than its parent process |
 | frontend.containerSecurityContext.capabilities | object | `{"drop":["ALL"]}` | Linux capabilities to drop |
-| frontend.containerSecurityContext.capabilities.drop | list | `["ALL"]` | List of Linux capabilities to drop from the container |
 | frontend.containerSecurityContext.readOnlyRootFilesystem | bool | `false` | Mount the container's root filesystem as read-only |
 | frontend.containerSecurityContext.runAsGroup | int | `1001` | Group ID to run the entrypoint of the container process |
 | frontend.containerSecurityContext.runAsNonRoot | bool | `true` | Indicates that the container must run as a non-root user |
@@ -220,8 +202,6 @@ A Helm chart for Blockscout blockchain explorer stack
 | global.datastores | object | `{}` | Shared datastore definitions |
 | global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |
 | global.imageRegistry | string | `""` | Global Docker image registry |
-| global.labels | object | `{"kots.io/app-slug":"settlemint-atk"}` | Global labels applied to all resources |
-| global.labels."kots.io/app-slug" | string | `"settlemint-atk"` | KOTS application slug identifier |
 | global.securityContexts | object | `{}` | Shared security context defaults |
 | global.storageClass | string | `""` | Global StorageClass for Persistent Volume(s) |
 | imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |

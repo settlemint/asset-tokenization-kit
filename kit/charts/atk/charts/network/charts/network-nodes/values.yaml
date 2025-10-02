@@ -1,10 +1,7 @@
 # Default configuration values for the network-nodes subchart. All keys include helm-docs compatible annotations.
 
-# -- (object) Global configuration values inherited from parent charts.
 global:
-  # -- (object) Kubernetes labels applied to all resources across the installation.
   labels:
-    # -- (string) KOTS application slug identifier for Replicated application management.
     kots.io/app-slug: settlemint-atk
 
 
@@ -14,7 +11,7 @@ rpcReplicaCount: 2
 # -- (int) Number of validator node replicas participating in consensus. Leave unset to derive from global.validatorReplicaCount.
 validatorReplicaCount:
 
-# -- (object) Container image configuration shared by validator and RPC pods.
+# Container image configuration shared by validator and RPC pods.
 image:
   # -- (string) OCI image repository hosting Hyperledger Besu.
   repository: docker.io/hyperledger/besu
@@ -32,7 +29,7 @@ nameOverride: ""
 # -- (string) Override for the fully qualified release name used in resource naming.
 fullnameOverride: "besu-node"
 
-# -- (object) Kubernetes ServiceAccount configuration applied to Besu pods.
+# Kubernetes ServiceAccount configuration applied to Besu pods.
 serviceAccount:
   # -- (bool) Create a ServiceAccount resource automatically for the release.
   create: true
@@ -43,12 +40,12 @@ serviceAccount:
   # -- (string) Existing ServiceAccount name to reuse when creation is disabled.
   name: ""
 
-# -- (object) RBAC configuration controlling Role/RoleBinding creation for accessing Besu artifacts.
+# RBAC configuration controlling Role/RoleBinding creation for accessing Besu artifacts.
 rbac:
   # -- (bool) Create Role and RoleBinding granting pods read access to ConfigMaps/Secrets.
   create: true
 
-# -- (object) Pod annotations merged onto all Besu pods.
+# Pod annotations merged onto all Besu pods.
 podAnnotations:
   # -- (string) Enables Prometheus scraping of the Besu metrics endpoint.
   prometheus.io/scrape: "true"
@@ -59,207 +56,133 @@ podAnnotations:
   # -- (string) HTTP scheme (http or https) used for metrics scraping.
   prometheus.io/scheme: http
 
-# -- (object) Additional labels applied to all Besu pods.
+# Additional labels applied to all Besu pods.
 podLabels: {}
 
-# -- (object) PodDisruptionBudget configuration for validator and RPC workloads.
+# PodDisruptionBudget configuration for validator and RPC workloads.
 podDisruptionBudgets:
-  # -- (object) PodDisruptionBudget controlling voluntary disruptions for validator pods.
+  # -- PodDisruptionBudget controlling voluntary disruptions for validator pods.
   validator:
-    # -- (bool) Enable the validator PodDisruptionBudget.
+    # -- Enable the validator PodDisruptionBudget.
     enabled: false
-    # -- (int) Minimum validator pods that must remain available. Mutually exclusive with maxUnavailable.
+    # -- Minimum validator pods that must remain available. Mutually exclusive with maxUnavailable.
     minAvailable: 1
-    # -- (int) Maximum validator pods that can be disrupted at once. Mutually exclusive with minAvailable.
+    # -- Maximum validator pods that can be disrupted at once. Mutually exclusive with minAvailable.
     maxUnavailable:
-    # -- (string) Optional unhealthy pod eviction policy (Default or AlwaysAllow).
+    # -- Optional unhealthy pod eviction policy (Default or AlwaysAllow).
     unhealthyPodEvictionPolicy: ""
-    # -- (object) Additional annotations applied to the validator PodDisruptionBudget.
+    # -- Additional annotations applied to the validator PodDisruptionBudget.
     annotations: {}
-    # -- (object) Additional labels applied to the validator PodDisruptionBudget.
+    # -- Additional labels applied to the validator PodDisruptionBudget.
     labels: {}
-  # -- (object) PodDisruptionBudget governing RPC pods.
+  # -- PodDisruptionBudget governing RPC pods.
   rpc:
-    # -- (bool) Enable the RPC PodDisruptionBudget.
+    # -- Enable the RPC PodDisruptionBudget.
     enabled: false
-    # -- (int) Minimum RPC pods that must remain available. Mutually exclusive with maxUnavailable.
+    # -- Minimum RPC pods that must remain available. Mutually exclusive with maxUnavailable.
     minAvailable: 1
-    # -- (int) Maximum RPC pods that can be disrupted at once. Mutually exclusive with minAvailable.
+    # -- Maximum RPC pods that can be disrupted at once. Mutually exclusive with minAvailable.
     maxUnavailable:
-    # -- (string) Optional unhealthy pod eviction policy (Default or AlwaysAllow).
+    # -- Optional unhealthy pod eviction policy (Default or AlwaysAllow).
     unhealthyPodEvictionPolicy: ""
-    # -- (object) Additional annotations applied to the RPC PodDisruptionBudget.
+    # -- Additional annotations applied to the RPC PodDisruptionBudget.
     annotations: {}
-    # -- (object) Additional labels applied to the RPC PodDisruptionBudget.
+    # -- Additional labels applied to the RPC PodDisruptionBudget.
     labels: {}
 
-# -- (object) NetworkPolicy configuration applied to Besu pods.
+# NetworkPolicy configuration applied to Besu pods.
 networkPolicy:
-  # -- (bool) Create a NetworkPolicy restricting Besu pod ingress and egress.
+  # -- Create a NetworkPolicy restricting Besu pod ingress and egress.
   enabled: false
-  # -- (object) Optional override for the default pod selector; defaults to Besu workload labels when empty.
+  # -- Optional override for the default pod selector; defaults to Besu workload labels when empty.
   podSelector: {}
-  # -- (list) Policy types enforced by the NetworkPolicy. When empty, inferred from ingress/egress rules or defaults to both.
+  # -- Policy types enforced by the NetworkPolicy. When empty, inferred from ingress/egress rules or defaults to both.
   policyTypes: []
-  # -- (object) Additional labels to add to the NetworkPolicy metadata.
+  # -- Additional labels to add to the NetworkPolicy metadata.
   labels: {}
-  # -- (object) Additional annotations to add to the NetworkPolicy metadata.
+  # -- Additional annotations to add to the NetworkPolicy metadata.
   annotations: {}
-  # -- (list) NetworkPolicy ingress rules. Leave empty to deny all ingress when enabled.
+  # -- NetworkPolicy ingress rules. Leave empty to deny all ingress when enabled.
   ingress:
-    # -- (object) Allow blockchain clients to reach RPC, WS, GraphQL, and metrics endpoints.
-    -
-      # -- (list) Source pod selectors allowed to connect to Besu services.
-      from:
-        -
-          # -- (object) Pod selector allowing txsigner pods ingress access.
-          podSelector:
-            # -- (object) Label matchers selecting txsigner pods.
+    # Allow blockchain clients to reach RPC, WS, GraphQL, and metrics endpoints.
+    - from:
+        - podSelector:
             matchLabels:
-              # -- (string) Application name label for txsigner.
               app.kubernetes.io/name: txsigner
-        -
-          # -- (object) Pod selector allowing erpc pods ingress access.
-          podSelector:
-            # -- (object) Label matchers selecting erpc pods.
+        - podSelector:
             matchLabels:
-              # -- (string) Application name label for erpc.
               app.kubernetes.io/name: erpc
-        -
-          # -- (object) Pod selector allowing blockscout-stack pods ingress access.
-          podSelector:
-            # -- (object) Label matchers selecting blockscout-stack pods.
+        - podSelector:
             matchLabels:
-              # -- (string) Application name label for blockscout-stack.
               app.kubernetes.io/name: blockscout-stack
-        -
-          # -- (object) Pod selector allowing graph-node pods ingress access.
-          podSelector:
-            # -- (object) Label matchers selecting graph-node pods.
+        - podSelector:
             matchLabels:
-              # -- (string) Application name label for graph-node.
               app.kubernetes.io/name: graph-node
         # - podSelector: {} # Uncomment to allow any pod within the namespace.
-      # -- (list) Target ports exposed to the selected sources.
       ports:
-        -
-          # -- (string) Protocol type for HTTP JSON-RPC port.
-          protocol: TCP
-          # -- (int) HTTP JSON-RPC port number.
+        - protocol: TCP
           port: 8545
-        -
-          # -- (string) Protocol type for WebSocket JSON-RPC port.
-          protocol: TCP
-          # -- (int) WebSocket JSON-RPC port number.
+        - protocol: TCP
           port: 8546
-        -
-          # -- (string) Protocol type for GraphQL API port.
-          protocol: TCP
-          # -- (int) GraphQL API port number.
+        - protocol: TCP
           port: 8547
-        -
-          # -- (string) Protocol type for metrics port.
-          protocol: TCP
-          # -- (int) Prometheus metrics port number.
+        - protocol: TCP
           port: 9545
-    # -- (object) Permit intra-cluster P2P traffic among Besu nodes.
-    -
-      # -- (list) Source pod selectors for P2P communication.
-      from:
-        -
-          # -- (object) Pod selector for Besu StatefulSet pods.
-          podSelector:
-            # -- (object) Label matchers selecting Besu StatefulSet pods.
+    # Permit intra-cluster P2P traffic among Besu nodes.
+    - from:
+        - podSelector:
             matchLabels:
-              # -- (string) Application name label for Besu StatefulSet.
               app.kubernetes.io/name: besu-statefulset
-      # -- (list) P2P port exposed to Besu peers.
       ports:
-        -
-          # -- (string) Protocol type for P2P port.
-          protocol: TCP
-          # -- (int) RLPx P2P port number.
+        - protocol: TCP
           port: 30303
 
-  # -- (list) NetworkPolicy egress rules. Leave empty to deny all egress when enabled.
+  # -- NetworkPolicy egress rules. Leave empty to deny all egress when enabled.
   egress:
-    # -- (object) Allow DNS resolution for outbound hosts.
-    -
-      # -- (list) Destination selectors for DNS egress.
-      to:
-        -
-          # -- (object) Namespace selector for DNS pods (empty matches all namespaces).
-          namespaceSelector: {}
-          # -- (object) Pod selector for kube-dns pods.
+    # Allow DNS resolution for outbound hosts.
+    - to:
+        - namespaceSelector: {}
           podSelector:
-            # -- (object) Label matchers selecting kube-dns pods.
             matchLabels:
-              # -- (string) Kubernetes DNS application label.
               k8s-app: kube-dns
-      # -- (list) DNS port configuration.
       ports:
-        -
-          # -- (string) Protocol type for DNS (UDP).
-          protocol: UDP
-          # -- (int) DNS port number.
+        - protocol: UDP
           port: 53
-    # -- (object) Permit Besu pods to speak to peers inside the namespace.
-    -
-      # -- (list) Destination pod selectors for internal P2P egress.
-      to:
-        -
-          # -- (object) Pod selector for Besu StatefulSet pods.
-          podSelector:
-            # -- (object) Label matchers selecting Besu StatefulSet pods.
+    # Permit Besu pods to speak to peers inside the namespace.
+    - to:
+        - podSelector:
             matchLabels:
-              # -- (string) Application name label for Besu StatefulSet.
               app.kubernetes.io/name: besu-statefulset
-      # -- (list) P2P port for internal communication.
       ports:
-        -
-          # -- (string) Protocol type for internal P2P.
-          protocol: TCP
-          # -- (int) RLPx P2P port number.
+        - protocol: TCP
           port: 30303
-    # -- (object) Allow outbound P2P connections to external peers (public networks).
-    -
-      # -- (list) IP block selectors for external P2P egress.
-      to:
-        -
-          # -- (object) IP block configuration for external network access.
-          ipBlock:
-            # -- (string) CIDR range allowing all external IPs.
+    # Allow outbound P2P connections to external peers (public networks).
+    - to:
+        - ipBlock:
             cidr: 0.0.0.0/0
-            # -- (list) Exception list blocking private IP ranges from egress.
             except:
-              # -- (string) Private IP range 10.0.0.0/8.
               - 10.0.0.0/8
-              # -- (string) Private IP range 172.16.0.0/12.
               - 172.16.0.0/12
-              # -- (string) Private IP range 192.168.0.0/16.
               - 192.168.0.0/16
             # Adjust the except list to match internal cluster CIDRs to avoid bypassing other policies.
-      # -- (list) P2P port for external communication.
       ports:
-        -
-          # -- (string) Protocol type for external P2P.
-          protocol: TCP
-          # -- (int) RLPx P2P port number.
+        - protocol: TCP
           port: 30303
 
-# -- (object) PriorityClass configuration applied to Besu workloads.
+# PriorityClass configuration applied to Besu workloads.
 priorityClassNames:
-  # -- (string) PriorityClass name assigned to validator pods. Leave empty to inherit namespace defaults.
+  # -- PriorityClass name assigned to validator pods. Leave empty to inherit namespace defaults.
   validator: ""
-  # -- (string) PriorityClass name assigned to RPC pods. Leave empty to inherit namespace defaults.
+  # -- PriorityClass name assigned to RPC pods. Leave empty to inherit namespace defaults.
   rpc: ""
 
-# -- (object) Pod-level security context shared by all containers.
+# Pod-level security context shared by all containers.
 podSecurityContext:
   {}
-  # -- (int) Leave empty to inherit from global.securityContexts.pod. Example: fsGroup: 2000
+  # -- Leave empty to inherit from global.securityContexts.pod.
+  # fsGroup: 2000
 
-# -- (object) Container-level security context applied to Besu containers.
+# Container-level security context applied to Besu containers.
 securityContext:
   {}
   # -- Leave empty to inherit from global.securityContexts.container.
@@ -270,11 +193,11 @@ securityContext:
   # runAsNonRoot: true
   # runAsUser: 1000
 
-# -- (object) Kubernetes Service definition exposing Besu endpoints.
+# Kubernetes Service definition exposing Besu endpoints.
 service:
   # -- (string) Service type controlling how endpoints are published (ClusterIP, NodePort, etc.).
   type: ClusterIP
-  # -- (object) Named Service ports exposing Besu interfaces.
+  # Named Service ports exposing Besu interfaces.
   ports:
     # -- (int) HTTP JSON-RPC port.
     rpc: 8545
@@ -289,7 +212,7 @@ service:
     # -- (int) Prometheus metrics port.
     metrics: 9545
 
-# -- (object) Core Besu configuration persisted as besu.conf for both validators and RPC nodes.
+# Core Besu configuration persisted as besu.conf for both validators and RPC nodes.
 config:
   # -- (string) Filesystem path where Besu loads the merged genesis JSON produced at runtime.
   genesisFile: /etc/besu/genesis.json
@@ -307,7 +230,7 @@ config:
   cacheLastBlocks: 1024
   # -- (int) Minimum gas price accepted for transactions (wei).
   minGasPrice: 0
-  # -- (object) Transaction pool configuration for ingress and prioritisation.
+  # Transaction pool configuration for ingress and prioritisation.
   txPool:
     # -- (string) Transaction ordering strategy (e.g., SEQUENCED).
     type: SEQUENCED
@@ -319,7 +242,7 @@ config:
     limitByAccountPercentage: 1
     # -- (bool) Persist the transaction pool to disk between restarts.
     enableSaveRestore: true
-  # -- (object) Peer-to-peer networking settings.
+  # Peer-to-peer networking settings.
   p2p:
     # -- (bool) Enable the devp2p networking subsystem.
     enabled: true
@@ -331,11 +254,11 @@ config:
     interface: "0.0.0.0"
     # -- (int) Maximum simultaneous peer connections.
     maxPeers: 25
-  # -- (object) JSON-RPC subsystem configuration shared by HTTP and WebSocket servers.
+  # JSON-RPC subsystem configuration shared by HTTP and WebSocket servers.
   rpc:
     # -- (int) Maximum fee per gas accepted for transactions submitted via RPC (0 disables the cap).
     txFeecap: 0
-  # -- (object) Chain synchronisation controls.
+  # Chain synchronisation controls.
   sync:
     # -- (int) Minimum number of peers required before synchronisation starts.
     minPeers: 1
@@ -350,7 +273,7 @@ config:
   # -- (list) Hostnames allowed to access the RPC interfaces; `*` permits all.
   hostAllowlist:
     - "*"
-  # -- (object) HTTP JSON-RPC server configuration.
+  # HTTP JSON-RPC server configuration.
   http:
     # -- (bool) Enable the HTTP JSON-RPC listener.
     enabled: true
@@ -380,7 +303,7 @@ config:
     maxRequestContentLength: 524288000
     # -- (int) Maximum number of batched JSON-RPC calls per request.
     maxBatchSize: 512
-  # -- (object) WebSocket JSON-RPC server configuration.
+  # WebSocket JSON-RPC server configuration.
   ws:
     # -- (bool) Enable the WebSocket JSON-RPC listener.
     enabled: true
@@ -405,7 +328,7 @@ config:
     maxActiveConnections: 2000
     # -- (int) Maximum WebSocket frame size in bytes.
     maxFrameSize: 2097152
-  # -- (object) GraphQL server configuration.
+  # GraphQL server configuration.
   graphql:
     # -- (bool) Enable the GraphQL API server.
     enabled: true
@@ -414,7 +337,7 @@ config:
     # -- (list) Allowed CORS origins for GraphQL requests.
     corsOrigins:
       - all
-  # -- (object) Prometheus metrics export configuration.
+  # Prometheus metrics export configuration.
   metrics:
     # -- (bool) Enable the Prometheus metrics endpoint.
     enabled: true
@@ -436,28 +359,22 @@ config:
   # -- (bool) Include revert reasons in RPC responses when failures occur.
   revertReasonEnabled: true
 
-# -- (object) Ingress configuration used to expose RPC services via Kubernetes Ingress resources.
+# Ingress configuration used to expose RPC services via Kubernetes Ingress resources.
 ingress:
   # -- (bool) Enable creation of an Ingress resource.
   enabled: false
   # -- (string) ingressClassName assigned to the Ingress for controller selection.
   className: ""
-  # -- (object) Metadata annotations applied to the Ingress resource.
+  # Metadata annotations applied to the Ingress resource.
   annotations:
     {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   # -- (list) Hostname and path routing rules for the Ingress.
   hosts:
-    -
-      # -- (string) Hostname for the Ingress rule.
-      host: chart-example.local
-      # -- (list) Path-based routing rules for the host.
+    - host: chart-example.local
       paths:
-        -
-          # -- (string) URL path prefix.
-          path: /
-          # -- (string) Path matching type (Exact, Prefix, or ImplementationSpecific).
+        - path: /
           pathType: ImplementationSpecific
   # -- (list) TLS configuration for Ingress hosts.
   tls: []
@@ -465,18 +382,15 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-# -- (object) Gateway API HTTPRoute configuration for clusters with gateway-api controllers.
+# Gateway API HTTPRoute configuration for clusters with gateway-api controllers.
 httpRoute:
   # -- (bool) Enable rendering of an HTTPRoute resource.
   enabled: false
-  # -- (object) Metadata annotations applied to the HTTPRoute.
+  # Metadata annotations applied to the HTTPRoute.
   annotations: {}
   # -- (list) Gateway references that should accept this route.
   parentRefs:
-    -
-      # -- (string) Gateway name.
-      name: gateway
-      # -- (string) Listener section name within the Gateway.
+    - name: gateway
       sectionName: http
       # namespace: default
   # -- (list) HTTP hostnames matched by the route.
@@ -488,7 +402,7 @@ httpRoute:
       # -- (list) Match conditions evaluated for each request.
       matches:
         -
-          # -- (object) Path matching condition for the request.
+          # Path matching condition for the request.
           path:
             # -- (string) Path match type (Exact, PathPrefix, or RegularExpression).
             type: PathPrefix
@@ -511,11 +425,11 @@ httpRoute:
       #         - name: version
       #           value: v2
 
-# -- (object) OpenShift Route configuration for exposing services through the OpenShift router.
+# OpenShift Route configuration for exposing services through the OpenShift router.
 openShiftRoute:
   # -- (bool) Enable creation of an OpenShift Route resource.
   enabled: false
-  # -- (object) Metadata annotations applied to the Route.
+  # Metadata annotations applied to the Route.
   annotations: {}
   # -- (string) Desired external hostname for the Route; leave empty for automatic assignment.
   host: ""
@@ -523,11 +437,11 @@ openShiftRoute:
   path: ""
   # -- (string) Wildcard policy controlling subdomain routing (None or Subdomain).
   wildcardPolicy: ""
-  # -- (object) Target service port configuration for the Route.
+  # Target service port configuration for the Route.
   port:
     # -- (string) Named service port exposed through the Route.
     targetPort: http
-  # -- (object) Primary backend configuration for the Route.
+  # Primary backend configuration for the Route.
   to:
     # -- (int) Backend weight determining traffic distribution.
     weight: 100
@@ -536,7 +450,7 @@ openShiftRoute:
   # -- (object|null) TLS termination settings; set to null to disable TLS.
   tls: null
 
-# -- (object) CPU and memory requests or limits for Besu containers.
+# CPU and memory requests or limits for Besu containers.
 resources:
   {}
   # limits:
@@ -546,9 +460,9 @@ resources:
   #   cpu: 100m
   #   memory: 128Mi
 
-# -- (object) Liveness probe configuration ensuring containers restart when unhealthy.
+# Liveness probe configuration ensuring containers restart when unhealthy.
 livenessProbe:
-  # -- (object) HTTP GET probe configuration hitting the Besu liveness endpoint.
+  # HTTP GET probe configuration hitting the Besu liveness endpoint.
   httpGet:
     # -- (string) HTTP path used for liveness probing.
     path: /readiness?minPeers=1&maxBlocksBehind=10000
@@ -563,7 +477,7 @@ livenessProbe:
   # -- (int) Consecutive failures required before the container is restarted.
   failureThreshold: 3
 
-# -- (object) Readiness probe configuration signalling when pods can accept traffic.
+# Readiness probe configuration signalling when pods can accept traffic.
 readinessProbe:
   # # HTTP GET probe configuration hitting the Besu readiness endpoint.
   # httpGet:
@@ -580,7 +494,7 @@ readinessProbe:
   # # -- (int) Consecutive failures required before the pod is considered unready.
   # failureThreshold: 3
 
-# -- (object) Persistent storage configuration for both validator and RPC StatefulSets.
+# Persistent storage configuration for both validator and RPC StatefulSets.
 persistence:
   # -- (bool) Enable persistent volume claims for ledger data.
   enabled: true
@@ -599,11 +513,11 @@ persistence:
   volumeMode: ""
   # -- (string) Name of an existing PersistentVolumeClaim to reuse instead of creating new PVCs.
   existingClaim: ""
-  # -- (object) Metadata annotations applied to generated PVCs.
+  # Metadata annotations applied to generated PVCs.
   annotations: {}
-  # -- (object) PVC selector allowing binding to specific PersistentVolumes.
+  # PVC selector allowing binding to specific PersistentVolumes.
   selector: {}
-  # -- (object) Retention policy controlling PVC lifecycle on delete or scale operations.
+  # Retention policy controlling PVC lifecycle on delete or scale operations.
   retention:
     # -- (string) Behaviour of PVCs when the Helm release is deleted.
     whenDeleted: Retain
@@ -627,13 +541,11 @@ volumeMounts: []
 #   mountPath: "/etc/foo"
 #   readOnly: true
 
-# -- (object) Init container configuration shared across validator and RPC workloads.
+# Init container configuration shared across validator and RPC workloads.
 initContainer:
-  # -- (object) TCP check init container configuration for validating service dependencies.
   tcpCheck:
     # -- (bool) Enable a tcp-check init container before Besu pods start.
     enabled: false
-    # -- (object) Container image configuration for the tcp-check init container.
     image:
       # -- (string) OCI image hosting the tcp-check utility.
       repository: ghcr.io/settlemint/btp-waitforit
@@ -643,27 +555,18 @@ initContainer:
       pullPolicy: IfNotPresent
     # -- (int) Timeout in seconds applied to each dependency probe.
     timeout: 120
-    # -- (object) Resource requests and limits for the tcp-check init container.
     resources:
-      # -- (object) Maximum resource limits.
       limits:
-        # -- (string) CPU limit.
         cpu: 100m
-        # -- (string) Memory limit.
         memory: 64Mi
-      # -- (object) Minimum resource requests.
       requests:
-        # -- (string) CPU request.
         cpu: 10m
-        # -- (string) Memory request.
         memory: 32Mi
     # -- (list) TCP dependencies expressed as name/endpoint pairs (host:port strings).
     dependencies: []
-  # -- (object) Compile-genesis init container configuration for merging allocation ConfigMaps.
   compileGenesis:
     # -- (bool) Enable the compile-genesis init container that merges allocation ConfigMaps into the runtime genesis file.
     enabled: true
-    # -- (object) Container image configuration for the compile-genesis init container.
     image:
       # -- (string) OCI image hosting the network-bootstrapper CLI used for genesis compilation.
       repository: ghcr.io/settlemint/network-bootstrapper
@@ -679,11 +582,11 @@ initContainer:
 # -- (list) Additional init containers appended verbatim to both StatefulSets.
 extraInitContainers: []
 
-# -- (object) Node selector constraints influencing where Besu pods can schedule.
+# Node selector constraints influencing where Besu pods can schedule.
 nodeSelector: {}
 
 # -- (list) Tolerations allowing pods to run on nodes with matching taints.
 tolerations: []
 
-# -- (object) Node and pod affinity or anti-affinity rules affecting scheduling decisions.
+# Node and pod affinity or anti-affinity rules affecting scheduling decisions.
 affinity: {}

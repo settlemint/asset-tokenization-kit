@@ -6,13 +6,9 @@ global:
   imagePullSecrets: []
   # -- (string) Global StorageClass for Persistent Volume(s)
   storageClass: ""
-  # -- (object) Security contexts configuration (pod and container level)
   securityContexts: {}
-  # -- (object) Datastore configurations for dependencies like Redis
   datastores: {}
-  # -- (object) Global labels applied to all resources
   labels:
-    # -- (string) Kots.io app slug identifier
     kots.io/app-slug: settlemint-atk
 
 # -- (string) String to fully override common.names.fullname
@@ -32,7 +28,7 @@ image:
   # -- (string) eRPC image repository
   repository: erpc/erpc
   # -- (string) eRPC image tag (immutable tags are recommended)
-  tag: "0.0.57"
+  tag: "0.0.56"
   # -- (string) eRPC image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
   digest: ""
   # -- (string) eRPC image pull policy
@@ -105,9 +101,8 @@ podSecurityContext: {}
 # -- (object) Container Security Context configuration (overrides global.securityContexts.container)
 containerSecurityContext: {}
 
-# -- (object) Runtime tuning for Go garbage collection and memory management
+# -- (object) Runtime tuning
 runtime:
-  # -- (object) Go garbage collection tuning configuration
   gc:
     # -- (bool) Enable automatic Go GC tuning based on container limits
     enabled: true
@@ -221,49 +216,27 @@ extraEnvVarsCM: ""
 # -- (string) Name of existing Secret containing extra env vars for eRPC nodes
 extraEnvVarsSecret: ""
 
-# -- (object) Init container configuration for dependency checking
 initContainer:
-  # -- (object) Generic TCP check settings for service dependencies
+  # Generic TCP check settings
   tcpCheck:
-    # -- (bool) Enable TCP dependency checking init container
     enabled: true
-    # -- (object) Container image for TCP check init container
     image:
-      # -- (string) TCP check image repository
       repository: ghcr.io/settlemint/btp-waitforit
-      # -- (string) TCP check image tag
       tag: v7.7.10
-      # -- (string) TCP check image pull policy
       pullPolicy: IfNotPresent
-    # -- (int) Timeout in seconds for each dependency check
-    timeout: 120
-    # -- (object) Resource limits and requests for TCP check container
+    timeout: 120 # Timeout in seconds for each dependency check
     resources:
-      # -- (object) Resource limits for TCP check container
       limits:
-        # -- (string) CPU limit for TCP check container
         cpu: 100m
-        # -- (string) Memory limit for TCP check container
         memory: 64Mi
-      # -- (object) Resource requests for TCP check container
       requests:
-        # -- (string) CPU request for TCP check container
         cpu: 10m
-        # -- (string) Memory request for TCP check container
         memory: 32Mi
-    # -- (list) List of service dependencies to check before starting
     dependencies:
-      # -- (object) Besu RPC service dependency
-      -
-        # -- (string) Name of the dependency
-        name: besu-rpc
-        # -- (string) Service endpoint to check (service-name:port)
+      # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
+      - name: besu-rpc
         endpoint: "besu-node-rpc-0.besu-node-rpc:8545"
-      # -- (object) Redis service dependency
-      -
-        # -- (string) Name of the dependency
-        name: redis
-        # -- (string) Service endpoint to check (template rendered)
+      - name: redis
         endpoint: '{{ include "erpc.redis.endpoint" (dict "context" $) }}'
 
 # -- (list) Additional init containers appended verbatim to the workload spec
@@ -329,29 +302,29 @@ ingress:
   # -- (list) Additional rules to be covered with this ingress record
   extraRules: []
 
-# -- (object) OpenShift Route parameters
+# -- OpenShift Route parameters
 openShiftRoute:
-  # -- (bool) Enable OpenShift route creation for eRPC
+  # -- Enable OpenShift route creation for eRPC
   enabled: false
-  # -- (object) Additional annotations for the OpenShift route resource
+  # -- Additional annotations for the OpenShift route resource
   annotations: {}
-  # -- (string) Hostname exposed via the OpenShift route
+  # -- Hostname exposed via the OpenShift route
   host: besu.k8s.orb.local
-  # -- (string) HTTP path exposed via the OpenShift route
+  # -- HTTP path exposed via the OpenShift route
   path: /
-  # -- (string) Wildcard policy applied to the route
+  # -- Wildcard policy applied to the route
   wildcardPolicy: None
-  # -- (object) Service port configuration for the route target
+  # -- Service port configuration for the route target
   port:
-    # -- (string) Service target port name (must exist on the eRPC service)
+    # -- Service target port name (must exist on the eRPC service)
     targetPort: http
-  # -- (object) Primary service weight configuration
+  # -- Primary service weight configuration
   to:
-    # -- (int) Weight assigned to the eRPC service backend
+    # -- Weight assigned to the eRPC service backend
     weight: 100
-  # -- (list) Additional backends for weighted routing
+  # -- Additional backends for weighted routing
   alternateBackends: []
-  # -- (object) TLS configuration for the OpenShift route
+  # -- TLS configuration for the OpenShift route
   tls: null
 
 # -- Service account for eRPC pods
@@ -377,33 +350,17 @@ autoscaling:
   minReplicas: 1
   # -- (list) Built-in metrics configuration
   builtInMetrics:
-    # -- (object) CPU utilization metric configuration
-    -
-      # -- (string) Metric type (Resource, Pods, Object, External)
-      type: Resource
-      # -- (object) Resource metric configuration
+    - type: Resource
       resource:
-        # -- (string) Resource name to monitor
         name: cpu
-        # -- (object) Target metric configuration
         target:
-          # -- (string) Target type (Utilization, Value, AverageValue)
           type: Utilization
-          # -- (int) Target average CPU utilization percentage
           averageUtilization: 80
-    # -- (object) Memory utilization metric configuration
-    -
-      # -- (string) Metric type (Resource, Pods, Object, External)
-      type: Resource
-      # -- (object) Resource metric configuration
+    - type: Resource
       resource:
-        # -- (string) Resource name to monitor
         name: memory
-        # -- (object) Target metric configuration
         target:
-          # -- (string) Target type (Utilization, Value, AverageValue)
           type: Utilization
-          # -- (int) Target average memory utilization percentage
           averageUtilization: 80
   # -- (list) Custom metrics configuration
   customMetrics: []
@@ -429,96 +386,41 @@ networkPolicy:
   addExternalClientAccess: true
   # -- (list) Add extra ingress rules to the NetworkPolicy
   extraIngress:
-    # -- (object) Ingress rule allowing access from specific pods
-    -
-      # -- (list) Source pod selectors for this ingress rule
-      from:
-        # -- (object) Allow traffic from dapp pods
-        -
-          # -- (object) Pod selector for dapp
-          podSelector:
-            # -- (object) Label selector for dapp pods
+    - from:
+        - podSelector:
             matchLabels:
-              # -- (string) App name label for dapp
               app.kubernetes.io/name: dapp
-        # -- (object) Allow traffic from txsigner pods
-        -
-          # -- (object) Pod selector for txsigner
-          podSelector:
-            # -- (object) Label selector for txsigner pods
+        - podSelector:
             matchLabels:
-              # -- (string) App name label for txsigner
               app.kubernetes.io/name: txsigner
-        # -- (object) Allow traffic from ingress-nginx pods
-        -
-          # -- (object) Pod selector for ingress-nginx
-          podSelector:
-            # -- (object) Label selector for ingress-nginx pods
+        - podSelector:
             matchLabels:
-              # -- (string) App name label for ingress-nginx
               app.kubernetes.io/name: ingress-nginx
-        # -- (object) Allow traffic from any pod in same namespace
-        -
-          # -- (object) Empty pod selector matches all pods
-          podSelector: {}
-      # -- (list) Port configurations for this ingress rule
+        - podSelector: {}  # Same namespace
       ports:
-        # -- (object) RPC port configuration
-        -
-          # -- (string) Protocol for RPC traffic
-          protocol: TCP
-          # -- (int) RPC port number
-          port: 4000
-        # -- (object) Metrics port configuration
-        -
-          # -- (string) Protocol for metrics traffic
-          protocol: TCP
-          # -- (int) Metrics port number
-          port: 4001
+        - protocol: TCP
+          port: 4000  # RPC port
+        - protocol: TCP
+          port: 4001  # Metrics port
   # -- (list) Add extra egress rules to the NetworkPolicy (ignored if allowExternalEgress=true)
   extraEgress:
-    # -- (object) Egress rule for DNS resolution
-    -
-      # -- (list) Destination selectors for DNS traffic
-      to:
-        # -- (object) Allow DNS queries to kube-dns pods
-        -
-          # -- (object) Namespace selector (empty matches all namespaces)
-          namespaceSelector: {}
-          # -- (object) Pod selector for kube-dns
+    # Allow DNS resolution
+    - to:
+        - namespaceSelector: {}
           podSelector:
-            # -- (object) Label selector for kube-dns pods
             matchLabels:
-              # -- (string) Kubernetes app label for DNS
               k8s-app: kube-dns
-      # -- (list) Port configurations for DNS egress
       ports:
-        # -- (object) DNS port configuration
-        -
-          # -- (string) Protocol for DNS queries
-          protocol: UDP
-          # -- (int) DNS port number
+        - protocol: UDP
           port: 53
-    # -- (object) Egress rule for Besu node access
-    -
-      # -- (list) Destination selectors for Besu traffic
-      to:
-        # -- (object) Allow traffic to Besu statefulset pods
-        -
-          # -- (object) Pod selector for Besu nodes
-          podSelector:
-            # -- (object) Label selector for Besu pods
+    # Allow access to Besu nodes
+    - to:
+        - podSelector:
             matchLabels:
-              # -- (string) App name label for Besu statefulset
               app.kubernetes.io/name: besu-statefulset
-      # -- (list) Port configurations for Besu egress
       ports:
-        # -- (object) Besu RPC port configuration
-        -
-          # -- (string) Protocol for Besu RPC traffic
-          protocol: TCP
-          # -- (int) Besu RPC port number
-          port: 8545
+        - protocol: TCP
+          port: 8545  # RPC
   # -- (object) Ingress rules configuration
   ingressRules:
     # -- (object) Access restrictions configuration
@@ -545,327 +447,155 @@ tests:
 
 # -- (object) eRPC configuration
 config:
-  # -- (string) Log level for eRPC (debug, info, warn, error)
+  # -- (string) Log level for eRPC
   logLevel: info
-  # -- (object) HTTP server configuration
+  # -- (object) Server configuration
   server:
-    # -- (string) IPv4 address to bind HTTP server to
     httpHostV4: 0.0.0.0
-    # -- (int) HTTP server port
     httpPort: 4000
-    # -- (string) Duration to wait before starting graceful shutdown
     waitBeforeShutdown: 30s
-    # -- (string) Duration to wait after graceful shutdown completes
     waitAfterShutdown: 30s
-  # -- (object) Prometheus metrics endpoint configuration
+  # -- (object) Metrics endpoint configuration
   metrics:
-    # -- (bool) Enable metrics endpoint
     enabled: true
-    # -- (string) IPv4 address to bind metrics server to
     hostV4: 0.0.0.0
-    # -- (int) Metrics server port
     port: 4001
-  # -- (list) Array of project configurations (will be overridden by parent chart). Chain IDs default from .Values.global.chainId when omitted (see configmap template).
+  # -- (list) Array of project configurations (will be overridden by parent chart)
+  #    Chain IDs default from .Values.global.chainId when omitted (see configmap template).
   projects:
-    # -- (object) Project configuration entry
-    -
-      # -- (string) Unique project identifier
-      id: settlemint
-      # -- (list) Network configurations for this project
+    - id: settlemint
       networks:
-        # -- (object) Network configuration entry
-        -
-          # -- (string) Blockchain architecture type (evm, substrate, etc.)
-          architecture: evm
-          # -- (object) EVM-specific configuration
+        - architecture: evm
           evm:
-            # -- (object) Data integrity enforcement rules
             integrity:
-              # -- (bool) Enforce consistent highest block number across upstreams
               enforceHighestBlock: true
-              # -- (bool) Enforce valid block range for eth_getLogs queries
               enforceGetLogsBlockRange: true
-          # -- (object) Default directives applied to all requests
           directiveDefaults:
-            # -- (bool) Retry requests that return empty results
             retryEmpty: true
-          # -- (list) Failsafe policies for request handling
           failsafe:
-            # -- (object) Failsafe policy for eth_getLogs method
-            -
-              # -- (string) RPC method pattern to match (supports wildcards)
-              matchMethod: "eth_getLogs"
-              # -- (object) Timeout configuration for this method
+            - matchMethod: "eth_getLogs"
               timeout:
-                # -- (string) Maximum duration for request completion
                 duration: 45s
-              # -- (object) Retry configuration for failed requests
               retry:
-                # -- (int) Maximum number of retry attempts
                 maxAttempts: 3
-                # -- (string) Initial delay before first retry
                 delay: 500ms
-                # -- (int) Multiplicative factor for exponential backoff
                 backoffFactor: 2
-                # -- (string) Maximum delay between retries
                 backoffMaxDelay: 10s
-                # -- (string) Random jitter added to retry delay
                 jitter: 300ms
-              # -- (object) Hedge configuration for parallel requests
               hedge:
-                # -- (float) Latency quantile threshold for hedging (0.0-1.0)
                 quantile: 0.9
-                # -- (string) Minimum delay before sending hedge request
                 minDelay: 200ms
-                # -- (string) Maximum delay before sending hedge request
                 maxDelay: 4s
-                # -- (int) Maximum number of concurrent hedge requests
                 maxCount: 1
-            # -- (object) Failsafe policy for trace/debug methods
-            -
-              # -- (string) RPC method pattern for trace, debug, and arbtrace methods
-              matchMethod: "trace_*|debug_*|arbtrace_*"
-              # -- (object) Timeout configuration for trace/debug methods
+            - matchMethod: "trace_*|debug_*|arbtrace_*"
               timeout:
-                # -- (string) Maximum duration for trace/debug requests
                 duration: 90s
-              # -- (object) Retry configuration for trace/debug methods
               retry:
-                # -- (int) Maximum retry attempts for trace/debug (limited to 1)
                 maxAttempts: 1
-            # -- (object) Failsafe policy for block and transaction queries
-            -
-              # -- (string) RPC method pattern for getBlock and getTransaction methods
-              matchMethod: "eth_getBlock*|eth_getTransaction*"
-              # -- (object) Timeout configuration for block/transaction queries
+            - matchMethod: "eth_getBlock*|eth_getTransaction*"
               timeout:
-                # -- (string) Maximum duration for block/transaction queries
                 duration: 6s
-              # -- (object) Retry configuration for block/transaction queries
               retry:
-                # -- (int) Maximum retry attempts for block/transaction queries
                 maxAttempts: 2
-                # -- (string) Initial delay before first retry
                 delay: 200ms
-                # -- (float) Multiplicative factor for exponential backoff
                 backoffFactor: 1.5
-                # -- (string) Maximum delay between retries
                 backoffMaxDelay: 3s
-                # -- (string) Random jitter added to retry delay
                 jitter: 150ms
-            # -- (object) Failsafe policy for unfinalized/realtime requests
-            -
-              # -- (string) RPC method pattern matching all methods
-              matchMethod: "*"
-              # -- (list) Block finality states to match
+            - matchMethod: "*"
               matchFinality:
-                # -- (string) Match unfinalized blocks
                 - unfinalized
-                # -- (string) Match realtime blocks
                 - realtime
-              # -- (object) Timeout configuration for unfinalized requests
               timeout:
-                # -- (string) Maximum duration for unfinalized requests
                 duration: 4s
-              # -- (object) Retry configuration for unfinalized requests
               retry:
-                # -- (int) Maximum retry attempts for unfinalized requests
                 maxAttempts: 2
-                # -- (string) Initial delay before first retry
                 delay: 150ms
-                # -- (string) Random jitter added to retry delay
                 jitter: 150ms
-              # -- (object) Hedge configuration for unfinalized requests
               hedge:
-                # -- (string) Delay before sending hedge request
                 delay: 250ms
-                # -- (int) Maximum number of concurrent hedge requests
                 maxCount: 1
-            # -- (object) Failsafe policy for finalized block requests
-            -
-              # -- (string) RPC method pattern matching all methods
-              matchMethod: "*"
-              # -- (list) Block finality states to match (finalized only)
+            - matchMethod: "*"
               matchFinality:
-                # -- (string) Match finalized blocks
                 - finalized
-              # -- (object) Timeout configuration for finalized requests
               timeout:
-                # -- (string) Maximum duration for finalized requests
                 duration: 20s
-              # -- (object) Retry configuration for finalized requests
               retry:
-                # -- (int) Maximum retry attempts for finalized requests
                 maxAttempts: 4
-                # -- (string) Initial delay before first retry
                 delay: 400ms
-                # -- (float) Multiplicative factor for exponential backoff
                 backoffFactor: 1.8
-                # -- (string) Maximum delay between retries
                 backoffMaxDelay: 8s
-                # -- (string) Random jitter added to retry delay
                 jitter: 250ms
-            # -- (object) Default fallback failsafe policy for all methods
-            -
-              # -- (string) RPC method pattern matching all methods (catch-all)
-              matchMethod: "*"
-              # -- (object) Timeout configuration for default policy
+            - matchMethod: "*"
               timeout:
-                # -- (string) Maximum duration for default requests
                 duration: 12s
-              # -- (object) Retry configuration for default policy
               retry:
-                # -- (int) Maximum retry attempts for default policy
                 maxAttempts: 3
-                # -- (string) Initial delay before first retry
                 delay: 300ms
-                # -- (float) Multiplicative factor for exponential backoff
                 backoffFactor: 1.4
-                # -- (string) Maximum delay between retries
                 backoffMaxDelay: 5s
-                # -- (string) Random jitter added to retry delay
                 jitter: 200ms
-              # -- (object) Hedge configuration for default policy
               hedge:
-                # -- (float) Latency quantile threshold for hedging (0.0-1.0)
                 quantile: 0.95
-                # -- (string) Minimum delay before sending hedge request
                 minDelay: 120ms
-                # -- (string) Maximum delay before sending hedge request
                 maxDelay: 2s
-                # -- (int) Maximum number of concurrent hedge requests
                 maxCount: 2
-      # -- (list) Upstream RPC node configurations for load balancing
       upstreams:
-        # -- (object) First Besu RPC node upstream
-        -
-          # -- (string) Unique identifier for this upstream
-          id: besu-node-rpc-0
-          # -- (string) RPC endpoint URL for this upstream
+        - id: besu-node-rpc-0
           endpoint: http://besu-node-rpc-0.besu-node-rpc:8545
-          # -- (object) EVM-specific configuration for this upstream
           evm: {}
-          # -- (list) Failsafe policies for this upstream
           failsafe:
-            # -- (object) Circuit breaker policy for this upstream
-            -
-              # -- (string) RPC method pattern matching all methods
-              matchMethod: "*"
-              # -- (object) Circuit breaker configuration
+            - matchMethod: "*"
               circuitBreaker:
-                # -- (int) Number of failures before opening circuit
                 failureThresholdCount: 40
-                # -- (int) Capacity of failure counter window
                 failureThresholdCapacity: 80
-                # -- (string) Duration before attempting to close circuit
                 halfOpenAfter: 120s
-                # -- (int) Number of successes needed to close circuit
                 successThresholdCount: 3
-                # -- (int) Capacity of success counter window
                 successThresholdCapacity: 10
-        # -- (object) Second Besu RPC node upstream
-        -
-          # -- (string) Unique identifier for this upstream
-          id: besu-node-rpc-1
-          # -- (string) RPC endpoint URL for this upstream
+        - id: besu-node-rpc-1
           endpoint: http://besu-node-rpc-1.besu-node-rpc:8545
-          # -- (object) EVM-specific configuration for this upstream
           evm: {}
-          # -- (list) Failsafe policies for this upstream
           failsafe:
-            # -- (object) Circuit breaker policy for this upstream
-            -
-              # -- (string) RPC method pattern matching all methods
-              matchMethod: "*"
-              # -- (object) Circuit breaker configuration
+            - matchMethod: "*"
               circuitBreaker:
-                # -- (int) Number of failures before opening circuit
                 failureThresholdCount: 40
-                # -- (int) Capacity of failure counter window
                 failureThresholdCapacity: 80
-                # -- (string) Duration before attempting to close circuit
                 halfOpenAfter: 120s
-                # -- (int) Number of successes needed to close circuit
                 successThresholdCount: 3
-                # -- (int) Capacity of success counter window
                 successThresholdCapacity: 10
-  # -- (object) Database configuration for caching and shared state
+  # -- (object) Database configuration for caching
   database:
-    # -- (object) EVM JSON-RPC response caching configuration
     evmJsonRpcCache:
-      # -- (list) Cache connector configurations
       connectors:
-        # -- (object) Redis cache connector
-        -
-          # -- (string) Unique identifier for this connector
-          id: redis-cache
-          # -- (string) Database driver type
+        - id: redis-cache
           driver: redis
-          # -- (object) Redis-specific configuration
           redis:
-            # -- (string) Redis connection URI (template rendered)
             uri: '{{ include "erpc.redis.uriFor" (dict "context" $ "dbKey" "cacheDb" "queryKey" "cacheQuery") }}'
-      # -- (object) Compression configuration for cached data
       compression:
-        # -- (bool) Enable compression for cached responses
         enabled: true
-        # -- (string) Compression algorithm to use (zstd, gzip, lz4)
         algorithm: zstd
-        # -- (string) Compression level for zstd (fastest, default, better, best)
         zstdLevel: default
-        # -- (int) Minimum response size in bytes before applying compression
         threshold: 1024
-      # -- (list) Cache policies defining what to cache and for how long
       policies:
-        # -- (object) Cache policy for finalized blocks
-        -
-          # -- (string) Network pattern to match (supports wildcards)
-          network: "*"
-          # -- (string) RPC method pattern to match (supports wildcards)
+        - network: "*"
           method: "*"
-          # -- (string) Block finality state to match
           finality: finalized
-          # -- (string) Connector ID to use for this policy
           connector: redis-cache
-          # -- (int) Time-to-live in seconds (0 = infinite)
           ttl: 0
-        # -- (object) Cache policy for unfinalized blocks
-        -
-          # -- (string) Network pattern to match (supports wildcards)
-          network: "*"
-          # -- (string) RPC method pattern to match (supports wildcards)
+        - network: "*"
           method: "*"
-          # -- (string) Block finality state to match
           finality: unfinalized
-          # -- (string) Connector ID to use for this policy
           connector: redis-cache
-          # -- (string) Time-to-live duration
           ttl: 5s
-        # -- (object) Cache policy for realtime blocks
-        -
-          # -- (string) Network pattern to match (supports wildcards)
-          network: "*"
-          # -- (string) RPC method pattern to match (supports wildcards)
+        - network: "*"
           method: "*"
-          # -- (string) Block finality state to match
           finality: realtime
-          # -- (string) Connector ID to use for this policy
           connector: redis-cache
-          # -- (string) Time-to-live duration
           ttl: 5s
-    # -- (object) Shared state configuration for distributed coordination
     sharedState:
-      # -- (string) Unique key prefix for this cluster's shared state
       clusterKey: "atk-erpc-shared"
-      # -- (object) Connector configuration for shared state storage
       connector:
-        # -- (string) Database driver type
         driver: redis
-        # -- (object) Redis-specific configuration
         redis:
-          # -- (string) Redis connection URI (template rendered)
           uri: '{{ include "erpc.redis.uriFor" (dict "context" $ "dbKey" "sharedStateDb" "queryKey" "sharedStateQuery") }}'
-      # -- (string) Timeout for fallback when shared state is unavailable
       fallbackTimeout: 5s
-      # -- (string) Time-to-live for distributed locks
       lockTtl: 30s

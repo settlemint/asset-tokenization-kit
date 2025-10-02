@@ -13,9 +13,7 @@ global:
   securityContexts: {}
   # -- (object) Shared datastore definitions
   datastores: {}
-  # -- (object) Global labels applied to all resources
   labels:
-    # -- (string) KOTS application slug identifier
     kots.io/app-slug: settlemint-atk
 
 # -- (string) String to fully override common.names.fullname
@@ -79,26 +77,26 @@ config:
       # -- (bool) Enable blackbox exporter
       enabled: false
 
-# -- (object) Blockscout backend configuration
+# -- Blockscout backend configuration (object)
 blockscout:
-  # -- (bool) Enable Blockscout backend deployment
+  # -- Enable Blockscout backend deployment (bool)
   enabled: true
-  # -- (int) Number of Blockscout backend replicas to deploy
+  # -- Number of Blockscout backend replicas to deploy (int)
   replicaCount: 1
-  # -- (object) Annotations for Blockscout backend deployment
+  # -- Annotations for Blockscout backend deployment (object)
   annotations: {}
 
-  # -- (object) Annotations for Blockscout backend pods
+  # -- Annotations for Blockscout backend pods (object)
   podAnnotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "4000"
     prometheus.io/path: "/metrics"
 
-  # -- (object) Blockscout backend image configuration
+  # -- Blockscout backend image configuration (object)
   image:
-    # -- (string) Blockscout backend image repository
+    # -- Blockscout backend image repository (object)
     repository: ghcr.io/blockscout/blockscout
-    # -- (string) Blockscout backend image tag (immutable tags are recommended)
+    # -- Blockscout backend image tag (immutable tags are recommended)
     tag: "9.0.2"
     # -- (string) Blockscout backend image pull policy
     pullPolicy: IfNotPresent
@@ -118,39 +116,22 @@ blockscout:
 
   # -- (object) TCP-based dependency checks for Blockscout
   initContainer:
-    # -- (object) TCP connection check configuration
     tcpCheck:
-      # -- (bool) Enable TCP check init container
       enabled: true
-      # -- (object) TCP check container image configuration
       image:
-        # -- (string) TCP check container image repository
         repository: ghcr.io/settlemint/btp-waitforit
-        # -- (string) TCP check container image tag
         tag: v7.7.10
-        # -- (string) TCP check container image pull policy
         pullPolicy: IfNotPresent
-      # -- (int) Timeout in seconds for TCP checks
       timeout: 120
-      # -- (object) TCP check container resource requests and limits
       resources:
-        # -- (object) Resource limits for TCP check container
         limits:
-          # -- (string) CPU limit for TCP check container
           cpu: 100m
-          # -- (string) Memory limit for TCP check container
           memory: 64Mi
-        # -- (object) Resource requests for TCP check container
         requests:
-          # -- (string) CPU request for TCP check container
           cpu: 10m
-          # -- (string) Memory request for TCP check container
           memory: 32Mi
-        # -- (list) List of service dependencies to check
         dependencies:
-          # -- (string) Dependency name
           - name: postgresql
-            # -- (string) Dependency endpoint to check
             endpoint: "{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"blockscout\" \"local\" $.Values.postgresql) }}"
 
   # -- (list) Additional init containers appended verbatim
@@ -404,7 +385,6 @@ frontend:
     allowPrivilegeEscalation: false
     # -- (object) Linux capabilities to drop
     capabilities:
-      # -- (list) List of Linux capabilities to drop from the container
       drop:
       - ALL
     # -- (bool) Mount the container's root filesystem as read-only

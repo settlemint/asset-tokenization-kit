@@ -6,9 +6,7 @@ global:
   imagePullSecrets: []
   # -- (string) Global StorageClass for Persistent Volume(s)
   storageClass: ""
-  # -- (object) Global labels to add to all resources
   labels:
-    # -- (string) KOTS application slug identifier
     kots.io/app-slug: settlemint-atk
 
 # -- String to fully override common.names.fullname (string)
@@ -96,7 +94,7 @@ podSecurityContext: {}
 # -- Container Security Context configuration (object)
 containerSecurityContext: {}
 
-# -- (object) TxSigner containers resource requests and limits
+# -- TxSigner containers resource requests and limits
 resources: {}
   # limits:
   #   cpu: 100m
@@ -163,16 +161,12 @@ lifecycleHooks: {}
 
 # -- (list) Optionally specify extra list of additional volumes for the TxSigner pod(s)
 extraVolumes:
-  # -- (object) Cache volume configuration
   - name: tx-signer-cache
-    # -- (object) Empty directory volume specification
     emptyDir: {}
 
 # -- (list) Optionally specify extra list of additional volumeMounts for the TxSigner container(s)
 extraVolumeMounts:
-  # -- (object) Cache volume mount configuration
   - name: tx-signer-cache
-    # -- (string) Mount path for cache volume
     mountPath: /signer/.cache
 
 # -- Array with extra environment variables to add to TxSigner nodes (list)
@@ -244,32 +238,32 @@ ingress:
   # -- Additional rules to be covered with this ingress record (list)
   extraRules: []
 
-# -- (object) OpenShift Route parameters
+# -- OpenShift Route parameters
 openShiftRoute:
-  # -- (bool) Enable OpenShift route creation for TxSigner
+  # -- Enable OpenShift route creation for TxSigner
   enabled: false
-  # -- (object) Additional annotations for the OpenShift route resource
+  # -- Additional annotations for the OpenShift route resource
   annotations: {}
-  # -- (string) Hostname exposed via the OpenShift route
+  # -- Hostname exposed via the OpenShift route
   host: txsigner.k8s.orb.local
-  # -- (string) HTTP path exposed via the OpenShift route
+  # -- HTTP path exposed via the OpenShift route
   path: /
-  # -- (string) Wildcard policy to apply to the route
+  # -- Wildcard policy to apply to the route
   wildcardPolicy: None
-  # -- (object) Service port configuration for the route target
+  # -- Service port configuration for the route target
   port:
-    # -- (string) Service target port name (must exist on the TxSigner service)
+    # -- Service target port name (must exist on the TxSigner service)
     targetPort: http
-  # -- (object) Primary service weight configuration
+  # -- Primary service weight configuration
   to:
-    # -- (int) Weight assigned to the TxSigner service backend
+    # -- Weight assigned to the TxSigner service backend
     weight: 100
-  # -- (list) Additional backends for weighted routing
+  # -- Additional backends for weighted routing
   alternateBackends: []
-  # -- (object) TLS configuration for the OpenShift route
+  # -- TLS configuration for the OpenShift route
   tls: null
 
-# -- (object) Service account for TxSigner pods
+# -- Service account for TxSigner pods
 serviceAccount:
   # -- (bool) Specifies whether a ServiceAccount should be created
   create: true
@@ -290,31 +284,19 @@ autoscaling:
   maxReplicas: 3
   # -- Minimum number of TxSigner replicas (int)
   minReplicas: 1
-  # -- (list) Built-in metrics configuration
+  # -- Built-in metrics configuration (list)
   builtInMetrics:
-    # -- (object) CPU resource metric configuration
     - type: Resource
-      # -- (object) Resource metric details
       resource:
-        # -- (string) Resource name (cpu or memory)
         name: cpu
-        # -- (object) Target metric threshold
         target:
-          # -- (string) Target metric type
           type: Utilization
-          # -- (int) Average utilization percentage threshold
           averageUtilization: 80
-    # -- (object) Memory resource metric configuration
     - type: Resource
-      # -- (object) Resource metric details
       resource:
-        # -- (string) Resource name (cpu or memory)
         name: memory
-        # -- (object) Target metric threshold
         target:
-          # -- (string) Target metric type
           type: Utilization
-          # -- (int) Average utilization percentage threshold
           averageUtilization: 80
   # -- Custom metrics configuration (list)
   customMetrics: []
@@ -338,81 +320,48 @@ networkPolicy:
   allowExternalEgress: true
   # -- (bool) Allow access from pods with client label set to "true". Ignored if `networkPolicy.allowExternal` is true.
   addExternalClientAccess: true
-  # -- (list) Add extra ingress rules to the NetworkPolicy
+  # -- Add extra ingress rules to the NetworkPolicy (list)
   extraIngress:
-    # -- (object) Allow ingress from dapp, portal, ingress-nginx, and same namespace
     - from:
-        # -- (object) Allow from dapp pods
         - podSelector:
-            # -- (object) Match labels for dapp
             matchLabels:
-              # -- (string) Application name for dapp
               app.kubernetes.io/name: dapp
-        # -- (object) Allow from portal pods
         - podSelector:
-            # -- (object) Match labels for portal
             matchLabels:
-              # -- (string) Application name for portal
               app.kubernetes.io/name: portal
-        # -- (object) Allow from ingress-nginx pods
         - podSelector:
-            # -- (object) Match labels for ingress-nginx
             matchLabels:
-              # -- (string) Application name for ingress-nginx
               app.kubernetes.io/name: ingress-nginx
-        # -- (object) Allow from all pods in same namespace
-        - podSelector: {}
-      # -- (list) Allowed ports for ingress
+        - podSelector: {} # Same namespace
       ports:
-        # -- (object) HTTP port configuration
         - protocol: TCP
-          # -- (int) HTTP port
-          port: 3000
-        # -- (object) Metrics port configuration
+          port: 3000 # HTTP port
         - protocol: TCP
-          # -- (int) Metrics port
-          port: 3001
+          port: 3001 # Metrics port
   # -- (list) Add extra egress rules to the NetworkPolicy (ignored if allowExternalEgress=true)
   extraEgress:
-    # -- (object) Allow DNS resolution
+    # Allow DNS resolution
     - to:
-        # -- (object) Allow egress to kube-dns pods
         - namespaceSelector: {}
-          # -- (object) Match kube-dns pods
           podSelector:
-            # -- (object) Match labels for kube-dns
             matchLabels:
-              # -- (string) Application name for kube-dns
               k8s-app: kube-dns
-      # -- (list) Allowed ports for DNS
       ports:
-        # -- (object) DNS UDP port configuration
         - protocol: UDP
-          # -- (int) DNS port
           port: 53
-    # -- (object) Allow access to Besu nodes
+    # Allow access to Besu nodes
     - to:
-        # -- (object) Allow egress to Besu statefulset pods
         - podSelector:
-            # -- (object) Match labels for Besu
             matchLabels:
-              # -- (string) Application name for Besu
               app.kubernetes.io/name: besu-statefulset
-      # -- (list) Allowed ports for Besu RPC
       ports:
-        # -- (object) Besu RPC port configuration
         - protocol: TCP
-          # -- (int) RPC port
-          port: 8545
-    # -- (object) Allow access to external HTTPS APIs (for signing services)
+          port: 8545 # RPC
+    # Allow access to external HTTPS APIs (for signing services)
     - to:
-        # -- (object) Allow egress to any namespace
         - namespaceSelector: {}
-      # -- (list) Allowed ports for HTTPS
       ports:
-        # -- (object) HTTPS port configuration
         - protocol: TCP
-          # -- (int) HTTPS port
           port: 443
   # -- (object) Ingress rules configuration
   ingressRules:
@@ -537,39 +486,22 @@ config:
 
 # -- (object) Init container configuration
 initContainer:
-  # -- (object) TCP connection check configuration
   tcpCheck:
-    # -- (bool) Enable TCP check init container
     enabled: true
-    # -- (object) Init container image configuration
     image:
-      # -- (string) Init container image repository
       repository: ghcr.io/settlemint/btp-waitforit
-      # -- (string) Init container image tag
       tag: v7.7.10
-      # -- (string) Init container image pull policy
       pullPolicy: IfNotPresent
-    # -- (int) Timeout in seconds for dependency checks
     timeout: 120
-    # -- (object) Init container resource requests and limits
     resources:
-      # -- (object) Resource limits
       limits:
-        # -- (string) CPU limit
         cpu: 100m
-        # -- (string) Memory limit
         memory: 64Mi
-      # -- (object) Resource requests
       requests:
-        # -- (string) CPU request
         cpu: 10m
-        # -- (string) Memory request
         memory: 32Mi
-    # -- (list) List of dependencies to check before starting
     dependencies:
-      # -- (object) PostgreSQL dependency configuration
       - name: postgresql
-        # -- (string) PostgreSQL endpoint template
         endpoint: "{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"txsigner\") }}"
 
 # -- (list) Additional init containers

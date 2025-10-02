@@ -1,706 +1,396 @@
-# Default values for the Asset Tokenization Kit (ATK)
-# This is the main umbrella chart that orchestrates all ATK subcharts.
-# All keys include helm-docs compatible annotations for auto-generated documentation.
-
-# -- (object) Global configuration shared across all subcharts
+# Global values shared across all subcharts
 global:
-  # -- (string) Blockchain chain ID used across all network components
   chainId: "53771311147"
-  # -- (string) Human-readable name for the blockchain network
   chainName: "ATK"
-  # -- (object) Global labels applied to all resources across all subcharts
+  # Global labels to be added to all resources
   labels: {}
-  # -- (object) Centralized datastore connection configuration shared across all services
   datastores:
-    # -- (object) Default datastore configuration for services that don't require specialized settings
     default:
-      # -- (object) Redis configuration for default services
       redis:
-        # -- (string) Redis service hostname within the cluster
         host: "redis"
-        # -- (int) Redis service port
         port: 6379
-        # -- (string) Redis authentication username
         username: "default"
-        # -- (string) Redis authentication password. Change for production deployments.
         password: "atk"
-        # -- (int) Redis database number to use (0-15)
         db: 0
-        # -- (string) Redis connection query parameters for tuning connection behavior
         query: "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"
-      # -- (object) PostgreSQL configuration for default services
       postgresql:
-        # -- (string) PostgreSQL service hostname within the cluster
         host: "postgresql"
-        # -- (int) PostgreSQL service port
         port: 5432
-        # -- (string) PostgreSQL superuser username
         username: "postgres"
-        # -- (string) PostgreSQL superuser password. Change for production deployments.
         password: "atk"
-        # -- (string) Default PostgreSQL database name
         database: "postgres"
-        # -- (string) SSL mode for PostgreSQL connections (disable, require, verify-ca, verify-full)
         sslMode: "disable"
-    # -- (object) ERPC-specific datastore configuration for RPC gateway caching
     erpc:
-      # -- (object) Redis database allocation for ERPC services
       redis:
-        # -- (int) Redis database number for ERPC response caching
         cacheDb: 0
-        # -- (int) Redis database number for ERPC shared state storage
         sharedStateDb: 1
-    # -- (object) Portal-specific datastore configuration for identity and access management
     portal:
-      # -- (object) PostgreSQL database for Portal service
       postgresql:
-        # -- (string) Dedicated database name for Portal tables
         database: "portal"
-        # -- (string) Database user for Portal with limited privileges
         username: "portal"
-        # -- (string) Portal database password. Change for production deployments.
         password: "atk"
-      # -- (object) Redis database for Portal session and caching
       redis:
-        # -- (int) Redis database number for Portal data
         db: 4
-    # -- (object) Transaction Signer specific datastore configuration
     txsigner:
-      # -- (object) PostgreSQL database for transaction signing service
       postgresql:
-        # -- (string) Dedicated database name for transaction signer state
         database: "txsigner"
-        # -- (string) Database user for transaction signer
         username: "txsigner"
-        # -- (string) Transaction signer database password. Change for production deployments.
         password: "atk"
-    # -- (object) The Graph Node specific datastore configuration for blockchain indexing
     graphNode:
-      # -- (object) PostgreSQL database for The Graph indexing data
       postgresql:
-        # -- (string) Dedicated database name for subgraph data
         database: "thegraph"
-        # -- (string) Database user for The Graph node
         username: "thegraph"
-        # -- (string) The Graph database password. Change for production deployments.
         password: "atk"
-    # -- (object) Blockscout specific datastore configuration for blockchain explorer
     blockscout:
-      # -- (object) PostgreSQL database for Blockscout explorer data
       postgresql:
-        # -- (string) Dedicated database name for blockchain explorer
         database: "blockscout"
-        # -- (string) Database user for Blockscout
         username: "blockscout"
-        # -- (string) Blockscout database password. Change for production deployments.
         password: "atk"
-    # -- (object) Hasura GraphQL Engine specific datastore configuration
     hasura:
-      # -- (object) PostgreSQL database for Hasura metadata and data
       postgresql:
-        # -- (string) Dedicated database name for Hasura GraphQL engine
         database: "hasura"
-        # -- (string) Database user for Hasura
         username: "hasura"
-        # -- (string) Hasura database password. Change for production deployments.
         password: "atk"
-      # -- (object) Redis databases for Hasura caching and rate limiting
       redis:
-        # -- (int) Redis database number for Hasura query result caching
         cacheDb: 2
-        # -- (int) Redis database number for Hasura API rate limiting
         rateLimitDb: 3
 
-# -- (object) Blockchain network infrastructure configuration
 network:
-  # -- (bool) Enable deployment of the blockchain network (validators and RPC nodes)
   enabled: true
-  # -- (object) Network bootstrapper job configuration for genesis and initial setup
   network-bootstrapper:
-    # -- (object) Container image for the network bootstrapper job
     image:
-      # -- (string) OCI registry and repository for network bootstrapper
       repository: ghcr.io/settlemint/network-bootstrapper
-    # -- (object) Pre-deployed contract artifacts configuration
     artifacts:
-      # -- (object) Configuration for pre-deployed smart contracts in genesis
       predeployed:
-        # -- (object) Image containing pre-deployed contract bytecode
         image:
-          # -- (string) OCI registry for pre-deployed artifacts
           registry: ghcr.io
-    # -- (object) Init container configuration for dependency checking
     initContainer:
-      # -- (object) TCP readiness check init container
       tcpCheck:
-        # -- (object) Wait-for-it utility image for TCP checks
         image:
-          # -- (string) Repository for TCP check utility
           repository: ghcr.io/settlemint/btp-waitforit
-  # -- (object) Blockchain node configuration (validators and RPC)
   network-nodes:
-    # -- (object) Hyperledger Besu container image
     image:
-      # -- (string) OCI registry and repository for Besu nodes
       repository: docker.io/hyperledger/besu
-    # -- (object) Init container for node startup dependencies
     initContainer:
-      # -- (object) TCP check before node starts
       tcpCheck:
-        # -- (object) Wait-for-it utility image
         image:
-          # -- (string) Repository for TCP check utility
           repository: ghcr.io/settlemint/btp-waitforit
-    # -- (object) Persistent storage configuration for blockchain data
     persistence:
-      # -- (string) Storage size for each blockchain node (ledger data)
       size: 20Gi
 
-# -- (object) ERPC Gateway configuration for RPC load balancing and caching
 erpc:
-  # -- (bool) Enable deployment of ERPC gateway
   enabled: true
-  # -- (object) ERPC container image
   image:
-    # -- (string) OCI registry for ERPC image
     registry: ghcr.io
-  # -- (object) Test container image for ERPC health checks
   tests:
-    # -- (object) Test image configuration
     image:
-      # -- (string) OCI registry for test utilities
       registry: docker.io
-  # -- (object) Init container for startup dependency checks
   initContainer:
-    # -- (object) TCP readiness check
     tcpCheck:
-      # -- (object) Wait-for-it utility image
       image:
-        # -- (string) Repository for TCP check utility
         repository: ghcr.io/settlemint/btp-waitforit
-  # -- (object) Resource requests and limits for ERPC pods
   resources: {}
-  # -- (object) Ingress configuration for exposing RPC endpoint
   ingress:
-    # -- (bool) Enable ingress for external RPC access
     enabled: true
-    # -- (string) IngressClass for RPC ingress
     className: "atk-nginx"
-    # -- (list) Ingress host rules for RPC endpoint
     hosts:
-      -
-        # -- (string) Hostname for RPC endpoint. Update for your environment.
-        host: rpc.k8s.orb.local
-        # -- (list) Path configuration
+      - host: rpc.k8s.orb.local
         paths:
-          -
-            # -- (string) Path prefix for RPC requests
-            path: /
-            # -- (string) Path matching strategy
+          - path: /
             pathType: ImplementationSpecific
-  # -- (object) OpenShift Route configuration (alternative to Ingress)
   openShiftRoute:
-    # -- (bool) Enable OpenShift route instead of standard ingress
     enabled: false
-    # -- (string) Hostname for OpenShift route
     host: rpc.k8s.orb.local
 
-# -- (object) Blockscout blockchain explorer configuration
 blockscout:
-  # -- (bool) Enable deployment of Blockscout blockchain explorer
   enabled: true
-  # -- (object) Blockscout backend service configuration
   blockscout:
-    # -- (object) Blockscout backend container image
     image:
-      # -- (string) OCI registry and repository for Blockscout backend
       repository: ghcr.io/blockscout/blockscout
-    # -- (object) Init container for database readiness
     initContainer:
-      # -- (object) TCP check for PostgreSQL
       tcpCheck:
-        # -- (object) Wait-for-it utility image
         image:
-          # -- (string) Repository for TCP check utility
           repository: ghcr.io/settlemint/btp-waitforit
-    # -- (object) Ingress configuration for Blockscout backend
     ingress:
-      # -- (bool) Enable ingress for Blockscout API
       enabled: true
-      # -- (string) IngressClass for Blockscout
       className: "atk-nginx"
-      # -- (string) Hostname for Blockscout explorer. Update for your environment.
       hostname: explorer.k8s.orb.local
-    # -- (object) OpenShift Route configuration
     openShiftRoute:
-      # -- (bool) Enable OpenShift route
       enabled: false
-      # -- (string) Hostname for OpenShift route
       host: explorer.k8s.orb.local
-    # -- (object) Environment variables for Blockscout configuration
     env:
-      # -- (string) API URL for Blockscout backend
       API_URL: https://explorer.k8s.orb.local
-      # -- (string) Web app URL for Blockscout frontend
       WEBAPP_URL: https://explorer.k8s.orb.local
-    # -- (object) Resource requests and limits for Blockscout backend
     resources: {}
-  # -- (object) Blockscout frontend service configuration
   frontend:
-    # -- (bool) Enable Blockscout frontend deployment
     enabled: true
-    # -- (object) Ingress configuration for Blockscout UI
     ingress:
-      # -- (bool) Enable ingress for frontend
       enabled: true
-      # -- (string) IngressClass for frontend
       className: "atk-nginx"
-      # -- (string) Hostname for Blockscout frontend
       hostname: explorer.k8s.orb.local
-    # -- (object) Blockscout frontend container image
     image:
-      # -- (string) OCI registry and repository for Blockscout frontend
       repository: ghcr.io/blockscout/frontend
 
-# -- (object) The Graph Node configuration for blockchain indexing
 graph-node:
-  # -- (bool) Enable deployment of The Graph indexing protocol
   enabled: true
-  # -- (object) Graph Node container image
   image:
-    # -- (string) OCI registry and repository for Graph Node
     repository: docker.io/graphprotocol/graph-node
-  # -- (object) Init containers for Graph Node startup
   initContainer:
-    # -- (object) Kubernetes client utility for pre-deployment tasks
     image:
-      # -- (string) kubectl utility image repository
       repository: docker.io/kubesphere/kubectl
-    # -- (object) TCP check for dependencies
     tcpCheck:
-      # -- (object) Wait-for-it utility image
       image:
-        # -- (string) Repository for TCP check utility
         repository: ghcr.io/settlemint/btp-waitforit
-  # -- (object) Ingress configuration for Graph Node API
   ingress:
-    # -- (bool) Enable ingress for subgraph queries
     enabled: true
-    # -- (string) IngressClass for Graph Node
     className: "atk-nginx"
-    # -- (object) Ingress annotations for URL rewriting
     annotations:
-      # -- (string) Enable regex path matching
       nginx.ingress.kubernetes.io/use-regex: "true"
-      # -- (string) Rewrite target for path normalization
       nginx.ingress.kubernetes.io/rewrite-target: /$1
-    # -- (list) Ingress host rules for Graph Node endpoints
     hosts:
-      -
-        # -- (string) Hostname for Graph Node. Update for your environment.
-        host: graph.k8s.orb.local
-        # -- (list) Path configurations for different Graph Node endpoints
+      - host: graph.k8s.orb.local
         paths:
-          -
-            # -- (string) Query endpoint path
-            path: /(.*)
-            # -- (string) Path matching type
+          - path: /(.*)
             pathType: ImplementationSpecific
-          -
-            # -- (string) WebSocket endpoint path
-            path: /ws/?(.*)
-            # -- (string) Path matching type
+          - path: /ws/?(.*)
             pathType: ImplementationSpecific
-          -
-            # -- (string) Admin API path
-            path: /admin/?(.*)
-            # -- (string) Path matching type
+          - path: /admin/?(.*)
             pathType: ImplementationSpecific
-          -
-            # -- (string) Indexer status path
-            path: /indexer/?(.*)
-            # -- (string) Path matching type
+          - path: /indexer/?(.*)
             pathType: ImplementationSpecific
-          -
-            # -- (string) Graph management path
-            path: /graphman/?(.*)
-            # -- (string) Path matching type
+          - path: /graphman/?(.*)
             pathType: ImplementationSpecific
-  # -- (object) OpenShift Route configuration
   openShiftRoute:
-    # -- (bool) Enable OpenShift route
     enabled: false
-    # -- (string) Hostname for OpenShift route
     host: graph.k8s.orb.local
 
-# -- (object) Hasura GraphQL Engine configuration
 hasura:
-  # -- (bool) Enable deployment of Hasura GraphQL engine
   enabled: true
-  # -- (string) Override fullname to simplify service discovery
+  # Override the fullname to be just "hasura" instead of "atk-hasura"
   fullnameOverride: "hasura"
-  # -- (object) Hasura container image configuration
+  # Image configuration
   image:
-    # -- (string) OCI registry for Hasura image
     registry: docker.io
-    # -- (string) Hasura image repository
     repository: hasura/graphql-engine
-    # -- (string) Hasura version tag
-    tag: v2.48.6
-    # -- (string) Image pull policy
+    tag: v2.48.5
     pullPolicy: IfNotPresent
-  # -- (object) Ingress configuration for Hasura console and API
+
+  # Ingress configuration
   ingress:
-    # -- (string) Hostname for Hasura GraphQL endpoint. Update for your environment.
     hostName: hasura.k8s.orb.local
 
-# -- (object) Portal identity and access management configuration
 portal:
-  # -- (bool) Enable deployment of Portal IAM service
   enabled: true
-  # -- (object) Portal container image
   image:
-    # -- (string) OCI registry for Portal image
     registry: ghcr.io
-  # -- (object) Init container for dependency checks
   initContainer:
-    # -- (object) TCP check for database readiness
     tcpCheck:
-      # -- (object) Wait-for-it utility image
       image:
-        # -- (string) Repository for TCP check utility
         repository: ghcr.io/settlemint/btp-waitforit
-  # -- (object) Ingress configuration for Portal API
   ingress:
-    # -- (string) Hostname for Portal service. Update for your environment.
     hostname: portal.k8s.orb.local
 
-# -- (object) Transaction Signer service configuration
+# Transaction Signer Configuration
 txsigner:
-  # -- (bool) Enable deployment of transaction signing service
   enabled: true
-  # -- (object) Transaction signer container image
   image:
-    # -- (string) OCI registry for txsigner image
     registry: ghcr.io
-  # -- (object) Test container image for health checks
   tests:
-    # -- (object) Test image configuration
     image:
-      # -- (string) OCI registry for test utilities
       registry: docker.io
-  # -- (object) Transaction signer wallet configuration
+  # Configuration for the txsigner subchart
   config:
-    # -- (string) BIP39 mnemonic phrase for deterministic key generation. MUST be changed for production.
     mnemonic:
       "gate yellow grunt wrestle disease obtain mixed nature mansion tape
       purchase awful"
-    # -- (string) BIP44 derivation path for Ethereum accounts
     derivationPath: "m/44'/60'/0'/0/0"
-  # -- (object) Resource requests and limits for transaction signer
   resources: {}
-  # -- (object) Init container for dependency checks
   initContainer:
-    # -- (object) TCP check for blockchain node readiness
     tcpCheck:
-      # -- (object) Wait-for-it utility image
       image:
-        # -- (string) Repository for TCP check utility
         repository: ghcr.io/settlemint/btp-waitforit
-  # -- (object) Ingress configuration for transaction signer API
   ingress:
-    # -- (bool) Enable ingress (typically disabled for internal-only services)
     enabled: false
-    # -- (string) Hostname for transaction signer
     hostname: txsigner.k8s.orb.local
 
-# -- (object) DApp frontend application configuration
+# DApp Frontend Configuration
 dapp:
-  # -- (bool) Enable deployment of the Asset Tokenization Kit web application
   enabled: true
-  # -- (object) DApp container image configuration
   image:
-    # -- (string) OCI registry and repository for DApp frontend
     repository: ghcr.io/settlemint/asset-tokenization-kit
-  # -- (object) Ingress configuration for DApp web interface
   ingress:
-    # -- (bool) Enable ingress for web application access
     enabled: true
-    # -- (list) Ingress host rules for DApp
+    # IMPORTANT: Set the correct hostname for your environment
     hosts:
-      -
-        # -- (string) Hostname for DApp. Update for your environment.
-        host: dapp.k8s.orb.local
-        # -- (list) Path configuration
+      - host: dapp.k8s.orb.local
         paths:
-          -
-            # -- (string) Root path for web application
-            path: /
-            # -- (string) Path matching type
+          - path: / # Adjust path if needed
             pathType: ImplementationSpecific
-  # -- (object) Resource requests and limits for DApp pods
   resources: {}
-  # -- (object) Environment variables for DApp runtime configuration (stored as secrets)
   secretEnv:
-    # -- (string) Base URL for authentication callbacks. Must match ingress hostname.
     BETTER_AUTH_URL: "https://dapp.k8s.orb.local"
-    # -- (string) Blockscout explorer UI endpoint for blockchain browsing
     SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "https://blockscout.k8s.orb.local/"
-  # -- (object) Init containers for DApp startup dependencies
   initContainer:
-    # -- (object) TCP check for backend services
     tcpCheck:
-      # -- (object) Wait-for-it utility image
       image:
-        # -- (string) Repository for TCP check utility
         repository: ghcr.io/settlemint/btp-waitforit
-    # -- (object) GraphQL endpoint readiness check
     graphQLCheck:
-      # -- (object) curl utility for GraphQL health checks
       image:
-        # -- (string) OCI registry for curl image
         registry: docker.io
-  # -- (object) Post-deployment job configuration for database migrations
   job:
-    # -- (object) Job container image
     image:
-      # -- (string) Node.js runtime image for migration scripts
+      # -- (string) Job image repository
       repository: docker.io/node
 
-# -- (object) Support infrastructure (ingress, reloader, databases, object storage)
 support:
-  # -- (bool) Enable deployment of support infrastructure components
   enabled: true
-  # -- (object) NGINX Ingress Controller configuration
+
+  # https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
   ingress-nginx:
-    # -- (bool) Enable NGINX Ingress Controller deployment
     enabled: true
-    # -- (int) Number of ingress controller replicas
     replicaCount: 1
-    # -- (object) Ingress controller configuration
     controller:
-      # -- (object) Resource requests and limits for ingress controller
       resources: {}
-      # -- (object) Ingress controller container image
       image:
-        # -- (string) Official Kubernetes ingress-nginx controller image
         repository: registry.k8s.io/ingress-nginx/controller
-  # -- (object) Stakater Reloader for automatic pod restarts on config changes
+
+  # https://github.com/stakater/Reloader/tree/master/deployments/kubernetes/chart/reloader
   reloader:
-    # -- (bool) Enable Reloader deployment
     enabled: true
-    # -- (object) Reloader container image
     image:
-      # -- (string) Reloader image repository
       repository: ghcr.io/stakater/reloader
-  # -- (object) MinIO object storage configuration
+
   minio:
-    # -- (bool) Enable MinIO object storage deployment
     enabled: true
-    # -- (object) MinIO server container image
     image:
-      # -- (string) MinIO server image repository
       repository: docker.io/minio/minio
-    # -- (object) MinIO client (mc) container image
     mcImage:
-      # -- (string) MinIO client image repository
       repository: docker.io/minio/minio
-    # -- (object) Ingress configuration for MinIO console
     ingress:
-      # -- (bool) Enable ingress for MinIO web console
       enabled: true
-      # -- (string) IngressClass for MinIO
       ingressClassName: atk-nginx
-      # -- (string) Path prefix for MinIO console
       path: /
-      # -- (list) Hostnames for MinIO access
       hosts:
         - minio.k8s.orb.local
-  # -- (object) Redis in-memory data store configuration
+
+  # Redis configuration
   redis:
-    # -- (bool) Enable Redis deployment
     enabled: true
-    # -- (object) Redis container image
     image:
-      # -- (string) OCI registry for Redis image
+      # -- Redis image registry
       registry: docker.io
-    # -- (string) Override fullname for simpler service discovery
     fullnameOverride: redis
-    # -- (object) Common labels applied to all Redis resources
     commonLabels:
       kots.io/app-slug: settlemint-atk
       app.kubernetes.io/managed-by: helm
-    # -- (object) Redis authentication configuration
     auth:
-      # -- (bool) Enable Redis password authentication
       enabled: true
-      # -- (string) Redis password. Change for production deployments.
       password: "atk"
-    # -- (object) Persistent storage for Redis data
     persistence:
-      # -- (bool) Enable persistence for Redis AOF/RDB
       enabled: true
-      # -- (string) Storage size for Redis data
       size: 1Gi
-    # -- (object) Resource requests and limits for Redis
     resources:
-      # -- (object) Resource requests
       requests:
-        # -- (string) Memory request
         memory: "128Mi"
-        # -- (string) CPU request
         cpu: "100m"
-      # -- (object) Resource limits
       limits:
-        # -- (string) Memory limit
         memory: "256Mi"
-        # -- (string) CPU limit
         cpu: "200m"
-  # -- (object) PostgreSQL database configuration
+
   postgresql:
-    # -- (bool) Enable PostgreSQL deployment
     enabled: true
-    # -- (object) PostgreSQL container image
     image:
-      # -- (string) OCI registry for PostgreSQL image
       registry: docker.io
 
-# -- (object) Observability stack (metrics, logging, tracing)
 observability:
-  # -- (bool) Enable deployment of observability infrastructure
   enabled: true
-  # -- (object) Kubernetes Metrics Server for resource metrics
+
+  # https://github.com/kubernetes-sigs/metrics-server/blob/master/charts/metrics-server/values.yaml
   metrics-server:
-    # -- (bool) Enable Metrics Server deployment
     enabled: true
-    # -- (object) Resource requests and limits for Metrics Server
     resources: {}
-    # -- (object) Metrics Server container image
     image:
-      # -- (string) Official Kubernetes metrics-server image
       repository: registry.k8s.io/metrics-server/metrics-server
-  # -- (object) Kube State Metrics for cluster-level metrics
+
+  # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-state-metrics/values.yaml
   kube-state-metrics:
-    # -- (object) Resource requests and limits for kube-state-metrics
     resources: {}
-    # -- (object) Kube state metrics container image
     image:
-      # -- (string) OCI registry for kube-state-metrics
       registry: registry.k8s.io
-  # -- (object) VictoriaMetrics time-series database for metrics storage
+
+  # https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metrics-single/values.yaml
   victoria-metrics-single:
-    # -- (object) VictoriaMetrics server configuration
     server:
-      # -- (object) Persistent storage for metrics data
       persistentVolume:
-        # -- (string) StorageClass for metrics volume (empty uses cluster default)
         storageClass: ""
-        # -- (string) Storage size for metrics retention
         size: 10Gi
-      # -- (object) Resource requests and limits for VictoriaMetrics
       resources: {}
-      # -- (object) VictoriaMetrics container image
       image:
-        # -- (string) OCI registry for VictoriaMetrics
         registry: docker.io
-  # -- (object) Loki log aggregation system
+
+  # https://github.com/grafana/loki/blob/main/production/helm/loki/values.yaml
   loki:
-    # -- (object) Loki server configuration
     loki:
-      # -- (object) Loki container image
       image:
-        # -- (string) OCI registry for Loki
+        # -- The Docker registry
         registry: docker.io
-    # -- (object) Loki single binary deployment mode
     singleBinary:
-      # -- (object) Persistent storage for log data
       persistence:
-        # -- (string) Storage size for log retention
         size: 10Gi
-      # -- (object) Resource requests and limits for Loki
       resources: {}
-      # -- (list) Additional environment variables for Loki
       extraEnv: []
-    # -- (object) Memcached for Loki query result caching
+        # Keep a little bit lower than memory limits
+        # - name: GOMEMLIMIT
+        #   value: 3750MiB
     memcached:
-      # -- (bool) Enable memcached deployment
+      # -- Enable the built in memcached server provided by the chart
       enabled: true
-      # -- (object) Memcached container image
       image:
-        # -- (string) Memcached image repository
+        # -- Memcached Docker image repository
         repository: docker.io/memcached
-    # -- (object) Memcached exporter for Prometheus metrics
     memcachedExporter:
-      # -- (object) Memcached exporter image
       image:
-        # -- (string) Prometheus memcached exporter repository
         repository: docker.io/prom/memcached-exporter
-    # -- (object) Kubernetes sidecar for dynamic configuration
     sidecar:
-      # -- (object) Sidecar container image
       image:
-        # -- (string) k8s-sidecar image repository
+        # -- The Docker registry and image for the k8s sidecar
         repository: docker.io/kiwigrid/k8s-sidecar
-    # -- (object) Loki gateway for load balancing
     gateway:
-      # -- (object) Gateway container image
       image:
-        # -- (string) OCI registry for gateway image
         registry: docker.io
-  # -- (object) Grafana Alloy for telemetry pipeline
+
+  # https://github.com/grafana/alloy/blob/main/operations/helm/charts/alloy/values.yaml
   alloy:
-    # -- (object) Alloy agent configuration
     alloy:
-      # -- (object) Resource requests and limits for Alloy
       resources: {}
-    # -- (object) Alloy container image
     image:
-      # -- (string) OCI registry for Alloy
       registry: docker.io
-    # -- (object) Config reloader sidecar
     configReloader:
-      # -- (object) Config reloader image
       image:
-        # -- (string) OCI registry for config reloader
         registry: quay.io
-  # -- (object) Grafana visualization and dashboarding
+
   grafana:
-    # -- (object) Grafana container image
     image:
-      # -- (string) OCI registry for Grafana
+      # -- The Docker registry
       registry: docker.io
-    # -- (object) Sidecar for dashboard provisioning
+    # Sidecar configuration for Grafana dashboards and datasources
     sidecar:
-      # -- (object) Sidecar container image
       image:
-        # -- (string) OCI registry for sidecar
         registry: docker.io
-    # -- (object) Ingress configuration for Grafana UI
     ingress:
-      # -- (list) Hostnames for Grafana access
       hosts:
         - grafana.k8s.orb.local
-    # -- (string) Grafana admin username. Change for production deployments.
     adminUser: settlemint
-    # -- (string) Grafana admin password. Change for production deployments.
     adminPassword: atk
-  # -- (object) Tempo distributed tracing backend
+
   tempo:
-    # -- (object) Tempo server image configuration
     tempo:
-      # -- (string) Tempo image repository
       repository: docker.io/grafana/tempo
-    # -- (object) Tempo query frontend image
     tempoQuery:
-      # -- (string) Tempo query image repository
       repository: docker.io/grafana/tempo-query
-    # -- (object) Tempo server configuration
     server:
-      # -- (object) Resource requests and limits for Tempo
       resources: {}
-  # -- (object) Prometheus Node Exporter for host metrics
+
   prometheus-node-exporter:
-    # -- (object) Node exporter container image
     image:
-      # -- (string) OCI registry for node exporter
       registry: quay.io

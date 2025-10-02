@@ -20,7 +20,7 @@ image:
   # -- (string) Hasura image repository
   repository: hasura/graphql-engine
   # -- (string) Hasura image tag
-  tag: v2.48.6
+  tag: v2.48.5
   # -- (string) Hasura image pull policy
   pullPolicy: IfNotPresent
 
@@ -328,31 +328,20 @@ autoscaling:
 
 # -- (list) Init containers
 initContainers:
-  # -- (string) Container name
   - name: wait-for-postgresql
-    # -- (string) Container image
     image: ghcr.io/settlemint/btp-waitforit:v7.7.10
-    # -- (string) Image pull policy
     imagePullPolicy: IfNotPresent
-    # -- (list) Container command
     command:
       - /usr/bin/wait-for-it
       - "postgresql:5432"
       - -t
       - "120"
-    # -- (object) Resource limits and requests
     resources:
-      # -- (object) Resource limits
       limits:
-        # -- (string) CPU limit
         cpu: 100m
-        # -- (string) Memory limit
         memory: 64Mi
-      # -- (object) Resource requests
       requests:
-        # -- (string) CPU request
         cpu: 10m
-        # -- (string) Memory request
         memory: 32Mi
 
 # -- (object) Pod annotations

@@ -3,25 +3,19 @@
 
 # -- (object) Global configuration
 global:
-  # -- (object) Labels applied to all resources
   labels:
-    # -- (string) KOTS application slug for Replicated
     kots.io/app-slug: settlemint-atk
-  # -- (object) Artifacts configuration for contract ABIs and genesis files
   artifacts:
-    # -- (object) Image containing contract ABIs and genesis files
+    # Image containing contract ABIs and genesis files
     image:
-      # -- (string) Image registry
       registry: ghcr.io
-      # -- (string) Image repository
       repository: settlemint/asset-tokenization-kit-artifacts
-      # -- (string) Image pull policy
       pullPolicy: IfNotPresent
-      # -- (string) Image tag (empty string uses Chart.appVersion)
       tag: ""
 # -- (string) String to partially override common.names.fullname template (will maintain the release name)
 nameOverride: ""
-# -- (string) Override the full resource name. Set to "graph-node" for backward compatibility with existing ATK deployments that reference "graph-node-combined" service name
+# -- (string) Override the full resource name. Set to "graph-node" for backward compatibility
+# with existing ATK deployments that reference "graph-node-combined" service name
 fullnameOverride: "graph-node"
 # -- (object) Graph Node image configuration
 image:
@@ -29,7 +23,8 @@ image:
   repository: graphprotocol/graph-node
   # -- (string) Graph Node image pull policy
   pullPolicy: IfNotPresent
-  # -- (string) Overrides the image tag. Defaults to Chart.appVersion if not set
+  # -- (string) Overrides the image tag
+  # @default -- Chart.appVersion
   tag: "v0.40.2"
 # -- (object) Init container configuration
 initContainer:
@@ -57,11 +52,7 @@ initContainer:
     timeout: 120
     # -- (list) List of dependencies to check
     dependencies:
-      # -- (object) Dependency configuration
-      -
-        # -- (string) Dependency name
-        name: postgresql
-        # -- (string) Dependency endpoint template
+      - name: postgresql
         endpoint: "{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"graphNode\" \"local\" .Values.postgresql) }}"
     # -- (object) Resource limits and requests for TCP check container
     resources:
@@ -85,14 +76,17 @@ serviceAccount:
   create: true
   # -- (object) Annotations to add to the service account
   annotations: {}
-  # -- (string) The name of the service account to use. If not set and create is true, a name is generated using the fullname template
+  # -- (string) The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
   name: ""
 # -- (object) RBAC configuration
 rbac:
   # -- (bool) Specifies whether RBAC resources are to be created
   create: false
-  # -- (list) RBAC rules for the service account. Add RBAC rules here if graph-node requires specific Kubernetes API access. Currently no special permissions are needed
+  # @default -- See `values.yaml`
   rules: []
+  # Add RBAC rules here if graph-node requires specific Kubernetes API access
+  # Currently no special permissions are needed
 # -- (int) Number of Graph Node replicas to deploy
 replicaCount: 1
 # -- (object) Specify [resource requests and limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits)
@@ -120,11 +114,8 @@ podSecurityContext: {}
 containerSecurityContext: {}
 # -- (object) Annotations for the `Pod`
 podAnnotations:
-  # -- (string) Enable Prometheus scraping for this pod
   prometheus.io/scrape: "true"
-  # -- (string) Prometheus metrics port
   prometheus.io/port: "8040"
-  # -- (string) Prometheus metrics endpoint path
   prometheus.io/path: "/metrics"
 # -- (object) Environment variables
 env:
@@ -132,69 +123,37 @@ env:
   IPFS: "https://ipfs.console.settlemint.com"
   # -- (string) Node role
   node_role: "combined"
-  # -- (string) Experimental subgraph version switching mode
   EXPERIMENTAL_SUBGRAPH_VERSION_SWITCHING_MODE: 'synced'
-  # -- (string) Maximum gas for eth_call operations
   GRAPH_ETH_CALL_GAS: '50000000'
-  # -- (string) Error patterns that indicate out of gas conditions
   GRAPH_GETH_ETH_CALL_ERRORS: 'out of gas'
-  # -- (string) Kill the node if it becomes unresponsive
   GRAPH_KILL_IF_UNRESPONSIVE: 'true'
-  # -- (string) Ethereum polling interval in milliseconds
   ETHEREUM_POLLING_INTERVAL: '1000'
-  # -- (string) Allow non-deterministic fulltext search operations
   GRAPH_ALLOW_NON_DETERMINISTIC_FULLTEXT_SEARCH: 'true'
-  # -- (string) Maximum memory for query cache in megabytes
   GRAPH_QUERY_CACHE_MAX_MEM: '3000'
-  # -- (string) Number of blocks to cache queries for
   GRAPH_QUERY_CACHE_BLOCKS: '6'
-  # -- (string) Time period in milliseconds before cached queries become stale
   GRAPH_QUERY_CACHE_STALE_PERIOD: '1000'
-  # -- (string) Log level (trace, debug, info, warn, error)
   GRAPH_LOG: 'info'
-  # -- (string) Log GraphQL query timing information
   GRAPH_LOG_QUERY_TIMING: 'gql'
-  # -- (string) Allow non-deterministic IPFS operations
   GRAPH_ALLOW_NON_DETERMINISTIC_IPFS: 'true'
-  # -- (string) Use parallel block constraints for better performance
   GRAPH_PARALLEL_BLOCK_CONSTRAINTS: 'true'
-  # -- (string) Clean up old Ethereum blocks from the database
   GRAPH_ETHEREUM_CLEANUP_BLOCKS: 'true'
-  # -- (string) Timeout in seconds for chain head watcher
   GRAPH_CHAIN_HEAD_WATCHER_TIMEOUT: '5'
-  # -- (string) Load window size in seconds for block ingestion
   GRAPH_LOAD_WINDOW_SIZE: '3600'
-  # -- (string) Bin size for load distribution
   GRAPH_LOAD_BIN_SIZE: '10'
-  # -- (string) Postpone attribute index creation until after data loading
   GRAPH_POSTPONE_ATTRIBUTE_INDEX_CREATION: 'true'
-  # -- (string) Duration in milliseconds to batch store writes (0 = disabled)
   GRAPH_STORE_WRITE_BATCH_DURATION: '0'
-  # -- (string) Number of operations to batch in store writes (0 = disabled)
   GRAPH_STORE_WRITE_BATCH_SIZE: '0'
-  # -- (string) Maximum gas allowed per handler execution
   GRAPH_MAX_GAS_PER_HANDLER: '1_000_000_000_000_000'
-  # -- (string) Maximum subgraph spec version supported
   GRAPH_MAX_SPEC_VERSION: '1.2.0'
-  # -- (string) Number of retries for failed Ethereum requests
   GRAPH_ETHEREUM_REQUEST_RETRIES: '10'
-  # -- (string) Number of blocks to fetch in a single batch
   GRAPH_ETHEREUM_BLOCK_BATCH_SIZE: '100'
-  # -- (string) Maximum block range size for queries
   GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE: '1000'
-  # -- (string) Target number of triggers per block range
   GRAPH_ETHEREUM_TARGET_TRIGGERS_PER_BLOCK_RANGE: '100'
-  # -- (string) Enable Prometheus metrics endpoint
   GRAPH_ENABLE_PROMETHEUS_METRICS: 'true'
-  # -- (string) Host address for Prometheus metrics server
   GRAPH_PROMETHEUS_HOST: '0.0.0.0'
-  # -- (string) Disable subgraph grafting feature
   GRAPH_DISABLE_GRAFTS: 'false'
-  # -- (string) Threshold for using static filters optimization
   GRAPH_STATIC_FILTERS_THRESHOLD: '10000'
-  # -- (string) Timeout in seconds for IPFS operations
   GRAPH_IPFS_TIMEOUT: '30'
-  # -- (string) Maximum concurrent JSON-RPC calls for block ingestor
   GRAPH_ETHEREUM_BLOCK_INGESTOR_MAX_CONCURRENT_JSON_RPC_CALLS: '100'
 # -- (object) Subgraph configuration shared with the bootstrap process
 subgraph:
@@ -202,19 +161,18 @@ subgraph:
   configMapName: besu-subgraph
 # -- (object) Environment variables from secrets
 secretEnv:
-  # -- (object) PostgreSQL username secret reference
   PRIMARY_SUBGRAPH_DATA_PGUSER:
     # -- (string) Name of the secret that contains your PG username (uses graph-node.pgSecretName helper)
     secretName: "" # Dynamically set in templates using helper
     # -- (string) Name of the data key in the secret that contains your PG username
     key: PGUSER
-  # -- (object) PostgreSQL password secret reference
   PRIMARY_SUBGRAPH_DATA_PGPASSWORD:
     # -- (string) Name of the secret that contains your PG password (uses graph-node.pgSecretName helper)
     secretName: "" # Dynamically set in templates using helper
     # -- (string) Name of the data key in the secret that contains your PG password
     key: PGPASSWORD
-# -- (object) Custom secret data for PostgreSQL credentials. Used for backward compatibility and default values
+# -- (object) Custom secret data for PostgreSQL credentials
+# Used for backward compatibility and default values
 customSecret: {}
 # -- (object) PostgreSQL overrides merged with global.datastores.graphNode.postgresql
 postgresql: {}
@@ -242,156 +200,87 @@ ingress:
   className: "atk-nginx"
   # -- (object) Additional annotations for the Ingress resource
   annotations:
-    # -- (string) Enable regex path matching in NGINX ingress
     nginx.ingress.kubernetes.io/use-regex: 'true'
-    # -- (string) Rewrite target path using capture group
     nginx.ingress.kubernetes.io/rewrite-target: /$1
   # -- (list) An array with hosts and paths
   hosts:
-    # -- (object) Ingress host configuration
-    -
-      # -- (string) Hostname for the ingress rule
-      host: graph.k8s.orb.local
-      # -- (list) List of path configurations for this host
+    - host: graph.k8s.orb.local
       paths:
-        # -- (object) Query endpoint path configuration
-        -
-          # -- (string) URL path pattern with regex capture group
-          path: /(.*)
-          # -- (string) Path type for Kubernetes ingress
+        - path: /(.*)
           pathType: ImplementationSpecific
-        # -- (object) WebSocket query endpoint path configuration
-        -
-          # -- (string) URL path pattern for WebSocket queries
-          path: /ws/?(.*)
-          # -- (string) Path type for Kubernetes ingress
+        - path: /ws/?(.*)
           pathType: ImplementationSpecific
-        # -- (object) Admin endpoint path configuration
-        -
-          # -- (string) URL path pattern for admin interface
-          path: /admin/?(.*)
-          # -- (string) Path type for Kubernetes ingress
+        - path: /admin/?(.*)
           pathType: ImplementationSpecific
-        # -- (object) Indexer endpoint path configuration
-        -
-          # -- (string) URL path pattern for indexer status
-          path: /indexer/?(.*)
-          # -- (string) Path type for Kubernetes ingress
+        - path: /indexer/?(.*)
           pathType: ImplementationSpecific
-        # -- (object) Graphman endpoint path configuration
-        -
-          # -- (string) URL path pattern for graphman interface
-          path: /graphman/?(.*)
-          # -- (string) Path type for Kubernetes ingress
+        - path: /graphman/?(.*)
           pathType: ImplementationSpecific
   # -- (list) TLS configuration for the ingress
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
-# -- (object) OpenShift Route parameters
+# -- OpenShift Route parameters
 openShiftRoute:
-  # -- (bool) Enable OpenShift route creation for Graph Node endpoints
+  # -- Enable OpenShift route creation for Graph Node endpoints
   enabled: false
-  # -- (object) Additional annotations applied to every generated route
+  # -- Additional annotations applied to every generated route
   annotations: {}
-  # -- (string) Hostname exposed via the OpenShift routes
+  # -- Hostname exposed via the OpenShift routes
   host: graph.k8s.orb.local
-  # -- (string) Wildcard policy applied when individual routes do not override it
+  # -- Wildcard policy applied when individual routes do not override it
   wildcardPolicy: None
-  # -- (object) TLS configuration shared by the generated routes
+  # -- TLS configuration shared by the generated routes
   tls: null
-  # -- (object) Primary service weight configuration used when routes omit a weight
+  # -- Primary service weight configuration used when routes omit a weight
   to:
-    # -- (int) Weight for the primary service backend
     weight: 100
-  # -- (list) Additional service backends shared by the generated routes
+  # -- Additional service backends shared by the generated routes
   alternateBackends: []
-  # -- (list) Route definitions for the exposed Graph Node endpoints
+  # -- Route definitions for the exposed Graph Node endpoints
   routes:
-    # -- (object) Query endpoint route configuration
-    -
-      # -- (string) Name suffix for the route resource
-      nameSuffix: ""
-      # -- (string) Hostname override (empty uses default host)
+    - nameSuffix: ""
       host: ""
-      # -- (string) URL path for the route
       path: /
-      # -- (string) Target service port name
       targetPort: http-query
-      # -- (object) Route-specific annotations
       annotations: {}
-    # -- (object) WebSocket query endpoint route configuration
-    -
-      # -- (string) Name suffix for the route resource
-      nameSuffix: ws
-      # -- (string) Hostname override (empty uses default host)
+    - nameSuffix: ws
       host: ""
-      # -- (string) URL path for the route
       path: /ws
-      # -- (string) Target service port name
       targetPort: http-queryws
-      # -- (object) Route-specific annotations
       annotations:
-        # -- (string) HAProxy rewrite target path
         haproxy.router.openshift.io/rewrite-target: /
-    # -- (object) Admin endpoint route configuration
-    -
-      # -- (string) Name suffix for the route resource
-      nameSuffix: admin
-      # -- (string) Hostname override (empty uses default host)
+    - nameSuffix: admin
       host: ""
-      # -- (string) URL path for the route
       path: /admin
-      # -- (string) Target service port name
       targetPort: http-admin
-      # -- (object) Route-specific annotations
       annotations:
-        # -- (string) HAProxy rewrite target path
         haproxy.router.openshift.io/rewrite-target: /
-    # -- (object) Indexer endpoint route configuration
-    -
-      # -- (string) Name suffix for the route resource
-      nameSuffix: indexer
-      # -- (string) Hostname override (empty uses default host)
+    - nameSuffix: indexer
       host: ""
-      # -- (string) URL path for the route
       path: /indexer
-      # -- (string) Target service port name
       targetPort: http-status
-      # -- (object) Route-specific annotations
       annotations:
-        # -- (string) HAProxy rewrite target path
         haproxy.router.openshift.io/rewrite-target: /
-    # -- (object) Graphman endpoint route configuration
-    -
-      # -- (string) Name suffix for the route resource
-      nameSuffix: graphman
-      # -- (string) Hostname override (empty uses default host)
+    - nameSuffix: graphman
       host: ""
-      # -- (string) URL path for the route
       path: /graphman
-      # -- (string) Target service port name
       targetPort: http-status
-      # -- (object) Route-specific annotations
       annotations:
-        # -- (string) HAProxy rewrite target path
         haproxy.router.openshift.io/rewrite-target: /
-# -- (object) Blockchain configuration for Graph Node
+# -- Blockchain configuration for Graph Node
 chains:
-  # -- (object) SettleMint blockchain configuration
+  # -- (object) Ethereum Mainnet
   settlemint:
     # -- (bool) Enable this configuring graph-node with this chain
     enabled: true
     # -- (string) The database shard to use for this chain
     shard: primary
-    # -- (list) A list of JSON-RPC endpoints for this node (you should override this list with your own configuration)
+    ## -- A list of JSON-RPC endpoints for this node (you should override this list with your own configuration)
     provider:
-      # -- (object) JSON-RPC provider configuration
-      -
-        # -- (string) Label for a JSON-RPC endpoint
+      - # -- (string) Label for a JSON-RPC endpoint
         label: erpc
-        # -- (object) Provider connection details
         details:
           # -- (string) Type of Provider: web3
           type: web3
@@ -401,13 +290,13 @@ chains:
           features: [archive, traces]
 # -- (object) Store configuration for Graph Node
 store:
-  # -- (object) Primary database shard configuration
   primary:
     # -- (bool) Enable this store for Graph Node
     enabled: true
     # -- (string) PostgreSQL connection string for primary shard
     connection: "postgresql://${PRIMARY_SUBGRAPH_DATA_PGUSER}:${PRIMARY_SUBGRAPH_DATA_PGPASSWORD}@${PRIMARY_SUBGRAPH_DATA_PGHOST}:${PRIMARY_SUBGRAPH_DATA_PGPORT}/${PRIMARY_SUBGRAPH_DATA_PGDATABASE}"
-# -- (string) Configuration for graph-node. See [graph-node config docs](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md) and default template in values.yaml
+# -- [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md)
+# @default -- See default template in [values.yaml](values.yaml)
 configTemplate: |
   # Store configuration
   [store]
@@ -476,23 +365,14 @@ postgresReadinessCheck:
   maxWaitTime: 30
   # -- (object) Add random delay to prevent all nodes from connecting simultaneously
   randomDelayRange:
-    # -- (int) Minimum random delay in seconds
     min: 5
-    # -- (int) Maximum random delay in seconds
     max: 30
-  # -- (object) Resource limits and requests for PostgreSQL readiness check container
   resources:
-    # -- (object) Resource limits
     limits:
-      # -- (string) CPU limit
       cpu: 100m
-      # -- (string) Memory limit
       memory: 96Mi
-    # -- (object) Resource requests
     requests:
-      # -- (string) CPU request
       cpu: 25m
-      # -- (string) Memory request
       memory: 48Mi
 # -- (list) Additional init containers
 extraInitContainers: []
@@ -507,11 +387,7 @@ extraVolumeMounts: []
 # can lead to data integrity issues
 # -- (int) Termination grace period seconds
 terminationGracePeriodSeconds: 60
-# -- (object) Graph Node defaults configuration
 graph-node:
-  # -- (object) Default values for Graph Node instances
   graphNodeDefaults:
-    # -- (object) Subgraph defaults configuration
     subgraph:
-      # -- (string) Default ConfigMap name for subgraph deployment
       configMapName: besu-subgraph
