@@ -1,0 +1,92 @@
+{{- $hasRouteAPI := .Capabilities.APIVersions.Has "route.openshift.io/v1" -}}
+{{- $route := .Values.openShiftRoute -}}
+{{- if and $hasRouteAPI $route.enabled -}}
+{{- $clusterSvc := include "ipfs-cluster.clusterFullname" . -}}
+{{- $ipfsSvc := include "ipfs-cluster.ipfsFullname" . -}}
+{{- $baseAnnotations := include "common.tplvalues.merge" (dict "values" (list .Values.commonAnnotations $route.annotations) "context" .) | fromYaml }}
+{{- $renderRoutes := list -}}
+{{- if and $route.api (ne (trim (default "" $route.api.host)) "") }}
+  {{- $renderRoutes = append $renderRoutes (dict "name" (default (printf "%s-api" $clusterSvc) $route.api.name) "config" $route.api) -}}
+{{- end -}}
+{{- if and $route.gateway (ne (trim (default "" $route.gateway.host)) "") }}
+  {{- $renderRoutes = append $renderRoutes (dict "name" (default (printf "%s-gateway" $clusterSvc) $route.gateway.name) "config" $route.gateway) -}}
+{{- end -}}
+{{- range $idx, $extra := $route.extraRoutes }}
+  {{- $renderRoutes = append $renderRoutes (dict "name" (default (printf "%s-extra-%d" $clusterSvc $idx) $extra.name) "config" $extra) -}}
+{{- end -}}
+{{- range $idx, $item := $renderRoutes }}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ $item.name }}
+  labels:
+    {{- include "ipfs-cluster.labels" $ | nindent 4 }}
+  {{- $annotations := include "common.tplvalues.merge" (dict "values" (list $baseAnnotations (index $item.config "annotations")) "context" $) | fromYaml }}
+  {{- if $annotations }}
+  annotations:
+{{ toYaml $annotations | nindent 4 }}
+  {{- end }}
+spec:
+  {{- $svc := (index $item.config "service") | default (dict) -}}
+  {{- $svcName := "" -}}
+  {{- if hasKey $svc "name" }}
+    {{- $svcName = tpl (index $svc "name") $ -}}
+  {{- else }}
+    {{- $target := default "cluster" (index $svc "target") -}}
+    {{- if eq $target "ipfs" }}
+      {{- $svcName = $ipfsSvc -}}
+    {{- else if eq $target "ipfs-headless" }}
+      {{- $svcName = printf "%s-headless" $ipfsSvc -}}
+    {{- else if eq $target "cluster-headless" }}
+      {{- $svcName = printf "%s-headless" $clusterSvc -}}
+    {{- else if eq $target "cluster" }}
+      {{- $svcName = $clusterSvc -}}
+    {{- else }}
+      {{- $svcName = tpl $target $ -}}
+    {{- end }}
+  {{- end }}
+  {{- if not $svcName }}
+    {{- $svcName = $clusterSvc -}}
+  {{- end }}
+  to:
+    kind: Service
+    name: {{ $svcName }}
+    {{- with (index $item.config "weight") }}
+    weight: {{ . }}
+    {{- end }}
+  {{- with (index $item.config "alternateBackends") }}
+  alternateBackends:
+{{ toYaml . | nindent 4 }}
+  {{- end }}
+  port:
+    {{- if hasKey $svc "portName" }}
+    targetPort: {{ index $svc "portName" }}
+    {{- else if hasKey $svc "port" }}
+      {{- $portVal := index $svc "port" -}}
+      {{- if kindIs "int" $portVal }}
+    targetPort: {{ $portVal }}
+      {{- else }}
+    targetPort: {{ $portVal }}
+      {{- end }}
+    {{- else if hasKey $svc "portTarget" }}
+    targetPort: {{ index $svc "portTarget" }}
+    {{- else }}
+    targetPort: api
+    {{- end }}
+  {{- with (default (index $item.config "host") "") }}
+    {{- if ne (trim .) "" }}
+  host: {{ . | quote }}
+    {{- end }}
+  {{- end }}
+  {{- with (default (index $item.config "path") "/") }}
+  path: {{ . | quote }}
+  {{- end }}
+  wildcardPolicy: {{ default (index $item.config "wildcardPolicy") $route.wildcardPolicy | default "None" }}
+  {{- $tls := default (index $item.config "tls") $route.tls }}
+  {{- if $tls }}
+  tls:
+{{ toYaml $tls | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}

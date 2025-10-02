@@ -1,0 +1,166 @@
+{{- $cfg := .Values.ipfs.config | default (dict) -}}
+{{- $bootstrap := .Values.ipfs.bootstrap | default (dict) -}}
+{{- $swarmPort := int (default 4001 $cfg.swarmPort) -}}
+{{- $gatewayPort := int (default 8888 $cfg.gatewayPort) -}}
+{{- $clusterPort := int (default 9096 $cfg.clusterPort) -}}
+{{- $bloomFilter := int (default 1048576 $cfg.bloomFilterSize) -}}
+{{- $appendBase := $cfg.appendAnnounce | default (list) -}}
+{{- $appendExtra := $cfg.extraAppendAnnounce | default (list) -}}
+{{- $appendCombined := list -}}
+{{- range $entry := $appendBase }}
+  {{- $appendCombined = append $appendCombined (tpl $entry $) -}}
+{{- end -}}
+{{- range $entry := $appendExtra }}
+  {{- $appendCombined = append $appendCombined (tpl $entry $) -}}
+{{- end -}}
+{{- if not $appendCombined }}
+  {{- $appendCombined = append $appendCombined (printf "/ip4/$POD_IP/tcp/%d" $swarmPort) -}}
+  {{- $appendCombined = append $appendCombined (printf "/ip4/${NODE_EXTERNAL_IP:-$POD_IP}/tcp/%d" $swarmPort) -}}
+  {{- $appendCombined = append $appendCombined (printf "/dns4/%s.%s.svc.cluster.local/tcp/%d" (include "ipfs-cluster.ipfsFullname" .) .Release.Namespace $swarmPort) -}}
+{{- end -}}
+{{- $addrFilters := $cfg.addrFilters | default (list) -}}
+{{- $noAnnounce := $cfg.noAnnounce | default (list) -}}
+{{- $httpHeaders := $cfg.api.httpHeaders | default (dict) -}}
+{{- $nodePeers := $bootstrap.nodePeers | default (list) -}}
+{{- $providerPeers := $bootstrap.providerPeers | default (list) -}}
+{{- $includeProviders := not (eq (false) $bootstrap.includeProviderPeers) -}}
+{{- $peeringPeers := list -}}
+{{- range $peer := $nodePeers }}
+  {{- $peeringPeers = append $peeringPeers $peer -}}
+{{- end -}}
+{{- if $includeProviders }}
+  {{- range $peer := $providerPeers }}
+    {{- $peeringPeers = append $peeringPeers $peer -}}
+  {{- end -}}
+{{- end -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "ipfs-cluster.ipfsFullname" . }}-init-d
+  labels:
+    {{- include "ipfs-cluster.labels" . | nindent 4 }}
+data:
+  00-configure-ipfs.sh: |
+    #!/bin/sh
+    set -euo pipefail
+
+    echo "Configuring IPFS node"
+
+    {{- $swarmKey := .Values.ipfs.swarmKey | default (dict) -}}
+    {{- if and $swarmKey.enabled $swarmKey.secretName }}
+    if [ -e "{{ $swarmKey.mountPath }}/{{ $swarmKey.secretKey }}" ]; then
+      cp "{{ $swarmKey.mountPath }}/{{ $swarmKey.secretKey }}" "{{ $swarmKey.repoPath }}/swarm.key"
+    fi
+    {{- end }}
+
+    if [ -f /data/ipfs/repo.lock ]; then
+      rm /data/ipfs/repo.lock
+    fi
+
+    if [ -d /mnt/node-external-ip ] && [ -f /mnt/node-external-ip/external-ip ]; then
+      . /mnt/node-external-ip/external-ip
+    fi
+
+    NODE_EXTERNAL_IP="${NODE_EXTERNAL_IP:-$POD_IP}"
+
+    ipfs repo migrate || true
+    ipfs config profile apply {{ default "server" $cfg.profile }}
+    ipfs config Addresses.Gateway /ip4/0.0.0.0/tcp/{{ $gatewayPort }}
+    ipfs config Addresses.Swarm '{{ printf "[\"/ip4/0.0.0.0/tcp/%d\", \"/ip6/::/tcp/%d\"]" $swarmPort $swarmPort }}' --json
+    ipfs config Addresses.AppendAnnounce '{{ toJson $appendCombined }}' --json
+
+    {{- if $cfg.connMgr }}
+    ipfs config --json Swarm.ConnMgr.HighWater {{ default 300 $cfg.connMgr.highWater }}
+    ipfs config --json Swarm.ConnMgr.LowWater {{ default 225 $cfg.connMgr.lowWater }}
+    ipfs config Swarm.ConnMgr.GracePeriod {{ default "20s" $cfg.connMgr.gracePeriod }}
+    {{- end }}
+
+    {{- if $cfg.bloomFilterSize }}
+    ipfs config --json Datastore.BloomFilterSize {{ $bloomFilter }}
+    {{- end }}
+
+    {{- with $cfg.discovery }}
+    ipfs config --json Discovery.MDNS.Enabled {{ ternary "true" "false" (default true .mdnsEnabled) }}
+    {{- end }}
+
+    {{- with $cfg.routing }}
+    ipfs config --json Routing.AcceleratedDHTClient {{ ternary "true" "false" (default true .acceleratedDHTClient) }}
+    {{- end }}
+
+    {{- with $cfg.swarm }}
+    ipfs config --bool Swarm.EnableHolePunching {{ ternary "true" "false" (default false .enableHolePunching) }}
+    ipfs config --bool Swarm.DisableNatPortMap {{ ternary "true" "false" (default false .disableNatPortMap) }}
+    {{- if hasKey . "transports" }}
+    {{- if hasKey .transports "quic" }}
+    ipfs config --json Swarm.Transports.Network.QUIC {{ ternary "true" "false" (default true .transports.quic) }}
+    {{- end }}
+    {{- end }}
+    {{- if hasKey . "relay" }}
+    {{- if hasKey .relay "network" }}
+    ipfs config --bool Swarm.Transports.Network.Relay {{ ternary "true" "false" (default false .relay.network) }}
+    {{- end }}
+    {{- if hasKey .relay "serviceEnabled" }}
+    ipfs config --bool Swarm.RelayService.Enabled {{ ternary "true" "false" (default false .relay.serviceEnabled) }}
+    {{- end }}
+    {{- if hasKey .relay "clientEnabled" }}
+    ipfs config --bool Swarm.RelayClient.Enabled {{ ternary "true" "false" (default false .relay.clientEnabled) }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+
+    ipfs config AutoNAT.ServiceMode {{ default "enabled" $cfg.autoNATServiceMode }}
+
+    {{- if $addrFilters }}
+    ipfs config Swarm.AddrFilters '{{ toJson $addrFilters }}' --json
+    {{- end }}
+    {{- if $noAnnounce }}
+    ipfs config Addresses.NoAnnounce '{{ toJson $noAnnounce }}' --json
+    {{- end }}
+
+    {{- with $cfg.gateway }}
+      {{- if .rootRedirect }}
+    ipfs config Gateway.RootRedirect {{ .rootRedirect | quote }}
+      {{- end }}
+      {{- if .publicGateways }}
+    ipfs config --json Gateway.PublicGateways '{{ toJson .publicGateways }}'
+      {{- end }}
+    {{- end }}
+
+    {{- with $cfg.datastore }}
+      {{- if .storageMax }}
+    ipfs config Datastore.StorageMax {{ .storageMax }}
+      {{- end }}
+    {{- end }}
+    {{- with $cfg.resourceMgr }}
+      {{- if .maxMemory }}
+    ipfs config Swarm.ResourceMgr.MaxMemory {{ .maxMemory }}
+      {{- end }}
+    {{- end }}
+
+    {{- with $httpHeaders.accessControlAllowHeaders }}
+    ipfs config --json API.HTTPHeaders.Access-Control-Allow-Headers '{{ toJson . }}'
+    {{- end }}
+    {{- with $httpHeaders.accessControlAllowOrigin }}
+    ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '{{ toJson . }}'
+    {{- end }}
+    {{- with $httpHeaders.accessControlAllowMethods }}
+    ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods '{{ toJson . }}'
+    {{- end }}
+
+    {{- if gt (len $nodePeers) 0 }}
+    ipfs bootstrap add{{ range $peer := $nodePeers }}{{ range $addr := $peer.Addrs }} {{ $addr }}/ipfs/{{ $peer.ID }}{{ end }}{{ end }}
+    {{- end }}
+
+    {{- if gt (len $peeringPeers) 0 }}
+    ipfs config --json Peering.Peers '{{ toJson $peeringPeers }}'
+    {{- end }}
+
+    {{- if and $includeProviders (gt (len $providerPeers) 0) }}
+    ipfs bootstrap add{{ range $peer := $providerPeers }}{{ range $addr := $peer.Addrs }} {{ $addr }}/ipfs/{{ $peer.ID }}{{ end }}{{ end }}
+    {{- end }}
+
+    exit 0
+{{- range $name, $script := .Values.ipfs.initScripts }}
+  {{ $name }}: |
+    {{- tpl $script $ | nindent 4 }}
+{{- end }}

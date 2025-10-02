@@ -101,11 +101,11 @@ A Helm chart for Hasura GraphQL Engine
 | healthChecks.startupProbe.periodSeconds | int | `10` | Period seconds |
 | healthChecks.startupProbe.successThreshold | int | `1` | Success threshold |
 | healthChecks.startupProbe.timeoutSeconds | int | `5` | Timeout seconds |
-| image | object | `{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"hasura/graphql-engine","tag":"v2.48.5"}` | Hasura image configuration |
+| image | object | `{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"hasura/graphql-engine","tag":"v2.48.6"}` | Hasura image configuration |
 | image.pullPolicy | string | `"IfNotPresent"` | Hasura image pull policy |
 | image.registry | string | `"docker.io"` | Hasura image registry |
 | image.repository | string | `"hasura/graphql-engine"` | Hasura image repository |
-| image.tag | string | `"v2.48.5"` | Hasura image tag |
+| image.tag | string | `"v2.48.6"` | Hasura image tag |
 | imagePullSecrets | list | `[]` | Docker registry secret names as an array |
 | ingress | object | `{"annotations":{},"className":"atk-nginx","enabled":true,"extraHosts":[],"hostName":"hasura.k8s.orb.local","path":"/","pathType":"Prefix","tls":[]}` | Ingress configuration |
 | ingress.annotations | object | `{}` | Ingress annotations |

@@ -17,7 +17,7 @@ A Helm chart for the supporting components
 |  | minio | 2.0.0-alpha.15 |
 |  | postgresql | 2.0.0-alpha.15 |
 |  | redis | 2.0.0-alpha.15 |
-| https://kubernetes.github.io/ingress-nginx | ingress-nginx | 4.13.2 |
+| https://kubernetes.github.io/ingress-nginx | ingress-nginx | 4.13.3 |
 | https://stakater.github.io/stakater-charts | reloader | 2.2.3 |
 
 ## Values
