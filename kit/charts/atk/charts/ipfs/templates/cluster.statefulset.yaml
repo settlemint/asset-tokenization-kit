@@ -1,0 +1,165 @@
+{{- $replicas := int .Values.replicaCount -}}
+{{- range $i, $_ := until $replicas }}
+{{- if gt $i 0 }}
+---
+{{ end }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ printf "%s-%d" (include "ipfs-cluster.clusterFullname" $) $i }}
+  labels:
+    {{- include "ipfs-cluster.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: cluster
+    app.kubernetes.io/instance-index: "{{ $i }}"
+  {{- if $.Values.commonAnnotations }}
+  annotations: {{- include "ipfs-cluster.tplvalues.render" (dict "value" $.Values.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: 1
+  serviceName: {{ printf "%s-%d" (include "ipfs-cluster.clusterFullname" $) $i }}
+  selector:
+    matchLabels:
+      {{- include "ipfs-cluster.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/component: cluster
+      app.kubernetes.io/instance-index: "{{ $i }}"
+  template:
+    metadata:
+      {{- $selectorLabels := (include "ipfs-cluster.selectorLabels" $ | fromYaml) | default (dict) }}
+      {{- $componentLabels := dict "app.kubernetes.io/component" "cluster" "app.kubernetes.io/instance-index" (printf "%d" $i) -}}
+      {{- $extraLabels := $.Values.cluster.podLabels | default (dict) -}}
+      {{- $podLabels := dict -}}
+      {{- range $k, $v := $selectorLabels }}
+        {{- $_ := set $podLabels $k $v -}}
+      {{- end }}
+      {{- range $k, $v := $componentLabels }}
+        {{- $_ := set $podLabels $k $v -}}
+      {{- end }}
+      {{- range $k, $v := $extraLabels }}
+        {{- $_ := set $podLabels $k $v -}}
+      {{- end }}
+      labels:
+{{ toYaml $podLabels | nindent 8 }}
+      {{- $podAnnotations := include "common.tplvalues.merge" (dict "values" (list $.Values.commonAnnotations $.Values.cluster.podAnnotations) "context" $) | fromYaml }}
+      {{- if not $podAnnotations }}
+        {{- $podAnnotations = dict -}}
+      {{- end }}
+      {{- $metricsPortStr := printf "%d" (int $.Values.cluster.service.ports.metrics) }}
+      {{- if not (hasKey $podAnnotations "prometheus.io/scrape") }}
+        {{- $_ := set $podAnnotations "prometheus.io/scrape" "true" -}}
+      {{- end }}
+      {{- if not (hasKey $podAnnotations "prometheus.io/port") }}
+        {{- $_ := set $podAnnotations "prometheus.io/port" $metricsPortStr -}}
+      {{- end }}
+      {{- if not (hasKey $podAnnotations "prometheus.io/path") }}
+        {{- $_ := set $podAnnotations "prometheus.io/path" "/metrics" -}}
+      {{- end }}
+      annotations:
+{{ toYaml $podAnnotations | nindent 8 }}
+    spec:
+      {{- include "ipfs-cluster.imagePullSecrets" $ | nindent 6 }}
+      serviceAccountName: {{ include "ipfs-cluster.serviceAccountName" $ }}
+      {{- $podSecurityContext := (include "ipfs-cluster.securityContext.pod" (dict "context" $ "local" $.Values.cluster.podSecurityContext)) | fromYaml }}
+      {{- if $podSecurityContext }}
+      securityContext:
+{{ toYaml $podSecurityContext | nindent 8 }}
+      {{- end }}
+      {{- $extraInit := $.Values.cluster.extraInitContainers | default (list) -}}
+      {{- if gt (len $extraInit) 0 }}
+      initContainers:
+{{ include "ipfs-cluster.tplvalues.render" (dict "value" $extraInit "context" $) | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: cluster
+          image: {{ include "common.images.image" (dict "imageRoot" $.Values.cluster.image "global" $.Values.global) }}
+          imagePullPolicy: {{ $.Values.cluster.image.pullPolicy }}
+          {{- $containerSecurityContext := (include "ipfs-cluster.securityContext.container" (dict "context" $ "local" $.Values.cluster.containerSecurityContext)) | fromYaml }}
+          {{- if $containerSecurityContext }}
+          securityContext:
+{{ toYaml $containerSecurityContext | nindent 12 }}
+          {{- end }}
+          {{- $ipfsApiPort := int $.Values.ipfs.service.ports.api }}
+          {{- $ipfsHeadless := printf "%s-headless" (include "ipfs-cluster.ipfsFullname" $) }}
+          env:
+            - name: CLUSTER_PEERNAME
+              value: {{ printf "cluster-%d" $i | quote }}
+            - name: CLUSTER_IPFSHTTP_NODEMULTIADDRESS
+              value: {{ printf "/dns4/%s-%d.%s.%s.svc.cluster.local/tcp/%d" (include "ipfs-cluster.ipfsFullname" $) $i $ipfsHeadless $.Release.Namespace $ipfsApiPort | quote }}
+            - name: CLUSTER_IPFSPROXY_NODEMULTIADDRESS
+              value: {{ printf "/dns4/%s-%d.%s.%s.svc.cluster.local/tcp/%d" (include "ipfs-cluster.ipfsFullname" $) $i $ipfsHeadless $.Release.Namespace $ipfsApiPort | quote }}
+            - name: CLUSTER_CRDT_TRUSTEDPEERS
+              value: "*"
+            - name: CLUSTER_RESTAPI_HTTPLISTENMULTIADDRESS
+              value: /ip4/0.0.0.0/tcp/{{ $.Values.cluster.service.ports.api }}
+            - name: CLUSTER_IPFSPROXY_LISTENMULTIADDRESS
+              value: /ip4/0.0.0.0/tcp/{{ $.Values.cluster.service.ports.proxy }}
+            - name: CLUSTER_METRICS_ENABLESTATS
+              value: "true"
+            - name: CLUSTER_METRICS_PROMETHEUSENDPOINT
+              value: /ip4/0.0.0.0/tcp/{{ $.Values.cluster.service.ports.metrics }}
+            - name: CLUSTER_MONITORPINGINTERVAL
+              value: 2s
+            - name: CLUSTER_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "ipfs-cluster.sharedSecretName" $ }}
+                  key: secret
+            {{- with $.Values.cluster.extraEnv }}
+{{ include "ipfs-cluster.tplvalues.render" (dict "value" . "context" $) | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: p2p
+              containerPort: {{ $.Values.cluster.service.ports.p2p }}
+              protocol: TCP
+            - name: api
+              containerPort: {{ $.Values.cluster.service.ports.api }}
+              protocol: TCP
+            - name: proxy
+              containerPort: {{ $.Values.cluster.service.ports.proxy }}
+              protocol: TCP
+            - name: metrics
+              containerPort: {{ $.Values.cluster.service.ports.metrics }}
+              protocol: TCP
+            - name: pinning
+              containerPort: {{ $.Values.cluster.service.ports.pinning }}
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /data/ipfs-cluster
+            {{- with $.Values.cluster.extraVolumeMounts }}
+{{ include "ipfs-cluster.tplvalues.render" (dict "value" . "context" $) | nindent 12 }}
+            {{- end }}
+          resources:
+{{ toYaml $.Values.cluster.resources | nindent 12 }}
+        {{- with $.Values.cluster.extraContainers }}
+{{ include "ipfs-cluster.tplvalues.render" (dict "value" . "context" $) | nindent 8 }}
+        {{- end }}
+      {{- with $.Values.cluster.extraVolumes }}
+      volumes:
+{{ include "ipfs-cluster.tplvalues.render" (dict "value" . "context" $) | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.cluster.nodeSelector }}
+      nodeSelector:
+{{ include "ipfs-cluster.tplvalues.render" (dict "value" . "context" $) | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.cluster.tolerations }}
+      tolerations:
+{{ include "ipfs-cluster.tplvalues.render" (dict "value" . "context" $) | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.cluster.affinity }}
+      affinity:
+{{ include "ipfs-cluster.tplvalues.render" (dict "value" . "context" $) | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        {{- $storageClass := default $.Values.global.storageClass $.Values.cluster.storage.storageClassName }}
+        {{- if $storageClass }}
+        storageClassName: {{ $storageClass }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ $.Values.cluster.storage.volumeSize }}
+{{- end }}

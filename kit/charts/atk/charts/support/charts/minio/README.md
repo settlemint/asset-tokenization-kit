@@ -71,10 +71,10 @@ A simple MinIO deployment for development environments
 | extraVolumes | list | `[]` | Additional volumes to mount in the MinIO container |
 | fullnameOverride | string | `""` | String to fully override common.names.fullname |
 | ignoreChartChecksums | bool | `false` | Disable automatic restart on secret/config changes to avoid unnecessary restarts in GitOps workflows |
-| image | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/minio/minio","tag":"RELEASE.2025-07-23T15-54-02Z"}` | MinIO image configuration |
+| image | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/minio/minio","tag":"RELEASE.2025-09-07T16-13-09Z"}` | MinIO image configuration |
 | image.pullPolicy | string | `"IfNotPresent"` | MinIO image pull policy |
 | image.repository | string | `"docker.io/minio/minio"` | MinIO image repository |
-| image.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` | MinIO image tag (immutable tags are recommended) |
+| image.tag | string | `"RELEASE.2025-09-07T16-13-09Z"` | MinIO image tag (immutable tags are recommended) |
 | imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |
 | ingress | object | `{"annotations":{},"enabled":false,"hosts":["minio-example.local"],"ingressClassName":null,"labels":{},"path":"/","tls":[]}` | Ingress configuration for MinIO S3 API |
 | ingress.annotations | object | `{}` | Annotations for the ingress resource |
@@ -108,10 +108,10 @@ A simple MinIO deployment for development environments
 | makeUserJob.resources.requests | object | `{"memory":"128Mi"}` | Resource requests for the makeUserJob |
 | makeUserJob.resources.requests.memory | string | `"128Mi"` | Memory request for the makeUserJob |
 | makeUserJob.securityContext | object | `{}` | Security context for the makeUserJob |
-| mcImage | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/minio/minio","tag":"RELEASE.2025-07-23T15-54-02Z"}` | MinIO client image configuration |
+| mcImage | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/minio/minio","tag":"RELEASE.2025-09-07T16-13-09Z"}` | MinIO client image configuration |
 | mcImage.pullPolicy | string | `"IfNotPresent"` | MinIO client image pull policy |
 | mcImage.repository | string | `"docker.io/minio/minio"` | MinIO client image repository |
-| mcImage.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` | MinIO client image tag |
+| mcImage.tag | string | `"RELEASE.2025-09-07T16-13-09Z"` | MinIO client image tag |
 | metrics | object | `{"serviceMonitor":{"additionalLabels":{},"annotations":{},"enabled":false,"includeNode":false,"interval":null,"namespace":null,"public":true,"relabelConfigs":{},"relabelConfigsCluster":{},"scrapeTimeout":null}}` | Prometheus metrics configuration |
 | metrics.serviceMonitor | object | `{"additionalLabels":{},"annotations":{},"enabled":false,"includeNode":false,"interval":null,"namespace":null,"public":true,"relabelConfigs":{},"relabelConfigsCluster":{},"scrapeTimeout":null}` | ServiceMonitor configuration for Prometheus Operator |
 | metrics.serviceMonitor.additionalLabels | object | `{}` | Additional labels for the ServiceMonitor |

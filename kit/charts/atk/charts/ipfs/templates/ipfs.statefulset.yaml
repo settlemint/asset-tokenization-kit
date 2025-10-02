@@ -1,0 +1,226 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "ipfs-cluster.ipfsFullname" . }}
+  labels:
+    {{- include "ipfs-cluster.labels" . | nindent 4 }}
+    app.kubernetes.io/component: ipfs
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "ipfs-cluster.tplvalues.render" (dict "value" .Values.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  serviceName: {{ include "ipfs-cluster.ipfsFullname" . }}-headless
+  selector:
+    matchLabels:
+      {{- include "ipfs-cluster.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: ipfs
+  template:
+    metadata:
+      {{- $selectorLabels := (include "ipfs-cluster.selectorLabels" . | fromYaml) | default (dict) }}
+      {{- $componentLabels := dict "app.kubernetes.io/component" "ipfs" -}}
+      {{- $extraLabels := .Values.ipfs.podLabels | default (dict) -}}
+      {{- $podLabels := dict -}}
+      {{- range $k, $v := $selectorLabels }}
+        {{- $_ := set $podLabels $k $v -}}
+      {{- end }}
+      {{- range $k, $v := $componentLabels }}
+        {{- $_ := set $podLabels $k $v -}}
+      {{- end }}
+      {{- range $k, $v := $extraLabels }}
+        {{- $_ := set $podLabels $k $v -}}
+      {{- end }}
+      labels:
+{{ toYaml $podLabels | nindent 8 }}
+      {{- $podAnnotations := include "common.tplvalues.merge" (dict "values" (list .Values.commonAnnotations .Values.ipfs.podAnnotations) "context" .) | fromYaml }}
+      {{- if $podAnnotations }}
+      annotations:
+{{ toYaml $podAnnotations | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- include "ipfs-cluster.imagePullSecrets" . | nindent 6 }}
+      serviceAccountName: {{ include "ipfs-cluster.serviceAccountName" . }}
+      {{- $podSecurityContext := (include "ipfs-cluster.securityContext.pod" (dict "context" $ "local" .Values.ipfs.podSecurityContext)) | fromYaml }}
+      {{- if $podSecurityContext }}
+      securityContext:
+{{ toYaml $podSecurityContext | nindent 8 }}
+      {{- end }}
+      {{- $extraInit := .Values.ipfs.initContainers | default (list) -}}
+      {{- $hasNodePort := .Values.p2pNodePort.enabled -}}
+      {{- $hostIPConfig := .Values.p2pNodePort.hostIP | default (dict) -}}
+      {{- $hostIPValue := default "" $hostIPConfig.value -}}
+      {{- $hostIPFieldPath := default "status.hostIP" $hostIPConfig.fieldPath -}}
+      {{- $initScripts := .Values.ipfs.initScripts | default (dict) -}}
+      {{- $initScriptNames := dict -}}
+      {{- if or $hasNodePort (gt (len $extraInit) 0) }}
+      initContainers:
+        {{- if $hasNodePort }}
+        - name: configure-nodeport
+          image: {{ include "common.images.image" (dict "imageRoot" .Values.ipfs.image "global" .Values.global) }}
+          imagePullPolicy: {{ .Values.ipfs.image.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - |
+              set -euo pipefail
+              cat <<'SCRIPT' > /container-init.d/nodeport.sh
+#!/bin/sh
+set -ex
+if [ -z "${HOST_IP:-}" ]; then
+  echo "HOST_IP is empty" >&2
+  exit 1
+fi
+if [ -z "${NODE_PORT:-}" ]; then
+  echo "NODE_PORT is empty" >&2
+  exit 1
+fi
+ipfs config Addresses.Announce "[ \"/ip4/${HOST_IP}/tcp/${NODE_PORT}\", \"/ip4/${HOST_IP}/udp/${NODE_PORT}/quic\", \"/ip4/${HOST_IP}/udp/${NODE_PORT}/quic-v1\", \"/ip4/${HOST_IP}/udp/${NODE_PORT}/quic-v1/webtransport\" ]" --json
+SCRIPT
+          env:
+            - name: HOST_IP
+              {{- if $hostIPValue }}
+              value: {{ $hostIPValue | quote }}
+              {{- else }}
+              valueFrom:
+                fieldRef:
+                  fieldPath: {{ $hostIPFieldPath | quote }}
+              {{- end }}
+            - name: NODE_PORT
+              value: {{ required "p2pNodePort.nodePort must be set when p2pNodePort.enabled is true" .Values.p2pNodePort.nodePort | quote }}
+          volumeMounts:
+            - name: init-d
+              mountPath: /container-init.d
+        {{- end }}
+        {{- if gt (len $extraInit) 0 }}
+{{ include "ipfs-cluster.tplvalues.render" (dict "value" $extraInit "context" $) | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: ipfs
+          image: {{ include "common.images.image" (dict "imageRoot" .Values.ipfs.image "global" .Values.global) }}
+          imagePullPolicy: {{ .Values.ipfs.image.pullPolicy }}
+          {{- if .Values.ipfs.customCommand }}
+          command:
+{{ include "ipfs-cluster.tplvalues.render" (dict "value" .Values.ipfs.customCommand "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.ipfs.extraArgs }}
+          args:
+{{ include "ipfs-cluster.tplvalues.render" (dict "value" .Values.ipfs.extraArgs "context" $) | nindent 12 }}
+          {{- end }}
+          {{- $containerSecurityContext := (include "ipfs-cluster.securityContext.container" (dict "context" $ "local" .Values.ipfs.containerSecurityContext)) | fromYaml }}
+          {{- if $containerSecurityContext }}
+          securityContext:
+{{ toYaml $containerSecurityContext | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: swarm
+              containerPort: {{ .Values.ipfs.service.ports.swarmTcp }}
+              protocol: TCP
+            - name: swarm-udp
+              containerPort: {{ .Values.ipfs.service.ports.swarmUdp }}
+              protocol: UDP
+            - name: api
+              containerPort: {{ .Values.ipfs.service.ports.api }}
+              protocol: TCP
+            - name: ws
+              containerPort: {{ .Values.ipfs.service.ports.ws }}
+              protocol: TCP
+            - name: gateway
+              containerPort: {{ .Values.ipfs.service.ports.gateway }}
+              protocol: TCP
+            - name: mdns
+              containerPort: {{ .Values.ipfs.service.ports.mdns }}
+              protocol: UDP
+          env:
+            - name: IPFS_PATH
+              value: /data/ipfs
+            - name: IPFS_TELEMETRY
+              value: "off"
+            {{- if $hasNodePort }}
+            - name: HOST_IP
+              {{- if $hostIPValue }}
+              value: {{ $hostIPValue | quote }}
+              {{- else }}
+              valueFrom:
+                fieldRef:
+                  fieldPath: {{ $hostIPFieldPath | quote }}
+              {{- end }}
+            - name: NODE_PORT
+              value: {{ required "p2pNodePort.nodePort must be set when p2pNodePort.enabled is true" .Values.p2pNodePort.nodePort | quote }}
+            {{- end }}
+            {{- if .Values.ipfs.runtime.goMemLimit }}
+            - name: GOMEMLIMIT
+              value: {{ .Values.ipfs.runtime.goMemLimit | quote }}
+            {{- end }}
+            {{- with .Values.ipfs.extraEnv }}
+{{ include "ipfs-cluster.tplvalues.render" (dict "value" . "context" $) | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: /data/ipfs
+            - name: init-d
+              mountPath: /container-init.d
+            {{- range $name, $_ := $initScripts }}
+            {{- $fileName := include "ipfs-cluster.initScriptFileName" (dict "name" $name) -}}
+            {{- if hasKey $initScriptNames $fileName -}}
+              {{- fail (printf "duplicate ipfs.initScripts key %q after validation" $fileName) -}}
+            {{- else -}}
+              {{- $_ := set $initScriptNames $fileName true -}}
+            {{- end }}
+            - name: init-d-configmap
+              subPath: {{ $fileName }}
+              mountPath: /container-init.d/{{ $fileName }}
+            {{- end }}
+            {{- if and .Values.ipfs.swarmKey.enabled .Values.ipfs.swarmKey.secretName }}
+            - name: swarm-key
+              mountPath: {{ .Values.ipfs.swarmKey.mountPath }}
+              readOnly: true
+            {{- end }}
+            {{- with .Values.ipfs.extraVolumeMounts }}
+{{ include "ipfs-cluster.tplvalues.render" (dict "value" . "context" $) | nindent 12 }}
+            {{- end }}
+          resources:
+{{ toYaml .Values.ipfs.resources | nindent 12 }}
+        {{- with .Values.ipfs.extraContainers }}
+{{ include "ipfs-cluster.tplvalues.render" (dict "value" . "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        - name: init-d
+          emptyDir: {}
+        - name: init-d-configmap
+          configMap:
+            name: {{ include "ipfs-cluster.ipfsFullname" . }}-init-d
+            defaultMode: 0777
+        {{- if and .Values.ipfs.swarmKey.enabled .Values.ipfs.swarmKey.secretName }}
+        - name: swarm-key
+          secret:
+            secretName: {{ .Values.ipfs.swarmKey.secretName }}
+        {{- end }}
+      {{- with .Values.ipfs.extraVolumes }}
+{{ include "ipfs-cluster.tplvalues.render" (dict "value" . "context" $) | nindent 8 }}
+      {{- end }}
+      {{- with .Values.ipfs.nodeSelector }}
+      nodeSelector:
+{{ include "ipfs-cluster.tplvalues.render" (dict "value" . "context" $) | nindent 8 }}
+      {{- end }}
+      {{- with .Values.ipfs.tolerations }}
+      tolerations:
+{{ include "ipfs-cluster.tplvalues.render" (dict "value" . "context" $) | nindent 8 }}
+      {{- end }}
+      {{- with .Values.ipfs.affinity }}
+      affinity:
+{{ include "ipfs-cluster.tplvalues.render" (dict "value" . "context" $) | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        {{- $storageClass := default .Values.global.storageClass .Values.ipfs.storage.storageClassName }}
+        {{- if $storageClass }}
+        storageClassName: {{ $storageClass }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.ipfs.storage.volumeSize }}
