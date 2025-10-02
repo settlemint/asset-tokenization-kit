@@ -1,4 +1,5 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { createTimeSeries } from "@/lib/utils/timeseries";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { buildStatsRangeQuery } from "@atk/zod/stats-range";
 import { timestamp } from "@atk/zod/timestamp";
@@ -71,22 +72,33 @@ export const statsAssetLifecycle =
         output: SystemStatsResponseSchema,
       });
 
-      const data = response.systemStats.map((item) => ({
-        timestamp: item.timestamp,
-        assetsCreatedCount: item.tokensCreatedCount,
-        assetsLaunchedCount: item.tokensLaunchedCount,
-      }));
+      const results = [
+        ...response.systemStats.map((item) => ({
+          timestamp: item.timestamp,
+          assetsCreated: item.tokensCreatedCount,
+          assetsLaunched: item.tokensLaunchedCount,
+        })),
+        {
+          timestamp: range.to,
+          assetsCreated: response.current?.tokensCreatedCount ?? 0,
+          assetsLaunched: response.current?.tokensLaunchedCount ?? 0,
+        },
+      ];
+
+      const data = createTimeSeries(
+        results,
+        ["assetsCreated", "assetsLaunched"],
+        {
+          range,
+          aggregation: "last",
+          accumulation: "max",
+          historical: true,
+        }
+      );
 
       return {
         range,
-        data: [
-          ...data,
-          {
-            timestamp: range.to,
-            assetsCreatedCount: response.current?.tokensCreatedCount ?? 0,
-            assetsLaunchedCount: response.current?.tokensLaunchedCount ?? 0,
-          },
-        ],
+        data,
       };
     }
   );

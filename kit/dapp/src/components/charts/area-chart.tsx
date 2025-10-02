@@ -16,7 +16,7 @@ import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
 import { ChartEmptyState } from "./chart-empty-state";
 import { ChartUpdateInfo } from "./chart-update-info";
 
-export type AreaChartData = Record<string, string | number>;
+export type AreaChartData = Record<string, string | number | Date>;
 
 export interface AreaChartComponentProps {
   title: string;

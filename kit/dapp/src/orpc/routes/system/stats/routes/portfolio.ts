@@ -1,4 +1,5 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { createTimeSeries } from "@/lib/utils/timeseries";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { buildStatsRangeQuery } from "@atk/zod/stats-range";
 import { timestamp } from "@atk/zod/timestamp";
@@ -34,13 +35,13 @@ const PORTFOLIO_VALUE_QUERY = theGraphGraphql(`
 `);
 
 // Base schema for portfolio data items
-const PortfolioDataItem = z.object({
+const PortfolioHistoryItemSchema = z.object({
   timestamp: timestamp(),
   totalValueInBaseCurrency: z.string(),
 });
 
 const PortfolioResponseSchema = z.object({
-  accountStats: z.array(PortfolioDataItem),
+  accountStats: z.array(PortfolioHistoryItemSchema),
   current: z
     .object({
       totalValueInBaseCurrency: z.string(),
@@ -112,16 +113,25 @@ export const statsPortfolio = systemRouter.system.stats.portfolio.handler(
       }
     );
 
+    const results = [
+      ...portfolioData.accountStats,
+      {
+        timestamp: range.to,
+        totalValueInBaseCurrency:
+          portfolioData.current?.totalValueInBaseCurrency ?? "0",
+      },
+    ];
+
+    const series = createTimeSeries(results, ["totalValueInBaseCurrency"], {
+      range,
+      aggregation: "last",
+      accumulation: "max",
+      historical: true,
+    });
+
     return {
       range,
-      data: [
-        ...portfolioData.accountStats,
-        {
-          timestamp: range.to,
-          totalValueInBaseCurrency:
-            portfolioData.current?.totalValueInBaseCurrency ?? "0",
-        },
-      ],
+      data: series,
     };
   }
 );

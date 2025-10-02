@@ -2,7 +2,7 @@ import { AreaChartComponent } from "@/components/charts/area-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
-import { formatChartDate, createTimeSeries } from "@/lib/utils/timeseries";
+import { formatChartDate } from "@/lib/utils/timeseries";
 import { orpc } from "@/orpc/orpc-client";
 import {
   resolveStatsRange,
@@ -39,8 +39,6 @@ export function AssetLifecycleAreaChart({
     [t]
   );
 
-  const dataKeys = useMemo(() => ["assetsCreated", "assetsLaunched"], []);
-
   const { data: rawData } = useQuery(
     orpc.system.stats.assetLifecycle.queryOptions({
       input: range,
@@ -65,19 +63,8 @@ export function AssetLifecycleAreaChart({
 
   const chartInterval = resolvedRange.interval;
 
-  const transformedData = useMemo(() => {
-    return (rawData?.data ?? []).map((item) => ({
-      timestamp: item.timestamp,
-      assetsLaunched: item.assetsLaunchedCount,
-    }));
-  }, [rawData]);
-
-  const timeseries = createTimeSeries(transformedData, ["assetsLaunched"], {
-    range: resolvedRange,
-    aggregation: "last",
-    accumulation: "max",
-    historical: true,
-  });
+  const timeseries = rawData?.data ?? [];
+  const dataKeys = ["assetsCreated", "assetsLaunched"];
 
   return (
     <ComponentErrorBoundary componentName="Asset Lifecycle Chart">

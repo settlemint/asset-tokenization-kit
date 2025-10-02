@@ -7,8 +7,8 @@ export const StatsAssetLifecycleOutputSchema = z.object({
   data: z.array(
     z.object({
       timestamp: timestamp(),
-      assetsCreatedCount: z.number(),
-      assetsLaunchedCount: z.number(),
+      assetsCreated: z.number(),
+      assetsLaunched: z.number(),
     })
   ),
 });

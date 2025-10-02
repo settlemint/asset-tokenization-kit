@@ -1,4 +1,5 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { createTimeSeries } from "@/lib/utils/timeseries";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { buildStatsRangeQuery } from "@atk/zod/stats-range";
 import { timestamp } from "@atk/zod/timestamp";
@@ -76,16 +77,25 @@ export const statsIdentityStatsOverTime =
         }
       );
 
+      const results = [
+        ...response.identityStats,
+        {
+          timestamp: range.to,
+          activeUserIdentitiesCount:
+            response.current?.activeUserIdentitiesCount ?? 0,
+        },
+      ];
+
+      const series = createTimeSeries(results, ["activeUserIdentitiesCount"], {
+        range,
+        aggregation: "last",
+        accumulation: "max",
+        historical: true,
+      });
+
       return {
         range,
-        identityStats: [
-          ...response.identityStats,
-          {
-            timestamp: range.to,
-            activeUserIdentitiesCount:
-              response.current?.activeUserIdentitiesCount ?? 0,
-          },
-        ],
+        identityStats: series,
       };
     }
   );

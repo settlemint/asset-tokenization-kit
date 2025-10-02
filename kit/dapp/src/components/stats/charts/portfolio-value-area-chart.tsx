@@ -2,7 +2,7 @@ import { AreaChartComponent } from "@/components/charts/area-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
-import { createTimeSeries, formatChartDate } from "@/lib/utils/timeseries";
+import { formatChartDate } from "@/lib/utils/timeseries";
 import { orpc } from "@/orpc/orpc-client";
 import {
   resolveStatsRange,
@@ -66,16 +66,7 @@ export function PortfolioValueAreaChart({
   });
 
   const chartInterval = resolvedRange.interval;
-  const timeseries = createTimeSeries(
-    rawData?.data ?? [],
-    ["totalValueInBaseCurrency"],
-    {
-      range: resolvedRange,
-      aggregation: "last",
-      accumulation: "max",
-      historical: true,
-    }
-  );
+  const chartData = rawData?.data ?? [];
   const dataKeys = ["totalValueInBaseCurrency"];
 
   return (
@@ -84,7 +75,7 @@ export function PortfolioValueAreaChart({
         title={t("charts.portfolioValue.title")}
         description={description}
         interval={chartInterval}
-        data={timeseries}
+        data={chartData}
         config={chartConfig}
         dataKeys={dataKeys}
         nameKey="timestamp"

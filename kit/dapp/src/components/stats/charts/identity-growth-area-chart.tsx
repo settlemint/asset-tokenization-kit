@@ -3,7 +3,7 @@ import { ComponentErrorBoundary } from "@/components/error/component-error-bound
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
 import { formatNumber } from "@/lib/utils/format-value/format-number";
-import { formatChartDate, createTimeSeries } from "@/lib/utils/timeseries";
+import { formatChartDate } from "@/lib/utils/timeseries";
 import { orpc } from "@/orpc/orpc-client";
 import {
   resolveStatsRange,
@@ -36,8 +36,6 @@ export function IdentityGrowthAreaChart({
     [t]
   );
 
-  const dataKeys = useMemo(() => ["activeUserIdentitiesCount"], []);
-
   const { data: rawData } = useQuery(
     orpc.system.stats.identityStatsOverTime.queryOptions({
       input: range,
@@ -57,20 +55,13 @@ export function IdentityGrowthAreaChart({
   });
 
   const chartInterval = resolvedRange.interval;
-  const timeseries = createTimeSeries(
-    rawData?.identityStats ?? [],
-    ["activeUserIdentitiesCount"],
-    {
-      range: resolvedRange,
-      aggregation: "last",
-      accumulation: "max",
-      historical: true,
-    }
-  );
+  const timeseries = rawData?.identityStats ?? [];
 
   const description = t("charts.identityGrowth.description", {
     overRange,
   });
+
+  const dataKeys = ["activeUserIdentitiesCount"];
 
   return (
     <ComponentErrorBoundary componentName="Identity Growth Chart">
