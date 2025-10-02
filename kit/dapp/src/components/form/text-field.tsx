@@ -34,6 +34,10 @@ export function TextField({
     [field]
   );
 
+  const handleBlur = React.useCallback(() => {
+    field.handleBlur();
+  }, [field]);
+
   const renderInput = React.useCallback(
     ({ className }: { className?: string }) => (
       <Input
@@ -41,10 +45,11 @@ export function TextField({
         id={field.name}
         value={field.state.value ?? ""}
         onChange={handleChange}
+        onBlur={handleBlur}
         className={cn(className, errorClassNames(field.state.meta))}
       />
     ),
-    [field.name, field.state.value, field.state.meta, handleChange]
+    [field.name, field.state.value, field.state.meta, handleChange, handleBlur]
   );
 
   return (

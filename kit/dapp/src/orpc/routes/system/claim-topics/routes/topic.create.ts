@@ -21,6 +21,7 @@ import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockch
 import { systemRouter } from "@/orpc/procedures/system.router";
 // No need to import SYSTEM_PERMISSIONS - using direct role requirements
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
+import { ORPCError } from "@orpc/server";
 import {
   TopicCreateOutputSchema,
   type TopicCreateOutput,
@@ -77,7 +78,7 @@ export const topicCreate = systemRouter.system.claimTopics.topicCreate
       },
     })
   )
-  .handler(async ({ input, context }): Promise<TopicCreateOutput> => {
+  .handler(async ({ input, context, errors }): Promise<TopicCreateOutput> => {
     const { system } = context;
     const { name, signature, walletVerification } = input;
     const sender = context.auth.user;
@@ -85,20 +86,42 @@ export const topicCreate = systemRouter.system.claimTopics.topicCreate
     const registryAddress = system.topicSchemeRegistry.id;
 
     // Execute the registration transaction
-    const transactionHash = await context.portalClient.mutate(
-      REGISTER_TOPIC_SCHEME_MUTATION,
-      {
-        address: registryAddress,
-        from: sender.wallet,
-        name,
-        signature,
-      },
-      {
-        sender,
-        code: walletVerification.secretVerificationCode,
-        type: walletVerification.verificationType,
-      }
-    );
+    const transactionHash = await context.portalClient
+      .mutate(
+        REGISTER_TOPIC_SCHEME_MUTATION,
+        {
+          address: registryAddress,
+          from: sender.wallet,
+          name,
+          signature,
+        },
+        {
+          sender,
+          code: walletVerification.secretVerificationCode,
+          type: walletVerification.verificationType,
+        }
+      )
+      .catch((error: unknown) => {
+        if (error instanceof ORPCError && error.code === "PORTAL_ERROR") {
+          const responseValidation =
+            typeof (error.data as { responseValidation?: unknown })
+              ?.responseValidation === "string"
+              ? (error.data as { responseValidation?: string })
+                  .responseValidation
+              : "";
+          const combined =
+            `${error.message ?? ""} ${responseValidation}`.toLowerCase();
+
+          if (combined.includes("topicschemealreadyexists")) {
+            throw errors.RESOURCE_ALREADY_EXISTS({
+              message: `Topic "${name}" already exists`,
+              cause: error,
+            });
+          }
+        }
+
+        throw error;
+      });
 
     // Return success response with transaction details
     return TopicCreateOutputSchema.parse({

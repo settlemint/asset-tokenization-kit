@@ -53,11 +53,28 @@ export function SystemAddonsSelection() {
       ),
     [systemDetails?.systemAddonRegistry.systemAddons]
   );
+  // Temporarily hide airdrops and xvp from selection
+  const visibleAddonTypes = useMemo<
+    Exclude<(typeof addonTypes)[number], "airdrops" | "xvp">[]
+  >(
+    () =>
+      addonTypes.filter(
+        (a): a is Exclude<(typeof addonTypes)[number], "airdrops" | "xvp"> =>
+          a !== "airdrops" && a !== "xvp"
+      ),
+    []
+  );
+
   const deployedAddonsConfig = useMemo(() => {
-    return [...deployedAddons].map((addon) => ({
-      type: addon,
-      name: t(`system-addons.addon-selection.addon-types.${addon}.title`),
-    }));
+    return [...deployedAddons]
+      .filter(
+        (addon): addon is (typeof visibleAddonTypes)[number] =>
+          addon !== "airdrops" && addon !== "xvp"
+      )
+      .map((addon) => ({
+        type: addon,
+        name: t(`system-addons.addon-selection.addon-types.${addon}.title`),
+      }));
   }, [deployedAddons, t]);
 
   const form = useAppForm({
@@ -116,7 +133,7 @@ export function SystemAddonsSelection() {
     orpc.settings.upsert.mutationOptions()
   );
 
-  const availableAddons = addonTypes;
+  const availableAddons = visibleAddonTypes;
 
   const handleAddAddon = (addon: SystemAddonConfig) => {
     const alreadyIncluded = form.state.values.addons.some(

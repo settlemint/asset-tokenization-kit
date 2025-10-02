@@ -175,6 +175,11 @@ function RecoveryCodesContent({
 
       {recoveryCodes.length > 0 && (
         <div className="mt-6 space-y-4 border-t pt-6">
+          {/* Action Buttons in Footer */}
+          <RecoveryCodesActions
+            onCopyAll={handleCopyAllWithTracking}
+            onDownload={handleDownloadWithTracking}
+          />
           {/* Checkbox Section with Better Visual Prominence */}
           <div className="rounded-lg bg-muted/50 border-2 border-muted p-4">
             <div className="flex items-start space-x-3">
@@ -208,12 +213,6 @@ function RecoveryCodesContent({
               </div>
             </div>
           </div>
-
-          {/* Action Buttons in Footer */}
-          <RecoveryCodesActions
-            onCopyAll={handleCopyAllWithTracking}
-            onDownload={handleDownloadWithTracking}
-          />
         </div>
       )}
     </FormStepLayout>
