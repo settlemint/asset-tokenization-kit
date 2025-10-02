@@ -54,7 +54,7 @@ Update the following sections of `values.yaml` to point Portal at your infrastru
 
 | Service | Values path | Default |
 | --- | --- | --- |
-| PostgreSQL | `global.datastores.portal.postgresql` | `postgresql://portal:atk@postgresql:5432/portal?sslmode=disable` |
+| PostgreSQL | `global.datastores.portal.postgresql` | `{"database":"portal","host":"postgresql","password":"atk","port":5432,"sslMode":"disable","username":"portal"}` |
 | Redis cache | `portal.config.redis` | `redis://default:atk@redis:6379/4` |
 
 Provide external hostnames, credentials, logical database numbers, and SSL settings where required.
@@ -298,7 +298,13 @@ config:
     networkId: "53771311147"
     networkName: "ATK"
     nodeRpcUrl: "http://txsigner:3000"
-  postgresql: "postgresql://portal:password@postgresql:5432/portal?sslmode=disable"
+  postgresql:
+    host: postgresql
+    port: 5432
+    database: portal
+    username: portal
+    password: password
+    sslMode: disable
   redis:
     host: "redis-master"
     port: 6379
@@ -350,7 +356,13 @@ pdb:
 
 ```yaml
 config:
-  postgresql: "postgresql://portal:password@external-db.example.com:5432/portal?sslmode=require"
+  postgresql:
+    host: external-db.example.com
+    port: 5432
+    database: portal
+    username: portal
+    password: password
+    sslMode: require
   redis:
     host: "external-redis.example.com"
     port: 6379

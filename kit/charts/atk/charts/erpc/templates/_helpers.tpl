@@ -87,92 +87,23 @@ Using common helper with chart-specific alias.
 {{- end }}
 
 {{/*
-Build a Redis URI from chart values.
-Parameters: host, port, username, password, db, query (without leading '?').
-*/}}
-{{- define "erpc.redis.uri" -}}
-{{- $host := default "redis" .host -}}
-{{- $port := default 6379 .port -}}
-{{- $username := default "" .username -}}
-{{- $password := default "" .password -}}
-{{- $db := default 0 .db -}}
-{{- $query := trimPrefix "?" (default "" .query) -}}
-{{- $auth := "" -}}
-{{- if or (ne $username "") (ne $password "") -}}
-  {{- if eq $username "" -}}
-    {{- $auth = printf ":%s@" $password -}}
-  {{- else if eq $password "" -}}
-    {{- $auth = printf "%s:@" $username -}}
-  {{- else -}}
-    {{- $auth = printf "%s:%s@" $username $password -}}
-  {{- end -}}
-{{- end -}}
-{{- $uri := printf "redis://%s%s:%v/%v" $auth $host $port $db -}}
-{{- if ne $query "" -}}
-  {{- printf "%s?%s" $uri $query -}}
-{{- else -}}
-  {{- $uri -}}
-{{- end -}}
-{{- end }}
-
-{{/*
-Merge global default, eRPC overrides, and chart-level Redis configuration.
-*/}}
-{{- define "erpc.redis.config" -}}
-{{- $ctx := .context | default . -}}
-{{ include "atk.datastores.redis" (dict "context" $ctx "chartKey" "erpc" "local" (default (dict) $ctx.Values.redis)) }}
-{{- end }}
-
-{{/*
 Generate a Redis URI selecting fields from merged configuration.
 */}}
 {{- define "erpc.redis.uriFor" -}}
-{{- $context := .context -}}
-{{- $config := (include "erpc.redis.config" (dict "context" $context)) | fromYaml -}}
+{{- $context := .context | default . -}}
 {{- $dbKey := default "cacheDb" .dbKey -}}
 {{- $queryKey := default "" .queryKey -}}
-{{- $db := 0 -}}
-{{- if and $config (hasKey $config $dbKey) -}}
-  {{- $db = index $config $dbKey -}}
-{{- end -}}
-{{- $query := "" -}}
-{{- if and $config (ne $queryKey "") (hasKey $config $queryKey) -}}
-  {{- $query = index $config $queryKey -}}
-{{- end -}}
-{{- $host := "redis" -}}
-{{- if and $config (hasKey $config "host") -}}
-  {{- $host = index $config "host" -}}
-{{- end -}}
-{{- $port := 6379 -}}
-{{- if and $config (hasKey $config "port") -}}
-  {{- $port = index $config "port" -}}
-{{- end -}}
-{{- $username := "" -}}
-{{- if and $config (hasKey $config "username") -}}
-  {{- $username = index $config "username" -}}
-{{- end -}}
-{{- $password := "" -}}
-{{- if and $config (hasKey $config "password") -}}
-  {{- $password = index $config "password" -}}
-{{- end -}}
-{{- include "erpc.redis.uri" (dict "host" $host "port" $port "username" $username "password" $password "db" $db "query" $query) -}}
+{{- $local := default (dict) $context.Values.redis -}}
+{{- include "atk.redis.uriFor" (dict "context" $context "chartKey" "erpc" "local" $local "dbKey" $dbKey "queryKey" $queryKey) -}}
 {{- end }}
 
 {{/*
 Return the host:port tuple for the configured Redis endpoint.
 */}}
 {{- define "erpc.redis.endpoint" -}}
-{{- $context := .context -}}
-{{- $config := (include "erpc.redis.config" (dict "context" $context)) | fromYaml -}}
-{{- $host := "redis" -}}
-{{- if and $config (hasKey $config "host") -}}
-  {{- $host = index $config "host" -}}
-{{- end -}}
-{{- $port := 6379 -}}
-{{- if and $config (hasKey $config "port") -}}
-  {{- $port = index $config "port" -}}
-{{- end -}}
-{{- printf "%s:%v" $host $port -}}
+{{- $context := .context | default . -}}
+{{- $local := default (dict) $context.Values.redis -}}
+{{- printf "%s:%s" (include "atk.redis.host" (dict "context" $context "chartKey" "erpc" "local" $local)) (include "atk.redis.port" (dict "context" $context "chartKey" "erpc" "local" $local)) -}}
 {{- end }}
 
 {{/*

@@ -69,8 +69,6 @@ config:
 
 # -- (object) Database configuration
 database:
-  # -- (string) Database connection string (overrides auto-generated URL)
-  connectionUrl: ""
   # -- (string) Database host (uses global datastores if not set)
   host: ""
   # -- (int) Database port (uses global datastores if not set)
@@ -150,10 +148,6 @@ cronTriggers:
 redis:
   # -- (bool) Enable Redis integration
   enabled: true
-  # -- (string) Redis URL for query caching (overrides auto-generated URL)
-  cacheUrl: ""
-  # -- (string) Redis URL for rate limiting (overrides auto-generated URL)
-  rateLimitUrl: ""
   # -- (string) Redis host (uses global datastores if not set)
   host: ""
   # -- (int) Redis port (uses global datastores if not set)
