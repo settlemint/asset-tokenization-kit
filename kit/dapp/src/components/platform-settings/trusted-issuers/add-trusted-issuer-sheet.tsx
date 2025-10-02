@@ -15,16 +15,16 @@ import { client, orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { TopicListOutput } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import type { TrustedIssuerCreateInput } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.create.schema";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
+import { formOptions, useStore } from "@tanstack/react-form";
 import {
   useMutation,
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import { useStore, formOptions } from "@tanstack/react-form";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import type { EthereumAddress } from "@atk/zod/ethereum-address";
 
 interface AddTrustedIssuerSheetProps {
   open: boolean;
@@ -118,10 +118,12 @@ export function AddTrustedIssuerSheet({
     form.store,
     (state) => state.values.issuerAddress
   );
-  const selectedTopicsCount = useStore(
-    form.store,
-    (state) => state.values.claimTopicIds.length
-  );
+
+  // Keep a stable reference to the form instance for effects
+  const formRef = useRef(form);
+  useEffect(() => {
+    formRef.current = form;
+  }, [form]);
 
   const validateClaimTopicsSelection = (
     topics: string[],
@@ -134,10 +136,13 @@ export function AddTrustedIssuerSheet({
   };
 
   useEffect(() => {
-    if (!issuerAddress && selectedTopicsCount > 0) {
-      form.setFieldValue("claimTopicIds", []);
+    if (!issuerAddress) {
+      const currentTopics = formRef.current.getFieldValue("claimTopicIds");
+      if (Array.isArray(currentTopics) && currentTopics.length > 0) {
+        formRef.current.setFieldValue("claimTopicIds", []);
+      }
     }
-  }, [issuerAddress, selectedTopicsCount, form]);
+  }, [issuerAddress]);
 
   // Create a lookup map for O(1) topic retrieval and options
   const { topicLookup, topicOptions } = useMemo(() => {
