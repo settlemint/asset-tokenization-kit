@@ -2,8 +2,8 @@ apiVersion: v2
 name: network-nodes
 description: A Helm chart for Kubernetes
 type: application
-version: 2.0.0-alpha.14
-appVersion: 2.0.0-alpha.14
+version: 2.0.0-alpha.15
+appVersion: 2.0.0-alpha.15
 maintainers:
   - name: SettleMint
     email: support@settlemint.com
