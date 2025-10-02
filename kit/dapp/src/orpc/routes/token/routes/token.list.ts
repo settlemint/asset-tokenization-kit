@@ -212,6 +212,8 @@ export const list = systemRouter.token.list.handler(
     const parsedTokens = TokenListSchema.parse(tokensWithClaims);
 
     // Return the response with tokens and total count
+    // Note: @fetchAll directive ensures we get ALL tokens, so parsedTokens.length
+    // represents the true total count across the entire dataset, not just a page
     return TokenListResponseSchema.parse({
       tokens: parsedTokens,
       totalCount: parsedTokens.length,

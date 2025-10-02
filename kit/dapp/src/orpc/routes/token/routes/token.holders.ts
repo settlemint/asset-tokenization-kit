@@ -78,6 +78,8 @@ export const holders = tokenRouter.token.holders.handler(
     });
 
     // Calculate total count from the balances array
+    // Note: @fetchAll directive ensures we get ALL balances, so this length
+    // represents the true total count of holders across the entire dataset
     const totalCount = response.token?.balances?.length ?? 0;
 
     // Return the response with total count
