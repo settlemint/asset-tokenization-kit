@@ -2,6 +2,7 @@ import { AreaChartComponent } from "@/components/charts/area-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
+import { formatChartDate, createTimeSeries } from "@/lib/utils/timeseries";
 import { orpc } from "@/orpc/orpc-client";
 import {
   resolveStatsRange,
@@ -9,7 +10,6 @@ import {
   type StatsResolvedRange,
 } from "@atk/zod/stats-range";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns/format";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -22,7 +22,8 @@ export type AssetLifecycleAreaChartProps = {
 export function AssetLifecycleAreaChart({
   range,
 }: AssetLifecycleAreaChartProps) {
-  const { t } = useTranslation("stats");
+  const { t, i18n } = useTranslation("stats");
+  const locale = i18n.language;
 
   const chartConfig: ChartConfig = useMemo(
     () => ({
@@ -47,27 +48,6 @@ export function AssetLifecycleAreaChart({
     })
   );
 
-  const chartData = useMemo(() => {
-    if (!rawData || rawData.data.length === 0) {
-      return [];
-    }
-
-    const interval = rawData.range.interval;
-
-    return rawData.data.map((item) => {
-      const formattedTimestamp =
-        interval === "hour"
-          ? format(item.timestamp, "MMM dd HH:mm")
-          : format(item.timestamp, "MMM dd");
-
-      return {
-        timestamp: formattedTimestamp,
-        assetsCreated: item.assetsCreatedCount,
-        assetsLaunched: item.assetsLaunchedCount,
-      };
-    });
-  }, [rawData]);
-
   const fallbackRange = useMemo<StatsResolvedRange>(() => {
     return resolveStatsRange(range);
   }, [range]);
@@ -85,18 +65,36 @@ export function AssetLifecycleAreaChart({
 
   const chartInterval = resolvedRange.interval;
 
+  const transformedData = useMemo(() => {
+    return (rawData?.data ?? []).map((item) => ({
+      timestamp: item.timestamp,
+      assetsLaunched: item.assetsLaunchedCount,
+    }));
+  }, [rawData]);
+
+  const timeseries = createTimeSeries(transformedData, ["assetsLaunched"], {
+    range: resolvedRange,
+    aggregation: "last",
+    accumulation: "max",
+    historical: true,
+  });
+
   return (
     <ComponentErrorBoundary componentName="Asset Lifecycle Chart">
       <AreaChartComponent
         title={t("charts.assetLifecycle.title")}
         description={description}
         interval={chartInterval}
-        data={chartData}
+        data={timeseries}
         config={chartConfig}
         dataKeys={dataKeys}
         nameKey="timestamp"
         showLegend
         stacked={false}
+        xTickFormatter={(value: string | Date) => {
+          const date = value instanceof Date ? value : new Date(value);
+          return formatChartDate(date, chartInterval, locale);
+        }}
         yTickFormatter={(value: string) =>
           Number(value).toLocaleString(undefined, {
             maximumFractionDigits: 0,

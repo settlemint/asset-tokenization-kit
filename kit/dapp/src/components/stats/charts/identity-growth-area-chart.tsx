@@ -3,15 +3,14 @@ import { ComponentErrorBoundary } from "@/components/error/component-error-bound
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
 import { formatNumber } from "@/lib/utils/format-value/format-number";
+import { formatChartDate, createTimeSeries } from "@/lib/utils/timeseries";
 import { orpc } from "@/orpc/orpc-client";
 import {
   resolveStatsRange,
   type StatsRangeInput,
   type StatsResolvedRange,
 } from "@atk/zod/stats-range";
-import { getTimestamp } from "@atk/zod/timestamp";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns/format";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { buildChartRangeDescription } from "./chart-range-description";
@@ -46,27 +45,6 @@ export function IdentityGrowthAreaChart({
     })
   );
 
-  const chartData = useMemo(() => {
-    if (!rawData) {
-      return [];
-    }
-
-    const interval = rawData.range.interval;
-
-    return rawData.identityStats.map((item) => {
-      const timestamp = getTimestamp(item.timestamp);
-      const formattedTimestamp =
-        interval === "hour"
-          ? format(timestamp, "MMM dd HH:mm")
-          : format(timestamp, "MMM dd");
-
-      return {
-        timestamp: formattedTimestamp,
-        activeUserIdentitiesCount: item.activeUserIdentitiesCount,
-      };
-    });
-  }, [rawData]);
-
   const fallbackRange = useMemo<StatsResolvedRange>(() => {
     return resolveStatsRange(range);
   }, [range]);
@@ -78,11 +56,21 @@ export function IdentityGrowthAreaChart({
     t,
   });
 
+  const chartInterval = resolvedRange.interval;
+  const timeseries = createTimeSeries(
+    rawData?.identityStats ?? [],
+    ["activeUserIdentitiesCount"],
+    {
+      range: resolvedRange,
+      aggregation: "last",
+      accumulation: "max",
+      historical: true,
+    }
+  );
+
   const description = t("charts.identityGrowth.description", {
     overRange,
   });
-
-  const chartInterval = resolvedRange.interval;
 
   return (
     <ComponentErrorBoundary componentName="Identity Growth Chart">
@@ -90,13 +78,17 @@ export function IdentityGrowthAreaChart({
         title={t("charts.identityGrowth.title")}
         description={description}
         interval={chartInterval}
-        data={chartData}
+        data={timeseries}
         config={chartConfig}
         dataKeys={dataKeys}
         nameKey="timestamp"
         showLegend
         showYAxis
         stacked={false}
+        xTickFormatter={(value: string | Date) => {
+          const date = value instanceof Date ? value : new Date(value);
+          return formatChartDate(date, chartInterval, locale);
+        }}
         yTickFormatter={(value: string) =>
           formatNumber(
             value,

@@ -30,7 +30,7 @@ export interface AreaChartComponentProps {
   stacked?: boolean;
   className?: string;
   chartContainerClassName?: string;
-  xTickFormatter?: (value: string) => string;
+  xTickFormatter?: (value: string | Date) => string;
   yTickFormatter?: (value: string) => string;
   emptyMessage?: string;
   emptyDescription?: string;

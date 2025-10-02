@@ -39,7 +39,7 @@ export type DataPoint = {
 };
 
 export type TimeSeriesResult<T> = {
-  timestamp: string;
+  timestamp: Date;
 } & {
   [K in keyof T]: number;
 };
@@ -55,8 +55,7 @@ export type TimeSeriesResult<T> = {
 export function createTimeSeries<T extends DataPoint>(
   data: T[],
   valueKeys: (keyof T)[],
-  options: TimeSeriesOptions,
-  locale: string
+  options: TimeSeriesOptions
 ): TimeSeriesResult<T>[] {
   const { accumulation, aggregation, historical, range } = options;
 
@@ -101,7 +100,7 @@ export function createTimeSeries<T extends DataPoint>(
     );
 
     const result = {
-      timestamp: formatChartDate(tick, granularity, locale),
+      timestamp: tick,
     } as TimeSeriesResult<Pick<T, keyof T>>;
 
     for (const key of valueKeys) {

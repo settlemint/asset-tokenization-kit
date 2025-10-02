@@ -2,7 +2,7 @@ import { AreaChartComponent } from "@/components/charts/area-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
-import { createTimeSeries } from "@/lib/utils/timeseries";
+import { createTimeSeries, formatChartDate } from "@/lib/utils/timeseries";
 import { orpc } from "@/orpc/orpc-client";
 import {
   resolveStatsRange,
@@ -74,8 +74,7 @@ export function PortfolioValueAreaChart({
       aggregation: "last",
       accumulation: "max",
       historical: true,
-    },
-    locale
+    }
   );
   const dataKeys = ["totalValueInBaseCurrency"];
 
@@ -91,6 +90,10 @@ export function PortfolioValueAreaChart({
         nameKey="timestamp"
         showLegend={false}
         stacked={false}
+        xTickFormatter={(value: string | Date) => {
+          const date = value instanceof Date ? value : new Date(value);
+          return formatChartDate(date, chartInterval, locale);
+        }}
         yTickFormatter={(value: string) => {
           // Format Y-axis ticks with currency notation for better readability
           const numValue = Number(value);

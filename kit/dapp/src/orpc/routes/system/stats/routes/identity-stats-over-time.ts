@@ -1,6 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { buildStatsRangeQuery } from "@atk/zod/stats-range";
+import { timestamp } from "@atk/zod/timestamp";
 import { z } from "zod";
 
 /**
@@ -8,19 +9,28 @@ import { z } from "zod";
  * Optimized for the Identity Growth Chart specifically
  */
 const IDENTITY_STATS_OVER_TIME_QUERY = theGraphGraphql(`
-  query IdentityStatsOverTime($systemId: String!, $from: Timestamp!, $to: Timestamp!, $interval: Aggregation_interval!) {
+  query IdentityStatsOverTime(
+    $systemIdString: String!
+    $systemId: ID!
+    $from: Timestamp!
+    $to: Timestamp!
+    $interval: Aggregation_interval!
+  ) {
     # Identity statistics over time - get aggregated daily stats from specified date
     identityStats: identityStats_collection(
       where: {
         timestamp_gte: $from
         timestamp_lte: $to
-        system: $systemId
+        system: $systemIdString
       }
       interval: $interval
       orderBy: timestamp
       orderDirection: asc
     ) {
       timestamp
+      activeUserIdentitiesCount
+    }
+    current: identityStatsState(id: $systemId) {
       activeUserIdentitiesCount
     }
   }
@@ -30,10 +40,15 @@ const IDENTITY_STATS_OVER_TIME_QUERY = theGraphGraphql(`
 const IdentityStatsOverTimeResponseSchema = z.object({
   identityStats: z.array(
     z.object({
-      timestamp: z.string(),
+      timestamp: timestamp(),
       activeUserIdentitiesCount: z.number(),
     })
   ),
+  current: z
+    .object({
+      activeUserIdentitiesCount: z.number(),
+    })
+    .nullable(),
 });
 
 export const statsIdentityStatsOverTime =
@@ -46,12 +61,13 @@ export const statsIdentityStatsOverTime =
           // TODO: replace minFrom with context.system.createdAt when available
         });
 
-      // Fetch identity stats data
+      const systemId = context.system.id.toLowerCase();
       const response = await context.theGraphClient.query(
         IDENTITY_STATS_OVER_TIME_QUERY,
         {
           input: {
-            systemId: context.system.id.toLowerCase(),
+            systemId,
+            systemIdString: systemId,
             interval,
             from: fromMicroseconds,
             to: toMicroseconds,
@@ -62,7 +78,14 @@ export const statsIdentityStatsOverTime =
 
       return {
         range,
-        identityStats: response.identityStats,
+        identityStats: [
+          ...response.identityStats,
+          {
+            timestamp: range.to,
+            activeUserIdentitiesCount:
+              response.current?.activeUserIdentitiesCount ?? 0,
+          },
+        ],
       };
     }
   );

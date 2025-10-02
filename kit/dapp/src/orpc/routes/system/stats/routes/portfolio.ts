@@ -5,20 +5,29 @@ import { timestamp } from "@atk/zod/timestamp";
 import { z } from "zod";
 
 /**
- * GraphQL query to fetch hourly portfolio data
+ * GraphQL query to fetch portfolio history and latest snapshot
  */
 const PORTFOLIO_VALUE_QUERY = theGraphGraphql(`
-  query PortfolioHistoryHourly($accountId: String!, $fromMicroseconds: Timestamp, $toMicroseconds: Timestamp, $interval: Aggregation_interval!) {
+  query PortfolioHistoryHourly(
+    $accountIdString: String!
+    $accountId: ID!
+    $fromMicroseconds: Timestamp
+    $toMicroseconds: Timestamp
+    $interval: Aggregation_interval!
+  ) {
     accountStats: accountStats_collection(
       interval: $interval
       where: {
-        account: $accountId,
+        account: $accountIdString,
         timestamp_gte: $fromMicroseconds,
         timestamp_lte: $toMicroseconds
       }
       orderBy: timestamp
     ) {
       timestamp
+      totalValueInBaseCurrency
+    }
+    current: accountStatsState(id: $accountId) {
       totalValueInBaseCurrency
     }
   }
@@ -32,6 +41,11 @@ const PortfolioDataItem = z.object({
 
 const PortfolioResponseSchema = z.object({
   accountStats: z.array(PortfolioDataItem),
+  current: z
+    .object({
+      totalValueInBaseCurrency: z.string(),
+    })
+    .nullable(),
 });
 
 /**
@@ -81,8 +95,10 @@ export const statsPortfolio = systemRouter.system.stats.portfolio.handler(
       });
 
     // Build query variables
+    const accountId = userAddress.toLowerCase();
     const variables = {
-      accountId: userAddress.toLowerCase(),
+      accountId,
+      accountIdString: accountId,
       fromMicroseconds,
       toMicroseconds,
       interval,
@@ -98,7 +114,14 @@ export const statsPortfolio = systemRouter.system.stats.portfolio.handler(
 
     return {
       range,
-      data: portfolioData.accountStats,
+      data: [
+        ...portfolioData.accountStats,
+        {
+          timestamp: range.to,
+          totalValueInBaseCurrency:
+            portfolioData.current?.totalValueInBaseCurrency ?? "0",
+        },
+      ],
     };
   }
 );
