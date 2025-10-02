@@ -211,6 +211,14 @@ The following table lists the configurable parameters of this chart and their de
 | hasura.image.tag | string | `"v2.48.6"` | Hasura version tag |
 | hasura.ingress | object | `{"hostName":"hasura.k8s.orb.local"}` | Ingress configuration for Hasura console and API |
 | hasura.ingress.hostName | string | `"hasura.k8s.orb.local"` | Hostname for Hasura GraphQL endpoint. Update for your environment. |
+| ipfs | object | `{"cluster":{"image":{"registry":"docker.io"}},"enabled":true,"ingress":{"hostnames":{"api":"ipfs-cluster.k8s.orb.local"}},"ipfs":{"config":{"api":{"httpHeaders":{"accessControlAllowOrigin":["https://ipfs-cluster.k8s.orb.local","http://ipfs-cluster.k8s.orb.local"]}}},"image":{"registry":"docker.io"}},"tests":{"image":{"registry":"docker.io"}}}` | IPFS Cluster deployment configuration |
+| ipfs.cluster | object | `{"image":{"registry":"docker.io"}}` | IPFS Cluster control-plane configuration overrides |
+| ipfs.cluster.image.registry | string | `"docker.io"` | OCI registry for the cluster control-plane image |
+| ipfs.enabled | bool | `true` | Enable deployment of the IPFS cluster stack |
+| ipfs.ingress | object | `{"hostnames":{"api":"ipfs-cluster.k8s.orb.local"}}` | Ingress configuration for the IPFS cluster endpoints |
+| ipfs.ipfs | object | `{"config":{"api":{"httpHeaders":{"accessControlAllowOrigin":["https://ipfs-cluster.k8s.orb.local","http://ipfs-cluster.k8s.orb.local"]}}},"image":{"registry":"docker.io"}}` | IPFS peer configuration overrides |
+| ipfs.ipfs.image.registry | string | `"docker.io"` | OCI registry for the Kubo image |
+| ipfs.tests | object | `{"image":{"registry":"docker.io"}}` | Test pod image configuration |
 | network | object | `{"enabled":true,"network-bootstrapper":{"artifacts":{"predeployed":{"image":{"registry":"ghcr.io"}}},"image":{"repository":"ghcr.io/settlemint/network-bootstrapper"},"initContainer":{"tcpCheck":{"image":{"repository":"ghcr.io/settlemint/btp-waitforit"}}}},"network-nodes":{"image":{"repository":"docker.io/hyperledger/besu"},"initContainer":{"tcpCheck":{"image":{"repository":"ghcr.io/settlemint/btp-waitforit"}}},"persistence":{"size":"20Gi"}}}` | Blockchain network infrastructure configuration |
 | network.enabled | bool | `true` | Enable deployment of the blockchain network (validators and RPC nodes) |
 | network.network-bootstrapper | object | `{"artifacts":{"predeployed":{"image":{"registry":"ghcr.io"}}},"image":{"repository":"ghcr.io/settlemint/network-bootstrapper"},"initContainer":{"tcpCheck":{"image":{"repository":"ghcr.io/settlemint/btp-waitforit"}}}}` | Network bootstrapper job configuration for genesis and initial setup |
@@ -393,6 +401,7 @@ The following table lists the configurable parameters of this chart and their de
 |  | erpc | 2.0.0-alpha.15 |
 |  | graph-node | 2.0.0-alpha.15 |
 |  | hasura | 2.0.0-alpha.15 |
+|  | ipfs | 2.0.0-alpha.15 |
 |  | network | 2.0.0-alpha.15 |
 |  | observability | 2.0.0-alpha.15 |
 |  | portal | 2.0.0-alpha.15 |

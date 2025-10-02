@@ -1,0 +1,26 @@
+{{- if .Values.p2pNodePort.enabled }}
+{{- $annotations := include "common.tplvalues.merge" (dict "values" (list .Values.commonAnnotations .Values.p2pNodePort.annotations) "context" .) | fromYaml }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ipfs-cluster.ipfsFullname" . }}-p2p-nodeport
+  labels:
+    {{- include "ipfs-cluster.labels" . | nindent 4 }}
+    app.kubernetes.io/component: ipfs
+  {{- if $annotations }}
+  annotations:
+{{ toYaml $annotations | nindent 4 }}
+  {{- end }}
+spec:
+  type: NodePort
+  externalTrafficPolicy: {{ .Values.p2pNodePort.externalTrafficPolicy }}
+  selector:
+    {{- include "ipfs-cluster.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: ipfs
+  ports:
+    - name: swarm
+      port: {{ .Values.ipfs.service.ports.swarmTcp }}
+      targetPort: swarm
+      protocol: TCP
+      nodePort: {{ required "p2pNodePort.nodePort must be set when p2pNodePort.enabled is true" .Values.p2pNodePort.nodePort }}
+{{- end }}

@@ -354,6 +354,35 @@ hasura:
     # -- (string) Hostname for Hasura GraphQL endpoint. Update for your environment.
     hostName: hasura.k8s.orb.local
 
+# -- (object) IPFS Cluster deployment configuration
+ipfs:
+  # -- (bool) Enable deployment of the IPFS cluster stack
+  enabled: true
+  # -- (object) IPFS Cluster control-plane configuration overrides
+  cluster:
+    image:
+      # -- (string) OCI registry for the cluster control-plane image
+      registry: docker.io
+  # -- (object) IPFS peer configuration overrides
+  ipfs:
+    image:
+      # -- (string) OCI registry for the Kubo image
+      registry: docker.io
+    config:
+      api:
+        httpHeaders:
+          accessControlAllowOrigin:
+            - https://ipfs-cluster.k8s.orb.local
+            - http://ipfs-cluster.k8s.orb.local
+  # -- (object) Ingress configuration for the IPFS cluster endpoints
+  ingress:
+    hostnames:
+      api: ipfs-cluster.k8s.orb.local
+  # -- (object) Test pod image configuration
+  tests:
+    image:
+      registry: docker.io
+
 # -- (object) Portal identity and access management configuration
 portal:
   # -- (bool) Enable deployment of Portal IAM service

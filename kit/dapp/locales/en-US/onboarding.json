@@ -316,7 +316,7 @@
         "setup-time-otp": "2-3 minutes",
         "setup-time-pin": "1 minute"
       },
-"description": "Like your bank card requires a PIN for security, your wallet needs protection too.\n\nSet a secure 6-digit PIN code.",
+      "description": "Like your bank card requires a PIN for security, your wallet needs protection too.\n\nSet a secure 6-digit PIN code.",
       "generate-backup-codes": "Generate your backup codes",
       "otp": {
         "description": "Uses an app like Google Authenticator to generate a new code every 30 seconds. Maximum security for your assets.",
