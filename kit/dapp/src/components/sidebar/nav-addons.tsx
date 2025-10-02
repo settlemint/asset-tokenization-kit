@@ -16,15 +16,8 @@ import {
 import { orpc } from "@/orpc/orpc-client";
 import { getAddonCategoryFromFactoryTypeId } from "@atk/zod/addon-types";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Link, useMatches, useNavigate } from "@tanstack/react-router";
-import {
-  ArrowLeftRight,
-  Banknote,
-  ChevronRight,
-  PlusIcon,
-  Truck,
-  Vault,
-} from "lucide-react";
+import { Link, useMatches } from "@tanstack/react-router";
+import { Banknote, ChevronRight, Vault } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -37,7 +30,6 @@ import { useTranslation } from "react-i18next";
  */
 export function NavAddons() {
   const { t } = useTranslation("navigation");
-  const navigate = useNavigate();
   const matches = useMatches();
   const { data: system } = useSuspenseQuery(
     orpc.system.read.queryOptions({
