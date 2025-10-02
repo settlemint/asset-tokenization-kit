@@ -2,8 +2,11 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# -- (object) Global configuration values inherited from parent chart
 global:
+  # -- (object) Global labels applied to all resources
   labels:
+    # -- (string) KOTS application slug identifier
     kots.io/app-slug: settlemint-atk
 
 # -- (int) Number of dApp replicas to deploy
@@ -37,11 +40,13 @@ serviceAccount:
 annotations: {}
 # -- (object) Additional labels for the deployment pod metadata
 podLabels:
+  # -- (string) Kubernetes application component label
   app.kubernetes.io/component: dapp
+  # -- (string) KOTS application slug identifier
   kots.io/app-slug: settlemint-atk
 # -- (object) Annotations for dApp pods
 podAnnotations:
-  # Disable Prometheus scraping by default; override to "true" to expose metrics.
+  # -- (string) Disable Prometheus scraping by default; override to "true" to expose metrics
   prometheus.io/scrape: "false"
 
 # -- (object) Pod security context configuration
@@ -69,9 +74,17 @@ ingress:
   annotations: {}
   # -- (list) Ingress host configuration
   hosts:
-    - host: dapp.local # Placeholder - Should be configured in parent chart values
+    # -- (object) Ingress host entry
+    -
+      # -- (string) Hostname for the ingress (placeholder - should be configured in parent chart values)
+      host: dapp.local
+      # -- (list) Path definitions for this host
       paths:
-        - path: /((?:sm_|bpaas-)[^/]+)?/?(.*) # Match original path structure
+        # -- (object) Path entry
+        -
+          # -- (string) URL path pattern matching original path structure
+          path: /((?:sm_|bpaas-)[^/]+)?/?(.*)
+          # -- (string) Path type for Kubernetes ingress
           pathType: ImplementationSpecific
   # -- (list) TLS configuration for the ingress
   tls: []
@@ -79,58 +92,74 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-# OpenShift Route configuration
+# -- (object) OpenShift Route configuration
 openShiftRoute:
-  # -- Enable OpenShift route creation for DApp
+  # -- (bool) Enable OpenShift route creation for DApp
   enabled: false
-  # -- Additional annotations for the OpenShift route resource
+  # -- (object) Additional annotations for the OpenShift route resource
   annotations: {}
-  # -- Hostname exposed via the OpenShift route
+  # -- (string) Hostname exposed via the OpenShift route
   host: dapp.k8s.orb.local
-  # -- HTTP path exposed via the OpenShift route
+  # -- (string) HTTP path exposed via the OpenShift route
   path: /
-  # -- Wildcard policy to apply to the route
+  # -- (string) Wildcard policy to apply to the route
   wildcardPolicy: None
-  # -- Service port configuration for the route target
+  # -- (object) Service port configuration for the route target
   port:
-    # -- Service target port name (must exist on the DApp service)
+    # -- (string) Service target port name (must exist on the DApp service)
     targetPort: http
-  # -- Primary service weight configuration
+  # -- (object) Primary service weight configuration
   to:
-    # -- Weight assigned to the DApp service backend
+    # -- (int) Weight assigned to the DApp service backend
     weight: 100
-  # -- Additional backends for weighted routing
+  # -- (list) Additional backends for weighted routing
   alternateBackends: []
-  # -- TLS configuration for the route (optional)
-  # Set to null for no TLS (HTTP only)
-  # Or specify configuration for TLS termination
+  # -- (object) TLS configuration for the route (optional). Set to null for no TLS (HTTP only), or specify configuration for TLS termination
   tls: null
 
-# Resource requests and limits
+# -- (object) Resource requests and limits for the dApp container
 resources: {}
 # -- (object) Liveness and Readiness probes configuration
 probes:
   # -- (object) Liveness probe configuration
   liveness:
+    # -- (object) HTTP GET probe configuration
     httpGet:
+      # -- (string) HTTP path to probe
       path: "/"
+      # -- (string) Port name to probe
       port: http
+      # -- (string) HTTP or HTTPS scheme
       scheme: HTTP
+    # -- (int) Number of seconds after the container has started before liveness probes are initiated
     initialDelaySeconds: 10
+    # -- (int) How often (in seconds) to perform the probe
     periodSeconds: 15
+    # -- (int) Number of seconds after which the probe times out
     timeoutSeconds: 3
+    # -- (int) Number of consecutive failures needed to consider the container unhealthy
     failureThreshold: 10
+    # -- (int) Minimum consecutive successes for the probe to be considered successful after having failed
     successThreshold: 1
   # -- (object) Readiness probe configuration
   readiness:
+    # -- (object) HTTP GET probe configuration
     httpGet:
+      # -- (string) HTTP path to probe
       path: "/"
+      # -- (string) Port name to probe
       port: http
+      # -- (string) HTTP or HTTPS scheme
       scheme: HTTP
+    # -- (int) Number of seconds after the container has started before readiness probes are initiated
     initialDelaySeconds: 5
+    # -- (int) How often (in seconds) to perform the probe
     periodSeconds: 10
+    # -- (int) Number of seconds after which the probe times out
     timeoutSeconds: 3
+    # -- (int) Number of consecutive failures needed to consider the container not ready
     failureThreshold: 10
+    # -- (int) Minimum consecutive successes for the probe to be considered successful after having failed
     successThreshold: 1
 
 # -- (list) Additional volumes for the deployment
@@ -161,90 +190,199 @@ networkPolicy:
   enabled: false
   # -- (list) Ingress rules for the network policy
   ingress:
-    # Allow from ingress controller
-    - from:
-        - namespaceSelector:
+    # -- (object) Allow traffic from ingress controller
+    -
+      # -- (list) Source selectors for ingress traffic
+      from:
+        # -- (object) Namespace selector for ingress-nginx
+        -
+          # -- (object) Match labels for namespace selection
+          namespaceSelector:
+            # -- (object) Label matcher for namespace
             matchLabels:
+              # -- (string) Namespace name label for ingress-nginx
               kubernetes.io/metadata.name: ingress-nginx
+      # -- (list) Port definitions for ingress traffic
       ports:
-        - protocol: TCP
+        # -- (object) TCP port configuration
+        -
+          # -- (string) Protocol type
+          protocol: TCP
+          # -- (int) Port number
           port: 3000
-    # Allow from same namespace
-    - from:
+    # -- (object) Allow traffic from same namespace
+    -
+      # -- (list) Source selectors for same-namespace traffic
+      from:
+        # -- (object) Pod selector (empty = all pods in namespace)
         - podSelector: {}
+      # -- (list) Port definitions for same-namespace traffic
       ports:
-        - protocol: TCP
+        # -- (object) TCP port configuration
+        -
+          # -- (string) Protocol type
+          protocol: TCP
+          # -- (int) Port number
           port: 3000
 
   # -- (list) Egress rules for the network policy
   egress:
-    # Allow DNS resolution
-    - to:
-        - namespaceSelector: {}
+    # -- (object) Allow DNS resolution
+    -
+      # -- (list) Destination selectors for DNS traffic
+      to:
+        # -- (object) Namespace and pod selector for kube-dns
+        -
+          # -- (object) Match all namespaces
+          namespaceSelector: {}
+          # -- (object) Pod selector for kube-dns
           podSelector:
+            # -- (object) Label matcher for kube-dns pods
             matchLabels:
+              # -- (string) Kubernetes app label for DNS service
               k8s-app: kube-dns
+      # -- (list) Port definitions for DNS traffic
       ports:
-        - protocol: UDP
+        # -- (object) UDP port configuration for DNS
+        -
+          # -- (string) Protocol type
+          protocol: UDP
+          # -- (int) DNS port number
           port: 53
-    # Allow access to PostgreSQL
-    - to:
-        - podSelector:
+    # -- (object) Allow access to PostgreSQL database
+    -
+      # -- (list) Destination selectors for PostgreSQL traffic
+      to:
+        # -- (object) Pod selector for PostgreSQL
+        -
+          # -- (object) Pod selector configuration
+          podSelector:
+            # -- (object) Label matcher for PostgreSQL pods
             matchLabels:
+              # -- (string) Application name for PostgreSQL HA deployment
               app.kubernetes.io/name: postgresql-ha
+      # -- (list) Port definitions for PostgreSQL traffic
       ports:
-        - protocol: TCP
+        # -- (object) TCP port configuration for PostgreSQL
+        -
+          # -- (string) Protocol type
+          protocol: TCP
+          # -- (int) PostgreSQL port number
           port: 5432
-    # Allow access to Hasura GraphQL
-    - to:
-        - podSelector:
+    # -- (object) Allow access to Hasura GraphQL Engine
+    -
+      # -- (list) Destination selectors for Hasura traffic
+      to:
+        # -- (object) Pod selector for Hasura
+        -
+          # -- (object) Pod selector configuration
+          podSelector:
+            # -- (object) Label matcher for Hasura pods
             matchLabels:
+              # -- (string) Application name for Hasura GraphQL Engine
               app.kubernetes.io/name: graphql-engine
+      # -- (list) Port definitions for Hasura traffic
       ports:
-        - protocol: TCP
+        # -- (object) TCP port configuration for Hasura
+        -
+          # -- (string) Protocol type
+          protocol: TCP
+          # -- (int) Hasura GraphQL Engine port number
           port: 8080
-    # Allow access to Portal API
-    - to:
-        - podSelector:
+    # -- (object) Allow access to Portal API
+    -
+      # -- (list) Destination selectors for Portal traffic
+      to:
+        # -- (object) Pod selector for Portal
+        -
+          # -- (object) Pod selector configuration
+          podSelector:
+            # -- (object) Label matcher for Portal pods
             matchLabels:
+              # -- (string) Application name for Portal service
               app.kubernetes.io/name: portal
+      # -- (list) Port definitions for Portal traffic
       ports:
-        - protocol: TCP
+        # -- (object) TCP port configuration for Portal HTTP API
+        -
+          # -- (string) Protocol type
+          protocol: TCP
+          # -- (int) Portal HTTP API port number
           port: 3000
-        - protocol: TCP
+        # -- (object) TCP port configuration for Portal GraphQL API
+        -
+          # -- (string) Protocol type
+          protocol: TCP
+          # -- (int) Portal GraphQL API port number
           port: 3001
-    # Allow access to ERPC
-    - to:
-        - podSelector:
+    # -- (object) Allow access to ERPC (Ethereum RPC proxy)
+    -
+      # -- (list) Destination selectors for ERPC traffic
+      to:
+        # -- (object) Pod selector for ERPC
+        -
+          # -- (object) Pod selector configuration
+          podSelector:
+            # -- (object) Label matcher for ERPC pods
             matchLabels:
+              # -- (string) Application name for ERPC service
               app.kubernetes.io/name: erpc
+      # -- (list) Port definitions for ERPC traffic
       ports:
-        - protocol: TCP
+        # -- (object) TCP port configuration for ERPC
+        -
+          # -- (string) Protocol type
+          protocol: TCP
+          # -- (int) ERPC port number
           port: 4000
-    # Allow external HTTPS (for external APIs)
-    - to:
-        - namespaceSelector: {}
+    # -- (object) Allow external HTTPS traffic for external APIs
+    -
+      # -- (list) Destination selectors for external HTTPS traffic
+      to:
+        # -- (object) Match all namespaces for external access
+        -
+          # -- (object) Namespace selector (empty = all namespaces)
+          namespaceSelector: {}
+      # -- (list) Port definitions for HTTPS traffic
       ports:
-        - protocol: TCP
+        # -- (object) TCP port configuration for HTTPS
+        -
+          # -- (string) Protocol type
+          protocol: TCP
+          # -- (int) HTTPS port number
           port: 443
 
 # -- (object) Environment variables sourced from a secret. These will be created in the secret.yaml template
 secretEnv:
+  # -- (string) Better Auth authentication URL
   BETTER_AUTH_URL: "https://dapp.local"
+  # -- (string) Next.js public application identifier
   NEXT_PUBLIC_APP_ID: "dapp"
+  # -- (string) NextAuth.js authentication URL
   NEXTAUTH_URL: "https://dapp.local"
+  # -- (string) OpenTelemetry OTLP exporter endpoint for traces
   OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy:4318/v1/traces"
+  # -- (string) OpenTelemetry OTLP protocol
   OTEL_EXPORTER_OTLP_PROTOCOL: "http"
+  # -- (string) Blockscout block explorer UI endpoint
   SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "http://blockscout-frontend-svc/"
+  # -- (string) Blockchain node JSON-RPC endpoint via transaction signer
   SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT: "http://txsigner:3000"
+  # -- (string) Hasura GraphQL Engine admin secret for authentication
   SETTLEMINT_HASURA_ADMIN_SECRET: "atk"
+  # -- (string) Hasura PostgreSQL database connection URL (templated)
   SETTLEMINT_HASURA_DATABASE_URL:
     '{{ include "atk.datastores.postgresql.url" (dict "context" $ "chartKey"
     "hasura") }}'
+  # -- (string) Hasura GraphQL Engine endpoint
   SETTLEMINT_HASURA_ENDPOINT: "http://hasura:8080/v1/graphql"
+  # -- (string) Hierarchical Deterministic (HD) wallet private key identifier
   SETTLEMINT_HD_PRIVATE_KEY: "atk-hd-private-key"
+  # -- (string) SettleMint instance type (standalone or cloud)
   SETTLEMINT_INSTANCE: "standalone"
+  # -- (string) SettleMint Portal GraphQL API endpoint
   SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT: "http://portal:3001/graphql"
+  # -- (string) The Graph Protocol subgraph endpoints (JSON array)
   SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS: '["http://graph-node-combined:8000/subgraphs/name/kit"]'
 
 # -- (list) Environment variables defined directly in the deployment
@@ -262,68 +400,116 @@ autoscaling:
   maxReplicas: 10
   # -- (int) Target CPU utilization percentage for autoscaling
   targetCPUUtilizationPercentage: 80
-  # -- Target memory utilization percentage for autoscaling (optional)
+  # -- (int) Target memory utilization percentage for autoscaling (optional)
   # targetMemoryUtilizationPercentage: 80
 
 # -- (object) PodDisruptionBudget configuration
 podDisruptionBudget:
   # -- (bool) Enable pod disruption budget
   enabled: false
-  # -- (int) Minimum number of pods that must be available during disruption. Can be an integer or percentage (e.g., "50%")
+  # -- (string) Minimum number of pods that must be available during disruption. Can be an integer or percentage (e.g., "50%")
   minAvailable: 1
-  # -- (int) Maximum number of pods that can be unavailable during disruption. Can be an integer or percentage. Only one of minAvailable or maxUnavailable can be specified
+  # -- (string) Maximum number of pods that can be unavailable during disruption. Can be an integer or percentage. Only one of minAvailable or maxUnavailable can be specified
   # maxUnavailable: 1
 
 # -- (object) Init container configuration
 initContainer:
-  # Generic TCP check settings
+  # -- (object) Generic TCP check settings for service availability
   tcpCheck:
+    # -- (bool) Enable TCP availability checks
     enabled: true
+    # -- (object) Container image configuration for TCP check init container
     image:
+      # -- (string) Image repository for wait-for-it utility
       repository: ghcr.io/settlemint/btp-waitforit
+      # -- (string) Image tag for wait-for-it utility
       tag: v7.7.10
+      # -- (string) Image pull policy
       pullPolicy: IfNotPresent
+    # -- (int) Timeout in seconds for all TCP checks to complete
     timeout: 120
+    # -- (object) Resource limits and requests for TCP check init container
     resources:
+      # -- (object) Resource limits
       limits:
+        # -- (string) CPU limit
         cpu: 100m
+        # -- (string) Memory limit
         memory: 64Mi
+      # -- (object) Resource requests
       requests:
+        # -- (string) CPU request
         cpu: 50m
+        # -- (string) Memory request
         memory: 32Mi
+    # -- (list) Service dependencies to check for availability (service-name:port)
     dependencies:
-      # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
-      - name: postgres
+      # -- (object) PostgreSQL database dependency
+      -
+        # -- (string) Dependency name
+        name: postgres
+        # -- (string) Service endpoint (templated)
         endpoint: '{{ include "atk.postgresql.endpoint" (dict "context" $) }}'
-      - name: hasura
+      # -- (object) Hasura GraphQL Engine dependency
+      -
+        # -- (string) Dependency name
+        name: hasura
+        # -- (string) Service endpoint
         endpoint: "hasura:8080"
-      - name: portal
+      # -- (object) Portal API dependency
+      -
+        # -- (string) Dependency name
+        name: portal
+        # -- (string) Service endpoint
         endpoint: "portal:3001"
-      - name: graph-node
+      # -- (object) The Graph node dependency
+      -
+        # -- (string) Dependency name
+        name: graph-node
+        # -- (string) Service endpoint
         endpoint: "graph-node-combined:8020"
-      - name: blockscout
+      # -- (object) Blockscout block explorer dependency
+      -
+        # -- (string) Dependency name
+        name: blockscout
+        # -- (string) Service endpoint
         endpoint: "blockscout-blockscout:80"
 
-  # Specific check for GraphQL endpoint readiness (e.g., The Graph subgraph)
+  # -- (object) Specific check for GraphQL endpoint readiness (e.g., The Graph subgraph)
   graphQLCheck:
+    # -- (bool) Enable GraphQL endpoint readiness check
     enabled: true
+    # -- (string) Name of the init container
     name: "wait-for-graphql"
+    # -- (object) Container image configuration for GraphQL check
     image:
+      # -- (string) Container registry
       registry: docker.io
+      # -- (string) Image repository for curl utility
       repository: curlimages/curl
+      # -- (string) Image tag
       tag: "8.16.0"
+      # -- (string) Image pull policy
       pullPolicy: IfNotPresent
-    # Wait for subgraph to finish syncing (extended timeout)
+    # -- (string) GraphQL endpoint URL to check (wait for subgraph to finish syncing with extended timeout)
     url: "http://graph-node-combined:8000/subgraphs/name/kit"
+    # -- (int) Number of retry attempts
     retries: 10
+    # -- (int) Delay in seconds between retry attempts
     retryDelaySeconds: 10
-    # Use a more sophisticated query to check sync status
+    # -- (string) GraphQL query to check sync status
     query: "{ _meta { hasIndexingErrors block { number } } }"
+    # -- (object) Resource limits and requests for GraphQL check init container
     resources:
+      # -- (object) Resource limits
       limits:
+        # -- (string) Memory limit
         memory: 64Mi
+      # -- (object) Resource requests
       requests:
+        # -- (string) CPU request
         cpu: 10m
+        # -- (string) Memory request
         memory: 12Mi
 
 # -- (list) Additional init containers appended verbatim to the deployment pod spec
