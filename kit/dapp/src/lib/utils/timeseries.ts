@@ -189,10 +189,16 @@ function isInTick(
 }
 
 export function formatChartDate(
-  date: Date,
+  value: Date | string | number,
   granularity: TimeGranularity,
   locale: string
 ): string {
+  const date = value instanceof Date ? value : new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    throw new TypeError("Invalid date value provided to formatChartDate");
+  }
+
   if (granularity === "hour") {
     return formatDate(date, "HH:mm, MMM d", locale);
   }

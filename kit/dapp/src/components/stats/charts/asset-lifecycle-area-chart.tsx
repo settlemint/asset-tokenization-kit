@@ -71,16 +71,16 @@ export function AssetLifecycleAreaChart({
       <AreaChartComponent
         title={t("charts.assetLifecycle.title")}
         description={description}
+        interval={chartInterval}
         data={timeseries}
         config={chartConfig}
         dataKeys={dataKeys}
         nameKey="timestamp"
         showLegend
         stacked={false}
-        xTickFormatter={(value: string | Date) => {
-          const date = value instanceof Date ? value : new Date(value);
-          return formatChartDate(date, chartInterval, locale);
-        }}
+        xTickFormatter={(value: string | Date | number) =>
+          formatChartDate(value, chartInterval, locale)
+        }
         yTickFormatter={(value: string) =>
           Number(value).toLocaleString(undefined, {
             maximumFractionDigits: 0,

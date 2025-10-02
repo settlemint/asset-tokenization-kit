@@ -68,6 +68,7 @@ export function IdentityGrowthAreaChart({
       <AreaChartComponent
         title={t("charts.identityGrowth.title")}
         description={description}
+        interval={chartInterval}
         data={timeseries}
         config={chartConfig}
         dataKeys={dataKeys}
@@ -75,10 +76,9 @@ export function IdentityGrowthAreaChart({
         showLegend
         showYAxis
         stacked={false}
-        xTickFormatter={(value: string | Date) => {
-          const date = value instanceof Date ? value : new Date(value);
-          return formatChartDate(date, chartInterval, locale);
-        }}
+        xTickFormatter={(value: string | Date | number) =>
+          formatChartDate(value, chartInterval, locale)
+        }
         yTickFormatter={(value: string) =>
           formatNumber(
             value,

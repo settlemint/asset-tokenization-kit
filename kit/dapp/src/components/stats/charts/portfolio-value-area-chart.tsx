@@ -74,16 +74,16 @@ export function PortfolioValueAreaChart({
       <AreaChartComponent
         title={t("charts.portfolioValue.title")}
         description={description}
+        interval={chartInterval}
         data={chartData}
         config={chartConfig}
         dataKeys={dataKeys}
         nameKey="timestamp"
         showLegend={false}
         stacked={false}
-        xTickFormatter={(value: string | Date) => {
-          const date = value instanceof Date ? value : new Date(value);
-          return formatChartDate(date, chartInterval, locale);
-        }}
+        xTickFormatter={(value: string | Date | number) =>
+          formatChartDate(value, chartInterval, locale)
+        }
         yTickFormatter={(value: string) => {
           // Format Y-axis ticks with currency notation for better readability
           const numValue = Number(value);
