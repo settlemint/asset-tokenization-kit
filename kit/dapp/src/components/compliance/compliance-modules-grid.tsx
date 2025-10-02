@@ -57,7 +57,7 @@ export function ComplianceModulesGrid({
                 {t(`modules.${typeId}.title`)}
               </SelectableCardTitle>
               <SelectableCardDescription>
-                {t(`modules.${typeId}.description`)}
+                {t(`modules.${typeId}.shortDescription`)}
               </SelectableCardDescription>
             </SelectableCardContent>
           </SelectableCard>

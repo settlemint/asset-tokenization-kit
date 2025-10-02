@@ -26,9 +26,24 @@
       "title": "Identity blocklist"
     },
     "SMARTIdentityVerificationComplianceModule": {
-      "description": "Require identity verification for all investors. Provides KYC and AML compliance through the SMART protocol.",
-      "shortDescription": "Require identity verification",
-      "title": "SMART identity verification"
+      "description": "SMART identity verification makes sure only verified investors can hold or trade this token. It checks if an investor's digital identity contains the right claims such as \"KYC passed\", \"accredited investor\", or \"not on sanctions list\".",
+      "shortDescription": "SMART identity verification makes sure only verified investors can hold or trade this token",
+      "title": "SMART identity verification",
+      "helper": {
+        "title": "Identity verification rules",
+        "intro": "SMART identity verification makes sure only verified investors can hold or trade this token. It checks if an investor's digital identity contains the right claims such as \"KYC passed\", \"accredited investor\", or \"not on sanctions list\".",
+        "howToTitle": "How to build expressions",
+        "howToItems": [
+          "Pick a claim topic (KYC, AML, accreditation, etc.).",
+          "Combine topics using logical operators: AND -> all must be true, OR -> at least one must be true, NOT -> exclude a condition.",
+          "Use groups to bundle parts of the rule for more advanced logic."
+        ],
+        "examplesTitle": "Examples",
+        "examples": {
+          "micaStandard": "MiCA / EU: (KYC AND AML) AND (PROFESSIONAL_INVESTOR OR ACCREDITED_INVESTOR)",
+          "micaContract": "MiCA / EU (allowing all contracts like tokens, vaults, ...): CONTRACT OR ((KYC AND AML) AND (PROFESSIONAL_INVESTOR OR ACCREDITED_INVESTOR))"
+        }
+      }
     }
   },
   "title": "Compliance",

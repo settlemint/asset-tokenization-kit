@@ -7,6 +7,7 @@ import { noop } from "@/lib/utils/noop";
 import type { ComplianceModulesList } from "@/orpc/routes/system/compliance-module/routes/compliance-module.list.schema";
 import type { ComplianceModulePairInput } from "@atk/zod/compliance";
 import { useStore } from "@tanstack/react-store";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const empty: never[] = [];
@@ -20,6 +21,7 @@ export const SelectComplianceModules = withForm({
   },
   render: function Render({ form, onStepSubmit, onBack, complianceModules }) {
     const { t } = useTranslation("asset-designer");
+    const [showFormStepActions, setShowFormStepActions] = useState(true);
 
     const initialModulePairs = useStore(
       form.store,
@@ -48,16 +50,18 @@ export const SelectComplianceModules = withForm({
         title={t("compliance.title")}
         description={t("compliance.description")}
         actions={
-          <>
-            <Button variant="outline" onClick={onBack}>
-              {t("form.buttons.back")}
-            </Button>
-            <form.StepSubmitButton
-              label={t("form.buttons.next")}
-              onStepSubmit={onStepSubmit}
-              validate={empty}
-            />
-          </>
+          showFormStepActions ? (
+            <>
+              <Button variant="outline" onClick={onBack}>
+                {t("form.buttons.back")}
+              </Button>
+              <form.StepSubmitButton
+                label={t("form.buttons.next")}
+                onStepSubmit={onStepSubmit}
+                validate={empty}
+              />
+            </>
+          ) : undefined
         }
       >
         <ComplianceModules
@@ -65,6 +69,13 @@ export const SelectComplianceModules = withForm({
           enabledModules={initialModulePairs}
           onEnable={addModulePair}
           onDisable={removeModulePair}
+          onModuleSelect={(activeModule) => {
+            if (activeModule) {
+              setShowFormStepActions(false);
+            } else {
+              setShowFormStepActions(true);
+            }
+          }}
         />
       </FormStepLayout>
     );
