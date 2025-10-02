@@ -53,6 +53,17 @@
       "matchPackageNames": ["/^@nomicfoundation//", "hardhat"]
     },
     {
+      "description": "Handle MinIO's timestamped release tags",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": [
+        "/^minio\\/minio$/",
+        "/^minio\\/mc$/",
+        "/^docker\\.io\\/minio\\/minio$/",
+        "/^docker\\.io\\/minio\\/mc$/"
+      ],
+      "versioning": "regex:^RELEASE\\.(?<major>\\d{4})-(?<minor>\\d{2})-(?<patch>\\d{2})T(?<build>\\d{2}-\\d{2}-\\d{2})Z$"
+    },
+    {
       "description": "Automerge GitHub Actions updates",
       "matchManagers": ["github-actions"],
       "automerge": true,
