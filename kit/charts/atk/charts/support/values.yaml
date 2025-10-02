@@ -1,5 +1,8 @@
+# -- (object) Global configuration applied to all resources
 global:
+  # -- (object) Common labels applied to all resources
   labels:
+    # -- (string) KOTS application identifier for SettleMint ATK
     kots.io/app-slug: settlemint-atk
 
 # Our simple PostgreSQL chart configuration
@@ -71,7 +74,9 @@ postgresql:
 
   # -- (object) Common labels to add to all PostgreSQL resources
   commonLabels:
+    # -- (string) KOTS application identifier for SettleMint ATK
     kots.io/app-slug: settlemint-atk
+    # -- (string) Identifies Helm as the manager of this resource
     app.kubernetes.io/managed-by: helm
 
   # -- (object) Database initialization scripts
@@ -164,9 +169,13 @@ ingress-nginx:
     enabled: false
   # -- Controller configuration (object)
   controller:
+    # -- (object) Controller container image configuration
     image:
+      # -- (string) Ingress NGINX controller image name
       image: ingress-nginx/controller
+      # -- (string) Image digest for immutable deployments
       digest: ""
+      # -- (string) Image digest for chroot variant
       digestChroot: ""
     # -- (bool) Allow snippet annotations in Ingress objects
     allowSnippetAnnotations: true
@@ -198,8 +207,11 @@ ingress-nginx:
           stabilizationWindowSeconds: 300
           # -- (list) Scale down policies
           policies:
+            # -- (string) Policy type for scale down
             - type: Pods
+              # -- (int) Number of pods to scale down
               value: 1
+              # -- (int) Period in seconds for scale down evaluation
               periodSeconds: 180
         # -- (object) Scale up behavior
         scaleUp:
@@ -207,68 +219,117 @@ ingress-nginx:
           stabilizationWindowSeconds: 0
           # -- (list) Scale up policies
           policies:
+            # -- (string) Policy type for scale up
             - type: Pods
+              # -- (int) Number of pods to scale up
               value: 2
+              # -- (int) Period in seconds for scale up evaluation
               periodSeconds: 60
     # -- (object) Update strategy configuration
     updateStrategy:
+      # -- (string) Update strategy type
       type: RollingUpdate
+      # -- (object) Rolling update configuration
       rollingUpdate:
+        # -- (string) Maximum number of pods that can be created above desired count
         maxSurge: "100%"
+        # -- (string) Maximum number of pods that can be unavailable during update
         maxUnavailable: "0%"
     # -- (object) Resource configuration
     resources: {}
     # -- (object) Pod labels
     podLabels:
+      # -- (string) KOTS application identifier for SettleMint ATK
       kots.io/app-slug: settlemint-atk
     # -- (object) Pod annotations
     podAnnotations:
+      # -- (string) Enable Prometheus scraping for metrics
       prometheus.io/scrape: "true"
+      # -- (string) Prometheus metrics port
       prometheus.io/port: "10254"
     # -- (object) Affinity configuration
     affinity:
+      # -- (object) Pod anti-affinity rules to distribute pods across nodes
       podAntiAffinity:
+        # -- (list) Preferred anti-affinity rules (soft requirement)
         preferredDuringSchedulingIgnoredDuringExecution:
+          # -- (int) Weight for scheduling preference (higher = more preferred)
           - weight: 100
+            # -- (object) Pod affinity term defining the anti-affinity rule
             podAffinityTerm:
+              # -- (object) Label selector for matching pods
               labelSelector:
+                # -- (list) Match expressions for label selection
                 matchExpressions:
+                  # -- (string) Label key to match
                   - key: app.kubernetes.io/component
+                    # -- (string) Operator for label matching
                     operator: In
+                    # -- (list) Values to match for the label
                     values:
                       - controller
+                  # -- (string) Label key to match
                   - key: app.kubernetes.io/name
+                    # -- (string) Operator for label matching
                     operator: In
+                    # -- (list) Values to match for the label
                     values:
                       - ingress-nginx
+              # -- (string) Topology key for spreading pods across nodes
               topologyKey: kubernetes.io/hostname
     # -- (object) NGINX configuration
     config:
+      # -- (string) Maximum client request body size
       proxy-body-size: '500M'
+      # -- (string) Enable HTTP/2 server push preload
       http2-push-preload: 'true'
+      # -- (string) Timeout for sending request to proxied server
       proxy-send-timeout: '3600'
+      # -- (string) Timeout for reading response from proxied server
       proxy-read-timeout: '3600'
+      # -- (string) Enable or disable buffering of responses from proxied server
       proxy-buffering: 'on'
+      # -- (string) Size of buffer used for reading response header from proxied server
       proxy-buffer-size: '128k'
+      # -- (string) Size limit for buffers that are busy sending a response to client
       proxy-busy-buffers-size: '128k'
+      # -- (string) Number of buffers used for reading response from proxied server
       proxy-buffers-number: '4'
+      # -- (string) Maximum size of temporary file for buffering response from proxied server
       proxy-max-temp-file-size: '1024m'
+      # -- (string) Size of buffer for reading client request body
       client-body-buffer-size: '128k'
+      # -- (string) Enables TCP Fast Open with specified queue size
       tcp-fast-open: '3000'
+      # -- (string) Number of worker processes (auto = CPU cores)
       worker-processes: auto
+      # -- (string) Maximum number of simultaneous connections per worker process
       max-worker-connections: '65536'
+      # -- (string) Number of idle keepalive connections to upstream servers
       upstream-keepalive-connections: '64'
+      # -- (string) Timeout for idle keepalive connections to upstream servers
       upstream-keepalive-timeout: '120'
+      # -- (string) HTTP status code to return when rate limit is exceeded
       limit-req-status-code: '429'
+      # -- (string) Enable HTTP/2 protocol support
       use-http2: 'true'
+      # -- (string) Enable use of X-Forwarded-* headers
       use-forwarded-headers: 'false'
+      # -- (string) Escape special characters in JSON log format
       log-format-escape-json: 'true'
+      # -- (string) JSON format for upstream access logs with request/response metadata
       log-format-upstream: '{"proxyUpstreamName": "$proxy_upstream_name", "httpRequest":{"requestMethod": "$request_method", "requestUrl": "$host$request_uri", "status": $status, "requestBody": "${request_body_filtered}"}, "cloudflare": {"cfConnectingIp": "$http_cf_connecting_ip", "cfIpCountry": "$http_cf_ipcountry", "cfRay": "$http_cf_ray", "trueClientIp": "$http_true_client_ip"}, "meta": {"timestamp": "$time_iso8601", "latency": "$upstream_response_time s", "requestID": "$req_id", "requestSize": "$request_length", "responseSize": "$upstream_response_length", "userAgent": "$http_user_agent", "referer": "$http_referer", "protocol":"$server_protocol", "proxyAlternativeUpstreamName": "$proxy_alternative_upstream_name", "upstreamStatus": "$upstream_status", "upstreamAddr": "$upstream_addr", "cfVisitor": "$http_cf_visitor", "cfRequestId": "$http_cf_request_id"}}'
+      # -- (string) Whether to ignore invalid headers in client requests
       ignore-invalid-headers: 'false'
+      # -- (string) Allow underscores in client request header names
       enable-underscores-in-headers: 'true'
+      # -- (string) Risk level for allowing snippet annotations (Critical/High/Medium/Low)
       annotations-risk-level: Critical
+      # -- (string) SSL/TLS cipher suites to use (strong ciphers only)
       ssl-ciphers: 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:AES128-GCM-SHA256:AES128-GCM-SHA384'
+      # -- (string) IPv4 CIDR whitelist for NGINX status endpoint (0.0.0.0 = all)
       nginx-status-ipv4-whitelist: '0.0.0.0'
+      # -- (string) Custom NGINX HTTP configuration snippet for Lua request body filtering and status endpoint
       http-snippet: |
         lua_need_request_body on;
 
@@ -293,66 +354,109 @@ ingress-nginx:
                 return 404;
             }
         }
+      # -- (string) Enable automatic redirect from HTTP to HTTPS
       ssl-redirect: 'false'
+      # -- (string) Enable OpenTelemetry tracing integration
       enable-opentelemetry: 'true'
+      # -- (string) Enable access logging for default backend requests
       enable-access-log-for-default-backend: 'true'
+      # -- (string) OpenTelemetry collector hostname for trace exports
       otlp-collector-host: 'o11y-alloy'
+      # -- (string) OpenTelemetry collector port for trace exports
       otlp-collector-port: '4317'
+      # -- (string) OpenTelemetry sampling strategy (AlwaysOn/AlwaysOff/TraceIdRatioBased)
       otel-sampler: AlwaysOn
+      # -- (string) Sampling ratio when using TraceIdRatioBased sampler (0.0-1.0)
       otel-sampler-ratio: '1.0'
+      # -- (string) Whether to respect parent span sampling decisions
       otel-sampler-parent-based: 'false'
+      # -- (string) Trust incoming trace context from client requests
       opentelemetry-trust-incoming-span: 'true'
+      # -- (string) Maximum queue size for OpenTelemetry span exports
       otel-max-queuesize: '2048'
+      # -- (string) Delay in milliseconds between OpenTelemetry batch exports
       otel-schedule-delay-millis: '5000'
+      # -- (string) Maximum number of spans per OpenTelemetry batch export
       otel-max-export-batch-size: '512'
+      # -- (string) Enable Brotli compression for responses
       enable-brotli: 'true'
+      # -- (string) Conditions for trying next upstream server on error
       proxy_next_upstream: 'error timeout http_500 http_502 http_503 http_504'
+      # -- (string) Timeout for trying next upstream server (seconds)
       proxy_next_upstream_timeout: '30'
+      # -- (string) Maximum number of upstream servers to try
       proxy_next_upstream_tries: '3'
     # -- (object) Extra arguments for the controller
     extraArgs:
+      # -- (string) Enable SSL passthrough mode for TLS termination at backend
       enable-ssl-passthrough: 'true'
     # -- (object) Service configuration
     service:
+      # -- (string) External traffic policy for preserving client source IP (Local/Cluster)
       externalTrafficPolicy: "Local" # Use if not ClusterIP
+      # -- (string) Kubernetes service type (LoadBalancer/ClusterIP/NodePort)
       type: LoadBalancer # Or ClusterIP if there is an external LB
       # -- (object) Service annotations
       annotations:
+        # -- (string) DNS hostnames for external-dns to manage
         external-dns.alpha.kubernetes.io/hostname: 'settlemint.local, *.settlemint.local'
+        # -- (string) Enable Cloudflare proxy for external-dns managed records
         external-dns.alpha.kubernetes.io/cloudflare-proxied: 'true'
+        # -- (string) AWS load balancer backend protocol
         service.beta.kubernetes.io/aws-load-balancer-backend-protocol: 'tcp'
+        # -- (string) AWS load balancer type (external/internal)
         service.beta.kubernetes.io/aws-load-balancer-type: 'external'
+        # -- (string) AWS NLB target type (ip/instance)
         service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: 'ip'
+        # -- (string) AWS load balancer scheme (internet-facing/internal)
         service.beta.kubernetes.io/aws-load-balancer-scheme: 'internet-facing'
+        # -- (string) Disable TCP reset on Azure load balancer
         service.beta.kubernetes.io/azure-load-balancer-disable-tcp-reset: 'true'
+        # -- (string) Azure load balancer TCP idle timeout in minutes
         service.beta.kubernetes.io/azure-load-balancer-tcp-idle-timeout: '30'
+        # -- (string) Azure load balancer health probe request path
         service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: '/healthz'
     # -- (object) Ingress class resource configuration
     ingressClassResource:
       # -- (string) If you run more than one platform versions on a single cluster, you need to make sure these are unique
       name: atk-nginx
+      # -- (bool) Enable creation of IngressClass resource
       enabled: true
+      # -- (bool) Set this IngressClass as cluster default
       default: false
+      # -- (string) Controller value for IngressClass resource
       controllerValue: 'k8s.io/atk-nginx'
     # -- (string) Ingress class name
     ingressClass: atk-nginx
     # -- (object) OpenTelemetry configuration
     opentelemetry:
+      # -- (bool) Enable OpenTelemetry sidecar for distributed tracing
       enabled: true
+      # -- (object) OpenTelemetry image configuration
       image:
+        # -- (string) OpenTelemetry image registry
         registry: registry.k8s.io
     # -- (object) Patch configuration
     patch:
+      # -- (object) Patch job image configuration
       image:
+        # -- (string) Patch job image registry
         registry: registry.k8s.io
     # -- (object) Metrics configuration
     metrics:
+      # -- (bool) Enable Prometheus metrics endpoint
       enabled: true
+      # -- (object) Metrics service configuration
       service:
+        # -- (object) Labels for metrics service
         labels:
+          # -- (string) KOTS application identifier for SettleMint ATK
           kots.io/app-slug: settlemint-atk
+        # -- (object) Annotations for metrics service
         annotations:
+          # -- (string) Enable Prometheus scraping for metrics
           prometheus.io/scrape: 'true'
+          # -- (string) Prometheus metrics port
           prometheus.io/port: '10254'
 
 # https://github.com/stakater/Reloader/tree/master/deployments/kubernetes/chart/reloader
@@ -388,6 +492,7 @@ reloader:
     securityContext:
       # -- (object) Specifies the security capabilities for the container. Here, all capabilities are dropped.
       capabilities:
+        # -- (list) Linux capabilities to drop from the container
         drop:
           - ALL
       # -- (bool) If true, the root filesystem of the container is read-only.
@@ -396,17 +501,24 @@ reloader:
       runAsNonRoot: true
       # -- (int) The user ID to run the container as. Change this for OpenShift or specific requirements.
       runAsUser: 2016
+      # -- (bool) Whether a process can gain more privileges than its parent
       allowPrivilegeEscalation: false
     # -- (object) Container security context configuration
     containerSecurityContext:
+      # -- (object) Linux capabilities configuration for container
       capabilities:
+        # -- (list) Linux capabilities to drop from the container
         drop:
           - ALL
+      # -- (bool) Whether a process can gain more privileges than its parent
       allowPrivilegeEscalation: false
+      # -- (bool) Mount the container's root filesystem as read-only
       readOnlyRootFilesystem: true
     # -- (object) Deployment configuration
     deployment:
+      # -- (object) Labels for Reloader deployment
       labels:
+        # -- (string) KOTS application identifier for SettleMint ATK
         kots.io/app-slug: settlemint-atk
 
 # -- MinIO configuration (object)
@@ -452,16 +564,20 @@ minio:
 
   # -- (list) Automatic bucket creation
   buckets:
-    # -- (object) ATK bucket configuration
+    # -- (string) Bucket name
     - name: atk
+      # -- (string) Bucket access policy (none/download/upload/public)
       policy: none
+      # -- (bool) Whether to purge bucket contents on deletion
       purge: false
 
   # -- (list) Automatic user/service account creation
   users:
-    # -- (object) ATK service user configuration
+    # -- (string) MinIO access key for user authentication
     - accessKey: atk-service
+      # -- (string) MinIO secret key for user authentication
       secretKey: atk-service-secret
+      # -- (string) User access policy (readonly/writeonly/readwrite/consoleAdmin)
       policy: readwrite
 
   # -- Ingress configuration for MinIO API (object)
