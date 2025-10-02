@@ -31,6 +31,19 @@ const IDENTITY_STATS_OVER_TIME_QUERY = theGraphGraphql(`
       timestamp
       activeUserIdentitiesCount
     }
+    baseline: identityStats_collection(
+      where: {
+        timestamp_lte: $from
+        system: $systemIdString
+      }
+      interval: $interval
+      orderBy: timestamp
+      orderDirection: desc
+      first: 1
+    ) {
+      timestamp
+      activeUserIdentitiesCount
+    }
     current: identityStatsState(id: $systemId) {
       activeUserIdentitiesCount
     }
@@ -40,6 +53,12 @@ const IDENTITY_STATS_OVER_TIME_QUERY = theGraphGraphql(`
 // Schema for the GraphQL response
 const IdentityStatsOverTimeResponseSchema = z.object({
   identityStats: z.array(
+    z.object({
+      timestamp: timestamp(),
+      activeUserIdentitiesCount: z.number(),
+    })
+  ),
+  baseline: z.array(
     z.object({
       timestamp: timestamp(),
       activeUserIdentitiesCount: z.number(),
@@ -78,6 +97,7 @@ export const statsIdentityStatsOverTime =
       );
 
       const results = [
+        ...response.baseline,
         ...response.identityStats,
         {
           timestamp: range.to,

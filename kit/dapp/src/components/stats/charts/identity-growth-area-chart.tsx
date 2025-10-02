@@ -68,7 +68,6 @@ export function IdentityGrowthAreaChart({
       <AreaChartComponent
         title={t("charts.identityGrowth.title")}
         description={description}
-        interval={chartInterval}
         data={timeseries}
         config={chartConfig}
         dataKeys={dataKeys}

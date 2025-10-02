@@ -27,6 +27,20 @@ const SYSTEM_STATS_QUERY = theGraphGraphql(`
       tokensCreatedCount
       tokensLaunchedCount
     }
+    baseline: systemStats_collection(
+      interval: $interval
+      where: {
+        system: $systemIdString
+        timestamp_lte: $from
+      }
+      orderBy: timestamp
+      orderDirection: desc
+      first: 1
+    ) {
+      timestamp
+      tokensCreatedCount
+      tokensLaunchedCount
+    }
     current: systemStatsState(id: $systemId) {
       tokensCreatedCount
       tokensLaunchedCount
@@ -42,6 +56,7 @@ const SystemStatsDataItem = z.object({
 
 const SystemStatsResponseSchema = z.object({
   systemStats: z.array(SystemStatsDataItem),
+  baseline: z.array(SystemStatsDataItem),
   current: z
     .object({
       tokensCreatedCount: z.number(),
@@ -73,6 +88,11 @@ export const statsAssetLifecycle =
       });
 
       const results = [
+        ...response.baseline.map((item) => ({
+          timestamp: item.timestamp,
+          assetsCreated: item.tokensCreatedCount,
+          assetsLaunched: item.tokensLaunchedCount,
+        })),
         ...response.systemStats.map((item) => ({
           timestamp: item.timestamp,
           assetsCreated: item.tokensCreatedCount,

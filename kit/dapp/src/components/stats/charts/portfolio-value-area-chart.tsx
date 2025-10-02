@@ -74,7 +74,6 @@ export function PortfolioValueAreaChart({
       <AreaChartComponent
         title={t("charts.portfolioValue.title")}
         description={description}
-        interval={chartInterval}
         data={chartData}
         config={chartConfig}
         dataKeys={dataKeys}

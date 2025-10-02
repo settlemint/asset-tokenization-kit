@@ -28,6 +28,19 @@ const PORTFOLIO_VALUE_QUERY = theGraphGraphql(`
       timestamp
       totalValueInBaseCurrency
     }
+    baseline: accountStats_collection(
+      interval: $interval
+      where: {
+        account: $accountIdString,
+        timestamp_lte: $fromMicroseconds
+      }
+      orderBy: timestamp
+      orderDirection: desc
+      first: 1
+    ) {
+      timestamp
+      totalValueInBaseCurrency
+    }
     current: accountStatsState(id: $accountId) {
       totalValueInBaseCurrency
     }
@@ -42,6 +55,7 @@ const PortfolioHistoryItemSchema = z.object({
 
 const PortfolioResponseSchema = z.object({
   accountStats: z.array(PortfolioHistoryItemSchema),
+  baseline: z.array(PortfolioHistoryItemSchema),
   current: z
     .object({
       totalValueInBaseCurrency: z.string(),
@@ -114,6 +128,7 @@ export const statsPortfolio = systemRouter.system.stats.portfolio.handler(
     );
 
     const results = [
+      ...portfolioData.baseline,
       ...portfolioData.accountStats,
       {
         timestamp: range.to,

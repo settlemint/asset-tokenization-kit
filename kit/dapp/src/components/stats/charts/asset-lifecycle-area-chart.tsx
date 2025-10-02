@@ -71,7 +71,6 @@ export function AssetLifecycleAreaChart({
       <AreaChartComponent
         title={t("charts.assetLifecycle.title")}
         description={description}
-        interval={chartInterval}
         data={timeseries}
         config={chartConfig}
         dataKeys={dataKeys}
