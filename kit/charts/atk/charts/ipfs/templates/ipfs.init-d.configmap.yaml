@@ -25,6 +25,8 @@
 {{- $providerPeers := $bootstrap.providerPeers | default (list) -}}
 {{- $includeProviders := not (eq (false) $bootstrap.includeProviderPeers) -}}
 {{- $peeringPeers := list -}}
+{{- $initScripts := .Values.ipfs.initScripts | default (dict) -}}
+{{- $initScriptNames := dict -}}
 {{- range $peer := $nodePeers }}
   {{- $peeringPeers = append $peeringPeers $peer -}}
 {{- end -}}
@@ -160,7 +162,13 @@ data:
     {{- end }}
 
     exit 0
-{{- range $name, $script := .Values.ipfs.initScripts }}
-  {{ $name }}: |
+{{- range $name, $script := $initScripts }}
+  {{- $fileName := include "ipfs-cluster.initScriptFileName" (dict "name" $name) -}}
+  {{- if hasKey $initScriptNames $fileName -}}
+    {{- fail (printf "duplicate ipfs.initScripts key %q after validation" $fileName) -}}
+  {{- else -}}
+    {{- $_ := set $initScriptNames $fileName true -}}
+  {{- end -}}
+  {{ $fileName }}: |
     {{- tpl $script $ | nindent 4 }}
 {{- end }}

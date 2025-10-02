@@ -127,3 +127,19 @@ Render combined image pull secrets for workloads.
 {{- define "ipfs-cluster.imagePullSecrets" -}}
 {{ include "atk.common.imagePullSecrets" . }}
 {{- end }}
+
+{{/*
+Validate and return a safe filename for init scripts defined in values.
+The key must already be a valid ConfigMap key consisting of alphanumeric
+characters plus dash, underscore, or dot to avoid invalid mounts.
+*/}}
+{{- define "ipfs-cluster.initScriptFileName" -}}
+{{- $name := index . "name" -}}
+{{- if not $name -}}
+  {{- fail "ipfs.initScripts keys must not be empty" -}}
+{{- end -}}
+{{- if not (regexMatch "^[A-Za-z0-9_.-]+$" $name) -}}
+  {{- fail (printf "ipfs.initScripts key %q must match ^[A-Za-z0-9_.-]+$" $name) -}}
+{{- end -}}
+{{- $name -}}
+{{- end }}

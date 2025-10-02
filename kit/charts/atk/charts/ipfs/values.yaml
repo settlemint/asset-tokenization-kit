@@ -54,6 +54,11 @@ p2pNodePort:
   externalTrafficPolicy: Cluster
   # -- (object) Additional annotations for the NodePort service
   annotations: {}
+  hostIP:
+    # -- (string) Optional static IP address to advertise. When set, overrides fieldRef detection.
+    value: ""
+    # -- (string) Pod fieldRef used to resolve the host IP when value is empty
+    fieldPath: status.hostIP
 
 # -- (object) IPFS Cluster peer configuration
 cluster:
@@ -136,7 +141,7 @@ ipfs:
   podSecurityContext: {}
   # -- (object) Container-level security context overrides
   containerSecurityContext: {}
-  # -- (map) Init scripts injected via ConfigMap (filename => script contents)
+  # -- (map) Init scripts injected via ConfigMap (filename => script contents). Keys must match ^[A-Za-z0-9_.-]+$
   initScripts: {}
   # -- (list) Extra commands to override the default entrypoint
   customCommand: []

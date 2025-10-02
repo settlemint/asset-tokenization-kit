@@ -47,6 +47,11 @@ spec:
       {{- end }}
       {{- $extraInit := .Values.ipfs.initContainers | default (list) -}}
       {{- $hasNodePort := .Values.p2pNodePort.enabled -}}
+      {{- $hostIPConfig := .Values.p2pNodePort.hostIP | default (dict) -}}
+      {{- $hostIPValue := default "" $hostIPConfig.value -}}
+      {{- $hostIPFieldPath := default "status.hostIP" $hostIPConfig.fieldPath -}}
+      {{- $initScripts := .Values.ipfs.initScripts | default (dict) -}}
+      {{- $initScriptNames := dict -}}
       {{- if or $hasNodePort (gt (len $extraInit) 0) }}
       initContainers:
         {{- if $hasNodePort }}
@@ -73,9 +78,13 @@ ipfs config Addresses.Announce "[ \"/ip4/${HOST_IP}/tcp/${NODE_PORT}\", \"/ip4/$
 SCRIPT
           env:
             - name: HOST_IP
+              {{- if $hostIPValue }}
+              value: {{ $hostIPValue | quote }}
+              {{- else }}
               valueFrom:
                 fieldRef:
-                  fieldPath: status.hostIP
+                  fieldPath: {{ $hostIPFieldPath | quote }}
+              {{- end }}
             - name: NODE_PORT
               value: {{ required "p2pNodePort.nodePort must be set when p2pNodePort.enabled is true" .Values.p2pNodePort.nodePort | quote }}
           volumeMounts:
@@ -129,9 +138,13 @@ SCRIPT
               value: "off"
             {{- if $hasNodePort }}
             - name: HOST_IP
+              {{- if $hostIPValue }}
+              value: {{ $hostIPValue | quote }}
+              {{- else }}
               valueFrom:
                 fieldRef:
-                  fieldPath: status.hostIP
+                  fieldPath: {{ $hostIPFieldPath | quote }}
+              {{- end }}
             - name: NODE_PORT
               value: {{ required "p2pNodePort.nodePort must be set when p2pNodePort.enabled is true" .Values.p2pNodePort.nodePort | quote }}
             {{- end }}
@@ -147,10 +160,16 @@ SCRIPT
               mountPath: /data/ipfs
             - name: init-d
               mountPath: /container-init.d
-            {{- range $name, $_ := .Values.ipfs.initScripts }}
+            {{- range $name, $_ := $initScripts }}
+            {{- $fileName := include "ipfs-cluster.initScriptFileName" (dict "name" $name) -}}
+            {{- if hasKey $initScriptNames $fileName -}}
+              {{- fail (printf "duplicate ipfs.initScripts key %q after validation" $fileName) -}}
+            {{- else -}}
+              {{- $_ := set $initScriptNames $fileName true -}}
+            {{- end }}
             - name: init-d-configmap
-              subPath: {{ $name }}
-              mountPath: /container-init.d/{{ $name }}
+              subPath: {{ $fileName }}
+              mountPath: /container-init.d/{{ $fileName }}
             {{- end }}
             {{- if and .Values.ipfs.swarmKey.enabled .Values.ipfs.swarmKey.secretName }}
             - name: swarm-key

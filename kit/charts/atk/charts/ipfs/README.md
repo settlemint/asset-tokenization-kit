@@ -98,7 +98,7 @@ A Helm chart for deploying IPFS Cluster and IPFS peer nodes for ATK
 | ipfs.image.repository | string | `"ipfs/kubo"` | IPFS image repository |
 | ipfs.image.tag | string | `"v0.38.0"` | IPFS image tag |
 | ipfs.initContainers | list | `[]` | Additional init containers |
-| ipfs.initScripts | map | `{}` | Init scripts injected via ConfigMap (filename => script contents) |
+| ipfs.initScripts | map | `{}` | Init scripts injected via ConfigMap (filename => script contents). Keys must match ^[A-Za-z0-9_.-]+$ |
 | ipfs.nodeSelector | object | `{}` | Node selector |
 | ipfs.podAnnotations | object | `{}` | Additional pod annotations |
 | ipfs.podLabels | object | `{"app.kubernetes.io/component":"ipfs"}` | Additional pod labels |
@@ -130,10 +130,12 @@ A Helm chart for deploying IPFS Cluster and IPFS peer nodes for ATK
 | openShiftRoute.routes | object | `{"api":{"enabled":true,"nameSuffix":"api","path":"/?(api/((.*[^/])?)?)","service":{"port":"proxy","target":"cluster"}},"cluster":{"enabled":true,"nameSuffix":"cluster","path":"/?cluster/(((.*[^/])?)?)","service":{"port":"api","target":"cluster"}},"pinning":{"enabled":true,"nameSuffix":"pinning","path":"/?pinning/(((.*[^/])?)?)","service":{"port":"pinning","target":"cluster"}},"ws":{"enabled":true,"nameSuffix":"ws","path":"/?ws/(((.*[^/])?)?)","service":{"port":"ws","target":"ipfs"}}}` | Route entries keyed by logical name; set enabled: false to skip a route |
 | openShiftRoute.tls | object | `nil` | TLS configuration applied when TLS is desired |
 | openShiftRoute.wildcardPolicy | string | `"None"` | Wildcard policy used when a Route does not override it |
-| p2pNodePort | object | `{"annotations":{},"enabled":false,"externalTrafficPolicy":"Cluster","nodePort":32000}` | Configuration for the optional NodePort service used for public P2P addresses |
+| p2pNodePort | object | `{"annotations":{},"enabled":false,"externalTrafficPolicy":"Cluster","hostIP":{"fieldPath":"status.hostIP","value":""},"nodePort":32000}` | Configuration for the optional NodePort service used for public P2P addresses |
 | p2pNodePort.annotations | object | `{}` | Additional annotations for the NodePort service |
 | p2pNodePort.enabled | bool | `false` | Enable creation of a NodePort service for the swarm port |
 | p2pNodePort.externalTrafficPolicy | string | `"Cluster"` | ExternalTrafficPolicy for the NodePort service |
+| p2pNodePort.hostIP.fieldPath | string | `"status.hostIP"` | Pod fieldRef used to resolve the host IP when value is empty |
+| p2pNodePort.hostIP.value | string | `""` | Optional static IP address to advertise. When set, overrides fieldRef detection. |
 | p2pNodePort.nodePort | int | `32000` | Static nodePort to announce when enabled |
 | replicaCount | int | `1` | Number of IPFS peers and cluster members |
 | serviceAccount | object | `{"annotations":{},"create":true,"name":""}` | Service account configuration |
