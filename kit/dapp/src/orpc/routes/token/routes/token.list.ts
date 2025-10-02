@@ -212,8 +212,15 @@ export const list = systemRouter.token.list.handler(
     const parsedTokens = TokenListSchema.parse(tokensWithClaims);
 
     // Return the response with tokens and total count
-    // Note: @fetchAll directive ensures we get ALL tokens, so parsedTokens.length
-    // represents the true total count across the entire dataset, not just a page
+    //
+    // Current approach: @fetchAll directive fetches ALL tokens, so parsedTokens.length
+    // represents the true total count. This works well for small to medium datasets.
+    //
+    // Future optimization: For large datasets (1000+ tokens), consider implementing:
+    // 1. Server-side pagination with limit/offset parameters
+    // 2. Separate count query that only fetches minimal token data (id only)
+    // 3. Parallel execution of data and count queries
+    // This would reduce memory usage and improve response times for large factories.
     return TokenListResponseSchema.parse({
       tokens: parsedTokens,
       totalCount: parsedTokens.length,

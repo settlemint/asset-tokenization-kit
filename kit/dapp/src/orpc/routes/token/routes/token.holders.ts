@@ -8,7 +8,7 @@ import {
 /**
  * GraphQL query for retrieving token holders and their balances.
  *
- * This query fetches all balance entries for a specific token, ordered by
+ * This query fetches balance entries for a specific token, ordered by
  * last updated time in descending order. Each balance entry includes:
  * - available: The amount of tokens available for transfer
  * - frozen: The amount of tokens frozen/locked
@@ -17,7 +17,8 @@ import {
  *
  * @remarks
  * The balances are ordered by lastUpdatedAt in descending order to show
- * the most recently active holders first.
+ * the most recently active holders first. We use @fetchAll here because
+ * the UI requires all holder data for client-side filtering and sorting.
  */
 const TOKEN_HOLDERS_QUERY = theGraphGraphql(`
   query TokenHoldersQuery($id: ID!) {
@@ -78,8 +79,8 @@ export const holders = tokenRouter.token.holders.handler(
     });
 
     // Calculate total count from the balances array
-    // Note: @fetchAll directive ensures we get ALL balances, so this length
-    // represents the true total count of holders across the entire dataset
+    // Note: Since we need all holder data for client-side filtering and sorting anyway,
+    // fetching all balances is necessary. The @fetchAll directive handles pagination internally.
     const totalCount = response.token?.balances?.length ?? 0;
 
     // Return the response with total count
