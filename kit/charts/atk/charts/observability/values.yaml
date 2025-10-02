@@ -1,5 +1,8 @@
+# -- (object) Global configuration applied to all resources
 global:
+  # -- (object) Labels applied to all resources in the chart
   labels:
+    # -- (string) KOTS application slug identifier
     kots.io/app-slug: settlemint-atk
 
 # https://github.com/kubernetes-sigs/metrics-server/blob/master/charts/metrics-server/values.yaml
@@ -87,180 +90,337 @@ victoria-metrics-single:
     resources: {}
     # -- (object) Ingress configuration for Victoria Metrics
     ingress:
+      # -- (bool) Enable ingress for Victoria Metrics
       enabled: false
+      # -- (object) Ingress annotations
       annotations:
+        # -- (string) Authentication type for ingress
         nginx.ingress.kubernetes.io/auth-type: basic
+        # -- (string) Secret name for basic authentication
         nginx.ingress.kubernetes.io/auth-secret: observability-metrics
+        # -- (string) Authentication realm message
         nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - Metrics"
+        # -- (string) Maximum allowed size of client request body
         nginx.ingress.kubernetes.io/proxy-body-size: "500m"
+        # -- (string) Timeout for reading a response from proxied server
         nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+        # -- (string) Timeout for transmitting a request to proxied server
         nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+        # -- (string) Buffer size for reading client request body
         nginx.ingress.kubernetes.io/client-body-buffer-size: "500m"
+      # -- (list) List of ingress hosts
       hosts:
+        # -- (string) Host name for ingress
         - name: metrics.settlemint.local
+          # -- (string) Path for ingress rule
           path: /
+          # -- (string) Service port name
           port: http
+      # -- (string) Ingress class name
       ingressClassName: atk-nginx
+      # -- (string) Path type for ingress rule
       pathType: Prefix
+    # -- (object) Additional labels for Victoria Metrics pods
     podLabels:
+      # -- (string) KOTS application slug identifier
       kots.io/app-slug: settlemint-atk
+    # -- (object) Annotations for Victoria Metrics pods
     podAnnotations:
+      # -- (string) Enable Prometheus scraping
       prometheus.io/scrape: "true"
+      # -- (string) Port for Prometheus scraping
       prometheus.io/port: "8428"
+      # -- (string) Path for Prometheus metrics endpoint
       prometheus.io/path: /metrics
+    # -- (object) Service configuration
     service:
+      # -- (object) Annotations for Victoria Metrics service
       annotations:
+        # -- (string) Enable Prometheus scraping
         prometheus.io/scrape: "true"
+        # -- (string) Port for Prometheus scraping
         prometheus.io/port: "8428"
+        # -- (string) Path for Prometheus metrics endpoint
         prometheus.io/path: /metrics
+      # -- (object) Labels for Victoria Metrics service
       labels:
+        # -- (string) KOTS application slug identifier
         kots.io/app-slug: settlemint-atk
 
 # https://github.com/grafana/loki/blob/main/production/helm/loki/values.yaml
 # -- (object) Loki configuration
 loki:
+  # -- (bool) Enable Loki deployment
   enabled: true
+  # -- (list) Global Docker registry secret names as an array
   imagePullSecrets: []
+  # -- (string) String to fully override common.names.fullname
   fullnameOverride: logs
+  # -- (object) Global configuration
   global:
+    # -- (object) Global image configuration
     image:
+      # -- (string) Global image registry
       registry: docker.io
+  # -- (object) Memcached configuration
   memcached:
+    # -- (object) Memcached image configuration
     image:
+      # -- (string) Memcached image repository
       repository: docker.io/library/memcached
+  # -- (object) Memcached exporter configuration
   memcachedExporter:
+    # -- (object) Memcached exporter image configuration
     image:
+      # -- (string) Memcached exporter image repository
       repository: docker.io/prom/memcached-exporter
+  # -- (object) Results cache configuration
   resultsCache:
+    # -- (bool) Enable results cache
     enabled: false
+  # -- (object) Loki server configuration
   loki:
+    # -- (bool) Enable authentication for Loki
     auth_enabled: false
+    # -- (object) Common configuration settings
     commonConfig:
+      # -- (int) Number of replicas for data replication
       replication_factor: 1
+    # -- (object) Schema configuration for index and chunks
     schemaConfig:
+      # -- (list) List of schema configurations
       configs:
+        # -- (string) Schema start date
         - from: 2024-04-01
+          # -- (string) Index store type
           store: tsdb
+          # -- (string) Object store type
           object_store: filesystem
+          # -- (string) Schema version
           schema: v13
+          # -- (object) Index configuration
           index:
+            # -- (string) Index prefix for table names
             prefix: loki_index_
+            # -- (string) Index rotation period
             period: 24h
+    # -- (object) Storage configuration
     storage:
+      # -- (string) Storage backend type
       type: 'filesystem'
+    # -- (object) Ingester configuration
     ingester:
+      # -- (string) Chunk compression encoding
       chunk_encoding: snappy
+    # -- (object) Tracing configuration
     tracing:
+      # -- (bool) Enable tracing
       enabled: true
+    # -- (object) Querier configuration
     querier:
+      # -- (int) Maximum concurrent queries
       max_concurrent: 2
+    # -- (object) Limits configuration
     limits_config:
+      # -- (string) Log retention period
       retention_period: 168h
+      # -- (bool) Reject samples older than max age
       reject_old_samples: true
+      # -- (string) Maximum age for samples
       reject_old_samples_max_age: 24h
+      # -- (int) Maximum number of series in a query
       max_query_series: 10000
+      # -- (int) Maximum parallelism for queries
       max_query_parallelism: 2
+      # -- (int) Maximum line size in bytes
       max_line_size: 100982429
+      # -- (string) Interval for splitting queries
       split_queries_by_interval: 15m
+      # -- (string) Rate limit per stream
       per_stream_rate_limit: 512M
+      # -- (string) Burst rate limit per stream
       per_stream_rate_limit_burst: 1024M
+      # -- (int) Cardinality limit for label combinations
       cardinality_limit: 200000
+      # -- (int) Ingestion burst size in MB
       ingestion_burst_size_mb: 1000
+      # -- (int) Ingestion rate in MB per second
       ingestion_rate_mb: 1000
+      # -- (int) Maximum entries limit per query
       max_entries_limit_per_query: 1000000
+      # -- (int) Maximum global streams per user
       max_global_streams_per_user: 10000
+      # -- (int) Maximum label value length
       max_label_value_length: 20480
+      # -- (int) Maximum label name length
       max_label_name_length: 10240
+      # -- (int) Maximum label names per series
       max_label_names_per_series: 300
+      # -- (bool) Allow structured metadata in logs
       allow_structured_metadata: true
+      # -- (bool) Enable volume endpoints
       volume_enabled: true
+    # -- (object) Server configuration
     server:
+      # -- (int) Maximum gRPC message receive size in bytes
       grpc_server_max_recv_msg_size: 100982429
+      # -- (int) Maximum gRPC message send size in bytes
       grpc_server_max_send_msg_size: 100982429
+    # -- (object) Compactor configuration
     compactor:
+      # -- (bool) Enable retention in compactor
       retention_enabled: true
+      # -- (string) Working directory for compactor
       working_directory: /var/loki/retention
+      # -- (string) Interval between compaction runs
       compaction_interval: 60m
+      # -- (string) Delay before deleting retained data
       retention_delete_delay: 2h
+      # -- (int) Number of workers for deletion
       retention_delete_worker_count: 150
+      # -- (string) Store type for delete requests
       delete_request_store: filesystem
+    # -- (object) Pattern receiver configuration for log pattern detection
     pattern_receiver:
+      # -- (bool) Enable pattern receiver
       enabled: true
+  # -- (object) Gateway configuration
   gateway:
+    # -- (object) Affinity rules for gateway pods
     affinity:
+      # -- (object) Pod anti-affinity rules
       podAntiAffinity:
+        # -- (object) Required anti-affinity rules during scheduling
         requiredDuringSchedulingIgnoredDuringExecution: null
+    # -- (object) Ingress configuration for gateway
     ingress:
+      # -- (bool) Enable ingress for gateway
       enabled: false
+      # -- (string) Ingress class name
       ingressClassName: atk-nginx
+      # -- (object) Ingress annotations
       annotations:
+        # -- (string) Authentication type for ingress
         nginx.ingress.kubernetes.io/auth-type: basic
+        # -- (string) Secret name for basic authentication
         nginx.ingress.kubernetes.io/auth-secret: observability-logs
+        # -- (string) Authentication realm message
         nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - Logs"
+        # -- (string) Maximum allowed size of client request body
         nginx.ingress.kubernetes.io/proxy-body-size: "500m"
+        # -- (string) Timeout for reading a response from proxied server
         nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+        # -- (string) Timeout for transmitting a request to proxied server
         nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+        # -- (string) Buffer size for reading client request body
         nginx.ingress.kubernetes.io/client-body-buffer-size: "500m"
+      # -- (list) List of ingress hosts
       hosts:
+        # -- (string) Host name for ingress
         - host: logs.settlemint.local
+          # -- (list) List of paths for this host
           paths:
+            # -- (string) Path for ingress rule
             - path: /
+              # -- (string) Path type for ingress rule
               pathType: Prefix
 
+  # -- (string) Deployment mode for Loki (SingleBinary, SimpleScalable, or Distributed)
   deploymentMode: SingleBinary
+  # -- (object) Single binary deployment configuration
   singleBinary:
+    # -- (object) Persistent volume configuration
     persistence:
+      # -- (string) Size of persistent volume
       size: 10Gi
+    # -- (int) Number of replicas for single binary deployment
     replicas: 1
+    # -- (object) Resource requests and limits
     resources: {}
     # extraEnv:
     #   # Keep a little bit lower than memory limits
     #   - name: GOMEMLIMIT
     #     value: 3750MiB
 
+  # -- (object) Chunks cache configuration
   chunksCache:
+    # -- (bool) Enable chunks cache
     enabled: false
     # default is 500MB, with limited memory keep this smaller
+    # -- (string) Writeback size limit for chunks cache
     writebackSizeLimit: 100MB
+    # -- (int) Allocated memory for chunks cache in MB
     allocatedMemory: 1024
 
+  # -- (object) Test configuration
   test:
+    # -- (bool) Enable test pods
     enabled: false
+  # -- (object) Loki canary configuration for monitoring
   lokiCanary:
+    # -- (bool) Enable Loki canary
     enabled: false
 
   # Enable minio for storage
+  # -- (object) MinIO configuration for object storage
   minio:
+    # -- (bool) Enable MinIO deployment
     enabled: false
 
   # Zero out replica counts of other deployment modes
+  # -- (object) Backend component configuration
   backend:
+    # -- (int) Number of backend replicas (0 when using SingleBinary)
     replicas: 0
+  # -- (object) Read component configuration
   read:
+    # -- (int) Number of read replicas (0 when using SingleBinary)
     replicas: 0
+  # -- (object) Write component configuration
   write:
+    # -- (int) Number of write replicas (0 when using SingleBinary)
     replicas: 0
 
+  # -- (object) Ingester component configuration
   ingester:
+    # -- (int) Number of ingester replicas (0 when using SingleBinary)
     replicas: 0
+  # -- (object) Querier component configuration
   querier:
+    # -- (int) Number of querier replicas (0 when using SingleBinary)
     replicas: 0
+  # -- (object) Query frontend component configuration
   queryFrontend:
+    # -- (int) Number of query frontend replicas (0 when using SingleBinary)
     replicas: 0
+  # -- (object) Query scheduler component configuration
   queryScheduler:
+    # -- (int) Number of query scheduler replicas (0 when using SingleBinary)
     replicas: 0
+  # -- (object) Distributor component configuration
   distributor:
+    # -- (int) Number of distributor replicas (0 when using SingleBinary)
     replicas: 0
+  # -- (object) Compactor component configuration
   compactor:
+    # -- (int) Number of compactor replicas (0 when using SingleBinary)
     replicas: 0
+  # -- (object) Index gateway component configuration
   indexGateway:
+    # -- (int) Number of index gateway replicas (0 when using SingleBinary)
     replicas: 0
+  # -- (object) Bloom compactor component configuration
   bloomCompactor:
+    # -- (int) Number of bloom compactor replicas (0 when using SingleBinary)
     replicas: 0
+  # -- (object) Bloom gateway component configuration
   bloomGateway:
+    # -- (int) Number of bloom gateway replicas (0 when using SingleBinary)
     replicas: 0
 
+  # -- (object) Sidecar configuration for config reloading
   sidecar:
+    # -- (object) Sidecar image configuration
     image:
       # -- (string) The Docker registry and image for the k8s sidecar
       repository: docker.io/kiwigrid/k8s-sidecar
@@ -269,65 +429,125 @@ loki:
 # https://github.com/grafana/alloy/blob/main/operations/helm/charts/alloy/values.yaml
 # -- (object) Alloy configuration
 alloy:
+  # -- (bool) Enable Alloy deployment
   enabled: true
+  # -- (object) Alloy image configuration
   image:
+    # -- (string) Image registry for Alloy
     registry: docker.io
+  # -- (object) Config reloader sidecar configuration
   configReloader:
+    # -- (object) Config reloader image configuration
     image:
+      # -- (string) Image registry for config reloader
       registry: ghcr.io
+  # -- (string) Cluster name label for metrics and logs
   clustername: ''
+  # -- (object) Global configuration
   global:
+    # -- (object) Global image configuration
     image:
+      # -- (list) Global Docker registry secret names as an array
       pullSecrets: []
+  # -- (object) Observability endpoints configuration
   endpoints:
+    # -- (object) Internal endpoints configuration for on-cluster services
     internal:
+      # -- (object) Internal Prometheus endpoint configuration
       prometheus:
+        # -- (bool) Enable internal Prometheus remote write
         enabled: true
+        # -- (string) Internal Prometheus remote write URL
         url: http://metrics:8428/api/v1/write
+      # -- (object) Internal Loki endpoint configuration
       loki:
+        # -- (bool) Enable internal Loki log shipping
         enabled: true
+        # -- (string) Internal Loki push URL
         url: http://logs:3100/loki/api/v1/push
+      # -- (object) Internal OpenTelemetry endpoint configuration
       otel:
+        # -- (bool) Enable internal OpenTelemetry traces
         enabled: true
+        # -- (string) Internal OpenTelemetry HTTP endpoint URL
         url: http://tempo:4318
+    # -- (object) External endpoints configuration for remote services
     external:
+      # -- (object) External Prometheus endpoint configuration
       prometheus:
+        # -- (bool) Enable external Prometheus remote write
         enabled: false
+        # -- (string) External Prometheus remote write URL
         url: ""
+        # -- (object) Basic authentication for external Prometheus
         basicAuth:
+          # -- (string) Username for external Prometheus basic auth
           username: null
+          # -- (string) Password for external Prometheus basic auth
           password: null
+      # -- (object) External Loki endpoint configuration
       loki:
+        # -- (bool) Enable external Loki log shipping
         enabled: false
+        # -- (string) External Loki push URL
         url: ""
+        # -- (object) Basic authentication for external Loki
         basicAuth:
+          # -- (string) Username for external Loki basic auth
           username: null
+          # -- (string) Password for external Loki basic auth
           password: null
+      # -- (object) External OpenTelemetry endpoint configuration
       otel:
+        # -- (bool) Enable external OpenTelemetry traces
         enabled: false
+        # -- (string) External OpenTelemetry endpoint URL
         url: ""
+        # -- (object) Basic authentication for external OpenTelemetry
         basicAuth:
+          # -- (string) Username for external OpenTelemetry basic auth
           username: null
+          # -- (string) Password for external OpenTelemetry basic auth
           password: null
+  # -- (string) String to fully override common.names.fullname
   fullnameOverride: alloy
+  # -- (object) Controller configuration
   controller:
+    # -- (string) Controller type (deployment, daemonset, or statefulset)
     type: "deployment"
+  # -- (object) Custom Resource Definitions configuration
   crds:
+    # -- (bool) Create CRDs during installation
     create: false
+  # -- (object) Alloy agent configuration
   alloy:
+    # -- (string) Stability level for experimental features
     stabilityLevel: "experimental"
+    # -- (list) Extra ports to expose on Alloy pods
     extraPorts:
+      # -- (string) Port name for OpenTelemetry gRPC
       - name: "otel-grpc"
+        # -- (int) Service port for OpenTelemetry gRPC
         port: 4317
+        # -- (int) Target port for OpenTelemetry gRPC
         targetPort: 4317
+        # -- (string) Protocol for OpenTelemetry gRPC
         protocol: "TCP"
+      # -- (string) Port name for OpenTelemetry HTTP
       - name: "otel-http"
+        # -- (int) Service port for OpenTelemetry HTTP
         port: 4318
+        # -- (int) Target port for OpenTelemetry HTTP
         targetPort: 4318
+        # -- (string) Protocol for OpenTelemetry HTTP
         protocol: "TCP"
+    # -- (object) Resource requests and limits for Alloy
     resources: {}
+    # -- (bool) Enable usage reporting to Grafana Labs
     enableReporting: false
+    # -- (object) ConfigMap configuration for Alloy
     configMap:
+      # -- (string) Alloy configuration content in HCL format
       content: |
         logging {
           level  = "info"
@@ -658,157 +878,301 @@ alloy:
 # https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
 # -- (object) Grafana configuration
 grafana:
+  # -- (bool) Enable Grafana deployment
   enabled: true
+  # -- (object) Additional labels for Grafana pods
   podLabels:
+    # -- (string) KOTS application slug identifier
     kots.io/app-slug: settlemint-atk
 
+    # -- (string) Helm managed-by label
     app.kubernetes.io/managed-by: helm
+  # -- (string) String to fully override common.names.fullname
   fullnameOverride: grafana
+  # -- (string) Grafana admin username
   adminUser: settlemint
+  # -- (string) Grafana admin password
   adminPassword: atk
+  # -- (object) Global configuration
   global:
+    # -- (string) Global image registry
     imageRegistry: docker.io
+    # -- (list) Global Docker registry secret names as an array
     imagePullSecrets: []
+  # -- (object) Ingress configuration for Grafana
   ingress:
+    # -- (bool) Enable ingress for Grafana
     enabled: true
+    # -- (string) Ingress class name
     ingressClassName: atk-nginx
+    # -- (list) List of ingress hosts
     hosts:
+      # -- (string) Host name for Grafana ingress
       - grafana.k8s.orb.local
+  # -- (object) Persistent volume configuration
   persistence:
+    # -- (bool) Enable persistent volume for Grafana
     enabled: false
+    # -- (string) Size of persistent volume
     size: 1Gi
+  # -- (object) Init container to fix permissions
   initChownData:
+    # -- (bool) Enable init container for chown
     enabled: false
+  # -- (object) Sidecar configuration for auto-loading resources
   sidecar:
+    # -- (object) Dashboard sidecar configuration
     dashboards:
+      # -- (bool) Enable dashboard sidecar
       enabled: true
+      # -- (object) Dashboard provider configuration
       provider:
+        # -- (bool) Allow UI updates to dashboards
         allowUiUpdates: true
+        # -- (bool) Create folders from file structure
         foldersFromFilesStructure: true
+      # -- (string) Annotation key for folder assignment
       folderAnnotation: grafana_folder
+      # -- (string) Namespace to search for dashboards (ALL for all namespaces)
       searchNamespace: ALL
+    # -- (object) Datasource sidecar configuration
     datasources:
+      # -- (bool) Enable datasource sidecar
       enabled: true
+      # -- (bool) Initialize datasources on startup
       initDatasources: true
+    # -- (object) Plugin sidecar configuration
     plugins:
+      # -- (bool) Enable plugin sidecar
       enabled: true
+    # -- (object) Alert sidecar configuration
     alerts:
+      # -- (bool) Enable alert sidecar
       enabled: false
+      # -- (string) Label key for alert discovery
       label: grafana_alert
+      # -- (string) Namespace to search for alerts (ALL for all namespaces)
       searchNamespace: ALL
+      # -- (string) Label value for alert discovery
       labelValue: "1"
+      # -- (string) Slack webhook URL for alerts
       slackUrl: ""
+      # -- (string) Slack channel for alerts
       slackChannel: ""
+      # -- (string) Slack username for alerts
       slackUsername: ""
+  # -- (object) Datasource configuration
   datasources:
+    # -- (object) Datasources YAML configuration
     datasources.yaml:
+      # -- (int) Datasource API version
       apiVersion: 1
+      # -- (list) List of datasources
       datasources:
+        # -- (string) Prometheus datasource name
         - name: Prometheus
+          # -- (string) Datasource type
           type: prometheus
+          # -- (string) Datasource unique identifier
           uid: prometheus
+          # -- (string) Datasource access mode
           access: proxy
+          # -- (string) Prometheus URL
           url: http://metrics:8428
+          # -- (bool) Set as default datasource
           isDefault: true
+        # -- (string) Loki datasource name
         - name: Loki
+          # -- (string) Datasource type
           type: loki
+          # -- (string) Datasource unique identifier
           uid: loki
+          # -- (string) Datasource access mode
           access: proxy
+          # -- (string) Loki URL
           url: http://logs:3100
+          # -- (bool) Set as default datasource
           isDefault: false
+          # -- (object) Loki JSON data configuration
           jsonData:
+            # -- (int) Query timeout in seconds
             timeout: 60
+            # -- (int) Maximum lines to return
             maxLines: 1000
+            # -- (list) Derived fields configuration for trace linking
             derivedFields:
+              # -- (string) Target datasource UID for trace links
               - datasourceUid: tempo
+                # -- (string) Regex to extract trace ID from logs
                 matcherRegex: "^.*?traceI[d|D]=(\\w+).*$"
+                # -- (string) Field name for trace ID
                 name: traceId
+                # -- (string) URL template for trace links
                 url: '$${__value.raw}'
+        # -- (string) PostgreSQL datasource name
         - name: PostgreSQL
+          # -- (string) Datasource type
           type: postgres
+          # -- (string) Datasource unique identifier
           uid: postgres
+          # -- (string) PostgreSQL URL
           url: postgresql:5432
+          # -- (string) Datasource access mode
           access: proxy
+          # -- (bool) Set as default datasource
           isDefault: false
+          # -- (string) Database name
           database: thegraph
+          # -- (string) Database user
           user: thegraph
+          # -- (object) PostgreSQL JSON data configuration
           jsonData:
+            # -- (string) SSL mode for PostgreSQL connection
             sslmode: 'disable'
+            # -- (int) PostgreSQL version
             postgresVersion: 15
+            # -- (bool) Enable TimescaleDB support
             timescaledb: false
+          # -- (object) Secure JSON data for sensitive fields
           secureJsonData:
+            # -- (string) Database password
             password: "atk" # WARNING: Store passwords securely (e.g., secrets) in production!
+  # -- (list) List of Grafana plugins to install
   plugins:
+    # -- (string) Loki Explore app plugin URL
     - https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip;grafana-lokiexplore-app
 
 
 # https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus-node-exporter/values.yaml
 # -- (object) Prometheus Node Exporter configuration
 prometheus-node-exporter:
+  # -- (bool) Enable Prometheus Node Exporter deployment
   enabled: true
+  # -- (object) Node exporter image configuration
   image:
+    # -- (string) Image registry for node exporter
     registry: quay.io
+  # -- (list) Docker registry secret names as an array
   imagePullSecrets: []
+  # -- (object) Kube RBAC proxy configuration
   kubeRBACProxy:
+    # -- (object) Kube RBAC proxy image configuration
     image:
+      # -- (string) Image registry for kube RBAC proxy
       registry: quay.io
+  # -- (object) Global configuration
   global:
+    # -- (string) Global image registry
     imageRegistry: quay.io
+  # -- (string) String to fully override common.names.fullname
   fullnameOverride: node-exporter
+  # -- (string) String to partially override common.names.name
   nameOverride: node-exporter
+  # -- (object) Annotations for node exporter pods
   podAnnotations:
+    # -- (string) Enable Prometheus scraping
     prometheus.io/scrape: "true"
+    # -- (string) Port for Prometheus scraping
     prometheus.io/port: "9100"
+    # -- (string) Mark pod as safe to evict for cluster autoscaler
     cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+  # -- (object) Labels for node exporter pods
   podLabels:
+    # -- (string) KOTS application slug identifier
     kots.io/app-slug: settlemint-atk
 
 # https://github.com/grafana/helm-charts/blob/main/charts/tempo/values.yaml
 # -- (object) Tempo configuration
 tempo:
+  # -- (bool) Enable Tempo deployment
   enabled: true
+  # -- (string) String to fully override common.names.fullname
   fullnameOverride: tempo
+  # -- (object) Tempo server configuration
   tempo:
+    # -- (string) Tempo image repository
     repository: docker.io/grafana/tempo
+    # -- (list) Docker registry secret names as an array
     pullSecrets: []
+    # -- (bool) Enable usage reporting to Grafana Labs
     reportingEnabled: false
+    # -- (string) Trace retention period
     retention: 168h
+    # -- (object) Metrics generator configuration
     metricsGenerator:
+      # -- (bool) Enable metrics generator
       enabled: true
+      # -- (string) Remote write URL for generated metrics
       remoteWriteUrl: http://o11y-metrics:8428/api/v1/write
+    # -- (object) Per-tenant overrides configuration
     overrides:
+      # -- (object) Default overrides for all tenants
       defaults:
+        # -- (object) Ingestion configuration
         ingestion:
+          # -- (int) Maximum traces per user
           max_traces_per_user: 100000
+          # -- (int) Rate limit in bytes per second
           rate_limit_bytes: 30000000
+        # -- (object) Global configuration
         global:
+          # -- (int) Maximum bytes per trace
           max_bytes_per_trace: 20000000
+  # -- (object) Tempo query configuration
   tempoQuery:
+    # -- (string) Tempo query image repository
     repository: docker.io/grafana/tempo-query
+    # -- (list) Docker registry secret names as an array
     pullSecrets: []
+    # -- (object) Ingress configuration for Tempo query
     ingress:
+      # -- (bool) Enable ingress for Tempo query
       enabled: false
+      # -- (object) Ingress annotations
       annotations:
+        # -- (string) Authentication type for ingress
         nginx.ingress.kubernetes.io/auth-type: basic
+        # -- (string) Maximum allowed size of client request body
         nginx.ingress.kubernetes.io/proxy-body-size: "500m"
+        # -- (string) Timeout for reading a response from proxied server
         nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+        # -- (string) Timeout for transmitting a request to proxied server
         nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+        # -- (string) Buffer size for reading client request body
         nginx.ingress.kubernetes.io/client-body-buffer-size: "500m"
+      # -- (list) List of ingress hosts
       hosts:
+        # -- (string) Host name for Tempo query ingress
         - traces.k8s.orb.local
+      # -- (string) Ingress class name
       ingressClassName: atk-nginx
+      # -- (string) Path type for ingress rule
       pathType: Prefix
+  # -- (object) Persistent volume configuration
   persistence:
+    # -- (bool) Enable persistent volume for Tempo
     enabled: true
+    # -- (string) Size of persistent volume
     size: 10Gi
+  # -- (object) Security context for Tempo pods
   securityContext:
+    # -- (int) User ID to run as
     runAsUser: 65532
+    # -- (int) Group ID to run as
     runAsGroup: 65532
+    # -- (int) Filesystem group ID
     fsGroup: 65532
+    # -- (bool) Run as non-root user
     runAsNonRoot: true
+  # -- (object) Annotations for Tempo pods
   podAnnotations:
+    # -- (string) Enable Prometheus scraping
     prometheus.io/scrape: "true"
+    # -- (string) Port for Prometheus scraping
     prometheus.io/port: "3100"
+    # -- (string) Path for Prometheus metrics endpoint
     prometheus.io/path: /metrics
+  # -- (object) Labels for Tempo pods
   podLabels:
+    # -- (string) KOTS application slug identifier
     kots.io/app-slug: settlemint-atk

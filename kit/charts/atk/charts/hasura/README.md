@@ -116,6 +116,17 @@ A Helm chart for Hasura GraphQL Engine
 | ingress.pathType | string | `"Prefix"` | Ingress path type |
 | ingress.tls | list | `[]` | TLS configuration |
 | initContainers | list | `[{"command":["/usr/bin/wait-for-it","postgresql:5432","-t","120"],"image":"ghcr.io/settlemint/btp-waitforit:v7.7.10","imagePullPolicy":"IfNotPresent","name":"wait-for-postgresql","resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}}]` | Init containers |
+| initContainers[0] | string | `{"command":["/usr/bin/wait-for-it","postgresql:5432","-t","120"],"image":"ghcr.io/settlemint/btp-waitforit:v7.7.10","imagePullPolicy":"IfNotPresent","name":"wait-for-postgresql","resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}}` | Container name |
+| initContainers[0].command | list | `["/usr/bin/wait-for-it","postgresql:5432","-t","120"]` | Container command |
+| initContainers[0].image | string | `"ghcr.io/settlemint/btp-waitforit:v7.7.10"` | Container image |
+| initContainers[0].imagePullPolicy | string | `"IfNotPresent"` | Image pull policy |
+| initContainers[0].resources | object | `{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}` | Resource limits and requests |
+| initContainers[0].resources.limits | object | `{"cpu":"100m","memory":"64Mi"}` | Resource limits |
+| initContainers[0].resources.limits.cpu | string | `"100m"` | CPU limit |
+| initContainers[0].resources.limits.memory | string | `"64Mi"` | Memory limit |
+| initContainers[0].resources.requests | object | `{"cpu":"10m","memory":"32Mi"}` | Resource requests |
+| initContainers[0].resources.requests.cpu | string | `"10m"` | CPU request |
+| initContainers[0].resources.requests.memory | string | `"32Mi"` | Memory request |
 | jwtSecrets | object | `[]` | JWT secrets configuration |
 | labels | object | `{}` | Labels to add to all resources |
 | metadata | object | `{"databaseUrl":""}` | Metadata database configuration |
