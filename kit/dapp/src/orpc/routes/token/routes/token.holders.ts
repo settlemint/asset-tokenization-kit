@@ -1,6 +1,9 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenHoldersResponseSchema } from "@/orpc/routes/token/routes/token.holders.schema";
+import {
+  TokenHoldersGraphQLResponseSchema,
+  TokenHoldersResponseSchema,
+} from "@/orpc/routes/token/routes/token.holders.schema";
 
 /**
  * GraphQL query for retrieving token holders and their balances.
@@ -71,9 +74,16 @@ export const holders = tokenRouter.token.holders.handler(
       input: {
         id: context.token.id.toLowerCase(),
       },
-      output: TokenHoldersResponseSchema,
+      output: TokenHoldersGraphQLResponseSchema,
     });
 
-    return response;
+    // Calculate total count from the balances array
+    const totalCount = response.token?.balances?.length ?? 0;
+
+    // Return the response with total count
+    return TokenHoldersResponseSchema.parse({
+      token: response.token,
+      totalCount,
+    });
   }
 );

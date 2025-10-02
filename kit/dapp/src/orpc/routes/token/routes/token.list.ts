@@ -1,7 +1,10 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { systemRouter } from "@/orpc/procedures/system.router";
 // TokensResponseSchema kept for reference; using permissive schema for nested claims extraction
-import { TokenListSchema } from "@/orpc/routes/token/routes/token.list.schema";
+import {
+  TokenListResponseSchema,
+  TokenListSchema,
+} from "@/orpc/routes/token/routes/token.list.schema";
 import { z } from "zod";
 
 /**
@@ -205,6 +208,13 @@ export const list = systemRouter.token.list.handler(
       };
     });
 
-    return TokenListSchema.parse(tokensWithClaims);
+    // Parse and validate the tokens
+    const parsedTokens = TokenListSchema.parse(tokensWithClaims);
+
+    // Return the response with tokens and total count
+    return TokenListResponseSchema.parse({
+      tokens: parsedTokens,
+      totalCount: parsedTokens.length,
+    });
   }
 );

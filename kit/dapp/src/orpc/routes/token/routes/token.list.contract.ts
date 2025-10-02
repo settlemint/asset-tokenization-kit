@@ -1,7 +1,7 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import {
   TokenListInputSchema,
-  TokenListSchema,
+  TokenListResponseSchema,
 } from "@/orpc/routes/token/routes/token.list.schema";
 
 export const tokenListContract = baseContract
@@ -13,4 +13,4 @@ export const tokenListContract = baseContract
     tags: ["token"],
   })
   .input(TokenListInputSchema)
-  .output(TokenListSchema);
+  .output(TokenListResponseSchema);

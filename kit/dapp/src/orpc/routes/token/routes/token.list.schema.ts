@@ -213,6 +213,20 @@ export const TokenListInputSchema = ListSchema.extend({
 });
 
 /**
+ * Schema for validating the token list response with total count.
+ *
+ * This schema wraps the token list with metadata including the total count
+ * to support proper pagination UI display. The total count represents the
+ * complete number of tokens available, regardless of pagination.
+ */
+export const TokenListResponseSchema = z.object({
+  /** Array of tokens for the current page */
+  tokens: TokenListSchema,
+  /** Total number of tokens available across all pages */
+  totalCount: z.number().int().nonnegative(),
+});
+
+/**
  * Type exports for enhanced TypeScript integration across the application.
  *
  * Why we export these specific types:
@@ -233,3 +247,6 @@ export type TokenList = z.infer<typeof TokenListSchema>;
 
 /** GraphQL response structure from TheGraph token queries */
 export type TokensResponse = z.infer<typeof TokensResponseSchema>;
+
+/** Response structure with tokens and total count for pagination */
+export type TokenListResponse = z.infer<typeof TokenListResponseSchema>;
