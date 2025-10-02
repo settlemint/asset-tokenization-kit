@@ -1,7 +1,7 @@
 import { client, orpc } from "@/orpc/orpc-client";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { getAddress } from "viem";
 
 export type AddressSearchScope = "user" | "asset" | "all";
@@ -64,30 +64,52 @@ export function useSearchAddresses({
   );
 
   // Collect unique, checksummed user wallets so each identity lookup runs at most once
-  const userWallets = useMemo(() => {
-    if (!shouldFilterUsersByIdentity) {
-      return [] as EthereumAddress[];
-    }
+  const userWalletCacheRef = useRef<{
+    wallets: EthereumAddress[];
+    signature: string;
+  }>({ wallets: [], signature: "" });
 
-    return [
-      ...new Set(
-        (users.map((user) => user.wallet).filter(Boolean) as EthereumAddress[])
-          .map((wallet) => {
-            try {
-              return getAddress(wallet);
-            } catch {
-              return null;
-            }
-          })
-          .filter((wallet): wallet is EthereumAddress => wallet !== null)
-      ),
-    ];
-  }, [shouldFilterUsersByIdentity, users]);
+  const { wallets: userWallets, signature: userWalletSignature } =
+    useMemo(() => {
+      if (!shouldFilterUsersByIdentity) {
+        if (userWalletCacheRef.current.signature !== "") {
+          userWalletCacheRef.current = { wallets: [], signature: "" };
+        }
+        return userWalletCacheRef.current;
+      }
+
+      const normalizedWallets = users.flatMap<EthereumAddress>((user) => {
+        if (!user.wallet) {
+          return [];
+        }
+
+        try {
+          return [getAddress(user.wallet)];
+        } catch {
+          return [];
+        }
+      });
+
+      const uniqueWallets = [...new Set(normalizedWallets)].toSorted();
+      const signature = uniqueWallets.join("|");
+
+      if (userWalletCacheRef.current.signature === signature) {
+        return userWalletCacheRef.current;
+      }
+
+      const next = { wallets: uniqueWallets, signature };
+      userWalletCacheRef.current = next;
+      return next;
+    }, [shouldFilterUsersByIdentity, users]);
 
   // Confirm the selected wallets actually have identities before exposing them in selectors
   const { data: walletsWithIdentityData, isLoading: isLoadingUserIdentities } =
     useQuery({
-      queryKey: ["address-search", "wallets-with-identity", userWallets],
+      queryKey: [
+        "address-search",
+        "wallets-with-identity",
+        userWalletSignature,
+      ],
       enabled: shouldFilterUsersByIdentity && userWallets.length > 0,
       staleTime: 60_000,
       queryFn: async () => {
@@ -109,7 +131,7 @@ export function useSearchAddresses({
     });
 
   const walletsWithIdentity = useMemo(() => {
-    return walletsWithIdentityData ?? null;
+    return walletsWithIdentityData ?? new Set<EthereumAddress>();
   }, [walletsWithIdentityData]);
 
   const searchResults = useMemo(() => {
@@ -123,7 +145,7 @@ export function useSearchAddresses({
         try {
           const validAddress = getAddress(user.wallet);
           if (shouldFilterUsersByIdentity) {
-            if (!walletsWithIdentity) {
+            if (isLoadingUserIdentities && walletsWithIdentity.size === 0) {
               return;
             }
 
@@ -152,7 +174,14 @@ export function useSearchAddresses({
     }
 
     return addresses;
-  }, [users, assets, scope, shouldFilterUsersByIdentity, walletsWithIdentity]);
+  }, [
+    users,
+    assets,
+    scope,
+    shouldFilterUsersByIdentity,
+    walletsWithIdentity,
+    isLoadingUserIdentities,
+  ]);
 
   return {
     searchResults,

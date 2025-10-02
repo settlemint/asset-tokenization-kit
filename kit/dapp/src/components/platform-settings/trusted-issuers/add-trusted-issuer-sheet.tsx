@@ -20,20 +20,34 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import { useStore } from "@tanstack/react-form";
+import { useStore, formOptions } from "@tanstack/react-form";
 import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 
 interface AddTrustedIssuerSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-/**
- * Sheet component for adding new trusted issuers
- * Allows administrators to select existing users and assign them as trusted issuers with selected topics
- */
+type AddTrustedIssuerFormValues = {
+  issuerAddress?: EthereumAddress;
+  claimTopicIds: string[];
+  walletVerification: UserVerification;
+};
+
+const addTrustedIssuerFormOptions = formOptions({
+  defaultValues: {
+    issuerAddress: undefined,
+    claimTopicIds: [] as string[],
+    walletVerification: {
+      secretVerificationCode: "",
+      verificationType: "PINCODE" as const,
+    },
+  } as AddTrustedIssuerFormValues,
+});
+
 export function AddTrustedIssuerSheet({
   open,
   onOpenChange,
@@ -60,18 +74,17 @@ export function AddTrustedIssuerSheet({
   });
 
   const form = useAppForm({
-    defaultValues: {
-      issuerAddress: undefined as unknown as `0x${string}`,
-      claimTopicIds: [] as string[],
-      walletVerification: {
-        secretVerificationCode: "",
-        verificationType: "PINCODE" as const,
-      } as UserVerification,
-    },
+    ...addTrustedIssuerFormOptions,
     onSubmit: ({ value }) => {
-      const promise = async () => {
+      const formValue = value;
+
+      const action = (async () => {
+        if (!formValue.issuerAddress) {
+          throw new Error("Issuer address is required before submission");
+        }
+
         const trustedIssuerIdentity = await client.system.identity.read({
-          wallet: value.issuerAddress,
+          wallet: formValue.issuerAddress,
         });
         if (!trustedIssuerIdentity) {
           throw new Error("Trusted issuer identity not found");
@@ -79,12 +92,12 @@ export function AddTrustedIssuerSheet({
 
         return createMutation.mutateAsync({
           issuerAddress: trustedIssuerIdentity.id,
-          claimTopicIds: value.claimTopicIds,
-          walletVerification: value.walletVerification,
+          claimTopicIds: formValue.claimTopicIds,
+          walletVerification: formValue.walletVerification,
         });
-      };
+      })();
 
-      toast.promise(promise, {
+      return toast.promise(action, {
         loading: t("common:saving"),
         success: t("trustedIssuers.toast.added"),
         error: (data) => t("common:error", { message: data.message }),
@@ -109,6 +122,16 @@ export function AddTrustedIssuerSheet({
     form.store,
     (state) => state.values.claimTopicIds.length
   );
+
+  const validateClaimTopicsSelection = (
+    topics: string[],
+    issuer?: EthereumAddress
+  ) => {
+    if (issuer && topics.length === 0) {
+      return t("trustedIssuers.add.fields.claimTopics.validation.required");
+    }
+    return undefined;
+  };
 
   useEffect(() => {
     if (!issuerAddress && selectedTopicsCount > 0) {
@@ -167,29 +190,24 @@ export function AddTrustedIssuerSheet({
               <form.AppField
                 name="claimTopicIds"
                 validators={{
-                  onChange: ({ value }) => {
-                    if (!form.state.values.issuerAddress) {
-                      return undefined;
-                    }
-
-                    if (value.length === 0) {
-                      return t(
-                        "trustedIssuers.add.fields.claimTopics.validation.required"
-                      );
-                    }
-                    return undefined;
-                  },
-                  onSubmit: ({ value }) => {
-                    if (value.length === 0) {
-                      return t(
-                        "trustedIssuers.add.fields.claimTopics.validation.required"
-                      );
-                    }
-                    return undefined;
-                  },
+                  onChange: ({ value }) =>
+                    validateClaimTopicsSelection(
+                      value,
+                      form.getFieldValue("issuerAddress") as
+                        | EthereumAddress
+                        | undefined
+                    ),
+                  onSubmit: ({ value }) =>
+                    validateClaimTopicsSelection(
+                      value,
+                      form.getFieldValue("issuerAddress") as
+                        | EthereumAddress
+                        | undefined
+                    ),
                 }}
                 children={(field) => {
                   const canSelectTopics = Boolean(issuerAddress);
+                  const selectedTopicIds = field.state.value;
 
                   return (
                     <div className="space-y-2">
@@ -197,8 +215,15 @@ export function AddTrustedIssuerSheet({
                         {t("trustedIssuers.add.fields.claimTopics.label")}
                         <span className="text-destructive ml-1">*</span>
                       </Label>
+                      {!canSelectTopics && (
+                        <p className="text-xs text-muted-foreground">
+                          {t(
+                            "trustedIssuers.add.fields.claimTopics.helperIssuerMissing"
+                          )}
+                        </p>
+                      )}
                       <MultipleSelector
-                        value={field.state.value.map((id: string) => ({
+                        value={selectedTopicIds.map((id: string) => ({
                           value: id,
                           label: topicLookup.get(id) || id,
                         }))}
@@ -257,9 +282,7 @@ export function AddTrustedIssuerSheet({
                     form.setFieldValue("walletVerification", verification);
                   },
                 }}
-                disabled={
-                  !form.state.values.issuerAddress || createMutation.isPending
-                }
+                disabled={!issuerAddress || createMutation.isPending}
               >
                 {createMutation.isPending
                   ? t("trustedIssuers.add.actions.adding")

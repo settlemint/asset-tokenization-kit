@@ -140,6 +140,7 @@
         "claimTopics": {
           "label": "Claim topics",
           "description": "Select the topics this issuer can verify. At least one topic must be selected.",
+          "helperIssuerMissing": "Select an issuer before choosing claim topics.",
           "placeholder": "Select topics...",
           "empty": "No topics available",
           "validation": {
