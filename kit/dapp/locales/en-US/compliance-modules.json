@@ -39,10 +39,10 @@
           "Use groups to bundle parts of the rule for more advanced logic."
         ],
         "examplesTitle": "Examples",
-        "examples": {
-          "micaStandard": "MiCA / EU: (KYC AND AML) AND (PROFESSIONAL_INVESTOR OR ACCREDITED_INVESTOR)",
-          "micaContract": "MiCA / EU (allowing all contracts like tokens, vaults, ...): CONTRACT OR ((KYC AND AML) AND (PROFESSIONAL_INVESTOR OR ACCREDITED_INVESTOR))"
-        }
+        "examples": [
+          "MiCA / EU: (KYC AND AML) AND (PROFESSIONAL_INVESTOR OR ACCREDITED_INVESTOR)",
+          "MiCA / EU (allowing all contracts like tokens, vaults, ...): CONTRACT OR ((KYC AND AML) AND (PROFESSIONAL_INVESTOR OR ACCREDITED_INVESTOR))"
+        ]
       }
     }
   },

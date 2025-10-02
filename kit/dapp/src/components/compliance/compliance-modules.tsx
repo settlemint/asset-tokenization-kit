@@ -18,7 +18,7 @@ interface ComplianceModulesProps {
   onEnable: (modulePair: ComplianceModulePairInput) => void;
 
   onDisable: (modulePair: ComplianceModulePairInput) => void;
-  onModuleSelect?: (
+  onActiveModuleChange?: (
     activeModule: {
       typeId: ComplianceTypeId;
       module: Address;
@@ -31,7 +31,7 @@ export function ComplianceModules({
   enabledModules,
   onEnable,
   onDisable,
-  onModuleSelect,
+  onActiveModuleChange,
 }: ComplianceModulesProps) {
   const { t } = useTranslation(["compliance-modules", "form"]);
   const [activeModule, setActiveModule] = useState<{
@@ -49,7 +49,7 @@ export function ComplianceModules({
         onDisable={onDisable}
         onClose={() => {
           setActiveModule(null);
-          onModuleSelect?.(null);
+          onActiveModuleChange?.(null);
         }}
       />
     );
@@ -84,7 +84,7 @@ export function ComplianceModules({
                   typeId,
                   module: getAddress(module.module),
                 });
-                onModuleSelect?.({
+                onActiveModuleChange?.({
                   typeId,
                   module: getAddress(module.module),
                 });
@@ -115,7 +115,7 @@ export function ComplianceModules({
                   typeId,
                   module: module.id,
                 });
-                onModuleSelect?.({
+                onActiveModuleChange?.({
                   typeId,
                   module: module.id,
                 });

@@ -93,8 +93,9 @@ export function ExpressionBuilder({
               <p>{helperCopy.examplesTitle}</p>
               <div className="space-y-2">
                 <ul className="mt-2 space-y-1 list-disc pl-5">
-                  <li>{helperCopy.examples.micaStandard}</li>
-                  <li>{helperCopy.examples.micaContract}</li>
+                  {helperCopy.examples.map((example) => (
+                    <li key={example}>{example}</li>
+                  ))}
                 </ul>
               </div>
             </div>

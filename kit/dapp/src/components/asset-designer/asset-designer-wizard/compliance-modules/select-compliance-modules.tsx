@@ -69,12 +69,8 @@ export const SelectComplianceModules = withForm({
           enabledModules={initialModulePairs}
           onEnable={addModulePair}
           onDisable={removeModulePair}
-          onModuleSelect={(activeModule) => {
-            if (activeModule) {
-              setShowFormStepActions(false);
-            } else {
-              setShowFormStepActions(true);
-            }
+          onActiveModuleChange={(activeModule) => {
+            setShowFormStepActions(!activeModule);
           }}
         />
       </FormStepLayout>
