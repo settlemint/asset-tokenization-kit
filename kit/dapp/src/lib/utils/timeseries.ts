@@ -265,10 +265,8 @@ function aggregateData<T extends DataPoint>(
         },
         {} as Record<keyof T, number>
       );
-    default: {
-      const _exhaustiveCheck: never = aggregation;
+    default:
       throw new Error("Unsupported aggregation type");
-    }
   }
 }
 
