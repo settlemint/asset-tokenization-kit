@@ -2,27 +2,27 @@
   "modules": {
     "AddressBlockListComplianceModule": {
       "description": "Block specific wallet addresses from accessing your asset. Prevents sanctioned or problematic addresses from participating.",
-      "shortDescription": "Block specific wallet addresses",
+      "shortDescription": "Block specific wallet addresses from accessing your asset",
       "title": "Block addresses"
     },
     "CountryAllowListComplianceModule": {
-      "description": "Allow investors only from specific countries. Helps meet regional compliance requirements.",
-      "shortDescription": "Allow specific countries only",
+      "description": "Allow investors from specific countries to access your asset. Helps meet regional compliance requirements.",
+      "shortDescription": "Allow investors from specific countries to access your asset",
       "title": "Country allowlist"
     },
     "CountryBlockListComplianceModule": {
-      "description": "Block investors from specific countries or regions. Helps comply with sanctions and regulatory restrictions.",
-      "shortDescription": "Block specific countries",
+      "description": "Block investors from specific countries from accessing your asset. Helps comply with sanctions and regulatory restrictions.",
+      "shortDescription": "Block investors from specific countries from accessing your asset",
       "title": "Country blocklist"
     },
     "IdentityAllowListComplianceModule": {
       "description": "Allow only verified identities from your approved list. Works well for exclusive offerings and private sales.",
-      "shortDescription": "Allow approved identities only",
+      "shortDescription": "Allow approved identities to access your asset",
       "title": "Identity allowlist"
     },
     "IdentityBlockListComplianceModule": {
       "description": "Block specific verified identities from accessing your asset. Remove problematic investors while staying compliant.",
-      "shortDescription": "Block specific identities",
+      "shortDescription": "Block specific identities from accessing your asset",
       "title": "Identity blocklist"
     },
     "SMARTIdentityVerificationComplianceModule": {
