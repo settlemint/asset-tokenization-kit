@@ -20,7 +20,8 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useStore } from "@tanstack/react-form";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -60,7 +61,7 @@ export function AddTrustedIssuerSheet({
 
   const form = useAppForm({
     defaultValues: {
-      issuerAddress: "0x" as `0x${string}`,
+      issuerAddress: undefined as unknown as `0x${string}`,
       claimTopicIds: [] as string[],
       walletVerification: {
         secretVerificationCode: "",
@@ -100,6 +101,21 @@ export function AddTrustedIssuerSheet({
     void form.handleSubmit();
   };
 
+  const issuerAddress = useStore(
+    form.store,
+    (state) => state.values.issuerAddress
+  );
+  const selectedTopicsCount = useStore(
+    form.store,
+    (state) => state.values.claimTopicIds.length
+  );
+
+  useEffect(() => {
+    if (!issuerAddress && selectedTopicsCount > 0) {
+      form.setFieldValue("claimTopicIds", []);
+    }
+  }, [issuerAddress, selectedTopicsCount, form]);
+
   // Create a lookup map for O(1) topic retrieval and options
   const { topicLookup, topicOptions } = useMemo(() => {
     const lookup = new Map(topics.map((topic) => [topic.topicId, topic.name]));
@@ -124,6 +140,7 @@ export function AddTrustedIssuerSheet({
           <form.AppForm>
             <div className="space-y-6">
               <AddressSelectOrInputToggle
+                allowManual={false}
                 children={({ mode }) => (
                   <>
                     {mode === "select" && (
@@ -143,30 +160,38 @@ export function AddTrustedIssuerSheet({
                         )}
                       />
                     )}
-                    {mode === "manual" && (
-                      <form.AppField
-                        name="issuerAddress"
-                        children={(field) => (
-                          <field.AddressInputField
-                            label={t(
-                              "trustedIssuers.add.fields.selectUser.label"
-                            )}
-                            required={true}
-                            description={t(
-                              "trustedIssuers.add.fields.selectUser.description"
-                            )}
-                          />
-                        )}
-                      />
-                    )}
                   </>
                 )}
               />
 
-              {form.state.values.issuerAddress && (
-                <form.AppField
-                  name="claimTopicIds"
-                  children={(field) => (
+              <form.AppField
+                name="claimTopicIds"
+                validators={{
+                  onChange: ({ value }) => {
+                    if (!form.state.values.issuerAddress) {
+                      return undefined;
+                    }
+
+                    if (value.length === 0) {
+                      return t(
+                        "trustedIssuers.add.fields.claimTopics.validation.required"
+                      );
+                    }
+                    return undefined;
+                  },
+                  onSubmit: ({ value }) => {
+                    if (value.length === 0) {
+                      return t(
+                        "trustedIssuers.add.fields.claimTopics.validation.required"
+                      );
+                    }
+                    return undefined;
+                  },
+                }}
+                children={(field) => {
+                  const canSelectTopics = Boolean(issuerAddress);
+
+                  return (
                     <div className="space-y-2">
                       <Label htmlFor="claimTopicIds">
                         {t("trustedIssuers.add.fields.claimTopics.label")}
@@ -198,6 +223,7 @@ export function AddTrustedIssuerSheet({
                             )
                           );
                         }}
+                        disabled={!canSelectTopics}
                       />
                       <p className="text-xs text-muted-foreground">
                         {t("trustedIssuers.add.fields.claimTopics.description")}
@@ -208,9 +234,9 @@ export function AddTrustedIssuerSheet({
                         </p>
                       )}
                     </div>
-                  )}
-                />
-              )}
+                  );
+                }}
+              />
             </div>
 
             <SheetFooter className="mt-8">

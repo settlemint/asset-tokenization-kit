@@ -141,7 +141,10 @@
           "label": "Claim topics",
           "description": "Select the topics this issuer can verify. At least one topic must be selected.",
           "placeholder": "Select topics...",
-          "empty": "No topics available"
+          "empty": "No topics available",
+          "validation": {
+            "required": "Select at least one claim topic."
+          }
         }
       },
       "selectedUser": {

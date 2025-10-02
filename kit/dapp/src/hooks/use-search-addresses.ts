@@ -1,4 +1,4 @@
-import { orpc } from "@/orpc/orpc-client";
+import { client, orpc } from "@/orpc/orpc-client";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -16,12 +16,23 @@ export interface UseSearchAddressesReturn {
   isLoading: boolean;
 }
 
+/**
+ * Headless address search adapted for the address selectors.
+ *
+ * - `scope="user"` surfaces user wallets but only if they already have a linked identity.
+ * - `scope="asset"` lists token contract addresses.
+ * - `scope="all"` combines both sets.
+ *
+ * Returning only identity-backed wallets keeps the Add Trusted Issuer flow from
+ * presenting accounts that cannot be promoted.
+ */
 export function useSearchAddresses({
   searchTerm,
   scope,
 }: UseSearchAddressesOptions): UseSearchAddressesReturn {
   const shouldSearchUsers = scope === "user" || scope === "all";
   const shouldSearchAssets = scope === "asset" || scope === "all";
+  const shouldFilterUsersByIdentity = shouldSearchUsers;
 
   // Query for users - use search API for all queries
   const { data: users = [], isLoading: isLoadingUsers } = useQuery(
@@ -52,6 +63,55 @@ export function useSearchAddresses({
         })
   );
 
+  // Collect unique, checksummed user wallets so each identity lookup runs at most once
+  const userWallets = useMemo(() => {
+    if (!shouldFilterUsersByIdentity) {
+      return [] as EthereumAddress[];
+    }
+
+    return [
+      ...new Set(
+        (users.map((user) => user.wallet).filter(Boolean) as EthereumAddress[])
+          .map((wallet) => {
+            try {
+              return getAddress(wallet);
+            } catch {
+              return null;
+            }
+          })
+          .filter((wallet): wallet is EthereumAddress => wallet !== null)
+      ),
+    ];
+  }, [shouldFilterUsersByIdentity, users]);
+
+  // Confirm the selected wallets actually have identities before exposing them in selectors
+  const { data: walletsWithIdentityData, isLoading: isLoadingUserIdentities } =
+    useQuery({
+      queryKey: ["address-search", "wallets-with-identity", userWallets],
+      enabled: shouldFilterUsersByIdentity && userWallets.length > 0,
+      staleTime: 60_000,
+      queryFn: async () => {
+        const results = await Promise.all(
+          userWallets.map(async (wallet) => {
+            try {
+              await client.system.identity.read({ wallet });
+              return wallet;
+            } catch {
+              return null;
+            }
+          })
+        );
+
+        return new Set<EthereumAddress>(
+          results.filter((wallet): wallet is EthereumAddress => wallet !== null)
+        );
+      },
+    });
+
+  const walletsWithIdentity = useMemo(() => {
+    return walletsWithIdentityData ?? null;
+  }, [walletsWithIdentityData]);
+
   const searchResults = useMemo(() => {
     const addresses: EthereumAddress[] = [];
 
@@ -62,6 +122,15 @@ export function useSearchAddresses({
 
         try {
           const validAddress = getAddress(user.wallet);
+          if (shouldFilterUsersByIdentity) {
+            if (!walletsWithIdentity) {
+              return;
+            }
+
+            if (!walletsWithIdentity.has(validAddress)) {
+              return;
+            }
+          }
           addresses.push(validAddress);
         } catch {
           // Invalid address format, skip
@@ -83,10 +152,10 @@ export function useSearchAddresses({
     }
 
     return addresses;
-  }, [users, assets, scope]);
+  }, [users, assets, scope, shouldFilterUsersByIdentity, walletsWithIdentity]);
 
   return {
     searchResults,
-    isLoading: isLoadingUsers || isLoadingAssets,
+    isLoading: isLoadingUsers || isLoadingAssets || isLoadingUserIdentities,
   };
 }
