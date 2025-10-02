@@ -11,6 +11,9 @@ dependencies:
 - name: erpc
   repository: ""
   version: 2.0.0-alpha.15
+- name: ipfs
+  repository: ""
+  version: 2.0.0-alpha.15
 - name: blockscout
   repository: ""
   version: 2.0.0-alpha.15
@@ -29,5 +32,5 @@ dependencies:
 - name: dapp
   repository: ""
   version: 2.0.0-alpha.15
-digest: sha256:ec28f84833553881f4c859ded3ddb68a8cc2831d97c812938044a4b259b3f81f
-generated: "2025-10-01T15:46:13.015687+02:00"
+digest: sha256:a043f185795b4fa1d5f9e12caafb94bd6df7a8b8b93e572d8e520e0145370f25
+generated: "2025-10-02T18:15:13.437262+02:00"

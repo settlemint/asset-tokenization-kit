@@ -22,6 +22,9 @@ dependencies:
   - name: erpc
     version: 2.0.0-alpha.15
     condition: erpc.enabled
+  - name: ipfs
+    version: 2.0.0-alpha.15
+    condition: ipfs.enabled
   - name: blockscout
     version: 2.0.0-alpha.15
     condition: blockscout.enabled

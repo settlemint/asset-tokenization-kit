@@ -15,7 +15,7 @@ global:
   labels: {}
 
 # -- (string) Override for generated full name
-fullnameOverride: ipfs-cluster
+fullnameOverride: ipfs
 
 # -- (string) Override for chart name
 nameOverride: ""
@@ -442,123 +442,82 @@ ipfs:
 # -- (object) Ingress configuration for the cluster REST API
 ingress:
   # -- (bool) Enable HTTP ingress for the cluster REST API
-  enabled: false
+  enabled: true
   # -- (string) Ingress class name
-  className: ""
-  # -- (object) Ingress annotations
-  annotations: {}
+  className: "atk-nginx"
   # -- (object) Hostnames mapped to path groups
   hostnames:
     api: ipfs-cluster.k8s.orb.local
-    gateway: ipfs-gateway.k8s.orb.local
   # -- (object) Path groups rendered for each hostname key
   pathGroups:
     api:
-      - path: /cluster(/|$)(.*)
+      # Mirror pulumi ipfs.resource.ts ingress paths (no ingressRegex prefix, webui omitted)
+      - path: '/?(api/((.*[^/])?)?)'
+        pathType: ImplementationSpecific
+        service:
+          target: cluster
+          port: proxy
+      - path: '/?cluster/(((.*[^/])?)?)'
         pathType: ImplementationSpecific
         service:
           target: cluster
           port: api
-      - path: /proxy(/|$)(.*)
-        pathType: ImplementationSpecific
-        service:
-          target: cluster
-          port: proxy
-      - path: /api(/|$)(.*)
-        pathType: ImplementationSpecific
-        service:
-          target: cluster
-          port: proxy
-      - path: /pinning(/|$)(.*)
+      - path: '/?pinning/(((.*[^/])?)?)'
         pathType: ImplementationSpecific
         service:
           target: cluster
           port: pinning
-      - path: /webui(/|$)(.*)
+      - path: '/?ws/(((.*[^/])?)?)'
         pathType: ImplementationSpecific
-        service:
-          target: cluster
-          port: proxy
-      - path: /gateway(/|$)(.*)
-        pathType: ImplementationSpecific
-        service:
-          target: cluster
-          port: proxy
-      - path: /ws(/|$)(.*)
-        pathType: ImplementationSpecific
-        service:
-          target: cluster
-          port: proxy
-      - path: /metrics(/|$)(.*)
-        pathType: ImplementationSpecific
-        service:
-          target: cluster
-          port: metrics
-    gateway:
-      - path: /
-        pathType: Prefix
         service:
           target: ipfs
-          port: gateway
+          port: ws
   # -- (list) TLS configuration for the ingress
   tls: []
 
 # -- (object) OpenShift route configuration
 openShiftRoute:
-  # -- (bool) Enable an OpenShift Route instead of ingress
+  # -- (bool) Enable OpenShift Routes instead of ingress
   enabled: false
-  # -- (object) Additional annotations for all routes
+  # -- (string) Global host applied to every rendered Route (per-route host overrides are optional)
+  host: ipfs-cluster.k8s.orb.local
+  # -- (object) Additional annotations merged into every Route
   annotations: {}
-  # -- (object) TLS configuration applied when host entries are used
+  # -- (object) TLS configuration applied when TLS is desired
   tls: null
-  # -- (string) Wildcard policy for generated routes
+  # -- (string) Wildcard policy used when a Route does not override it
   wildcardPolicy: None
-  # -- (object) API route configuration (set host to enable)
-  api:
-    host: ipfs-cluster.k8s.orb.local
-    path: /cluster
-    service:
-      target: cluster
-      port: api
-  # -- (object) Gateway route configuration (set host to enable)
-  gateway:
-    host: ipfs-gateway.k8s.orb.local
-    path: /
-    service:
-      target: ipfs
-      port: gateway
-  # -- (list) Additional custom routes
-  extraRoutes:
-    - name: ipfs-cluster-proxy
-      host: ipfs-cluster.k8s.orb.local
-      path: /proxy
+  # -- (object) Route entries keyed by logical name; set enabled: false to skip a route
+  routes:
+    cluster:
+      enabled: true
+      nameSuffix: cluster
+      path: '/?cluster/(((.*[^/])?)?)'
+      service:
+        target: cluster
+        port: api
+    api:
+      enabled: true
+      nameSuffix: api
+      # Mirror Ingress configuration (no ingressRegex prefix)
+      path: '/?(api/((.*[^/])?)?)'
       service:
         target: cluster
         port: proxy
-    - name: ipfs-cluster-api
-      host: ipfs-cluster.k8s.orb.local
-      path: /api
-      service:
-        target: cluster
-        port: proxy
-    - name: ipfs-cluster-pinning
-      host: ipfs-cluster.k8s.orb.local
-      path: /pinning
+    pinning:
+      enabled: true
+      nameSuffix: pinning
+      path: '/?pinning/(((.*[^/])?)?)'
       service:
         target: cluster
         port: pinning
-    - name: ipfs-cluster-webui
-      host: ipfs-cluster.k8s.orb.local
-      path: /webui
+    ws:
+      enabled: true
+      nameSuffix: ws
+      path: '/?ws/(((.*[^/])?)?)'
       service:
-        target: cluster
-        port: proxy
-    - name: ipfs-cluster-ws
-      host: ipfs-cluster.k8s.orb.local
-      path: /ws
-      service:
-        target: cluster
-        port: proxy
+        target: ipfs
+        port: ws
 
 # -- (object) Test hook image configuration
 tests:

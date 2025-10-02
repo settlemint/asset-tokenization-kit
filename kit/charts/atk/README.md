@@ -142,6 +142,13 @@ The following table lists the configurable parameters of this chart and their de
 | hasura.image.repository | string | `"hasura/graphql-engine"` |  |
 | hasura.image.tag | string | `"v2.48.6"` |  |
 | hasura.ingress.hostName | string | `"hasura.k8s.orb.local"` |  |
+| ipfs.cluster.image.registry | string | `"docker.io"` |  |
+| ipfs.enabled | bool | `true` |  |
+| ipfs.ingress.hostnames.api | string | `"ipfs-cluster.k8s.orb.local"` |  |
+| ipfs.ipfs.config.api.httpHeaders.accessControlAllowOrigin[0] | string | `"https://ipfs-cluster.k8s.orb.local"` |  |
+| ipfs.ipfs.config.api.httpHeaders.accessControlAllowOrigin[1] | string | `"http://ipfs-cluster.k8s.orb.local"` |  |
+| ipfs.ipfs.image.registry | string | `"docker.io"` |  |
+| ipfs.tests.image.registry | string | `"docker.io"` |  |
 | network.enabled | bool | `true` |  |
 | network.network-bootstrapper.artifacts.predeployed.image.registry | string | `"ghcr.io"` |  |
 | network.network-bootstrapper.image.repository | string | `"ghcr.io/settlemint/network-bootstrapper"` |  |
@@ -238,6 +245,7 @@ The following table lists the configurable parameters of this chart and their de
 |  | erpc | 2.0.0-alpha.15 |
 |  | graph-node | 2.0.0-alpha.15 |
 |  | hasura | 2.0.0-alpha.15 |
+|  | ipfs | 2.0.0-alpha.15 |
 |  | network | 2.0.0-alpha.15 |
 |  | observability | 2.0.0-alpha.15 |
 |  | portal | 2.0.0-alpha.15 |

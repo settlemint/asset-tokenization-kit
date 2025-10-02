@@ -179,6 +179,27 @@ hasura:
   ingress:
     hostName: hasura.k8s.orb.local
 
+ipfs:
+  enabled: true
+  cluster:
+    image:
+      registry: docker.io
+  ipfs:
+    image:
+      registry: docker.io
+    config:
+      api:
+        httpHeaders:
+          accessControlAllowOrigin:
+            - https://ipfs-cluster.k8s.orb.local
+            - http://ipfs-cluster.k8s.orb.local
+  ingress:
+    hostnames:
+      api: ipfs-cluster.k8s.orb.local
+  tests:
+    image:
+      registry: docker.io
+
 portal:
   enabled: true
   image:
