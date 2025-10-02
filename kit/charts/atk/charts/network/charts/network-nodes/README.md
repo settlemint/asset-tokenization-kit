@@ -1,6 +1,6 @@
 # network-nodes
 
-![Version: 2.0.0-alpha.15](https://img.shields.io/badge/Version-2.0.0--alpha.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.15](https://img.shields.io/badge/AppVersion-2.0.0--alpha.15-informational?style=flat-square)
+![Version: 2.0.0-alpha.17](https://img.shields.io/badge/Version-2.0.0--alpha.17-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.17](https://img.shields.io/badge/AppVersion-2.0.0--alpha.17-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -87,9 +87,9 @@ A Helm chart for Kubernetes
 | httpRoute.rules[0].matches[0].path | object | `{"type":"PathPrefix","value":"/headers"}` | Path matching condition for the request. |
 | httpRoute.rules[0].matches[0].path.type | string | `"PathPrefix"` | Path match type (Exact, PathPrefix, or RegularExpression). |
 | httpRoute.rules[0].matches[0].path.value | string | `"/headers"` | Path value used when evaluating the request URL. |
-| image | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/hyperledger/besu","tag":"25.9.0"}` | Container image configuration shared by validator and RPC pods. |
+| image | object | `{"pullPolicy":"IfNotPresent","repository":"harbor.settlemint.com/docker.io/hyperledger/besu","tag":"25.9.0"}` | Container image configuration shared by validator and RPC pods. |
 | image.pullPolicy | string | `"IfNotPresent"` | Kubernetes image pull policy for Besu containers. |
-| image.repository | string | `"docker.io/hyperledger/besu"` | OCI image repository hosting Hyperledger Besu. |
+| image.repository | string | `"harbor.settlemint.com/docker.io/hyperledger/besu"` | OCI image repository hosting Hyperledger Besu. |
 | image.tag | string | `"25.9.0"` | Specific Besu image tag to deploy. |
 | imagePullSecrets | list | `[]` | Image pull secrets granting registry access for the Besu image. |
 | ingress | object | `{"annotations":{},"className":"","enabled":false,"hosts":[{"host":"chart-example.local","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}],"tls":[]}` | Ingress configuration used to expose RPC services via Kubernetes Ingress resources. |
@@ -102,21 +102,21 @@ A Helm chart for Kubernetes
 | ingress.hosts[0].paths[0].path | string | `"/"` | URL path prefix. |
 | ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` | Path matching type (Exact, Prefix, or ImplementationSpecific). |
 | ingress.tls | list | `[]` | TLS configuration for Ingress hosts. |
-| initContainer | object | `{"compileGenesis":{"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/network-bootstrapper","tag":"1.2.3"},"outputPath":"","resources":{}},"tcpCheck":{"dependencies":[],"enabled":false,"image":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}},"timeout":120}}` | Init container configuration shared across validator and RPC workloads. |
-| initContainer.compileGenesis | object | `{"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/network-bootstrapper","tag":"1.2.3"},"outputPath":"","resources":{}}` | Compile-genesis init container configuration for merging allocation ConfigMaps. |
+| initContainer | object | `{"compileGenesis":{"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"harbor.settlemint.com/ghcr.io/settlemint/network-bootstrapper","tag":"1.2.3"},"outputPath":"","resources":{}},"tcpCheck":{"dependencies":[],"enabled":false,"image":{"pullPolicy":"IfNotPresent","repository":"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}},"timeout":120}}` | Init container configuration shared across validator and RPC workloads. |
+| initContainer.compileGenesis | object | `{"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"harbor.settlemint.com/ghcr.io/settlemint/network-bootstrapper","tag":"1.2.3"},"outputPath":"","resources":{}}` | Compile-genesis init container configuration for merging allocation ConfigMaps. |
 | initContainer.compileGenesis.enabled | bool | `true` | Enable the compile-genesis init container that merges allocation ConfigMaps into the runtime genesis file. |
-| initContainer.compileGenesis.image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/network-bootstrapper","tag":"1.2.3"}` | Container image configuration for the compile-genesis init container. |
+| initContainer.compileGenesis.image | object | `{"pullPolicy":"IfNotPresent","repository":"harbor.settlemint.com/ghcr.io/settlemint/network-bootstrapper","tag":"1.2.3"}` | Container image configuration for the compile-genesis init container. |
 | initContainer.compileGenesis.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy for the compile-genesis init container. |
-| initContainer.compileGenesis.image.repository | string | `"ghcr.io/settlemint/network-bootstrapper"` | OCI image hosting the network-bootstrapper CLI used for genesis compilation. |
+| initContainer.compileGenesis.image.repository | string | `"harbor.settlemint.com/ghcr.io/settlemint/network-bootstrapper"` | OCI image hosting the network-bootstrapper CLI used for genesis compilation. |
 | initContainer.compileGenesis.image.tag | string | `"1.2.3"` | Image tag for the network-bootstrapper CLI. |
 | initContainer.compileGenesis.outputPath | string | `""` | Filesystem path populated with the compiled genesis JSON. Leave empty to mirror config.genesisFile. |
 | initContainer.compileGenesis.resources | object | `{}` | Optional Kubernetes resource requests/limits for the compile-genesis init container. |
-| initContainer.tcpCheck | object | `{"dependencies":[],"enabled":false,"image":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}},"timeout":120}` | TCP check init container configuration for validating service dependencies. |
+| initContainer.tcpCheck | object | `{"dependencies":[],"enabled":false,"image":{"pullPolicy":"IfNotPresent","repository":"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}},"timeout":120}` | TCP check init container configuration for validating service dependencies. |
 | initContainer.tcpCheck.dependencies | list | `[]` | TCP dependencies expressed as name/endpoint pairs (host:port strings). |
 | initContainer.tcpCheck.enabled | bool | `false` | Enable a tcp-check init container before Besu pods start. |
-| initContainer.tcpCheck.image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"}` | Container image configuration for the tcp-check init container. |
+| initContainer.tcpCheck.image | object | `{"pullPolicy":"IfNotPresent","repository":"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"}` | Container image configuration for the tcp-check init container. |
 | initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy for the tcp-check init container. |
-| initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` | OCI image hosting the tcp-check utility. |
+| initContainer.tcpCheck.image.repository | string | `"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit"` | OCI image hosting the tcp-check utility. |
 | initContainer.tcpCheck.image.tag | string | `"v7.7.10"` | Image tag for the tcp-check utility. |
 | initContainer.tcpCheck.resources | object | `{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}` | Resource requests and limits for the tcp-check init container. |
 | initContainer.tcpCheck.resources.limits | object | `{"cpu":"100m","memory":"64Mi"}` | Maximum resource limits. |

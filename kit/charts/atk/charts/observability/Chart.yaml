@@ -2,8 +2,8 @@ apiVersion: v2
 name: observability
 description: A Helm chart for the observability components
 type: application
-version: 2.0.0-alpha.15
-appVersion: 2.0.0-alpha.15
+version: 2.0.0-alpha.17
+appVersion: 2.0.0-alpha.17
 icon: https://console.settlemint.com/android-chrome-512x512.png
 maintainers:
   - name: SettleMint

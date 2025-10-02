@@ -1,6 +1,6 @@
 # dapp
 
-![Version: 2.0.0-alpha.15](https://img.shields.io/badge/Version-2.0.0--alpha.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.15](https://img.shields.io/badge/AppVersion-2.0.0--alpha.15-informational?style=flat-square)
+![Version: 2.0.0-alpha.17](https://img.shields.io/badge/Version-2.0.0--alpha.17-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.17](https://img.shields.io/badge/AppVersion-2.0.0--alpha.17-informational?style=flat-square)
 
 A Helm chart for the ATK DApp frontend
 
@@ -21,9 +21,9 @@ A Helm chart for the ATK DApp frontend
 | global | object | `{"labels":{"kots.io/app-slug":"settlemint-atk"}}` | Global configuration values inherited from parent chart |
 | global.labels | object | `{"kots.io/app-slug":"settlemint-atk"}` | Global labels applied to all resources |
 | global.labels."kots.io/app-slug" | string | `"settlemint-atk"` | KOTS application slug identifier |
-| image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/asset-tokenization-kit","tag":""}` | dApp image configuration |
+| image | object | `{"pullPolicy":"IfNotPresent","repository":"harbor.settlemint.com/ghcr.io/settlemint/asset-tokenization-kit","tag":""}` | dApp image configuration |
 | image.pullPolicy | string | `"IfNotPresent"` | dApp image pull policy |
-| image.repository | string | `"ghcr.io/settlemint/asset-tokenization-kit"` | dApp image repository |
+| image.repository | string | `"harbor.settlemint.com/ghcr.io/settlemint/asset-tokenization-kit"` | dApp image repository |
 | image.tag | string | `""` | dApp image tag (defaults to chart appVersion) |
 | ingress | object | `{"annotations":{},"className":"atk-nginx","enabled":false,"hosts":[{"host":"dapp.local","paths":[{"path":"/((?:sm_|bpaas-)[^/]+)?/?(.*)","pathType":"ImplementationSpecific"}]}],"tls":[]}` | Ingress configuration |
 | ingress.annotations | object | `{}` | Additional annotations for the Ingress resource |
@@ -37,12 +37,12 @@ A Helm chart for the ATK DApp frontend
 | ingress.hosts[0].paths[0].path | string | `"/((?:sm_|bpaas-)[^/]+)?/?(.*)"` | URL path pattern matching original path structure |
 | ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` | Path type for Kubernetes ingress |
 | ingress.tls | list | `[]` | TLS configuration for the ingress |
-| initContainer | object | `{"graphQLCheck":{"enabled":true,"image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"curlimages/curl","tag":"8.16.0"},"name":"wait-for-graphql","query":"{ _meta { hasIndexingErrors block { number } } }","resources":{"limits":{"memory":"64Mi"},"requests":{"cpu":"10m","memory":"12Mi"}},"retries":10,"retryDelaySeconds":10,"url":"http://graph-node-combined:8000/subgraphs/name/kit"},"tcpCheck":{"dependencies":[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $) }}","name":"postgres"},{"endpoint":"hasura:8080","name":"hasura"},{"endpoint":"portal:3001","name":"portal"},{"endpoint":"graph-node-combined:8020","name":"graph-node"},{"endpoint":"blockscout-blockscout:80","name":"blockscout"}],"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"50m","memory":"32Mi"}},"timeout":120}}` | Init container configuration |
-| initContainer.graphQLCheck | object | `{"enabled":true,"image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"curlimages/curl","tag":"8.16.0"},"name":"wait-for-graphql","query":"{ _meta { hasIndexingErrors block { number } } }","resources":{"limits":{"memory":"64Mi"},"requests":{"cpu":"10m","memory":"12Mi"}},"retries":10,"retryDelaySeconds":10,"url":"http://graph-node-combined:8000/subgraphs/name/kit"}` | Specific check for GraphQL endpoint readiness (e.g., The Graph subgraph) |
+| initContainer | object | `{"graphQLCheck":{"enabled":true,"image":{"pullPolicy":"IfNotPresent","registry":"harbor.settlemint.com/docker.io","repository":"curlimages/curl","tag":"8.16.0"},"name":"wait-for-graphql","query":"{ _meta { hasIndexingErrors block { number } } }","resources":{"limits":{"memory":"64Mi"},"requests":{"cpu":"10m","memory":"12Mi"}},"retries":10,"retryDelaySeconds":10,"url":"http://graph-node-combined:8000/subgraphs/name/kit"},"tcpCheck":{"dependencies":[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $) }}","name":"postgres"},{"endpoint":"hasura:8080","name":"hasura"},{"endpoint":"portal:3001","name":"portal"},{"endpoint":"graph-node-combined:8020","name":"graph-node"},{"endpoint":"blockscout-blockscout:80","name":"blockscout"}],"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"50m","memory":"32Mi"}},"timeout":120}}` | Init container configuration |
+| initContainer.graphQLCheck | object | `{"enabled":true,"image":{"pullPolicy":"IfNotPresent","registry":"harbor.settlemint.com/docker.io","repository":"curlimages/curl","tag":"8.16.0"},"name":"wait-for-graphql","query":"{ _meta { hasIndexingErrors block { number } } }","resources":{"limits":{"memory":"64Mi"},"requests":{"cpu":"10m","memory":"12Mi"}},"retries":10,"retryDelaySeconds":10,"url":"http://graph-node-combined:8000/subgraphs/name/kit"}` | Specific check for GraphQL endpoint readiness (e.g., The Graph subgraph) |
 | initContainer.graphQLCheck.enabled | bool | `true` | Enable GraphQL endpoint readiness check |
-| initContainer.graphQLCheck.image | object | `{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"curlimages/curl","tag":"8.16.0"}` | Container image configuration for GraphQL check |
+| initContainer.graphQLCheck.image | object | `{"pullPolicy":"IfNotPresent","registry":"harbor.settlemint.com/docker.io","repository":"curlimages/curl","tag":"8.16.0"}` | Container image configuration for GraphQL check |
 | initContainer.graphQLCheck.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
-| initContainer.graphQLCheck.image.registry | string | `"docker.io"` | Container registry |
+| initContainer.graphQLCheck.image.registry | string | `"harbor.settlemint.com/docker.io"` | Container registry |
 | initContainer.graphQLCheck.image.repository | string | `"curlimages/curl"` | Image repository for curl utility |
 | initContainer.graphQLCheck.image.tag | string | `"8.16.0"` | Image tag |
 | initContainer.graphQLCheck.name | string | `"wait-for-graphql"` | Name of the init container |
@@ -56,7 +56,7 @@ A Helm chart for the ATK DApp frontend
 | initContainer.graphQLCheck.retries | int | `10` | Number of retry attempts |
 | initContainer.graphQLCheck.retryDelaySeconds | int | `10` | Delay in seconds between retry attempts |
 | initContainer.graphQLCheck.url | string | `"http://graph-node-combined:8000/subgraphs/name/kit"` | GraphQL endpoint URL to check (wait for subgraph to finish syncing with extended timeout) |
-| initContainer.tcpCheck | object | `{"dependencies":[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $) }}","name":"postgres"},{"endpoint":"hasura:8080","name":"hasura"},{"endpoint":"portal:3001","name":"portal"},{"endpoint":"graph-node-combined:8020","name":"graph-node"},{"endpoint":"blockscout-blockscout:80","name":"blockscout"}],"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"50m","memory":"32Mi"}},"timeout":120}` | Generic TCP check settings for service availability |
+| initContainer.tcpCheck | object | `{"dependencies":[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $) }}","name":"postgres"},{"endpoint":"hasura:8080","name":"hasura"},{"endpoint":"portal:3001","name":"portal"},{"endpoint":"graph-node-combined:8020","name":"graph-node"},{"endpoint":"blockscout-blockscout:80","name":"blockscout"}],"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"50m","memory":"32Mi"}},"timeout":120}` | Generic TCP check settings for service availability |
 | initContainer.tcpCheck.dependencies | list | `[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $) }}","name":"postgres"},{"endpoint":"hasura:8080","name":"hasura"},{"endpoint":"portal:3001","name":"portal"},{"endpoint":"graph-node-combined:8020","name":"graph-node"},{"endpoint":"blockscout-blockscout:80","name":"blockscout"}]` | Service dependencies to check for availability (service-name:port) |
 | initContainer.tcpCheck.dependencies[0] | object | `{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $) }}","name":"postgres"}` | PostgreSQL database dependency |
 | initContainer.tcpCheck.dependencies[0].endpoint | string | `"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $) }}"` | Service endpoint (templated) |
@@ -74,9 +74,9 @@ A Helm chart for the ATK DApp frontend
 | initContainer.tcpCheck.dependencies[4].endpoint | string | `"blockscout-blockscout:80"` | Service endpoint |
 | initContainer.tcpCheck.dependencies[4].name | string | `"blockscout"` | Dependency name |
 | initContainer.tcpCheck.enabled | bool | `true` | Enable TCP availability checks |
-| initContainer.tcpCheck.image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"}` | Container image configuration for TCP check init container |
+| initContainer.tcpCheck.image | object | `{"pullPolicy":"IfNotPresent","repository":"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"}` | Container image configuration for TCP check init container |
 | initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
-| initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` | Image repository for wait-for-it utility |
+| initContainer.tcpCheck.image.repository | string | `"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit"` | Image repository for wait-for-it utility |
 | initContainer.tcpCheck.image.tag | string | `"v7.7.10"` | Image tag for wait-for-it utility |
 | initContainer.tcpCheck.resources | object | `{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"50m","memory":"32Mi"}}` | Resource limits and requests for TCP check init container |
 | initContainer.tcpCheck.resources.limits | object | `{"cpu":"100m","memory":"64Mi"}` | Resource limits |
