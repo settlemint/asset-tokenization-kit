@@ -91,16 +91,17 @@ export function NavAddons() {
   };
 
   const addonCategories = [
-    {
-      name: t("addonCategories.distribution"),
-      icon: Truck,
-      addons: groupedAddons.distribution,
-    },
-    {
-      name: t("addonCategories.exchange"),
-      icon: ArrowLeftRight,
-      addons: groupedAddons.exchange,
-    },
+    // Distribution and Exchange categories are hidden
+    // {
+    //   name: t("addonCategories.distribution"),
+    //   icon: Truck,
+    //   addons: groupedAddons.distribution,
+    // },
+    // {
+    //   name: t("addonCategories.exchange"),
+    //   icon: ArrowLeftRight,
+    //   addons: groupedAddons.exchange,
+    // },
     {
       name: t("addonCategories.custody"),
       icon: Vault,
@@ -121,7 +122,8 @@ export function NavAddons() {
     <SidebarGroup>
       <SidebarGroupLabel>{t("addons")}</SidebarGroupLabel>
       <SidebarMenu>
-        <SidebarMenuButton
+        {/* Addon Designer button is hidden for now */}
+        {/* <SidebarMenuButton
           className="bg-accent text-primary-foreground shadow-dropdown shadow-inset hover:bg-accent-hover hover:text-primary-foreground my-2"
           onClick={() => {
             void navigate({
@@ -131,7 +133,7 @@ export function NavAddons() {
         >
           <PlusIcon className="mr-1 h-4 w-4" />
           <span>{t("addonDesigner")}</span>
-        </SidebarMenuButton>
+        </SidebarMenuButton> */}
         {addonCategories
           .filter((category) => category.addons.length > 0)
           .map((category) => {
