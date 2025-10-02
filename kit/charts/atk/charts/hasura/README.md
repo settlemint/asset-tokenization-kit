@@ -49,9 +49,8 @@ A Helm chart for Hasura GraphQL Engine
 | config.wsKeepAlive | int | `5` | WebSocket keepalive interval (seconds) |
 | cronTriggers | object | `{"includeInMetadata":false}` | Cron triggers configuration |
 | cronTriggers.includeInMetadata | bool | `false` | Include webhook secret in cron triggers |
-| database | object | `{"connLifetime":600,"connectionUrl":"","connections":50,"database":"","enablePooling":true,"host":"","idleTimeout":180,"password":"","port":"","sslMode":"","txIsolation":"read-committed","usePreparedStatements":true,"username":""}` | Database configuration |
+| database | object | `{"connLifetime":600,"connections":50,"database":"","enablePooling":true,"host":"","idleTimeout":180,"password":"","port":"","sslMode":"","txIsolation":"read-committed","usePreparedStatements":true,"username":""}` | Database configuration |
 | database.connLifetime | int | `600` | Connection lifetime (seconds) |
-| database.connectionUrl | string | `""` | Database connection string (overrides auto-generated URL) |
 | database.connections | int | `50` | Maximum connections |
 | database.database | string | `""` | Database name (uses global datastores if not set) |
 | database.enablePooling | bool | `true` | Enable connection pooling |
@@ -167,16 +166,14 @@ A Helm chart for Hasura GraphQL Engine
 | podLabels | object | `{}` | Pod labels |
 | podSecurityContext | object | `{}` | Pod security context |
 | priorityClassName | object | `""` | Priority class configuration |
-| redis | object | `{"cacheDb":"","cacheTtl":60,"cacheUrl":"","enabled":true,"host":"","password":"","port":"","rateLimitDb":"","rateLimitUrl":"","username":""}` | Redis configuration for caching and rate limiting |
+| redis | object | `{"cacheDb":"","cacheTtl":60,"enabled":true,"host":"","password":"","port":"","rateLimitDb":"","username":""}` | Redis configuration for caching and rate limiting |
 | redis.cacheDb | int | `""` | Redis database index for caching (uses global datastores if not set) |
 | redis.cacheTtl | int | `60` | Cache TTL in seconds |
-| redis.cacheUrl | string | `""` | Redis URL for query caching (overrides auto-generated URL) |
 | redis.enabled | bool | `true` | Enable Redis integration |
 | redis.host | string | `""` | Redis host (uses global datastores if not set) |
 | redis.password | string | `""` | Redis password (uses global datastores if not set) |
 | redis.port | int | `""` | Redis port (uses global datastores if not set) |
 | redis.rateLimitDb | int | `""` | Redis database index for rate limiting (uses global datastores if not set) |
-| redis.rateLimitUrl | string | `""` | Redis URL for rate limiting (overrides auto-generated URL) |
 | redis.username | string | `""` | Redis username (uses global datastores if not set) |
 | replicaCount | int | `1` | Number of Hasura replicas to deploy |
 | resources | object | `{}` | Resource limits and requests |
