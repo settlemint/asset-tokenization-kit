@@ -195,9 +195,7 @@ Database connection URL
     {{- $sslMode = $sslMode | default .Values.global.datastores.default.postgresql.sslMode -}}
   {{- end -}}
 {{- end -}}
-{{- if or .Values.database.connectionUrl (and $host $port $username $password $database) -}}
-{{- .Values.database.connectionUrl | default (printf "postgresql://%s:%s@%s:%v/%s?sslmode=%s" $username $password $host $port $database $sslMode) -}}
-{{- end -}}
+{{- include "atk.datastores.postgresql.url" (dict "context" . "chartKey" "hasura" "local" (default (dict) .Values.database)) -}}
 {{- end -}}
 
 {{/*
@@ -215,102 +213,12 @@ Metadata database connection URL
 Redis cache URL
 */}}
 {{- define "hasura.redisCacheUrl" -}}
-{{- $host := .Values.redis.host -}}
-{{- if and .Values.global .Values.global.datastores -}}
-  {{- if and .Values.global.datastores.hasura .Values.global.datastores.hasura.redis -}}
-    {{- $host = $host | default .Values.global.datastores.hasura.redis.host -}}
-  {{- end -}}
-  {{- if and .Values.global.datastores.default .Values.global.datastores.default.redis -}}
-    {{- $host = $host | default .Values.global.datastores.default.redis.host -}}
-  {{- end -}}
-{{- end -}}
-{{- $port := .Values.redis.port -}}
-{{- if and .Values.global .Values.global.datastores -}}
-  {{- if and .Values.global.datastores.hasura .Values.global.datastores.hasura.redis -}}
-    {{- $port = $port | default .Values.global.datastores.hasura.redis.port -}}
-  {{- end -}}
-  {{- if and .Values.global.datastores.default .Values.global.datastores.default.redis -}}
-    {{- $port = $port | default .Values.global.datastores.default.redis.port -}}
-  {{- end -}}
-{{- end -}}
-{{- $username := .Values.redis.username -}}
-{{- if and .Values.global .Values.global.datastores -}}
-  {{- if and .Values.global.datastores.hasura .Values.global.datastores.hasura.redis -}}
-    {{- $username = $username | default .Values.global.datastores.hasura.redis.username -}}
-  {{- end -}}
-  {{- if and .Values.global.datastores.default .Values.global.datastores.default.redis -}}
-    {{- $username = $username | default .Values.global.datastores.default.redis.username -}}
-  {{- end -}}
-{{- end -}}
-{{- $password := .Values.redis.password -}}
-{{- if and .Values.global .Values.global.datastores -}}
-  {{- if and .Values.global.datastores.hasura .Values.global.datastores.hasura.redis -}}
-    {{- $password = $password | default .Values.global.datastores.hasura.redis.password -}}
-  {{- end -}}
-  {{- if and .Values.global.datastores.default .Values.global.datastores.default.redis -}}
-    {{- $password = $password | default .Values.global.datastores.default.redis.password -}}
-  {{- end -}}
-{{- end -}}
-{{- $db := .Values.redis.cacheDb -}}
-{{- if and .Values.global .Values.global.datastores -}}
-  {{- if and .Values.global.datastores.hasura .Values.global.datastores.hasura.redis -}}
-    {{- $db = $db | default .Values.global.datastores.hasura.redis.cacheDb -}}
-  {{- end -}}
-{{- end -}}
-{{- $db = $db | default "2" -}}
-{{- if or .Values.redis.cacheUrl (and $host $port) -}}
-{{- .Values.redis.cacheUrl | default (printf "redis://%s:%s@%s:%v/%v" $username $password $host $port $db) -}}
-{{- end -}}
+{{- include "atk.redis.uriFor" (dict "context" . "chartKey" "hasura" "local" (default (dict) .Values.redis) "dbKey" "cacheDb" "queryKey" "cacheQuery") -}}
 {{- end -}}
 
 {{/*
 Redis rate limit URL
 */}}
 {{- define "hasura.redisRateLimitUrl" -}}
-{{- $host := .Values.redis.host -}}
-{{- if and .Values.global .Values.global.datastores -}}
-  {{- if and .Values.global.datastores.hasura .Values.global.datastores.hasura.redis -}}
-    {{- $host = $host | default .Values.global.datastores.hasura.redis.host -}}
-  {{- end -}}
-  {{- if and .Values.global.datastores.default .Values.global.datastores.default.redis -}}
-    {{- $host = $host | default .Values.global.datastores.default.redis.host -}}
-  {{- end -}}
-{{- end -}}
-{{- $port := .Values.redis.port -}}
-{{- if and .Values.global .Values.global.datastores -}}
-  {{- if and .Values.global.datastores.hasura .Values.global.datastores.hasura.redis -}}
-    {{- $port = $port | default .Values.global.datastores.hasura.redis.port -}}
-  {{- end -}}
-  {{- if and .Values.global.datastores.default .Values.global.datastores.default.redis -}}
-    {{- $port = $port | default .Values.global.datastores.default.redis.port -}}
-  {{- end -}}
-{{- end -}}
-{{- $username := .Values.redis.username -}}
-{{- if and .Values.global .Values.global.datastores -}}
-  {{- if and .Values.global.datastores.hasura .Values.global.datastores.hasura.redis -}}
-    {{- $username = $username | default .Values.global.datastores.hasura.redis.username -}}
-  {{- end -}}
-  {{- if and .Values.global.datastores.default .Values.global.datastores.default.redis -}}
-    {{- $username = $username | default .Values.global.datastores.default.redis.username -}}
-  {{- end -}}
-{{- end -}}
-{{- $password := .Values.redis.password -}}
-{{- if and .Values.global .Values.global.datastores -}}
-  {{- if and .Values.global.datastores.hasura .Values.global.datastores.hasura.redis -}}
-    {{- $password = $password | default .Values.global.datastores.hasura.redis.password -}}
-  {{- end -}}
-  {{- if and .Values.global.datastores.default .Values.global.datastores.default.redis -}}
-    {{- $password = $password | default .Values.global.datastores.default.redis.password -}}
-  {{- end -}}
-{{- end -}}
-{{- $db := .Values.redis.rateLimitDb -}}
-{{- if and .Values.global .Values.global.datastores -}}
-  {{- if and .Values.global.datastores.hasura .Values.global.datastores.hasura.redis -}}
-    {{- $db = $db | default .Values.global.datastores.hasura.redis.rateLimitDb -}}
-  {{- end -}}
-{{- end -}}
-{{- $db = $db | default "3" -}}
-{{- if or .Values.redis.rateLimitUrl (and $host $port) -}}
-{{- .Values.redis.rateLimitUrl | default (printf "redis://%s:%s@%s:%v/%v" $username $password $host $port $db) -}}
-{{- end -}}
+{{- include "atk.redis.uriFor" (dict "context" . "chartKey" "hasura" "local" (default (dict) .Values.redis) "dbKey" "rateLimitDb" "queryKey" "rateLimitQuery") -}}
 {{- end -}}

@@ -66,17 +66,7 @@ spec:
         {{- end }}
       {{- end }}
       {{- $postgresLocal := default (dict) .Values.postgresql }}
-      {{- $postgresConfig := ((include "atk.datastores.postgresql" (dict "context" . "chartKey" "txsigner" "local" $postgresLocal)) | fromYaml) | default (dict) }}
-      {{- $postgresUrl := "" }}
-      {{- if and $postgresConfig (hasKey $postgresConfig "url") }}
-        {{- $maybe := index $postgresConfig "url" }}
-        {{- if $maybe }}
-          {{- $postgresUrl = printf "%v" $maybe }}
-        {{- end }}
-      {{- end }}
-      {{- if eq (trim $postgresUrl) "" }}
-        {{- $postgresUrl = include "atk.datastores.postgresql.url" (dict "context" . "chartKey" "txsigner" "local" $postgresLocal) }}
-      {{- end }}
+      {{- $postgresUrl := include "atk.datastores.postgresql.url" (dict "context" . "chartKey" "txsigner" "local" $postgresLocal) }}
       containers:
         - name: txsigner
           image: {{ include "common.images.image" (dict "imageRoot" .Values.image "global" .Values.global) }}

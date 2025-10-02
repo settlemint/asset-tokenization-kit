@@ -203,48 +203,144 @@ Parameters:
 {{- end -}}
 
 {{/*
+Ensure a required datastore field is populated; fail with a consistent message otherwise.
+*/}}
+{{- define "atk.datastores.require" -}}
+{{- $value := printf "%v" (default "" .value) -}}
+{{- if eq (trim $value) "" -}}
+  {{- fail (printf "%s must be set for datastore %q" .field .source) -}}
+{{- end -}}
+{{- $value -}}
+{{- end -}}
+
+{{/*
+Resolve a human-readable name for the datastore we are validating.
+*/}}
+{{- define "atk.datastores.source" -}}
+{{- $ctx := .context -}}
+{{- $chartKey := printf "%v" (default "" .chartKey) -}}
+{{- $source := trim $chartKey -}}
+{{- if eq $source "" -}}
+  {{- if $ctx.Chart -}}
+    {{- $source = $ctx.Chart.Name -}}
+  {{- else -}}
+    {{- $source = "global" -}}
+  {{- end -}}
+{{- end -}}
+{{- $source -}}
+{{- end -}}
+
+{{/*
+Return the effective Redis datastore configuration with empty overrides pruned.
+*/}}
+{{- define "atk.datastores.redis.config" -}}
+{{- $ctx := .context | default . -}}
+{{- $chartKey := default "" .chartKey -}}
+{{- $legacyKey := default "" .legacyKey -}}
+{{- $local := default (dict) .local -}}
+{{- $base := ((include "atk.datastores.redis" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" (dict))) | fromYaml) | default (dict) -}}
+{{- $overrides := $local | default (dict) -}}
+{{- $result := dict -}}
+{{- range $key, $value := $base -}}
+  {{- $string := trim (printf "%v" $value) -}}
+  {{- if ne $string "" -}}
+    {{- $_ := set $result $key $value -}}
+  {{- end -}}
+{{- end -}}
+{{- range $key, $value := $overrides -}}
+  {{- $string := trim (printf "%v" $value) -}}
+  {{- if ne $string "" -}}
+    {{- $_ := set $result $key $value -}}
+  {{- end -}}
+{{- end -}}
+{{- toYaml $result -}}
+{{- end -}}
+
+{{/*
+Return the effective PostgreSQL datastore configuration with empty overrides pruned.
+*/}}
+{{- define "atk.datastores.postgresql.config" -}}
+{{- $ctx := .context | default . -}}
+{{- $chartKey := default "" .chartKey -}}
+{{- $legacyKey := default "" .legacyKey -}}
+{{- $local := default (dict) .local -}}
+{{- $base := ((include "atk.datastores.postgresql" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" (dict))) | fromYaml) | default (dict) -}}
+{{- $overrides := $local | default (dict) -}}
+{{- $result := dict -}}
+{{- range $key, $value := $base -}}
+  {{- $string := trim (printf "%v" $value) -}}
+  {{- if ne $string "" -}}
+    {{- $_ := set $result $key $value -}}
+  {{- end -}}
+{{- end -}}
+{{- range $key, $value := $overrides -}}
+  {{- $string := trim (printf "%v" $value) -}}
+  {{- if ne $string "" -}}
+    {{- $_ := set $result $key $value -}}
+  {{- end -}}
+{{- end -}}
+{{- toYaml $result -}}
+{{- end -}}
+
+{{/*
 Shared PostgreSQL helpers.
 */}}
 {{- define "atk.postgresql.host" -}}
 {{- $ctx := .context | default . -}}
 {{- $chartKey := default "" .chartKey -}}
+{{- $legacyKey := default "" .legacyKey -}}
 {{- $local := default (dict) .local -}}
-{{- $config := ((include "atk.datastores.postgresql" (dict "context" $ctx "chartKey" $chartKey "local" $local)) | fromYaml) | default (dict) -}}
-{{- default "postgresql" (index $config "host") -}}
+{{- $config := ((include "atk.datastores.postgresql.config" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" $local)) | fromYaml) | default (dict) -}}
+{{- $source := trim (include "atk.datastores.source" (dict "context" $ctx "chartKey" $chartKey)) -}}
+{{- $host := trim (include "atk.datastores.require" (dict "value" (index $config "host") "field" "postgresql.host" "source" $source)) -}}
+{{- $host -}}
 {{- end -}}
 
 {{- define "atk.postgresql.port" -}}
 {{- $ctx := .context | default . -}}
 {{- $chartKey := default "" .chartKey -}}
+{{- $legacyKey := default "" .legacyKey -}}
 {{- $local := default (dict) .local -}}
-{{- $config := ((include "atk.datastores.postgresql" (dict "context" $ctx "chartKey" $chartKey "local" $local)) | fromYaml) | default (dict) -}}
-{{- printf "%v" (default 5432 (index $config "port")) -}}
+{{- $config := ((include "atk.datastores.postgresql.config" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" $local)) | fromYaml) | default (dict) -}}
+{{- $source := trim (include "atk.datastores.source" (dict "context" $ctx "chartKey" $chartKey)) -}}
+{{- $port := trim (include "atk.datastores.require" (dict "value" (index $config "port") "field" "postgresql.port" "source" $source)) -}}
+{{- $port -}}
 {{- end -}}
 
 {{- define "atk.postgresql.sslMode" -}}
 {{- $ctx := .context | default . -}}
 {{- $chartKey := default "" .chartKey -}}
+{{- $legacyKey := default "" .legacyKey -}}
 {{- $local := default (dict) .local -}}
-{{- $config := ((include "atk.datastores.postgresql" (dict "context" $ctx "chartKey" $chartKey "local" $local)) | fromYaml) | default (dict) -}}
-{{- default "disable" (index $config "sslMode") -}}
+{{- $config := ((include "atk.datastores.postgresql.config" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" $local)) | fromYaml) | default (dict) -}}
+{{- printf "%v" (default "" (index $config "sslMode")) -}}
 {{- end -}}
 
 {{- define "atk.postgresql.endpoint" -}}
 {{- $ctx := .context | default . -}}
 {{- $chartKey := default "" .chartKey -}}
+{{- $legacyKey := default "" .legacyKey -}}
 {{- $local := default (dict) .local -}}
-{{- printf "%s:%s" (include "atk.postgresql.host" (dict "context" $ctx "chartKey" $chartKey "local" $local)) (include "atk.postgresql.port" (dict "context" $ctx "chartKey" $chartKey "local" $local)) -}}
+{{- printf "%s:%s" (include "atk.postgresql.host" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" $local)) (include "atk.postgresql.port" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" $local)) -}}
 {{- end -}}
 
 {{- define "atk.postgresql.url" -}}
-{{- $ctx := .context -}}
+{{- $ctx := .context | default . -}}
 {{- $chartKey := default "" .chartKey -}}
-{{- $username := .username -}}
-{{- $password := .password -}}
-{{- $database := .database -}}
+{{- $legacyKey := default "" .legacyKey -}}
 {{- $local := default (dict) .local -}}
-{{- $sslMode := .sslMode | default (include "atk.postgresql.sslMode" (dict "context" $ctx "chartKey" $chartKey "local" $local)) -}}
-{{- printf "postgresql://%s:%s@%s/%s?sslmode=%s" $username $password (include "atk.postgresql.endpoint" (dict "context" $ctx "chartKey" $chartKey "local" $local)) $database $sslMode -}}
+{{- $config := ((include "atk.datastores.postgresql.config" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" $local)) | fromYaml) | default (dict) -}}
+{{- $source := trim (include "atk.datastores.source" (dict "context" $ctx "chartKey" $chartKey)) -}}
+{{- $username := trim (include "atk.datastores.require" (dict "value" (index $config "username") "field" "postgresql.username" "source" $source)) -}}
+{{- $password := trim (include "atk.datastores.require" (dict "value" (index $config "password") "field" "postgresql.password" "source" $source)) -}}
+{{- $database := trim (include "atk.datastores.require" (dict "value" (index $config "database") "field" "postgresql.database" "source" $source)) -}}
+{{- $sslMode := printf "%v" (default "" (index $config "sslMode")) -}}
+{{- $endpoint := include "atk.postgresql.endpoint" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" $local) -}}
+{{- $query := "" -}}
+{{- if ne (trim $sslMode) "" -}}
+  {{- $query = printf "?sslmode=%s" $sslMode -}}
+{{- end -}}
+{{- printf "postgresql://%s:%s@%s/%s%s" $username $password $endpoint $database $query -}}
 {{- end -}}
 
 {{/*
@@ -253,47 +349,120 @@ Shared Redis helpers.
 {{- define "atk.redis.host" -}}
 {{- $ctx := .context | default . -}}
 {{- $chartKey := default "" .chartKey -}}
+{{- $legacyKey := default "" .legacyKey -}}
 {{- $local := default (dict) .local -}}
-{{- $config := ((include "atk.datastores.redis" (dict "context" $ctx "chartKey" $chartKey "local" $local)) | fromYaml) | default (dict) -}}
-{{- default "redis" (index $config "host") -}}
+{{- $config := ((include "atk.datastores.redis.config" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" $local)) | fromYaml) | default (dict) -}}
+{{- $source := trim (include "atk.datastores.source" (dict "context" $ctx "chartKey" $chartKey)) -}}
+{{- $host := trim (include "atk.datastores.require" (dict "value" (index $config "host") "field" "redis.host" "source" $source)) -}}
+{{- $host -}}
 {{- end -}}
 
 {{- define "atk.redis.port" -}}
 {{- $ctx := .context | default . -}}
 {{- $chartKey := default "" .chartKey -}}
+{{- $legacyKey := default "" .legacyKey -}}
 {{- $local := default (dict) .local -}}
-{{- $config := ((include "atk.datastores.redis" (dict "context" $ctx "chartKey" $chartKey "local" $local)) | fromYaml) | default (dict) -}}
-{{- printf "%v" (default 6379 (index $config "port")) -}}
+{{- $config := ((include "atk.datastores.redis.config" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" $local)) | fromYaml) | default (dict) -}}
+{{- $source := trim (include "atk.datastores.source" (dict "context" $ctx "chartKey" $chartKey)) -}}
+{{- $port := trim (include "atk.datastores.require" (dict "value" (index $config "port") "field" "redis.port" "source" $source)) -}}
+{{- $port -}}
 {{- end -}}
 
 {{- define "atk.redis.username" -}}
 {{- $ctx := .context | default . -}}
 {{- $chartKey := default "" .chartKey -}}
+{{- $legacyKey := default "" .legacyKey -}}
 {{- $local := default (dict) .local -}}
-{{- $config := ((include "atk.datastores.redis" (dict "context" $ctx "chartKey" $chartKey "local" $local)) | fromYaml) | default (dict) -}}
-{{- default "default" (index $config "username") -}}
+{{- $config := ((include "atk.datastores.redis.config" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" $local)) | fromYaml) | default (dict) -}}
+{{- printf "%v" (default "" (index $config "username")) -}}
 {{- end -}}
 
 {{- define "atk.redis.password" -}}
 {{- $ctx := .context | default . -}}
 {{- $chartKey := default "" .chartKey -}}
+{{- $legacyKey := default "" .legacyKey -}}
 {{- $local := default (dict) .local -}}
-{{- $config := ((include "atk.datastores.redis" (dict "context" $ctx "chartKey" $chartKey "local" $local)) | fromYaml) | default (dict) -}}
-{{- default "atk" (index $config "password") -}}
+{{- $config := ((include "atk.datastores.redis.config" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" $local)) | fromYaml) | default (dict) -}}
+{{- printf "%v" (default "" (index $config "password")) -}}
 {{- end -}}
 
 {{- define "atk.redis.address" -}}
 {{- $ctx := .context | default . -}}
 {{- $chartKey := default "" .chartKey -}}
+{{- $legacyKey := default "" .legacyKey -}}
 {{- $local := default (dict) .local -}}
-{{- printf "%s:%s" (include "atk.redis.host" (dict "context" $ctx "chartKey" $chartKey "local" $local)) (include "atk.redis.port" (dict "context" $ctx "chartKey" $chartKey "local" $local)) -}}
+{{- printf "%s:%s" (include "atk.redis.host" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" $local)) (include "atk.redis.port" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" $local)) -}}
 {{- end -}}
 
 {{- define "atk.redis.url" -}}
 {{- $ctx := .context | default . -}}
 {{- $chartKey := default "" .chartKey -}}
+{{- $legacyKey := default "" .legacyKey -}}
 {{- $local := default (dict) .local -}}
-{{- printf "redis://%s:%s@%s" (include "atk.redis.username" (dict "context" $ctx "chartKey" $chartKey "local" $local)) (include "atk.redis.password" (dict "context" $ctx "chartKey" $chartKey "local" $local)) (include "atk.redis.address" (dict "context" $ctx "chartKey" $chartKey "local" $local)) -}}
+{{- $dbKey := default "db" .dbKey -}}
+{{- $queryKey := default "" .queryKey -}}
+{{- include "atk.redis.uriFor" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" $local "dbKey" $dbKey "queryKey" $queryKey) -}}
+{{- end -}}
+
+{{- define "atk.redis.uri" -}}
+{{- $host := printf "%v" (default "" .host) -}}
+{{- $port := printf "%v" (default "" .port) -}}
+{{- $username := printf "%v" (default "" .username) -}}
+{{- $password := printf "%v" (default "" .password) -}}
+{{- $db := printf "%v" (default 0 .db) -}}
+{{- $query := trimPrefix "?" (printf "%v" (default "" .query)) -}}
+{{- $auth := "" -}}
+{{- if or (ne $username "") (ne $password "") -}}
+  {{- if eq $username "" -}}
+    {{- $auth = printf ":%s@" $password -}}
+  {{- else if eq $password "" -}}
+    {{- $auth = printf "%s:@" $username -}}
+  {{- else -}}
+    {{- $auth = printf "%s:%s@" $username $password -}}
+  {{- end -}}
+{{- end -}}
+{{- $uri := printf "redis://%s%s:%s/%s" $auth $host $port $db -}}
+{{- if ne $query "" -}}
+  {{- printf "%s?%s" $uri $query -}}
+{{- else -}}
+  {{- $uri -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "atk.redis.uriFor" -}}
+{{- $ctx := .context | default . -}}
+{{- $chartKey := default "" .chartKey -}}
+{{- $legacyKey := default "" .legacyKey -}}
+{{- $local := default (dict) .local -}}
+{{- $dbKey := default "db" .dbKey -}}
+{{- $queryKey := default "" .queryKey -}}
+{{- $config := ((include "atk.datastores.redis.config" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" $local)) | fromYaml) | default (dict) -}}
+{{- $source := trim (include "atk.datastores.source" (dict "context" $ctx "chartKey" $chartKey)) -}}
+{{- $host := trim (include "atk.redis.host" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" $local)) -}}
+{{- $port := trim (include "atk.redis.port" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" $local)) -}}
+{{- $db := "" -}}
+{{- if hasKey $config $dbKey -}}
+  {{- $db = index $config $dbKey -}}
+{{- end -}}
+{{- if and (eq (printf "%v" $db) "") (ne $dbKey "db") (hasKey $config "db") -}}
+  {{- $db = index $config "db" -}}
+{{- end -}}
+{{- $dbString := printf "%v" $db -}}
+{{- if eq (trim $dbString) "" -}}
+  {{- fail (printf "redis.%s (or redis.db) must be set for datastore %q" $dbKey $source) -}}
+{{- end -}}
+{{- $query := "" -}}
+{{- if and (ne $queryKey "") (hasKey $config $queryKey) -}}
+  {{- $query = index $config $queryKey -}}
+{{- else if hasKey $config "query" -}}
+  {{- $query = index $config "query" -}}
+{{- end -}}
+{{- $username := trim (printf "%v" (default "" (index $config "username"))) -}}
+{{- $password := trim (printf "%v" (default "" (index $config "password"))) -}}
+{{- if and (ne $username "") (eq $password "") -}}
+  {{- fail (printf "redis.password must be set for datastore %q when redis.username is provided" $source) -}}
+{{- end -}}
+{{- include "atk.redis.uri" (dict "host" $host "port" $port "username" $username "password" $password "db" $db "query" $query) -}}
 {{- end -}}
 
 {{/*
@@ -302,22 +471,7 @@ Return a PostgreSQL connection URL derived from datastore defaults and optional 
 {{- define "atk.datastores.postgresql.url" -}}
 {{- $ctx := .context | default . -}}
 {{- $chartKey := default "" .chartKey -}}
+{{- $legacyKey := default "" .legacyKey -}}
 {{- $local := default (dict) .local -}}
-{{- $config := ((include "atk.datastores.postgresql" (dict "context" $ctx "chartKey" $chartKey "local" $local)) | fromYaml) | default (dict) -}}
-{{- $existingUrl := "" -}}
-{{- if and $config (hasKey $config "url") -}}
-  {{- $maybe := index $config "url" -}}
-  {{- if $maybe -}}
-    {{- $existingUrl = printf "%v" $maybe -}}
-  {{- end -}}
-{{- end -}}
-{{- if ne (trim $existingUrl) "" -}}
-  {{- $existingUrl -}}
-{{- else -}}
-  {{- $username := default "postgres" (index $config "username") -}}
-  {{- $password := default "atk" (index $config "password") -}}
-  {{- $database := default "postgres" (index $config "database") -}}
-  {{- $sslMode := index $config "sslMode" -}}
-  {{- include "atk.postgresql.url" (dict "context" $ctx "chartKey" $chartKey "local" $local "username" $username "password" $password "database" $database "sslMode" $sslMode) -}}
-{{- end -}}
+{{- include "atk.postgresql.url" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" $local) -}}
 {{- end -}}

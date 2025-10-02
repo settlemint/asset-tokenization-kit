@@ -69,8 +69,6 @@ config:
 
 # -- (object) Database configuration
 database:
-  # -- (string) Database connection string (overrides auto-generated URL)
-  connectionUrl: ""
   # -- (string) Database host (uses global datastores if not set)
   host: ""
   # -- (int) Database port (uses global datastores if not set)
@@ -150,10 +148,6 @@ cronTriggers:
 redis:
   # -- (bool) Enable Redis integration
   enabled: true
-  # -- (string) Redis URL for query caching (overrides auto-generated URL)
-  cacheUrl: ""
-  # -- (string) Redis URL for rate limiting (overrides auto-generated URL)
-  rateLimitUrl: ""
   # -- (string) Redis host (uses global datastores if not set)
   host: ""
   # -- (int) Redis port (uses global datastores if not set)
@@ -328,20 +322,31 @@ autoscaling:
 
 # -- (list) Init containers
 initContainers:
+  # -- (string) Container name
   - name: wait-for-postgresql
+    # -- (string) Container image
     image: ghcr.io/settlemint/btp-waitforit:v7.7.10
+    # -- (string) Image pull policy
     imagePullPolicy: IfNotPresent
+    # -- (list) Container command
     command:
       - /usr/bin/wait-for-it
       - "postgresql:5432"
       - -t
       - "120"
+    # -- (object) Resource limits and requests
     resources:
+      # -- (object) Resource limits
       limits:
+        # -- (string) CPU limit
         cpu: 100m
+        # -- (string) Memory limit
         memory: 64Mi
+      # -- (object) Resource requests
       requests:
+        # -- (string) CPU request
         cpu: 10m
+        # -- (string) Memory request
         memory: 32Mi
 
 # -- (object) Pod annotations
