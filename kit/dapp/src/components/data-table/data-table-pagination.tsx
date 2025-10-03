@@ -120,7 +120,9 @@ export function DataTablePagination<TData>({
           </div>
         ) : (
           <span className="tabular-nums">
-            <span className="text-muted-foreground">Total: </span>
+            <span className="text-muted-foreground pr-1">
+              {t("totalItems")}
+            </span>
             <span className="text-foreground">{totalCount}</span>
           </span>
         )}

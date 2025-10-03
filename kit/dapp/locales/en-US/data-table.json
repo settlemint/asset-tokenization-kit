@@ -114,7 +114,7 @@
     }
   },
   "toggleColumns": "Toggle columns",
-  "totalItems": "Total: {{count}}",
+  "totalItems": "Total:",
   "tryAdjustingFilters": "Try adjusting your filters to find what you're looking for",
   "view": "View",
   "viewDetails": "View details"

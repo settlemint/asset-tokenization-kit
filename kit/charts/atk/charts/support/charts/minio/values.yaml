@@ -387,7 +387,7 @@ resources:
   # -- (object) Resource requests for MinIO containers
   requests:
     # -- (string) Memory request for MinIO containers
-    memory: 16Gi
+    memory: 256Mi
 
 ## List of policies to be created after minio install
 ##

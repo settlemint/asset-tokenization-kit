@@ -179,6 +179,7 @@ export function UsersTable() {
         }}
         pagination={{
           enablePagination: true,
+          totalCount,
         }}
         initialPageSize={20}
         initialSorting={[

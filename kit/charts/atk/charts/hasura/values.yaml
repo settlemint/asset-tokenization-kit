@@ -339,7 +339,7 @@ initContainers:
       # -- (object) Resource limits
       limits:
         # -- (string) CPU limit
-        cpu: 100m
+        cpu: 300m
         # -- (string) Memory limit
         memory: 64Mi
       # -- (object) Resource requests

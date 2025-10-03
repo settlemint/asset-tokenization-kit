@@ -647,9 +647,6 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
         }}
         pagination={{
           enablePagination: true,
-        }}
-        serverSidePagination={{
-          enabled: false, // We're still doing client-side pagination
           totalCount,
         }}
         initialSorting={INITIAL_SORTING}

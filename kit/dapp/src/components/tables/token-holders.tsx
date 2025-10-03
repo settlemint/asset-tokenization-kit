@@ -408,9 +408,6 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
             // Pagination essential for large holder lists to maintain performance
             // Token holder lists can grow to thousands of entries
             enablePagination: true,
-          }}
-          serverSidePagination={{
-            enabled: false, // We're still doing client-side pagination
             totalCount,
           }}
           initialSorting={INITIAL_SORTING}

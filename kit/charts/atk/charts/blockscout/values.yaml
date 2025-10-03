@@ -137,7 +137,7 @@ blockscout:
         # -- (object) Resource limits for TCP check container
         limits:
           # -- (string) CPU limit for TCP check container
-          cpu: 100m
+          cpu: 300m
           # -- (string) Memory limit for TCP check container
           memory: 64Mi
         # -- (object) Resource requests for TCP check container

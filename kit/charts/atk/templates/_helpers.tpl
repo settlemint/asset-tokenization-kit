@@ -136,6 +136,67 @@ Extract domain from a hostname (e.g., "hasura.k8s.orb.local" -> "k8s.orb.local")
 {{- end -}}
 
 {{/*
+Resolve the primary host for a component's ingress configuration.
+Safely handles hostname/host/hosts structures and falls back to the provided default.
+Parameters:
+- context: root context (optional)
+- path: list of keys leading to the component scope (e.g., list "graph-node")
+- default: fallback host string
+*/}}
+{{- define "atk.ingress.primaryHost" -}}
+{{- $ctx := .context | default . -}}
+{{- $path := .path | default (list) -}}
+{{- $fallback := default "" .default -}}
+{{- $node := $ctx.Values -}}
+{{- $missing := false -}}
+{{- range $segment := $path -}}
+  {{- if and (not $missing) (kindIs "map" $node) (hasKey $node $segment) -}}
+    {{- $node = index $node $segment -}}
+  {{- else -}}
+    {{- $missing = true -}}
+  {{- end -}}
+{{- end -}}
+{{- if $missing -}}
+  {{- $node = dict -}}
+{{- end -}}
+{{- if and (kindIs "map" $node) (hasKey $node "ingress") -}}
+  {{- $node = index $node "ingress" -}}
+{{- end -}}
+{{- $host := $fallback -}}
+{{- if kindIs "map" $node -}}
+  {{- if hasKey $node "hostname" -}}
+    {{- $host = default $fallback (index $node "hostname") -}}
+  {{- else if hasKey $node "hostName" -}}
+    {{- $host = default $fallback (index $node "hostName") -}}
+  {{- else if hasKey $node "host" -}}
+    {{- $host = default $fallback (index $node "host") -}}
+  {{- else if hasKey $node "hosts" -}}
+    {{- $host = include "atk.ingress.primaryHost.firstFromList" (dict "hosts" (index $node "hosts") "default" $fallback) -}}
+  {{- end -}}
+{{- end -}}
+{{- $host -}}
+{{- end -}}
+
+{{/*
+Return the first host entry from an ingress hosts array that may contain
+either host objects or raw strings.
+*/}}
+{{- define "atk.ingress.primaryHost.firstFromList" -}}
+{{- $hosts := .hosts | default (list) -}}
+{{- $fallback := default "" .default -}}
+{{- $host := $fallback -}}
+{{- if and $hosts (gt (len $hosts) 0) -}}
+  {{- $first := index $hosts 0 -}}
+  {{- if kindIs "map" $first -}}
+    {{- $host = default $fallback (index $first "host") -}}
+  {{- else if kindIs "string" $first -}}
+    {{- $host = $first -}}
+  {{- end -}}
+{{- end -}}
+{{- $host -}}
+{{- end -}}
+
+{{/*
 Merge datastore defaults and overrides following the security context helper pattern.
 Parameters:
 - context: root context
