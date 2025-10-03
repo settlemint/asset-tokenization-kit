@@ -137,6 +137,18 @@ network:
         image:
           # -- (string) Repository for TCP check utility
           repository: ghcr.io/settlemint/btp-waitforit
+    # -- (object) Resource requests and limits for the bootstrapper job
+    resources:
+      requests:
+        # -- (string) CPU request for bootstrapper pods
+        cpu: "100m"
+        # -- (string) Memory request for bootstrapper pods
+        memory: "128Mi"
+      limits:
+        # -- (string) CPU limit for bootstrapper pods
+        cpu: "250m"
+        # -- (string) Memory limit for bootstrapper pods
+        memory: "256Mi"
   # -- (object) Blockchain node configuration (validators and RPC)
   network-nodes:
     # -- (object) Hyperledger Besu container image
@@ -151,10 +163,35 @@ network:
         image:
           # -- (string) Repository for TCP check utility
           repository: ghcr.io/settlemint/btp-waitforit
+    # -- (object) Resource requests and limits for Besu validator and RPC pods
+    resources:
+      requests:
+        # -- (string) CPU request per Besu pod
+        cpu: "75m"
+        # -- (string) Memory request per Besu pod
+        memory: "1280Mi"
+      limits:
+        # -- (string) CPU limit per Besu pod
+        cpu: "1500m"
+        # -- (string) Memory limit per Besu pod
+        memory: "2560Mi"
     # -- (object) Persistent storage configuration for blockchain data
     persistence:
       # -- (string) Storage size for each blockchain node (ledger data)
       size: 20Gi
+    compileGenesis:
+      # -- (object) Resource requests and limits for genesis compilation init container
+      resources:
+        requests:
+          # -- (string) CPU request for genesis compilation
+          cpu: "100m"
+          # -- (string) Memory request for genesis compilation
+          memory: "128Mi"
+        limits:
+          # -- (string) CPU limit for genesis compilation
+          cpu: "250m"
+          # -- (string) Memory limit for genesis compilation
+          memory: "256Mi"
 
 # -- (object) ERPC Gateway configuration for RPC load balancing and caching
 erpc:
@@ -179,7 +216,17 @@ erpc:
         # -- (string) Repository for TCP check utility
         repository: ghcr.io/settlemint/btp-waitforit
   # -- (object) Resource requests and limits for ERPC pods
-  resources: {}
+  resources:
+    requests:
+      # -- (string) CPU request for ERPC pods
+      cpu: "250m"
+      # -- (string) Memory request for ERPC pods
+      memory: "1024Mi"
+    limits:
+      # -- (string) CPU limit for ERPC pods
+      cpu: "1000m"
+      # -- (string) Memory limit for ERPC pods
+      memory: "2048Mi"
   # -- (object) Ingress configuration for exposing RPC endpoint
   ingress:
     # -- (bool) Enable ingress for external RPC access
@@ -234,7 +281,17 @@ blockscout:
       # -- (string) Web app URL for Blockscout frontend
       WEBAPP_URL: https://explorer.k8s.orb.local
     # -- (object) Resource requests and limits for Blockscout backend
-    resources: {}
+    resources:
+      requests:
+        # -- (string) CPU request for Blockscout backend pods
+        cpu: "150m"
+        # -- (string) Memory request for Blockscout backend pods
+        memory: "1280Mi"
+      limits:
+        # -- (string) CPU limit for Blockscout backend pods
+        cpu: "1500m"
+        # -- (string) Memory limit for Blockscout backend pods
+        memory: "2560Mi"
   # -- (object) Blockscout frontend service configuration
   frontend:
     # -- (bool) Enable Blockscout frontend deployment
@@ -251,6 +308,18 @@ blockscout:
     image:
       # -- (string) OCI registry and repository for Blockscout frontend
       repository: ghcr.io/blockscout/frontend
+    # -- (object) Resource requests and limits for Blockscout frontend pods
+    resources:
+      requests:
+        # -- (string) CPU request for Blockscout frontend pods
+        cpu: "120m"
+        # -- (string) Memory request for Blockscout frontend pods
+        memory: "768Mi"
+      limits:
+        # -- (string) CPU limit for Blockscout frontend pods
+        cpu: "600m"
+        # -- (string) Memory limit for Blockscout frontend pods
+        memory: "1536Mi"
 
 # -- (object) The Graph Node configuration for blockchain indexing
 graph-node:
@@ -278,6 +347,18 @@ graph-node:
       image:
         # -- (string) Repository for TCP check utility
         repository: ghcr.io/settlemint/btp-waitforit
+  # -- (object) Resource requests and limits for Graph Node StatefulSet
+  resources:
+    requests:
+      # -- (string) CPU request for Graph Node pods
+      cpu: "100m"
+      # -- (string) Memory request for Graph Node pods
+      memory: "1536Mi"
+    limits:
+      # -- (string) CPU limit for Graph Node pods
+      cpu: "1000m"
+      # -- (string) Memory limit for Graph Node pods
+      memory: "3072Mi"
   # -- (object) Ingress configuration for Graph Node API
   ingress:
     # -- (bool) Enable ingress for subgraph queries
@@ -353,6 +434,18 @@ hasura:
     className: "atk-nginx"
     # -- (string) Hostname for Hasura GraphQL endpoint. Update for your environment.
     hostName: hasura.k8s.orb.local
+  # -- (object) Resource requests and limits for Hasura deployment
+  resources:
+    requests:
+      # -- (string) CPU request for Hasura pods
+      cpu: "100m"
+      # -- (string) Memory request for Hasura pods
+      memory: "1024Mi"
+    limits:
+      # -- (string) CPU limit for Hasura pods
+      cpu: "1000m"
+      # -- (string) Memory limit for Hasura pods
+      memory: "2048Mi"
 
 # -- (object) IPFS Cluster deployment configuration
 ipfs:
@@ -363,6 +456,18 @@ ipfs:
     image:
       # -- (string) OCI registry for the cluster control-plane image
       registry: docker.io
+    # -- (object) Resource requests and limits for IPFS Cluster control-plane pods
+    resources:
+      requests:
+        # -- (string) CPU request for cluster pods
+        cpu: "50m"
+        # -- (string) Memory request for cluster pods
+        memory: "1024Mi"
+      limits:
+        # -- (string) CPU limit for cluster pods
+        cpu: "1000m"
+        # -- (string) Memory limit for cluster pods
+        memory: "2048Mi"
   # -- (object) IPFS peer configuration overrides
   ipfs:
     image:
@@ -374,6 +479,18 @@ ipfs:
           accessControlAllowOrigin:
             - https://ipfs-cluster.k8s.orb.local
             - http://ipfs-cluster.k8s.orb.local
+    # -- (object) Resource requests and limits for IPFS peer pods
+    resources:
+      requests:
+        # -- (string) CPU request for IPFS pods
+        cpu: "300m"
+        # -- (string) Memory request for IPFS pods
+        memory: "1024Mi"
+      limits:
+        # -- (string) CPU limit for IPFS pods
+        cpu: "600m"
+        # -- (string) Memory limit for IPFS pods
+        memory: "2048Mi"
   # -- (object) Ingress configuration for the IPFS cluster endpoints
   ingress:
     # -- (bool) Enable ingress exposure for IPFS cluster endpoints
@@ -408,6 +525,18 @@ portal:
       image:
         # -- (string) Repository for TCP check utility
         repository: ghcr.io/settlemint/btp-waitforit
+  # -- (object) Resource requests and limits for Portal pods
+  resources:
+    requests:
+      # -- (string) CPU request for Portal pods
+      cpu: "100m"
+      # -- (string) Memory request for Portal pods
+      memory: "512Mi"
+    limits:
+      # -- (string) CPU limit for Portal pods
+      cpu: "1000m"
+      # -- (string) Memory limit for Portal pods
+      memory: "1024Mi"
   # -- (object) Ingress configuration for Portal API
   ingress:
     # -- (bool) Enable ingress exposure for Portal
@@ -440,7 +569,17 @@ txsigner:
     # -- (string) BIP44 derivation path for Ethereum accounts
     derivationPath: "m/44'/60'/0'/0/0"
   # -- (object) Resource requests and limits for transaction signer
-  resources: {}
+  resources:
+    requests:
+      # -- (string) CPU request for txsigner pods
+      cpu: "150m"
+      # -- (string) Memory request for txsigner pods
+      memory: "256Mi"
+    limits:
+      # -- (string) CPU limit for txsigner pods
+      cpu: "500m"
+      # -- (string) Memory limit for txsigner pods
+      memory: "512Mi"
   # -- (object) Init container for dependency checks
   initContainer:
     # -- (object) TCP check for blockchain node readiness
@@ -481,7 +620,17 @@ dapp:
             # -- (string) Path matching type
             pathType: ImplementationSpecific
   # -- (object) Resource requests and limits for DApp pods
-  resources: {}
+  resources:
+    requests:
+      # -- (string) CPU request for DApp pods
+      cpu: "100m"
+      # -- (string) Memory request for DApp pods
+      memory: "1024Mi"
+    limits:
+      # -- (string) CPU limit for DApp pods
+      cpu: "1000m"
+      # -- (string) Memory limit for DApp pods
+      memory: "2048Mi"
   # -- (object) Environment variables for DApp runtime configuration (stored as secrets)
   secretEnv:
     # -- (string) Base URL for authentication callbacks. Must match ingress hostname.
@@ -527,7 +676,17 @@ support:
     # -- (object) Ingress controller configuration
     controller:
       # -- (object) Resource requests and limits for ingress controller
-      resources: {}
+      resources:
+        requests:
+          # -- (string) CPU request for ingress controller pods
+          cpu: "200m"
+          # -- (string) Memory request for ingress controller pods
+          memory: "512Mi"
+        limits:
+          # -- (string) CPU limit for ingress controller pods
+          cpu: "600m"
+          # -- (string) Memory limit for ingress controller pods
+          memory: "1024Mi"
       # -- (object) Ingress controller container image
       image:
         # -- (string) Official Kubernetes ingress-nginx controller image
@@ -550,6 +709,18 @@ support:
     image:
       # -- (string) Reloader image repository
       repository: ghcr.io/stakater/reloader
+    # -- (object) Resource requests and limits for Reloader deployment
+    resources:
+      requests:
+        # -- (string) CPU request for Reloader pods
+        cpu: "100m"
+        # -- (string) Memory request for Reloader pods
+        memory: "128Mi"
+      limits:
+        # -- (string) CPU limit for Reloader pods
+        cpu: "200m"
+        # -- (string) Memory limit for Reloader pods
+        memory: "256Mi"
   # -- (object) MinIO object storage configuration
   minio:
     # -- (bool) Enable MinIO object storage deployment
@@ -562,6 +733,18 @@ support:
     mcImage:
       # -- (string) MinIO client image repository
       repository: docker.io/minio/minio
+    # -- (object) Resource requests and limits for MinIO pods
+  resources:
+    requests:
+      # -- (string) CPU request for MinIO pods
+      cpu: "50m"
+      # -- (string) Memory request for MinIO pods
+      memory: "512Mi"
+    limits:
+      # -- (string) CPU limit for MinIO pods
+      cpu: "500m"
+      # -- (string) Memory limit for MinIO pods
+      memory: "1024Mi"
     # -- (object) Ingress configuration for MinIO console
     ingress:
       # -- (bool) Enable ingress for MinIO web console
@@ -642,7 +825,17 @@ observability:
     # -- (bool) Enable Metrics Server deployment
     enabled: true
     # -- (object) Resource requests and limits for Metrics Server
-    resources: {}
+    resources:
+      requests:
+        # -- (string) CPU request for Metrics Server pods
+        cpu: "40m"
+        # -- (string) Memory request for Metrics Server pods
+        memory: "25Mi"
+      limits:
+        # -- (string) CPU limit for Metrics Server pods
+        cpu: "80m"
+        # -- (string) Memory limit for Metrics Server pods
+        memory: "50Mi"
     # -- (object) Metrics Server container image
     image:
       # -- (string) Official Kubernetes metrics-server image
@@ -650,7 +843,17 @@ observability:
   # -- (object) Kube State Metrics for cluster-level metrics
   kube-state-metrics:
     # -- (object) Resource requests and limits for kube-state-metrics
-    resources: {}
+    resources:
+      requests:
+        # -- (string) CPU request for kube-state-metrics pods
+        cpu: "120m"
+        # -- (string) Memory request for kube-state-metrics pods
+        memory: "160Mi"
+      limits:
+        # -- (string) CPU limit for kube-state-metrics pods
+        cpu: "240m"
+        # -- (string) Memory limit for kube-state-metrics pods
+        memory: "256Mi"
     # -- (object) Kube state metrics container image
     image:
       # -- (string) OCI registry for kube-state-metrics
@@ -671,7 +874,17 @@ observability:
         # -- (string) Storage size for metrics retention
         size: 10Gi
       # -- (object) Resource requests and limits for VictoriaMetrics
-      resources: {}
+      resources:
+        requests:
+          # -- (string) CPU request for VictoriaMetrics pods
+          cpu: "180m"
+          # -- (string) Memory request for VictoriaMetrics pods
+          memory: "320Mi"
+        limits:
+          # -- (string) CPU limit for VictoriaMetrics pods
+          cpu: "420m"
+          # -- (string) Memory limit for VictoriaMetrics pods
+          memory: "600Mi"
       # -- (object) VictoriaMetrics container image
       image:
         # -- (string) OCI registry for VictoriaMetrics
@@ -691,7 +904,17 @@ observability:
         # -- (string) Storage size for log retention
         size: 10Gi
       # -- (object) Resource requests and limits for Loki
-      resources: {}
+      resources:
+        requests:
+          # -- (string) CPU request for Loki single binary pods
+          cpu: "170m"
+          # -- (string) Memory request for Loki single binary pods
+          memory: "360Mi"
+        limits:
+          # -- (string) CPU limit for Loki single binary pods
+          cpu: "500m"
+          # -- (string) Memory limit for Loki single binary pods
+          memory: "600Mi"
       # -- (list) Additional environment variables for Loki
       extraEnv: []
     # -- (object) Memcached for Loki query result caching
@@ -702,30 +925,88 @@ observability:
       image:
         # -- (string) Memcached image repository
         repository: docker.io/memcached
+      # -- (object) Resource requests and limits for Loki memcached pods
+      resources:
+        requests:
+          # -- (string) CPU request for memcached pods
+          cpu: "40m"
+          # -- (string) Memory request for memcached pods
+          memory: "48Mi"
+        limits:
+          # -- (string) CPU limit for memcached pods
+          cpu: "120m"
+          # -- (string) Memory limit for memcached pods
+          memory: "96Mi"
     # -- (object) Memcached exporter for Prometheus metrics
     memcachedExporter:
       # -- (object) Memcached exporter image
       image:
         # -- (string) Prometheus memcached exporter repository
         repository: docker.io/prom/memcached-exporter
+      # -- (object) Resource requests and limits for memcached exporter pods
+      resources:
+        requests:
+          # -- (string) CPU request for memcached exporter pods
+          cpu: "10m"
+          # -- (string) Memory request for memcached exporter pods
+          memory: "24Mi"
+        limits:
+          # -- (string) CPU limit for memcached exporter pods
+          cpu: "25m"
+          # -- (string) Memory limit for memcached exporter pods
+          memory: "48Mi"
     # -- (object) Kubernetes sidecar for dynamic configuration
     sidecar:
       # -- (object) Sidecar container image
       image:
         # -- (string) k8s-sidecar image repository
         repository: docker.io/kiwigrid/k8s-sidecar
+      # -- (object) Resource requests and limits for Loki sidecar pods
+      resources:
+        requests:
+          # -- (string) CPU request for sidecar pods
+          cpu: "25m"
+          # -- (string) Memory request for sidecar pods
+          memory: "36Mi"
+        limits:
+          # -- (string) CPU limit for sidecar pods
+          cpu: "75m"
+          # -- (string) Memory limit for sidecar pods
+          memory: "72Mi"
     # -- (object) Loki gateway for load balancing
     gateway:
       # -- (object) Gateway container image
       image:
         # -- (string) OCI registry for gateway image
         registry: docker.io
+      # -- (object) Resource requests and limits for Loki gateway pods
+      resources:
+        requests:
+          # -- (string) CPU request for gateway pods
+          cpu: "50m"
+          # -- (string) Memory request for gateway pods
+          memory: "64Mi"
+        limits:
+          # -- (string) CPU limit for gateway pods
+          cpu: "150m"
+          # -- (string) Memory limit for gateway pods
+          memory: "160Mi"
   # -- (object) Grafana Alloy for telemetry pipeline
   alloy:
     # -- (object) Alloy agent configuration
     alloy:
       # -- (object) Resource requests and limits for Alloy
-      resources: {}
+      resources:
+        requests:
+          # -- (string) CPU request for Alloy pods
+          cpu: "100m"
+          # -- (string) Memory request for Alloy pods
+          memory: "160Mi"
+        limits:
+          # -- (string) CPU limit for Alloy pods
+          cpu: "240m"
+          # -- (string) Memory limit for Alloy pods
+          memory: "320Mi"
     # -- (object) Alloy container image
     image:
       # -- (string) OCI registry for Alloy
@@ -742,6 +1023,18 @@ observability:
     image:
       # -- (string) OCI registry for Grafana
       registry: docker.io
+    # -- (object) Resource requests and limits for Grafana pods
+    resources:
+      requests:
+        # -- (string) CPU request for Grafana pods
+        cpu: "180m"
+        # -- (string) Memory request for Grafana pods
+        memory: "192Mi"
+      limits:
+        # -- (string) CPU limit for Grafana pods
+        cpu: "360m"
+        # -- (string) Memory limit for Grafana pods
+        memory: "384Mi"
     # -- (object) Sidecar for dashboard provisioning
     sidecar:
       # -- (object) Sidecar container image
@@ -770,13 +1063,35 @@ observability:
     # -- (object) Tempo server configuration
     server:
       # -- (object) Resource requests and limits for Tempo
-      resources: {}
+      resources:
+        requests:
+          # -- (string) CPU request for Tempo pods
+          cpu: "100m"
+          # -- (string) Memory request for Tempo pods
+          memory: "192Mi"
+        limits:
+          # -- (string) CPU limit for Tempo pods
+          cpu: "240m"
+          # -- (string) Memory limit for Tempo pods
+          memory: "384Mi"
   # -- (object) Prometheus Node Exporter for host metrics
   prometheus-node-exporter:
     # -- (object) Node exporter container image
     image:
       # -- (string) OCI registry for node exporter
       registry: quay.io
+    # -- (object) Resource requests and limits for node exporter DaemonSet
+    resources:
+      requests:
+        # -- (string) CPU request for node exporter pods
+        cpu: "30m"
+        # -- (string) Memory request for node exporter pods
+        memory: "32Mi"
+      limits:
+        # -- (string) CPU limit for node exporter pods
+        cpu: "60m"
+        # -- (string) Memory limit for node exporter pods
+        memory: "64Mi"
     kubeRBACProxy:
       image:
         # -- (string) OCI registry for kube-rbac-proxy sidecar

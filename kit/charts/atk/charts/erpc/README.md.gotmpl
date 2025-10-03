@@ -1,227 +1,281 @@
-## Introduction
+{{- define "chart.sumCpuDisplay" -}}
+{{- $m := float64 (default 0 .milli) -}}
+{{- if le $m (float64 0) -}}
+-
+{{- else -}}
+  {{- $cores := mulf $m 0.001 -}}
+  {{- printf "%.2f cores (%.0fm)" $cores $m -}}
+{{- end -}}
+{{- end -}}
 
-[eRPC](https://erpc.cloud/) is a fault-tolerant EVM (Ethereum Virtual Machine) RPC proxy and permanent caching solution designed for high-load scenarios like data indexing and frontend usage.
+{{- define "chart.sumMemDisplay" -}}
+{{- $mi := float64 (default 0 .mi) -}}
+{{- if le $mi (float64 0) -}}
+-
+{{- else -}}
+  {{- $gi := divf $mi 1024 -}}
+  {{- printf "%.0fMi (%.2fGi)" $mi $gi -}}
+{{- end -}}
+{{- end -}}
 
-### Key Features
+{{- define "chart.sumStorageDisplay" -}}
+{{- $mi := float64 (default 0 .mi) -}}
+{{- if le $mi (float64 0) -}}
+-
+{{- else -}}
+  {{- $gi := divf $mi 1024 -}}
+  {{- printf "%.0fMi (%.2fGi)" $mi $gi -}}
+{{- end -}}
+{{- end -}}
 
-- **Automatic routing** between multiple upstream providers
-- **Intelligent caching** to reduce load on blockchain nodes
-- **Built-in monitoring** and tracing capabilities
-- **Fault tolerance** with automatic failover
-- **Rate limit handling** across multiple providers
+{{- define "chart.renderDefaultCell" -}}
+{{- $type := lower .Type -}}
+{{- if or (eq $type "object") (eq $type "map") (eq $type "array") (eq $type "list") -}}
+-
+{{- else -}}
+  {{- if .Default -}}{{ .Default -}}{{- else -}}{{ .AutoDefault -}}{{- end -}}
+{{- end -}}
+{{- end -}}
 
-### Benefits
+{{- define "chart.valuesTable" -}}
+{{- if .Sections.Sections -}}
+  {{- range .Sections.Sections -}}
 
-- Improves performance from 5 RPS to 500 RPS
-- Handles rate limits and provider failures automatically
-- Provides a resilient infrastructure for blockchain data access
-- Reduces costs by caching repeated requests
+###{{.SectionName}}
 
-### Use Cases
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+{{- range .SectionItems }}
+|{{.Key}}|{{.Type}}|{{template "chart.renderDefaultCell" .}}|{{if .Description}}{{.Description}}{{else}}{{.AutoDescription}}{{end}}|
+{{- end }}
+  {{- end -}}
+  {{- if .Sections.DefaultSection.SectionItems -}}
 
-- Web3 indexers
-- Blockchain services
-- High-traffic decentralized applications
-- Data analytics platforms
+###{{.Sections.DefaultSection.SectionName}}
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+{{- range .Sections.DefaultSection.SectionItems }}
+|{{.Key}}|{{.Type}}|{{template "chart.renderDefaultCell" .}}|{{if .Description}}{{.Description}}{{else}}{{.AutoDescription}}{{end}}|
+{{- end }}
+  {{- end -}}
+{{- else -}}
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+{{- range .Values }}
+|{{.Key}}|{{.Type}}|{{template "chart.renderDefaultCell" .}}|{{if .Description}}{{.Description}}{{else}}{{.AutoDescription}}{{end}}|
+{{- end }}
+{{- end -}}
+{{- end -}}
+
+{{- define "chart.resourcesRows" -}}
+{{- $map := .m -}}
+{{- $path := .path -}}
+{{- $agg := .agg | default (dict) -}}
+{{- range $key, $val := $map -}}
+  {{- if and (kindIs "map" $val) (not (or (eq $key "resources") (eq $key "requests") (eq $key "limits") (eq $key "persistence") (eq $key "persistentVolume") (eq $key "persistentvolume"))) }}
+    {{- $name := $key -}}
+    {{- if $path }}{{- $name = printf "%s.%s" $path $key }}{{- end -}}
+    {{- $res := index $val "resources" -}}
+    {{- $reqCpu := "-" -}}
+    {{- $reqMem := "-" -}}
+    {{- $limCpu := "-" -}}
+    {{- $limMem := "-" -}}
+    {{- if kindIs "map" $res -}}
+      {{- $requests := index $res "requests" -}}
+      {{- if kindIs "map" $requests }}
+        {{- if hasKey $requests "cpu" }}{{- $reqCpu = printf "%v" (index $requests "cpu") -}}{{- end -}}
+        {{- if hasKey $requests "memory" }}{{- $reqMem = printf "%v" (index $requests "memory") -}}{{- end -}}
+      {{- end -}}
+      {{- $limits := index $res "limits" -}}
+      {{- if kindIs "map" $limits }}
+        {{- if hasKey $limits "cpu" }}{{- $limCpu = printf "%v" (index $limits "cpu") -}}{{- end -}}
+        {{- if hasKey $limits "memory" }}{{- $limMem = printf "%v" (index $limits "memory") -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $storage := "-" -}}
+    {{- if hasKey $val "persistence" -}}
+      {{- $p := index $val "persistence" -}}
+      {{- if kindIs "map" $p -}}
+        {{- if hasKey $p "size" }}{{- $storage = printf "%v" (index $p "size") -}}{{- else if hasKey $p "volumeSize" }}{{- $storage = printf "%v" (index $p "volumeSize") -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if and (eq $storage "-") (hasKey $val "persistentVolume") -}}
+      {{- $pv := index $val "persistentVolume" -}}
+      {{- if kindIs "map" $pv -}}
+        {{- if hasKey $pv "size" }}{{- $storage = printf "%v" (index $pv "size") -}}{{- else if hasKey $pv "volumeSize" }}{{- $storage = printf "%v" (index $pv "volumeSize") -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $hasData := or (ne $reqCpu "-") (ne $limCpu "-") (ne $reqMem "-") (ne $limMem "-") (ne $storage "-") -}}
+    {{- $replicas := 1 -}}
+    {{- if hasKey $val "replicaCount" -}}
+      {{- $candidate := int (default 1 (index $val "replicaCount")) -}}
+      {{- if gt $candidate 0 }}{{- $replicas = $candidate -}}{{- end -}}
+    {{- else if hasKey $val "replicas" -}}
+      {{- $candidate := int (default 1 (index $val "replicas")) -}}
+      {{- if gt $candidate 0 }}{{- $replicas = $candidate -}}{{- end -}}
+    {{- end -}}
+    {{- if lt $replicas 1 }}{{- $replicas = 1 -}}{{- end -}}
+    {{- if $hasData -}}
+      {{- $reqCpuMilli := 0.0 -}}
+      {{- if ne $reqCpu "-" -}}
+        {{- $trim := trim $reqCpu -}}
+        {{- if regexMatch "(?i)m$" $trim -}}
+          {{- $reqCpuMilli = float64 (regexReplaceAll "(?i)m$" $trim "") -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" $trim -}}
+          {{- $reqCpuMilli = mul (float64 $trim) 1000 -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $limCpuMilli := 0.0 -}}
+      {{- if ne $limCpu "-" -}}
+        {{- $trim := trim $limCpu -}}
+        {{- if regexMatch "(?i)m$" $trim -}}
+          {{- $limCpuMilli = float64 (regexReplaceAll "(?i)m$" $trim "") -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" $trim -}}
+          {{- $limCpuMilli = mul (float64 $trim) 1000 -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $reqMemMi := 0.0 -}}
+      {{- if ne $reqMem "-" -}}
+        {{- $trim := trim $reqMem -}}
+        {{- if regexMatch "(?i)Mi$" $trim -}}
+          {{- $reqMemMi = float64 (regexReplaceAll "(?i)Mi$" $trim "") -}}
+        {{- else if regexMatch "(?i)Gi$" $trim -}}
+          {{- $reqMemMi = mul (float64 (regexReplaceAll "(?i)Gi$" $trim "")) 1024 -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" $trim -}}
+          {{- $reqMemMi = float64 $trim -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $limMemMi := 0.0 -}}
+      {{- if ne $limMem "-" -}}
+        {{- $trim := trim $limMem -}}
+        {{- if regexMatch "(?i)Mi$" $trim -}}
+          {{- $limMemMi = float64 (regexReplaceAll "(?i)Mi$" $trim "") -}}
+        {{- else if regexMatch "(?i)Gi$" $trim -}}
+          {{- $limMemMi = mul (float64 (regexReplaceAll "(?i)Gi$" $trim "")) 1024 -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" $trim -}}
+          {{- $limMemMi = float64 $trim -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $storageMi := 0.0 -}}
+      {{- if ne $storage "-" -}}
+        {{- $trim := trim $storage -}}
+        {{- if regexMatch "(?i)Mi$" $trim -}}
+          {{- $storageMi = float64 (regexReplaceAll "(?i)Mi$" $trim "") -}}
+        {{- else if regexMatch "(?i)Gi$" $trim -}}
+          {{- $storageMi = mul (float64 (regexReplaceAll "(?i)Gi$" $trim "")) 1024 -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" $trim -}}
+          {{- $storageMi = float64 $trim -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $reqCpuDisplay := $reqCpu -}}
+      {{- if and (ne $reqCpu "-") (gt $replicas 1) (gt $reqCpuMilli 0.0) -}}
+        {{- $total := mul $reqCpuMilli (float64 $replicas) -}}
+        {{- if regexMatch "(?i)m$" (trim $reqCpu) -}}
+          {{- $reqCpuDisplay = printf "%s (total %.0fm)" $reqCpu $total -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" (trim $reqCpu) -}}
+          {{- $totalCores := div $total 1000 -}}
+          {{- $totalCoresStr := printf "%.2f" $totalCores | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
+          {{- $reqCpuDisplay = printf "%s (total %s)" $reqCpu $totalCoresStr -}}
+        {{- else -}}
+          {{- $reqCpuDisplay = printf "%s (x%d)" $reqCpu $replicas -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $limCpuDisplay := $limCpu -}}
+      {{- if and (ne $limCpu "-") (gt $replicas 1) (gt $limCpuMilli 0.0) -}}
+        {{- $total := mul $limCpuMilli (float64 $replicas) -}}
+        {{- if regexMatch "(?i)m$" (trim $limCpu) -}}
+          {{- $limCpuDisplay = printf "%s (total %.0fm)" $limCpu $total -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" (trim $limCpu) -}}
+          {{- $totalCores := div $total 1000 -}}
+          {{- $totalCoresStr := printf "%.2f" $totalCores | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
+          {{- $limCpuDisplay = printf "%s (total %s)" $limCpu $totalCoresStr -}}
+        {{- else -}}
+          {{- $limCpuDisplay = printf "%s (x%d)" $limCpu $replicas -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $reqMemDisplay := $reqMem -}}
+      {{- if and (ne $reqMem "-") (gt $replicas 1) (gt $reqMemMi 0.0) -}}
+        {{- $total := mul $reqMemMi (float64 $replicas) -}}
+        {{- if regexMatch "(?i)Gi$" (trim $reqMem) -}}
+          {{- $totalGi := div $total 1024 -}}
+          {{- $totalGiStr := printf "%.2f" $totalGi | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
+          {{- $reqMemDisplay = printf "%s (total %sGi)" $reqMem $totalGiStr -}}
+        {{- else -}}
+          {{- $reqMemDisplay = printf "%s (total %.0fMi)" $reqMem $total -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $limMemDisplay := $limMem -}}
+      {{- if and (ne $limMem "-") (gt $replicas 1) (gt $limMemMi 0.0) -}}
+        {{- $total := mul $limMemMi (float64 $replicas) -}}
+        {{- if regexMatch "(?i)Gi$" (trim $limMem) -}}
+          {{- $totalGi := div $total 1024 -}}
+          {{- $totalGiStr := printf "%.2f" $totalGi | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
+          {{- $limMemDisplay = printf "%s (total %sGi)" $limMem $totalGiStr -}}
+        {{- else -}}
+          {{- $limMemDisplay = printf "%s (total %.0fMi)" $limMem $total -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $storageDisplay := $storage -}}
+      {{- if and (ne $storage "-") (gt $replicas 1) (gt $storageMi 0.0) -}}
+        {{- $total := mul $storageMi (float64 $replicas) -}}
+        {{- if regexMatch "(?i)Gi$" (trim $storage) -}}
+          {{- $totalGi := div $total 1024 -}}
+          {{- $totalGiStr := printf "%.2f" $totalGi | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
+          {{- $storageDisplay = printf "%s (total %sGi)" $storage $totalGiStr -}}
+        {{- else -}}
+          {{- $storageDisplay = printf "%s (total %.0fMi)" $storage $total -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $totalReqCpu := mul $reqCpuMilli (float64 $replicas) -}}
+      {{- $totalLimCpu := mul $limCpuMilli (float64 $replicas) -}}
+      {{- $totalReqMem := mul $reqMemMi (float64 $replicas) -}}
+      {{- $totalLimMem := mul $limMemMi (float64 $replicas) -}}
+      {{- $totalStorage := mul $storageMi (float64 $replicas) -}}
+      {{- if $agg -}}
+        {{- if gt (float64 $totalReqCpu) 0.0 }}{{- $_ := set $agg "reqCpu" (add (index $agg "reqCpu") (float64 $totalReqCpu)) -}}{{- end -}}
+        {{- if gt (float64 $totalLimCpu) 0.0 }}{{- $_ := set $agg "limCpu" (add (index $agg "limCpu") (float64 $totalLimCpu)) -}}{{- end -}}
+        {{- if gt (float64 $totalReqMem) 0.0 }}{{- $_ := set $agg "reqMem" (add (index $agg "reqMem") (float64 $totalReqMem)) -}}{{- end -}}
+        {{- if gt (float64 $totalLimMem) 0.0 }}{{- $_ := set $agg "limMem" (add (index $agg "limMem") (float64 $totalLimMem)) -}}{{- end -}}
+        {{- if gt (float64 $totalStorage) 0.0 }}{{- $_ := set $agg "storage" (add (index $agg "storage") (float64 $totalStorage)) -}}{{- end -}}
+      {{- end -}}
+{{- printf "| %s | %d | %s | %s | %s | %s | %s |\n" $name $replicas $reqCpuDisplay $limCpuDisplay $reqMemDisplay $limMemDisplay $storageDisplay -}}
+    {{- end -}}
+{{ template "chart.resourcesRows" (dict "m" $val "path" $name "agg" $agg) -}}
+  {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "chart.resourcesTable" -}}
+## Resource Summary
+
+| Component | Replicas | Request CPU | Limit CPU | Request Memory | Limit Memory | Storage |
+|-----------|----------|-------------|-----------|----------------|--------------|---------|
+{{ $values := fromYaml (toYaml .ChartValues) -}}
+{{ $agg := dict "reqCpu" 0.0 "limCpu" 0.0 "reqMem" 0.0 "limMem" 0.0 "storage" 0.0 -}}
+{{ template "chart.resourcesRows" (dict "m" $values "path" "" "agg" $agg) }}
+| **Totals** | - | {{ template "chart.sumCpuDisplay" (dict "milli" (index $agg "reqCpu")) }} | {{ template "chart.sumCpuDisplay" (dict "milli" (index $agg "limCpu")) }} | {{ template "chart.sumMemDisplay" (dict "mi" (index $agg "reqMem")) }} | {{ template "chart.sumMemDisplay" (dict "mi" (index $agg "limMem")) }} | {{ template "chart.sumStorageDisplay" (dict "mi" (index $agg "storage")) }} |
+{{- end -}}
+
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+## Configuration
+
+The following table lists the configurable parameters of this chart and their default values.
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "chart.resourcesTable" . }}
 
 {{ template "chart.maintainersSection" . }}
 
 {{ template "chart.sourcesSection" . }}
 
 {{ template "chart.requirementsSection" . }}
-
-## Prerequisites
-
-- Kubernetes 1.19+
-- Helm 3.2.0+
-- PV provisioner support in the underlying infrastructure (if persistence is enabled)
-- Redis instance reachable from the cluster (defaults target the bundled `support.redis` release)
-
-## Connection Requirements
-
-Configure Redis connectivity via the `global.datastores.erpc.redis` section (or override per-chart with `redis`).
-
-| Purpose | Values path | Default |
-| --- | --- | --- |
-| Cache connector | `global.datastores.erpc.redis.cacheDb` | `redis://default:atk@redis:6379/0` |
-| Shared state connector | `global.datastores.erpc.redis.sharedStateDb` | `redis://default:atk@redis:6379/1` |
-
-Update the host, port, credentials, and database numbers to match your external Redis deployment.
-
-## Installing the Chart
-
-To install the chart with the release name `my-release`:
-
-```console
-helm install my-release .
-```
-
-The command deploys eRPC on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
-
-> **Tip**: List all releases using `helm list`
-
-## Uninstalling the Chart
-
-To uninstall/delete the `my-release` deployment:
-
-```console
-helm delete my-release
-```
-
-The command removes all the Kubernetes components associated with the chart and deletes the release.
-
-## Parameters
-
-{{ template "chart.valuesSection" . }}
-
-## Configuration and installation details
-
-### Setting up upstream providers
-
-You can configure multiple upstream RPC providers in the `config.projects` section:
-
-```yaml
-config:
-  projects:
-    - id: my-project
-      upstreams:
-        - endpoint: http://node1:8545
-        - endpoint: http://node2:8545
-```
-
-### Advanced configuration
-
-#### Using external ConfigMap
-
-Instead of inline configuration, you can reference an external ConfigMap:
-
-```yaml
-extraEnvVarsCM: my-erpc-config
-```
-
-#### Custom volumes and mounts
-
-Mount additional configuration files or secrets:
-
-```yaml
-extraVolumes:
-  - name: custom-config
-    configMap:
-      name: my-custom-config
-extraVolumeMounts:
-  - name: custom-config
-    mountPath: /config/custom
-    readOnly: true
-```
-
-### Exposing eRPC
-
-#### LoadBalancer service
-
-```yaml
-service:
-  type: LoadBalancer
-  port: 4000
-```
-
-#### Ingress
-
-```yaml
-ingress:
-  enabled: true
-  hostname: erpc.example.com
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt
-  tls: true
-```
-
-### Metrics and monitoring
-
-eRPC exposes Prometheus metrics on port 4001 at the `/metrics` endpoint. The metrics port is configured via:
-
-```yaml
-service:
-  metricsPort: 4001
-```
-
-To scrape metrics with Prometheus, the chart includes pod annotations:
-
-```yaml
-podAnnotations:
-  prometheus.io/scrape: "true"
-  prometheus.io/port: "4001"
-  prometheus.io/path: "/metrics"
-```
-
-### Resource limits and autoscaling
-
-Configure resource limits and requests:
-
-```yaml
-resources:
-  limits:
-    cpu: 100m
-    memory: 128Mi
-  requests:
-    cpu: 100m
-    memory: 128Mi
-```
-
-Enable horizontal pod autoscaling:
-
-```yaml
-autoscaling:
-  enabled: true
-  minReplicas: 1
-  maxReplicas: 10
-  builtInMetrics:
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: 80
-```
-
-### Network policies
-
-To restrict network traffic to/from eRPC pods:
-
-```yaml
-networkPolicy:
-  enabled: true
-  allowExternal: false
-  allowExternalEgress: false
-  extraIngress:
-    - from:
-        - podSelector:
-            matchLabels:
-              app.kubernetes.io/name: my-app
-      ports:
-        - protocol: TCP
-          port: 4000
-```
-
-## Troubleshooting
-
-### eRPC pods are not starting
-
-Check the pod logs:
-```console
-kubectl logs -l app.kubernetes.io/name=erpc
-```
-
-### Connection refused errors
-
-Ensure your upstream endpoints are reachable from within the cluster:
-```console
-kubectl exec -it deploy/erpc -- curl -v http://your-upstream:8545
-```
-
-### Performance issues
-
-Check if caching is working properly by monitoring metrics:
-```console
-kubectl port-forward svc/erpc 4001:4001
-curl http://localhost:4001/metrics | grep erpc_cache
-```
