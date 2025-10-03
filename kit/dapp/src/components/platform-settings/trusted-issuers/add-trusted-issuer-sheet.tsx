@@ -12,8 +12,8 @@ import {
 } from "@/components/ui/sheet";
 import { useAppForm } from "@/hooks/use-app-form";
 import { client, orpc } from "@/orpc/orpc-client";
-import type { TopicListOutput } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
+import type { TopicListOutput } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import {
   TrustedIssuerCreateInputSchema,
   type TrustedIssuerCreateInput,
@@ -85,11 +85,32 @@ export function AddTrustedIssuerSheet({
           throw new Error("Issuer address is required before submission");
         }
 
-        const trustedIssuerIdentity = await client.system.identity.read({
-          wallet: issuerAddress,
-        });
+        const missingIdentityErrorMessage = t(
+          "trustedIssuers.add.errors.identityRequired",
+          {
+            defaultValue:
+              "The selected user must register an identity before they can be added as a trusted issuer.",
+          }
+        );
+
+        const trustedIssuerIdentity = await client.system.identity
+          .read({
+            wallet: issuerAddress,
+          })
+          .catch((error: unknown) => {
+            const maybeOrpcError = error as {
+              code?: string;
+            };
+
+            if (maybeOrpcError?.code === "NOT_FOUND") {
+              throw new Error(missingIdentityErrorMessage);
+            }
+
+            throw error;
+          });
+
         if (!trustedIssuerIdentity) {
-          throw new Error("Trusted issuer identity not found");
+          throw new Error(missingIdentityErrorMessage);
         }
 
         const payload = TrustedIssuerCreateInputSchema.parse({
@@ -122,6 +143,13 @@ export function AddTrustedIssuerSheet({
     form.store,
     (state) => state.values.issuerAddress
   );
+  const claimTopicIds = useStore(
+    form.store,
+    (state) => state.values.claimTopicIds
+  );
+  const hasSelectedTopics = Array.isArray(claimTopicIds)
+    ? claimTopicIds.length > 0
+    : false;
 
   // Keep a stable reference to the form instance for effects
   const formRef = useRef(form);
@@ -172,7 +200,6 @@ export function AddTrustedIssuerSheet({
           <form.AppForm>
             <div className="space-y-6">
               <AddressSelectOrInputToggle
-                allowManual={false}
                 children={({ mode }) => (
                   <>
                     {mode === "select" && (
@@ -181,6 +208,22 @@ export function AddTrustedIssuerSheet({
                         children={(field) => (
                           <field.AddressSelectField
                             scope="user"
+                            label={t(
+                              "trustedIssuers.add.fields.selectUser.label"
+                            )}
+                            required={true}
+                            description={t(
+                              "trustedIssuers.add.fields.selectUser.description"
+                            )}
+                          />
+                        )}
+                      />
+                    )}
+                    {mode === "manual" && (
+                      <form.AppField
+                        name="issuerAddress"
+                        children={(field) => (
+                          <field.AddressInputField
                             label={t(
                               "trustedIssuers.add.fields.selectUser.label"
                             )}
@@ -293,7 +336,11 @@ export function AddTrustedIssuerSheet({
                     form.setFieldValue("walletVerification", verification);
                   },
                 }}
-                disabled={!issuerAddress || createMutation.isPending}
+                disabled={
+                  !issuerAddress ||
+                  !hasSelectedTopics ||
+                  createMutation.isPending
+                }
               >
                 {createMutation.isPending
                   ? t("trustedIssuers.add.actions.adding")
