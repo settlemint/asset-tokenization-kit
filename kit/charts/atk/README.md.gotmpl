@@ -254,7 +254,7 @@
 |-----------|----------|-------------|-----------|----------------|--------------|---------|
 {{ $values := fromYaml (toYaml .ChartValues) -}}
 {{ $agg := dict "reqCpu" 0.0 "limCpu" 0.0 "reqMem" 0.0 "limMem" 0.0 "storage" 0.0 -}}
-{{ template "chart.resourcesRows" (dict "m" $values "path" "" "agg" $agg) }}
+{{- template "chart.resourcesRows" (dict "m" $values "path" "" "agg" $agg) -}}
 | **Totals** | - | {{ template "chart.sumCpuDisplay" (dict "milli" (index $agg "reqCpu")) }} | {{ template "chart.sumCpuDisplay" (dict "milli" (index $agg "limCpu")) }} | {{ template "chart.sumMemDisplay" (dict "mi" (index $agg "reqMem")) }} | {{ template "chart.sumMemDisplay" (dict "mi" (index $agg "limMem")) }} | {{ template "chart.sumStorageDisplay" (dict "mi" (index $agg "storage")) }} |
 {{- end -}}
 
