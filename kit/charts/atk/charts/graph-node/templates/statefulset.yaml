@@ -59,13 +59,19 @@ spec:
           securityContext:
             {{- toYaml $containerSecurityContext | nindent 12 }}
           {{- end }}
+      {{- $ipfsConfig := default (dict) .Values.ipfs }}
+      {{- $defaultIpfsEndpoint := default "" .Values.env.IPFS }}
+      {{- $ipfsEndpoints := (default (list $defaultIpfsEndpoint) (index $ipfsConfig "endpoints")) | compact }}
+      {{- $endpointCount := len (required "graph-node: configure at least one IPFS endpoint via .Values.ipfs.endpoints or env.IPFS" $ipfsEndpoints) }}
           command:
             - sh
             - -c
             - |
               graph-node \
                 --config /etc/graph-node/config.toml \
-                --ipfs {{ .Values.env.IPFS }}
+{{- range $index, $endpoint := $ipfsEndpoints }}
+                --ipfs {{ $endpoint }}{{- if lt (add $index 1) $endpointCount }} \\{{- end }}
+{{- end }}
           ports:
             - name: http-query
               containerPort: {{ .Values.service.ports.httpQuery }}

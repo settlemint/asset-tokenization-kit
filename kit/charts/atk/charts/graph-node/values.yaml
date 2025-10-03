@@ -55,6 +55,10 @@ initContainer:
       pullPolicy: IfNotPresent
     # -- (int) Timeout in seconds for each dependency check
     timeout: 120
+    ipfsClusterProxy:
+      enabled: true
+      host: ipfs-cluster
+      port: 9095
     # -- (list) List of dependencies to check
     dependencies:
       # -- (object) Dependency configuration
@@ -63,6 +67,8 @@ initContainer:
         name: postgresql
         # -- (string) Dependency endpoint template
         endpoint: "{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"graphNode\" \"local\" .Values.postgresql) }}"
+      - name: ipfs-cluster-proxy
+        endpoint: "{{ include \"graph-node.ipfsClusterProxyEndpoint\" (dict \"context\" $) }}"
     # -- (object) Resource limits and requests for TCP check container
     resources:
       # -- (object) Resource limits

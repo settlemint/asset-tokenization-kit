@@ -1,0 +1,89 @@
+{{- if .Values.ingress.enabled -}}
+{{- $ing := .Values.ingress -}}
+{{- $clusterSvc := include "ipfs-cluster.clusterFullname" . -}}
+{{- $ipfsSvc := include "ipfs-cluster.ipfsFullname" . -}}
+{{- $annotations := include "common.tplvalues.merge" (dict "values" (list .Values.commonAnnotations $ing.annotations) "context" .) | fromYaml }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $clusterSvc }}
+  labels:
+    {{- include "ipfs-cluster.labels" . | nindent 4 }}
+  {{- if $annotations }}
+  annotations:
+{{ toYaml $annotations | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if $ing.className }}
+  ingressClassName: {{ $ing.className }}
+  {{- end }}
+  {{- if $ing.tls }}
+  tls:
+    {{- range $ing.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range $group, $host := $ing.hostnames }}
+      {{- if and $host (ne (trim $host) "") }}
+    - host: {{ $host | quote }}
+      http:
+        paths:
+          {{- $paths := (index $ing.pathGroups $group) | default (list) -}}
+          {{- range $paths }}
+          {{- $entry := . -}}
+          {{- $svc := $entry.service | default (dict) -}}
+          {{- $svcName := "" -}}
+          {{- if hasKey $svc "name" }}
+            {{- $svcName = tpl (index $svc "name") $ -}}
+          {{- else }}
+            {{- $target := default "cluster" (index $svc "target") -}}
+            {{- if eq $target "ipfs" }}
+              {{- $svcName = $ipfsSvc -}}
+            {{- else if eq $target "ipfs-headless" }}
+              {{- $svcName = printf "%s-headless" $ipfsSvc -}}
+            {{- else if eq $target "cluster-headless" }}
+              {{- $svcName = printf "%s-headless" $clusterSvc -}}
+            {{- else if eq $target "cluster" }}
+              {{- $svcName = $clusterSvc -}}
+            {{- else }}
+              {{- $svcName = tpl $target $ -}}
+            {{- end }}
+          {{- end }}
+          {{- if not $svcName }}
+            {{- $svcName = $clusterSvc -}}
+          {{- end }}
+          {{- $portSpec := dict -}}
+          {{- if hasKey $svc "portName" }}
+            {{- $_ := set $portSpec "name" (index $svc "portName") -}}
+          {{- else if hasKey $svc "port" }}
+            {{- $portVal := index $svc "port" -}}
+            {{- if kindIs "int" $portVal }}
+              {{- $_ := set $portSpec "number" $portVal -}}
+            {{- else }}
+              {{- $_ := set $portSpec "name" $portVal -}}
+            {{- end }}
+          {{- end }}
+          {{- if not (or (hasKey $portSpec "name") (hasKey $portSpec "number")) }}
+            {{- $defaultPort := default "api" (index $svc "defaultPort") -}}
+            {{- $_ := set $portSpec "name" $defaultPort -}}
+          {{- end }}
+          - path: {{ $entry.path | default "/" }}
+            pathType: {{ $entry.pathType | default "Prefix" }}
+            backend:
+              service:
+                name: {{ $svcName }}
+                port:
+                  {{- if hasKey $portSpec "number" }}
+                  number: {{ index $portSpec "number" }}
+                  {{- else }}
+                  name: {{ index $portSpec "name" | default "api" }}
+                  {{- end }}
+          {{- end }}
+      {{- end }}
+    {{- end }}
+{{- end }}

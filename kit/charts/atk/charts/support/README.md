@@ -1,6 +1,6 @@
 # support
 
-![Version: 2.0.0-alpha.15](https://img.shields.io/badge/Version-2.0.0--alpha.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.15](https://img.shields.io/badge/AppVersion-2.0.0--alpha.15-informational?style=flat-square)
+![Version: 2.0.0-alpha.17](https://img.shields.io/badge/Version-2.0.0--alpha.17-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.17](https://img.shields.io/badge/AppVersion-2.0.0--alpha.17-informational?style=flat-square)
 
 A Helm chart for the supporting components
 
@@ -14,9 +14,9 @@ A Helm chart for the supporting components
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | minio | 2.0.0-alpha.15 |
-|  | postgresql | 2.0.0-alpha.15 |
-|  | redis | 2.0.0-alpha.15 |
+|  | minio | 2.0.0-alpha.17 |
+|  | postgresql | 2.0.0-alpha.17 |
+|  | redis | 2.0.0-alpha.17 |
 | https://kubernetes.github.io/ingress-nginx | ingress-nginx | 4.13.3 |
 | https://stakater.github.io/stakater-charts | reloader | 2.2.3 |
 
@@ -169,7 +169,7 @@ A Helm chart for the supporting components
 | ingress-nginx.global.image | object | `{"registry":"registry.k8s.io"}` | Global image configuration |
 | ingress-nginx.global.image.registry | string | `"registry.k8s.io"` | Global image registry |
 | ingress-nginx.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array (list) |
-| minio | object | `{"buckets":[{"name":"atk","policy":"none","purge":false}],"consoleIngress":{"enabled":true,"hosts":["minio-console.k8s.orb.local"],"ingressClassName":"atk-nginx","path":"/"},"enabled":true,"fullnameOverride":"minio","image":{"repository":"docker.io/minio/minio","tag":"RELEASE.2025-07-23T15-54-02Z"},"ingress":{"enabled":true,"hosts":["minio.k8s.orb.local"],"ingressClassName":"atk-nginx","path":"/"},"mode":"standalone","persistence":{"enabled":true,"size":"1Gi"},"replicas":1,"resources":{"limits":{"cpu":"200m","memory":"512Mi"},"requests":{"cpu":"100m","memory":"256Mi"}},"rootPassword":"atk-password","rootUser":"admin","users":[{"accessKey":"atk-service","policy":"readwrite","secretKey":"atk-service-secret"}]}` | MinIO configuration (object) |
+| minio | object | `{"buckets":[{"name":"atk","policy":"none","purge":false}],"consoleIngress":{"enabled":true,"hosts":["minio-console.k8s.orb.local"],"ingressClassName":"atk-nginx","path":"/"},"enabled":true,"fullnameOverride":"minio","image":{"repository":"docker.io/minio/minio","tag":"RELEASE.2025-09-07T16-13-09Z"},"ingress":{"enabled":true,"hosts":["minio.k8s.orb.local"],"ingressClassName":"atk-nginx","path":"/"},"mode":"standalone","persistence":{"enabled":true,"size":"1Gi"},"replicas":1,"resources":{"limits":{"cpu":"200m","memory":"512Mi"},"requests":{"cpu":"100m","memory":"256Mi"}},"rootPassword":"atk-password","rootUser":"admin","users":[{"accessKey":"atk-service","policy":"readwrite","secretKey":"atk-service-secret"}]}` | MinIO configuration (object) |
 | minio.buckets | list | `[{"name":"atk","policy":"none","purge":false}]` | Automatic bucket creation |
 | minio.buckets[0] | string | `{"name":"atk","policy":"none","purge":false}` | Bucket name |
 | minio.buckets[0].policy | string | `"none"` | Bucket access policy (none/download/upload/public) |
@@ -181,9 +181,9 @@ A Helm chart for the supporting components
 | minio.consoleIngress.path | string | `"/"` | Path for MinIO console ingress |
 | minio.enabled | bool | `true` | Enable MinIO deployment (bool) |
 | minio.fullnameOverride | string | `"minio"` | String to fully override common.names.fullname (string) |
-| minio.image | object | `{"repository":"docker.io/minio/minio","tag":"RELEASE.2025-07-23T15-54-02Z"}` | MinIO image configuration |
+| minio.image | object | `{"repository":"docker.io/minio/minio","tag":"RELEASE.2025-09-07T16-13-09Z"}` | MinIO image configuration |
 | minio.image.repository | string | `"docker.io/minio/minio"` | MinIO image repository |
-| minio.image.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` | MinIO image tag (immutable tags are recommended) |
+| minio.image.tag | string | `"RELEASE.2025-09-07T16-13-09Z"` | MinIO image tag (immutable tags are recommended) |
 | minio.ingress | object | `{"enabled":true,"hosts":["minio.k8s.orb.local"],"ingressClassName":"atk-nginx","path":"/"}` | Ingress configuration for MinIO API (object) |
 | minio.ingress.enabled | bool | `true` | Enable ingress for MinIO API |
 | minio.ingress.hosts | list | `["minio.k8s.orb.local"]` | Hosts for MinIO API ingress |

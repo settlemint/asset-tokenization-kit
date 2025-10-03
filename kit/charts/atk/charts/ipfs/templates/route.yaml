@@ -1,0 +1,119 @@
+{{- /*
+Render OpenShift Route resources when the API is available and the feature is enabled.
+Routes are defined via .Values.openShiftRoute.routes to avoid array overrides while
+still allowing per-route customisation.
+*/ -}}
+{{- $hasRouteAPI := .Capabilities.APIVersions.Has "route.openshift.io/v1" -}}
+{{- $routeValues := .Values.openShiftRoute -}}
+{{- if and $hasRouteAPI $routeValues.enabled -}}
+{{- $clusterSvc := include "ipfs-cluster.clusterFullname" . -}}
+{{- $ipfsSvc := include "ipfs-cluster.ipfsFullname" . -}}
+{{- $baseAnnotations := include "common.tplvalues.merge" (dict "values" (list .Values.commonAnnotations $routeValues.annotations) "context" .) | fromYaml }}
+{{- $globalHost := trim (default "" $routeValues.host) -}}
+{{- $wildcardDefault := default "None" $routeValues.wildcardPolicy -}}
+{{- $routes := default dict $routeValues.routes -}}
+{{- range $key := sortAlpha (keys $routes) }}
+  {{- $entry := index $routes $key -}}
+  {{- if and $entry (kindIs "map" $entry) }}
+    {{- $enabled := default true (index $entry "enabled") }}
+    {{- if $enabled }}
+      {{- $state := dict }}
+      {{- $_ := set $state "name" (printf "%s-%s" $clusterSvc $key) }}
+      {{- $_ := set $state "svcName" $clusterSvc }}
+      {{- $_ := set $state "targetPort" "api" }}
+      {{- $_ := set $state "path" (default "/" (index $entry "path")) }}
+      {{- $_ := set $state "host" $globalHost }}
+      {{- if hasKey $entry "host" }}
+        {{- $_ := set $state "host" (tpl (index $entry "host") $) }}
+      {{- end }}
+      {{- with index $entry "nameSuffix" }}
+        {{- $_ := set $state "name" (printf "%s-%s" $clusterSvc (tpl . $)) }}
+      {{- end }}
+      {{- if hasKey $entry "name" }}
+        {{- $_ := set $state "name" (tpl (index $entry "name") $) }}
+      {{- end }}
+      {{- $serviceConfig := dict }}
+      {{- if hasKey $entry "service" }}
+        {{- $serviceConfig = index $entry "service" }}
+      {{- end }}
+      {{- if and $serviceConfig (kindIs "map" $serviceConfig) }}
+        {{- if hasKey $serviceConfig "name" }}
+          {{- $_ := set $state "svcName" (tpl (index $serviceConfig "name") $) }}
+        {{- else }}
+          {{- $target := default "cluster" (index $serviceConfig "target") }}
+          {{- if eq $target "ipfs" }}
+            {{- $_ := set $state "svcName" $ipfsSvc }}
+          {{- else if eq $target "ipfs-headless" }}
+            {{- $_ := set $state "svcName" (printf "%s-headless" $ipfsSvc) }}
+          {{- else if eq $target "cluster-headless" }}
+            {{- $_ := set $state "svcName" (printf "%s-headless" $clusterSvc) }}
+          {{- else if eq $target "cluster" }}
+            {{- $_ := set $state "svcName" $clusterSvc }}
+          {{- else }}
+            {{- $_ := set $state "svcName" (tpl $target $) }}
+          {{- end }}
+        {{- end }}
+        {{- if hasKey $serviceConfig "portName" }}
+          {{- $_ := set $state "targetPort" (index $serviceConfig "portName") }}
+        {{- else if hasKey $serviceConfig "port" }}
+          {{- $_ := set $state "targetPort" (index $serviceConfig "port") }}
+        {{- else if hasKey $serviceConfig "portTarget" }}
+          {{- $_ := set $state "targetPort" (index $serviceConfig "portTarget") }}
+        {{- end }}
+      {{- end }}
+      {{- if hasKey $entry "weight" }}
+        {{- $_ := set $state "weight" (index $entry "weight") }}
+      {{- end }}
+      {{- if hasKey $entry "wildcardPolicy" }}
+        {{- $_ := set $state "wildcard" (index $entry "wildcardPolicy") }}
+      {{- else }}
+        {{- $_ := set $state "wildcard" $wildcardDefault }}
+      {{- end }}
+      {{- if hasKey $entry "tls" }}
+        {{- $_ := set $state "tls" (index $entry "tls") }}
+      {{- else }}
+        {{- $_ := set $state "tls" $routeValues.tls }}
+      {{- end }}
+      {{- $annotations := include "common.tplvalues.merge" (dict "values" (list $baseAnnotations (index $entry "annotations")) "context" $) | fromYaml }}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ index $state "name" }}
+  labels:
+    {{- include "ipfs-cluster.labels" $ | nindent 4 }}
+  {{- if $annotations }}
+  annotations:
+{{ toYaml $annotations | nindent 4 }}
+  {{- end }}
+spec:
+  to:
+    kind: Service
+    name: {{ index $state "svcName" }}
+    {{- with (index $state "weight") }}
+    weight: {{ . }}
+    {{- end }}
+  {{- with index $entry "alternateBackends" }}
+  alternateBackends:
+{{ toYaml . | nindent 4 }}
+  {{- end }}
+  port:
+    targetPort: {{ index $state "targetPort" }}
+  {{- with (index $state "host") }}
+    {{- if ne (trim .) "" }}
+  host: {{ . | quote }}
+    {{- end }}
+  {{- end }}
+  path: {{ (index $state "path") | quote }}
+  {{- with (index $state "wildcard") }}
+  wildcardPolicy: {{ . }}
+  {{- end }}
+  {{- $tls := index $state "tls" }}
+  {{- if $tls }}
+  tls:
+{{ toYaml $tls | nindent 4 }}
+  {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}

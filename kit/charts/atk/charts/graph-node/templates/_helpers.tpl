@@ -82,3 +82,30 @@ Return the PostgreSQL secret name
 {{- define "graph-node.pgSecretName" -}}
 {{- printf "%s-pg-secret" (include "graph-node.fullname" .) }}
 {{- end }}
+
+{{/*
+Resolve the endpoint host:port string for the IPFS cluster proxy dependency.
+Allows overriding via initContainer.tcpCheck.ipfsClusterProxy.{endpoint,host,port} values.
+*/}}
+{{- define "graph-node.ipfsClusterProxyEndpoint" -}}
+{{- $ctx := .context | default . -}}
+{{- $initContainer := $ctx.Values.initContainer | default (dict) -}}
+{{- $tcpCheck := index $initContainer "tcpCheck" | default (dict) -}}
+{{- $proxy := index $tcpCheck "ipfsClusterProxy" | default (dict) -}}
+{{- $enabled := true -}}
+{{- if hasKey $proxy "enabled" -}}
+  {{- $enabled = index $proxy "enabled" -}}
+{{- end -}}
+{{- if $enabled -}}
+  {{- $endpoint := "" -}}
+  {{- if hasKey $proxy "endpoint" -}}
+    {{- $endpoint = index $proxy "endpoint" -}}
+  {{- end -}}
+  {{- if not $endpoint -}}
+    {{- $host := default "ipfs-cluster" (index $proxy "host") -}}
+    {{- $port := default 9095 (index $proxy "port") -}}
+    {{- $endpoint = printf "%s:%v" $host $port -}}
+  {{- end -}}
+  {{- tpl (toString $endpoint) $ctx -}}
+{{- end -}}
+{{- end }}
