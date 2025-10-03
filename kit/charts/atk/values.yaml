@@ -351,6 +351,10 @@ hasura:
     pullPolicy: IfNotPresent
   # -- (object) Ingress configuration for Hasura console and API
   ingress:
+    # -- (bool) Enable ingress exposure for Hasura
+    enabled: true
+    # -- (string) IngressClass for Hasura ingress resources
+    className: "atk-nginx"
     # -- (string) Hostname for Hasura GraphQL endpoint. Update for your environment.
     hostName: hasura.k8s.orb.local
 
@@ -376,6 +380,10 @@ ipfs:
             - http://ipfs-cluster.k8s.orb.local
   # -- (object) Ingress configuration for the IPFS cluster endpoints
   ingress:
+    # -- (bool) Enable ingress exposure for IPFS cluster endpoints
+    enabled: true
+    # -- (string) IngressClass for IPFS cluster ingress resources
+    className: "atk-nginx"
     hostnames:
       api: ipfs-cluster.k8s.orb.local
   # -- (object) Test pod image configuration
@@ -401,6 +409,10 @@ portal:
         repository: ghcr.io/settlemint/btp-waitforit
   # -- (object) Ingress configuration for Portal API
   ingress:
+    # -- (bool) Enable ingress exposure for Portal
+    enabled: true
+    # -- (string) IngressClass for Portal ingress resources
+    ingressClassName: "atk-nginx"
     # -- (string) Hostname for Portal service. Update for your environment.
     hostname: portal.k8s.orb.local
 
@@ -545,6 +557,17 @@ support:
       # -- (list) Hostnames for MinIO access
       hosts:
         - minio.k8s.orb.local
+    # -- (object) MinIO console ingress configuration
+    consoleIngress:
+      # -- (bool) Enable ingress for MinIO console dashboard
+      enabled: true
+      # -- (string) IngressClass for MinIO console ingress resources
+      ingressClassName: atk-nginx
+      # -- (string) Path prefix for MinIO console ingress
+      path: /
+      # -- (list) Hostnames for MinIO console access
+      hosts:
+        - minio-console.k8s.orb.local
   # -- (object) Redis in-memory data store configuration
   redis:
     # -- (bool) Enable Redis deployment

@@ -201,7 +201,7 @@ The following table lists the configurable parameters of this chart and their de
 | graph-node.openShiftRoute | object | `{"enabled":false,"host":"graph.k8s.orb.local"}` | OpenShift Route configuration |
 | graph-node.openShiftRoute.enabled | bool | `false` | Enable OpenShift route |
 | graph-node.openShiftRoute.host | string | `"graph.k8s.orb.local"` | Hostname for OpenShift route |
-| hasura | object | `{"enabled":true,"fullnameOverride":"hasura","image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"hasura/graphql-engine","tag":"v2.48.6"},"ingress":{"hostName":"hasura.k8s.orb.local"}}` | Hasura GraphQL Engine configuration |
+| hasura | object | `{"enabled":true,"fullnameOverride":"hasura","image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"hasura/graphql-engine","tag":"v2.48.6"},"ingress":{"className":"atk-nginx","enabled":true,"hostName":"hasura.k8s.orb.local"}}` | Hasura GraphQL Engine configuration |
 | hasura.enabled | bool | `true` | Enable deployment of Hasura GraphQL engine |
 | hasura.fullnameOverride | string | `"hasura"` | Override fullname to simplify service discovery |
 | hasura.image | object | `{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"hasura/graphql-engine","tag":"v2.48.6"}` | Hasura container image configuration |
@@ -209,13 +209,17 @@ The following table lists the configurable parameters of this chart and their de
 | hasura.image.registry | string | `"docker.io"` | OCI registry for Hasura image |
 | hasura.image.repository | string | `"hasura/graphql-engine"` | Hasura image repository |
 | hasura.image.tag | string | `"v2.48.6"` | Hasura version tag |
-| hasura.ingress | object | `{"hostName":"hasura.k8s.orb.local"}` | Ingress configuration for Hasura console and API |
+| hasura.ingress | object | `{"className":"atk-nginx","enabled":true,"hostName":"hasura.k8s.orb.local"}` | Ingress configuration for Hasura console and API |
+| hasura.ingress.className | string | `"atk-nginx"` | IngressClass for Hasura ingress resources |
+| hasura.ingress.enabled | bool | `true` | Enable ingress exposure for Hasura |
 | hasura.ingress.hostName | string | `"hasura.k8s.orb.local"` | Hostname for Hasura GraphQL endpoint. Update for your environment. |
-| ipfs | object | `{"cluster":{"image":{"registry":"docker.io"}},"enabled":true,"ingress":{"hostnames":{"api":"ipfs-cluster.k8s.orb.local"}},"ipfs":{"config":{"api":{"httpHeaders":{"accessControlAllowOrigin":["https://ipfs-cluster.k8s.orb.local","http://ipfs-cluster.k8s.orb.local"]}}},"image":{"registry":"docker.io"}},"tests":{"image":{"registry":"docker.io"}}}` | IPFS Cluster deployment configuration |
+| ipfs | object | `{"cluster":{"image":{"registry":"docker.io"}},"enabled":true,"ingress":{"className":"atk-nginx","enabled":true,"hostnames":{"api":"ipfs-cluster.k8s.orb.local"}},"ipfs":{"config":{"api":{"httpHeaders":{"accessControlAllowOrigin":["https://ipfs-cluster.k8s.orb.local","http://ipfs-cluster.k8s.orb.local"]}}},"image":{"registry":"docker.io"}},"tests":{"image":{"registry":"docker.io"}}}` | IPFS Cluster deployment configuration |
 | ipfs.cluster | object | `{"image":{"registry":"docker.io"}}` | IPFS Cluster control-plane configuration overrides |
 | ipfs.cluster.image.registry | string | `"docker.io"` | OCI registry for the cluster control-plane image |
 | ipfs.enabled | bool | `true` | Enable deployment of the IPFS cluster stack |
-| ipfs.ingress | object | `{"hostnames":{"api":"ipfs-cluster.k8s.orb.local"}}` | Ingress configuration for the IPFS cluster endpoints |
+| ipfs.ingress | object | `{"className":"atk-nginx","enabled":true,"hostnames":{"api":"ipfs-cluster.k8s.orb.local"}}` | Ingress configuration for the IPFS cluster endpoints |
+| ipfs.ingress.className | string | `"atk-nginx"` | IngressClass for IPFS cluster ingress resources |
+| ipfs.ingress.enabled | bool | `true` | Enable ingress exposure for IPFS cluster endpoints |
 | ipfs.ipfs | object | `{"config":{"api":{"httpHeaders":{"accessControlAllowOrigin":["https://ipfs-cluster.k8s.orb.local","http://ipfs-cluster.k8s.orb.local"]}}},"image":{"registry":"docker.io"}}` | IPFS peer configuration overrides |
 | ipfs.ipfs.image.registry | string | `"docker.io"` | OCI registry for the Kubo image |
 | ipfs.tests | object | `{"image":{"registry":"docker.io"}}` | Test pod image configuration |
@@ -310,17 +314,19 @@ The following table lists the configurable parameters of this chart and their de
 | observability.victoria-metrics-single.server.persistentVolume.size | string | `"10Gi"` | Storage size for metrics retention |
 | observability.victoria-metrics-single.server.persistentVolume.storageClass | string | `""` | StorageClass for metrics volume (empty uses cluster default) |
 | observability.victoria-metrics-single.server.resources | object | `{}` | Resource requests and limits for VictoriaMetrics |
-| portal | object | `{"enabled":true,"image":{"registry":"ghcr.io"},"ingress":{"hostname":"portal.k8s.orb.local"},"initContainer":{"tcpCheck":{"image":{"repository":"ghcr.io/settlemint/btp-waitforit"}}}}` | Portal identity and access management configuration |
+| portal | object | `{"enabled":true,"image":{"registry":"ghcr.io"},"ingress":{"enabled":true,"hostname":"portal.k8s.orb.local","ingressClassName":"atk-nginx"},"initContainer":{"tcpCheck":{"image":{"repository":"ghcr.io/settlemint/btp-waitforit"}}}}` | Portal identity and access management configuration |
 | portal.enabled | bool | `true` | Enable deployment of Portal IAM service |
 | portal.image | object | `{"registry":"ghcr.io"}` | Portal container image |
 | portal.image.registry | string | `"ghcr.io"` | OCI registry for Portal image |
-| portal.ingress | object | `{"hostname":"portal.k8s.orb.local"}` | Ingress configuration for Portal API |
+| portal.ingress | object | `{"enabled":true,"hostname":"portal.k8s.orb.local","ingressClassName":"atk-nginx"}` | Ingress configuration for Portal API |
+| portal.ingress.enabled | bool | `true` | Enable ingress exposure for Portal |
 | portal.ingress.hostname | string | `"portal.k8s.orb.local"` | Hostname for Portal service. Update for your environment. |
+| portal.ingress.ingressClassName | string | `"atk-nginx"` | IngressClass for Portal ingress resources |
 | portal.initContainer | object | `{"tcpCheck":{"image":{"repository":"ghcr.io/settlemint/btp-waitforit"}}}` | Init container for dependency checks |
 | portal.initContainer.tcpCheck | object | `{"image":{"repository":"ghcr.io/settlemint/btp-waitforit"}}` | TCP check for database readiness |
 | portal.initContainer.tcpCheck.image | object | `{"repository":"ghcr.io/settlemint/btp-waitforit"}` | Wait-for-it utility image |
 | portal.initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` | Repository for TCP check utility |
-| support | object | `{"enabled":true,"ingress-nginx":{"controller":{"image":{"repository":"registry.k8s.io/ingress-nginx/controller"},"resources":{}},"enabled":true,"replicaCount":1},"minio":{"enabled":true,"image":{"repository":"docker.io/minio/minio"},"ingress":{"enabled":true,"hosts":["minio.k8s.orb.local"],"ingressClassName":"atk-nginx","path":"/"},"mcImage":{"repository":"docker.io/minio/minio"}},"postgresql":{"enabled":true,"image":{"registry":"docker.io"}},"redis":{"auth":{"enabled":true,"password":"atk"},"commonLabels":{"app.kubernetes.io/managed-by":"helm","kots.io/app-slug":"settlemint-atk"},"enabled":true,"fullnameOverride":"redis","image":{"registry":"docker.io"},"persistence":{"enabled":true,"size":"1Gi"},"resources":{"limits":{"cpu":"200m","memory":"256Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}},"reloader":{"enabled":true,"image":{"repository":"ghcr.io/stakater/reloader"}}}` | Support infrastructure (ingress, reloader, databases, object storage) |
+| support | object | `{"enabled":true,"ingress-nginx":{"controller":{"image":{"repository":"registry.k8s.io/ingress-nginx/controller"},"resources":{}},"enabled":true,"replicaCount":1},"minio":{"consoleIngress":{"enabled":true,"hosts":["minio-console.k8s.orb.local"],"ingressClassName":"atk-nginx","path":"/"},"enabled":true,"image":{"repository":"docker.io/minio/minio"},"ingress":{"enabled":true,"hosts":["minio.k8s.orb.local"],"ingressClassName":"atk-nginx","path":"/"},"mcImage":{"repository":"docker.io/minio/minio"}},"postgresql":{"enabled":true,"image":{"registry":"docker.io"}},"redis":{"auth":{"enabled":true,"password":"atk"},"commonLabels":{"app.kubernetes.io/managed-by":"helm","kots.io/app-slug":"settlemint-atk"},"enabled":true,"fullnameOverride":"redis","image":{"registry":"docker.io"},"persistence":{"enabled":true,"size":"1Gi"},"resources":{"limits":{"cpu":"200m","memory":"256Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}},"reloader":{"enabled":true,"image":{"repository":"ghcr.io/stakater/reloader"}}}` | Support infrastructure (ingress, reloader, databases, object storage) |
 | support.enabled | bool | `true` | Enable deployment of support infrastructure components |
 | support.ingress-nginx | object | `{"controller":{"image":{"repository":"registry.k8s.io/ingress-nginx/controller"},"resources":{}},"enabled":true,"replicaCount":1}` | NGINX Ingress Controller configuration |
 | support.ingress-nginx.controller | object | `{"image":{"repository":"registry.k8s.io/ingress-nginx/controller"},"resources":{}}` | Ingress controller configuration |
@@ -329,7 +335,12 @@ The following table lists the configurable parameters of this chart and their de
 | support.ingress-nginx.controller.resources | object | `{}` | Resource requests and limits for ingress controller |
 | support.ingress-nginx.enabled | bool | `true` | Enable NGINX Ingress Controller deployment |
 | support.ingress-nginx.replicaCount | int | `1` | Number of ingress controller replicas |
-| support.minio | object | `{"enabled":true,"image":{"repository":"docker.io/minio/minio"},"ingress":{"enabled":true,"hosts":["minio.k8s.orb.local"],"ingressClassName":"atk-nginx","path":"/"},"mcImage":{"repository":"docker.io/minio/minio"}}` | MinIO object storage configuration |
+| support.minio | object | `{"consoleIngress":{"enabled":true,"hosts":["minio-console.k8s.orb.local"],"ingressClassName":"atk-nginx","path":"/"},"enabled":true,"image":{"repository":"docker.io/minio/minio"},"ingress":{"enabled":true,"hosts":["minio.k8s.orb.local"],"ingressClassName":"atk-nginx","path":"/"},"mcImage":{"repository":"docker.io/minio/minio"}}` | MinIO object storage configuration |
+| support.minio.consoleIngress | object | `{"enabled":true,"hosts":["minio-console.k8s.orb.local"],"ingressClassName":"atk-nginx","path":"/"}` | MinIO console ingress configuration |
+| support.minio.consoleIngress.enabled | bool | `true` | Enable ingress for MinIO console dashboard |
+| support.minio.consoleIngress.hosts | list | `["minio-console.k8s.orb.local"]` | Hostnames for MinIO console access |
+| support.minio.consoleIngress.ingressClassName | string | `"atk-nginx"` | IngressClass for MinIO console ingress resources |
+| support.minio.consoleIngress.path | string | `"/"` | Path prefix for MinIO console ingress |
 | support.minio.enabled | bool | `true` | Enable MinIO object storage deployment |
 | support.minio.image | object | `{"repository":"docker.io/minio/minio"}` | MinIO server container image |
 | support.minio.image.repository | string | `"docker.io/minio/minio"` | MinIO server image repository |
