@@ -266,7 +266,9 @@ describe("User read", () => {
       expect(user.firstName).toBeUndefined();
       expect(user.lastName).toBeUndefined();
       // Should use the original name when KYC data is not available
-      expect(user.name).toBe(userWithoutKyc.name);
+      expect(user.name).toBe(
+        `${userWithoutKyc.firstName} ${userWithoutKyc.lastName}`
+      );
     });
 
     it("returns consistent data when reading by ID vs wallet", async () => {

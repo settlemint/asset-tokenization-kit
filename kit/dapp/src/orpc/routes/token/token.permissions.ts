@@ -23,7 +23,7 @@ export const TOKEN_PERMISSIONS: Record<
   freezeAddress: "custodian",
   recoverERC20: "emergency",
   recoverTokens: "emergency",
-  redeem: "supplyManagement",
+  redeem: { any: [] }, // No roles required
   mature: "governance",
   removeComplianceModule: "governance",
   setCap: "supplyManagement",

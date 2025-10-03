@@ -1,3 +1,4 @@
+import { encodeComplianceParams } from "@/lib/compliance/encoding";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import {
   type PredictAddressInput,
@@ -42,6 +43,10 @@ export const stablecoinPredictHandler = async (
     {
       address: context.factoryAddress,
       ...input,
+      initialModulePairs: input.initialModulePairs.map((pair) => ({
+        module: pair.module,
+        params: encodeComplianceParams(pair),
+      })),
     },
     z.object({
       ATKStableCoinFactoryImplementation: z.object({
