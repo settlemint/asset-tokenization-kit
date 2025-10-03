@@ -1,6 +1,6 @@
 # graph-node
 
-![Version: 2.0.0-alpha.15](https://img.shields.io/badge/Version-2.0.0--alpha.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.15](https://img.shields.io/badge/AppVersion-2.0.0--alpha.15-informational?style=flat-square)
+![Version: 2.0.0-alpha.17](https://img.shields.io/badge/Version-2.0.0--alpha.17-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.17](https://img.shields.io/badge/AppVersion-2.0.0--alpha.17-informational?style=flat-square)
 
 A Helm chart for Graph Node
 
@@ -73,11 +73,11 @@ A Helm chart for Graph Node
 | extraVolumeMounts | list | `[]` | Additional volume mounts |
 | extraVolumes | list | `[]` | Additional volumes |
 | fullnameOverride | string | `"graph-node"` | Override the full resource name. Set to "graph-node" for backward compatibility with existing ATK deployments that reference "graph-node-combined" service name |
-| global | object | `{"artifacts":{"image":{"pullPolicy":"IfNotPresent","registry":"ghcr.io","repository":"settlemint/asset-tokenization-kit-artifacts","tag":""}},"labels":{"kots.io/app-slug":"settlemint-atk"}}` | Global configuration |
-| global.artifacts | object | `{"image":{"pullPolicy":"IfNotPresent","registry":"ghcr.io","repository":"settlemint/asset-tokenization-kit-artifacts","tag":""}}` | Artifacts configuration for contract ABIs and genesis files |
-| global.artifacts.image | object | `{"pullPolicy":"IfNotPresent","registry":"ghcr.io","repository":"settlemint/asset-tokenization-kit-artifacts","tag":""}` | Image containing contract ABIs and genesis files |
+| global | object | `{"artifacts":{"image":{"pullPolicy":"IfNotPresent","registry":"harbor.settlemint.com/ghcr.io","repository":"settlemint/asset-tokenization-kit-artifacts","tag":""}},"labels":{"kots.io/app-slug":"settlemint-atk"}}` | Global configuration |
+| global.artifacts | object | `{"image":{"pullPolicy":"IfNotPresent","registry":"harbor.settlemint.com/ghcr.io","repository":"settlemint/asset-tokenization-kit-artifacts","tag":""}}` | Artifacts configuration for contract ABIs and genesis files |
+| global.artifacts.image | object | `{"pullPolicy":"IfNotPresent","registry":"harbor.settlemint.com/ghcr.io","repository":"settlemint/asset-tokenization-kit-artifacts","tag":""}` | Image containing contract ABIs and genesis files |
 | global.artifacts.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
-| global.artifacts.image.registry | string | `"ghcr.io"` | Image registry |
+| global.artifacts.image.registry | string | `"harbor.settlemint.com/ghcr.io"` | Image registry |
 | global.artifacts.image.repository | string | `"settlemint/asset-tokenization-kit-artifacts"` | Image repository |
 | global.artifacts.image.tag | string | `""` | Image tag (empty string uses Chart.appVersion) |
 | global.labels | object | `{"kots.io/app-slug":"settlemint-atk"}` | Labels applied to all resources |
@@ -86,9 +86,9 @@ A Helm chart for Graph Node
 | graph-node.graphNodeDefaults | object | `{"subgraph":{"configMapName":"besu-subgraph"}}` | Default values for Graph Node instances |
 | graph-node.graphNodeDefaults.subgraph | object | `{"configMapName":"besu-subgraph"}` | Subgraph defaults configuration |
 | graph-node.graphNodeDefaults.subgraph.configMapName | string | `"besu-subgraph"` | Default ConfigMap name for subgraph deployment |
-| image | object | `{"pullPolicy":"IfNotPresent","repository":"graphprotocol/graph-node","tag":"v0.40.2"}` | Graph Node image configuration |
+| image | object | `{"pullPolicy":"IfNotPresent","repository":"harbor.settlemint.com/docker.io/graphprotocol/graph-node","tag":"v0.40.2"}` | Graph Node image configuration |
 | image.pullPolicy | string | `"IfNotPresent"` | Graph Node image pull policy |
-| image.repository | string | `"graphprotocol/graph-node"` | Image for Graph Node |
+| image.repository | string | `"harbor.settlemint.com/docker.io/graphprotocol/graph-node"` | Image for Graph Node |
 | image.tag | string | `"v0.40.2"` | Overrides the image tag. Defaults to Chart.appVersion if not set |
 | imagePullSecrets | list | `[]` | Pull secrets required to fetch the Image |
 | ingress | object | `{"annotations":{"nginx.ingress.kubernetes.io/rewrite-target":"/$1","nginx.ingress.kubernetes.io/use-regex":"true"},"className":"atk-nginx","enabled":true,"hosts":[{"host":"graph.k8s.orb.local","paths":[{"path":"/(.*)","pathType":"ImplementationSpecific"},{"path":"/ws/?(.*)","pathType":"ImplementationSpecific"},{"path":"/admin/?(.*)","pathType":"ImplementationSpecific"},{"path":"/indexer/?(.*)","pathType":"ImplementationSpecific"},{"path":"/graphman/?(.*)","pathType":"ImplementationSpecific"}]}],"tls":[]}` | Ingress configuration |
@@ -117,20 +117,20 @@ A Helm chart for Graph Node
 | ingress.hosts[0].paths[4].path | string | `"/graphman/?(.*)"` | URL path pattern for graphman interface |
 | ingress.hosts[0].paths[4].pathType | string | `"ImplementationSpecific"` | Path type for Kubernetes ingress |
 | ingress.tls | list | `[]` | TLS configuration for the ingress |
-| initContainer | object | `{"image":{"pullPolicy":"IfNotPresent","repository":"docker.io/kubesphere/kubectl","tag":"v1.33.4"},"tcpCheck":{"dependencies":[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"graphNode\" \"local\" .Values.postgresql) }}","name":"postgresql"},{"endpoint":"{{ include \"graph-node.ipfsClusterProxyEndpoint\" (dict \"context\" $) }}","name":"ipfs-cluster-proxy"}],"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"ipfsClusterProxy":{"enabled":true,"host":"ipfs-cluster","port":9095},"resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}},"timeout":120}}` | Init container configuration |
-| initContainer.image | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/kubesphere/kubectl","tag":"v1.33.4"}` | Image for init container kubectl |
+| initContainer | object | `{"image":{"pullPolicy":"IfNotPresent","repository":"harbor.settlemint.com/docker.io/kubesphere/kubectl","tag":"v1.33.4"},"tcpCheck":{"dependencies":[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"graphNode\" \"local\" .Values.postgresql) }}","name":"postgresql"},{"endpoint":"{{ include \"graph-node.ipfsClusterProxyEndpoint\" (dict \"context\" $) }}","name":"ipfs-cluster-proxy"}],"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"ipfsClusterProxy":{"enabled":true,"host":"ipfs-cluster","port":9095},"resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}},"timeout":120}}` | Init container configuration |
+| initContainer.image | object | `{"pullPolicy":"IfNotPresent","repository":"harbor.settlemint.com/docker.io/kubesphere/kubectl","tag":"v1.33.4"}` | Image for init container kubectl |
 | initContainer.image.pullPolicy | string | `"IfNotPresent"` | Kubectl image pull policy |
-| initContainer.image.repository | string | `"docker.io/kubesphere/kubectl"` | Kubectl image repository |
+| initContainer.image.repository | string | `"harbor.settlemint.com/docker.io/kubesphere/kubectl"` | Kubectl image repository |
 | initContainer.image.tag | string | `"v1.33.4"` | Kubectl image tag |
-| initContainer.tcpCheck | object | `{"dependencies":[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"graphNode\" \"local\" .Values.postgresql) }}","name":"postgresql"},{"endpoint":"{{ include \"graph-node.ipfsClusterProxyEndpoint\" (dict \"context\" $) }}","name":"ipfs-cluster-proxy"}],"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"ipfsClusterProxy":{"enabled":true,"host":"ipfs-cluster","port":9095},"resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}},"timeout":120}` | TCP check configuration |
+| initContainer.tcpCheck | object | `{"dependencies":[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"graphNode\" \"local\" .Values.postgresql) }}","name":"postgresql"},{"endpoint":"{{ include \"graph-node.ipfsClusterProxyEndpoint\" (dict \"context\" $) }}","name":"ipfs-cluster-proxy"}],"enabled":true,"image":{"pullPolicy":"IfNotPresent","repository":"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"},"ipfsClusterProxy":{"enabled":true,"host":"ipfs-cluster","port":9095},"resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}},"timeout":120}` | TCP check configuration |
 | initContainer.tcpCheck.dependencies | list | `[{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"graphNode\" \"local\" .Values.postgresql) }}","name":"postgresql"},{"endpoint":"{{ include \"graph-node.ipfsClusterProxyEndpoint\" (dict \"context\" $) }}","name":"ipfs-cluster-proxy"}]` | List of dependencies to check |
 | initContainer.tcpCheck.dependencies[0] | object | `{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"graphNode\" \"local\" .Values.postgresql) }}","name":"postgresql"}` | Dependency configuration |
 | initContainer.tcpCheck.dependencies[0].endpoint | string | `"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"graphNode\" \"local\" .Values.postgresql) }}"` | Dependency endpoint template |
 | initContainer.tcpCheck.dependencies[0].name | string | `"postgresql"` | Dependency name |
 | initContainer.tcpCheck.enabled | bool | `true` | Enable TCP check init container |
-| initContainer.tcpCheck.image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"}` | TCP check image configuration |
+| initContainer.tcpCheck.image | object | `{"pullPolicy":"IfNotPresent","repository":"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit","tag":"v7.7.10"}` | TCP check image configuration |
 | initContainer.tcpCheck.image.pullPolicy | string | `"IfNotPresent"` | TCP check image pull policy |
-| initContainer.tcpCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` | TCP check image repository |
+| initContainer.tcpCheck.image.repository | string | `"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit"` | TCP check image repository |
 | initContainer.tcpCheck.image.tag | string | `"v7.7.10"` | TCP check image tag |
 | initContainer.tcpCheck.resources | object | `{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}` | Resource limits and requests for TCP check container |
 | initContainer.tcpCheck.resources.limits | object | `{"cpu":"100m","memory":"64Mi"}` | Resource limits |
@@ -197,9 +197,9 @@ A Helm chart for Graph Node
 | podDisruptionBudget | object | `{"enabled":false}` | Pod disruption budget |
 | podDisruptionBudget.enabled | bool | `false` | Enable pod disruption budget |
 | podSecurityContext | object | `{}` | Pod-wide security context |
-| postgresReadinessCheck | object | `{"enabled":true,"image":"docker.io/postgres:18.0-alpine","initialWaitTime":2,"maxRetries":30,"maxWaitTime":30,"randomDelayRange":{"max":30,"min":5},"resources":{"limits":{"cpu":"100m","memory":"96Mi"},"requests":{"cpu":"25m","memory":"48Mi"}}}` | PostgreSQL readiness check configuration |
+| postgresReadinessCheck | object | `{"enabled":true,"image":"harbor.settlemint.com/docker.io/postgres:18.0-alpine","initialWaitTime":2,"maxRetries":30,"maxWaitTime":30,"randomDelayRange":{"max":30,"min":5},"resources":{"limits":{"cpu":"100m","memory":"96Mi"},"requests":{"cpu":"25m","memory":"48Mi"}}}` | PostgreSQL readiness check configuration |
 | postgresReadinessCheck.enabled | bool | `true` | Enable PostgreSQL readiness check init container |
-| postgresReadinessCheck.image | string | `"docker.io/postgres:18.0-alpine"` | Docker image for PostgreSQL readiness check |
+| postgresReadinessCheck.image | string | `"harbor.settlemint.com/docker.io/postgres:18.0-alpine"` | Docker image for PostgreSQL readiness check |
 | postgresReadinessCheck.initialWaitTime | int | `2` | Initial wait time between retries (doubles with exponential backoff) |
 | postgresReadinessCheck.maxRetries | int | `30` | Maximum number of connection retries |
 | postgresReadinessCheck.maxWaitTime | int | `30` | Maximum wait time between retries |
