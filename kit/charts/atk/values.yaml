@@ -185,19 +185,9 @@ erpc:
     # -- (bool) Enable ingress for external RPC access
     enabled: true
     # -- (string) IngressClass for RPC ingress
-    className: "atk-nginx"
-    # -- (list) Ingress host rules for RPC endpoint
-    hosts:
-      -
-        # -- (string) Hostname for RPC endpoint. Update for your environment.
-        host: rpc.k8s.orb.local
-        # -- (list) Path configuration
-        paths:
-          -
-            # -- (string) Path prefix for RPC requests
-            path: /
-            # -- (string) Path matching strategy
-            pathType: ImplementationSpecific
+    ingressClassName: "atk-nginx"
+    # -- (string) Hostname for RPC endpoint. Update for your environment.
+    hostname: rpc.k8s.orb.local
   # -- (object) OpenShift Route configuration (alternative to Ingress)
   openShiftRoute:
     # -- (bool) Enable OpenShift route instead of standard ingress

@@ -92,18 +92,14 @@ The following table lists the configurable parameters of this chart and their de
 | dapp.secretEnv | object | `{"BETTER_AUTH_URL":"https://dapp.k8s.orb.local","SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT":"https://blockscout.k8s.orb.local/"}` | Environment variables for DApp runtime configuration (stored as secrets) |
 | dapp.secretEnv.BETTER_AUTH_URL | string | `"https://dapp.k8s.orb.local"` | Base URL for authentication callbacks. Must match ingress hostname. |
 | dapp.secretEnv.SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT | string | `"https://blockscout.k8s.orb.local/"` | Blockscout explorer UI endpoint for blockchain browsing |
-| erpc | object | `{"enabled":true,"image":{"registry":"ghcr.io"},"ingress":{"className":"atk-nginx","enabled":true,"hosts":[{"host":"rpc.k8s.orb.local","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]},"initContainer":{"tcpCheck":{"image":{"repository":"ghcr.io/settlemint/btp-waitforit"}}},"openShiftRoute":{"enabled":false,"host":"rpc.k8s.orb.local"},"resources":{},"tests":{"image":{"registry":"docker.io"}}}` | ERPC Gateway configuration for RPC load balancing and caching |
+| erpc | object | `{"enabled":true,"image":{"registry":"ghcr.io"},"ingress":{"enabled":true,"hostname":"rpc.k8s.orb.local","ingressClassName":"atk-nginx"},"initContainer":{"tcpCheck":{"image":{"repository":"ghcr.io/settlemint/btp-waitforit"}}},"openShiftRoute":{"enabled":false,"host":"rpc.k8s.orb.local"},"resources":{},"tests":{"image":{"registry":"docker.io"}}}` | ERPC Gateway configuration for RPC load balancing and caching |
 | erpc.enabled | bool | `true` | Enable deployment of ERPC gateway |
 | erpc.image | object | `{"registry":"ghcr.io"}` | ERPC container image |
 | erpc.image.registry | string | `"ghcr.io"` | OCI registry for ERPC image |
-| erpc.ingress | object | `{"className":"atk-nginx","enabled":true,"hosts":[{"host":"rpc.k8s.orb.local","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]}` | Ingress configuration for exposing RPC endpoint |
-| erpc.ingress.className | string | `"atk-nginx"` | IngressClass for RPC ingress |
+| erpc.ingress | object | `{"enabled":true,"hostname":"rpc.k8s.orb.local","ingressClassName":"atk-nginx"}` | Ingress configuration for exposing RPC endpoint |
 | erpc.ingress.enabled | bool | `true` | Enable ingress for external RPC access |
-| erpc.ingress.hosts | list | `[{"host":"rpc.k8s.orb.local","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | Ingress host rules for RPC endpoint |
-| erpc.ingress.hosts[0].host | string | `"rpc.k8s.orb.local"` | Hostname for RPC endpoint. Update for your environment. |
-| erpc.ingress.hosts[0].paths | list | `[{"path":"/","pathType":"ImplementationSpecific"}]` | Path configuration |
-| erpc.ingress.hosts[0].paths[0].path | string | `"/"` | Path prefix for RPC requests |
-| erpc.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` | Path matching strategy |
+| erpc.ingress.hostname | string | `"rpc.k8s.orb.local"` | Hostname for RPC endpoint. Update for your environment. |
+| erpc.ingress.ingressClassName | string | `"atk-nginx"` | IngressClass for RPC ingress |
 | erpc.initContainer | object | `{"tcpCheck":{"image":{"repository":"ghcr.io/settlemint/btp-waitforit"}}}` | Init container for startup dependency checks |
 | erpc.initContainer.tcpCheck | object | `{"image":{"repository":"ghcr.io/settlemint/btp-waitforit"}}` | TCP readiness check |
 | erpc.initContainer.tcpCheck.image | object | `{"repository":"ghcr.io/settlemint/btp-waitforit"}` | Wait-for-it utility image |
