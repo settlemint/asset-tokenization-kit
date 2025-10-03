@@ -1,3 +1,4 @@
+import { fixedYieldScheduleClaimContract } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.claim.contract";
 import { fixedYieldScheduleCreateContract } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.create.contract";
 import { fixedYieldScheduleReadContract } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.read.contract";
 import { fixedYieldScheduleTopUpContract } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.top-up.contract";
@@ -64,4 +65,14 @@ export const fixedYieldScheduleContract = {
    * @see {@link ./routes/fixed-yield-schedule.withdraw.contract} - Contract implementation
    */
   withdraw: fixedYieldScheduleWithdrawContract,
+
+  /**
+   * Claim yield from a fixed yield schedule.
+   *
+   * Claims yield from an existing fixed yield schedule contract.
+   * Returns the transaction hash of the claim operation.
+   *
+   * @see {@link ./routes/fixed-yield-schedule.claim.contract} - Contract implementation
+   */
+  claim: fixedYieldScheduleClaimContract,
 };

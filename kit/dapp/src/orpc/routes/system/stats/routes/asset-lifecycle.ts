@@ -1,13 +1,14 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { createTimeSeries } from "@/lib/utils/timeseries";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { buildStatsRangeQuery } from "@atk/zod/stats-range";
 import { timestamp } from "@atk/zod/timestamp";
-import { subHours } from "date-fns";
 import { z } from "zod";
 
 const SYSTEM_STATS_QUERY = theGraphGraphql(`
   query SystemAssetLifecycle(
-    $systemId: String!
+    $systemIdString: String!
+    $systemId: ID!
     $interval: Aggregation_interval!
     $from: Timestamp!
     $to: Timestamp!
@@ -15,7 +16,7 @@ const SYSTEM_STATS_QUERY = theGraphGraphql(`
     systemStats: systemStats_collection(
       interval: $interval
       where: {
-        system: $systemId
+        system: $systemIdString
         timestamp_gte: $from
         timestamp_lte: $to
       }
@@ -23,6 +24,24 @@ const SYSTEM_STATS_QUERY = theGraphGraphql(`
       orderDirection: asc
     ) {
       timestamp
+      tokensCreatedCount
+      tokensLaunchedCount
+    }
+    baseline: systemStats_collection(
+      interval: $interval
+      where: {
+        system: $systemIdString
+        timestamp_lte: $from
+      }
+      orderBy: timestamp
+      orderDirection: desc
+      first: 1
+    ) {
+      timestamp
+      tokensCreatedCount
+      tokensLaunchedCount
+    }
+    current: systemStatsState(id: $systemId) {
       tokensCreatedCount
       tokensLaunchedCount
     }
@@ -37,6 +56,13 @@ const SystemStatsDataItem = z.object({
 
 const SystemStatsResponseSchema = z.object({
   systemStats: z.array(SystemStatsDataItem),
+  baseline: z.array(SystemStatsDataItem),
+  current: z
+    .object({
+      tokensCreatedCount: z.number(),
+      tokensLaunchedCount: z.number(),
+    })
+    .nullable(),
 });
 
 export const statsAssetLifecycle =
@@ -46,13 +72,14 @@ export const statsAssetLifecycle =
       const { interval, fromMicroseconds, toMicroseconds, range } =
         buildStatsRangeQuery(input, {
           now,
-          minFrom: subHours(now, 48),
           // TODO: replace minFrom with context.system.createdAt when available
         });
 
+      const systemId = context.system.id.toLowerCase();
       const response = await context.theGraphClient.query(SYSTEM_STATS_QUERY, {
         input: {
-          systemId: context.system.id.toLowerCase(),
+          systemId,
+          systemIdString: systemId,
           interval,
           from: fromMicroseconds,
           to: toMicroseconds,
@@ -60,13 +87,38 @@ export const statsAssetLifecycle =
         output: SystemStatsResponseSchema,
       });
 
+      const results = [
+        ...response.baseline.map((item) => ({
+          timestamp: item.timestamp,
+          assetsCreated: item.tokensCreatedCount,
+          assetsLaunched: item.tokensLaunchedCount,
+        })),
+        ...response.systemStats.map((item) => ({
+          timestamp: item.timestamp,
+          assetsCreated: item.tokensCreatedCount,
+          assetsLaunched: item.tokensLaunchedCount,
+        })),
+        {
+          timestamp: range.to,
+          assetsCreated: response.current?.tokensCreatedCount ?? 0,
+          assetsLaunched: response.current?.tokensLaunchedCount ?? 0,
+        },
+      ];
+
+      const data = createTimeSeries(
+        results,
+        ["assetsCreated", "assetsLaunched"],
+        {
+          range,
+          aggregation: "last",
+          accumulation: "max",
+          historical: true,
+        }
+      );
+
       return {
         range,
-        data: response.systemStats.map((item) => ({
-          timestamp: item.timestamp,
-          assetsCreatedCount: item.tokensCreatedCount,
-          assetsLaunchedCount: item.tokensLaunchedCount,
-        })),
+        data,
       };
     }
   );

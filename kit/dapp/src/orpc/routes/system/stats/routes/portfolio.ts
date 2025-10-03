@@ -1,19 +1,25 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { createTimeSeries } from "@/lib/utils/timeseries";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { buildStatsRangeQuery } from "@atk/zod/stats-range";
 import { timestamp } from "@atk/zod/timestamp";
-import { subHours } from "date-fns";
 import { z } from "zod";
 
 /**
- * GraphQL query to fetch hourly portfolio data
+ * GraphQL query to fetch portfolio history and latest snapshot
  */
 const PORTFOLIO_VALUE_QUERY = theGraphGraphql(`
-  query PortfolioHistoryHourly($accountId: String!, $fromMicroseconds: Timestamp, $toMicroseconds: Timestamp, $interval: Aggregation_interval!) {
+  query PortfolioHistoryHourly(
+    $accountIdString: String!
+    $accountId: ID!
+    $fromMicroseconds: Timestamp
+    $toMicroseconds: Timestamp
+    $interval: Aggregation_interval!
+  ) {
     accountStats: accountStats_collection(
       interval: $interval
       where: {
-        account: $accountId,
+        account: $accountIdString,
         timestamp_gte: $fromMicroseconds,
         timestamp_lte: $toMicroseconds
       }
@@ -22,17 +28,39 @@ const PORTFOLIO_VALUE_QUERY = theGraphGraphql(`
       timestamp
       totalValueInBaseCurrency
     }
+    baseline: accountStats_collection(
+      interval: $interval
+      where: {
+        account: $accountIdString,
+        timestamp_lte: $fromMicroseconds
+      }
+      orderBy: timestamp
+      orderDirection: desc
+      first: 1
+    ) {
+      timestamp
+      totalValueInBaseCurrency
+    }
+    current: accountStatsState(id: $accountId) {
+      totalValueInBaseCurrency
+    }
   }
 `);
 
 // Base schema for portfolio data items
-const PortfolioDataItem = z.object({
+const PortfolioHistoryItemSchema = z.object({
   timestamp: timestamp(),
   totalValueInBaseCurrency: z.string(),
 });
 
 const PortfolioResponseSchema = z.object({
-  accountStats: z.array(PortfolioDataItem),
+  accountStats: z.array(PortfolioHistoryItemSchema),
+  baseline: z.array(PortfolioHistoryItemSchema),
+  current: z
+    .object({
+      totalValueInBaseCurrency: z.string(),
+    })
+    .nullable(),
 });
 
 /**
@@ -78,13 +106,14 @@ export const statsPortfolio = systemRouter.system.stats.portfolio.handler(
     const { interval, fromMicroseconds, toMicroseconds, range } =
       buildStatsRangeQuery(input, {
         now,
-        minFrom: subHours(now, 48),
         // TODO: replace minFrom with context.system.createdAt when available
       });
 
     // Build query variables
+    const accountId = userAddress.toLowerCase();
     const variables = {
-      accountId: userAddress.toLowerCase(),
+      accountId,
+      accountIdString: accountId,
       fromMicroseconds,
       toMicroseconds,
       interval,
@@ -98,9 +127,26 @@ export const statsPortfolio = systemRouter.system.stats.portfolio.handler(
       }
     );
 
+    const results = [
+      ...portfolioData.baseline,
+      ...portfolioData.accountStats,
+      {
+        timestamp: range.to,
+        totalValueInBaseCurrency:
+          portfolioData.current?.totalValueInBaseCurrency ?? "0",
+      },
+    ];
+
+    const series = createTimeSeries(results, ["totalValueInBaseCurrency"], {
+      range,
+      aggregation: "last",
+      accumulation: "max",
+      historical: true,
+    });
+
     return {
       range,
-      data: portfolioData.accountStats,
+      data: series,
     };
   }
 );

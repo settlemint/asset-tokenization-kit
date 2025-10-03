@@ -15,7 +15,6 @@ import type { ComplianceModuleDetailProps } from "@/components/compliance/detail
 import { CountryMultiselect } from "@/components/country/country-multiselect";
 import { Button } from "@/components/ui/button";
 import { useCountries } from "@/hooks/use-countries";
-import { encodeCountryParams } from "@/lib/compliance/encoding/encode-country-params";
 import { haveSameNumbers } from "@/lib/utils/array";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -56,12 +55,10 @@ export function CountryRestrictionModuleDetail({
     const numericCodes = selectedCountries.map(
       (country) => country.numericCode
     );
-    const encodedParams = encodeCountryParams(numericCodes);
     onEnable({
       typeId,
       module,
       values: numericCodes,
-      params: encodedParams,
     });
   };
 
@@ -70,7 +67,6 @@ export function CountryRestrictionModuleDetail({
       typeId,
       module,
       values: [],
-      params: "",
     });
   };
 

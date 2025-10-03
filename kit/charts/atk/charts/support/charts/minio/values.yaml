@@ -20,7 +20,7 @@ image:
   # -- (string) MinIO image repository
   repository: docker.io/minio/minio
   # -- (string) MinIO image tag (immutable tags are recommended)
-  tag: RELEASE.2025-07-23T15-54-02Z
+  tag: RELEASE.2025-09-07T16-13-09Z
   # -- (string) MinIO image pull policy
   pullPolicy: IfNotPresent
 
@@ -36,7 +36,7 @@ mcImage:
   # -- (string) MinIO client image repository
   repository: docker.io/minio/minio
   # -- (string) MinIO client image tag
-  tag: RELEASE.2025-07-23T15-54-02Z
+  tag: RELEASE.2025-09-07T16-13-09Z
   # -- (string) MinIO client image pull policy
   pullPolicy: IfNotPresent
 

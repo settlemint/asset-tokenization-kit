@@ -320,7 +320,7 @@ describe("Token read", () => {
         recoverERC20: false,
         recoverTokens: false,
         mature: false,
-        redeem: false,
+        redeem: true,
         removeComplianceModule: false,
         revokeRole: false,
         setCap: false,

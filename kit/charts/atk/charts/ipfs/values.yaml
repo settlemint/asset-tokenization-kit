@@ -1,0 +1,537 @@
+# Default values for ipfs-cluster chart.
+# This chart deploys an IPFS Cluster control plane alongside Kubo (go-ipfs) peers.
+
+# -- (object) Global Docker image registry and shared labels
+global:
+  # -- (string) Global Docker image registry
+  imageRegistry: ""
+  # -- (string) Global image tag override
+  imageTag: ""
+  # -- (list) Global Docker registry secret names as an array
+  imagePullSecrets: []
+  # -- (object) Global StorageClass overrides
+  storageClass: ""
+  # -- (object) Global labels applied to all resources
+  labels: {}
+
+# -- (string) Override for generated full name
+fullnameOverride: ipfs
+
+# -- (string) Override for chart name
+nameOverride: ""
+
+# -- (list) Image pull secrets applied to workload pods
+imagePullSecrets: []
+
+# -- (object) Labels to add to all rendered manifests
+commonLabels: {}
+
+# -- (object) Annotations to add to all rendered manifests
+commonAnnotations: {}
+
+# -- (int) Number of IPFS peers and cluster members
+replicaCount: 1
+
+# -- (string) Shared secret for cluster peers. Leave empty to auto-generate.
+sharedSecret: ""
+
+# -- (object) Service account configuration
+serviceAccount:
+  # -- (bool) Create the service account
+  create: true
+  # -- (object) Service account annotations
+  annotations: {}
+  # -- (string) Service account name override
+  name: ""
+
+# -- (object) Configuration for the optional NodePort service used for public P2P addresses
+p2pNodePort:
+  # -- (bool) Enable creation of a NodePort service for the swarm port
+  enabled: false
+  # -- (int) Static nodePort to announce when enabled
+  nodePort: 32000
+  # -- (string) ExternalTrafficPolicy for the NodePort service
+  externalTrafficPolicy: Cluster
+  # -- (object) Additional annotations for the NodePort service
+  annotations: {}
+  hostIP:
+    # -- (string) Optional static IP address to advertise. When set, overrides fieldRef detection.
+    value: ""
+    # -- (string) Pod fieldRef used to resolve the host IP when value is empty
+    fieldPath: status.hostIP
+
+# -- (object) IPFS Cluster peer configuration
+cluster:
+  image:
+    # -- (string) Cluster image registry
+    registry: docker.io
+    # -- (string) Cluster image repository
+    repository: ipfs/ipfs-cluster
+    # -- (string) Cluster image tag
+    tag: v1.1.4
+    # -- (string) Cluster image pull policy
+    pullPolicy: IfNotPresent
+  # -- (object) Additional pod labels
+  podLabels:
+    app.kubernetes.io/component: cluster
+  # -- (object) Additional pod annotations
+  podAnnotations: {}
+  # -- (object) Pod-level security context overrides
+  podSecurityContext: {}
+  # -- (object) Container-level security context overrides
+  containerSecurityContext: {}
+  # -- (list) Extra environment variables for the cluster container
+  extraEnv: []
+  # -- (list) Additional containers to inject into the pod
+  extraContainers: []
+  # -- (list) Additional init containers
+  extraInitContainers: []
+  # -- (object) Additional volumes for the pod
+  extraVolumes: []
+  # -- (list) Additional volume mounts for the cluster container
+  extraVolumeMounts: []
+  # -- (object) Resource requests and limits
+  resources: {}
+  # -- (object) Node selector
+  nodeSelector: {}
+  # -- (list) Tolerations
+  tolerations: []
+  # -- (object) Affinity
+  affinity: {}
+  storage:
+    # -- (string) StorageClass for the cluster data PVC
+    storageClassName: ""
+    # -- (string) Requested storage size for the cluster data PVC
+    volumeSize: 1Gi
+  service:
+    # -- (string) Service type for the cluster REST API
+    type: ClusterIP
+    # -- (object) Additional annotations for the cluster service
+    annotations: {}
+    # -- (object) Cluster service port configuration
+    ports:
+      # -- (int) REST API port
+      api: 9094
+      # -- (int) IPFS proxy port
+      proxy: 9095
+      # -- (int) Prometheus metrics port
+      metrics: 8888
+      # -- (int) Libp2p cluster port
+      p2p: 9096
+      # -- (int) Pinning service HTTP port
+      pinning: 9097
+
+# -- (object) IPFS (Kubo) peer configuration
+ipfs:
+  image:
+    # -- (string) IPFS image registry
+    registry: docker.io
+    # -- (string) IPFS image repository
+    repository: ipfs/kubo
+    # -- (string) IPFS image tag
+    tag: v0.38.0
+    # -- (string) IPFS image pull policy
+    pullPolicy: IfNotPresent
+  # -- (object) Additional pod labels
+  podLabels:
+    app.kubernetes.io/component: ipfs
+  # -- (object) Additional pod annotations
+  podAnnotations: {}
+  # -- (object) Pod-level security context overrides
+  podSecurityContext: {}
+  # -- (object) Container-level security context overrides
+  containerSecurityContext: {}
+  # -- (map) Init scripts injected via ConfigMap (filename => script contents). Keys must match ^[A-Za-z0-9_.-]+$
+  initScripts: {}
+  # -- (list) Extra commands to override the default entrypoint
+  customCommand: []
+  # -- (list) Additional arguments passed to the container command
+  extraArgs: []
+  # -- (list) Additional environment variables for the IPFS container
+  extraEnv: []
+  # -- (list) Additional init containers
+  initContainers: []
+  # -- (list) Additional containers to inject into the pod
+  extraContainers: []
+  # -- (list) Additional volume mounts for the IPFS container
+  extraVolumeMounts: []
+  # -- (object) Additional volumes for the pod
+  extraVolumes: []
+  # -- (object) Resource requests and limits
+  resources: {}
+  # -- (object) Node selector
+  nodeSelector: {}
+  # -- (list) Tolerations
+  tolerations: []
+  # -- (object) Affinity rules
+  affinity: {}
+  storage:
+    # -- (string) StorageClass for the IPFS data PVC
+    storageClassName: ""
+    # -- (string) Requested storage size for the IPFS data PVC
+    volumeSize: 10Gi
+  # -- (object) Runtime configuration applied through init script
+  config:
+    # -- (string) IPFS profile applied during initialization
+    profile: server
+    # -- (int) Gateway TCP port
+    gatewayPort: 8888
+    # -- (int) Swarm TCP port
+    swarmPort: 4001
+    # -- (int) Cluster libp2p port used for announcements
+    clusterPort: 9096
+    # -- (list) Base Addresses.AppendAnnounce values. Entries are templated with Helm's tpl.
+    appendAnnounce:
+      - "/ip4/$POD_IP/tcp/{{ .Values.ipfs.config.swarmPort }}"
+      - "/ip4/${NODE_EXTERNAL_IP:-$POD_IP}/tcp/{{ .Values.ipfs.config.swarmPort }}"
+      - "/dns4/{{ include \"ipfs-cluster.ipfsFullname\" . }}.{{ .Release.Namespace }}.svc.cluster.local/tcp/{{ .Values.ipfs.config.swarmPort }}"
+    # -- (list) Additional Addresses.AppendAnnounce entries appended after the defaults
+    extraAppendAnnounce: []
+    connMgr:
+      # -- (int) Swarm.ConnMgr.HighWater threshold
+      highWater: 300
+      # -- (int) Swarm.ConnMgr.LowWater threshold
+      lowWater: 225
+      # -- (string) Swarm.ConnMgr.GracePeriod duration
+      gracePeriod: 20s
+    # -- (int) Datastore bloom filter size
+    bloomFilterSize: 1048576
+    discovery:
+      # -- (bool) Discovery.MDNS.Enabled toggle
+      mdnsEnabled: true
+    routing:
+      # -- (bool) Routing.AcceleratedDHTClient toggle
+      acceleratedDHTClient: true
+    swarm:
+      # -- (bool) Swarm.EnableHolePunching toggle
+      enableHolePunching: false
+      # -- (bool) Swarm.DisableNatPortMap toggle
+      disableNatPortMap: false
+      transports:
+        # -- (bool) Swarm.Transports.Network.QUIC toggle
+        quic: true
+      relay:
+        # -- (bool) Swarm.Transports.Network.Relay toggle
+        network: false
+        # -- (bool) Swarm.RelayService.Enabled toggle
+        serviceEnabled: false
+        # -- (bool) Swarm.RelayClient.Enabled toggle
+        clientEnabled: false
+    # -- (string) AutoNAT service mode
+    autoNATServiceMode: enabled
+    # -- (list) Swarm.AddrFilters CIDR entries
+    addrFilters:
+      - /ip4/100.64.0.0/ipcidr/10
+      - /ip4/169.254.0.0/ipcidr/16
+      - /ip4/198.18.0.0/ipcidr/15
+      - /ip4/198.51.100.0/ipcidr/24
+      - /ip4/203.0.113.0/ipcidr/24
+      - /ip4/240.0.0.0/ipcidr/4
+      - /ip6/100::/ipcidr/64
+      - /ip6/2001:2::/ipcidr/48
+      - /ip6/2001:db8::/ipcidr/32
+      - /ip6/fc00::/ipcidr/7
+      - /ip6/fe80::/ipcidr/10
+    # -- (list) Addresses.NoAnnounce CIDR entries
+    noAnnounce:
+      - /ip4/100.64.0.0/ipcidr/10
+      - /ip4/169.254.0.0/ipcidr/16
+      - /ip4/198.18.0.0/ipcidr/15
+      - /ip4/198.51.100.0/ipcidr/24
+      - /ip4/203.0.113.0/ipcidr/24
+      - /ip4/240.0.0.0/ipcidr/4
+      - /ip6/100::/ipcidr/64
+      - /ip6/2001:2::/ipcidr/48
+      - /ip6/2001:db8::/ipcidr/32
+      - /ip6/fc00::/ipcidr/7
+      - /ip6/fe80::/ipcidr/10
+    gateway:
+      # -- (string) Gateway.RootRedirect target
+      rootRedirect: ""
+      # -- (object) Gateway.PublicGateways overrides
+      publicGateways: {}
+    datastore:
+      # -- (string) Datastore.StorageMax value (e.g. 10Gi). Leave empty to skip.
+      storageMax: ""
+    resourceMgr:
+      # -- (string) Swarm.ResourceMgr.MaxMemory value in bytes. Leave empty to skip.
+      maxMemory: ""
+    api:
+      httpHeaders:
+        # -- (list) API.HTTPHeaders.Access-Control-Allow-Headers values
+        accessControlAllowHeaders:
+          - x-auth-token
+          - DNT
+          - X-CustomHeader
+          - Keep-Alive
+          - User-Agent
+          - X-Requested-With
+          - If-Modified-Since
+          - Cache-Control
+          - Content-Type
+          - Authorization
+          - X-Apollo-Tracing
+          - shouldpersistheaders
+          - x-hasura-admin-secret
+          - x-hasura-role
+          - x-hasura-user-id
+        # -- (list) API.HTTPHeaders.Access-Control-Allow-Origin values
+        accessControlAllowOrigin:
+          - '*'
+        # -- (list) API.HTTPHeaders.Access-Control-Allow-Methods values
+        accessControlAllowMethods:
+          - PUT
+          - POST
+          - GET
+          - OPTIONS
+          - DELETE
+          - HEAD
+  bootstrap:
+    # -- (list) Custom bootstrap peers added to the node. Objects must define ID and Addrs.
+    nodePeers: []
+    # -- (list) Default provider peers added when includeProviderPeers is true.
+    providerPeers:
+      - ID: QmcFf2FH3CEgTNHeMRGhN7HNHU1EXAxoEk6EFuSyXCsvRE
+        Addrs:
+          - /dnsaddr/node-1.ingress.cloudflare-ipfs.com
+      - ID: QmcFmLd5ySfk2WZuJ1mfSWLDjdmHZq7rSAua4GoeSQfs1z
+        Addrs:
+          - /dnsaddr/node-2.ingress.cloudflare-ipfs.com
+      - ID: QmcfFmzSDVbwexQ9Au2pt5YEXHK5xajwgaU6PpkbLWerMa
+        Addrs:
+          - /dnsaddr/node-3.ingress.cloudflare-ipfs.com
+      - ID: QmcfJeB3Js1FG7T8YaZATEiaHqNKVdQfybYYkbT1knUswx
+        Addrs:
+          - /dnsaddr/node-4.ingress.cloudflare-ipfs.com
+      - ID: QmcfVvzK4tMdFmpJjEKDUoqRgP4W9FnmJoziYX5GXJJ8eZ
+        Addrs:
+          - /dnsaddr/node-5.ingress.cloudflare-ipfs.com
+      - ID: QmcfZD3VKrUxyP9BbyUnZDpbqDnT7cQ4WjPP8TRLXaoE7G
+        Addrs:
+          - /dnsaddr/node-6.ingress.cloudflare-ipfs.com
+      - ID: QmcfZP2LuW4jxviTeG8fi28qjnZScACb8PEgHAc17ZEri3
+        Addrs:
+          - /dnsaddr/node-7.ingress.cloudflare-ipfs.com
+      - ID: QmcfgsJsMtx6qJb74akCw1M24X1zFwgGo11h1cuhwQjtJP
+        Addrs:
+          - /dnsaddr/node-8.ingress.cloudflare-ipfs.com
+      - ID: Qmcfr2FC7pFzJbTSDfYaSy1J8Uuy8ccGLeLyqJCKJvTHMi
+        Addrs:
+          - /dnsaddr/node-9.ingress.cloudflare-ipfs.com
+      - ID: QmcfR3V5YAtHBzxVACWCzXTt26SyEkxdwhGJ6875A8BuWx
+        Addrs:
+          - /dnsaddr/node-10.ingress.cloudflare-ipfs.com
+      - ID: Qmcfuo1TM9uUiJp6dTbm915Rf1aTqm3a3dnmCdDQLHgvL5
+        Addrs:
+          - /dnsaddr/node-11.ingress.cloudflare-ipfs.com
+      - ID: QmcfV2sg9zaq7UUHVCGuSvT2M2rnLBAPsiE79vVyK3Cuev
+        Addrs:
+          - /dnsaddr/node-12.ingress.cloudflare-ipfs.com
+      - ID: 12D3KooWGaHbxpDWn4JVYud899Wcpa4iHPa3AMYydfxQDb3MhDME
+        Addrs:
+          - /dns4/ipfs.ssi.eecc.de
+      - ID: 12D3KooWCVXs8P7iq6ao4XhfAmKWrEeuKFWCJgqe9jGDMTqHYBjw
+        Addrs:
+          - /ip4/139.178.68.217/tcp/6744
+      - ID: 12D3KooWGBWx9gyUFTVQcKMTenQMSyE2ad9m7c9fpjS4NMjoDien
+        Addrs:
+          - /ip4/147.75.49.71/tcp/6745
+      - ID: 12D3KooWFrnuj5o3tx4fGD2ZVJRyDqTdzGnU3XYXmBbWbc8Hs8Nd
+        Addrs:
+          - /ip4/147.75.86.255/tcp/6745
+      - ID: 12D3KooWN8vAoGd6eurUSidcpLYguQiGZwt4eVgDvbgaS7kiGTup
+        Addrs:
+          - /ip4/3.134.223.177/tcp/6745
+      - ID: 12D3KooWLV128pddyvoG6NBvoZw7sSrgpMTPtjnpu3mSmENqhtL7
+        Addrs:
+          - /ip4/35.74.45.12/udp/6746/quic
+      - ID: QmWaik1eJcGHq1ybTWe7sezRfqKNcDRNkeBaLnGwQJz1Cj
+        Addrs:
+          - /dnsaddr/fra1-1.hostnodes.pinata.cloud
+      - ID: QmNfpLrQQZr5Ns9FAJKpyzgnDL2GgC6xBug1yUZozKFgu4
+        Addrs:
+          - /dnsaddr/fra1-2.hostnodes.pinata.cloud
+      - ID: QmPo1ygpngghu5it8u4Mr3ym6SEU2Wp2wA66Z91Y1S1g29
+        Addrs:
+          - /dnsaddr/fra1-3.hostnodes.pinata.cloud
+      - ID: QmRjLSisUCHVpFa5ELVvX3qVPfdxajxWJEHs9kN3EcxAW6
+        Addrs:
+          - /dnsaddr/nyc1-1.hostnodes.pinata.cloud
+      - ID: QmPySsdmbczdZYBpbi2oq2WMJ8ErbfxtkG8Mo192UHkfGP
+        Addrs:
+          - /dnsaddr/nyc1-2.hostnodes.pinata.cloud
+      - ID: QmSarArpxemsPESa6FNkmuu9iSE1QWqPX2R3Aw6f5jq4D5
+        Addrs:
+          - /dnsaddr/nyc1-3.hostnodes.pinata.cloud
+      - ID: 12D3KooWFFhc8fPYnQXdWBCowxSV21EFYin3rU27p3NVgSMjN41k
+        Addrs:
+          - /ip4/5.161.92.43/tcp/4001
+          - /ip4/5.161.92.43/udp/4001/quic-v1
+          - /ip6/2a01:4ff:f0:3b1e::1/tcp/4001
+          - /ip6/2a01:4ff:f0:3b1e::1/udp/4001/quic-v1
+      - ID: 12D3KooWSW4hoHmDXmY5rW7nCi9XmGTy3foFt72u86jNP53LTNBJ
+        Addrs:
+          - /ip4/5.161.55.227/tcp/4001
+          - /ip4/5.161.55.227/udp/4001/quic-v1
+          - /ip6/2a01:4ff:f0:1e5a::1/tcp/4001
+          - /ip6/2a01:4ff:f0:1e5a::1/udp/4001/quic-v1
+      - ID: 12D3KooWSDj6JM2JmoHwE9AUUwqAFUEg9ndd3pMA8aF2bkYckZfo
+        Addrs:
+          - /ip4/5.161.92.36/tcp/4001
+          - /ip4/5.161.92.36/udp/4001/quic-v1
+          - /ip6/2a01:4ff:f0:3764::1/tcp/4001
+          - /ip6/2a01:4ff:f0:3764::1/udp/4001/quic-v1
+      - ID: QmR69wtWUMm1TWnmuD4JqC1TWLZcc8iR2KrTenfZZbiztd
+        Addrs:
+          - /ip4/104.210.43.77
+      - ID: 12D3KooWGASC2jm3pmohEJXUhuStkxDitPgzvs4qMuFPaiD9x1BA
+        Addrs:
+          - /ip4/78.46.108.24
+      - ID: 12D3KooWRbWZN3GvLf9CHmozq4vnTzDD4EEoiqtRJxg5FV6Gfjmm
+        Addrs:
+          - /ip4/65.109.19.136
+      - ID: 12D3KooWQ85aSCFwFkByr5e3pUCQeuheVhobVxGSSs1DrRQHGv1t
+        Addrs:
+          - /dnsaddr/node-1.ipfs.4everland.net
+      - ID: 12D3KooWGtYkBAaqJMJEmywMxaCiNP7LCEFUAFiLEBASe232c2VH
+        Addrs:
+          - /dns4/bitswap.filebase.io/tcp/443/wss
+      - ID: 12D3KooWKNJDVqWKdGH5PJUpgG7JwSQnJCHSt2abfRMht2yjyV5x
+        Addrs:
+          - /dnsaddr/node-1.ipfs.bit.site
+      - ID: bafzaajaiaejca3eporu7skzkukuie5nopngnubidqmnf57fl3qet7angukq234qj
+        Addrs:
+          - /dnsaddr/peer.ipfs.storry.tv
+      - ID: bafzaajaiaejcajedrki5t7qmgxzhwr24pfxb5cwrdf5d7rktguqurqztxsbffbvh
+        Addrs:
+          - /dnsaddr/peer2.ipfs.storry.tv
+      - ID: bafzbeibhqavlasjc7dvbiopygwncnrtvjd2xmryk5laib7zyjor6kf3avm
+        Addrs:
+          - /dns4/elastic.dag.house/tcp/443/wss
+    # -- (bool) Include providerPeers in bootstrap and peering configuration
+    includeProviderPeers: true
+  swarmKey:
+    # -- (bool) Mount a swarm.key secret and copy it into the repo
+    enabled: false
+    # -- (string) Kubernetes secret name containing swarm.key
+    secretName: ""
+    # -- (string) Key within the secret that holds the swarm key
+    secretKey: swarm.key
+    # -- (string) Mount path for the swarm key secret inside the pod
+    mountPath: /etc/ipfs/swarm
+    # -- (string) Destination directory for the swarm key inside the repo
+    repoPath: /data/ipfs
+  runtime:
+    # -- (string) Optional GOMEMLIMIT value for the IPFS container (e.g. "1024MiB")
+    goMemLimit: ""
+  service:
+    # -- (string) Service type for IPFS API/gateway
+    type: ClusterIP
+    # -- (object) Additional annotations for the IPFS service
+    annotations: {}
+    # -- (object) Service ports exposed by the IPFS peers
+    ports:
+      # -- (int) API port
+      api: 5001
+      # -- (int) Websocket port
+      ws: 8081
+      # -- (int) Gateway port
+      gateway: 8080
+      # -- (int) Swarm TCP port
+      swarmTcp: 4001
+      # -- (int) Swarm UDP port
+      swarmUdp: 4001
+      # -- (int) MDNS port
+      mdns: 5353
+
+# -- (object) Ingress configuration for the cluster REST API
+ingress:
+  # -- (bool) Enable HTTP ingress for the cluster REST API
+  enabled: true
+  # -- (string) Ingress class name
+  className: "atk-nginx"
+  # -- (object) Hostnames mapped to path groups
+  hostnames:
+    api: ipfs-cluster.k8s.orb.local
+  # -- (object) Path groups rendered for each hostname key
+  pathGroups:
+    api:
+      # Mirror pulumi ipfs.resource.ts ingress paths (no ingressRegex prefix, webui omitted)
+      - path: '/?(api/((.*[^/])?)?)'
+        pathType: ImplementationSpecific
+        service:
+          target: cluster
+          port: proxy
+      - path: '/?cluster/(((.*[^/])?)?)'
+        pathType: ImplementationSpecific
+        service:
+          target: cluster
+          port: api
+      - path: '/?pinning/(((.*[^/])?)?)'
+        pathType: ImplementationSpecific
+        service:
+          target: cluster
+          port: pinning
+      - path: '/?ws/(((.*[^/])?)?)'
+        pathType: ImplementationSpecific
+        service:
+          target: ipfs
+          port: ws
+  # -- (list) TLS configuration for the ingress
+  tls: []
+
+# -- (object) OpenShift route configuration
+openShiftRoute:
+  # -- (bool) Enable OpenShift Routes instead of ingress
+  enabled: false
+  # -- (string) Global host applied to every rendered Route (per-route host overrides are optional)
+  host: ipfs-cluster.k8s.orb.local
+  # -- (object) Additional annotations merged into every Route
+  annotations: {}
+  # -- (object) TLS configuration applied when TLS is desired
+  tls: null
+  # -- (string) Wildcard policy used when a Route does not override it
+  wildcardPolicy: None
+  # -- (object) Route entries keyed by logical name; set enabled: false to skip a route
+  routes:
+    cluster:
+      enabled: true
+      nameSuffix: cluster
+      path: '/?cluster/(((.*[^/])?)?)'
+      service:
+        target: cluster
+        port: api
+    api:
+      enabled: true
+      nameSuffix: api
+      # Mirror Ingress configuration (no ingressRegex prefix)
+      path: '/?(api/((.*[^/])?)?)'
+      service:
+        target: cluster
+        port: proxy
+    pinning:
+      enabled: true
+      nameSuffix: pinning
+      path: '/?pinning/(((.*[^/])?)?)'
+      service:
+        target: cluster
+        port: pinning
+    ws:
+      enabled: true
+      nameSuffix: ws
+      path: '/?ws/(((.*[^/])?)?)'
+      service:
+        target: ipfs
+        port: ws
+
+# -- (object) Test hook image configuration
+tests:
+  image:
+    # -- (string) Test image registry
+    registry: docker.io
+    # -- (string) Test image repository
+    repository: busybox
+    # -- (string) Test image tag
+    tag: "1.36"
+    # -- (string) Test image pull policy
+    pullPolicy: IfNotPresent

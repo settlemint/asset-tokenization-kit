@@ -161,29 +161,23 @@ struct CountryBlockListConfig {
 
 **Purpose**: Advanced identity verification with logical expressions
 
-**Key Innovation**: Unlike ERC-3643's simple AND-only logic, supports complex
-expressions:
+**Key Innovation**: Uses postfix (Reverse Polish Notation) expressions. Examples
+(infix → postfix tokens):
 
-```typescript
-// Simple requirement (like ERC-3643)
-"KYC AND AML";
-
-// Smart contracts bypass individual verification
-"CONTRACT OR (KYC AND AML)";
-
-// Accredited investors have different requirements
-"ACCREDITED OR (KYC AND AML AND JURISDICTION)";
-
-// Complex institutional rules
-"(INSTITUTION AND REGULATORY_APPROVAL) OR (INDIVIDUAL AND KYC AND AML)";
-```
+- "KYC AND AML" → [KYC, AML, AND]
+- "CONTRACT OR (KYC AND AML)" → [CONTRACT, KYC, AML, AND, OR]
+- "ACCREDITED OR (KYC AND AML AND JURISDICTION)" → [ACCREDITED, KYC, AML, AND,
+  JURISDICTION, AND, OR]
+- "(INSTITUTION AND REGULATORY_APPROVAL) OR (INDIVIDUAL AND KYC AND AML)" →
+  [INSTITUTION, REGULATORY_APPROVAL, AND, INDIVIDUAL, KYC, AML, AND, OR]
+- "KYC AND NOT SANCTIONED" → [KYC, SANCTIONED, NOT, AND]
 
 **Benefits**:
 
--  Flexible entity types (contracts, institutions, individuals)
--  Regulatory efficiency for accredited investors
--  DeFi compatibility (smart contracts without individual KYC)
--  Multi-jurisdiction support
+- Flexible entity types (contracts, institutions, individuals)
+- Regulatory efficiency for accredited investors
+- DeFi compatibility (smart contracts without individual KYC)
+- Multi-jurisdiction support
 
 ### Transfer & Supply Modules
 
@@ -415,21 +409,32 @@ going beyond simple AND-only requirements:
 **Expression Components**:
 
 - **TOPIC nodes**: Represent required claims (KYC, AML, ACCREDITED, etc.)
-- **AND nodes**: All child requirements must be met
-- **OR nodes**: At least one child requirement must be met
-- **NOT nodes**: Child requirement must NOT be met
+- **AND nodes**: All child requirements must be met (binary operator)
+- **OR nodes**: At least one child requirement must be met (binary operator)
+- **NOT nodes**: Invert the next operand (unary operator)
 
-**Expression Examples**:
+**Postfix Examples**:
 
 ```typescript
-// Allow contracts or verified individuals
-"CONTRACT OR (KYC AND AML)";
+// Infix: "CONTRACT OR (KYC AND AML)"
+// Postfix tokens: [CONTRACT, KYC, AML, AND, OR]
 
-// Different requirements for different investor types
-"ACCREDITED OR (RETAIL AND KYC AND AML AND SUITABILITY)";
+// Infix: "ACCREDITED OR (RETAIL AND KYC AND AML AND SUITABILITY)"
+// Postfix tokens: [ACCREDITED, RETAIL, KYC, AML, AND, SUITABILITY, AND, AND, OR]
 
-// Multi-jurisdiction compliance
-"KYC AND (US_ACCREDITED OR EU_QUALIFIED OR UK_SOPHISTICATED)";
+// Infix: "KYC AND (US_ACCREDITED OR EU_QUALIFIED OR UK_SOPHISTICATED)"
+// Postfix tokens: [KYC, US_ACCREDITED, EU_QUALIFIED, OR, UK_SOPHISTICATED, OR, AND]
+
+// Infix: "KYC AND NOT SANCTIONED"
+// Postfix tokens: [KYC, SANCTIONED, NOT, AND]
+```
+
+```solidity
+// Solidity construction for: KYC AND AML → [KYC, AML, AND]
+ExpressionNode[] memory kycAml = new ExpressionNode[](3);
+kycAml[0] = ExpressionNode(ExpressionType.TOPIC, KYC_TOPIC_ID);
+kycAml[1] = ExpressionNode(ExpressionType.TOPIC, AML_TOPIC_ID);
+kycAml[2] = ExpressionNode(ExpressionType.AND, 0);
 ```
 
 ### Exemption Support
@@ -496,6 +501,7 @@ CountryAllowListConfig memory config = CountryAllowListConfig({
 
 ```solidity
 // Allow smart contracts OR individuals with KYC+AML
+// Postfix: [CONTRACT, KYC, AML, AND, OR]
 ExpressionNode[] memory expression = [
     ExpressionNode(ExpressionType.TOPIC, CONTRACT_TOPIC_ID),
     ExpressionNode(ExpressionType.TOPIC, KYC_TOPIC_ID),
@@ -521,7 +527,7 @@ TimeLockParams memory config = TimeLockParams({
 ### Complete Investor Control (Identity + Count)
 
 ```solidity
-// Common expression for both modules - only KYC+AML verified investors
+// Common postfix expression for both modules - only KYC+AML verified investors
 ExpressionNode[] memory kycAmlExpression = [
     ExpressionNode(ExpressionType.TOPIC, KYC_TOPIC_ID),
     ExpressionNode(ExpressionType.TOPIC, AML_TOPIC_ID),

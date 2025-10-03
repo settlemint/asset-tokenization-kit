@@ -5,7 +5,8 @@ import { OrpcClient } from "./orpc-client";
 
 type TokenInput = Parameters<OrpcClient["token"]["create"]>[0];
 
-type TokenActions = {
+type TokenOptions = {
+  useExactName?: boolean;
   grantRole?: AccessControlRole | AccessControlRole[];
   unpause?: boolean;
 };
@@ -13,7 +14,7 @@ type TokenActions = {
 export async function createToken(
   orpClient: OrpcClient,
   input: TokenInput,
-  actions: TokenActions = {}
+  options: TokenOptions = {}
 ) {
   // Truncate the base name to ensure total length with UUID doesn't exceed 50 chars
   // UUID is 36 chars + 1 space = 37 chars, so max base name is 13 chars
@@ -22,8 +23,18 @@ export async function createToken(
 
   const payload = {
     ...input,
-    name,
+    name: options.useExactName === true ? input.name : name,
   };
+
+  if (options.useExactName === true) {
+    const searchResults = await orpClient.token.search({ query: payload.name });
+    const existingToken = searchResults.find(
+      (t) => t.name === payload.name && t.symbol === payload.symbol
+    );
+    if (existingToken) {
+      return orpClient.token.read({ tokenAddress: existingToken.id });
+    }
+  }
 
   const result = await orpClient.token.create(payload);
 
@@ -32,7 +43,7 @@ export async function createToken(
     throw new Error("Token not deployed");
   }
 
-  const { grantRole, unpause } = actions;
+  const { grantRole, unpause } = options;
 
   let rolesToGrant: AccessControlRole[] = grantRole
     ? Array.isArray(grantRole)
