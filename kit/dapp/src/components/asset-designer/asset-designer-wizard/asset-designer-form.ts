@@ -60,6 +60,7 @@ export const assetDesignerFormOptions = formOptions({
       secretVerificationCode: "",
       verificationType: "OTP",
     },
+    available: false,
   } as AssetDesignerFormInputData,
 });
 
