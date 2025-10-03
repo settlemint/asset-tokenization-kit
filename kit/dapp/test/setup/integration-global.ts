@@ -43,14 +43,15 @@ export async function setup() {
       (async () => {
         await setupDefaultAdminRoles(orpClient);
         await setupTrustedClaimIssuers(orpClient, DEFAULT_ISSUER);
+        // Requires admin roles and trusted issuers to be setup first
+        await createAndRegisterUserIdentities(orpClient, [
+          DEFAULT_ADMIN,
+          DEFAULT_INVESTOR,
+          DEFAULT_ISSUER,
+        ]);
       })(),
       setupDefaultIssuerRoles(orpClient, DEFAULT_ISSUER),
       setDefaultSystemSettings(orpClient),
-      createAndRegisterUserIdentities(orpClient, [
-        DEFAULT_ADMIN,
-        DEFAULT_INVESTOR,
-        DEFAULT_ISSUER,
-      ]),
     ]);
 
     stopApi();
