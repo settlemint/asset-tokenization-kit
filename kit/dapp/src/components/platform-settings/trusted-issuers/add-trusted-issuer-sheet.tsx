@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/sheet";
 import { useAppForm } from "@/hooks/use-app-form";
 import { client, orpc } from "@/orpc/orpc-client";
-import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { TopicListOutput } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import {
   TrustedIssuerCreateInputSchema,
@@ -33,6 +32,14 @@ interface AddTrustedIssuerSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
+
+// Reuse the trusted issuer input schema while keeping issuerAddress optional until the user picks one.
+type TrustedIssuerFormValues = Omit<
+  TrustedIssuerCreateInput,
+  "issuerAddress"
+> & {
+  issuerAddress?: EthereumAddress;
+};
 
 export function AddTrustedIssuerSheet({
   open,
@@ -59,13 +66,7 @@ export function AddTrustedIssuerSheet({
     },
   });
 
-  type AddTrustedIssuerFormValues = {
-    issuerAddress?: EthereumAddress;
-    claimTopicIds: string[];
-    walletVerification: UserVerification;
-  };
-
-  const createDefaultFormValues = (): AddTrustedIssuerFormValues => ({
+  const createDefaultFormValues = (): TrustedIssuerFormValues => ({
     issuerAddress: undefined,
     claimTopicIds: [],
     walletVerification: {
