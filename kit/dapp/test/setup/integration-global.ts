@@ -6,6 +6,7 @@ import {
   bootstrapSystem,
   bootstrapTokenFactories,
   createAndRegisterUserIdentities,
+  issueDefaultKycClaims,
   setDefaultSystemSettings,
   setupDefaultAdminRoles,
   setupDefaultIssuerRoles,
@@ -42,9 +43,13 @@ export async function setup() {
       bootstrapAddons(orpClient),
       (async () => {
         await setupDefaultAdminRoles(orpClient);
-        await setupTrustedClaimIssuers(orpClient, DEFAULT_ISSUER);
-        // Requires admin roles and trusted issuers to be setup first
         await createAndRegisterUserIdentities(orpClient, [
+          DEFAULT_ADMIN,
+          DEFAULT_INVESTOR,
+          DEFAULT_ISSUER,
+        ]);
+        await setupTrustedClaimIssuers(orpClient, DEFAULT_ISSUER);
+        await issueDefaultKycClaims(orpClient, [
           DEFAULT_ADMIN,
           DEFAULT_INVESTOR,
           DEFAULT_ISSUER,
