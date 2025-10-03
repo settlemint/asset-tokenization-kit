@@ -76,6 +76,12 @@ function Web3AddressComponent({
         symbol: undefined,
       };
     }
+    if (token) {
+      return {
+        name: token.name,
+        symbol: token.symbol,
+      };
+    }
     return {
       name: user?.name,
       symbol: undefined,
