@@ -1,11 +1,14 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenHoldersResponseSchema } from "@/orpc/routes/token/routes/token.holders.schema";
+import {
+  TokenHoldersGraphQLResponseSchema,
+  TokenHoldersResponseSchema,
+} from "@/orpc/routes/token/routes/token.holders.schema";
 
 /**
  * GraphQL query for retrieving token holders and their balances.
  *
- * This query fetches all balance entries for a specific token, ordered by
+ * This query fetches balance entries for a specific token, ordered by
  * last updated time in descending order. Each balance entry includes:
  * - available: The amount of tokens available for transfer
  * - frozen: The amount of tokens frozen/locked
@@ -14,7 +17,8 @@ import { TokenHoldersResponseSchema } from "@/orpc/routes/token/routes/token.hol
  *
  * @remarks
  * The balances are ordered by lastUpdatedAt in descending order to show
- * the most recently active holders first.
+ * the most recently active holders first. We use @fetchAll here because
+ * the UI requires all holder data for client-side filtering and sorting.
  */
 const TOKEN_HOLDERS_QUERY = theGraphGraphql(`
   query TokenHoldersQuery($id: ID!) {
@@ -71,9 +75,18 @@ export const holders = tokenRouter.token.holders.handler(
       input: {
         id: context.token.id.toLowerCase(),
       },
-      output: TokenHoldersResponseSchema,
+      output: TokenHoldersGraphQLResponseSchema,
     });
 
-    return response;
+    // Calculate total count from the balances array
+    // Note: Since we need all holder data for client-side filtering and sorting anyway,
+    // fetching all balances is necessary. The @fetchAll directive handles pagination internally.
+    const totalCount = response.token?.balances?.length ?? 0;
+
+    // Return the response with total count
+    return TokenHoldersResponseSchema.parse({
+      token: response.token,
+      totalCount,
+    });
   }
 );

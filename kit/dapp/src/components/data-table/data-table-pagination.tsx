@@ -22,6 +22,8 @@ import { useTranslation } from "react-i18next";
 export interface DataTablePaginationOptions {
   /** Whether to enable pagination controls. Defaults to true. */
   enablePagination?: boolean;
+  /** Total number of items across all pages (for server-side pagination) */
+  totalCount?: number;
 }
 
 /**
@@ -54,6 +56,7 @@ interface DataTablePaginationProps<TData> extends DataTablePaginationOptions {
 export function DataTablePagination<TData>({
   table,
   enablePagination = true,
+  totalCount,
 }: DataTablePaginationProps<TData>) {
   const { t } = useTranslation("data-table");
 
@@ -102,16 +105,25 @@ export function DataTablePagination<TData>({
 
   return (
     <div className="flex items-center justify-between px-2 py-1">
-      <div className="flex-1 text-muted-foreground text-xs">
-        {table.getAllColumns().some((column) => column.id === "select") &&
-          table.getFilteredSelectedRowModel().rows.length > 0 && (
-            <span>
-              {t("selectedRowsInfo", {
-                selected: table.getFilteredSelectedRowModel().rows.length,
-                total: table.getFilteredRowModel().rows.length,
-              })}
-            </span>
-          )}
+      <div className="flex-1 text-xs">
+        {totalCount === undefined ? (
+          <div className="text-muted-foreground">
+            {table.getAllColumns().some((column) => column.id === "select") &&
+              table.getFilteredSelectedRowModel().rows.length > 0 && (
+                <span>
+                  {t("selectedRowsInfo", {
+                    selected: table.getFilteredSelectedRowModel().rows.length,
+                    total: table.getFilteredRowModel().rows.length,
+                  })}
+                </span>
+              )}
+          </div>
+        ) : (
+          <span className="tabular-nums">
+            <span className="text-muted-foreground">Total: </span>
+            <span className="text-foreground">{totalCount}</span>
+          </span>
+        )}
       </div>
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
