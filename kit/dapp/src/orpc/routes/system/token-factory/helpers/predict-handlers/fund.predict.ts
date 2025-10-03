@@ -29,6 +29,7 @@
  * @see {@link PredictAddressInput} Input schema for address prediction
  */
 
+import { encodeComplianceParams } from "@/lib/compliance/encoding/index";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import {
   type PredictAddressInput,
@@ -140,6 +141,10 @@ export const fundPredictHandler = async (
     {
       address: context.factoryAddress, // Factory contract address for prediction
       ...input, // Spread fund parameters (symbol, name, decimals, etc.)
+      initialModulePairs: input.initialModulePairs.map((pair) => ({
+        module: pair.module,
+        params: encodeComplianceParams(pair),
+      })),
     },
     // RESPONSE VALIDATION: Ensure Portal returns expected address format
     z.object({

@@ -34,23 +34,31 @@ export function useSearchAddresses({
     })
   );
 
-  // Query for assets - search when there's a term, list first 5 when empty
-  const { data: assets = [], isLoading: isLoadingAssets } = useQuery(
-    searchTerm.length > 0
-      ? orpc.token.search.queryOptions({
-          enabled: shouldSearchAssets,
-          input: {
-            query: searchTerm,
-            limit: 10,
-          },
-        })
-      : orpc.token.list.queryOptions({
-          enabled: shouldSearchAssets,
-          input: {
-            limit: 5,
-          },
-        })
+  // Query for asset search
+  const { data: searchAssets = [], isLoading: isLoadingSearch } = useQuery(
+    orpc.token.search.queryOptions({
+      enabled: shouldSearchAssets && searchTerm.length > 0,
+      input: {
+        query: searchTerm,
+        limit: 10,
+      },
+    })
   );
+
+  // Query for asset list (when no search term)
+  const { data: listAssetsResponse, isLoading: isLoadingList } = useQuery(
+    orpc.token.list.queryOptions({
+      enabled: shouldSearchAssets && searchTerm.length === 0,
+      input: {
+        limit: 5,
+      },
+    })
+  );
+
+  // Extract tokens array from response
+  const assets =
+    searchTerm.length > 0 ? searchAssets : listAssetsResponse?.tokens || [];
+  const isLoadingAssets = isLoadingSearch || isLoadingList;
 
   const searchResults = useMemo(() => {
     const addresses: EthereumAddress[] = [];
@@ -70,7 +78,7 @@ export function useSearchAddresses({
     }
 
     if (scope === "asset" || scope === "all") {
-      assets.forEach((asset) => {
+      assets.forEach((asset: { id?: string }) => {
         if (!asset.id) return;
 
         try {

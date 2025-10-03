@@ -1,7 +1,10 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { systemRouter } from "@/orpc/procedures/system.router";
 // TokensResponseSchema kept for reference; using permissive schema for nested claims extraction
-import { TokenListSchema } from "@/orpc/routes/token/routes/token.list.schema";
+import {
+  TokenListResponseSchema,
+  TokenListSchema,
+} from "@/orpc/routes/token/routes/token.list.schema";
 import { z } from "zod";
 
 /**
@@ -205,6 +208,22 @@ export const list = systemRouter.token.list.handler(
       };
     });
 
-    return TokenListSchema.parse(tokensWithClaims);
+    // Parse and validate the tokens
+    const parsedTokens = TokenListSchema.parse(tokensWithClaims);
+
+    // Return the response with tokens and total count
+    //
+    // Current approach: @fetchAll directive fetches ALL tokens, so parsedTokens.length
+    // represents the true total count. This works well for small to medium datasets.
+    //
+    // Future optimization: For large datasets (1000+ tokens), consider implementing:
+    // 1. Server-side pagination with limit/offset parameters
+    // 2. Separate count query that only fetches minimal token data (id only)
+    // 3. Parallel execution of data and count queries
+    // This would reduce memory usage and improve response times for large factories.
+    return TokenListResponseSchema.parse({
+      tokens: parsedTokens,
+      totalCount: parsedTokens.length,
+    });
   }
 );

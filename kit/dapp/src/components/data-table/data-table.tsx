@@ -528,7 +528,11 @@ function DataTableComponent<TData>({
         </div>
       )}
       {table.getRowModel().rows.length > 0 && (
-        <DataTablePagination table={table} {...pagination} />
+        <DataTablePagination
+          table={table}
+          {...pagination}
+          totalCount={serverSidePagination?.totalCount}
+        />
       )}
 
       {/* Bulk Actions Bar */}

@@ -17,7 +17,6 @@ import {
 import type { ComplianceModuleDetailProps } from "@/components/compliance/details/types";
 import { ArrayFieldsLayout } from "@/components/layout/array-fields-layout";
 import { Button } from "@/components/ui/button";
-import { encodeAddressParams } from "@/lib/compliance/encoding/encode-address-params";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { isAddress } from "viem";
@@ -76,13 +75,10 @@ export function AddressRestrictionModuleDetail({
       .map((e) => e.value)
       .filter((addr) => isAddress(addr));
 
-    const encodedParams = encodeAddressParams(validAddresses);
-
     onEnable({
       typeId,
       module,
       values: validAddresses,
-      params: encodedParams,
     });
   };
 
@@ -91,7 +87,6 @@ export function AddressRestrictionModuleDetail({
       typeId,
       module,
       values: [],
-      params: "",
     });
   };
 

@@ -19,6 +19,7 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import type { Context } from "@/orpc/context/context";
 
+import { encodeComplianceParams } from "@/lib/compliance/encoding/index";
 import {
   createToken,
   type TokenCreateContext,
@@ -76,7 +77,7 @@ export const stablecoinCreateHandler = async (
         countryCode: input.countryCode,
         initialModulePairs: input.initialModulePairs.map((pair) => ({
           module: pair.module,
-          params: pair.params,
+          params: encodeComplianceParams(pair),
         })),
       },
       context.walletVerification

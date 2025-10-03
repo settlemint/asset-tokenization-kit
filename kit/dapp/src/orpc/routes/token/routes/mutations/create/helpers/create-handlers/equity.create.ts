@@ -38,6 +38,7 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import type { Context } from "@/orpc/context/context";
 
+import { encodeComplianceParams } from "@/lib/compliance/encoding/index";
 import {
   createToken,
   type TokenCreateContext,
@@ -156,7 +157,7 @@ export const equityCreateHandler = async (
         // COMPLIANCE MODULES: Map to factory-expected format for proper initialization
         initialModulePairs: input.initialModulePairs.map((pair) => ({
           module: pair.module,
-          params: pair.params,
+          params: encodeComplianceParams(pair),
         })),
       },
       // VERIFICATION DELEGATION: Portal middleware enriches with challenge data

@@ -1,6 +1,6 @@
 import {
-  type ActionItem,
   ActionsCell,
+  type ActionItem,
 } from "@/components/data-table/cells/actions-cell";
 import { createSelectionColumn } from "@/components/data-table/columns/selection-column";
 import { DataTable } from "@/components/data-table/data-table";
@@ -12,54 +12,26 @@ import { ComponentErrorBoundary } from "@/components/error/component-error-bound
 import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
 import { formatValue } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
+import type { DenominationAssetList } from "@/orpc/routes/token/routes/token.denomination-assets.schema";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import type { ColumnDef } from "@tanstack/react-table";
 import {
   Coins,
   Copy,
   ExternalLink,
   Eye,
   Hash,
-  Package,
+  PauseCircle,
   Type,
 } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-// logger reserved for future debug
-// const logger = createLogger();
+type DenominationAsset = DenominationAssetList[number];
 
-/**
- * GraphQL query result for bonds using this denomination asset
- */
-interface DenominationAssetBond {
-  id: string;
-  token: {
-    id: string;
-    name: string;
-    symbol: string;
-    decimals: number;
-    totalSupply: string;
-    pausable: {
-      paused: boolean;
-    };
-    factory: {
-      id: string;
-      name: string;
-    };
-  };
-  faceValue: string;
-  maturityDate: string;
-  isMatured: boolean;
-  denominationAssetNeeded: string;
-}
-
-type Bond = DenominationAssetBond;
-
-const columnHelper = createStrictColumnHelper<Bond>();
+const columnHelper = createStrictColumnHelper<DenominationAsset>();
 
 /**
  * Initial sorting configuration for the denomination assets table
@@ -67,7 +39,7 @@ const columnHelper = createStrictColumnHelper<Bond>();
  */
 const INITIAL_SORTING = [
   {
-    id: "token.name",
+    id: "name",
     desc: false,
   },
 ];
@@ -84,7 +56,7 @@ export function DenominationAssetTable({
 
   // Fetch bonds that use this token as denomination asset
   const {
-    data: bondsData,
+    data: denominationAssetsData,
     isLoading,
     error,
   } = useSuspenseQuery(
@@ -93,7 +65,7 @@ export function DenominationAssetTable({
     })
   );
 
-  const bonds = bondsData || [];
+  const denominationAssets = denominationAssetsData || [];
 
   // Copy to clipboard utility
   const copyToClipboard = useCallback(
@@ -125,147 +97,99 @@ export function DenominationAssetTable({
   );
 
   // Column definitions
-  const columns = useMemo<ColumnDef<Bond>[]>(() => {
-    const baseColumns: ColumnDef<Bond>[] = [
-      createSelectionColumn<Bond>(),
-
-      // Asset Name
-      columnHelper.display({
-        id: "name",
-        header: () => (
-          <div className="flex items-center gap-2">
-            <Package className="h-4 w-4" />
-            {t("fields.name")}
-          </div>
-        ),
-        cell: ({ row }) => {
-          const bond = row.original;
-          return (
-            <div className="flex items-center gap-3">
-              <div className="flex flex-col">
-                <span className="font-medium">{bond.token.name}</span>
-                <span className="text-sm text-muted-foreground">
-                  {bond.token.symbol}
-                </span>
-              </div>
-            </div>
-          );
+  const columns = useMemo(() => {
+    return withAutoFeatures([
+      createSelectionColumn<DenominationAsset>(),
+      columnHelper.accessor("id", {
+        header: t("columns.contractAddress"),
+        meta: {
+          displayName: t("columns.contractAddress"),
+          type: "address",
+          icon: Copy,
         },
       }),
-
-      // Factory
-      columnHelper.display({
-        id: "factory",
-        header: () => (
-          <div className="flex items-center gap-2">
-            <Type className="h-4 w-4" />
-            Factory
-          </div>
-        ),
-        cell: ({ row }) => (
-          <span className="text-sm">{row.original.token.factory.name}</span>
-        ),
+      columnHelper.accessor("name", {
+        header: t("columns.name"),
+        meta: {
+          displayName: t("columns.tokenName"),
+          type: "text",
+          icon: Type,
+        },
       }),
-
-      // Face Value
-      columnHelper.display({
-        id: "faceValue",
-        header: () => (
-          <div className="flex items-center gap-2">
-            <Coins className="h-4 w-4" />
-            {t("fields.faceValue")}
-          </div>
-        ),
-        cell: ({ row }) => (
-          <span className="font-mono text-sm">
-            {formatValue(row.original.faceValue, { type: "number" })}
-          </span>
-        ),
+      columnHelper.accessor("symbol", {
+        header: t("columns.symbol"),
+        meta: {
+          displayName: t("columns.tokenSymbol"),
+          type: "text",
+          icon: Coins,
+        },
       }),
-
-      // Total Supply
+      columnHelper.accessor("decimals", {
+        header: t("columns.decimals"),
+        meta: {
+          displayName: t("columns.decimals"),
+          type: "number",
+          icon: Hash,
+          max: 18,
+        },
+      }),
       columnHelper.display({
         id: "totalSupply",
-        header: () => (
-          <div className="flex items-center gap-2">
-            <Hash className="h-4 w-4" />
-            {t("fields.totalSupply")}
-          </div>
-        ),
-        cell: ({ row }) => (
-          <span className="font-mono text-sm">
-            {formatValue(row.original.token.totalSupply, {
-              type: "currency",
-              currency: { assetSymbol: row.original.token.symbol },
-            })}
-          </span>
-        ),
-      }),
-
-      // Maturity Date
-      columnHelper.display({
-        id: "maturityDate",
-        header: () => (
-          <div className="flex items-center gap-2">
-            {t("fields.maturityDate")}
-          </div>
-        ),
-        cell: ({ row }) => (
-          <span className="text-sm">
-            {formatValue(row.original.maturityDate, {
-              type: "date",
-              dateOptions: { includeTime: true },
-            })}
-          </span>
-        ),
-      }),
-
-      // Status
-      columnHelper.display({
-        id: "status",
-        header: t("fields.status"),
+        header: t("columns.totalSupply"),
         cell: ({ row }) => {
-          const paused = row.original.token.pausable.paused;
-          const isMatured = row.original.isMatured;
-          return (
-            <div className="flex items-center gap-2">
-              <TokenStatusBadge paused={paused} />
-              {isMatured && (
-                <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
-                  {t("status.matured")}
-                </span>
-              )}
-            </div>
-          );
+          return formatValue(row.original.totalSupply, {
+            type: "currency",
+            currency: { assetSymbol: row.original.symbol },
+          });
+        },
+        meta: {
+          displayName: t("columns.totalSupply"),
+          type: "none",
+          icon: Coins,
         },
       }),
-
+      columnHelper.display({
+        id: "paused",
+        header: t("columns.paused"),
+        cell: ({ row }) => {
+          const paused = row.original.pausable.paused;
+          return <TokenStatusBadge paused={paused} />;
+        },
+        meta: {
+          displayName: t("columns.paused"),
+          type: "none",
+          icon: PauseCircle,
+        },
+      }),
       // Actions
       columnHelper.display({
         id: "actions",
         header: () => t("columns.actions"),
         cell: ({ row }) => {
-          const bond = row.original;
+          const denominationAsset = row.original;
           const actions: ActionItem[] = [
             {
               label: t("actions.viewDetails"),
               icon: <Eye className="h-4 w-4" />,
               onClick: () => {
-                navigateToToken(bond.token.factory.id, bond.token.id);
+                navigateToToken(
+                  denominationAsset.tokenFactory.id,
+                  denominationAsset.id
+                );
               },
             },
             {
               label: t("actions.copyAddress"),
               icon: <Copy className="h-4 w-4" />,
               onClick: () => {
-                copyToClipboard(bond.token.id);
+                copyToClipboard(denominationAsset.id);
               },
             },
             {
               label: t("actions.viewOnEtherscan"),
               icon: <ExternalLink className="h-4 w-4" />,
               onClick: () => {
-                openInExplorer(bond.token.id);
+                openInExplorer(denominationAsset.id);
               },
             },
           ];
@@ -273,13 +197,11 @@ export function DenominationAssetTable({
           return <ActionsCell actions={actions} />;
         },
       }),
-    ];
-
-    return withAutoFeatures(baseColumns);
+    ]);
   }, [t, copyToClipboard, openInExplorer, navigateToToken]);
 
   // Bulk actions configuration
-  const { actions, actionGroups } = useBulkActions<Bond>({});
+  const { actions, actionGroups } = useBulkActions<DenominationAsset>({});
 
   if (error) {
     throw error;
@@ -289,7 +211,7 @@ export function DenominationAssetTable({
     <ComponentErrorBoundary>
       <DataTable
         name="denomination-assets"
-        data={bonds}
+        data={denominationAssets}
         columns={columns}
         isLoading={isLoading}
         initialSorting={INITIAL_SORTING}
