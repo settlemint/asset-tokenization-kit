@@ -73,12 +73,22 @@ export function IdentityTable() {
             type: "none",
           },
         }),
+        columnHelper.accessor("id", {
+          id: "identityId_filter",
+          header: "",
+          enableHiding: false,
+          meta: {
+            displayName: t("identityTable.columns.id"),
+            type: "text",
+          },
+        }),
         // Hidden accessor column for filtering functionality
         // This column provides searchable text content but is not visible in the UI
         // It allows users to filter by contract name, addresses, and entity type
         columnHelper.accessor(
           (row: IdentityRow) =>
             [
+              row.id,
               row.account?.contractName,
               row.account?.id,
               row.isContract === true
@@ -247,7 +257,7 @@ export function IdentityTable() {
           enabled: false,
         }}
         advancedToolbar={{
-          enableGlobalSearch: false,
+          enableGlobalSearch: true,
           enableFilters: true,
           enableExport: true,
           enableViewOptions: true,
@@ -259,6 +269,7 @@ export function IdentityTable() {
         // Hide the filter-only columns which are used for filtering functionality
         // The visible display columns handle the UI presentation
         initialColumnVisibility={{
+          identityId_filter: false,
           linkedEntity_filter: false,
           type_filter: false,
         }}
