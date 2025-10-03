@@ -61,13 +61,13 @@ describe("AssetLifecycleAreaChart", () => {
         data: [
           {
             timestamp: new Date(Date.UTC(2024, 0, 1)),
-            assetsCreatedCount: 12,
-            assetsLaunchedCount: 9,
+            assetsCreated: 12,
+            assetsLaunched: 9,
           },
           {
             timestamp: new Date(Date.UTC(2024, 0, 2)),
-            assetsCreatedCount: 18,
-            assetsLaunchedCount: 15,
+            assetsCreated: 18,
+            assetsLaunched: 15,
           },
         ],
       })
