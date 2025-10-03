@@ -46,7 +46,7 @@ spec:
     - host: {{ $primaryHost | quote }}
       http:
         paths:
-          {{- range $primaryPaths }}
+          {{ range $primaryPaths }}
           {{- $pathVal := default "/" .path -}}
           {{- $pathType := default "ImplementationSpecific" .pathType -}}
           {{- $serviceName := default (printf "%s-combined" $fullName) .serviceName -}}
@@ -74,14 +74,14 @@ spec:
                   {{- else }}
                   number: {{ $servicePortNumber | default 80 }}
                   {{- end }}
-          {{- end }}
+          {{ end }}
     {{- end }}
     {{- else }}
-    {{- range .Values.ingress.hosts }}
+    {{ range .Values.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
         paths:
-          {{- range .paths }}
+          {{ range .paths }}
           {{- if eq .path "/ws/?(.*)" }}
           - path: {{ .path }}
             pathType: {{ .pathType | default "ImplementationSpecific" }}
@@ -114,8 +114,8 @@ spec:
                 name: {{ $fullName }}-combined
                 port:
                   name: http-query
-          {{- end }}
-          {{- end }}
-    {{- end }}
+          {{ end }}
+    {{ end }}
+    {{ end }}
     {{- end }}
 {{- end }}

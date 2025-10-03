@@ -265,6 +265,7 @@ The following table lists the configurable parameters of this chart and their de
 |reloader.reloader.deployment|object|-|Deployment configuration|
 |reloader.reloader.deployment.labels|object|-|Labels for Reloader deployment|
 |reloader.reloader.deployment.labels."kots.io/app-slug"|string|`"settlemint-atk"`|KOTS application identifier for SettleMint ATK|
+|reloader.reloader.deployment.resources|object|-|Resource requests and limits for Reloader pods|
 |reloader.reloader.readOnlyRootFileSystem|bool|`true`|Enable read-only root filesystem|
 |reloader.reloader.reloadOnCreate|bool|`false`|Reload on resource creation|
 |reloader.reloader.securityContext|object|-|Security context configuration|
@@ -591,8 +592,9 @@ The following table lists the configurable parameters of this chart and their de
 |-----------|----------|-------------|-----------|----------------|--------------|---------|
 | minio | 1 | 100m | 200m | 256Mi | 512Mi | 1Gi |
 | postgresql | 1 | 100m | 500m | 256Mi | 1Gi | 8Gi |
+| reloader.reloader.deployment | 1 | 100m | 200m | 128Mi | 256Mi | - |
 
-| **Totals** | - | 0.20 cores (200m) | 0.70 cores (700m) | 512Mi (0.50Gi) | 1536Mi (1.50Gi) | 9216Mi (9.00Gi) |
+| **Totals** | - | 0.30 cores (300m) | 0.90 cores (900m) | 640Mi (0.62Gi) | 1792Mi (1.75Gi) | 9216Mi (9.00Gi) |
 
 ## Maintainers
 

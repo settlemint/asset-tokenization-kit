@@ -839,14 +839,14 @@ observability:
     resources:
       requests:
         # -- (string) CPU request for Metrics Server pods
-        cpu: "40m"
+        cpu: "200m"
         # -- (string) Memory request for Metrics Server pods
-        memory: "25Mi"
+        memory: "256Mi"
       limits:
         # -- (string) CPU limit for Metrics Server pods
-        cpu: "80m"
+        cpu: "400m"
         # -- (string) Memory limit for Metrics Server pods
-        memory: "50Mi"
+        memory: "512Mi"
     # -- (object) Metrics Server container image
     image:
       # -- (string) Official Kubernetes metrics-server image
@@ -918,14 +918,14 @@ observability:
       resources:
         requests:
           # -- (string) CPU request for Loki single binary pods
-          cpu: "170m"
+          cpu: "400m"
           # -- (string) Memory request for Loki single binary pods
-          memory: "360Mi"
+          memory: "1024Mi"
         limits:
           # -- (string) CPU limit for Loki single binary pods
-          cpu: "500m"
+          cpu: "800m"
           # -- (string) Memory limit for Loki single binary pods
-          memory: "600Mi"
+          memory: "2048Mi"
       # -- (list) Additional environment variables for Loki
       extraEnv: []
     # -- (object) Memcached for Loki query result caching
@@ -1010,14 +1010,14 @@ observability:
       resources:
         requests:
           # -- (string) CPU request for Alloy pods
-          cpu: "100m"
+          cpu: "200m"
           # -- (string) Memory request for Alloy pods
-          memory: "160Mi"
+          memory: "512Mi"
         limits:
           # -- (string) CPU limit for Alloy pods
-          cpu: "240m"
+          cpu: "800m"
           # -- (string) Memory limit for Alloy pods
-          memory: "320Mi"
+          memory: "1024Mi"
     # -- (object) Alloy container image
     image:
       # -- (string) OCI registry for Alloy
@@ -1040,12 +1040,12 @@ observability:
         # -- (string) CPU request for Grafana pods
         cpu: "180m"
         # -- (string) Memory request for Grafana pods
-        memory: "192Mi"
+        memory: "384Mi"
       limits:
         # -- (string) CPU limit for Grafana pods
         cpu: "360m"
         # -- (string) Memory limit for Grafana pods
-        memory: "384Mi"
+        memory: "768Mi"
     # -- (object) Sidecar for dashboard provisioning
     sidecar:
       # -- (object) Sidecar container image

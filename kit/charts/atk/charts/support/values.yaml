@@ -520,6 +520,14 @@ reloader:
       labels:
         # -- (string) KOTS application identifier for SettleMint ATK
         kots.io/app-slug: settlemint-atk
+      # -- (object) Resource requests and limits for Reloader pods
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 200m
+          memory: 256Mi
 
 # -- MinIO configuration (object)
 minio:

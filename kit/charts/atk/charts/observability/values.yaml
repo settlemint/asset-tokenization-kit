@@ -10,6 +10,14 @@ global:
 metrics-server:
   # -- (bool) Enable metrics server deployment
   enabled: false
+  # -- (object) Resource requests and limits for metrics server pods
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 400m
+      memory: 512Mi
   # -- Global Docker registry secret names as an array (list)
   imagePullSecrets: []
   # -- (object) Metrics server image configuration
@@ -336,7 +344,13 @@ loki:
     # -- (int) Number of replicas for single binary deployment
     replicas: 1
     # -- (object) Resource requests and limits
-    resources: {}
+    resources:
+      requests:
+        cpu: 400m
+        memory: 1024Mi
+      limits:
+        cpu: 800m
+        memory: 2048Mi
     # extraEnv:
     #   # Keep a little bit lower than memory limits
     #   - name: GOMEMLIMIT
@@ -542,7 +556,13 @@ alloy:
         # -- (string) Protocol for OpenTelemetry HTTP
         protocol: "TCP"
     # -- (object) Resource requests and limits for Alloy
-    resources: {}
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: 800m
+        memory: 1024Mi
     # -- (bool) Enable usage reporting to Grafana Labs
     enableReporting: false
     # -- (object) ConfigMap configuration for Alloy
@@ -877,170 +897,178 @@ alloy:
 
 # https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
 # -- (object) Grafana configuration
-grafana:
-  # -- (bool) Enable Grafana deployment
-  enabled: true
-  # -- (object) Additional labels for Grafana pods
-  podLabels:
-    # -- (string) KOTS application slug identifier
-    kots.io/app-slug: settlemint-atk
-
-    # -- (string) Helm managed-by label
-    app.kubernetes.io/managed-by: helm
-  # -- (string) String to fully override common.names.fullname
-  fullnameOverride: grafana
-  # -- (string) Grafana admin username
-  adminUser: settlemint
-  # -- (string) Grafana admin password
-  adminPassword: atk
-  # -- (object) Global configuration
-  global:
-    # -- (string) Global image registry
-    imageRegistry: docker.io
-    # -- (list) Global Docker registry secret names as an array
-    imagePullSecrets: []
-  # -- (object) Ingress configuration for Grafana
-  ingress:
-    # -- (bool) Enable ingress for Grafana
+  grafana:
+    # -- (bool) Enable Grafana deployment
     enabled: true
-    # -- (string) Ingress class name
-    ingressClassName: atk-nginx
-    # -- (list) List of ingress hosts
-    hosts:
-      # -- (string) Host name for Grafana ingress
-      - grafana.k8s.orb.local
-  # -- (object) Persistent volume configuration
-  persistence:
-    # -- (bool) Enable persistent volume for Grafana
-    enabled: false
-    # -- (string) Size of persistent volume
-    size: 1Gi
-  # -- (object) Init container to fix permissions
-  initChownData:
-    # -- (bool) Enable init container for chown
-    enabled: false
-  # -- (object) Sidecar configuration for auto-loading resources
-  sidecar:
-    # -- (object) Dashboard sidecar configuration
-    dashboards:
-      # -- (bool) Enable dashboard sidecar
+    # -- (object) Additional labels for Grafana pods
+    podLabels:
+      # -- (string) KOTS application slug identifier
+      kots.io/app-slug: settlemint-atk
+
+      # -- (string) Helm managed-by label
+      app.kubernetes.io/managed-by: helm
+    # -- (string) String to fully override common.names.fullname
+    fullnameOverride: grafana
+    # -- (string) Grafana admin username
+    adminUser: settlemint
+    # -- (string) Grafana admin password
+    adminPassword: atk
+    # -- (object) Global configuration
+    global:
+      # -- (string) Global image registry
+      imageRegistry: docker.io
+      # -- (list) Global Docker registry secret names as an array
+      imagePullSecrets: []
+    # -- (object) Ingress configuration for Grafana
+    ingress:
+      # -- (bool) Enable ingress for Grafana
       enabled: true
-      # -- (object) Dashboard provider configuration
-      provider:
-        # -- (bool) Allow UI updates to dashboards
-        allowUiUpdates: true
-        # -- (bool) Create folders from file structure
-        foldersFromFilesStructure: true
-      # -- (string) Annotation key for folder assignment
-      folderAnnotation: grafana_folder
-      # -- (string) Namespace to search for dashboards (ALL for all namespaces)
-      searchNamespace: ALL
-    # -- (object) Datasource sidecar configuration
-    datasources:
-      # -- (bool) Enable datasource sidecar
-      enabled: true
-      # -- (bool) Initialize datasources on startup
-      initDatasources: true
-    # -- (object) Plugin sidecar configuration
-    plugins:
-      # -- (bool) Enable plugin sidecar
-      enabled: true
-    # -- (object) Alert sidecar configuration
-    alerts:
-      # -- (bool) Enable alert sidecar
+      # -- (string) Ingress class name
+      ingressClassName: atk-nginx
+      # -- (list) List of ingress hosts
+      hosts:
+        # -- (string) Host name for Grafana ingress
+        - grafana.k8s.orb.local
+    # -- (object) Resource requests and limits for Grafana pods
+    resources:
+      requests:
+        cpu: 180m
+        memory: 384Mi
+      limits:
+        cpu: 360m
+        memory: 768Mi
+    # -- (object) Persistent volume configuration
+    persistence:
+      # -- (bool) Enable persistent volume for Grafana
       enabled: false
-      # -- (string) Label key for alert discovery
-      label: grafana_alert
-      # -- (string) Namespace to search for alerts (ALL for all namespaces)
-      searchNamespace: ALL
-      # -- (string) Label value for alert discovery
-      labelValue: "1"
-      # -- (string) Slack webhook URL for alerts
-      slackUrl: ""
-      # -- (string) Slack channel for alerts
-      slackChannel: ""
-      # -- (string) Slack username for alerts
-      slackUsername: ""
-  # -- (object) Datasource configuration
-  datasources:
-    # -- (object) Datasources YAML configuration
-    datasources.yaml:
-      # -- (int) Datasource API version
-      apiVersion: 1
-      # -- (list) List of datasources
+      # -- (string) Size of persistent volume
+      size: 1Gi
+    # -- (object) Init container to fix permissions
+    initChownData:
+      # -- (bool) Enable init container for chown
+      enabled: false
+    # -- (object) Sidecar configuration for auto-loading resources
+    sidecar:
+      # -- (object) Dashboard sidecar configuration
+      dashboards:
+        # -- (bool) Enable dashboard sidecar
+        enabled: true
+        # -- (object) Dashboard provider configuration
+        provider:
+          # -- (bool) Allow UI updates to dashboards
+          allowUiUpdates: true
+          # -- (bool) Create folders from file structure
+          foldersFromFilesStructure: true
+        # -- (string) Annotation key for folder assignment
+        folderAnnotation: grafana_folder
+        # -- (string) Namespace to search for dashboards (ALL for all namespaces)
+        searchNamespace: ALL
+      # -- (object) Datasource sidecar configuration
       datasources:
-        # -- (string) Prometheus datasource name
-        - name: Prometheus
-          # -- (string) Datasource type
-          type: prometheus
-          # -- (string) Datasource unique identifier
-          uid: prometheus
-          # -- (string) Datasource access mode
-          access: proxy
-          # -- (string) Prometheus URL
-          url: http://metrics:8428
-          # -- (bool) Set as default datasource
-          isDefault: true
-        # -- (string) Loki datasource name
-        - name: Loki
-          # -- (string) Datasource type
-          type: loki
-          # -- (string) Datasource unique identifier
-          uid: loki
-          # -- (string) Datasource access mode
-          access: proxy
-          # -- (string) Loki URL
-          url: http://logs:3100
-          # -- (bool) Set as default datasource
-          isDefault: false
-          # -- (object) Loki JSON data configuration
-          jsonData:
-            # -- (int) Query timeout in seconds
-            timeout: 60
-            # -- (int) Maximum lines to return
-            maxLines: 1000
-            # -- (list) Derived fields configuration for trace linking
-            derivedFields:
-              # -- (string) Target datasource UID for trace links
-              - datasourceUid: tempo
-                # -- (string) Regex to extract trace ID from logs
-                matcherRegex: "^.*?traceI[d|D]=(\\w+).*$"
-                # -- (string) Field name for trace ID
-                name: traceId
-                # -- (string) URL template for trace links
-                url: '$${__value.raw}'
-        # -- (string) PostgreSQL datasource name
-        - name: PostgreSQL
-          # -- (string) Datasource type
-          type: postgres
-          # -- (string) Datasource unique identifier
-          uid: postgres
-          # -- (string) PostgreSQL URL
-          url: postgresql:5432
-          # -- (string) Datasource access mode
-          access: proxy
-          # -- (bool) Set as default datasource
-          isDefault: false
-          # -- (string) Database name
-          database: thegraph
-          # -- (string) Database user
-          user: thegraph
-          # -- (object) PostgreSQL JSON data configuration
-          jsonData:
-            # -- (string) SSL mode for PostgreSQL connection
-            sslmode: 'disable'
-            # -- (int) PostgreSQL version
-            postgresVersion: 15
-            # -- (bool) Enable TimescaleDB support
-            timescaledb: false
-          # -- (object) Secure JSON data for sensitive fields
-          secureJsonData:
-            # -- (string) Database password
-            password: "atk" # WARNING: Store passwords securely (e.g., secrets) in production!
-  # -- (list) List of Grafana plugins to install
-  plugins:
-    # -- (string) Loki Explore app plugin URL
-    - https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip;grafana-lokiexplore-app
+        # -- (bool) Enable datasource sidecar
+        enabled: true
+        # -- (bool) Initialize datasources on startup
+        initDatasources: true
+      # -- (object) Plugin sidecar configuration
+      plugins:
+        # -- (bool) Enable plugin sidecar
+        enabled: true
+      # -- (object) Alert sidecar configuration
+      alerts:
+        # -- (bool) Enable alert sidecar
+        enabled: false
+        # -- (string) Label key for alert discovery
+        label: grafana_alert
+        # -- (string) Namespace to search for alerts (ALL for all namespaces)
+        searchNamespace: ALL
+        # -- (string) Label value for alert discovery
+        labelValue: "1"
+        # -- (string) Slack webhook URL for alerts
+        slackUrl: ""
+        # -- (string) Slack channel for alerts
+        slackChannel: ""
+        # -- (string) Slack username for alerts
+        slackUsername: ""
+    # -- (object) Datasource configuration
+    datasources:
+      # -- (object) Datasources YAML configuration
+      datasources.yaml:
+        # -- (int) Datasource API version
+        apiVersion: 1
+        # -- (list) List of datasources
+        datasources:
+          # -- (string) Prometheus datasource name
+          - name: Prometheus
+            # -- (string) Datasource type
+            type: prometheus
+            # -- (string) Datasource unique identifier
+            uid: prometheus
+            # -- (string) Datasource access mode
+            access: proxy
+            # -- (string) Prometheus URL
+            url: http://metrics:8428
+            # -- (bool) Set as default datasource
+            isDefault: true
+          # -- (string) Loki datasource name
+          - name: Loki
+            # -- (string) Datasource type
+            type: loki
+            # -- (string) Datasource unique identifier
+            uid: loki
+            # -- (string) Datasource access mode
+            access: proxy
+            # -- (string) Loki URL
+            url: http://logs:3100
+            # -- (bool) Set as default datasource
+            isDefault: false
+            # -- (object) Loki JSON data configuration
+            jsonData:
+              # -- (int) Query timeout in seconds
+              timeout: 60
+              # -- (int) Maximum lines to return
+              maxLines: 1000
+              # -- (list) Derived fields configuration for trace linking
+              derivedFields:
+                # -- (string) Target datasource UID for trace links
+                - datasourceUid: tempo
+                  # -- (string) Regex to extract trace ID from logs
+                  matcherRegex: "^.*?traceI[d|D]=(\\w+).*$"
+                  # -- (string) Field name for trace ID
+                  name: traceId
+                  # -- (string) URL template for trace links
+                  url: '$${__value.raw}'
+          # -- (string) PostgreSQL datasource name
+          - name: PostgreSQL
+            # -- (string) Datasource type
+            type: postgres
+            # -- (string) Datasource unique identifier
+            uid: postgres
+            # -- (string) PostgreSQL URL
+            url: postgresql:5432
+            # -- (string) Datasource access mode
+            access: proxy
+            # -- (bool) Set as default datasource
+            isDefault: false
+            # -- (string) Database name
+            database: thegraph
+            # -- (string) Database user
+            user: thegraph
+            # -- (object) PostgreSQL JSON data configuration
+            jsonData:
+              # -- (string) SSL mode for PostgreSQL connection
+              sslmode: 'disable'
+              # -- (int) PostgreSQL version
+              postgresVersion: 15
+              # -- (bool) Enable TimescaleDB support
+              timescaledb: false
+            # -- (object) Secure JSON data for sensitive fields
+            secureJsonData:
+              # -- (string) Database password
+              password: "atk" # WARNING: Store passwords securely (e.g., secrets) in production!
+    # -- (list) List of Grafana plugins to install
+    plugins:
+      # -- (string) Loki Explore app plugin URL
+      - https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip;grafana-lokiexplore-app
 
 
 # https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus-node-exporter/values.yaml
@@ -1092,6 +1120,14 @@ tempo:
   tempo:
     # -- (string) Tempo image repository
     repository: docker.io/grafana/tempo
+    # -- (object) Resource requests and limits for Tempo pods
+    resources:
+      requests:
+        cpu: 100m
+        memory: 192Mi
+      limits:
+        cpu: 240m
+        memory: 384Mi
     # -- (list) Docker registry secret names as an array
     pullSecrets: []
     # -- (bool) Enable usage reporting to Grafana Labs
@@ -1122,6 +1158,14 @@ tempo:
   tempoQuery:
     # -- (string) Tempo query image repository
     repository: docker.io/grafana/tempo-query
+    # -- (object) Resource requests and limits for Tempo query pods
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
     # -- (list) Docker registry secret names as an array
     pullSecrets: []
     # -- (object) Ingress configuration for Tempo query

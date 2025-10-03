@@ -299,10 +299,10 @@ The following table lists the configurable parameters of this chart and their de
 |observability.alloy|object|-|Grafana Alloy for telemetry pipeline|
 |observability.alloy.alloy|object|-|Alloy agent configuration|
 |observability.alloy.alloy.resources|object|-|Resource requests and limits for Alloy|
-|observability.alloy.alloy.resources.limits.cpu|string|`"240m"`|CPU limit for Alloy pods|
-|observability.alloy.alloy.resources.limits.memory|string|`"320Mi"`|Memory limit for Alloy pods|
-|observability.alloy.alloy.resources.requests.cpu|string|`"100m"`|CPU request for Alloy pods|
-|observability.alloy.alloy.resources.requests.memory|string|`"160Mi"`|Memory request for Alloy pods|
+|observability.alloy.alloy.resources.limits.cpu|string|`"800m"`|CPU limit for Alloy pods|
+|observability.alloy.alloy.resources.limits.memory|string|`"1024Mi"`|Memory limit for Alloy pods|
+|observability.alloy.alloy.resources.requests.cpu|string|`"200m"`|CPU request for Alloy pods|
+|observability.alloy.alloy.resources.requests.memory|string|`"512Mi"`|Memory request for Alloy pods|
 |observability.alloy.configReloader|object|-|Config reloader sidecar|
 |observability.alloy.configReloader.image|object|-|Config reloader image|
 |observability.alloy.configReloader.image.registry|string|`"quay.io"`|OCI registry for config reloader|
@@ -318,9 +318,9 @@ The following table lists the configurable parameters of this chart and their de
 |observability.grafana.ingress.hosts|list|-|Hostnames for Grafana access|
 |observability.grafana.resources|object|-|Resource requests and limits for Grafana pods|
 |observability.grafana.resources.limits.cpu|string|`"360m"`|CPU limit for Grafana pods|
-|observability.grafana.resources.limits.memory|string|`"384Mi"`|Memory limit for Grafana pods|
+|observability.grafana.resources.limits.memory|string|`"768Mi"`|Memory limit for Grafana pods|
 |observability.grafana.resources.requests.cpu|string|`"180m"`|CPU request for Grafana pods|
-|observability.grafana.resources.requests.memory|string|`"192Mi"`|Memory request for Grafana pods|
+|observability.grafana.resources.requests.memory|string|`"384Mi"`|Memory request for Grafana pods|
 |observability.grafana.sidecar|object|-|Sidecar for dashboard provisioning|
 |observability.grafana.sidecar.image|object|-|Sidecar container image|
 |observability.grafana.sidecar.image.registry|string|`"docker.io"`|OCI registry for sidecar|
@@ -374,19 +374,19 @@ The following table lists the configurable parameters of this chart and their de
 |observability.loki.singleBinary.persistence|object|-|Persistent storage for log data|
 |observability.loki.singleBinary.persistence.size|string|`"10Gi"`|Storage size for log retention|
 |observability.loki.singleBinary.resources|object|-|Resource requests and limits for Loki|
-|observability.loki.singleBinary.resources.limits.cpu|string|`"500m"`|CPU limit for Loki single binary pods|
-|observability.loki.singleBinary.resources.limits.memory|string|`"600Mi"`|Memory limit for Loki single binary pods|
-|observability.loki.singleBinary.resources.requests.cpu|string|`"170m"`|CPU request for Loki single binary pods|
-|observability.loki.singleBinary.resources.requests.memory|string|`"360Mi"`|Memory request for Loki single binary pods|
+|observability.loki.singleBinary.resources.limits.cpu|string|`"800m"`|CPU limit for Loki single binary pods|
+|observability.loki.singleBinary.resources.limits.memory|string|`"2048Mi"`|Memory limit for Loki single binary pods|
+|observability.loki.singleBinary.resources.requests.cpu|string|`"400m"`|CPU request for Loki single binary pods|
+|observability.loki.singleBinary.resources.requests.memory|string|`"1024Mi"`|Memory request for Loki single binary pods|
 |observability.metrics-server|object|-|Kubernetes Metrics Server for resource metrics|
 |observability.metrics-server.enabled|bool|`true`|Enable Metrics Server deployment|
 |observability.metrics-server.image|object|-|Metrics Server container image|
 |observability.metrics-server.image.repository|string|`"registry.k8s.io/metrics-server/metrics-server"`|Official Kubernetes metrics-server image|
 |observability.metrics-server.resources|object|-|Resource requests and limits for Metrics Server|
-|observability.metrics-server.resources.limits.cpu|string|`"80m"`|CPU limit for Metrics Server pods|
-|observability.metrics-server.resources.limits.memory|string|`"50Mi"`|Memory limit for Metrics Server pods|
-|observability.metrics-server.resources.requests.cpu|string|`"40m"`|CPU request for Metrics Server pods|
-|observability.metrics-server.resources.requests.memory|string|`"25Mi"`|Memory request for Metrics Server pods|
+|observability.metrics-server.resources.limits.cpu|string|`"400m"`|CPU limit for Metrics Server pods|
+|observability.metrics-server.resources.limits.memory|string|`"512Mi"`|Memory limit for Metrics Server pods|
+|observability.metrics-server.resources.requests.cpu|string|`"200m"`|CPU request for Metrics Server pods|
+|observability.metrics-server.resources.requests.memory|string|`"256Mi"`|Memory request for Metrics Server pods|
 |observability.prometheus-node-exporter|object|-|Prometheus Node Exporter for host metrics|
 |observability.prometheus-node-exporter.image|object|-|Node exporter container image|
 |observability.prometheus-node-exporter.image.registry|string|`"quay.io"`|OCI registry for node exporter|
@@ -2302,90 +2302,90 @@ The following table lists the configurable parameters of this chart and their de
 |observability.alloy.global|object|-|Global configuration|
 |observability.alloy.global.image|object|-|Global image configuration|
 |observability.alloy.global.image.pullSecrets|list|-|Global Docker registry secret names as an array|
+|observability.alloy.grafana.adminPassword|string|`"atk"`|Grafana admin password|
+|observability.alloy.grafana.adminUser|string|`"settlemint"`|Grafana admin username|
+|observability.alloy.grafana.datasources|object|-|Datasource configuration|
+|observability.alloy.grafana.datasources."datasources.yaml"|object|-|Datasources YAML configuration|
+|observability.alloy.grafana.datasources."datasources.yaml".apiVersion|int|`1`|Datasource API version|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources|list|-|List of datasources|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[0]|string|`{"access":"proxy","isDefault":true,"name":"Prometheus","type":"prometheus","uid":"prometheus","url":"http://metrics:8428"}`|Prometheus datasource name|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[0].access|string|`"proxy"`|Datasource access mode|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[0].isDefault|bool|`true`|Set as default datasource|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[0].type|string|`"prometheus"`|Datasource type|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[0].uid|string|`"prometheus"`|Datasource unique identifier|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[0].url|string|`"http://metrics:8428"`|Prometheus URL|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[1]|string|`{"access":"proxy","isDefault":false,"jsonData":{"derivedFields":[{"datasourceUid":"tempo","matcherRegex":"^.*?traceI[d|D]=(\\w+).*$","name":"traceId","url":"$${__value.raw}"}],"maxLines":1000,"timeout":60},"name":"Loki","type":"loki","uid":"loki","url":"http://logs:3100"}`|Loki datasource name|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[1].access|string|`"proxy"`|Datasource access mode|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[1].isDefault|bool|`false`|Set as default datasource|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[1].jsonData|object|-|Loki JSON data configuration|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[1].jsonData.derivedFields|list|-|Derived fields configuration for trace linking|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[1].jsonData.derivedFields[0]|string|`{"datasourceUid":"tempo","matcherRegex":"^.*?traceI[d|D]=(\\w+).*$","name":"traceId","url":"$${__value.raw}"}`|Target datasource UID for trace links|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[1].jsonData.derivedFields[0].matcherRegex|string|`"^.*?traceI[d|D]=(\\w+).*$"`|Regex to extract trace ID from logs|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[1].jsonData.derivedFields[0].name|string|`"traceId"`|Field name for trace ID|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[1].jsonData.derivedFields[0].url|string|`"$${__value.raw}"`|URL template for trace links|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[1].jsonData.maxLines|int|`1000`|Maximum lines to return|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[1].jsonData.timeout|int|`60`|Query timeout in seconds|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[1].type|string|`"loki"`|Datasource type|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[1].uid|string|`"loki"`|Datasource unique identifier|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[1].url|string|`"http://logs:3100"`|Loki URL|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[2]|string|`{"access":"proxy","database":"thegraph","isDefault":false,"jsonData":{"postgresVersion":15,"sslmode":"disable","timescaledb":false},"name":"PostgreSQL","secureJsonData":{"password":"atk"},"type":"postgres","uid":"postgres","url":"postgresql:5432","user":"thegraph"}`|PostgreSQL datasource name|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[2].access|string|`"proxy"`|Datasource access mode|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[2].database|string|`"thegraph"`|Database name|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[2].isDefault|bool|`false`|Set as default datasource|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[2].jsonData|object|-|PostgreSQL JSON data configuration|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[2].jsonData.postgresVersion|int|`15`|PostgreSQL version|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[2].jsonData.sslmode|string|`"disable"`|SSL mode for PostgreSQL connection|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[2].jsonData.timescaledb|bool|`false`|Enable TimescaleDB support|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[2].secureJsonData|object|-|Secure JSON data for sensitive fields|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[2].secureJsonData.password|string|`"atk"`|Database password|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[2].type|string|`"postgres"`|Datasource type|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[2].uid|string|`"postgres"`|Datasource unique identifier|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[2].url|string|`"postgresql:5432"`|PostgreSQL URL|
+|observability.alloy.grafana.datasources."datasources.yaml".datasources[2].user|string|`"thegraph"`|Database user|
+|observability.alloy.grafana.enabled|bool|`true`|Enable Grafana deployment|
+|observability.alloy.grafana.fullnameOverride|string|`"grafana"`|String to fully override common.names.fullname|
+|observability.alloy.grafana.global|object|-|Global configuration|
+|observability.alloy.grafana.global.imagePullSecrets|list|-|Global Docker registry secret names as an array|
+|observability.alloy.grafana.global.imageRegistry|string|`"docker.io"`|Global image registry|
+|observability.alloy.grafana.ingress|object|-|Ingress configuration for Grafana|
+|observability.alloy.grafana.ingress.enabled|bool|`true`|Enable ingress for Grafana|
+|observability.alloy.grafana.ingress.hosts|list|-|List of ingress hosts|
+|observability.alloy.grafana.ingress.hosts[0]|string|`"grafana.k8s.orb.local"`|Host name for Grafana ingress|
+|observability.alloy.grafana.ingress.ingressClassName|string|`"atk-nginx"`|Ingress class name|
+|observability.alloy.grafana.initChownData|object|-|Init container to fix permissions|
+|observability.alloy.grafana.initChownData.enabled|bool|`false`|Enable init container for chown|
+|observability.alloy.grafana.persistence|object|-|Persistent volume configuration|
+|observability.alloy.grafana.persistence.enabled|bool|`false`|Enable persistent volume for Grafana|
+|observability.alloy.grafana.persistence.size|string|`"1Gi"`|Size of persistent volume|
+|observability.alloy.grafana.plugins|list|-|List of Grafana plugins to install|
+|observability.alloy.grafana.plugins[0]|string|`"https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip;grafana-lokiexplore-app"`|Loki Explore app plugin URL|
+|observability.alloy.grafana.podLabels|object|-|Additional labels for Grafana pods|
+|observability.alloy.grafana.podLabels."app.kubernetes.io/managed-by"|string|`"helm"`|Helm managed-by label|
+|observability.alloy.grafana.podLabels."kots.io/app-slug"|string|`"settlemint-atk"`|KOTS application slug identifier|
+|observability.alloy.grafana.resources|object|-|Resource requests and limits for Grafana pods|
+|observability.alloy.grafana.sidecar|object|-|Sidecar configuration for auto-loading resources|
+|observability.alloy.grafana.sidecar.alerts|object|-|Alert sidecar configuration|
+|observability.alloy.grafana.sidecar.alerts.enabled|bool|`false`|Enable alert sidecar|
+|observability.alloy.grafana.sidecar.alerts.label|string|`"grafana_alert"`|Label key for alert discovery|
+|observability.alloy.grafana.sidecar.alerts.labelValue|string|`"1"`|Label value for alert discovery|
+|observability.alloy.grafana.sidecar.alerts.searchNamespace|string|`"ALL"`|Namespace to search for alerts (ALL for all namespaces)|
+|observability.alloy.grafana.sidecar.alerts.slackChannel|string|`""`|Slack channel for alerts|
+|observability.alloy.grafana.sidecar.alerts.slackUrl|string|`""`|Slack webhook URL for alerts|
+|observability.alloy.grafana.sidecar.alerts.slackUsername|string|`""`|Slack username for alerts|
+|observability.alloy.grafana.sidecar.dashboards|object|-|Dashboard sidecar configuration|
+|observability.alloy.grafana.sidecar.dashboards.enabled|bool|`true`|Enable dashboard sidecar|
+|observability.alloy.grafana.sidecar.dashboards.folderAnnotation|string|`"grafana_folder"`|Annotation key for folder assignment|
+|observability.alloy.grafana.sidecar.dashboards.provider|object|-|Dashboard provider configuration|
+|observability.alloy.grafana.sidecar.dashboards.provider.allowUiUpdates|bool|`true`|Allow UI updates to dashboards|
+|observability.alloy.grafana.sidecar.dashboards.provider.foldersFromFilesStructure|bool|`true`|Create folders from file structure|
+|observability.alloy.grafana.sidecar.dashboards.searchNamespace|string|`"ALL"`|Namespace to search for dashboards (ALL for all namespaces)|
+|observability.alloy.grafana.sidecar.datasources|object|-|Datasource sidecar configuration|
+|observability.alloy.grafana.sidecar.datasources.enabled|bool|`true`|Enable datasource sidecar|
+|observability.alloy.grafana.sidecar.datasources.initDatasources|bool|`true`|Initialize datasources on startup|
+|observability.alloy.grafana.sidecar.plugins|object|-|Plugin sidecar configuration|
+|observability.alloy.grafana.sidecar.plugins.enabled|bool|`true`|Enable plugin sidecar|
 |observability.alloy.image|object|-|Alloy image configuration|
 |observability.alloy.image.registry|string|`"docker.io"`|Image registry for Alloy|
-|observability.grafana|object|-|Grafana configuration|
-|observability.grafana.adminPassword|string|`"atk"`|Grafana admin password|
-|observability.grafana.adminUser|string|`"settlemint"`|Grafana admin username|
-|observability.grafana.datasources|object|-|Datasource configuration|
-|observability.grafana.datasources."datasources.yaml"|object|-|Datasources YAML configuration|
-|observability.grafana.datasources."datasources.yaml".apiVersion|int|`1`|Datasource API version|
-|observability.grafana.datasources."datasources.yaml".datasources|list|-|List of datasources|
-|observability.grafana.datasources."datasources.yaml".datasources[0]|string|`{"access":"proxy","isDefault":true,"name":"Prometheus","type":"prometheus","uid":"prometheus","url":"http://metrics:8428"}`|Prometheus datasource name|
-|observability.grafana.datasources."datasources.yaml".datasources[0].access|string|`"proxy"`|Datasource access mode|
-|observability.grafana.datasources."datasources.yaml".datasources[0].isDefault|bool|`true`|Set as default datasource|
-|observability.grafana.datasources."datasources.yaml".datasources[0].type|string|`"prometheus"`|Datasource type|
-|observability.grafana.datasources."datasources.yaml".datasources[0].uid|string|`"prometheus"`|Datasource unique identifier|
-|observability.grafana.datasources."datasources.yaml".datasources[0].url|string|`"http://metrics:8428"`|Prometheus URL|
-|observability.grafana.datasources."datasources.yaml".datasources[1]|string|`{"access":"proxy","isDefault":false,"jsonData":{"derivedFields":[{"datasourceUid":"tempo","matcherRegex":"^.*?traceI[d|D]=(\\w+).*$","name":"traceId","url":"$${__value.raw}"}],"maxLines":1000,"timeout":60},"name":"Loki","type":"loki","uid":"loki","url":"http://logs:3100"}`|Loki datasource name|
-|observability.grafana.datasources."datasources.yaml".datasources[1].access|string|`"proxy"`|Datasource access mode|
-|observability.grafana.datasources."datasources.yaml".datasources[1].isDefault|bool|`false`|Set as default datasource|
-|observability.grafana.datasources."datasources.yaml".datasources[1].jsonData|object|-|Loki JSON data configuration|
-|observability.grafana.datasources."datasources.yaml".datasources[1].jsonData.derivedFields|list|-|Derived fields configuration for trace linking|
-|observability.grafana.datasources."datasources.yaml".datasources[1].jsonData.derivedFields[0]|string|`{"datasourceUid":"tempo","matcherRegex":"^.*?traceI[d|D]=(\\w+).*$","name":"traceId","url":"$${__value.raw}"}`|Target datasource UID for trace links|
-|observability.grafana.datasources."datasources.yaml".datasources[1].jsonData.derivedFields[0].matcherRegex|string|`"^.*?traceI[d|D]=(\\w+).*$"`|Regex to extract trace ID from logs|
-|observability.grafana.datasources."datasources.yaml".datasources[1].jsonData.derivedFields[0].name|string|`"traceId"`|Field name for trace ID|
-|observability.grafana.datasources."datasources.yaml".datasources[1].jsonData.derivedFields[0].url|string|`"$${__value.raw}"`|URL template for trace links|
-|observability.grafana.datasources."datasources.yaml".datasources[1].jsonData.maxLines|int|`1000`|Maximum lines to return|
-|observability.grafana.datasources."datasources.yaml".datasources[1].jsonData.timeout|int|`60`|Query timeout in seconds|
-|observability.grafana.datasources."datasources.yaml".datasources[1].type|string|`"loki"`|Datasource type|
-|observability.grafana.datasources."datasources.yaml".datasources[1].uid|string|`"loki"`|Datasource unique identifier|
-|observability.grafana.datasources."datasources.yaml".datasources[1].url|string|`"http://logs:3100"`|Loki URL|
-|observability.grafana.datasources."datasources.yaml".datasources[2]|string|`{"access":"proxy","database":"thegraph","isDefault":false,"jsonData":{"postgresVersion":15,"sslmode":"disable","timescaledb":false},"name":"PostgreSQL","secureJsonData":{"password":"atk"},"type":"postgres","uid":"postgres","url":"postgresql:5432","user":"thegraph"}`|PostgreSQL datasource name|
-|observability.grafana.datasources."datasources.yaml".datasources[2].access|string|`"proxy"`|Datasource access mode|
-|observability.grafana.datasources."datasources.yaml".datasources[2].database|string|`"thegraph"`|Database name|
-|observability.grafana.datasources."datasources.yaml".datasources[2].isDefault|bool|`false`|Set as default datasource|
-|observability.grafana.datasources."datasources.yaml".datasources[2].jsonData|object|-|PostgreSQL JSON data configuration|
-|observability.grafana.datasources."datasources.yaml".datasources[2].jsonData.postgresVersion|int|`15`|PostgreSQL version|
-|observability.grafana.datasources."datasources.yaml".datasources[2].jsonData.sslmode|string|`"disable"`|SSL mode for PostgreSQL connection|
-|observability.grafana.datasources."datasources.yaml".datasources[2].jsonData.timescaledb|bool|`false`|Enable TimescaleDB support|
-|observability.grafana.datasources."datasources.yaml".datasources[2].secureJsonData|object|-|Secure JSON data for sensitive fields|
-|observability.grafana.datasources."datasources.yaml".datasources[2].secureJsonData.password|string|`"atk"`|Database password|
-|observability.grafana.datasources."datasources.yaml".datasources[2].type|string|`"postgres"`|Datasource type|
-|observability.grafana.datasources."datasources.yaml".datasources[2].uid|string|`"postgres"`|Datasource unique identifier|
-|observability.grafana.datasources."datasources.yaml".datasources[2].url|string|`"postgresql:5432"`|PostgreSQL URL|
-|observability.grafana.datasources."datasources.yaml".datasources[2].user|string|`"thegraph"`|Database user|
-|observability.grafana.enabled|bool|`true`|Enable Grafana deployment|
-|observability.grafana.fullnameOverride|string|`"grafana"`|String to fully override common.names.fullname|
-|observability.grafana.global|object|-|Global configuration|
-|observability.grafana.global.imagePullSecrets|list|-|Global Docker registry secret names as an array|
-|observability.grafana.global.imageRegistry|string|`"docker.io"`|Global image registry|
-|observability.grafana.ingress|object|-|Ingress configuration for Grafana|
-|observability.grafana.ingress.enabled|bool|`true`|Enable ingress for Grafana|
-|observability.grafana.ingress.hosts|list|-|List of ingress hosts|
-|observability.grafana.ingress.hosts[0]|string|`"grafana.k8s.orb.local"`|Host name for Grafana ingress|
-|observability.grafana.ingress.ingressClassName|string|`"atk-nginx"`|Ingress class name|
-|observability.grafana.initChownData|object|-|Init container to fix permissions|
-|observability.grafana.initChownData.enabled|bool|`false`|Enable init container for chown|
-|observability.grafana.persistence|object|-|Persistent volume configuration|
-|observability.grafana.persistence.enabled|bool|`false`|Enable persistent volume for Grafana|
-|observability.grafana.persistence.size|string|`"1Gi"`|Size of persistent volume|
-|observability.grafana.plugins|list|-|List of Grafana plugins to install|
-|observability.grafana.plugins[0]|string|`"https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip;grafana-lokiexplore-app"`|Loki Explore app plugin URL|
-|observability.grafana.podLabels|object|-|Additional labels for Grafana pods|
-|observability.grafana.podLabels."app.kubernetes.io/managed-by"|string|`"helm"`|Helm managed-by label|
-|observability.grafana.podLabels."kots.io/app-slug"|string|`"settlemint-atk"`|KOTS application slug identifier|
-|observability.grafana.sidecar|object|-|Sidecar configuration for auto-loading resources|
-|observability.grafana.sidecar.alerts|object|-|Alert sidecar configuration|
-|observability.grafana.sidecar.alerts.enabled|bool|`false`|Enable alert sidecar|
-|observability.grafana.sidecar.alerts.label|string|`"grafana_alert"`|Label key for alert discovery|
-|observability.grafana.sidecar.alerts.labelValue|string|`"1"`|Label value for alert discovery|
-|observability.grafana.sidecar.alerts.searchNamespace|string|`"ALL"`|Namespace to search for alerts (ALL for all namespaces)|
-|observability.grafana.sidecar.alerts.slackChannel|string|`""`|Slack channel for alerts|
-|observability.grafana.sidecar.alerts.slackUrl|string|`""`|Slack webhook URL for alerts|
-|observability.grafana.sidecar.alerts.slackUsername|string|`""`|Slack username for alerts|
-|observability.grafana.sidecar.dashboards|object|-|Dashboard sidecar configuration|
-|observability.grafana.sidecar.dashboards.enabled|bool|`true`|Enable dashboard sidecar|
-|observability.grafana.sidecar.dashboards.folderAnnotation|string|`"grafana_folder"`|Annotation key for folder assignment|
-|observability.grafana.sidecar.dashboards.provider|object|-|Dashboard provider configuration|
-|observability.grafana.sidecar.dashboards.provider.allowUiUpdates|bool|`true`|Allow UI updates to dashboards|
-|observability.grafana.sidecar.dashboards.provider.foldersFromFilesStructure|bool|`true`|Create folders from file structure|
-|observability.grafana.sidecar.dashboards.searchNamespace|string|`"ALL"`|Namespace to search for dashboards (ALL for all namespaces)|
-|observability.grafana.sidecar.datasources|object|-|Datasource sidecar configuration|
-|observability.grafana.sidecar.datasources.enabled|bool|`true`|Enable datasource sidecar|
-|observability.grafana.sidecar.datasources.initDatasources|bool|`true`|Initialize datasources on startup|
-|observability.grafana.sidecar.plugins|object|-|Plugin sidecar configuration|
-|observability.grafana.sidecar.plugins.enabled|bool|`true`|Enable plugin sidecar|
 |observability.kube-state-metrics|object|-|Kube State Metrics configuration|
 |observability.kube-state-metrics.customLabels|object|-|Custom labels to add to all resources|
 |observability.kube-state-metrics.enabled|bool|`true`|Enable kube-state-metrics deployment|
@@ -2533,6 +2533,7 @@ The following table lists the configurable parameters of this chart and their de
 |observability.metrics-server.image.repository|string|`"registry.k8s.io/metrics-server/metrics-server"`|Metrics server image repository|
 |observability.metrics-server.imagePullSecrets|list|-|Global Docker registry secret names as an array (list)|
 |observability.metrics-server.podLabels|object|-|Additional labels for metrics server pods|
+|observability.metrics-server.resources|object|-|Resource requests and limits for metrics server pods|
 |observability.metrics-server.server|object|-|Server configuration|
 |observability.metrics-server.server.persistentVolume|object|-|Persistent volume configuration|
 |observability.metrics-server.server.persistentVolume.enabled|bool|`false`|Enable persistent volume for metrics server|
@@ -2587,6 +2588,7 @@ The following table lists the configurable parameters of this chart and their de
 |observability.tempo.tempo.pullSecrets|list|-|Docker registry secret names as an array|
 |observability.tempo.tempo.reportingEnabled|bool|`false`|Enable usage reporting to Grafana Labs|
 |observability.tempo.tempo.repository|string|`"docker.io/grafana/tempo"`|Tempo image repository|
+|observability.tempo.tempo.resources|object|-|Resource requests and limits for Tempo pods|
 |observability.tempo.tempo.retention|string|`"168h"`|Trace retention period|
 |observability.tempo.tempoQuery|object|-|Tempo query configuration|
 |observability.tempo.tempoQuery.ingress|object|-|Ingress configuration for Tempo query|
@@ -2603,6 +2605,7 @@ The following table lists the configurable parameters of this chart and their de
 |observability.tempo.tempoQuery.ingress.pathType|string|`"Prefix"`|Path type for ingress rule|
 |observability.tempo.tempoQuery.pullSecrets|list|-|Docker registry secret names as an array|
 |observability.tempo.tempoQuery.repository|string|`"docker.io/grafana/tempo-query"`|Tempo query image repository|
+|observability.tempo.tempoQuery.resources|object|-|Resource requests and limits for Tempo query pods|
 |observability.victoria-metrics-single|object|-|Victoria Metrics Single configuration|
 |observability.victoria-metrics-single.enabled|bool|`true`|Enable Victoria Metrics Single deployment|
 |observability.victoria-metrics-single.global|object|-|Global configuration|
@@ -3134,6 +3137,7 @@ The following table lists the configurable parameters of this chart and their de
 |support.reloader.reloader.deployment|object|-|Deployment configuration|
 |support.reloader.reloader.deployment.labels|object|-|Labels for Reloader deployment|
 |support.reloader.reloader.deployment.labels."kots.io/app-slug"|string|`"settlemint-atk"`|KOTS application identifier for SettleMint ATK|
+|support.reloader.reloader.deployment.resources|object|-|Resource requests and limits for Reloader pods|
 |support.reloader.reloader.readOnlyRootFileSystem|bool|`true`|Enable read-only root filesystem|
 |support.reloader.reloader.reloadOnCreate|bool|`false`|Reload on resource creation|
 |support.reloader.reloader.securityContext|object|-|Security context configuration|
@@ -3728,15 +3732,15 @@ The following table lists the configurable parameters of this chart and their de
 | network.network-bootstrapper | 1 | 100m | 250m | 128Mi | 256Mi | - |
 | network.network-nodes | 1 | 75m | 1500m | 1280Mi | 2560Mi | 20Gi |
 | network.network-nodes.compileGenesis | 1 | 100m | 250m | 128Mi | 256Mi | - |
-| observability.alloy.alloy | 1 | 100m | 240m | 160Mi | 320Mi | - |
-| observability.grafana | 1 | 180m | 360m | 192Mi | 384Mi | - |
+| observability.alloy.alloy | 1 | 200m | 800m | 512Mi | 1024Mi | - |
+| observability.grafana | 1 | 180m | 360m | 384Mi | 768Mi | - |
 | observability.kube-state-metrics | 1 | 120m | 240m | 160Mi | 256Mi | - |
 | observability.loki.gateway | 1 | 50m | 150m | 64Mi | 160Mi | - |
 | observability.loki.memcached | 1 | 40m | 120m | 48Mi | 96Mi | - |
 | observability.loki.memcachedExporter | 1 | 10m | 25m | 24Mi | 48Mi | - |
 | observability.loki.sidecar | 1 | 25m | 75m | 36Mi | 72Mi | - |
-| observability.loki.singleBinary | 1 | 170m | 500m | 360Mi | 600Mi | 10Gi |
-| observability.metrics-server | 1 | 40m | 80m | 25Mi | 50Mi | - |
+| observability.loki.singleBinary | 1 | 400m | 800m | 1024Mi | 2048Mi | 10Gi |
+| observability.metrics-server | 1 | 200m | 400m | 256Mi | 512Mi | - |
 | observability.prometheus-node-exporter | 1 | 30m | 60m | 32Mi | 64Mi | - |
 | observability.tempo.server | 1 | 100m | 240m | 192Mi | 384Mi | - |
 | observability.victoria-metrics-single.server | 1 | 180m | 420m | 320Mi | 600Mi | 10Gi |
@@ -3747,7 +3751,7 @@ The following table lists the configurable parameters of this chart and their de
 | support.reloader | 1 | 100m | 200m | 128Mi | 256Mi | - |
 | txsigner | 1 | 150m | 500m | 256Mi | 512Mi | - |
 
-| **Totals** | - | 3.19 cores (3190m) | 15.21 cores (15210m) | 13901Mi (13.58Gi) | 27610Mi (26.96Gi) | 41984Mi (41.00Gi) |
+| **Totals** | - | 3.68 cores (3680m) | 16.39 cores (16390m) | 15340Mi (14.98Gi) | 30608Mi (29.89Gi) | 41984Mi (41.00Gi) |
 
 ## Maintainers
 
