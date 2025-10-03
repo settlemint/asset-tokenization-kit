@@ -30,7 +30,7 @@ image:
   # -- (string) Redis image repository
   repository: redis
   # -- (string) Redis image tag
-  tag: "8.2.1-alpine"
+  tag: "8.2.2-alpine"
   # -- (string) Redis image pull policy
   pullPolicy: IfNotPresent
   # -- Redis image pull secrets (list)
