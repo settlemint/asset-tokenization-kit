@@ -123,6 +123,13 @@ abstract contract AbstractATKTokenFactoryImplementation is
 
     // --- Internal Functions ---
 
+    /// @inheritdoc IATKTokenFactory
+    /// @param predictedAddress The address to check for availability.
+    /// @return True if the address is available (not deployed by this factory), false otherwise.
+    function isAddressAvailable(address predictedAddress) public view override returns (bool) {
+        return !isFactoryToken[predictedAddress];
+    }
+
     /// @notice Returns the identity registry contract.
     /// @return The identity registry contract.
     function _identityRegistry() internal view returns (ISMARTIdentityRegistry) {

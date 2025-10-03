@@ -78,4 +78,9 @@ interface IATKTokenFactory is IERC165, IATKSystemAccessManaged {
     /// @param tokenImplementation_ The address to check for validity.
     /// @return True if the address is a valid token implementation, false otherwise.
     function isValidTokenImplementation(address tokenImplementation_) external view returns (bool);
+
+    /// @notice Checks if a predicted address is available for deployment.
+    /// @param predictedAddress The address to check for availability.
+    /// @return True if the address is available (not deployed by this factory), false otherwise.
+    function isAddressAvailable(address predictedAddress) external view returns (bool);
 }
