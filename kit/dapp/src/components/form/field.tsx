@@ -172,10 +172,10 @@ export function FieldWithAddons({
 
 export function errorClassNames({
   isTouched,
-  errors,
+  isValid,
 }: {
   isTouched?: boolean;
-  errors: string[];
+  isValid: boolean;
 }) {
-  return cn(isTouched && errors.length > 0 && "border-destructive");
+  return cn(isTouched && !isValid && "border-destructive");
 }
