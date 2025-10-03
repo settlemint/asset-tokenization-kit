@@ -21,7 +21,7 @@
     "eslint-plugin-no-barrel-files": "1.2.2",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-compiler": "19.1.0-rc.2",
-    "eslint-plugin-react-hooks": "6.1.0",
+    "eslint-plugin-react-hooks": "6.1.1",
     "eslint-plugin-react-perf": "3.3.3",
     "eslint-plugin-unicorn": "61.0.2",
     "@tanstack/eslint-plugin-query": "5.90.1",
