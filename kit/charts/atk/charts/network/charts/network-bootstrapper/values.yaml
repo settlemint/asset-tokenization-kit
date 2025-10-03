@@ -88,7 +88,7 @@ initContainer:
       # -- (object) Maximum resource limits for the tcp-check init container.
       limits:
         # -- (string) Maximum CPU allocation for the tcp-check init container.
-        cpu: 100m
+        cpu: 300m
         # -- (string) Maximum memory allocation for the tcp-check init container.
         memory: 64Mi
       # -- (object) Minimum resource requests for the tcp-check init container.

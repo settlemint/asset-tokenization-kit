@@ -197,7 +197,7 @@ initContainer:
       # -- (object) Resource limits for the ABI download init container
       limits:
         # -- (string) CPU limit for the ABI download init container
-        cpu: 150m
+        cpu: 450m
         # -- (string) Memory limit for the ABI download init container
         memory: 128Mi
       # -- (object) Resource requests for the ABI download init container
@@ -228,7 +228,7 @@ initContainer:
       # -- (object) Resource limits for the TCP check init container
       limits:
         # -- (string) CPU limit for the TCP check init container
-        cpu: 100m
+        cpu: 300m
         # -- (string) Memory limit for the TCP check init container
         memory: 64Mi
       # -- (object) Resource requests for the TCP check init container

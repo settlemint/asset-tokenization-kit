@@ -137,8 +137,26 @@ network:
         image:
           # -- (string) Repository for TCP check utility
           repository: ghcr.io/settlemint/btp-waitforit
+    # -- (object) Resource requests and limits for the bootstrapper job
+    resources:
+      requests:
+        # -- (string) CPU request for bootstrapper pods
+        cpu: "100m"
+        # -- (string) Memory request for bootstrapper pods
+        memory: "128Mi"
+      limits:
+        # -- (string) CPU limit for bootstrapper pods
+        cpu: "600m"
+        # -- (string) Memory limit for bootstrapper pods
+        memory: "256Mi"
   # -- (object) Blockchain node configuration (validators and RPC)
   network-nodes:
+    # -- (int) Total Besu pod replicas (validators + RPC). Used for resource summaries.
+    replicaCount: 2
+    # -- (int) Number of validator node replicas participating in consensus.
+    validatorReplicaCount: 1
+    # -- (int) Number of RPC node replicas provisioned via StatefulSet.
+    rpcReplicaCount: 1
     # -- (object) Hyperledger Besu container image
     image:
       # -- (string) OCI registry and repository for Besu nodes
@@ -151,10 +169,35 @@ network:
         image:
           # -- (string) Repository for TCP check utility
           repository: ghcr.io/settlemint/btp-waitforit
+    # -- (object) Resource requests and limits for Besu validator and RPC pods
+    resources:
+      requests:
+        # -- (string) CPU request per Besu pod
+        cpu: "60m"
+        # -- (string) Memory request per Besu pod
+        memory: "512Mi"
+      limits:
+        # -- (string) CPU limit per Besu pod
+        cpu: "360m"
+        # -- (string) Memory limit per Besu pod
+        memory: "1024Mi"
     # -- (object) Persistent storage configuration for blockchain data
     persistence:
       # -- (string) Storage size for each blockchain node (ledger data)
       size: 20Gi
+    compileGenesis:
+      # -- (object) Resource requests and limits for genesis compilation init container
+      resources:
+        requests:
+          # -- (string) CPU request for genesis compilation
+          cpu: "100m"
+          # -- (string) Memory request for genesis compilation
+          memory: "128Mi"
+        limits:
+          # -- (string) CPU limit for genesis compilation
+          cpu: "600m"
+          # -- (string) Memory limit for genesis compilation
+          memory: "256Mi"
 
 # -- (object) ERPC Gateway configuration for RPC load balancing and caching
 erpc:
@@ -179,25 +222,25 @@ erpc:
         # -- (string) Repository for TCP check utility
         repository: ghcr.io/settlemint/btp-waitforit
   # -- (object) Resource requests and limits for ERPC pods
-  resources: {}
+  resources:
+    requests:
+      # -- (string) CPU request for ERPC pods
+      cpu: "60m"
+      # -- (string) Memory request for ERPC pods
+      memory: "256Mi"
+    limits:
+      # -- (string) CPU limit for ERPC pods
+      cpu: "360m"
+      # -- (string) Memory limit for ERPC pods
+      memory: "512Mi"
   # -- (object) Ingress configuration for exposing RPC endpoint
   ingress:
     # -- (bool) Enable ingress for external RPC access
     enabled: true
     # -- (string) IngressClass for RPC ingress
-    className: "atk-nginx"
-    # -- (list) Ingress host rules for RPC endpoint
-    hosts:
-      -
-        # -- (string) Hostname for RPC endpoint. Update for your environment.
-        host: rpc.k8s.orb.local
-        # -- (list) Path configuration
-        paths:
-          -
-            # -- (string) Path prefix for RPC requests
-            path: /
-            # -- (string) Path matching strategy
-            pathType: ImplementationSpecific
+    ingressClassName: "atk-nginx"
+    # -- (string) Hostname for RPC endpoint. Update for your environment.
+    hostname: rpc.k8s.orb.local
   # -- (object) OpenShift Route configuration (alternative to Ingress)
   openShiftRoute:
     # -- (bool) Enable OpenShift route instead of standard ingress
@@ -244,7 +287,17 @@ blockscout:
       # -- (string) Web app URL for Blockscout frontend
       WEBAPP_URL: https://explorer.k8s.orb.local
     # -- (object) Resource requests and limits for Blockscout backend
-    resources: {}
+    resources:
+      requests:
+        # -- (string) CPU request for Blockscout backend pods
+        cpu: "100m"
+        # -- (string) Memory request for Blockscout backend pods
+        memory: "640Mi"
+      limits:
+        # -- (string) CPU limit for Blockscout backend pods
+        cpu: "600m"
+        # -- (string) Memory limit for Blockscout backend pods
+        memory: "1280Mi"
   # -- (object) Blockscout frontend service configuration
   frontend:
     # -- (bool) Enable Blockscout frontend deployment
@@ -261,11 +314,29 @@ blockscout:
     image:
       # -- (string) OCI registry and repository for Blockscout frontend
       repository: ghcr.io/blockscout/frontend
+    # -- (object) Resource requests and limits for Blockscout frontend pods
+    resources:
+      requests:
+        # -- (string) CPU request for Blockscout frontend pods
+        cpu: "60m"
+        # -- (string) Memory request for Blockscout frontend pods
+        memory: "320Mi"
+      limits:
+        # -- (string) CPU limit for Blockscout frontend pods
+        cpu: "360m"
+        # -- (string) Memory limit for Blockscout frontend pods
+        memory: "640Mi"
 
 # -- (object) The Graph Node configuration for blockchain indexing
 graph-node:
   # -- (bool) Enable deployment of The Graph indexing protocol
   enabled: true
+  # -- (object) Override shared artifacts image configuration
+  global:
+    artifacts:
+      image:
+        # -- (string) OCI registry for shared Graph Node artifacts
+        registry: ghcr.io
   # -- (object) Graph Node container image
   image:
     # -- (string) OCI registry and repository for Graph Node
@@ -282,50 +353,69 @@ graph-node:
       image:
         # -- (string) Repository for TCP check utility
         repository: ghcr.io/settlemint/btp-waitforit
+  # -- (object) Resource requests and limits for Graph Node StatefulSet
+  resources:
+    requests:
+      # -- (string) CPU request for Graph Node pods
+      cpu: "60m"
+      # -- (string) Memory request for Graph Node pods
+      memory: "512Mi"
+    limits:
+      # -- (string) CPU limit for Graph Node pods
+      cpu: "360m"
+      # -- (string) Memory limit for Graph Node pods
+      memory: "1024Mi"
   # -- (object) Ingress configuration for Graph Node API
   ingress:
     # -- (bool) Enable ingress for subgraph queries
     enabled: true
-    # -- (string) IngressClass for Graph Node
-    className: "atk-nginx"
+    # -- (string) IngressClass for Graph Node (Kubernetes 1.19+)
+    ingressClassName: "atk-nginx"
     # -- (object) Ingress annotations for URL rewriting
     annotations:
       # -- (string) Enable regex path matching
       nginx.ingress.kubernetes.io/use-regex: "true"
       # -- (string) Rewrite target for path normalization
       nginx.ingress.kubernetes.io/rewrite-target: /$1
-    # -- (list) Ingress host rules for Graph Node endpoints
-    hosts:
+    # -- (string) Hostname for Graph Node. Update for your environment.
+    hostname: graph.k8s.orb.local
+    # -- (list) Path configurations for different Graph Node endpoints
+    paths:
       -
-        # -- (string) Hostname for Graph Node. Update for your environment.
-        host: graph.k8s.orb.local
-        # -- (list) Path configurations for different Graph Node endpoints
-        paths:
-          -
-            # -- (string) Query endpoint path
-            path: /(.*)
-            # -- (string) Path matching type
-            pathType: ImplementationSpecific
-          -
-            # -- (string) WebSocket endpoint path
-            path: /ws/?(.*)
-            # -- (string) Path matching type
-            pathType: ImplementationSpecific
-          -
-            # -- (string) Admin API path
-            path: /admin/?(.*)
-            # -- (string) Path matching type
-            pathType: ImplementationSpecific
-          -
-            # -- (string) Indexer status path
-            path: /indexer/?(.*)
-            # -- (string) Path matching type
-            pathType: ImplementationSpecific
-          -
-            # -- (string) Graph management path
-            path: /graphman/?(.*)
-            # -- (string) Path matching type
-            pathType: ImplementationSpecific
+        # -- (string) Query endpoint path
+        path: /(.*)
+        # -- (string) Path matching type
+        pathType: ImplementationSpecific
+        # -- (string) Service port name handling HTTP queries
+        servicePortName: http-query
+      -
+        # -- (string) WebSocket endpoint path
+        path: /ws/?(.*)
+        # -- (string) Path matching type
+        pathType: ImplementationSpecific
+        # -- (string) Service port name handling WebSocket traffic
+        servicePortName: http-queryws
+      -
+        # -- (string) Admin API path
+        path: /admin/?(.*)
+        # -- (string) Path matching type
+        pathType: ImplementationSpecific
+        # -- (string) Service port name exposing the admin API
+        servicePortName: http-admin
+      -
+        # -- (string) Indexer status path
+        path: /indexer/?(.*)
+        # -- (string) Path matching type
+        pathType: ImplementationSpecific
+        # -- (string) Service port name serving indexer status APIs
+        servicePortName: http-status
+      -
+        # -- (string) Graph management path
+        path: /graphman/?(.*)
+        # -- (string) Path matching type
+        pathType: ImplementationSpecific
+        # -- (string) Service port name serving graphman APIs
+        servicePortName: http-status
   # -- (object) OpenShift Route configuration
   openShiftRoute:
     # -- (bool) Enable OpenShift route
@@ -351,8 +441,26 @@ hasura:
     pullPolicy: IfNotPresent
   # -- (object) Ingress configuration for Hasura console and API
   ingress:
+    # -- (bool) Enable ingress exposure for Hasura
+    enabled: true
+    # -- (string) Deprecated: Use `ingressClassName` instead. Will be removed in future versions.
+    className: "atk-nginx"
+    # -- (string) IngressClass for Hasura ingress resources (Kubernetes 1.19+ standard)
+    ingressClassName: "atk-nginx"
     # -- (string) Hostname for Hasura GraphQL endpoint. Update for your environment.
     hostName: hasura.k8s.orb.local
+  # -- (object) Resource requests and limits for Hasura deployment
+  resources:
+    requests:
+      # -- (string) CPU request for Hasura pods
+      cpu: "80m"
+      # -- (string) Memory request for Hasura pods
+      memory: "384Mi"
+    limits:
+      # -- (string) CPU limit for Hasura pods
+      cpu: "480m"
+      # -- (string) Memory limit for Hasura pods
+      memory: "768Mi"
 
 # -- (object) IPFS Cluster deployment configuration
 ipfs:
@@ -363,6 +471,18 @@ ipfs:
     image:
       # -- (string) OCI registry for the cluster control-plane image
       registry: docker.io
+    # -- (object) Resource requests and limits for IPFS Cluster control-plane pods
+    resources:
+      requests:
+        # -- (string) CPU request for cluster pods
+        cpu: "60m"
+        # -- (string) Memory request for cluster pods
+        memory: "256Mi"
+      limits:
+        # -- (string) CPU limit for cluster pods
+        cpu: "360m"
+        # -- (string) Memory limit for cluster pods
+        memory: "512Mi"
   # -- (object) IPFS peer configuration overrides
   ipfs:
     image:
@@ -374,8 +494,26 @@ ipfs:
           accessControlAllowOrigin:
             - https://ipfs-cluster.k8s.orb.local
             - http://ipfs-cluster.k8s.orb.local
+    # -- (object) Resource requests and limits for IPFS peer pods
+    resources:
+      requests:
+        # -- (string) CPU request for IPFS pods
+        cpu: "150m"
+        # -- (string) Memory request for IPFS pods
+        memory: "512Mi"
+      limits:
+        # -- (string) CPU limit for IPFS pods
+        cpu: "900m"
+        # -- (string) Memory limit for IPFS pods
+        memory: "1024Mi"
   # -- (object) Ingress configuration for the IPFS cluster endpoints
   ingress:
+    # -- (bool) Enable ingress exposure for IPFS cluster endpoints
+    enabled: true
+    # -- (string) Deprecated: Use `ingressClassName` instead. Will be removed in future versions.
+    className: "atk-nginx"
+    # -- (string) IngressClass for IPFS cluster ingress resources (Kubernetes 1.19+ standard)
+    ingressClassName: "atk-nginx"
     hostnames:
       api: ipfs-cluster.k8s.orb.local
   # -- (object) Test pod image configuration
@@ -391,6 +529,11 @@ portal:
   image:
     # -- (string) OCI registry for Portal image
     registry: ghcr.io
+  # -- (object) Test pod image configuration
+  tests:
+    image:
+      # -- (string) OCI registry for Portal test utilities
+      registry: docker.io
   # -- (object) Init container for dependency checks
   initContainer:
     # -- (object) TCP check for database readiness
@@ -399,8 +542,24 @@ portal:
       image:
         # -- (string) Repository for TCP check utility
         repository: ghcr.io/settlemint/btp-waitforit
+  # -- (object) Resource requests and limits for Portal pods
+  resources:
+    requests:
+      # -- (string) CPU request for Portal pods
+      cpu: "60m"
+      # -- (string) Memory request for Portal pods
+      memory: "256Mi"
+    limits:
+      # -- (string) CPU limit for Portal pods
+      cpu: "360m"
+      # -- (string) Memory limit for Portal pods
+      memory: "512Mi"
   # -- (object) Ingress configuration for Portal API
   ingress:
+    # -- (bool) Enable ingress exposure for Portal
+    enabled: true
+    # -- (string) IngressClass for Portal ingress resources
+    ingressClassName: "atk-nginx"
     # -- (string) Hostname for Portal service. Update for your environment.
     hostname: portal.k8s.orb.local
 
@@ -427,7 +586,17 @@ txsigner:
     # -- (string) BIP44 derivation path for Ethereum accounts
     derivationPath: "m/44'/60'/0'/0/0"
   # -- (object) Resource requests and limits for transaction signer
-  resources: {}
+  resources:
+    requests:
+      # -- (string) CPU request for txsigner pods
+      cpu: "60m"
+      # -- (string) Memory request for txsigner pods
+      memory: "192Mi"
+    limits:
+      # -- (string) CPU limit for txsigner pods
+      cpu: "360m"
+      # -- (string) Memory limit for txsigner pods
+      memory: "384Mi"
   # -- (object) Init container for dependency checks
   initContainer:
     # -- (object) TCP check for blockchain node readiness
@@ -468,7 +637,17 @@ dapp:
             # -- (string) Path matching type
             pathType: ImplementationSpecific
   # -- (object) Resource requests and limits for DApp pods
-  resources: {}
+  resources:
+    requests:
+      # -- (string) CPU request for DApp pods
+      cpu: "100m"
+      # -- (string) Memory request for DApp pods
+      memory: "1024Mi"
+    limits:
+      # -- (string) CPU limit for DApp pods
+      cpu: "3000m"
+      # -- (string) Memory limit for DApp pods
+      memory: "2048Mi"
   # -- (object) Environment variables for DApp runtime configuration (stored as secrets)
   secretEnv:
     # -- (string) Base URL for authentication callbacks. Must match ingress hostname.
@@ -504,16 +683,41 @@ support:
   ingress-nginx:
     # -- (bool) Enable NGINX Ingress Controller deployment
     enabled: true
+    # -- (object) Global ingress-nginx image configuration
+    global:
+      image:
+        # -- (string) OCI registry for ingress-nginx assets
+        registry: registry.k8s.io
     # -- (int) Number of ingress controller replicas
     replicaCount: 1
     # -- (object) Ingress controller configuration
     controller:
       # -- (object) Resource requests and limits for ingress controller
-      resources: {}
+      resources:
+        requests:
+          # -- (string) CPU request for ingress controller pods
+          cpu: "120m"
+          # -- (string) Memory request for ingress controller pods
+          memory: "256Mi"
+        limits:
+          # -- (string) CPU limit for ingress controller pods
+          cpu: "720m"
+          # -- (string) Memory limit for ingress controller pods
+          memory: "512Mi"
       # -- (object) Ingress controller container image
       image:
         # -- (string) Official Kubernetes ingress-nginx controller image
         repository: registry.k8s.io/ingress-nginx/controller
+      # -- (object) OpenTelemetry sidecar image configuration
+      opentelemetry:
+        image:
+          # -- (string) OCI registry for OpenTelemetry collector
+          registry: registry.k8s.io
+      # -- (object) Patch job image configuration
+      patch:
+        image:
+          # -- (string) OCI registry for ingress-nginx patch job
+          registry: registry.k8s.io
   # -- (object) Stakater Reloader for automatic pod restarts on config changes
   reloader:
     # -- (bool) Enable Reloader deployment
@@ -522,6 +726,18 @@ support:
     image:
       # -- (string) Reloader image repository
       repository: ghcr.io/stakater/reloader
+    # -- (object) Resource requests and limits for Reloader deployment
+    resources:
+      requests:
+        # -- (string) CPU request for Reloader pods
+        cpu: "20m"
+        # -- (string) Memory request for Reloader pods
+        memory: "64Mi"
+      limits:
+        # -- (string) CPU limit for Reloader pods
+        cpu: "120m"
+        # -- (string) Memory limit for Reloader pods
+        memory: "128Mi"
   # -- (object) MinIO object storage configuration
   minio:
     # -- (bool) Enable MinIO object storage deployment
@@ -534,6 +750,18 @@ support:
     mcImage:
       # -- (string) MinIO client image repository
       repository: docker.io/minio/minio
+    # -- (object) Resource requests and limits for MinIO pods
+    resources:
+      requests:
+        # -- (string) CPU request for MinIO pods
+        cpu: "50m"
+        # -- (string) Memory request for MinIO pods
+        memory: "256Mi"
+      limits:
+        # -- (string) CPU limit for MinIO pods
+        cpu: "300m"
+        # -- (string) Memory limit for MinIO pods
+        memory: "512Mi"
     # -- (object) Ingress configuration for MinIO console
     ingress:
       # -- (bool) Enable ingress for MinIO web console
@@ -545,6 +773,17 @@ support:
       # -- (list) Hostnames for MinIO access
       hosts:
         - minio.k8s.orb.local
+    # -- (object) MinIO console ingress configuration
+    consoleIngress:
+      # -- (bool) Enable ingress for MinIO console dashboard
+      enabled: true
+      # -- (string) IngressClass for MinIO console ingress resources
+      ingressClassName: atk-nginx
+      # -- (string) Path prefix for MinIO console ingress
+      path: /
+      # -- (list) Hostnames for MinIO console access
+      hosts:
+        - minio-console.k8s.orb.local
   # -- (object) Redis in-memory data store configuration
   redis:
     # -- (bool) Enable Redis deployment
@@ -576,15 +815,15 @@ support:
       # -- (object) Resource requests
       requests:
         # -- (string) Memory request
-        memory: "128Mi"
+        memory: "64Mi"
         # -- (string) CPU request
-        cpu: "100m"
+        cpu: "40m"
       # -- (object) Resource limits
       limits:
         # -- (string) Memory limit
-        memory: "256Mi"
+        memory: "128Mi"
         # -- (string) CPU limit
-        cpu: "200m"
+        cpu: "240m"
   # -- (object) PostgreSQL database configuration
   postgresql:
     # -- (bool) Enable PostgreSQL deployment
@@ -603,7 +842,17 @@ observability:
     # -- (bool) Enable Metrics Server deployment
     enabled: true
     # -- (object) Resource requests and limits for Metrics Server
-    resources: {}
+    resources:
+      requests:
+        # -- (string) CPU request for Metrics Server pods
+        cpu: "60m"
+        # -- (string) Memory request for Metrics Server pods
+        memory: "128Mi"
+      limits:
+        # -- (string) CPU limit for Metrics Server pods
+        cpu: "360m"
+        # -- (string) Memory limit for Metrics Server pods
+        memory: "256Mi"
     # -- (object) Metrics Server container image
     image:
       # -- (string) Official Kubernetes metrics-server image
@@ -611,13 +860,28 @@ observability:
   # -- (object) Kube State Metrics for cluster-level metrics
   kube-state-metrics:
     # -- (object) Resource requests and limits for kube-state-metrics
-    resources: {}
+    resources:
+      requests:
+        # -- (string) CPU request for kube-state-metrics pods
+        cpu: "40m"
+        # -- (string) Memory request for kube-state-metrics pods
+        memory: "128Mi"
+      limits:
+        # -- (string) CPU limit for kube-state-metrics pods
+        cpu: "240m"
+        # -- (string) Memory limit for kube-state-metrics pods
+        memory: "256Mi"
     # -- (object) Kube state metrics container image
     image:
       # -- (string) OCI registry for kube-state-metrics
       registry: registry.k8s.io
   # -- (object) VictoriaMetrics time-series database for metrics storage
   victoria-metrics-single:
+    # -- (object) Global VictoriaMetrics image configuration
+    global:
+      image:
+        # -- (string) OCI registry for VictoriaMetrics shared components
+        registry: docker.io
     # -- (object) VictoriaMetrics server configuration
     server:
       # -- (object) Persistent storage for metrics data
@@ -627,7 +891,17 @@ observability:
         # -- (string) Storage size for metrics retention
         size: 10Gi
       # -- (object) Resource requests and limits for VictoriaMetrics
-      resources: {}
+      resources:
+        requests:
+          # -- (string) CPU request for VictoriaMetrics pods
+          cpu: "60m"
+          # -- (string) Memory request for VictoriaMetrics pods
+          memory: "256Mi"
+        limits:
+          # -- (string) CPU limit for VictoriaMetrics pods
+          cpu: "360m"
+          # -- (string) Memory limit for VictoriaMetrics pods
+          memory: "512Mi"
       # -- (object) VictoriaMetrics container image
       image:
         # -- (string) OCI registry for VictoriaMetrics
@@ -647,7 +921,17 @@ observability:
         # -- (string) Storage size for log retention
         size: 10Gi
       # -- (object) Resource requests and limits for Loki
-      resources: {}
+      resources:
+        requests:
+          # -- (string) CPU request for Loki single binary pods
+          cpu: "200m"
+          # -- (string) Memory request for Loki single binary pods
+          memory: "512Mi"
+        limits:
+          # -- (string) CPU limit for Loki single binary pods
+          cpu: "1200m"
+          # -- (string) Memory limit for Loki single binary pods
+          memory: "1024Mi"
       # -- (list) Additional environment variables for Loki
       extraEnv: []
     # -- (object) Memcached for Loki query result caching
@@ -658,30 +942,88 @@ observability:
       image:
         # -- (string) Memcached image repository
         repository: docker.io/memcached
+      # -- (object) Resource requests and limits for Loki memcached pods
+      resources:
+        requests:
+          # -- (string) CPU request for memcached pods
+          cpu: "40m"
+          # -- (string) Memory request for memcached pods
+          memory: "48Mi"
+        limits:
+          # -- (string) CPU limit for memcached pods
+          cpu: "240m"
+          # -- (string) Memory limit for memcached pods
+          memory: "96Mi"
     # -- (object) Memcached exporter for Prometheus metrics
     memcachedExporter:
       # -- (object) Memcached exporter image
       image:
         # -- (string) Prometheus memcached exporter repository
         repository: docker.io/prom/memcached-exporter
+      # -- (object) Resource requests and limits for memcached exporter pods
+      resources:
+        requests:
+          # -- (string) CPU request for memcached exporter pods
+          cpu: "10m"
+          # -- (string) Memory request for memcached exporter pods
+          memory: "24Mi"
+        limits:
+          # -- (string) CPU limit for memcached exporter pods
+          cpu: "60m"
+          # -- (string) Memory limit for memcached exporter pods
+          memory: "48Mi"
     # -- (object) Kubernetes sidecar for dynamic configuration
     sidecar:
       # -- (object) Sidecar container image
       image:
         # -- (string) k8s-sidecar image repository
         repository: docker.io/kiwigrid/k8s-sidecar
+      # -- (object) Resource requests and limits for Loki sidecar pods
+      resources:
+        requests:
+          # -- (string) CPU request for sidecar pods
+          cpu: "120m"
+          # -- (string) Memory request for sidecar pods
+          memory: "96Mi"
+        limits:
+          # -- (string) CPU limit for sidecar pods
+          cpu: "720m"
+          # -- (string) Memory limit for sidecar pods
+          memory: "192Mi"
     # -- (object) Loki gateway for load balancing
     gateway:
       # -- (object) Gateway container image
       image:
         # -- (string) OCI registry for gateway image
         registry: docker.io
+      # -- (object) Resource requests and limits for Loki gateway pods
+      resources:
+        requests:
+          # -- (string) CPU request for gateway pods
+          cpu: "20m"
+          # -- (string) Memory request for gateway pods
+          memory: "32Mi"
+        limits:
+          # -- (string) CPU limit for gateway pods
+          cpu: "120m"
+          # -- (string) Memory limit for gateway pods
+          memory: "64Mi"
   # -- (object) Grafana Alloy for telemetry pipeline
   alloy:
     # -- (object) Alloy agent configuration
     alloy:
       # -- (object) Resource requests and limits for Alloy
-      resources: {}
+      resources:
+        requests:
+          # -- (string) CPU request for Alloy pods
+          cpu: "120m"
+          # -- (string) Memory request for Alloy pods
+          memory: "512Mi"
+        limits:
+          # -- (string) CPU limit for Alloy pods
+          cpu: "720m"
+          # -- (string) Memory limit for Alloy pods
+          memory: "1024Mi"
     # -- (object) Alloy container image
     image:
       # -- (string) OCI registry for Alloy
@@ -698,6 +1040,18 @@ observability:
     image:
       # -- (string) OCI registry for Grafana
       registry: docker.io
+    # -- (object) Resource requests and limits for Grafana pods
+    resources:
+      requests:
+        # -- (string) CPU request for Grafana pods
+        cpu: "60m"
+        # -- (string) Memory request for Grafana pods
+        memory: "256Mi"
+      limits:
+        # -- (string) CPU limit for Grafana pods
+        cpu: "360m"
+        # -- (string) Memory limit for Grafana pods
+        memory: "512Mi"
     # -- (object) Sidecar for dashboard provisioning
     sidecar:
       # -- (object) Sidecar container image
@@ -726,10 +1080,36 @@ observability:
     # -- (object) Tempo server configuration
     server:
       # -- (object) Resource requests and limits for Tempo
-      resources: {}
+      resources:
+        requests:
+          # -- (string) CPU request for Tempo pods
+          cpu: "60m"
+          # -- (string) Memory request for Tempo pods
+          memory: "160Mi"
+        limits:
+          # -- (string) CPU limit for Tempo pods
+          cpu: "360m"
+          # -- (string) Memory limit for Tempo pods
+          memory: "320Mi"
   # -- (object) Prometheus Node Exporter for host metrics
   prometheus-node-exporter:
     # -- (object) Node exporter container image
     image:
       # -- (string) OCI registry for node exporter
       registry: quay.io
+    # -- (object) Resource requests and limits for node exporter DaemonSet
+    resources:
+      requests:
+        # -- (string) CPU request for node exporter pods
+        cpu: "30m"
+        # -- (string) Memory request for node exporter pods
+        memory: "32Mi"
+      limits:
+        # -- (string) CPU limit for node exporter pods
+        cpu: "180m"
+        # -- (string) Memory limit for node exporter pods
+        memory: "64Mi"
+    kubeRBACProxy:
+      image:
+        # -- (string) OCI registry for kube-rbac-proxy sidecar
+        registry: quay.io
