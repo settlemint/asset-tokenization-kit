@@ -70,20 +70,20 @@ function Web3AddressComponent({
   const account = accountSearch?.[0];
 
   const data = useMemo(() => {
-    if (account) {
-      return {
-        name: account.contractName,
-        symbol: undefined,
-      };
-    }
     if (token) {
       return {
         name: token.name,
         symbol: token.symbol,
       };
     }
+    if (user) {
+      return {
+        name: user.name,
+        symbol: undefined,
+      };
+    }
     return {
-      name: user?.name,
+      name: account?.contractName,
       symbol: undefined,
     };
   }, [user, token, account]);
