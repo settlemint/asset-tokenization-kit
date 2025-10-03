@@ -7,16 +7,17 @@ import {
   FormSummaryItem,
 } from "@/components/form/multi-step/form-step";
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { assetClassIcon } from "@/hooks/use-asset-class";
 import { useCountries } from "@/hooks/use-countries";
 import { formatValue } from "@/lib/utils/format-value";
 import { noop } from "@/lib/utils/noop";
-import { orpc } from "@/orpc/orpc-client";
+import { client, orpc } from "@/orpc/orpc-client";
 import type { ComplianceModulePairInput } from "@atk/zod/compliance";
 import { useQuery } from "@tanstack/react-query";
-import { Shield } from "lucide-react";
+import { CheckCircle2, Shield } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export const Summary = withForm({
@@ -142,6 +143,68 @@ export const Summary = withForm({
             )}
           </FormSummaryCard>
         )}
+
+        <form.Subscribe selector={(state) => state.values}>
+          {(formValues) => (
+            <form.Field
+              name="available"
+              validators={{
+                onChangeAsync: async () => {
+                  try {
+                    const result = await client.system.factory.available({
+                      parameters: formValues,
+                    });
+                    return result.isAvailable ? undefined : "unavailable";
+                  } catch {
+                    return "error";
+                  }
+                },
+                onChangeAsyncDebounceMs: 500,
+              }}
+            >
+              {(field) => (
+                <div className="mt-4">
+                  {field.state.meta.isValidating ? (
+                    <Alert>
+                      <AlertDescription>
+                        {t("wizard.steps.summary.availability.checking")}
+                      </AlertDescription>
+                    </Alert>
+                  ) : field.state.meta.errors.length > 0 ? (
+                    <Alert variant="destructive">
+                      <AlertTitle>
+                        {field.state.meta.errors[0] === "error"
+                          ? t("wizard.steps.summary.availability.error")
+                          : t("wizard.steps.summary.availability.unavailable")}
+                      </AlertTitle>
+                      <AlertDescription>
+                        {field.state.meta.errors[0] === "error"
+                          ? t(
+                              "wizard.steps.summary.availability.errorDescription"
+                            )
+                          : t(
+                              "wizard.steps.summary.availability.unavailableDescription"
+                            )}
+                      </AlertDescription>
+                    </Alert>
+                  ) : (
+                    <Alert className="border-green-600 bg-green-50 dark:bg-green-950/20">
+                      <CheckCircle2 className="text-green-600" />
+                      <AlertTitle className="text-green-900 dark:text-green-100">
+                        {t("wizard.steps.summary.availability.available")}
+                      </AlertTitle>
+                      <AlertDescription className="text-green-800 dark:text-green-200">
+                        {t(
+                          "wizard.steps.summary.availability.availableDescription"
+                        )}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+              )}
+            </form.Field>
+          )}
+        </form.Subscribe>
 
         <form.Errors />
       </FormStepLayout>

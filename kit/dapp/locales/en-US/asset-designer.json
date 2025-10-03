@@ -192,6 +192,15 @@
         "complianceModules": {
           "title": "Compliance modules",
           "description": "Compliance modules that have been enabled for your {{type}}"
+        },
+        "availability": {
+          "checking": "Checking if this configuration is available...",
+          "available": "Ready to create",
+          "availableDescription": "This configuration is unique. You can proceed with deployment.",
+          "unavailable": "Change your asset details",
+          "unavailableDescription": "An asset with these exact settings already exists. Adjust the name, symbol, or other parameters to continue.",
+          "error": "Check your connection",
+          "errorDescription": "We couldn't verify if this configuration is available. Make sure you're connected and try again."
         }
       }
     },
