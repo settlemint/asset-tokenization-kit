@@ -12,11 +12,14 @@ import {
 } from "@/components/ui/sheet";
 import { useAppForm } from "@/hooks/use-app-form";
 import { client, orpc } from "@/orpc/orpc-client";
-import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { TopicListOutput } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
-import type { TrustedIssuerCreateInput } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.create.schema";
+import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
+import {
+  TrustedIssuerCreateInputSchema,
+  type TrustedIssuerCreateInput,
+} from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.create.schema";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
-import { formOptions, useStore } from "@tanstack/react-form";
+import { useStore } from "@tanstack/react-form";
 import {
   useMutation,
   useQueryClient,
@@ -30,23 +33,6 @@ interface AddTrustedIssuerSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-
-type AddTrustedIssuerFormValues = {
-  issuerAddress?: EthereumAddress;
-  claimTopicIds: string[];
-  walletVerification: UserVerification;
-};
-
-const addTrustedIssuerFormOptions = formOptions({
-  defaultValues: {
-    issuerAddress: undefined,
-    claimTopicIds: [] as string[],
-    walletVerification: {
-      secretVerificationCode: "",
-      verificationType: "PINCODE" as const,
-    },
-  } as AddTrustedIssuerFormValues,
-});
 
 export function AddTrustedIssuerSheet({
   open,
@@ -69,32 +55,50 @@ export function AddTrustedIssuerSheet({
         queryKey: orpc.system.trustedIssuers.list.queryKey(),
       });
       onOpenChange(false);
-      form.reset();
+      form.reset(createDefaultFormValues());
+    },
+  });
+
+  type AddTrustedIssuerFormValues = {
+    issuerAddress?: EthereumAddress;
+    claimTopicIds: string[];
+    walletVerification: UserVerification;
+  };
+
+  const createDefaultFormValues = (): AddTrustedIssuerFormValues => ({
+    issuerAddress: undefined,
+    claimTopicIds: [],
+    walletVerification: {
+      secretVerificationCode: "",
+      verificationType: "PINCODE",
     },
   });
 
   const form = useAppForm({
-    ...addTrustedIssuerFormOptions,
+    defaultValues: createDefaultFormValues(),
     onSubmit: ({ value }) => {
-      const formValue = value;
+      const { issuerAddress, claimTopicIds, walletVerification } =
+        TrustedIssuerCreateInputSchema.parse(value);
 
       const action = (async () => {
-        if (!formValue.issuerAddress) {
+        if (!issuerAddress) {
           throw new Error("Issuer address is required before submission");
         }
 
         const trustedIssuerIdentity = await client.system.identity.read({
-          wallet: formValue.issuerAddress,
+          wallet: issuerAddress,
         });
         if (!trustedIssuerIdentity) {
           throw new Error("Trusted issuer identity not found");
         }
 
-        return createMutation.mutateAsync({
+        const payload = TrustedIssuerCreateInputSchema.parse({
           issuerAddress: trustedIssuerIdentity.id,
-          claimTopicIds: formValue.claimTopicIds,
-          walletVerification: formValue.walletVerification,
+          claimTopicIds,
+          walletVerification,
         });
+
+        return createMutation.mutateAsync(payload);
       })();
 
       return toast.promise(action, {
@@ -106,7 +110,7 @@ export function AddTrustedIssuerSheet({
   });
 
   const handleClose = () => {
-    form.reset();
+    form.reset(createDefaultFormValues());
     onOpenChange(false);
   };
 
@@ -126,10 +130,10 @@ export function AddTrustedIssuerSheet({
   }, [form]);
 
   const validateClaimTopicsSelection = (
-    topics: string[],
+    topics: string[] | undefined,
     issuer?: EthereumAddress
   ) => {
-    if (issuer && topics.length === 0) {
+    if (issuer && (!topics || topics.length === 0)) {
       return t("trustedIssuers.add.fields.claimTopics.validation.required");
     }
     return undefined;
@@ -212,7 +216,9 @@ export function AddTrustedIssuerSheet({
                 }}
                 children={(field) => {
                   const canSelectTopics = Boolean(issuerAddress);
-                  const selectedTopicIds = field.state.value;
+                  const selectedTopicIds = Array.isArray(field.state.value)
+                    ? field.state.value
+                    : [];
 
                   return (
                     <div className="space-y-2">
