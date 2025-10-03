@@ -132,18 +132,18 @@ export function getAssetTabConfiguration({
     { tabKey: "holders", href: `${baseUrl}/holders`, badgeType: "holders" },
     { tabKey: "yield", href: `${baseUrl}/yield` },
     { tabKey: "events", href: `${baseUrl}/events`, badgeType: "events" },
-    { tabKey: "actions", href: `${baseUrl}/actions`, badgeType: "actions" },
+    // { tabKey: "actions", href: `${baseUrl}/actions`, badgeType: "actions" },
     { tabKey: "permissions", href: `${baseUrl}/permissions` },
-    {
-      tabKey: "allowlist",
-      href: `${baseUrl}/allowlist`,
-      badgeType: "allowlist",
-    },
-    {
-      tabKey: "blocklist",
-      href: `${baseUrl}/blocklist`,
-      badgeType: "blocklist",
-    },
+    // {
+    //   tabKey: "allowlist",
+    //   href: `${baseUrl}/allowlist`,
+    //   badgeType: "allowlist",
+    // },
+    // {
+    //   tabKey: "blocklist",
+    //   href: `${baseUrl}/blocklist`,
+    //   badgeType: "blocklist",
+    // },
     {
       tabKey: "denominationAsset",
       href: `${baseUrl}/denomination-asset`,

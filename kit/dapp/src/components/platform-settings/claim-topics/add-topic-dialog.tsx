@@ -9,10 +9,22 @@ import {
 } from "@/components/ui/dialog";
 import { useAppForm } from "@/hooks/use-app-form";
 import { client, orpc } from "@/orpc/orpc-client";
-import { type TopicCreateInput } from "@/orpc/routes/system/claim-topics/routes/topic.create.schema";
+import {
+  TopicCreateInputSchema,
+  type TopicCreateInput,
+} from "@/orpc/routes/system/claim-topics/routes/topic.create.schema";
+import type { TopicScheme } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { z } from "zod";
+
+// Form-level schema to make verificationType required for the form input
+const AddTopicFormSchema = TopicCreateInputSchema.extend({
+  walletVerification: TopicCreateInputSchema.shape.walletVerification.extend({
+    verificationType: z.enum(["PINCODE", "OTP", "SECRET_CODES"]),
+  }),
+});
 
 /**
  * Dialog component for adding new claim topics
@@ -27,6 +39,16 @@ export function AddTopicDialog({
 }) {
   const queryClient = useQueryClient();
   const { t } = useTranslation("claim-topics-issuers");
+  const { t: tErrors } = useTranslation("errors");
+
+  const normalizeName = (value: string) =>
+    value.normalize("NFKC").trim().toLowerCase();
+  const getExistingTopics = (): TopicScheme[] => {
+    return (
+      queryClient.getQueryData(orpc.system.claimTopics.topicList.queryKey()) ??
+      []
+    );
+  };
 
   const createMutation = useMutation({
     mutationFn: (data: TopicCreateInput) =>
@@ -56,9 +78,34 @@ export function AddTopicDialog({
         secretVerificationCode: "",
         verificationType: "PINCODE",
       },
+    } as z.infer<typeof AddTopicFormSchema>,
+    validators: {
+      onChange: AddTopicFormSchema,
+      onSubmit: ({ value }) => {
+        const normalizedInput = normalizeName(value.name);
+        const duplicate = getExistingTopics().some(
+          (topic) => normalizeName(topic.name) === normalizedInput
+        );
+
+        if (duplicate) {
+          return {
+            fields: {
+              name: {
+                message: tErrors("resourceAlreadyExists.description"),
+              },
+            },
+          };
+        }
+      },
     },
     onSubmit: ({ value }) => {
-      createMutation.mutate(value as TopicCreateInput);
+      const sanitizedValue: TopicCreateInput = {
+        ...value,
+        name: value.name.trim(),
+        signature: value.signature.trim(),
+      };
+
+      createMutation.mutate(sanitizedValue);
     },
   });
 

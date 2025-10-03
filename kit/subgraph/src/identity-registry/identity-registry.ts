@@ -1,11 +1,12 @@
 import {
+  IdentityRecovered,
+  IdentityRegistered,
+  IdentityRemoved,
   IdentityStorageSet,
   TopicSchemeRegistrySet,
   TrustedIssuersRegistrySet,
-  IdentityRegistered,
 } from "../../generated/templates/IdentityRegistry/IdentityRegistry";
 import { fetchEvent } from "../event/fetch/event";
-import { fetchIdentity } from "../identity/fetch/identity";
 import { fetchIdentityRegistryStorage } from "../identity-registry-storage/fetch/identity-registry-storage";
 import { fetchTopicSchemeRegistry } from "../topic-scheme-registry/fetch/topic-scheme-registry";
 import { fetchTrustedIssuersRegistry } from "../trusted-issuers-registry/fetch/trusted-issuers-registry";
@@ -45,8 +46,12 @@ export function handleTrustedIssuersRegistrySet(
 
 export function handleIdentityRegistered(event: IdentityRegistered): void {
   fetchEvent(event, "IdentityRegistered");
+}
 
-  // Note: The actual RegisteredIdentity creation is handled by the IdentityStored
-  // event from the IdentityRegistryStorage contract, which provides the storage
-  // contract address directly and ensures the Identity entity exists.
+export function handleIdentityRemoved(event: IdentityRemoved): void {
+  fetchEvent(event, "IdentityRemoved");
+}
+
+export function handleIdentityRecovered(event: IdentityRecovered): void {
+  fetchEvent(event, "IdentityRecovered");
 }

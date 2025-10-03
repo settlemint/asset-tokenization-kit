@@ -25,6 +25,7 @@
  * @see {@link ATKBondFactoryImplementation} Smart contract factory for bond tokens
  */
 
+import { encodeComplianceParams } from "@/lib/compliance/encoding/index";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import type { TokenCreateContext } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create";
 import { createToken } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create";
@@ -101,7 +102,7 @@ export const bondCreateHandler = async (
         denominationAsset: input.denominationAsset,
         initialModulePairs: input.initialModulePairs.map((pair) => ({
           module: pair.module,
-          params: pair.params,
+          params: encodeComplianceParams(pair),
         })),
       },
       // VERIFICATION DELEGATION: Portal middleware enriches with challengeId/challengeResponse

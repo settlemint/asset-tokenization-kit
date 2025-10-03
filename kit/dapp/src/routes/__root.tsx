@@ -17,9 +17,6 @@
 
 /// <reference types="vite/client" />
 
-// Initialize ORPC server client
-import "@/lib/orpc.server";
-
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { NotFound } from "@/components/error/not-found";
 import type { orpc } from "@/orpc/orpc-client";
@@ -29,7 +26,7 @@ import { seo } from "@atk/config/metadata";
 import "@fontsource-variable/figtree";
 import "@fontsource-variable/roboto-mono";
 import { TanStackDevtools } from "@tanstack/react-devtools";
-import { FormDevtoolsPlugin } from "@tanstack/react-form-devtools";
+import { FormDevtools } from "@tanstack/react-form-devtools";
 import { type QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import {
@@ -188,7 +185,10 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
                 name: "Router",
                 render: <TanStackRouterDevtoolsPanel />,
               },
-              FormDevtoolsPlugin(),
+              {
+                name: "Form",
+                render: <FormDevtools />,
+              },
             ]}
           />
         </Providers>

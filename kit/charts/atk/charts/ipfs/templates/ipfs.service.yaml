@@ -1,0 +1,81 @@
+{{- $serviceAnnotations := include "common.tplvalues.merge" (dict "values" (list .Values.commonAnnotations .Values.ipfs.service.annotations) "context" .) | fromYaml }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ipfs-cluster.ipfsFullname" . }}
+  labels:
+    {{- include "ipfs-cluster.labels" . | nindent 4 }}
+    app.kubernetes.io/component: ipfs
+  {{- if $serviceAnnotations }}
+  annotations:
+{{ toYaml $serviceAnnotations | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.ipfs.service.type }}
+  selector:
+    {{- include "ipfs-cluster.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: ipfs
+  ports:
+    - name: api
+      port: {{ .Values.ipfs.service.ports.api }}
+      targetPort: api
+      protocol: TCP
+    - name: ws
+      port: {{ .Values.ipfs.service.ports.ws }}
+      targetPort: ws
+      protocol: TCP
+    - name: gateway
+      port: {{ .Values.ipfs.service.ports.gateway }}
+      targetPort: gateway
+      protocol: TCP
+    - name: swarm
+      port: {{ .Values.ipfs.service.ports.swarmTcp }}
+      targetPort: swarm
+      protocol: TCP
+    - name: swarm-udp
+      port: {{ .Values.ipfs.service.ports.swarmUdp }}
+      targetPort: swarm-udp
+      protocol: UDP
+    - name: mdns
+      port: {{ .Values.ipfs.service.ports.mdns }}
+      targetPort: mdns
+      protocol: UDP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ipfs-cluster.ipfsFullname" . }}-headless
+  labels:
+    {{- include "ipfs-cluster.labels" . | nindent 4 }}
+    app.kubernetes.io/component: ipfs
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    {{- include "ipfs-cluster.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: ipfs
+  ports:
+    - name: api
+      port: {{ .Values.ipfs.service.ports.api }}
+      targetPort: api
+      protocol: TCP
+    - name: ws
+      port: {{ .Values.ipfs.service.ports.ws }}
+      targetPort: ws
+      protocol: TCP
+    - name: gateway
+      port: {{ .Values.ipfs.service.ports.gateway }}
+      targetPort: gateway
+      protocol: TCP
+    - name: swarm
+      port: {{ .Values.ipfs.service.ports.swarmTcp }}
+      targetPort: swarm
+      protocol: TCP
+    - name: swarm-udp
+      port: {{ .Values.ipfs.service.ports.swarmUdp }}
+      targetPort: swarm-udp
+      protocol: UDP
+    - name: mdns
+      port: {{ .Values.ipfs.service.ports.mdns }}
+      targetPort: mdns
+      protocol: UDP

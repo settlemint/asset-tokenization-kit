@@ -61,6 +61,28 @@
     },
     "title": "تصدير البيانات"
   },
+  "identityMetrics": {
+    "title": "نظرة عامة على الهوية",
+    "description": "الحالة الحالية لهويات النظام والتسجيلات",
+    "totalIdentities": "إجمالي الهويات",
+    "activeRegistrations": "التسجيلات النشطة",
+    "pendingRegistrations": "التسجيلات المعلقة"
+  },
+  "portfolioDetails": {
+    "name": "تفاصيل المحفظة",
+    "summary": {
+      "title": "ملخص المحفظة",
+      "description": "اعرض إجمالي قيمة محفظتك ومقتنياتك"
+    },
+    "breakdown": {
+      "title": "تفصيل المحفظة",
+      "description": "تفصيل مفصل لأصولك حسب النوع"
+    },
+    "performance": {
+      "title": "أداء المحفظة",
+      "description": "تتبع قيمة محفظتك عبر الزمن"
+    }
+  },
   "filters": {
     "apply": "تطبيق الفلاتر",
     "assetType": "نوع الأصل",
@@ -108,6 +130,14 @@
     "subtitle": "إليك ما يحدث مع أصولك اليوم",
     "title": "مرحبًا بعودتك، {{name}}"
   },
+  "assetOverview": {
+    "title": "نظرة عامة على الأصول",
+    "subtitle": "تتبع وتحليل أصولك المميزة",
+    "emptyState": {
+      "title": "ستظهر نظرة عامة على أصولك هنا",
+      "description": "ستظهر الرسوم البيانية والإحصائيات بمجرد إنشاء أول أصل مميز لك"
+    }
+  },
   "widgets": {
     "alerts": {
       "dismiss": "تجاهل",
@@ -140,6 +170,15 @@
         "transfer": "{{user}} نقل {{amount}} {{token}}"
       },
       "viewAll": "عرض جميع الأنشطة"
+    },
+    "latestEvents": {
+      "columns": {
+        "event": "الحدث",
+        "asset": "الأصل",
+        "account": "الحساب",
+        "time": "الوقت",
+        "transaction": "المعاملة"
+      }
     }
   }
 }

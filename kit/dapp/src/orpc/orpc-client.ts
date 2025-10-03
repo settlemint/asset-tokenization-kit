@@ -3,18 +3,15 @@
  *
  * This module exports the primary ORPC client used throughout the application.
  * It creates an isomorphic client that works both on the server and client side:
- * - Server-side: Uses pre-initialized globalThis.$client for optimal SSR performance
+ * - Server-side: Uses direct router client with request headers from TanStack Start
  * - Client-side: Uses OpenAPI link with automatic cookie inclusion for authentication
- *
- * The server-side client is initialized in @/lib/orpc.server
- * to ensure zero client bundle impact while providing optimal SSR performance.
  *
  * The client is integrated with TanStack Query for data fetching and caching.
  * @see {@link ./routes/contract} - Type-safe contract definitions
  * @see {@link ./routes/router} - Main router with all endpoints
- * @see {@link @/lib/orpc.server} - Server-side client initialization
  */
 
+import { normalizeHeaders } from "@/orpc/context/context";
 import { bigDecimalSerializer } from "@atk/zod/bigdecimal";
 import { bigIntSerializer } from "@atk/zod/bigint";
 import { timestampSerializer } from "@atk/zod/timestamp";
@@ -22,32 +19,51 @@ import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
 import type { RouterClient } from "@orpc/server";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { createIsomorphicFn } from "@tanstack/react-start";
+import { getHeaders } from "@tanstack/react-start/server";
 import type { router } from "./routes/router";
+
+const logger = createLogger();
 
 /**
  * Creates an isomorphic ORPC client that adapts based on the runtime environment.
  *
  * Server-side behavior:
- * - Uses pre-initialized globalThis.$client from @/lib/orpc.server
- * - Provides zero-latency direct function calls during SSR
- * - Eliminates async imports and HTTP overhead
+ * - Creates a direct router client for optimal performance
+ * - Automatically includes request headers from TanStack Start
+ * - Bypasses HTTP layer for direct function calls
  *
  * Client-side behavior:
  * - Creates an OpenAPI client that communicates via HTTP
  * - Automatically includes cookies for session-based authentication
  * - Points to the `/api` endpoint relative to the current origin
- * - Router code is completely excluded from client bundle
  */
 const getORPCClient = createIsomorphicFn()
-  .server(() => {
-    // Use the pre-initialized server client from @/lib/orpc.server
-    if (!globalThis.$client) {
-      throw new Error(
-        "Server ORPC client not initialized. Ensure @/lib/orpc.server is imported before this module."
-      );
-    }
-    return globalThis.$client;
+  .server((): RouterClient<typeof router> => {
+    const link = new RPCLink({
+      url: `http://localhost:3000/api/rpc`,
+      headers: () => {
+        try {
+          const headers = getHeaders();
+          return normalizeHeaders(headers);
+        } catch (error) {
+          // Handle cases where there's no HTTP event in AsyncLocalStorage
+          // This can happen during hydration or when there's no active request
+          logger.warn(
+            "No HTTPEvent found in AsyncLocalStorage, using empty headers",
+            { error }
+          );
+          return {};
+        }
+      },
+      customJsonSerializers: [
+        bigDecimalSerializer,
+        bigIntSerializer,
+        timestampSerializer,
+      ],
+    });
+    return createORPCClient(link);
   })
   .client((): RouterClient<typeof router> => {
     const link = new RPCLink({

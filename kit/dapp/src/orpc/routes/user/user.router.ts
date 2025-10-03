@@ -3,6 +3,7 @@ import kyc from "@/orpc/routes/user/kyc/kyc.router";
 import { adminList } from "@/orpc/routes/user/routes/admins.list";
 import { createWallet } from "@/orpc/routes/user/routes/mutations/create-wallet";
 import { assets } from "@/orpc/routes/user/routes/user.assets";
+import { events } from "@/orpc/routes/user/routes/user.events";
 import { list } from "@/orpc/routes/user/routes/user.list";
 import { me } from "@/orpc/routes/user/routes/user.me";
 import { read } from "@/orpc/routes/user/routes/user.read";
@@ -24,6 +25,7 @@ import { statsUserCount } from "@/orpc/routes/user/routes/user.stats.user-count"
  * - list: GET /user/list - List users with pagination
  * - read: GET /user/read - Get specific user by ID or wallet address
  * - stats: GET /user/stats - User statistics and metrics
+ * - events: GET /user/events - Recent blockchain events for the user
  * - kyc: KYC profile management routes (nested namespace)
  * - claims: Claims management routes (nested namespace)
  * - actions: GET /user/actions - User's accessible actions (alias for /actions/list)
@@ -39,6 +41,7 @@ const routes = {
   me,
   actions: actionsList,
   assets,
+  events,
   search,
   list,
   adminList,

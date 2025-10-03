@@ -5,6 +5,26 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ManageAssetDropdown } from "./manage-asset-dropdown";
 
+// Ensure mocked query functions always resolve to defined data to avoid TanStack Query warnings.
+const resolveQueryData = <T,>(data: T) => vi.fn(() => Promise.resolve(data));
+
+const mockYieldSchedule = {
+  id: "yield-schedule-1",
+  denominationAsset: { id: "0xdenomination" as const },
+};
+
+const mockTokenDetails = {
+  id: "0xdenomination" as const,
+  symbol: "DENOM",
+  decimals: 18,
+};
+
+const emptyHolderResponse = {
+  holder: {
+    available: [0n, 18] as [bigint, number],
+  },
+};
+
 // Mock dependencies
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -19,18 +39,51 @@ vi.mock("@/orpc/orpc-client", () => ({
     token: {
       mint: { mutationOptions: vi.fn(() => ({})) },
       read: {
-        queryOptions: vi.fn(() => ({ queryKey: ["token", "read"] })),
+        queryOptions: vi.fn(
+          ({
+            enabled,
+            input: _input,
+            ...rest
+          }: { enabled?: boolean; input?: unknown } = {}) => ({
+            ...rest,
+            enabled,
+            queryKey: ["token", "read"],
+            queryFn: resolveQueryData(mockTokenDetails),
+          })
+        ),
         queryKey: vi.fn(() => ["token", "read"]),
       },
       list: { key: vi.fn(() => ["token", "list"]) },
       holders: {
-        queryOptions: vi.fn(() => ({ queryKey: ["token", "holders"] })),
+        queryOptions: vi.fn(
+          ({
+            enabled,
+            input: _input,
+            ...rest
+          }: { enabled?: boolean; input?: unknown } = {}) => ({
+            ...rest,
+            enabled,
+            queryKey: ["token", "holders"],
+            queryFn: resolveQueryData([]),
+          })
+        ),
         queryKey: vi.fn(() => ["token", "holders"]),
       },
       pause: { mutationOptions: vi.fn(() => ({})) },
       unpause: { mutationOptions: vi.fn(() => ({})) },
       holder: {
-        queryOptions: vi.fn(() => ({ queryKey: ["token", "holder"] })),
+        queryOptions: vi.fn(
+          ({
+            enabled,
+            input: _input,
+            ...rest
+          }: { enabled?: boolean; input?: unknown } = {}) => ({
+            ...rest,
+            enabled,
+            queryKey: ["token", "holder"],
+            queryFn: resolveQueryData(emptyHolderResponse),
+          })
+        ),
         queryKey: vi.fn(() => ["token", "holder"]),
       },
       updateCollateral: { mutationOptions: vi.fn(() => ({})) },
@@ -45,9 +98,18 @@ vi.mock("@/orpc/orpc-client", () => ({
     },
     fixedYieldSchedule: {
       read: {
-        queryOptions: vi.fn(() => ({
-          queryKey: ["fixedYieldSchedule", "read"],
-        })),
+        queryOptions: vi.fn(
+          ({
+            enabled,
+            input: _input,
+            ...rest
+          }: { enabled?: boolean; input?: unknown } = {}) => ({
+            ...rest,
+            enabled,
+            queryKey: ["fixedYieldSchedule", "read"],
+            queryFn: resolveQueryData(mockYieldSchedule),
+          })
+        ),
       },
       topUp: { mutationOptions: vi.fn(() => ({})) },
       withdraw: { mutationOptions: vi.fn(() => ({})) },
@@ -198,7 +260,7 @@ describe("ManageAssetDropdown", () => {
     vi.clearAllMocks();
     queryClient = new QueryClient({
       defaultOptions: {
-        queries: { retry: false, queryFn: vi.fn() },
+        queries: { retry: false, queryFn: vi.fn(() => Promise.resolve({})) },
         mutations: { retry: false },
       },
     });

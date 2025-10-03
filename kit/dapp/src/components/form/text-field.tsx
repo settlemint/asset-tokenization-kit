@@ -34,6 +34,10 @@ export function TextField({
     [field]
   );
 
+  const handleBlur = React.useCallback(() => {
+    field.handleBlur();
+  }, [field]);
+
   const errorClass = React.useMemo(() => {
     return errorClassNames({
       isTouched: field.state.meta.isTouched,
@@ -49,11 +53,12 @@ export function TextField({
           id={field.name}
           value={field.state.value ?? ""}
           onChange={handleChange}
+          onBlur={handleBlur}
           className={cn(className, errorClass)}
         />
       );
     },
-    [field.name, field.state.value, handleChange, errorClass]
+    [field.name, field.state.value, handleChange, handleBlur, errorClass]
   );
 
   return (

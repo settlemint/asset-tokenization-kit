@@ -1,6 +1,5 @@
 import { kycProfiles, user } from "@/lib/db/schema";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
@@ -90,9 +89,6 @@ export const search = authRouter.user.search
         return context.system?.systemAccessManager?.accessControl;
       },
     })
-  )
-  .use(
-    offChainPermissionsMiddleware({ requiredPermissions: { user: ["list"] } })
   )
   .use(databaseMiddleware)
   .handler(async ({ context, input }) => {

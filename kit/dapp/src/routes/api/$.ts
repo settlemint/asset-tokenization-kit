@@ -17,6 +17,7 @@
  * @see {@link https://spec.openapis.org/oas/latest.html} - OpenAPI specification
  */
 
+import { normalizeHeaders } from "@/orpc/context/context";
 import { logUnexpectedError } from "@/orpc/helpers/error";
 import { router } from "@/orpc/routes/router";
 import { metadata } from "@atk/config/metadata";
@@ -27,6 +28,7 @@ import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
 import { CORSPlugin } from "@orpc/server/plugins";
 import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
+// import { createFileRoute } from "@tanstack/react-router";
 import {
   createServerFileRoute,
   getHeaders,
@@ -114,12 +116,25 @@ export async function handle({ request }: { request: Request }) {
   const { response } = await handler.handle(request, {
     prefix: "/api",
     context: {
-      headers: getHeaders(),
+      headers: normalizeHeaders(getHeaders()),
     },
   });
 
   return response ?? new Response("Not Found", { status: 404 });
 }
+
+// export const Route = createFileRoute("/api/$")({
+//   server: {
+//     handlers: {
+//       HEAD: handle,
+//       GET: handle,
+//       POST: handle,
+//       PUT: handle,
+//       PATCH: handle,
+//       DELETE: handle,
+//     },
+//   },
+// });
 
 export const ServerRoute = createServerFileRoute("/api/$").methods({
   HEAD: handle,

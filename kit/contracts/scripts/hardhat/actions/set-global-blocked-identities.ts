@@ -1,4 +1,4 @@
-import { Address } from "viem";
+import type { Address } from "viem";
 import { atkDeployer } from "../services/deployer";
 import { withDecodedRevertReason } from "../utils/decode-revert-reason";
 import { encodeAddressParams } from "../utils/encode-address-params";

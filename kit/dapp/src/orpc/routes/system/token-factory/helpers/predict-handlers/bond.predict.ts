@@ -1,3 +1,4 @@
+import { encodeComplianceParams } from "@/lib/compliance/encoding";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import {
   type PredictAddressInput,
@@ -53,6 +54,10 @@ export const bondPredictHandler = async (
     {
       address: context.factoryAddress,
       ...input,
+      initialModulePairs: input.initialModulePairs.map((pair) => ({
+        module: pair.module,
+        params: encodeComplianceParams(pair),
+      })),
       faceValue: input.faceValue.toString(),
       cap: input.cap.toString(),
       maturityDate: getUnixTime(input.maturityDate).toString(),

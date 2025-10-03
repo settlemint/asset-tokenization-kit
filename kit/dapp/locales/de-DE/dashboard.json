@@ -61,6 +61,28 @@
     },
     "title": "Daten exportieren"
   },
+  "identityMetrics": {
+    "title": "Identitäts-Übersicht",
+    "description": "Aktueller Status der Systemidentitäten und Registrierungen",
+    "totalIdentities": "Gesamte Identitäten",
+    "activeRegistrations": "Aktive Registrierungen",
+    "pendingRegistrations": "Ausstehende Registrierungen"
+  },
+  "portfolioDetails": {
+    "name": "Portfolio-Details",
+    "summary": {
+      "title": "Portfolioübersicht",
+      "description": "Gesamtwert und Bestände Ihres Portfolios anzeigen"
+    },
+    "breakdown": {
+      "title": "Portfolio-Aufschlüsselung",
+      "description": "Detaillierte Aufschlüsselung Ihrer Assets nach Typ"
+    },
+    "performance": {
+      "title": "Portfolio-Performance",
+      "description": "Verfolgen Sie den Wert Ihres Portfolios im Zeitverlauf"
+    }
+  },
   "filters": {
     "apply": "Filter anwenden",
     "assetType": "Asset-Typ",
@@ -108,6 +130,14 @@
     "subtitle": "Hier ist, was heute mit Ihren Assets passiert",
     "title": "Willkommen zurück, {{name}}"
   },
+  "assetOverview": {
+    "title": "Asset-Übersicht",
+    "subtitle": "Verfolgen und analysieren Sie Ihre tokenisierten Assets",
+    "emptyState": {
+      "title": "Ihre Asset-Übersicht wird hier angezeigt",
+      "description": "Diagramme und Statistiken werden angezeigt, sobald Sie Ihr erstes tokenisiertes Asset erstellen"
+    }
+  },
   "widgets": {
     "alerts": {
       "dismiss": "Schließen",
@@ -140,6 +170,15 @@
         "transfer": "{{user}} übertrug {{amount}} {{token}}"
       },
       "viewAll": "Alle Aktivitäten anzeigen"
+    },
+    "latestEvents": {
+      "columns": {
+        "event": "Ereignis",
+        "asset": "Asset",
+        "account": "Konto",
+        "time": "Zeit",
+        "transaction": "Transaktion"
+      }
     }
   }
 }

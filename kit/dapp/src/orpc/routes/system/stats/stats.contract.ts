@@ -1,13 +1,13 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
+import { StatsAssetLifecycleOutputSchema } from "@/orpc/routes/system/stats/routes/asset-lifecycle.schema";
 import { StatsAssetsOutputSchema } from "@/orpc/routes/system/stats/routes/assets.schema";
+import { StatsIdentityCountOutputSchema } from "@/orpc/routes/system/stats/routes/identity-count.schema";
+import { StatsIdentityStatsOverTimeOutputSchema } from "@/orpc/routes/system/stats/routes/identity-stats-over-time.schema";
 import {
   StatsPortfolioDetailsInputSchema,
   StatsPortfolioDetailsOutputSchema,
 } from "@/orpc/routes/system/stats/routes/portfolio-details.schema";
-import {
-  StatsPortfolioInputSchema,
-  StatsPortfolioOutputSchema,
-} from "@/orpc/routes/system/stats/routes/portfolio.schema";
+import { StatsPortfolioOutputSchema } from "@/orpc/routes/system/stats/routes/portfolio.schema";
 import {
   StatsTransactionCountInputSchema,
   StatsTransactionCountOutputSchema,
@@ -17,6 +17,7 @@ import {
   StatsTransactionHistoryOutputSchema,
 } from "@/orpc/routes/system/stats/routes/transaction-history.schema";
 import { StatsValueOutputSchema } from "@/orpc/routes/system/stats/routes/value.schema";
+import { StatsRangeInputSchema } from "@atk/zod/stats-range";
 
 const statsAssets = baseContract
   .route({
@@ -27,6 +28,39 @@ const statsAssets = baseContract
     tags: ["stats", "system"],
   })
   .output(StatsAssetsOutputSchema);
+
+const statsAssetLifecycle = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/asset-lifecycle",
+    description: "Retrieve counts for created and launched assets over time",
+    successDescription: "System asset lifecycle metrics retrieved successfully",
+    tags: ["stats", "system", "assets"],
+  })
+  .input(StatsRangeInputSchema)
+  .output(StatsAssetLifecycleOutputSchema);
+
+const statsIdentityCount = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/identity-count",
+    description: "Retrieve count of identities created by the identity factory",
+    successDescription:
+      "Identity factory creation count statistics retrieved successfully",
+    tags: ["stats", "system", "identity"],
+  })
+  .output(StatsIdentityCountOutputSchema);
+
+const statsIdentityStatsOverTime = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/identity-stats-over-time",
+    description: "Retrieve identity statistics over time for charts",
+    successDescription: "Identity statistics over time retrieved successfully",
+    tags: ["stats", "system", "identity"],
+  })
+  .input(StatsRangeInputSchema)
+  .output(StatsIdentityStatsOverTimeOutputSchema);
 
 const statsTransactionCount = baseContract
   .route({
@@ -69,7 +103,7 @@ const statsPortfolio = baseContract
     successDescription: "System portfolio statistics retrieved successfully",
     tags: ["stats", "system"],
   })
-  .input(StatsPortfolioInputSchema)
+  .input(StatsRangeInputSchema)
   .output(StatsPortfolioOutputSchema);
 
 const statsPortfolioDetails = baseContract
@@ -85,6 +119,9 @@ const statsPortfolioDetails = baseContract
 
 export const statsContract = {
   assets: statsAssets,
+  assetLifecycle: statsAssetLifecycle,
+  identityCount: statsIdentityCount,
+  identityStatsOverTime: statsIdentityStatsOverTime,
   transactionCount: statsTransactionCount,
   transactionHistory: statsTransactionHistory,
   value: statsValue,

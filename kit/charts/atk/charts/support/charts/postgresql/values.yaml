@@ -8,7 +8,7 @@ image:
   # -- (string) Image repository
   repository: postgres
   # -- (string) Image tag
-  tag: "17.6-alpine"
+  tag: "18.0-alpine"
   # -- (string) Image pull policy
   pullPolicy: IfNotPresent
 

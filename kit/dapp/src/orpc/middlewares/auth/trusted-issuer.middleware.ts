@@ -92,8 +92,7 @@ const TrustedIssuerTopicsResponseSchema = z.object({
  * const issueClaimRoute = baseRouter
  *   .use(theGraphMiddleware)
  *   .use(trustedIssuerMiddleware({
- *     topicPath: "claim.topic",
- *     requireTopic: true
+ *     selectTopics: (input) => [input.claim.topic],
  *   }))
  *   .input(z.object({
  *     claim: z.object({
@@ -107,7 +106,7 @@ const TrustedIssuerTopicsResponseSchema = z.object({
  * ```
  */
 export const trustedIssuerMiddleware = <TInput>(options: {
-  selectTopic: (input: Readonly<TInput>) => string | undefined;
+  selectTopics: (input: Readonly<TInput>) => string[] | undefined;
 }) =>
   baseRouter.middleware(async ({ next, context, errors }, input: TInput) => {
     // If user is not authenticated, provide empty array (graceful fallback)
@@ -152,12 +151,16 @@ export const trustedIssuerMiddleware = <TInput>(options: {
       issuer.claimTopics.map((topic) => topic.name)
     );
 
-    const requestedTopic = options.selectTopic(input);
-    if (requestedTopic && !userTrustedIssuerTopics.includes(requestedTopic)) {
+    const requestedTopics = options.selectTopics(input);
+    const notAuthorizedTopics =
+      requestedTopics?.filter(
+        (topic) => !userTrustedIssuerTopics.includes(topic)
+      ) ?? [];
+    if (notAuthorizedTopics.length > 0) {
       throw errors.FORBIDDEN({
-        message: `You are not a trusted issuer for topic: ${requestedTopic}`,
+        message: `You are not a trusted issuer for topic(s): ${notAuthorizedTopics.join(", ")}`,
         data: {
-          requestedTopic,
+          requestedTopics,
           authorizedTopics: userTrustedIssuerTopics,
         },
       });

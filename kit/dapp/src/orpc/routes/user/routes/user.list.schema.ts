@@ -45,6 +45,12 @@ export const UserWithIdentitySchema = UserSchema.extend({
    * Record mapping role names to boolean values indicating if user has that role.
    */
   roles: accessControlRoles,
+
+  /**
+   * Whether the user is has any admin role.
+   * True if user has any admin role.
+   */
+  isAdmin: z.boolean().optional().nullable(),
 });
 
 /**

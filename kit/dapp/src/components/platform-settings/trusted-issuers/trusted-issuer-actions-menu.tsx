@@ -42,7 +42,7 @@ export function TrustedIssuerActionsMenu({
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const [showVerificationDialog, setShowVerificationDialog] = useState(false);
   const queryClient = useQueryClient();
-  const { t } = useTranslation("claim-topics-issuers");
+  const { t } = useTranslation(["claim-topics-issuers", "common"]);
 
   // Remove issuer mutation
   const removeMutation = useMutation({
@@ -52,19 +52,13 @@ export function TrustedIssuerActionsMenu({
         walletVerification: verification,
       }),
     onSuccess: () => {
-      toast.success(t("trustedIssuers.toast.removed"));
       void queryClient.invalidateQueries({
         queryKey: orpc.system.trustedIssuers.list.queryKey(),
       });
       setShowRemoveDialog(false);
       setShowVerificationDialog(false);
     },
-    onError: (error) => {
-      toast.error(
-        t("trustedIssuers.toast.removeError", {
-          error: error.message || error.toString() || "Unknown error",
-        })
-      );
+    onError: () => {
       setShowVerificationDialog(false);
     },
   });
@@ -76,7 +70,11 @@ export function TrustedIssuerActionsMenu({
   };
 
   const handleVerificationSubmit = (verification: UserVerification) => {
-    removeMutation.mutate(verification);
+    toast.promise(removeMutation.mutateAsync(verification), {
+      loading: t("common:saving"),
+      success: t("trustedIssuers.toast.removed"),
+      error: (data) => t("common:error", { message: data.message }),
+    });
   };
 
   const handleVerificationCancel = () => {

@@ -1,12 +1,18 @@
+import tailwindcss from "@tailwindcss/vite";
+import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
-import react from "@vitejs/plugin-react";
+import viteReact from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import { analyzer } from "vite-bundle-analyzer";
 import tsConfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
+  logLevel: process.env.CLAUDECODE ? "warn" : "info",
+  server: {
+    port: 3000,
+  },
   build: {
-    target: "ES2023",
+    target: "es2023",
     sourcemap: true,
     rollupOptions: {
       onwarn(warning, warn) {
@@ -26,27 +32,23 @@ export default defineConfig({
       },
     },
   },
-  logLevel: process.env.CLAUDECODE ? "warn" : "info",
   optimizeDeps: {
     esbuildOptions: {
-      target: "ES2023",
+      target: "es2023",
     },
-    include: [
-      // Only include dependencies that cause full-page reloads or are CommonJS
-      "date-fns", // CommonJS library
-      "recharts", // Large charting library with d3 dependencies
-    ],
   },
-  server: {
-    port: 3000,
+  esbuild: {
+    target: "es2023",
   },
   plugins: [
+    devtools(),
     tsConfigPaths(),
+    tailwindcss(),
     tanstackStart({
       target: "bun",
       customViteReactPlugin: true,
     }),
-    react({
+    viteReact({
       babel: {
         plugins: [["babel-plugin-react-compiler", {}]],
       },

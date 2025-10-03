@@ -6,6 +6,7 @@ global:
   imagePullSecrets: []
   # -- (string) Global StorageClass for Persistent Volume(s)
   storageClass: ""
+  # -- (object) Global labels to add to all resources
   labels:
     kots.io/app-slug: settlemint-atk
 
@@ -28,7 +29,7 @@ image:
   # -- (string) Portal image repository
   repository: settlemint/btp-scs-portal
   # -- (string) Portal image tag (immutable tags are recommended)
-  tag: "8.6.8"
+  tag: "8.6.9"
   # -- (string) Portal image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
   digest: ""
   # -- (string) Portal image pull policy
@@ -175,12 +176,15 @@ extraEnvVarsCM: ""
 # -- (string) Name of existing Secret containing extra env vars for Portal nodes
 extraEnvVarsSecret: ""
 
+# -- (object) Init container configurations for dependency management and pre-start tasks
 initContainer:
+  # -- (object) ABI download init container configuration
   downloadAbi:
     # -- (bool) Enable the ABI download init container that syncs ConfigMaps via network-bootstrapper.
     enabled: true
     # -- (string) Directory where ABI files are written before being shared with the portal container.
     outputDirectory: /shared-abis
+    # -- (object) Container image configuration for the ABI downloader
     image:
       # -- (string) OCI image hosting the network-bootstrapper CLI.
       repository: ghcr.io/settlemint/network-bootstrapper
@@ -188,33 +192,59 @@ initContainer:
       tag: "1.2.3"
       # -- (string) Image pull policy for the ABI download init container.
       pullPolicy: IfNotPresent
+    # -- (object) Resource requests and limits for the ABI download init container
     resources:
+      # -- (object) Resource limits for the ABI download init container
       limits:
+        # -- (string) CPU limit for the ABI download init container
         cpu: 150m
+        # -- (string) Memory limit for the ABI download init container
         memory: 128Mi
+      # -- (object) Resource requests for the ABI download init container
       requests:
+        # -- (string) CPU request for the ABI download init container
         cpu: 25m
+        # -- (string) Memory request for the ABI download init container
         memory: 64Mi
+    # -- (object) Security context for the ABI download init container
     securityContext: {}
 
+  # -- (object) TCP check init container configuration for service dependency verification
   tcpCheck:
+    # -- (bool) Enable TCP check init container to wait for dependent services
     enabled: true
+    # -- (object) Container image configuration for TCP check
     image:
+      # -- (string) Repository for the TCP check init container image
       repository: ghcr.io/settlemint/btp-waitforit
+      # -- (string) Image tag for the TCP check init container
       tag: v7.7.10
+      # -- (string) Image pull policy for the TCP check init container
       pullPolicy: IfNotPresent
+    # -- (int) Timeout in seconds for TCP connectivity checks
     timeout: 120
+    # -- (object) Resource requests and limits for the TCP check init container
     resources:
+      # -- (object) Resource limits for the TCP check init container
       limits:
+        # -- (string) CPU limit for the TCP check init container
         cpu: 100m
+        # -- (string) Memory limit for the TCP check init container
         memory: 64Mi
+      # -- (object) Resource requests for the TCP check init container
       requests:
+        # -- (string) CPU request for the TCP check init container
         cpu: 10m
+        # -- (string) Memory request for the TCP check init container
         memory: 32Mi
+    # -- (list) List of service dependencies to verify before starting portal
     dependencies:
+      # -- (string) Name of the dependent service
       - name: postgresql
+        # -- (string) TCP endpoint to check (format: host:port)
         endpoint: "postgresql:5432"
 
+# -- (list) Additional init containers to add to the Portal pod
 extraInitContainers: []
 
 # -- (object) RBAC configuration controlling whether Role/RoleBinding resources are rendered.
@@ -354,19 +384,31 @@ autoscaling:
   maxReplicas: 3
   # -- (int) Minimum number of Portal replicas
   minReplicas: 1
-  # -- (list) Built-in metrics configuration
+  # -- (list) Built-in metrics configuration for CPU and memory based scaling
   builtInMetrics:
+    # -- (string) Metric type (Resource, Pods, Object, or External)
     - type: Resource
+      # -- (object) Resource metric configuration
       resource:
+        # -- (string) Name of the resource metric (cpu or memory)
         name: cpu
+        # -- (object) Target metric threshold configuration
         target:
+          # -- (string) Target metric type (Utilization or AverageValue)
           type: Utilization
+          # -- (int) Target average CPU utilization percentage
           averageUtilization: 80
+    # -- (string) Metric type (Resource, Pods, Object, or External)
     - type: Resource
+      # -- (object) Resource metric configuration
       resource:
+        # -- (string) Name of the resource metric (cpu or memory)
         name: memory
+        # -- (object) Target metric threshold configuration
         target:
+          # -- (string) Target metric type (Utilization or AverageValue)
           type: Utilization
+          # -- (int) Target average memory utilization percentage
           averageUtilization: 80
   # -- (list) Custom metrics configuration
   customMetrics: []
@@ -392,51 +434,86 @@ networkPolicy:
   addExternalClientAccess: true
   # -- (list) Add extra ingress rules to the NetworkPolicy
   extraIngress:
+    # -- (list) Source selectors for ingress traffic
     - from:
+        # -- (object) Namespace selector for ingress-nginx
         - namespaceSelector:
+            # -- (object) Labels to match ingress-nginx namespace
             matchLabels:
               kubernetes.io/metadata.name: ingress-nginx
+        # -- (object) Pod selector for dapp pods
         - podSelector:
+            # -- (object) Labels to match dapp pods
             matchLabels:
               app.kubernetes.io/name: dapp
+        # -- (object) Pod selector for same namespace pods
         - podSelector: {}  # Same namespace
+      # -- (list) Allowed ports for ingress traffic
       ports:
+        # -- (string) Protocol for HTTP port
         - protocol: TCP
+          # -- (int) HTTP port number
           port: 3000  # HTTP port
+        # -- (string) Protocol for GraphQL port
         - protocol: TCP
+          # -- (int) GraphQL port number
           port: 3001  # GraphQL port
   # -- (list) Add extra egress rules to the NetworkPolicy (ignored if allowExternalEgress=true)
   extraEgress:
     # Allow DNS resolution
+    # -- (list) Destination selectors for DNS resolution
     - to:
+        # -- (object) Namespace selector for kube-dns
         - namespaceSelector: {}
+          # -- (object) Pod selector for kube-dns
           podSelector:
+            # -- (object) Labels to match kube-dns pods
             matchLabels:
               k8s-app: kube-dns
+      # -- (list) Allowed ports for DNS traffic
       ports:
+        # -- (string) Protocol for DNS
         - protocol: UDP
+          # -- (int) DNS port number
           port: 53
     # Allow access to PostgreSQL
+    # -- (list) Destination selectors for PostgreSQL access
     - to:
+        # -- (object) Pod selector for PostgreSQL
         - podSelector:
+            # -- (object) Labels to match PostgreSQL pods
             matchLabels:
               app.kubernetes.io/name: postgresql-ha
+      # -- (list) Allowed ports for PostgreSQL traffic
       ports:
+        # -- (string) Protocol for PostgreSQL
         - protocol: TCP
+          # -- (int) PostgreSQL port number
           port: 5432
     # Allow access to Redis
+    # -- (list) Destination selectors for Redis access
     - to:
+        # -- (object) Pod selector for Redis
         - podSelector:
+            # -- (object) Labels to match Redis pods
             matchLabels:
               app.kubernetes.io/name: redis
+      # -- (list) Allowed ports for Redis traffic
       ports:
+        # -- (string) Protocol for Redis
         - protocol: TCP
+          # -- (int) Redis port number
           port: 6379
     # Allow external HTTPS (for external APIs if needed)
+    # -- (list) Destination selectors for external HTTPS access
     - to:
+        # -- (object) Namespace selector for all namespaces
         - namespaceSelector: {}
+      # -- (list) Allowed ports for external HTTPS traffic
       ports:
+        # -- (string) Protocol for HTTPS
         - protocol: TCP
+          # -- (int) HTTPS port number
           port: 443
   # -- (object) Ingress rules configuration
   ingressRules:

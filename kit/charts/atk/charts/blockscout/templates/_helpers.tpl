@@ -87,27 +87,6 @@ Using common helper with chart-specific alias.
 {{- end }}
 
 {{/*
-Image pull secrets
-*/}}
-{{- define "atk.common.imagePullSecrets" -}}
-{{- $pullSecrets := list }}
-{{- if .Values.global }}
-  {{- range .Values.global.imagePullSecrets -}}
-    {{- $pullSecrets = append $pullSecrets . -}}
-  {{- end -}}
-{{- end -}}
-{{- range .Values.imagePullSecrets -}}
-  {{- $pullSecrets = append $pullSecrets . -}}
-{{- end -}}
-{{- if (not (empty $pullSecrets)) }}
-imagePullSecrets:
-{{- range $pullSecrets }}
-  - name: {{ . }}
-{{- end }}
-{{- end }}
-{{- end }}
-
-{{/*
 Return merged pod security context defaults for Blockscout.
 */}}
 {{- define "blockscout.securityContext.pod" -}}

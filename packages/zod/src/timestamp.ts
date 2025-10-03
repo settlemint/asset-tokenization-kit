@@ -8,6 +8,7 @@
  * @module TimestampValidation
  */
 import type { StandardRPCCustomJsonSerializer } from "@orpc/client/standard";
+import { getUnixTime } from "date-fns";
 import { z } from "zod";
 
 /**
@@ -176,6 +177,11 @@ export function isTimestamp(value: unknown): value is Timestamp {
  */
 export function getTimestamp(value: unknown): Timestamp {
   return timestamp().parse(value);
+}
+
+export function getUnixTimeMicroseconds(value: Timestamp): string {
+  const unixSeconds = getUnixTime(value);
+  return (unixSeconds * 10 ** 6).toString();
 }
 
 /**

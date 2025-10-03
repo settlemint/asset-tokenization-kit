@@ -24,35 +24,23 @@
 import { auth } from "@/lib/auth";
 import { createServerFileRoute } from "@tanstack/react-start/server";
 
+// export const Route = createFileRoute("/api/auth/$")({
+//   server: {
+//     handlers: {
+//       GET: ({ request }) => {
+//         return auth.handler(request);
+//       },
+//       POST: ({ request }) => {
+//         return auth.handler(request);
+//       },
+//     },
+//   },
+// });
+
 export const ServerRoute = createServerFileRoute("/api/auth/$").methods({
-  /**
-   * Handles GET requests for authentication operations.
-   *
-   * Used for:
-   * - OAuth provider callbacks (e.g., /api/auth/callback/google)
-   * - Email verification links
-   * - Magic link authentication
-   * - Password reset token validation
-   * @param root0
-   * @param root0.request
-   */
   GET: async ({ request }) => {
     return auth.handler(request);
   },
-
-  /**
-   * Handles POST requests for authentication operations.
-   *
-   * Used for:
-   * - User login (/api/auth/sign-in)
-   * - User registration (/api/auth/sign-up)
-   * - Password reset requests
-   * - Session refresh
-   * - Logout operations
-   * - Multi-factor authentication verification
-   * @param root0
-   * @param root0.request
-   */
   POST: async ({ request }) => {
     return auth.handler(request);
   },

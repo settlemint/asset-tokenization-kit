@@ -1,4 +1,4 @@
-import { Address, BigDecimal } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, log } from "@graphprotocol/graph-ts";
 import {
   SystemStatsData,
   SystemStatsState,
@@ -109,6 +109,51 @@ export function updateSystemStatsForPriceChange(
 }
 
 /**
+ * Update system stats for token launch (first unpause)
+ */
+export function updateSystemStatsForTokenLaunch(token: Token): void {
+  const isAlreadyLaunched = token.isLaunched;
+  if (isAlreadyLaunched) {
+    return;
+  }
+
+  const systemAddress = getTokenSystemAddress(token);
+  const state = fetchSystemStatsState(systemAddress);
+
+  token.isLaunched = true;
+  token.save();
+
+  state.tokensLaunchedCount = state.tokensLaunchedCount + 1;
+  state.save();
+
+  // Create timeseries entry
+  trackSystemStats(systemAddress, state.totalValueInBaseCurrency);
+}
+
+/**
+ * Update system stats for token creation
+ */
+export function updateSystemStatsForTokenCreate(token: Token): void {
+  const systemAddress = getTokenSystemAddress(token);
+  // Sanity check
+  if (systemAddress.equals(Address.zero())) {
+    log.warning(
+      "Skipped increment tokens created count in system stats for token {} - system is not set",
+      [token.id.toHexString()]
+    );
+    return;
+  }
+
+  const state = fetchSystemStatsState(systemAddress);
+
+  state.tokensCreatedCount = state.tokensCreatedCount + 1;
+  state.save();
+
+  // Create timeseries entry
+  trackSystemStats(systemAddress, state.totalValueInBaseCurrency);
+}
+
+/**
  * Fetch or create SystemStatsState entity
  */
 function fetchSystemStatsState(systemAddress: Address): SystemStatsState {
@@ -118,6 +163,8 @@ function fetchSystemStatsState(systemAddress: Address): SystemStatsState {
     state = new SystemStatsState(systemAddress);
     state.system = fetchSystem(systemAddress).id;
     state.totalValueInBaseCurrency = BigDecimal.zero();
+    state.tokensCreatedCount = 0;
+    state.tokensLaunchedCount = 0;
     state.save();
   }
 
@@ -131,11 +178,15 @@ function trackSystemStats(
   systemAddress: Address,
   totalValue: BigDecimal
 ): void {
+  const state = fetchSystemStatsState(systemAddress);
+
   // Create timeseries entry - ID is auto-generated for timeseries entities
   const systemStats = new SystemStatsData(1);
 
   systemStats.system = fetchSystem(systemAddress).id;
   systemStats.totalValueInBaseCurrency = totalValue;
+  systemStats.tokensCreatedCount = state.tokensCreatedCount;
+  systemStats.tokensLaunchedCount = state.tokensLaunchedCount;
 
   systemStats.save();
 }

@@ -177,12 +177,7 @@ export function TopicsTable() {
         data={topics}
         columns={columns}
         urlState={{
-          enabled: true,
-          enableUrlPersistence: false,
-          defaultPageSize: 10,
-          enableGlobalFilter: true,
-          enableRowSelection: false,
-          debounceMs: 300,
+          enabled: false,
         }}
         advancedToolbar={{
           enableGlobalSearch: true,

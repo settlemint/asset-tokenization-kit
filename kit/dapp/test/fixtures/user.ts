@@ -6,7 +6,8 @@ import { getOrpcClient } from "./orpc-client";
 
 export interface User {
   email: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   password: string;
 }
 
@@ -16,19 +17,22 @@ export const DEFAULT_PINCODE = "123456";
 
 export const DEFAULT_ADMIN: User = {
   email: "admin@settlemint.com",
-  name: "admin",
+  firstName: "admin",
+  lastName: "(integration tests)",
   password: DEFAULT_PASSWORD,
 };
 
 export const DEFAULT_INVESTOR: User = {
   email: "investor@settlemint.com",
-  name: "investor",
+  firstName: "investor",
+  lastName: "(integration tests)",
   password: DEFAULT_PASSWORD,
 };
 
 export const DEFAULT_ISSUER: User = {
   email: "issuer@settlemint.com",
-  name: "issuer",
+  firstName: "issuer",
+  lastName: "(integration tests)",
   password: DEFAULT_PASSWORD,
 };
 
@@ -88,7 +92,10 @@ export const setupUser = (user: User) =>
       try {
         const authClient = getAuthClient();
         // Step 1: Sign up
-        const { error: signUpError } = await authClient.signUp.email(user);
+        const { error: signUpError } = await authClient.signUp.email({
+          ...user,
+          name: `${user.firstName} ${user.lastName}`,
+        });
 
         if (signUpError) {
           if (signUpError.code !== "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL") {
@@ -277,10 +284,11 @@ export async function getUserWallet(user: User) {
   return userData.wallet;
 }
 
-export async function createTestUser(name = "test") {
-  const user = {
+export async function createTestUser(firstName = "test", lastName = "") {
+  const user: User = {
     email: `${randomUUID()}@test.com`,
-    name,
+    firstName,
+    lastName,
     password: DEFAULT_PASSWORD,
   };
   const session = await setupUser(user);

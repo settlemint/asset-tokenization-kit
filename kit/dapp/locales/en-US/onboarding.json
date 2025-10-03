@@ -1,7 +1,7 @@
 {
   "assets": {
     "asset-factories-deployed-successfully": "Asset factories deployed successfully",
-    "asset-factories-description": "You'll be asked to confirm each transaction using your PIN or OTP.",
+    "asset-factories-description": "You'll be asked to confirm each transaction with two-factor authentication.",
     "asset-types-deployed": "Asset types deployed",
     "available-asset-types": "Available asset types",
     "choose-asset-types": "Define which types of tokenized assets your platform will support.",
@@ -79,7 +79,7 @@
     "success-title": "Identity Created Successfully",
     "title": "Your On-Chain Identity",
     "deployment-warning": "This process may take up to 2–3 minutes",
-    "transaction-confirmation-info": "You'll be asked to confirm each transaction using your PIN or OTP.",
+    "transaction-confirmation-info": "You'll be asked to confirm each transaction with two-factor authentication.",
     "body-1": "Your wallet proves that you control access to your assets, but it doesn’t prove who you are.",
     "body-2": "ONCHAINID is your on-chain identity, securely linked to your wallet. It holds verified information such as your name, country, or KYC status, which are added by trusted sources. These verifications are called “claims” and help the platform meet compliance requirements and protect users.",
     "body-3": "Think of it as your digital passport for the blockchain: unique, verifiable, and fully under your control.",
@@ -228,7 +228,7 @@
       "required-for-bonds": "Required for bonds",
       "intro-1": "Platform add-ons allow you to extend the capabilities of your tokenization platform. These features — like Airdrops, Yield, or XVP — are deployed as smart contracts, just like the core system.",
       "intro-2": "You can enable the ones you need now, and easily change or expand them later in Settings.",
-      "transaction-confirmation-info": "You'll be asked to confirm each transaction using your PIN or OTP.",
+      "transaction-confirmation-info": "You'll be asked to confirm each transaction with two-factor authentication.",
       "select-all-addons": "Select all the addons you plan to enable",
       "title": "Configure platform add-ons",
       "enabled-addons": "Enabled add-ons",
@@ -316,7 +316,7 @@
         "setup-time-otp": "2-3 minutes",
         "setup-time-pin": "1 minute"
       },
-      "description": "Like your bank card needs a PIN, your wallet needs protection too.\n\nChoose between a quick PIN code or stronger one-time passwords (OTP) from an authenticator app.",
+      "description": "Like your bank card requires a PIN for security, your wallet needs protection too.\n\nSet a secure 6-digit PIN code.",
       "generate-backup-codes": "Generate your backup codes",
       "otp": {
         "description": "Uses an app like Google Authenticator to generate a new code every 30 seconds. Maximum security for your assets.",

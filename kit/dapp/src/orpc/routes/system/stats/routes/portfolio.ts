@@ -1,56 +1,66 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { createTimeSeries } from "@/lib/utils/timeseries";
 import { systemRouter } from "@/orpc/procedures/system.router";
-import { getUnixTime } from "date-fns";
+import { buildStatsRangeQuery } from "@atk/zod/stats-range";
+import { timestamp } from "@atk/zod/timestamp";
 import { z } from "zod";
 
 /**
- * GraphQL query to fetch hourly portfolio data
+ * GraphQL query to fetch portfolio history and latest snapshot
  */
-const PORTFOLIO_HOURLY_QUERY = theGraphGraphql(`
-  query PortfolioHistoryHourly($accountId: String!, $from: Timestamp, $to: Timestamp) {
+const PORTFOLIO_VALUE_QUERY = theGraphGraphql(`
+  query PortfolioHistoryHourly(
+    $accountIdString: String!
+    $accountId: ID!
+    $fromMicroseconds: Timestamp
+    $toMicroseconds: Timestamp
+    $interval: Aggregation_interval!
+  ) {
     accountStats: accountStats_collection(
-      interval: hour
+      interval: $interval
       where: {
-        account: $accountId,
-        timestamp_gte: $from,
-        timestamp_lte: $to
+        account: $accountIdString,
+        timestamp_gte: $fromMicroseconds,
+        timestamp_lte: $toMicroseconds
       }
       orderBy: timestamp
     ) {
       timestamp
       totalValueInBaseCurrency
     }
-  }
-`);
-
-/**
- * GraphQL query to fetch daily portfolio data
- */
-const PORTFOLIO_DAILY_QUERY = theGraphGraphql(`
-  query PortfolioHistoryDaily($accountId: String!, $from: Timestamp, $to: Timestamp) {
-    accountStats: accountStats_collection(
-      interval: day
+    baseline: accountStats_collection(
+      interval: $interval
       where: {
-        account: $accountId,
-        timestamp_gte: $from,
-        timestamp_lte: $to
+        account: $accountIdString,
+        timestamp_lte: $fromMicroseconds
       }
       orderBy: timestamp
+      orderDirection: desc
+      first: 1
     ) {
       timestamp
+      totalValueInBaseCurrency
+    }
+    current: accountStatsState(id: $accountId) {
       totalValueInBaseCurrency
     }
   }
 `);
 
 // Base schema for portfolio data items
-const PortfolioDataItem = z.object({
-  timestamp: z.string(),
+const PortfolioHistoryItemSchema = z.object({
+  timestamp: timestamp(),
   totalValueInBaseCurrency: z.string(),
 });
 
 const PortfolioResponseSchema = z.object({
-  accountStats: z.array(PortfolioDataItem),
+  accountStats: z.array(PortfolioHistoryItemSchema),
+  baseline: z.array(PortfolioHistoryItemSchema),
+  current: z
+    .object({
+      totalValueInBaseCurrency: z.string(),
+    })
+    .nullable(),
 });
 
 /**
@@ -92,34 +102,51 @@ export const statsPortfolio = systemRouter.system.stats.portfolio.handler(
     // Get user's wallet address from auth context
     const userAddress = context.auth.user.wallet;
 
+    const now = new Date();
+    const { interval, fromMicroseconds, toMicroseconds, range } =
+      buildStatsRangeQuery(input, {
+        now,
+        // TODO: replace minFrom with context.system.createdAt when available
+      });
+
     // Build query variables
-    const variables: {
-      accountId: string;
-      from?: string;
-      to?: string;
-    } = {
-      accountId: userAddress.toLowerCase(),
-    };
+    const accountId = userAddress.toLowerCase();
+    const variables = {
+      accountId,
+      accountIdString: accountId,
+      fromMicroseconds,
+      toMicroseconds,
+      interval,
+    } as const;
 
-    if (input.from) {
-      variables.from = getUnixTime(input.from).toString();
-    }
+    const portfolioData = await context.theGraphClient.query(
+      PORTFOLIO_VALUE_QUERY,
+      {
+        input: variables,
+        output: PortfolioResponseSchema,
+      }
+    );
 
-    if (input.to) {
-      variables.to = getUnixTime(input.to).toString();
-    }
+    const results = [
+      ...portfolioData.baseline,
+      ...portfolioData.accountStats,
+      {
+        timestamp: range.to,
+        totalValueInBaseCurrency:
+          portfolioData.current?.totalValueInBaseCurrency ?? "0",
+      },
+    ];
 
-    const query =
-      input.interval === "hour"
-        ? PORTFOLIO_HOURLY_QUERY
-        : PORTFOLIO_DAILY_QUERY;
-    const portfolioData = await context.theGraphClient.query(query, {
-      input: variables,
-      output: PortfolioResponseSchema,
+    const series = createTimeSeries(results, ["totalValueInBaseCurrency"], {
+      range,
+      aggregation: "last",
+      accumulation: "max",
+      historical: true,
     });
 
     return {
-      data: portfolioData.accountStats,
+      range,
+      data: series,
     };
   }
 );

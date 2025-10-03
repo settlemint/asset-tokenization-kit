@@ -38,7 +38,7 @@ export function AssetDesignerDialog({
       }}
     >
       <AssetDesignerWizard
-        onSubmit={() => {
+        onClose={() => {
           onOpenChange(false);
         }}
       />

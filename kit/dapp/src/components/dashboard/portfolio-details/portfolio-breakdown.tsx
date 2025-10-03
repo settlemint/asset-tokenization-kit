@@ -1,6 +1,6 @@
 import { PortfolioBreakdownPieChart } from "@/components/stats/charts/portfolio-breakdown-pie-chart";
+import { PortfolioValueAreaChart } from "@/components/stats/charts/portfolio-value-area-chart";
 import type { StatsPortfolioDetailsOutput } from "@/orpc/routes/system/stats/routes/portfolio-details.schema";
-import { PortfolioBreakdownTable } from "./portfolio-breakdown-table";
 
 interface PortfolioBreakdownProps {
   breakdown: StatsPortfolioDetailsOutput["tokenFactoryBreakdown"];
@@ -22,7 +22,6 @@ export function PortfolioBreakdown({
       />
     );
   }
-
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <PortfolioBreakdownPieChart
@@ -30,7 +29,7 @@ export function PortfolioBreakdown({
         hasAssets={hasAssets}
         interval={interval}
       />
-      <PortfolioBreakdownTable breakdown={breakdown} />
+      <PortfolioValueAreaChart range="trailing7Days" />
     </div>
   );
 }

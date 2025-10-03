@@ -1,6 +1,6 @@
 # hasura
 
-![Version: 2.0.0-alpha.9](https://img.shields.io/badge/Version-2.0.0--alpha.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.9](https://img.shields.io/badge/AppVersion-2.0.0--alpha.9-informational?style=flat-square)
+![Version: 2.0.0-alpha.17](https://img.shields.io/badge/Version-2.0.0--alpha.17-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.17](https://img.shields.io/badge/AppVersion-2.0.0--alpha.17-informational?style=flat-square)
 
 A Helm chart for Hasura GraphQL Engine
 
@@ -49,9 +49,8 @@ A Helm chart for Hasura GraphQL Engine
 | config.wsKeepAlive | int | `5` | WebSocket keepalive interval (seconds) |
 | cronTriggers | object | `{"includeInMetadata":false}` | Cron triggers configuration |
 | cronTriggers.includeInMetadata | bool | `false` | Include webhook secret in cron triggers |
-| database | object | `{"connLifetime":600,"connectionUrl":"","connections":50,"database":"","enablePooling":true,"host":"","idleTimeout":180,"password":"","port":"","sslMode":"","txIsolation":"read-committed","usePreparedStatements":true,"username":""}` | Database configuration |
+| database | object | `{"connLifetime":600,"connections":50,"database":"","enablePooling":true,"host":"","idleTimeout":180,"password":"","port":"","sslMode":"","txIsolation":"read-committed","usePreparedStatements":true,"username":""}` | Database configuration |
 | database.connLifetime | int | `600` | Connection lifetime (seconds) |
-| database.connectionUrl | string | `""` | Database connection string (overrides auto-generated URL) |
 | database.connections | int | `50` | Maximum connections |
 | database.database | string | `""` | Database name (uses global datastores if not set) |
 | database.enablePooling | bool | `true` | Enable connection pooling |
@@ -101,11 +100,11 @@ A Helm chart for Hasura GraphQL Engine
 | healthChecks.startupProbe.periodSeconds | int | `10` | Period seconds |
 | healthChecks.startupProbe.successThreshold | int | `1` | Success threshold |
 | healthChecks.startupProbe.timeoutSeconds | int | `5` | Timeout seconds |
-| image | object | `{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"hasura/graphql-engine","tag":"v2.48.5"}` | Hasura image configuration |
+| image | object | `{"pullPolicy":"IfNotPresent","registry":"harbor.settlemint.com/docker.io","repository":"hasura/graphql-engine","tag":"v2.48.6"}` | Hasura image configuration |
 | image.pullPolicy | string | `"IfNotPresent"` | Hasura image pull policy |
-| image.registry | string | `"docker.io"` | Hasura image registry |
+| image.registry | string | `"harbor.settlemint.com/docker.io"` | Hasura image registry |
 | image.repository | string | `"hasura/graphql-engine"` | Hasura image repository |
-| image.tag | string | `"v2.48.5"` | Hasura image tag |
+| image.tag | string | `"v2.48.6"` | Hasura image tag |
 | imagePullSecrets | list | `[]` | Docker registry secret names as an array |
 | ingress | object | `{"annotations":{},"className":"atk-nginx","enabled":true,"extraHosts":[],"hostName":"hasura.k8s.orb.local","path":"/","pathType":"Prefix","tls":[]}` | Ingress configuration |
 | ingress.annotations | object | `{}` | Ingress annotations |
@@ -116,7 +115,18 @@ A Helm chart for Hasura GraphQL Engine
 | ingress.path | string | `"/"` | Ingress path |
 | ingress.pathType | string | `"Prefix"` | Ingress path type |
 | ingress.tls | list | `[]` | TLS configuration |
-| initContainers | list | `[{"command":["/usr/bin/wait-for-it","postgresql:5432","-t","120"],"image":"ghcr.io/settlemint/btp-waitforit:v7.7.10","imagePullPolicy":"IfNotPresent","name":"wait-for-postgresql","resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}}]` | Init containers |
+| initContainers | list | `[{"command":["/usr/bin/wait-for-it","postgresql:5432","-t","120"],"image":"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit:v7.7.10","imagePullPolicy":"IfNotPresent","name":"wait-for-postgresql","resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}}]` | Init containers |
+| initContainers[0] | string | `{"command":["/usr/bin/wait-for-it","postgresql:5432","-t","120"],"image":"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit:v7.7.10","imagePullPolicy":"IfNotPresent","name":"wait-for-postgresql","resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}}` | Container name |
+| initContainers[0].command | list | `["/usr/bin/wait-for-it","postgresql:5432","-t","120"]` | Container command |
+| initContainers[0].image | string | `"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit:v7.7.10"` | Container image |
+| initContainers[0].imagePullPolicy | string | `"IfNotPresent"` | Image pull policy |
+| initContainers[0].resources | object | `{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}` | Resource limits and requests |
+| initContainers[0].resources.limits | object | `{"cpu":"100m","memory":"64Mi"}` | Resource limits |
+| initContainers[0].resources.limits.cpu | string | `"100m"` | CPU limit |
+| initContainers[0].resources.limits.memory | string | `"64Mi"` | Memory limit |
+| initContainers[0].resources.requests | object | `{"cpu":"10m","memory":"32Mi"}` | Resource requests |
+| initContainers[0].resources.requests.cpu | string | `"10m"` | CPU request |
+| initContainers[0].resources.requests.memory | string | `"32Mi"` | Memory request |
 | jwtSecrets | object | `[]` | JWT secrets configuration |
 | labels | object | `{}` | Labels to add to all resources |
 | metadata | object | `{"databaseUrl":""}` | Metadata database configuration |
@@ -156,16 +166,14 @@ A Helm chart for Hasura GraphQL Engine
 | podLabels | object | `{}` | Pod labels |
 | podSecurityContext | object | `{}` | Pod security context |
 | priorityClassName | object | `""` | Priority class configuration |
-| redis | object | `{"cacheDb":"","cacheTtl":60,"cacheUrl":"","enabled":true,"host":"","password":"","port":"","rateLimitDb":"","rateLimitUrl":"","username":""}` | Redis configuration for caching and rate limiting |
+| redis | object | `{"cacheDb":"","cacheTtl":60,"enabled":true,"host":"","password":"","port":"","rateLimitDb":"","username":""}` | Redis configuration for caching and rate limiting |
 | redis.cacheDb | int | `""` | Redis database index for caching (uses global datastores if not set) |
 | redis.cacheTtl | int | `60` | Cache TTL in seconds |
-| redis.cacheUrl | string | `""` | Redis URL for query caching (overrides auto-generated URL) |
 | redis.enabled | bool | `true` | Enable Redis integration |
 | redis.host | string | `""` | Redis host (uses global datastores if not set) |
 | redis.password | string | `""` | Redis password (uses global datastores if not set) |
 | redis.port | int | `""` | Redis port (uses global datastores if not set) |
 | redis.rateLimitDb | int | `""` | Redis database index for rate limiting (uses global datastores if not set) |
-| redis.rateLimitUrl | string | `""` | Redis URL for rate limiting (overrides auto-generated URL) |
 | redis.username | string | `""` | Redis username (uses global datastores if not set) |
 | replicaCount | int | `1` | Number of Hasura replicas to deploy |
 | resources | object | `{}` | Resource limits and requests |

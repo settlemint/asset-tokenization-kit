@@ -2,6 +2,7 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { ClaimTopic } from "@/orpc/helpers/claims/create-claim";
 import { issueClaim } from "@/orpc/helpers/claims/issue-claim";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
+import { trustedIssuerMiddleware } from "@/orpc/middlewares/auth/trusted-issuer.middleware";
 import type { baseRouter } from "@/orpc/procedures/base.router";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
@@ -69,6 +70,23 @@ export const create = systemRouter.token.create
       requiredRoles: SYSTEM_PERMISSIONS.tokenCreate,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
+      },
+    })
+  )
+  .use(
+    trustedIssuerMiddleware({
+      selectTopics: (input) => {
+        const topics = new Set<string>();
+        if (input.isin) {
+          topics.add(ClaimTopic.isin);
+        }
+        if ("basePrice" in input) {
+          topics.add(ClaimTopic.basePrice);
+        }
+        if ("class" in input && "category" in input) {
+          topics.add(ClaimTopic.assetClassification);
+        }
+        return [...topics];
       },
     })
   )

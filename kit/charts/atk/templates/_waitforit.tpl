@@ -27,6 +27,13 @@ Usage: include "atk.waitforit.containers" (dict "context" $ "config" <values>)
   {{- end }}
 {{- end -}}
 {{- range $deps }}
+{{ $dependencyEnabled := true -}}
+{{- if hasKey . "enabled" -}}
+{{- $dependencyEnabled = index . "enabled" -}}
+{{- end -}}
+{{ $rawEndpoint := default "" .endpoint -}}
+{{- $resolvedEndpoint := trim (tpl $rawEndpoint $ctx) -}}
+{{- if and $dependencyEnabled (ne $resolvedEndpoint "") -}}
 - name: wait-for-{{ .name }}
   image: "{{ $repository }}:{{ $tag }}"
   imagePullPolicy: {{ $pullPolicy }}
@@ -39,12 +46,13 @@ Usage: include "atk.waitforit.containers" (dict "context" $ "config" <values>)
   {{- end }}
   command:
     - /usr/bin/wait-for-it
-    - "{{ tpl .endpoint $ctx }}"
+    - "{{ $resolvedEndpoint }}"
     - -t
     - "{{ $timeout }}"
   {{- if gt (len $resources) 0 }}
   resources:
 {{ toYaml $resources | nindent 4 }}
+  {{- end }}
   {{- end }}
 {{- end }}
 {{- end -}}

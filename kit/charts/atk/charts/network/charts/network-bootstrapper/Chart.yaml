@@ -2,8 +2,8 @@ apiVersion: v2
 name: network-bootstrapper
 description: A Helm chart for Kubernetes
 type: application
-version: 2.0.0-alpha.9
-appVersion: 2.0.0-alpha.9
+version: 2.0.0-alpha.17
+appVersion: 2.0.0-alpha.17
 maintainers:
   - name: SettleMint
     email: support@settlemint.com

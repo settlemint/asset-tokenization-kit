@@ -40,7 +40,7 @@ export function OtpSetupModal({ open, onClose }: OtpSetupModalProps) {
 
   const { mutate: enableTwoFactor } = useMutation({
     mutationFn: async () =>
-      authClient.twoFactor.enable({
+      await authClient.twoFactor.enable({
         password: undefined,
       }),
     onSuccess: async (data) => {
@@ -90,7 +90,7 @@ export function OtpSetupModal({ open, onClose }: OtpSetupModalProps) {
 
   const { mutate: verifyOtp, isPending: isVerifyingOtp } = useMutation({
     mutationFn: async (code: string) =>
-      authClient.twoFactor.verifyTotp({
+      await authClient.twoFactor.verifyTotp({
         code,
       }),
     onSuccess: async () => {

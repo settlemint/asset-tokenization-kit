@@ -168,7 +168,9 @@ describe("User list", () => {
       if (userWithoutKyc) {
         expect(userWithoutKyc.firstName).toBeUndefined();
         expect(userWithoutKyc.lastName).toBeUndefined();
-        expect(userWithoutKyc.name).toBe(testUser3.user.name); // Should use original name
+        expect(userWithoutKyc.name).toBe(
+          `${testUser3.user.firstName} ${testUser3.user.lastName}`
+        ); // Should use original name
         expect(userWithoutKyc.email).toBe(testUser3.user.email);
         expect(userWithoutKyc.wallet).toBe(testUser3Data.wallet);
       }

@@ -71,31 +71,33 @@ describe("isFundClass", () => {
   });
 
   describe("invalid values", () => {
-    test.each([
-      ["invalid-class", "string"],
-      ["premium", "string"],
-      ["", "empty string"],
-      [null, "null"],
-      [undefined, "undefined"],
-      [123, "number"],
-      [true, "boolean"],
-      [false, "boolean"],
-      [{}, "object"],
-      [[], "array"],
-      [Symbol("test"), "symbol"],
-      [() => {}, "function"],
-      [new Date(), "Date object"],
-      [/regex/, "RegExp"],
-      [Number.NaN, "NaN"],
-      [Infinity, "Infinity"],
-      [-Infinity, "-Infinity"],
-      ["INSTITUTIONAL", "uppercase variant"],
-      ["Retail", "capitalized variant"],
-      ["  retail  ", "string with spaces"],
-      ["retail\n", "string with newline"],
-    ])(
-      "should return false for invalid value %s - %s",
-      (value, _description) => {
+    const invalidFundClassValues: { value: unknown; label: string }[] = [
+      { value: "invalid-class", label: "string" },
+      { value: "premium", label: "string" },
+      { value: "", label: "empty string" },
+      { value: null, label: "null" },
+      { value: undefined, label: "undefined" },
+      { value: 123, label: "number" },
+      { value: true, label: "boolean" },
+      { value: false, label: "boolean" },
+      { value: {}, label: "object" },
+      { value: [], label: "array" },
+      { value: Symbol("test"), label: "symbol" },
+      { value: () => {}, label: "function" },
+      { value: new Date(), label: "Date object" },
+      { value: /regex/, label: "RegExp" },
+      { value: Number.NaN, label: "NaN" },
+      { value: Infinity, label: "Infinity" },
+      { value: -Infinity, label: "-Infinity" },
+      { value: "INSTITUTIONAL", label: "uppercase variant" },
+      { value: "Retail", label: "capitalized variant" },
+      { value: "  retail  ", label: "string with spaces" },
+      { value: "retail\n", label: "string with newline" },
+    ];
+
+    test.each<{ value: unknown; label: string }>(invalidFundClassValues)(
+      "should return false for invalid value $label",
+      ({ value }) => {
         expect(isFundClass(value)).toBe(false);
       }
     );
@@ -129,39 +131,44 @@ describe("getFundClass", () => {
   });
 
   describe("invalid values", () => {
-    test.each([
-      ["invalid-class", "Invalid option"],
-      ["premium", "Invalid option"],
-      ["", "Invalid option"],
-      [null, "Invalid option"],
-      [undefined, "Invalid option"],
-      [123, "Invalid option"],
-      [true, "Invalid option"],
-      [false, "Invalid option"],
-      [{}, "Invalid option"],
-      [[], "Invalid option"],
-      [Symbol("test"), "Invalid option"],
-      [() => {}, "Invalid option"],
-      [new Date(), "Invalid option"],
-      [/regex/, "Invalid option"],
-      [Number.NaN, "Invalid option"],
-      [Infinity, "Invalid option"],
-      [-Infinity, "Invalid option"],
-      ["INSTITUTIONAL", "Invalid option"],
-      ["Retail", "Invalid option"],
-      ["  retail  ", "Invalid option"],
-      ["retail\n", "Invalid option"],
-    ])("should throw for invalid value %s - %s", (value, _expectedError) => {
-      expect(() => getFundClass(value)).toThrow();
-      try {
-        getFundClass(value);
-      } catch (error) {
-        if (error instanceof Error) {
-          expect(error.message).toContain("Invalid option");
-          expect(error.message).toContain("INCOME_FOCUSED");
+    const invalidGetFundClassValues: { value: unknown; label: string }[] = [
+      { value: "invalid-class", label: "Invalid option" },
+      { value: "premium", label: "Invalid option" },
+      { value: "", label: "Invalid option" },
+      { value: null, label: "Invalid option" },
+      { value: undefined, label: "Invalid option" },
+      { value: 123, label: "Invalid option" },
+      { value: true, label: "Invalid option" },
+      { value: false, label: "Invalid option" },
+      { value: {}, label: "Invalid option" },
+      { value: [], label: "Invalid option" },
+      { value: Symbol("test"), label: "Invalid option" },
+      { value: () => {}, label: "Invalid option" },
+      { value: new Date(), label: "Invalid option" },
+      { value: /regex/, label: "Invalid option" },
+      { value: Number.NaN, label: "Invalid option" },
+      { value: Infinity, label: "Invalid option" },
+      { value: -Infinity, label: "Invalid option" },
+      { value: "INSTITUTIONAL", label: "Invalid option" },
+      { value: "Retail", label: "Invalid option" },
+      { value: "  retail  ", label: "Invalid option" },
+      { value: "retail\n", label: "Invalid option" },
+    ];
+
+    test.each<{ value: unknown; label: string }>(invalidGetFundClassValues)(
+      "should throw for invalid value $label",
+      ({ value }) => {
+        expect(() => getFundClass(value)).toThrow();
+        try {
+          getFundClass(value);
+        } catch (error) {
+          if (error instanceof Error) {
+            expect(error.message).toContain("Invalid option");
+            expect(error.message).toContain("INCOME_FOCUSED");
+          }
         }
       }
-    });
+    );
   });
 
   describe("error handling", () => {

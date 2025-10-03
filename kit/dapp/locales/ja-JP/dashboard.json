@@ -61,6 +61,28 @@
     },
     "title": "データをエクスポート"
   },
+  "identityMetrics": {
+    "title": "アイデンティティ概要",
+    "description": "現在のシステムアイデンティティの状態と登録",
+    "totalIdentities": "総アイデンティティ数",
+    "activeRegistrations": "アクティブな登録",
+    "pendingRegistrations": "保留中の登録"
+  },
+  "portfolioDetails": {
+    "name": "ポートフォリオ詳細",
+    "summary": {
+      "title": "ポートフォリオ概要",
+      "description": "ポートフォリオの総価値と保有資産を確認できます"
+    },
+    "breakdown": {
+      "title": "ポートフォリオ内訳",
+      "description": "資産タイプごとの内訳を表示します"
+    },
+    "performance": {
+      "title": "ポートフォリオのパフォーマンス",
+      "description": "時間の経過によるポートフォリオ価値の推移を追跡します"
+    }
+  },
   "filters": {
     "apply": "フィルターを適用",
     "assetType": "資産タイプ",
@@ -108,6 +130,14 @@
     "subtitle": "今日の資産の状況は以下の通りです",
     "title": "お帰りなさい、{{name}}"
   },
+  "assetOverview": {
+    "title": "資産概要",
+    "subtitle": "トークン化された資産を追跡・分析",
+    "emptyState": {
+      "title": "資産概要がここに表示されます",
+      "description": "最初のトークン化資産を作成すると、チャートと統計が表示されます"
+    }
+  },
   "widgets": {
     "alerts": {
       "dismiss": "閉じる",
@@ -140,6 +170,15 @@
         "transfer": "{{user}} が {{amount}} {{token}} を転送しました"
       },
       "viewAll": "すべてのアクティビティを表示"
+    },
+    "latestEvents": {
+      "columns": {
+        "event": "イベント",
+        "asset": "アセット",
+        "account": "アカウント",
+        "time": "時間",
+        "transaction": "トランザクション"
+      }
     }
   }
 }

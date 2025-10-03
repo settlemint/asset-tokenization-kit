@@ -8,6 +8,41 @@ import type { System } from "@/orpc/routes/system/routes/system.read.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { EthereumAddress } from "@atk/zod/ethereum-address";
 import type { getHeaders } from "@tanstack/react-start/server";
+import type { IncomingHttpHeaders } from "node:http";
+
+export type SourceHeaders = IncomingHttpHeaders | ReturnType<typeof getHeaders>;
+
+export type NormalizedHeaders = Record<string, string | string[]>;
+
+export function normalizeHeaders(headers: SourceHeaders): NormalizedHeaders {
+  const normalized: NormalizedHeaders = {};
+
+  if (headers instanceof Headers) {
+    headers.forEach((value, key) => {
+      const existing = normalized[key];
+      if (existing === undefined) {
+        normalized[key] = value;
+        return;
+      }
+
+      normalized[key] = Array.isArray(existing)
+        ? [...existing, value]
+        : [existing, value];
+    });
+
+    return normalized;
+  }
+
+  for (const [key, value] of Object.entries(headers)) {
+    if (value === undefined) {
+      continue;
+    }
+
+    normalized[key] = value;
+  }
+
+  return normalized;
+}
 
 /**
  * ORPC procedure context type definition.
@@ -31,10 +66,14 @@ export interface Context {
    * - CSRF protection tokens
    * - Custom application headers
    *
+   * Stored as a plain object keyed by lower-cased header names with either
+   * string or string[] values so downstream middleware can iterate without
+   * relying on environment-specific header implementations.
+   *
    * These headers are essential for authentication, content negotiation,
    * and maintaining request context across procedure calls.
    */
-  headers: ReturnType<typeof getHeaders>;
+  headers: NormalizedHeaders;
 
   /**
    * Authentication session information.

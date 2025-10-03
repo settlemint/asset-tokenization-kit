@@ -1,3 +1,4 @@
+import { claim } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.claim";
 import { create } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.create";
 import { read } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.read";
 import { topUp } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.top-up";
@@ -69,6 +70,16 @@ const routes = {
    * @see {@link ./routes/fixed-yield-schedule.withdraw} - Implementation details
    */
   withdraw,
+
+  /**
+   * Claim yield from a fixed yield schedule.
+   *
+   * Claims yield from an existing fixed yield schedule contract.
+   * Returns the transaction hash of the claim operation.
+   *
+   * @see {@link ./routes/fixed-yield-schedule.claim} - Implementation details
+   */
+  claim,
 };
 
 export default routes;

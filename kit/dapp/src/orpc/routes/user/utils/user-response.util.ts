@@ -59,6 +59,7 @@ export function buildUserWithIdentity({
   claims,
   isRegistered,
   context,
+  isAdmin,
 }: {
   userData: UserData;
   kyc: KycData | null;
@@ -66,6 +67,7 @@ export function buildUserWithIdentity({
   claims: IdentityClaim[];
   isRegistered: boolean;
   context: Required<Pick<Context, "system">>;
+  isAdmin?: boolean;
 }) {
   const roles = mapUserRoles(
     userData.wallet,
@@ -86,6 +88,7 @@ export function buildUserWithIdentity({
     identity,
     claims,
     isRegistered,
+    isAdmin,
     createdAt: userData.createdAt?.toISOString(),
     lastLoginAt: userData.lastLoginAt?.toISOString(),
   } as UserWithIdentity;

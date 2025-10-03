@@ -30,6 +30,7 @@ export function fetchToken(address: Address): Token {
     token.extensions = [];
     token.implementsERC3643 = false;
     token.implementsSMART = false;
+    token.isLaunched = false;
 
     token.save();
 
