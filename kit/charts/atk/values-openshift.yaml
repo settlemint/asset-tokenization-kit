@@ -36,53 +36,22 @@ graph-node:
   openShiftRoute:
     enabled: true
     host: graph.apps-crc.testing
-    wildcardPolicy: None
-    tls: null
-    to:
-      weight: 100
-    alternateBackends: []
-    routes:
-      - nameSuffix: ""
-        host: ""
-        path: /
-        targetPort: http-query
-        annotations: {}
-      - nameSuffix: ws
-        host: ""
-        path: /ws
-        targetPort: http-queryws
-        annotations:
-          haproxy.router.openshift.io/rewrite-target: /
-      - nameSuffix: admin
-        host: ""
-        path: /admin
-        targetPort: http-admin
-        annotations:
-          haproxy.router.openshift.io/rewrite-target: /
-      - nameSuffix: indexer
-        host: ""
-        path: /indexer
-        targetPort: http-status
-        annotations:
-          haproxy.router.openshift.io/rewrite-target: /
-      - nameSuffix: graphman
-        host: ""
-        path: /graphman
-        targetPort: http-status
-        annotations:
-          haproxy.router.openshift.io/rewrite-target: /
 
 # Portal security contexts for OpenShift
 portal:
   ingress:
     enabled: false
-# Transaction Signer security contexts for OpenShift
-txsigner:
   openShiftRoute:
     enabled: true
+    host: portal.apps-crc.testing
+# Transaction Signer security contexts for OpenShift
+txsigner:
+  ingress:
+    enabled: false
+
+  openShiftRoute:
+    enabled: false
     host: txsigner.apps-crc.testing
-    path: /
-    tls: null
 
 # ERPC security contexts for OpenShift
 erpc:
@@ -92,9 +61,6 @@ erpc:
   openShiftRoute:
     enabled: true
     host: rpc.apps-crc.testing
-    path: /
-    wildcardPolicy: None
-    tls: null
 
 # DApp security contexts for OpenShift
 dapp:
@@ -104,8 +70,23 @@ dapp:
   openShiftRoute:
     enabled: true
     host: dapp.apps-crc.testing
-    path: /
-    tls: null
+  secretEnv:
+    BETTER_AUTH_URL: "https://dapp.apps-crc.testing"
+    SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "https://explorer.apps-crc.testing/"
+
+ipfs:
+  ingress:
+    enabled: false
+  openShiftRoute:
+    enabled: true
+    host: ipfs-cluster.apps-crc.testing
+  ipfs:
+    config:
+      api:
+        httpHeaders:
+          accessControlAllowOrigin:
+            - https://ipfs-cluster.apps-crc.testing
+            - http://ipfs-cluster.apps-crc.testing
 
 # Support services security contexts for OpenShift
 support:
@@ -130,6 +111,8 @@ support:
           runAsUser: null
   minio:
     ingress:
+      enabled: false
+    consoleIngress:
       enabled: false
 
 observability:
@@ -178,18 +161,6 @@ hasura:
     enabled: true
     # -- (string) Route hostname
     host: hasura.apps-crc.testing
-    # -- (string) Route path
-    path: /
-    # -- (string) Wildcard policy
-    wildcardPolicy: None
-    # -- (object) TLS configuration
-    tls: null
-    # -- (object) Service weight configuration
-    to:
-      # -- (int) Weight for the service
-      weight: 100
-    # -- (list) Alternate backends
-    alternateBackends: []
 
 # Blockscout configuration for OpenShift
 blockscout:
@@ -200,8 +171,6 @@ blockscout:
     openShiftRoute:
       enabled: true
       host: explorer.apps-crc.testing
-      path: /api
-      wildcardPolicy: None
 
     env:
       API_URL: https://explorer.apps-crc.testing
@@ -214,8 +183,6 @@ blockscout:
     openShiftRoute:
       enabled: true
       host: explorer.apps-crc.testing
-      path: /
-      wildcardPolicy: None
     podSecurityContext:
       fsGroup: null
       runAsUser: null
@@ -224,4 +191,3 @@ blockscout:
       runAsUser: null
       runAsGroup: null
       fsGroup: null
-
