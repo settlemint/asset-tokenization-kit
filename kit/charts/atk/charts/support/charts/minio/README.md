@@ -1,6 +1,6 @@
 # minio
 
-![Version: 2.0.0-alpha.17](https://img.shields.io/badge/Version-2.0.0--alpha.17-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.17](https://img.shields.io/badge/AppVersion-2.0.0--alpha.17-informational?style=flat-square)
+![Version: 2.0.0-alpha.18](https://img.shields.io/badge/Version-2.0.0--alpha.18-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.18](https://img.shields.io/badge/AppVersion-2.0.0--alpha.18-informational?style=flat-square)
 
 A simple MinIO deployment for development environments
 
@@ -71,7 +71,7 @@ The following table lists the configurable parameters of this chart and their de
 |ignoreChartChecksums|bool|`false`|Disable automatic restart on secret/config changes to avoid unnecessary restarts in GitOps workflows|
 |image|object|-|MinIO image configuration|
 |image.pullPolicy|string|`"IfNotPresent"`|MinIO image pull policy|
-|image.repository|string|`"docker.io/minio/minio"`|MinIO image repository|
+|image.repository|string|`"harbor.settlemint.com/docker.io/minio/minio"`|MinIO image repository|
 |image.tag|string|`"RELEASE.2025-09-07T16-13-09Z"`|MinIO image tag (immutable tags are recommended)|
 |imagePullSecrets|list|-|Global Docker registry secret names as an array|
 |ingress|object|-|Ingress configuration for MinIO S3 API|
@@ -108,7 +108,7 @@ The following table lists the configurable parameters of this chart and their de
 |makeUserJob.securityContext|object|-|Security context for the makeUserJob|
 |mcImage|object|-|MinIO client image configuration|
 |mcImage.pullPolicy|string|`"IfNotPresent"`|MinIO client image pull policy|
-|mcImage.repository|string|`"docker.io/minio/minio"`|MinIO client image repository|
+|mcImage.repository|string|`"harbor.settlemint.com/docker.io/minio/minio"`|MinIO client image repository|
 |mcImage.tag|string|`"RELEASE.2025-09-07T16-13-09Z"`|MinIO client image tag|
 |metrics|object|-|Prometheus metrics configuration|
 |metrics.serviceMonitor|object|-|ServiceMonitor configuration for Prometheus Operator|
