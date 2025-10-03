@@ -55,7 +55,7 @@ export function RadioField({
 
   const renderCardRadio = () => (
     <RadioGroup
-      value={currentValue}
+      value={currentValue ?? ""}
       onValueChange={(value) => {
         field.handleChange(value);
         onSelect?.(value);
