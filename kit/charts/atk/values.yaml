@@ -152,11 +152,11 @@ network:
   # -- (object) Blockchain node configuration (validators and RPC)
   network-nodes:
     # -- (int) Total Besu pod replicas (validators + RPC). Used for resource summaries.
-    replicaCount: 6
+    replicaCount: 2
     # -- (int) Number of validator node replicas participating in consensus.
-    validatorReplicaCount: 4
+    validatorReplicaCount: 1
     # -- (int) Number of RPC node replicas provisioned via StatefulSet.
-    rpcReplicaCount: 2
+    rpcReplicaCount: 1
     # -- (object) Hyperledger Besu container image
     image:
       # -- (string) OCI registry and repository for Besu nodes

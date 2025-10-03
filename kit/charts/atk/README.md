@@ -290,14 +290,14 @@ The following table lists the configurable parameters of this chart and their de
 |network.network-nodes.initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|Repository for TCP check utility|
 |network.network-nodes.persistence|object|-|Persistent storage configuration for blockchain data|
 |network.network-nodes.persistence.size|string|`"20Gi"`|Storage size for each blockchain node (ledger data)|
-|network.network-nodes.replicaCount|int|`6`|Total Besu pod replicas (validators + RPC). Used for resource summaries.|
+|network.network-nodes.replicaCount|int|`2`|Total Besu pod replicas (validators + RPC). Used for resource summaries.|
 |network.network-nodes.resources|object|-|Resource requests and limits for Besu validator and RPC pods|
 |network.network-nodes.resources.limits.cpu|string|`"360m"`|CPU limit per Besu pod|
 |network.network-nodes.resources.limits.memory|string|`"1024Mi"`|Memory limit per Besu pod|
 |network.network-nodes.resources.requests.cpu|string|`"60m"`|CPU request per Besu pod|
 |network.network-nodes.resources.requests.memory|string|`"512Mi"`|Memory request per Besu pod|
-|network.network-nodes.rpcReplicaCount|int|`2`|Number of RPC node replicas provisioned via StatefulSet.|
-|network.network-nodes.validatorReplicaCount|int|`4`|Number of validator node replicas participating in consensus.|
+|network.network-nodes.rpcReplicaCount|int|`1`|Number of RPC node replicas provisioned via StatefulSet.|
+|network.network-nodes.validatorReplicaCount|int|`1`|Number of validator node replicas participating in consensus.|
 |observability|object|-|Observability stack (metrics, logging, tracing)|
 |observability.alloy|object|-|Grafana Alloy for telemetry pipeline|
 |observability.alloy.alloy|object|-|Alloy agent configuration|
@@ -3738,7 +3738,7 @@ The following table lists the configurable parameters of this chart and their de
 | ipfs.cluster | 1 | 60m | 360m | 256Mi | 512Mi | - |
 | ipfs.ipfs | 1 | 150m | 900m | 512Mi | 1024Mi | - |
 | network.network-bootstrapper | 1 | 100m | 600m | 128Mi | 256Mi | - |
-| network.network-nodes | 6 | 60m (total %!f(int64=360)m) | 360m (total %!f(int64=2160)m) | 512Mi (total %!f(int64=3072)Mi) | 1024Mi (total %!f(int64=6144)Mi) | 20Gi |
+| network.network-nodes | 2 | 60m (total 120m) | 360m (total 720m) | 512Mi (total 1024Mi) | 1024Mi (total 2048Mi) | 20Gi |
 | network.network-nodes.compileGenesis | 1 | 100m | 600m | 128Mi | 256Mi | - |
 | observability.alloy.alloy | 1 | 120m | 720m | 512Mi | 1024Mi | - |
 | observability.grafana | 1 | 60m | 360m | 256Mi | 512Mi | - |
@@ -3759,24 +3759,15 @@ The following table lists the configurable parameters of this chart and their de
 | support.reloader | 1 | 20m | 120m | 64Mi | 128Mi | - |
 | txsigner | 1 | 60m | 360m | 192Mi | 384Mi | - |
 
-| **Totals** | - | 2.40 cores (2400m) | 16.80 cores (16800m) | 10504Mi (10.26Gi) | 21008Mi (20.52Gi) | - |
-
- 
-   
-   
-   
-   
+| **Totals** | - | 2.16 cores (2160m) | 15.36 cores (15360m) | 8456Mi (8.26Gi) | 16912Mi (16.52Gi) | - |
 
 ## Network Node Replica Breakdown
 
 | Workload | Replicas | Notes |
 |----------|----------|-------|
-| Validators | 4 | Primary consensus nodes |
-| RPC | 2 | Public JSON-RPC endpoints |
-| **Total Besu Pods** | 6 | Sum used for capacity planning |
-
-   
- 
+| Validators | 1 | Primary consensus nodes |
+| RPC | 1 | Public JSON-RPC endpoints |
+| **Total Besu Pods** | 2 | Sum used for capacity planning |
 
 ## Maintainers
 
