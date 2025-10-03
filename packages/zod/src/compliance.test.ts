@@ -97,8 +97,6 @@ describe("complianceParams", () => {
           "0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed",
         ],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       const result = validator.parse(validParams);
       expect(result.typeId).toBe("AddressBlockListComplianceModule");
@@ -114,8 +112,6 @@ describe("complianceParams", () => {
         typeId: "AddressBlockListComplianceModule" as const,
         values: ["0xinvalid", "not-an-address"],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       expect(() => validator.parse(invalidParams)).toThrow();
     });
@@ -125,8 +121,6 @@ describe("complianceParams", () => {
         typeId: "AddressBlockListComplianceModule" as const,
         values: [],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       expect(() => validator.parse(emptyParams)).not.toThrow();
     });
@@ -138,8 +132,6 @@ describe("complianceParams", () => {
         typeId: "CountryAllowListComplianceModule" as const,
         values: [840, 826, 250, 276], // US, GB, FR, DE as numeric codes
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       const result = validator.parse(validParams);
       expect(result.typeId).toBe("CountryAllowListComplianceModule");
@@ -151,8 +143,6 @@ describe("complianceParams", () => {
         typeId: "CountryAllowListComplianceModule" as const,
         values: [999, 1000, -1, 0], // Invalid numeric codes
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       expect(() => validator.parse(invalidParams)).toThrow();
     });
@@ -162,8 +152,6 @@ describe("complianceParams", () => {
         typeId: "CountryAllowListComplianceModule" as const,
         values: [],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       expect(() => validator.parse(emptyParams)).not.toThrow();
     });
@@ -175,8 +163,6 @@ describe("complianceParams", () => {
         typeId: "CountryBlockListComplianceModule" as const,
         values: [156, 643, 364], // CN, RU, IR as numeric codes
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       const result = validator.parse(validParams);
       expect(result.typeId).toBe("CountryBlockListComplianceModule");
@@ -193,8 +179,6 @@ describe("complianceParams", () => {
           "0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed",
         ],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       const result = validator.parse(validParams);
       expect(result.typeId).toBe("IdentityAllowListComplianceModule");
@@ -210,8 +194,6 @@ describe("complianceParams", () => {
         typeId: "IdentityAllowListComplianceModule" as const,
         values: ["0xinvalid", "not-an-address"],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       expect(() => validator.parse(invalidParams)).toThrow();
     });
@@ -221,8 +203,6 @@ describe("complianceParams", () => {
         typeId: "IdentityAllowListComplianceModule" as const,
         values: [],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       expect(() => validator.parse(emptyParams)).not.toThrow();
     });
@@ -237,8 +217,6 @@ describe("complianceParams", () => {
           "0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed",
         ],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       const result = validator.parse(validParams);
       expect(result.typeId).toBe("IdentityBlockListComplianceModule");
@@ -254,8 +232,6 @@ describe("complianceParams", () => {
         typeId: "IdentityBlockListComplianceModule" as const,
         values: ["0xinvalid", "not-an-address"],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       expect(() => validator.parse(invalidParams)).toThrow();
     });
@@ -265,8 +241,6 @@ describe("complianceParams", () => {
         typeId: "IdentityBlockListComplianceModule" as const,
         values: [],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       expect(() => validator.parse(emptyParams)).not.toThrow();
     });
@@ -285,8 +259,6 @@ describe("complianceParams", () => {
           ")",
         ],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       const result = validator.parse(validParams);
       expect(result.typeId).toBe("SMARTIdentityVerificationComplianceModule");
@@ -302,8 +274,6 @@ describe("complianceParams", () => {
         typeId: "SMARTIdentityVerificationComplianceModule" as const,
         values: [],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       const result = validator.parse(emptyParams);
       expect(result.typeId).toBe("SMARTIdentityVerificationComplianceModule");
@@ -317,16 +287,12 @@ describe("complianceParams", () => {
         typeId: "AddressBlockListComplianceModule" as const,
         values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
 
       const countryParams = {
         typeId: "CountryAllowListComplianceModule" as const,
         values: [840], // US as numeric code
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
 
       expect(() => validator.parse(addressParams)).not.toThrow();
@@ -339,8 +305,6 @@ describe("complianceParams", () => {
         typeId: "AddressBlockListComplianceModule" as const,
         values: [840, 826], // Numeric country codes instead of addresses
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       expect(() => validator.parse(wrongParams1)).toThrow();
 
@@ -349,8 +313,6 @@ describe("complianceParams", () => {
         typeId: "CountryAllowListComplianceModule" as const,
         values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"], // Address instead of numeric country codes
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       expect(() => validator.parse(wrongParams2)).toThrow();
 
@@ -359,8 +321,6 @@ describe("complianceParams", () => {
         typeId: "IdentityAllowListComplianceModule" as const,
         values: [{ nodeType: 0, value: 1n }], // Expression node instead of addresses
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       expect(() => validator.parse(wrongParams3)).toThrow();
 
@@ -369,8 +329,6 @@ describe("complianceParams", () => {
         typeId: "SMARTIdentityVerificationComplianceModule" as const,
         values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"], // Address instead of expression nodes
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       expect(() => validator.parse(wrongParams4)).toThrow();
     });
@@ -382,8 +340,6 @@ describe("complianceParams", () => {
         typeId: "AddressBlockListComplianceModule" as const,
         values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"],
         module: "0xinvalid", // Invalid address
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       expect(() => validator.parse(invalidModule)).toThrow();
     });
@@ -393,61 +349,17 @@ describe("complianceParams", () => {
         typeId: "AddressBlockListComplianceModule" as const,
         values: [],
         module: "71c7656ec7ab88b098defb751b7401b5f6d8976f", // Missing 0x
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       expect(() => validator.parse(invalidModule)).toThrow();
     });
 
-    it("should reject invalid params hash", () => {
-      const invalidParams = {
-        typeId: "CountryAllowListComplianceModule" as const,
-        values: [840], // US as numeric code
-        module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params: "0xinvalidhash", // Too short
-      };
-      expect(() => validator.parse(invalidParams)).toThrow();
-    });
-
-    it("should reject params without 0x prefix", () => {
-      const invalidParams = {
-        typeId: "CountryBlockListComplianceModule" as const,
-        values: [156], // CN as numeric code
-        module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef", // Missing 0x
-      };
-      expect(() => validator.parse(invalidParams)).toThrow();
-    });
-
-    it("should reject params with invalid hex characters", () => {
-      const invalidParams = {
-        typeId: "IdentityAllowListComplianceModule" as const,
-        values: [],
-        module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x123456789gabcdef1234567890abcdef1234567890abcdef1234567890abcdef", // 'g' is not hex
-      };
-      expect(() => validator.parse(invalidParams)).toThrow();
-    });
-
-    it("should reject null/undefined module or params", () => {
+    it("should reject null/undefined module", () => {
       const missingModule = {
         typeId: "AddressBlockListComplianceModule" as const,
         values: [],
         module: null,
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       expect(() => validator.parse(missingModule)).toThrow();
-
-      const missingParams = {
-        typeId: "AddressBlockListComplianceModule" as const,
-        values: [],
-        module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params: undefined,
-      };
-      expect(() => validator.parse(missingParams)).toThrow();
     });
 
     it("should normalize module addresses to checksum format", () => {
@@ -455,8 +367,6 @@ describe("complianceParams", () => {
         typeId: "AddressBlockListComplianceModule" as const,
         values: [],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f", // lowercase
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       const result = validator.parse(lowerCaseModule);
       expect(result.module).toBe("0x71C7656EC7ab88b098defB751B7401B5f6d8976F");
@@ -472,22 +382,16 @@ describe("complianceModulePair", () => {
       typeId: "AddressBlockListComplianceModule" as const,
       values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"],
       module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-      params:
-        "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
     };
     const countryPair = {
       typeId: "CountryAllowListComplianceModule" as const,
       values: [840, 826], // US, GB as numeric codes
       module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-      params:
-        "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
     };
     const smartPair = {
       typeId: "SMARTIdentityVerificationComplianceModule" as const,
       values: [],
       module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-      params:
-        "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
     };
 
     expect(() => validator.parse(addressPair)).not.toThrow();
@@ -504,8 +408,6 @@ describe("complianceModulePair", () => {
       typeId: "InvalidModule",
       values: [],
       module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-      params:
-        "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
     };
     expect(() => validator.parse(invalidPair)).toThrow();
   });
@@ -520,15 +422,11 @@ describe("complianceModulePairArray", () => {
         typeId: "AddressBlockListComplianceModule" as const,
         values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       },
       {
         typeId: "CountryAllowListComplianceModule" as const,
         values: [840, 826], // US, GB as numeric codes
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       },
     ];
 
@@ -554,15 +452,11 @@ describe("complianceModulePairArray", () => {
         typeId: "AddressBlockListComplianceModule" as const,
         values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       },
       {
         typeId: "InvalidModule",
         values: [],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       },
     ];
     expect(() => validator.parse(invalidPairs)).toThrow();
@@ -611,8 +505,6 @@ describe("type safety", () => {
         typeId: "AddressBlockListComplianceModule",
         values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       });
       expect(result.typeId).toBe("AddressBlockListComplianceModule");
       if (result.typeId === "AddressBlockListComplianceModule") {
@@ -626,8 +518,6 @@ describe("type safety", () => {
         typeId: "CountryAllowListComplianceModule",
         values: [840, 826], // US, GB as numeric codes
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       });
       expect(result.success).toBe(true);
       if (result.success) {
@@ -662,8 +552,6 @@ describe("integration with Zod schemas", () => {
         typeId: "AddressBlockListComplianceModule" as const,
         values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       },
     };
     expect(() => complianceConfigSchema.parse(validConfig)).not.toThrow();
@@ -674,8 +562,6 @@ describe("integration with Zod schemas", () => {
         typeId: "IdentityAllowListComplianceModule" as const,
         values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       },
     };
     expect(() =>
@@ -688,8 +574,6 @@ describe("integration with Zod schemas", () => {
         typeId: "InvalidModule",
         values: [],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       },
     };
     expect(() => complianceConfigSchema.parse(invalidConfig)).toThrow();
@@ -731,7 +615,7 @@ describe("Schema descriptions", () => {
       "Compliance module configuration with type-specific parameters"
     );
     expect(complianceModulePair().description).toBe(
-      "Compliance module pair with typeId and params"
+      "Compliance module pair with typeId and values"
     );
     expect(complianceModulePairArray().description).toBe(
       "Array of compliance module pairs for token initialization"
@@ -1029,8 +913,6 @@ describe("Edge cases and error handling", () => {
       const noTypeId = {
         values: [],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
       expect(() => complianceParams().parse(noTypeId)).toThrow();
     });
@@ -1054,31 +936,11 @@ describe("Edge cases and error handling", () => {
         typeId: "AddressBlockListComplianceModule" as const,
         values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"],
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
         extraField: "should be ignored",
       };
       const result = complianceParams().parse(withExtraFields);
       expect(result.typeId).toBe("AddressBlockListComplianceModule");
       expect((result as { extraField?: unknown }).extraField).toBeUndefined();
-    });
-
-    it("should handle params with invalid hex format", () => {
-      const invalidHex = {
-        typeId: "AddressBlockListComplianceModule" as const,
-        values: [],
-        module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params: "0xinvalidhex", // Invalid hex characters
-      };
-      expect(() => complianceParams().parse(invalidHex)).toThrow();
-
-      const noPrefix = {
-        typeId: "AddressBlockListComplianceModule" as const,
-        values: [],
-        module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params: "1234567890abcdef", // Missing 0x prefix
-      };
-      expect(() => complianceParams().parse(noPrefix)).toThrow();
     });
   });
 
@@ -1118,8 +980,6 @@ describe("Edge cases and error handling", () => {
           typeId: "AddressBlockListComplianceModule" as const,
           values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"],
           module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-          params:
-            "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
         },
         null, // Invalid item
       ];
@@ -1132,8 +992,6 @@ describe("Edge cases and error handling", () => {
           typeId: "CountryAllowListComplianceModule" as const,
           values: [840, "invalid"], // Invalid country code (mixed with string)
           module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-          params:
-            "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
         },
       ];
       expect(() => complianceModulePairArray().parse(nestedInvalid)).toThrow();
@@ -1145,15 +1003,11 @@ describe("Edge cases and error handling", () => {
           typeId: "CountryAllowListComplianceModule" as const,
           values: [840], // US as numeric code
           module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-          params:
-            "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
         },
         {
           typeId: "AddressBlockListComplianceModule" as const,
           values: ["0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed"],
           module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-          params:
-            "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
         },
       ];
       const result = complianceModulePairArray().parse(orderedArray);
@@ -1168,8 +1022,6 @@ describe("Edge cases and error handling", () => {
         typeId: "AddressBlockListComplianceModule" as const,
         values: [840, 826], // Numeric country codes for address module (should fail)
         module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-        params:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       };
 
       try {
@@ -1193,8 +1045,6 @@ describe("Edge cases and error handling", () => {
               typeId,
               values: [],
               module: "0x71c7656ec7ab88b098defb751b7401b5f6d8976f",
-              params:
-                "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
             };
             complianceParams().parse(testData);
             return true;

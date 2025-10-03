@@ -14,11 +14,7 @@ import type { ComplianceModuleDetailProps } from "@/components/compliance/detail
 import { ExpressionBuilder } from "@/components/expression-builder/expression-builder";
 import { validateUIExpression } from "@/components/expression-builder/expression-builder.utils";
 import { Button } from "@/components/ui/button";
-import { encodeExpressionParams } from "@/lib/compliance/encoding/encode-expression-params";
-import {
-  convertInfixToPostfix,
-  type ExpressionWithGroups,
-} from "@atk/zod/expression-node";
+import { type ExpressionWithGroups } from "@atk/zod/expression-node";
 import { UserIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -38,13 +34,10 @@ export function IdentityRestrictionModuleDetail({
     useState<ExpressionWithGroups>(initialValues?.values ?? []);
 
   const handleEnable = () => {
-    const expression = convertInfixToPostfix(expressionWithGroups) ?? [];
-    const encodedParams = encodeExpressionParams(expression);
     onEnable({
       typeId,
       module,
       values: expressionWithGroups,
-      params: encodedParams,
     });
   };
 
@@ -53,7 +46,6 @@ export function IdentityRestrictionModuleDetail({
       typeId,
       module,
       values: expressionWithGroups,
-      params: "",
     });
     onClose();
   };
