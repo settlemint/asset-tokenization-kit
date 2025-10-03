@@ -256,6 +256,12 @@ blockscout:
 graph-node:
   # -- (bool) Enable deployment of The Graph indexing protocol
   enabled: true
+  # -- (object) Override shared artifacts image configuration
+  global:
+    artifacts:
+      image:
+        # -- (string) OCI registry for shared Graph Node artifacts
+        registry: ghcr.io
   # -- (object) Graph Node container image
   image:
     # -- (string) OCI registry and repository for Graph Node
@@ -389,6 +395,11 @@ portal:
   image:
     # -- (string) OCI registry for Portal image
     registry: ghcr.io
+  # -- (object) Test pod image configuration
+  tests:
+    image:
+      # -- (string) OCI registry for Portal test utilities
+      registry: docker.io
   # -- (object) Init container for dependency checks
   initContainer:
     # -- (object) TCP check for database readiness
@@ -506,6 +517,11 @@ support:
   ingress-nginx:
     # -- (bool) Enable NGINX Ingress Controller deployment
     enabled: true
+    # -- (object) Global ingress-nginx image configuration
+    global:
+      image:
+        # -- (string) OCI registry for ingress-nginx assets
+        registry: registry.k8s.io
     # -- (int) Number of ingress controller replicas
     replicaCount: 1
     # -- (object) Ingress controller configuration
@@ -516,6 +532,16 @@ support:
       image:
         # -- (string) Official Kubernetes ingress-nginx controller image
         repository: registry.k8s.io/ingress-nginx/controller
+      # -- (object) OpenTelemetry sidecar image configuration
+      opentelemetry:
+        image:
+          # -- (string) OCI registry for OpenTelemetry collector
+          registry: registry.k8s.io
+      # -- (object) Patch job image configuration
+      patch:
+        image:
+          # -- (string) OCI registry for ingress-nginx patch job
+          registry: registry.k8s.io
   # -- (object) Stakater Reloader for automatic pod restarts on config changes
   reloader:
     # -- (bool) Enable Reloader deployment
@@ -631,6 +657,11 @@ observability:
       registry: registry.k8s.io
   # -- (object) VictoriaMetrics time-series database for metrics storage
   victoria-metrics-single:
+    # -- (object) Global VictoriaMetrics image configuration
+    global:
+      image:
+        # -- (string) OCI registry for VictoriaMetrics shared components
+        registry: docker.io
     # -- (object) VictoriaMetrics server configuration
     server:
       # -- (object) Persistent storage for metrics data
@@ -746,3 +777,7 @@ observability:
     image:
       # -- (string) OCI registry for node exporter
       registry: quay.io
+    kubeRBACProxy:
+      image:
+        # -- (string) OCI registry for kube-rbac-proxy sidecar
+        registry: quay.io
