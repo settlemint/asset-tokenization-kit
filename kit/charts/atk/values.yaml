@@ -146,11 +146,17 @@ network:
         memory: "128Mi"
       limits:
         # -- (string) CPU limit for bootstrapper pods
-        cpu: "250m"
+        cpu: "600m"
         # -- (string) Memory limit for bootstrapper pods
         memory: "256Mi"
   # -- (object) Blockchain node configuration (validators and RPC)
   network-nodes:
+    # -- (int) Total Besu pod replicas (validators + RPC). Used for resource summaries.
+    replicaCount: 6
+    # -- (int) Number of validator node replicas participating in consensus.
+    validatorReplicaCount: 4
+    # -- (int) Number of RPC node replicas provisioned via StatefulSet.
+    rpcReplicaCount: 2
     # -- (object) Hyperledger Besu container image
     image:
       # -- (string) OCI registry and repository for Besu nodes
@@ -167,14 +173,14 @@ network:
     resources:
       requests:
         # -- (string) CPU request per Besu pod
-        cpu: "75m"
+        cpu: "60m"
         # -- (string) Memory request per Besu pod
-        memory: "1280Mi"
+        memory: "512Mi"
       limits:
         # -- (string) CPU limit per Besu pod
-        cpu: "1500m"
+        cpu: "360m"
         # -- (string) Memory limit per Besu pod
-        memory: "2560Mi"
+        memory: "1024Mi"
     # -- (object) Persistent storage configuration for blockchain data
     persistence:
       # -- (string) Storage size for each blockchain node (ledger data)
@@ -189,7 +195,7 @@ network:
           memory: "128Mi"
         limits:
           # -- (string) CPU limit for genesis compilation
-          cpu: "250m"
+          cpu: "600m"
           # -- (string) Memory limit for genesis compilation
           memory: "256Mi"
 
@@ -219,14 +225,14 @@ erpc:
   resources:
     requests:
       # -- (string) CPU request for ERPC pods
-      cpu: "250m"
+      cpu: "60m"
       # -- (string) Memory request for ERPC pods
-      memory: "1024Mi"
+      memory: "256Mi"
     limits:
       # -- (string) CPU limit for ERPC pods
-      cpu: "1000m"
+      cpu: "360m"
       # -- (string) Memory limit for ERPC pods
-      memory: "2048Mi"
+      memory: "512Mi"
   # -- (object) Ingress configuration for exposing RPC endpoint
   ingress:
     # -- (bool) Enable ingress for external RPC access
@@ -284,14 +290,14 @@ blockscout:
     resources:
       requests:
         # -- (string) CPU request for Blockscout backend pods
-        cpu: "150m"
+        cpu: "100m"
         # -- (string) Memory request for Blockscout backend pods
-        memory: "1280Mi"
+        memory: "640Mi"
       limits:
         # -- (string) CPU limit for Blockscout backend pods
-        cpu: "1500m"
+        cpu: "600m"
         # -- (string) Memory limit for Blockscout backend pods
-        memory: "2560Mi"
+        memory: "1280Mi"
   # -- (object) Blockscout frontend service configuration
   frontend:
     # -- (bool) Enable Blockscout frontend deployment
@@ -312,14 +318,14 @@ blockscout:
     resources:
       requests:
         # -- (string) CPU request for Blockscout frontend pods
-        cpu: "120m"
+        cpu: "60m"
         # -- (string) Memory request for Blockscout frontend pods
-        memory: "768Mi"
+        memory: "320Mi"
       limits:
         # -- (string) CPU limit for Blockscout frontend pods
-        cpu: "600m"
+        cpu: "360m"
         # -- (string) Memory limit for Blockscout frontend pods
-        memory: "1536Mi"
+        memory: "640Mi"
 
 # -- (object) The Graph Node configuration for blockchain indexing
 graph-node:
@@ -351,14 +357,14 @@ graph-node:
   resources:
     requests:
       # -- (string) CPU request for Graph Node pods
-      cpu: "100m"
+      cpu: "60m"
       # -- (string) Memory request for Graph Node pods
-      memory: "1536Mi"
+      memory: "512Mi"
     limits:
       # -- (string) CPU limit for Graph Node pods
-      cpu: "1000m"
+      cpu: "360m"
       # -- (string) Memory limit for Graph Node pods
-      memory: "3072Mi"
+      memory: "1024Mi"
   # -- (object) Ingress configuration for Graph Node API
   ingress:
     # -- (bool) Enable ingress for subgraph queries
@@ -447,14 +453,14 @@ hasura:
   resources:
     requests:
       # -- (string) CPU request for Hasura pods
-      cpu: "100m"
+      cpu: "80m"
       # -- (string) Memory request for Hasura pods
-      memory: "1024Mi"
+      memory: "384Mi"
     limits:
       # -- (string) CPU limit for Hasura pods
-      cpu: "1000m"
+      cpu: "480m"
       # -- (string) Memory limit for Hasura pods
-      memory: "2048Mi"
+      memory: "768Mi"
 
 # -- (object) IPFS Cluster deployment configuration
 ipfs:
@@ -469,14 +475,14 @@ ipfs:
     resources:
       requests:
         # -- (string) CPU request for cluster pods
-        cpu: "50m"
+        cpu: "60m"
         # -- (string) Memory request for cluster pods
-        memory: "1024Mi"
+        memory: "256Mi"
       limits:
         # -- (string) CPU limit for cluster pods
-        cpu: "1000m"
+        cpu: "360m"
         # -- (string) Memory limit for cluster pods
-        memory: "2048Mi"
+        memory: "512Mi"
   # -- (object) IPFS peer configuration overrides
   ipfs:
     image:
@@ -492,14 +498,14 @@ ipfs:
     resources:
       requests:
         # -- (string) CPU request for IPFS pods
-        cpu: "300m"
+        cpu: "150m"
         # -- (string) Memory request for IPFS pods
-        memory: "1024Mi"
+        memory: "512Mi"
       limits:
         # -- (string) CPU limit for IPFS pods
-        cpu: "600m"
+        cpu: "900m"
         # -- (string) Memory limit for IPFS pods
-        memory: "2048Mi"
+        memory: "1024Mi"
   # -- (object) Ingress configuration for the IPFS cluster endpoints
   ingress:
     # -- (bool) Enable ingress exposure for IPFS cluster endpoints
@@ -540,14 +546,14 @@ portal:
   resources:
     requests:
       # -- (string) CPU request for Portal pods
-      cpu: "100m"
+      cpu: "60m"
       # -- (string) Memory request for Portal pods
-      memory: "512Mi"
+      memory: "256Mi"
     limits:
       # -- (string) CPU limit for Portal pods
-      cpu: "1000m"
+      cpu: "360m"
       # -- (string) Memory limit for Portal pods
-      memory: "1024Mi"
+      memory: "512Mi"
   # -- (object) Ingress configuration for Portal API
   ingress:
     # -- (bool) Enable ingress exposure for Portal
@@ -583,14 +589,14 @@ txsigner:
   resources:
     requests:
       # -- (string) CPU request for txsigner pods
-      cpu: "150m"
+      cpu: "60m"
       # -- (string) Memory request for txsigner pods
-      memory: "256Mi"
+      memory: "192Mi"
     limits:
       # -- (string) CPU limit for txsigner pods
-      cpu: "500m"
+      cpu: "360m"
       # -- (string) Memory limit for txsigner pods
-      memory: "512Mi"
+      memory: "384Mi"
   # -- (object) Init container for dependency checks
   initContainer:
     # -- (object) TCP check for blockchain node readiness
@@ -639,7 +645,7 @@ dapp:
       memory: "1024Mi"
     limits:
       # -- (string) CPU limit for DApp pods
-      cpu: "1000m"
+      cpu: "3000m"
       # -- (string) Memory limit for DApp pods
       memory: "2048Mi"
   # -- (object) Environment variables for DApp runtime configuration (stored as secrets)
@@ -690,14 +696,14 @@ support:
       resources:
         requests:
           # -- (string) CPU request for ingress controller pods
-          cpu: "200m"
+          cpu: "120m"
           # -- (string) Memory request for ingress controller pods
-          memory: "512Mi"
+          memory: "256Mi"
         limits:
           # -- (string) CPU limit for ingress controller pods
-          cpu: "600m"
+          cpu: "720m"
           # -- (string) Memory limit for ingress controller pods
-          memory: "1024Mi"
+          memory: "512Mi"
       # -- (object) Ingress controller container image
       image:
         # -- (string) Official Kubernetes ingress-nginx controller image
@@ -724,14 +730,14 @@ support:
     resources:
       requests:
         # -- (string) CPU request for Reloader pods
-        cpu: "100m"
+        cpu: "20m"
         # -- (string) Memory request for Reloader pods
-        memory: "128Mi"
+        memory: "64Mi"
       limits:
         # -- (string) CPU limit for Reloader pods
-        cpu: "200m"
+        cpu: "120m"
         # -- (string) Memory limit for Reloader pods
-        memory: "256Mi"
+        memory: "128Mi"
   # -- (object) MinIO object storage configuration
   minio:
     # -- (bool) Enable MinIO object storage deployment
@@ -750,12 +756,12 @@ support:
         # -- (string) CPU request for MinIO pods
         cpu: "50m"
         # -- (string) Memory request for MinIO pods
-        memory: "512Mi"
+        memory: "256Mi"
       limits:
         # -- (string) CPU limit for MinIO pods
-        cpu: "500m"
+        cpu: "300m"
         # -- (string) Memory limit for MinIO pods
-        memory: "1024Mi"
+        memory: "512Mi"
     # -- (object) Ingress configuration for MinIO console
     ingress:
       # -- (bool) Enable ingress for MinIO web console
@@ -809,15 +815,15 @@ support:
       # -- (object) Resource requests
       requests:
         # -- (string) Memory request
-        memory: "128Mi"
+        memory: "64Mi"
         # -- (string) CPU request
-        cpu: "100m"
+        cpu: "40m"
       # -- (object) Resource limits
       limits:
         # -- (string) Memory limit
-        memory: "256Mi"
+        memory: "128Mi"
         # -- (string) CPU limit
-        cpu: "200m"
+        cpu: "240m"
   # -- (object) PostgreSQL database configuration
   postgresql:
     # -- (bool) Enable PostgreSQL deployment
@@ -839,14 +845,14 @@ observability:
     resources:
       requests:
         # -- (string) CPU request for Metrics Server pods
-        cpu: "200m"
+        cpu: "60m"
         # -- (string) Memory request for Metrics Server pods
-        memory: "256Mi"
+        memory: "128Mi"
       limits:
         # -- (string) CPU limit for Metrics Server pods
-        cpu: "400m"
+        cpu: "360m"
         # -- (string) Memory limit for Metrics Server pods
-        memory: "512Mi"
+        memory: "256Mi"
     # -- (object) Metrics Server container image
     image:
       # -- (string) Official Kubernetes metrics-server image
@@ -857,9 +863,9 @@ observability:
     resources:
       requests:
         # -- (string) CPU request for kube-state-metrics pods
-        cpu: "120m"
+        cpu: "40m"
         # -- (string) Memory request for kube-state-metrics pods
-        memory: "160Mi"
+        memory: "128Mi"
       limits:
         # -- (string) CPU limit for kube-state-metrics pods
         cpu: "240m"
@@ -888,14 +894,14 @@ observability:
       resources:
         requests:
           # -- (string) CPU request for VictoriaMetrics pods
-          cpu: "180m"
+          cpu: "60m"
           # -- (string) Memory request for VictoriaMetrics pods
-          memory: "320Mi"
+          memory: "256Mi"
         limits:
           # -- (string) CPU limit for VictoriaMetrics pods
-          cpu: "420m"
+          cpu: "360m"
           # -- (string) Memory limit for VictoriaMetrics pods
-          memory: "600Mi"
+          memory: "512Mi"
       # -- (object) VictoriaMetrics container image
       image:
         # -- (string) OCI registry for VictoriaMetrics
@@ -918,14 +924,14 @@ observability:
       resources:
         requests:
           # -- (string) CPU request for Loki single binary pods
-          cpu: "400m"
+          cpu: "200m"
           # -- (string) Memory request for Loki single binary pods
-          memory: "1024Mi"
+          memory: "512Mi"
         limits:
           # -- (string) CPU limit for Loki single binary pods
-          cpu: "800m"
+          cpu: "1200m"
           # -- (string) Memory limit for Loki single binary pods
-          memory: "2048Mi"
+          memory: "1024Mi"
       # -- (list) Additional environment variables for Loki
       extraEnv: []
     # -- (object) Memcached for Loki query result caching
@@ -945,7 +951,7 @@ observability:
           memory: "48Mi"
         limits:
           # -- (string) CPU limit for memcached pods
-          cpu: "120m"
+          cpu: "240m"
           # -- (string) Memory limit for memcached pods
           memory: "96Mi"
     # -- (object) Memcached exporter for Prometheus metrics
@@ -963,7 +969,7 @@ observability:
           memory: "24Mi"
         limits:
           # -- (string) CPU limit for memcached exporter pods
-          cpu: "25m"
+          cpu: "60m"
           # -- (string) Memory limit for memcached exporter pods
           memory: "48Mi"
     # -- (object) Kubernetes sidecar for dynamic configuration
@@ -976,14 +982,14 @@ observability:
       resources:
         requests:
           # -- (string) CPU request for sidecar pods
-          cpu: "25m"
+          cpu: "120m"
           # -- (string) Memory request for sidecar pods
-          memory: "36Mi"
+          memory: "96Mi"
         limits:
           # -- (string) CPU limit for sidecar pods
-          cpu: "75m"
+          cpu: "720m"
           # -- (string) Memory limit for sidecar pods
-          memory: "72Mi"
+          memory: "192Mi"
     # -- (object) Loki gateway for load balancing
     gateway:
       # -- (object) Gateway container image
@@ -994,14 +1000,14 @@ observability:
       resources:
         requests:
           # -- (string) CPU request for gateway pods
-          cpu: "50m"
+          cpu: "20m"
           # -- (string) Memory request for gateway pods
-          memory: "64Mi"
+          memory: "32Mi"
         limits:
           # -- (string) CPU limit for gateway pods
-          cpu: "150m"
+          cpu: "120m"
           # -- (string) Memory limit for gateway pods
-          memory: "160Mi"
+          memory: "64Mi"
   # -- (object) Grafana Alloy for telemetry pipeline
   alloy:
     # -- (object) Alloy agent configuration
@@ -1010,12 +1016,12 @@ observability:
       resources:
         requests:
           # -- (string) CPU request for Alloy pods
-          cpu: "200m"
+          cpu: "120m"
           # -- (string) Memory request for Alloy pods
           memory: "512Mi"
         limits:
           # -- (string) CPU limit for Alloy pods
-          cpu: "800m"
+          cpu: "720m"
           # -- (string) Memory limit for Alloy pods
           memory: "1024Mi"
     # -- (object) Alloy container image
@@ -1038,14 +1044,14 @@ observability:
     resources:
       requests:
         # -- (string) CPU request for Grafana pods
-        cpu: "180m"
+        cpu: "60m"
         # -- (string) Memory request for Grafana pods
-        memory: "384Mi"
+        memory: "256Mi"
       limits:
         # -- (string) CPU limit for Grafana pods
         cpu: "360m"
         # -- (string) Memory limit for Grafana pods
-        memory: "768Mi"
+        memory: "512Mi"
     # -- (object) Sidecar for dashboard provisioning
     sidecar:
       # -- (object) Sidecar container image
@@ -1077,14 +1083,14 @@ observability:
       resources:
         requests:
           # -- (string) CPU request for Tempo pods
-          cpu: "100m"
+          cpu: "60m"
           # -- (string) Memory request for Tempo pods
-          memory: "192Mi"
+          memory: "160Mi"
         limits:
           # -- (string) CPU limit for Tempo pods
-          cpu: "240m"
+          cpu: "360m"
           # -- (string) Memory limit for Tempo pods
-          memory: "384Mi"
+          memory: "320Mi"
   # -- (object) Prometheus Node Exporter for host metrics
   prometheus-node-exporter:
     # -- (object) Node exporter container image
@@ -1100,7 +1106,7 @@ observability:
         memory: "32Mi"
       limits:
         # -- (string) CPU limit for node exporter pods
-        cpu: "60m"
+        cpu: "180m"
         # -- (string) Memory limit for node exporter pods
         memory: "64Mi"
     kubeRBACProxy:

@@ -67,11 +67,11 @@ The following table lists the configurable parameters of this chart and their de
 |replicaCount|int|`1`|Number of Redis replicas (should be 1 for development)|
 |resources|object|-|Resources configuration|
 |resources.limits|object|-|Resource limits|
-|resources.limits.cpu|string|`"200m"`|CPU limit|
-|resources.limits.memory|string|`"256Mi"`|Memory limit|
+|resources.limits.cpu|string|`"240m"`|CPU limit|
+|resources.limits.memory|string|`"128Mi"`|Memory limit|
 |resources.requests|object|-|Resource requests|
-|resources.requests.cpu|string|`"100m"`|CPU request|
-|resources.requests.memory|string|`"128Mi"`|Memory request|
+|resources.requests.cpu|string|`"40m"`|CPU request|
+|resources.requests.memory|string|`"64Mi"`|Memory request|
 |service|object|-|Service configuration|
 |service.annotations|object|-|Service annotations|
 |service.labels|object|-|Service labels|

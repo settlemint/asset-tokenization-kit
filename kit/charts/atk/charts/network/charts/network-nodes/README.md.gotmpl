@@ -217,27 +217,28 @@
         {{- end -}}
       {{- end -}}
       {{- $storageDisplay := $storage -}}
-      {{- if and (ne $storage "-") (gt $replicas 1) (gt $storageMi 0.0) -}}
-        {{- $total := mul $storageMi (float64 $replicas) -}}
+      {{- $hasStorage := and (ne $storage "-") (gt $replicas 1) (kindIs "float64" $storageMi) (gt $storageMi 0.0) -}}
+      {{- $totalStorage := 0.0 -}}
+      {{- if $hasStorage -}}
+        {{- $totalStorage = mul $storageMi (float64 $replicas) -}}
         {{- if regexMatch "(?i)Gi$" (trim $storage) -}}
-          {{- $totalGi := div $total 1024 -}}
+          {{- $totalGi := div $totalStorage 1024 -}}
           {{- $totalGiStr := printf "%.2f" $totalGi | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
           {{- $storageDisplay = printf "%s (total %sGi)" $storage $totalGiStr -}}
         {{- else -}}
-          {{- $storageDisplay = printf "%s (total %.0fMi)" $storage $total -}}
+          {{- $storageDisplay = printf "%s (total %.0fMi)" $storage $totalStorage -}}
         {{- end -}}
       {{- end -}}
       {{- $totalReqCpu := mul $reqCpuMilli (float64 $replicas) -}}
       {{- $totalLimCpu := mul $limCpuMilli (float64 $replicas) -}}
       {{- $totalReqMem := mul $reqMemMi (float64 $replicas) -}}
       {{- $totalLimMem := mul $limMemMi (float64 $replicas) -}}
-      {{- $totalStorage := mul $storageMi (float64 $replicas) -}}
       {{- if $agg -}}
         {{- if gt (float64 $totalReqCpu) 0.0 }}{{- $_ := set $agg "reqCpu" (add (index $agg "reqCpu") (float64 $totalReqCpu)) -}}{{- end -}}
         {{- if gt (float64 $totalLimCpu) 0.0 }}{{- $_ := set $agg "limCpu" (add (index $agg "limCpu") (float64 $totalLimCpu)) -}}{{- end -}}
         {{- if gt (float64 $totalReqMem) 0.0 }}{{- $_ := set $agg "reqMem" (add (index $agg "reqMem") (float64 $totalReqMem)) -}}{{- end -}}
         {{- if gt (float64 $totalLimMem) 0.0 }}{{- $_ := set $agg "limMem" (add (index $agg "limMem") (float64 $totalLimMem)) -}}{{- end -}}
-        {{- if gt (float64 $totalStorage) 0.0 }}{{- $_ := set $agg "storage" (add (index $agg "storage") (float64 $totalStorage)) -}}{{- end -}}
+        {{- if and $hasStorage (gt (float64 $totalStorage) 0.0) }}{{- $_ := set $agg "storage" (add (index $agg "storage") (float64 $totalStorage)) -}}{{- end -}}
       {{- end -}}
 {{- printf "| %s | %d | %s | %s | %s | %s | %s |\n" $name $replicas $reqCpuDisplay $limCpuDisplay $reqMemDisplay $limMemDisplay $storageDisplay -}}
     {{- end -}}
@@ -273,6 +274,25 @@ The following table lists the configurable parameters of this chart and their de
 {{ template "chart.valuesSection" . }}
 
 {{ template "chart.resourcesTable" . }}
+
+{{ $vals := fromYaml (toYaml .ChartValues) }}
+{{ with $vals }}
+{{ $validators := int (default 0 (index . "validatorReplicaCount")) }}
+{{ $rpc := int (default 0 (index . "rpcReplicaCount")) }}
+{{ $total := add $validators $rpc }}
+{{ if or (gt $validators 0) (gt $rpc 0) }}
+
+## Replica Breakdown
+
+| Workload | Replicas | Notes |
+|----------|----------|-------|
+| Validators | {{ $validators }} | StatefulSet `besu-node-validator` |
+| RPC | {{ $rpc }} | StatefulSet `besu-node-rpc` |
+| **Total Besu Pods** | {{ $total }} | Validators + RPC |
+
+{{ end }}
+
+{{- end -}}
 
 {{ template "chart.maintainersSection" . }}
 

@@ -118,7 +118,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.tcpCheck.image.tag|string|`"v7.7.10"`|Image tag for the tcp-check utility.|
 |initContainer.tcpCheck.resources|object|-|Resource requests and limits for the tcp-check init container.|
 |initContainer.tcpCheck.resources.limits|object|-|Maximum resource limits.|
-|initContainer.tcpCheck.resources.limits.cpu|string|`"100m"`|CPU limit.|
+|initContainer.tcpCheck.resources.limits.cpu|string|`"300m"`|CPU limit.|
 |initContainer.tcpCheck.resources.limits.memory|string|`"64Mi"`|Memory limit.|
 |initContainer.tcpCheck.resources.requests|object|-|Minimum resource requests.|
 |initContainer.tcpCheck.resources.requests.cpu|string|`"10m"`|CPU request.|
@@ -257,7 +257,12 @@ The following table lists the configurable parameters of this chart and their de
 |rbac|object|-|RBAC configuration controlling Role/RoleBinding creation for accessing Besu artifacts.|
 |rbac.create|bool|`true`|Create Role and RoleBinding granting pods read access to ConfigMaps/Secrets.|
 |readinessProbe|object|-|Readiness probe configuration signalling when pods can accept traffic.|
+|replicaCount|int|`6`|Total number of Besu pods (validators + RPC). Used for documentation summaries.|
 |resources|object|-|CPU and memory requests or limits for Besu containers.|
+|resources.limits.cpu|string|`"180m"`|CPU limit per Besu pod (approx. 3x request to target ~33% utilization).|
+|resources.limits.memory|string|`"1024Mi"`|Memory limit per Besu pod|
+|resources.requests.cpu|string|`"60m"`|CPU request per Besu pod|
+|resources.requests.memory|string|`"512Mi"`|Memory request per Besu pod|
 |rpcReplicaCount|int|`2`|Number of RPC node replicas provisioned via StatefulSet.|
 |securityContext|object|-|Container-level security context applied to Besu containers.|
 |service|object|-|Kubernetes Service definition exposing Besu endpoints.|
@@ -275,7 +280,7 @@ The following table lists the configurable parameters of this chart and their de
 |serviceAccount.create|bool|`true`|Create a ServiceAccount resource automatically for the release.|
 |serviceAccount.name|string|`""`|Existing ServiceAccount name to reuse when creation is disabled.|
 |tolerations|list|-|Tolerations allowing pods to run on nodes with matching taints.|
-|validatorReplicaCount|int|`nil`|Number of validator node replicas participating in consensus. Leave unset to derive from global.validatorReplicaCount.|
+|validatorReplicaCount|int|`4`|Number of validator node replicas participating in consensus. Leave unset to derive from global.validatorReplicaCount.|
 |volumeMounts|list|-|Additional volume mounts applied to Besu containers.|
 |volumes|list|-|Extra volumes attached to Besu pods for custom configuration or secrets.|
 
@@ -283,9 +288,17 @@ The following table lists the configurable parameters of this chart and their de
 
 | Component | Replicas | Request CPU | Limit CPU | Request Memory | Limit Memory | Storage |
 |-----------|----------|-------------|-----------|----------------|--------------|---------|
-| initContainer.tcpCheck | 1 | 10m | 100m | 32Mi | 64Mi | - |
+| initContainer.tcpCheck | 1 | 10m | 300m | 32Mi | 64Mi | - |
 
-| **Totals** | - | 0.01 cores (10m) | 0.10 cores (100m) | 32Mi (0.03Gi) | 64Mi (0.06Gi) | - |
+| **Totals** | - | 0.01 cores (10m) | 0.30 cores (300m) | 32Mi (0.03Gi) | 64Mi (0.06Gi) | - |
+
+## Replica Breakdown
+
+| Workload | Replicas | Notes |
+|----------|----------|-------|
+| Validators | 4 | StatefulSet `besu-node-validator` |
+| RPC | 2 | StatefulSet `besu-node-rpc` |
+| **Total Besu Pods** | 6 | Validators + RPC |
 
 ## Maintainers
 

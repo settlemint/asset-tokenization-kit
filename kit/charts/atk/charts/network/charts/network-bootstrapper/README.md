@@ -50,7 +50,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.tcpCheck.image.tag|string|`"v7.7.10"`|Image tag for the tcp-check utility.|
 |initContainer.tcpCheck.resources|object|-|CPU and memory resource constraints for the tcp-check init container.|
 |initContainer.tcpCheck.resources.limits|object|-|Maximum resource limits for the tcp-check init container.|
-|initContainer.tcpCheck.resources.limits.cpu|string|`"100m"`|Maximum CPU allocation for the tcp-check init container.|
+|initContainer.tcpCheck.resources.limits.cpu|string|`"300m"`|Maximum CPU allocation for the tcp-check init container.|
 |initContainer.tcpCheck.resources.limits.memory|string|`"64Mi"`|Maximum memory allocation for the tcp-check init container.|
 |initContainer.tcpCheck.resources.requests|object|-|Minimum resource requests for the tcp-check init container.|
 |initContainer.tcpCheck.resources.requests.cpu|string|`"10m"`|Minimum CPU request for the tcp-check init container.|
@@ -103,9 +103,9 @@ The following table lists the configurable parameters of this chart and their de
 
 | Component | Replicas | Request CPU | Limit CPU | Request Memory | Limit Memory | Storage |
 |-----------|----------|-------------|-----------|----------------|--------------|---------|
-| initContainer.tcpCheck | 1 | 10m | 100m | 32Mi | 64Mi | - |
+| initContainer.tcpCheck | 1 | 10m | 300m | 32Mi | 64Mi | - |
 
-| **Totals** | - | 0.01 cores (10m) | 0.10 cores (100m) | 32Mi (0.03Gi) | 64Mi (0.06Gi) | - |
+| **Totals** | - | 0.01 cores (10m) | 0.30 cores (300m) | 32Mi (0.03Gi) | 64Mi (0.06Gi) | - |
 
 ## Maintainers
 

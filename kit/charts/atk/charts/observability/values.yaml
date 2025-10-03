@@ -16,7 +16,7 @@ metrics-server:
       cpu: 200m
       memory: 256Mi
     limits:
-      cpu: 400m
+      cpu: 1200m
       memory: 512Mi
   # -- Global Docker registry secret names as an array (list)
   imagePullSecrets: []
@@ -349,7 +349,7 @@ loki:
         cpu: 400m
         memory: 1024Mi
       limits:
-        cpu: 800m
+        cpu: 2400m
         memory: 2048Mi
     # extraEnv:
     #   # Keep a little bit lower than memory limits
@@ -561,7 +561,7 @@ alloy:
         cpu: 200m
         memory: 512Mi
       limits:
-        cpu: 800m
+        cpu: 2400m
         memory: 1024Mi
     # -- (bool) Enable usage reporting to Grafana Labs
     enableReporting: false
@@ -935,7 +935,7 @@ alloy:
         cpu: 180m
         memory: 384Mi
       limits:
-        cpu: 360m
+        cpu: 1080m
         memory: 768Mi
     # -- (object) Persistent volume configuration
     persistence:
@@ -1126,7 +1126,7 @@ tempo:
         cpu: 100m
         memory: 192Mi
       limits:
-        cpu: 240m
+        cpu: 720m
         memory: 384Mi
     # -- (list) Docker registry secret names as an array
     pullSecrets: []
@@ -1164,7 +1164,7 @@ tempo:
         cpu: 100m
         memory: 128Mi
       limits:
-        cpu: 200m
+        cpu: 600m
         memory: 256Mi
     # -- (list) Docker registry secret names as an array
     pullSecrets: []

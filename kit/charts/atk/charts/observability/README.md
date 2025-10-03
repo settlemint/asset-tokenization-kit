@@ -427,16 +427,16 @@ The following table lists the configurable parameters of this chart and their de
 
 | Component | Replicas | Request CPU | Limit CPU | Request Memory | Limit Memory | Storage |
 |-----------|----------|-------------|-----------|----------------|--------------|---------|
-| alloy.alloy | 1 | 200m | 800m | 512Mi | 1024Mi | - |
-| alloy.grafana | 1 | 180m | 360m | 384Mi | 768Mi | 1Gi |
-| loki.singleBinary | 1 | 400m | 800m | 1024Mi | 2048Mi | 10Gi |
-| metrics-server | 1 | 200m | 400m | 256Mi | 512Mi | - |
+| alloy.alloy | 1 | 200m | 2400m | 512Mi | 1024Mi | - |
+| alloy.grafana | 1 | 180m | 1080m | 384Mi | 768Mi | 1Gi |
+| loki.singleBinary | 1 | 400m | 2400m | 1024Mi | 2048Mi | 10Gi |
+| metrics-server | 1 | 200m | 1200m | 256Mi | 512Mi | - |
 | tempo | 1 | - | - | - | - | 10Gi |
-| tempo.tempo | 1 | 100m | 240m | 192Mi | 384Mi | - |
-| tempo.tempoQuery | 1 | 100m | 200m | 128Mi | 256Mi | - |
+| tempo.tempo | 1 | 100m | 720m | 192Mi | 384Mi | - |
+| tempo.tempoQuery | 1 | 100m | 600m | 128Mi | 256Mi | - |
 | victoria-metrics-single.server | 1 | - | - | - | - | 10Gi |
 
-| **Totals** | - | 1.18 cores (1180m) | 2.80 cores (2800m) | 2496Mi (2.44Gi) | 4992Mi (4.88Gi) | 31744Mi (31.00Gi) |
+| **Totals** | - | 1.18 cores (1180m) | 8.40 cores (8400m) | 2496Mi (2.44Gi) | 4992Mi (4.88Gi) | 31744Mi (31.00Gi) |
 
 ## Maintainers
 

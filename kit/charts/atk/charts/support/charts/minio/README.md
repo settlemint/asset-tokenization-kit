@@ -174,7 +174,7 @@ The following table lists the configurable parameters of this chart and their de
 |replicas|int|`16`|Number of MinIO pod replicas to run|
 |resources|object|-|Resource requests and limits for MinIO containers|
 |resources.requests|object|-|Resource requests for MinIO containers|
-|resources.requests.memory|string|`"16Gi"`|Memory request for MinIO containers|
+|resources.requests.memory|string|`"256Mi"`|Memory request for MinIO containers|
 |rootPassword|string|`""`|MinIO root password (admin password), auto-generated if not set|
 |rootUser|string|`""`|MinIO root user (admin username), auto-generated if not set|
 |runtimeClassName|string|`""`|Runtime class name for MinIO pods|

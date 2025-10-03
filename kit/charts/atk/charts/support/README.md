@@ -188,7 +188,7 @@ The following table lists the configurable parameters of this chart and their de
 |minio.replicas|int|`1`|Number of MinIO replicas (int)|
 |minio.resources|object|-|MinIO resource requests and limits (object)|
 |minio.resources.limits|object|-|Resource limits (object)|
-|minio.resources.limits.cpu|string|`"200m"`|CPU limit (string)|
+|minio.resources.limits.cpu|string|`"600m"`|CPU limit (string)|
 |minio.resources.limits.memory|string|`"512Mi"`|Memory limit (string)|
 |minio.resources.requests|object|-|Resource requests (object)|
 |minio.resources.requests.cpu|string|`"100m"`|CPU request (string)|
@@ -238,10 +238,10 @@ The following table lists the configurable parameters of this chart and their de
 |postgresql.postgresql_conf.work_mem|string|`"4MB"`|Amount of memory to be used by internal sort operations and hash tables|
 |postgresql.resources|object|-|Resource configuration for development (object)|
 |postgresql.resources.limits|object|-|Resource limits (object)|
-|postgresql.resources.limits.cpu|string|`"500m"`|CPU limit (string)|
-|postgresql.resources.limits.memory|string|`"1Gi"`|Memory limit (string)|
+|postgresql.resources.limits.cpu|string|`"480m"`|CPU limit (string)|
+|postgresql.resources.limits.memory|string|`"512Mi"`|Memory limit (string)|
 |postgresql.resources.requests|object|-|Resource requests (object)|
-|postgresql.resources.requests.cpu|string|`"100m"`|CPU request (string)|
+|postgresql.resources.requests.cpu|string|`"80m"`|CPU request (string)|
 |postgresql.resources.requests.memory|string|`"256Mi"`|Memory request (string)|
 |postgresql.service|object|-|Service configuration|
 |postgresql.service.port|int|`5432`|PostgreSQL service port|
@@ -439,7 +439,7 @@ The following table lists the configurable parameters of this chart and their de
 |minio.replicas|int|`16`|Number of MinIO pod replicas to run|
 |minio.resources|object|-|Resource requests and limits for MinIO containers|
 |minio.resources.requests|object|-|Resource requests for MinIO containers|
-|minio.resources.requests.memory|string|`"16Gi"`|Memory request for MinIO containers|
+|minio.resources.requests.memory|string|`"256Mi"`|Memory request for MinIO containers|
 |minio.rootPassword|string|`""`|MinIO root password (admin password), auto-generated if not set|
 |minio.rootUser|string|`""`|MinIO root user (admin username), auto-generated if not set|
 |minio.runtimeClassName|string|`""`|Runtime class name for MinIO pods|
@@ -512,10 +512,10 @@ The following table lists the configurable parameters of this chart and their de
 |postgresql.postgresql_conf.work_mem|string|`"4MB"`|Amount of memory to be used by internal sort operations and hash tables|
 |postgresql.resources|object|-|Resource configuration|
 |postgresql.resources.limits|object|-|Resource limits|
-|postgresql.resources.limits.cpu|string|`"500m"`|CPU limit|
-|postgresql.resources.limits.memory|string|`"1Gi"`|Memory limit|
+|postgresql.resources.limits.cpu|string|`"480m"`|CPU limit|
+|postgresql.resources.limits.memory|string|`"512Mi"`|Memory limit|
 |postgresql.resources.requests|object|-|Resource requests|
-|postgresql.resources.requests.cpu|string|`"100m"`|CPU request|
+|postgresql.resources.requests.cpu|string|`"80m"`|CPU request|
 |postgresql.resources.requests.memory|string|`"256Mi"`|Memory request|
 |postgresql.securityContext|object|-|Container security context|
 |postgresql.service|object|-|Service configuration|
@@ -574,11 +574,11 @@ The following table lists the configurable parameters of this chart and their de
 |redis.replicaCount|int|`1`|Number of Redis replicas (should be 1 for development)|
 |redis.resources|object|-|Resources configuration|
 |redis.resources.limits|object|-|Resource limits|
-|redis.resources.limits.cpu|string|`"200m"`|CPU limit|
-|redis.resources.limits.memory|string|`"256Mi"`|Memory limit|
+|redis.resources.limits.cpu|string|`"240m"`|CPU limit|
+|redis.resources.limits.memory|string|`"128Mi"`|Memory limit|
 |redis.resources.requests|object|-|Resource requests|
-|redis.resources.requests.cpu|string|`"100m"`|CPU request|
-|redis.resources.requests.memory|string|`"128Mi"`|Memory request|
+|redis.resources.requests.cpu|string|`"40m"`|CPU request|
+|redis.resources.requests.memory|string|`"64Mi"`|Memory request|
 |redis.service|object|-|Service configuration|
 |redis.service.annotations|object|-|Service annotations|
 |redis.service.labels|object|-|Service labels|
@@ -590,11 +590,11 @@ The following table lists the configurable parameters of this chart and their de
 
 | Component | Replicas | Request CPU | Limit CPU | Request Memory | Limit Memory | Storage |
 |-----------|----------|-------------|-----------|----------------|--------------|---------|
-| minio | 1 | 100m | 200m | 256Mi | 512Mi | 1Gi |
-| postgresql | 1 | 100m | 500m | 256Mi | 1Gi | 8Gi |
-| reloader.reloader.deployment | 1 | 100m | 200m | 128Mi | 256Mi | - |
+| minio | 1 | 100m | 600m | 256Mi | 512Mi | 1Gi |
+| postgresql | 1 | 80m | 480m | 256Mi | 512Mi | 8Gi |
+| reloader.reloader.deployment | 1 | 100m | 600m | 128Mi | 256Mi | - |
 
-| **Totals** | - | 0.30 cores (300m) | 0.90 cores (900m) | 640Mi (0.62Gi) | 1792Mi (1.75Gi) | 9216Mi (9.00Gi) |
+| **Totals** | - | 0.28 cores (280m) | 1.68 cores (1680m) | 640Mi (0.62Gi) | 1280Mi (1.25Gi) | 9216Mi (9.00Gi) |
 
 ## Maintainers
 

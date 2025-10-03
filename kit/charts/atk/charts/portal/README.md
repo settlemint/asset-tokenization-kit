@@ -91,7 +91,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.downloadAbi.outputDirectory|string|`"/shared-abis"`|Directory where ABI files are written before being shared with the portal container.|
 |initContainer.downloadAbi.resources|object|-|Resource requests and limits for the ABI download init container|
 |initContainer.downloadAbi.resources.limits|object|-|Resource limits for the ABI download init container|
-|initContainer.downloadAbi.resources.limits.cpu|string|`"150m"`|CPU limit for the ABI download init container|
+|initContainer.downloadAbi.resources.limits.cpu|string|`"450m"`|CPU limit for the ABI download init container|
 |initContainer.downloadAbi.resources.limits.memory|string|`"128Mi"`|Memory limit for the ABI download init container|
 |initContainer.downloadAbi.resources.requests|object|-|Resource requests for the ABI download init container|
 |initContainer.downloadAbi.resources.requests.cpu|string|`"25m"`|CPU request for the ABI download init container|
@@ -108,7 +108,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.tcpCheck.image.tag|string|`"v7.7.10"`|Image tag for the TCP check init container|
 |initContainer.tcpCheck.resources|object|-|Resource requests and limits for the TCP check init container|
 |initContainer.tcpCheck.resources.limits|object|-|Resource limits for the TCP check init container|
-|initContainer.tcpCheck.resources.limits.cpu|string|`"100m"`|CPU limit for the TCP check init container|
+|initContainer.tcpCheck.resources.limits.cpu|string|`"300m"`|CPU limit for the TCP check init container|
 |initContainer.tcpCheck.resources.limits.memory|string|`"64Mi"`|Memory limit for the TCP check init container|
 |initContainer.tcpCheck.resources.requests|object|-|Resource requests for the TCP check init container|
 |initContainer.tcpCheck.resources.requests.cpu|string|`"10m"`|CPU request for the TCP check init container|
@@ -268,10 +268,10 @@ The following table lists the configurable parameters of this chart and their de
 
 | Component | Replicas | Request CPU | Limit CPU | Request Memory | Limit Memory | Storage |
 |-----------|----------|-------------|-----------|----------------|--------------|---------|
-| initContainer.downloadAbi | 1 | 25m | 150m | 64Mi | 128Mi | - |
-| initContainer.tcpCheck | 1 | 10m | 100m | 32Mi | 64Mi | - |
+| initContainer.downloadAbi | 1 | 25m | 450m | 64Mi | 128Mi | - |
+| initContainer.tcpCheck | 1 | 10m | 300m | 32Mi | 64Mi | - |
 
-| **Totals** | - | 0.04 cores (35m) | 0.25 cores (250m) | 96Mi (0.09Gi) | 192Mi (0.19Gi) | - |
+| **Totals** | - | 0.04 cores (35m) | 0.75 cores (750m) | 96Mi (0.09Gi) | 192Mi (0.19Gi) | - |
 
 ## Maintainers
 

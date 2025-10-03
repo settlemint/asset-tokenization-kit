@@ -43,13 +43,13 @@ postgresql:
       # -- Memory request (string)
       memory: "256Mi"
       # -- CPU request (string)
-      cpu: "100m"
+      cpu: "80m"
     # -- Resource limits (object)
     limits:
       # -- Memory limit (string)
-      memory: "1Gi"
+      memory: "512Mi"
       # -- CPU limit (string)
-      cpu: "500m"
+      cpu: "480m"
 
   # -- Persistence configuration (object)
   persistence:
@@ -526,7 +526,7 @@ reloader:
           cpu: 100m
           memory: 128Mi
         limits:
-          cpu: 200m
+          cpu: 600m
           memory: 256Mi
 
 # -- MinIO configuration (object)
@@ -568,7 +568,7 @@ minio:
       # -- Memory limit (string)
       memory: 512Mi
       # -- CPU limit (string)
-      cpu: 200m
+      cpu: 600m
 
   # -- (list) Automatic bucket creation
   buckets:

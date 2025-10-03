@@ -72,7 +72,7 @@ The following table lists the configurable parameters of this chart and their de
 |blockscout.initContainer.tcpCheck.resources.dependencies[0]|string|`{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"blockscout\" \"local\" $.Values.postgresql) }}","name":"postgresql"}`|Dependency name|
 |blockscout.initContainer.tcpCheck.resources.dependencies[0].endpoint|string|`"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"blockscout\" \"local\" $.Values.postgresql) }}"`|Dependency endpoint to check|
 |blockscout.initContainer.tcpCheck.resources.limits|object|-|Resource limits for TCP check container|
-|blockscout.initContainer.tcpCheck.resources.limits.cpu|string|`"100m"`|CPU limit for TCP check container|
+|blockscout.initContainer.tcpCheck.resources.limits.cpu|string|`"300m"`|CPU limit for TCP check container|
 |blockscout.initContainer.tcpCheck.resources.limits.memory|string|`"64Mi"`|Memory limit for TCP check container|
 |blockscout.initContainer.tcpCheck.resources.requests|object|-|Resource requests for TCP check container|
 |blockscout.initContainer.tcpCheck.resources.requests.cpu|string|`"10m"`|CPU request for TCP check container|
@@ -239,9 +239,9 @@ The following table lists the configurable parameters of this chart and their de
 
 | Component | Replicas | Request CPU | Limit CPU | Request Memory | Limit Memory | Storage |
 |-----------|----------|-------------|-----------|----------------|--------------|---------|
-| blockscout.initContainer.tcpCheck | 1 | 10m | 100m | 32Mi | 64Mi | - |
+| blockscout.initContainer.tcpCheck | 1 | 10m | 300m | 32Mi | 64Mi | - |
 
-| **Totals** | - | 0.01 cores (10m) | 0.10 cores (100m) | 32Mi (0.03Gi) | 64Mi (0.06Gi) | - |
+| **Totals** | - | 0.01 cores (10m) | 0.30 cores (300m) | 32Mi (0.03Gi) | 64Mi (0.06Gi) | - |
 
 ## Maintainers
 

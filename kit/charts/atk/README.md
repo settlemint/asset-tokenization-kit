@@ -105,10 +105,10 @@ The following table lists the configurable parameters of this chart and their de
 |blockscout.blockscout.openShiftRoute.enabled|bool|`false`|Enable OpenShift route|
 |blockscout.blockscout.openShiftRoute.host|string|`"explorer.k8s.orb.local"`|Hostname for OpenShift route|
 |blockscout.blockscout.resources|object|-|Resource requests and limits for Blockscout backend|
-|blockscout.blockscout.resources.limits.cpu|string|`"1500m"`|CPU limit for Blockscout backend pods|
-|blockscout.blockscout.resources.limits.memory|string|`"2560Mi"`|Memory limit for Blockscout backend pods|
-|blockscout.blockscout.resources.requests.cpu|string|`"150m"`|CPU request for Blockscout backend pods|
-|blockscout.blockscout.resources.requests.memory|string|`"1280Mi"`|Memory request for Blockscout backend pods|
+|blockscout.blockscout.resources.limits.cpu|string|`"600m"`|CPU limit for Blockscout backend pods|
+|blockscout.blockscout.resources.limits.memory|string|`"1280Mi"`|Memory limit for Blockscout backend pods|
+|blockscout.blockscout.resources.requests.cpu|string|`"100m"`|CPU request for Blockscout backend pods|
+|blockscout.blockscout.resources.requests.memory|string|`"640Mi"`|Memory request for Blockscout backend pods|
 |blockscout.enabled|bool|`true`|Enable deployment of Blockscout blockchain explorer|
 |blockscout.frontend|object|-|Blockscout frontend service configuration|
 |blockscout.frontend.enabled|bool|`true`|Enable Blockscout frontend deployment|
@@ -119,10 +119,10 @@ The following table lists the configurable parameters of this chart and their de
 |blockscout.frontend.ingress.enabled|bool|`true`|Enable ingress for frontend|
 |blockscout.frontend.ingress.hostname|string|`"explorer.k8s.orb.local"`|Hostname for Blockscout frontend|
 |blockscout.frontend.resources|object|-|Resource requests and limits for Blockscout frontend pods|
-|blockscout.frontend.resources.limits.cpu|string|`"600m"`|CPU limit for Blockscout frontend pods|
-|blockscout.frontend.resources.limits.memory|string|`"1536Mi"`|Memory limit for Blockscout frontend pods|
-|blockscout.frontend.resources.requests.cpu|string|`"120m"`|CPU request for Blockscout frontend pods|
-|blockscout.frontend.resources.requests.memory|string|`"768Mi"`|Memory request for Blockscout frontend pods|
+|blockscout.frontend.resources.limits.cpu|string|`"360m"`|CPU limit for Blockscout frontend pods|
+|blockscout.frontend.resources.limits.memory|string|`"640Mi"`|Memory limit for Blockscout frontend pods|
+|blockscout.frontend.resources.requests.cpu|string|`"60m"`|CPU request for Blockscout frontend pods|
+|blockscout.frontend.resources.requests.memory|string|`"320Mi"`|Memory request for Blockscout frontend pods|
 |dapp|object|-|DApp frontend application configuration|
 |dapp.enabled|bool|`true`|Enable deployment of the Asset Tokenization Kit web application|
 |dapp.image|object|-|DApp container image configuration|
@@ -145,7 +145,7 @@ The following table lists the configurable parameters of this chart and their de
 |dapp.job.image|object|-|Job container image|
 |dapp.job.image.repository|string|`"docker.io/node"`|Node.js runtime image for migration scripts|
 |dapp.resources|object|-|Resource requests and limits for DApp pods|
-|dapp.resources.limits.cpu|string|`"1000m"`|CPU limit for DApp pods|
+|dapp.resources.limits.cpu|string|`"3000m"`|CPU limit for DApp pods|
 |dapp.resources.limits.memory|string|`"2048Mi"`|Memory limit for DApp pods|
 |dapp.resources.requests.cpu|string|`"100m"`|CPU request for DApp pods|
 |dapp.resources.requests.memory|string|`"1024Mi"`|Memory request for DApp pods|
@@ -168,10 +168,10 @@ The following table lists the configurable parameters of this chart and their de
 |erpc.openShiftRoute.enabled|bool|`false`|Enable OpenShift route instead of standard ingress|
 |erpc.openShiftRoute.host|string|`"rpc.k8s.orb.local"`|Hostname for OpenShift route|
 |erpc.resources|object|-|Resource requests and limits for ERPC pods|
-|erpc.resources.limits.cpu|string|`"1000m"`|CPU limit for ERPC pods|
-|erpc.resources.limits.memory|string|`"2048Mi"`|Memory limit for ERPC pods|
-|erpc.resources.requests.cpu|string|`"250m"`|CPU request for ERPC pods|
-|erpc.resources.requests.memory|string|`"1024Mi"`|Memory request for ERPC pods|
+|erpc.resources.limits.cpu|string|`"360m"`|CPU limit for ERPC pods|
+|erpc.resources.limits.memory|string|`"512Mi"`|Memory limit for ERPC pods|
+|erpc.resources.requests.cpu|string|`"60m"`|CPU request for ERPC pods|
+|erpc.resources.requests.memory|string|`"256Mi"`|Memory request for ERPC pods|
 |erpc.tests|object|-|Test container image for ERPC health checks|
 |erpc.tests.image|object|-|Test image configuration|
 |erpc.tests.image.registry|string|`"docker.io"`|OCI registry for test utilities|
@@ -215,10 +215,10 @@ The following table lists the configurable parameters of this chart and their de
 |graph-node.openShiftRoute.enabled|bool|`false`|Enable OpenShift route|
 |graph-node.openShiftRoute.host|string|`"graph.k8s.orb.local"`|Hostname for OpenShift route|
 |graph-node.resources|object|-|Resource requests and limits for Graph Node StatefulSet|
-|graph-node.resources.limits.cpu|string|`"1000m"`|CPU limit for Graph Node pods|
-|graph-node.resources.limits.memory|string|`"3072Mi"`|Memory limit for Graph Node pods|
-|graph-node.resources.requests.cpu|string|`"100m"`|CPU request for Graph Node pods|
-|graph-node.resources.requests.memory|string|`"1536Mi"`|Memory request for Graph Node pods|
+|graph-node.resources.limits.cpu|string|`"360m"`|CPU limit for Graph Node pods|
+|graph-node.resources.limits.memory|string|`"1024Mi"`|Memory limit for Graph Node pods|
+|graph-node.resources.requests.cpu|string|`"60m"`|CPU request for Graph Node pods|
+|graph-node.resources.requests.memory|string|`"512Mi"`|Memory request for Graph Node pods|
 |hasura|object|-|Hasura GraphQL Engine configuration|
 |hasura.enabled|bool|`true`|Enable deployment of Hasura GraphQL engine|
 |hasura.fullnameOverride|string|`"hasura"`|Override fullname to simplify service discovery|
@@ -233,18 +233,18 @@ The following table lists the configurable parameters of this chart and their de
 |hasura.ingress.hostName|string|`"hasura.k8s.orb.local"`|Hostname for Hasura GraphQL endpoint. Update for your environment.|
 |hasura.ingress.ingressClassName|string|`"atk-nginx"`|IngressClass for Hasura ingress resources (Kubernetes 1.19+ standard)|
 |hasura.resources|object|-|Resource requests and limits for Hasura deployment|
-|hasura.resources.limits.cpu|string|`"1000m"`|CPU limit for Hasura pods|
-|hasura.resources.limits.memory|string|`"2048Mi"`|Memory limit for Hasura pods|
-|hasura.resources.requests.cpu|string|`"100m"`|CPU request for Hasura pods|
-|hasura.resources.requests.memory|string|`"1024Mi"`|Memory request for Hasura pods|
+|hasura.resources.limits.cpu|string|`"480m"`|CPU limit for Hasura pods|
+|hasura.resources.limits.memory|string|`"768Mi"`|Memory limit for Hasura pods|
+|hasura.resources.requests.cpu|string|`"80m"`|CPU request for Hasura pods|
+|hasura.resources.requests.memory|string|`"384Mi"`|Memory request for Hasura pods|
 |ipfs|object|-|IPFS Cluster deployment configuration|
 |ipfs.cluster|object|-|IPFS Cluster control-plane configuration overrides|
 |ipfs.cluster.image.registry|string|`"docker.io"`|OCI registry for the cluster control-plane image|
 |ipfs.cluster.resources|object|-|Resource requests and limits for IPFS Cluster control-plane pods|
-|ipfs.cluster.resources.limits.cpu|string|`"1000m"`|CPU limit for cluster pods|
-|ipfs.cluster.resources.limits.memory|string|`"2048Mi"`|Memory limit for cluster pods|
-|ipfs.cluster.resources.requests.cpu|string|`"50m"`|CPU request for cluster pods|
-|ipfs.cluster.resources.requests.memory|string|`"1024Mi"`|Memory request for cluster pods|
+|ipfs.cluster.resources.limits.cpu|string|`"360m"`|CPU limit for cluster pods|
+|ipfs.cluster.resources.limits.memory|string|`"512Mi"`|Memory limit for cluster pods|
+|ipfs.cluster.resources.requests.cpu|string|`"60m"`|CPU request for cluster pods|
+|ipfs.cluster.resources.requests.memory|string|`"256Mi"`|Memory request for cluster pods|
 |ipfs.enabled|bool|`true`|Enable deployment of the IPFS cluster stack|
 |ipfs.ingress|object|-|Ingress configuration for the IPFS cluster endpoints|
 |ipfs.ingress.className|string|`"atk-nginx"`|Deprecated: Use `ingressClassName` instead. Will be removed in future versions.|
@@ -253,10 +253,10 @@ The following table lists the configurable parameters of this chart and their de
 |ipfs.ipfs|object|-|IPFS peer configuration overrides|
 |ipfs.ipfs.image.registry|string|`"docker.io"`|OCI registry for the Kubo image|
 |ipfs.ipfs.resources|object|-|Resource requests and limits for IPFS peer pods|
-|ipfs.ipfs.resources.limits.cpu|string|`"600m"`|CPU limit for IPFS pods|
-|ipfs.ipfs.resources.limits.memory|string|`"2048Mi"`|Memory limit for IPFS pods|
-|ipfs.ipfs.resources.requests.cpu|string|`"300m"`|CPU request for IPFS pods|
-|ipfs.ipfs.resources.requests.memory|string|`"1024Mi"`|Memory request for IPFS pods|
+|ipfs.ipfs.resources.limits.cpu|string|`"900m"`|CPU limit for IPFS pods|
+|ipfs.ipfs.resources.limits.memory|string|`"1024Mi"`|Memory limit for IPFS pods|
+|ipfs.ipfs.resources.requests.cpu|string|`"150m"`|CPU request for IPFS pods|
+|ipfs.ipfs.resources.requests.memory|string|`"512Mi"`|Memory request for IPFS pods|
 |ipfs.tests|object|-|Test pod image configuration|
 |network|object|-|Blockchain network infrastructure configuration|
 |network.enabled|bool|`true`|Enable deployment of the blockchain network (validators and RPC nodes)|
@@ -272,13 +272,13 @@ The following table lists the configurable parameters of this chart and their de
 |network.network-bootstrapper.initContainer.tcpCheck.image|object|-|Wait-for-it utility image for TCP checks|
 |network.network-bootstrapper.initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|Repository for TCP check utility|
 |network.network-bootstrapper.resources|object|-|Resource requests and limits for the bootstrapper job|
-|network.network-bootstrapper.resources.limits.cpu|string|`"250m"`|CPU limit for bootstrapper pods|
+|network.network-bootstrapper.resources.limits.cpu|string|`"600m"`|CPU limit for bootstrapper pods|
 |network.network-bootstrapper.resources.limits.memory|string|`"256Mi"`|Memory limit for bootstrapper pods|
 |network.network-bootstrapper.resources.requests.cpu|string|`"100m"`|CPU request for bootstrapper pods|
 |network.network-bootstrapper.resources.requests.memory|string|`"128Mi"`|Memory request for bootstrapper pods|
 |network.network-nodes|object|-|Blockchain node configuration (validators and RPC)|
 |network.network-nodes.compileGenesis.resources|object|-|Resource requests and limits for genesis compilation init container|
-|network.network-nodes.compileGenesis.resources.limits.cpu|string|`"250m"`|CPU limit for genesis compilation|
+|network.network-nodes.compileGenesis.resources.limits.cpu|string|`"600m"`|CPU limit for genesis compilation|
 |network.network-nodes.compileGenesis.resources.limits.memory|string|`"256Mi"`|Memory limit for genesis compilation|
 |network.network-nodes.compileGenesis.resources.requests.cpu|string|`"100m"`|CPU request for genesis compilation|
 |network.network-nodes.compileGenesis.resources.requests.memory|string|`"128Mi"`|Memory request for genesis compilation|
@@ -290,18 +290,21 @@ The following table lists the configurable parameters of this chart and their de
 |network.network-nodes.initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|Repository for TCP check utility|
 |network.network-nodes.persistence|object|-|Persistent storage configuration for blockchain data|
 |network.network-nodes.persistence.size|string|`"20Gi"`|Storage size for each blockchain node (ledger data)|
+|network.network-nodes.replicaCount|int|`6`|Total Besu pod replicas (validators + RPC). Used for resource summaries.|
 |network.network-nodes.resources|object|-|Resource requests and limits for Besu validator and RPC pods|
-|network.network-nodes.resources.limits.cpu|string|`"1500m"`|CPU limit per Besu pod|
-|network.network-nodes.resources.limits.memory|string|`"2560Mi"`|Memory limit per Besu pod|
-|network.network-nodes.resources.requests.cpu|string|`"75m"`|CPU request per Besu pod|
-|network.network-nodes.resources.requests.memory|string|`"1280Mi"`|Memory request per Besu pod|
+|network.network-nodes.resources.limits.cpu|string|`"360m"`|CPU limit per Besu pod|
+|network.network-nodes.resources.limits.memory|string|`"1024Mi"`|Memory limit per Besu pod|
+|network.network-nodes.resources.requests.cpu|string|`"60m"`|CPU request per Besu pod|
+|network.network-nodes.resources.requests.memory|string|`"512Mi"`|Memory request per Besu pod|
+|network.network-nodes.rpcReplicaCount|int|`2`|Number of RPC node replicas provisioned via StatefulSet.|
+|network.network-nodes.validatorReplicaCount|int|`4`|Number of validator node replicas participating in consensus.|
 |observability|object|-|Observability stack (metrics, logging, tracing)|
 |observability.alloy|object|-|Grafana Alloy for telemetry pipeline|
 |observability.alloy.alloy|object|-|Alloy agent configuration|
 |observability.alloy.alloy.resources|object|-|Resource requests and limits for Alloy|
-|observability.alloy.alloy.resources.limits.cpu|string|`"800m"`|CPU limit for Alloy pods|
+|observability.alloy.alloy.resources.limits.cpu|string|`"720m"`|CPU limit for Alloy pods|
 |observability.alloy.alloy.resources.limits.memory|string|`"1024Mi"`|Memory limit for Alloy pods|
-|observability.alloy.alloy.resources.requests.cpu|string|`"200m"`|CPU request for Alloy pods|
+|observability.alloy.alloy.resources.requests.cpu|string|`"120m"`|CPU request for Alloy pods|
 |observability.alloy.alloy.resources.requests.memory|string|`"512Mi"`|Memory request for Alloy pods|
 |observability.alloy.configReloader|object|-|Config reloader sidecar|
 |observability.alloy.configReloader.image|object|-|Config reloader image|
@@ -318,9 +321,9 @@ The following table lists the configurable parameters of this chart and their de
 |observability.grafana.ingress.hosts|list|-|Hostnames for Grafana access|
 |observability.grafana.resources|object|-|Resource requests and limits for Grafana pods|
 |observability.grafana.resources.limits.cpu|string|`"360m"`|CPU limit for Grafana pods|
-|observability.grafana.resources.limits.memory|string|`"768Mi"`|Memory limit for Grafana pods|
-|observability.grafana.resources.requests.cpu|string|`"180m"`|CPU request for Grafana pods|
-|observability.grafana.resources.requests.memory|string|`"384Mi"`|Memory request for Grafana pods|
+|observability.grafana.resources.limits.memory|string|`"512Mi"`|Memory limit for Grafana pods|
+|observability.grafana.resources.requests.cpu|string|`"60m"`|CPU request for Grafana pods|
+|observability.grafana.resources.requests.memory|string|`"256Mi"`|Memory request for Grafana pods|
 |observability.grafana.sidecar|object|-|Sidecar for dashboard provisioning|
 |observability.grafana.sidecar.image|object|-|Sidecar container image|
 |observability.grafana.sidecar.image.registry|string|`"docker.io"`|OCI registry for sidecar|
@@ -330,17 +333,17 @@ The following table lists the configurable parameters of this chart and their de
 |observability.kube-state-metrics.resources|object|-|Resource requests and limits for kube-state-metrics|
 |observability.kube-state-metrics.resources.limits.cpu|string|`"240m"`|CPU limit for kube-state-metrics pods|
 |observability.kube-state-metrics.resources.limits.memory|string|`"256Mi"`|Memory limit for kube-state-metrics pods|
-|observability.kube-state-metrics.resources.requests.cpu|string|`"120m"`|CPU request for kube-state-metrics pods|
-|observability.kube-state-metrics.resources.requests.memory|string|`"160Mi"`|Memory request for kube-state-metrics pods|
+|observability.kube-state-metrics.resources.requests.cpu|string|`"40m"`|CPU request for kube-state-metrics pods|
+|observability.kube-state-metrics.resources.requests.memory|string|`"128Mi"`|Memory request for kube-state-metrics pods|
 |observability.loki|object|-|Loki log aggregation system|
 |observability.loki.gateway|object|-|Loki gateway for load balancing|
 |observability.loki.gateway.image|object|-|Gateway container image|
 |observability.loki.gateway.image.registry|string|`"docker.io"`|OCI registry for gateway image|
 |observability.loki.gateway.resources|object|-|Resource requests and limits for Loki gateway pods|
-|observability.loki.gateway.resources.limits.cpu|string|`"150m"`|CPU limit for gateway pods|
-|observability.loki.gateway.resources.limits.memory|string|`"160Mi"`|Memory limit for gateway pods|
-|observability.loki.gateway.resources.requests.cpu|string|`"50m"`|CPU request for gateway pods|
-|observability.loki.gateway.resources.requests.memory|string|`"64Mi"`|Memory request for gateway pods|
+|observability.loki.gateway.resources.limits.cpu|string|`"120m"`|CPU limit for gateway pods|
+|observability.loki.gateway.resources.limits.memory|string|`"64Mi"`|Memory limit for gateway pods|
+|observability.loki.gateway.resources.requests.cpu|string|`"20m"`|CPU request for gateway pods|
+|observability.loki.gateway.resources.requests.memory|string|`"32Mi"`|Memory request for gateway pods|
 |observability.loki.loki|object|-|Loki server configuration|
 |observability.loki.loki.image|object|-|Loki container image|
 |observability.loki.loki.image.registry|string|`"docker.io"`|OCI registry for Loki|
@@ -349,7 +352,7 @@ The following table lists the configurable parameters of this chart and their de
 |observability.loki.memcached.image|object|-|Memcached container image|
 |observability.loki.memcached.image.repository|string|`"docker.io/memcached"`|Memcached image repository|
 |observability.loki.memcached.resources|object|-|Resource requests and limits for Loki memcached pods|
-|observability.loki.memcached.resources.limits.cpu|string|`"120m"`|CPU limit for memcached pods|
+|observability.loki.memcached.resources.limits.cpu|string|`"240m"`|CPU limit for memcached pods|
 |observability.loki.memcached.resources.limits.memory|string|`"96Mi"`|Memory limit for memcached pods|
 |observability.loki.memcached.resources.requests.cpu|string|`"40m"`|CPU request for memcached pods|
 |observability.loki.memcached.resources.requests.memory|string|`"48Mi"`|Memory request for memcached pods|
@@ -357,7 +360,7 @@ The following table lists the configurable parameters of this chart and their de
 |observability.loki.memcachedExporter.image|object|-|Memcached exporter image|
 |observability.loki.memcachedExporter.image.repository|string|`"docker.io/prom/memcached-exporter"`|Prometheus memcached exporter repository|
 |observability.loki.memcachedExporter.resources|object|-|Resource requests and limits for memcached exporter pods|
-|observability.loki.memcachedExporter.resources.limits.cpu|string|`"25m"`|CPU limit for memcached exporter pods|
+|observability.loki.memcachedExporter.resources.limits.cpu|string|`"60m"`|CPU limit for memcached exporter pods|
 |observability.loki.memcachedExporter.resources.limits.memory|string|`"48Mi"`|Memory limit for memcached exporter pods|
 |observability.loki.memcachedExporter.resources.requests.cpu|string|`"10m"`|CPU request for memcached exporter pods|
 |observability.loki.memcachedExporter.resources.requests.memory|string|`"24Mi"`|Memory request for memcached exporter pods|
@@ -365,44 +368,44 @@ The following table lists the configurable parameters of this chart and their de
 |observability.loki.sidecar.image|object|-|Sidecar container image|
 |observability.loki.sidecar.image.repository|string|`"docker.io/kiwigrid/k8s-sidecar"`|k8s-sidecar image repository|
 |observability.loki.sidecar.resources|object|-|Resource requests and limits for Loki sidecar pods|
-|observability.loki.sidecar.resources.limits.cpu|string|`"75m"`|CPU limit for sidecar pods|
-|observability.loki.sidecar.resources.limits.memory|string|`"72Mi"`|Memory limit for sidecar pods|
-|observability.loki.sidecar.resources.requests.cpu|string|`"25m"`|CPU request for sidecar pods|
-|observability.loki.sidecar.resources.requests.memory|string|`"36Mi"`|Memory request for sidecar pods|
+|observability.loki.sidecar.resources.limits.cpu|string|`"720m"`|CPU limit for sidecar pods|
+|observability.loki.sidecar.resources.limits.memory|string|`"192Mi"`|Memory limit for sidecar pods|
+|observability.loki.sidecar.resources.requests.cpu|string|`"120m"`|CPU request for sidecar pods|
+|observability.loki.sidecar.resources.requests.memory|string|`"96Mi"`|Memory request for sidecar pods|
 |observability.loki.singleBinary|object|-|Loki single binary deployment mode|
 |observability.loki.singleBinary.extraEnv|list|-|Additional environment variables for Loki|
 |observability.loki.singleBinary.persistence|object|-|Persistent storage for log data|
 |observability.loki.singleBinary.persistence.size|string|`"10Gi"`|Storage size for log retention|
 |observability.loki.singleBinary.resources|object|-|Resource requests and limits for Loki|
-|observability.loki.singleBinary.resources.limits.cpu|string|`"800m"`|CPU limit for Loki single binary pods|
-|observability.loki.singleBinary.resources.limits.memory|string|`"2048Mi"`|Memory limit for Loki single binary pods|
-|observability.loki.singleBinary.resources.requests.cpu|string|`"400m"`|CPU request for Loki single binary pods|
-|observability.loki.singleBinary.resources.requests.memory|string|`"1024Mi"`|Memory request for Loki single binary pods|
+|observability.loki.singleBinary.resources.limits.cpu|string|`"1200m"`|CPU limit for Loki single binary pods|
+|observability.loki.singleBinary.resources.limits.memory|string|`"1024Mi"`|Memory limit for Loki single binary pods|
+|observability.loki.singleBinary.resources.requests.cpu|string|`"200m"`|CPU request for Loki single binary pods|
+|observability.loki.singleBinary.resources.requests.memory|string|`"512Mi"`|Memory request for Loki single binary pods|
 |observability.metrics-server|object|-|Kubernetes Metrics Server for resource metrics|
 |observability.metrics-server.enabled|bool|`true`|Enable Metrics Server deployment|
 |observability.metrics-server.image|object|-|Metrics Server container image|
 |observability.metrics-server.image.repository|string|`"registry.k8s.io/metrics-server/metrics-server"`|Official Kubernetes metrics-server image|
 |observability.metrics-server.resources|object|-|Resource requests and limits for Metrics Server|
-|observability.metrics-server.resources.limits.cpu|string|`"400m"`|CPU limit for Metrics Server pods|
-|observability.metrics-server.resources.limits.memory|string|`"512Mi"`|Memory limit for Metrics Server pods|
-|observability.metrics-server.resources.requests.cpu|string|`"200m"`|CPU request for Metrics Server pods|
-|observability.metrics-server.resources.requests.memory|string|`"256Mi"`|Memory request for Metrics Server pods|
+|observability.metrics-server.resources.limits.cpu|string|`"360m"`|CPU limit for Metrics Server pods|
+|observability.metrics-server.resources.limits.memory|string|`"256Mi"`|Memory limit for Metrics Server pods|
+|observability.metrics-server.resources.requests.cpu|string|`"60m"`|CPU request for Metrics Server pods|
+|observability.metrics-server.resources.requests.memory|string|`"128Mi"`|Memory request for Metrics Server pods|
 |observability.prometheus-node-exporter|object|-|Prometheus Node Exporter for host metrics|
 |observability.prometheus-node-exporter.image|object|-|Node exporter container image|
 |observability.prometheus-node-exporter.image.registry|string|`"quay.io"`|OCI registry for node exporter|
 |observability.prometheus-node-exporter.kubeRBACProxy.image.registry|string|`"quay.io"`|OCI registry for kube-rbac-proxy sidecar|
 |observability.prometheus-node-exporter.resources|object|-|Resource requests and limits for node exporter DaemonSet|
-|observability.prometheus-node-exporter.resources.limits.cpu|string|`"60m"`|CPU limit for node exporter pods|
+|observability.prometheus-node-exporter.resources.limits.cpu|string|`"180m"`|CPU limit for node exporter pods|
 |observability.prometheus-node-exporter.resources.limits.memory|string|`"64Mi"`|Memory limit for node exporter pods|
 |observability.prometheus-node-exporter.resources.requests.cpu|string|`"30m"`|CPU request for node exporter pods|
 |observability.prometheus-node-exporter.resources.requests.memory|string|`"32Mi"`|Memory request for node exporter pods|
 |observability.tempo|object|-|Tempo distributed tracing backend|
 |observability.tempo.server|object|-|Tempo server configuration|
 |observability.tempo.server.resources|object|-|Resource requests and limits for Tempo|
-|observability.tempo.server.resources.limits.cpu|string|`"240m"`|CPU limit for Tempo pods|
-|observability.tempo.server.resources.limits.memory|string|`"384Mi"`|Memory limit for Tempo pods|
-|observability.tempo.server.resources.requests.cpu|string|`"100m"`|CPU request for Tempo pods|
-|observability.tempo.server.resources.requests.memory|string|`"192Mi"`|Memory request for Tempo pods|
+|observability.tempo.server.resources.limits.cpu|string|`"360m"`|CPU limit for Tempo pods|
+|observability.tempo.server.resources.limits.memory|string|`"320Mi"`|Memory limit for Tempo pods|
+|observability.tempo.server.resources.requests.cpu|string|`"60m"`|CPU request for Tempo pods|
+|observability.tempo.server.resources.requests.memory|string|`"160Mi"`|Memory request for Tempo pods|
 |observability.tempo.tempo|object|-|Tempo server image configuration|
 |observability.tempo.tempo.repository|string|`"docker.io/grafana/tempo"`|Tempo image repository|
 |observability.tempo.tempoQuery|object|-|Tempo query frontend image|
@@ -417,10 +420,10 @@ The following table lists the configurable parameters of this chart and their de
 |observability.victoria-metrics-single.server.persistentVolume.size|string|`"10Gi"`|Storage size for metrics retention|
 |observability.victoria-metrics-single.server.persistentVolume.storageClass|string|`""`|StorageClass for metrics volume (empty uses cluster default)|
 |observability.victoria-metrics-single.server.resources|object|-|Resource requests and limits for VictoriaMetrics|
-|observability.victoria-metrics-single.server.resources.limits.cpu|string|`"420m"`|CPU limit for VictoriaMetrics pods|
-|observability.victoria-metrics-single.server.resources.limits.memory|string|`"600Mi"`|Memory limit for VictoriaMetrics pods|
-|observability.victoria-metrics-single.server.resources.requests.cpu|string|`"180m"`|CPU request for VictoriaMetrics pods|
-|observability.victoria-metrics-single.server.resources.requests.memory|string|`"320Mi"`|Memory request for VictoriaMetrics pods|
+|observability.victoria-metrics-single.server.resources.limits.cpu|string|`"360m"`|CPU limit for VictoriaMetrics pods|
+|observability.victoria-metrics-single.server.resources.limits.memory|string|`"512Mi"`|Memory limit for VictoriaMetrics pods|
+|observability.victoria-metrics-single.server.resources.requests.cpu|string|`"60m"`|CPU request for VictoriaMetrics pods|
+|observability.victoria-metrics-single.server.resources.requests.memory|string|`"256Mi"`|Memory request for VictoriaMetrics pods|
 |portal|object|-|Portal identity and access management configuration|
 |portal.enabled|bool|`true`|Enable deployment of Portal IAM service|
 |portal.image|object|-|Portal container image|
@@ -434,10 +437,10 @@ The following table lists the configurable parameters of this chart and their de
 |portal.initContainer.tcpCheck.image|object|-|Wait-for-it utility image|
 |portal.initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|Repository for TCP check utility|
 |portal.resources|object|-|Resource requests and limits for Portal pods|
-|portal.resources.limits.cpu|string|`"1000m"`|CPU limit for Portal pods|
-|portal.resources.limits.memory|string|`"1024Mi"`|Memory limit for Portal pods|
-|portal.resources.requests.cpu|string|`"100m"`|CPU request for Portal pods|
-|portal.resources.requests.memory|string|`"512Mi"`|Memory request for Portal pods|
+|portal.resources.limits.cpu|string|`"360m"`|CPU limit for Portal pods|
+|portal.resources.limits.memory|string|`"512Mi"`|Memory limit for Portal pods|
+|portal.resources.requests.cpu|string|`"60m"`|CPU request for Portal pods|
+|portal.resources.requests.memory|string|`"256Mi"`|Memory request for Portal pods|
 |portal.tests|object|-|Test pod image configuration|
 |portal.tests.image.registry|string|`"docker.io"`|OCI registry for Portal test utilities|
 |support|object|-|Support infrastructure (ingress, reloader, databases, object storage)|
@@ -451,10 +454,10 @@ The following table lists the configurable parameters of this chart and their de
 |support.ingress-nginx.controller.patch|object|-|Patch job image configuration|
 |support.ingress-nginx.controller.patch.image.registry|string|`"registry.k8s.io"`|OCI registry for ingress-nginx patch job|
 |support.ingress-nginx.controller.resources|object|-|Resource requests and limits for ingress controller|
-|support.ingress-nginx.controller.resources.limits.cpu|string|`"600m"`|CPU limit for ingress controller pods|
-|support.ingress-nginx.controller.resources.limits.memory|string|`"1024Mi"`|Memory limit for ingress controller pods|
-|support.ingress-nginx.controller.resources.requests.cpu|string|`"200m"`|CPU request for ingress controller pods|
-|support.ingress-nginx.controller.resources.requests.memory|string|`"512Mi"`|Memory request for ingress controller pods|
+|support.ingress-nginx.controller.resources.limits.cpu|string|`"720m"`|CPU limit for ingress controller pods|
+|support.ingress-nginx.controller.resources.limits.memory|string|`"512Mi"`|Memory limit for ingress controller pods|
+|support.ingress-nginx.controller.resources.requests.cpu|string|`"120m"`|CPU request for ingress controller pods|
+|support.ingress-nginx.controller.resources.requests.memory|string|`"256Mi"`|Memory request for ingress controller pods|
 |support.ingress-nginx.enabled|bool|`true`|Enable NGINX Ingress Controller deployment|
 |support.ingress-nginx.global|object|-|Global ingress-nginx image configuration|
 |support.ingress-nginx.global.image.registry|string|`"registry.k8s.io"`|OCI registry for ingress-nginx assets|
@@ -476,10 +479,10 @@ The following table lists the configurable parameters of this chart and their de
 |support.minio.mcImage|object|-|MinIO client (mc) container image|
 |support.minio.mcImage.repository|string|`"docker.io/minio/minio"`|MinIO client image repository|
 |support.minio.resources|object|-|Resource requests and limits for MinIO pods|
-|support.minio.resources.limits.cpu|string|`"500m"`|CPU limit for MinIO pods|
-|support.minio.resources.limits.memory|string|`"1024Mi"`|Memory limit for MinIO pods|
+|support.minio.resources.limits.cpu|string|`"300m"`|CPU limit for MinIO pods|
+|support.minio.resources.limits.memory|string|`"512Mi"`|Memory limit for MinIO pods|
 |support.minio.resources.requests.cpu|string|`"50m"`|CPU request for MinIO pods|
-|support.minio.resources.requests.memory|string|`"512Mi"`|Memory request for MinIO pods|
+|support.minio.resources.requests.memory|string|`"256Mi"`|Memory request for MinIO pods|
 |support.postgresql|object|-|PostgreSQL database configuration|
 |support.postgresql.enabled|bool|`true`|Enable PostgreSQL deployment|
 |support.postgresql.image|object|-|PostgreSQL container image|
@@ -498,20 +501,20 @@ The following table lists the configurable parameters of this chart and their de
 |support.redis.persistence.size|string|`"1Gi"`|Storage size for Redis data|
 |support.redis.resources|object|-|Resource requests and limits for Redis|
 |support.redis.resources.limits|object|-|Resource limits|
-|support.redis.resources.limits.cpu|string|`"200m"`|CPU limit|
-|support.redis.resources.limits.memory|string|`"256Mi"`|Memory limit|
+|support.redis.resources.limits.cpu|string|`"240m"`|CPU limit|
+|support.redis.resources.limits.memory|string|`"128Mi"`|Memory limit|
 |support.redis.resources.requests|object|-|Resource requests|
-|support.redis.resources.requests.cpu|string|`"100m"`|CPU request|
-|support.redis.resources.requests.memory|string|`"128Mi"`|Memory request|
+|support.redis.resources.requests.cpu|string|`"40m"`|CPU request|
+|support.redis.resources.requests.memory|string|`"64Mi"`|Memory request|
 |support.reloader|object|-|Stakater Reloader for automatic pod restarts on config changes|
 |support.reloader.enabled|bool|`true`|Enable Reloader deployment|
 |support.reloader.image|object|-|Reloader container image|
 |support.reloader.image.repository|string|`"ghcr.io/stakater/reloader"`|Reloader image repository|
 |support.reloader.resources|object|-|Resource requests and limits for Reloader deployment|
-|support.reloader.resources.limits.cpu|string|`"200m"`|CPU limit for Reloader pods|
-|support.reloader.resources.limits.memory|string|`"256Mi"`|Memory limit for Reloader pods|
-|support.reloader.resources.requests.cpu|string|`"100m"`|CPU request for Reloader pods|
-|support.reloader.resources.requests.memory|string|`"128Mi"`|Memory request for Reloader pods|
+|support.reloader.resources.limits.cpu|string|`"120m"`|CPU limit for Reloader pods|
+|support.reloader.resources.limits.memory|string|`"128Mi"`|Memory limit for Reloader pods|
+|support.reloader.resources.requests.cpu|string|`"20m"`|CPU request for Reloader pods|
+|support.reloader.resources.requests.memory|string|`"64Mi"`|Memory request for Reloader pods|
 |txsigner|object|-|Transaction Signer service configuration|
 |txsigner.config|object|-|Transaction signer wallet configuration|
 |txsigner.config.derivationPath|string|`"m/44'/60'/0'/0/0"`|BIP44 derivation path for Ethereum accounts|
@@ -527,10 +530,10 @@ The following table lists the configurable parameters of this chart and their de
 |txsigner.initContainer.tcpCheck.image|object|-|Wait-for-it utility image|
 |txsigner.initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|Repository for TCP check utility|
 |txsigner.resources|object|-|Resource requests and limits for transaction signer|
-|txsigner.resources.limits.cpu|string|`"500m"`|CPU limit for txsigner pods|
-|txsigner.resources.limits.memory|string|`"512Mi"`|Memory limit for txsigner pods|
-|txsigner.resources.requests.cpu|string|`"150m"`|CPU request for txsigner pods|
-|txsigner.resources.requests.memory|string|`"256Mi"`|Memory request for txsigner pods|
+|txsigner.resources.limits.cpu|string|`"360m"`|CPU limit for txsigner pods|
+|txsigner.resources.limits.memory|string|`"384Mi"`|Memory limit for txsigner pods|
+|txsigner.resources.requests.cpu|string|`"60m"`|CPU request for txsigner pods|
+|txsigner.resources.requests.memory|string|`"192Mi"`|Memory request for txsigner pods|
 |txsigner.tests|object|-|Test container image for health checks|
 |txsigner.tests.image|object|-|Test image configuration|
 |txsigner.tests.image.registry|string|`"docker.io"`|OCI registry for test utilities|
@@ -594,7 +597,7 @@ The following table lists the configurable parameters of this chart and their de
 |blockscout.blockscout.initContainer.tcpCheck.resources.dependencies[0]|string|`{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"blockscout\" \"local\" $.Values.postgresql) }}","name":"postgresql"}`|Dependency name|
 |blockscout.blockscout.initContainer.tcpCheck.resources.dependencies[0].endpoint|string|`"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"blockscout\" \"local\" $.Values.postgresql) }}"`|Dependency endpoint to check|
 |blockscout.blockscout.initContainer.tcpCheck.resources.limits|object|-|Resource limits for TCP check container|
-|blockscout.blockscout.initContainer.tcpCheck.resources.limits.cpu|string|`"100m"`|CPU limit for TCP check container|
+|blockscout.blockscout.initContainer.tcpCheck.resources.limits.cpu|string|`"300m"`|CPU limit for TCP check container|
 |blockscout.blockscout.initContainer.tcpCheck.resources.limits.memory|string|`"64Mi"`|Memory limit for TCP check container|
 |blockscout.blockscout.initContainer.tcpCheck.resources.requests|object|-|Resource requests for TCP check container|
 |blockscout.blockscout.initContainer.tcpCheck.resources.requests.cpu|string|`"10m"`|CPU request for TCP check container|
@@ -817,7 +820,7 @@ The following table lists the configurable parameters of this chart and their de
 |dapp.initContainer.tcpCheck.image.tag|string|`"v7.7.10"`|Image tag for wait-for-it utility|
 |dapp.initContainer.tcpCheck.resources|object|-|Resource limits and requests for TCP check init container|
 |dapp.initContainer.tcpCheck.resources.limits|object|-|Resource limits|
-|dapp.initContainer.tcpCheck.resources.limits.cpu|string|`"100m"`|CPU limit|
+|dapp.initContainer.tcpCheck.resources.limits.cpu|string|`"300m"`|CPU limit|
 |dapp.initContainer.tcpCheck.resources.limits.memory|string|`"64Mi"`|Memory limit|
 |dapp.initContainer.tcpCheck.resources.requests|object|-|Resource requests|
 |dapp.initContainer.tcpCheck.resources.requests.cpu|string|`"50m"`|CPU request|
@@ -1218,7 +1221,7 @@ The following table lists the configurable parameters of this chart and their de
 |erpc.initContainer.tcpCheck.image.tag|string|`"v7.7.10"`|TCP check image tag|
 |erpc.initContainer.tcpCheck.resources|object|-|Resource limits and requests for TCP check container|
 |erpc.initContainer.tcpCheck.resources.limits|object|-|Resource limits for TCP check container|
-|erpc.initContainer.tcpCheck.resources.limits.cpu|string|`"100m"`|CPU limit for TCP check container|
+|erpc.initContainer.tcpCheck.resources.limits.cpu|string|`"300m"`|CPU limit for TCP check container|
 |erpc.initContainer.tcpCheck.resources.limits.memory|string|`"64Mi"`|Memory limit for TCP check container|
 |erpc.initContainer.tcpCheck.resources.requests|object|-|Resource requests for TCP check container|
 |erpc.initContainer.tcpCheck.resources.requests.cpu|string|`"10m"`|CPU request for TCP check container|
@@ -1479,7 +1482,7 @@ The following table lists the configurable parameters of this chart and their de
 |graph-node.initContainer.tcpCheck.image.tag|string|`"v7.7.10"`|TCP check image tag|
 |graph-node.initContainer.tcpCheck.resources|object|-|Resource limits and requests for TCP check container|
 |graph-node.initContainer.tcpCheck.resources.limits|object|-|Resource limits|
-|graph-node.initContainer.tcpCheck.resources.limits.cpu|string|`"100m"`|CPU limit|
+|graph-node.initContainer.tcpCheck.resources.limits.cpu|string|`"300m"`|CPU limit|
 |graph-node.initContainer.tcpCheck.resources.limits.memory|string|`"64Mi"`|Memory limit|
 |graph-node.initContainer.tcpCheck.resources.requests|object|-|Resource requests|
 |graph-node.initContainer.tcpCheck.resources.requests.cpu|string|`"10m"`|CPU request|
@@ -1553,7 +1556,7 @@ The following table lists the configurable parameters of this chart and their de
 |graph-node.postgresReadinessCheck.randomDelayRange.min|int|`5`|Minimum random delay in seconds|
 |graph-node.postgresReadinessCheck.resources|object|-|Resource limits and requests for PostgreSQL readiness check container|
 |graph-node.postgresReadinessCheck.resources.limits|object|-|Resource limits|
-|graph-node.postgresReadinessCheck.resources.limits.cpu|string|`"100m"`|CPU limit|
+|graph-node.postgresReadinessCheck.resources.limits.cpu|string|`"300m"`|CPU limit|
 |graph-node.postgresReadinessCheck.resources.limits.memory|string|`"96Mi"`|Memory limit|
 |graph-node.postgresReadinessCheck.resources.requests|object|-|Resource requests|
 |graph-node.postgresReadinessCheck.resources.requests.cpu|string|`"25m"`|CPU request|
@@ -1691,13 +1694,13 @@ The following table lists the configurable parameters of this chart and their de
 |hasura.ingress.pathType|string|`"Prefix"`|Ingress path type|
 |hasura.ingress.tls|list|-|TLS configuration|
 |hasura.initContainers|list|-|Init containers|
-|hasura.initContainers[0]|string|`{"command":["/usr/bin/wait-for-it","postgresql:5432","-t","120"],"image":"ghcr.io/settlemint/btp-waitforit:v7.7.10","imagePullPolicy":"IfNotPresent","name":"wait-for-postgresql","resources":{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}}`|Container name|
+|hasura.initContainers[0]|string|`{"command":["/usr/bin/wait-for-it","postgresql:5432","-t","120"],"image":"ghcr.io/settlemint/btp-waitforit:v7.7.10","imagePullPolicy":"IfNotPresent","name":"wait-for-postgresql","resources":{"limits":{"cpu":"300m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}}`|Container name|
 |hasura.initContainers[0].command|list|-|Container command|
 |hasura.initContainers[0].image|string|`"ghcr.io/settlemint/btp-waitforit:v7.7.10"`|Container image|
 |hasura.initContainers[0].imagePullPolicy|string|`"IfNotPresent"`|Image pull policy|
 |hasura.initContainers[0].resources|object|-|Resource limits and requests|
 |hasura.initContainers[0].resources.limits|object|-|Resource limits|
-|hasura.initContainers[0].resources.limits.cpu|string|`"100m"`|CPU limit|
+|hasura.initContainers[0].resources.limits.cpu|string|`"300m"`|CPU limit|
 |hasura.initContainers[0].resources.limits.memory|string|`"64Mi"`|Memory limit|
 |hasura.initContainers[0].resources.requests|object|-|Resource requests|
 |hasura.initContainers[0].resources.requests.cpu|string|`"10m"`|CPU request|
@@ -1932,7 +1935,7 @@ The following table lists the configurable parameters of this chart and their de
 |network.network-bootstrapper.initContainer.tcpCheck.image.tag|string|`"v7.7.10"`|Image tag for the tcp-check utility.|
 |network.network-bootstrapper.initContainer.tcpCheck.resources|object|-|CPU and memory resource constraints for the tcp-check init container.|
 |network.network-bootstrapper.initContainer.tcpCheck.resources.limits|object|-|Maximum resource limits for the tcp-check init container.|
-|network.network-bootstrapper.initContainer.tcpCheck.resources.limits.cpu|string|`"100m"`|Maximum CPU allocation for the tcp-check init container.|
+|network.network-bootstrapper.initContainer.tcpCheck.resources.limits.cpu|string|`"300m"`|Maximum CPU allocation for the tcp-check init container.|
 |network.network-bootstrapper.initContainer.tcpCheck.resources.limits.memory|string|`"64Mi"`|Maximum memory allocation for the tcp-check init container.|
 |network.network-bootstrapper.initContainer.tcpCheck.resources.requests|object|-|Minimum resource requests for the tcp-check init container.|
 |network.network-bootstrapper.initContainer.tcpCheck.resources.requests.cpu|string|`"10m"`|Minimum CPU request for the tcp-check init container.|
@@ -2083,7 +2086,7 @@ The following table lists the configurable parameters of this chart and their de
 |network.network-nodes.initContainer.tcpCheck.image.tag|string|`"v7.7.10"`|Image tag for the tcp-check utility.|
 |network.network-nodes.initContainer.tcpCheck.resources|object|-|Resource requests and limits for the tcp-check init container.|
 |network.network-nodes.initContainer.tcpCheck.resources.limits|object|-|Maximum resource limits.|
-|network.network-nodes.initContainer.tcpCheck.resources.limits.cpu|string|`"100m"`|CPU limit.|
+|network.network-nodes.initContainer.tcpCheck.resources.limits.cpu|string|`"300m"`|CPU limit.|
 |network.network-nodes.initContainer.tcpCheck.resources.limits.memory|string|`"64Mi"`|Memory limit.|
 |network.network-nodes.initContainer.tcpCheck.resources.requests|object|-|Minimum resource requests.|
 |network.network-nodes.initContainer.tcpCheck.resources.requests.cpu|string|`"10m"`|CPU request.|
@@ -2222,7 +2225,12 @@ The following table lists the configurable parameters of this chart and their de
 |network.network-nodes.rbac|object|-|RBAC configuration controlling Role/RoleBinding creation for accessing Besu artifacts.|
 |network.network-nodes.rbac.create|bool|`true`|Create Role and RoleBinding granting pods read access to ConfigMaps/Secrets.|
 |network.network-nodes.readinessProbe|object|-|Readiness probe configuration signalling when pods can accept traffic.|
+|network.network-nodes.replicaCount|int|`6`|Total number of Besu pods (validators + RPC). Used for documentation summaries.|
 |network.network-nodes.resources|object|-|CPU and memory requests or limits for Besu containers.|
+|network.network-nodes.resources.limits.cpu|string|`"180m"`|CPU limit per Besu pod (approx. 3x request to target ~33% utilization).|
+|network.network-nodes.resources.limits.memory|string|`"1024Mi"`|Memory limit per Besu pod|
+|network.network-nodes.resources.requests.cpu|string|`"60m"`|CPU request per Besu pod|
+|network.network-nodes.resources.requests.memory|string|`"512Mi"`|Memory request per Besu pod|
 |network.network-nodes.rpcReplicaCount|int|`2`|Number of RPC node replicas provisioned via StatefulSet.|
 |network.network-nodes.securityContext|object|-|Container-level security context applied to Besu containers.|
 |network.network-nodes.service|object|-|Kubernetes Service definition exposing Besu endpoints.|
@@ -2240,7 +2248,7 @@ The following table lists the configurable parameters of this chart and their de
 |network.network-nodes.serviceAccount.create|bool|`true`|Create a ServiceAccount resource automatically for the release.|
 |network.network-nodes.serviceAccount.name|string|`""`|Existing ServiceAccount name to reuse when creation is disabled.|
 |network.network-nodes.tolerations|list|-|Tolerations allowing pods to run on nodes with matching taints.|
-|network.network-nodes.validatorReplicaCount|int|`nil`|Number of validator node replicas participating in consensus. Leave unset to derive from global.validatorReplicaCount.|
+|network.network-nodes.validatorReplicaCount|int|`4`|Number of validator node replicas participating in consensus. Leave unset to derive from global.validatorReplicaCount.|
 |network.network-nodes.volumeMounts|list|-|Additional volume mounts applied to Besu containers.|
 |network.network-nodes.volumes|list|-|Extra volumes attached to Besu pods for custom configuration or secrets.|
 |observability.alloy|object|-|Alloy configuration|
@@ -2719,7 +2727,7 @@ The following table lists the configurable parameters of this chart and their de
 |portal.initContainer.downloadAbi.outputDirectory|string|`"/shared-abis"`|Directory where ABI files are written before being shared with the portal container.|
 |portal.initContainer.downloadAbi.resources|object|-|Resource requests and limits for the ABI download init container|
 |portal.initContainer.downloadAbi.resources.limits|object|-|Resource limits for the ABI download init container|
-|portal.initContainer.downloadAbi.resources.limits.cpu|string|`"150m"`|CPU limit for the ABI download init container|
+|portal.initContainer.downloadAbi.resources.limits.cpu|string|`"450m"`|CPU limit for the ABI download init container|
 |portal.initContainer.downloadAbi.resources.limits.memory|string|`"128Mi"`|Memory limit for the ABI download init container|
 |portal.initContainer.downloadAbi.resources.requests|object|-|Resource requests for the ABI download init container|
 |portal.initContainer.downloadAbi.resources.requests.cpu|string|`"25m"`|CPU request for the ABI download init container|
@@ -2736,7 +2744,7 @@ The following table lists the configurable parameters of this chart and their de
 |portal.initContainer.tcpCheck.image.tag|string|`"v7.7.10"`|Image tag for the TCP check init container|
 |portal.initContainer.tcpCheck.resources|object|-|Resource requests and limits for the TCP check init container|
 |portal.initContainer.tcpCheck.resources.limits|object|-|Resource limits for the TCP check init container|
-|portal.initContainer.tcpCheck.resources.limits.cpu|string|`"100m"`|CPU limit for the TCP check init container|
+|portal.initContainer.tcpCheck.resources.limits.cpu|string|`"300m"`|CPU limit for the TCP check init container|
 |portal.initContainer.tcpCheck.resources.limits.memory|string|`"64Mi"`|Memory limit for the TCP check init container|
 |portal.initContainer.tcpCheck.resources.requests|object|-|Resource requests for the TCP check init container|
 |portal.initContainer.tcpCheck.resources.requests.cpu|string|`"10m"`|CPU request for the TCP check init container|
@@ -3060,7 +3068,7 @@ The following table lists the configurable parameters of this chart and their de
 |support.minio.replicas|int|`1`|Number of MinIO replicas (int)|
 |support.minio.resources|object|-|MinIO resource requests and limits (object)|
 |support.minio.resources.limits|object|-|Resource limits (object)|
-|support.minio.resources.limits.cpu|string|`"200m"`|CPU limit (string)|
+|support.minio.resources.limits.cpu|string|`"600m"`|CPU limit (string)|
 |support.minio.resources.limits.memory|string|`"512Mi"`|Memory limit (string)|
 |support.minio.resources.requests|object|-|Resource requests (object)|
 |support.minio.resources.requests.cpu|string|`"100m"`|CPU request (string)|
@@ -3110,10 +3118,10 @@ The following table lists the configurable parameters of this chart and their de
 |support.postgresql.postgresql_conf.work_mem|string|`"4MB"`|Amount of memory to be used by internal sort operations and hash tables|
 |support.postgresql.resources|object|-|Resource configuration for development (object)|
 |support.postgresql.resources.limits|object|-|Resource limits (object)|
-|support.postgresql.resources.limits.cpu|string|`"500m"`|CPU limit (string)|
-|support.postgresql.resources.limits.memory|string|`"1Gi"`|Memory limit (string)|
+|support.postgresql.resources.limits.cpu|string|`"480m"`|CPU limit (string)|
+|support.postgresql.resources.limits.memory|string|`"512Mi"`|Memory limit (string)|
 |support.postgresql.resources.requests|object|-|Resource requests (object)|
-|support.postgresql.resources.requests.cpu|string|`"100m"`|CPU request (string)|
+|support.postgresql.resources.requests.cpu|string|`"80m"`|CPU request (string)|
 |support.postgresql.resources.requests.memory|string|`"256Mi"`|Memory request (string)|
 |support.postgresql.service|object|-|Service configuration|
 |support.postgresql.service.port|int|`5432`|PostgreSQL service port|
@@ -3311,7 +3319,7 @@ The following table lists the configurable parameters of this chart and their de
 |support.minio.replicas|int|`16`|Number of MinIO pod replicas to run|
 |support.minio.resources|object|-|Resource requests and limits for MinIO containers|
 |support.minio.resources.requests|object|-|Resource requests for MinIO containers|
-|support.minio.resources.requests.memory|string|`"16Gi"`|Memory request for MinIO containers|
+|support.minio.resources.requests.memory|string|`"256Mi"`|Memory request for MinIO containers|
 |support.minio.rootPassword|string|`""`|MinIO root password (admin password), auto-generated if not set|
 |support.minio.rootUser|string|`""`|MinIO root user (admin username), auto-generated if not set|
 |support.minio.runtimeClassName|string|`""`|Runtime class name for MinIO pods|
@@ -3384,10 +3392,10 @@ The following table lists the configurable parameters of this chart and their de
 |support.postgresql.postgresql_conf.work_mem|string|`"4MB"`|Amount of memory to be used by internal sort operations and hash tables|
 |support.postgresql.resources|object|-|Resource configuration|
 |support.postgresql.resources.limits|object|-|Resource limits|
-|support.postgresql.resources.limits.cpu|string|`"500m"`|CPU limit|
-|support.postgresql.resources.limits.memory|string|`"1Gi"`|Memory limit|
+|support.postgresql.resources.limits.cpu|string|`"480m"`|CPU limit|
+|support.postgresql.resources.limits.memory|string|`"512Mi"`|Memory limit|
 |support.postgresql.resources.requests|object|-|Resource requests|
-|support.postgresql.resources.requests.cpu|string|`"100m"`|CPU request|
+|support.postgresql.resources.requests.cpu|string|`"80m"`|CPU request|
 |support.postgresql.resources.requests.memory|string|`"256Mi"`|Memory request|
 |support.postgresql.securityContext|object|-|Container security context|
 |support.postgresql.service|object|-|Service configuration|
@@ -3446,11 +3454,11 @@ The following table lists the configurable parameters of this chart and their de
 |support.redis.replicaCount|int|`1`|Number of Redis replicas (should be 1 for development)|
 |support.redis.resources|object|-|Resources configuration|
 |support.redis.resources.limits|object|-|Resource limits|
-|support.redis.resources.limits.cpu|string|`"200m"`|CPU limit|
-|support.redis.resources.limits.memory|string|`"256Mi"`|Memory limit|
+|support.redis.resources.limits.cpu|string|`"240m"`|CPU limit|
+|support.redis.resources.limits.memory|string|`"128Mi"`|Memory limit|
 |support.redis.resources.requests|object|-|Resource requests|
-|support.redis.resources.requests.cpu|string|`"100m"`|CPU request|
-|support.redis.resources.requests.memory|string|`"128Mi"`|Memory request|
+|support.redis.resources.requests.cpu|string|`"40m"`|CPU request|
+|support.redis.resources.requests.memory|string|`"64Mi"`|Memory request|
 |support.redis.service|object|-|Service configuration|
 |support.redis.service.annotations|object|-|Service annotations|
 |support.redis.service.labels|object|-|Service labels|
@@ -3572,7 +3580,7 @@ The following table lists the configurable parameters of this chart and their de
 |txsigner.initContainer.tcpCheck.image.tag|string|`"v7.7.10"`|Init container image tag|
 |txsigner.initContainer.tcpCheck.resources|object|-|Init container resource requests and limits|
 |txsigner.initContainer.tcpCheck.resources.limits|object|-|Resource limits|
-|txsigner.initContainer.tcpCheck.resources.limits.cpu|string|`"100m"`|CPU limit|
+|txsigner.initContainer.tcpCheck.resources.limits.cpu|string|`"300m"`|CPU limit|
 |txsigner.initContainer.tcpCheck.resources.limits.memory|string|`"64Mi"`|Memory limit|
 |txsigner.initContainer.tcpCheck.resources.requests|object|-|Resource requests|
 |txsigner.initContainer.tcpCheck.resources.requests.cpu|string|`"10m"`|CPU request|
@@ -3721,37 +3729,54 @@ The following table lists the configurable parameters of this chart and their de
 
 | Component | Replicas | Request CPU | Limit CPU | Request Memory | Limit Memory | Storage |
 |-----------|----------|-------------|-----------|----------------|--------------|---------|
-| blockscout.blockscout | 1 | 150m | 1500m | 1280Mi | 2560Mi | - |
-| blockscout.frontend | 1 | 120m | 600m | 768Mi | 1536Mi | - |
-| dapp | 1 | 100m | 1000m | 1024Mi | 2048Mi | - |
-| erpc | 1 | 250m | 1000m | 1024Mi | 2048Mi | - |
-| graph-node | 1 | 100m | 1000m | 1536Mi | 3072Mi | - |
-| hasura | 1 | 100m | 1000m | 1024Mi | 2048Mi | - |
-| ipfs.cluster | 1 | 50m | 1000m | 1024Mi | 2048Mi | - |
-| ipfs.ipfs | 1 | 300m | 600m | 1024Mi | 2048Mi | - |
-| network.network-bootstrapper | 1 | 100m | 250m | 128Mi | 256Mi | - |
-| network.network-nodes | 1 | 75m | 1500m | 1280Mi | 2560Mi | 20Gi |
-| network.network-nodes.compileGenesis | 1 | 100m | 250m | 128Mi | 256Mi | - |
-| observability.alloy.alloy | 1 | 200m | 800m | 512Mi | 1024Mi | - |
-| observability.grafana | 1 | 180m | 360m | 384Mi | 768Mi | - |
-| observability.kube-state-metrics | 1 | 120m | 240m | 160Mi | 256Mi | - |
-| observability.loki.gateway | 1 | 50m | 150m | 64Mi | 160Mi | - |
-| observability.loki.memcached | 1 | 40m | 120m | 48Mi | 96Mi | - |
-| observability.loki.memcachedExporter | 1 | 10m | 25m | 24Mi | 48Mi | - |
-| observability.loki.sidecar | 1 | 25m | 75m | 36Mi | 72Mi | - |
-| observability.loki.singleBinary | 1 | 400m | 800m | 1024Mi | 2048Mi | 10Gi |
-| observability.metrics-server | 1 | 200m | 400m | 256Mi | 512Mi | - |
-| observability.prometheus-node-exporter | 1 | 30m | 60m | 32Mi | 64Mi | - |
-| observability.tempo.server | 1 | 100m | 240m | 192Mi | 384Mi | - |
-| observability.victoria-metrics-single.server | 1 | 180m | 420m | 320Mi | 600Mi | 10Gi |
-| portal | 1 | 100m | 1000m | 512Mi | 1024Mi | - |
-| support.ingress-nginx.controller | 1 | 200m | 600m | 512Mi | 1024Mi | - |
-| support.minio | 1 | 50m | 500m | 512Mi | 1024Mi | - |
-| support.redis | 1 | 100m | 200m | 128Mi | 256Mi | 1Gi |
-| support.reloader | 1 | 100m | 200m | 128Mi | 256Mi | - |
-| txsigner | 1 | 150m | 500m | 256Mi | 512Mi | - |
+| blockscout.blockscout | 1 | 100m | 600m | 640Mi | 1280Mi | - |
+| blockscout.frontend | 1 | 60m | 360m | 320Mi | 640Mi | - |
+| dapp | 1 | 100m | 3000m | 1024Mi | 2048Mi | - |
+| erpc | 1 | 60m | 360m | 256Mi | 512Mi | - |
+| graph-node | 1 | 60m | 360m | 512Mi | 1024Mi | - |
+| hasura | 1 | 80m | 480m | 384Mi | 768Mi | - |
+| ipfs.cluster | 1 | 60m | 360m | 256Mi | 512Mi | - |
+| ipfs.ipfs | 1 | 150m | 900m | 512Mi | 1024Mi | - |
+| network.network-bootstrapper | 1 | 100m | 600m | 128Mi | 256Mi | - |
+| network.network-nodes | 6 | 60m (total %!f(int64=360)m) | 360m (total %!f(int64=2160)m) | 512Mi (total %!f(int64=3072)Mi) | 1024Mi (total %!f(int64=6144)Mi) | 20Gi |
+| network.network-nodes.compileGenesis | 1 | 100m | 600m | 128Mi | 256Mi | - |
+| observability.alloy.alloy | 1 | 120m | 720m | 512Mi | 1024Mi | - |
+| observability.grafana | 1 | 60m | 360m | 256Mi | 512Mi | - |
+| observability.kube-state-metrics | 1 | 40m | 240m | 128Mi | 256Mi | - |
+| observability.loki.gateway | 1 | 20m | 120m | 32Mi | 64Mi | - |
+| observability.loki.memcached | 1 | 40m | 240m | 48Mi | 96Mi | - |
+| observability.loki.memcachedExporter | 1 | 10m | 60m | 24Mi | 48Mi | - |
+| observability.loki.sidecar | 1 | 120m | 720m | 96Mi | 192Mi | - |
+| observability.loki.singleBinary | 1 | 200m | 1200m | 512Mi | 1024Mi | 10Gi |
+| observability.metrics-server | 1 | 60m | 360m | 128Mi | 256Mi | - |
+| observability.prometheus-node-exporter | 1 | 30m | 180m | 32Mi | 64Mi | - |
+| observability.tempo.server | 1 | 60m | 360m | 160Mi | 320Mi | - |
+| observability.victoria-metrics-single.server | 1 | 60m | 360m | 256Mi | 512Mi | 10Gi |
+| portal | 1 | 60m | 360m | 256Mi | 512Mi | - |
+| support.ingress-nginx.controller | 1 | 120m | 720m | 256Mi | 512Mi | - |
+| support.minio | 1 | 50m | 300m | 256Mi | 512Mi | - |
+| support.redis | 1 | 40m | 240m | 64Mi | 128Mi | 1Gi |
+| support.reloader | 1 | 20m | 120m | 64Mi | 128Mi | - |
+| txsigner | 1 | 60m | 360m | 192Mi | 384Mi | - |
 
-| **Totals** | - | 3.68 cores (3680m) | 16.39 cores (16390m) | 15340Mi (14.98Gi) | 30608Mi (29.89Gi) | 41984Mi (41.00Gi) |
+| **Totals** | - | 2.40 cores (2400m) | 16.80 cores (16800m) | 10504Mi (10.26Gi) | 21008Mi (20.52Gi) | - |
+
+ 
+   
+   
+   
+   
+
+## Network Node Replica Breakdown
+
+| Workload | Replicas | Notes |
+|----------|----------|-------|
+| Validators | 4 | Primary consensus nodes |
+| RPC | 2 | Public JSON-RPC endpoints |
+| **Total Besu Pods** | 6 | Sum used for capacity planning |
+
+   
+ 
 
 ## Maintainers
 

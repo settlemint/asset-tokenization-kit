@@ -120,7 +120,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.tcpCheck.image.tag|string|`"v7.7.10"`|TCP check image tag|
 |initContainer.tcpCheck.resources|object|-|Resource limits and requests for TCP check container|
 |initContainer.tcpCheck.resources.limits|object|-|Resource limits|
-|initContainer.tcpCheck.resources.limits.cpu|string|`"100m"`|CPU limit|
+|initContainer.tcpCheck.resources.limits.cpu|string|`"300m"`|CPU limit|
 |initContainer.tcpCheck.resources.limits.memory|string|`"64Mi"`|Memory limit|
 |initContainer.tcpCheck.resources.requests|object|-|Resource requests|
 |initContainer.tcpCheck.resources.requests.cpu|string|`"10m"`|CPU request|
@@ -194,7 +194,7 @@ The following table lists the configurable parameters of this chart and their de
 |postgresReadinessCheck.randomDelayRange.min|int|`5`|Minimum random delay in seconds|
 |postgresReadinessCheck.resources|object|-|Resource limits and requests for PostgreSQL readiness check container|
 |postgresReadinessCheck.resources.limits|object|-|Resource limits|
-|postgresReadinessCheck.resources.limits.cpu|string|`"100m"`|CPU limit|
+|postgresReadinessCheck.resources.limits.cpu|string|`"300m"`|CPU limit|
 |postgresReadinessCheck.resources.limits.memory|string|`"96Mi"`|Memory limit|
 |postgresReadinessCheck.resources.requests|object|-|Resource requests|
 |postgresReadinessCheck.resources.requests.cpu|string|`"25m"`|CPU request|
@@ -237,10 +237,10 @@ The following table lists the configurable parameters of this chart and their de
 
 | Component | Replicas | Request CPU | Limit CPU | Request Memory | Limit Memory | Storage |
 |-----------|----------|-------------|-----------|----------------|--------------|---------|
-| initContainer.tcpCheck | 1 | 10m | 100m | 32Mi | 64Mi | - |
-| postgresReadinessCheck | 1 | 25m | 100m | 48Mi | 96Mi | - |
+| initContainer.tcpCheck | 1 | 10m | 300m | 32Mi | 64Mi | - |
+| postgresReadinessCheck | 1 | 25m | 300m | 48Mi | 96Mi | - |
 
-| **Totals** | - | 0.04 cores (35m) | 0.20 cores (200m) | 80Mi (0.08Gi) | 160Mi (0.16Gi) | - |
+| **Totals** | - | 0.04 cores (35m) | 0.60 cores (600m) | 80Mi (0.08Gi) | 160Mi (0.16Gi) | - |
 
 ## Maintainers
 

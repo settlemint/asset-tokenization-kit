@@ -52,10 +52,10 @@ The following table lists the configurable parameters of this chart and their de
 |postgresql_conf.work_mem|string|`"4MB"`|Amount of memory to be used by internal sort operations and hash tables|
 |resources|object|-|Resource configuration|
 |resources.limits|object|-|Resource limits|
-|resources.limits.cpu|string|`"500m"`|CPU limit|
-|resources.limits.memory|string|`"1Gi"`|Memory limit|
+|resources.limits.cpu|string|`"480m"`|CPU limit|
+|resources.limits.memory|string|`"512Mi"`|Memory limit|
 |resources.requests|object|-|Resource requests|
-|resources.requests.cpu|string|`"100m"`|CPU request|
+|resources.requests.cpu|string|`"80m"`|CPU request|
 |resources.requests.memory|string|`"256Mi"`|Memory request|
 |securityContext|object|-|Container security context|
 |service|object|-|Service configuration|

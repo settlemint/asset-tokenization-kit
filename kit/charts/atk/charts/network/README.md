@@ -60,7 +60,7 @@ The following table lists the configurable parameters of this chart and their de
 |network-bootstrapper.initContainer.tcpCheck.image.tag|string|`"v7.7.10"`|Image tag for the tcp-check utility.|
 |network-bootstrapper.initContainer.tcpCheck.resources|object|-|CPU and memory resource constraints for the tcp-check init container.|
 |network-bootstrapper.initContainer.tcpCheck.resources.limits|object|-|Maximum resource limits for the tcp-check init container.|
-|network-bootstrapper.initContainer.tcpCheck.resources.limits.cpu|string|`"100m"`|Maximum CPU allocation for the tcp-check init container.|
+|network-bootstrapper.initContainer.tcpCheck.resources.limits.cpu|string|`"300m"`|Maximum CPU allocation for the tcp-check init container.|
 |network-bootstrapper.initContainer.tcpCheck.resources.limits.memory|string|`"64Mi"`|Maximum memory allocation for the tcp-check init container.|
 |network-bootstrapper.initContainer.tcpCheck.resources.requests|object|-|Minimum resource requests for the tcp-check init container.|
 |network-bootstrapper.initContainer.tcpCheck.resources.requests.cpu|string|`"10m"`|Minimum CPU request for the tcp-check init container.|
@@ -211,7 +211,7 @@ The following table lists the configurable parameters of this chart and their de
 |network-nodes.initContainer.tcpCheck.image.tag|string|`"v7.7.10"`|Image tag for the tcp-check utility.|
 |network-nodes.initContainer.tcpCheck.resources|object|-|Resource requests and limits for the tcp-check init container.|
 |network-nodes.initContainer.tcpCheck.resources.limits|object|-|Maximum resource limits.|
-|network-nodes.initContainer.tcpCheck.resources.limits.cpu|string|`"100m"`|CPU limit.|
+|network-nodes.initContainer.tcpCheck.resources.limits.cpu|string|`"300m"`|CPU limit.|
 |network-nodes.initContainer.tcpCheck.resources.limits.memory|string|`"64Mi"`|Memory limit.|
 |network-nodes.initContainer.tcpCheck.resources.requests|object|-|Minimum resource requests.|
 |network-nodes.initContainer.tcpCheck.resources.requests.cpu|string|`"10m"`|CPU request.|
@@ -350,7 +350,12 @@ The following table lists the configurable parameters of this chart and their de
 |network-nodes.rbac|object|-|RBAC configuration controlling Role/RoleBinding creation for accessing Besu artifacts.|
 |network-nodes.rbac.create|bool|`true`|Create Role and RoleBinding granting pods read access to ConfigMaps/Secrets.|
 |network-nodes.readinessProbe|object|-|Readiness probe configuration signalling when pods can accept traffic.|
+|network-nodes.replicaCount|int|`6`|Total number of Besu pods (validators + RPC). Used for documentation summaries.|
 |network-nodes.resources|object|-|CPU and memory requests or limits for Besu containers.|
+|network-nodes.resources.limits.cpu|string|`"180m"`|CPU limit per Besu pod (approx. 3x request to target ~33% utilization).|
+|network-nodes.resources.limits.memory|string|`"1024Mi"`|Memory limit per Besu pod|
+|network-nodes.resources.requests.cpu|string|`"60m"`|CPU request per Besu pod|
+|network-nodes.resources.requests.memory|string|`"512Mi"`|Memory request per Besu pod|
 |network-nodes.rpcReplicaCount|int|`2`|Number of RPC node replicas provisioned via StatefulSet.|
 |network-nodes.securityContext|object|-|Container-level security context applied to Besu containers.|
 |network-nodes.service|object|-|Kubernetes Service definition exposing Besu endpoints.|
@@ -368,7 +373,7 @@ The following table lists the configurable parameters of this chart and their de
 |network-nodes.serviceAccount.create|bool|`true`|Create a ServiceAccount resource automatically for the release.|
 |network-nodes.serviceAccount.name|string|`""`|Existing ServiceAccount name to reuse when creation is disabled.|
 |network-nodes.tolerations|list|-|Tolerations allowing pods to run on nodes with matching taints.|
-|network-nodes.validatorReplicaCount|int|`nil`|Number of validator node replicas participating in consensus. Leave unset to derive from global.validatorReplicaCount.|
+|network-nodes.validatorReplicaCount|int|`4`|Number of validator node replicas participating in consensus. Leave unset to derive from global.validatorReplicaCount.|
 |network-nodes.volumeMounts|list|-|Additional volume mounts applied to Besu containers.|
 |network-nodes.volumes|list|-|Extra volumes attached to Besu pods for custom configuration or secrets.|
 
