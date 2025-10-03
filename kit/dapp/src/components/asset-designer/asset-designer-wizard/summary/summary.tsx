@@ -149,6 +149,9 @@ export const Summary = withForm({
             <form.Field
               name="available"
               validators={{
+                onMount: () => {
+                  void form.validateField("available", "change");
+                },
                 onChangeAsync: async () => {
                   try {
                     const result = await client.system.factory.available({
@@ -188,12 +191,15 @@ export const Summary = withForm({
                       </AlertDescription>
                     </Alert>
                   ) : (
-                    <Alert className="border-green-600 bg-green-50 dark:bg-green-950/20">
-                      <CheckCircle2 className="text-green-600" />
-                      <AlertTitle className="text-green-900 dark:text-green-100">
+                    <Alert
+                      variant="default"
+                      className="border-success bg-success-background text-success"
+                    >
+                      <CheckCircle2 className="text-success" />
+                      <AlertTitle>
                         {t("wizard.steps.summary.availability.available")}
                       </AlertTitle>
-                      <AlertDescription className="text-green-800 dark:text-green-200">
+                      <AlertDescription>
                         {t(
                           "wizard.steps.summary.availability.availableDescription"
                         )}
