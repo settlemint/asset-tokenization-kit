@@ -244,52 +244,38 @@ service:
 ingress:
   # -- (bool) Enable ingress record generation for Graph Node
   enabled: true
-  # -- (string) IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
-  className: "atk-nginx"
+  # -- (string) IngressClass that will be used to implement the Ingress (Kubernetes 1.19+)
+  ingressClassName: "atk-nginx"
   # -- (object) Additional annotations for the Ingress resource
   annotations:
     # -- (string) Enable regex path matching in NGINX ingress
     nginx.ingress.kubernetes.io/use-regex: 'true'
     # -- (string) Rewrite target path using capture group
     nginx.ingress.kubernetes.io/rewrite-target: /$1
-  # -- (list) An array with hosts and paths
-  hosts:
-    # -- (object) Ingress host configuration
-    -
-      # -- (string) Hostname for the ingress rule
-      host: graph.k8s.orb.local
-      # -- (list) List of path configurations for this host
-      paths:
-        # -- (object) Query endpoint path configuration
-        -
-          # -- (string) URL path pattern with regex capture group
-          path: /(.*)
-          # -- (string) Path type for Kubernetes ingress
-          pathType: ImplementationSpecific
-        # -- (object) WebSocket query endpoint path configuration
-        -
-          # -- (string) URL path pattern for WebSocket queries
-          path: /ws/?(.*)
-          # -- (string) Path type for Kubernetes ingress
-          pathType: ImplementationSpecific
-        # -- (object) Admin endpoint path configuration
-        -
-          # -- (string) URL path pattern for admin interface
-          path: /admin/?(.*)
-          # -- (string) Path type for Kubernetes ingress
-          pathType: ImplementationSpecific
-        # -- (object) Indexer endpoint path configuration
-        -
-          # -- (string) URL path pattern for indexer status
-          path: /indexer/?(.*)
-          # -- (string) Path type for Kubernetes ingress
-          pathType: ImplementationSpecific
-        # -- (object) Graphman endpoint path configuration
-        -
-          # -- (string) URL path pattern for graphman interface
-          path: /graphman/?(.*)
-          # -- (string) Path type for Kubernetes ingress
-          pathType: ImplementationSpecific
+  # -- (string) Primary hostname served by the ingress
+  hostname: graph.k8s.orb.local
+  # -- (list) Path rules mapped to Graph Node service ports
+  paths:
+    # -- (object) Query endpoint path configuration
+    - path: /(.*)
+      pathType: ImplementationSpecific
+      servicePortName: http-query
+    # -- (object) WebSocket query endpoint path configuration
+    - path: /ws/?(.*)
+      pathType: ImplementationSpecific
+      servicePortName: http-queryws
+    # -- (object) Admin endpoint path configuration
+    - path: /admin/?(.*)
+      pathType: ImplementationSpecific
+      servicePortName: http-admin
+    # -- (object) Indexer endpoint path configuration
+    - path: /indexer/?(.*)
+      pathType: ImplementationSpecific
+      servicePortName: http-status
+    # -- (object) Graphman endpoint path configuration
+    - path: /graphman/?(.*)
+      pathType: ImplementationSpecific
+      servicePortName: http-status
   # -- (list) TLS configuration for the ingress
   tls: []
   #  - secretName: chart-example-tls

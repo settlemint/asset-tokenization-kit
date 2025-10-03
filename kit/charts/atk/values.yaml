@@ -363,46 +363,53 @@ graph-node:
   ingress:
     # -- (bool) Enable ingress for subgraph queries
     enabled: true
-    # -- (string) IngressClass for Graph Node
-    className: "atk-nginx"
+    # -- (string) IngressClass for Graph Node (Kubernetes 1.19+)
+    ingressClassName: "atk-nginx"
     # -- (object) Ingress annotations for URL rewriting
     annotations:
       # -- (string) Enable regex path matching
       nginx.ingress.kubernetes.io/use-regex: "true"
       # -- (string) Rewrite target for path normalization
       nginx.ingress.kubernetes.io/rewrite-target: /$1
-    # -- (list) Ingress host rules for Graph Node endpoints
-    hosts:
+    # -- (string) Hostname for Graph Node. Update for your environment.
+    hostname: graph.k8s.orb.local
+    # -- (list) Path configurations for different Graph Node endpoints
+    paths:
       -
-        # -- (string) Hostname for Graph Node. Update for your environment.
-        host: graph.k8s.orb.local
-        # -- (list) Path configurations for different Graph Node endpoints
-        paths:
-          -
-            # -- (string) Query endpoint path
-            path: /(.*)
-            # -- (string) Path matching type
-            pathType: ImplementationSpecific
-          -
-            # -- (string) WebSocket endpoint path
-            path: /ws/?(.*)
-            # -- (string) Path matching type
-            pathType: ImplementationSpecific
-          -
-            # -- (string) Admin API path
-            path: /admin/?(.*)
-            # -- (string) Path matching type
-            pathType: ImplementationSpecific
-          -
-            # -- (string) Indexer status path
-            path: /indexer/?(.*)
-            # -- (string) Path matching type
-            pathType: ImplementationSpecific
-          -
-            # -- (string) Graph management path
-            path: /graphman/?(.*)
-            # -- (string) Path matching type
-            pathType: ImplementationSpecific
+        # -- (string) Query endpoint path
+        path: /(.*)
+        # -- (string) Path matching type
+        pathType: ImplementationSpecific
+        # -- (string) Service port name handling HTTP queries
+        servicePortName: http-query
+      -
+        # -- (string) WebSocket endpoint path
+        path: /ws/?(.*)
+        # -- (string) Path matching type
+        pathType: ImplementationSpecific
+        # -- (string) Service port name handling WebSocket traffic
+        servicePortName: http-queryws
+      -
+        # -- (string) Admin API path
+        path: /admin/?(.*)
+        # -- (string) Path matching type
+        pathType: ImplementationSpecific
+        # -- (string) Service port name exposing the admin API
+        servicePortName: http-admin
+      -
+        # -- (string) Indexer status path
+        path: /indexer/?(.*)
+        # -- (string) Path matching type
+        pathType: ImplementationSpecific
+        # -- (string) Service port name serving indexer status APIs
+        servicePortName: http-status
+      -
+        # -- (string) Graph management path
+        path: /graphman/?(.*)
+        # -- (string) Path matching type
+        pathType: ImplementationSpecific
+        # -- (string) Service port name serving graphman APIs
+        servicePortName: http-status
   # -- (object) OpenShift Route configuration
   openShiftRoute:
     # -- (bool) Enable OpenShift route

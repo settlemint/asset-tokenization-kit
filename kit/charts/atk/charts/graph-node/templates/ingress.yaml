@@ -1,5 +1,20 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "graph-node.fullname" . -}}
+{{- $defaultHost := "" -}}
+{{- if and .Values.ingress.hosts (gt (len .Values.ingress.hosts) 0) -}}
+  {{- $firstHost := index .Values.ingress.hosts 0 -}}
+  {{- if $firstHost.host }}{{- $defaultHost = $firstHost.host -}}{{- end -}}
+{{- end -}}
+{{- $primaryHost := default $defaultHost .Values.ingress.hostname -}}
+{{- $primaryPaths := .Values.ingress.paths -}}
+{{- if or (not $primaryPaths) (eq (len $primaryPaths) 0) -}}
+  {{- if and .Values.ingress.hosts (gt (len .Values.ingress.hosts) 0) -}}
+    {{- $primaryHostMap := index .Values.ingress.hosts 0 -}}
+    {{- if and (not $primaryHost) $primaryHostMap.host }}{{- $primaryHost = $primaryHostMap.host -}}{{- end -}}
+    {{- if $primaryHostMap.paths }}{{- $primaryPaths = $primaryHostMap.paths -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $hasNewSchema := and $primaryPaths (gt (len $primaryPaths) 0) -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -11,8 +26,9 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- if .Values.ingress.className }}
-  ingressClassName: {{ .Values.ingress.className }}
+  {{- $className := default .Values.ingress.className .Values.ingress.ingressClassName }}
+  {{- if $className }}
+  ingressClassName: {{ $className | quote }}
   {{- end }}
   {{- if .Values.ingress.tls }}
   tls:
@@ -25,6 +41,42 @@ spec:
     {{- end }}
   {{- end }}
   rules:
+    {{- if $hasNewSchema }}
+    {{- if $primaryHost }}
+    - host: {{ $primaryHost | quote }}
+      http:
+        paths:
+          {{- range $primaryPaths }}
+          {{- $pathVal := default "/" .path -}}
+          {{- $pathType := default "ImplementationSpecific" .pathType -}}
+          {{- $serviceName := default (printf "%s-combined" $fullName) .serviceName -}}
+          {{- $servicePortName := .servicePortName -}}
+          {{- $servicePortNumber := .servicePort -}}
+          {{- if and (not $servicePortName) (not $servicePortNumber) -}}
+            {{- if eq $pathVal "/ws/?(.*)" -}}
+              {{- $servicePortName = "http-queryws" -}}
+            {{- else if eq $pathVal "/admin/?(.*)" -}}
+              {{- $servicePortName = "http-admin" -}}
+            {{- else if or (eq $pathVal "/indexer/?(.*)") (eq $pathVal "/graphman/?(.*)") -}}
+              {{- $servicePortName = "http-status" -}}
+            {{- else -}}
+              {{- $servicePortName = "http-query" -}}
+            {{- end -}}
+          {{- end -}}
+          - path: {{ $pathVal }}
+            pathType: {{ $pathType }}
+            backend:
+              service:
+                name: {{ $serviceName }}
+                port:
+                  {{- if $servicePortName }}
+                  name: {{ $servicePortName }}
+                  {{- else }}
+                  number: {{ $servicePortNumber | default 80 }}
+                  {{- end }}
+          {{- end }}
+    {{- end }}
+    {{- else }}
     {{- range .Values.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
@@ -64,5 +116,6 @@ spec:
                   name: http-query
           {{- end }}
           {{- end }}
+    {{- end }}
     {{- end }}
 {{- end }}

@@ -93,27 +93,15 @@ The following table lists the configurable parameters of this chart and their de
 |ingress.annotations|object|-|Additional annotations for the Ingress resource|
 |ingress.annotations."nginx.ingress.kubernetes.io/rewrite-target"|string|`"/$1"`|Rewrite target path using capture group|
 |ingress.annotations."nginx.ingress.kubernetes.io/use-regex"|string|`"true"`|Enable regex path matching in NGINX ingress|
-|ingress.className|string|`"atk-nginx"`|IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)|
 |ingress.enabled|bool|`true`|Enable ingress record generation for Graph Node|
-|ingress.hosts|list|-|An array with hosts and paths|
-|ingress.hosts[0]|object|-|Ingress host configuration|
-|ingress.hosts[0].host|string|`"graph.k8s.orb.local"`|Hostname for the ingress rule|
-|ingress.hosts[0].paths|list|-|List of path configurations for this host|
-|ingress.hosts[0].paths[0]|object|-|Query endpoint path configuration|
-|ingress.hosts[0].paths[0].path|string|`"/(.*)"`|URL path pattern with regex capture group|
-|ingress.hosts[0].paths[0].pathType|string|`"ImplementationSpecific"`|Path type for Kubernetes ingress|
-|ingress.hosts[0].paths[1]|object|-|WebSocket query endpoint path configuration|
-|ingress.hosts[0].paths[1].path|string|`"/ws/?(.*)"`|URL path pattern for WebSocket queries|
-|ingress.hosts[0].paths[1].pathType|string|`"ImplementationSpecific"`|Path type for Kubernetes ingress|
-|ingress.hosts[0].paths[2]|object|-|Admin endpoint path configuration|
-|ingress.hosts[0].paths[2].path|string|`"/admin/?(.*)"`|URL path pattern for admin interface|
-|ingress.hosts[0].paths[2].pathType|string|`"ImplementationSpecific"`|Path type for Kubernetes ingress|
-|ingress.hosts[0].paths[3]|object|-|Indexer endpoint path configuration|
-|ingress.hosts[0].paths[3].path|string|`"/indexer/?(.*)"`|URL path pattern for indexer status|
-|ingress.hosts[0].paths[3].pathType|string|`"ImplementationSpecific"`|Path type for Kubernetes ingress|
-|ingress.hosts[0].paths[4]|object|-|Graphman endpoint path configuration|
-|ingress.hosts[0].paths[4].path|string|`"/graphman/?(.*)"`|URL path pattern for graphman interface|
-|ingress.hosts[0].paths[4].pathType|string|`"ImplementationSpecific"`|Path type for Kubernetes ingress|
+|ingress.hostname|string|`"graph.k8s.orb.local"`|Primary hostname served by the ingress|
+|ingress.ingressClassName|string|`"atk-nginx"`|IngressClass that will be used to implement the Ingress (Kubernetes 1.19+)|
+|ingress.paths|list|-|Path rules mapped to Graph Node service ports|
+|ingress.paths[0]|object|-|Query endpoint path configuration|
+|ingress.paths[1]|object|-|WebSocket query endpoint path configuration|
+|ingress.paths[2]|object|-|Admin endpoint path configuration|
+|ingress.paths[3]|object|-|Indexer endpoint path configuration|
+|ingress.paths[4]|object|-|Graphman endpoint path configuration|
 |ingress.tls|list|-|TLS configuration for the ingress|
 |initContainer|object|-|Init container configuration|
 |initContainer.image|object|-|Image for init container kubectl|
