@@ -1,4 +1,8 @@
 import { assetDesignerFormOptions } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
+import {
+  AvailabilityStatus,
+  type AvailabilityStatusState,
+} from "@/components/asset-designer/asset-designer-wizard/summary/availability-status";
 import { BondSummaryFields } from "@/components/asset-designer/asset-designer-wizard/summary/bond";
 import { EquitySummaryFields } from "@/components/asset-designer/asset-designer-wizard/summary/equity";
 import { FundSummaryFields } from "@/components/asset-designer/asset-designer-wizard/summary/fund";
@@ -7,7 +11,6 @@ import {
   FormSummaryItem,
 } from "@/components/form/multi-step/form-step";
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { assetClassIcon } from "@/hooks/use-asset-class";
@@ -17,7 +20,7 @@ import { noop } from "@/lib/utils/noop";
 import { client, orpc } from "@/orpc/orpc-client";
 import type { ComplianceModulePairInput } from "@atk/zod/compliance";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle2, Shield } from "lucide-react";
+import { Shield } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export const Summary = withForm({
@@ -163,47 +166,18 @@ export const Summary = withForm({
             onChangeAsyncDebounceMs: 500,
           }}
         >
-          {(field) => (
-            <div className="mt-4">
-              {field.state.meta.isValidating ? (
-                <Alert>
-                  <AlertDescription>
-                    {t("wizard.steps.summary.availability.checking")}
-                  </AlertDescription>
-                </Alert>
-              ) : field.state.meta.errors.length > 0 ? (
-                <Alert variant="destructive">
-                  <AlertTitle>
-                    {field.state.meta.errors[0] === "error"
-                      ? t("wizard.steps.summary.availability.error")
-                      : t("wizard.steps.summary.availability.unavailable")}
-                  </AlertTitle>
-                  <AlertDescription>
-                    {field.state.meta.errors[0] === "error"
-                      ? t("wizard.steps.summary.availability.errorDescription")
-                      : t(
-                          "wizard.steps.summary.availability.unavailableDescription"
-                        )}
-                  </AlertDescription>
-                </Alert>
-              ) : (
-                <Alert
-                  variant="default"
-                  className="border-success bg-success-background text-success"
-                >
-                  <CheckCircle2 className="text-success" />
-                  <AlertTitle>
-                    {t("wizard.steps.summary.availability.available")}
-                  </AlertTitle>
-                  <AlertDescription>
-                    {t(
-                      "wizard.steps.summary.availability.availableDescription"
-                    )}
-                  </AlertDescription>
-                </Alert>
-              )}
-            </div>
-          )}
+          {(field) => {
+            const errorKey = field.state.meta.errors[0];
+
+            let status: AvailabilityStatusState = "available";
+            if (field.state.meta.isValidating) {
+              status = "loading";
+            } else if (typeof errorKey === "string") {
+              status = errorKey;
+            }
+
+            return <AvailabilityStatus status={status} className="mt-4" />;
+          }}
         </form.Field>
 
         <form.Errors />
