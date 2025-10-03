@@ -42,7 +42,10 @@ export const stablecoinPredictHandler = async (
     PREDICT_STABLECOIN_ADDRESS_QUERY,
     {
       address: context.factoryAddress,
-      ...input,
+      symbol: input.symbol,
+      name: input.name,
+      decimals: input.decimals,
+      countryCode: input.countryCode,
       initialModulePairs: input.initialModulePairs.map((pair) => ({
         module: pair.module,
         params: encodeComplianceParams(pair),
