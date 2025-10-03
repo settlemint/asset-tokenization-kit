@@ -31,10 +31,10 @@ A simple Redis deployment for development environments
 | global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |
 | global.imageRegistry | string | `""` | Global Docker image registry |
 | global.storageClass | string | `""` | Global StorageClass for Persistent Volume(s) |
-| image | object | `{"pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"harbor.settlemint.com/docker.io","repository":"redis","tag":"8.2.1-alpine"}` | Redis image configuration |
+| image | object | `{"pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"docker.io","repository":"redis","tag":"8.2.1-alpine"}` | Redis image configuration |
 | image.pullPolicy | string | `"IfNotPresent"` | Redis image pull policy |
 | image.pullSecrets | list | `[]` | Redis image pull secrets (list) |
-| image.registry | string | `"harbor.settlemint.com/docker.io"` | Redis image registry |
+| image.registry | string | `"docker.io"` | Redis image registry |
 | image.repository | string | `"redis"` | Redis image repository |
 | image.tag | string | `"8.2.1-alpine"` | Redis image tag |
 | livenessProbe | object | `{"enabled":true,"failureThreshold":3,"initialDelaySeconds":30,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}` | Liveness probe configuration |
