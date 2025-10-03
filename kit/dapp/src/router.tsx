@@ -31,6 +31,8 @@ export function createRouter() {
   return getRouter();
 }
 
+const IS_SERVER = globalThis.window === undefined;
+
 export function getRouter() {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -57,7 +59,9 @@ export function getRouter() {
           return failureCount < 3;
         },
         retryDelay: 1000,
-        gcTime: 1000 * 60 * 60 * 24, // 24 hours
+        gcTime: IS_SERVER
+          ? 1000 * 60 * 5 // 5 minutes, balanced to allow reasonable caching while reducing memory consumption
+          : 1000 * 60 * 60 * 24, // 24 hours,
         staleTime: 1000 * 60 * 5, // 5 minutes
         refetchOnMount: (query) => {
           // Always refetch if invalidated
@@ -69,19 +73,15 @@ export function getRouter() {
     },
   });
 
-  const persister = createAsyncStoragePersister({
-    storage:
-      globalThis.window === undefined ? undefined : globalThis.localStorage,
-    key: "atk-query-cache",
-    throttleTime: 1000,
-    serialize: (data) => stringify(data),
-    deserialize: async (data) => parse(data),
-  });
+  if (!IS_SERVER && process.env.NODE_ENV !== "development") {
+    const persister = createAsyncStoragePersister({
+      storage: globalThis.localStorage,
+      key: "atk-query-cache",
+      throttleTime: 1000,
+      serialize: (data) => stringify(data),
+      deserialize: async (data) => parse(data),
+    });
 
-  if (
-    globalThis.window !== undefined &&
-    process.env.NODE_ENV !== "development"
-  ) {
     const buildId = process.env.BUILD_ID ?? new Date().toISOString();
     void persistQueryClient({
       queryClient,
@@ -96,7 +96,7 @@ export function getRouter() {
     });
   }
 
-  if (globalThis.window !== undefined) {
+  if (!IS_SERVER) {
     broadcastQueryClient({
       queryClient,
       broadcastChannel: "atk-query-sync",

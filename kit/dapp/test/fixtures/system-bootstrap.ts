@@ -360,6 +360,57 @@ export async function createAndRegisterUserIdentities(
   );
 }
 
+export async function issueDefaultKycClaims(
+  orpClient: OrpcClient,
+  users: User[]
+) {
+  await Promise.all(
+    users.map(async (user) => {
+      const userOrpClient = getOrpcClient(await signInWithUser(user));
+      const userIdentity = await userOrpClient.system.identity.me({});
+      const hasKycClaim = userIdentity.claims.some(
+        (c) => c.name === "knowYourCustomer"
+      );
+      const hasAmlClaim = userIdentity.claims.some(
+        (c) => c.name === "antiMoneyLaundering"
+      );
+      const claimsToAdd: Parameters<
+        typeof orpClient.system.identity.claims.issue
+      >[0]["claim"][] = [];
+      if (!hasKycClaim) {
+        claimsToAdd.push({
+          topic: "knowYourCustomer",
+          data: {
+            claim: "kyc-verified",
+          },
+        });
+      }
+      if (!hasAmlClaim) {
+        claimsToAdd.push({
+          topic: "antiMoneyLaundering",
+          data: {
+            claim: "aml-verified",
+          },
+        });
+      }
+      if (claimsToAdd.length > 0) {
+        await Promise.all(
+          claimsToAdd.map((claim) =>
+            orpClient.system.identity.claims.issue({
+              walletVerification: {
+                secretVerificationCode: DEFAULT_PINCODE,
+                verificationType: "PINCODE",
+              },
+              targetIdentityAddress: userIdentity.id,
+              claim,
+            })
+          )
+        );
+      }
+    })
+  );
+}
+
 function extractRequiredRoles(permissions: Record<string, RoleRequirement>) {
   return Object.entries(permissions).reduce((acc, [, requiredRoles]) => {
     const roles = getRoles([requiredRoles]);

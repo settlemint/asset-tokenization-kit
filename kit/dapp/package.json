@@ -13,7 +13,7 @@
     "watch": "tsgo --noEmit --watch",
     "build": "bun --bun vite build",
     "postbuild": "bun run tools/fix-noble-crypto.ts",
-    "start": "bun run server.ts",
+    "start": "bun run .output/server/index.mjs",
     "shadcn": "bunx shadcn@canary",
     "settlemint:connect:local": "settlemint connect --instance local",
     "codegen:settlemint": "settlemint codegen",
