@@ -25,7 +25,7 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -77,8 +77,7 @@ export function AddTrustedIssuerSheet({
   const form = useAppForm({
     defaultValues: createDefaultFormValues(),
     onSubmit: ({ value }) => {
-      const { issuerAddress, claimTopicIds, walletVerification } =
-        TrustedIssuerCreateInputSchema.parse(value);
+      const { issuerAddress, claimTopicIds, walletVerification } = value;
 
       const action = (async () => {
         if (!issuerAddress) {
@@ -113,13 +112,17 @@ export function AddTrustedIssuerSheet({
           throw new Error(missingIdentityErrorMessage);
         }
 
-        const payload = TrustedIssuerCreateInputSchema.parse({
+        const parseResult = TrustedIssuerCreateInputSchema.safeParse({
           issuerAddress: trustedIssuerIdentity.id,
           claimTopicIds,
           walletVerification,
         });
 
-        return createMutation.mutateAsync(payload);
+        if (!parseResult.success) {
+          throw new Error(parseResult.error.message);
+        }
+
+        return createMutation.mutateAsync(parseResult.data);
       })();
 
       return toast.promise(action, {
@@ -151,12 +154,6 @@ export function AddTrustedIssuerSheet({
     ? claimTopicIds.length > 0
     : false;
 
-  // Keep a stable reference to the form instance for effects
-  const formRef = useRef(form);
-  useEffect(() => {
-    formRef.current = form;
-  }, [form]);
-
   const validateClaimTopicsSelection = (
     topics: string[] | undefined,
     issuer?: EthereumAddress
@@ -169,12 +166,12 @@ export function AddTrustedIssuerSheet({
 
   useEffect(() => {
     if (!issuerAddress) {
-      const currentTopics = formRef.current.getFieldValue("claimTopicIds");
+      const currentTopics = form.getFieldValue("claimTopicIds");
       if (Array.isArray(currentTopics) && currentTopics.length > 0) {
-        formRef.current.setFieldValue("claimTopicIds", []);
+        form.setFieldValue("claimTopicIds", []);
       }
     }
-  }, [issuerAddress]);
+  }, [issuerAddress, form]);
 
   // Create a lookup map for O(1) topic retrieval and options
   const { topicLookup, topicOptions } = useMemo(() => {
