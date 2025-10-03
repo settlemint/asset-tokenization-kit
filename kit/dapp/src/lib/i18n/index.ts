@@ -436,7 +436,8 @@ void i18n.init({
   fallbackLng: ["en-US", "en"],
   defaultNS,
   ns: namespaces, // Load all namespaces initially for SSR
-  supportedLngs: [...supportedLanguages],
+  supportedLngs: [...supportedLanguages, "en"],
+  nonExplicitSupportedLngs: true,
   interpolation: {
     escapeValue: false, // React already escapes values
   },

@@ -106,23 +106,23 @@ export function DataTablePagination<TData>({
   return (
     <div className="flex items-center justify-between px-2 py-1">
       <div className="flex-1 text-xs">
-        {totalCount === undefined ? (
-          <div className="text-muted-foreground">
-            {table.getAllColumns().some((column) => column.id === "select") &&
-              table.getFilteredSelectedRowModel().rows.length > 0 && (
-                <span>
-                  {t("selectedRowsInfo", {
-                    selected: table.getFilteredSelectedRowModel().rows.length,
-                    total: table.getFilteredRowModel().rows.length,
-                  })}
-                </span>
-              )}
-          </div>
-        ) : (
-          <span className="tabular-nums text-muted-foreground">
-            {t("totalItems", { count: totalCount })}
-          </span>
-        )}
+        <div className="text-muted-foreground">
+          {table.getAllColumns().some((column) => column.id === "select") &&
+          table.getFilteredSelectedRowModel().rows.length > 0 ? (
+            <span>
+              {t("selectedRowsInfo", {
+                selected: table.getFilteredSelectedRowModel().rows.length,
+                total: table.getFilteredRowModel().rows.length,
+              })}
+            </span>
+          ) : (
+            totalCount !== undefined && (
+              <span className="tabular-nums">
+                {t("totalItems", { count: totalCount })}
+              </span>
+            )
+          )}
+        </div>
       </div>
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
