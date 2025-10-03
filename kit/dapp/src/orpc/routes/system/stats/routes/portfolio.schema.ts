@@ -10,7 +10,7 @@ export const StatsPortfolioOutputSchema = z.object({
   data: z.array(
     z.object({
       timestamp: timestamp(),
-      totalValueInBaseCurrency: z.string(),
+      totalValueInBaseCurrency: z.number(),
     })
   ),
 });

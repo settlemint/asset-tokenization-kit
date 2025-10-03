@@ -9,7 +9,7 @@ import {
 } from "viem";
 import { anvil } from "viem/chains";
 
-const logger = createLogger();
+const logger = createLogger({ level: "info" });
 
 // Create a test client for time manipulation
 export const testClient = createTestClient({

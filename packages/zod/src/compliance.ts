@@ -9,7 +9,6 @@
 
 import { z } from "zod";
 import { ethereumAddress } from "./ethereum-address";
-import { ethereumHex } from "./ethereum-hex";
 import { expressionNodeWithGroups } from "./expression-node";
 import { isoCountryCodeNumeric } from "./iso-country-code";
 
@@ -64,28 +63,6 @@ export const ComplianceTypeIdEnum = {
     "SMARTIdentityVerificationComplianceModule",
 } as const;
 
-/**
- * Creates a Zod schema that validates a compliance module typeId.
- * @remarks
- * Features:
- * - Strict enum validation against predefined compliance module typeIds
- * - Type-safe inference
- * - Descriptive error messages for invalid inputs
- * - Case-sensitive matching (must match exact casing)
- * @returns A Zod enum schema for compliance module typeId validation
- * @example
- * ```typescript
- * const schema = complianceTypeId();
- * schema.parse("AddressBlockListComplianceModule"); // Returns "AddressBlockListComplianceModule" as ComplianceTypeId
- * schema.parse("invalid"); // Throws ZodError
- *
- * // Use in form validation
- * const formSchema = z.object({
- *   typeId: complianceTypeId(),
- *   params: z.array(z.string())
- * });
- * ```
- */
 export const complianceTypeId = () =>
   z.enum(complianceTypeIds).describe("Compliance module typeId identifier");
 
@@ -119,19 +96,19 @@ export const smartIdentityVerificationValues = () =>
  * // Address-based compliance module
  * const addressParams = complianceParams().parse({
  *   typeId: "AddressBlockListComplianceModule",
- *   params: ["0x742d35Cc6634C0532925a3b844Bc9e7595f6eD2"]
+ *   values: ["0x742d35Cc6634C0532925a3b844Bc9e7595f6eD2"]
  * });
  *
  * // Country-based compliance module
  * const countryParams = complianceParams().parse({
  *   typeId: "CountryAllowListComplianceModule",
- *   params: ["US", "GB", "FR"]
+ *   values: ["840", "056"]
  * });
  *
  * // Identity verification module (no params)
  * const smartParams = complianceParams().parse({
  *   typeId: "SMARTIdentityVerificationComplianceModule",
- *   params: []
+ *   values: []
  * });
  * ```
  */
@@ -142,68 +119,62 @@ export const complianceParams = () =>
         typeId: z.literal("AddressBlockListComplianceModule"),
         values: addressBlockListValues(),
         module: ethereumAddress,
-        params: ethereumHex,
       }),
       z.object({
         typeId: z.literal("CountryAllowListComplianceModule"),
         values: countryAllowListValues(),
         module: ethereumAddress,
-        params: ethereumHex,
       }),
       z.object({
         typeId: z.literal("CountryBlockListComplianceModule"),
         values: countryBlockListValues(),
         module: ethereumAddress,
-        params: ethereumHex,
       }),
       z.object({
         typeId: z.literal("IdentityAllowListComplianceModule"),
         values: identityAllowListValues(),
         module: ethereumAddress,
-        params: ethereumHex,
       }),
       z.object({
         typeId: z.literal("IdentityBlockListComplianceModule"),
         values: identityBlockListValues(),
         module: ethereumAddress,
-        params: ethereumHex,
       }),
       z.object({
         typeId: z.literal("SMARTIdentityVerificationComplianceModule"),
         values: smartIdentityVerificationValues(),
         module: ethereumAddress,
-        params: ethereumHex,
       }),
     ])
 
     .describe("Compliance module configuration with type-specific parameters");
 
 /**
- * Schema for a compliance module pair that combines typeId and params.
+ * Schema for a compliance module pair that combines typeId and values.
  * This is used for the 'initialModulePairs' field in token creation schemas.
  * @example
  * ```typescript
  * // Address-based compliance module pair
  * const addressPair = complianceModulePair().parse({
  *   typeId: "AddressBlockListComplianceModule",
- *   params: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"]
+ *   values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"]
  * });
  *
  * // Country-based compliance module pair
  * const countryPair = complianceModulePair().parse({
  *   typeId: "CountryAllowListComplianceModule",
- *   params: ["US", "GB"]
+ *   values: ["840", "276"]
  * });
  *
  * // Array of compliance module pairs
  * const modulePairs = complianceModulePairArray().parse([
- *   { typeId: "AddressBlockListComplianceModule", params: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"] },
- *   { typeId: "CountryAllowListComplianceModule", params: ["US", "GB"] }
+ *   { typeId: "AddressBlockListComplianceModule", values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"] },
+ *   { typeId: "CountryAllowListComplianceModule", values: ["840", "276"] }
  * ]);
  * ```
  */
 export const complianceModulePair = () =>
-  complianceParams().describe("Compliance module pair with typeId and params");
+  complianceParams().describe("Compliance module pair with typeId and values");
 
 /**
  * Creates an array validator for multiple compliance module pairs.
@@ -213,8 +184,8 @@ export const complianceModulePair = () =>
  * ```typescript
  * const schema = complianceModulePairArray();
  * schema.parse([
- *   { typeId: "AddressBlockListComplianceModule", params: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"] },
- *   { typeId: "CountryAllowListComplianceModule", params: ["US", "GB"] }
+ *   { typeId: "AddressBlockListComplianceModule", values: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"] },
+ *   { typeId: "CountryAllowListComplianceModule", values: ["840", "276"] }
  * ]); // Valid
  * schema.parse([]); // Valid - empty array allowed
  * ```
@@ -239,7 +210,7 @@ export type ComplianceTypeId = z.infer<ReturnType<typeof complianceTypeId>>;
 export type ComplianceParams = z.infer<ReturnType<typeof complianceParams>>;
 
 /**
- * Type representing a compliance module pair with typeId and params.
+ * Type representing a compliance module pair with typeId and values.
  * Used for token initialization and configuration.
  */
 export type ComplianceModulePairInput = z.input<

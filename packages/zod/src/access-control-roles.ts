@@ -61,6 +61,7 @@ export const accessControlRole = z.enum(roles);
 export type AccessControlRole = z.infer<typeof accessControlRole>;
 
 export const assetAccessControlRoles: AccessControlRoles[] = [
+  "admin",
   "custodian",
   "emergency",
   "governance",

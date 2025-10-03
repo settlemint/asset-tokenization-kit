@@ -44,10 +44,13 @@ describe("Token list", () => {
   it("can list tokens", async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
-    const tokens = await client.token.list({});
-    expect(tokens.length).toBeGreaterThanOrEqual(2);
-    expect(tokens.find((t) => t.id === depositToken.id)).toBeDefined();
-    expect(tokens.find((t) => t.id === stablecoinToken.id)).toBeDefined();
+    const response = await client.token.list({});
+    expect(response.tokens.length).toBeGreaterThanOrEqual(2);
+    expect(response.tokens.find((t) => t.id === depositToken.id)).toBeDefined();
+    expect(
+      response.tokens.find((t) => t.id === stablecoinToken.id)
+    ).toBeDefined();
+    expect(response.totalCount).toBeGreaterThanOrEqual(2);
   });
 
   it("can list tokens by token factory", async () => {
@@ -61,11 +64,14 @@ describe("Token list", () => {
     if (!depositTokenFactory) {
       throw new Error("Deposit token factory not found");
     }
-    const tokens = await client.token.list({
+    const response = await client.token.list({
       tokenFactory: depositTokenFactory.id,
     });
-    expect(tokens.length).toBeGreaterThanOrEqual(1);
-    expect(tokens.find((t) => t.id === depositToken.id)).toBeDefined();
-    expect(tokens.find((t) => t.id === stablecoinToken.id)).toBeUndefined();
+    expect(response.tokens.length).toBeGreaterThanOrEqual(1);
+    expect(response.tokens.find((t) => t.id === depositToken.id)).toBeDefined();
+    expect(
+      response.tokens.find((t) => t.id === stablecoinToken.id)
+    ).toBeUndefined();
+    expect(response.totalCount).toBeGreaterThanOrEqual(1);
   });
 });

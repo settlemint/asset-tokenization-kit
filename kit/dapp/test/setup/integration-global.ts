@@ -42,11 +42,15 @@ export async function setup() {
       bootstrapAddons(orpClient),
       (async () => {
         await setupDefaultAdminRoles(orpClient);
-        await setupTrustedClaimIssuers(orpClient);
+        await setupTrustedClaimIssuers(orpClient, DEFAULT_ISSUER);
       })(),
-      setupDefaultIssuerRoles(orpClient),
+      setupDefaultIssuerRoles(orpClient, DEFAULT_ISSUER),
       setDefaultSystemSettings(orpClient),
-      createAndRegisterUserIdentities(orpClient),
+      createAndRegisterUserIdentities(orpClient, [
+        DEFAULT_ADMIN,
+        DEFAULT_INVESTOR,
+        DEFAULT_ISSUER,
+      ]),
     ]);
 
     stopApi();

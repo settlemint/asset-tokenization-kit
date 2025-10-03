@@ -1,3 +1,5 @@
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type {
   ExpressionNode,
   ExpressionWithGroups,
@@ -21,7 +23,13 @@ export function ExpressionBuilder({
   expressionWithGroups,
   onChange,
 }: ExpressionBuilderProps) {
-  const { t } = useTranslation("components");
+  const { t } = useTranslation(["components", "compliance-modules"]);
+  const helperCopy = t(
+    "compliance-modules:modules.SMARTIdentityVerificationComplianceModule.helper",
+    {
+      returnObjects: true,
+    }
+  );
 
   const [inputMode, setInputMode] = useState<"topic" | "operator">(
     expressionWithGroups.length > 0 ? "operator" : "topic"
@@ -65,11 +73,34 @@ export function ExpressionBuilder({
   const showEndGroup = openGroups > 0;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold mb-4">
-          {t("expressionBuilder.title")}
-        </h3>
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("expressionBuilder.title")}</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <Alert>
+          <AlertTitle>{helperCopy.howToTitle}</AlertTitle>
+          <AlertDescription className="space-y-3">
+            <div className="space-y-2">
+              <ul className="mt-2 space-y-1 list-disc pl-5">
+                {helperCopy.howToItems.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="space-y-2">
+              <p>{helperCopy.examplesTitle}</p>
+              <div className="space-y-2">
+                <ul className="mt-2 space-y-1 list-disc pl-5">
+                  {helperCopy.examples.map((example) => (
+                    <li key={example}>{example}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </AlertDescription>
+        </Alert>
 
         <ExpressionDisplay
           expressionWithGroups={expressionWithGroups}
@@ -92,7 +123,7 @@ export function ExpressionBuilder({
             />
           )}
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
