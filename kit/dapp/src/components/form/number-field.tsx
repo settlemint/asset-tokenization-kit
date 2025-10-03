@@ -34,6 +34,13 @@ export function NumberField({
     [field]
   );
 
+  const errorClass = React.useMemo(() => {
+    return errorClassNames({
+      isTouched: field.state.meta.isTouched,
+      errors: field.state.meta.errors,
+    });
+  }, [field.state.meta.isTouched, field.state.meta.errors]);
+
   const renderInput = React.useCallback(
     ({ className }: { className?: string }) => {
       return (
@@ -43,11 +50,11 @@ export function NumberField({
           type="number"
           inputMode="decimal"
           onChange={handleChange}
-          className={cn(className, errorClassNames(field.state.meta))}
+          className={cn(className, errorClass)}
         />
       );
     },
-    [field.name, field.state.value, field.state.meta, handleChange]
+    [field.name, field.state.value, handleChange, errorClass]
   );
 
   return (
