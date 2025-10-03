@@ -271,7 +271,7 @@ The following table lists the configurable parameters of this chart and their de
 | initContainer.downloadAbi | 1 | 25m | 150m | 64Mi | 128Mi | - |
 | initContainer.tcpCheck | 1 | 10m | 100m | 32Mi | 64Mi | - |
 
-| **Totals** | - | %!f(int64=00) cores (35m) | %!f(int64=00) cores (250m) | 96Mi (0.09Gi) | 192Mi (0.19Gi) | - |
+| **Totals** | - | 0.04 cores (35m) | 0.25 cores (250m) | 96Mi (0.09Gi) | 192Mi (0.19Gi) | - |
 
 ## Maintainers
 
