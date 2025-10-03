@@ -532,6 +532,6 @@ tests:
     # -- (string) Test image repository
     repository: busybox
     # -- (string) Test image tag
-    tag: "1.36"
+    tag: "1.37"
     # -- (string) Test image pull policy
     pullPolicy: IfNotPresent
