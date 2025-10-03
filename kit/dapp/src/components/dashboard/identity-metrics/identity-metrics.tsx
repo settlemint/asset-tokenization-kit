@@ -58,7 +58,7 @@ export function IdentityMetrics() {
       </div>
 
       <div className="w-full">
-        <IdentityGrowthAreaChart range="trailing24Hours" />
+        <IdentityGrowthAreaChart range="trailing7Days" />
       </div>
     </div>
   );

@@ -54,12 +54,12 @@ vi.mock("@/orpc/orpc-client", () => ({
                   },
                   data: [
                     {
-                      timestamp: `${from.getTime() / 1000}`,
-                      totalValueInBaseCurrency: "1000",
+                      timestamp: from,
+                      totalValueInBaseCurrency: 1000,
                     },
                     {
-                      timestamp: `${to.getTime() / 1000}`,
-                      totalValueInBaseCurrency: "1100",
+                      timestamp: to,
+                      totalValueInBaseCurrency: 1100,
                     },
                   ],
                 });
@@ -143,6 +143,9 @@ vi.mock("react-i18next", () => ({
       }
 
       return key;
+    },
+    i18n: {
+      language: "en",
     },
   }),
 }));
