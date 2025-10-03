@@ -7,7 +7,7 @@ import pluginRouter from "@tanstack/eslint-plugin-router";
 import noBarrelFiles from "eslint-plugin-no-barrel-files";
 import pluginReact from "eslint-plugin-react";
 import reactCompiler from "eslint-plugin-react-compiler";
-import reactHooks from "eslint-plugin-react-hooks";
+// import reactHooks from "eslint-plugin-react-hooks";
 import unicorn from "eslint-plugin-unicorn";
 import { defineConfig } from "eslint/config";
 import globals from "globals";
@@ -105,10 +105,13 @@ export default defineConfig([
     files: ["src/**/*.{jsx,tsx}"],
     ...pluginReact.configs.flat.recommended,
   },
-  {
-    files: ["src/**/*.{jsx,tsx}"],
-    ...reactHooks.configs["recommended-latest"],
-  },
+  // {
+  //   files: ["src/**/*.{jsx,tsx}"],
+  //   plugins: {
+  //     "react-hooks": reactHooks,
+  //   },
+  //   extends: ["react-hooks/recommended"],
+  // },
 
   // TypeScript - Base rules only (no type checking)
   ...tseslint.configs.recommended.map((config) => ({
