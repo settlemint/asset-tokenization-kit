@@ -144,73 +144,67 @@ export const Summary = withForm({
           </FormSummaryCard>
         )}
 
-        <form.Subscribe selector={(state) => state.values}>
-          {(formValues) => (
-            <form.Field
-              name="available"
-              validators={{
-                onMount: () => {
-                  void form.validateField("available", "change");
-                },
-                onChangeAsync: async () => {
-                  try {
-                    const result = await client.system.factory.available({
-                      parameters: formValues,
-                    });
-                    return result.isAvailable ? undefined : "unavailable";
-                  } catch {
-                    return "error";
-                  }
-                },
-                onChangeAsyncDebounceMs: 500,
-              }}
-            >
-              {(field) => (
-                <div className="mt-4">
-                  {field.state.meta.isValidating ? (
-                    <Alert>
-                      <AlertDescription>
-                        {t("wizard.steps.summary.availability.checking")}
-                      </AlertDescription>
-                    </Alert>
-                  ) : field.state.meta.errors.length > 0 ? (
-                    <Alert variant="destructive">
-                      <AlertTitle>
-                        {field.state.meta.errors[0] === "error"
-                          ? t("wizard.steps.summary.availability.error")
-                          : t("wizard.steps.summary.availability.unavailable")}
-                      </AlertTitle>
-                      <AlertDescription>
-                        {field.state.meta.errors[0] === "error"
-                          ? t(
-                              "wizard.steps.summary.availability.errorDescription"
-                            )
-                          : t(
-                              "wizard.steps.summary.availability.unavailableDescription"
-                            )}
-                      </AlertDescription>
-                    </Alert>
-                  ) : (
-                    <Alert
-                      variant="default"
-                      className="border-success bg-success-background text-success"
-                    >
-                      <CheckCircle2 className="text-success" />
-                      <AlertTitle>
-                        {t("wizard.steps.summary.availability.available")}
-                      </AlertTitle>
-                      <AlertDescription>
-                        {t(
-                          "wizard.steps.summary.availability.availableDescription"
+        <form.Field
+          name="available"
+          validators={{
+            onMount: () => {
+              void form.validateField("available", "change");
+            },
+            onChangeAsync: async () => {
+              try {
+                const result = await client.system.factory.available({
+                  parameters: values,
+                });
+                return result.isAvailable ? undefined : "unavailable";
+              } catch {
+                return "error";
+              }
+            },
+            onChangeAsyncDebounceMs: 500,
+          }}
+        >
+          {(field) => (
+            <div className="mt-4">
+              {field.state.meta.isValidating ? (
+                <Alert>
+                  <AlertDescription>
+                    {t("wizard.steps.summary.availability.checking")}
+                  </AlertDescription>
+                </Alert>
+              ) : field.state.meta.errors.length > 0 ? (
+                <Alert variant="destructive">
+                  <AlertTitle>
+                    {field.state.meta.errors[0] === "error"
+                      ? t("wizard.steps.summary.availability.error")
+                      : t("wizard.steps.summary.availability.unavailable")}
+                  </AlertTitle>
+                  <AlertDescription>
+                    {field.state.meta.errors[0] === "error"
+                      ? t("wizard.steps.summary.availability.errorDescription")
+                      : t(
+                          "wizard.steps.summary.availability.unavailableDescription"
                         )}
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                </div>
+                  </AlertDescription>
+                </Alert>
+              ) : (
+                <Alert
+                  variant="default"
+                  className="border-success bg-success-background text-success"
+                >
+                  <CheckCircle2 className="text-success" />
+                  <AlertTitle>
+                    {t("wizard.steps.summary.availability.available")}
+                  </AlertTitle>
+                  <AlertDescription>
+                    {t(
+                      "wizard.steps.summary.availability.availableDescription"
+                    )}
+                  </AlertDescription>
+                </Alert>
               )}
-            </form.Field>
+            </div>
           )}
-        </form.Subscribe>
+        </form.Field>
 
         <form.Errors />
       </FormStepLayout>
