@@ -224,9 +224,10 @@ The following table lists the configurable parameters of this chart and their de
 |hasura.image.repository|string|`"hasura/graphql-engine"`|Hasura image repository|
 |hasura.image.tag|string|`"v2.48.6"`|Hasura version tag|
 |hasura.ingress|object|-|Ingress configuration for Hasura console and API|
-|hasura.ingress.className|string|`"atk-nginx"`|IngressClass for Hasura ingress resources|
+|hasura.ingress.className|string|`"atk-nginx"`|Deprecated: Use `ingressClassName` instead. Will be removed in future versions.|
 |hasura.ingress.enabled|bool|`true`|Enable ingress exposure for Hasura|
 |hasura.ingress.hostName|string|`"hasura.k8s.orb.local"`|Hostname for Hasura GraphQL endpoint. Update for your environment.|
+|hasura.ingress.ingressClassName|string|`"atk-nginx"`|IngressClass for Hasura ingress resources (Kubernetes 1.19+ standard)|
 |hasura.resources|object|-|Resource requests and limits for Hasura deployment|
 |hasura.resources.limits.cpu|string|`"1000m"`|CPU limit for Hasura pods|
 |hasura.resources.limits.memory|string|`"2048Mi"`|Memory limit for Hasura pods|
@@ -242,8 +243,9 @@ The following table lists the configurable parameters of this chart and their de
 |ipfs.cluster.resources.requests.memory|string|`"1024Mi"`|Memory request for cluster pods|
 |ipfs.enabled|bool|`true`|Enable deployment of the IPFS cluster stack|
 |ipfs.ingress|object|-|Ingress configuration for the IPFS cluster endpoints|
-|ipfs.ingress.className|string|`"atk-nginx"`|IngressClass for IPFS cluster ingress resources|
+|ipfs.ingress.className|string|`"atk-nginx"`|Deprecated: Use `ingressClassName` instead. Will be removed in future versions.|
 |ipfs.ingress.enabled|bool|`true`|Enable ingress exposure for IPFS cluster endpoints|
+|ipfs.ingress.ingressClassName|string|`"atk-nginx"`|IngressClass for IPFS cluster ingress resources (Kubernetes 1.19+ standard)|
 |ipfs.ipfs|object|-|IPFS peer configuration overrides|
 |ipfs.ipfs.image.registry|string|`"docker.io"`|OCI registry for the Kubo image|
 |ipfs.ipfs.resources|object|-|Resource requests and limits for IPFS peer pods|
@@ -454,11 +456,26 @@ The following table lists the configurable parameters of this chart and their de
 |support.ingress-nginx.global.image.registry|string|`"registry.k8s.io"`|OCI registry for ingress-nginx assets|
 |support.ingress-nginx.replicaCount|int|`1`|Number of ingress controller replicas|
 |support.minio|object|-|MinIO object storage configuration|
+|support.minio.consoleIngress|object|-|MinIO console ingress configuration|
+|support.minio.consoleIngress.enabled|bool|`true`|Enable ingress for MinIO console dashboard|
+|support.minio.consoleIngress.hosts|list|-|Hostnames for MinIO console access|
+|support.minio.consoleIngress.ingressClassName|string|`"atk-nginx"`|IngressClass for MinIO console ingress resources|
+|support.minio.consoleIngress.path|string|`"/"`|Path prefix for MinIO console ingress|
 |support.minio.enabled|bool|`true`|Enable MinIO object storage deployment|
 |support.minio.image|object|-|MinIO server container image|
 |support.minio.image.repository|string|`"docker.io/minio/minio"`|MinIO server image repository|
+|support.minio.ingress|object|-|Ingress configuration for MinIO console|
+|support.minio.ingress.enabled|bool|`true`|Enable ingress for MinIO web console|
+|support.minio.ingress.hosts|list|-|Hostnames for MinIO access|
+|support.minio.ingress.ingressClassName|string|`"atk-nginx"`|IngressClass for MinIO|
+|support.minio.ingress.path|string|`"/"`|Path prefix for MinIO console|
 |support.minio.mcImage|object|-|MinIO client (mc) container image|
 |support.minio.mcImage.repository|string|`"docker.io/minio/minio"`|MinIO client image repository|
+|support.minio.resources|object|-|Resource requests and limits for MinIO pods|
+|support.minio.resources.limits.cpu|string|`"500m"`|CPU limit for MinIO pods|
+|support.minio.resources.limits.memory|string|`"1024Mi"`|Memory limit for MinIO pods|
+|support.minio.resources.requests.cpu|string|`"50m"`|CPU request for MinIO pods|
+|support.minio.resources.requests.memory|string|`"512Mi"`|Memory request for MinIO pods|
 |support.postgresql|object|-|PostgreSQL database configuration|
 |support.postgresql.enabled|bool|`true`|Enable PostgreSQL deployment|
 |support.postgresql.image|object|-|PostgreSQL container image|
@@ -491,20 +508,6 @@ The following table lists the configurable parameters of this chart and their de
 |support.reloader.resources.limits.memory|string|`"256Mi"`|Memory limit for Reloader pods|
 |support.reloader.resources.requests.cpu|string|`"100m"`|CPU request for Reloader pods|
 |support.reloader.resources.requests.memory|string|`"128Mi"`|Memory request for Reloader pods|
-|support.resources.consoleIngress|object|-|MinIO console ingress configuration|
-|support.resources.consoleIngress.enabled|bool|`true`|Enable ingress for MinIO console dashboard|
-|support.resources.consoleIngress.hosts|list|-|Hostnames for MinIO console access|
-|support.resources.consoleIngress.ingressClassName|string|`"atk-nginx"`|IngressClass for MinIO console ingress resources|
-|support.resources.consoleIngress.path|string|`"/"`|Path prefix for MinIO console ingress|
-|support.resources.ingress|object|-|Ingress configuration for MinIO console|
-|support.resources.ingress.enabled|bool|`true`|Enable ingress for MinIO web console|
-|support.resources.ingress.hosts|list|-|Hostnames for MinIO access|
-|support.resources.ingress.ingressClassName|string|`"atk-nginx"`|IngressClass for MinIO|
-|support.resources.ingress.path|string|`"/"`|Path prefix for MinIO console|
-|support.resources.limits.cpu|string|`"500m"`|CPU limit for MinIO pods|
-|support.resources.limits.memory|string|`"1024Mi"`|Memory limit for MinIO pods|
-|support.resources.requests.cpu|string|`"50m"`|CPU request for MinIO pods|
-|support.resources.requests.memory|string|`"512Mi"`|Memory request for MinIO pods|
 |txsigner|object|-|Transaction Signer service configuration|
 |txsigner.config|object|-|Transaction signer wallet configuration|
 |txsigner.config.derivationPath|string|`"m/44'/60'/0'/0/0"`|BIP44 derivation path for Ethereum accounts|
@@ -3746,8 +3749,8 @@ The following table lists the configurable parameters of this chart and their de
 | observability.tempo.server | 1 | 100m | 240m | 192Mi | 384Mi | - |
 | observability.victoria-metrics-single.server | 1 | 180m | 420m | 320Mi | 600Mi | 10Gi |
 | portal | 1 | 100m | 1000m | 512Mi | 1024Mi | - |
-| support | 1 | 50m | 500m | 512Mi | 1024Mi | - |
 | support.ingress-nginx.controller | 1 | 200m | 600m | 512Mi | 1024Mi | - |
+| support.minio | 1 | 50m | 500m | 512Mi | 1024Mi | - |
 | support.redis | 1 | 100m | 200m | 128Mi | 256Mi | 1Gi |
 | support.reloader | 1 | 100m | 200m | 128Mi | 256Mi | - |
 | txsigner | 1 | 150m | 500m | 256Mi | 512Mi | - |

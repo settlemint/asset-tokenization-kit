@@ -430,8 +430,10 @@ hasura:
   ingress:
     # -- (bool) Enable ingress exposure for Hasura
     enabled: true
-    # -- (string) IngressClass for Hasura ingress resources
+    # -- (string) Deprecated: Use `ingressClassName` instead. Will be removed in future versions.
     className: "atk-nginx"
+    # -- (string) IngressClass for Hasura ingress resources (Kubernetes 1.19+ standard)
+    ingressClassName: "atk-nginx"
     # -- (string) Hostname for Hasura GraphQL endpoint. Update for your environment.
     hostName: hasura.k8s.orb.local
   # -- (object) Resource requests and limits for Hasura deployment
@@ -495,8 +497,10 @@ ipfs:
   ingress:
     # -- (bool) Enable ingress exposure for IPFS cluster endpoints
     enabled: true
-    # -- (string) IngressClass for IPFS cluster ingress resources
+    # -- (string) Deprecated: Use `ingressClassName` instead. Will be removed in future versions.
     className: "atk-nginx"
+    # -- (string) IngressClass for IPFS cluster ingress resources (Kubernetes 1.19+ standard)
+    ingressClassName: "atk-nginx"
     hostnames:
       api: ipfs-cluster.k8s.orb.local
   # -- (object) Test pod image configuration
@@ -734,17 +738,17 @@ support:
       # -- (string) MinIO client image repository
       repository: docker.io/minio/minio
     # -- (object) Resource requests and limits for MinIO pods
-  resources:
-    requests:
-      # -- (string) CPU request for MinIO pods
-      cpu: "50m"
-      # -- (string) Memory request for MinIO pods
-      memory: "512Mi"
-    limits:
-      # -- (string) CPU limit for MinIO pods
-      cpu: "500m"
-      # -- (string) Memory limit for MinIO pods
-      memory: "1024Mi"
+    resources:
+      requests:
+        # -- (string) CPU request for MinIO pods
+        cpu: "50m"
+        # -- (string) Memory request for MinIO pods
+        memory: "512Mi"
+      limits:
+        # -- (string) CPU limit for MinIO pods
+        cpu: "500m"
+        # -- (string) Memory limit for MinIO pods
+        memory: "1024Mi"
     # -- (object) Ingress configuration for MinIO console
     ingress:
       # -- (bool) Enable ingress for MinIO web console
