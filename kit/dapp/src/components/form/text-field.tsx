@@ -41,9 +41,9 @@ export function TextField({
   const errorClass = React.useMemo(() => {
     return errorClassNames({
       isTouched: field.state.meta.isTouched,
-      isValid: field.state.meta.isValid,
+      errors: field.state.meta.errors,
     });
-  }, [field.state.meta.isTouched, field.state.meta.isValid]);
+  }, [field.state.meta.isTouched, field.state.meta.errors]);
 
   const renderInput = React.useCallback(
     ({ className }: { className?: string }) => {
