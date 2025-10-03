@@ -4,13 +4,13 @@
 
 The following endpoints are now available:
 
-  Blockchain JSON-RPC: https://{{ (index .Values.erpc.ingress.hosts 0).host | default "rpc.k8s.orb.local" }}
+  Blockchain JSON-RPC: https://{{ .Values.erpc.ingress.hostname | default "rpc.k8s.orb.local" }}
   Blockchain Explorer: https://{{ .Values.blockscout.frontend.ingress.hostname | default "explorer.k8s.orb.local" }}
              The Graph: https://{{ (index .Values "graph-node" "ingress" "hosts" 0).host | default "graph.k8s.orb.local" }}
                 Hasura: https://{{ .Values.hasura.ingress.hostName | default "hasura.k8s.orb.local" }}
                Grafana: https://{{ (index .Values "observability" "grafana" "ingress" "hosts" 0 ) | default "grafana.k8s.orb.local" }}
 {{- if .Values.dapp.enabled }}
-                  DApp: https://{{ (index .Values.dapp.ingress.hosts 0).host | default "dapp.k8s.orb.local" }}
+                  DApp: https://{{ .Values.dapp.ingress.hostname | default "dapp.k8s.orb.local" }}
 {{- end }}
 
 ========================================================================
@@ -22,8 +22,8 @@ to configure the following environment variables:
 
 Configuration Details:
   Instance Type: standalone
-  Blockchain RPC: {{- if and .Values.txsigner.enabled .Values.txsigner.ingress.enabled }} https://{{ .Values.txsigner.ingress.hostname | default "txsigner.k8s.orb.local" }}{{- else }} https://{{ (index .Values.erpc.ingress.hosts 0).host | default "rpc.k8s.orb.local" }}{{- end }}
-  Load Balancer: https://{{ (index .Values.erpc.ingress.hosts 0).host | default "rpc.k8s.orb.local" }}
+  Blockchain RPC: {{- if and .Values.txsigner.enabled .Values.txsigner.ingress.enabled }} https://{{ .Values.txsigner.ingress.hostname | default "txsigner.k8s.orb.local" }}{{- else }} https://{{ .Values.erpc.ingress.hostname | default "rpc.k8s.orb.local" }}{{- end }}
+  Load Balancer: https://{{ .Values.erpc.ingress.hostname | default "rpc.k8s.orb.local" }}
   Hasura GraphQL: https://{{ .Values.hasura.ingress.hostName | default "hasura.k8s.orb.local" }}/v1/graphql
   Hasura Admin Secret: {{ .Values.dapp.secretEnv.SETTLEMINT_HASURA_ADMIN_SECRET | default "atk" }}
   Database URL: {{ printf "postgresql://hasura:atk@postgresql.%s:5432/hasura" (include "atk.extractDomain" (dict "url" (.Values.hasura.ingress.hostName | default "hasura.k8s.orb.local"))) }}
@@ -45,8 +45,8 @@ Configuration Details:
 Create the following files in your project root directory:
 
 === .env ===
-SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT={{- if and .Values.txsigner.enabled .Values.txsigner.ingress.enabled }}https://{{ .Values.txsigner.ingress.hostname | default "txsigner.k8s.orb.local" }}{{- else }}https://{{ (index .Values.erpc.ingress.hosts 0).host | default "rpc.k8s.orb.local" }}{{- end }}
-SETTLEMINT_BLOCKCHAIN_NODE_OR_LOAD_BALANCER_JSON_RPC_ENDPOINT=https://{{ (index .Values.erpc.ingress.hosts 0).host | default "rpc.k8s.orb.local" }}
+SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT={{- if and .Values.txsigner.enabled .Values.txsigner.ingress.enabled }}https://{{ .Values.txsigner.ingress.hostname | default "txsigner.k8s.orb.local" }}{{- else }}https://{{ .Values.erpc.ingress.hostname | default "rpc.k8s.orb.local" }}{{- end }}
+SETTLEMINT_BLOCKCHAIN_NODE_OR_LOAD_BALANCER_JSON_RPC_ENDPOINT=https://{{ .Values.erpc.ingress.hostname | default "rpc.k8s.orb.local" }}
 SETTLEMINT_BLOCKSCOUT_GRAPHQL_ENDPOINT=https://{{ .Values.blockscout.frontend.ingress.hostname | default "explorer.k8s.orb.local" }}/api/v1/graphql
 SETTLEMINT_HASURA_ENDPOINT=https://{{ .Values.hasura.ingress.hostName | default "hasura.k8s.orb.local" }}/v1/graphql
 SETTLEMINT_INSTANCE=standalone
