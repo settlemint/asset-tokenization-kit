@@ -23,7 +23,7 @@
     "helm:extract-env": "bun run tools/extract-env.ts",
     "helm:connect": "cd ../../ && bunx settlemint connect -a",
     "helm:subgraph": "bash tools/helm-subgraph.sh",
-    "docs": "helm-docs --chart-search-root=. --skip-version-footer",
+    "docs": "helm-docs --chart-search-root=. --document-dependency-values --skip-version-footer",
     "aws-marketplace": "bun run tools/aws-marketplace-automation.ts"
   },
   "dependencies": {},
