@@ -15,8 +15,8 @@ description: >
 
   blockchain infrastructure.
 type: application
-version: 2.0.0-alpha.17
-appVersion: 2.0.0-alpha.17
+version: 2.0.0-alpha.18
+appVersion: 2.0.0-alpha.18
 icon: https://console.settlemint.com/android-chrome-512x512.png
 home: https://github.com/settlemint/starterkit-asset-tokenization
 sources:

@@ -172,7 +172,7 @@
       {{- if and (ne $reqCpu "-") (gt $replicas 1) (gt $reqCpuMilli 0.0) -}}
         {{- $total := mul $reqCpuMilli (float64 $replicas) -}}
         {{- if regexMatch "(?i)m$" (trim $reqCpu) -}}
-          {{- $reqCpuDisplay = printf "%s (total %.0fm)" $reqCpu (float64 $total) -}}
+          {{- $reqCpuDisplay = printf "%s (total %.0fm)" $reqCpu $total -}}
         {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" (trim $reqCpu) -}}
           {{- $totalCores := div $total 1000 -}}
           {{- $totalCoresStr := printf "%.2f" $totalCores | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
@@ -185,7 +185,7 @@
       {{- if and (ne $limCpu "-") (gt $replicas 1) (gt $limCpuMilli 0.0) -}}
         {{- $total := mul $limCpuMilli (float64 $replicas) -}}
         {{- if regexMatch "(?i)m$" (trim $limCpu) -}}
-          {{- $limCpuDisplay = printf "%s (total %.0fm)" $limCpu (float64 $total) -}}
+          {{- $limCpuDisplay = printf "%s (total %.0fm)" $limCpu $total -}}
         {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" (trim $limCpu) -}}
           {{- $totalCores := div $total 1000 -}}
           {{- $totalCoresStr := printf "%.2f" $totalCores | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
@@ -202,7 +202,7 @@
           {{- $totalGiStr := printf "%.2f" $totalGi | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
           {{- $reqMemDisplay = printf "%s (total %sGi)" $reqMem $totalGiStr -}}
         {{- else -}}
-          {{- $reqMemDisplay = printf "%s (total %.0fMi)" $reqMem (float64 $total) -}}
+          {{- $reqMemDisplay = printf "%s (total %.0fMi)" $reqMem $total -}}
         {{- end -}}
       {{- end -}}
       {{- $limMemDisplay := $limMem -}}
@@ -213,7 +213,7 @@
           {{- $totalGiStr := printf "%.2f" $totalGi | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
           {{- $limMemDisplay = printf "%s (total %sGi)" $limMem $totalGiStr -}}
         {{- else -}}
-          {{- $limMemDisplay = printf "%s (total %.0fMi)" $limMem (float64 $total) -}}
+          {{- $limMemDisplay = printf "%s (total %.0fMi)" $limMem $total -}}
         {{- end -}}
       {{- end -}}
       {{- $storageDisplay := $storage -}}
@@ -226,7 +226,7 @@
           {{- $totalGiStr := printf "%.2f" $totalGi | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
           {{- $storageDisplay = printf "%s (total %sGi)" $storage $totalGiStr -}}
         {{- else -}}
-          {{- $storageDisplay = printf "%s (total %.0fMi)" $storage (float64 $totalStorage) -}}
+          {{- $storageDisplay = printf "%s (total %.0fMi)" $storage $totalStorage -}}
         {{- end -}}
       {{- end -}}
       {{- $totalReqCpu := mul $reqCpuMilli (float64 $replicas) -}}
@@ -254,7 +254,7 @@
 |-----------|----------|-------------|-----------|----------------|--------------|---------|
 {{ $values := fromYaml (toYaml .ChartValues) -}}
 {{ $agg := dict "reqCpu" 0.0 "limCpu" 0.0 "reqMem" 0.0 "limMem" 0.0 "storage" 0.0 -}}
-{{- template "chart.resourcesRows" (dict "m" $values "path" "" "agg" $agg) -}}
+{{ template "chart.resourcesRows" (dict "m" $values "path" "" "agg" $agg) }}
 | **Totals** | - | {{ template "chart.sumCpuDisplay" (dict "milli" (index $agg "reqCpu")) }} | {{ template "chart.sumCpuDisplay" (dict "milli" (index $agg "limCpu")) }} | {{ template "chart.sumMemDisplay" (dict "mi" (index $agg "reqMem")) }} | {{ template "chart.sumMemDisplay" (dict "mi" (index $agg "limMem")) }} | {{ template "chart.sumStorageDisplay" (dict "mi" (index $agg "storage")) }} |
 {{- end -}}
 
@@ -275,25 +275,24 @@ The following table lists the configurable parameters of this chart and their de
 
 {{ template "chart.resourcesTable" . }}
 
-{{ $chartVals := fromYaml (toYaml .ChartValues) -}}
-{{- with index $chartVals "network" -}}
-  {{- with index . "network-nodes" -}}
-    {{- $validators := int (default 0 (index . "validatorReplicaCount")) -}}
-    {{- $rpc := int (default 0 (index . "rpcReplicaCount")) -}}
-    {{- $total := add $validators $rpc -}}
-    {{- if or (gt $validators 0) (gt $rpc 0) -}}
+{{ $vals := fromYaml (toYaml .ChartValues) }}
+{{ with $vals }}
+{{ $validators := int (default 0 (index . "validatorReplicaCount")) }}
+{{ $rpc := int (default 0 (index . "rpcReplicaCount")) }}
+{{ $total := add $validators $rpc }}
+{{ if or (gt $validators 0) (gt $rpc 0) }}
 
-## Network Node Replica Breakdown
+## Replica Breakdown
 
 | Workload | Replicas | Notes |
 |----------|----------|-------|
-| Validators | {{ $validators }} | Primary consensus nodes |
-| RPC | {{ $rpc }} | Public JSON-RPC endpoints |
-| **Total Besu Pods** | {{ $total }} | Sum used for capacity planning |
+| Validators | {{ $validators }} | StatefulSet `besu-node-validator` |
+| RPC | {{ $rpc }} | StatefulSet `besu-node-rpc` |
+| **Total Besu Pods** | {{ $total }} | Validators + RPC |
 
-    {{- end }}
-  {{- end -}}
-{{- end }}
+{{ end }}
+
+{{- end -}}
 
 {{ template "chart.maintainersSection" . }}
 

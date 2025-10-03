@@ -8,11 +8,15 @@ global:
     kots.io/app-slug: settlemint-atk
 
 
+
+# -- (int) Total number of Besu pods (validators + RPC). Used for documentation summaries.
+replicaCount: 6
+
 # -- (int) Number of RPC node replicas provisioned via StatefulSet.
 rpcReplicaCount: 2
 
 # -- (int) Number of validator node replicas participating in consensus. Leave unset to derive from global.validatorReplicaCount.
-validatorReplicaCount:
+validatorReplicaCount: 4
 
 # -- (object) Container image configuration shared by validator and RPC pods.
 image:
@@ -538,13 +542,16 @@ openShiftRoute:
 
 # -- (object) CPU and memory requests or limits for Besu containers.
 resources:
-  {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  requests:
+    # -- (string) CPU request per Besu pod
+    cpu: "60m"
+    # -- (string) Memory request per Besu pod
+    memory: "512Mi"
+  limits:
+    # -- (string) CPU limit per Besu pod (approx. 3x request to target ~33% utilization).
+    cpu: "180m"
+    # -- (string) Memory limit per Besu pod
+    memory: "1024Mi"
 
 # -- (object) Liveness probe configuration ensuring containers restart when unhealthy.
 livenessProbe:
@@ -648,7 +655,7 @@ initContainer:
       # -- (object) Maximum resource limits.
       limits:
         # -- (string) CPU limit.
-        cpu: 100m
+        cpu: 300m
         # -- (string) Memory limit.
         memory: 64Mi
       # -- (object) Minimum resource requests.

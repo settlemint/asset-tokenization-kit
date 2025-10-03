@@ -1,309 +1,281 @@
-## Introduction
+{{- define "chart.sumCpuDisplay" -}}
+{{- $m := float64 (default 0 .milli) -}}
+{{- if le $m (float64 0) -}}
+-
+{{- else -}}
+  {{- $cores := mulf $m 0.001 -}}
+  {{- printf "%.2f cores (%.0fm)" $cores $m -}}
+{{- end -}}
+{{- end -}}
 
-TxSigner is a secure transaction signing service for blockchain applications that provides automated transaction signing, key management, and transaction queuing capabilities. It offers a secure environment for managing private keys and signing transactions with support for multiple signing strategies.
+{{- define "chart.sumMemDisplay" -}}
+{{- $mi := float64 (default 0 .mi) -}}
+{{- if le $mi (float64 0) -}}
+-
+{{- else -}}
+  {{- $gi := divf $mi 1024 -}}
+  {{- printf "%.0fMi (%.2fGi)" $mi $gi -}}
+{{- end -}}
+{{- end -}}
 
-### Key Features
+{{- define "chart.sumStorageDisplay" -}}
+{{- $mi := float64 (default 0 .mi) -}}
+{{- if le $mi (float64 0) -}}
+-
+{{- else -}}
+  {{- $gi := divf $mi 1024 -}}
+  {{- printf "%.0fMi (%.2fGi)" $mi $gi -}}
+{{- end -}}
+{{- end -}}
 
-- **Multiple signing strategies** (local, KMS, HSM)
-- **Secure key management** with encrypted storage
-- **Transaction queuing** and nonce management
-- **Rate limiting** and access control
-- **Comprehensive audit logging**
-- **Prometheus metrics** for monitoring
-- **Support for multiple blockchain networks**
+{{- define "chart.renderDefaultCell" -}}
+{{- $type := lower .Type -}}
+{{- if or (eq $type "object") (eq $type "map") (eq $type "array") (eq $type "list") -}}
+-
+{{- else -}}
+  {{- if .Default -}}{{ .Default -}}{{- else -}}{{ .AutoDefault -}}{{- end -}}
+{{- end -}}
+{{- end -}}
 
-### Benefits
+{{- define "chart.valuesTable" -}}
+{{- if .Sections.Sections -}}
+  {{- range .Sections.Sections -}}
 
-- Centralized signing service for distributed applications
-- Reduced risk of private key exposure
-- Automated nonce management prevents transaction conflicts
-- Built-in rate limiting protects against abuse
-- Audit trail for compliance requirements
+###{{.SectionName}}
 
-### Use Cases
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+{{- range .SectionItems }}
+|{{.Key}}|{{.Type}}|{{template "chart.renderDefaultCell" .}}|{{if .Description}}{{.Description}}{{else}}{{.AutoDescription}}{{end}}|
+{{- end }}
+  {{- end -}}
+  {{- if .Sections.DefaultSection.SectionItems -}}
 
-- DeFi applications requiring automated transactions
-- NFT minting services
-- Token distribution systems
-- Bridge operators
-- Any application requiring secure transaction signing
+###{{.Sections.DefaultSection.SectionName}}
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+{{- range .Sections.DefaultSection.SectionItems }}
+|{{.Key}}|{{.Type}}|{{template "chart.renderDefaultCell" .}}|{{if .Description}}{{.Description}}{{else}}{{.AutoDescription}}{{end}}|
+{{- end }}
+  {{- end -}}
+{{- else -}}
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+{{- range .Values }}
+|{{.Key}}|{{.Type}}|{{template "chart.renderDefaultCell" .}}|{{if .Description}}{{.Description}}{{else}}{{.AutoDescription}}{{end}}|
+{{- end }}
+{{- end -}}
+{{- end -}}
+
+{{- define "chart.resourcesRows" -}}
+{{- $map := .m -}}
+{{- $path := .path -}}
+{{- $agg := .agg | default (dict) -}}
+{{- range $key, $val := $map -}}
+  {{- if and (kindIs "map" $val) (not (or (eq $key "resources") (eq $key "requests") (eq $key "limits") (eq $key "persistence") (eq $key "persistentVolume") (eq $key "persistentvolume"))) }}
+    {{- $name := $key -}}
+    {{- if $path }}{{- $name = printf "%s.%s" $path $key }}{{- end -}}
+    {{- $res := index $val "resources" -}}
+    {{- $reqCpu := "-" -}}
+    {{- $reqMem := "-" -}}
+    {{- $limCpu := "-" -}}
+    {{- $limMem := "-" -}}
+    {{- if kindIs "map" $res -}}
+      {{- $requests := index $res "requests" -}}
+      {{- if kindIs "map" $requests }}
+        {{- if hasKey $requests "cpu" }}{{- $reqCpu = printf "%v" (index $requests "cpu") -}}{{- end -}}
+        {{- if hasKey $requests "memory" }}{{- $reqMem = printf "%v" (index $requests "memory") -}}{{- end -}}
+      {{- end -}}
+      {{- $limits := index $res "limits" -}}
+      {{- if kindIs "map" $limits }}
+        {{- if hasKey $limits "cpu" }}{{- $limCpu = printf "%v" (index $limits "cpu") -}}{{- end -}}
+        {{- if hasKey $limits "memory" }}{{- $limMem = printf "%v" (index $limits "memory") -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $storage := "-" -}}
+    {{- if hasKey $val "persistence" -}}
+      {{- $p := index $val "persistence" -}}
+      {{- if kindIs "map" $p -}}
+        {{- if hasKey $p "size" }}{{- $storage = printf "%v" (index $p "size") -}}{{- else if hasKey $p "volumeSize" }}{{- $storage = printf "%v" (index $p "volumeSize") -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if and (eq $storage "-") (hasKey $val "persistentVolume") -}}
+      {{- $pv := index $val "persistentVolume" -}}
+      {{- if kindIs "map" $pv -}}
+        {{- if hasKey $pv "size" }}{{- $storage = printf "%v" (index $pv "size") -}}{{- else if hasKey $pv "volumeSize" }}{{- $storage = printf "%v" (index $pv "volumeSize") -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $hasData := or (ne $reqCpu "-") (ne $limCpu "-") (ne $reqMem "-") (ne $limMem "-") (ne $storage "-") -}}
+    {{- $replicas := 1 -}}
+    {{- if hasKey $val "replicaCount" -}}
+      {{- $candidate := int (default 1 (index $val "replicaCount")) -}}
+      {{- if gt $candidate 0 }}{{- $replicas = $candidate -}}{{- end -}}
+    {{- else if hasKey $val "replicas" -}}
+      {{- $candidate := int (default 1 (index $val "replicas")) -}}
+      {{- if gt $candidate 0 }}{{- $replicas = $candidate -}}{{- end -}}
+    {{- end -}}
+    {{- if lt $replicas 1 }}{{- $replicas = 1 -}}{{- end -}}
+    {{- if $hasData -}}
+      {{- $reqCpuMilli := 0.0 -}}
+      {{- if ne $reqCpu "-" -}}
+        {{- $trim := trim $reqCpu -}}
+        {{- if regexMatch "(?i)m$" $trim -}}
+          {{- $reqCpuMilli = float64 (regexReplaceAll "(?i)m$" $trim "") -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" $trim -}}
+          {{- $reqCpuMilli = mul (float64 $trim) 1000 -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $limCpuMilli := 0.0 -}}
+      {{- if ne $limCpu "-" -}}
+        {{- $trim := trim $limCpu -}}
+        {{- if regexMatch "(?i)m$" $trim -}}
+          {{- $limCpuMilli = float64 (regexReplaceAll "(?i)m$" $trim "") -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" $trim -}}
+          {{- $limCpuMilli = mul (float64 $trim) 1000 -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $reqMemMi := 0.0 -}}
+      {{- if ne $reqMem "-" -}}
+        {{- $trim := trim $reqMem -}}
+        {{- if regexMatch "(?i)Mi$" $trim -}}
+          {{- $reqMemMi = float64 (regexReplaceAll "(?i)Mi$" $trim "") -}}
+        {{- else if regexMatch "(?i)Gi$" $trim -}}
+          {{- $reqMemMi = mul (float64 (regexReplaceAll "(?i)Gi$" $trim "")) 1024 -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" $trim -}}
+          {{- $reqMemMi = float64 $trim -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $limMemMi := 0.0 -}}
+      {{- if ne $limMem "-" -}}
+        {{- $trim := trim $limMem -}}
+        {{- if regexMatch "(?i)Mi$" $trim -}}
+          {{- $limMemMi = float64 (regexReplaceAll "(?i)Mi$" $trim "") -}}
+        {{- else if regexMatch "(?i)Gi$" $trim -}}
+          {{- $limMemMi = mul (float64 (regexReplaceAll "(?i)Gi$" $trim "")) 1024 -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" $trim -}}
+          {{- $limMemMi = float64 $trim -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $storageMi := 0.0 -}}
+      {{- if ne $storage "-" -}}
+        {{- $trim := trim $storage -}}
+        {{- if regexMatch "(?i)Mi$" $trim -}}
+          {{- $storageMi = float64 (regexReplaceAll "(?i)Mi$" $trim "") -}}
+        {{- else if regexMatch "(?i)Gi$" $trim -}}
+          {{- $storageMi = mul (float64 (regexReplaceAll "(?i)Gi$" $trim "")) 1024 -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" $trim -}}
+          {{- $storageMi = float64 $trim -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $reqCpuDisplay := $reqCpu -}}
+      {{- if and (ne $reqCpu "-") (gt $replicas 1) (gt $reqCpuMilli 0.0) -}}
+        {{- $total := mul $reqCpuMilli (float64 $replicas) -}}
+        {{- if regexMatch "(?i)m$" (trim $reqCpu) -}}
+          {{- $reqCpuDisplay = printf "%s (total %.0fm)" $reqCpu $total -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" (trim $reqCpu) -}}
+          {{- $totalCores := div $total 1000 -}}
+          {{- $totalCoresStr := printf "%.2f" $totalCores | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
+          {{- $reqCpuDisplay = printf "%s (total %s)" $reqCpu $totalCoresStr -}}
+        {{- else -}}
+          {{- $reqCpuDisplay = printf "%s (x%d)" $reqCpu $replicas -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $limCpuDisplay := $limCpu -}}
+      {{- if and (ne $limCpu "-") (gt $replicas 1) (gt $limCpuMilli 0.0) -}}
+        {{- $total := mul $limCpuMilli (float64 $replicas) -}}
+        {{- if regexMatch "(?i)m$" (trim $limCpu) -}}
+          {{- $limCpuDisplay = printf "%s (total %.0fm)" $limCpu $total -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" (trim $limCpu) -}}
+          {{- $totalCores := div $total 1000 -}}
+          {{- $totalCoresStr := printf "%.2f" $totalCores | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
+          {{- $limCpuDisplay = printf "%s (total %s)" $limCpu $totalCoresStr -}}
+        {{- else -}}
+          {{- $limCpuDisplay = printf "%s (x%d)" $limCpu $replicas -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $reqMemDisplay := $reqMem -}}
+      {{- if and (ne $reqMem "-") (gt $replicas 1) (gt $reqMemMi 0.0) -}}
+        {{- $total := mul $reqMemMi (float64 $replicas) -}}
+        {{- if regexMatch "(?i)Gi$" (trim $reqMem) -}}
+          {{- $totalGi := div $total 1024 -}}
+          {{- $totalGiStr := printf "%.2f" $totalGi | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
+          {{- $reqMemDisplay = printf "%s (total %sGi)" $reqMem $totalGiStr -}}
+        {{- else -}}
+          {{- $reqMemDisplay = printf "%s (total %.0fMi)" $reqMem $total -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $limMemDisplay := $limMem -}}
+      {{- if and (ne $limMem "-") (gt $replicas 1) (gt $limMemMi 0.0) -}}
+        {{- $total := mul $limMemMi (float64 $replicas) -}}
+        {{- if regexMatch "(?i)Gi$" (trim $limMem) -}}
+          {{- $totalGi := div $total 1024 -}}
+          {{- $totalGiStr := printf "%.2f" $totalGi | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
+          {{- $limMemDisplay = printf "%s (total %sGi)" $limMem $totalGiStr -}}
+        {{- else -}}
+          {{- $limMemDisplay = printf "%s (total %.0fMi)" $limMem $total -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $storageDisplay := $storage -}}
+      {{- if and (ne $storage "-") (gt $replicas 1) (gt $storageMi 0.0) -}}
+        {{- $total := mul $storageMi (float64 $replicas) -}}
+        {{- if regexMatch "(?i)Gi$" (trim $storage) -}}
+          {{- $totalGi := div $total 1024 -}}
+          {{- $totalGiStr := printf "%.2f" $totalGi | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
+          {{- $storageDisplay = printf "%s (total %sGi)" $storage $totalGiStr -}}
+        {{- else -}}
+          {{- $storageDisplay = printf "%s (total %.0fMi)" $storage $total -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $totalReqCpu := mul $reqCpuMilli (float64 $replicas) -}}
+      {{- $totalLimCpu := mul $limCpuMilli (float64 $replicas) -}}
+      {{- $totalReqMem := mul $reqMemMi (float64 $replicas) -}}
+      {{- $totalLimMem := mul $limMemMi (float64 $replicas) -}}
+      {{- $totalStorage := mul $storageMi (float64 $replicas) -}}
+      {{- if $agg -}}
+        {{- if gt (float64 $totalReqCpu) 0.0 }}{{- $_ := set $agg "reqCpu" (add (index $agg "reqCpu") (float64 $totalReqCpu)) -}}{{- end -}}
+        {{- if gt (float64 $totalLimCpu) 0.0 }}{{- $_ := set $agg "limCpu" (add (index $agg "limCpu") (float64 $totalLimCpu)) -}}{{- end -}}
+        {{- if gt (float64 $totalReqMem) 0.0 }}{{- $_ := set $agg "reqMem" (add (index $agg "reqMem") (float64 $totalReqMem)) -}}{{- end -}}
+        {{- if gt (float64 $totalLimMem) 0.0 }}{{- $_ := set $agg "limMem" (add (index $agg "limMem") (float64 $totalLimMem)) -}}{{- end -}}
+        {{- if gt (float64 $totalStorage) 0.0 }}{{- $_ := set $agg "storage" (add (index $agg "storage") (float64 $totalStorage)) -}}{{- end -}}
+      {{- end -}}
+{{- printf "| %s | %d | %s | %s | %s | %s | %s |\n" $name $replicas $reqCpuDisplay $limCpuDisplay $reqMemDisplay $limMemDisplay $storageDisplay -}}
+    {{- end -}}
+{{ template "chart.resourcesRows" (dict "m" $val "path" $name "agg" $agg) -}}
+  {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "chart.resourcesTable" -}}
+## Resource Summary
+
+| Component | Replicas | Request CPU | Limit CPU | Request Memory | Limit Memory | Storage |
+|-----------|----------|-------------|-----------|----------------|--------------|---------|
+{{ $values := fromYaml (toYaml .ChartValues) -}}
+{{ $agg := dict "reqCpu" 0.0 "limCpu" 0.0 "reqMem" 0.0 "limMem" 0.0 "storage" 0.0 -}}
+{{ template "chart.resourcesRows" (dict "m" $values "path" "" "agg" $agg) }}
+| **Totals** | - | {{ template "chart.sumCpuDisplay" (dict "milli" (index $agg "reqCpu")) }} | {{ template "chart.sumCpuDisplay" (dict "milli" (index $agg "limCpu")) }} | {{ template "chart.sumMemDisplay" (dict "mi" (index $agg "reqMem")) }} | {{ template "chart.sumMemDisplay" (dict "mi" (index $agg "limMem")) }} | {{ template "chart.sumStorageDisplay" (dict "mi" (index $agg "storage")) }} |
+{{- end -}}
+
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+## Configuration
+
+The following table lists the configurable parameters of this chart and their default values.
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "chart.resourcesTable" . }}
 
 {{ template "chart.maintainersSection" . }}
 
 {{ template "chart.sourcesSection" . }}
 
 {{ template "chart.requirementsSection" . }}
-
-## Prerequisites
-
-- Kubernetes 1.19+
-- Helm 3.2.0+
-- Access to a blockchain RPC endpoint
-- Private key or key management service configured
-- PostgreSQL database (defaults target the bundled `support.postgresql` release)
-
-## Connection Requirements
-
-TxSigner inherits its default database credentials from the `global.datastores.txsigner.postgresql`
-configuration. Override individual connection fields by customizing `global.datastores.txsigner.postgresql`
-or providing chart-level overrides under `txsigner.postgresql`.
-
-## Installing the Chart
-
-To install the chart with the release name `my-release`:
-
-```console
-helm install my-release .
-```
-
-The command deploys TxSigner on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
-
-> **Tip**: List all releases using `helm list`
-
-## Uninstalling the Chart
-
-To uninstall/delete the `my-release` deployment:
-
-```console
-helm delete my-release
-```
-
-The command removes all the Kubernetes components associated with the chart and deletes the release.
-
-## Parameters
-
-{{ template "chart.valuesSection" . }}
-
-## Configuration and installation details
-
-### Signing Strategies
-
-TxSigner supports multiple signing strategies:
-
-#### Local Signing (Development)
-
-```yaml
-config:
-  signingStrategy: "local"
-  privateKey: "0x..." # Not recommended for production
-  # OR use existing secret
-  existingSecret: "my-signing-key"
-  existingSecretKey: "private-key"
-```
-
-#### AWS KMS (Production)
-
-```yaml
-config:
-  signingStrategy: "kms"
-  kms:
-    provider: "aws"
-    keyId: "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
-    region: "us-east-1"
-```
-
-#### Hardware Security Module (HSM)
-
-```yaml
-config:
-  signingStrategy: "hsm"
-  hsm:
-    module: "/usr/lib/softhsm/libsofthsm2.so"
-    slot: "0"
-    pin: "1234"
-```
-
-### Advanced Configuration
-
-#### Rate Limiting
-
-Configure rate limiting to prevent abuse:
-
-```yaml
-config:
-  rateLimit:
-    enabled: true
-    maxRequestsPerMinute: 60
-    maxRequestsPerHour: 1000
-```
-
-#### Access Control
-
-Restrict which contracts and methods can be called:
-
-```yaml
-config:
-  allowedContracts:
-    - "0x742d35Cc6634C0532925a3b844Bc9e7095931fE0"
-    - "0x..."
-  allowedMethods:
-    - "transfer"
-    - "approve"
-    - "mint"
-```
-
-#### Gas Configuration
-
-Control gas pricing strategies:
-
-```yaml
-config:
-  gas:
-    priceStrategy: "estimator" # or "fixed", "oracle"
-    fixedPrice: 20 # in Gwei, only for fixed strategy
-    limit: 3000000
-    multiplier: 1.1 # for estimator strategy
-```
-
-#### Nonce Management
-
-Configure nonce handling:
-
-```yaml
-config:
-  nonce:
-    strategy: "sequential" # or "parallel"
-    maxPending: 10
-```
-
-### Exposing TxSigner
-
-#### LoadBalancer Service
-
-```yaml
-service:
-  type: LoadBalancer
-  port: 3000
-  metricsPort: 3001
-```
-
-#### Ingress
-
-```yaml
-ingress:
-  enabled: true
-  hostname: txsigner.example.com
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt
-  tls: true
-```
-
-### Metrics and Monitoring
-
-TxSigner exposes Prometheus metrics on port 3001 at the `/metrics` endpoint:
-
-```yaml
-podAnnotations:
-  prometheus.io/scrape: "true"
-  prometheus.io/port: "3001"
-  prometheus.io/path: "/metrics"
-```
-
-Available metrics include:
-- Transaction signing requests
-- Queue depth
-- Signing latency
-- Rate limit violations
-- Error rates
-
-### Security Considerations
-
-#### Network Policies
-
-Restrict network access to TxSigner:
-
-```yaml
-networkPolicy:
-  enabled: true
-  allowExternal: false
-  extraIngress:
-    - from:
-        - podSelector:
-            matchLabels:
-              app.kubernetes.io/name: dapp
-      ports:
-        - protocol: TCP
-          port: 3000
-```
-
-#### Pod Security Context
-
-Run with restricted permissions:
-
-```yaml
-podSecurityContext:
-  enabled: true
-  fsGroup: 1001
-containerSecurityContext:
-  enabled: true
-  runAsUser: 1001
-  runAsNonRoot: true
-  readOnlyRootFilesystem: false
-  allowPrivilegeEscalation: false
-  capabilities:
-    drop: ["ALL"]
-```
-
-### High Availability
-
-Enable autoscaling for high availability:
-
-```yaml
-autoscaling:
-  enabled: true
-  minReplicas: 2
-  maxReplicas: 10
-  builtInMetrics:
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: 70
-```
-
-Configure pod disruption budget:
-
-```yaml
-pdb:
-  enabled: true
-  minAvailable: 1
-```
-
-## Troubleshooting
-
-### TxSigner pods are not starting
-
-Check the pod logs:
-```console
-kubectl logs -l app.kubernetes.io/name=txsigner
-```
-
-### Authentication errors
-
-Verify your private key or KMS configuration:
-```console
-kubectl describe secret txsigner-env
-```
-
-### Connection to RPC endpoint failing
-
-Test RPC connectivity from within the pod:
-```console
-kubectl exec -it deploy/txsigner -- curl -v http://your-rpc-endpoint:8545
-```
-
-### High latency in transaction signing
-
-Check the metrics to identify bottlenecks:
-```console
-kubectl port-forward svc/txsigner 3001:3001
-curl http://localhost:3001/metrics | grep txsigner_signing_duration
-```
-
-### Nonce conflicts
-
-Review nonce management strategy and increase `maxPending` if needed:
-```console
-kubectl logs -l app.kubernetes.io/name=txsigner | grep -i nonce
-```
