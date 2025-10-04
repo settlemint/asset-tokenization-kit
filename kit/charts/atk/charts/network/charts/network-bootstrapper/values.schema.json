@@ -7,10 +7,9 @@
       "type": "object",
       "properties": {
         "chainId": {
-          "description": "Explicit chain ID embedded into the generated genesis artefacts when provided.",
+          "description": "Common labels applied to all resources in the release.",
           "type": [
-            "string",
-            "integer",
+            "object",
             "null"
           ],
           "default": null
@@ -318,22 +317,14 @@
           "default": 30303
         },
         "validators": {
-          "description": "Number of validator identities to generate when building the genesis (default 4).",
-          "type": [
-            "integer",
-            "null"
-          ],
-          "default": 4
-        },
-        "staticNodeDomain": {
-          "description": "DNS suffix appended to generated static node hostnames.",
+          "description": "DNS suffix appended to generated static node hostnames. -- (int) Number of validator identities to generate (default 4).",
           "type": [
             "string",
             "null"
           ],
           "default": null
         },
-        "staticNodeNamespace": {
+        "staticNodeDomain": {
           "description": "Namespace component inserted between service name and domain in static node hostnames.",
           "type": [
             "string",
@@ -341,7 +332,7 @@
           ],
           "default": null
         },
-        "staticNodePort": {
+        "staticNodeNamespace": {
           "description": "TCP P2P port embedded in static node enode URIs.",
           "type": [
             "integer",
@@ -349,7 +340,7 @@
           ],
           "default": null
         },
-        "staticNodeDiscoveryPort": {
+        "staticNodePort": {
           "description": "UDP discovery port embedded in static node enode URIs.",
           "type": [
             "integer",
@@ -357,7 +348,7 @@
           ],
           "default": null
         },
-        "staticNodeServiceName": {
+        "staticNodeDiscoveryPort": {
           "description": "Headless Service name used when constructing static node hostnames.",
           "type": [
             "string",
@@ -365,7 +356,7 @@
           ],
           "default": null
         },
-        "staticNodePodPrefix": {
+        "staticNodeServiceName": {
           "description": "StatefulSet prefix applied to validator pod hostnames.",
           "type": [
             "string",
@@ -373,7 +364,7 @@
           ],
           "default": null
         },
-        "genesisConfigMapName": {
+        "staticNodePodPrefix": {
           "description": "ConfigMap name storing the generated genesis.json payload.",
           "type": [
             "string",
@@ -381,7 +372,7 @@
           ],
           "default": null
         },
-        "staticNodesConfigMapName": {
+        "genesisConfigMapName": {
           "description": "ConfigMap name storing the generated static-nodes.json payload.",
           "type": [
             "string",
@@ -389,7 +380,7 @@
           ],
           "default": null
         },
-        "faucetArtifactPrefix": {
+        "staticNodesConfigMapName": {
           "description": "Prefix used for faucet ConfigMaps and Secrets.",
           "type": [
             "string",
@@ -397,8 +388,16 @@
           ],
           "default": null
         },
-        "allocations": {
+        "faucetArtifactPrefix": {
           "description": "Path to a JSON allocations file providing pre-funded accounts.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "allocations": {
+          "description": "Output target for generated artefacts: screen, file, or kubernetes.",
           "type": [
             "string",
             "null"
@@ -410,22 +409,14 @@
           "default": "kubernetes"
         },
         "consensus": {
-          "description": "Consensus engine to configure (QBFT or IBFTv2).",
-          "type": [
-            "string",
-            "null"
-          ],
-          "default": null
-        },
-        "chainId": {
-          "description": "Explicit chain ID to encode into the genesis file. Leave unset to inherit from global.chainId.",
+          "description": "Explicit chain ID to encode into the genesis file. Leave unset to inherit from global.chainId. -- (string) Consensus engine to configure (QBFT or IBFTv2).",
           "type": [
             "integer",
             "null"
           ],
           "default": null
         },
-        "secondsPerBlock": {
+        "chainId": {
           "description": "Block interval in seconds for the genesis configuration.",
           "type": [
             "integer",
@@ -433,7 +424,7 @@
           ],
           "default": null
         },
-        "gasLimit": {
+        "secondsPerBlock": {
           "description": "Genesis block gas limit expressed as a decimal number.",
           "type": [
             "integer",
@@ -441,7 +432,7 @@
           ],
           "default": null
         },
-        "gasPrice": {
+        "gasLimit": {
           "description": "Base gas price in wei applied across the network.",
           "type": [
             "integer",
@@ -449,7 +440,7 @@
           ],
           "default": null
         },
-        "evmStackSize": {
+        "gasPrice": {
           "description": "Maximum EVM stack size permitted for contract execution.",
           "type": [
             "integer",
@@ -457,10 +448,18 @@
           ],
           "default": null
         },
-        "contractSizeLimit": {
+        "evmStackSize": {
           "description": "Maximum smart-contract bytecode size accepted by the EVM.",
           "type": [
             "integer",
+            "null"
+          ],
+          "default": null
+        },
+        "contractSizeLimit": {
+          "description": "Artifact sourcing controls for bootstrap data used by the nodes chart.",
+          "type": [
+            "object",
             "null"
           ],
           "default": null

@@ -38,10 +38,9 @@
           "additionalProperties": false
         },
         "chainId": {
-          "description": "Chain ID applied when subcharts omit explicit overrides. Inherited from the parent ATK chart.",
+          "description": "Shared pod- and container-level security contexts applied when subcharts omit explicit overrides -- (int) Chain ID applied when subcharts omit explicit overrides. Inherited from parent atk chart.",
           "type": [
-            "string",
-            "integer",
+            "object",
             "null"
           ],
           "default": null

@@ -408,7 +408,7 @@
                   "type": "integer",
                   "default": 80
                 },
-                "behavior": {
+                "behaviour": {
                   "type": "object",
                   "properties": {
                     "scaleDown": {

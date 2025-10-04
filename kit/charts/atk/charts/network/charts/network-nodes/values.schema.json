@@ -1543,68 +1543,12 @@
       "additionalProperties": false
     },
     "readinessProbe": {
-      "type": "object",
-      "properties": {
-        "httpGet": {
-          "type": "object",
-          "properties": {
-            "path": {
-              "type": "string",
-              "description": "HTTP path used for readiness probing, including peer/sync thresholds.",
-              "default": "/liveness?minPeers=1&maxBlocksBehind=10000"
-            },
-            "port": {
-              "oneOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "integer"
-                }
-              ],
-              "description": "Target container port serving the readiness endpoint.",
-              "default": "json-rpc"
-            },
-            "scheme": {
-              "type": "string",
-              "description": "Scheme to use for connecting to the host (HTTP or HTTPS).",
-              "default": "HTTP"
-            }
-          },
-          "required": [
-            "path",
-            "port"
-          ],
-          "additionalProperties": false
-        },
-        "initialDelaySeconds": {
-          "description": "Seconds to wait before starting readiness checks.",
-          "type": "integer",
-          "default": 15
-        },
-        "periodSeconds": {
-          "description": "Frequency of readiness checks in seconds.",
-          "type": "integer",
-          "default": 5
-        },
-        "timeoutSeconds": {
-          "description": "Timeout in seconds before marking the probe as failed.",
-          "type": "integer",
-          "default": 2
-        },
-        "failureThreshold": {
-          "description": "Consecutive readiness probe failures required before the pod is considered unready.",
-          "type": "integer",
-          "default": 3
-        },
-        "successThreshold": {
-          "description": "Consecutive readiness probe successes required before the pod is considered ready again.",
-          "type": "integer",
-          "default": 1
-        }
-      },
-      "description": "Readiness probe configuration signalling when pods can accept traffic.",
-      "additionalProperties": false
+      "description": "HTTP path used for readiness probing, including peer/sync thresholds. path: /liveness # -- (string|int) Target container port serving the readiness endpoint. port: json-rpc # -- (int) Seconds to wait before starting readiness checks. initialDelaySeconds: 15 # -- (int) Frequency of readiness checks in seconds. periodSeconds: 5 # -- (int) Timeout in seconds before marking the probe as failed. timeoutSeconds: 2 # -- (int) Consecutive failures required before the pod is considered unready. failureThreshold: 3 -- (object) Readiness probe configuration signalling when pods can accept traffic.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "default": null
     },
     "persistence": {
       "type": "object",
