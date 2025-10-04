@@ -100,7 +100,7 @@ The following table lists the configurable parameters of this chart and their de
 |healthChecks.startupProbe.timeoutSeconds|int|`5`|Timeout seconds|
 |image|object|-|Hasura image configuration|
 |image.pullPolicy|string|`"IfNotPresent"`|Hasura image pull policy|
-|image.registry|string|`"harbor.settlemint.com/docker.io"`|Hasura image registry|
+|image.registry|string|`"docker.io"`|Hasura image registry|
 |image.repository|string|`"hasura/graphql-engine"`|Hasura image repository|
 |image.tag|string|`"v2.48.6"`|Hasura image tag|
 |imagePullSecrets|list|-|Docker registry secret names as an array|
@@ -114,9 +114,9 @@ The following table lists the configurable parameters of this chart and their de
 |ingress.pathType|string|`"Prefix"`|Ingress path type|
 |ingress.tls|list|-|TLS configuration|
 |initContainers|list|-|Init containers|
-|initContainers[0]|string|`{"command":["/usr/bin/wait-for-it","postgresql:5432","-t","120"],"image":"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit:v7.7.10","imagePullPolicy":"IfNotPresent","name":"wait-for-postgresql","resources":{"limits":{"cpu":"300m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}}`|Container name|
+|initContainers[0]|string|`{"command":["/usr/bin/wait-for-it","postgresql:5432","-t","120"],"image":"ghcr.io/settlemint/btp-waitforit:v7.7.10","imagePullPolicy":"IfNotPresent","name":"wait-for-postgresql","resources":{"limits":{"cpu":"300m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}}`|Container name|
 |initContainers[0].command|list|-|Container command|
-|initContainers[0].image|string|`"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit:v7.7.10"`|Container image|
+|initContainers[0].image|string|`"ghcr.io/settlemint/btp-waitforit:v7.7.10"`|Container image|
 |initContainers[0].imagePullPolicy|string|`"IfNotPresent"`|Image pull policy|
 |initContainers[0].resources|object|-|Resource limits and requests|
 |initContainers[0].resources.limits|object|-|Resource limits|
@@ -198,7 +198,6 @@ The following table lists the configurable parameters of this chart and their de
 
 | Component | Replicas | Request CPU | Limit CPU | Request Memory | Limit Memory | Storage |
 |-----------|----------|-------------|-----------|----------------|--------------|---------|
-
 | **Totals** | - | - | - | - | - | - |
 
 ## Maintainers

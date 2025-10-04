@@ -31,7 +31,7 @@ The following table lists the configurable parameters of this chart and their de
 |alloy.clustername|string|`""`|Cluster name label for metrics and logs|
 |alloy.configReloader|object|-|Config reloader sidecar configuration|
 |alloy.configReloader.image|object|-|Config reloader image configuration|
-|alloy.configReloader.image.registry|string|`"harbor.settlemint.com/ghcr.io"`|Image registry for config reloader|
+|alloy.configReloader.image.registry|string|`"ghcr.io"`|Image registry for config reloader|
 |alloy.controller|object|-|Controller configuration|
 |alloy.controller.type|string|`"deployment"`|Controller type (deployment, daemonset, or statefulset)|
 |alloy.crds|object|-|Custom Resource Definitions configuration|
@@ -115,7 +115,7 @@ The following table lists the configurable parameters of this chart and their de
 |alloy.grafana.fullnameOverride|string|`"grafana"`|String to fully override common.names.fullname|
 |alloy.grafana.global|object|-|Global configuration|
 |alloy.grafana.global.imagePullSecrets|list|-|Global Docker registry secret names as an array|
-|alloy.grafana.global.imageRegistry|string|`"harbor.settlemint.com/docker.io"`|Global image registry|
+|alloy.grafana.global.imageRegistry|string|`"docker.io"`|Global image registry|
 |alloy.grafana.ingress|object|-|Ingress configuration for Grafana|
 |alloy.grafana.ingress.enabled|bool|`true`|Enable ingress for Grafana|
 |alloy.grafana.ingress.hosts|list|-|List of ingress hosts|
@@ -154,7 +154,7 @@ The following table lists the configurable parameters of this chart and their de
 |alloy.grafana.sidecar.plugins|object|-|Plugin sidecar configuration|
 |alloy.grafana.sidecar.plugins.enabled|bool|`true`|Enable plugin sidecar|
 |alloy.image|object|-|Alloy image configuration|
-|alloy.image.registry|string|`"harbor.settlemint.com/docker.io"`|Image registry for Alloy|
+|alloy.image.registry|string|`"docker.io"`|Image registry for Alloy|
 |global|object|-|Global configuration applied to all resources|
 |global.labels|object|-|Labels applied to all resources in the chart|
 |global.labels."kots.io/app-slug"|string|`"settlemint-atk"`|KOTS application slug identifier|
@@ -163,7 +163,7 @@ The following table lists the configurable parameters of this chart and their de
 |kube-state-metrics.enabled|bool|`true`|Enable kube-state-metrics deployment|
 |kube-state-metrics.fullnameOverride|string|`"kube-state-metrics"`|String to fully override common.names.fullname (string)|
 |kube-state-metrics.image|object|-|Kube state metrics image configuration|
-|kube-state-metrics.image.registry|string|`"harbor.settlemint.com/registry.k8s.io"`|Kube state metrics image registry|
+|kube-state-metrics.image.registry|string|`"registry.k8s.io"`|Kube state metrics image registry|
 |kube-state-metrics.imagePullSecrets|list|-|Global Docker registry secret names as an array (list)|
 |kube-state-metrics.metricLabelsAllowlist|list|-|Allow list for metric labels|
 |kube-state-metrics.podAnnotations|object|-|Annotations for kube-state-metrics pods|
@@ -207,7 +207,7 @@ The following table lists the configurable parameters of this chart and their de
 |loki.gateway.ingress.ingressClassName|string|`"atk-nginx"`|Ingress class name|
 |loki.global|object|-|Global configuration|
 |loki.global.image|object|-|Global image configuration|
-|loki.global.image.registry|string|`"harbor.settlemint.com/docker.io"`|Global image registry|
+|loki.global.image.registry|string|`"docker.io"`|Global image registry|
 |loki.imagePullSecrets|list|-|Global Docker registry secret names as an array|
 |loki.indexGateway|object|-|Index gateway component configuration|
 |loki.indexGateway.replicas|int|`0`|Number of index gateway replicas (0 when using SingleBinary)|
@@ -270,10 +270,10 @@ The following table lists the configurable parameters of this chart and their de
 |loki.lokiCanary.enabled|bool|`false`|Enable Loki canary|
 |loki.memcached|object|-|Memcached configuration|
 |loki.memcached.image|object|-|Memcached image configuration|
-|loki.memcached.image.repository|string|`"harbor.settlemint.com/docker.io/library/memcached"`|Memcached image repository|
+|loki.memcached.image.repository|string|`"docker.io/library/memcached"`|Memcached image repository|
 |loki.memcachedExporter|object|-|Memcached exporter configuration|
 |loki.memcachedExporter.image|object|-|Memcached exporter image configuration|
-|loki.memcachedExporter.image.repository|string|`"harbor.settlemint.com/docker.io/prom/memcached-exporter"`|Memcached exporter image repository|
+|loki.memcachedExporter.image.repository|string|`"docker.io/prom/memcached-exporter"`|Memcached exporter image repository|
 |loki.minio|object|-|MinIO configuration for object storage|
 |loki.minio.enabled|bool|`false`|Enable MinIO deployment|
 |loki.querier|object|-|Querier component configuration|
@@ -288,7 +288,7 @@ The following table lists the configurable parameters of this chart and their de
 |loki.resultsCache.enabled|bool|`false`|Enable results cache|
 |loki.sidecar|object|-|Sidecar configuration for config reloading|
 |loki.sidecar.image|object|-|Sidecar image configuration|
-|loki.sidecar.image.repository|string|`"harbor.settlemint.com/docker.io/kiwigrid/k8s-sidecar"`|The Docker registry and image for the k8s sidecar|
+|loki.sidecar.image.repository|string|`"docker.io/kiwigrid/k8s-sidecar"`|The Docker registry and image for the k8s sidecar|
 |loki.singleBinary|object|-|Single binary deployment configuration|
 |loki.singleBinary.persistence|object|-|Persistent volume configuration|
 |loki.singleBinary.persistence.size|string|`"10Gi"`|Size of persistent volume|
@@ -302,7 +302,7 @@ The following table lists the configurable parameters of this chart and their de
 |metrics-server.enabled|bool|`false`|Enable metrics server deployment|
 |metrics-server.fullnameOverride|string|`"metrics-server"`|String to fully override common.names.fullname (string)|
 |metrics-server.image|object|-|Metrics server image configuration|
-|metrics-server.image.repository|string|`"harbor.settlemint.com/registry.k8s.io/metrics-server/metrics-server"`|Metrics server image repository|
+|metrics-server.image.repository|string|`"registry.k8s.io/metrics-server/metrics-server"`|Metrics server image repository|
 |metrics-server.imagePullSecrets|list|-|Global Docker registry secret names as an array (list)|
 |metrics-server.podLabels|object|-|Additional labels for metrics server pods|
 |metrics-server.resources|object|-|Resource requests and limits for metrics server pods|
@@ -315,13 +315,13 @@ The following table lists the configurable parameters of this chart and their de
 |prometheus-node-exporter.enabled|bool|`true`|Enable Prometheus Node Exporter deployment|
 |prometheus-node-exporter.fullnameOverride|string|`"node-exporter"`|String to fully override common.names.fullname|
 |prometheus-node-exporter.global|object|-|Global configuration|
-|prometheus-node-exporter.global.imageRegistry|string|`"harbor.settlemint.com/quay.io"`|Global image registry|
+|prometheus-node-exporter.global.imageRegistry|string|`"quay.io"`|Global image registry|
 |prometheus-node-exporter.image|object|-|Node exporter image configuration|
-|prometheus-node-exporter.image.registry|string|`"harbor.settlemint.com/quay.io"`|Image registry for node exporter|
+|prometheus-node-exporter.image.registry|string|`"quay.io"`|Image registry for node exporter|
 |prometheus-node-exporter.imagePullSecrets|list|-|Docker registry secret names as an array|
 |prometheus-node-exporter.kubeRBACProxy|object|-|Kube RBAC proxy configuration|
 |prometheus-node-exporter.kubeRBACProxy.image|object|-|Kube RBAC proxy image configuration|
-|prometheus-node-exporter.kubeRBACProxy.image.registry|string|`"harbor.settlemint.com/quay.io"`|Image registry for kube RBAC proxy|
+|prometheus-node-exporter.kubeRBACProxy.image.registry|string|`"quay.io"`|Image registry for kube RBAC proxy|
 |prometheus-node-exporter.nameOverride|string|`"node-exporter"`|String to partially override common.names.name|
 |prometheus-node-exporter.podAnnotations|object|-|Annotations for node exporter pods|
 |prometheus-node-exporter.podAnnotations."cluster-autoscaler.kubernetes.io/safe-to-evict"|string|`"true"`|Mark pod as safe to evict for cluster autoscaler|
@@ -359,7 +359,7 @@ The following table lists the configurable parameters of this chart and their de
 |tempo.tempo.overrides.defaults.ingestion.rate_limit_bytes|int|`30000000`|Rate limit in bytes per second|
 |tempo.tempo.pullSecrets|list|-|Docker registry secret names as an array|
 |tempo.tempo.reportingEnabled|bool|`false`|Enable usage reporting to Grafana Labs|
-|tempo.tempo.repository|string|`"harbor.settlemint.com/docker.io/grafana/tempo"`|Tempo image repository|
+|tempo.tempo.repository|string|`"docker.io/grafana/tempo"`|Tempo image repository|
 |tempo.tempo.resources|object|-|Resource requests and limits for Tempo pods|
 |tempo.tempo.retention|string|`"168h"`|Trace retention period|
 |tempo.tempoQuery|object|-|Tempo query configuration|
@@ -376,13 +376,13 @@ The following table lists the configurable parameters of this chart and their de
 |tempo.tempoQuery.ingress.ingressClassName|string|`"atk-nginx"`|Ingress class name|
 |tempo.tempoQuery.ingress.pathType|string|`"Prefix"`|Path type for ingress rule|
 |tempo.tempoQuery.pullSecrets|list|-|Docker registry secret names as an array|
-|tempo.tempoQuery.repository|string|`"harbor.settlemint.com/docker.io/grafana/tempo-query"`|Tempo query image repository|
+|tempo.tempoQuery.repository|string|`"docker.io/grafana/tempo-query"`|Tempo query image repository|
 |tempo.tempoQuery.resources|object|-|Resource requests and limits for Tempo query pods|
 |victoria-metrics-single|object|-|Victoria Metrics Single configuration|
 |victoria-metrics-single.enabled|bool|`true`|Enable Victoria Metrics Single deployment|
 |victoria-metrics-single.global|object|-|Global configuration|
 |victoria-metrics-single.global.image|object|-|Global image configuration|
-|victoria-metrics-single.global.image.registry|string|`"harbor.settlemint.com/docker.io"`|Global image registry|
+|victoria-metrics-single.global.image.registry|string|`"docker.io"`|Global image registry|
 |victoria-metrics-single.global.imagePullSecrets|list|-|Global Docker registry secret names as an array (list)|
 |victoria-metrics-single.server|object|-|Victoria Metrics server configuration|
 |victoria-metrics-single.server.extraArgs|object|-|Extra arguments for Victoria Metrics server|
@@ -435,7 +435,6 @@ The following table lists the configurable parameters of this chart and their de
 | tempo.tempo | 1 | 100m | 720m | 192Mi | 384Mi | - |
 | tempo.tempoQuery | 1 | 100m | 600m | 128Mi | 256Mi | - |
 | victoria-metrics-single.server | 1 | - | - | - | - | 10Gi |
-
 | **Totals** | - | 1.18 cores (1180m) | 8.40 cores (8400m) | 2496Mi (2.44Gi) | 4992Mi (4.88Gi) | 31744Mi (31.00Gi) |
 
 ## Maintainers

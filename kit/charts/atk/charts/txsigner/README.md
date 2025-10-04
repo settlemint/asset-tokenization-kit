@@ -109,7 +109,7 @@ The following table lists the configurable parameters of this chart and their de
 |image.digest|string|`""`|TxSigner image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag|
 |image.pullPolicy|string|`"IfNotPresent"`|TxSigner image pull policy|
 |image.pullSecrets|list|-|TxSigner image pull secrets (list)|
-|image.registry|string|`"harbor.settlemint.com/ghcr.io"`|TxSigner image registry|
+|image.registry|string|`"ghcr.io"`|TxSigner image registry|
 |image.repository|string|`"settlemint/btp-signer"`|TxSigner image repository|
 |image.tag|string|`"7.15.13"`|TxSigner image tag (immutable tags are recommended)|
 |ingress|object|-|Ingress parameters (object)|
@@ -135,7 +135,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.tcpCheck.enabled|bool|`true`|Enable TCP check init container|
 |initContainer.tcpCheck.image|object|-|Init container image configuration|
 |initContainer.tcpCheck.image.pullPolicy|string|`"IfNotPresent"`|Init container image pull policy|
-|initContainer.tcpCheck.image.repository|string|`"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit"`|Init container image repository|
+|initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|Init container image repository|
 |initContainer.tcpCheck.image.tag|string|`"v7.7.10"`|Init container image tag|
 |initContainer.tcpCheck.resources|object|-|Init container resource requests and limits|
 |initContainer.tcpCheck.resources.limits|object|-|Resource limits|
@@ -275,7 +275,7 @@ The following table lists the configurable parameters of this chart and their de
 |tests|object|-|Test parameters (object)|
 |tests.image|object|-|Image for test pods|
 |tests.image.pullPolicy|string|`"IfNotPresent"`|Test image pull policy|
-|tests.image.registry|string|`"harbor.settlemint.com/docker.io"`|Test image registry|
+|tests.image.registry|string|`"docker.io"`|Test image registry|
 |tests.image.repository|string|`"busybox"`|Test image repository|
 |tests.image.tag|string|`"1.37.0"`|Test image tag|
 |tolerations|list|-|Tolerations for pod assignment (list)|
@@ -289,7 +289,6 @@ The following table lists the configurable parameters of this chart and their de
 | Component | Replicas | Request CPU | Limit CPU | Request Memory | Limit Memory | Storage |
 |-----------|----------|-------------|-----------|----------------|--------------|---------|
 | initContainer.tcpCheck | 1 | 10m | 300m | 32Mi | 64Mi | - |
-
 | **Totals** | - | 0.01 cores (10m) | 0.30 cores (300m) | 32Mi (0.03Gi) | 64Mi (0.06Gi) | - |
 
 ## Maintainers

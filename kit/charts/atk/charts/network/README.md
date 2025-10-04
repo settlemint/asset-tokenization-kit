@@ -29,7 +29,6 @@ The following table lists the configurable parameters of this chart and their de
 
 | Component | Replicas | Request CPU | Limit CPU | Request Memory | Limit Memory | Storage |
 |-----------|----------|-------------|-----------|----------------|--------------|---------|
-
 | **Totals** | - | - | - | - | - | - |
 
 ## Maintainers
