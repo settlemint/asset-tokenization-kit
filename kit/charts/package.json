@@ -11,6 +11,7 @@
   "scripts": {
     "reset": "orb delete k8s --force  && orb start k8s ",
     "dependencies": "bun run tools/dependencies.ts",
+    "lint": "helm lint ./atk --strict --skip-schema-validation",
     "compile": "helm template atk --output-dir dist --include-crds",
     "package:harbor": "bun run tools/package-harbor.ts",
     "package:pack": "helm package atk --destination . ",

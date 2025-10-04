@@ -27,6 +27,10 @@ The following table lists the configurable parameters of this chart and their de
 |alloy.alloy.extraPorts[1].protocol|string|`"TCP"`|Protocol for OpenTelemetry HTTP|
 |alloy.alloy.extraPorts[1].targetPort|int|`4318`|Target port for OpenTelemetry HTTP|
 |alloy.alloy.resources|object|-|Resource requests and limits for Alloy|
+|alloy.alloy.resources.limits.cpu|string|`"2400m"`|CPU limit for Alloy pods|
+|alloy.alloy.resources.limits.memory|string|`"1024Mi"`|Memory limit for Alloy pods|
+|alloy.alloy.resources.requests.cpu|string|`"200m"`|CPU request reserved for Alloy pods|
+|alloy.alloy.resources.requests.memory|string|`"512Mi"`|Memory request reserved for Alloy pods|
 |alloy.alloy.stabilityLevel|string|`"experimental"`|Stability level for experimental features|
 |alloy.clustername|string|`""`|Cluster name label for metrics and logs|
 |alloy.configReloader|object|-|Config reloader sidecar configuration|
@@ -132,6 +136,10 @@ The following table lists the configurable parameters of this chart and their de
 |alloy.grafana.podLabels."app.kubernetes.io/managed-by"|string|`"helm"`|Helm managed-by label|
 |alloy.grafana.podLabels."kots.io/app-slug"|string|`"settlemint-atk"`|KOTS application slug identifier|
 |alloy.grafana.resources|object|-|Resource requests and limits for Grafana pods|
+|alloy.grafana.resources.limits.cpu|string|`"1080m"`|CPU limit for Grafana pods|
+|alloy.grafana.resources.limits.memory|string|`"768Mi"`|Memory limit for Grafana pods|
+|alloy.grafana.resources.requests.cpu|string|`"180m"`|CPU request reserved for Grafana pods|
+|alloy.grafana.resources.requests.memory|string|`"384Mi"`|Memory request reserved for Grafana pods|
 |alloy.grafana.sidecar|object|-|Sidecar configuration for auto-loading resources|
 |alloy.grafana.sidecar.alerts|object|-|Alert sidecar configuration|
 |alloy.grafana.sidecar.alerts.enabled|bool|`false`|Enable alert sidecar|
@@ -160,6 +168,7 @@ The following table lists the configurable parameters of this chart and their de
 |global.labels."kots.io/app-slug"|string|`"settlemint-atk"`|KOTS application slug identifier|
 |kube-state-metrics|object|-|Kube State Metrics configuration|
 |kube-state-metrics.customLabels|object|-|Custom labels to add to all resources|
+|kube-state-metrics.customLabels."kots.io/app-slug"|string|`"settlemint-atk"`|KOTS application slug applied to kube-state-metrics resources|
 |kube-state-metrics.enabled|bool|`true`|Enable kube-state-metrics deployment|
 |kube-state-metrics.fullnameOverride|string|`"kube-state-metrics"`|String to fully override common.names.fullname (string)|
 |kube-state-metrics.image|object|-|Kube state metrics image configuration|
@@ -167,6 +176,7 @@ The following table lists the configurable parameters of this chart and their de
 |kube-state-metrics.imagePullSecrets|list|-|Global Docker registry secret names as an array (list)|
 |kube-state-metrics.metricLabelsAllowlist|list|-|Allow list for metric labels|
 |kube-state-metrics.podAnnotations|object|-|Annotations for kube-state-metrics pods|
+|kube-state-metrics.podAnnotations."prometheus.io/scrape"|string|`"true"`|Enable Prometheus scraping for kube-state-metrics pods|
 |loki|object|-|Loki configuration|
 |loki.backend|object|-|Backend component configuration|
 |loki.backend.replicas|int|`0`|Number of backend replicas (0 when using SingleBinary)|
@@ -294,6 +304,10 @@ The following table lists the configurable parameters of this chart and their de
 |loki.singleBinary.persistence.size|string|`"10Gi"`|Size of persistent volume|
 |loki.singleBinary.replicas|int|`1`|Number of replicas for single binary deployment|
 |loki.singleBinary.resources|object|-|Resource requests and limits|
+|loki.singleBinary.resources.limits.cpu|string|`"2400m"`|CPU limit for the Loki single-binary pods|
+|loki.singleBinary.resources.limits.memory|string|`"2048Mi"`|Memory limit for the Loki single-binary pods|
+|loki.singleBinary.resources.requests.cpu|string|`"400m"`|CPU request for the Loki single-binary pods|
+|loki.singleBinary.resources.requests.memory|string|`"1024Mi"`|Memory request for the Loki single-binary pods|
 |loki.test|object|-|Test configuration|
 |loki.test.enabled|bool|`false`|Enable test pods|
 |loki.write|object|-|Write component configuration|
@@ -305,12 +319,18 @@ The following table lists the configurable parameters of this chart and their de
 |metrics-server.image.repository|string|`"registry.k8s.io/metrics-server/metrics-server"`|Metrics server image repository|
 |metrics-server.imagePullSecrets|list|-|Global Docker registry secret names as an array (list)|
 |metrics-server.podLabels|object|-|Additional labels for metrics server pods|
+|metrics-server.podLabels."kots.io/app-slug"|string|`"settlemint-atk"`|KOTS application slug applied to metrics server pods|
 |metrics-server.resources|object|-|Resource requests and limits for metrics server pods|
+|metrics-server.resources.limits.cpu|string|`"1200m"`|CPU limit for metrics server pods|
+|metrics-server.resources.limits.memory|string|`"512Mi"`|Memory limit for metrics server pods|
+|metrics-server.resources.requests.cpu|string|`"200m"`|CPU request reserved for metrics server pods|
+|metrics-server.resources.requests.memory|string|`"256Mi"`|Memory request reserved for metrics server pods|
 |metrics-server.server|object|-|Server configuration|
 |metrics-server.server.persistentVolume|object|-|Persistent volume configuration|
 |metrics-server.server.persistentVolume.enabled|bool|`false`|Enable persistent volume for metrics server|
 |metrics-server.service|object|-|Service configuration|
 |metrics-server.service.labels|object|-|Additional labels for metrics server service|
+|metrics-server.service.labels."kots.io/app-slug"|string|`"settlemint-atk"`|KOTS application slug applied to the metrics server Service|
 |prometheus-node-exporter|object|-|Prometheus Node Exporter configuration|
 |prometheus-node-exporter.enabled|bool|`true`|Enable Prometheus Node Exporter deployment|
 |prometheus-node-exporter.fullnameOverride|string|`"node-exporter"`|String to fully override common.names.fullname|
@@ -361,6 +381,10 @@ The following table lists the configurable parameters of this chart and their de
 |tempo.tempo.reportingEnabled|bool|`false`|Enable usage reporting to Grafana Labs|
 |tempo.tempo.repository|string|`"docker.io/grafana/tempo"`|Tempo image repository|
 |tempo.tempo.resources|object|-|Resource requests and limits for Tempo pods|
+|tempo.tempo.resources.limits.cpu|string|`"720m"`|CPU limit for Tempo pods|
+|tempo.tempo.resources.limits.memory|string|`"384Mi"`|Memory limit for Tempo pods|
+|tempo.tempo.resources.requests.cpu|string|`"100m"`|CPU request reserved for Tempo pods|
+|tempo.tempo.resources.requests.memory|string|`"192Mi"`|Memory request reserved for Tempo pods|
 |tempo.tempo.retention|string|`"168h"`|Trace retention period|
 |tempo.tempoQuery|object|-|Tempo query configuration|
 |tempo.tempoQuery.ingress|object|-|Ingress configuration for Tempo query|
@@ -378,6 +402,10 @@ The following table lists the configurable parameters of this chart and their de
 |tempo.tempoQuery.pullSecrets|list|-|Docker registry secret names as an array|
 |tempo.tempoQuery.repository|string|`"docker.io/grafana/tempo-query"`|Tempo query image repository|
 |tempo.tempoQuery.resources|object|-|Resource requests and limits for Tempo query pods|
+|tempo.tempoQuery.resources.limits.cpu|string|`"600m"`|CPU limit for Tempo query pods|
+|tempo.tempoQuery.resources.limits.memory|string|`"256Mi"`|Memory limit for Tempo query pods|
+|tempo.tempoQuery.resources.requests.cpu|string|`"100m"`|CPU request reserved for Tempo query pods|
+|tempo.tempoQuery.resources.requests.memory|string|`"128Mi"`|Memory request reserved for Tempo query pods|
 |victoria-metrics-single|object|-|Victoria Metrics Single configuration|
 |victoria-metrics-single.enabled|bool|`true`|Enable Victoria Metrics Single deployment|
 |victoria-metrics-single.global|object|-|Global configuration|

@@ -14,6 +14,8 @@ The following table lists the configurable parameters of this chart and their de
 |-----|------|---------|-------------|
 |affinity|object|-|Affinity for pod assignment (object)|
 |commonLabels|object|-|Common labels to add to all PostgreSQL resources|
+|commonLabels."app.kubernetes.io/managed-by"|string|`"helm"`|Label identifying Helm as the managing tool|
+|commonLabels."kots.io/app-slug"|string|`"settlemint-atk"`|KOTS application slug applied to PostgreSQL resources|
 |fullnameOverride|string|`"postgresql"`|String to fully override common.names.fullname (string)|
 |image|object|-|Image configuration|
 |image.pullPolicy|string|`"IfNotPresent"`|Image pull policy|

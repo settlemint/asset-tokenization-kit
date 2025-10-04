@@ -100,6 +100,9 @@ The following table lists the configurable parameters of this chart and their de
 |blockscout.openShiftRoute.to.weight|int|`100`|Weight assigned to the Blockscout backend service backend|
 |blockscout.openShiftRoute.wildcardPolicy|string|`"None"`|Wildcard policy to apply to the route|
 |blockscout.podAnnotations|object|-|Annotations for Blockscout backend pods|
+|blockscout.podAnnotations."prometheus.io/path"|string|`"/metrics"`|HTTP endpoint exposing backend metrics|
+|blockscout.podAnnotations."prometheus.io/port"|string|`"4000"`|Metrics port scraped by Prometheus|
+|blockscout.podAnnotations."prometheus.io/scrape"|string|`"true"`|Enable Prometheus scraping for Blockscout backend pods|
 |blockscout.podSecurityContext|object|-|Pod Security Context configuration for Blockscout backend (overrides global.securityContexts.pod)|
 |blockscout.readinessProbe|object|-|Configure Blockscout backend containers' readiness probe|
 |blockscout.readinessProbe.enabled|bool|`true`|Enable readinessProbe on Blockscout backend containers|

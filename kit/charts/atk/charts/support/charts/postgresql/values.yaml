@@ -147,7 +147,9 @@ postgresql_conf:
 
 # -- (object) Common labels to add to all PostgreSQL resources
 commonLabels:
+  # -- (string) KOTS application slug applied to PostgreSQL resources
   kots.io/app-slug: settlemint-atk
+  # -- (string) Label identifying Helm as the managing tool
   app.kubernetes.io/managed-by: helm
 
 # -- String to fully override common.names.fullname (string)

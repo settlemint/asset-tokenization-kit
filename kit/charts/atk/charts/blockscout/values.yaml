@@ -90,8 +90,11 @@ blockscout:
 
   # -- (object) Annotations for Blockscout backend pods
   podAnnotations:
+    # -- (string) Enable Prometheus scraping for Blockscout backend pods
     prometheus.io/scrape: "true"
+    # -- (string) Metrics port scraped by Prometheus
     prometheus.io/port: "4000"
+    # -- (string) HTTP endpoint exposing backend metrics
     prometheus.io/path: "/metrics"
 
   # -- (object) Blockscout backend image configuration

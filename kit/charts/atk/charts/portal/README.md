@@ -57,6 +57,7 @@ The following table lists the configurable parameters of this chart and their de
 |global.imagePullSecrets|list|-|Global Docker registry secret names as an array|
 |global.imageRegistry|string|`""`|Global Docker image registry|
 |global.labels|object|-|Global labels to add to all resources|
+|global.labels."kots.io/app-slug"|string|`"settlemint-atk"`|KOTS application slug applied to all Portal resources|
 |global.storageClass|string|`""`|Global StorageClass for Persistent Volume(s)|
 |image|object|-|Portal image|
 |image.digest|string|`""`|Portal image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag|
@@ -138,18 +139,21 @@ The following table lists the configurable parameters of this chart and their de
 |networkPolicy.extraEgress[0].to[0]|object|-|Namespace selector for kube-dns|
 |networkPolicy.extraEgress[0].to[0].podSelector|object|-|Pod selector for kube-dns|
 |networkPolicy.extraEgress[0].to[0].podSelector.matchLabels|object|-|Labels to match kube-dns pods|
+|networkPolicy.extraEgress[0].to[0].podSelector.matchLabels.k8s-app|string|`"kube-dns"`|Label selecting kube-dns pods for DNS access|
 |networkPolicy.extraEgress[1]|list|-|Destination selectors for PostgreSQL access|
 |networkPolicy.extraEgress[1].ports|list|-|Allowed ports for PostgreSQL traffic|
 |networkPolicy.extraEgress[1].ports[0]|string|`{"port":5432,"protocol":"TCP"}`|Protocol for PostgreSQL|
 |networkPolicy.extraEgress[1].ports[0].port|int|`5432`|PostgreSQL port number|
 |networkPolicy.extraEgress[1].to[0]|object|-|Pod selector for PostgreSQL|
 |networkPolicy.extraEgress[1].to[0].podSelector.matchLabels|object|-|Labels to match PostgreSQL pods|
+|networkPolicy.extraEgress[1].to[0].podSelector.matchLabels."app.kubernetes.io/name"|string|`"postgresql-ha"`|Application label selecting the PostgreSQL HA pods|
 |networkPolicy.extraEgress[2]|list|-|Destination selectors for Redis access|
 |networkPolicy.extraEgress[2].ports|list|-|Allowed ports for Redis traffic|
 |networkPolicy.extraEgress[2].ports[0]|string|`{"port":6379,"protocol":"TCP"}`|Protocol for Redis|
 |networkPolicy.extraEgress[2].ports[0].port|int|`6379`|Redis port number|
 |networkPolicy.extraEgress[2].to[0]|object|-|Pod selector for Redis|
 |networkPolicy.extraEgress[2].to[0].podSelector.matchLabels|object|-|Labels to match Redis pods|
+|networkPolicy.extraEgress[2].to[0].podSelector.matchLabels."app.kubernetes.io/name"|string|`"redis"`|Application label selecting the Redis pods|
 |networkPolicy.extraEgress[3]|list|-|Destination selectors for external HTTPS access|
 |networkPolicy.extraEgress[3].ports|list|-|Allowed ports for external HTTPS traffic|
 |networkPolicy.extraEgress[3].ports[0]|string|`{"port":443,"protocol":"TCP"}`|Protocol for HTTPS|
@@ -159,8 +163,10 @@ The following table lists the configurable parameters of this chart and their de
 |networkPolicy.extraIngress[0]|list|-|Source selectors for ingress traffic|
 |networkPolicy.extraIngress[0].from[0]|object|-|Namespace selector for ingress-nginx|
 |networkPolicy.extraIngress[0].from[0].namespaceSelector.matchLabels|object|-|Labels to match ingress-nginx namespace|
+|networkPolicy.extraIngress[0].from[0].namespaceSelector.matchLabels."kubernetes.io/metadata.name"|string|`"ingress-nginx"`|Namespace label selecting the ingress-nginx controller|
 |networkPolicy.extraIngress[0].from[1]|object|-|Pod selector for dapp pods|
 |networkPolicy.extraIngress[0].from[1].podSelector.matchLabels|object|-|Labels to match dapp pods|
+|networkPolicy.extraIngress[0].from[1].podSelector.matchLabels."app.kubernetes.io/name"|string|`"dapp"`|Application label selecting the dApp frontend pods|
 |networkPolicy.extraIngress[0].from[2]|object|-|Pod selector for same namespace pods|
 |networkPolicy.extraIngress[0].ports|list|-|Allowed ports for ingress traffic|
 |networkPolicy.extraIngress[0].ports[0]|string|`{"port":3000,"protocol":"TCP"}`|Protocol for HTTP port|
@@ -207,8 +213,12 @@ The following table lists the configurable parameters of this chart and their de
 |pdb.minAvailable|string|`""`|Minimum number/percentage of pods that should remain scheduled|
 |podAffinityPreset|string|`""`|Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`|
 |podAnnotations|object|-|Annotations for Portal pods|
+|podAnnotations."prometheus.io/path"|string|`"/portal-metrics"`|Metrics endpoint path served by the Portal pods|
+|podAnnotations."prometheus.io/port"|string|`"3000"`|Metrics port exposed by the Portal pods|
+|podAnnotations."prometheus.io/scrape"|string|`"true"`|Enable Prometheus scraping for Portal pods|
 |podAntiAffinityPreset|string|`"soft"`|Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`|
 |podLabels|object|-|Extra labels for Portal pods|
+|podLabels."app.kubernetes.io/component"|string|`"portal"`|Component label identifying pods as part of the Portal application|
 |podSecurityContext|object|-|Pod Security Context configuration (overrides global.securityContexts.pod)|
 |priorityClassName|string|`""`|Portal pods' priority class name|
 |rbac|object|-|RBAC configuration controlling whether Role/RoleBinding resources are rendered.|
