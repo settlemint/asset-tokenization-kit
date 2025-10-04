@@ -98,10 +98,20 @@ The following table lists the configurable parameters of this chart and their de
 |ingress.ingressClassName|string|`"atk-nginx"`|IngressClass that will be used to implement the Ingress (Kubernetes 1.19+)|
 |ingress.paths|list|-|Path rules mapped to Graph Node service ports|
 |ingress.paths[0]|object|-|Query endpoint path configuration|
+|ingress.paths[0].pathType|string|`"ImplementationSpecific"`|Kubernetes path matching mode for the query endpoint|
+|ingress.paths[0].servicePortName|string|`"http-query"`|Service port name handling HTTP query traffic|
 |ingress.paths[1]|object|-|WebSocket query endpoint path configuration|
+|ingress.paths[1].pathType|string|`"ImplementationSpecific"`|Kubernetes path matching mode for the WebSocket endpoint|
+|ingress.paths[1].servicePortName|string|`"http-queryws"`|Service port name handling WebSocket query traffic|
 |ingress.paths[2]|object|-|Admin endpoint path configuration|
+|ingress.paths[2].pathType|string|`"ImplementationSpecific"`|Kubernetes path matching mode for the admin endpoint|
+|ingress.paths[2].servicePortName|string|`"http-admin"`|Service port name exposing admin operations|
 |ingress.paths[3]|object|-|Indexer endpoint path configuration|
+|ingress.paths[3].pathType|string|`"ImplementationSpecific"`|Kubernetes path matching mode for the indexer endpoint|
+|ingress.paths[3].servicePortName|string|`"http-status"`|Service port name exposing indexer status metrics|
 |ingress.paths[4]|object|-|Graphman endpoint path configuration|
+|ingress.paths[4].pathType|string|`"ImplementationSpecific"`|Kubernetes path matching mode for the Graphman endpoint|
+|ingress.paths[4].servicePortName|string|`"http-status"`|Service port name exposing Graphman operations|
 |ingress.tls|list|-|TLS configuration for the ingress|
 |initContainer|object|-|Init container configuration|
 |initContainer.image|object|-|Image for init container kubectl|
@@ -113,11 +123,16 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.tcpCheck.dependencies[0]|object|-|Dependency configuration|
 |initContainer.tcpCheck.dependencies[0].endpoint|string|`"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"graphNode\" \"local\" .Values.postgresql) }}"`|Dependency endpoint template|
 |initContainer.tcpCheck.dependencies[0].name|string|`"postgresql"`|Dependency name|
+|initContainer.tcpCheck.dependencies[1].endpoint|string|`"{{ include \"graph-node.ipfsClusterProxyEndpoint\" (dict \"context\" $) }}"`|Rendered endpoint for the IPFS cluster proxy health check|
+|initContainer.tcpCheck.dependencies[1].name|string|`"ipfs-cluster-proxy"`|Human-readable name for the IPFS cluster proxy dependency|
 |initContainer.tcpCheck.enabled|bool|`true`|Enable TCP check init container|
 |initContainer.tcpCheck.image|object|-|TCP check image configuration|
 |initContainer.tcpCheck.image.pullPolicy|string|`"IfNotPresent"`|TCP check image pull policy|
 |initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|TCP check image repository|
 |initContainer.tcpCheck.image.tag|string|`"v7.7.10"`|TCP check image tag|
+|initContainer.tcpCheck.ipfsClusterProxy.enabled|bool|`true`|Enable readiness checks against the IPFS cluster proxy|
+|initContainer.tcpCheck.ipfsClusterProxy.host|string|`"ipfs-cluster"`|Hostname for the IPFS cluster proxy service|
+|initContainer.tcpCheck.ipfsClusterProxy.port|int|`9095`|TCP port used by the IPFS cluster proxy service|
 |initContainer.tcpCheck.resources|object|-|Resource limits and requests for TCP check container|
 |initContainer.tcpCheck.resources.limits|object|-|Resource limits|
 |initContainer.tcpCheck.resources.limits.cpu|string|`"300m"`|CPU limit|

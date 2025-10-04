@@ -13,10 +13,14 @@ metrics-server:
   # -- (object) Resource requests and limits for metrics server pods
   resources:
     requests:
+      # -- (string) CPU request reserved for metrics server pods
       cpu: 200m
+      # -- (string) Memory request reserved for metrics server pods
       memory: 256Mi
     limits:
+      # -- (string) CPU limit for metrics server pods
       cpu: 1200m
+      # -- (string) Memory limit for metrics server pods
       memory: 512Mi
   # -- Global Docker registry secret names as an array (list)
   imagePullSecrets: []
@@ -30,6 +34,7 @@ metrics-server:
   service:
     # -- (object) Additional labels for metrics server service
     labels:
+      # -- (string) KOTS application slug applied to the metrics server Service
       kots.io/app-slug: settlemint-atk
   # -- (object) Server configuration
   server:
@@ -39,6 +44,7 @@ metrics-server:
       enabled: false
   # -- (object) Additional labels for metrics server pods
   podLabels:
+    # -- (string) KOTS application slug applied to metrics server pods
     kots.io/app-slug: settlemint-atk
 
 # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-state-metrics/values.yaml
@@ -56,9 +62,11 @@ kube-state-metrics:
   fullnameOverride: kube-state-metrics
   # -- (object) Custom labels to add to all resources
   customLabels:
+    # -- (string) KOTS application slug applied to kube-state-metrics resources
     kots.io/app-slug: settlemint-atk
   # -- (object) Annotations for kube-state-metrics pods
   podAnnotations:
+    # -- (string) Enable Prometheus scraping for kube-state-metrics pods
     prometheus.io/scrape: "true"
   # -- (list) Allow list for metric labels
   metricLabelsAllowlist:
@@ -346,10 +354,14 @@ loki:
     # -- (object) Resource requests and limits
     resources:
       requests:
+        # -- (string) CPU request for the Loki single-binary pods
         cpu: 400m
+        # -- (string) Memory request for the Loki single-binary pods
         memory: 1024Mi
       limits:
+        # -- (string) CPU limit for the Loki single-binary pods
         cpu: 2400m
+        # -- (string) Memory limit for the Loki single-binary pods
         memory: 2048Mi
     # extraEnv:
     #   # Keep a little bit lower than memory limits
@@ -558,10 +570,14 @@ alloy:
     # -- (object) Resource requests and limits for Alloy
     resources:
       requests:
+        # -- (string) CPU request reserved for Alloy pods
         cpu: 200m
+        # -- (string) Memory request reserved for Alloy pods
         memory: 512Mi
       limits:
+        # -- (string) CPU limit for Alloy pods
         cpu: 2400m
+        # -- (string) Memory limit for Alloy pods
         memory: 1024Mi
     # -- (bool) Enable usage reporting to Grafana Labs
     enableReporting: false
@@ -932,10 +948,14 @@ alloy:
     # -- (object) Resource requests and limits for Grafana pods
     resources:
       requests:
+        # -- (string) CPU request reserved for Grafana pods
         cpu: 180m
+        # -- (string) Memory request reserved for Grafana pods
         memory: 384Mi
       limits:
+        # -- (string) CPU limit for Grafana pods
         cpu: 1080m
+        # -- (string) Memory limit for Grafana pods
         memory: 768Mi
     # -- (object) Persistent volume configuration
     persistence:
@@ -1123,10 +1143,14 @@ tempo:
     # -- (object) Resource requests and limits for Tempo pods
     resources:
       requests:
+        # -- (string) CPU request reserved for Tempo pods
         cpu: 100m
+        # -- (string) Memory request reserved for Tempo pods
         memory: 192Mi
       limits:
+        # -- (string) CPU limit for Tempo pods
         cpu: 720m
+        # -- (string) Memory limit for Tempo pods
         memory: 384Mi
     # -- (list) Docker registry secret names as an array
     pullSecrets: []
@@ -1161,10 +1185,14 @@ tempo:
     # -- (object) Resource requests and limits for Tempo query pods
     resources:
       requests:
+        # -- (string) CPU request reserved for Tempo query pods
         cpu: 100m
+        # -- (string) Memory request reserved for Tempo query pods
         memory: 128Mi
       limits:
+        # -- (string) CPU limit for Tempo query pods
         cpu: 600m
+        # -- (string) Memory limit for Tempo query pods
         memory: 256Mi
     # -- (list) Docker registry secret names as an array
     pullSecrets: []

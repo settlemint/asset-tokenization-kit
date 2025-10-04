@@ -8,6 +8,7 @@ global:
   storageClass: ""
   # -- (object) Global labels to add to all resources
   labels:
+    # -- (string) KOTS application slug applied to all Portal resources
     kots.io/app-slug: settlemint-atk
 
 # -- (string) String to fully override common.names.fullname
@@ -58,12 +59,16 @@ topologySpreadConstraints: []
 
 # -- (object) Extra labels for Portal pods
 podLabels:
+  # -- (string) Component label identifying pods as part of the Portal application
   app.kubernetes.io/component: portal
 
 # -- (object) Annotations for Portal pods
 podAnnotations:
+  # -- (string) Enable Prometheus scraping for Portal pods
   prometheus.io/scrape: "true"
+  # -- (string) Metrics port exposed by the Portal pods
   prometheus.io/port: "3000"
+  # -- (string) Metrics endpoint path served by the Portal pods
   prometheus.io/path: "/portal-metrics"
 
 # -- (string) Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
@@ -440,11 +445,13 @@ networkPolicy:
         - namespaceSelector:
             # -- (object) Labels to match ingress-nginx namespace
             matchLabels:
+              # -- (string) Namespace label selecting the ingress-nginx controller
               kubernetes.io/metadata.name: ingress-nginx
         # -- (object) Pod selector for dapp pods
         - podSelector:
             # -- (object) Labels to match dapp pods
             matchLabels:
+              # -- (string) Application label selecting the dApp frontend pods
               app.kubernetes.io/name: dapp
         # -- (object) Pod selector for same namespace pods
         - podSelector: {}  # Same namespace
@@ -469,6 +476,7 @@ networkPolicy:
           podSelector:
             # -- (object) Labels to match kube-dns pods
             matchLabels:
+              # -- (string) Label selecting kube-dns pods for DNS access
               k8s-app: kube-dns
       # -- (list) Allowed ports for DNS traffic
       ports:
@@ -483,6 +491,7 @@ networkPolicy:
         - podSelector:
             # -- (object) Labels to match PostgreSQL pods
             matchLabels:
+              # -- (string) Application label selecting the PostgreSQL HA pods
               app.kubernetes.io/name: postgresql-ha
       # -- (list) Allowed ports for PostgreSQL traffic
       ports:
@@ -497,6 +506,7 @@ networkPolicy:
         - podSelector:
             # -- (object) Labels to match Redis pods
             matchLabels:
+              # -- (string) Application label selecting the Redis pods
               app.kubernetes.io/name: redis
       # -- (list) Allowed ports for Redis traffic
       ports:

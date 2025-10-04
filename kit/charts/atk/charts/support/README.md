@@ -262,6 +262,10 @@ The following table lists the configurable parameters of this chart and their de
 |reloader.reloader.deployment.labels|object|-|Labels for Reloader deployment|
 |reloader.reloader.deployment.labels."kots.io/app-slug"|string|`"settlemint-atk"`|KOTS application identifier for SettleMint ATK|
 |reloader.reloader.deployment.resources|object|-|Resource requests and limits for Reloader pods|
+|reloader.reloader.deployment.resources.limits.cpu|string|`"600m"`|CPU limit for Reloader pods|
+|reloader.reloader.deployment.resources.limits.memory|string|`"256Mi"`|Memory limit for Reloader pods|
+|reloader.reloader.deployment.resources.requests.cpu|string|`"100m"`|CPU request reserved for Reloader pods|
+|reloader.reloader.deployment.resources.requests.memory|string|`"128Mi"`|Memory request reserved for Reloader pods|
 |reloader.reloader.readOnlyRootFileSystem|bool|`true`|Enable read-only root filesystem|
 |reloader.reloader.reloadOnCreate|bool|`false`|Reload on resource creation|
 |reloader.reloader.securityContext|object|-|Security context configuration|

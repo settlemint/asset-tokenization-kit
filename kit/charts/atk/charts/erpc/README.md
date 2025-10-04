@@ -366,6 +366,7 @@ The following table lists the configurable parameters of this chart and their de
 |podAnnotations."prometheus.io/scrape"|string|`"true"`|Enable prometheus scraping|
 |podAntiAffinityPreset|string|`"soft"`|Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`|
 |podLabels|object|-|Extra labels for eRPC pods|
+|podLabels."app.kubernetes.io/component"|string|`"erpc"`|Kubernetes component label identifying the workload as eRPC|
 |podSecurityContext|object|-|Pod Security Context configuration (overrides global.securityContexts.pod)|
 |priorityClassName|string|`""`|eRPC pods' priority class name|
 |readinessProbe|object|-|Configure eRPC containers' readiness probe|

@@ -64,6 +64,7 @@ topologySpreadConstraints: []
 
 # -- (object) Extra labels for eRPC pods
 podLabels:
+  # -- (string) Kubernetes component label identifying the workload as eRPC
   app.kubernetes.io/component: erpc
 
 # -- (object) Annotations for eRPC pods

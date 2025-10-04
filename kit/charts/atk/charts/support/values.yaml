@@ -523,10 +523,14 @@ reloader:
       # -- (object) Resource requests and limits for Reloader pods
       resources:
         requests:
+          # -- (string) CPU request reserved for Reloader pods
           cpu: 100m
+          # -- (string) Memory request reserved for Reloader pods
           memory: 128Mi
         limits:
+          # -- (string) CPU limit for Reloader pods
           cpu: 600m
+          # -- (string) Memory limit for Reloader pods
           memory: 256Mi
 
 # -- MinIO configuration (object)

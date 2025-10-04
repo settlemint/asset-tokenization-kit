@@ -56,8 +56,11 @@ initContainer:
     # -- (int) Timeout in seconds for each dependency check
     timeout: 120
     ipfsClusterProxy:
+      # -- (bool) Enable readiness checks against the IPFS cluster proxy
       enabled: true
+      # -- (string) Hostname for the IPFS cluster proxy service
       host: ipfs-cluster
+      # -- (int) TCP port used by the IPFS cluster proxy service
       port: 9095
     # -- (list) List of dependencies to check
     dependencies:
@@ -67,7 +70,10 @@ initContainer:
         name: postgresql
         # -- (string) Dependency endpoint template
         endpoint: "{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"graphNode\" \"local\" .Values.postgresql) }}"
-      - name: ipfs-cluster-proxy
+      - # -- (object) Additional dependency describing the IPFS cluster proxy endpoint
+        # -- (string) Human-readable name for the IPFS cluster proxy dependency
+        name: ipfs-cluster-proxy
+        # -- (string) Rendered endpoint for the IPFS cluster proxy health check
         endpoint: "{{ include \"graph-node.ipfsClusterProxyEndpoint\" (dict \"context\" $) }}"
     # -- (object) Resource limits and requests for TCP check container
     resources:
@@ -258,23 +264,33 @@ ingress:
   paths:
     # -- (object) Query endpoint path configuration
     - path: /(.*)
+      # -- (string) Kubernetes path matching mode for the query endpoint
       pathType: ImplementationSpecific
+      # -- (string) Service port name handling HTTP query traffic
       servicePortName: http-query
     # -- (object) WebSocket query endpoint path configuration
     - path: /ws/?(.*)
+      # -- (string) Kubernetes path matching mode for the WebSocket endpoint
       pathType: ImplementationSpecific
+      # -- (string) Service port name handling WebSocket query traffic
       servicePortName: http-queryws
     # -- (object) Admin endpoint path configuration
     - path: /admin/?(.*)
+      # -- (string) Kubernetes path matching mode for the admin endpoint
       pathType: ImplementationSpecific
+      # -- (string) Service port name exposing admin operations
       servicePortName: http-admin
     # -- (object) Indexer endpoint path configuration
     - path: /indexer/?(.*)
+      # -- (string) Kubernetes path matching mode for the indexer endpoint
       pathType: ImplementationSpecific
+      # -- (string) Service port name exposing indexer status metrics
       servicePortName: http-status
     # -- (object) Graphman endpoint path configuration
     - path: /graphman/?(.*)
+      # -- (string) Kubernetes path matching mode for the Graphman endpoint
       pathType: ImplementationSpecific
+      # -- (string) Service port name exposing Graphman operations
       servicePortName: http-status
   # -- (list) TLS configuration for the ingress
   tls: []

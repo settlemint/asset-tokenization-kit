@@ -228,6 +228,7 @@ The following table lists the configurable parameters of this chart and their de
 |ipfs.ingress|object|-|Ingress configuration for the IPFS cluster endpoints|
 |ipfs.ingress.className|string|`"atk-nginx"`|Deprecated: Use `ingressClassName` instead. Will be removed in future versions.|
 |ipfs.ingress.enabled|bool|`true`|Enable ingress exposure for IPFS cluster endpoints|
+|ipfs.ingress.hostnames.api|string|`"ipfs-cluster.k8s.orb.local"`|Primary hostname serving the IPFS cluster API|
 |ipfs.ingress.ingressClassName|string|`"atk-nginx"`|IngressClass for IPFS cluster ingress resources (Kubernetes 1.19+ standard)|
 |ipfs.ipfs|object|-|IPFS peer configuration overrides|
 |ipfs.ipfs.image.registry|string|`"docker.io"`|OCI registry for the Kubo image|
@@ -237,6 +238,7 @@ The following table lists the configurable parameters of this chart and their de
 |ipfs.ipfs.resources.requests.cpu|string|`"150m"`|CPU request for IPFS pods|
 |ipfs.ipfs.resources.requests.memory|string|`"512Mi"`|Memory request for IPFS pods|
 |ipfs.tests|object|-|Test pod image configuration|
+|ipfs.tests.image.registry|string|`"docker.io"`|Container registry hosting the chart test image|
 |network|object|-|Blockchain network infrastructure configuration|
 |network.enabled|bool|`true`|Enable deployment of the blockchain network (validators and RPC nodes)|
 |network.network-bootstrapper|object|-|Network bootstrapper job configuration for genesis and initial setup|
@@ -471,6 +473,8 @@ The following table lists the configurable parameters of this chart and their de
 |support.redis.auth.enabled|bool|`true`|Enable Redis password authentication|
 |support.redis.auth.password|string|`"atk"`|Redis password. Change for production deployments.|
 |support.redis.commonLabels|object|-|Common labels applied to all Redis resources|
+|support.redis.commonLabels."app.kubernetes.io/managed-by"|string|`"helm"`|Label identifying Helm as the managing tool for Redis resources|
+|support.redis.commonLabels."kots.io/app-slug"|string|`"settlemint-atk"`|KOTS application slug tag for Redis resources|
 |support.redis.enabled|bool|`true`|Enable Redis deployment|
 |support.redis.fullnameOverride|string|`"redis"`|Override fullname for simpler service discovery|
 |support.redis.image|object|-|Redis container image|

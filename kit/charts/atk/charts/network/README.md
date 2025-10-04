@@ -15,6 +15,7 @@ The following table lists the configurable parameters of this chart and their de
 |global|object|-|Global configuration shared across network subcharts|
 |global.chainId|int|`nil`|Chain ID applied when subcharts omit explicit overrides. Inherited from parent atk chart.|
 |global.labels|object|-|Common labels applied to all resources in the network|
+|global.labels."kots.io/app-slug"|string|`"settlemint-atk"`|KOTS application slug to align network resources with the installer metadata|
 |global.networkNodes|object|-|Defaults consumed by Besu network node workloads|
 |global.networkNodes.faucetArtifactPrefix|string|`"besu-faucet"`|Prefix used for faucet-related ConfigMaps and Secrets containing funded accounts|
 |global.networkNodes.genesisConfigMapName|string|`"besu-genesis"`|ConfigMap name storing the generated genesis.json artifact|
