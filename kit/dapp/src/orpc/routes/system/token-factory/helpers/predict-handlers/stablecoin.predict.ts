@@ -38,11 +38,12 @@ export const stablecoinPredictHandler = async (
     throw new Error("Invalid token type");
   }
 
+  const { basePrice: _, ...params } = input;
   const result = await context.portalClient.query(
     PREDICT_STABLECOIN_ADDRESS_QUERY,
     {
       address: context.factoryAddress,
-      ...input,
+      ...params,
       initialModulePairs: input.initialModulePairs.map((pair) => ({
         module: pair.module,
         params: encodeComplianceParams(pair),

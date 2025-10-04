@@ -136,11 +136,12 @@ export const fundPredictHandler = async (
   // PORTAL DELEGATION: Query Portal for CREATE2 address calculation
   // WHY: Portal has access to factory contract logic and CREATE2 salt generation
   // that would be complex to replicate in the application layer
+  const { basePrice: _, ...params } = input;
   const result = await context.portalClient.query(
     PREDICT_FUND_ADDRESS_QUERY,
     {
       address: context.factoryAddress, // Factory contract address for prediction
-      ...input, // Spread fund parameters (symbol, name, decimals, etc.)
+      ...params, // Spread fund parameters (symbol, name, decimals, etc.)
       initialModulePairs: input.initialModulePairs.map((pair) => ({
         module: pair.module,
         params: encodeComplianceParams(pair),
