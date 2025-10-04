@@ -1,0 +1,1524 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "support values",
+  "type": "object",
+  "properties": {
+    "global": {
+      "type": "object",
+      "properties": {
+        "labels": {
+          "type": "object",
+          "properties": {
+            "kots.io/app-slug": {
+              "type": "string",
+              "default": "settlemint-atk"
+            }
+          },
+          "description": "KOTS application identifier for SettleMint ATK",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Global configuration applied to all resources",
+      "additionalProperties": false
+    },
+    "postgresql": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "fullnameOverride": {
+          "type": "string",
+          "default": "postgresql"
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "registry": {
+              "type": "string",
+              "default": "docker.io"
+            },
+            "repository": {
+              "description": "PostgreSQL image repository",
+              "type": "string",
+              "default": "postgres"
+            },
+            "tag": {
+              "description": "PostgreSQL image tag (immutable tags are recommended)",
+              "type": "string",
+              "default": "18.0-alpine"
+            },
+            "pullPolicy": {
+              "description": "PostgreSQL image pull policy",
+              "type": "string",
+              "default": "IfNotPresent"
+            }
+          },
+          "description": "PostgreSQL image configuration",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "imagePullSecrets": {
+          "type": "array",
+          "items": {}
+        },
+        "postgresql": {
+          "type": "object",
+          "properties": {
+            "username": {
+              "type": "string",
+              "default": "postgres"
+            },
+            "password": {
+              "type": "string",
+              "default": "atk"
+            },
+            "database": {
+              "type": "string",
+              "default": "postgres"
+            }
+          },
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "requests": {
+              "type": "object",
+              "properties": {
+                "memory": {
+                  "type": "string",
+                  "default": "256Mi"
+                },
+                "cpu": {
+                  "type": "string",
+                  "default": "80m"
+                }
+              },
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "limits": {
+              "type": "object",
+              "properties": {
+                "memory": {
+                  "type": "string",
+                  "default": "512Mi"
+                },
+                "cpu": {
+                  "type": "string",
+                  "default": "480m"
+                }
+              },
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "persistence": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "storageClass": {
+              "description": "Storage class for persistent volume (uses default if empty)",
+              "type": "string",
+              "default": ""
+            },
+            "accessModes": {
+              "type": "array",
+              "description": "Access modes for persistent volume",
+              "items": {
+                "type": "string",
+                "default": "ReadWriteOnce"
+              }
+            },
+            "size": {
+              "type": "string",
+              "default": "8Gi"
+            }
+          },
+          "additionalProperties": true
+        },
+        "service": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "default": "ClusterIP"
+            },
+            "port": {
+              "description": "PostgreSQL service port",
+              "type": "integer",
+              "default": 5432
+            },
+            "targetPort": {
+              "description": "PostgreSQL service target port",
+              "type": "integer",
+              "default": 5432
+            }
+          },
+          "description": "Service configuration",
+          "additionalProperties": true
+        },
+        "commonLabels": {
+          "type": "object",
+          "properties": {
+            "kots.io/app-slug": {
+              "type": "string",
+              "default": "settlemint-atk"
+            },
+            "app.kubernetes.io/managed-by": {
+              "description": "Identifies Helm as the manager of this resource",
+              "type": "string",
+              "default": "helm"
+            }
+          },
+          "description": "Common labels to add to all PostgreSQL resources",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "initdb": {
+          "type": "object",
+          "properties": {
+            "scripts": {
+              "type": "object",
+              "properties": {
+                "create_databases.sql": {
+                  "type": "string",
+                  "default": "-- Create databases and users for all ATK services\nCREATE DATABASE blockscout;\nCREATE USER blockscout WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE blockscout TO blockscout;\n\\c blockscout;\nGRANT ALL ON SCHEMA public TO blockscout;\n\n\\c postgres;\nCREATE DATABASE thegraph WITH ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' TEMPLATE template0;\nCREATE USER thegraph WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE thegraph TO thegraph;\n\\c thegraph;\nGRANT ALL ON SCHEMA public TO thegraph;\n\n\\c postgres;\nCREATE DATABASE hasura;\nCREATE USER hasura WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE hasura TO hasura;\n\\c hasura;\nGRANT ALL ON SCHEMA public TO hasura;\n\n\\c postgres;\nCREATE DATABASE portal;\nCREATE USER portal WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE portal TO portal;\n\\c portal;\nGRANT ALL ON SCHEMA public TO portal;\n\n\\c postgres;\nCREATE DATABASE txsigner;\nCREATE USER txsigner WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE txsigner TO txsigner;\n\\c txsigner;\nGRANT ALL ON SCHEMA public TO txsigner;\n"
+                }
+              },
+              "description": "SQL script to create databases and users for all ATK services",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Database initialization scripts",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "postgresql_conf": {
+          "type": "object",
+          "properties": {
+            "max_connections": {
+              "type": "integer",
+              "default": 1000
+            },
+            "shared_buffers": {
+              "description": "Amount of memory dedicated to PostgreSQL to use for caching data",
+              "type": "string",
+              "default": "256MB"
+            },
+            "effective_cache_size": {
+              "description": "Planner's assumption about the effective size of the disk cache",
+              "type": "string",
+              "default": "1GB"
+            },
+            "maintenance_work_mem": {
+              "description": "Specifies the maximum amount of memory for maintenance operations",
+              "type": "string",
+              "default": "64MB"
+            },
+            "checkpoint_completion_target": {
+              "description": "Target for completion of checkpoint processing",
+              "type": "number",
+              "default": 0.9
+            },
+            "wal_buffers": {
+              "description": "Amount of memory used in shared memory for WAL data",
+              "type": "string",
+              "default": "16MB"
+            },
+            "default_statistics_target": {
+              "description": "Default statistics target for table columns",
+              "type": "integer",
+              "default": 100
+            },
+            "random_page_cost": {
+              "description": "Planner's assumption about the cost of a non-sequentially-fetched disk page",
+              "type": "number",
+              "default": 1.1
+            },
+            "effective_io_concurrency": {
+              "description": "Number of concurrent disk I/O operations",
+              "type": "integer",
+              "default": 200
+            },
+            "work_mem": {
+              "description": "Amount of memory to be used by internal sort operations and hash tables",
+              "type": "string",
+              "default": "4MB"
+            },
+            "min_wal_size": {
+              "description": "Minimum size to which the WAL will shrink",
+              "type": "string",
+              "default": "1GB"
+            },
+            "max_wal_size": {
+              "description": "Maximum size to which the WAL will grow during automatic checkpoints",
+              "type": "string",
+              "default": "4GB"
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "ingress-nginx": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "global": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "registry": {
+                  "type": "string",
+                  "default": "registry.k8s.io"
+                }
+              },
+              "description": "Global image registry",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Global configuration",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "fullnameOverride": {
+          "type": "string",
+          "default": "ingress-nginx"
+        },
+        "imagePullSecrets": {
+          "type": "array",
+          "items": {}
+        },
+        "defaultBackend": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
+        "controller": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "image": {
+                  "type": "string",
+                  "default": "ingress-nginx/controller"
+                },
+                "digest": {
+                  "description": "Image digest for immutable deployments",
+                  "type": "string",
+                  "default": ""
+                },
+                "digestChroot": {
+                  "description": "Image digest for chroot variant",
+                  "type": "string",
+                  "default": ""
+                }
+              },
+              "description": "Ingress NGINX controller image name",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "allowSnippetAnnotations": {
+              "description": "Allow snippet annotations in Ingress objects",
+              "type": "boolean",
+              "default": true
+            },
+            "runAsUser": {
+              "description": "User ID to run the controller process",
+              "type": "integer",
+              "default": 2016
+            },
+            "admissionWebhooks": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false
+                }
+              },
+              "additionalProperties": {
+                "type": "boolean"
+              }
+            },
+            "replicaCount": {
+              "type": "integer",
+              "default": 1
+            },
+            "autoscaling": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "minReplicas": {
+                  "type": "integer",
+                  "default": 2
+                },
+                "maxReplicas": {
+                  "type": "integer",
+                  "default": 10
+                },
+                "targetCPUUtilizationPercentage": {
+                  "description": "Target CPU utilization percentage",
+                  "type": "integer",
+                  "default": 80
+                },
+                "targetMemoryUtilizationPercentage": {
+                  "description": "Target memory utilization percentage",
+                  "type": "integer",
+                  "default": 80
+                },
+                "behavior": {
+                  "type": "object",
+                  "properties": {
+                    "scaleDown": {
+                      "type": "object",
+                      "properties": {
+                        "stabilizationWindowSeconds": {
+                          "type": "integer",
+                          "default": 300
+                        },
+                        "policies": {
+                          "type": "array",
+                          "description": "Scale down policies",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "default": "Pods"
+                              },
+                              "value": {
+                                "description": "Number of pods to scale down",
+                                "type": "integer",
+                                "default": 1
+                              },
+                              "periodSeconds": {
+                                "description": "Period in seconds for scale down evaluation",
+                                "type": "integer",
+                                "default": 180
+                              }
+                            },
+                            "additionalProperties": true
+                          }
+                        }
+                      },
+                      "description": "Stabilization window for scale down",
+                      "additionalProperties": true
+                    },
+                    "scaleUp": {
+                      "type": "object",
+                      "properties": {
+                        "stabilizationWindowSeconds": {
+                          "type": "integer",
+                          "default": 0
+                        },
+                        "policies": {
+                          "type": "array",
+                          "description": "Scale up policies",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "default": "Pods"
+                              },
+                              "value": {
+                                "description": "Number of pods to scale up",
+                                "type": "integer",
+                                "default": 2
+                              },
+                              "periodSeconds": {
+                                "description": "Period in seconds for scale up evaluation",
+                                "type": "integer",
+                                "default": 60
+                              }
+                            },
+                            "additionalProperties": true
+                          }
+                        }
+                      },
+                      "description": "Scale up behavior",
+                      "additionalProperties": true
+                    }
+                  },
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              },
+              "additionalProperties": true
+            },
+            "updateStrategy": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "default": "RollingUpdate"
+                },
+                "rollingUpdate": {
+                  "type": "object",
+                  "properties": {
+                    "maxSurge": {
+                      "type": "string",
+                      "default": "100%"
+                    },
+                    "maxUnavailable": {
+                      "description": "Maximum number of pods that can be unavailable during update",
+                      "type": "string",
+                      "default": "0%"
+                    }
+                  },
+                  "description": "Rolling update configuration",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Update strategy configuration",
+              "additionalProperties": true
+            },
+            "resources": {
+              "type": "object",
+              "properties": {},
+              "description": "Resource configuration",
+              "additionalProperties": true
+            },
+            "podLabels": {
+              "type": "object",
+              "properties": {
+                "kots.io/app-slug": {
+                  "type": "string",
+                  "default": "settlemint-atk"
+                }
+              },
+              "description": "Pod labels",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "podAnnotations": {
+              "type": "object",
+              "properties": {
+                "prometheus.io/scrape": {
+                  "type": "string",
+                  "default": "true"
+                },
+                "prometheus.io/port": {
+                  "description": "Prometheus metrics port",
+                  "type": "string",
+                  "default": "10254"
+                }
+              },
+              "description": "Pod annotations",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "affinity": {
+              "type": "object",
+              "properties": {
+                "podAntiAffinity": {
+                  "type": "object",
+                  "properties": {
+                    "preferredDuringSchedulingIgnoredDuringExecution": {
+                      "type": "array",
+                      "description": "Weight for scheduling preference (higher = more preferred)",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "weight": {
+                            "type": "integer",
+                            "default": 100
+                          },
+                          "podAffinityTerm": {
+                            "type": "object",
+                            "properties": {
+                              "labelSelector": {
+                                "type": "object",
+                                "properties": {
+                                  "matchExpressions": {
+                                    "type": "array",
+                                    "description": "Label key to match",
+                                    "items": {
+                                      "anyOf": [
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "key": {
+                                              "type": "string",
+                                              "default": "app.kubernetes.io/component"
+                                            },
+                                            "operator": {
+                                              "description": "Operator for label matching",
+                                              "type": "string",
+                                              "default": "In"
+                                            },
+                                            "values": {
+                                              "type": "array",
+                                              "description": "Values to match for the label",
+                                              "items": {
+                                                "type": "string",
+                                                "default": "controller"
+                                              }
+                                            }
+                                          },
+                                          "additionalProperties": true
+                                        },
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "key": {
+                                              "type": "string",
+                                              "default": "app.kubernetes.io/name"
+                                            },
+                                            "operator": {
+                                              "description": "Operator for label matching",
+                                              "type": "string",
+                                              "default": "In"
+                                            },
+                                            "values": {
+                                              "type": "array",
+                                              "description": "Values to match for the label",
+                                              "items": {
+                                                "type": "string",
+                                                "default": "ingress-nginx"
+                                              }
+                                            }
+                                          },
+                                          "description": "Label key to match",
+                                          "additionalProperties": true
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                "description": "Match expressions for label selection",
+                                "additionalProperties": {
+                                  "type": "array"
+                                }
+                              },
+                              "topologyKey": {
+                                "description": "Topology key for spreading pods across nodes",
+                                "type": "string",
+                                "default": "kubernetes.io/hostname"
+                              }
+                            },
+                            "description": "Pod affinity term defining the anti-affinity rule",
+                            "additionalProperties": true
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    }
+                  },
+                  "description": "Preferred anti-affinity rules (soft requirement)",
+                  "additionalProperties": {
+                    "type": "array"
+                  }
+                }
+              },
+              "description": "Affinity configuration",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "config": {
+              "type": "object",
+              "properties": {
+                "proxy-body-size": {
+                  "type": "string",
+                  "default": "500M"
+                },
+                "http2-push-preload": {
+                  "description": "Enable HTTP/2 server push preload",
+                  "type": "string",
+                  "default": "true"
+                },
+                "proxy-send-timeout": {
+                  "description": "Timeout for sending request to proxied server",
+                  "type": "string",
+                  "default": "3600"
+                },
+                "proxy-read-timeout": {
+                  "description": "Timeout for reading response from proxied server",
+                  "type": "string",
+                  "default": "3600"
+                },
+                "proxy-buffering": {
+                  "description": "Enable or disable buffering of responses from proxied server",
+                  "type": "string",
+                  "default": "on"
+                },
+                "proxy-buffer-size": {
+                  "description": "Size of buffer used for reading response header from proxied server",
+                  "type": "string",
+                  "default": "128k"
+                },
+                "proxy-busy-buffers-size": {
+                  "description": "Size limit for buffers that are busy sending a response to client",
+                  "type": "string",
+                  "default": "128k"
+                },
+                "proxy-buffers-number": {
+                  "description": "Number of buffers used for reading response from proxied server",
+                  "type": "string",
+                  "default": "4"
+                },
+                "proxy-max-temp-file-size": {
+                  "description": "Maximum size of temporary file for buffering response from proxied server",
+                  "type": "string",
+                  "default": "1024m"
+                },
+                "client-body-buffer-size": {
+                  "description": "Size of buffer for reading client request body",
+                  "type": "string",
+                  "default": "128k"
+                },
+                "tcp-fast-open": {
+                  "description": "Enables TCP Fast Open with specified queue size",
+                  "type": "string",
+                  "default": "3000"
+                },
+                "worker-processes": {
+                  "description": "Number of worker processes (auto = CPU cores)",
+                  "type": "string",
+                  "default": "auto"
+                },
+                "max-worker-connections": {
+                  "description": "Maximum number of simultaneous connections per worker process",
+                  "type": "string",
+                  "default": "65536"
+                },
+                "upstream-keepalive-connections": {
+                  "description": "Number of idle keepalive connections to upstream servers",
+                  "type": "string",
+                  "default": "64"
+                },
+                "upstream-keepalive-timeout": {
+                  "description": "Timeout for idle keepalive connections to upstream servers",
+                  "type": "string",
+                  "default": "120"
+                },
+                "limit-req-status-code": {
+                  "description": "HTTP status code to return when rate limit is exceeded",
+                  "type": "string",
+                  "default": "429"
+                },
+                "use-http2": {
+                  "description": "Enable HTTP/2 protocol support",
+                  "type": "string",
+                  "default": "true"
+                },
+                "use-forwarded-headers": {
+                  "description": "Enable use of X-Forwarded-* headers",
+                  "type": "string",
+                  "default": "false"
+                },
+                "log-format-escape-json": {
+                  "description": "Escape special characters in JSON log format",
+                  "type": "string",
+                  "default": "true"
+                },
+                "log-format-upstream": {
+                  "description": "JSON format for upstream access logs with request/response metadata",
+                  "type": "string",
+                  "default": "{\"proxyUpstreamName\": \"$proxy_upstream_name\", \"httpRequest\":{\"requestMethod\": \"$request_method\", \"requestUrl\": \"$host$request_uri\", \"status\": $status, \"requestBody\": \"${request_body_filtered}\"}, \"cloudflare\": {\"cfConnectingIp\": \"$http_cf_connecting_ip\", \"cfIpCountry\": \"$http_cf_ipcountry\", \"cfRay\": \"$http_cf_ray\", \"trueClientIp\": \"$http_true_client_ip\"}, \"meta\": {\"timestamp\": \"$time_iso8601\", \"latency\": \"$upstream_response_time s\", \"requestID\": \"$req_id\", \"requestSize\": \"$request_length\", \"responseSize\": \"$upstream_response_length\", \"userAgent\": \"$http_user_agent\", \"referer\": \"$http_referer\", \"protocol\":\"$server_protocol\", \"proxyAlternativeUpstreamName\": \"$proxy_alternative_upstream_name\", \"upstreamStatus\": \"$upstream_status\", \"upstreamAddr\": \"$upstream_addr\", \"cfVisitor\": \"$http_cf_visitor\", \"cfRequestId\": \"$http_cf_request_id\"}}"
+                },
+                "ignore-invalid-headers": {
+                  "description": "Whether to ignore invalid headers in client requests",
+                  "type": "string",
+                  "default": "false"
+                },
+                "enable-underscores-in-headers": {
+                  "description": "Allow underscores in client request header names",
+                  "type": "string",
+                  "default": "true"
+                },
+                "annotations-risk-level": {
+                  "description": "Risk level for allowing snippet annotations (Critical/High/Medium/Low)",
+                  "type": "string",
+                  "default": "Critical"
+                },
+                "ssl-ciphers": {
+                  "description": "SSL/TLS cipher suites to use (strong ciphers only)",
+                  "type": "string",
+                  "default": "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:AES128-GCM-SHA256:AES128-GCM-SHA384"
+                },
+                "nginx-status-ipv4-whitelist": {
+                  "description": "IPv4 CIDR whitelist for NGINX status endpoint (0.0.0.0 = all)",
+                  "type": "string",
+                  "default": "0.0.0.0"
+                },
+                "http-snippet": {
+                  "description": "Custom NGINX HTTP configuration snippet for Lua request body filtering and status endpoint",
+                  "type": "string",
+                  "default": "lua_need_request_body on;\n\nmap $status $request_body_filtered {\n    204     \"\";\n    default $request_body_binary_check;\n}\n\nmap $request_body $request_body_binary_check {\n    ~[^[:print:]]  \"[binary data]\";\n    default       $request_body;\n}\n\nserver {\n    listen 18080;\n\n    location /nginx_status {\n        allow all;\n        stub_status on;\n    }\n    location / {\n        return 404;\n    }\n}\n"
+                },
+                "ssl-redirect": {
+                  "description": "Enable automatic redirect from HTTP to HTTPS",
+                  "type": "string",
+                  "default": "false"
+                },
+                "enable-opentelemetry": {
+                  "description": "Enable OpenTelemetry tracing integration",
+                  "type": "string",
+                  "default": "true"
+                },
+                "enable-access-log-for-default-backend": {
+                  "description": "Enable access logging for default backend requests",
+                  "type": "string",
+                  "default": "true"
+                },
+                "otlp-collector-host": {
+                  "description": "OpenTelemetry collector hostname for trace exports",
+                  "type": "string",
+                  "default": "o11y-alloy"
+                },
+                "otlp-collector-port": {
+                  "description": "OpenTelemetry collector port for trace exports",
+                  "type": "string",
+                  "default": "4317"
+                },
+                "otel-sampler": {
+                  "description": "OpenTelemetry sampling strategy (AlwaysOn/AlwaysOff/TraceIdRatioBased)",
+                  "type": "string",
+                  "default": "AlwaysOn"
+                },
+                "otel-sampler-ratio": {
+                  "description": "Sampling ratio when using TraceIdRatioBased sampler (0.0-1.0)",
+                  "type": "string",
+                  "default": "1.0"
+                },
+                "otel-sampler-parent-based": {
+                  "description": "Whether to respect parent span sampling decisions",
+                  "type": "string",
+                  "default": "false"
+                },
+                "opentelemetry-trust-incoming-span": {
+                  "description": "Trust incoming trace context from client requests",
+                  "type": "string",
+                  "default": "true"
+                },
+                "otel-max-queuesize": {
+                  "description": "Maximum queue size for OpenTelemetry span exports",
+                  "type": "string",
+                  "default": "2048"
+                },
+                "otel-schedule-delay-millis": {
+                  "description": "Delay in milliseconds between OpenTelemetry batch exports",
+                  "type": "string",
+                  "default": "5000"
+                },
+                "otel-max-export-batch-size": {
+                  "description": "Maximum number of spans per OpenTelemetry batch export",
+                  "type": "string",
+                  "default": "512"
+                },
+                "enable-brotli": {
+                  "description": "Enable Brotli compression for responses",
+                  "type": "string",
+                  "default": "true"
+                },
+                "proxy_next_upstream": {
+                  "description": "Conditions for trying next upstream server on error",
+                  "type": "string",
+                  "default": "error timeout http_500 http_502 http_503 http_504"
+                },
+                "proxy_next_upstream_timeout": {
+                  "description": "Timeout for trying next upstream server (seconds)",
+                  "type": "string",
+                  "default": "30"
+                },
+                "proxy_next_upstream_tries": {
+                  "description": "Maximum number of upstream servers to try",
+                  "type": "string",
+                  "default": "3"
+                }
+              },
+              "description": "NGINX configuration",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "extraArgs": {
+              "type": "object",
+              "properties": {
+                "enable-ssl-passthrough": {
+                  "type": "string",
+                  "default": "true"
+                }
+              },
+              "description": "Extra arguments for the controller",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "service": {
+              "type": "object",
+              "properties": {
+                "externalTrafficPolicy": {
+                  "description": "Use if not ClusterIP",
+                  "type": "string",
+                  "default": "Local"
+                },
+                "type": {
+                  "description": "Kubernetes service type (LoadBalancer/ClusterIP/NodePort)",
+                  "type": "string",
+                  "default": "LoadBalancer"
+                },
+                "annotations": {
+                  "type": "object",
+                  "properties": {
+                    "external-dns.alpha.kubernetes.io/hostname": {
+                      "type": "string",
+                      "default": "settlemint.local, *.settlemint.local"
+                    },
+                    "external-dns.alpha.kubernetes.io/cloudflare-proxied": {
+                      "description": "Enable Cloudflare proxy for external-dns managed records",
+                      "type": "string",
+                      "default": "true"
+                    },
+                    "service.beta.kubernetes.io/aws-load-balancer-backend-protocol": {
+                      "description": "AWS load balancer backend protocol",
+                      "type": "string",
+                      "default": "tcp"
+                    },
+                    "service.beta.kubernetes.io/aws-load-balancer-type": {
+                      "description": "AWS load balancer type (external/internal)",
+                      "type": "string",
+                      "default": "external"
+                    },
+                    "service.beta.kubernetes.io/aws-load-balancer-nlb-target-type": {
+                      "description": "AWS NLB target type (ip/instance)",
+                      "type": "string",
+                      "default": "ip"
+                    },
+                    "service.beta.kubernetes.io/aws-load-balancer-scheme": {
+                      "description": "AWS load balancer scheme (internet-facing/internal)",
+                      "type": "string",
+                      "default": "internet-facing"
+                    },
+                    "service.beta.kubernetes.io/azure-load-balancer-disable-tcp-reset": {
+                      "description": "Disable TCP reset on Azure load balancer",
+                      "type": "string",
+                      "default": "true"
+                    },
+                    "service.beta.kubernetes.io/azure-load-balancer-tcp-idle-timeout": {
+                      "description": "Azure load balancer TCP idle timeout in minutes",
+                      "type": "string",
+                      "default": "30"
+                    },
+                    "service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path": {
+                      "description": "Azure load balancer health probe request path",
+                      "type": "string",
+                      "default": "/healthz"
+                    }
+                  },
+                  "description": "Service annotations",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Service configuration",
+              "additionalProperties": true
+            },
+            "ingressClassResource": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "default": "atk-nginx"
+                },
+                "enabled": {
+                  "description": "Enable creation of IngressClass resource",
+                  "type": "boolean",
+                  "default": true
+                },
+                "default": {
+                  "description": "Set this IngressClass as cluster default",
+                  "type": "boolean",
+                  "default": false
+                },
+                "controllerValue": {
+                  "description": "Controller value for IngressClass resource",
+                  "type": "string",
+                  "default": "k8s.io/atk-nginx"
+                }
+              },
+              "description": "Ingress class resource configuration",
+              "additionalProperties": true
+            },
+            "ingressClass": {
+              "description": "Ingress class name",
+              "type": "string",
+              "default": "atk-nginx"
+            },
+            "opentelemetry": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "registry": {
+                      "type": "string",
+                      "default": "registry.k8s.io"
+                    }
+                  },
+                  "description": "OpenTelemetry image configuration",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "OpenTelemetry configuration",
+              "additionalProperties": true
+            },
+            "patch": {
+              "type": "object",
+              "properties": {
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "registry": {
+                      "type": "string",
+                      "default": "registry.k8s.io"
+                    }
+                  },
+                  "description": "Patch job image registry",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Patch configuration",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "metrics": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "service": {
+                  "type": "object",
+                  "properties": {
+                    "labels": {
+                      "type": "object",
+                      "properties": {
+                        "kots.io/app-slug": {
+                          "type": "string",
+                          "default": "settlemint-atk"
+                        }
+                      },
+                      "description": "KOTS application identifier for SettleMint ATK",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "annotations": {
+                      "type": "object",
+                      "properties": {
+                        "prometheus.io/scrape": {
+                          "type": "string",
+                          "default": "true"
+                        },
+                        "prometheus.io/port": {
+                          "description": "Prometheus metrics port",
+                          "type": "string",
+                          "default": "10254"
+                        }
+                      },
+                      "description": "Annotations for metrics service",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "description": "Metrics service configuration",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Metrics configuration",
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "reloader": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "fullnameOverride": {
+          "type": "string",
+          "default": "reloader"
+        },
+        "global": {
+          "type": "object",
+          "properties": {
+            "imagePullSecrets": {
+              "type": "array",
+              "items": {}
+            }
+          },
+          "additionalProperties": {
+            "type": "array"
+          }
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "default": "stakater/reloader"
+            },
+            "repository": {
+              "description": "Reloader image repository",
+              "type": "string",
+              "default": "ghcr.io/stakater/reloader"
+            }
+          },
+          "description": "Reloader image configuration",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "reloader": {
+          "type": "object",
+          "properties": {
+            "autoReloadAll": {
+              "type": "boolean",
+              "default": true
+            },
+            "watchGlobally": {
+              "description": "Watch resources globally across namespaces",
+              "type": "boolean",
+              "default": false
+            },
+            "readOnlyRootFileSystem": {
+              "description": "Enable read-only root filesystem",
+              "type": "boolean",
+              "default": true
+            },
+            "reloadOnCreate": {
+              "description": "Reload on resource creation",
+              "type": "boolean",
+              "default": false
+            },
+            "syncAfterRestart": {
+              "description": "Sync after restart",
+              "type": "boolean",
+              "default": true
+            },
+            "securityContext": {
+              "type": "object",
+              "properties": {
+                "capabilities": {
+                  "type": "object",
+                  "properties": {
+                    "drop": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "default": "ALL"
+                      }
+                    }
+                  },
+                  "description": "Linux capabilities to drop from the container",
+                  "additionalProperties": {
+                    "type": "array"
+                  }
+                },
+                "readOnlyRootFilesystem": {
+                  "description": "If true, the root filesystem of the container is read-only.",
+                  "type": "boolean",
+                  "default": false
+                },
+                "runAsNonRoot": {
+                  "description": "Ensures the container runs as a non-root user.",
+                  "type": "boolean",
+                  "default": true
+                },
+                "runAsUser": {
+                  "description": "The user ID to run the container as. Change this for OpenShift or specific requirements.",
+                  "type": "integer",
+                  "default": 2016
+                },
+                "allowPrivilegeEscalation": {
+                  "description": "Whether a process can gain more privileges than its parent",
+                  "type": "boolean",
+                  "default": false
+                }
+              },
+              "description": "Security context configuration",
+              "additionalProperties": true
+            },
+            "containerSecurityContext": {
+              "type": "object",
+              "properties": {
+                "capabilities": {
+                  "type": "object",
+                  "properties": {
+                    "drop": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "default": "ALL"
+                      }
+                    }
+                  },
+                  "description": "Linux capabilities to drop from the container",
+                  "additionalProperties": {
+                    "type": "array"
+                  }
+                },
+                "allowPrivilegeEscalation": {
+                  "description": "Whether a process can gain more privileges than its parent",
+                  "type": "boolean",
+                  "default": false
+                },
+                "readOnlyRootFilesystem": {
+                  "description": "Mount the container's root filesystem as read-only",
+                  "type": "boolean",
+                  "default": true
+                }
+              },
+              "description": "Container security context configuration",
+              "additionalProperties": true
+            },
+            "deployment": {
+              "type": "object",
+              "properties": {
+                "labels": {
+                  "type": "object",
+                  "properties": {
+                    "kots.io/app-slug": {
+                      "type": "string",
+                      "default": "settlemint-atk"
+                    }
+                  },
+                  "description": "KOTS application identifier for SettleMint ATK",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "resources": {
+                  "type": "object",
+                  "properties": {
+                    "requests": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "100m"
+                        },
+                        "memory": {
+                          "type": "string",
+                          "default": "128Mi"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "limits": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "600m"
+                        },
+                        "memory": {
+                          "type": "string",
+                          "default": "256Mi"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "description": "Resource requests and limits for Reloader pods",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Deployment configuration",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "minio": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string",
+              "default": "docker.io/minio/minio"
+            },
+            "tag": {
+              "description": "MinIO image tag (immutable tags are recommended)",
+              "type": "string",
+              "default": "RELEASE.2025-09-07T16-13-09Z"
+            }
+          },
+          "description": "MinIO image configuration",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "fullnameOverride": {
+          "type": "string",
+          "default": "minio"
+        },
+        "mode": {
+          "type": "string",
+          "default": "standalone"
+        },
+        "replicas": {
+          "type": "integer",
+          "default": 1
+        },
+        "persistence": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "size": {
+              "type": "string",
+              "default": "1Gi"
+            }
+          },
+          "additionalProperties": true
+        },
+        "rootUser": {
+          "type": "string",
+          "default": "admin"
+        },
+        "rootPassword": {
+          "type": "string",
+          "default": "atk-password"
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "requests": {
+              "type": "object",
+              "properties": {
+                "memory": {
+                  "type": "string",
+                  "default": "256Mi"
+                },
+                "cpu": {
+                  "type": "string",
+                  "default": "100m"
+                }
+              },
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "limits": {
+              "type": "object",
+              "properties": {
+                "memory": {
+                  "type": "string",
+                  "default": "512Mi"
+                },
+                "cpu": {
+                  "type": "string",
+                  "default": "600m"
+                }
+              },
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "buckets": {
+          "type": "array",
+          "description": "Automatic bucket creation",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "default": "atk"
+              },
+              "policy": {
+                "description": "Bucket access policy (none/download/upload/public)",
+                "type": "string",
+                "default": "none"
+              },
+              "purge": {
+                "description": "Whether to purge bucket contents on deletion",
+                "type": "boolean",
+                "default": false
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "users": {
+          "type": "array",
+          "description": "Automatic user/service account creation",
+          "items": {
+            "type": "object",
+            "properties": {
+              "accessKey": {
+                "type": "string",
+                "default": "atk-service"
+              },
+              "secretKey": {
+                "description": "MinIO secret key for user authentication",
+                "type": "string",
+                "default": "atk-service-secret"
+              },
+              "policy": {
+                "description": "User access policy (readonly/writeonly/readwrite/consoleAdmin)",
+                "type": "string",
+                "default": "readwrite"
+              }
+            },
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "ingress": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "ingressClassName": {
+              "description": "IngressClass for MinIO API",
+              "type": "string",
+              "default": "atk-nginx"
+            },
+            "path": {
+              "description": "Path for MinIO API ingress",
+              "type": "string",
+              "default": "/"
+            },
+            "hosts": {
+              "type": "array",
+              "description": "Hosts for MinIO API ingress",
+              "items": {
+                "type": "string",
+                "default": "minio.k8s.orb.local"
+              }
+            }
+          },
+          "additionalProperties": true
+        },
+        "consoleIngress": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "ingressClassName": {
+              "description": "IngressClass for MinIO console",
+              "type": "string",
+              "default": "atk-nginx"
+            },
+            "path": {
+              "description": "Path for MinIO console ingress",
+              "type": "string",
+              "default": "/"
+            },
+            "hosts": {
+              "type": "array",
+              "description": "Hosts for MinIO console ingress",
+              "items": {
+                "type": "string",
+                "default": "minio-console.k8s.orb.local"
+              }
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,1323 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "graph-node values",
+  "type": "object",
+  "properties": {
+    "global": {
+      "type": "object",
+      "properties": {
+        "labels": {
+          "type": "object",
+          "properties": {
+            "kots.io/app-slug": {
+              "type": "string",
+              "default": "settlemint-atk"
+            }
+          },
+          "description": "KOTS application slug for Replicated",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "artifacts": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "registry": {
+                  "type": "string",
+                  "default": "ghcr.io"
+                },
+                "repository": {
+                  "description": "Image repository",
+                  "type": "string",
+                  "default": "settlemint/asset-tokenization-kit-artifacts"
+                },
+                "pullPolicy": {
+                  "description": "Image pull policy",
+                  "type": "string",
+                  "default": "IfNotPresent"
+                },
+                "tag": {
+                  "description": "Image tag (empty string uses Chart.appVersion)",
+                  "type": "string",
+                  "default": ""
+                }
+              },
+              "description": "Image registry",
+              "additionalProperties": false
+            }
+          },
+          "description": "Artifacts configuration for contract ABIs and genesis files",
+          "additionalProperties": false
+        }
+      },
+      "description": "Global configuration",
+      "additionalProperties": false
+    },
+    "nameOverride": {
+      "description": "String to partially override common.names.fullname template (will maintain the release name)",
+      "type": "string",
+      "default": ""
+    },
+    "fullnameOverride": {
+      "description": "Override the full resource name. Set to \"graph-node\" for backward compatibility with existing ATK deployments that reference \"graph-node-combined\" service name",
+      "type": "string",
+      "default": "graph-node"
+    },
+    "image": {
+      "type": "object",
+      "properties": {
+        "repository": {
+          "type": "string",
+          "default": "graphprotocol/graph-node"
+        },
+        "pullPolicy": {
+          "description": "Graph Node image pull policy",
+          "type": "string",
+          "default": "IfNotPresent"
+        },
+        "tag": {
+          "description": "Overrides the image tag. Defaults to Chart.appVersion if not set",
+          "type": "string",
+          "default": "v0.40.2"
+        }
+      },
+      "description": "Graph Node image configuration",
+      "additionalProperties": false
+    },
+    "initContainer": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string",
+              "default": "docker.io/kubesphere/kubectl"
+            },
+            "tag": {
+              "description": "Kubectl image tag",
+              "type": "string",
+              "default": "v1.33.4"
+            },
+            "pullPolicy": {
+              "description": "Kubectl image pull policy",
+              "type": "string",
+              "default": "IfNotPresent"
+            }
+          },
+          "description": "Kubectl image repository",
+          "additionalProperties": false
+        },
+        "tcpCheck": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "image": {
+              "type": "object",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "default": "ghcr.io/settlemint/btp-waitforit"
+                },
+                "tag": {
+                  "description": "TCP check image tag",
+                  "type": "string",
+                  "default": "v7.7.10"
+                },
+                "pullPolicy": {
+                  "description": "TCP check image pull policy",
+                  "type": "string",
+                  "default": "IfNotPresent"
+                }
+              },
+              "description": "TCP check image configuration",
+              "additionalProperties": false
+            },
+            "timeout": {
+              "description": "Timeout in seconds for each dependency check",
+              "type": "integer",
+              "default": 120
+            },
+            "ipfsClusterProxy": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "host": {
+                  "type": "string",
+                  "default": "ipfs-cluster"
+                },
+                "port": {
+                  "type": "integer",
+                  "default": 9095
+                }
+              },
+              "additionalProperties": false
+            },
+            "dependencies": {
+              "type": "array",
+              "description": "List of dependencies to check",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "default": "postgresql"
+                      },
+                      "endpoint": {
+                        "description": "Dependency endpoint template",
+                        "type": "string",
+                        "default": "{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"graphNode\" \"local\" .Values.postgresql) }}"
+                      }
+                    },
+                    "description": "Dependency name",
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "default": "ipfs-cluster-proxy"
+                      },
+                      "endpoint": {
+                        "type": "string",
+                        "default": "{{ include \"graph-node.ipfsClusterProxyEndpoint\" (dict \"context\" $) }}"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "300m"
+                    },
+                    "memory": {
+                      "description": "Memory limit",
+                      "type": "string",
+                      "default": "64Mi"
+                    }
+                  },
+                  "description": "CPU limit",
+                  "additionalProperties": false
+                },
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "10m"
+                    },
+                    "memory": {
+                      "description": "Memory request",
+                      "type": "string",
+                      "default": "32Mi"
+                    }
+                  },
+                  "description": "Resource requests",
+                  "additionalProperties": false
+                }
+              },
+              "description": "Resource limits and requests for TCP check container",
+              "additionalProperties": false
+            }
+          },
+          "description": "TCP check configuration",
+          "additionalProperties": false
+        }
+      },
+      "description": "Init container configuration",
+      "additionalProperties": false
+    },
+    "imagePullSecrets": {
+      "type": "array",
+      "description": "Pull secrets required to fetch the Image",
+      "items": {}
+    },
+    "serviceAccount": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean",
+          "default": true
+        },
+        "annotations": {
+          "type": "object",
+          "properties": {},
+          "description": "Annotations to add to the service account",
+          "additionalProperties": true
+        },
+        "name": {
+          "description": "The name of the service account to use. If not set and create is true, a name is generated using the fullname template",
+          "type": "string",
+          "default": ""
+        }
+      },
+      "description": "Service account configuration",
+      "additionalProperties": false
+    },
+    "rbac": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean",
+          "default": false
+        },
+        "rules": {
+          "type": "array",
+          "description": "RBAC rules for the service account. Add RBAC rules here if graph-node requires specific Kubernetes API access. Currently no special permissions are needed",
+          "items": {}
+        }
+      },
+      "description": "RBAC configuration",
+      "additionalProperties": false
+    },
+    "replicaCount": {
+      "description": "Number of Graph Node replicas to deploy",
+      "type": "integer",
+      "default": 1
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "description": "Specify [resource requests and limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits)",
+      "additionalProperties": true
+    },
+    "nodeSelector": {
+      "type": "object",
+      "properties": {},
+      "description": "Specify a [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)",
+      "additionalProperties": true
+    },
+    "tolerations": {
+      "type": "array",
+      "description": "Specify [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)",
+      "items": {}
+    },
+    "podSecurityContext": {
+      "type": "object",
+      "properties": {},
+      "description": "Pod-wide security context",
+      "additionalProperties": true
+    },
+    "containerSecurityContext": {
+      "type": "object",
+      "properties": {},
+      "description": "Container-level security context overrides",
+      "additionalProperties": true
+    },
+    "podAnnotations": {
+      "type": "object",
+      "properties": {
+        "prometheus.io/scrape": {
+          "type": "string",
+          "default": "true"
+        },
+        "prometheus.io/port": {
+          "description": "Prometheus metrics port",
+          "type": "string",
+          "default": "8040"
+        },
+        "prometheus.io/path": {
+          "description": "Prometheus metrics endpoint path",
+          "type": "string",
+          "default": "/metrics"
+        }
+      },
+      "description": "Annotations for the `Pod`",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "env": {
+      "type": "object",
+      "properties": {
+        "IPFS": {
+          "type": "string",
+          "default": "https://ipfs.console.settlemint.com"
+        },
+        "node_role": {
+          "description": "Node role",
+          "type": "string",
+          "default": "combined"
+        },
+        "EXPERIMENTAL_SUBGRAPH_VERSION_SWITCHING_MODE": {
+          "description": "Experimental subgraph version switching mode",
+          "type": "string",
+          "default": "synced"
+        },
+        "GRAPH_ETH_CALL_GAS": {
+          "description": "Maximum gas for eth_call operations",
+          "type": "string",
+          "default": "50000000"
+        },
+        "GRAPH_GETH_ETH_CALL_ERRORS": {
+          "description": "Error patterns that indicate out of gas conditions",
+          "type": "string",
+          "default": "out of gas"
+        },
+        "GRAPH_KILL_IF_UNRESPONSIVE": {
+          "description": "Kill the node if it becomes unresponsive",
+          "type": "string",
+          "default": "true"
+        },
+        "ETHEREUM_POLLING_INTERVAL": {
+          "description": "Ethereum polling interval in milliseconds",
+          "type": "string",
+          "default": "1000"
+        },
+        "GRAPH_ALLOW_NON_DETERMINISTIC_FULLTEXT_SEARCH": {
+          "description": "Allow non-deterministic fulltext search operations",
+          "type": "string",
+          "default": "true"
+        },
+        "GRAPH_QUERY_CACHE_MAX_MEM": {
+          "description": "Maximum memory for query cache in megabytes",
+          "type": "string",
+          "default": "3000"
+        },
+        "GRAPH_QUERY_CACHE_BLOCKS": {
+          "description": "Number of blocks to cache queries for",
+          "type": "string",
+          "default": "6"
+        },
+        "GRAPH_QUERY_CACHE_STALE_PERIOD": {
+          "description": "Time period in milliseconds before cached queries become stale",
+          "type": "string",
+          "default": "1000"
+        },
+        "GRAPH_LOG": {
+          "description": "Log level (trace, debug, info, warn, error)",
+          "type": "string",
+          "default": "info"
+        },
+        "GRAPH_LOG_QUERY_TIMING": {
+          "description": "Log GraphQL query timing information",
+          "type": "string",
+          "default": "gql"
+        },
+        "GRAPH_ALLOW_NON_DETERMINISTIC_IPFS": {
+          "description": "Allow non-deterministic IPFS operations",
+          "type": "string",
+          "default": "true"
+        },
+        "GRAPH_PARALLEL_BLOCK_CONSTRAINTS": {
+          "description": "Use parallel block constraints for better performance",
+          "type": "string",
+          "default": "true"
+        },
+        "GRAPH_ETHEREUM_CLEANUP_BLOCKS": {
+          "description": "Clean up old Ethereum blocks from the database",
+          "type": "string",
+          "default": "true"
+        },
+        "GRAPH_CHAIN_HEAD_WATCHER_TIMEOUT": {
+          "description": "Timeout in seconds for chain head watcher",
+          "type": "string",
+          "default": "5"
+        },
+        "GRAPH_LOAD_WINDOW_SIZE": {
+          "description": "Load window size in seconds for block ingestion",
+          "type": "string",
+          "default": "3600"
+        },
+        "GRAPH_LOAD_BIN_SIZE": {
+          "description": "Bin size for load distribution",
+          "type": "string",
+          "default": "10"
+        },
+        "GRAPH_POSTPONE_ATTRIBUTE_INDEX_CREATION": {
+          "description": "Postpone attribute index creation until after data loading",
+          "type": "string",
+          "default": "true"
+        },
+        "GRAPH_STORE_WRITE_BATCH_DURATION": {
+          "description": "Duration in milliseconds to batch store writes (0 = disabled)",
+          "type": "string",
+          "default": "0"
+        },
+        "GRAPH_STORE_WRITE_BATCH_SIZE": {
+          "description": "Number of operations to batch in store writes (0 = disabled)",
+          "type": "string",
+          "default": "0"
+        },
+        "GRAPH_MAX_GAS_PER_HANDLER": {
+          "description": "Maximum gas allowed per handler execution",
+          "type": "string",
+          "default": "1_000_000_000_000_000"
+        },
+        "GRAPH_MAX_SPEC_VERSION": {
+          "description": "Maximum subgraph spec version supported",
+          "type": "string",
+          "default": "1.2.0"
+        },
+        "GRAPH_ETHEREUM_REQUEST_RETRIES": {
+          "description": "Number of retries for failed Ethereum requests",
+          "type": "string",
+          "default": "10"
+        },
+        "GRAPH_ETHEREUM_BLOCK_BATCH_SIZE": {
+          "description": "Number of blocks to fetch in a single batch",
+          "type": "string",
+          "default": "100"
+        },
+        "GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE": {
+          "description": "Maximum block range size for queries",
+          "type": "string",
+          "default": "1000"
+        },
+        "GRAPH_ETHEREUM_TARGET_TRIGGERS_PER_BLOCK_RANGE": {
+          "description": "Target number of triggers per block range",
+          "type": "string",
+          "default": "100"
+        },
+        "GRAPH_ENABLE_PROMETHEUS_METRICS": {
+          "description": "Enable Prometheus metrics endpoint",
+          "type": "string",
+          "default": "true"
+        },
+        "GRAPH_PROMETHEUS_HOST": {
+          "description": "Host address for Prometheus metrics server",
+          "type": "string",
+          "default": "0.0.0.0"
+        },
+        "GRAPH_DISABLE_GRAFTS": {
+          "description": "Disable subgraph grafting feature",
+          "type": "string",
+          "default": "false"
+        },
+        "GRAPH_STATIC_FILTERS_THRESHOLD": {
+          "description": "Threshold for using static filters optimization",
+          "type": "string",
+          "default": "10000"
+        },
+        "GRAPH_IPFS_TIMEOUT": {
+          "description": "Timeout in seconds for IPFS operations",
+          "type": "string",
+          "default": "30"
+        },
+        "GRAPH_ETHEREUM_BLOCK_INGESTOR_MAX_CONCURRENT_JSON_RPC_CALLS": {
+          "description": "Maximum concurrent JSON-RPC calls for block ingestor",
+          "type": "string",
+          "default": "100"
+        }
+      },
+      "description": "Environment variables",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "subgraph": {
+      "type": "object",
+      "properties": {
+        "configMapName": {
+          "type": "string",
+          "default": "besu-subgraph"
+        }
+      },
+      "description": "Subgraph configuration shared with the bootstrap process",
+      "additionalProperties": false
+    },
+    "secretEnv": {
+      "type": "object",
+      "properties": {
+        "PRIMARY_SUBGRAPH_DATA_PGUSER": {
+          "type": "object",
+          "properties": {
+            "secretName": {
+              "description": "Dynamically set in templates using helper",
+              "type": "string",
+              "default": ""
+            },
+            "key": {
+              "description": "Name of the data key in the secret that contains your PG username",
+              "type": "string",
+              "default": "PGUSER"
+            }
+          },
+          "description": "Name of the secret that contains your PG username (uses graph-node.pgSecretName helper)",
+          "additionalProperties": false
+        },
+        "PRIMARY_SUBGRAPH_DATA_PGPASSWORD": {
+          "type": "object",
+          "properties": {
+            "secretName": {
+              "description": "Dynamically set in templates using helper",
+              "type": "string",
+              "default": ""
+            },
+            "key": {
+              "description": "Name of the data key in the secret that contains your PG password",
+              "type": "string",
+              "default": "PGPASSWORD"
+            }
+          },
+          "description": "PostgreSQL password secret reference",
+          "additionalProperties": false
+        }
+      },
+      "description": "Environment variables from secrets",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "customSecret": {
+      "type": "object",
+      "properties": {},
+      "description": "Custom secret data for PostgreSQL credentials. Used for backward compatibility and default values",
+      "additionalProperties": true
+    },
+    "postgresql": {
+      "type": "object",
+      "properties": {},
+      "description": "PostgreSQL overrides merged with global.datastores.graphNode.postgresql",
+      "additionalProperties": true
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "default": "ClusterIP"
+        },
+        "ports": {
+          "type": "object",
+          "properties": {
+            "httpQuery": {
+              "type": "integer",
+              "default": 8000
+            },
+            "httpQueryws": {
+              "description": "Service Port to expose Graph Node Websocket Query endpoint on",
+              "type": "integer",
+              "default": 8001
+            },
+            "httpAdmin": {
+              "description": "Service Port to expose Graph Node Admin endpoint on",
+              "type": "integer",
+              "default": 8020
+            },
+            "httpStatus": {
+              "description": "Service Port to expose Graph Node Status endpoint on",
+              "type": "integer",
+              "default": 8030
+            },
+            "httpMetrics": {
+              "description": "Service Port to expose Graph Node Metrics endpoint on",
+              "type": "integer",
+              "default": 8040
+            }
+          },
+          "description": "Service ports configuration",
+          "additionalProperties": false
+        }
+      },
+      "description": "Service configuration",
+      "additionalProperties": false
+    },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "ingressClassName": {
+          "description": "IngressClass that will be used to implement the Ingress (Kubernetes 1.19+)",
+          "type": "string",
+          "default": "atk-nginx"
+        },
+        "annotations": {
+          "type": "object",
+          "properties": {
+            "nginx.ingress.kubernetes.io/use-regex": {
+              "type": "string",
+              "default": "true"
+            },
+            "nginx.ingress.kubernetes.io/rewrite-target": {
+              "description": "Rewrite target path using capture group",
+              "type": "string",
+              "default": "/$1"
+            }
+          },
+          "description": "Additional annotations for the Ingress resource",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "hostname": {
+          "description": "Primary hostname served by the ingress",
+          "type": "string",
+          "default": "graph.k8s.orb.local"
+        },
+        "paths": {
+          "type": "array",
+          "description": "Path rules mapped to Graph Node service ports",
+          "items": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "default": "/(.*)"
+                  },
+                  "pathType": {
+                    "type": "string",
+                    "default": "ImplementationSpecific"
+                  },
+                  "servicePortName": {
+                    "type": "string",
+                    "default": "http-query"
+                  }
+                },
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "default": "/ws/?(.*)"
+                  },
+                  "pathType": {
+                    "type": "string",
+                    "default": "ImplementationSpecific"
+                  },
+                  "servicePortName": {
+                    "type": "string",
+                    "default": "http-queryws"
+                  }
+                },
+                "description": "WebSocket query endpoint path configuration",
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "default": "/admin/?(.*)"
+                  },
+                  "pathType": {
+                    "type": "string",
+                    "default": "ImplementationSpecific"
+                  },
+                  "servicePortName": {
+                    "type": "string",
+                    "default": "http-admin"
+                  }
+                },
+                "description": "Admin endpoint path configuration",
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "default": "/indexer/?(.*)"
+                  },
+                  "pathType": {
+                    "type": "string",
+                    "default": "ImplementationSpecific"
+                  },
+                  "servicePortName": {
+                    "type": "string",
+                    "default": "http-status"
+                  }
+                },
+                "description": "Indexer endpoint path configuration",
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "default": "/graphman/?(.*)"
+                  },
+                  "pathType": {
+                    "type": "string",
+                    "default": "ImplementationSpecific"
+                  },
+                  "servicePortName": {
+                    "type": "string",
+                    "default": "http-status"
+                  }
+                },
+                "description": "Graphman endpoint path configuration",
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "tls": {
+          "type": "array",
+          "description": "TLS configuration for the ingress",
+          "items": {}
+        }
+      },
+      "description": "Ingress configuration",
+      "additionalProperties": false
+    },
+    "openShiftRoute": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "annotations": {
+          "type": "object",
+          "properties": {},
+          "description": "Additional annotations applied to every generated route",
+          "additionalProperties": true
+        },
+        "host": {
+          "description": "Hostname exposed via the OpenShift routes",
+          "type": "string",
+          "default": "graph.k8s.orb.local"
+        },
+        "wildcardPolicy": {
+          "description": "Wildcard policy applied when individual routes do not override it",
+          "type": "string",
+          "default": "None"
+        },
+        "tls": {
+          "description": "TLS configuration shared by the generated routes",
+          "type": [
+            "object",
+            "null"
+          ],
+          "default": null
+        },
+        "to": {
+          "type": "object",
+          "properties": {
+            "weight": {
+              "type": "integer",
+              "default": 100
+            }
+          },
+          "description": "Primary service weight configuration used when routes omit a weight",
+          "additionalProperties": false
+        },
+        "alternateBackends": {
+          "type": "array",
+          "description": "Additional service backends shared by the generated routes",
+          "items": {}
+        },
+        "routes": {
+          "type": "array",
+          "description": "Route definitions for the exposed Graph Node endpoints",
+          "items": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "nameSuffix": {
+                    "type": "string",
+                    "default": ""
+                  },
+                  "host": {
+                    "description": "Hostname override (empty uses default host)",
+                    "type": "string",
+                    "default": ""
+                  },
+                  "path": {
+                    "description": "URL path for the route",
+                    "type": "string",
+                    "default": "/"
+                  },
+                  "targetPort": {
+                    "description": "Target service port name",
+                    "type": "string",
+                    "default": "http-query"
+                  },
+                  "annotations": {
+                    "type": "object",
+                    "properties": {},
+                    "description": "Route-specific annotations",
+                    "additionalProperties": true
+                  }
+                },
+                "description": "Name suffix for the route resource",
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "nameSuffix": {
+                    "type": "string",
+                    "default": "ws"
+                  },
+                  "host": {
+                    "description": "Hostname override (empty uses default host)",
+                    "type": "string",
+                    "default": ""
+                  },
+                  "path": {
+                    "description": "URL path for the route",
+                    "type": "string",
+                    "default": "/ws"
+                  },
+                  "targetPort": {
+                    "description": "Target service port name",
+                    "type": "string",
+                    "default": "http-queryws"
+                  },
+                  "annotations": {
+                    "type": "object",
+                    "properties": {
+                      "haproxy.router.openshift.io/rewrite-target": {
+                        "type": "string",
+                        "default": "/"
+                      }
+                    },
+                    "description": "Route-specific annotations",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "description": "WebSocket query endpoint route configuration -- (string) Name suffix for the route resource",
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "nameSuffix": {
+                    "type": "string",
+                    "default": "admin"
+                  },
+                  "host": {
+                    "description": "Hostname override (empty uses default host)",
+                    "type": "string",
+                    "default": ""
+                  },
+                  "path": {
+                    "description": "URL path for the route",
+                    "type": "string",
+                    "default": "/admin"
+                  },
+                  "targetPort": {
+                    "description": "Target service port name",
+                    "type": "string",
+                    "default": "http-admin"
+                  },
+                  "annotations": {
+                    "type": "object",
+                    "properties": {
+                      "haproxy.router.openshift.io/rewrite-target": {
+                        "type": "string",
+                        "default": "/"
+                      }
+                    },
+                    "description": "Route-specific annotations",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "description": "Admin endpoint route configuration -- (string) Name suffix for the route resource",
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "nameSuffix": {
+                    "type": "string",
+                    "default": "indexer"
+                  },
+                  "host": {
+                    "description": "Hostname override (empty uses default host)",
+                    "type": "string",
+                    "default": ""
+                  },
+                  "path": {
+                    "description": "URL path for the route",
+                    "type": "string",
+                    "default": "/indexer"
+                  },
+                  "targetPort": {
+                    "description": "Target service port name",
+                    "type": "string",
+                    "default": "http-status"
+                  },
+                  "annotations": {
+                    "type": "object",
+                    "properties": {
+                      "haproxy.router.openshift.io/rewrite-target": {
+                        "type": "string",
+                        "default": "/"
+                      }
+                    },
+                    "description": "Route-specific annotations",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "description": "Indexer endpoint route configuration -- (string) Name suffix for the route resource",
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "nameSuffix": {
+                    "type": "string",
+                    "default": "graphman"
+                  },
+                  "host": {
+                    "description": "Hostname override (empty uses default host)",
+                    "type": "string",
+                    "default": ""
+                  },
+                  "path": {
+                    "description": "URL path for the route",
+                    "type": "string",
+                    "default": "/graphman"
+                  },
+                  "targetPort": {
+                    "description": "Target service port name",
+                    "type": "string",
+                    "default": "http-status"
+                  },
+                  "annotations": {
+                    "type": "object",
+                    "properties": {
+                      "haproxy.router.openshift.io/rewrite-target": {
+                        "type": "string",
+                        "default": "/"
+                      }
+                    },
+                    "description": "Route-specific annotations",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "description": "Graphman endpoint route configuration -- (string) Name suffix for the route resource",
+                "additionalProperties": false
+              }
+            ]
+          }
+        }
+      },
+      "description": "Enable OpenShift route creation for Graph Node endpoints",
+      "additionalProperties": false
+    },
+    "chains": {
+      "type": "object",
+      "properties": {
+        "settlemint": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "shard": {
+              "description": "The database shard to use for this chain",
+              "type": "string",
+              "default": "primary"
+            },
+            "provider": {
+              "type": "array",
+              "description": "A list of JSON-RPC endpoints for this node (you should override this list with your own configuration)",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "default": "erpc"
+                  },
+                  "details": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "default": "web3"
+                      },
+                      "url": {
+                        "description": "URL for JSON-RPC endpoint",
+                        "type": "string",
+                        "default": "http://erpc:4000/settlemint/evm/53771311147"
+                      },
+                      "features": {
+                        "type": "array",
+                        "description": "Data capabilities this node has",
+                        "items": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "default": "archive"
+                            },
+                            {
+                              "type": "string",
+                              "default": "traces"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "description": "Provider connection details",
+                    "additionalProperties": false
+                  }
+                },
+                "description": "Label for a JSON-RPC endpoint",
+                "additionalProperties": false
+              }
+            }
+          },
+          "description": "Enable this configuring graph-node with this chain",
+          "additionalProperties": false
+        }
+      },
+      "description": "Blockchain configuration for Graph Node",
+      "additionalProperties": false
+    },
+    "store": {
+      "type": "object",
+      "properties": {
+        "primary": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "connection": {
+              "description": "PostgreSQL connection string for primary shard",
+              "type": "string",
+              "default": "postgresql://${PRIMARY_SUBGRAPH_DATA_PGUSER}:${PRIMARY_SUBGRAPH_DATA_PGPASSWORD}@${PRIMARY_SUBGRAPH_DATA_PGHOST}:${PRIMARY_SUBGRAPH_DATA_PGPORT}/${PRIMARY_SUBGRAPH_DATA_PGDATABASE}"
+            }
+          },
+          "description": "Enable this store for Graph Node",
+          "additionalProperties": false
+        }
+      },
+      "description": "Store configuration for Graph Node",
+      "additionalProperties": false
+    },
+    "configTemplate": {
+      "description": "Configuration for graph-node. See [graph-node config docs](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md) and default template in values.yaml",
+      "type": "string",
+      "default": "# Store configuration\n[store]\n{{- range $storeName, $storeValues := $.Values.store }}\n{{- if $storeValues.enabled }}\n  [store.{{ $storeName }}]\n  connection = {{ required \"You must specify a store connection string\" $storeValues.connection | quote }}\n  pool_size = {{ default 10 $storeValues.poolSize }}\n  weight = {{ default 1 $storeValues.weight }}\n{{- end }}\n{{- end }}\n\n# Chain configuration\n{{- $patchedChains := dict \"ingestor\" (print (include \"graph-node.fullname\" $) \"-combined-\" 0) }}\n{{- range $chainName, $chainValues := $.Values.chains }}\n{{- if $chainValues.enabled }}\n  {{- $_ := set $patchedChains $chainName (omit $chainValues \"enabled\") }}\n{{- end }}\n{{- end }}\n{{ toToml (dict \"chains\" $patchedChains) }}\n\n# Deployment rule configuration\n[deployment]\n# Deployment rules match top to bottom\n[[deployment.rule]]\n# DEFAULT RULE\n# There's no 'match' field, so any subgraph that hasn't matched above, matches this rule\nshards = [\"primary\"]\nindexers = [\"{{ include \"graph-node.fullname\" $ }}-combined-0\"]\n"
+    },
+    "networkPolicy": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "ingress": {
+          "type": "array",
+          "description": "Ingress rules for network policy",
+          "items": {}
+        },
+        "egress": {
+          "type": "array",
+          "description": "Egress rules for network policy",
+          "items": {}
+        }
+      },
+      "description": "Network policies",
+      "additionalProperties": false
+    },
+    "autoscaling": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "minReplicas": {
+          "description": "Minimum number of replicas",
+          "type": "integer",
+          "default": 1
+        },
+        "maxReplicas": {
+          "description": "Maximum number of replicas",
+          "type": "integer",
+          "default": 100
+        },
+        "targetCPUUtilizationPercentage": {
+          "description": "Target CPU utilization percentage",
+          "type": "integer",
+          "default": 80
+        }
+      },
+      "description": "Autoscaling",
+      "additionalProperties": false
+    },
+    "podDisruptionBudget": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "description": "Enable pod disruption budget minAvailable: 1 maxUnavailable: 1 -- (object) PostgreSQL readiness check configuration",
+      "additionalProperties": false
+    },
+    "postgresReadinessCheck": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "image": {
+          "description": "Docker image for PostgreSQL readiness check",
+          "type": "string",
+          "default": "docker.io/postgres:18.0-alpine"
+        },
+        "maxRetries": {
+          "description": "Maximum number of connection retries",
+          "type": "integer",
+          "default": 30
+        },
+        "initialWaitTime": {
+          "description": "Initial wait time between retries (doubles with exponential backoff)",
+          "type": "integer",
+          "default": 2
+        },
+        "maxWaitTime": {
+          "description": "Maximum wait time between retries",
+          "type": "integer",
+          "default": 30
+        },
+        "randomDelayRange": {
+          "type": "object",
+          "properties": {
+            "min": {
+              "type": "integer",
+              "default": 5
+            },
+            "max": {
+              "description": "Maximum random delay in seconds",
+              "type": "integer",
+              "default": 30
+            }
+          },
+          "description": "Add random delay to prevent all nodes from connecting simultaneously",
+          "additionalProperties": false
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "limits": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "default": "300m"
+                },
+                "memory": {
+                  "description": "Memory limit",
+                  "type": "string",
+                  "default": "96Mi"
+                }
+              },
+              "description": "CPU limit",
+              "additionalProperties": false
+            },
+            "requests": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "default": "25m"
+                },
+                "memory": {
+                  "description": "Memory request",
+                  "type": "string",
+                  "default": "48Mi"
+                }
+              },
+              "description": "Resource requests",
+              "additionalProperties": false
+            }
+          },
+          "description": "Resource limits and requests for PostgreSQL readiness check container",
+          "additionalProperties": false
+        }
+      },
+      "description": "Enable PostgreSQL readiness check init container",
+      "additionalProperties": false
+    },
+    "extraInitContainers": {
+      "type": "array",
+      "description": "Additional init containers",
+      "items": {}
+    },
+    "extraContainers": {
+      "type": "array",
+      "description": "Additional containers",
+      "items": {}
+    },
+    "extraVolumes": {
+      "type": "array",
+      "description": "Additional volumes",
+      "items": {}
+    },
+    "extraVolumeMounts": {
+      "type": "array",
+      "description": "Additional volume mounts",
+      "items": {}
+    },
+    "terminationGracePeriodSeconds": {
+      "description": "Termination grace period seconds",
+      "type": "integer",
+      "default": 60
+    },
+    "graph-node": {
+      "type": "object",
+      "properties": {
+        "graphNodeDefaults": {
+          "type": "object",
+          "properties": {
+            "subgraph": {
+              "type": "object",
+              "properties": {
+                "configMapName": {
+                  "type": "string",
+                  "default": "besu-subgraph"
+                }
+              },
+              "description": "Default ConfigMap name for subgraph deployment",
+              "additionalProperties": false
+            }
+          },
+          "description": "Subgraph defaults configuration",
+          "additionalProperties": false
+        }
+      },
+      "description": "Graph Node defaults configuration",
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

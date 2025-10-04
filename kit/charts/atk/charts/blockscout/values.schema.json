@@ -1,0 +1,1232 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "blockscout values",
+  "type": "object",
+  "properties": {
+    "global": {
+      "type": "object",
+      "properties": {
+        "imageRegistry": {
+          "type": "string",
+          "default": ""
+        },
+        "imagePullSecrets": {
+          "type": "array",
+          "description": "Global Docker registry secret names as an array",
+          "items": {}
+        },
+        "storageClass": {
+          "description": "Global StorageClass for Persistent Volume(s)",
+          "type": "string",
+          "default": ""
+        },
+        "securityContexts": {
+          "type": "object",
+          "properties": {},
+          "description": "Shared security context defaults",
+          "additionalProperties": true
+        },
+        "datastores": {
+          "type": "object",
+          "properties": {},
+          "description": "Shared datastore definitions",
+          "additionalProperties": true
+        },
+        "labels": {
+          "type": "object",
+          "properties": {
+            "kots.io/app-slug": {
+              "type": "string",
+              "default": "settlemint-atk"
+            }
+          },
+          "description": "Global labels applied to all resources",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Global Docker image registry and security defaults",
+      "additionalProperties": false
+    },
+    "fullnameOverride": {
+      "description": "String to fully override common.names.fullname",
+      "type": "string",
+      "default": "blockscout"
+    },
+    "imagePullSecrets": {
+      "type": "array",
+      "description": "Global Docker registry secret names as an array",
+      "items": {}
+    },
+    "serviceAccount": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean",
+          "default": true
+        },
+        "annotations": {
+          "type": "object",
+          "properties": {},
+          "description": "Annotations for service account. Evaluated as a template. Only used if `create` is `true`.",
+          "additionalProperties": true
+        },
+        "name": {
+          "description": "The name of the ServiceAccount to use",
+          "type": "string",
+          "default": ""
+        }
+      },
+      "description": "Service account for Blockscout pods",
+      "additionalProperties": false
+    },
+    "postgresql": {
+      "type": "object",
+      "properties": {},
+      "description": "PostgreSQL connection overrides (merged with global.datastores.blockscout.postgresql)",
+      "additionalProperties": true
+    },
+    "config": {
+      "type": "object",
+      "properties": {
+        "network": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "default": "{{ .Values.global.chainId }}"
+            },
+            "name": {
+              "description": "Network name",
+              "type": "string",
+              "default": "Asset Tokenization Kit"
+            },
+            "shortname": {
+              "description": "Network short name",
+              "type": "string",
+              "default": "ATK"
+            },
+            "icon": {
+              "description": "Network icon URL",
+              "type": "string",
+              "default": ""
+            },
+            "icon_dark": {
+              "description": "Network dark mode icon URL",
+              "type": "string",
+              "default": ""
+            },
+            "logo": {
+              "description": "Network logo URL",
+              "type": "string",
+              "default": ""
+            },
+            "logo_dark": {
+              "description": "Network dark mode logo URL",
+              "type": "string",
+              "default": ""
+            },
+            "currency": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "default": "Native Token"
+                },
+                "symbol": {
+                  "description": "Currency symbol",
+                  "type": "string",
+                  "default": "NT"
+                },
+                "decimals": {
+                  "description": "Currency decimals",
+                  "type": "integer",
+                  "default": 18
+                },
+                "dualToken": {
+                  "description": "Enable dual token support",
+                  "type": "boolean",
+                  "default": false
+                }
+              },
+              "description": "Network currency configuration",
+              "additionalProperties": false
+            }
+          },
+          "description": "Network ID",
+          "additionalProperties": false
+        },
+        "account": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "description": "Account configuration",
+          "additionalProperties": false
+        },
+        "testnet": {
+          "description": "Enable testnet mode",
+          "type": "boolean",
+          "default": false
+        },
+        "prometheus": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "blackbox": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false
+                }
+              },
+              "description": "Blackbox exporter configuration",
+              "additionalProperties": false
+            }
+          },
+          "description": "Prometheus configuration",
+          "additionalProperties": false
+        }
+      },
+      "description": "Blockscout configuration",
+      "additionalProperties": true
+    },
+    "blockscout": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "replicaCount": {
+          "description": "Number of Blockscout backend replicas to deploy",
+          "type": "integer",
+          "default": 1
+        },
+        "annotations": {
+          "type": "object",
+          "properties": {},
+          "description": "Annotations for Blockscout backend deployment",
+          "additionalProperties": true
+        },
+        "podAnnotations": {
+          "type": "object",
+          "properties": {
+            "prometheus.io/scrape": {
+              "type": "string",
+              "default": "true"
+            },
+            "prometheus.io/port": {
+              "type": "string",
+              "default": "4000"
+            },
+            "prometheus.io/path": {
+              "type": "string",
+              "default": "/metrics"
+            }
+          },
+          "description": "Annotations for Blockscout backend pods",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string",
+              "default": "ghcr.io/blockscout/blockscout"
+            },
+            "tag": {
+              "description": "Blockscout backend image tag (immutable tags are recommended)",
+              "type": "string",
+              "default": "9.0.2"
+            },
+            "pullPolicy": {
+              "description": "Blockscout backend image pull policy",
+              "type": "string",
+              "default": "IfNotPresent"
+            }
+          },
+          "description": "Blockscout backend image configuration",
+          "additionalProperties": false
+        },
+        "init": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "command": {
+              "type": "array",
+              "description": "Init container command",
+              "items": {
+                "type": "string",
+                "default": "/bin/sh"
+              }
+            },
+            "args": {
+              "type": "array",
+              "description": "Init container arguments",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "default": "-c"
+                  },
+                  {
+                    "type": "string",
+                    "default": "echo \"Running database migrations...\"\nbin/blockscout eval \"Elixir.Explorer.ReleaseTasks.create_and_migrate()\"\n"
+                  }
+                ]
+              }
+            }
+          },
+          "description": "Init container configuration for database migrations",
+          "additionalProperties": false
+        },
+        "initContainer": {
+          "type": "object",
+          "properties": {
+            "tcpCheck": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "repository": {
+                      "type": "string",
+                      "default": "ghcr.io/settlemint/btp-waitforit"
+                    },
+                    "tag": {
+                      "description": "TCP check container image tag",
+                      "type": "string",
+                      "default": "v7.7.10"
+                    },
+                    "pullPolicy": {
+                      "description": "TCP check container image pull policy",
+                      "type": "string",
+                      "default": "IfNotPresent"
+                    }
+                  },
+                  "description": "TCP check container image configuration",
+                  "additionalProperties": false
+                },
+                "timeout": {
+                  "description": "Timeout in seconds for TCP checks",
+                  "type": "integer",
+                  "default": 120
+                },
+                "resources": {
+                  "type": "object",
+                  "properties": {
+                    "limits": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "300m"
+                        },
+                        "memory": {
+                          "description": "Memory limit for TCP check container",
+                          "type": "string",
+                          "default": "64Mi"
+                        }
+                      },
+                      "description": "CPU limit for TCP check container",
+                      "additionalProperties": false
+                    },
+                    "requests": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "10m"
+                        },
+                        "memory": {
+                          "description": "Memory request for TCP check container",
+                          "type": "string",
+                          "default": "32Mi"
+                        }
+                      },
+                      "description": "Resource requests for TCP check container",
+                      "additionalProperties": false
+                    },
+                    "dependencies": {
+                      "type": "array",
+                      "description": "List of service dependencies to check",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "default": "postgresql"
+                          },
+                          "endpoint": {
+                            "description": "Dependency endpoint to check",
+                            "type": "string",
+                            "default": "{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"blockscout\" \"local\" $.Values.postgresql) }}"
+                          }
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "description": "TCP check container resource requests and limits",
+                  "additionalProperties": false
+                }
+              },
+              "description": "Enable TCP check init container",
+              "additionalProperties": false
+            }
+          },
+          "description": "TCP-based dependency checks for Blockscout",
+          "additionalProperties": false
+        },
+        "extraInitContainers": {
+          "type": "array",
+          "description": "Additional init containers appended verbatim",
+          "items": {}
+        },
+        "separateApi": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "replicaCount": {
+              "description": "Number of separate API replicas",
+              "type": "integer",
+              "default": 1
+            }
+          },
+          "description": "Separate API configuration",
+          "additionalProperties": false
+        },
+        "service": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "default": "ClusterIP"
+            },
+            "port": {
+              "description": "Blockscout backend service HTTP port",
+              "type": "integer",
+              "default": 80
+            }
+          },
+          "description": "Service parameters for Blockscout backend",
+          "additionalProperties": false
+        },
+        "ingress": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "className": {
+              "description": "IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)",
+              "type": "string",
+              "default": "atk-nginx"
+            },
+            "hostname": {
+              "description": "Default host for the ingress record",
+              "type": "string",
+              "default": "explorer.k8s.orb.local"
+            },
+            "annotations": {
+              "type": "object",
+              "properties": {},
+              "description": "Additional annotations for the Ingress resource",
+              "additionalProperties": true
+            },
+            "tls": {
+              "type": "array",
+              "description": "TLS configuration for the ingress",
+              "items": {}
+            }
+          },
+          "description": "Ingress parameters for Blockscout backend",
+          "additionalProperties": false
+        },
+        "openShiftRoute": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "annotations": {
+              "type": "object",
+              "properties": {},
+              "description": "Additional annotations for the OpenShift route resource",
+              "additionalProperties": true
+            },
+            "host": {
+              "description": "Hostname exposed via the OpenShift route",
+              "type": "string",
+              "default": "explorer.k8s.orb.local"
+            },
+            "path": {
+              "description": "HTTP path exposed via the OpenShift route",
+              "type": "string",
+              "default": "/api"
+            },
+            "wildcardPolicy": {
+              "description": "Wildcard policy to apply to the route",
+              "type": "string",
+              "default": "None"
+            },
+            "port": {
+              "type": "object",
+              "properties": {
+                "targetPort": {
+                  "type": "string",
+                  "default": "http"
+                }
+              },
+              "description": "Service port configuration for the route target",
+              "additionalProperties": false
+            },
+            "to": {
+              "type": "object",
+              "properties": {
+                "weight": {
+                  "type": "integer",
+                  "default": 100
+                }
+              },
+              "description": "Primary service weight configuration",
+              "additionalProperties": false
+            },
+            "alternateBackends": {
+              "type": "array",
+              "description": "Additional backends for weighted routing",
+              "items": {}
+            },
+            "tls": {
+              "description": "TLS configuration for the OpenShift route",
+              "type": [
+                "object",
+                "null"
+              ],
+              "default": null
+            }
+          },
+          "description": "OpenShift Route parameters for Blockscout backend",
+          "additionalProperties": false
+        },
+        "resources": {
+          "type": "object",
+          "properties": {},
+          "description": "Blockscout backend containers resource requests and limits",
+          "additionalProperties": true
+        },
+        "podSecurityContext": {
+          "type": "object",
+          "properties": {},
+          "description": "Pod Security Context configuration for Blockscout backend (overrides global.securityContexts.pod)",
+          "additionalProperties": true
+        },
+        "containerSecurityContext": {
+          "type": "object",
+          "properties": {},
+          "description": "Container Security Context configuration for Blockscout backend (overrides global.securityContexts.container)",
+          "additionalProperties": true
+        },
+        "initContainerSecurityContext": {
+          "type": "object",
+          "properties": {},
+          "description": "Init container Security Context configuration for Blockscout backend (overrides global.securityContexts.container)",
+          "additionalProperties": true
+        },
+        "nodeSelector": {
+          "type": "object",
+          "properties": {},
+          "description": "Node labels for pod assignment",
+          "additionalProperties": true
+        },
+        "tolerations": {
+          "type": "array",
+          "description": "Tolerations for pod assignment",
+          "items": {}
+        },
+        "affinity": {
+          "type": "object",
+          "properties": {},
+          "description": "Affinity for pod assignment",
+          "additionalProperties": true
+        },
+        "livenessProbe": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "initialDelaySeconds": {
+              "description": "Initial delay seconds for livenessProbe",
+              "type": "integer",
+              "default": 100
+            },
+            "periodSeconds": {
+              "description": "Period seconds for livenessProbe",
+              "type": "integer",
+              "default": 100
+            },
+            "timeoutSeconds": {
+              "description": "Timeout seconds for livenessProbe",
+              "type": "integer",
+              "default": 30
+            },
+            "successThreshold": {
+              "description": "Success threshold for livenessProbe",
+              "type": "integer",
+              "default": 1
+            },
+            "failureThreshold": {
+              "description": "Failure threshold for livenessProbe",
+              "type": "integer",
+              "default": 5
+            }
+          },
+          "description": "Configure Blockscout backend containers' liveness probe",
+          "additionalProperties": false
+        },
+        "readinessProbe": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "initialDelaySeconds": {
+              "description": "Initial delay seconds for readinessProbe",
+              "type": "integer",
+              "default": 30
+            },
+            "periodSeconds": {
+              "description": "Period seconds for readinessProbe",
+              "type": "integer",
+              "default": 10
+            },
+            "timeoutSeconds": {
+              "description": "Timeout seconds for readinessProbe",
+              "type": "integer",
+              "default": 30
+            },
+            "successThreshold": {
+              "description": "Success threshold for readinessProbe",
+              "type": "integer",
+              "default": 1
+            },
+            "failureThreshold": {
+              "description": "Failure threshold for readinessProbe",
+              "type": "integer",
+              "default": 5
+            }
+          },
+          "description": "Configure Blockscout backend containers' readiness probe",
+          "additionalProperties": false
+        },
+        "env": {
+          "type": "object",
+          "properties": {
+            "NETWORK": {
+              "type": "string",
+              "default": "mainnet"
+            },
+            "SUBNETWORK": {
+              "description": "Subnetwork name",
+              "type": "string",
+              "default": "ATK"
+            },
+            "ETHEREUM_JSONRPC_VARIANT": {
+              "description": "Ethereum JSON-RPC variant",
+              "type": "string",
+              "default": "besu"
+            },
+            "SHOW_TXS_CHART": {
+              "description": "Show transactions chart",
+              "type": "string",
+              "default": "true"
+            },
+            "TXS_STATS_ENABLED": {
+              "description": "Enable transaction statistics",
+              "type": "string",
+              "default": "true"
+            },
+            "OTHER_EXPLORERS": {
+              "description": "Other explorers configuration",
+              "type": "string",
+              "default": "{}"
+            },
+            "SUPPORTED_CHAINS": {
+              "description": "Supported chains configuration",
+              "type": "string",
+              "default": "{}"
+            },
+            "ADMIN_PANEL_ENABLED": {
+              "description": "Enable admin panel",
+              "type": "string",
+              "default": "true"
+            },
+            "EMISSION_FORMAT": {
+              "description": "Emission format",
+              "type": "string",
+              "default": "DEFAULT"
+            },
+            "FETCH_REWARDS_WAY": {
+              "description": "Fetch rewards method",
+              "type": "string",
+              "default": "trace_block"
+            },
+            "DISABLE_EXCHANGE_RATES": {
+              "description": "Disable exchange rates",
+              "type": "string",
+              "default": "true"
+            },
+            "ECTO_USE_SSL": {
+              "description": "Use SSL for database connection",
+              "type": "string",
+              "default": "false"
+            },
+            "POOL_SIZE": {
+              "description": "Database pool size",
+              "type": "string",
+              "default": "10"
+            },
+            "POOL_SIZE_API": {
+              "description": "API database pool size",
+              "type": "string",
+              "default": "10"
+            },
+            "ECTO_ADAPTER_TIMEOUT": {
+              "description": "Database adapter timeout",
+              "type": "string",
+              "default": "60000"
+            },
+            "DATABASE_TIMEOUT": {
+              "description": "Database timeout",
+              "type": "string",
+              "default": "60000"
+            },
+            "MIX_ENV": {
+              "description": "Mix environment",
+              "type": "string",
+              "default": "prod"
+            },
+            "API_GRAPHQL_MAX_COMPLEXITY": {
+              "description": "GraphQL API maximum complexity",
+              "type": "string",
+              "default": "1000"
+            },
+            "IPFS_GATEWAY_URL": {
+              "description": "IPFS gateway URL",
+              "type": "string",
+              "default": "https://ipfs.io/ipfs"
+            },
+            "IPFS_PUBLIC_GATEWAY_URL": {
+              "description": "IPFS public gateway URL",
+              "type": "string",
+              "default": "https://ipfs.io/ipfs"
+            },
+            "API_URL": {
+              "description": "API URL",
+              "type": "string",
+              "default": "https://explorer.k8s.orb.local"
+            },
+            "WEBAPP_URL": {
+              "description": "Web application URL",
+              "type": "string",
+              "default": "https://explorer.k8s.orb.local"
+            },
+            "DATABASE_URL": {
+              "description": "Database connection URL (overrides global.datastores.blockscout.postgresql)",
+              "type": "string",
+              "default": ""
+            },
+            "ETHEREUM_JSONRPC_HTTP_URL": {
+              "description": "Ethereum JSON-RPC HTTP URL",
+              "type": "string",
+              "default": "http://erpc:4000/settlemint/evm/{{ include \"blockscout.chainId\" . }}"
+            },
+            "ETHEREUM_JSONRPC_TRACE_URL": {
+              "description": "Ethereum JSON-RPC trace URL",
+              "type": "string",
+              "default": "http://erpc:4000/settlemint/evm/{{ include \"blockscout.chainId\" . }}"
+            },
+            "SECRET_KEY_BASE": {
+              "description": "Secret key base for Phoenix application",
+              "type": "string",
+              "default": "atk"
+            },
+            "TZDATA_DIR": {
+              "description": "Timezone data directory",
+              "type": "string",
+              "default": "/tmp/tzdata"
+            }
+          },
+          "description": "Environment variables for Blockscout backend",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Blockscout backend configuration",
+      "additionalProperties": false
+    },
+    "frontend": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "replicaCount": {
+          "description": "Number of Blockscout frontend replicas to deploy",
+          "type": "integer",
+          "default": 1
+        },
+        "podAnnotations": {
+          "type": "object",
+          "properties": {},
+          "description": "Annotations for Blockscout frontend pods",
+          "additionalProperties": true
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string",
+              "default": "ghcr.io/blockscout/frontend"
+            },
+            "tag": {
+              "description": "Blockscout frontend image tag (immutable tags are recommended)",
+              "type": "string",
+              "default": "v2.3.4"
+            },
+            "pullPolicy": {
+              "description": "Blockscout frontend image pull policy",
+              "type": "string",
+              "default": "IfNotPresent"
+            }
+          },
+          "description": "Blockscout frontend image configuration",
+          "additionalProperties": false
+        },
+        "service": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "default": "ClusterIP"
+            },
+            "port": {
+              "description": "Blockscout frontend service HTTP port",
+              "type": "integer",
+              "default": 80
+            }
+          },
+          "description": "Service parameters for Blockscout frontend",
+          "additionalProperties": false
+        },
+        "ingress": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "className": {
+              "description": "IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)",
+              "type": "string",
+              "default": "atk-nginx"
+            },
+            "hostname": {
+              "description": "Default host for the ingress record",
+              "type": "string",
+              "default": "explorer.k8s.orb.local"
+            },
+            "annotations": {
+              "type": "object",
+              "properties": {},
+              "description": "Additional annotations for the Ingress resource",
+              "additionalProperties": true
+            },
+            "tls": {
+              "type": "array",
+              "description": "TLS configuration for the ingress",
+              "items": {}
+            }
+          },
+          "description": "Ingress parameters for Blockscout frontend",
+          "additionalProperties": false
+        },
+        "openShiftRoute": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "annotations": {
+              "type": "object",
+              "properties": {},
+              "description": "Additional annotations for the OpenShift route resource",
+              "additionalProperties": true
+            },
+            "host": {
+              "description": "Hostname exposed via the OpenShift route",
+              "type": "string",
+              "default": "explorer.k8s.orb.local"
+            },
+            "path": {
+              "description": "HTTP path exposed via the OpenShift route",
+              "type": "string",
+              "default": "/"
+            },
+            "wildcardPolicy": {
+              "description": "Wildcard policy to apply to the route",
+              "type": "string",
+              "default": "None"
+            },
+            "port": {
+              "type": "object",
+              "properties": {
+                "targetPort": {
+                  "type": "string",
+                  "default": "http"
+                }
+              },
+              "description": "Service port configuration for the route target",
+              "additionalProperties": false
+            },
+            "to": {
+              "type": "object",
+              "properties": {
+                "weight": {
+                  "type": "integer",
+                  "default": 100
+                }
+              },
+              "description": "Primary service weight configuration",
+              "additionalProperties": false
+            },
+            "alternateBackends": {
+              "type": "array",
+              "description": "Additional backends for weighted routing",
+              "items": {}
+            },
+            "tls": {
+              "description": "TLS configuration for the OpenShift route",
+              "type": [
+                "object",
+                "null"
+              ],
+              "default": null
+            }
+          },
+          "description": "OpenShift Route parameters for Blockscout frontend",
+          "additionalProperties": false
+        },
+        "resources": {
+          "type": "object",
+          "properties": {},
+          "description": "Blockscout frontend containers resource requests and limits",
+          "additionalProperties": true
+        },
+        "podSecurityContext": {
+          "type": "object",
+          "properties": {
+            "fsGroup": {
+              "type": "integer",
+              "default": 1001
+            },
+            "runAsUser": {
+              "description": "User ID to run the entrypoint of the container process",
+              "type": "integer",
+              "default": 1001
+            },
+            "runAsGroup": {
+              "description": "Group ID to run the entrypoint of the container process",
+              "type": "integer",
+              "default": 1001
+            },
+            "runAsNonRoot": {
+              "description": "Indicates that the container must run as a non-root user",
+              "type": "boolean",
+              "default": true
+            }
+          },
+          "description": "Pod Security Context configuration for Blockscout frontend",
+          "additionalProperties": false
+        },
+        "containerSecurityContext": {
+          "type": "object",
+          "properties": {
+            "runAsUser": {
+              "type": "integer",
+              "default": 1001
+            },
+            "runAsGroup": {
+              "description": "Group ID to run the entrypoint of the container process",
+              "type": "integer",
+              "default": 1001
+            },
+            "runAsNonRoot": {
+              "description": "Indicates that the container must run as a non-root user",
+              "type": "boolean",
+              "default": true
+            },
+            "allowPrivilegeEscalation": {
+              "description": "Controls whether a process can gain more privileges than its parent process",
+              "type": "boolean",
+              "default": false
+            },
+            "capabilities": {
+              "type": "object",
+              "properties": {
+                "drop": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "default": "ALL"
+                  }
+                }
+              },
+              "description": "Linux capabilities to drop",
+              "additionalProperties": false
+            },
+            "readOnlyRootFilesystem": {
+              "description": "Mount the container's root filesystem as read-only",
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "description": "Container Security Context configuration for Blockscout frontend",
+          "additionalProperties": false
+        },
+        "nodeSelector": {
+          "type": "object",
+          "properties": {},
+          "description": "Node labels for pod assignment",
+          "additionalProperties": true
+        },
+        "tolerations": {
+          "type": "array",
+          "description": "Tolerations for pod assignment",
+          "items": {}
+        },
+        "affinity": {
+          "type": "object",
+          "properties": {},
+          "description": "Affinity for pod assignment",
+          "additionalProperties": true
+        },
+        "livenessProbe": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "initialDelaySeconds": {
+              "description": "Initial delay seconds for livenessProbe",
+              "type": "integer",
+              "default": 30
+            },
+            "periodSeconds": {
+              "description": "Period seconds for livenessProbe",
+              "type": "integer",
+              "default": 10
+            },
+            "timeoutSeconds": {
+              "description": "Timeout seconds for livenessProbe",
+              "type": "integer",
+              "default": 5
+            },
+            "successThreshold": {
+              "description": "Success threshold for livenessProbe",
+              "type": "integer",
+              "default": 1
+            },
+            "failureThreshold": {
+              "description": "Failure threshold for livenessProbe",
+              "type": "integer",
+              "default": 5
+            }
+          },
+          "description": "Configure Blockscout frontend containers' liveness probe",
+          "additionalProperties": false
+        },
+        "readinessProbe": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "initialDelaySeconds": {
+              "description": "Initial delay seconds for readinessProbe",
+              "type": "integer",
+              "default": 30
+            },
+            "periodSeconds": {
+              "description": "Period seconds for readinessProbe",
+              "type": "integer",
+              "default": 5
+            },
+            "timeoutSeconds": {
+              "description": "Timeout seconds for readinessProbe",
+              "type": "integer",
+              "default": 3
+            },
+            "successThreshold": {
+              "description": "Success threshold for readinessProbe",
+              "type": "integer",
+              "default": 1
+            },
+            "failureThreshold": {
+              "description": "Failure threshold for readinessProbe",
+              "type": "integer",
+              "default": 5
+            }
+          },
+          "description": "Configure Blockscout frontend containers' readiness probe",
+          "additionalProperties": false
+        },
+        "env": {
+          "type": "object",
+          "properties": {
+            "NEXT_PUBLIC_IS_ACCOUNT_SUPPORTED": {
+              "type": "string",
+              "default": "false"
+            },
+            "NEXT_PUBLIC_IS_TESTNET": {
+              "description": "Enable testnet mode in frontend",
+              "type": "string",
+              "default": "false"
+            },
+            "NEXT_PUBLIC_AD_BANNER_PROVIDER": {
+              "description": "Ad banner provider configuration",
+              "type": "string",
+              "default": "none"
+            },
+            "NEXT_PUBLIC_AD_TEXT_PROVIDER": {
+              "description": "Ad text provider configuration",
+              "type": "string",
+              "default": "none"
+            },
+            "NEXT_PUBLIC_HAS_BEACON_CHAIN": {
+              "description": "Enable beacon chain support",
+              "type": "string",
+              "default": "false"
+            },
+            "NEXT_PUBLIC_TRANSACTION_INTERPRETATION_PROVIDER": {
+              "description": "Transaction interpretation provider",
+              "type": "string",
+              "default": "blockscout"
+            },
+            "NEXT_PUBLIC_HOMEPAGE_CHARTS": {
+              "description": "Homepage charts configuration",
+              "type": "string",
+              "default": "[\"daily_txs\"]"
+            },
+            "NEXT_PUBLIC_HOMEPAGE_STATS": {
+              "description": "Homepage stats configuration",
+              "type": "string",
+              "default": "[\"total_blocks\",\"average_block_time\",\"total_txs\",\"wallet_addresses\",\"gas_tracker\"]"
+            },
+            "NEXT_PUBLIC_PROMOTE_BLOCKSCOUT_IN_TITLE": {
+              "description": "Promote Blockscout in title",
+              "type": "string",
+              "default": "false"
+            },
+            "NEXT_PUBLIC_OG_ENHANCED_DATA_ENABLED": {
+              "description": "Enable OpenGraph enhanced data",
+              "type": "string",
+              "default": "true"
+            },
+            "NEXT_PUBLIC_SEO_ENHANCED_DATA_ENABLED": {
+              "description": "Enable SEO enhanced data",
+              "type": "string",
+              "default": "true"
+            },
+            "NEXT_PUBLIC_HAS_CONTRACT_AUDIT_REPORTS": {
+              "description": "Enable contract audit reports",
+              "type": "string",
+              "default": "true"
+            },
+            "NEXT_PUBLIC_FONT_FAMILY_HEADING": {
+              "description": "Font family for headings",
+              "type": "string",
+              "default": "{'name':'Figtree','url':'https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap'}"
+            },
+            "NEXT_PUBLIC_FONT_FAMILY_BODY": {
+              "description": "Font family for body text",
+              "type": "string",
+              "default": "{'name':'Figtree','url':'https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap'}"
+            }
+          },
+          "description": "Environment variables for Blockscout frontend",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Blockscout frontend configuration",
+      "additionalProperties": false
+    },
+    "stats": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "ingress": {
+          "type": "object",
+          "properties": {
+            "hostname": {
+              "type": "string",
+              "default": ""
+            }
+          },
+          "description": "Ingress configuration for stats",
+          "additionalProperties": false
+        }
+      },
+      "description": "Blockscout stats configuration",
+      "additionalProperties": false
+    },
+    "redirect": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "description": "Blockscout redirect configuration",
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,3775 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "atk values",
+  "type": "object",
+  "properties": {
+    "global": {
+      "type": "object",
+      "properties": {
+        "chainId": {
+          "type": "string",
+          "default": "53771311147"
+        },
+        "chainName": {
+          "description": "Human-readable name for the blockchain network",
+          "type": "string",
+          "default": "ATK"
+        },
+        "labels": {
+          "type": "object",
+          "properties": {},
+          "description": "Global labels applied to all resources across all subcharts",
+          "additionalProperties": true
+        },
+        "datastores": {
+          "type": "object",
+          "properties": {
+            "default": {
+              "type": "object",
+              "properties": {
+                "redis": {
+                  "type": "object",
+                  "properties": {
+                    "host": {
+                      "type": "string",
+                      "default": "redis"
+                    },
+                    "port": {
+                      "description": "Redis service port",
+                      "type": "integer",
+                      "default": 6379
+                    },
+                    "username": {
+                      "description": "Redis authentication username",
+                      "type": "string",
+                      "default": "default"
+                    },
+                    "password": {
+                      "description": "Redis authentication password. Change for production deployments.",
+                      "type": "string",
+                      "default": "atk"
+                    },
+                    "db": {
+                      "description": "Redis database number to use (0-15)",
+                      "type": "integer",
+                      "default": 0
+                    },
+                    "query": {
+                      "description": "Redis connection query parameters for tuning connection behavior",
+                      "type": "string",
+                      "default": "dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50"
+                    }
+                  },
+                  "description": "Redis service hostname within the cluster",
+                  "additionalProperties": false
+                },
+                "postgresql": {
+                  "type": "object",
+                  "properties": {
+                    "host": {
+                      "type": "string",
+                      "default": "postgresql"
+                    },
+                    "port": {
+                      "description": "PostgreSQL service port",
+                      "type": "integer",
+                      "default": 5432
+                    },
+                    "username": {
+                      "description": "PostgreSQL superuser username",
+                      "type": "string",
+                      "default": "postgres"
+                    },
+                    "password": {
+                      "description": "PostgreSQL superuser password. Change for production deployments.",
+                      "type": "string",
+                      "default": "atk"
+                    },
+                    "database": {
+                      "description": "Default PostgreSQL database name",
+                      "type": "string",
+                      "default": "postgres"
+                    },
+                    "sslMode": {
+                      "description": "SSL mode for PostgreSQL connections (disable, require, verify-ca, verify-full)",
+                      "type": "string",
+                      "default": "disable"
+                    }
+                  },
+                  "description": "PostgreSQL configuration for default services",
+                  "additionalProperties": false
+                }
+              },
+              "description": "Redis configuration for default services",
+              "additionalProperties": false
+            },
+            "erpc": {
+              "type": "object",
+              "properties": {
+                "redis": {
+                  "type": "object",
+                  "properties": {
+                    "cacheDb": {
+                      "type": "integer",
+                      "default": 0
+                    },
+                    "sharedStateDb": {
+                      "description": "Redis database number for ERPC shared state storage",
+                      "type": "integer",
+                      "default": 1
+                    }
+                  },
+                  "description": "Redis database number for ERPC response caching",
+                  "additionalProperties": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "description": "ERPC-specific datastore configuration for RPC gateway caching",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "portal": {
+              "type": "object",
+              "properties": {
+                "postgresql": {
+                  "type": "object",
+                  "properties": {
+                    "database": {
+                      "type": "string",
+                      "default": "portal"
+                    },
+                    "username": {
+                      "description": "Database user for Portal with limited privileges",
+                      "type": "string",
+                      "default": "portal"
+                    },
+                    "password": {
+                      "description": "Portal database password. Change for production deployments.",
+                      "type": "string",
+                      "default": "atk"
+                    }
+                  },
+                  "description": "Dedicated database name for Portal tables",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "redis": {
+                  "type": "object",
+                  "properties": {
+                    "db": {
+                      "type": "integer",
+                      "default": 4
+                    }
+                  },
+                  "description": "Redis database for Portal session and caching",
+                  "additionalProperties": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "description": "Portal-specific datastore configuration for identity and access management",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "txsigner": {
+              "type": "object",
+              "properties": {
+                "postgresql": {
+                  "type": "object",
+                  "properties": {
+                    "database": {
+                      "type": "string",
+                      "default": "txsigner"
+                    },
+                    "username": {
+                      "description": "Database user for transaction signer",
+                      "type": "string",
+                      "default": "txsigner"
+                    },
+                    "password": {
+                      "description": "Transaction signer database password. Change for production deployments.",
+                      "type": "string",
+                      "default": "atk"
+                    }
+                  },
+                  "description": "Dedicated database name for transaction signer state",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Transaction Signer specific datastore configuration",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "graphNode": {
+              "type": "object",
+              "properties": {
+                "postgresql": {
+                  "type": "object",
+                  "properties": {
+                    "database": {
+                      "type": "string",
+                      "default": "thegraph"
+                    },
+                    "username": {
+                      "description": "Database user for The Graph node",
+                      "type": "string",
+                      "default": "thegraph"
+                    },
+                    "password": {
+                      "description": "The Graph database password. Change for production deployments.",
+                      "type": "string",
+                      "default": "atk"
+                    }
+                  },
+                  "description": "Dedicated database name for subgraph data",
+                  "additionalProperties": false
+                }
+              },
+              "description": "The Graph Node specific datastore configuration for blockchain indexing",
+              "additionalProperties": false
+            },
+            "blockscout": {
+              "type": "object",
+              "properties": {
+                "postgresql": {
+                  "type": "object",
+                  "properties": {
+                    "database": {
+                      "type": "string",
+                      "default": "blockscout"
+                    },
+                    "username": {
+                      "description": "Database user for Blockscout",
+                      "type": "string",
+                      "default": "blockscout"
+                    },
+                    "password": {
+                      "description": "Blockscout database password. Change for production deployments.",
+                      "type": "string",
+                      "default": "atk"
+                    }
+                  },
+                  "description": "Dedicated database name for blockchain explorer",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Blockscout specific datastore configuration for blockchain explorer",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "hasura": {
+              "type": "object",
+              "properties": {
+                "postgresql": {
+                  "type": "object",
+                  "properties": {
+                    "database": {
+                      "type": "string",
+                      "default": "hasura"
+                    },
+                    "username": {
+                      "description": "Database user for Hasura",
+                      "type": "string",
+                      "default": "hasura"
+                    },
+                    "password": {
+                      "description": "Hasura database password. Change for production deployments.",
+                      "type": "string",
+                      "default": "atk"
+                    }
+                  },
+                  "description": "Dedicated database name for Hasura GraphQL engine",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "redis": {
+                  "type": "object",
+                  "properties": {
+                    "cacheDb": {
+                      "type": "integer",
+                      "default": 2
+                    },
+                    "rateLimitDb": {
+                      "description": "Redis database number for Hasura API rate limiting",
+                      "type": "integer",
+                      "default": 3
+                    }
+                  },
+                  "description": "Redis databases for Hasura caching and rate limiting",
+                  "additionalProperties": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "description": "Hasura GraphQL Engine specific datastore configuration",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Centralized datastore connection configuration shared across all services",
+          "additionalProperties": false
+        }
+      },
+      "description": "This is the main umbrella chart that orchestrates all ATK subcharts. All keys include helm-docs compatible annotations for auto-generated documentation. -- (object) Global configuration shared across all subcharts",
+      "additionalProperties": false
+    },
+    "network": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "network-bootstrapper": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "default": "ghcr.io/settlemint/network-bootstrapper"
+                }
+              },
+              "description": "OCI registry and repository for network bootstrapper",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "artifacts": {
+              "type": "object",
+              "properties": {
+                "predeployed": {
+                  "type": "object",
+                  "properties": {
+                    "image": {
+                      "type": "object",
+                      "properties": {
+                        "registry": {
+                          "type": "string",
+                          "default": "ghcr.io"
+                        }
+                      },
+                      "description": "OCI registry for pre-deployed artifacts",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "description": "Image containing pre-deployed contract bytecode",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Pre-deployed contract artifacts configuration",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "initContainer": {
+              "type": "object",
+              "properties": {
+                "tcpCheck": {
+                  "type": "object",
+                  "properties": {
+                    "image": {
+                      "type": "object",
+                      "properties": {
+                        "repository": {
+                          "type": "string",
+                          "default": "ghcr.io/settlemint/btp-waitforit"
+                        }
+                      },
+                      "description": "Repository for TCP check utility",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "description": "Wait-for-it utility image for TCP checks",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Init container configuration for dependency checking",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "100m"
+                    },
+                    "memory": {
+                      "description": "Memory request for bootstrapper pods",
+                      "type": "string",
+                      "default": "128Mi"
+                    }
+                  },
+                  "description": "CPU request for bootstrapper pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "600m"
+                    },
+                    "memory": {
+                      "description": "Memory limit for bootstrapper pods",
+                      "type": "string",
+                      "default": "256Mi"
+                    }
+                  },
+                  "description": "CPU limit for bootstrapper pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Resource requests and limits for the bootstrapper job",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Network bootstrapper job configuration for genesis and initial setup",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "network-nodes": {
+          "type": "object",
+          "properties": {
+            "replicaCount": {
+              "type": "integer",
+              "default": 2
+            },
+            "validatorReplicaCount": {
+              "description": "Number of validator node replicas participating in consensus.",
+              "type": "integer",
+              "default": 1
+            },
+            "rpcReplicaCount": {
+              "description": "Number of RPC node replicas provisioned via StatefulSet.",
+              "type": "integer",
+              "default": 1
+            },
+            "image": {
+              "type": "object",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "default": "docker.io/hyperledger/besu"
+                }
+              },
+              "description": "Hyperledger Besu container image",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "initContainer": {
+              "type": "object",
+              "properties": {
+                "tcpCheck": {
+                  "type": "object",
+                  "properties": {
+                    "image": {
+                      "type": "object",
+                      "properties": {
+                        "repository": {
+                          "type": "string",
+                          "default": "ghcr.io/settlemint/btp-waitforit"
+                        }
+                      },
+                      "description": "Repository for TCP check utility",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "description": "Wait-for-it utility image",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Init container for node startup dependencies",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "60m"
+                    },
+                    "memory": {
+                      "description": "Memory request per Besu pod",
+                      "type": "string",
+                      "default": "512Mi"
+                    }
+                  },
+                  "description": "CPU request per Besu pod",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "360m"
+                    },
+                    "memory": {
+                      "description": "Memory limit per Besu pod",
+                      "type": "string",
+                      "default": "1024Mi"
+                    }
+                  },
+                  "description": "CPU limit per Besu pod",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Resource requests and limits for Besu validator and RPC pods",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "persistence": {
+              "type": "object",
+              "properties": {
+                "size": {
+                  "type": "string",
+                  "default": "20Gi"
+                }
+              },
+              "description": "Persistent storage configuration for blockchain data",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "compileGenesis": {
+              "type": "object",
+              "properties": {
+                "resources": {
+                  "type": "object",
+                  "properties": {
+                    "requests": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "100m"
+                        },
+                        "memory": {
+                          "description": "Memory request for genesis compilation",
+                          "type": "string",
+                          "default": "128Mi"
+                        }
+                      },
+                      "description": "CPU request for genesis compilation",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "limits": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "600m"
+                        },
+                        "memory": {
+                          "description": "Memory limit for genesis compilation",
+                          "type": "string",
+                          "default": "256Mi"
+                        }
+                      },
+                      "description": "CPU limit for genesis compilation",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Resource requests and limits for genesis compilation init container",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Blockchain node configuration (validators and RPC)",
+          "additionalProperties": true
+        }
+      },
+      "description": "Blockchain network infrastructure configuration",
+      "additionalProperties": true
+    },
+    "erpc": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "registry": {
+              "type": "string",
+              "default": "ghcr.io"
+            }
+          },
+          "description": "ERPC container image",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "tests": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "registry": {
+                  "type": "string",
+                  "default": "docker.io"
+                }
+              },
+              "description": "OCI registry for test utilities",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Test container image for ERPC health checks",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "initContainer": {
+          "type": "object",
+          "properties": {
+            "tcpCheck": {
+              "type": "object",
+              "properties": {
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "repository": {
+                      "type": "string",
+                      "default": "ghcr.io/settlemint/btp-waitforit"
+                    }
+                  },
+                  "description": "Repository for TCP check utility",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Wait-for-it utility image",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Init container for startup dependency checks",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "requests": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "default": "60m"
+                },
+                "memory": {
+                  "description": "Memory request for ERPC pods",
+                  "type": "string",
+                  "default": "256Mi"
+                }
+              },
+              "description": "CPU request for ERPC pods",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "limits": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "default": "360m"
+                },
+                "memory": {
+                  "description": "Memory limit for ERPC pods",
+                  "type": "string",
+                  "default": "512Mi"
+                }
+              },
+              "description": "CPU limit for ERPC pods",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Resource requests and limits for ERPC pods",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "ingress": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "ingressClassName": {
+              "description": "IngressClass for RPC ingress",
+              "type": "string",
+              "default": "atk-nginx"
+            },
+            "hostname": {
+              "description": "Hostname for RPC endpoint. Update for your environment.",
+              "type": "string",
+              "default": "rpc.k8s.orb.local"
+            }
+          },
+          "description": "Ingress configuration for exposing RPC endpoint",
+          "additionalProperties": true
+        },
+        "openShiftRoute": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "host": {
+              "description": "Hostname for OpenShift route",
+              "type": "string",
+              "default": "rpc.k8s.orb.local"
+            }
+          },
+          "description": "OpenShift Route configuration (alternative to Ingress)",
+          "additionalProperties": true
+        }
+      },
+      "description": "ERPC Gateway configuration for RPC load balancing and caching",
+      "additionalProperties": true
+    },
+    "blockscout": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "blockscout": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "default": "ghcr.io/blockscout/blockscout"
+                }
+              },
+              "description": "OCI registry and repository for Blockscout backend",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "initContainer": {
+              "type": "object",
+              "properties": {
+                "tcpCheck": {
+                  "type": "object",
+                  "properties": {
+                    "image": {
+                      "type": "object",
+                      "properties": {
+                        "repository": {
+                          "type": "string",
+                          "default": "ghcr.io/settlemint/btp-waitforit"
+                        }
+                      },
+                      "description": "Repository for TCP check utility",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "description": "Wait-for-it utility image",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Init container for database readiness",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "ingress": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "className": {
+                  "description": "IngressClass for Blockscout",
+                  "type": "string",
+                  "default": "atk-nginx"
+                },
+                "hostname": {
+                  "description": "Hostname for Blockscout explorer. Update for your environment.",
+                  "type": "string",
+                  "default": "explorer.k8s.orb.local"
+                }
+              },
+              "description": "Ingress configuration for Blockscout backend",
+              "additionalProperties": true
+            },
+            "openShiftRoute": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "host": {
+                  "description": "Hostname for OpenShift route",
+                  "type": "string",
+                  "default": "explorer.k8s.orb.local"
+                }
+              },
+              "description": "OpenShift Route configuration",
+              "additionalProperties": true
+            },
+            "env": {
+              "type": "object",
+              "properties": {
+                "API_URL": {
+                  "type": "string",
+                  "default": "https://explorer.k8s.orb.local"
+                },
+                "WEBAPP_URL": {
+                  "description": "Web app URL for Blockscout frontend",
+                  "type": "string",
+                  "default": "https://explorer.k8s.orb.local"
+                }
+              },
+              "description": "Environment variables for Blockscout configuration",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "100m"
+                    },
+                    "memory": {
+                      "description": "Memory request for Blockscout backend pods",
+                      "type": "string",
+                      "default": "640Mi"
+                    }
+                  },
+                  "description": "CPU request for Blockscout backend pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "600m"
+                    },
+                    "memory": {
+                      "description": "Memory limit for Blockscout backend pods",
+                      "type": "string",
+                      "default": "1280Mi"
+                    }
+                  },
+                  "description": "CPU limit for Blockscout backend pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Resource requests and limits for Blockscout backend",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Blockscout backend service configuration",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "frontend": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "ingress": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "className": {
+                  "description": "IngressClass for frontend",
+                  "type": "string",
+                  "default": "atk-nginx"
+                },
+                "hostname": {
+                  "description": "Hostname for Blockscout frontend",
+                  "type": "string",
+                  "default": "explorer.k8s.orb.local"
+                }
+              },
+              "description": "Ingress configuration for Blockscout UI",
+              "additionalProperties": true
+            },
+            "image": {
+              "type": "object",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "default": "ghcr.io/blockscout/frontend"
+                }
+              },
+              "description": "Blockscout frontend container image",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "60m"
+                    },
+                    "memory": {
+                      "description": "Memory request for Blockscout frontend pods",
+                      "type": "string",
+                      "default": "320Mi"
+                    }
+                  },
+                  "description": "CPU request for Blockscout frontend pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "360m"
+                    },
+                    "memory": {
+                      "description": "Memory limit for Blockscout frontend pods",
+                      "type": "string",
+                      "default": "640Mi"
+                    }
+                  },
+                  "description": "CPU limit for Blockscout frontend pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Resource requests and limits for Blockscout frontend pods",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Blockscout frontend service configuration",
+          "additionalProperties": true
+        }
+      },
+      "description": "Blockscout blockchain explorer configuration",
+      "additionalProperties": true
+    },
+    "graph-node": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "global": {
+          "type": "object",
+          "properties": {
+            "artifacts": {
+              "type": "object",
+              "properties": {
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "registry": {
+                      "type": "string",
+                      "default": "ghcr.io"
+                    }
+                  },
+                  "description": "OCI registry for shared Graph Node artifacts",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Override shared artifacts image configuration",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string",
+              "default": "docker.io/graphprotocol/graph-node"
+            }
+          },
+          "description": "Graph Node container image",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "initContainer": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "default": "docker.io/kubesphere/kubectl"
+                }
+              },
+              "description": "kubectl utility image repository",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "tcpCheck": {
+              "type": "object",
+              "properties": {
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "repository": {
+                      "type": "string",
+                      "default": "ghcr.io/settlemint/btp-waitforit"
+                    }
+                  },
+                  "description": "Repository for TCP check utility",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "TCP check for dependencies",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Init containers for Graph Node startup",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "requests": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "default": "60m"
+                },
+                "memory": {
+                  "description": "Memory request for Graph Node pods",
+                  "type": "string",
+                  "default": "512Mi"
+                }
+              },
+              "description": "CPU request for Graph Node pods",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "limits": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "default": "360m"
+                },
+                "memory": {
+                  "description": "Memory limit for Graph Node pods",
+                  "type": "string",
+                  "default": "1024Mi"
+                }
+              },
+              "description": "CPU limit for Graph Node pods",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Resource requests and limits for Graph Node StatefulSet",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "ingress": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "ingressClassName": {
+              "description": "IngressClass for Graph Node (Kubernetes 1.19+)",
+              "type": "string",
+              "default": "atk-nginx"
+            },
+            "annotations": {
+              "type": "object",
+              "properties": {
+                "nginx.ingress.kubernetes.io/use-regex": {
+                  "type": "string",
+                  "default": "true"
+                },
+                "nginx.ingress.kubernetes.io/rewrite-target": {
+                  "description": "Rewrite target for path normalization",
+                  "type": "string",
+                  "default": "/$1"
+                }
+              },
+              "description": "Ingress annotations for URL rewriting",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "hostname": {
+              "description": "Hostname for Graph Node. Update for your environment.",
+              "type": "string",
+              "default": "graph.k8s.orb.local"
+            },
+            "paths": {
+              "type": "array",
+              "description": "Path configurations for different Graph Node endpoints",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "path": {
+                        "type": "string",
+                        "default": "/(.*)"
+                      },
+                      "pathType": {
+                        "description": "Path matching type",
+                        "type": "string",
+                        "default": "ImplementationSpecific"
+                      },
+                      "servicePortName": {
+                        "description": "Service port name handling HTTP queries",
+                        "type": "string",
+                        "default": "http-query"
+                      }
+                    },
+                    "description": "Query endpoint path",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "path": {
+                        "type": "string",
+                        "default": "/ws/?(.*)"
+                      },
+                      "pathType": {
+                        "description": "Path matching type",
+                        "type": "string",
+                        "default": "ImplementationSpecific"
+                      },
+                      "servicePortName": {
+                        "description": "Service port name handling WebSocket traffic",
+                        "type": "string",
+                        "default": "http-queryws"
+                      }
+                    },
+                    "description": "WebSocket endpoint path",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "path": {
+                        "type": "string",
+                        "default": "/admin/?(.*)"
+                      },
+                      "pathType": {
+                        "description": "Path matching type",
+                        "type": "string",
+                        "default": "ImplementationSpecific"
+                      },
+                      "servicePortName": {
+                        "description": "Service port name exposing the admin API",
+                        "type": "string",
+                        "default": "http-admin"
+                      }
+                    },
+                    "description": "Admin API path",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "path": {
+                        "type": "string",
+                        "default": "/indexer/?(.*)"
+                      },
+                      "pathType": {
+                        "description": "Path matching type",
+                        "type": "string",
+                        "default": "ImplementationSpecific"
+                      },
+                      "servicePortName": {
+                        "description": "Service port name serving indexer status APIs",
+                        "type": "string",
+                        "default": "http-status"
+                      }
+                    },
+                    "description": "Indexer status path",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "path": {
+                        "type": "string",
+                        "default": "/graphman/?(.*)"
+                      },
+                      "pathType": {
+                        "description": "Path matching type",
+                        "type": "string",
+                        "default": "ImplementationSpecific"
+                      },
+                      "servicePortName": {
+                        "description": "Service port name serving graphman APIs",
+                        "type": "string",
+                        "default": "http-status"
+                      }
+                    },
+                    "description": "Graph management path",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "description": "Ingress configuration for Graph Node API",
+          "additionalProperties": true
+        },
+        "openShiftRoute": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "host": {
+              "description": "Hostname for OpenShift route",
+              "type": "string",
+              "default": "graph.k8s.orb.local"
+            }
+          },
+          "description": "OpenShift Route configuration",
+          "additionalProperties": true
+        }
+      },
+      "description": "The Graph Node configuration for blockchain indexing",
+      "additionalProperties": true
+    },
+    "hasura": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "fullnameOverride": {
+          "description": "Override fullname to simplify service discovery",
+          "type": "string",
+          "default": "hasura"
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "registry": {
+              "type": "string",
+              "default": "docker.io"
+            },
+            "repository": {
+              "description": "Hasura image repository",
+              "type": "string",
+              "default": "hasura/graphql-engine"
+            },
+            "tag": {
+              "description": "Hasura version tag",
+              "type": "string",
+              "default": "v2.48.6"
+            },
+            "pullPolicy": {
+              "description": "Image pull policy",
+              "type": "string",
+              "default": "IfNotPresent"
+            }
+          },
+          "description": "Hasura container image configuration",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "ingress": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "className": {
+              "description": "Deprecated: Use `ingressClassName` instead. Will be removed in future versions.",
+              "type": "string",
+              "default": "atk-nginx"
+            },
+            "ingressClassName": {
+              "description": "IngressClass for Hasura ingress resources (Kubernetes 1.19+ standard)",
+              "type": "string",
+              "default": "atk-nginx"
+            },
+            "hostName": {
+              "description": "Hostname for Hasura GraphQL endpoint. Update for your environment.",
+              "type": "string",
+              "default": "hasura.k8s.orb.local"
+            }
+          },
+          "description": "Ingress configuration for Hasura console and API",
+          "additionalProperties": true
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "requests": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "default": "80m"
+                },
+                "memory": {
+                  "description": "Memory request for Hasura pods",
+                  "type": "string",
+                  "default": "384Mi"
+                }
+              },
+              "description": "CPU request for Hasura pods",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "limits": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "default": "480m"
+                },
+                "memory": {
+                  "description": "Memory limit for Hasura pods",
+                  "type": "string",
+                  "default": "768Mi"
+                }
+              },
+              "description": "CPU limit for Hasura pods",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Resource requests and limits for Hasura deployment",
+          "additionalProperties": {
+            "type": "object"
+          }
+        }
+      },
+      "description": "Hasura GraphQL Engine configuration",
+      "additionalProperties": true
+    },
+    "ipfs": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "cluster": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "registry": {
+                  "type": "string",
+                  "default": "docker.io"
+                }
+              },
+              "description": "OCI registry for the cluster control-plane image",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "60m"
+                    },
+                    "memory": {
+                      "description": "Memory request for cluster pods",
+                      "type": "string",
+                      "default": "256Mi"
+                    }
+                  },
+                  "description": "CPU request for cluster pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "360m"
+                    },
+                    "memory": {
+                      "description": "Memory limit for cluster pods",
+                      "type": "string",
+                      "default": "512Mi"
+                    }
+                  },
+                  "description": "CPU limit for cluster pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Resource requests and limits for IPFS Cluster control-plane pods",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "IPFS Cluster control-plane configuration overrides",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "ipfs": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "registry": {
+                  "type": "string",
+                  "default": "docker.io"
+                }
+              },
+              "description": "OCI registry for the Kubo image",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "config": {
+              "type": "object",
+              "properties": {
+                "api": {
+                  "type": "object",
+                  "properties": {
+                    "httpHeaders": {
+                      "type": "object",
+                      "properties": {
+                        "accessControlAllowOrigin": {
+                          "type": "array",
+                          "items": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "default": "https://ipfs-cluster.k8s.orb.local"
+                              },
+                              {
+                                "type": "string",
+                                "default": "http://ipfs-cluster.k8s.orb.local"
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "array"
+                      }
+                    }
+                  },
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              },
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "150m"
+                    },
+                    "memory": {
+                      "description": "Memory request for IPFS pods",
+                      "type": "string",
+                      "default": "512Mi"
+                    }
+                  },
+                  "description": "CPU request for IPFS pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "900m"
+                    },
+                    "memory": {
+                      "description": "Memory limit for IPFS pods",
+                      "type": "string",
+                      "default": "1024Mi"
+                    }
+                  },
+                  "description": "CPU limit for IPFS pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Resource requests and limits for IPFS peer pods",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "IPFS peer configuration overrides",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "ingress": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "className": {
+              "description": "Deprecated: Use `ingressClassName` instead. Will be removed in future versions.",
+              "type": "string",
+              "default": "atk-nginx"
+            },
+            "ingressClassName": {
+              "description": "IngressClass for IPFS cluster ingress resources (Kubernetes 1.19+ standard)",
+              "type": "string",
+              "default": "atk-nginx"
+            },
+            "hostnames": {
+              "type": "object",
+              "properties": {
+                "api": {
+                  "type": "string",
+                  "default": "ipfs-cluster.k8s.orb.local"
+                }
+              },
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Ingress configuration for the IPFS cluster endpoints",
+          "additionalProperties": true
+        },
+        "tests": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "registry": {
+                  "type": "string",
+                  "default": "docker.io"
+                }
+              },
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Test pod image configuration",
+          "additionalProperties": {
+            "type": "object"
+          }
+        }
+      },
+      "description": "IPFS Cluster deployment configuration",
+      "additionalProperties": true
+    },
+    "portal": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "registry": {
+              "type": "string",
+              "default": "ghcr.io"
+            }
+          },
+          "description": "Portal container image",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "tests": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "registry": {
+                  "type": "string",
+                  "default": "docker.io"
+                }
+              },
+              "description": "OCI registry for Portal test utilities",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Test pod image configuration",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "initContainer": {
+          "type": "object",
+          "properties": {
+            "tcpCheck": {
+              "type": "object",
+              "properties": {
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "repository": {
+                      "type": "string",
+                      "default": "ghcr.io/settlemint/btp-waitforit"
+                    }
+                  },
+                  "description": "Repository for TCP check utility",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Wait-for-it utility image",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Init container for dependency checks",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "requests": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "default": "60m"
+                },
+                "memory": {
+                  "description": "Memory request for Portal pods",
+                  "type": "string",
+                  "default": "256Mi"
+                }
+              },
+              "description": "CPU request for Portal pods",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "limits": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "default": "360m"
+                },
+                "memory": {
+                  "description": "Memory limit for Portal pods",
+                  "type": "string",
+                  "default": "512Mi"
+                }
+              },
+              "description": "CPU limit for Portal pods",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Resource requests and limits for Portal pods",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "ingress": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "ingressClassName": {
+              "description": "IngressClass for Portal ingress resources",
+              "type": "string",
+              "default": "atk-nginx"
+            },
+            "hostname": {
+              "description": "Hostname for Portal service. Update for your environment.",
+              "type": "string",
+              "default": "portal.k8s.orb.local"
+            }
+          },
+          "description": "Ingress configuration for Portal API",
+          "additionalProperties": true
+        }
+      },
+      "description": "Portal identity and access management configuration",
+      "additionalProperties": true
+    },
+    "txsigner": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "registry": {
+              "type": "string",
+              "default": "ghcr.io"
+            }
+          },
+          "description": "Transaction signer container image",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "tests": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "registry": {
+                  "type": "string",
+                  "default": "docker.io"
+                }
+              },
+              "description": "OCI registry for test utilities",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Test container image for health checks",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "config": {
+          "type": "object",
+          "properties": {
+            "mnemonic": {
+              "type": "string",
+              "default": "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
+            },
+            "derivationPath": {
+              "description": "BIP44 derivation path for Ethereum accounts",
+              "type": "string",
+              "default": "m/44'/60'/0'/0/0"
+            }
+          },
+          "description": "Transaction signer wallet configuration",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "requests": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "default": "60m"
+                },
+                "memory": {
+                  "description": "Memory request for txsigner pods",
+                  "type": "string",
+                  "default": "192Mi"
+                }
+              },
+              "description": "CPU request for txsigner pods",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "limits": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "default": "360m"
+                },
+                "memory": {
+                  "description": "Memory limit for txsigner pods",
+                  "type": "string",
+                  "default": "384Mi"
+                }
+              },
+              "description": "CPU limit for txsigner pods",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Resource requests and limits for transaction signer",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "initContainer": {
+          "type": "object",
+          "properties": {
+            "tcpCheck": {
+              "type": "object",
+              "properties": {
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "repository": {
+                      "type": "string",
+                      "default": "ghcr.io/settlemint/btp-waitforit"
+                    }
+                  },
+                  "description": "Repository for TCP check utility",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Wait-for-it utility image",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Init container for dependency checks",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "ingress": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "hostname": {
+              "description": "Hostname for transaction signer",
+              "type": "string",
+              "default": "txsigner.k8s.orb.local"
+            }
+          },
+          "description": "Ingress configuration for transaction signer API",
+          "additionalProperties": true
+        }
+      },
+      "description": "Transaction Signer service configuration",
+      "additionalProperties": true
+    },
+    "dapp": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string",
+              "default": "ghcr.io/settlemint/asset-tokenization-kit"
+            }
+          },
+          "description": "DApp container image configuration",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "ingress": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "hosts": {
+              "type": "array",
+              "description": "Ingress host rules for DApp",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "host": {
+                    "type": "string",
+                    "default": "dapp.k8s.orb.local"
+                  },
+                  "paths": {
+                    "type": "array",
+                    "description": "Path configuration",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "path": {
+                          "type": "string",
+                          "default": "/"
+                        },
+                        "pathType": {
+                          "description": "Path matching type",
+                          "type": "string",
+                          "default": "ImplementationSpecific"
+                        }
+                      },
+                      "description": "Root path for web application",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "description": "Hostname for DApp. Update for your environment.",
+                "additionalProperties": true
+              }
+            }
+          },
+          "description": "Ingress configuration for DApp web interface",
+          "additionalProperties": true
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "requests": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "default": "100m"
+                },
+                "memory": {
+                  "description": "Memory request for DApp pods",
+                  "type": "string",
+                  "default": "1024Mi"
+                }
+              },
+              "description": "CPU request for DApp pods",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "limits": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "default": "3000m"
+                },
+                "memory": {
+                  "description": "Memory limit for DApp pods",
+                  "type": "string",
+                  "default": "2048Mi"
+                }
+              },
+              "description": "CPU limit for DApp pods",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Resource requests and limits for DApp pods",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "secretEnv": {
+          "type": "object",
+          "properties": {
+            "BETTER_AUTH_URL": {
+              "type": "string",
+              "default": "https://dapp.k8s.orb.local"
+            },
+            "SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT": {
+              "description": "Blockscout explorer UI endpoint for blockchain browsing",
+              "type": "string",
+              "default": "https://blockscout.k8s.orb.local/"
+            }
+          },
+          "description": "Environment variables for DApp runtime configuration (stored as secrets)",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "initContainer": {
+          "type": "object",
+          "properties": {
+            "tcpCheck": {
+              "type": "object",
+              "properties": {
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "repository": {
+                      "type": "string",
+                      "default": "ghcr.io/settlemint/btp-waitforit"
+                    }
+                  },
+                  "description": "Repository for TCP check utility",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Wait-for-it utility image",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "graphQLCheck": {
+              "type": "object",
+              "properties": {
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "registry": {
+                      "type": "string",
+                      "default": "docker.io"
+                    }
+                  },
+                  "description": "OCI registry for curl image",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "GraphQL endpoint readiness check",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Init containers for DApp startup dependencies",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "job": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "default": "docker.io/node"
+                }
+              },
+              "description": "Node.js runtime image for migration scripts",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Post-deployment job configuration for database migrations",
+          "additionalProperties": {
+            "type": "object"
+          }
+        }
+      },
+      "description": "DApp frontend application configuration",
+      "additionalProperties": true
+    },
+    "support": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "ingress-nginx": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "global": {
+              "type": "object",
+              "properties": {
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "registry": {
+                      "type": "string",
+                      "default": "registry.k8s.io"
+                    }
+                  },
+                  "description": "OCI registry for ingress-nginx assets",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Global ingress-nginx image configuration",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "replicaCount": {
+              "description": "Number of ingress controller replicas",
+              "type": "integer",
+              "default": 1
+            },
+            "controller": {
+              "type": "object",
+              "properties": {
+                "resources": {
+                  "type": "object",
+                  "properties": {
+                    "requests": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "120m"
+                        },
+                        "memory": {
+                          "description": "Memory request for ingress controller pods",
+                          "type": "string",
+                          "default": "256Mi"
+                        }
+                      },
+                      "description": "CPU request for ingress controller pods",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "limits": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "720m"
+                        },
+                        "memory": {
+                          "description": "Memory limit for ingress controller pods",
+                          "type": "string",
+                          "default": "512Mi"
+                        }
+                      },
+                      "description": "CPU limit for ingress controller pods",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                },
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "repository": {
+                      "type": "string",
+                      "default": "registry.k8s.io/ingress-nginx/controller"
+                    }
+                  },
+                  "description": "Ingress controller container image",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "opentelemetry": {
+                  "type": "object",
+                  "properties": {
+                    "image": {
+                      "type": "object",
+                      "properties": {
+                        "registry": {
+                          "type": "string",
+                          "default": "registry.k8s.io"
+                        }
+                      },
+                      "description": "OCI registry for OpenTelemetry collector",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "description": "OpenTelemetry sidecar image configuration",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                },
+                "patch": {
+                  "type": "object",
+                  "properties": {
+                    "image": {
+                      "type": "object",
+                      "properties": {
+                        "registry": {
+                          "type": "string",
+                          "default": "registry.k8s.io"
+                        }
+                      },
+                      "description": "OCI registry for ingress-nginx patch job",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "description": "Patch job image configuration",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Ingress controller configuration",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "NGINX Ingress Controller configuration",
+          "additionalProperties": true
+        },
+        "reloader": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "image": {
+              "type": "object",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "default": "ghcr.io/stakater/reloader"
+                }
+              },
+              "description": "Reloader container image",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "20m"
+                    },
+                    "memory": {
+                      "description": "Memory request for Reloader pods",
+                      "type": "string",
+                      "default": "64Mi"
+                    }
+                  },
+                  "description": "CPU request for Reloader pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "120m"
+                    },
+                    "memory": {
+                      "description": "Memory limit for Reloader pods",
+                      "type": "string",
+                      "default": "128Mi"
+                    }
+                  },
+                  "description": "CPU limit for Reloader pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Resource requests and limits for Reloader deployment",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Stakater Reloader for automatic pod restarts on config changes",
+          "additionalProperties": true
+        },
+        "minio": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "image": {
+              "type": "object",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "default": "docker.io/minio/minio"
+                }
+              },
+              "description": "MinIO server container image",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "mcImage": {
+              "type": "object",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "default": "docker.io/minio/minio"
+                }
+              },
+              "description": "MinIO client (mc) container image",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "50m"
+                    },
+                    "memory": {
+                      "description": "Memory request for MinIO pods",
+                      "type": "string",
+                      "default": "256Mi"
+                    }
+                  },
+                  "description": "CPU request for MinIO pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "300m"
+                    },
+                    "memory": {
+                      "description": "Memory limit for MinIO pods",
+                      "type": "string",
+                      "default": "512Mi"
+                    }
+                  },
+                  "description": "CPU limit for MinIO pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Resource requests and limits for MinIO pods",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "ingress": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "ingressClassName": {
+                  "description": "IngressClass for MinIO",
+                  "type": "string",
+                  "default": "atk-nginx"
+                },
+                "path": {
+                  "description": "Path prefix for MinIO console",
+                  "type": "string",
+                  "default": "/"
+                },
+                "hosts": {
+                  "type": "array",
+                  "description": "Hostnames for MinIO access",
+                  "items": {
+                    "type": "string",
+                    "default": "minio.k8s.orb.local"
+                  }
+                }
+              },
+              "description": "Ingress configuration for MinIO console",
+              "additionalProperties": true
+            },
+            "consoleIngress": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "ingressClassName": {
+                  "description": "IngressClass for MinIO console ingress resources",
+                  "type": "string",
+                  "default": "atk-nginx"
+                },
+                "path": {
+                  "description": "Path prefix for MinIO console ingress",
+                  "type": "string",
+                  "default": "/"
+                },
+                "hosts": {
+                  "type": "array",
+                  "description": "Hostnames for MinIO console access",
+                  "items": {
+                    "type": "string",
+                    "default": "minio-console.k8s.orb.local"
+                  }
+                }
+              },
+              "description": "MinIO console ingress configuration",
+              "additionalProperties": true
+            }
+          },
+          "description": "MinIO object storage configuration",
+          "additionalProperties": true
+        },
+        "redis": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "image": {
+              "type": "object",
+              "properties": {
+                "registry": {
+                  "type": "string",
+                  "default": "docker.io"
+                }
+              },
+              "description": "Redis container image",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "fullnameOverride": {
+              "description": "Override fullname for simpler service discovery",
+              "type": "string",
+              "default": "redis"
+            },
+            "commonLabels": {
+              "type": "object",
+              "properties": {
+                "kots.io/app-slug": {
+                  "type": "string",
+                  "default": "settlemint-atk"
+                },
+                "app.kubernetes.io/managed-by": {
+                  "type": "string",
+                  "default": "helm"
+                }
+              },
+              "description": "Common labels applied to all Redis resources",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "auth": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "password": {
+                  "description": "Redis password. Change for production deployments.",
+                  "type": "string",
+                  "default": "atk"
+                }
+              },
+              "description": "Redis authentication configuration",
+              "additionalProperties": true
+            },
+            "persistence": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "size": {
+                  "description": "Storage size for Redis data",
+                  "type": "string",
+                  "default": "1Gi"
+                }
+              },
+              "description": "Persistent storage for Redis data",
+              "additionalProperties": true
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "memory": {
+                      "type": "string",
+                      "default": "64Mi"
+                    },
+                    "cpu": {
+                      "description": "CPU request",
+                      "type": "string",
+                      "default": "40m"
+                    }
+                  },
+                  "description": "Memory request",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "memory": {
+                      "type": "string",
+                      "default": "128Mi"
+                    },
+                    "cpu": {
+                      "description": "CPU limit",
+                      "type": "string",
+                      "default": "240m"
+                    }
+                  },
+                  "description": "Resource limits",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Resource requests and limits for Redis",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Redis in-memory data store configuration",
+          "additionalProperties": true
+        },
+        "postgresql": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "image": {
+              "type": "object",
+              "properties": {
+                "registry": {
+                  "type": "string",
+                  "default": "docker.io"
+                }
+              },
+              "description": "PostgreSQL container image",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "PostgreSQL database configuration",
+          "additionalProperties": true
+        }
+      },
+      "description": "Support infrastructure (ingress, reloader, databases, object storage)",
+      "additionalProperties": true
+    },
+    "observability": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "metrics-server": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "60m"
+                    },
+                    "memory": {
+                      "description": "Memory request for Metrics Server pods",
+                      "type": "string",
+                      "default": "128Mi"
+                    }
+                  },
+                  "description": "CPU request for Metrics Server pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "360m"
+                    },
+                    "memory": {
+                      "description": "Memory limit for Metrics Server pods",
+                      "type": "string",
+                      "default": "256Mi"
+                    }
+                  },
+                  "description": "CPU limit for Metrics Server pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Resource requests and limits for Metrics Server",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "image": {
+              "type": "object",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "default": "registry.k8s.io/metrics-server/metrics-server"
+                }
+              },
+              "description": "Metrics Server container image",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Kubernetes Metrics Server for resource metrics",
+          "additionalProperties": true
+        },
+        "kube-state-metrics": {
+          "type": "object",
+          "properties": {
+            "resources": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "40m"
+                    },
+                    "memory": {
+                      "description": "Memory request for kube-state-metrics pods",
+                      "type": "string",
+                      "default": "128Mi"
+                    }
+                  },
+                  "description": "CPU request for kube-state-metrics pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "240m"
+                    },
+                    "memory": {
+                      "description": "Memory limit for kube-state-metrics pods",
+                      "type": "string",
+                      "default": "256Mi"
+                    }
+                  },
+                  "description": "CPU limit for kube-state-metrics pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "image": {
+              "type": "object",
+              "properties": {
+                "registry": {
+                  "type": "string",
+                  "default": "registry.k8s.io"
+                }
+              },
+              "description": "Kube state metrics container image",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Kube State Metrics for cluster-level metrics",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "victoria-metrics-single": {
+          "type": "object",
+          "properties": {
+            "global": {
+              "type": "object",
+              "properties": {
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "registry": {
+                      "type": "string",
+                      "default": "docker.io"
+                    }
+                  },
+                  "description": "OCI registry for VictoriaMetrics shared components",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "server": {
+              "type": "object",
+              "properties": {
+                "persistentVolume": {
+                  "type": "object",
+                  "properties": {
+                    "storageClass": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "size": {
+                      "description": "Storage size for metrics retention",
+                      "type": "string",
+                      "default": "10Gi"
+                    }
+                  },
+                  "description": "StorageClass for metrics volume (empty uses cluster default)",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "resources": {
+                  "type": "object",
+                  "properties": {
+                    "requests": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "60m"
+                        },
+                        "memory": {
+                          "description": "Memory request for VictoriaMetrics pods",
+                          "type": "string",
+                          "default": "256Mi"
+                        }
+                      },
+                      "description": "CPU request for VictoriaMetrics pods",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "limits": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "360m"
+                        },
+                        "memory": {
+                          "description": "Memory limit for VictoriaMetrics pods",
+                          "type": "string",
+                          "default": "512Mi"
+                        }
+                      },
+                      "description": "CPU limit for VictoriaMetrics pods",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "description": "Resource requests and limits for VictoriaMetrics",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                },
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "registry": {
+                      "type": "string",
+                      "default": "docker.io"
+                    }
+                  },
+                  "description": "VictoriaMetrics container image",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "VictoriaMetrics server configuration",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "VictoriaMetrics time-series database for metrics storage",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "loki": {
+          "type": "object",
+          "properties": {
+            "loki": {
+              "type": "object",
+              "properties": {
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "registry": {
+                      "type": "string",
+                      "default": "docker.io"
+                    }
+                  },
+                  "description": "OCI registry for Loki",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Loki container image",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "singleBinary": {
+              "type": "object",
+              "properties": {
+                "persistence": {
+                  "type": "object",
+                  "properties": {
+                    "size": {
+                      "type": "string",
+                      "default": "10Gi"
+                    }
+                  },
+                  "description": "Storage size for log retention",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "resources": {
+                  "type": "object",
+                  "properties": {
+                    "requests": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "200m"
+                        },
+                        "memory": {
+                          "description": "Memory request for Loki single binary pods",
+                          "type": "string",
+                          "default": "512Mi"
+                        }
+                      },
+                      "description": "CPU request for Loki single binary pods",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "limits": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "1200m"
+                        },
+                        "memory": {
+                          "description": "Memory limit for Loki single binary pods",
+                          "type": "string",
+                          "default": "1024Mi"
+                        }
+                      },
+                      "description": "CPU limit for Loki single binary pods",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "description": "Resource requests and limits for Loki",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                },
+                "extraEnv": {
+                  "type": "array",
+                  "description": "Additional environment variables for Loki",
+                  "items": {}
+                }
+              },
+              "description": "Loki single binary deployment mode",
+              "additionalProperties": true
+            },
+            "memcached": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "repository": {
+                      "type": "string",
+                      "default": "docker.io/memcached"
+                    }
+                  },
+                  "description": "Memcached container image",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "resources": {
+                  "type": "object",
+                  "properties": {
+                    "requests": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "40m"
+                        },
+                        "memory": {
+                          "description": "Memory request for memcached pods",
+                          "type": "string",
+                          "default": "48Mi"
+                        }
+                      },
+                      "description": "CPU request for memcached pods",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "limits": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "240m"
+                        },
+                        "memory": {
+                          "description": "Memory limit for memcached pods",
+                          "type": "string",
+                          "default": "96Mi"
+                        }
+                      },
+                      "description": "CPU limit for memcached pods",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "description": "Resource requests and limits for Loki memcached pods",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Memcached for Loki query result caching",
+              "additionalProperties": true
+            },
+            "memcachedExporter": {
+              "type": "object",
+              "properties": {
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "repository": {
+                      "type": "string",
+                      "default": "docker.io/prom/memcached-exporter"
+                    }
+                  },
+                  "description": "Prometheus memcached exporter repository",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "resources": {
+                  "type": "object",
+                  "properties": {
+                    "requests": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "10m"
+                        },
+                        "memory": {
+                          "description": "Memory request for memcached exporter pods",
+                          "type": "string",
+                          "default": "24Mi"
+                        }
+                      },
+                      "description": "CPU request for memcached exporter pods",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "limits": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "60m"
+                        },
+                        "memory": {
+                          "description": "Memory limit for memcached exporter pods",
+                          "type": "string",
+                          "default": "48Mi"
+                        }
+                      },
+                      "description": "CPU limit for memcached exporter pods",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "description": "Resource requests and limits for memcached exporter pods",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Memcached exporter for Prometheus metrics",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "sidecar": {
+              "type": "object",
+              "properties": {
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "repository": {
+                      "type": "string",
+                      "default": "docker.io/kiwigrid/k8s-sidecar"
+                    }
+                  },
+                  "description": "k8s-sidecar image repository",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "resources": {
+                  "type": "object",
+                  "properties": {
+                    "requests": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "120m"
+                        },
+                        "memory": {
+                          "description": "Memory request for sidecar pods",
+                          "type": "string",
+                          "default": "96Mi"
+                        }
+                      },
+                      "description": "CPU request for sidecar pods",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "limits": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "720m"
+                        },
+                        "memory": {
+                          "description": "Memory limit for sidecar pods",
+                          "type": "string",
+                          "default": "192Mi"
+                        }
+                      },
+                      "description": "CPU limit for sidecar pods",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "description": "Resource requests and limits for Loki sidecar pods",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Kubernetes sidecar for dynamic configuration",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "gateway": {
+              "type": "object",
+              "properties": {
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "registry": {
+                      "type": "string",
+                      "default": "docker.io"
+                    }
+                  },
+                  "description": "OCI registry for gateway image",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "resources": {
+                  "type": "object",
+                  "properties": {
+                    "requests": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "20m"
+                        },
+                        "memory": {
+                          "description": "Memory request for gateway pods",
+                          "type": "string",
+                          "default": "32Mi"
+                        }
+                      },
+                      "description": "CPU request for gateway pods",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "limits": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "120m"
+                        },
+                        "memory": {
+                          "description": "Memory limit for gateway pods",
+                          "type": "string",
+                          "default": "64Mi"
+                        }
+                      },
+                      "description": "CPU limit for gateway pods",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "description": "Resource requests and limits for Loki gateway pods",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Loki gateway for load balancing",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Loki log aggregation system",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "alloy": {
+          "type": "object",
+          "properties": {
+            "alloy": {
+              "type": "object",
+              "properties": {
+                "resources": {
+                  "type": "object",
+                  "properties": {
+                    "requests": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "120m"
+                        },
+                        "memory": {
+                          "description": "Memory request for Alloy pods",
+                          "type": "string",
+                          "default": "512Mi"
+                        }
+                      },
+                      "description": "CPU request for Alloy pods",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "limits": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "720m"
+                        },
+                        "memory": {
+                          "description": "Memory limit for Alloy pods",
+                          "type": "string",
+                          "default": "1024Mi"
+                        }
+                      },
+                      "description": "CPU limit for Alloy pods",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Resource requests and limits for Alloy",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "image": {
+              "type": "object",
+              "properties": {
+                "registry": {
+                  "type": "string",
+                  "default": "docker.io"
+                }
+              },
+              "description": "Alloy container image",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "configReloader": {
+              "type": "object",
+              "properties": {
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "registry": {
+                      "type": "string",
+                      "default": "quay.io"
+                    }
+                  },
+                  "description": "OCI registry for config reloader",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Config reloader sidecar",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Grafana Alloy for telemetry pipeline",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "grafana": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "registry": {
+                  "type": "string",
+                  "default": "docker.io"
+                }
+              },
+              "description": "OCI registry for Grafana",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "60m"
+                    },
+                    "memory": {
+                      "description": "Memory request for Grafana pods",
+                      "type": "string",
+                      "default": "256Mi"
+                    }
+                  },
+                  "description": "CPU request for Grafana pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "360m"
+                    },
+                    "memory": {
+                      "description": "Memory limit for Grafana pods",
+                      "type": "string",
+                      "default": "512Mi"
+                    }
+                  },
+                  "description": "CPU limit for Grafana pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Resource requests and limits for Grafana pods",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "sidecar": {
+              "type": "object",
+              "properties": {
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "registry": {
+                      "type": "string",
+                      "default": "docker.io"
+                    }
+                  },
+                  "description": "OCI registry for sidecar",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Sidecar for dashboard provisioning",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "ingress": {
+              "type": "object",
+              "properties": {
+                "hosts": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "default": "grafana.k8s.orb.local"
+                  }
+                }
+              },
+              "description": "Ingress configuration for Grafana UI",
+              "additionalProperties": {
+                "type": "array"
+              }
+            },
+            "adminUser": {
+              "description": "Grafana admin username. Change for production deployments.",
+              "type": "string",
+              "default": "settlemint"
+            },
+            "adminPassword": {
+              "description": "Grafana admin password. Change for production deployments.",
+              "type": "string",
+              "default": "atk"
+            }
+          },
+          "description": "Grafana visualization and dashboarding",
+          "additionalProperties": true
+        },
+        "tempo": {
+          "type": "object",
+          "properties": {
+            "tempo": {
+              "type": "object",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "default": "docker.io/grafana/tempo"
+                }
+              },
+              "description": "Tempo image repository",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "tempoQuery": {
+              "type": "object",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "default": "docker.io/grafana/tempo-query"
+                }
+              },
+              "description": "Tempo query frontend image",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "server": {
+              "type": "object",
+              "properties": {
+                "resources": {
+                  "type": "object",
+                  "properties": {
+                    "requests": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "60m"
+                        },
+                        "memory": {
+                          "description": "Memory request for Tempo pods",
+                          "type": "string",
+                          "default": "160Mi"
+                        }
+                      },
+                      "description": "CPU request for Tempo pods",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "limits": {
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "default": "360m"
+                        },
+                        "memory": {
+                          "description": "Memory limit for Tempo pods",
+                          "type": "string",
+                          "default": "320Mi"
+                        }
+                      },
+                      "description": "CPU limit for Tempo pods",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Tempo server configuration",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Tempo distributed tracing backend",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "prometheus-node-exporter": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "registry": {
+                  "type": "string",
+                  "default": "quay.io"
+                }
+              },
+              "description": "OCI registry for node exporter",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "30m"
+                    },
+                    "memory": {
+                      "description": "Memory request for node exporter pods",
+                      "type": "string",
+                      "default": "32Mi"
+                    }
+                  },
+                  "description": "CPU request for node exporter pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "180m"
+                    },
+                    "memory": {
+                      "description": "Memory limit for node exporter pods",
+                      "type": "string",
+                      "default": "64Mi"
+                    }
+                  },
+                  "description": "CPU limit for node exporter pods",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Resource requests and limits for node exporter DaemonSet",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "kubeRBACProxy": {
+              "type": "object",
+              "properties": {
+                "image": {
+                  "type": "object",
+                  "properties": {
+                    "registry": {
+                      "type": "string",
+                      "default": "quay.io"
+                    }
+                  },
+                  "description": "OCI registry for kube-rbac-proxy sidecar",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Prometheus Node Exporter for host metrics",
+          "additionalProperties": {
+            "type": "object"
+          }
+        }
+      },
+      "description": "Observability stack (metrics, logging, tracing)",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

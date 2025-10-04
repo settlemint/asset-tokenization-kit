@@ -1,0 +1,2701 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "observability values",
+  "type": "object",
+  "properties": {
+    "global": {
+      "type": "object",
+      "properties": {
+        "labels": {
+          "type": "object",
+          "properties": {
+            "kots.io/app-slug": {
+              "type": "string",
+              "default": "settlemint-atk"
+            }
+          },
+          "description": "KOTS application slug identifier",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Global configuration applied to all resources",
+      "additionalProperties": false
+    },
+    "metrics-server": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "requests": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "default": "200m"
+                },
+                "memory": {
+                  "type": "string",
+                  "default": "256Mi"
+                }
+              },
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "limits": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "default": "1200m"
+                },
+                "memory": {
+                  "type": "string",
+                  "default": "512Mi"
+                }
+              },
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Resource requests and limits for metrics server pods",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "imagePullSecrets": {
+          "type": "array",
+          "items": {}
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string",
+              "default": "registry.k8s.io/metrics-server/metrics-server"
+            }
+          },
+          "description": "Metrics server image configuration",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "fullnameOverride": {
+          "type": "string",
+          "default": "metrics-server"
+        },
+        "service": {
+          "type": "object",
+          "properties": {
+            "labels": {
+              "type": "object",
+              "properties": {
+                "kots.io/app-slug": {
+                  "type": "string",
+                  "default": "settlemint-atk"
+                }
+              },
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Service configuration",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "server": {
+          "type": "object",
+          "properties": {
+            "persistentVolume": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false
+                }
+              },
+              "description": "Enable persistent volume for metrics server",
+              "additionalProperties": {
+                "type": "boolean"
+              }
+            }
+          },
+          "description": "Server configuration",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "podLabels": {
+          "type": "object",
+          "properties": {
+            "kots.io/app-slug": {
+              "type": "string",
+              "default": "settlemint-atk"
+            }
+          },
+          "description": "Additional labels for metrics server pods",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Kubernetes Metrics Server configuration",
+      "additionalProperties": true
+    },
+    "kube-state-metrics": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "imagePullSecrets": {
+          "type": "array",
+          "items": {}
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "registry": {
+              "type": "string",
+              "default": "registry.k8s.io"
+            }
+          },
+          "description": "Kube state metrics image configuration",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "fullnameOverride": {
+          "type": "string",
+          "default": "kube-state-metrics"
+        },
+        "customLabels": {
+          "type": "object",
+          "properties": {
+            "kots.io/app-slug": {
+              "type": "string",
+              "default": "settlemint-atk"
+            }
+          },
+          "description": "Custom labels to add to all resources",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "podAnnotations": {
+          "type": "object",
+          "properties": {
+            "prometheus.io/scrape": {
+              "type": "string",
+              "default": "true"
+            }
+          },
+          "description": "Annotations for kube-state-metrics pods",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metricLabelsAllowlist": {
+          "type": "array",
+          "description": "Allow list for metric labels",
+          "items": {
+            "anyOf": [
+              {
+                "type": "string",
+                "default": "pods=[*]"
+              },
+              {
+                "type": "string",
+                "default": "ingresses=[*]"
+              }
+            ]
+          }
+        }
+      },
+      "description": "Kube State Metrics configuration",
+      "additionalProperties": true
+    },
+    "victoria-metrics-single": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "global": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "registry": {
+                  "type": "string",
+                  "default": "docker.io"
+                }
+              },
+              "description": "Global image registry",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "imagePullSecrets": {
+              "type": "array",
+              "items": {}
+            }
+          },
+          "description": "Global configuration",
+          "additionalProperties": true
+        },
+        "server": {
+          "type": "object",
+          "properties": {
+            "extraArgs": {
+              "type": "object",
+              "properties": {
+                "search.maxQueryLen": {
+                  "type": "integer",
+                  "default": 163840
+                }
+              },
+              "description": "Maximum query length",
+              "additionalProperties": {
+                "type": "integer"
+              }
+            },
+            "fullnameOverride": {
+              "type": "string",
+              "default": "metrics"
+            },
+            "retentionPeriod": {
+              "description": "Data retention period in months",
+              "type": "integer",
+              "default": 1
+            },
+            "persistentVolume": {
+              "type": "object",
+              "properties": {
+                "storageClass": {
+                  "type": "string",
+                  "default": ""
+                },
+                "size": {
+                  "description": "Size of the persistent volume",
+                  "type": "string",
+                  "default": "10Gi"
+                }
+              },
+              "description": "Persistent volume configuration",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "resources": {
+              "type": "object",
+              "properties": {},
+              "description": "Resource requests and limits for Victoria Metrics server",
+              "additionalProperties": true
+            },
+            "ingress": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "annotations": {
+                  "type": "object",
+                  "properties": {
+                    "nginx.ingress.kubernetes.io/auth-type": {
+                      "type": "string",
+                      "default": "basic"
+                    },
+                    "nginx.ingress.kubernetes.io/auth-secret": {
+                      "description": "Secret name for basic authentication",
+                      "type": "string",
+                      "default": "observability-metrics"
+                    },
+                    "nginx.ingress.kubernetes.io/auth-realm": {
+                      "description": "Authentication realm message",
+                      "type": "string",
+                      "default": "Authentication Required - Metrics"
+                    },
+                    "nginx.ingress.kubernetes.io/proxy-body-size": {
+                      "description": "Maximum allowed size of client request body",
+                      "type": "string",
+                      "default": "500m"
+                    },
+                    "nginx.ingress.kubernetes.io/proxy-read-timeout": {
+                      "description": "Timeout for reading a response from proxied server",
+                      "type": "string",
+                      "default": "3600"
+                    },
+                    "nginx.ingress.kubernetes.io/proxy-send-timeout": {
+                      "description": "Timeout for transmitting a request to proxied server",
+                      "type": "string",
+                      "default": "3600"
+                    },
+                    "nginx.ingress.kubernetes.io/client-body-buffer-size": {
+                      "description": "Buffer size for reading client request body",
+                      "type": "string",
+                      "default": "500m"
+                    }
+                  },
+                  "description": "Ingress annotations",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "hosts": {
+                  "type": "array",
+                  "description": "List of ingress hosts",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "default": "metrics.settlemint.local"
+                      },
+                      "path": {
+                        "description": "Path for ingress rule",
+                        "type": "string",
+                        "default": "/"
+                      },
+                      "port": {
+                        "description": "Service port name",
+                        "type": "string",
+                        "default": "http"
+                      }
+                    },
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "ingressClassName": {
+                  "description": "Ingress class name",
+                  "type": "string",
+                  "default": "atk-nginx"
+                },
+                "pathType": {
+                  "description": "Path type for ingress rule",
+                  "type": "string",
+                  "default": "Prefix"
+                }
+              },
+              "description": "Ingress configuration for Victoria Metrics",
+              "additionalProperties": true
+            },
+            "podLabels": {
+              "type": "object",
+              "properties": {
+                "kots.io/app-slug": {
+                  "type": "string",
+                  "default": "settlemint-atk"
+                }
+              },
+              "description": "Additional labels for Victoria Metrics pods",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "podAnnotations": {
+              "type": "object",
+              "properties": {
+                "prometheus.io/scrape": {
+                  "type": "string",
+                  "default": "true"
+                },
+                "prometheus.io/port": {
+                  "description": "Port for Prometheus scraping",
+                  "type": "string",
+                  "default": "8428"
+                },
+                "prometheus.io/path": {
+                  "description": "Path for Prometheus metrics endpoint",
+                  "type": "string",
+                  "default": "/metrics"
+                }
+              },
+              "description": "Annotations for Victoria Metrics pods",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "service": {
+              "type": "object",
+              "properties": {
+                "annotations": {
+                  "type": "object",
+                  "properties": {
+                    "prometheus.io/scrape": {
+                      "type": "string",
+                      "default": "true"
+                    },
+                    "prometheus.io/port": {
+                      "description": "Port for Prometheus scraping",
+                      "type": "string",
+                      "default": "8428"
+                    },
+                    "prometheus.io/path": {
+                      "description": "Path for Prometheus metrics endpoint",
+                      "type": "string",
+                      "default": "/metrics"
+                    }
+                  },
+                  "description": "Enable Prometheus scraping",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "labels": {
+                  "type": "object",
+                  "properties": {
+                    "kots.io/app-slug": {
+                      "type": "string",
+                      "default": "settlemint-atk"
+                    }
+                  },
+                  "description": "Labels for Victoria Metrics service",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Service configuration",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Victoria Metrics server configuration",
+          "additionalProperties": true
+        }
+      },
+      "description": "Victoria Metrics Single configuration",
+      "additionalProperties": true
+    },
+    "loki": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "imagePullSecrets": {
+          "type": "array",
+          "description": "Global Docker registry secret names as an array",
+          "items": {}
+        },
+        "fullnameOverride": {
+          "description": "String to fully override common.names.fullname",
+          "type": "string",
+          "default": "logs"
+        },
+        "global": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "registry": {
+                  "type": "string",
+                  "default": "docker.io"
+                }
+              },
+              "description": "Global image registry",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Global configuration",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "memcached": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "default": "docker.io/library/memcached"
+                }
+              },
+              "description": "Memcached image repository",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Memcached configuration",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "memcachedExporter": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "default": "docker.io/prom/memcached-exporter"
+                }
+              },
+              "description": "Memcached exporter image repository",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Memcached exporter configuration",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "resultsCache": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "description": "Results cache configuration",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
+        "loki": {
+          "type": "object",
+          "properties": {
+            "auth_enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "commonConfig": {
+              "type": "object",
+              "properties": {
+                "replication_factor": {
+                  "type": "integer",
+                  "default": 1
+                }
+              },
+              "description": "Common configuration settings",
+              "additionalProperties": {
+                "type": "integer"
+              }
+            },
+            "schemaConfig": {
+              "type": "object",
+              "properties": {
+                "configs": {
+                  "type": "array",
+                  "description": "Schema start date",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "from": {
+                        "type": "string",
+                        "default": "2024-04-01"
+                      },
+                      "store": {
+                        "description": "Index store type",
+                        "type": "string",
+                        "default": "tsdb"
+                      },
+                      "object_store": {
+                        "description": "Object store type",
+                        "type": "string",
+                        "default": "filesystem"
+                      },
+                      "schema": {
+                        "description": "Schema version",
+                        "type": "string",
+                        "default": "v13"
+                      },
+                      "index": {
+                        "type": "object",
+                        "properties": {
+                          "prefix": {
+                            "type": "string",
+                            "default": "loki_index_"
+                          },
+                          "period": {
+                            "description": "Index rotation period",
+                            "type": "string",
+                            "default": "24h"
+                          }
+                        },
+                        "description": "Index configuration",
+                        "additionalProperties": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              },
+              "description": "Schema configuration for index and chunks",
+              "additionalProperties": {
+                "type": "array"
+              }
+            },
+            "storage": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "default": "filesystem"
+                }
+              },
+              "description": "Storage configuration",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "ingester": {
+              "type": "object",
+              "properties": {
+                "chunk_encoding": {
+                  "type": "string",
+                  "default": "snappy"
+                }
+              },
+              "description": "Ingester configuration",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "tracing": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true
+                }
+              },
+              "description": "Tracing configuration",
+              "additionalProperties": {
+                "type": "boolean"
+              }
+            },
+            "querier": {
+              "type": "object",
+              "properties": {
+                "max_concurrent": {
+                  "type": "integer",
+                  "default": 2
+                }
+              },
+              "description": "Querier configuration",
+              "additionalProperties": {
+                "type": "integer"
+              }
+            },
+            "limits_config": {
+              "type": "object",
+              "properties": {
+                "retention_period": {
+                  "type": "string",
+                  "default": "168h"
+                },
+                "reject_old_samples": {
+                  "description": "Reject samples older than max age",
+                  "type": "boolean",
+                  "default": true
+                },
+                "reject_old_samples_max_age": {
+                  "description": "Maximum age for samples",
+                  "type": "string",
+                  "default": "24h"
+                },
+                "max_query_series": {
+                  "description": "Maximum number of series in a query",
+                  "type": "integer",
+                  "default": 10000
+                },
+                "max_query_parallelism": {
+                  "description": "Maximum parallelism for queries",
+                  "type": "integer",
+                  "default": 2
+                },
+                "max_line_size": {
+                  "description": "Maximum line size in bytes",
+                  "type": "integer",
+                  "default": 100982429
+                },
+                "split_queries_by_interval": {
+                  "description": "Interval for splitting queries",
+                  "type": "string",
+                  "default": "15m"
+                },
+                "per_stream_rate_limit": {
+                  "description": "Rate limit per stream",
+                  "type": "string",
+                  "default": "512M"
+                },
+                "per_stream_rate_limit_burst": {
+                  "description": "Burst rate limit per stream",
+                  "type": "string",
+                  "default": "1024M"
+                },
+                "cardinality_limit": {
+                  "description": "Cardinality limit for label combinations",
+                  "type": "integer",
+                  "default": 200000
+                },
+                "ingestion_burst_size_mb": {
+                  "description": "Ingestion burst size in MB",
+                  "type": "integer",
+                  "default": 1000
+                },
+                "ingestion_rate_mb": {
+                  "description": "Ingestion rate in MB per second",
+                  "type": "integer",
+                  "default": 1000
+                },
+                "max_entries_limit_per_query": {
+                  "description": "Maximum entries limit per query",
+                  "type": "integer",
+                  "default": 1000000
+                },
+                "max_global_streams_per_user": {
+                  "description": "Maximum global streams per user",
+                  "type": "integer",
+                  "default": 10000
+                },
+                "max_label_value_length": {
+                  "description": "Maximum label value length",
+                  "type": "integer",
+                  "default": 20480
+                },
+                "max_label_name_length": {
+                  "description": "Maximum label name length",
+                  "type": "integer",
+                  "default": 10240
+                },
+                "max_label_names_per_series": {
+                  "description": "Maximum label names per series",
+                  "type": "integer",
+                  "default": 300
+                },
+                "allow_structured_metadata": {
+                  "description": "Allow structured metadata in logs",
+                  "type": "boolean",
+                  "default": true
+                },
+                "volume_enabled": {
+                  "description": "Enable volume endpoints",
+                  "type": "boolean",
+                  "default": true
+                }
+              },
+              "description": "Limits configuration",
+              "additionalProperties": true
+            },
+            "server": {
+              "type": "object",
+              "properties": {
+                "grpc_server_max_recv_msg_size": {
+                  "type": "integer",
+                  "default": 100982429
+                },
+                "grpc_server_max_send_msg_size": {
+                  "description": "Maximum gRPC message send size in bytes",
+                  "type": "integer",
+                  "default": 100982429
+                }
+              },
+              "description": "Server configuration",
+              "additionalProperties": {
+                "type": "integer"
+              }
+            },
+            "compactor": {
+              "type": "object",
+              "properties": {
+                "retention_enabled": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "working_directory": {
+                  "description": "Working directory for compactor",
+                  "type": "string",
+                  "default": "/var/loki/retention"
+                },
+                "compaction_interval": {
+                  "description": "Interval between compaction runs",
+                  "type": "string",
+                  "default": "60m"
+                },
+                "retention_delete_delay": {
+                  "description": "Delay before deleting retained data",
+                  "type": "string",
+                  "default": "2h"
+                },
+                "retention_delete_worker_count": {
+                  "description": "Number of workers for deletion",
+                  "type": "integer",
+                  "default": 150
+                },
+                "delete_request_store": {
+                  "description": "Store type for delete requests",
+                  "type": "string",
+                  "default": "filesystem"
+                }
+              },
+              "description": "Compactor configuration",
+              "additionalProperties": true
+            },
+            "pattern_receiver": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true
+                }
+              },
+              "description": "Pattern receiver configuration for log pattern detection",
+              "additionalProperties": {
+                "type": "boolean"
+              }
+            }
+          },
+          "description": "Loki server configuration",
+          "additionalProperties": true
+        },
+        "gateway": {
+          "type": "object",
+          "properties": {
+            "affinity": {
+              "type": "object",
+              "properties": {
+                "podAntiAffinity": {
+                  "type": "object",
+                  "properties": {
+                    "requiredDuringSchedulingIgnoredDuringExecution": {
+                      "type": "null",
+                      "default": null
+                    }
+                  },
+                  "description": "Required anti-affinity rules during scheduling",
+                  "additionalProperties": {
+                    "type": "null"
+                  }
+                }
+              },
+              "description": "Pod anti-affinity rules",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "ingress": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "ingressClassName": {
+                  "description": "Ingress class name",
+                  "type": "string",
+                  "default": "atk-nginx"
+                },
+                "annotations": {
+                  "type": "object",
+                  "properties": {
+                    "nginx.ingress.kubernetes.io/auth-type": {
+                      "type": "string",
+                      "default": "basic"
+                    },
+                    "nginx.ingress.kubernetes.io/auth-secret": {
+                      "description": "Secret name for basic authentication",
+                      "type": "string",
+                      "default": "observability-logs"
+                    },
+                    "nginx.ingress.kubernetes.io/auth-realm": {
+                      "description": "Authentication realm message",
+                      "type": "string",
+                      "default": "Authentication Required - Logs"
+                    },
+                    "nginx.ingress.kubernetes.io/proxy-body-size": {
+                      "description": "Maximum allowed size of client request body",
+                      "type": "string",
+                      "default": "500m"
+                    },
+                    "nginx.ingress.kubernetes.io/proxy-read-timeout": {
+                      "description": "Timeout for reading a response from proxied server",
+                      "type": "string",
+                      "default": "3600"
+                    },
+                    "nginx.ingress.kubernetes.io/proxy-send-timeout": {
+                      "description": "Timeout for transmitting a request to proxied server",
+                      "type": "string",
+                      "default": "3600"
+                    },
+                    "nginx.ingress.kubernetes.io/client-body-buffer-size": {
+                      "description": "Buffer size for reading client request body",
+                      "type": "string",
+                      "default": "500m"
+                    }
+                  },
+                  "description": "Ingress annotations",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "hosts": {
+                  "type": "array",
+                  "description": "List of ingress hosts",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "host": {
+                        "type": "string",
+                        "default": "logs.settlemint.local"
+                      },
+                      "paths": {
+                        "type": "array",
+                        "description": "List of paths for this host",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "path": {
+                              "type": "string",
+                              "default": "/"
+                            },
+                            "pathType": {
+                              "description": "Path type for ingress rule",
+                              "type": "string",
+                              "default": "Prefix"
+                            }
+                          },
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              },
+              "description": "Ingress configuration for gateway",
+              "additionalProperties": true
+            }
+          },
+          "description": "Gateway configuration",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "deploymentMode": {
+          "description": "Deployment mode for Loki (SingleBinary, SimpleScalable, or Distributed)",
+          "type": "string",
+          "default": "SingleBinary"
+        },
+        "singleBinary": {
+          "type": "object",
+          "properties": {
+            "persistence": {
+              "type": "object",
+              "properties": {
+                "size": {
+                  "type": "string",
+                  "default": "10Gi"
+                }
+              },
+              "description": "Size of persistent volume",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "replicas": {
+              "description": "Number of replicas for single binary deployment",
+              "type": "integer",
+              "default": 1
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "400m"
+                    },
+                    "memory": {
+                      "type": "string",
+                      "default": "1024Mi"
+                    }
+                  },
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "2400m"
+                    },
+                    "memory": {
+                      "type": "string",
+                      "default": "2048Mi"
+                    }
+                  },
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Resource requests and limits",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Single binary deployment configuration",
+          "additionalProperties": true
+        },
+        "chunksCache": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "writebackSizeLimit": {
+              "description": "Writeback size limit for chunks cache",
+              "type": "string",
+              "default": "100MB"
+            },
+            "allocatedMemory": {
+              "description": "Allocated memory for chunks cache in MB",
+              "type": "integer",
+              "default": 1024
+            }
+          },
+          "description": "Enable chunks cache",
+          "additionalProperties": true
+        },
+        "test": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "description": "Test configuration",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
+        "lokiCanary": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "description": "Loki canary configuration for monitoring",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
+        "minio": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "description": "MinIO configuration for object storage",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
+        "backend": {
+          "type": "object",
+          "properties": {
+            "replicas": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          "description": "Backend component configuration",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "read": {
+          "type": "object",
+          "properties": {
+            "replicas": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          "description": "Read component configuration",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "write": {
+          "type": "object",
+          "properties": {
+            "replicas": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          "description": "Write component configuration",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "ingester": {
+          "type": "object",
+          "properties": {
+            "replicas": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          "description": "Ingester component configuration",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "querier": {
+          "type": "object",
+          "properties": {
+            "replicas": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          "description": "Querier component configuration",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "queryFrontend": {
+          "type": "object",
+          "properties": {
+            "replicas": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          "description": "Query frontend component configuration",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "queryScheduler": {
+          "type": "object",
+          "properties": {
+            "replicas": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          "description": "Query scheduler component configuration",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "distributor": {
+          "type": "object",
+          "properties": {
+            "replicas": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          "description": "Distributor component configuration",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "compactor": {
+          "type": "object",
+          "properties": {
+            "replicas": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          "description": "Compactor component configuration",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "indexGateway": {
+          "type": "object",
+          "properties": {
+            "replicas": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          "description": "Index gateway component configuration",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "bloomCompactor": {
+          "type": "object",
+          "properties": {
+            "replicas": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          "description": "Bloom compactor component configuration",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "bloomGateway": {
+          "type": "object",
+          "properties": {
+            "replicas": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          "description": "Bloom gateway component configuration",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "sidecar": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "default": "docker.io/kiwigrid/k8s-sidecar"
+                }
+              },
+              "description": "The Docker registry and image for the k8s sidecar",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Sidecar configuration for config reloading",
+          "additionalProperties": {
+            "type": "object"
+          }
+        }
+      },
+      "description": "Loki configuration",
+      "additionalProperties": true
+    },
+    "alloy": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "registry": {
+              "type": "string",
+              "default": "docker.io"
+            }
+          },
+          "description": "Alloy image configuration",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "configReloader": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "registry": {
+                  "type": "string",
+                  "default": "ghcr.io"
+                }
+              },
+              "description": "Image registry for config reloader",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Config reloader sidecar configuration",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "clustername": {
+          "description": "Cluster name label for metrics and logs",
+          "type": "string",
+          "default": ""
+        },
+        "global": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "pullSecrets": {
+                  "type": "array",
+                  "items": {}
+                }
+              },
+              "description": "Global Docker registry secret names as an array",
+              "additionalProperties": {
+                "type": "array"
+              }
+            }
+          },
+          "description": "Global configuration",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "endpoints": {
+          "type": "object",
+          "properties": {
+            "internal": {
+              "type": "object",
+              "properties": {
+                "prometheus": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "url": {
+                      "description": "Internal Prometheus remote write URL",
+                      "type": "string",
+                      "default": "http://metrics:8428/api/v1/write"
+                    }
+                  },
+                  "description": "Enable internal Prometheus remote write",
+                  "additionalProperties": true
+                },
+                "loki": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "url": {
+                      "description": "Internal Loki push URL",
+                      "type": "string",
+                      "default": "http://logs:3100/loki/api/v1/push"
+                    }
+                  },
+                  "description": "Internal Loki endpoint configuration",
+                  "additionalProperties": true
+                },
+                "otel": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "url": {
+                      "description": "Internal OpenTelemetry HTTP endpoint URL",
+                      "type": "string",
+                      "default": "http://tempo:4318"
+                    }
+                  },
+                  "description": "Internal OpenTelemetry endpoint configuration",
+                  "additionalProperties": true
+                }
+              },
+              "description": "Internal Prometheus endpoint configuration",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "external": {
+              "type": "object",
+              "properties": {
+                "prometheus": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "url": {
+                      "description": "External Prometheus remote write URL",
+                      "type": "string",
+                      "default": ""
+                    },
+                    "basicAuth": {
+                      "type": "object",
+                      "properties": {
+                        "username": {
+                          "type": "null",
+                          "default": null
+                        },
+                        "password": {
+                          "description": "Password for external Prometheus basic auth",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "default": null
+                        }
+                      },
+                      "description": "Basic authentication for external Prometheus",
+                      "additionalProperties": true
+                    }
+                  },
+                  "description": "Enable external Prometheus remote write",
+                  "additionalProperties": true
+                },
+                "loki": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "url": {
+                      "description": "External Loki push URL",
+                      "type": "string",
+                      "default": ""
+                    },
+                    "basicAuth": {
+                      "type": "object",
+                      "properties": {
+                        "username": {
+                          "type": "null",
+                          "default": null
+                        },
+                        "password": {
+                          "description": "Password for external Loki basic auth",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "default": null
+                        }
+                      },
+                      "description": "Basic authentication for external Loki",
+                      "additionalProperties": true
+                    }
+                  },
+                  "description": "External Loki endpoint configuration",
+                  "additionalProperties": true
+                },
+                "otel": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "url": {
+                      "description": "External OpenTelemetry endpoint URL",
+                      "type": "string",
+                      "default": ""
+                    },
+                    "basicAuth": {
+                      "type": "object",
+                      "properties": {
+                        "username": {
+                          "type": "null",
+                          "default": null
+                        },
+                        "password": {
+                          "description": "Password for external OpenTelemetry basic auth",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "default": null
+                        }
+                      },
+                      "description": "Basic authentication for external OpenTelemetry",
+                      "additionalProperties": true
+                    }
+                  },
+                  "description": "External OpenTelemetry endpoint configuration",
+                  "additionalProperties": true
+                }
+              },
+              "description": "External endpoints configuration for remote services",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Observability endpoints configuration",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "fullnameOverride": {
+          "description": "String to fully override common.names.fullname",
+          "type": "string",
+          "default": "alloy"
+        },
+        "controller": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "default": "deployment"
+            }
+          },
+          "description": "Controller configuration",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "crds": {
+          "type": "object",
+          "properties": {
+            "create": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "description": "Custom Resource Definitions configuration",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
+        "alloy": {
+          "type": "object",
+          "properties": {
+            "stabilityLevel": {
+              "type": "string",
+              "default": "experimental"
+            },
+            "extraPorts": {
+              "type": "array",
+              "description": "Extra ports to expose on Alloy pods",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "default": "otel-grpc"
+                      },
+                      "port": {
+                        "description": "Service port for OpenTelemetry gRPC",
+                        "type": "integer",
+                        "default": 4317
+                      },
+                      "targetPort": {
+                        "description": "Target port for OpenTelemetry gRPC",
+                        "type": "integer",
+                        "default": 4317
+                      },
+                      "protocol": {
+                        "description": "Protocol for OpenTelemetry gRPC",
+                        "type": "string",
+                        "default": "TCP"
+                      }
+                    },
+                    "additionalProperties": true
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "default": "otel-http"
+                      },
+                      "port": {
+                        "description": "Service port for OpenTelemetry HTTP",
+                        "type": "integer",
+                        "default": 4318
+                      },
+                      "targetPort": {
+                        "description": "Target port for OpenTelemetry HTTP",
+                        "type": "integer",
+                        "default": 4318
+                      },
+                      "protocol": {
+                        "description": "Protocol for OpenTelemetry HTTP",
+                        "type": "string",
+                        "default": "TCP"
+                      }
+                    },
+                    "description": "Port name for OpenTelemetry HTTP",
+                    "additionalProperties": true
+                  }
+                ]
+              }
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "200m"
+                    },
+                    "memory": {
+                      "type": "string",
+                      "default": "512Mi"
+                    }
+                  },
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "2400m"
+                    },
+                    "memory": {
+                      "type": "string",
+                      "default": "1024Mi"
+                    }
+                  },
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Resource requests and limits for Alloy",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "enableReporting": {
+              "description": "Enable usage reporting to Grafana Labs",
+              "type": "boolean",
+              "default": false
+            },
+            "configMap": {
+              "type": "object",
+              "properties": {
+                "content": {
+                  "type": "string",
+                  "default": "logging {\n  level  = \"info\"\n  format = \"logfmt\"\n}\n\ndiscovery.kubernetes \"kubernetes_nodes\" {\n  role = \"node\"\n}\n\ndiscovery.relabel \"kubernetes_nodes_cadvisor\" {\n  targets = discovery.kubernetes.kubernetes_nodes.targets\n\n  rule {\n    target_label = \"__address__\"\n    replacement  = \"kubernetes.default.svc:443\"\n  }\n\n  rule {\n    source_labels = [\"__meta_kubernetes_node_name\"]\n    regex         = \"(.+)\"\n    target_label  = \"__metrics_path__\"\n    replacement   = \"/api/v1/nodes/$1/proxy/metrics/cadvisor\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_uid\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_id\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_name\"\n    action      = \"labeldrop\"\n  }\n}\n\ndiscovery.relabel \"kubernetes_nodes\" {\n  targets = discovery.kubernetes.kubernetes_nodes.targets\n\n  rule {\n    target_label = \"__address__\"\n    replacement  = \"kubernetes.default.svc:443\"\n  }\n\n  rule {\n    source_labels = [\"__meta_kubernetes_node_name\"]\n    regex         = \"(.+)\"\n    target_label  = \"__metrics_path__\"\n    replacement   = \"/api/v1/nodes/$1/proxy/metrics\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_uid\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_id\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_name\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    replacement  = \"{{ .Values.clustername | default \"settlemint\" }}\"\n    target_label = \"cluster_name\"\n  }\n}\n\n\nprometheus.scrape \"kubernetes_nodes_cadvisor\" {\n  targets         = discovery.relabel.kubernetes_nodes_cadvisor.output\n  forward_to      = [{{if .Values.endpoints.internal.prometheus.enabled }}prometheus.remote_write.btp_metrics.receiver{{ end }}{{if .Values.endpoints.external.prometheus.enabled }}{{if .Values.endpoints.internal.prometheus.enabled }},{{ end }}prometheus.remote_write.btp_metrics_external.receiver{{ end }}]\n  job_name        = \"kubernetes-nodes-cadvisor\"\n  scrape_interval = \"15s\"\n  scheme          = \"https\"\n\n  authorization {\n    type             = \"Bearer\"\n    credentials_file = \"/var/run/secrets/kubernetes.io/serviceaccount/token\"\n  }\n\n  tls_config {\n    ca_file              = \"/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\"\n    insecure_skip_verify = true\n  }\n}\n\nprometheus.scrape \"kubernetes_nodes\" {\n  targets         = discovery.relabel.kubernetes_nodes.output\n  forward_to      = [{{if .Values.endpoints.internal.prometheus.enabled }}prometheus.remote_write.btp_metrics.receiver{{ end }}{{if .Values.endpoints.external.prometheus.enabled }}{{if .Values.endpoints.internal.prometheus.enabled }},{{ end }}prometheus.remote_write.btp_metrics_external.receiver{{ end }}]\n  job_name        = \"kubernetes-nodes\"\n  scrape_interval = \"15s\"\n  scheme          = \"https\"\n\n  authorization {\n    type             = \"Bearer\"\n    credentials_file = \"/var/run/secrets/kubernetes.io/serviceaccount/token\"\n  }\n\n  tls_config {\n    ca_file              = \"/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\"\n    insecure_skip_verify = true\n  }\n}\n\n{{- if .Values.endpoints.internal.prometheus.enabled }}\nprometheus.remote_write \"btp_metrics\" {\n    endpoint {\n        url = {{ .Values.endpoints.internal.prometheus.url | quote }}\n    }\n}\n{{- end }}\n\n{{- if .Values.endpoints.external.prometheus.enabled }}\nprometheus.remote_write \"btp_metrics_external\" {\n    endpoint {\n        url = {{ .Values.endpoints.external.prometheus.url | quote }}\n\n        {{- if and .Values.endpoints.external.prometheus.basicAuth.username .Values.endpoints.external.prometheus.basicAuth.password }}\n        basic_auth {\n          username = {{ .Values.endpoints.external.prometheus.basicAuth.username | quote }}\n          password = {{ .Values.endpoints.external.prometheus.basicAuth.password | quote }}\n        }\n        {{- end }}\n    }\n}\n{{- end }}\n\ndiscovery.kubernetes \"kubernetes_pods\" {\n  role = \"pod\"\n\n\n  selectors {\n    role  = \"pod\"\n    label = \"app.kubernetes.io/instance={{ .Release.Name }}\"\n  }\n\n}\n\ndiscovery.relabel \"kubernetes_pods\" {\n  targets = discovery.kubernetes.kubernetes_pods.targets\n\n  rule {\n    source_labels = [\"__meta_kubernetes_pod_annotation_prometheus_io_scheme\"]\n    regex         = \"(https?)\"\n    target_label  = \"__scheme__\"\n  }\n\n  rule {\n    source_labels = [\"__meta_kubernetes_pod_annotation_prometheus_io_path\"]\n    regex         = \"(.+)\"\n    target_label  = \"__metrics_path__\"\n  }\n\n  rule {\n    source_labels = [\"__address__\", \"__meta_kubernetes_pod_annotation_prometheus_io_port\"]\n    regex         = \"(.+?)(?::\\\\d+)?;(\\\\d+)\"\n    target_label  = \"__address__\"\n    replacement   = \"$1:$2\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_annotation_prometheus_io_param_(.+)\"\n    replacement = \"__param_$1\"\n    action      = \"labelmap\"\n  }\n\n  rule {\n    source_labels = [\"__meta_kubernetes_pod_label_app_kubernetes_io_component\"]\n    target_label  = \"component\"\n  }\n\n  rule {\n    source_labels = [\"__meta_kubernetes_namespace\"]\n    target_label  = \"namespace\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_uid\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_id\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    regex       = \"__meta_kubernetes_pod_label_name\"\n    action      = \"labeldrop\"\n  }\n\n  rule {\n    replacement  = \"{{ .Values.clustername | default \"settlemint\" }}\"\n    target_label = \"cluster_name\"\n  }\n\n}\n\nprometheus.scrape \"kubernetes_pods\" {\n  targets         = discovery.relabel.kubernetes_pods.output\n  forward_to      = [{{if .Values.endpoints.internal.prometheus.enabled }}prometheus.remote_write.btp_metrics.receiver{{ end }}{{if .Values.endpoints.external.prometheus.enabled }}{{if .Values.endpoints.internal.prometheus.enabled }},{{ end }}prometheus.remote_write.btp_metrics_external.receiver{{ end }}]\n  job_name        = \"kubernetes-pods\"\n  honor_labels    = true\n  scrape_interval = \"15s\"\n}\n\nloki.source.kubernetes \"kubernetes_pods\" {\n  targets    = discovery.relabel.kubernetes_pods.output\n  forward_to = [{{ if .Values.endpoints.internal.loki.enabled }}loki.process.redact_tokens.receiver{{ end }}{{ if .Values.endpoints.external.loki.enabled }}{{ if .Values.endpoints.internal.loki.enabled }},{{ end }}loki.process.redact_tokens_external.receiver{{ end }}]\n}\n\n{{- if .Values.endpoints.internal.loki.enabled }}\nloki.process \"redact_tokens\" {\n  forward_to = [loki.secretfilter.secret_filter.receiver]\n  stage.replace {\n    expression = \"(?i)sm_\\\\S+_[0-9a-zA-Z]{3}([0-9a-zA-Z]+)\"\n    replace = \"****\"\n  }\n}\n\nloki.secretfilter \"secret_filter\" {\n  forward_to  = [loki.write.btp_logs.receiver]\n  redact_with = \"<ALLOY-REDACTED-SECRET:$SECRET_NAME:$SECRET_HASH>\"\n}\n\nloki.write \"btp_logs\" {\n  endpoint {\n    url = {{ .Values.endpoints.internal.loki.url | quote }}\n  }\n}\n{{- end }}\n\n{{- if .Values.endpoints.external.loki.enabled }}\nloki.process \"redact_tokens_external\" {\n  forward_to = [loki.secretfilter.secret_filter_external.receiver]\n  stage.replace {\n    expression = \"(?i)sm_\\\\S+_[0-9a-zA-Z]{3}([0-9a-zA-Z]+)\"\n    replace = \"****\"\n  }\n}\n\nloki.secretfilter \"secret_filter_external\" {\n  forward_to  = [loki.write.btp_logs_external.receiver]\n  redact_with = \"<ALLOY-REDACTED-SECRET:$SECRET_NAME:$SECRET_HASH>\"\n}\n\nloki.write \"btp_logs_external\" {\n  endpoint {\n    url = {{ .Values.endpoints.external.loki.url | quote }}\n\n    {{- if and .Values.endpoints.external.loki.basicAuth.username .Values.endpoints.external.loki.basicAuth.password }}\n    basic_auth {\n      username = {{ .Values.endpoints.external.loki.basicAuth.username | quote }}\n      password = {{ .Values.endpoints.external.loki.basicAuth.password | quote }}\n    }\n    {{- end }}\n  }\n}\n{{- end }}\n\notelcol.receiver.otlp \"atk_traces\" {\n  grpc {\n    endpoint = \"0.0.0.0:4317\"\n  }\n\n  http {\n    endpoint = \"0.0.0.0:4318\"\n  }\n\n  output {\n    traces  = [otelcol.processor.batch.atk_traces.input]\n  }\n}\n\notelcol.processor.batch \"atk_traces\" {\n  send_batch_size = 16384\n  send_batch_max_size = 16384\n  timeout = \"2s\"\n\n  output {\n    traces  = [{{ if .Values.endpoints.internal.otel.enabled }}otelcol.exporter.otlphttp.atk_traces_internal.input{{ end }}{{ if .Values.endpoints.external.otel.enabled }}{{ if .Values.endpoints.internal.otel.enabled }},{{ end }}otelcol.exporter.otlphttp.atk_traces_external.input{{ end }}]\n  }\n}\n\n{{- if .Values.endpoints.internal.otel.enabled }}\notelcol.exporter.otlphttp \"atk_traces_internal\" {\n  client {\n    endpoint = {{ .Values.endpoints.internal.otel.url | quote }}\n    tls {\n      insecure             = true\n      insecure_skip_verify = true\n    }\n  }\n}\n{{- end }}\n\n{{- if .Values.endpoints.external.otel.enabled }}\notelcol.exporter.otlp \"atk_traces_external\" {\n  client {\n    endpoint = {{ .Values.endpoints.external.otel.url | quote }}\n\n\n    {{- if and .Values.endpoints.external.otel.basicAuth.username .Values.endpoints.external.otel.basicAuth.password }}\n    auth     = otelcol.auth.basic.atk_traces_external.handler\n    {{- end }}\n  }\n}\n\n{{- if and .Values.endpoints.external.otel.basicAuth.username .Values.endpoints.external.otel.basicAuth.password }}\notelcol.auth.basic \"atk_traces_external\" {\n  username = {{ .Values.endpoints.external.otel.basicAuth.username | quote }}\n  password = {{ .Values.endpoints.external.otel.basicAuth.password | quote }}\n}\n{{- end }}\n\n{{- end }}\n"
+                }
+              },
+              "description": "ConfigMap configuration for Alloy",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Alloy agent configuration",
+          "additionalProperties": true
+        },
+        "grafana": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "podLabels": {
+              "type": "object",
+              "properties": {
+                "kots.io/app-slug": {
+                  "type": "string",
+                  "default": "settlemint-atk"
+                },
+                "app.kubernetes.io/managed-by": {
+                  "description": "Helm managed-by label",
+                  "type": "string",
+                  "default": "helm"
+                }
+              },
+              "description": "Additional labels for Grafana pods",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "fullnameOverride": {
+              "description": "String to fully override common.names.fullname",
+              "type": "string",
+              "default": "grafana"
+            },
+            "adminUser": {
+              "description": "Grafana admin username",
+              "type": "string",
+              "default": "settlemint"
+            },
+            "adminPassword": {
+              "description": "Grafana admin password",
+              "type": "string",
+              "default": "atk"
+            },
+            "global": {
+              "type": "object",
+              "properties": {
+                "imageRegistry": {
+                  "type": "string",
+                  "default": "docker.io"
+                },
+                "imagePullSecrets": {
+                  "type": "array",
+                  "description": "Global Docker registry secret names as an array",
+                  "items": {}
+                }
+              },
+              "description": "Global configuration",
+              "additionalProperties": true
+            },
+            "ingress": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "ingressClassName": {
+                  "description": "Ingress class name",
+                  "type": "string",
+                  "default": "atk-nginx"
+                },
+                "hosts": {
+                  "type": "array",
+                  "description": "List of ingress hosts",
+                  "items": {
+                    "type": "string",
+                    "default": "grafana.k8s.orb.local"
+                  }
+                }
+              },
+              "description": "Ingress configuration for Grafana",
+              "additionalProperties": true
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "180m"
+                    },
+                    "memory": {
+                      "type": "string",
+                      "default": "384Mi"
+                    }
+                  },
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "1080m"
+                    },
+                    "memory": {
+                      "type": "string",
+                      "default": "768Mi"
+                    }
+                  },
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Resource requests and limits for Grafana pods",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "persistence": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "size": {
+                  "description": "Size of persistent volume",
+                  "type": "string",
+                  "default": "1Gi"
+                }
+              },
+              "description": "Persistent volume configuration",
+              "additionalProperties": true
+            },
+            "initChownData": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false
+                }
+              },
+              "description": "Init container to fix permissions",
+              "additionalProperties": {
+                "type": "boolean"
+              }
+            },
+            "sidecar": {
+              "type": "object",
+              "properties": {
+                "dashboards": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "provider": {
+                      "type": "object",
+                      "properties": {
+                        "allowUiUpdates": {
+                          "type": "boolean",
+                          "default": true
+                        },
+                        "foldersFromFilesStructure": {
+                          "description": "Create folders from file structure",
+                          "type": "boolean",
+                          "default": true
+                        }
+                      },
+                      "description": "Dashboard provider configuration",
+                      "additionalProperties": {
+                        "type": "boolean"
+                      }
+                    },
+                    "folderAnnotation": {
+                      "description": "Annotation key for folder assignment",
+                      "type": "string",
+                      "default": "grafana_folder"
+                    },
+                    "searchNamespace": {
+                      "description": "Namespace to search for dashboards (ALL for all namespaces)",
+                      "type": "string",
+                      "default": "ALL"
+                    }
+                  },
+                  "description": "Enable dashboard sidecar",
+                  "additionalProperties": true
+                },
+                "datasources": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "initDatasources": {
+                      "description": "Initialize datasources on startup",
+                      "type": "boolean",
+                      "default": true
+                    }
+                  },
+                  "description": "Datasource sidecar configuration",
+                  "additionalProperties": {
+                    "type": "boolean"
+                  }
+                },
+                "plugins": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "default": true
+                    }
+                  },
+                  "description": "Plugin sidecar configuration",
+                  "additionalProperties": {
+                    "type": "boolean"
+                  }
+                },
+                "alerts": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "label": {
+                      "description": "Label key for alert discovery",
+                      "type": "string",
+                      "default": "grafana_alert"
+                    },
+                    "searchNamespace": {
+                      "description": "Namespace to search for alerts (ALL for all namespaces)",
+                      "type": "string",
+                      "default": "ALL"
+                    },
+                    "labelValue": {
+                      "description": "Label value for alert discovery",
+                      "type": "string",
+                      "default": "1"
+                    },
+                    "slackUrl": {
+                      "description": "Slack webhook URL for alerts",
+                      "type": "string",
+                      "default": ""
+                    },
+                    "slackChannel": {
+                      "description": "Slack channel for alerts",
+                      "type": "string",
+                      "default": ""
+                    },
+                    "slackUsername": {
+                      "description": "Slack username for alerts",
+                      "type": "string",
+                      "default": ""
+                    }
+                  },
+                  "description": "Alert sidecar configuration",
+                  "additionalProperties": true
+                }
+              },
+              "description": "Sidecar configuration for auto-loading resources",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "datasources": {
+              "type": "object",
+              "properties": {
+                "datasources.yaml": {
+                  "type": "object",
+                  "properties": {
+                    "apiVersion": {
+                      "type": "integer",
+                      "default": 1
+                    },
+                    "datasources": {
+                      "type": "array",
+                      "description": "List of datasources",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "default": "Prometheus"
+                              },
+                              "type": {
+                                "description": "Datasource type",
+                                "type": "string",
+                                "default": "prometheus"
+                              },
+                              "uid": {
+                                "description": "Datasource unique identifier",
+                                "type": "string",
+                                "default": "prometheus"
+                              },
+                              "access": {
+                                "description": "Datasource access mode",
+                                "type": "string",
+                                "default": "proxy"
+                              },
+                              "url": {
+                                "description": "Prometheus URL",
+                                "type": "string",
+                                "default": "http://metrics:8428"
+                              },
+                              "isDefault": {
+                                "description": "Set as default datasource",
+                                "type": "boolean",
+                                "default": true
+                              }
+                            },
+                            "additionalProperties": true
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "default": "Loki"
+                              },
+                              "type": {
+                                "description": "Datasource type",
+                                "type": "string",
+                                "default": "loki"
+                              },
+                              "uid": {
+                                "description": "Datasource unique identifier",
+                                "type": "string",
+                                "default": "loki"
+                              },
+                              "access": {
+                                "description": "Datasource access mode",
+                                "type": "string",
+                                "default": "proxy"
+                              },
+                              "url": {
+                                "description": "Loki URL",
+                                "type": "string",
+                                "default": "http://logs:3100"
+                              },
+                              "isDefault": {
+                                "description": "Set as default datasource",
+                                "type": "boolean",
+                                "default": false
+                              },
+                              "jsonData": {
+                                "type": "object",
+                                "properties": {
+                                  "timeout": {
+                                    "type": "integer",
+                                    "default": 60
+                                  },
+                                  "maxLines": {
+                                    "description": "Maximum lines to return",
+                                    "type": "integer",
+                                    "default": 1000
+                                  },
+                                  "derivedFields": {
+                                    "type": "array",
+                                    "description": "Derived fields configuration for trace linking",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "datasourceUid": {
+                                          "type": "string",
+                                          "default": "tempo"
+                                        },
+                                        "matcherRegex": {
+                                          "description": "Regex to extract trace ID from logs",
+                                          "type": "string",
+                                          "default": "^.*?traceI[d|D]=(\\w+).*$"
+                                        },
+                                        "name": {
+                                          "description": "Field name for trace ID",
+                                          "type": "string",
+                                          "default": "traceId"
+                                        },
+                                        "url": {
+                                          "description": "URL template for trace links",
+                                          "type": "string",
+                                          "default": "$${__value.raw}"
+                                        }
+                                      },
+                                      "additionalProperties": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                },
+                                "description": "Loki JSON data configuration",
+                                "additionalProperties": true
+                              }
+                            },
+                            "description": "Loki datasource name",
+                            "additionalProperties": true
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "default": "PostgreSQL"
+                              },
+                              "type": {
+                                "description": "Datasource type",
+                                "type": "string",
+                                "default": "postgres"
+                              },
+                              "uid": {
+                                "description": "Datasource unique identifier",
+                                "type": "string",
+                                "default": "postgres"
+                              },
+                              "url": {
+                                "description": "PostgreSQL URL",
+                                "type": "string",
+                                "default": "postgresql:5432"
+                              },
+                              "access": {
+                                "description": "Datasource access mode",
+                                "type": "string",
+                                "default": "proxy"
+                              },
+                              "isDefault": {
+                                "description": "Set as default datasource",
+                                "type": "boolean",
+                                "default": false
+                              },
+                              "database": {
+                                "description": "Database name",
+                                "type": "string",
+                                "default": "thegraph"
+                              },
+                              "user": {
+                                "description": "Database user",
+                                "type": "string",
+                                "default": "thegraph"
+                              },
+                              "jsonData": {
+                                "type": "object",
+                                "properties": {
+                                  "sslmode": {
+                                    "type": "string",
+                                    "default": "disable"
+                                  },
+                                  "postgresVersion": {
+                                    "description": "PostgreSQL version",
+                                    "type": "integer",
+                                    "default": 15
+                                  },
+                                  "timescaledb": {
+                                    "description": "Enable TimescaleDB support",
+                                    "type": "boolean",
+                                    "default": false
+                                  }
+                                },
+                                "description": "PostgreSQL JSON data configuration",
+                                "additionalProperties": true
+                              },
+                              "secureJsonData": {
+                                "type": "object",
+                                "properties": {
+                                  "password": {
+                                    "description": "in production!",
+                                    "type": "string",
+                                    "default": "atk"
+                                  }
+                                },
+                                "description": "Secure JSON data for sensitive fields",
+                                "additionalProperties": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "description": "PostgreSQL datasource name",
+                            "additionalProperties": true
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "description": "Datasource API version",
+                  "additionalProperties": true
+                }
+              },
+              "description": "Datasource configuration",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "plugins": {
+              "type": "array",
+              "description": "List of Grafana plugins to install",
+              "items": {
+                "type": "string",
+                "default": "https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip;grafana-lokiexplore-app"
+              }
+            }
+          },
+          "description": "Grafana configuration",
+          "additionalProperties": true
+        }
+      },
+      "description": "Alloy configuration",
+      "additionalProperties": true
+    },
+    "prometheus-node-exporter": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "registry": {
+              "type": "string",
+              "default": "quay.io"
+            }
+          },
+          "description": "Node exporter image configuration",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "imagePullSecrets": {
+          "type": "array",
+          "description": "Docker registry secret names as an array",
+          "items": {}
+        },
+        "kubeRBACProxy": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "object",
+              "properties": {
+                "registry": {
+                  "type": "string",
+                  "default": "quay.io"
+                }
+              },
+              "description": "Image registry for kube RBAC proxy",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Kube RBAC proxy configuration",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "global": {
+          "type": "object",
+          "properties": {
+            "imageRegistry": {
+              "type": "string",
+              "default": "quay.io"
+            }
+          },
+          "description": "Global configuration",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "fullnameOverride": {
+          "description": "String to fully override common.names.fullname",
+          "type": "string",
+          "default": "node-exporter"
+        },
+        "nameOverride": {
+          "description": "String to partially override common.names.name",
+          "type": "string",
+          "default": "node-exporter"
+        },
+        "podAnnotations": {
+          "type": "object",
+          "properties": {
+            "prometheus.io/scrape": {
+              "type": "string",
+              "default": "true"
+            },
+            "prometheus.io/port": {
+              "description": "Port for Prometheus scraping",
+              "type": "string",
+              "default": "9100"
+            },
+            "cluster-autoscaler.kubernetes.io/safe-to-evict": {
+              "description": "Mark pod as safe to evict for cluster autoscaler",
+              "type": "string",
+              "default": "true"
+            }
+          },
+          "description": "Annotations for node exporter pods",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "podLabels": {
+          "type": "object",
+          "properties": {
+            "kots.io/app-slug": {
+              "type": "string",
+              "default": "settlemint-atk"
+            }
+          },
+          "description": "Labels for node exporter pods",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Prometheus Node Exporter configuration",
+      "additionalProperties": true
+    },
+    "tempo": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "fullnameOverride": {
+          "description": "String to fully override common.names.fullname",
+          "type": "string",
+          "default": "tempo"
+        },
+        "tempo": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string",
+              "default": "docker.io/grafana/tempo"
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "100m"
+                    },
+                    "memory": {
+                      "type": "string",
+                      "default": "192Mi"
+                    }
+                  },
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "720m"
+                    },
+                    "memory": {
+                      "type": "string",
+                      "default": "384Mi"
+                    }
+                  },
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Resource requests and limits for Tempo pods",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "pullSecrets": {
+              "type": "array",
+              "description": "Docker registry secret names as an array",
+              "items": {}
+            },
+            "reportingEnabled": {
+              "description": "Enable usage reporting to Grafana Labs",
+              "type": "boolean",
+              "default": false
+            },
+            "retention": {
+              "description": "Trace retention period",
+              "type": "string",
+              "default": "168h"
+            },
+            "metricsGenerator": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "remoteWriteUrl": {
+                  "description": "Remote write URL for generated metrics",
+                  "type": "string",
+                  "default": "http://o11y-metrics:8428/api/v1/write"
+                }
+              },
+              "description": "Metrics generator configuration",
+              "additionalProperties": true
+            },
+            "overrides": {
+              "type": "object",
+              "properties": {
+                "defaults": {
+                  "type": "object",
+                  "properties": {
+                    "ingestion": {
+                      "type": "object",
+                      "properties": {
+                        "max_traces_per_user": {
+                          "type": "integer",
+                          "default": 100000
+                        },
+                        "rate_limit_bytes": {
+                          "description": "Rate limit in bytes per second",
+                          "type": "integer",
+                          "default": 30000000
+                        }
+                      },
+                      "description": "Maximum traces per user",
+                      "additionalProperties": {
+                        "type": "integer"
+                      }
+                    },
+                    "global": {
+                      "type": "object",
+                      "properties": {
+                        "max_bytes_per_trace": {
+                          "type": "integer",
+                          "default": 20000000
+                        }
+                      },
+                      "description": "Global configuration",
+                      "additionalProperties": {
+                        "type": "integer"
+                      }
+                    }
+                  },
+                  "description": "Ingestion configuration",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              },
+              "description": "Per-tenant overrides configuration",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "description": "Tempo server configuration",
+          "additionalProperties": true
+        },
+        "tempoQuery": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string",
+              "default": "docker.io/grafana/tempo-query"
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "100m"
+                    },
+                    "memory": {
+                      "type": "string",
+                      "default": "128Mi"
+                    }
+                  },
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "600m"
+                    },
+                    "memory": {
+                      "type": "string",
+                      "default": "256Mi"
+                    }
+                  },
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Resource requests and limits for Tempo query pods",
+              "additionalProperties": {
+                "type": "object"
+              }
+            },
+            "pullSecrets": {
+              "type": "array",
+              "description": "Docker registry secret names as an array",
+              "items": {}
+            },
+            "ingress": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "annotations": {
+                  "type": "object",
+                  "properties": {
+                    "nginx.ingress.kubernetes.io/auth-type": {
+                      "type": "string",
+                      "default": "basic"
+                    },
+                    "nginx.ingress.kubernetes.io/proxy-body-size": {
+                      "description": "Maximum allowed size of client request body",
+                      "type": "string",
+                      "default": "500m"
+                    },
+                    "nginx.ingress.kubernetes.io/proxy-read-timeout": {
+                      "description": "Timeout for reading a response from proxied server",
+                      "type": "string",
+                      "default": "3600"
+                    },
+                    "nginx.ingress.kubernetes.io/proxy-send-timeout": {
+                      "description": "Timeout for transmitting a request to proxied server",
+                      "type": "string",
+                      "default": "3600"
+                    },
+                    "nginx.ingress.kubernetes.io/client-body-buffer-size": {
+                      "description": "Buffer size for reading client request body",
+                      "type": "string",
+                      "default": "500m"
+                    }
+                  },
+                  "description": "Ingress annotations",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "hosts": {
+                  "type": "array",
+                  "description": "List of ingress hosts",
+                  "items": {
+                    "type": "string",
+                    "default": "traces.k8s.orb.local"
+                  }
+                },
+                "ingressClassName": {
+                  "description": "Ingress class name",
+                  "type": "string",
+                  "default": "atk-nginx"
+                },
+                "pathType": {
+                  "description": "Path type for ingress rule",
+                  "type": "string",
+                  "default": "Prefix"
+                }
+              },
+              "description": "Ingress configuration for Tempo query",
+              "additionalProperties": true
+            }
+          },
+          "description": "Tempo query configuration",
+          "additionalProperties": true
+        },
+        "persistence": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "size": {
+              "description": "Size of persistent volume",
+              "type": "string",
+              "default": "10Gi"
+            }
+          },
+          "description": "Persistent volume configuration",
+          "additionalProperties": true
+        },
+        "securityContext": {
+          "type": "object",
+          "properties": {
+            "runAsUser": {
+              "type": "integer",
+              "default": 65532
+            },
+            "runAsGroup": {
+              "description": "Group ID to run as",
+              "type": "integer",
+              "default": 65532
+            },
+            "fsGroup": {
+              "description": "Filesystem group ID",
+              "type": "integer",
+              "default": 65532
+            },
+            "runAsNonRoot": {
+              "description": "Run as non-root user",
+              "type": "boolean",
+              "default": true
+            }
+          },
+          "description": "Security context for Tempo pods",
+          "additionalProperties": true
+        },
+        "podAnnotations": {
+          "type": "object",
+          "properties": {
+            "prometheus.io/scrape": {
+              "type": "string",
+              "default": "true"
+            },
+            "prometheus.io/port": {
+              "description": "Port for Prometheus scraping",
+              "type": "string",
+              "default": "3100"
+            },
+            "prometheus.io/path": {
+              "description": "Path for Prometheus metrics endpoint",
+              "type": "string",
+              "default": "/metrics"
+            }
+          },
+          "description": "Annotations for Tempo pods",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "podLabels": {
+          "type": "object",
+          "properties": {
+            "kots.io/app-slug": {
+              "type": "string",
+              "default": "settlemint-atk"
+            }
+          },
+          "description": "Labels for Tempo pods",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Tempo configuration",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

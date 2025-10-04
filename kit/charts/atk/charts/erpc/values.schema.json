@@ -1,0 +1,2256 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "erpc values",
+  "type": "object",
+  "properties": {
+    "global": {
+      "type": "object",
+      "properties": {
+        "imageRegistry": {
+          "type": "string",
+          "default": ""
+        },
+        "imagePullSecrets": {
+          "type": "array",
+          "description": "Global Docker registry secret names as an array",
+          "items": {}
+        },
+        "storageClass": {
+          "description": "Global StorageClass for Persistent Volume(s)",
+          "type": "string",
+          "default": ""
+        },
+        "securityContexts": {
+          "type": "object",
+          "properties": {},
+          "description": "Security contexts configuration (pod and container level)",
+          "additionalProperties": true
+        },
+        "datastores": {
+          "type": "object",
+          "properties": {},
+          "description": "Datastore configurations for dependencies like Redis",
+          "additionalProperties": true
+        },
+        "labels": {
+          "type": "object",
+          "properties": {
+            "kots.io/app-slug": {
+              "type": "string",
+              "default": "settlemint-atk"
+            }
+          },
+          "description": "Global labels applied to all resources",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Global Docker image registry",
+      "additionalProperties": false
+    },
+    "fullnameOverride": {
+      "description": "String to fully override common.names.fullname",
+      "type": "string",
+      "default": "erpc"
+    },
+    "commonLabels": {
+      "type": "object",
+      "properties": {},
+      "description": "Labels to add to all deployed objects",
+      "additionalProperties": true
+    },
+    "commonAnnotations": {
+      "type": "object",
+      "properties": {},
+      "description": "Annotations to add to all deployed objects",
+      "additionalProperties": true
+    },
+    "image": {
+      "type": "object",
+      "properties": {
+        "registry": {
+          "type": "string",
+          "default": "ghcr.io"
+        },
+        "repository": {
+          "description": "eRPC image repository",
+          "type": "string",
+          "default": "erpc/erpc"
+        },
+        "tag": {
+          "description": "eRPC image tag (immutable tags are recommended)",
+          "type": "string",
+          "default": "0.0.57"
+        },
+        "digest": {
+          "description": "eRPC image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag",
+          "type": "string",
+          "default": ""
+        },
+        "pullPolicy": {
+          "description": "eRPC image pull policy",
+          "type": "string",
+          "default": "IfNotPresent"
+        },
+        "pullSecrets": {
+          "type": "array",
+          "description": "eRPC image pull secrets",
+          "items": {}
+        }
+      },
+      "description": "eRPC image",
+      "additionalProperties": false
+    },
+    "redis": {
+      "type": "object",
+      "properties": {},
+      "description": "Redis parameters for cache/shared state connectivity (overrides global.datastores.erpc.redis)",
+      "additionalProperties": true
+    },
+    "replicaCount": {
+      "description": "Number of eRPC replicas to deploy",
+      "type": "integer",
+      "default": 1
+    },
+    "updateStrategy": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "default": "RollingUpdate"
+        },
+        "rollingUpdate": {
+          "type": "object",
+          "properties": {},
+          "description": "eRPC deployment rolling update configuration parameters",
+          "additionalProperties": true
+        }
+      },
+      "description": "Update strategy configuration for eRPC deployment",
+      "additionalProperties": false
+    },
+    "schedulerName": {
+      "description": "Alternate scheduler",
+      "type": "string",
+      "default": ""
+    },
+    "priorityClassName": {
+      "description": "eRPC pods' priority class name",
+      "type": "string",
+      "default": ""
+    },
+    "topologySpreadConstraints": {
+      "type": "array",
+      "description": "Topology Spread Constraints for pod assignment",
+      "items": {}
+    },
+    "podLabels": {
+      "type": "object",
+      "properties": {
+        "app.kubernetes.io/component": {
+          "type": "string",
+          "default": "erpc"
+        }
+      },
+      "description": "Extra labels for eRPC pods",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "podAnnotations": {
+      "type": "object",
+      "properties": {
+        "prometheus.io/scrape": {
+          "type": "string",
+          "default": "true"
+        },
+        "prometheus.io/port": {
+          "description": "Prometheus metrics port",
+          "type": "string",
+          "default": "4001"
+        },
+        "prometheus.io/path": {
+          "description": "Prometheus metrics path",
+          "type": "string",
+          "default": "/metrics"
+        }
+      },
+      "description": "Annotations for eRPC pods",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "podAffinityPreset": {
+      "description": "Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`",
+      "type": "string",
+      "default": ""
+    },
+    "podAntiAffinityPreset": {
+      "description": "Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`",
+      "type": "string",
+      "default": "soft"
+    },
+    "nodeAffinityPreset": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "default": ""
+        },
+        "key": {
+          "description": "Node label key to match. Ignored if `affinity` is set",
+          "type": "string",
+          "default": ""
+        },
+        "values": {
+          "type": "array",
+          "description": "Node label values to match. Ignored if `affinity` is set",
+          "items": {}
+        }
+      },
+      "description": "Node affinity preset configuration",
+      "additionalProperties": false
+    },
+    "affinity": {
+      "type": "object",
+      "properties": {},
+      "description": "Affinity for pod assignment",
+      "additionalProperties": true
+    },
+    "nodeSelector": {
+      "type": "object",
+      "properties": {},
+      "description": "Node labels for pod assignment",
+      "additionalProperties": true
+    },
+    "tolerations": {
+      "type": "array",
+      "description": "Tolerations for pod assignment",
+      "items": {}
+    },
+    "podSecurityContext": {
+      "type": "object",
+      "properties": {},
+      "description": "Pod Security Context configuration (overrides global.securityContexts.pod)",
+      "additionalProperties": true
+    },
+    "containerSecurityContext": {
+      "type": "object",
+      "properties": {},
+      "description": "Container Security Context configuration (overrides global.securityContexts.container)",
+      "additionalProperties": true
+    },
+    "runtime": {
+      "type": "object",
+      "properties": {
+        "gc": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "gogc": {
+              "description": "Triggers garbage collection when heap grows by this percentage",
+              "type": "integer",
+              "default": 30
+            },
+            "gomemlimitRatio": {
+              "description": "Fraction of the pod memory limit used to derive GOMEMLIMIT (set to 1.0 for 100%)",
+              "type": "number",
+              "default": 0.85
+            },
+            "gomemlimitOverride": {
+              "description": "Absolute fallback for GOMEMLIMIT (takes precedence when set, e.g. \"2GiB\")",
+              "type": "string",
+              "default": ""
+            }
+          },
+          "description": "Enable automatic Go GC tuning based on container limits",
+          "additionalProperties": false
+        }
+      },
+      "description": "Runtime tuning for Go garbage collection and memory management",
+      "additionalProperties": false
+    },
+    "workingDir": {
+      "description": "Working directory for the eRPC container",
+      "type": "string",
+      "default": "/"
+    },
+    "configMountPath": {
+      "description": "Path where the rendered configuration file will be mounted",
+      "type": "string",
+      "default": "/erpc.yaml"
+    },
+    "envSecret": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "name": {
+          "description": "Name of the Secret containing the .env data (required when enabled)",
+          "type": "string",
+          "default": ""
+        },
+        "mountPath": {
+          "description": "Path where the .env file will be mounted",
+          "type": "string",
+          "default": "/.env"
+        },
+        "subPath": {
+          "description": "Optional subPath within the Secret to mount (defaults to the key named `.env`)",
+          "type": "string",
+          "default": ""
+        },
+        "defaultMode": {
+          "description": "File mode applied to the mounted Secret (decimal 420 = 0644)",
+          "type": "integer",
+          "default": 420
+        }
+      },
+      "description": ".env Secret mount configuration",
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "description": "eRPC containers resource requests and limits",
+      "additionalProperties": true
+    },
+    "livenessProbe": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "initialDelaySeconds": {
+          "description": "Initial delay seconds for livenessProbe",
+          "type": "integer",
+          "default": 10
+        },
+        "periodSeconds": {
+          "description": "Period seconds for livenessProbe",
+          "type": "integer",
+          "default": 10
+        },
+        "timeoutSeconds": {
+          "description": "Timeout seconds for livenessProbe",
+          "type": "integer",
+          "default": 5
+        },
+        "failureThreshold": {
+          "description": "Failure threshold for livenessProbe",
+          "type": "integer",
+          "default": 3
+        },
+        "successThreshold": {
+          "description": "Success threshold for livenessProbe",
+          "type": "integer",
+          "default": 1
+        },
+        "httpGet": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "default": "/healthcheck"
+            },
+            "port": {
+              "description": "Port for httpGet livenessProbe",
+              "type": "string",
+              "default": "http"
+            }
+          },
+          "description": "HTTP get parameters for livenessProbe",
+          "additionalProperties": false
+        }
+      },
+      "description": "Configure eRPC containers' liveness probe",
+      "additionalProperties": false
+    },
+    "readinessProbe": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "initialDelaySeconds": {
+          "description": "Initial delay seconds for readinessProbe",
+          "type": "integer",
+          "default": 5
+        },
+        "periodSeconds": {
+          "description": "Period seconds for readinessProbe",
+          "type": "integer",
+          "default": 10
+        },
+        "timeoutSeconds": {
+          "description": "Timeout seconds for readinessProbe",
+          "type": "integer",
+          "default": 5
+        },
+        "failureThreshold": {
+          "description": "Failure threshold for readinessProbe",
+          "type": "integer",
+          "default": 3
+        },
+        "successThreshold": {
+          "description": "Success threshold for readinessProbe",
+          "type": "integer",
+          "default": 1
+        },
+        "httpGet": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "default": "/healthcheck"
+            },
+            "port": {
+              "description": "Port for httpGet readinessProbe",
+              "type": "string",
+              "default": "http"
+            }
+          },
+          "description": "HTTP get parameters for readinessProbe",
+          "additionalProperties": false
+        }
+      },
+      "description": "Configure eRPC containers' readiness probe",
+      "additionalProperties": false
+    },
+    "startupProbe": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "initialDelaySeconds": {
+          "description": "Initial delay seconds for startupProbe",
+          "type": "integer",
+          "default": 30
+        },
+        "periodSeconds": {
+          "description": "Period seconds for startupProbe",
+          "type": "integer",
+          "default": 10
+        },
+        "timeoutSeconds": {
+          "description": "Timeout seconds for startupProbe",
+          "type": "integer",
+          "default": 5
+        },
+        "failureThreshold": {
+          "description": "Failure threshold for startupProbe",
+          "type": "integer",
+          "default": 10
+        },
+        "successThreshold": {
+          "description": "Success threshold for startupProbe",
+          "type": "integer",
+          "default": 1
+        }
+      },
+      "description": "Configure eRPC containers' startup probe",
+      "additionalProperties": false
+    },
+    "lifecycleHooks": {
+      "type": "object",
+      "properties": {},
+      "description": "lifecycleHooks for the eRPC container(s) to automate configuration before or after startup",
+      "additionalProperties": true
+    },
+    "extraVolumes": {
+      "type": "array",
+      "description": "Optionally specify extra list of additional volumes for the eRPC pod(s)",
+      "items": {}
+    },
+    "extraVolumeMounts": {
+      "type": "array",
+      "description": "Optionally specify extra list of additional volumeMounts for the eRPC container(s)",
+      "items": {}
+    },
+    "extraEnvVars": {
+      "type": "array",
+      "description": "Array with extra environment variables to add to eRPC nodes",
+      "items": {}
+    },
+    "extraEnvVarsCM": {
+      "description": "Name of existing ConfigMap containing extra env vars for eRPC nodes",
+      "type": "string",
+      "default": ""
+    },
+    "extraEnvVarsSecret": {
+      "description": "Name of existing Secret containing extra env vars for eRPC nodes",
+      "type": "string",
+      "default": ""
+    },
+    "initContainer": {
+      "type": "object",
+      "properties": {
+        "tcpCheck": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "image": {
+              "type": "object",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "default": "ghcr.io/settlemint/btp-waitforit"
+                },
+                "tag": {
+                  "description": "TCP check image tag",
+                  "type": "string",
+                  "default": "v7.7.10"
+                },
+                "pullPolicy": {
+                  "description": "TCP check image pull policy",
+                  "type": "string",
+                  "default": "IfNotPresent"
+                }
+              },
+              "description": "Container image for TCP check init container",
+              "additionalProperties": false
+            },
+            "timeout": {
+              "description": "Timeout in seconds for each dependency check",
+              "type": "integer",
+              "default": 120
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "300m"
+                    },
+                    "memory": {
+                      "description": "Memory limit for TCP check container",
+                      "type": "string",
+                      "default": "64Mi"
+                    }
+                  },
+                  "description": "CPU limit for TCP check container",
+                  "additionalProperties": false
+                },
+                "requests": {
+                  "type": "object",
+                  "properties": {
+                    "cpu": {
+                      "type": "string",
+                      "default": "10m"
+                    },
+                    "memory": {
+                      "description": "Memory request for TCP check container",
+                      "type": "string",
+                      "default": "32Mi"
+                    }
+                  },
+                  "description": "Resource requests for TCP check container",
+                  "additionalProperties": false
+                }
+              },
+              "description": "Resource limits and requests for TCP check container",
+              "additionalProperties": false
+            },
+            "dependencies": {
+              "type": "array",
+              "description": "List of service dependencies to check before starting",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "default": "besu-rpc"
+                      },
+                      "endpoint": {
+                        "description": "Service endpoint to check (service-name:port)",
+                        "type": "string",
+                        "default": "besu-node-rpc-0.besu-node-rpc:8545"
+                      }
+                    },
+                    "description": "Name of the dependency",
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "default": "redis"
+                      },
+                      "endpoint": {
+                        "description": "Service endpoint to check (template rendered)",
+                        "type": "string",
+                        "default": "{{ include \"erpc.redis.endpoint\" (dict \"context\" $) }}"
+                      }
+                    },
+                    "description": "Redis service dependency -- (string) Name of the dependency",
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            }
+          },
+          "description": "Enable TCP dependency checking init container",
+          "additionalProperties": false
+        }
+      },
+      "description": "Init container configuration for dependency checking",
+      "additionalProperties": false
+    },
+    "extraInitContainers": {
+      "type": "array",
+      "description": "Additional init containers appended verbatim to the workload spec",
+      "items": {}
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "default": "ClusterIP"
+        },
+        "port": {
+          "description": "eRPC service HTTP port",
+          "type": "integer",
+          "default": 4000
+        },
+        "metricsPort": {
+          "description": "eRPC service metrics port",
+          "type": "integer",
+          "default": 4001
+        },
+        "nodePort": {
+          "description": "Node port for HTTP",
+          "type": "string",
+          "default": ""
+        },
+        "metricsNodePort": {
+          "description": "Node port for metrics",
+          "type": "string",
+          "default": ""
+        },
+        "clusterIP": {
+          "description": "eRPC service Cluster IP",
+          "type": "string",
+          "default": ""
+        },
+        "loadBalancerIP": {
+          "description": "eRPC service Load Balancer IP",
+          "type": "string",
+          "default": ""
+        },
+        "loadBalancerSourceRanges": {
+          "type": "array",
+          "description": "eRPC service Load Balancer sources",
+          "items": {}
+        },
+        "externalTrafficPolicy": {
+          "description": "eRPC service external traffic policy",
+          "type": "string",
+          "default": "Cluster"
+        },
+        "annotations": {
+          "type": "object",
+          "properties": {},
+          "description": "Additional custom annotations for eRPC service",
+          "additionalProperties": true
+        },
+        "extraPorts": {
+          "type": "array",
+          "description": "Extra ports to expose in the eRPC service (normally used with the `sidecar` value)",
+          "items": {}
+        },
+        "sessionAffinity": {
+          "description": "Session Affinity for Kubernetes service, can be \"None\" or \"ClientIP\"",
+          "type": "string",
+          "default": "None"
+        },
+        "sessionAffinityConfig": {
+          "type": "object",
+          "properties": {},
+          "description": "Additional settings for the sessionAffinity",
+          "additionalProperties": true
+        }
+      },
+      "description": "Service parameters",
+      "additionalProperties": false
+    },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "pathType": {
+          "description": "Ingress path type",
+          "type": "string",
+          "default": "ImplementationSpecific"
+        },
+        "apiVersion": {
+          "description": "Force Ingress API version (automatically detected if not set)",
+          "type": "string",
+          "default": ""
+        },
+        "hostname": {
+          "description": "Default host for the ingress record",
+          "type": "string",
+          "default": "besu.k8s.orb.local"
+        },
+        "ingressClassName": {
+          "description": "IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)",
+          "type": "string",
+          "default": "atk-nginx"
+        },
+        "path": {
+          "description": "Default path for the ingress record",
+          "type": "string",
+          "default": "/"
+        },
+        "annotations": {
+          "type": "object",
+          "properties": {},
+          "description": "Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.",
+          "additionalProperties": true
+        },
+        "tls": {
+          "description": "Enable TLS configuration for the host defined at `ingress.hostname` parameter",
+          "type": "boolean",
+          "default": false
+        },
+        "selfSigned": {
+          "description": "Create a TLS secret for this ingress record using self-signed certificates generated by Helm",
+          "type": "boolean",
+          "default": false
+        },
+        "extraHosts": {
+          "type": "array",
+          "description": "An array with additional hostname(s) to be covered with the ingress record",
+          "items": {}
+        },
+        "extraPaths": {
+          "type": "array",
+          "description": "An array with additional arbitrary paths that may need to be added to the ingress under the main host",
+          "items": {}
+        },
+        "extraTls": {
+          "type": "array",
+          "description": "TLS configuration for additional hostname(s) to be covered with this ingress record",
+          "items": {}
+        },
+        "secrets": {
+          "type": "array",
+          "description": "Custom TLS certificates as secrets",
+          "items": {}
+        },
+        "extraRules": {
+          "type": "array",
+          "description": "Additional rules to be covered with this ingress record",
+          "items": {}
+        }
+      },
+      "description": "Ingress parameters",
+      "additionalProperties": false
+    },
+    "openShiftRoute": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "annotations": {
+          "type": "object",
+          "properties": {},
+          "description": "Additional annotations for the OpenShift route resource",
+          "additionalProperties": true
+        },
+        "host": {
+          "description": "Hostname exposed via the OpenShift route",
+          "type": "string",
+          "default": "besu.k8s.orb.local"
+        },
+        "path": {
+          "description": "HTTP path exposed via the OpenShift route",
+          "type": "string",
+          "default": "/"
+        },
+        "wildcardPolicy": {
+          "description": "Wildcard policy applied to the route",
+          "type": "string",
+          "default": "None"
+        },
+        "port": {
+          "type": "object",
+          "properties": {
+            "targetPort": {
+              "type": "string",
+              "default": "http"
+            }
+          },
+          "description": "Service port configuration for the route target",
+          "additionalProperties": false
+        },
+        "to": {
+          "type": "object",
+          "properties": {
+            "weight": {
+              "type": "integer",
+              "default": 100
+            }
+          },
+          "description": "Primary service weight configuration",
+          "additionalProperties": false
+        },
+        "alternateBackends": {
+          "type": "array",
+          "description": "Additional backends for weighted routing",
+          "items": {}
+        },
+        "tls": {
+          "description": "TLS configuration for the OpenShift route",
+          "type": [
+            "object",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "description": "OpenShift Route parameters",
+      "additionalProperties": false
+    },
+    "serviceAccount": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean",
+          "default": true
+        },
+        "name": {
+          "description": "The name of the ServiceAccount to use.",
+          "type": "string",
+          "default": ""
+        },
+        "automountServiceAccountToken": {
+          "description": "Automount service account token for the deployment controller service account",
+          "type": "boolean",
+          "default": false
+        },
+        "annotations": {
+          "type": "object",
+          "properties": {},
+          "description": "Annotations for service account. Evaluated as a template. Only used if `create` is `true`.",
+          "additionalProperties": true
+        },
+        "labels": {
+          "type": "object",
+          "properties": {},
+          "description": "Extra labels to be added to the service account",
+          "additionalProperties": true
+        }
+      },
+      "description": "Service account for eRPC pods",
+      "additionalProperties": false
+    },
+    "autoscaling": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "maxReplicas": {
+          "description": "Maximum number of eRPC replicas",
+          "type": "integer",
+          "default": 3
+        },
+        "minReplicas": {
+          "description": "Minimum number of eRPC replicas",
+          "type": "integer",
+          "default": 1
+        },
+        "builtInMetrics": {
+          "type": "array",
+          "description": "Built-in metrics configuration",
+          "items": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "default": "Resource"
+                  },
+                  "resource": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "default": "cpu"
+                      },
+                      "target": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "default": "Utilization"
+                          },
+                          "averageUtilization": {
+                            "description": "Target average CPU utilization percentage",
+                            "type": "integer",
+                            "default": 80
+                          }
+                        },
+                        "description": "Target metric configuration",
+                        "additionalProperties": false
+                      }
+                    },
+                    "description": "Resource metric configuration",
+                    "additionalProperties": false
+                  }
+                },
+                "description": "Metric type (Resource, Pods, Object, External)",
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "default": "Resource"
+                  },
+                  "resource": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "default": "memory"
+                      },
+                      "target": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "default": "Utilization"
+                          },
+                          "averageUtilization": {
+                            "description": "Target average memory utilization percentage",
+                            "type": "integer",
+                            "default": 80
+                          }
+                        },
+                        "description": "Target metric configuration",
+                        "additionalProperties": false
+                      }
+                    },
+                    "description": "Resource metric configuration",
+                    "additionalProperties": false
+                  }
+                },
+                "description": "Memory utilization metric configuration -- (string) Metric type (Resource, Pods, Object, External)",
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "customMetrics": {
+          "type": "array",
+          "description": "Custom metrics configuration",
+          "items": {}
+        }
+      },
+      "description": "Autoscaling configuration for eRPC",
+      "additionalProperties": false
+    },
+    "pdb": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "minAvailable": {
+          "description": "Minimum number/percentage of pods that should remain scheduled",
+          "type": "string",
+          "default": ""
+        },
+        "maxUnavailable": {
+          "description": "Maximum number/percentage of pods that may be made unavailable. Defaults to 1 if both pdb.minAvailable and pdb.maxUnavailable are empty.",
+          "type": "string",
+          "default": ""
+        }
+      },
+      "description": "Pod disruption budget configuration",
+      "additionalProperties": false
+    },
+    "networkPolicy": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "allowExternal": {
+          "description": "The Policy model to apply",
+          "type": "boolean",
+          "default": true
+        },
+        "allowExternalEgress": {
+          "description": "Allow the pod to access any range of port and all destinations.",
+          "type": "boolean",
+          "default": true
+        },
+        "addExternalClientAccess": {
+          "description": "Allow access from pods with client label set to \"true\". Ignored if `networkPolicy.allowExternal` is true.",
+          "type": "boolean",
+          "default": true
+        },
+        "extraIngress": {
+          "type": "array",
+          "description": "Add extra ingress rules to the NetworkPolicy",
+          "items": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "array",
+                "description": "Allow traffic from dapp pods",
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "podSelector": {
+                          "type": "object",
+                          "properties": {
+                            "matchLabels": {
+                              "type": "object",
+                              "properties": {
+                                "app.kubernetes.io/name": {
+                                  "type": "string",
+                                  "default": "dapp"
+                                }
+                              },
+                              "description": "App name label for dapp",
+                              "additionalProperties": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "description": "Label selector for dapp pods",
+                          "additionalProperties": {
+                            "type": "object"
+                          }
+                        }
+                      },
+                      "description": "Pod selector for dapp",
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "podSelector": {
+                          "type": "object",
+                          "properties": {
+                            "matchLabels": {
+                              "type": "object",
+                              "properties": {
+                                "app.kubernetes.io/name": {
+                                  "type": "string",
+                                  "default": "txsigner"
+                                }
+                              },
+                              "description": "App name label for txsigner",
+                              "additionalProperties": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "description": "Label selector for txsigner pods",
+                          "additionalProperties": {
+                            "type": "object"
+                          }
+                        }
+                      },
+                      "description": "Allow traffic from txsigner pods -- (object) Pod selector for txsigner",
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "podSelector": {
+                          "type": "object",
+                          "properties": {
+                            "matchLabels": {
+                              "type": "object",
+                              "properties": {
+                                "app.kubernetes.io/name": {
+                                  "type": "string",
+                                  "default": "ingress-nginx"
+                                }
+                              },
+                              "description": "App name label for ingress-nginx",
+                              "additionalProperties": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "description": "Label selector for ingress-nginx pods",
+                          "additionalProperties": {
+                            "type": "object"
+                          }
+                        }
+                      },
+                      "description": "Allow traffic from ingress-nginx pods -- (object) Pod selector for ingress-nginx",
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "podSelector": {
+                          "type": "object",
+                          "properties": {},
+                          "additionalProperties": true
+                        }
+                      },
+                      "description": "Allow traffic from any pod in same namespace -- (object) Empty pod selector matches all pods",
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              },
+              "ports": {
+                "type": "array",
+                "description": "Port configurations for this ingress rule",
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "protocol": {
+                          "type": "string",
+                          "default": "TCP"
+                        },
+                        "port": {
+                          "description": "RPC port number",
+                          "type": "integer",
+                          "default": 4000
+                        }
+                      },
+                      "description": "Protocol for RPC traffic",
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "protocol": {
+                          "type": "string",
+                          "default": "TCP"
+                        },
+                        "port": {
+                          "description": "Metrics port number",
+                          "type": "integer",
+                          "default": 4001
+                        }
+                      },
+                      "description": "Metrics port configuration -- (string) Protocol for metrics traffic",
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Source pod selectors for this ingress rule",
+            "additionalProperties": false
+          }
+        },
+        "extraEgress": {
+          "type": "array",
+          "description": "Add extra egress rules to the NetworkPolicy (ignored if allowExternalEgress=true)",
+          "items": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "to": {
+                    "type": "array",
+                    "description": "Allow DNS queries to kube-dns pods",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "namespaceSelector": {
+                          "type": "object",
+                          "properties": {},
+                          "additionalProperties": true
+                        },
+                        "podSelector": {
+                          "type": "object",
+                          "properties": {
+                            "matchLabels": {
+                              "type": "object",
+                              "properties": {
+                                "k8s-app": {
+                                  "type": "string",
+                                  "default": "kube-dns"
+                                }
+                              },
+                              "description": "Kubernetes app label for DNS",
+                              "additionalProperties": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "description": "Pod selector for kube-dns",
+                          "additionalProperties": {
+                            "type": "object"
+                          }
+                        }
+                      },
+                      "description": "Namespace selector (empty matches all namespaces)",
+                      "additionalProperties": false
+                    }
+                  },
+                  "ports": {
+                    "type": "array",
+                    "description": "Port configurations for DNS egress",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "protocol": {
+                          "type": "string",
+                          "default": "UDP"
+                        },
+                        "port": {
+                          "description": "DNS port number",
+                          "type": "integer",
+                          "default": 53
+                        }
+                      },
+                      "description": "Protocol for DNS queries",
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "description": "Destination selectors for DNS traffic",
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "to": {
+                    "type": "array",
+                    "description": "Allow traffic to Besu statefulset pods",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "podSelector": {
+                          "type": "object",
+                          "properties": {
+                            "matchLabels": {
+                              "type": "object",
+                              "properties": {
+                                "app.kubernetes.io/name": {
+                                  "type": "string",
+                                  "default": "besu-statefulset"
+                                }
+                              },
+                              "description": "App name label for Besu statefulset",
+                              "additionalProperties": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "description": "Label selector for Besu pods",
+                          "additionalProperties": {
+                            "type": "object"
+                          }
+                        }
+                      },
+                      "description": "Pod selector for Besu nodes",
+                      "additionalProperties": false
+                    }
+                  },
+                  "ports": {
+                    "type": "array",
+                    "description": "Port configurations for Besu egress",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "protocol": {
+                          "type": "string",
+                          "default": "TCP"
+                        },
+                        "port": {
+                          "description": "Besu RPC port number",
+                          "type": "integer",
+                          "default": 8545
+                        }
+                      },
+                      "description": "Protocol for Besu RPC traffic",
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "description": "Egress rule for Besu node access -- (list) Destination selectors for Besu traffic",
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "ingressRules": {
+          "type": "object",
+          "properties": {
+            "accessOnlyFrom": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "namespaceSelector": {
+                  "type": "object",
+                  "properties": {},
+                  "description": "Namespace selector label that is allowed to access eRPC. This label will be used to identified allowed namespace(s).",
+                  "additionalProperties": true
+                },
+                "podSelector": {
+                  "type": "object",
+                  "properties": {},
+                  "description": "Pods selector label that is allowed to access eRPC. This label will be used to identified allowed pod(s).",
+                  "additionalProperties": true
+                }
+              },
+              "description": "Enable ingress rule that makes eRPC only accessible from a particular origin.",
+              "additionalProperties": false
+            }
+          },
+          "description": "Ingress rules configuration",
+          "additionalProperties": false
+        }
+      },
+      "description": "Network policies configuration",
+      "additionalProperties": false
+    },
+    "tests": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "type": "object",
+          "properties": {
+            "registry": {
+              "type": "string",
+              "default": "docker.io"
+            },
+            "repository": {
+              "description": "Test image repository",
+              "type": "string",
+              "default": "busybox"
+            },
+            "tag": {
+              "description": "Test image tag",
+              "type": "string",
+              "default": "1.37.0"
+            },
+            "pullPolicy": {
+              "description": "Test image pull policy",
+              "type": "string",
+              "default": "IfNotPresent"
+            }
+          },
+          "description": "Test image registry",
+          "additionalProperties": false
+        }
+      },
+      "description": "Test parameters",
+      "additionalProperties": false
+    },
+    "config": {
+      "type": "object",
+      "properties": {
+        "logLevel": {
+          "type": "string",
+          "default": "info"
+        },
+        "server": {
+          "type": "object",
+          "properties": {
+            "httpHostV4": {
+              "type": "string",
+              "default": "0.0.0.0"
+            },
+            "httpPort": {
+              "description": "HTTP server port",
+              "type": "integer",
+              "default": 4000
+            },
+            "waitBeforeShutdown": {
+              "description": "Duration to wait before starting graceful shutdown",
+              "type": "string",
+              "default": "30s"
+            },
+            "waitAfterShutdown": {
+              "description": "Duration to wait after graceful shutdown completes",
+              "type": "string",
+              "default": "30s"
+            }
+          },
+          "description": "HTTP server configuration",
+          "additionalProperties": false
+        },
+        "metrics": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "hostV4": {
+              "description": "IPv4 address to bind metrics server to",
+              "type": "string",
+              "default": "0.0.0.0"
+            },
+            "port": {
+              "description": "Metrics server port",
+              "type": "integer",
+              "default": 4001
+            }
+          },
+          "description": "Prometheus metrics endpoint configuration",
+          "additionalProperties": false
+        },
+        "projects": {
+          "type": "array",
+          "description": "Array of project configurations (will be overridden by parent chart). Chain IDs default from .Values.global.chainId when omitted (see configmap template).",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "default": "settlemint"
+              },
+              "networks": {
+                "type": "array",
+                "description": "Network configurations for this project",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "architecture": {
+                      "type": "string",
+                      "default": "evm"
+                    },
+                    "evm": {
+                      "type": "object",
+                      "properties": {
+                        "integrity": {
+                          "type": "object",
+                          "properties": {
+                            "enforceHighestBlock": {
+                              "type": "boolean",
+                              "default": true
+                            },
+                            "enforceGetLogsBlockRange": {
+                              "description": "Enforce valid block range for eth_getLogs queries",
+                              "type": "boolean",
+                              "default": true
+                            }
+                          },
+                          "description": "Enforce consistent highest block number across upstreams",
+                          "additionalProperties": false
+                        }
+                      },
+                      "description": "EVM-specific configuration",
+                      "additionalProperties": false
+                    },
+                    "directiveDefaults": {
+                      "type": "object",
+                      "properties": {
+                        "retryEmpty": {
+                          "type": "boolean",
+                          "default": true
+                        }
+                      },
+                      "description": "Default directives applied to all requests",
+                      "additionalProperties": false
+                    },
+                    "failsafe": {
+                      "type": "array",
+                      "description": "Failsafe policies for request handling",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "matchMethod": {
+                                "type": "string",
+                                "default": "eth_getLogs"
+                              },
+                              "timeout": {
+                                "type": "object",
+                                "properties": {
+                                  "duration": {
+                                    "type": "string",
+                                    "default": "45s"
+                                  }
+                                },
+                                "description": "Timeout configuration for this method",
+                                "additionalProperties": false
+                              },
+                              "retry": {
+                                "type": "object",
+                                "properties": {
+                                  "maxAttempts": {
+                                    "type": "integer",
+                                    "default": 3
+                                  },
+                                  "delay": {
+                                    "description": "Initial delay before first retry",
+                                    "type": "string",
+                                    "default": "500ms"
+                                  },
+                                  "backoffFactor": {
+                                    "description": "Multiplicative factor for exponential backoff",
+                                    "type": "integer",
+                                    "default": 2
+                                  },
+                                  "backoffMaxDelay": {
+                                    "description": "Maximum delay between retries",
+                                    "type": "string",
+                                    "default": "10s"
+                                  },
+                                  "jitter": {
+                                    "description": "Random jitter added to retry delay",
+                                    "type": "string",
+                                    "default": "300ms"
+                                  }
+                                },
+                                "description": "Retry configuration for failed requests",
+                                "additionalProperties": false
+                              },
+                              "hedge": {
+                                "type": "object",
+                                "properties": {
+                                  "quantile": {
+                                    "type": "number",
+                                    "default": 0.9
+                                  },
+                                  "minDelay": {
+                                    "description": "Minimum delay before sending hedge request",
+                                    "type": "string",
+                                    "default": "200ms"
+                                  },
+                                  "maxDelay": {
+                                    "description": "Maximum delay before sending hedge request",
+                                    "type": "string",
+                                    "default": "4s"
+                                  },
+                                  "maxCount": {
+                                    "description": "Maximum number of concurrent hedge requests",
+                                    "type": "integer",
+                                    "default": 1
+                                  }
+                                },
+                                "description": "Hedge configuration for parallel requests",
+                                "additionalProperties": false
+                              }
+                            },
+                            "description": "RPC method pattern to match (supports wildcards)",
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "matchMethod": {
+                                "type": "string",
+                                "default": "trace_*|debug_*|arbtrace_*"
+                              },
+                              "timeout": {
+                                "type": "object",
+                                "properties": {
+                                  "duration": {
+                                    "type": "string",
+                                    "default": "90s"
+                                  }
+                                },
+                                "description": "Timeout configuration for trace/debug methods",
+                                "additionalProperties": false
+                              },
+                              "retry": {
+                                "type": "object",
+                                "properties": {
+                                  "maxAttempts": {
+                                    "type": "integer",
+                                    "default": 1
+                                  }
+                                },
+                                "description": "Retry configuration for trace/debug methods",
+                                "additionalProperties": false
+                              }
+                            },
+                            "description": "Failsafe policy for trace/debug methods -- (string) RPC method pattern for trace, debug, and arbtrace methods",
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "matchMethod": {
+                                "type": "string",
+                                "default": "eth_getBlock*|eth_getTransaction*"
+                              },
+                              "timeout": {
+                                "type": "object",
+                                "properties": {
+                                  "duration": {
+                                    "type": "string",
+                                    "default": "6s"
+                                  }
+                                },
+                                "description": "Timeout configuration for block/transaction queries",
+                                "additionalProperties": false
+                              },
+                              "retry": {
+                                "type": "object",
+                                "properties": {
+                                  "maxAttempts": {
+                                    "type": "integer",
+                                    "default": 2
+                                  },
+                                  "delay": {
+                                    "description": "Initial delay before first retry",
+                                    "type": "string",
+                                    "default": "200ms"
+                                  },
+                                  "backoffFactor": {
+                                    "description": "Multiplicative factor for exponential backoff",
+                                    "type": "number",
+                                    "default": 1.5
+                                  },
+                                  "backoffMaxDelay": {
+                                    "description": "Maximum delay between retries",
+                                    "type": "string",
+                                    "default": "3s"
+                                  },
+                                  "jitter": {
+                                    "description": "Random jitter added to retry delay",
+                                    "type": "string",
+                                    "default": "150ms"
+                                  }
+                                },
+                                "description": "Retry configuration for block/transaction queries",
+                                "additionalProperties": false
+                              }
+                            },
+                            "description": "Failsafe policy for block and transaction queries -- (string) RPC method pattern for getBlock and getTransaction methods",
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "matchMethod": {
+                                "type": "string",
+                                "default": "*"
+                              },
+                              "matchFinality": {
+                                "type": "array",
+                                "description": "Block finality states to match",
+                                "items": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "default": "unfinalized"
+                                    },
+                                    {
+                                      "description": "Match realtime blocks",
+                                      "type": "string",
+                                      "default": "realtime"
+                                    }
+                                  ]
+                                }
+                              },
+                              "timeout": {
+                                "type": "object",
+                                "properties": {
+                                  "duration": {
+                                    "type": "string",
+                                    "default": "4s"
+                                  }
+                                },
+                                "description": "Timeout configuration for unfinalized requests",
+                                "additionalProperties": false
+                              },
+                              "retry": {
+                                "type": "object",
+                                "properties": {
+                                  "maxAttempts": {
+                                    "type": "integer",
+                                    "default": 2
+                                  },
+                                  "delay": {
+                                    "description": "Initial delay before first retry",
+                                    "type": "string",
+                                    "default": "150ms"
+                                  },
+                                  "jitter": {
+                                    "description": "Random jitter added to retry delay",
+                                    "type": "string",
+                                    "default": "150ms"
+                                  }
+                                },
+                                "description": "Retry configuration for unfinalized requests",
+                                "additionalProperties": false
+                              },
+                              "hedge": {
+                                "type": "object",
+                                "properties": {
+                                  "delay": {
+                                    "type": "string",
+                                    "default": "250ms"
+                                  },
+                                  "maxCount": {
+                                    "description": "Maximum number of concurrent hedge requests",
+                                    "type": "integer",
+                                    "default": 1
+                                  }
+                                },
+                                "description": "Hedge configuration for unfinalized requests",
+                                "additionalProperties": false
+                              }
+                            },
+                            "description": "Failsafe policy for unfinalized/realtime requests -- (string) RPC method pattern matching all methods",
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "matchMethod": {
+                                "type": "string",
+                                "default": "*"
+                              },
+                              "matchFinality": {
+                                "type": "array",
+                                "description": "Block finality states to match (finalized only)",
+                                "items": {
+                                  "type": "string",
+                                  "default": "finalized"
+                                }
+                              },
+                              "timeout": {
+                                "type": "object",
+                                "properties": {
+                                  "duration": {
+                                    "type": "string",
+                                    "default": "20s"
+                                  }
+                                },
+                                "description": "Timeout configuration for finalized requests",
+                                "additionalProperties": false
+                              },
+                              "retry": {
+                                "type": "object",
+                                "properties": {
+                                  "maxAttempts": {
+                                    "type": "integer",
+                                    "default": 4
+                                  },
+                                  "delay": {
+                                    "description": "Initial delay before first retry",
+                                    "type": "string",
+                                    "default": "400ms"
+                                  },
+                                  "backoffFactor": {
+                                    "description": "Multiplicative factor for exponential backoff",
+                                    "type": "number",
+                                    "default": 1.8
+                                  },
+                                  "backoffMaxDelay": {
+                                    "description": "Maximum delay between retries",
+                                    "type": "string",
+                                    "default": "8s"
+                                  },
+                                  "jitter": {
+                                    "description": "Random jitter added to retry delay",
+                                    "type": "string",
+                                    "default": "250ms"
+                                  }
+                                },
+                                "description": "Retry configuration for finalized requests",
+                                "additionalProperties": false
+                              }
+                            },
+                            "description": "Failsafe policy for finalized block requests -- (string) RPC method pattern matching all methods",
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "matchMethod": {
+                                "type": "string",
+                                "default": "*"
+                              },
+                              "timeout": {
+                                "type": "object",
+                                "properties": {
+                                  "duration": {
+                                    "type": "string",
+                                    "default": "12s"
+                                  }
+                                },
+                                "description": "Timeout configuration for default policy",
+                                "additionalProperties": false
+                              },
+                              "retry": {
+                                "type": "object",
+                                "properties": {
+                                  "maxAttempts": {
+                                    "type": "integer",
+                                    "default": 3
+                                  },
+                                  "delay": {
+                                    "description": "Initial delay before first retry",
+                                    "type": "string",
+                                    "default": "300ms"
+                                  },
+                                  "backoffFactor": {
+                                    "description": "Multiplicative factor for exponential backoff",
+                                    "type": "number",
+                                    "default": 1.4
+                                  },
+                                  "backoffMaxDelay": {
+                                    "description": "Maximum delay between retries",
+                                    "type": "string",
+                                    "default": "5s"
+                                  },
+                                  "jitter": {
+                                    "description": "Random jitter added to retry delay",
+                                    "type": "string",
+                                    "default": "200ms"
+                                  }
+                                },
+                                "description": "Retry configuration for default policy",
+                                "additionalProperties": false
+                              },
+                              "hedge": {
+                                "type": "object",
+                                "properties": {
+                                  "quantile": {
+                                    "type": "number",
+                                    "default": 0.95
+                                  },
+                                  "minDelay": {
+                                    "description": "Minimum delay before sending hedge request",
+                                    "type": "string",
+                                    "default": "120ms"
+                                  },
+                                  "maxDelay": {
+                                    "description": "Maximum delay before sending hedge request",
+                                    "type": "string",
+                                    "default": "2s"
+                                  },
+                                  "maxCount": {
+                                    "description": "Maximum number of concurrent hedge requests",
+                                    "type": "integer",
+                                    "default": 2
+                                  }
+                                },
+                                "description": "Hedge configuration for default policy",
+                                "additionalProperties": false
+                              }
+                            },
+                            "description": "Default fallback failsafe policy for all methods -- (string) RPC method pattern matching all methods (catch-all)",
+                            "additionalProperties": false
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "description": "Blockchain architecture type (evm, substrate, etc.)",
+                  "additionalProperties": false
+                }
+              },
+              "upstreams": {
+                "type": "array",
+                "description": "Upstream RPC node configurations for load balancing",
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "default": "besu-node-rpc-0"
+                        },
+                        "endpoint": {
+                          "description": "RPC endpoint URL for this upstream",
+                          "type": "string",
+                          "default": "http://besu-node-rpc-0.besu-node-rpc:8545"
+                        },
+                        "evm": {
+                          "type": "object",
+                          "properties": {},
+                          "description": "EVM-specific configuration for this upstream",
+                          "additionalProperties": true
+                        },
+                        "failsafe": {
+                          "type": "array",
+                          "description": "Failsafe policies for this upstream",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "matchMethod": {
+                                "type": "string",
+                                "default": "*"
+                              },
+                              "circuitBreaker": {
+                                "type": "object",
+                                "properties": {
+                                  "failureThresholdCount": {
+                                    "type": "integer",
+                                    "default": 40
+                                  },
+                                  "failureThresholdCapacity": {
+                                    "description": "Capacity of failure counter window",
+                                    "type": "integer",
+                                    "default": 80
+                                  },
+                                  "halfOpenAfter": {
+                                    "description": "Duration before attempting to close circuit",
+                                    "type": "string",
+                                    "default": "120s"
+                                  },
+                                  "successThresholdCount": {
+                                    "description": "Number of successes needed to close circuit",
+                                    "type": "integer",
+                                    "default": 3
+                                  },
+                                  "successThresholdCapacity": {
+                                    "description": "Capacity of success counter window",
+                                    "type": "integer",
+                                    "default": 10
+                                  }
+                                },
+                                "description": "Circuit breaker configuration",
+                                "additionalProperties": false
+                              }
+                            },
+                            "description": "RPC method pattern matching all methods",
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "description": "Unique identifier for this upstream",
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "default": "besu-node-rpc-1"
+                        },
+                        "endpoint": {
+                          "description": "RPC endpoint URL for this upstream",
+                          "type": "string",
+                          "default": "http://besu-node-rpc-1.besu-node-rpc:8545"
+                        },
+                        "evm": {
+                          "type": "object",
+                          "properties": {},
+                          "description": "EVM-specific configuration for this upstream",
+                          "additionalProperties": true
+                        },
+                        "failsafe": {
+                          "type": "array",
+                          "description": "Failsafe policies for this upstream",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "matchMethod": {
+                                "type": "string",
+                                "default": "*"
+                              },
+                              "circuitBreaker": {
+                                "type": "object",
+                                "properties": {
+                                  "failureThresholdCount": {
+                                    "type": "integer",
+                                    "default": 40
+                                  },
+                                  "failureThresholdCapacity": {
+                                    "description": "Capacity of failure counter window",
+                                    "type": "integer",
+                                    "default": 80
+                                  },
+                                  "halfOpenAfter": {
+                                    "description": "Duration before attempting to close circuit",
+                                    "type": "string",
+                                    "default": "120s"
+                                  },
+                                  "successThresholdCount": {
+                                    "description": "Number of successes needed to close circuit",
+                                    "type": "integer",
+                                    "default": 3
+                                  },
+                                  "successThresholdCapacity": {
+                                    "description": "Capacity of success counter window",
+                                    "type": "integer",
+                                    "default": 10
+                                  }
+                                },
+                                "description": "Circuit breaker configuration",
+                                "additionalProperties": false
+                              }
+                            },
+                            "description": "RPC method pattern matching all methods",
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "description": "Second Besu RPC node upstream -- (string) Unique identifier for this upstream",
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Unique project identifier",
+            "additionalProperties": false
+          }
+        },
+        "database": {
+          "type": "object",
+          "properties": {
+            "evmJsonRpcCache": {
+              "type": "object",
+              "properties": {
+                "connectors": {
+                  "type": "array",
+                  "description": "Redis cache connector",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "default": "redis-cache"
+                      },
+                      "driver": {
+                        "description": "Database driver type",
+                        "type": "string",
+                        "default": "redis"
+                      },
+                      "redis": {
+                        "type": "object",
+                        "properties": {
+                          "uri": {
+                            "type": "string",
+                            "default": "{{ include \"erpc.redis.uriFor\" (dict \"context\" $ \"dbKey\" \"cacheDb\" \"queryKey\" \"cacheQuery\") }}"
+                          }
+                        },
+                        "description": "Redis-specific configuration",
+                        "additionalProperties": false
+                      }
+                    },
+                    "description": "Unique identifier for this connector",
+                    "additionalProperties": false
+                  }
+                },
+                "compression": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "algorithm": {
+                      "description": "Compression algorithm to use (zstd, gzip, lz4)",
+                      "type": "string",
+                      "default": "zstd"
+                    },
+                    "zstdLevel": {
+                      "description": "Compression level for zstd (fastest, default, better, best)",
+                      "type": "string",
+                      "default": "default"
+                    },
+                    "threshold": {
+                      "description": "Minimum response size in bytes before applying compression",
+                      "type": "integer",
+                      "default": 1024
+                    }
+                  },
+                  "description": "Compression configuration for cached data",
+                  "additionalProperties": false
+                },
+                "policies": {
+                  "type": "array",
+                  "description": "Cache policies defining what to cache and for how long",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "network": {
+                            "type": "string",
+                            "default": "*"
+                          },
+                          "method": {
+                            "description": "RPC method pattern to match (supports wildcards)",
+                            "type": "string",
+                            "default": "*"
+                          },
+                          "finality": {
+                            "description": "Block finality state to match",
+                            "type": "string",
+                            "default": "finalized"
+                          },
+                          "connector": {
+                            "description": "Connector ID to use for this policy",
+                            "type": "string",
+                            "default": "redis-cache"
+                          },
+                          "ttl": {
+                            "description": "Time-to-live in seconds (0 = infinite)",
+                            "type": "integer",
+                            "default": 0
+                          }
+                        },
+                        "description": "Network pattern to match (supports wildcards)",
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "network": {
+                            "type": "string",
+                            "default": "*"
+                          },
+                          "method": {
+                            "description": "RPC method pattern to match (supports wildcards)",
+                            "type": "string",
+                            "default": "*"
+                          },
+                          "finality": {
+                            "description": "Block finality state to match",
+                            "type": "string",
+                            "default": "unfinalized"
+                          },
+                          "connector": {
+                            "description": "Connector ID to use for this policy",
+                            "type": "string",
+                            "default": "redis-cache"
+                          },
+                          "ttl": {
+                            "description": "Time-to-live duration",
+                            "type": "string",
+                            "default": "5s"
+                          }
+                        },
+                        "description": "Cache policy for unfinalized blocks -- (string) Network pattern to match (supports wildcards)",
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "network": {
+                            "type": "string",
+                            "default": "*"
+                          },
+                          "method": {
+                            "description": "RPC method pattern to match (supports wildcards)",
+                            "type": "string",
+                            "default": "*"
+                          },
+                          "finality": {
+                            "description": "Block finality state to match",
+                            "type": "string",
+                            "default": "realtime"
+                          },
+                          "connector": {
+                            "description": "Connector ID to use for this policy",
+                            "type": "string",
+                            "default": "redis-cache"
+                          },
+                          "ttl": {
+                            "description": "Time-to-live duration",
+                            "type": "string",
+                            "default": "5s"
+                          }
+                        },
+                        "description": "Cache policy for realtime blocks -- (string) Network pattern to match (supports wildcards)",
+                        "additionalProperties": false
+                      }
+                    ]
+                  }
+                }
+              },
+              "description": "Cache connector configurations",
+              "additionalProperties": false
+            },
+            "sharedState": {
+              "type": "object",
+              "properties": {
+                "clusterKey": {
+                  "type": "string",
+                  "default": "atk-erpc-shared"
+                },
+                "connector": {
+                  "type": "object",
+                  "properties": {
+                    "driver": {
+                      "type": "string",
+                      "default": "redis"
+                    },
+                    "redis": {
+                      "type": "object",
+                      "properties": {
+                        "uri": {
+                          "type": "string",
+                          "default": "{{ include \"erpc.redis.uriFor\" (dict \"context\" $ \"dbKey\" \"sharedStateDb\" \"queryKey\" \"sharedStateQuery\") }}"
+                        }
+                      },
+                      "description": "Redis-specific configuration",
+                      "additionalProperties": false
+                    }
+                  },
+                  "description": "Connector configuration for shared state storage",
+                  "additionalProperties": false
+                },
+                "fallbackTimeout": {
+                  "description": "Timeout for fallback when shared state is unavailable",
+                  "type": "string",
+                  "default": "5s"
+                },
+                "lockTtl": {
+                  "description": "Time-to-live for distributed locks",
+                  "type": "string",
+                  "default": "30s"
+                }
+              },
+              "description": "Shared state configuration for distributed coordination",
+              "additionalProperties": false
+            }
+          },
+          "description": "Database configuration for caching and shared state",
+          "additionalProperties": false
+        }
+      },
+      "description": "eRPC configuration",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

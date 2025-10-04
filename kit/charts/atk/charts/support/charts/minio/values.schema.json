@@ -1,0 +1,1103 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "minio values",
+  "type": "object",
+  "properties": {
+    "nameOverride": {
+      "description": "String to partially override common.names.fullname template (will maintain the release name)",
+      "type": "string",
+      "default": ""
+    },
+    "fullnameOverride": {
+      "description": "String to fully override common.names.fullname",
+      "type": "string",
+      "default": ""
+    },
+    "clusterDomain": {
+      "description": "Kubernetes cluster domain where minio is running",
+      "type": "string",
+      "default": "cluster.local"
+    },
+    "image": {
+      "type": "object",
+      "properties": {
+        "repository": {
+          "type": "string",
+          "default": "docker.io/minio/minio"
+        },
+        "tag": {
+          "description": "MinIO image tag (immutable tags are recommended)",
+          "type": "string",
+          "default": "RELEASE.2025-09-07T16-13-09Z"
+        },
+        "pullPolicy": {
+          "description": "MinIO image pull policy",
+          "type": "string",
+          "default": "IfNotPresent"
+        }
+      },
+      "description": "MinIO image configuration",
+      "additionalProperties": false
+    },
+    "imagePullSecrets": {
+      "type": "array",
+      "description": "Global Docker registry secret names as an array",
+      "items": {}
+    },
+    "mcImage": {
+      "type": "object",
+      "properties": {
+        "repository": {
+          "type": "string",
+          "default": "docker.io/minio/minio"
+        },
+        "tag": {
+          "description": "MinIO client image tag",
+          "type": "string",
+          "default": "RELEASE.2025-09-07T16-13-09Z"
+        },
+        "pullPolicy": {
+          "description": "MinIO client image pull policy",
+          "type": "string",
+          "default": "IfNotPresent"
+        }
+      },
+      "description": ". # -- (object) MinIO client image configuration",
+      "additionalProperties": false
+    },
+    "mode": {
+      "description": "MinIO mode (standalone or distributed)",
+      "type": "string",
+      "default": "distributed"
+    },
+    "additionalLabels": {
+      "type": "object",
+      "properties": {},
+      "description": "Additional labels to include with deployment or statefulset",
+      "additionalProperties": true
+    },
+    "additionalAnnotations": {
+      "type": "object",
+      "properties": {},
+      "description": "Additional annotations to include with deployment or statefulset",
+      "additionalProperties": true
+    },
+    "ignoreChartChecksums": {
+      "description": "Disable automatic restart on secret/config changes to avoid unnecessary restarts in GitOps workflows",
+      "type": "boolean",
+      "default": false
+    },
+    "extraArgs": {
+      "type": "array",
+      "description": "Additional command-line arguments to pass to the MinIO binary",
+      "items": {}
+    },
+    "extraVolumes": {
+      "type": "array",
+      "description": "Additional volumes to mount in the MinIO container",
+      "items": {}
+    },
+    "extraVolumeMounts": {
+      "type": "array",
+      "description": "Additional volume mounts for the MinIO container",
+      "items": {}
+    },
+    "extraContainers": {
+      "type": "array",
+      "description": "Additional sidecar containers to run alongside MinIO",
+      "items": {}
+    },
+    "minioAPIPort": {
+      "description": "Internal port number for MinIO S3 API",
+      "type": "string",
+      "default": "9000"
+    },
+    "minioConsolePort": {
+      "description": "Internal port number for MinIO Browser Console",
+      "type": "string",
+      "default": "9001"
+    },
+    "deploymentUpdate": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "default": "RollingUpdate"
+        },
+        "maxUnavailable": {
+          "description": "Maximum number of pods unavailable during update",
+          "type": "integer",
+          "default": 0
+        },
+        "maxSurge": {
+          "description": "Maximum number of pods that can be created over the desired number",
+          "type": "string",
+          "default": "100%"
+        }
+      },
+      "description": "Update strategy configuration for Deployments",
+      "additionalProperties": false
+    },
+    "statefulSetUpdate": {
+      "type": "object",
+      "properties": {
+        "updateStrategy": {
+          "type": "string",
+          "default": "RollingUpdate"
+        }
+      },
+      "description": "Update strategy configuration for StatefulSets",
+      "additionalProperties": false
+    },
+    "priorityClassName": {
+      "description": "Priority class name for MinIO pods",
+      "type": "string",
+      "default": ""
+    },
+    "runtimeClassName": {
+      "description": "Runtime class name for MinIO pods",
+      "type": "string",
+      "default": ""
+    },
+    "rootUser": {
+      "description": "MinIO root user (admin username), auto-generated if not set",
+      "type": "string",
+      "default": ""
+    },
+    "rootPassword": {
+      "description": "MinIO root password (admin password), auto-generated if not set",
+      "type": "string",
+      "default": ""
+    },
+    "existingSecret": {
+      "description": "Name of existing Secret containing rootUser and rootPassword keys",
+      "type": "string",
+      "default": ""
+    },
+    "certsPath": {
+      "description": "Directory path for TLS certificates on MinIO pod",
+      "type": "string",
+      "default": "/etc/minio/certs/"
+    },
+    "configPathmc": {
+      "description": "Directory path for MinIO client configuration",
+      "type": "string",
+      "default": "/etc/minio/mc/"
+    },
+    "mountPath": {
+      "description": "Mount path for persistent volume on MinIO pod",
+      "type": "string",
+      "default": "/export"
+    },
+    "bucketRoot": {
+      "description": "Root directory for MinIO server storage (sub-directory of mountPath)",
+      "type": "string",
+      "default": ""
+    },
+    "drivesPerNode": {
+      "description": "Number of drives attached to each MinIO node",
+      "type": "integer",
+      "default": 1
+    },
+    "replicas": {
+      "description": "Number of MinIO pod replicas to run",
+      "type": "integer",
+      "default": 16
+    },
+    "pools": {
+      "description": "Number of MinIO server pools for distributed deployment",
+      "type": "integer",
+      "default": 1
+    },
+    "tls": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "certSecret": {
+          "description": "Name of Kubernetes Secret containing TLS certificate and key",
+          "type": "string",
+          "default": ""
+        },
+        "publicCrt": {
+          "description": "Filename of public certificate in the TLS secret",
+          "type": "string",
+          "default": "public.crt"
+        },
+        "privateKey": {
+          "description": "Filename of private key in the TLS secret",
+          "type": "string",
+          "default": "private.key"
+        }
+      },
+      "description": "TLS/SSL configuration for MinIO",
+      "additionalProperties": false
+    },
+    "trustedCertsSecret": {
+      "description": "Name of Kubernetes Secret containing trusted CA certificates for third-party verification",
+      "type": "string",
+      "default": ""
+    },
+    "persistence": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "annotations": {
+          "type": "object",
+          "properties": {},
+          "description": "Annotations to add to the PersistentVolumeClaim",
+          "additionalProperties": true
+        },
+        "existingClaim": {
+          "description": "Name of existing PersistentVolumeClaim to use instead of creating new one",
+          "type": "string",
+          "default": ""
+        },
+        "storageClass": {
+          "description": "or set to null, no storageClassName spec is #   set, choosing the default provisioner.  (gp2 on AWS, standard on #   GKE, AWS & OpenStack) # # Storage class of PV to bind. By default it looks for standard storage class. # If the PV uses a different storage class, specify that here. -- (string) Storage class name for persistent volume",
+          "type": "string",
+          "default": ""
+        },
+        "volumeName": {
+          "description": "Name of persistent volume to bind to",
+          "type": "string",
+          "default": ""
+        },
+        "accessMode": {
+          "description": "Access mode for persistent volume",
+          "type": "string",
+          "default": "ReadWriteOnce"
+        },
+        "size": {
+          "description": "Size of persistent volume claim",
+          "type": "string",
+          "default": "500Gi"
+        },
+        "subPath": {
+          "description": ". # -- (string) Mount a sub-path within the volume instead of the root",
+          "type": "string",
+          "default": ""
+        }
+      },
+      "description": "Persistent volume configuration for MinIO data storage",
+      "additionalProperties": false
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "default": "ClusterIP"
+        },
+        "clusterIP": {
+          "description": "Static cluster IP address for the service",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "port": {
+          "description": "External port for MinIO S3 API service",
+          "type": "string",
+          "default": "9000"
+        },
+        "nodePort": {
+          "description": "NodePort to expose the service on each node (requires type: NodePort)",
+          "type": "integer",
+          "default": 32000
+        },
+        "loadBalancerIP": {
+          "description": "Static IP address for LoadBalancer service type",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "externalIPs": {
+          "type": "array",
+          "description": "List of external IPs for the service",
+          "items": {}
+        },
+        "annotations": {
+          "type": "object",
+          "properties": {},
+          "description": "Annotations to add to the service",
+          "additionalProperties": true
+        },
+        "loadBalancerSourceRanges": {
+          "type": "array",
+          "description": "List of IP CIDR ranges allowed to access LoadBalancer service",
+          "items": {}
+        },
+        "externalTrafficPolicy": {
+          "description": "External traffic policy (Cluster or Local)",
+          "type": "string",
+          "default": "Cluster"
+        }
+      },
+      "description": ". # or access it from within the cluster (ClusterIP service). Set the service type and the port to serve it. # ref: http://kubernetes.io/docs/user-guide/services/ # -- (object) Kubernetes Service configuration for MinIO S3 API",
+      "additionalProperties": false
+    },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "ingressClassName": {
+          "description": "Ingress class name to use",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "labels": {
+          "type": "object",
+          "properties": {},
+          "description": "Additional labels for the ingress resource",
+          "additionalProperties": true
+        },
+        "annotations": {
+          "type": "object",
+          "properties": {},
+          "description": "Annotations for the ingress resource",
+          "additionalProperties": true
+        },
+        "path": {
+          "description": "Path prefix for the ingress rule",
+          "type": "string",
+          "default": "/"
+        },
+        "hosts": {
+          "type": "array",
+          "description": "Hostnames for the ingress",
+          "items": {
+            "type": "string",
+            "default": "minio-example.local"
+          }
+        },
+        "tls": {
+          "type": "array",
+          "description": "TLS configuration for the ingress",
+          "items": {}
+        }
+      },
+      "description": "Ingress configuration for MinIO S3 API",
+      "additionalProperties": false
+    },
+    "consoleService": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "default": "ClusterIP"
+        },
+        "clusterIP": {
+          "description": "Static cluster IP address for the console service",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "port": {
+          "description": "External port for MinIO Console service",
+          "type": "string",
+          "default": "9001"
+        },
+        "nodePort": {
+          "description": "NodePort to expose the console service on each node (requires type: NodePort)",
+          "type": "integer",
+          "default": 32001
+        },
+        "loadBalancerIP": {
+          "description": "Static IP address for console LoadBalancer service type",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "externalIPs": {
+          "type": "array",
+          "description": "List of external IPs for the console service",
+          "items": {}
+        },
+        "annotations": {
+          "type": "object",
+          "properties": {},
+          "description": "Annotations to add to the console service",
+          "additionalProperties": true
+        },
+        "loadBalancerSourceRanges": {
+          "type": "array",
+          "description": "List of IP CIDR ranges allowed to access console LoadBalancer service",
+          "items": {}
+        },
+        "externalTrafficPolicy": {
+          "description": "External traffic policy for console service (Cluster or Local)",
+          "type": "string",
+          "default": "Cluster"
+        }
+      },
+      "description": "Service type for MinIO Console (ClusterIP, NodePort, LoadBalancer)",
+      "additionalProperties": false
+    },
+    "consoleIngress": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "ingressClassName": {
+          "description": "Ingress class name to use for console",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "labels": {
+          "type": "object",
+          "properties": {},
+          "description": "Additional labels for the console ingress resource",
+          "additionalProperties": true
+        },
+        "annotations": {
+          "type": "object",
+          "properties": {},
+          "description": "Annotations for the console ingress resource",
+          "additionalProperties": true
+        },
+        "path": {
+          "description": "Path prefix for the console ingress rule",
+          "type": "string",
+          "default": "/"
+        },
+        "hosts": {
+          "type": "array",
+          "description": "Hostnames for the console ingress",
+          "items": {
+            "type": "string",
+            "default": "console.minio-example.local"
+          }
+        },
+        "tls": {
+          "type": "array",
+          "description": "TLS configuration for the console ingress",
+          "items": {}
+        }
+      },
+      "description": "Ingress configuration for MinIO Console",
+      "additionalProperties": false
+    },
+    "nodeSelector": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
+    "tolerations": {
+      "type": "array",
+      "description": "Tolerations for pod assignment",
+      "items": {}
+    },
+    "affinity": {
+      "type": "object",
+      "properties": {},
+      "description": "Affinity rules for pod assignment",
+      "additionalProperties": true
+    },
+    "topologySpreadConstraints": {
+      "type": "array",
+      "description": "Topology spread constraints for pod distribution",
+      "items": {}
+    },
+    "securityContext": {
+      "type": "object",
+      "properties": {},
+      "description": "Pod-level security context (only applied when persistence is enabled)",
+      "additionalProperties": true
+    },
+    "containerSecurityContext": {
+      "type": "object",
+      "properties": {
+        "readOnlyRootFilesystem": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "description": "Container-level security context",
+      "additionalProperties": false
+    },
+    "podAnnotations": {
+      "type": "object",
+      "properties": {},
+      "description": "Additional annotations to add to MinIO pods",
+      "additionalProperties": true
+    },
+    "podLabels": {
+      "type": "object",
+      "properties": {},
+      "description": "Additional labels to add to MinIO pods",
+      "additionalProperties": true
+    },
+    "resources": {
+      "type": "object",
+      "properties": {
+        "requests": {
+          "type": "object",
+          "properties": {
+            "memory": {
+              "type": "string",
+              "default": "256Mi"
+            }
+          },
+          "description": "Memory request for MinIO containers",
+          "additionalProperties": false
+        }
+      },
+      "description": "Resource requests and limits for MinIO containers",
+      "additionalProperties": false
+    },
+    "policies": {
+      "type": "array",
+      "description": "List of custom MinIO policies to create after installation",
+      "items": {}
+    },
+    "makePolicyJob": {
+      "type": "object",
+      "properties": {
+        "securityContext": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "requests": {
+              "type": "object",
+              "properties": {
+                "memory": {
+                  "type": "string",
+                  "default": "128Mi"
+                }
+              },
+              "description": "Memory request for the makePolicyJob",
+              "additionalProperties": false
+            }
+          },
+          "description": "Resource requests and limits for the makePolicyJob",
+          "additionalProperties": false
+        },
+        "exitCommand": {
+          "description": "Command to run after the main command completes",
+          "type": "string",
+          "default": ""
+        }
+      },
+      "description": "Configuration for the Kubernetes Job that creates policies",
+      "additionalProperties": false
+    },
+    "users": {
+      "type": "array",
+      "description": "List of MinIO users to create after installation",
+      "items": {
+        "type": "object",
+        "properties": {
+          "accessKey": {
+            "type": "string",
+            "default": "console"
+          },
+          "secretKey": {
+            "description": "Secret key (password) for the MinIO user",
+            "type": "string",
+            "default": "console123"
+          },
+          "policy": {
+            "description": "Policy to assign to the MinIO user",
+            "type": "string",
+            "default": "consoleAdmin"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "makeUserJob": {
+      "type": "object",
+      "properties": {
+        "securityContext": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "requests": {
+              "type": "object",
+              "properties": {
+                "memory": {
+                  "type": "string",
+                  "default": "128Mi"
+                }
+              },
+              "description": "Memory request for the makeUserJob",
+              "additionalProperties": false
+            }
+          },
+          "description": "Resource requests and limits for the makeUserJob",
+          "additionalProperties": false
+        },
+        "exitCommand": {
+          "description": "Command to run after the main command completes",
+          "type": "string",
+          "default": ""
+        }
+      },
+      "description": "Security context for the makeUserJob",
+      "additionalProperties": false
+    },
+    "svcaccts": {
+      "type": "array",
+      "description": "List of MinIO service accounts to create after installation",
+      "items": {}
+    },
+    "makeServiceAccountJob": {
+      "type": "object",
+      "properties": {
+        "securityContext": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "requests": {
+              "type": "object",
+              "properties": {
+                "memory": {
+                  "type": "string",
+                  "default": "128Mi"
+                }
+              },
+              "description": "Memory request for the makeServiceAccountJob",
+              "additionalProperties": false
+            }
+          },
+          "description": "Resource requests and limits for the makeServiceAccountJob",
+          "additionalProperties": false
+        },
+        "exitCommand": {
+          "description": "Command to run after the main command completes",
+          "type": "string",
+          "default": ""
+        }
+      },
+      "description": "Configuration for the Kubernetes Job that creates service accounts",
+      "additionalProperties": false
+    },
+    "buckets": {
+      "type": "array",
+      "description": "List of MinIO buckets to create after installation",
+      "items": {}
+    },
+    "makeBucketJob": {
+      "type": "object",
+      "properties": {
+        "securityContext": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "requests": {
+              "type": "object",
+              "properties": {
+                "memory": {
+                  "type": "string",
+                  "default": "128Mi"
+                }
+              },
+              "description": "Memory request for the makeBucketJob",
+              "additionalProperties": false
+            }
+          },
+          "description": "Resource requests and limits for the makeBucketJob",
+          "additionalProperties": false
+        },
+        "exitCommand": {
+          "description": "Command to run after the main command completes",
+          "type": "string",
+          "default": ""
+        }
+      },
+      "description": "Configuration for the Kubernetes Job that creates buckets",
+      "additionalProperties": false
+    },
+    "customCommands": {
+      "description": "List of custom MinIO client commands to run after installation",
+      "type": [
+        "array",
+        "null"
+      ],
+      "default": null
+    },
+    "customCommandJob": {
+      "type": "object",
+      "properties": {
+        "securityContext": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "requests": {
+              "type": "object",
+              "properties": {
+                "memory": {
+                  "type": "string",
+                  "default": "128Mi"
+                }
+              },
+              "description": "Memory request for the customCommandJob",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Resource requests and limits for the customCommandJob",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "extraVolumes": {
+          "type": "array",
+          "description": "Additional volumes to mount in the customCommandJob",
+          "items": {}
+        },
+        "extraVolumeMounts": {
+          "type": "array",
+          "description": "Additional volume mounts for the customCommandJob container",
+          "items": {}
+        },
+        "exitCommand": {
+          "description": "Command to run after the main command completes",
+          "type": "string",
+          "default": ""
+        }
+      },
+      "description": "Configuration for the Kubernetes Job that runs custom commands",
+      "additionalProperties": true
+    },
+    "postJob": {
+      "type": "object",
+      "properties": {
+        "podAnnotations": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "annotations": {
+          "type": "object",
+          "properties": {},
+          "description": "Annotations to add to the postJob",
+          "additionalProperties": true
+        },
+        "securityContext": {
+          "type": "object",
+          "properties": {},
+          "description": "Security context for the postJob",
+          "additionalProperties": true
+        },
+        "nodeSelector": {
+          "type": "object",
+          "properties": {},
+          "description": "Node selector labels for postJob pod assignment",
+          "additionalProperties": true
+        },
+        "tolerations": {
+          "type": "array",
+          "description": "Tolerations for postJob pod assignment",
+          "items": {}
+        },
+        "affinity": {
+          "type": "object",
+          "properties": {},
+          "description": "Affinity rules for postJob pod assignment",
+          "additionalProperties": true
+        }
+      },
+      "description": "Configuration for merged post-installation jobs",
+      "additionalProperties": false
+    },
+    "environment": {
+      "description": "# when Chart is deployed -- (object) Additional environment variables for MinIO server",
+      "type": "null",
+      "default": null
+    },
+    "extraSecret": {
+      "description": "Name of existing Secret containing additional environment variables in 'config.env' key",
+      "type": [
+        "string",
+        "null"
+      ],
+      "default": null
+    },
+    "oidc": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "configUrl": {
+          "description": "OIDC provider configuration URL",
+          "type": "string",
+          "default": "https://identity-provider-url/.well-known/openid-configuration"
+        },
+        "clientId": {
+          "description": "OIDC client ID",
+          "type": "string",
+          "default": "minio"
+        },
+        "clientSecret": {
+          "description": "OIDC client secret",
+          "type": "string",
+          "default": ""
+        },
+        "existingClientSecretName": {
+          "description": "Name of existing Secret containing OIDC client credentials",
+          "type": "string",
+          "default": ""
+        },
+        "existingClientIdKey": {
+          "description": "Key in existing Secret for OIDC client ID",
+          "type": "string",
+          "default": ""
+        },
+        "existingClientSecretKey": {
+          "description": "Key in existing Secret for OIDC client secret",
+          "type": "string",
+          "default": ""
+        },
+        "claimName": {
+          "description": "OIDC claim name to use for policy mapping",
+          "type": "string",
+          "default": "policy"
+        },
+        "scopes": {
+          "description": "OIDC scopes to request",
+          "type": "string",
+          "default": "openid,profile,email"
+        },
+        "redirectUri": {
+          "description": "OIDC redirect URI for OAuth callback",
+          "type": "string",
+          "default": "https://console-endpoint-url/oauth_callback"
+        },
+        "claimPrefix": {
+          "description": "Prefix to add to OIDC claim values",
+          "type": "string",
+          "default": ""
+        },
+        "comment": {
+          "description": "Comment for OIDC configuration",
+          "type": "string",
+          "default": ""
+        },
+        "displayName": {
+          "description": "Display name for OIDC provider in MinIO console",
+          "type": "string",
+          "default": ""
+        }
+      },
+      "description": "compatible provider. # See https://min.io/docs/minio/linux/operations/external-iam/configure-openid-external-identity-management.html for a tutorial on using these variables. -- (object) OpenID Connect (OIDC) configuration for external identity management",
+      "additionalProperties": false
+    },
+    "networkPolicy": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "flavor": {
+          "description": "or Cilium Network Policies (flavor: cilium) -- (string) Network policy implementation flavor (kubernetes or cilium)",
+          "type": "string",
+          "default": "kubernetes"
+        },
+        "allowExternal": {
+          "description": "Allow external traffic to MinIO pods",
+          "type": "boolean",
+          "default": true
+        },
+        "egressEntities": {
+          "type": "array",
+          "description": "List of egress entities to allow (Cilium only)",
+          "items": {
+            "type": "string",
+            "default": "kube-apiserver"
+          }
+        }
+      },
+      "description": "Network policy configuration for MinIO pods",
+      "additionalProperties": false
+    },
+    "podDisruptionBudget": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "maxUnavailable": {
+          "description": "Maximum number of unavailable pods during disruptions",
+          "type": "integer",
+          "default": 1
+        }
+      },
+      "description": "Pod disruption budget configuration for MinIO",
+      "additionalProperties": false
+    },
+    "serviceAccount": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean",
+          "default": true
+        },
+        "name": {
+          "description": "Name of the service account to use or create",
+          "type": "string",
+          "default": "minio-sa"
+        }
+      },
+      "description": "Service account configuration for MinIO pods",
+      "additionalProperties": false
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "serviceMonitor": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "includeNode": {
+              "description": "Scrape each node/pod individually for additional per-node metrics",
+              "type": "boolean",
+              "default": false
+            },
+            "public": {
+              "description": "Make metrics endpoint publicly accessible",
+              "type": "boolean",
+              "default": true
+            },
+            "additionalLabels": {
+              "type": "object",
+              "properties": {},
+              "description": "Additional labels for the ServiceMonitor",
+              "additionalProperties": true
+            },
+            "annotations": {
+              "type": "object",
+              "properties": {},
+              "description": "Annotations for the ServiceMonitor",
+              "additionalProperties": true
+            },
+            "relabelConfigs": {
+              "type": "object",
+              "properties": {},
+              "description": "Relabel configs for node-level metrics",
+              "additionalProperties": true
+            },
+            "relabelConfigsCluster": {
+              "type": "object",
+              "properties": {},
+              "description": "Relabel configs for cluster-level metrics",
+              "additionalProperties": true
+            },
+            "namespace": {
+              "description": "Namespace to deploy ServiceMonitor in",
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": null
+            },
+            "interval": {
+              "description": "Prometheus scrape interval",
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": null
+            },
+            "scrapeTimeout": {
+              "description": "Prometheus scrape timeout",
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": null
+            }
+          },
+          "description": "Enable ServiceMonitor creation for Prometheus Operator",
+          "additionalProperties": false
+        }
+      },
+      "description": "Prometheus metrics configuration",
+      "additionalProperties": false
+    },
+    "etcd": {
+      "type": "object",
+      "properties": {
+        "endpoints": {
+          "type": "array",
+          "items": {}
+        },
+        "pathPrefix": {
+          "description": "Path prefix for ETCD keys",
+          "type": "string",
+          "default": ""
+        },
+        "corednsPathPrefix": {
+          "description": "Path prefix for CoreDNS ETCD keys",
+          "type": "string",
+          "default": ""
+        },
+        "clientCert": {
+          "description": "Client certificate for ETCD authentication",
+          "type": "string",
+          "default": ""
+        },
+        "clientCertKey": {
+          "description": "Client certificate key for ETCD authentication",
+          "type": "string",
+          "default": ""
+        }
+      },
+      "description": "ETCD configuration for MinIO STS (Security Token Service)",
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

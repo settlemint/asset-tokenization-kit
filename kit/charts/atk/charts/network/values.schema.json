@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "network values",
+  "type": "object",
+  "properties": {
+    "global": {
+      "type": "object",
+      "properties": {
+        "networkNodes": {
+          "type": "object",
+          "properties": {
+            "serviceName": {
+              "type": "string",
+              "default": ""
+            },
+            "podPrefix": {
+              "description": "StatefulSet prefix used for validator pod hostnames",
+              "type": "string",
+              "default": ""
+            },
+            "genesisConfigMapName": {
+              "description": "ConfigMap name storing the generated genesis.json artifact",
+              "type": "string",
+              "default": "besu-genesis"
+            },
+            "staticNodesConfigMapName": {
+              "description": "ConfigMap name storing static-nodes.json entries for node discovery",
+              "type": "string",
+              "default": "besu-static-nodes"
+            },
+            "faucetArtifactPrefix": {
+              "description": "Prefix used for faucet-related ConfigMaps and Secrets containing funded accounts",
+              "type": "string",
+              "default": "besu-faucet"
+            }
+          },
+          "description": "Kubernetes Service name fronting validator pods to align bootstrapper static-nodes output",
+          "additionalProperties": false
+        },
+        "chainId": {
+          "description": "Chain ID applied when subcharts omit explicit overrides. Inherited from the parent ATK chart.",
+          "type": [
+            "string",
+            "integer",
+            "null"
+          ],
+          "default": null
+        },
+        "securityContexts": {
+          "type": "object",
+          "properties": {
+            "pod": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": true
+            },
+            "container": {
+              "type": "object",
+              "properties": {},
+              "description": "Container security context inherited by subcharts when set",
+              "additionalProperties": true
+            }
+          },
+          "description": "Pod security context inherited by subcharts when set",
+          "additionalProperties": false
+        },
+        "labels": {
+          "type": "object",
+          "properties": {
+            "kots.io/app-slug": {
+              "type": "string",
+              "default": "settlemint-atk"
+            }
+          },
+          "description": "Common labels applied to all resources in the network",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Global configuration shared across network subcharts",
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
