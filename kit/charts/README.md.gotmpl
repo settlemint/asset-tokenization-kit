@@ -217,16 +217,31 @@
         {{- end -}}
       {{- end -}}
       {{- $storageDisplay := $storage -}}
-      {{- $hasStorage := and (ne $storage "-") (gt $replicas 1) (kindIs "float64" $storageMi) (gt $storageMi 0.0) -}}
+      {{- $hasStorage := false -}}
       {{- $totalStorage := 0.0 -}}
-      {{- if $hasStorage -}}
-        {{- $totalStorage = mul $storageMi (float64 $replicas) -}}
-        {{- if regexMatch "(?i)Gi$" (trim $storage) -}}
-          {{- $totalGi := div $totalStorage 1024 -}}
-          {{- $totalGiStr := printf "%.2f" $totalGi | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
-          {{- $storageDisplay = printf "%s (total %sGi)" $storage $totalGiStr -}}
-        {{- else -}}
-          {{- $storageDisplay = printf "%s (total %.0fMi)" $storage (float64 $totalStorage) -}}
+      {{- if ne $storage "-" -}}
+        {{- $storageMiFloat := float64 $storageMi -}}
+        {{- if gt $storageMiFloat 0.0 -}}
+          {{- $hasStorage = true -}}
+          {{- $totalStorage = mul $storageMiFloat (float64 $replicas) -}}
+          {{- $trimStorage := trim $storage -}}
+          {{- if regexMatch "(?i)Gi$" $trimStorage -}}
+            {{- $totalGi := divf $totalStorage 1024 -}}
+            {{- $totalGiFormatted := printf "%.2f" $totalGi -}}
+            {{- $totalGiTrimmed := regexReplaceAll "(\\.[0-9]*[1-9])0+$" $totalGiFormatted "$1" -}}
+            {{- $totalGiStr := regexReplaceAll "\\.0+$" $totalGiTrimmed "" -}}
+            {{- if gt $replicas 1 -}}
+              {{- $storageDisplay = printf "%s (total %sGi)" $trimStorage $totalGiStr -}}
+            {{- else -}}
+              {{- $storageDisplay = $trimStorage -}}
+            {{- end -}}
+          {{- else -}}
+            {{- if gt $replicas 1 -}}
+              {{- $storageDisplay = printf "%s (total %.0fMi)" $trimStorage (float64 $totalStorage) -}}
+            {{- else -}}
+              {{- $storageDisplay = $trimStorage -}}
+            {{- end -}}
+          {{- end -}}
         {{- end -}}
       {{- end -}}
       {{- $totalReqCpu := mul $reqCpuMilli (float64 $replicas) -}}
