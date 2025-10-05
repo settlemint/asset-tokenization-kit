@@ -325,7 +325,7 @@ initContainers:
   # -- (string) Container name
   - name: wait-for-postgresql
     # -- (string) Container image
-    image: ghcr.io/settlemint/btp-waitforit:v7.7.10
+    image: ghcr.io/settlemint/btp-waitforit:v7.7.11
     # -- (string) Image pull policy
     imagePullPolicy: IfNotPresent
     # -- (list) Container command
