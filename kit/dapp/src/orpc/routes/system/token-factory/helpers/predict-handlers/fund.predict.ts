@@ -141,6 +141,7 @@ export const fundPredictHandler = async (
     PREDICT_FUND_ADDRESS_QUERY,
     {
       address: context.factoryAddress, // Factory contract address for prediction
+      from: context.walletAddress,
       ...params, // Spread fund parameters (symbol, name, decimals, etc.)
       initialModulePairs: input.initialModulePairs.map((pair) => ({
         module: pair.module,

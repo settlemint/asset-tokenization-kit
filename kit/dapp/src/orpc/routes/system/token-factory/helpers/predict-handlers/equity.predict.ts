@@ -43,6 +43,7 @@ export const equityPredictHandler = async (
     PREDICT_EQUITY_ADDRESS_QUERY,
     {
       address: context.factoryAddress,
+      from: context.walletAddress,
       ...params,
       initialModulePairs: input.initialModulePairs.map((pair) => ({
         module: pair.module,

@@ -1,5 +1,5 @@
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
+import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { getTokenFactory } from "@/orpc/routes/system/token-factory/helpers/factory-context";
 import { predictAddressHandlerMap } from "@/orpc/routes/system/token-factory/helpers/predict-handlers/handler-map";
 
@@ -19,5 +19,6 @@ export const factoryPredictAddress =
       return handler(input, {
         factoryAddress: tokenFactory.id,
         portalClient: context.portalClient,
+        walletAddress: context.auth.user.wallet,
       });
     });

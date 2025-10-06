@@ -217,12 +217,41 @@ abstract contract AbstractATKTokenFactoryImplementation is
         view
         returns (address predictedAddress)
     {
-        // Use _msgSender() as the initial admin to match actual deployment behavior
+        return _predictAccessManagerAddress(accessManagerSaltInputData, _msgSender());
+    }
+
+    /// @notice Predicts the deployment address of an access manager using CREATE2 for a specific admin.
+    /// @param accessManagerSaltInputData The ABI encoded data to be used for salt calculation for the access manager.
+    /// @param initialAdmin The address that will act as the initial admin when deploying the access manager.
+    /// @return predictedAddress The predicted address where the access manager would be deployed.
+    function _predictAccessManagerAddress(
+        bytes memory accessManagerSaltInputData,
+        address initialAdmin
+    )
+        internal
+        view
+        returns (address predictedAddress)
+    {
         (bytes32 salt, bytes memory fullCreationCode) =
-            _prepareAccessManagerCreationData(accessManagerSaltInputData, _msgSender());
+            _prepareAccessManagerCreationData(accessManagerSaltInputData, initialAdmin);
         bytes32 bytecodeHash = keccak256(fullCreationCode);
         predictedAddress = Create2.computeAddress(salt, bytecodeHash, address(this));
         return predictedAddress;
+    }
+
+    /// @notice Public helper to predict the access manager address for external consumers.
+    /// @param accessManagerSaltInputData The ABI encoded data used for salt calculation.
+    /// @param initialAdmin The intended initial admin address.
+    /// @return predictedAddress The predicted address where the access manager would be deployed.
+    function predictAccessManagerAddress(
+        bytes memory accessManagerSaltInputData,
+        address initialAdmin
+    )
+        public
+        view
+        returns (address predictedAddress)
+    {
+        return _predictAccessManagerAddress(accessManagerSaltInputData, initialAdmin);
     }
 
     /// @notice Creates a new access manager for a token using CREATE2.

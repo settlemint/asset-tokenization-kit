@@ -64,6 +64,8 @@ import { stablecoinPredictHandler } from "./stablecoin.predict";
 export interface PredictHandlerContext {
   /** Factory contract address for CREATE2 prediction scoping */
   factoryAddress: EthereumAddress;
+  /** Wallet address for the user making the prediction */
+  walletAddress: EthereumAddress;
   /** Validated Portal client for type-safe GraphQL operations */
   portalClient: ValidatedPortalClient;
 }

@@ -53,6 +53,7 @@ export const bondPredictHandler = async (
     PREDICT_BOND_ADDRESS_QUERY,
     {
       address: context.factoryAddress,
+      from: context.walletAddress,
       ...input,
       initialModulePairs: input.initialModulePairs.map((pair) => ({
         module: pair.module,
