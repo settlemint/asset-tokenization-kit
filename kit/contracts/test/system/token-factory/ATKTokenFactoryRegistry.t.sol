@@ -47,7 +47,8 @@ contract MockTokenFactory is IATKTokenFactory, IWithTypeIdentifier {
     function predictAccessManagerAddress(
         string memory,
         string memory,
-        uint8
+        uint8,
+        address
     )
         external
         pure
@@ -94,7 +95,8 @@ contract MockInvalidTokenFactory is IATKTokenFactory {
     function predictAccessManagerAddress(
         string memory,
         string memory,
-        uint8
+        uint8,
+        address
     )
         external
         pure

@@ -79,15 +79,17 @@ interface IATKTokenFactory is IERC165, IATKSystemAccessManaged {
     /// @return True if the address is a valid token implementation, false otherwise.
     function isValidTokenImplementation(address tokenImplementation_) external view returns (bool);
 
-    /// @notice Predicts the access manager address for a token using its metadata with the caller as the initial admin.
+    /// @notice Predicts the access manager address for a token using its metadata with the specified initial admin.
     /// @param name_ The token name.
     /// @param symbol_ The token symbol.
     /// @param decimals_ The token decimals.
+    /// @param initialAdmin_ The address that will be set as the initial admin of the access manager.
     /// @return predictedAddress The deterministic address where the access manager would be deployed.
     function predictAccessManagerAddress(
         string memory name_,
         string memory symbol_,
-        uint8 decimals_
+        uint8 decimals_,
+        address initialAdmin_
     )
         external
         view
