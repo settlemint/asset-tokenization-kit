@@ -6,9 +6,22 @@ import {
   getUserData,
   signInWithUser,
 } from "@test/fixtures/user";
+import { randomUUID } from "node:crypto";
 import { beforeAll, describe, expect, it } from "vitest";
 
 describe("KYC list", () => {
+  const testRunKey = randomUUID();
+  const profileNames = {
+    firstUser: {
+      firstName: `John-${testRunKey}`,
+      lastName: `Doe-${testRunKey}`,
+    },
+    secondUser: {
+      firstName: `Jane-${testRunKey}`,
+      lastName: `Smith-${testRunKey}`,
+    },
+  } as const;
+
   let testUser1: Awaited<ReturnType<typeof createTestUser>>;
   let testUser2: Awaited<ReturnType<typeof createTestUser>>;
   let user1Data: Awaited<ReturnType<typeof getUserData>>;
@@ -37,8 +50,8 @@ describe("KYC list", () => {
     await Promise.all([
       client1.user.kyc.upsert({
         userId: user1Data.id,
-        firstName: "John",
-        lastName: "Doe",
+        firstName: profileNames.firstUser.firstName,
+        lastName: profileNames.firstUser.lastName,
         dob: new Date("1990-01-01"),
         country: "US",
         residencyStatus: "resident",
@@ -46,8 +59,8 @@ describe("KYC list", () => {
       }),
       client2.user.kyc.upsert({
         userId: user2Data.id,
-        firstName: "Jane",
-        lastName: "Smith",
+        firstName: profileNames.secondUser.firstName,
+        lastName: profileNames.secondUser.lastName,
         dob: new Date("1985-05-15"),
         country: "GB",
         residencyStatus: "resident",
@@ -77,12 +90,12 @@ describe("KYC list", () => {
     const user2Profile = result.items.find((p) => p.userId === user2Data.id);
 
     expect(user1Profile).toBeDefined();
-    expect(user1Profile?.firstName).toBe("John");
-    expect(user1Profile?.lastName).toBe("Doe");
+    expect(user1Profile?.firstName).toBe(profileNames.firstUser.firstName);
+    expect(user1Profile?.lastName).toBe(profileNames.firstUser.lastName);
 
     expect(user2Profile).toBeDefined();
-    expect(user2Profile?.firstName).toBe("Jane");
-    expect(user2Profile?.lastName).toBe("Smith");
+    expect(user2Profile?.firstName).toBe(profileNames.secondUser.firstName);
+    expect(user2Profile?.lastName).toBe(profileNames.secondUser.lastName);
   });
 
   it("can search KYC profiles by name", async () => {
@@ -98,9 +111,11 @@ describe("KYC list", () => {
     });
 
     expect(result.items.length).toBeGreaterThanOrEqual(1);
-    const johnProfile = result.items.find((p) => p.firstName === "John");
+    const johnProfile = result.items.find(
+      (p) => p.firstName === profileNames.firstUser.firstName
+    );
     expect(johnProfile).toBeDefined();
-    expect(johnProfile?.lastName).toBe("Doe");
+    expect(johnProfile?.lastName).toBe(profileNames.firstUser.lastName);
   });
 
   it("can paginate KYC profiles", async () => {
@@ -113,10 +128,11 @@ describe("KYC list", () => {
       offset: 0,
       orderBy: "createdAt",
       orderDirection: "desc",
+      search: testRunKey,
     });
 
     expect(page1.items.length).toBeLessThanOrEqual(1);
-    expect(page1.total).toBeGreaterThanOrEqual(2);
+    expect(page1.total).toBe(2);
 
     // Get second page
     const page2 = await client.user.kyc.list({
@@ -124,6 +140,7 @@ describe("KYC list", () => {
       offset: 1,
       orderBy: "createdAt",
       orderDirection: "desc",
+      search: testRunKey,
     });
 
     expect(page2.items.length).toBeLessThanOrEqual(1);
