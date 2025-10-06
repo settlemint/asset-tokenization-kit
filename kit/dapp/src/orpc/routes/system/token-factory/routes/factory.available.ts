@@ -53,8 +53,8 @@ const AccessControlResponseSchema = z.object({
 export const factoryAvailable = systemRouter.system.factory.available.handler(
   async ({ input, context }): Promise<AvailableOutput> => {
     let address: EthereumAddress;
-    if ("address" in input) {
-      address = input.address;
+    if ("accessControl" in input) {
+      address = input.accessControl;
     } else {
       const { predictedAddress } = await call(
         factoryPredictAddress,
