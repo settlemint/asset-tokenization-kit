@@ -12,15 +12,19 @@ import {
 } from "@/components/ui/sheet";
 import { useAppForm } from "@/hooks/use-app-form";
 import { client, orpc } from "@/orpc/orpc-client";
-import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { TopicListOutput } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
-import type { TrustedIssuerCreateInput } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.create.schema";
+import {
+  TrustedIssuerCreateInputSchema,
+  type TrustedIssuerCreateInput,
+} from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.create.schema";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
+import { useStore } from "@tanstack/react-form";
 import {
   useMutation,
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -29,10 +33,14 @@ interface AddTrustedIssuerSheetProps {
   onOpenChange: (open: boolean) => void;
 }
 
-/**
- * Sheet component for adding new trusted issuers
- * Allows administrators to select existing users and assign them as trusted issuers with selected topics
- */
+// Reuse the trusted issuer input schema while keeping issuerAddress optional until the user picks one.
+type TrustedIssuerFormValues = Omit<
+  TrustedIssuerCreateInput,
+  "issuerAddress"
+> & {
+  issuerAddress?: EthereumAddress;
+};
+
 export function AddTrustedIssuerSheet({
   open,
   onOpenChange,
@@ -54,36 +62,71 @@ export function AddTrustedIssuerSheet({
         queryKey: orpc.system.trustedIssuers.list.queryKey(),
       });
       onOpenChange(false);
-      form.reset();
+      form.reset(createDefaultFormValues());
+    },
+  });
+
+  const createDefaultFormValues = (): TrustedIssuerFormValues => ({
+    issuerAddress: undefined,
+    claimTopicIds: [],
+    walletVerification: {
+      secretVerificationCode: "",
+      verificationType: "PINCODE",
     },
   });
 
   const form = useAppForm({
-    defaultValues: {
-      issuerAddress: "0x" as `0x${string}`,
-      claimTopicIds: [] as string[],
-      walletVerification: {
-        secretVerificationCode: "",
-        verificationType: "PINCODE" as const,
-      } as UserVerification,
-    },
+    defaultValues: createDefaultFormValues(),
     onSubmit: ({ value }) => {
-      const promise = async () => {
-        const trustedIssuerIdentity = await client.system.identity.read({
-          wallet: value.issuerAddress,
-        });
-        if (!trustedIssuerIdentity) {
-          throw new Error("Trusted issuer identity not found");
+      const { issuerAddress, claimTopicIds, walletVerification } = value;
+
+      const action = (async () => {
+        if (!issuerAddress) {
+          throw new Error("Issuer address is required before submission");
         }
 
-        return createMutation.mutateAsync({
-          issuerAddress: trustedIssuerIdentity.id,
-          claimTopicIds: value.claimTopicIds,
-          walletVerification: value.walletVerification,
-        });
-      };
+        const missingIdentityErrorMessage = t(
+          "trustedIssuers.add.errors.identityRequired",
+          {
+            defaultValue:
+              "The selected user must register an identity before they can be added as a trusted issuer.",
+          }
+        );
 
-      toast.promise(promise, {
+        const trustedIssuerIdentity = await client.system.identity
+          .read({
+            wallet: issuerAddress,
+          })
+          .catch((error: unknown) => {
+            const maybeOrpcError = error as {
+              code?: string;
+            };
+
+            if (maybeOrpcError?.code === "NOT_FOUND") {
+              throw new Error(missingIdentityErrorMessage);
+            }
+
+            throw error;
+          });
+
+        if (!trustedIssuerIdentity) {
+          throw new Error(missingIdentityErrorMessage);
+        }
+
+        const parseResult = TrustedIssuerCreateInputSchema.safeParse({
+          issuerAddress: trustedIssuerIdentity.id,
+          claimTopicIds,
+          walletVerification,
+        });
+
+        if (!parseResult.success) {
+          throw new Error(parseResult.error.message);
+        }
+
+        return createMutation.mutateAsync(parseResult.data);
+      })();
+
+      return toast.promise(action, {
         loading: t("common:saving"),
         success: t("trustedIssuers.toast.added"),
         error: (data) => t("common:error", { message: data.message }),
@@ -92,13 +135,44 @@ export function AddTrustedIssuerSheet({
   });
 
   const handleClose = () => {
-    form.reset();
+    form.reset(createDefaultFormValues());
     onOpenChange(false);
   };
 
   const handleSubmit = () => {
     void form.handleSubmit();
   };
+
+  const issuerAddress = useStore(
+    form.store,
+    (state) => state.values.issuerAddress
+  );
+  const claimTopicIds = useStore(
+    form.store,
+    (state) => state.values.claimTopicIds
+  );
+  const hasSelectedTopics = Array.isArray(claimTopicIds)
+    ? claimTopicIds.length > 0
+    : false;
+
+  const validateClaimTopicsSelection = (
+    topics: string[] | undefined,
+    issuer?: EthereumAddress
+  ) => {
+    if (issuer && (!topics || topics.length === 0)) {
+      return t("trustedIssuers.add.fields.claimTopics.validation.required");
+    }
+    return undefined;
+  };
+
+  useEffect(() => {
+    if (!issuerAddress) {
+      const currentTopics = form.getFieldValue("claimTopicIds");
+      if (Array.isArray(currentTopics) && currentTopics.length > 0) {
+        form.setFieldValue("claimTopicIds", []);
+      }
+    }
+  }, [issuerAddress, form]);
 
   // Create a lookup map for O(1) topic retrieval and options
   const { topicLookup, topicOptions } = useMemo(() => {
@@ -163,17 +237,45 @@ export function AddTrustedIssuerSheet({
                 )}
               />
 
-              {form.state.values.issuerAddress && (
-                <form.AppField
-                  name="claimTopicIds"
-                  children={(field) => (
+              <form.AppField
+                name="claimTopicIds"
+                validators={{
+                  onChange: ({ value }) =>
+                    validateClaimTopicsSelection(
+                      value,
+                      form.getFieldValue("issuerAddress") as
+                        | EthereumAddress
+                        | undefined
+                    ),
+                  onSubmit: ({ value }) =>
+                    validateClaimTopicsSelection(
+                      value,
+                      form.getFieldValue("issuerAddress") as
+                        | EthereumAddress
+                        | undefined
+                    ),
+                }}
+                children={(field) => {
+                  const canSelectTopics = Boolean(issuerAddress);
+                  const selectedTopicIds = Array.isArray(field.state.value)
+                    ? field.state.value
+                    : [];
+
+                  return (
                     <div className="space-y-2">
                       <Label htmlFor="claimTopicIds">
                         {t("trustedIssuers.add.fields.claimTopics.label")}
                         <span className="text-destructive ml-1">*</span>
                       </Label>
+                      {!canSelectTopics && (
+                        <p className="text-xs text-muted-foreground">
+                          {t(
+                            "trustedIssuers.add.fields.claimTopics.helperIssuerMissing"
+                          )}
+                        </p>
+                      )}
                       <MultipleSelector
-                        value={field.state.value.map((id: string) => ({
+                        value={selectedTopicIds.map((id: string) => ({
                           value: id,
                           label: topicLookup.get(id) || id,
                         }))}
@@ -198,6 +300,7 @@ export function AddTrustedIssuerSheet({
                             )
                           );
                         }}
+                        disabled={!canSelectTopics}
                       />
                       <p className="text-xs text-muted-foreground">
                         {t("trustedIssuers.add.fields.claimTopics.description")}
@@ -208,9 +311,9 @@ export function AddTrustedIssuerSheet({
                         </p>
                       )}
                     </div>
-                  )}
-                />
-              )}
+                  );
+                }}
+              />
             </div>
 
             <SheetFooter className="mt-8">
@@ -232,7 +335,9 @@ export function AddTrustedIssuerSheet({
                   },
                 }}
                 disabled={
-                  !form.state.values.issuerAddress || createMutation.isPending
+                  !issuerAddress ||
+                  !hasSelectedTopics ||
+                  createMutation.isPending
                 }
               >
                 {createMutation.isPending

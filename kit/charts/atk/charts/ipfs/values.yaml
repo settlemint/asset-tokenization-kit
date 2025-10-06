@@ -73,6 +73,7 @@ cluster:
     pullPolicy: IfNotPresent
   # -- (object) Additional pod labels
   podLabels:
+    # -- (string) Component label identifying pods as part of the IPFS cluster control plane
     app.kubernetes.io/component: cluster
   # -- (object) Additional pod annotations
   podAnnotations: {}
@@ -134,6 +135,7 @@ ipfs:
     pullPolicy: IfNotPresent
   # -- (object) Additional pod labels
   podLabels:
+    # -- (string) Component label identifying pods as IPFS daemons
     app.kubernetes.io/component: ipfs
   # -- (object) Additional pod annotations
   podAnnotations: {}
@@ -291,121 +293,229 @@ ipfs:
     nodePeers: []
     # -- (list) Default provider peers added when includeProviderPeers is true.
     providerPeers:
-      - ID: QmcFf2FH3CEgTNHeMRGhN7HNHU1EXAxoEk6EFuSyXCsvRE
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: QmcFf2FH3CEgTNHeMRGhN7HNHU1EXAxoEk6EFuSyXCsvRE
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/node-1.ingress.cloudflare-ipfs.com
-      - ID: QmcFmLd5ySfk2WZuJ1mfSWLDjdmHZq7rSAua4GoeSQfs1z
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: QmcFmLd5ySfk2WZuJ1mfSWLDjdmHZq7rSAua4GoeSQfs1z
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/node-2.ingress.cloudflare-ipfs.com
-      - ID: QmcfFmzSDVbwexQ9Au2pt5YEXHK5xajwgaU6PpkbLWerMa
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: QmcfFmzSDVbwexQ9Au2pt5YEXHK5xajwgaU6PpkbLWerMa
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/node-3.ingress.cloudflare-ipfs.com
-      - ID: QmcfJeB3Js1FG7T8YaZATEiaHqNKVdQfybYYkbT1knUswx
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: QmcfJeB3Js1FG7T8YaZATEiaHqNKVdQfybYYkbT1knUswx
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/node-4.ingress.cloudflare-ipfs.com
-      - ID: QmcfVvzK4tMdFmpJjEKDUoqRgP4W9FnmJoziYX5GXJJ8eZ
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: QmcfVvzK4tMdFmpJjEKDUoqRgP4W9FnmJoziYX5GXJJ8eZ
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/node-5.ingress.cloudflare-ipfs.com
-      - ID: QmcfZD3VKrUxyP9BbyUnZDpbqDnT7cQ4WjPP8TRLXaoE7G
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: QmcfZD3VKrUxyP9BbyUnZDpbqDnT7cQ4WjPP8TRLXaoE7G
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/node-6.ingress.cloudflare-ipfs.com
-      - ID: QmcfZP2LuW4jxviTeG8fi28qjnZScACb8PEgHAc17ZEri3
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: QmcfZP2LuW4jxviTeG8fi28qjnZScACb8PEgHAc17ZEri3
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/node-7.ingress.cloudflare-ipfs.com
-      - ID: QmcfgsJsMtx6qJb74akCw1M24X1zFwgGo11h1cuhwQjtJP
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: QmcfgsJsMtx6qJb74akCw1M24X1zFwgGo11h1cuhwQjtJP
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/node-8.ingress.cloudflare-ipfs.com
-      - ID: Qmcfr2FC7pFzJbTSDfYaSy1J8Uuy8ccGLeLyqJCKJvTHMi
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: Qmcfr2FC7pFzJbTSDfYaSy1J8Uuy8ccGLeLyqJCKJvTHMi
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/node-9.ingress.cloudflare-ipfs.com
-      - ID: QmcfR3V5YAtHBzxVACWCzXTt26SyEkxdwhGJ6875A8BuWx
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: QmcfR3V5YAtHBzxVACWCzXTt26SyEkxdwhGJ6875A8BuWx
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/node-10.ingress.cloudflare-ipfs.com
-      - ID: Qmcfuo1TM9uUiJp6dTbm915Rf1aTqm3a3dnmCdDQLHgvL5
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: Qmcfuo1TM9uUiJp6dTbm915Rf1aTqm3a3dnmCdDQLHgvL5
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/node-11.ingress.cloudflare-ipfs.com
-      - ID: QmcfV2sg9zaq7UUHVCGuSvT2M2rnLBAPsiE79vVyK3Cuev
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: QmcfV2sg9zaq7UUHVCGuSvT2M2rnLBAPsiE79vVyK3Cuev
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/node-12.ingress.cloudflare-ipfs.com
-      - ID: 12D3KooWGaHbxpDWn4JVYud899Wcpa4iHPa3AMYydfxQDb3MhDME
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: 12D3KooWGaHbxpDWn4JVYud899Wcpa4iHPa3AMYydfxQDb3MhDME
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dns4/ipfs.ssi.eecc.de
-      - ID: 12D3KooWCVXs8P7iq6ao4XhfAmKWrEeuKFWCJgqe9jGDMTqHYBjw
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: 12D3KooWCVXs8P7iq6ao4XhfAmKWrEeuKFWCJgqe9jGDMTqHYBjw
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /ip4/139.178.68.217/tcp/6744
-      - ID: 12D3KooWGBWx9gyUFTVQcKMTenQMSyE2ad9m7c9fpjS4NMjoDien
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: 12D3KooWGBWx9gyUFTVQcKMTenQMSyE2ad9m7c9fpjS4NMjoDien
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /ip4/147.75.49.71/tcp/6745
-      - ID: 12D3KooWFrnuj5o3tx4fGD2ZVJRyDqTdzGnU3XYXmBbWbc8Hs8Nd
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: 12D3KooWFrnuj5o3tx4fGD2ZVJRyDqTdzGnU3XYXmBbWbc8Hs8Nd
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /ip4/147.75.86.255/tcp/6745
-      - ID: 12D3KooWN8vAoGd6eurUSidcpLYguQiGZwt4eVgDvbgaS7kiGTup
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: 12D3KooWN8vAoGd6eurUSidcpLYguQiGZwt4eVgDvbgaS7kiGTup
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /ip4/3.134.223.177/tcp/6745
-      - ID: 12D3KooWLV128pddyvoG6NBvoZw7sSrgpMTPtjnpu3mSmENqhtL7
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: 12D3KooWLV128pddyvoG6NBvoZw7sSrgpMTPtjnpu3mSmENqhtL7
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /ip4/35.74.45.12/udp/6746/quic
-      - ID: QmWaik1eJcGHq1ybTWe7sezRfqKNcDRNkeBaLnGwQJz1Cj
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: QmWaik1eJcGHq1ybTWe7sezRfqKNcDRNkeBaLnGwQJz1Cj
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/fra1-1.hostnodes.pinata.cloud
-      - ID: QmNfpLrQQZr5Ns9FAJKpyzgnDL2GgC6xBug1yUZozKFgu4
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: QmNfpLrQQZr5Ns9FAJKpyzgnDL2GgC6xBug1yUZozKFgu4
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/fra1-2.hostnodes.pinata.cloud
-      - ID: QmPo1ygpngghu5it8u4Mr3ym6SEU2Wp2wA66Z91Y1S1g29
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: QmPo1ygpngghu5it8u4Mr3ym6SEU2Wp2wA66Z91Y1S1g29
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/fra1-3.hostnodes.pinata.cloud
-      - ID: QmRjLSisUCHVpFa5ELVvX3qVPfdxajxWJEHs9kN3EcxAW6
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: QmRjLSisUCHVpFa5ELVvX3qVPfdxajxWJEHs9kN3EcxAW6
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/nyc1-1.hostnodes.pinata.cloud
-      - ID: QmPySsdmbczdZYBpbi2oq2WMJ8ErbfxtkG8Mo192UHkfGP
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: QmPySsdmbczdZYBpbi2oq2WMJ8ErbfxtkG8Mo192UHkfGP
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/nyc1-2.hostnodes.pinata.cloud
-      - ID: QmSarArpxemsPESa6FNkmuu9iSE1QWqPX2R3Aw6f5jq4D5
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: QmSarArpxemsPESa6FNkmuu9iSE1QWqPX2R3Aw6f5jq4D5
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/nyc1-3.hostnodes.pinata.cloud
-      - ID: 12D3KooWFFhc8fPYnQXdWBCowxSV21EFYin3rU27p3NVgSMjN41k
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: 12D3KooWFFhc8fPYnQXdWBCowxSV21EFYin3rU27p3NVgSMjN41k
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /ip4/5.161.92.43/tcp/4001
           - /ip4/5.161.92.43/udp/4001/quic-v1
           - /ip6/2a01:4ff:f0:3b1e::1/tcp/4001
           - /ip6/2a01:4ff:f0:3b1e::1/udp/4001/quic-v1
-      - ID: 12D3KooWSW4hoHmDXmY5rW7nCi9XmGTy3foFt72u86jNP53LTNBJ
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: 12D3KooWSW4hoHmDXmY5rW7nCi9XmGTy3foFt72u86jNP53LTNBJ
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /ip4/5.161.55.227/tcp/4001
           - /ip4/5.161.55.227/udp/4001/quic-v1
           - /ip6/2a01:4ff:f0:1e5a::1/tcp/4001
           - /ip6/2a01:4ff:f0:1e5a::1/udp/4001/quic-v1
-      - ID: 12D3KooWSDj6JM2JmoHwE9AUUwqAFUEg9ndd3pMA8aF2bkYckZfo
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: 12D3KooWSDj6JM2JmoHwE9AUUwqAFUEg9ndd3pMA8aF2bkYckZfo
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /ip4/5.161.92.36/tcp/4001
           - /ip4/5.161.92.36/udp/4001/quic-v1
           - /ip6/2a01:4ff:f0:3764::1/tcp/4001
           - /ip6/2a01:4ff:f0:3764::1/udp/4001/quic-v1
-      - ID: QmR69wtWUMm1TWnmuD4JqC1TWLZcc8iR2KrTenfZZbiztd
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: QmR69wtWUMm1TWnmuD4JqC1TWLZcc8iR2KrTenfZZbiztd
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /ip4/104.210.43.77
-      - ID: 12D3KooWGASC2jm3pmohEJXUhuStkxDitPgzvs4qMuFPaiD9x1BA
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: 12D3KooWGASC2jm3pmohEJXUhuStkxDitPgzvs4qMuFPaiD9x1BA
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /ip4/78.46.108.24
-      - ID: 12D3KooWRbWZN3GvLf9CHmozq4vnTzDD4EEoiqtRJxg5FV6Gfjmm
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: 12D3KooWRbWZN3GvLf9CHmozq4vnTzDD4EEoiqtRJxg5FV6Gfjmm
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /ip4/65.109.19.136
-      - ID: 12D3KooWQ85aSCFwFkByr5e3pUCQeuheVhobVxGSSs1DrRQHGv1t
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: 12D3KooWQ85aSCFwFkByr5e3pUCQeuheVhobVxGSSs1DrRQHGv1t
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/node-1.ipfs.4everland.net
-      - ID: 12D3KooWGtYkBAaqJMJEmywMxaCiNP7LCEFUAFiLEBASe232c2VH
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: 12D3KooWGtYkBAaqJMJEmywMxaCiNP7LCEFUAFiLEBASe232c2VH
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dns4/bitswap.filebase.io/tcp/443/wss
-      - ID: 12D3KooWKNJDVqWKdGH5PJUpgG7JwSQnJCHSt2abfRMht2yjyV5x
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: 12D3KooWKNJDVqWKdGH5PJUpgG7JwSQnJCHSt2abfRMht2yjyV5x
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/node-1.ipfs.bit.site
-      - ID: bafzaajaiaejca3eporu7skzkukuie5nopngnubidqmnf57fl3qet7angukq234qj
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: bafzaajaiaejca3eporu7skzkukuie5nopngnubidqmnf57fl3qet7angukq234qj
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/peer.ipfs.storry.tv
-      - ID: bafzaajaiaejcajedrki5t7qmgxzhwr24pfxb5cwrdf5d7rktguqurqztxsbffbvh
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: bafzaajaiaejcajedrki5t7qmgxzhwr24pfxb5cwrdf5d7rktguqurqztxsbffbvh
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dnsaddr/peer2.ipfs.storry.tv
-      - ID: bafzbeibhqavlasjc7dvbiopygwncnrtvjd2xmryk5laib7zyjor6kf3avm
+      -
+        # -- (string) Libp2p peer ID for the bootstrap node
+        ID: bafzbeibhqavlasjc7dvbiopygwncnrtvjd2xmryk5laib7zyjor6kf3avm
+        # -- (list) Multiaddresses advertising the bootstrap peer
         Addrs:
           - /dns4/elastic.dag.house/tcp/443/wss
     # -- (bool) Include providerPeers in bootstrap and peering configuration
@@ -452,30 +562,47 @@ ingress:
   className: "atk-nginx"
   # -- (object) Hostnames mapped to path groups
   hostnames:
+    # -- (string) Hostname served by the cluster REST API ingress
     api: ipfs-cluster.k8s.orb.local
   # -- (object) Path groups rendered for each hostname key
   pathGroups:
     api:
       # Mirror pulumi ipfs.resource.ts ingress paths (no ingressRegex prefix, webui omitted)
+      # -- (string) Ingress path pattern for REST API calls
       - path: '/?(api/((.*[^/])?)?)'
+        # -- (string) Path matching mode for cluster API requests
         pathType: ImplementationSpecific
         service:
+          # -- (string) Backend service handling cluster API requests
           target: cluster
+          # -- (string) Named service port forwarding API traffic
           port: proxy
+      # -- (string) Ingress path pattern for cluster control endpoints
       - path: '/?cluster/(((.*[^/])?)?)'
+        # -- (string) Path matching mode for cluster control operations
         pathType: ImplementationSpecific
         service:
+          # -- (string) Backend service handling cluster control requests
           target: cluster
+          # -- (string) Named service port forwarding cluster control requests
           port: api
+      # -- (string) Ingress path pattern for pinning API routes
       - path: '/?pinning/(((.*[^/])?)?)'
+        # -- (string) Path matching mode for pinning REST routes
         pathType: ImplementationSpecific
         service:
+          # -- (string) Backend service handling pinning operations
           target: cluster
+          # -- (string) Named service port forwarding pinning traffic
           port: pinning
+      # -- (string) Ingress path pattern for WebSocket streaming
       - path: '/?ws/(((.*[^/])?)?)'
+        # -- (string) Path matching mode for WebSocket connections
         pathType: ImplementationSpecific
         service:
+          # -- (string) Backend service handling WebSocket connections
           target: ipfs
+          # -- (string) Named service port forwarding WebSocket traffic
           port: ws
   # -- (list) TLS configuration for the ingress
   tls: []
@@ -495,33 +622,53 @@ openShiftRoute:
   # -- (object) Route entries keyed by logical name; set enabled: false to skip a route
   routes:
     cluster:
+      # -- (bool) Enable the cluster Route exposing REST endpoints
       enabled: true
+      # -- (string) Suffix appended to the generated Route name
       nameSuffix: cluster
+      # -- (string) HTTP path matched by the cluster Route
       path: '/?cluster/(((.*[^/])?)?)'
       service:
+        # -- (string) Backend service used by the cluster Route
         target: cluster
+        # -- (string) Named service port exposed through the cluster Route
         port: api
     api:
+      # -- (bool) Enable the REST API Route
       enabled: true
+      # -- (string) Suffix appended to the REST API Route name
       nameSuffix: api
       # Mirror Ingress configuration (no ingressRegex prefix)
+      # -- (string) HTTP path matched by the REST API Route
       path: '/?(api/((.*[^/])?)?)'
       service:
+        # -- (string) Backend service used by the REST API Route
         target: cluster
+        # -- (string) Named service port exposed through the REST API Route
         port: proxy
     pinning:
+      # -- (bool) Enable the pinning Route
       enabled: true
+      # -- (string) Suffix appended to the pinning Route name
       nameSuffix: pinning
+      # -- (string) HTTP path matched by the pinning Route
       path: '/?pinning/(((.*[^/])?)?)'
       service:
+        # -- (string) Backend service handling pinning requests
         target: cluster
+        # -- (string) Named service port exposed through the pinning Route
         port: pinning
     ws:
+      # -- (bool) Enable the WebSocket Route
       enabled: true
+      # -- (string) Suffix appended to the WebSocket Route name
       nameSuffix: ws
+      # -- (string) HTTP path matched by the WebSocket Route
       path: '/?ws/(((.*[^/])?)?)'
       service:
+        # -- (string) Backend service handling WebSocket requests
         target: ipfs
+        # -- (string) Named service port exposed through the WebSocket Route
         port: ws
 
 # -- (object) Test hook image configuration
@@ -532,6 +679,6 @@ tests:
     # -- (string) Test image repository
     repository: busybox
     # -- (string) Test image tag
-    tag: "1.36"
+    tag: "1.37"
     # -- (string) Test image pull policy
     pullPolicy: IfNotPresent

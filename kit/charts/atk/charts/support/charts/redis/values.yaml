@@ -30,7 +30,7 @@ image:
   # -- (string) Redis image repository
   repository: redis
   # -- (string) Redis image tag
-  tag: "8.2.1-alpine"
+  tag: "8.2.2-alpine"
   # -- (string) Redis image pull policy
   pullPolicy: IfNotPresent
   # -- Redis image pull secrets (list)
@@ -55,15 +55,15 @@ resources:
   # -- (object) Resource requests
   requests:
     # -- (string) Memory request
-    memory: "128Mi"
+    memory: "64Mi"
     # -- (string) CPU request
-    cpu: "100m"
+    cpu: "40m"
   # -- (object) Resource limits
   limits:
     # -- (string) Memory limit
-    memory: "256Mi"
+    memory: "128Mi"
     # -- (string) CPU limit
-    cpu: "200m"
+    cpu: "240m"
 
 # -- (object) Persistence configuration
 persistence:

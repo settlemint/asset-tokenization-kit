@@ -58,7 +58,7 @@
       "dependsOn": ["contracts#artifacts:genesis", "contracts#artifacts:abi"]
     },
     "docs": {
-      "inputs": ["**/values.yaml", "**/Chart.yaml"]
+      "inputs": ["**/values.yaml", "**/Chart.yaml", "README.md.gotmpl"]
     }
   }
 }

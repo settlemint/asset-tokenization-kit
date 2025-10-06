@@ -64,6 +64,7 @@ topologySpreadConstraints: []
 
 # -- (object) Extra labels for eRPC pods
 podLabels:
+  # -- (string) Kubernetes component label identifying the workload as eRPC
   app.kubernetes.io/component: erpc
 
 # -- (object) Annotations for eRPC pods
@@ -232,7 +233,7 @@ initContainer:
       # -- (string) TCP check image repository
       repository: ghcr.io/settlemint/btp-waitforit
       # -- (string) TCP check image tag
-      tag: v7.7.10
+      tag: v7.7.11
       # -- (string) TCP check image pull policy
       pullPolicy: IfNotPresent
     # -- (int) Timeout in seconds for each dependency check
@@ -242,7 +243,7 @@ initContainer:
       # -- (object) Resource limits for TCP check container
       limits:
         # -- (string) CPU limit for TCP check container
-        cpu: 100m
+        cpu: 300m
         # -- (string) Memory limit for TCP check container
         memory: 64Mi
       # -- (object) Resource requests for TCP check container

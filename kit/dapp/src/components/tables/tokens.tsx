@@ -13,10 +13,7 @@ import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
 import { parseClaim } from "@/lib/utils/claims/parse-claim";
 import { formatValue } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
-import type {
-  TokenList,
-  TokenListResponse,
-} from "@/orpc/routes/token/routes/token.list.schema";
+import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
 import type { EquityCategory } from "@atk/zod/equity-categories";
 import { equityCategory } from "@atk/zod/equity-categories";
 import type { EquityClass } from "@atk/zod/equity-classes";
@@ -134,7 +131,7 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
   // Get the current route's path pattern from the matched route
   const routePath = router.state.matches.at(-1)?.pathname;
 
-  const { data: response }: { data: TokenListResponse } = useSuspenseQuery(
+  const { data: response } = useSuspenseQuery(
     orpc.token.list.queryOptions({
       input: {
         tokenFactory: factoryAddress,
@@ -647,9 +644,6 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
         }}
         pagination={{
           enablePagination: true,
-        }}
-        serverSidePagination={{
-          enabled: false, // We're still doing client-side pagination
           totalCount,
         }}
         initialSorting={INITIAL_SORTING}

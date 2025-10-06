@@ -433,10 +433,11 @@ void i18n.init({
     },
   },
   lng: fallbackLng,
-  fallbackLng,
+  fallbackLng: ["en-US"],
   defaultNS,
   ns: namespaces, // Load all namespaces initially for SSR
   supportedLngs: [...supportedLanguages],
+  nonExplicitSupportedLngs: true,
   interpolation: {
     escapeValue: false, // React already escapes values
   },
