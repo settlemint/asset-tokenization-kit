@@ -22,6 +22,8 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
+const AVAILABLE_ADDONS = addonTypes.filter((type) => type === "yield");
+
 export function SystemAddonsSelection() {
   const { refreshUserState } = useOnboardingNavigation();
   const { t } = useTranslation(["onboarding", "common"]);
@@ -53,28 +55,12 @@ export function SystemAddonsSelection() {
       ),
     [systemDetails?.systemAddonRegistry.systemAddons]
   );
-  // Temporarily hide airdrops and xvp from selection
-  const visibleAddonTypes = useMemo<
-    Exclude<(typeof addonTypes)[number], "airdrops" | "xvp">[]
-  >(
-    () =>
-      addonTypes.filter(
-        (a): a is Exclude<(typeof addonTypes)[number], "airdrops" | "xvp"> =>
-          a !== "airdrops" && a !== "xvp"
-      ),
-    []
-  );
 
   const deployedAddonsConfig = useMemo(() => {
-    return [...deployedAddons]
-      .filter(
-        (addon): addon is (typeof visibleAddonTypes)[number] =>
-          addon !== "airdrops" && addon !== "xvp"
-      )
-      .map((addon) => ({
-        type: addon,
-        name: t(`system-addons.addon-selection.addon-types.${addon}.title`),
-      }));
+    return [...deployedAddons].map((addon) => ({
+      type: addon,
+      name: t(`system-addons.addon-selection.addon-types.${addon}.title`),
+    }));
   }, [deployedAddons, t]);
 
   const form = useAppForm({
@@ -132,8 +118,6 @@ export function SystemAddonsSelection() {
   const { mutateAsync: updateSetting } = useMutation(
     orpc.settings.upsert.mutationOptions()
   );
-
-  const availableAddons = visibleAddonTypes;
 
   const handleAddAddon = (addon: SystemAddonConfig) => {
     const alreadyIncluded = form.state.values.addons.some(
@@ -264,7 +248,7 @@ export function SystemAddonsSelection() {
                           </p>
                         </div>
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                          {availableAddons.map((addon) => {
+                          {AVAILABLE_ADDONS.map((addon) => {
                             const Icon = getAddonIcon(addon);
                             const isYieldRequiredForBond =
                               addon === "yield" && hasBondFactory;

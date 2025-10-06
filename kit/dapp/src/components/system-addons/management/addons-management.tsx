@@ -25,6 +25,8 @@ import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
+const AVAILABLE_ADDONS = addonTypes.filter((type) => type === "yield");
+
 export function AddonsManagement() {
   const { t } = useTranslation(["onboarding", "common"]);
   const queryClient = useQueryClient();
@@ -151,8 +153,7 @@ export function AddonsManagement() {
     );
   }
 
-  const availableAddons = addonTypes;
-  const hasUndeployedAddons = availableAddons.some(
+  const hasUndeployedAddons = AVAILABLE_ADDONS.some(
     (addon) => !deployedAddons.has(addon)
   );
 
@@ -178,7 +179,7 @@ export function AddonsManagement() {
             )}
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {availableAddons.map((addonType) => {
+              {AVAILABLE_ADDONS.map((addonType) => {
                 const Icon = getAddonIcon(addonType);
                 const isDeployed = deployedAddons.has(addonType);
                 const isSelected = selectedAddons.some(
