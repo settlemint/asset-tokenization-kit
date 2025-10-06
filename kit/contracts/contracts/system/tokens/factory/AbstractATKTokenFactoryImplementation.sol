@@ -241,30 +241,16 @@ abstract contract AbstractATKTokenFactoryImplementation is
 
     /// @inheritdoc IATKTokenFactory
     function predictAccessManagerAddress(
-        bytes memory accessManagerSaltInputData,
-        address initialAdmin
-    )
-        public
-        view
-        override
-        returns (address predictedAddress)
-    {
-        return _predictAccessManagerAddress(accessManagerSaltInputData, initialAdmin);
-    }
-
-    /// @inheritdoc IATKTokenFactory
-    function predictAccessManagerAddress(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         uint8 decimals_
     )
-        public
+        external
         view
         override
         returns (address predictedAddress)
     {
-        bytes memory saltInput = _buildSaltInput(name_, symbol_, decimals_);
-        return _predictAccessManagerAddress(saltInput);
+        return _predictAccessManagerAddress(_buildSaltInput(name_, symbol_, decimals_));
     }
 
     /// @notice Creates a new access manager for a token using CREATE2.
