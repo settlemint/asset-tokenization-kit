@@ -5,17 +5,19 @@ import { PredictAddressOutputSchema } from "@/orpc/routes/system/token-factory/r
 import z from "zod";
 
 const PREDICT_ACCESS_MANAGER_QUERY = portalGraphql(`
-  query PredictEquityAccessManagerAddress(
+  query PredictAccessManagerAddress(
     $address: String!
     $symbol: String!
     $name: String!
     $decimals: Int!
+    $initialAdmin: String!
   ) {
     IATKTokenFactory(address: $address) {
       predictAccessManagerAddress(
         symbol_: $symbol
         name_: $name
-        decimals_: $decimals
+        decimals_: $decimals,
+        initialAdmin_: $initialAdmin
       ) {
         predictedAddress
       }
@@ -40,6 +42,7 @@ export const factoryPredictAddress =
           name: input.name,
           symbol: input.symbol,
           decimals: input.decimals,
+          initialAdmin: context.auth.user.wallet,
         },
         z.object({
           IATKTokenFactory: z.object({
