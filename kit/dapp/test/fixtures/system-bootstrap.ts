@@ -299,39 +299,13 @@ export async function createAndRegisterUserIdentities(
         });
         if (!skipRegistration) {
           try {
-            const identity = await orpcClient.system.identity.register({
+            await orpcClient.system.identity.register({
               walletVerification: {
                 secretVerificationCode: DEFAULT_PINCODE,
                 verificationType: "PINCODE",
               },
               wallet: me.wallet,
               country,
-            });
-            await orpcClient.system.identity.claims.issue({
-              walletVerification: {
-                secretVerificationCode: DEFAULT_PINCODE,
-                verificationType: "PINCODE",
-              },
-              targetIdentityAddress: identity.id,
-              claim: {
-                topic: "knowYourCustomer",
-                data: {
-                  claim: "kyc-verified",
-                },
-              },
-            });
-            await orpcClient.system.identity.claims.issue({
-              walletVerification: {
-                secretVerificationCode: DEFAULT_PINCODE,
-                verificationType: "PINCODE",
-              },
-              targetIdentityAddress: identity.id,
-              claim: {
-                topic: "antiMoneyLaundering",
-                data: {
-                  claim: "aml-verified",
-                },
-              },
             });
           } catch (err) {
             if (
@@ -355,6 +329,57 @@ export async function createAndRegisterUserIdentities(
           nationalId: "1234567890",
           userId: me.id,
         });
+      }
+    })
+  );
+}
+
+export async function issueDefaultKycClaims(
+  orpClient: OrpcClient,
+  users: User[]
+) {
+  await Promise.all(
+    users.map(async (user) => {
+      const userOrpClient = getOrpcClient(await signInWithUser(user));
+      const userIdentity = await userOrpClient.system.identity.me({});
+      const hasKycClaim = userIdentity.claims.some(
+        (c) => c.name === "knowYourCustomer"
+      );
+      const hasAmlClaim = userIdentity.claims.some(
+        (c) => c.name === "antiMoneyLaundering"
+      );
+      const claimsToAdd: Parameters<
+        typeof orpClient.system.identity.claims.issue
+      >[0]["claim"][] = [];
+      if (!hasKycClaim) {
+        claimsToAdd.push({
+          topic: "knowYourCustomer",
+          data: {
+            claim: "kyc-verified",
+          },
+        });
+      }
+      if (!hasAmlClaim) {
+        claimsToAdd.push({
+          topic: "antiMoneyLaundering",
+          data: {
+            claim: "aml-verified",
+          },
+        });
+      }
+      if (claimsToAdd.length > 0) {
+        await Promise.all(
+          claimsToAdd.map((claim) =>
+            orpClient.system.identity.claims.issue({
+              walletVerification: {
+                secretVerificationCode: DEFAULT_PINCODE,
+                verificationType: "PINCODE",
+              },
+              targetIdentityAddress: userIdentity.id,
+              claim,
+            })
+          )
+        );
       }
     })
   );

@@ -1,0 +1,317 @@
+{{- define "chart.sumCpuDisplay" -}}
+{{- $m := float64 (default 0 .milli) -}}
+{{- if le $m (float64 0) -}}
+-
+{{- else -}}
+  {{- $cores := mulf $m 0.001 -}}
+  {{- printf "%.2f cores (%.0fm)" $cores $m -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "chart.sumMemDisplay" -}}
+{{- $mi := float64 (default 0 .mi) -}}
+{{- if le $mi (float64 0) -}}
+-
+{{- else -}}
+  {{- $gi := divf $mi 1024 -}}
+  {{- printf "%.0fMi (%.2fGi)" $mi $gi -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "chart.sumStorageDisplay" -}}
+{{- $mi := float64 (default 0 .mi) -}}
+{{- if le $mi (float64 0) -}}
+-
+{{- else -}}
+  {{- $gi := divf $mi 1024 -}}
+  {{- printf "%.0fMi (%.2fGi)" $mi $gi -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "chart.renderDefaultCell" -}}
+{{- $type := lower .Type -}}
+{{- if or (eq $type "object") (eq $type "map") (eq $type "array") (eq $type "list") -}}
+-
+{{- else -}}
+  {{- if .Default -}}{{ .Default -}}{{- else -}}{{ .AutoDefault -}}{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "chart.valuesTable" -}}
+{{- if .Sections.Sections -}}
+  {{- range .Sections.Sections -}}
+
+###{{.SectionName}}
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+{{- range .SectionItems }}
+|{{.Key}}|{{.Type}}|{{template "chart.renderDefaultCell" .}}|{{if .Description}}{{.Description}}{{else}}{{.AutoDescription}}{{end}}|
+{{- end }}
+  {{- end -}}
+  {{- if .Sections.DefaultSection.SectionItems -}}
+
+###{{.Sections.DefaultSection.SectionName}}
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+{{- range .Sections.DefaultSection.SectionItems }}
+|{{.Key}}|{{.Type}}|{{template "chart.renderDefaultCell" .}}|{{if .Description}}{{.Description}}{{else}}{{.AutoDescription}}{{end}}|
+{{- end }}
+  {{- end -}}
+{{- else -}}
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+{{- range .Values }}
+|{{.Key}}|{{.Type}}|{{template "chart.renderDefaultCell" .}}|{{if .Description}}{{.Description}}{{else}}{{.AutoDescription}}{{end}}|
+{{- end }}
+{{- end -}}
+{{- end -}}
+
+{{- define "chart.resourcesRows" -}}
+{{- $map := .m -}}
+{{- $path := .path -}}
+{{- $agg := .agg | default (dict) -}}
+{{- range $key, $val := $map -}}
+  {{- if and (kindIs "map" $val) (not (or (eq $key "resources") (eq $key "requests") (eq $key "limits") (eq $key "persistence") (eq $key "persistentVolume") (eq $key "persistentvolume"))) }}
+    {{- $name := $key -}}
+    {{- if $path }}{{- $name = printf "%s.%s" $path $key }}{{- end -}}
+    {{- $res := index $val "resources" -}}
+    {{- $reqCpu := "-" -}}
+    {{- $reqMem := "-" -}}
+    {{- $limCpu := "-" -}}
+    {{- $limMem := "-" -}}
+    {{- if kindIs "map" $res -}}
+      {{- $requests := index $res "requests" -}}
+      {{- if kindIs "map" $requests }}
+        {{- if hasKey $requests "cpu" }}{{- $reqCpu = printf "%v" (index $requests "cpu") -}}{{- end -}}
+        {{- if hasKey $requests "memory" }}{{- $reqMem = printf "%v" (index $requests "memory") -}}{{- end -}}
+      {{- end -}}
+      {{- $limits := index $res "limits" -}}
+      {{- if kindIs "map" $limits }}
+        {{- if hasKey $limits "cpu" }}{{- $limCpu = printf "%v" (index $limits "cpu") -}}{{- end -}}
+        {{- if hasKey $limits "memory" }}{{- $limMem = printf "%v" (index $limits "memory") -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $storage := "-" -}}
+    {{- if hasKey $val "persistence" -}}
+      {{- $p := index $val "persistence" -}}
+      {{- if kindIs "map" $p -}}
+        {{- if hasKey $p "size" }}{{- $storage = printf "%v" (index $p "size") -}}{{- else if hasKey $p "volumeSize" }}{{- $storage = printf "%v" (index $p "volumeSize") -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if and (eq $storage "-") (hasKey $val "persistentVolume") -}}
+      {{- $pv := index $val "persistentVolume" -}}
+      {{- if kindIs "map" $pv -}}
+        {{- if hasKey $pv "size" }}{{- $storage = printf "%v" (index $pv "size") -}}{{- else if hasKey $pv "volumeSize" }}{{- $storage = printf "%v" (index $pv "volumeSize") -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $hasData := or (ne $reqCpu "-") (ne $limCpu "-") (ne $reqMem "-") (ne $limMem "-") (ne $storage "-") -}}
+    {{- $replicas := 1 -}}
+    {{- if hasKey $val "replicaCount" -}}
+      {{- $candidate := int (default 1 (index $val "replicaCount")) -}}
+      {{- if gt $candidate 0 }}{{- $replicas = $candidate -}}{{- end -}}
+    {{- else if hasKey $val "replicas" -}}
+      {{- $candidate := int (default 1 (index $val "replicas")) -}}
+      {{- if gt $candidate 0 }}{{- $replicas = $candidate -}}{{- end -}}
+    {{- end -}}
+    {{- if lt $replicas 1 }}{{- $replicas = 1 -}}{{- end -}}
+    {{- if $hasData -}}
+      {{- $reqCpuMilli := 0.0 -}}
+      {{- if ne $reqCpu "-" -}}
+        {{- $trim := trim $reqCpu -}}
+        {{- if regexMatch "(?i)m$" $trim -}}
+          {{- $reqCpuMilli = float64 (regexReplaceAll "(?i)m$" $trim "") -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" $trim -}}
+          {{- $reqCpuMilli = mul (float64 $trim) 1000 -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $limCpuMilli := 0.0 -}}
+      {{- if ne $limCpu "-" -}}
+        {{- $trim := trim $limCpu -}}
+        {{- if regexMatch "(?i)m$" $trim -}}
+          {{- $limCpuMilli = float64 (regexReplaceAll "(?i)m$" $trim "") -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" $trim -}}
+          {{- $limCpuMilli = mul (float64 $trim) 1000 -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $reqMemMi := 0.0 -}}
+      {{- if ne $reqMem "-" -}}
+        {{- $trim := trim $reqMem -}}
+        {{- if regexMatch "(?i)Mi$" $trim -}}
+          {{- $reqMemMi = float64 (regexReplaceAll "(?i)Mi$" $trim "") -}}
+        {{- else if regexMatch "(?i)Gi$" $trim -}}
+          {{- $reqMemMi = mul (float64 (regexReplaceAll "(?i)Gi$" $trim "")) 1024 -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" $trim -}}
+          {{- $reqMemMi = float64 $trim -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $limMemMi := 0.0 -}}
+      {{- if ne $limMem "-" -}}
+        {{- $trim := trim $limMem -}}
+        {{- if regexMatch "(?i)Mi$" $trim -}}
+          {{- $limMemMi = float64 (regexReplaceAll "(?i)Mi$" $trim "") -}}
+        {{- else if regexMatch "(?i)Gi$" $trim -}}
+          {{- $limMemMi = mul (float64 (regexReplaceAll "(?i)Gi$" $trim "")) 1024 -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" $trim -}}
+          {{- $limMemMi = float64 $trim -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $storageMi := 0.0 -}}
+      {{- if ne $storage "-" -}}
+        {{- $trim := trim $storage -}}
+        {{- if regexMatch "(?i)Mi$" $trim -}}
+          {{- $storageMi = float64 (regexReplaceAll "(?i)Mi$" $trim "") -}}
+        {{- else if regexMatch "(?i)Gi$" $trim -}}
+          {{- $storageMi = mul (float64 (regexReplaceAll "(?i)Gi$" $trim "")) 1024 -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" $trim -}}
+          {{- $storageMi = float64 $trim -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $reqCpuDisplay := $reqCpu -}}
+      {{- if and (ne $reqCpu "-") (gt $replicas 1) (gt $reqCpuMilli 0.0) -}}
+        {{- $total := mul $reqCpuMilli (float64 $replicas) -}}
+        {{- if regexMatch "(?i)m$" (trim $reqCpu) -}}
+          {{- $reqCpuDisplay = printf "%s (total %.0fm)" $reqCpu (float64 $total) -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" (trim $reqCpu) -}}
+          {{- $totalCores := div $total 1000 -}}
+          {{- $totalCoresStr := printf "%.2f" $totalCores | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
+          {{- $reqCpuDisplay = printf "%s (total %s)" $reqCpu $totalCoresStr -}}
+        {{- else -}}
+          {{- $reqCpuDisplay = printf "%s (x%d)" $reqCpu $replicas -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $limCpuDisplay := $limCpu -}}
+      {{- if and (ne $limCpu "-") (gt $replicas 1) (gt $limCpuMilli 0.0) -}}
+        {{- $total := mul $limCpuMilli (float64 $replicas) -}}
+        {{- if regexMatch "(?i)m$" (trim $limCpu) -}}
+          {{- $limCpuDisplay = printf "%s (total %.0fm)" $limCpu (float64 $total) -}}
+        {{- else if regexMatch "^[0-9]+(\\.[0-9]+)?$" (trim $limCpu) -}}
+          {{- $totalCores := div $total 1000 -}}
+          {{- $totalCoresStr := printf "%.2f" $totalCores | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
+          {{- $limCpuDisplay = printf "%s (total %s)" $limCpu $totalCoresStr -}}
+        {{- else -}}
+          {{- $limCpuDisplay = printf "%s (x%d)" $limCpu $replicas -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $reqMemDisplay := $reqMem -}}
+      {{- if and (ne $reqMem "-") (gt $replicas 1) (gt $reqMemMi 0.0) -}}
+        {{- $total := mul $reqMemMi (float64 $replicas) -}}
+        {{- if regexMatch "(?i)Gi$" (trim $reqMem) -}}
+          {{- $totalGi := div $total 1024 -}}
+          {{- $totalGiStr := printf "%.2f" $totalGi | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
+          {{- $reqMemDisplay = printf "%s (total %sGi)" $reqMem $totalGiStr -}}
+        {{- else -}}
+          {{- $reqMemDisplay = printf "%s (total %.0fMi)" $reqMem (float64 $total) -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $limMemDisplay := $limMem -}}
+      {{- if and (ne $limMem "-") (gt $replicas 1) (gt $limMemMi 0.0) -}}
+        {{- $total := mul $limMemMi (float64 $replicas) -}}
+        {{- if regexMatch "(?i)Gi$" (trim $limMem) -}}
+          {{- $totalGi := div $total 1024 -}}
+          {{- $totalGiStr := printf "%.2f" $totalGi | regexReplaceAll "(\\.[0-9]*[1-9])0+$" "$1" | regexReplaceAll "\\.0+$" "" -}}
+          {{- $limMemDisplay = printf "%s (total %sGi)" $limMem $totalGiStr -}}
+        {{- else -}}
+          {{- $limMemDisplay = printf "%s (total %.0fMi)" $limMem (float64 $total) -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $storageDisplay := $storage -}}
+      {{- $hasStorage := false -}}
+      {{- $totalStorage := 0.0 -}}
+      {{- if ne $storage "-" -}}
+        {{- $storageMiFloat := float64 $storageMi -}}
+        {{- if gt $storageMiFloat 0.0 -}}
+          {{- $hasStorage = true -}}
+          {{- $totalStorage = mul $storageMiFloat (float64 $replicas) -}}
+          {{- $trimStorage := trim $storage -}}
+          {{- if regexMatch "(?i)Gi$" $trimStorage -}}
+            {{- $totalGi := divf $totalStorage 1024 -}}
+            {{- $totalGiFormatted := printf "%.2f" $totalGi -}}
+            {{- $totalGiTrimmed := regexReplaceAll "(\\.[0-9]*[1-9])0+$" $totalGiFormatted "$1" -}}
+            {{- $totalGiStr := regexReplaceAll "\\.0+$" $totalGiTrimmed "" -}}
+            {{- if gt $replicas 1 -}}
+              {{- $storageDisplay = printf "%s (total %sGi)" $trimStorage $totalGiStr -}}
+            {{- else -}}
+              {{- $storageDisplay = $trimStorage -}}
+            {{- end -}}
+          {{- else -}}
+            {{- if gt $replicas 1 -}}
+              {{- $storageDisplay = printf "%s (total %.0fMi)" $trimStorage (float64 $totalStorage) -}}
+            {{- else -}}
+              {{- $storageDisplay = $trimStorage -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $totalReqCpu := mul $reqCpuMilli (float64 $replicas) -}}
+      {{- $totalLimCpu := mul $limCpuMilli (float64 $replicas) -}}
+      {{- $totalReqMem := mul $reqMemMi (float64 $replicas) -}}
+      {{- $totalLimMem := mul $limMemMi (float64 $replicas) -}}
+      {{- if $agg -}}
+        {{- if gt (float64 $totalReqCpu) 0.0 }}{{- $_ := set $agg "reqCpu" (add (index $agg "reqCpu") (float64 $totalReqCpu)) -}}{{- end -}}
+        {{- if gt (float64 $totalLimCpu) 0.0 }}{{- $_ := set $agg "limCpu" (add (index $agg "limCpu") (float64 $totalLimCpu)) -}}{{- end -}}
+        {{- if gt (float64 $totalReqMem) 0.0 }}{{- $_ := set $agg "reqMem" (add (index $agg "reqMem") (float64 $totalReqMem)) -}}{{- end -}}
+        {{- if gt (float64 $totalLimMem) 0.0 }}{{- $_ := set $agg "limMem" (add (index $agg "limMem") (float64 $totalLimMem)) -}}{{- end -}}
+        {{- if and $hasStorage (gt (float64 $totalStorage) 0.0) }}{{- $_ := set $agg "storage" (add (index $agg "storage") (float64 $totalStorage)) -}}{{- end -}}
+      {{- end -}}
+{{- printf "| %s | %d | %s | %s | %s | %s | %s |\n" $name $replicas $reqCpuDisplay $limCpuDisplay $reqMemDisplay $limMemDisplay $storageDisplay -}}
+    {{- end -}}
+{{ template "chart.resourcesRows" (dict "m" $val "path" $name "agg" $agg) -}}
+  {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "chart.resourcesTable" -}}
+## Resource Summary
+
+| Component | Replicas | Request CPU | Limit CPU | Request Memory | Limit Memory | Storage |
+|-----------|----------|-------------|-----------|----------------|--------------|---------|
+{{ $values := fromYaml (toYaml .ChartValues) -}}
+{{ $agg := dict "reqCpu" 0.0 "limCpu" 0.0 "reqMem" 0.0 "limMem" 0.0 "storage" 0.0 -}}
+{{- template "chart.resourcesRows" (dict "m" $values "path" "" "agg" $agg) -}}
+| **Totals** | - | {{ template "chart.sumCpuDisplay" (dict "milli" (index $agg "reqCpu")) }} | {{ template "chart.sumCpuDisplay" (dict "milli" (index $agg "limCpu")) }} | {{ template "chart.sumMemDisplay" (dict "mi" (index $agg "reqMem")) }} | {{ template "chart.sumMemDisplay" (dict "mi" (index $agg "limMem")) }} | {{ template "chart.sumStorageDisplay" (dict "mi" (index $agg "storage")) }} |
+{{- end -}}
+
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+## Configuration
+
+The following table lists the configurable parameters of this chart and their default values.
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "chart.resourcesTable" . }}
+
+{{ $chartVals := fromYaml (toYaml .ChartValues) -}}
+{{- with index $chartVals "network" -}}
+  {{- with index . "network-nodes" -}}
+    {{- $validators := int (default 0 (index . "validatorReplicaCount")) -}}
+    {{- $rpc := int (default 0 (index . "rpcReplicaCount")) -}}
+    {{- $total := add $validators $rpc -}}
+    {{- if or (gt $validators 0) (gt $rpc 0) -}}
+
+## Network Node Replica Breakdown
+
+| Workload | Replicas | Notes |
+|----------|----------|-------|
+| Validators | {{ $validators }} | Primary consensus nodes |
+| RPC | {{ $rpc }} | Public JSON-RPC endpoints |
+| **Total Besu Pods** | {{ $total }} | Sum used for capacity planning |
+
+    {{- end }}
+  {{- end -}}
+{{- end }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}

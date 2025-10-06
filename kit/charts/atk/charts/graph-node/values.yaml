@@ -50,14 +50,17 @@ initContainer:
       # -- (string) TCP check image repository
       repository: ghcr.io/settlemint/btp-waitforit
       # -- (string) TCP check image tag
-      tag: v7.7.10
+      tag: v7.7.11
       # -- (string) TCP check image pull policy
       pullPolicy: IfNotPresent
     # -- (int) Timeout in seconds for each dependency check
     timeout: 120
     ipfsClusterProxy:
+      # -- (bool) Enable readiness checks against the IPFS cluster proxy
       enabled: true
+      # -- (string) Hostname for the IPFS cluster proxy service
       host: ipfs-cluster
+      # -- (int) TCP port used by the IPFS cluster proxy service
       port: 9095
     # -- (list) List of dependencies to check
     dependencies:
@@ -67,14 +70,17 @@ initContainer:
         name: postgresql
         # -- (string) Dependency endpoint template
         endpoint: "{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"graphNode\" \"local\" .Values.postgresql) }}"
-      - name: ipfs-cluster-proxy
+      - # -- (object) Additional dependency describing the IPFS cluster proxy endpoint
+        # -- (string) Human-readable name for the IPFS cluster proxy dependency
+        name: ipfs-cluster-proxy
+        # -- (string) Rendered endpoint for the IPFS cluster proxy health check
         endpoint: "{{ include \"graph-node.ipfsClusterProxyEndpoint\" (dict \"context\" $) }}"
     # -- (object) Resource limits and requests for TCP check container
     resources:
       # -- (object) Resource limits
       limits:
         # -- (string) CPU limit
-        cpu: 100m
+        cpu: 300m
         # -- (string) Memory limit
         memory: 64Mi
       # -- (object) Resource requests
@@ -244,52 +250,48 @@ service:
 ingress:
   # -- (bool) Enable ingress record generation for Graph Node
   enabled: true
-  # -- (string) IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
-  className: "atk-nginx"
+  # -- (string) IngressClass that will be used to implement the Ingress (Kubernetes 1.19+)
+  ingressClassName: "atk-nginx"
   # -- (object) Additional annotations for the Ingress resource
   annotations:
     # -- (string) Enable regex path matching in NGINX ingress
     nginx.ingress.kubernetes.io/use-regex: 'true'
     # -- (string) Rewrite target path using capture group
     nginx.ingress.kubernetes.io/rewrite-target: /$1
-  # -- (list) An array with hosts and paths
-  hosts:
-    # -- (object) Ingress host configuration
-    -
-      # -- (string) Hostname for the ingress rule
-      host: graph.k8s.orb.local
-      # -- (list) List of path configurations for this host
-      paths:
-        # -- (object) Query endpoint path configuration
-        -
-          # -- (string) URL path pattern with regex capture group
-          path: /(.*)
-          # -- (string) Path type for Kubernetes ingress
-          pathType: ImplementationSpecific
-        # -- (object) WebSocket query endpoint path configuration
-        -
-          # -- (string) URL path pattern for WebSocket queries
-          path: /ws/?(.*)
-          # -- (string) Path type for Kubernetes ingress
-          pathType: ImplementationSpecific
-        # -- (object) Admin endpoint path configuration
-        -
-          # -- (string) URL path pattern for admin interface
-          path: /admin/?(.*)
-          # -- (string) Path type for Kubernetes ingress
-          pathType: ImplementationSpecific
-        # -- (object) Indexer endpoint path configuration
-        -
-          # -- (string) URL path pattern for indexer status
-          path: /indexer/?(.*)
-          # -- (string) Path type for Kubernetes ingress
-          pathType: ImplementationSpecific
-        # -- (object) Graphman endpoint path configuration
-        -
-          # -- (string) URL path pattern for graphman interface
-          path: /graphman/?(.*)
-          # -- (string) Path type for Kubernetes ingress
-          pathType: ImplementationSpecific
+  # -- (string) Primary hostname served by the ingress
+  hostname: graph.k8s.orb.local
+  # -- (list) Path rules mapped to Graph Node service ports
+  paths:
+    # -- (object) Query endpoint path configuration
+    - path: /(.*)
+      # -- (string) Kubernetes path matching mode for the query endpoint
+      pathType: ImplementationSpecific
+      # -- (string) Service port name handling HTTP query traffic
+      servicePortName: http-query
+    # -- (object) WebSocket query endpoint path configuration
+    - path: /ws/?(.*)
+      # -- (string) Kubernetes path matching mode for the WebSocket endpoint
+      pathType: ImplementationSpecific
+      # -- (string) Service port name handling WebSocket query traffic
+      servicePortName: http-queryws
+    # -- (object) Admin endpoint path configuration
+    - path: /admin/?(.*)
+      # -- (string) Kubernetes path matching mode for the admin endpoint
+      pathType: ImplementationSpecific
+      # -- (string) Service port name exposing admin operations
+      servicePortName: http-admin
+    # -- (object) Indexer endpoint path configuration
+    - path: /indexer/?(.*)
+      # -- (string) Kubernetes path matching mode for the indexer endpoint
+      pathType: ImplementationSpecific
+      # -- (string) Service port name exposing indexer status metrics
+      servicePortName: http-status
+    # -- (object) Graphman endpoint path configuration
+    - path: /graphman/?(.*)
+      # -- (string) Kubernetes path matching mode for the Graphman endpoint
+      pathType: ImplementationSpecific
+      # -- (string) Service port name exposing Graphman operations
+      servicePortName: http-status
   # -- (list) TLS configuration for the ingress
   tls: []
   #  - secretName: chart-example-tls
@@ -491,7 +493,7 @@ postgresReadinessCheck:
     # -- (object) Resource limits
     limits:
       # -- (string) CPU limit
-      cpu: 100m
+      cpu: 300m
       # -- (string) Memory limit
       memory: 96Mi
     # -- (object) Resource requests

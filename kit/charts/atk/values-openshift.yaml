@@ -1,171 +1,253 @@
 # OpenShift-specific values override for ATK
-#
-# This file overrides specific security context values for OpenShift environments.
-# Use this file with: helm install atk ./atk -f values.yaml -f values-openshift.yaml
-#
-# Key principle: Templates are the same for both Kubernetes and OpenShift.
-# The only difference is in the values - OpenShift doesn't set runAsUser/runAsGroup/fsGroup
-# because OpenShift assigns these automatically based on the project's UID range.
+# This file aligns the Helm chart with OpenShift's Security Context Constraints (SCCs)
+# by clearing runAsUser/runAsGroup/fsGroup assignments so the platform can inject
+# compliant identities. Use with: helm install atk ./atk -f values.yaml -f values-openshift.yaml
+# Templates remain identical between Kubernetes and OpenShift; only the values change.
 
-# Global security contexts for OpenShift
+# -- (object) Global security context overrides applied cluster-wide when running on OpenShift
 global:
+  # -- (object) OpenShift-adjusted pod and container security contexts
   securityContexts:
+    # -- (object) Pod-level security context overrides; OpenShift injects UID/GID automatically
     pod:
+      # -- (string|null) Filesystem group cleared so OpenShift assigns a compliant value
       fsGroup: null
+      # -- (string|null) Pod user ID cleared to accept OpenShift-assigned UID
       runAsUser: null
+      # -- (string|null) Pod group ID cleared to accept OpenShift-assigned GID
       runAsGroup: null
+      # -- (bool) Enforce non-root execution in line with OpenShift restricted SCC
       runAsNonRoot: true
+      # -- (object) Seccomp profile adhering to cluster defaults
       seccompProfile:
+        # -- (string) Use RuntimeDefault profile supplied by the cluster
         type: RuntimeDefault
+    # -- (object) Container-level security context overrides for OpenShift admission
     container:
+      # -- (bool) Require non-root containers even when UID is assigned dynamically
       runAsNonRoot: true
+      # -- (string|null) Container user ID cleared for OpenShift assignment
       runAsUser: null
+      # -- (string|null) Container group ID cleared for OpenShift assignment
       runAsGroup: null
+      # -- (bool) Disallow privilege escalation per OpenShift restricted SCC
       allowPrivilegeEscalation: false
+      # -- (object) Capability adjustments matching restricted SCC expectations
       capabilities:
+        # -- (list) Capabilities removed from the container for least privilege
         drop:
+          # -- (string) Drop all Linux capabilities for least privilege
           - ALL
+      # -- (object) Seccomp profile adhering to cluster defaults
       seccompProfile:
+        # -- (string) Use RuntimeDefault profile supplied by the cluster
         type: RuntimeDefault
 
-# Graph Node security contexts for OpenShift
+# -- (object) Graph Node routing overrides for OpenShift
 graph-node:
+  # -- (object) Disable Kubernetes ingress to avoid conflicting with routes
   ingress:
+    # -- (bool) Disable ingress resources on OpenShift
     enabled: false
 
+  # -- (object) OpenShift Route replacing the ingress
   openShiftRoute:
+    # -- (bool) Enable route exposure for Graph Node APIs
     enabled: true
+    # -- (string) Route hostname served by the OpenShift cluster
     host: graph.apps-crc.testing
-    wildcardPolicy: None
-    tls: null
-    to:
-      weight: 100
-    alternateBackends: []
-    routes:
-      - nameSuffix: ""
-        host: ""
-        path: /
-        targetPort: http-query
-        annotations: {}
-      - nameSuffix: ws
-        host: ""
-        path: /ws
-        targetPort: http-queryws
-        annotations:
-          haproxy.router.openshift.io/rewrite-target: /
-      - nameSuffix: admin
-        host: ""
-        path: /admin
-        targetPort: http-admin
-        annotations:
-          haproxy.router.openshift.io/rewrite-target: /
-      - nameSuffix: indexer
-        host: ""
-        path: /indexer
-        targetPort: http-status
-        annotations:
-          haproxy.router.openshift.io/rewrite-target: /
-      - nameSuffix: graphman
-        host: ""
-        path: /graphman
-        targetPort: http-status
-        annotations:
-          haproxy.router.openshift.io/rewrite-target: /
 
-# Portal security contexts for OpenShift
+# -- (object) Portal routing overrides for OpenShift
 portal:
+  # -- (object) Disable Kubernetes ingress in favor of routes
   ingress:
+    # -- (bool) Disable ingress resources on OpenShift
     enabled: false
-# Transaction Signer security contexts for OpenShift
+  # -- (object) OpenShift Route exposing the Portal UI
+  openShiftRoute:
+    # -- (bool) Enable route for Portal frontend
+    enabled: true
+    # -- (string) Route hostname for Portal access
+    host: portal.apps-crc.testing
+
+# -- (object) Transaction signer networking overrides for OpenShift
 txsigner:
+  # -- (object) Disable ingress resources for OpenShift environments
+  ingress:
+    # -- (bool) Disable ingress because routes are optional for backend services
+    enabled: false
+
+  # -- (object) Optional OpenShift Route configuration for transaction signer API
   openShiftRoute:
-    enabled: true
+    # -- (bool) Keep route disabled by default; enable if external access required
+    enabled: false
+    # -- (string) Placeholder hostname for transaction signer route
     host: txsigner.apps-crc.testing
-    path: /
-    tls: null
 
-# ERPC security contexts for OpenShift
+# -- (object) ERPC gateway routing overrides for OpenShift
 erpc:
+  # -- (object) Disable ingress because OpenShift routes are used
   ingress:
+    # -- (bool) Disable ingress resources on OpenShift
     enabled: false
 
+  # -- (object) OpenShift Route exposing the ERPC endpoint
   openShiftRoute:
+    # -- (bool) Enable route for RPC endpoint
     enabled: true
+    # -- (string) Route hostname for RPC access
     host: rpc.apps-crc.testing
-    path: /
-    wildcardPolicy: None
-    tls: null
 
-# DApp security contexts for OpenShift
+# -- (object) DApp routing and environment overrides for OpenShift
 dapp:
+  # -- (object) Disable ingress in favor of OpenShift routes
   ingress:
+    # -- (bool) Disable ingress resources on OpenShift
     enabled: false
 
+  # -- (object) OpenShift Route exposing the web DApp
   openShiftRoute:
+    # -- (bool) Enable route for the web DApp
     enabled: true
+    # -- (string) Route hostname for the DApp
     host: dapp.apps-crc.testing
-    path: /
-    tls: null
+  # -- (object) Secret-backed environment variables aligned to OpenShift route hostnames
+  secretEnv:
+    # -- (string) Base URL for Better Auth callbacks using the OpenShift route
+    BETTER_AUTH_URL: "https://dapp.apps-crc.testing"
+    # -- (string) Blockscout UI endpoint exposed via OpenShift route
+    SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "https://explorer.apps-crc.testing/"
 
-# Support services security contexts for OpenShift
+# -- (object) IPFS cluster routing overrides for OpenShift
+ipfs:
+  # -- (object) Ingress configuration for IPFS API
+  ingress:
+    # -- (bool) Disable ingress to use OpenShift routes exclusively
+    enabled: false
+  # -- (object) OpenShift Route exposing the IPFS cluster API
+  openShiftRoute:
+    # -- (bool) Enable route for IPFS cluster API
+    enabled: true
+    # -- (string) Hostname for the IPFS cluster route
+    host: ipfs-cluster.apps-crc.testing
+  # -- (object) IPFS daemon configuration overrides for CORS alignment with routes
+  ipfs:
+    # -- (object) IPFS daemon configuration
+    config:
+      # -- (object) IPFS API configuration
+      api:
+        # -- (object) HTTP header overrides for CORS access
+        httpHeaders:
+          # -- (list) Allowed origins aligning with OpenShift routes
+          accessControlAllowOrigin:
+            # -- (string) HTTPS origin for OpenShift route
+            - https://ipfs-cluster.apps-crc.testing
+            # -- (string) HTTP origin for OpenShift route (for local/test scenarios)
+            - http://ipfs-cluster.apps-crc.testing
+
+# -- (object) Support service overrides tailored for OpenShift clusters
 support:
-  # PostgreSQL configuration for OpenShift
+  # The PostgreSQL and Redis subcharts inherit global securityContexts. Uncomment to provide
+  # fully custom OpenShift-specific pod/container contexts if required.
   # postgresql:
   #   podSecurityContext: {}
   #   securityContext: {}
-
-  # Redis - clear default security contexts to use global ones
   # redis:
   #   podSecurityContext: {}
   #   containerSecurityContext: {}
 
-  # Nginx Ingress Controller adjustments for OpenShift (if used)
+  # -- (object) NGINX ingress controller toggle; disabled because OpenShift exposes routes natively
   ingress-nginx:
+    # -- (bool) Disable bundled ingress controller; OpenShift router handles ingress
     enabled: false
 
+  # -- (object) Reloader overrides to clear security context for OpenShift SCC compatibility
   reloader:
+    # -- (object) Reloader chart configuration
     reloader:
+      # -- (object) Deployment-specific overrides
       deployment:
+        # -- (object) Security context adjustments for OpenShift
         securityContext:
+          # -- (string|null) Allow OpenShift to define runtime UID
           runAsUser: null
+
+  # -- (object) MinIO overrides aligning ingress exposure with OpenShift routes
   minio:
+    # -- (object) MinIO ingress configuration
     ingress:
+      # -- (bool) Disable ingress; use OpenShift routes instead
+      enabled: false
+    # -- (object) MinIO console ingress configuration
+    consoleIngress:
+      # -- (bool) Disable console ingress; use OpenShift routes instead
       enabled: false
 
+# -- (object) Observability stack overrides optimized for OpenShift
 observability:
+  # -- (object) Grafana security context adjustments for OpenShift
   grafana:
+    # -- (object) Pod security context overrides for Grafana
     securityContext:
+      # -- (bool) Require non-root execution while allowing OpenShift to manage IDs
       runAsNonRoot: true
+      # -- (string|null) Pod user ID cleared for OpenShift assignment
       runAsUser: null
+      # -- (string|null) Pod group ID cleared for OpenShift assignment
       runAsGroup: null
+      # -- (string|null) Filesystem group cleared for OpenShift assignment
       fsGroup: null
+  # -- (object) kube-state-metrics overrides for OpenShift security contexts
   kube-state-metrics:
+    # -- (object) Security context settings for kube-state-metrics pods
     securityContext:
+      # -- (bool) Enable security context block while letting OpenShift assign IDs
       enabled: true
+      # -- (string|null) Pod group ID cleared for OpenShift assignment
       runAsGroup: null
+      # -- (string|null) Pod user ID cleared for OpenShift assignment
       runAsUser: null
+      # -- (string|null) Filesystem group cleared for OpenShift assignment
       fsGroup: null
+  # -- (bool) Disable node exporter because OpenShift handles host metrics differently
   prometheus-node-exporter:
     enabled: false
+  # -- (object) Loki overrides for OpenShift security and routing
   loki:
+    # -- (object) Loki server security context adjustments
     loki:
+      # -- (object) Pod security context overrides for Loki single binary deployment
       podSecurityContext:
+        # -- (string|null) Filesystem group cleared so OpenShift assigns automatically
         fsGroup: null
+        # -- (string|null) RunAs group cleared for OpenShift assignment
         runAsGroup: null
+        # -- (bool) Require non-root containers in alignment with SCC
         runAsNonRoot: true
+        # -- (string|null) RunAs user cleared for OpenShift assignment
         runAsUser: null
+    # -- (object) Loki gateway settings for OpenShift
     gateway:
+      # -- (bool) Disable bundled gateway; rely on OpenShift routing when needed
       enabled: false
+  # -- (object) Tempo security context adjustments for OpenShift
   tempo:
+    # -- (object) Tempo pod security context overrides
     securityContext:
+      # -- (string|null) RunAs user cleared for OpenShift assignment
       runAsUser: null
+      # -- (string|null) RunAs group cleared for OpenShift assignment
       runAsGroup: null
+      # -- (string|null) Filesystem group cleared for OpenShift assignment
       fsGroup: null
+  # -- (object) Metrics server security context adjustments
   metrics-server:
+    # -- (object) Pod security context overrides for metrics server
     securityContext:
+      # -- (string|null) RunAs user cleared for OpenShift assignment
       runAsUser: null
 
-# Hasura configuration for OpenShift
+# -- (object) Hasura configuration for OpenShift
 hasura:
   # -- (object) Ingress configuration
   ingress:
@@ -178,50 +260,56 @@ hasura:
     enabled: true
     # -- (string) Route hostname
     host: hasura.apps-crc.testing
-    # -- (string) Route path
-    path: /
-    # -- (string) Wildcard policy
-    wildcardPolicy: None
-    # -- (object) TLS configuration
-    tls: null
-    # -- (object) Service weight configuration
-    to:
-      # -- (int) Weight for the service
-      weight: 100
-    # -- (list) Alternate backends
-    alternateBackends: []
 
-# Blockscout configuration for OpenShift
+# -- (object) Blockscout routing and security overrides for OpenShift
 blockscout:
+  # -- (object) Blockscout API service overrides
   blockscout:
+    # -- (object) Ingress configuration for Blockscout API
     ingress:
+      # -- (bool) Disable ingress; expose via OpenShift route
       enabled: false
 
+    # -- (object) OpenShift Route configuration for Blockscout API
     openShiftRoute:
+      # -- (bool) Enable route for Blockscout API
       enabled: true
+      # -- (string) Route hostname for explorer API
       host: explorer.apps-crc.testing
-      path: /api
-      wildcardPolicy: None
 
+    # -- (object) Environment variables aligned to OpenShift route hostnames
     env:
+      # -- (string) Base API URL served via OpenShift route
       API_URL: https://explorer.apps-crc.testing
+      # -- (string) Blockscout web UI URL served via OpenShift route
       WEBAPP_URL: https://explorer.apps-crc.testing
 
+  # -- (object) Blockscout frontend overrides
   frontend:
+    # -- (object) Ingress configuration for frontend
     ingress:
+      # -- (bool) Disable ingress; expose via OpenShift route
       enabled: false
 
+    # -- (object) OpenShift Route configuration for Blockscout UI
     openShiftRoute:
+      # -- (bool) Enable route for Blockscout UI
       enabled: true
+      # -- (string) Route hostname for explorer UI
       host: explorer.apps-crc.testing
-      path: /
-      wildcardPolicy: None
+    # -- (object) Pod security context overrides for frontend pods
     podSecurityContext:
+      # -- (string|null) Filesystem group cleared for OpenShift assignment
       fsGroup: null
+      # -- (string|null) RunAs user cleared for OpenShift assignment
       runAsUser: null
+      # -- (string|null) RunAs group cleared for OpenShift assignment
       runAsGroup: null
+    # -- (object) Container security context overrides for frontend containers
     containerSecurityContext:
+      # -- (string|null) RunAs user cleared for OpenShift assignment
       runAsUser: null
+      # -- (string|null) RunAs group cleared for OpenShift assignment
       runAsGroup: null
+      # -- (string|null) Filesystem group cleared for OpenShift assignment
       fsGroup: null
-
