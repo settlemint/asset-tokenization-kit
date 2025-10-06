@@ -81,7 +81,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.tcpCheck.image|object|-|Container image configuration for TCP check init container|
 |initContainer.tcpCheck.image.pullPolicy|string|`"IfNotPresent"`|Image pull policy|
 |initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|Image repository for wait-for-it utility|
-|initContainer.tcpCheck.image.tag|string|`"v7.7.10"`|Image tag for wait-for-it utility|
+|initContainer.tcpCheck.image.tag|string|`"v7.7.11"`|Image tag for wait-for-it utility|
 |initContainer.tcpCheck.resources|object|-|Resource limits and requests for TCP check init container|
 |initContainer.tcpCheck.resources.limits|object|-|Resource limits|
 |initContainer.tcpCheck.resources.limits.cpu|string|`"300m"`|CPU limit|

@@ -129,7 +129,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.tcpCheck.image|object|-|TCP check image configuration|
 |initContainer.tcpCheck.image.pullPolicy|string|`"IfNotPresent"`|TCP check image pull policy|
 |initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|TCP check image repository|
-|initContainer.tcpCheck.image.tag|string|`"v7.7.10"`|TCP check image tag|
+|initContainer.tcpCheck.image.tag|string|`"v7.7.11"`|TCP check image tag|
 |initContainer.tcpCheck.ipfsClusterProxy.enabled|bool|`true`|Enable readiness checks against the IPFS cluster proxy|
 |initContainer.tcpCheck.ipfsClusterProxy.host|string|`"ipfs-cluster"`|Hostname for the IPFS cluster proxy service|
 |initContainer.tcpCheck.ipfsClusterProxy.port|int|`9095`|TCP port used by the IPFS cluster proxy service|

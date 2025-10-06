@@ -299,39 +299,13 @@ export async function createAndRegisterUserIdentities(
         });
         if (!skipRegistration) {
           try {
-            const identity = await orpcClient.system.identity.register({
+            await orpcClient.system.identity.register({
               walletVerification: {
                 secretVerificationCode: DEFAULT_PINCODE,
                 verificationType: "PINCODE",
               },
               wallet: me.wallet,
               country,
-            });
-            await orpcClient.system.identity.claims.issue({
-              walletVerification: {
-                secretVerificationCode: DEFAULT_PINCODE,
-                verificationType: "PINCODE",
-              },
-              targetIdentityAddress: identity.id,
-              claim: {
-                topic: "knowYourCustomer",
-                data: {
-                  claim: "kyc-verified",
-                },
-              },
-            });
-            await orpcClient.system.identity.claims.issue({
-              walletVerification: {
-                secretVerificationCode: DEFAULT_PINCODE,
-                verificationType: "PINCODE",
-              },
-              targetIdentityAddress: identity.id,
-              claim: {
-                topic: "antiMoneyLaundering",
-                data: {
-                  claim: "aml-verified",
-                },
-              },
             });
           } catch (err) {
             if (
