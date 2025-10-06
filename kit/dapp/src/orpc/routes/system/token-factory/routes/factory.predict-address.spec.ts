@@ -85,4 +85,32 @@ describe("Factory predict address", () => {
     // Predicted addresses should be different for different parameters
     expect(prediction1.predictedAddress).not.toBe(prediction2.predictedAddress);
   }, 100_000);
+
+  test("same name, symbol, and decimals but different asset types produce different predicted addresses", async () => {
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+
+    const sharedParams = {
+      name: "Shared Token Name",
+      symbol: "SHRD",
+      decimals: 18,
+    };
+
+    // Predict for equity type
+    const equityPrediction = await client.system.factory.predictAddress({
+      type: "equity",
+      ...sharedParams,
+    });
+
+    // Predict for bond type with same name, symbol, and decimals
+    const bondPrediction = await client.system.factory.predictAddress({
+      type: "bond",
+      ...sharedParams,
+    });
+
+    // Predicted addresses should be different due to different asset types
+    expect(equityPrediction.predictedAddress).not.toBe(
+      bondPrediction.predictedAddress
+    );
+  }, 100_000);
 });
