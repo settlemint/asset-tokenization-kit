@@ -5,6 +5,7 @@ import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
 import { getUserTabConfiguration } from "@/components/tab-navigation/user-tab-configuration";
 import { UserStatusBadge } from "@/components/users/user-status-badge";
 import { getUserDisplayName } from "@/lib/utils/user-display-name";
+import { ORPCError } from "@orpc/client";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useMemo } from "react";
@@ -51,11 +52,18 @@ export const Route = createFileRoute(
     const user = await queryClient.ensureQueryData(
       orpc.user.read.queryOptions({ input: { userId } })
     );
-    const identity = await queryClient.ensureQueryData(
-      orpc.system.identity.read.queryOptions({
-        input: { wallet: user.wallet ?? "" },
-      })
-    );
+    const identity = await queryClient
+      .ensureQueryData(
+        orpc.system.identity.read.queryOptions({
+          input: { wallet: user.wallet ?? "" },
+        })
+      )
+      .catch((error: unknown) => {
+        if (error instanceof ORPCError && error.status === 404) {
+          return undefined;
+        }
+        throw error;
+      });
     return {
       user,
       identity,
@@ -119,7 +127,9 @@ function RouteComponent() {
         <RouterBreadcrumb />
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-bold tracking-tight">{displayName}</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {displayName || user.email}
+            </h1>
             <UserStatusBadge identity={identity} user={user} />
           </div>
           {/* Future: Add ManageUserDropdown here */}
