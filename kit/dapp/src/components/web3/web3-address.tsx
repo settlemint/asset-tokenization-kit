@@ -7,6 +7,13 @@ import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { useQuery } from "@tanstack/react-query";
 import { memo, useMemo } from "react";
 
+const COMMON_QUERY_OPTIONS = {
+  staleTime: 1000 * 60 * 29, // stale data for 29 minutes
+  gcTime: 1000 * 60 * 30, // Cache data for 30 minutes
+  retry: false, // Don't retry if address is not a user
+  throwOnError: false, // Don't throw if address is not a user
+  refetchOnMount: false,
+};
 interface Web3AddressProps {
   address: EthereumAddress;
   size?: "tiny" | "small" | "medium" | "big" | "large";
@@ -36,10 +43,8 @@ function Web3AddressComponent({
   const { data: userSearch } = useQuery(
     orpc.user.search.queryOptions({
       input: { query: address, limit: 1 },
-      staleTime: 1000 * 60 * 30, // Cache user data for 30 minutes
-      retry: false, // Don't retry if address is not a user
-      throwOnError: false, // Don't throw if address is not a user
       enabled: !skipDataQueries, // Disable during onboarding
+      ...COMMON_QUERY_OPTIONS,
     })
   );
   const user = userSearch?.[0];
@@ -48,10 +53,8 @@ function Web3AddressComponent({
   const { data: tokenSearch } = useQuery(
     orpc.token.search.queryOptions({
       input: { query: address, limit: 1 },
-      staleTime: 1000 * 60 * 30, // Cache token data for 30 minutes
-      retry: false, // Don't retry if address is not a token
-      throwOnError: false, // Don't throw if address is not a token
       enabled: !skipDataQueries, // Disable during onboarding
+      ...COMMON_QUERY_OPTIONS,
     })
   );
   const token = tokenSearch?.[0];
@@ -60,13 +63,30 @@ function Web3AddressComponent({
   const { data: accountSearch } = useQuery(
     orpc.account.search.queryOptions({
       input: { query: address, limit: 1 },
-      staleTime: 1000 * 60 * 30, // Cache account data for 30 minutes
-      retry: false, // Don't retry if address is not indexed
-      throwOnError: false, // Don't throw if account is not found
       enabled: !skipDataQueries, // Disable during onboarding
+      ...COMMON_QUERY_OPTIONS,
     })
   );
   const account = accountSearch?.[0];
+
+  const data = useMemo(() => {
+    if (token) {
+      return {
+        name: token.name,
+        symbol: token.symbol,
+      };
+    }
+    if (user) {
+      return {
+        name: user.name,
+        symbol: undefined,
+      };
+    }
+    return {
+      name: account?.contractName,
+      symbol: undefined,
+    };
+  }, [user, token, account]);
 
   // Memoize truncated address display
   const truncatedAddressDisplay = useMemo(() => {
@@ -86,49 +106,15 @@ function Web3AddressComponent({
 
     if (avatarOnly) return null;
 
-    if (showPrettyName && token?.name) {
+    if (showPrettyName && data?.name) {
       return (
         <div className="flex items-center gap-2">
-          <span className="font-medium">{token.name}</span>
-          {showSymbol && token.symbol && (
+          <span className="font-medium">{data.name}</span>
+          {showSymbol && data.symbol && (
             <span className="text-muted-foreground text-xs">
-              ({token.symbol})
+              ({data.symbol})
             </span>
           )}
-          {showBadge && (
-            <Badge
-              className="min-w-0 max-w-24"
-              variant="outline"
-              title={address}
-            >
-              {renderAddress("text-xs")}
-            </Badge>
-          )}
-        </div>
-      );
-    }
-
-    if (showPrettyName && user?.name) {
-      return (
-        <div className="flex items-center gap-2">
-          <span className="font-medium">{user.name}</span>
-          {showBadge && (
-            <Badge
-              className="min-w-0 max-w-24"
-              variant="outline"
-              title={address}
-            >
-              {renderAddress("text-xs")}
-            </Badge>
-          )}
-        </div>
-      );
-    }
-
-    if (showPrettyName && account?.contractName) {
-      return (
-        <div className="flex items-center gap-2">
-          <span className="font-medium">{account.contractName}</span>
           {showBadge && (
             <Badge
               className="min-w-0 max-w-24"
@@ -145,9 +131,7 @@ function Web3AddressComponent({
     return renderAddress();
   }, [
     avatarOnly,
-    token,
-    user,
-    account,
+    data,
     showBadge,
     address,
     showSymbol,
@@ -165,7 +149,7 @@ function Web3AddressComponent({
         <Web3Avatar
           address={address}
           size={size}
-          name={user?.name ?? token?.name ?? account?.contractName}
+          name={data?.name}
           className="mr-2"
         />
         {displayContent}
@@ -178,7 +162,7 @@ function Web3AddressComponent({
       <Web3Avatar
         address={address}
         size={size}
-        name={user?.name ?? token?.name ?? account?.contractName}
+        name={data?.name}
         className="mr-2"
       />
       {displayContent}

@@ -85,18 +85,16 @@ async function checkGravatar(email: string): Promise<string | null> {
   const checkUrl = `${GRAVATAR_BASE_URL}${hash}?d=blank&s=200`;
   const finalUrl = `${GRAVATAR_BASE_URL}${hash}?d=${GRAVATAR_DEFAULT}&s=200`;
 
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => {
-      controller.abort();
-    }, 3000); // 3s timeout
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => {
+    controller.abort();
+  }, 3000); // 3s timeout
 
+  try {
     const response = await fetch(checkUrl, {
       method: "HEAD",
       signal: controller.signal,
     });
-
-    clearTimeout(timeoutId);
 
     // Check if the response is successful and not a blank/empty image
     const result =
@@ -119,6 +117,8 @@ async function checkGravatar(email: string): Promise<string | null> {
     });
 
     return null;
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
@@ -160,6 +160,7 @@ const Web3AvatarComponent = memo(function Web3Avatar({
     staleTime: 24 * 60 * 60 * 1000, // 24 hours
     gcTime: 7 * 24 * 60 * 60 * 1000, // 7 days
     retry: false,
+    refetchOnMount: false,
   });
 
   const jazziconSeed = useMemo(() => {
