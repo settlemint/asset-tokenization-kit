@@ -87,7 +87,7 @@ jobs:
       - name: Start dev server
         run: |
           echo "Starting server..."
-          nohup bun run start >   2>&1 &
+          nohup bun run start > server.log 2>&1 &
           echo "SERVER_PID=$!" >> $GITHUB_ENV
           echo "Waiting for Start to initialize routes (readiness probe)..."
           echo "Performing initial server check..."
