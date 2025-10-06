@@ -22,7 +22,7 @@ import { useTranslation } from "react-i18next";
 import {
   AvailabilityStatus,
   type AvailabilityStatusState,
-} from "../summary/availability-status";
+} from "./availability-status";
 
 const commonFields: KeysOfUnion<AssetDesignerFormInputData>[] = [
   "name",
@@ -172,7 +172,7 @@ export const AssetBasics = withForm({
             }
 
             return isDependantFieldsTouched ? (
-              <AvailabilityStatus status={status} className="mt-4 col-span-2" />
+              <AvailabilityStatus status={status} className="col-span-2" />
             ) : null;
           }}
         </form.Field>
