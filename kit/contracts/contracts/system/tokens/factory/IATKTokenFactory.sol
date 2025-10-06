@@ -78,4 +78,31 @@ interface IATKTokenFactory is IERC165, IATKSystemAccessManaged {
     /// @param tokenImplementation_ The address to check for validity.
     /// @return True if the address is a valid token implementation, false otherwise.
     function isValidTokenImplementation(address tokenImplementation_) external view returns (bool);
+
+    /// @notice Predicts the CREATE2 deployment address for an access manager that would be created by this factory.
+    /// @param accessManagerSaltInputData The ABI encoded data used for salt calculation (typically derived from token
+    /// metadata such as name, symbol, and decimals).
+    /// @param initialAdmin The address that will be set as the initial admin of the access manager when deployed.
+    /// @return predictedAddress The deterministic address where the access manager would be deployed.
+    function predictAccessManagerAddress(
+        bytes memory accessManagerSaltInputData,
+        address initialAdmin
+    )
+        external
+        view
+        returns (address predictedAddress);
+
+    /// @notice Predicts the access manager address for a token using its metadata with the caller as the initial admin.
+    /// @param name_ The token name.
+    /// @param symbol_ The token symbol.
+    /// @param decimals_ The token decimals.
+    /// @return predictedAddress The deterministic address where the access manager would be deployed.
+    function predictAccessManagerAddress(
+        string memory name_,
+        string memory symbol_,
+        uint8 decimals_
+    )
+        external
+        view
+        returns (address predictedAddress);
 }
