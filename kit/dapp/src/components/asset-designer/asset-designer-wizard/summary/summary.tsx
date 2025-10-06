@@ -1,8 +1,4 @@
 import { assetDesignerFormOptions } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
-import {
-  AvailabilityStatus,
-  type AvailabilityStatusState,
-} from "@/components/asset-designer/asset-designer-wizard/summary/availability-status";
 import { BondSummaryFields } from "@/components/asset-designer/asset-designer-wizard/summary/bond";
 import { EquitySummaryFields } from "@/components/asset-designer/asset-designer-wizard/summary/equity";
 import { FundSummaryFields } from "@/components/asset-designer/asset-designer-wizard/summary/fund";
@@ -17,7 +13,7 @@ import { assetClassIcon } from "@/hooks/use-asset-class";
 import { useCountries } from "@/hooks/use-countries";
 import { formatValue } from "@/lib/utils/format-value";
 import { noop } from "@/lib/utils/noop";
-import { client, orpc } from "@/orpc/orpc-client";
+import { orpc } from "@/orpc/orpc-client";
 import type { ComplianceModulePairInput } from "@atk/zod/compliance";
 import { useQuery } from "@tanstack/react-query";
 import { Shield } from "lucide-react";
@@ -146,39 +142,6 @@ export const Summary = withForm({
             )}
           </FormSummaryCard>
         )}
-
-        <form.Field
-          name="available"
-          validators={{
-            onMount: () => {
-              void form.validateField("available", "change");
-            },
-            onChangeAsync: async () => {
-              try {
-                const result = await client.system.factory.available({
-                  parameters: values,
-                });
-                return result.isAvailable ? undefined : "unavailable";
-              } catch {
-                return "error";
-              }
-            },
-            onChangeAsyncDebounceMs: 500,
-          }}
-        >
-          {(field) => {
-            const errorKey = field.state.meta.errors[0];
-
-            let status: AvailabilityStatusState = "available";
-            if (field.state.meta.isValidating) {
-              status = "loading";
-            } else if (typeof errorKey === "string") {
-              status = errorKey;
-            }
-
-            return <AvailabilityStatus status={status} className="mt-4" />;
-          }}
-        </form.Field>
 
         <form.Errors />
       </FormStepLayout>

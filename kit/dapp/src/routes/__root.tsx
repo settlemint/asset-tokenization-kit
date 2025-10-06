@@ -25,17 +25,13 @@ import appCss from "@/styles/app.css?url";
 import { seo } from "@atk/config/metadata";
 import "@fontsource-variable/figtree";
 import "@fontsource-variable/roboto-mono";
-import { TanStackDevtools } from "@tanstack/react-devtools";
-import { FormDevtools } from "@tanstack/react-form-devtools";
 import { type QueryClient } from "@tanstack/react-query";
-import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import {
   createRootRouteWithContext,
   HeadContent,
   Outlet,
   Scripts,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { useMemo, type ReactNode } from "react";
 import { Toaster } from "sonner";
 
@@ -175,7 +171,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <Providers>
           {children}
           <Toaster richColors />
-          <TanStackDevtools
+          {/* <TanStackDevtools
             plugins={[
               {
                 name: "Query",
@@ -190,7 +186,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
                 render: <FormDevtools />,
               },
             ]}
-          />
+          /> */}
         </Providers>
         <Scripts />
       </body>
