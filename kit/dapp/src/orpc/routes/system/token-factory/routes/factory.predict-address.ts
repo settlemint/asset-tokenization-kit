@@ -1,12 +1,30 @@
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { portalGraphql } from "@/lib/settlemint/portal";
+import { systemRouter } from "@/orpc/procedures/system.router";
 import { getTokenFactory } from "@/orpc/routes/system/token-factory/helpers/factory-context";
-import { predictAddressHandlerMap } from "@/orpc/routes/system/token-factory/helpers/predict-handlers/handler-map";
+import { PredictAddressOutputSchema } from "@/orpc/routes/system/token-factory/routes/factory.predict-address.schema";
+import z from "zod";
 
+const PREDICT_ACCESS_MANAGER_QUERY = portalGraphql(`
+  query PredictEquityAccessManagerAddress(
+    $address: String!
+    $symbol: String!
+    $name: String!
+    $decimals: Int!
+  ) {
+    IATKTokenFactory(address: $address) {
+      predictAccessManagerAddress(
+        symbol_: $symbol
+        name_: $name
+        decimals_: $decimals
+      ) {
+        predictedAddress
+      }
+    }
+  }
+`);
 export const factoryPredictAddress =
-  onboardedRouter.system.factory.predictAddress
-    .use(systemMiddleware)
-    .handler(({ input, context, errors }) => {
+  systemRouter.system.factory.predictAddress.handler(
+    async ({ input, context, errors }) => {
       const tokenFactory = getTokenFactory(context, input.type);
       if (!tokenFactory) {
         throw errors.NOT_FOUND({
@@ -14,11 +32,22 @@ export const factoryPredictAddress =
         });
       }
 
-      const handler = predictAddressHandlerMap[input.type];
+      const result = await context.portalClient.query(
+        PREDICT_ACCESS_MANAGER_QUERY,
+        {
+          address: tokenFactory.id,
+          from: context.auth.user.wallet,
+          name: input.name,
+          symbol: input.symbol,
+          decimals: input.decimals,
+        },
+        z.object({
+          IATKTokenFactory: z.object({
+            predictAccessManagerAddress: PredictAddressOutputSchema,
+          }),
+        })
+      );
 
-      return handler(input, {
-        factoryAddress: tokenFactory.id,
-        portalClient: context.portalClient,
-        walletAddress: context.auth.user.wallet,
-      });
-    });
+      return result.IATKTokenFactory.predictAccessManagerAddress;
+    }
+  );
