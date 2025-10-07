@@ -16,15 +16,8 @@ import {
 import { orpc } from "@/orpc/orpc-client";
 import { getAddonCategoryFromFactoryTypeId } from "@atk/zod/addon-types";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Link, useMatches, useNavigate } from "@tanstack/react-router";
-import {
-  ArrowLeftRight,
-  Banknote,
-  ChevronRight,
-  PlusIcon,
-  Truck,
-  Vault,
-} from "lucide-react";
+import { Link, useMatches } from "@tanstack/react-router";
+import { Banknote, ChevronRight, Vault } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -37,7 +30,6 @@ import { useTranslation } from "react-i18next";
  */
 export function NavAddons() {
   const { t } = useTranslation("navigation");
-  const navigate = useNavigate();
   const matches = useMatches();
   const { data: system } = useSuspenseQuery(
     orpc.system.read.queryOptions({
@@ -91,16 +83,17 @@ export function NavAddons() {
   };
 
   const addonCategories = [
-    {
-      name: t("addonCategories.distribution"),
-      icon: Truck,
-      addons: groupedAddons.distribution,
-    },
-    {
-      name: t("addonCategories.exchange"),
-      icon: ArrowLeftRight,
-      addons: groupedAddons.exchange,
-    },
+    // Distribution and Exchange categories are hidden
+    // {
+    //   name: t("addonCategories.distribution"),
+    //   icon: Truck,
+    //   addons: groupedAddons.distribution,
+    // },
+    // {
+    //   name: t("addonCategories.exchange"),
+    //   icon: ArrowLeftRight,
+    //   addons: groupedAddons.exchange,
+    // },
     {
       name: t("addonCategories.custody"),
       icon: Vault,
@@ -121,7 +114,8 @@ export function NavAddons() {
     <SidebarGroup>
       <SidebarGroupLabel>{t("addons")}</SidebarGroupLabel>
       <SidebarMenu>
-        <SidebarMenuButton
+        {/* Addon Designer button is hidden for now */}
+        {/* <SidebarMenuButton
           className="bg-accent text-primary-foreground shadow-dropdown shadow-inset hover:bg-accent-hover hover:text-primary-foreground my-2"
           onClick={() => {
             void navigate({
@@ -131,7 +125,7 @@ export function NavAddons() {
         >
           <PlusIcon className="mr-1 h-4 w-4" />
           <span>{t("addonDesigner")}</span>
-        </SidebarMenuButton>
+        </SidebarMenuButton> */}
         {addonCategories
           .filter((category) => category.addons.length > 0)
           .map((category) => {

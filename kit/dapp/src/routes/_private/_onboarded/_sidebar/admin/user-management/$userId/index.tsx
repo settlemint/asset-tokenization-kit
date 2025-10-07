@@ -56,7 +56,7 @@ function RouteComponent() {
         <DetailGridItem
           label={t("user:fields.fullName")}
           info={t("user:fields.fullNameInfo")}
-          value={displayName}
+          value={displayName || "-"}
           type="text"
         />
 
@@ -111,14 +111,16 @@ function RouteComponent() {
           emptyValue={t("user:fields.noWalletConnected")}
         />
 
-        <DetailGridItem
-          label={t("user:fields.onChainIdentity")}
-          info={t("user:fields.onChainIdentityInfo")}
-          value={identity.id}
-          type="address"
-          showPrettyName={false}
-          emptyValue={t("user:fields.noIdentityRegistered")}
-        />
+        {identity && (
+          <DetailGridItem
+            label={t("user:fields.onChainIdentity")}
+            info={t("user:fields.onChainIdentityInfo")}
+            value={identity.id}
+            type="address"
+            showPrettyName={false}
+            emptyValue={t("user:fields.noIdentityRegistered")}
+          />
+        )}
       </DetailGrid>
 
       {/* KYC Information - Separate grid if available */}

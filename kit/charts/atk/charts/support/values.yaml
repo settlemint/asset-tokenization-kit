@@ -43,13 +43,13 @@ postgresql:
       # -- Memory request (string)
       memory: "256Mi"
       # -- CPU request (string)
-      cpu: "100m"
+      cpu: "80m"
     # -- Resource limits (object)
     limits:
       # -- Memory limit (string)
-      memory: "1Gi"
+      memory: "512Mi"
       # -- CPU limit (string)
-      cpu: "500m"
+      cpu: "480m"
 
   # -- Persistence configuration (object)
   persistence:
@@ -520,6 +520,18 @@ reloader:
       labels:
         # -- (string) KOTS application identifier for SettleMint ATK
         kots.io/app-slug: settlemint-atk
+      # -- (object) Resource requests and limits for Reloader pods
+      resources:
+        requests:
+          # -- (string) CPU request reserved for Reloader pods
+          cpu: 100m
+          # -- (string) Memory request reserved for Reloader pods
+          memory: 128Mi
+        limits:
+          # -- (string) CPU limit for Reloader pods
+          cpu: 600m
+          # -- (string) Memory limit for Reloader pods
+          memory: 256Mi
 
 # -- MinIO configuration (object)
 minio:
@@ -560,7 +572,7 @@ minio:
       # -- Memory limit (string)
       memory: 512Mi
       # -- CPU limit (string)
-      cpu: 200m
+      cpu: 600m
 
   # -- (list) Automatic bucket creation
   buckets:

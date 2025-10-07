@@ -17,7 +17,7 @@ describe("Admins list", () => {
     expect(defaultAdmin).toBeDefined();
     expect(defaultAdmin?.email).toBe(DEFAULT_ADMIN.email);
     expect(defaultAdmin?.name).toBe(
-      `${DEFAULT_ADMIN.name} (Integration tests)`
+      `${DEFAULT_ADMIN.firstName} ${DEFAULT_ADMIN.lastName}`
     );
     // Verify current user was added as an admin in the default system
     const system = await client.system.read({ id: "default" });

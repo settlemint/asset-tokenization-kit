@@ -256,7 +256,9 @@ describe("User search", () => {
         (u) => u.wallet === userWithoutKycData.wallet
       );
       expect(foundUser).toBeDefined();
-      expect(foundUser?.name).toBe(userWithoutKyc.name);
+      expect(foundUser?.name).toBe(
+        `${userWithoutKyc.firstName} ${userWithoutKyc.lastName}`
+      );
     });
   });
 

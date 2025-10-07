@@ -16,6 +16,7 @@
  * @see {@link @/lib/settlemint/portal} - Portal GraphQL client with transaction tracking
  */
 
+import { encodeComplianceParams } from "@/lib/compliance/encoding/index";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import type { Context } from "@/orpc/context/context";
 import {
@@ -78,7 +79,7 @@ export const fundCreateHandler = async (
         managementFeeBps: input.managementFeeBps,
         initialModulePairs: input.initialModulePairs.map((pair) => ({
           module: pair.module,
-          params: pair.params,
+          params: encodeComplianceParams(pair),
         })),
       },
       context.walletVerification

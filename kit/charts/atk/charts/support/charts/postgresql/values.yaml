@@ -28,13 +28,13 @@ resources:
     # -- (string) Memory request
     memory: "256Mi"
     # -- (string) CPU request
-    cpu: "100m"
+    cpu: "80m"
   # -- (object) Resource limits
   limits:
     # -- (string) Memory limit
-    memory: "1Gi"
+    memory: "512Mi"
     # -- (string) CPU limit
-    cpu: "500m"
+    cpu: "480m"
 
 # -- (object) Persistence configuration
 persistence:
@@ -147,7 +147,9 @@ postgresql_conf:
 
 # -- (object) Common labels to add to all PostgreSQL resources
 commonLabels:
+  # -- (string) KOTS application slug applied to PostgreSQL resources
   kots.io/app-slug: settlemint-atk
+  # -- (string) Label identifying Helm as the managing tool
   app.kubernetes.io/managed-by: helm
 
 # -- String to fully override common.names.fullname (string)

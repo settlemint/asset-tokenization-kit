@@ -546,7 +546,7 @@ initContainer:
       # -- (string) Init container image repository
       repository: ghcr.io/settlemint/btp-waitforit
       # -- (string) Init container image tag
-      tag: v7.7.10
+      tag: v7.7.11
       # -- (string) Init container image pull policy
       pullPolicy: IfNotPresent
     # -- (int) Timeout in seconds for dependency checks
@@ -556,7 +556,7 @@ initContainer:
       # -- (object) Resource limits
       limits:
         # -- (string) CPU limit
-        cpu: 100m
+        cpu: 300m
         # -- (string) Memory limit
         memory: 64Mi
       # -- (object) Resource requests

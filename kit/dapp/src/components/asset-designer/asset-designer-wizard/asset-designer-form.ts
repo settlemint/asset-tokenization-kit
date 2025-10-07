@@ -26,6 +26,7 @@ export const AssetDesignerFormSchema = TokenCreateSchema.and(
 ).and(
   z.object({
     assetClass: assetClass(),
+    available: z.boolean(),
   })
 );
 
@@ -59,6 +60,7 @@ export const assetDesignerFormOptions = formOptions({
       secretVerificationCode: "",
       verificationType: "OTP",
     },
+    available: false,
   } as AssetDesignerFormInputData,
 });
 

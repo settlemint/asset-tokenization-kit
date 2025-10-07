@@ -11,6 +11,7 @@
   "scripts": {
     "reset": "orb delete k8s --force  && orb start k8s ",
     "dependencies": "bun run tools/dependencies.ts",
+    "lint": "helm lint ./atk --strict --skip-schema-validation",
     "compile": "helm template atk --output-dir dist --include-crds",
     "package:harbor": "bun run tools/package-harbor.ts",
     "package:pack": "helm package atk --destination . ",
@@ -23,7 +24,7 @@
     "helm:extract-env": "bun run tools/extract-env.ts",
     "helm:connect": "cd ../../ && bunx settlemint connect -a",
     "helm:subgraph": "bash tools/helm-subgraph.sh",
-    "docs": "helm-docs --chart-search-root=. --skip-version-footer",
+    "docs": "helm-docs --chart-search-root=. --template-files=./README.md.gotmpl --skip-version-footer",
     "aws-marketplace": "bun run tools/aws-marketplace-automation.ts"
   },
   "dependencies": {},

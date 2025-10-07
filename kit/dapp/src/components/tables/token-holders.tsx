@@ -93,6 +93,7 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
   // Extract holders data with defensive null checking to prevent runtime errors
   // The API may return partial data during loading states or network issues
   const holders = holdersResponse.token?.balances ?? [];
+  const totalCount = holdersResponse.totalCount;
 
   // Token state determines available actions for security and compliance
   const isPaused = token.pausable?.paused ?? false;
@@ -362,20 +363,6 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
         />
       )}
       <div className="space-y-4">
-        {/* 
-          Total holders display provides immediate context for token distribution.
-          
-          Showing holder count upfront helps users understand the scale of token
-          distribution before diving into individual records. This is particularly
-          important for compliance reporting where holder count thresholds may
-          trigger regulatory requirements (e.g., SEC filing requirements).
-        */}
-        <div className="flex items-center gap-2">
-          <UserCircle className="h-5 w-5 text-muted-foreground" />
-          <p className="text-sm font-medium">
-            {t("tokens:holders.totalHolders", { count: holders.length })}
-          </p>
-        </div>
         <DataTable
           name="token-holders"
           data={holders}
@@ -421,6 +408,7 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
             // Pagination essential for large holder lists to maintain performance
             // Token holder lists can grow to thousands of entries
             enablePagination: true,
+            totalCount,
           }}
           initialSorting={INITIAL_SORTING}
         />

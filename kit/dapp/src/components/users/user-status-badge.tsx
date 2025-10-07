@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import type { Identity } from "@/orpc/routes/system/identity/routes/identity.read.schema";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { useTranslation } from "react-i18next";
+import { zeroAddress } from "viem";
 
 interface UserStatusBadgeProps {
   user: User;
@@ -22,7 +23,7 @@ export function UserStatusBadge({
 }: UserStatusBadgeProps) {
   const { t } = useTranslation("user");
 
-  if (!user.wallet) {
+  if (user.wallet === zeroAddress) {
     return (
       <Badge
         variant="outline"

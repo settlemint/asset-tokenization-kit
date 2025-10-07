@@ -1,18 +1,14 @@
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { isContractAddress } from "@/test/anvil";
 import type { AccessControlRoles } from "@atk/zod/access-control-roles";
+import type { FiatCurrency } from "@atk/zod/fiat-currency";
 import type { RoleRequirement } from "@atk/zod/role-requirement";
 import { ORPCError } from "@orpc/server";
 import { retryWhenFailed } from "@settlemint/sdk-utils";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { DEFAULT_INVESTOR } from "@test/fixtures/user";
+import { type User } from "@test/fixtures/user";
 import { getOrpcClient, type OrpcClient } from "./orpc-client";
-import {
-  DEFAULT_ADMIN,
-  DEFAULT_ISSUER,
-  DEFAULT_PINCODE,
-  signInWithUser,
-} from "./user";
+import { DEFAULT_PINCODE, signInWithUser } from "./user";
 
 const { userSearch: _, ...otherSystemRoles } = SYSTEM_PERMISSIONS;
 const SYSTEM_MANAGEMENT_REQUIRED_ROLES = extractRequiredRoles(otherSystemRoles);
@@ -177,8 +173,11 @@ export async function bootstrapAddons(orpClient: OrpcClient) {
   });
 }
 
-export async function setupDefaultIssuerRoles(orpClient: OrpcClient) {
-  const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
+export async function setupDefaultIssuerRoles(
+  orpClient: OrpcClient,
+  issuer: User
+) {
+  const issuerOrpcClient = getOrpcClient(await signInWithUser(issuer));
   const issuerSystem = await issuerOrpcClient.system.read({ id: "default" });
 
   // Issuer needs both token management roles and the claimIssuer role
@@ -224,7 +223,10 @@ export async function setupDefaultAdminRoles(orpClient: OrpcClient) {
   }
 }
 
-export async function setupTrustedClaimIssuers(orpClient: OrpcClient) {
+export async function setupTrustedClaimIssuers(
+  orpClient: OrpcClient,
+  issuer: User
+) {
   const topics = await orpClient.system.claimTopics.topicList({});
   const trustedIssuers = await orpClient.system.trustedIssuers.list({});
   const adminIdentity = await orpClient.system.identity.me({});
@@ -240,7 +242,7 @@ export async function setupTrustedClaimIssuers(orpClient: OrpcClient) {
       claimTopicIds: topics.map((t) => t.topicId),
     });
   }
-  const issuerOrpcClient = getOrpcClient(await signInWithUser(DEFAULT_ISSUER));
+  const issuerOrpcClient = getOrpcClient(await signInWithUser(issuer));
   const issuerIdentity = await issuerOrpcClient.system.identity.me({});
   if (!trustedIssuers.some((t) => t.id === issuerIdentity?.id)) {
     logger.info("Making issuer a trusted issuer of asset related topics");
@@ -262,7 +264,10 @@ export async function setupTrustedClaimIssuers(orpClient: OrpcClient) {
   }
 }
 
-export async function setDefaultSystemSettings(orpClient: OrpcClient) {
+export async function setDefaultSystemSettings(
+  orpClient: OrpcClient,
+  currency: FiatCurrency = "USD"
+) {
   const settings = await orpClient.settings.list({});
   if (settings.find((s) => s.key === "BASE_CURRENCY")) {
     logger.info("Base currency already set");
@@ -270,13 +275,16 @@ export async function setDefaultSystemSettings(orpClient: OrpcClient) {
   }
   await orpClient.settings.upsert({
     key: "BASE_CURRENCY",
-    value: "USD",
+    value: currency,
   });
 }
 
-export async function createAndRegisterUserIdentities(orpcClient: OrpcClient) {
-  const users = [DEFAULT_ISSUER, DEFAULT_INVESTOR, DEFAULT_ADMIN];
-
+export async function createAndRegisterUserIdentities(
+  orpcClient: OrpcClient,
+  users: User[],
+  country: string = "BE",
+  skipRegistration: boolean = false
+) {
   await Promise.all(
     users.map(async (user) => {
       const userOrpClient = getOrpcClient(await signInWithUser(user));
@@ -289,36 +297,89 @@ export async function createAndRegisterUserIdentities(orpcClient: OrpcClient) {
           },
           wallet: me.wallet,
         });
-        try {
-          await orpcClient.system.identity.register({
-            walletVerification: {
-              secretVerificationCode: DEFAULT_PINCODE,
-              verificationType: "PINCODE",
-            },
-            wallet: me.wallet,
-            country: "BE",
-          });
-        } catch (err) {
-          if (
-            !(
-              err instanceof ORPCError &&
-              err.message.includes("IdentityAlreadyRegistered")
-            )
-          ) {
-            throw err;
+        if (!skipRegistration) {
+          try {
+            await orpcClient.system.identity.register({
+              walletVerification: {
+                secretVerificationCode: DEFAULT_PINCODE,
+                verificationType: "PINCODE",
+              },
+              wallet: me.wallet,
+              country,
+            });
+          } catch (err) {
+            if (
+              !(
+                err instanceof ORPCError &&
+                err.message.includes("IdentityAlreadyRegistered")
+              )
+            ) {
+              throw err;
+            }
           }
         }
       }
       if (!me.onboardingState.identity) {
         await orpcClient.user.kyc.upsert({
-          firstName: user.name,
-          lastName: "(Integration tests)",
+          firstName: user.firstName,
+          lastName: user.lastName,
           dob: new Date("1990-01-01"),
-          country: "BE",
+          country,
           residencyStatus: "resident",
           nationalId: "1234567890",
           userId: me.id,
         });
+      }
+    })
+  );
+}
+
+export async function issueDefaultKycClaims(
+  orpClient: OrpcClient,
+  users: User[]
+) {
+  await Promise.all(
+    users.map(async (user) => {
+      const userOrpClient = getOrpcClient(await signInWithUser(user));
+      const userIdentity = await userOrpClient.system.identity.me({});
+      const hasKycClaim = userIdentity.claims.some(
+        (c) => c.name === "knowYourCustomer"
+      );
+      const hasAmlClaim = userIdentity.claims.some(
+        (c) => c.name === "antiMoneyLaundering"
+      );
+      const claimsToAdd: Parameters<
+        typeof orpClient.system.identity.claims.issue
+      >[0]["claim"][] = [];
+      if (!hasKycClaim) {
+        claimsToAdd.push({
+          topic: "knowYourCustomer",
+          data: {
+            claim: "kyc-verified",
+          },
+        });
+      }
+      if (!hasAmlClaim) {
+        claimsToAdd.push({
+          topic: "antiMoneyLaundering",
+          data: {
+            claim: "aml-verified",
+          },
+        });
+      }
+      if (claimsToAdd.length > 0) {
+        await Promise.all(
+          claimsToAdd.map((claim) =>
+            orpClient.system.identity.claims.issue({
+              walletVerification: {
+                secretVerificationCode: DEFAULT_PINCODE,
+                verificationType: "PINCODE",
+              },
+              targetIdentityAddress: userIdentity.id,
+              claim,
+            })
+          )
+        );
       }
     })
   );

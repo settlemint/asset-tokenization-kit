@@ -90,8 +90,11 @@ blockscout:
 
   # -- (object) Annotations for Blockscout backend pods
   podAnnotations:
+    # -- (string) Enable Prometheus scraping for Blockscout backend pods
     prometheus.io/scrape: "true"
+    # -- (string) Metrics port scraped by Prometheus
     prometheus.io/port: "4000"
+    # -- (string) HTTP endpoint exposing backend metrics
     prometheus.io/path: "/metrics"
 
   # -- (object) Blockscout backend image configuration
@@ -127,7 +130,7 @@ blockscout:
         # -- (string) TCP check container image repository
         repository: ghcr.io/settlemint/btp-waitforit
         # -- (string) TCP check container image tag
-        tag: v7.7.10
+        tag: v7.7.11
         # -- (string) TCP check container image pull policy
         pullPolicy: IfNotPresent
       # -- (int) Timeout in seconds for TCP checks
@@ -137,7 +140,7 @@ blockscout:
         # -- (object) Resource limits for TCP check container
         limits:
           # -- (string) CPU limit for TCP check container
-          cpu: 100m
+          cpu: 300m
           # -- (string) Memory limit for TCP check container
           memory: 64Mi
         # -- (object) Resource requests for TCP check container

@@ -131,7 +131,7 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
   // Get the current route's path pattern from the matched route
   const routePath = router.state.matches.at(-1)?.pathname;
 
-  const { data: tokens } = useSuspenseQuery(
+  const { data: response } = useSuspenseQuery(
     orpc.token.list.queryOptions({
       input: {
         tokenFactory: factoryAddress,
@@ -139,8 +139,11 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
     })
   );
 
+  const tokens = response.tokens;
+  const totalCount = response.totalCount;
+
   // Note: We now always show the Price column (cells still hide per-row when not applicable)
-  const hasAssetClassification = tokens.some((t) => {
+  const hasAssetClassification = tokens.some((t: Token) => {
     const classification = parseClaim<{ class?: string; category?: string }>(
       t.claims,
       "assetClassification"
@@ -641,6 +644,7 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
         }}
         pagination={{
           enablePagination: true,
+          totalCount,
         }}
         initialSorting={INITIAL_SORTING}
         customEmptyState={{

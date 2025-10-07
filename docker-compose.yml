@@ -11,7 +11,7 @@ volumes:
     driver: local
 services:
   anvil:
-    image: ghcr.io/settlemint/btp-anvil-test-node:v7.7.10
+    image: ghcr.io/settlemint/btp-anvil-test-node:v7.7.11
     container_name: ${CONTAINER_PREFIX:-atk}-anvil
     restart: unless-stopped
     environment:

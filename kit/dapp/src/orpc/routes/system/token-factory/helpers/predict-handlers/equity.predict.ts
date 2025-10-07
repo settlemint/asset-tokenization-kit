@@ -1,3 +1,4 @@
+import { encodeComplianceParams } from "@/lib/compliance/encoding/index";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import {
   type PredictAddressInput,
@@ -37,11 +38,16 @@ export const equityPredictHandler = async (
     throw new Error("Invalid token type");
   }
 
+  const { basePrice: _, ...params } = input;
   const result = await context.portalClient.query(
     PREDICT_EQUITY_ADDRESS_QUERY,
     {
       address: context.factoryAddress,
-      ...input,
+      ...params,
+      initialModulePairs: input.initialModulePairs.map((pair) => ({
+        module: pair.module,
+        params: encodeComplianceParams(pair),
+      })),
     },
     z.object({
       ATKEquityFactoryImplementation: z.object({
