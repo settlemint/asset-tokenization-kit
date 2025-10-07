@@ -204,9 +204,10 @@ abstract contract AbstractATKTokenFactoryImplementation is
         initialAdmins[0] = initialAdmin;
         initialAdmins[1] = address(this); // Add the factory as an initial admin to allow the access manager to be
             // upgraded
-        bytes memory constructorArgs = abi.encode(_systemAddress, initialAdmins);
-        bytes memory bytecode = type(ATKTokenAccessManagerProxy).creationCode;
-        fullCreationCode = bytes.concat(bytecode, constructorArgs);
+        fullCreationCode = bytes.concat(
+            type(ATKTokenAccessManagerProxy).creationCode, // Bytecode of the ATKTokenAccessManagerProxy contract
+            abi.encode(_systemAddress, initialAdmins) // Constructor arguments
+        );
     }
 
     /// @notice Predicts the deployment address of an access manager using CREATE2.
@@ -217,12 +218,39 @@ abstract contract AbstractATKTokenFactoryImplementation is
         view
         returns (address predictedAddress)
     {
-        // Use _msgSender() as the initial admin to match actual deployment behavior
+        return _predictAccessManagerAddress(accessManagerSaltInputData, _msgSender());
+    }
+
+    /// @notice Predicts the deployment address of an access manager using CREATE2 for a specific admin.
+    /// @param accessManagerSaltInputData The ABI encoded data to be used for salt calculation for the access manager.
+    /// @param initialAdmin The address that will act as the initial admin when deploying the access manager.
+    /// @return predictedAddress The predicted address where the access manager would be deployed.
+    function _predictAccessManagerAddress(
+        bytes memory accessManagerSaltInputData,
+        address initialAdmin
+    )
+        internal
+        view
+        returns (address predictedAddress)
+    {
         (bytes32 salt, bytes memory fullCreationCode) =
-            _prepareAccessManagerCreationData(accessManagerSaltInputData, _msgSender());
-        bytes32 bytecodeHash = keccak256(fullCreationCode);
-        predictedAddress = Create2.computeAddress(salt, bytecodeHash, address(this));
-        return predictedAddress;
+            _prepareAccessManagerCreationData(accessManagerSaltInputData, initialAdmin);
+        return Create2.computeAddress(salt, keccak256(fullCreationCode), address(this));
+    }
+
+    /// @inheritdoc IATKTokenFactory
+    function predictAccessManagerAddress(
+        string calldata name_,
+        string calldata symbol_,
+        uint8 decimals_,
+        address initialAdmin_
+    )
+        external
+        view
+        override
+        returns (address predictedAddress)
+    {
+        return _predictAccessManagerAddress(_buildSaltInput(name_, symbol_, decimals_), initialAdmin_);
     }
 
     /// @notice Creates a new access manager for a token using CREATE2.

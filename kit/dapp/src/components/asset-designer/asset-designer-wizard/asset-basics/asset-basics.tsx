@@ -12,17 +12,23 @@ import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
 import type { KeysOfUnion } from "@/lib/utils/union";
-import { orpc } from "@/orpc/orpc-client";
+import { client, orpc } from "@/orpc/orpc-client";
 import { getAssetExtensionsForType } from "@atk/zod/asset-extensions";
 import { useQuery } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
 import { from } from "dnum";
 import { useTranslation } from "react-i18next";
 
+import {
+  AvailabilityStatus,
+  type AvailabilityStatusState,
+} from "./availability-status";
+
 const commonFields: KeysOfUnion<AssetDesignerFormInputData>[] = [
   "name",
   "symbol",
   "decimals",
+  "available",
   "isin",
   "countryCode",
   "basePrice",
@@ -65,6 +71,7 @@ export const AssetBasics = withForm({
                   : commonFields
               }
               checkRequiredFn={isRequiredField}
+              revalidateOn="stateChange"
             />
           </>
         }
@@ -112,6 +119,7 @@ export const AssetBasics = withForm({
             />
           )}
         />
+
         <form.AppField
           name="isin"
           children={(field) => (
@@ -126,6 +134,50 @@ export const AssetBasics = withForm({
             />
           )}
         />
+
+        <form.Field
+          name="available"
+          validators={{
+            onBlurListenTo: ["name", "symbol", "decimals", "type"],
+            onBlurAsync: async ({ fieldApi }) => {
+              const name = fieldApi.form.getFieldValue("name");
+              const symbol = fieldApi.form.getFieldValue("symbol");
+              const decimals = fieldApi.form.getFieldValue("decimals");
+              const assetType = fieldApi.form.getFieldValue("type");
+
+              try {
+                const result = await client.system.factory.available({
+                  parameters: { name, symbol, decimals, type: assetType },
+                });
+                return result.isAvailable ? undefined : "unavailable";
+              } catch {
+                return "error";
+              }
+            },
+            onBlurAsyncDebounceMs: 500,
+          }}
+        >
+          {(field) => {
+            const errorKey = field.state.meta.errors[0];
+            const isDependantFieldsTouched =
+              field.form.getFieldMeta("name")?.isTouched &&
+              field.form.getFieldMeta("symbol")?.isTouched &&
+              field.form.getFieldMeta("decimals")?.isTouched &&
+              field.form.getFieldMeta("type")?.isTouched;
+
+            let status: AvailabilityStatusState = "available";
+            if (field.state.meta.isValidating) {
+              status = "loading";
+            } else if (typeof errorKey === "string") {
+              status = errorKey;
+            }
+
+            return isDependantFieldsTouched ? (
+              <AvailabilityStatus status={status} className="col-span-2" />
+            ) : null;
+          }}
+        </form.Field>
+
         {!hasDenominationAsset && (
           <form.AppField
             name="basePrice"
