@@ -12,7 +12,6 @@ integrity across the full stack.
 ```
 e2e/
 ├── ui-tests/           # UI workflow tests
-├── api-tests/          # API endpoint tests
 ├── pages/              # Page object models
 ├── test-data/          # Test fixtures and data
 ├── utils/              # Test helpers and utilities
@@ -57,7 +56,6 @@ accessibility
 ### Test locations
 
 - UI tests: `ui-tests/*.spec.ts`
-- API tests: `api-tests/*.spec.ts`
 - Page objects: `pages/*.ts`
 
 ## Agent Hints (Local)
@@ -70,7 +68,7 @@ accessibility
 
 ### Safe extension points
 
-- Add new test files in `ui-tests/` or `api-tests/`
+- Add new test files in `ui-tests/`
 - Extend page objects in `pages/` for new UI elements
 - Add test data fixtures in `test-data/`
 

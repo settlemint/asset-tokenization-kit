@@ -16,7 +16,9 @@ export const AvailableInputSchema = z.union([
     parameters: PredictAddressInputSchema,
   }),
   z.object({
-    address: ethereumAddress.describe("The address to check"),
+    accessControl: ethereumAddress.describe(
+      "The access control address to check"
+    ),
   }),
 ]);
 

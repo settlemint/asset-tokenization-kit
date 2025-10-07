@@ -56,8 +56,6 @@
     "publish": "turbo publish",
     "test:e2e:ui": "bun run --cwd kit/e2e playwright test --config=playwright.ui.config.ts --project=ui-tests",
     "test:e2e:ui:debug": "bun run --cwd kit/e2e playwright test --config=playwright.ui.config.ts --ui",
-    "test:e2e:api": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests",
-    "test:e2e:api:debug": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests --ui",
     "helm": "turbo run helm ",
     "dev:up": "TIMESTAMP=$(date +'%s') docker compose -p atk up -d",
     "postdev:up": "settlemint connect --instance local",
