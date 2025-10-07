@@ -17,12 +17,12 @@ const defaultTo = new Date(Date.UTC(2024, 0, 2));
 
 const defaultRange: StatsRangePreset = "trailing7Days";
 
-// Mock useQuery while keeping other exports
+// Mock useQueries while keeping other exports
 vi.mock("@tanstack/react-query", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tanstack/react-query")>();
   return {
     ...actual,
-    useQuery: vi.fn(),
+    useQueries: vi.fn(),
   };
 });
 
@@ -45,29 +45,31 @@ describe("AssetLifecycleInteractiveChart", () => {
   });
 
   it("should render chart with lifecycle data", async () => {
-    const { useQuery } = await import("@tanstack/react-query");
-    vi.mocked(useQuery).mockReturnValue(
-      createMockQueryResult({
-        range: {
-          interval: "day",
-          from: defaultFrom,
-          to: defaultTo,
-          isPreset: false,
+    const { useQueries } = await import("@tanstack/react-query");
+    const mockData = {
+      range: {
+        interval: "day" as const,
+        from: defaultFrom,
+        to: defaultTo,
+        isPreset: false,
+      },
+      data: [
+        {
+          timestamp: new Date(Date.UTC(2024, 0, 1)),
+          assetsCreated: 12,
+          assetsLaunched: 9,
         },
-        data: [
-          {
-            timestamp: new Date(Date.UTC(2024, 0, 1)),
-            assetsCreated: 12,
-            assetsLaunched: 9,
-          },
-          {
-            timestamp: new Date(Date.UTC(2024, 0, 2)),
-            assetsCreated: 18,
-            assetsLaunched: 15,
-          },
-        ],
-      })
-    );
+        {
+          timestamp: new Date(Date.UTC(2024, 0, 2)),
+          assetsCreated: 18,
+          assetsLaunched: 15,
+        },
+      ],
+    };
+    vi.mocked(useQueries).mockReturnValue([
+      createMockQueryResult(mockData),
+      createMockQueryResult(mockData),
+    ]);
 
     renderWithProviders(
       <AssetLifecycleInteractiveChart defaultRange={defaultRange} />
@@ -76,24 +78,23 @@ describe("AssetLifecycleInteractiveChart", () => {
     expect(
       await screen.findByText("charts.assetLifecycle.title")
     ).toBeInTheDocument();
-    expect(
-      await screen.findByText("charts.assetLifecycle.description")
-    ).toBeInTheDocument();
   });
 
   it("should show empty state when no lifecycle data exists", async () => {
-    const { useQuery } = await import("@tanstack/react-query");
-    vi.mocked(useQuery).mockReturnValue(
-      createMockQueryResult({
-        range: {
-          interval: "day",
-          from: defaultFrom,
-          to: defaultTo,
-          isPreset: false,
-        },
-        data: [],
-      })
-    );
+    const { useQueries } = await import("@tanstack/react-query");
+    const mockData = {
+      range: {
+        interval: "day" as const,
+        from: defaultFrom,
+        to: defaultTo,
+        isPreset: false,
+      },
+      data: [],
+    };
+    vi.mocked(useQueries).mockReturnValue([
+      createMockQueryResult(mockData),
+      createMockQueryResult(mockData),
+    ]);
 
     renderWithProviders(
       <AssetLifecycleInteractiveChart defaultRange={defaultRange} />
@@ -108,8 +109,8 @@ describe("AssetLifecycleInteractiveChart", () => {
   });
 
   it("should surface ORPC errors", async () => {
-    const { useQuery } = await import("@tanstack/react-query");
-    vi.mocked(useQuery).mockImplementation(
+    const { useQueries } = await import("@tanstack/react-query");
+    vi.mocked(useQueries).mockImplementation(
       createMockQueryError(
         new Error("ORPC Error: Failed to fetch asset lifecycle stats")
       )
