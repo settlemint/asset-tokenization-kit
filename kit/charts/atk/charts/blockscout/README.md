@@ -1,6 +1,6 @@
 # blockscout
 
-![Version: 2.0.0-alpha.18](https://img.shields.io/badge/Version-2.0.0--alpha.18-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.18](https://img.shields.io/badge/AppVersion-2.0.0--alpha.18-informational?style=flat-square)
+![Version: 2.0.0-beta.1](https://img.shields.io/badge/Version-2.0.0--beta.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.1](https://img.shields.io/badge/AppVersion-2.0.0--beta.1-informational?style=flat-square)
 
 A Helm chart for Blockscout blockchain explorer stack
 
@@ -48,7 +48,7 @@ The following table lists the configurable parameters of this chart and their de
 |blockscout.extraInitContainers|list|-|Additional init containers appended verbatim|
 |blockscout.image|object|-|Blockscout backend image configuration|
 |blockscout.image.pullPolicy|string|`"IfNotPresent"`|Blockscout backend image pull policy|
-|blockscout.image.repository|string|`"ghcr.io/blockscout/blockscout"`|Blockscout backend image repository|
+|blockscout.image.repository|string|`"harbor.settlemint.com/ghcr.io/blockscout/blockscout"`|Blockscout backend image repository|
 |blockscout.image.tag|string|`"9.0.2"`|Blockscout backend image tag (immutable tags are recommended)|
 |blockscout.ingress|object|-|Ingress parameters for Blockscout backend|
 |blockscout.ingress.annotations|object|-|Additional annotations for the Ingress resource|
@@ -65,7 +65,7 @@ The following table lists the configurable parameters of this chart and their de
 |blockscout.initContainer.tcpCheck.enabled|bool|`true`|Enable TCP check init container|
 |blockscout.initContainer.tcpCheck.image|object|-|TCP check container image configuration|
 |blockscout.initContainer.tcpCheck.image.pullPolicy|string|`"IfNotPresent"`|TCP check container image pull policy|
-|blockscout.initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|TCP check container image repository|
+|blockscout.initContainer.tcpCheck.image.repository|string|`"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit"`|TCP check container image repository|
 |blockscout.initContainer.tcpCheck.image.tag|string|`"v7.7.11"`|TCP check container image tag|
 |blockscout.initContainer.tcpCheck.resources|object|-|TCP check container resource requests and limits|
 |blockscout.initContainer.tcpCheck.resources.dependencies|list|-|List of service dependencies to check|
@@ -169,7 +169,7 @@ The following table lists the configurable parameters of this chart and their de
 |frontend.env.NEXT_PUBLIC_TRANSACTION_INTERPRETATION_PROVIDER|string|`"blockscout"`|Transaction interpretation provider|
 |frontend.image|object|-|Blockscout frontend image configuration|
 |frontend.image.pullPolicy|string|`"IfNotPresent"`|Blockscout frontend image pull policy|
-|frontend.image.repository|string|`"ghcr.io/blockscout/frontend"`|Blockscout frontend image repository|
+|frontend.image.repository|string|`"harbor.settlemint.com/ghcr.io/blockscout/frontend"`|Blockscout frontend image repository|
 |frontend.image.tag|string|`"v2.3.4"`|Blockscout frontend image tag (immutable tags are recommended)|
 |frontend.ingress|object|-|Ingress parameters for Blockscout frontend|
 |frontend.ingress.annotations|object|-|Additional annotations for the Ingress resource|

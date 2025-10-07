@@ -1,6 +1,6 @@
 # hasura
 
-![Version: 2.0.0-alpha.18](https://img.shields.io/badge/Version-2.0.0--alpha.18-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.18](https://img.shields.io/badge/AppVersion-2.0.0--alpha.18-informational?style=flat-square)
+![Version: 2.0.0-beta.1](https://img.shields.io/badge/Version-2.0.0--beta.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.1](https://img.shields.io/badge/AppVersion-2.0.0--beta.1-informational?style=flat-square)
 
 A Helm chart for Hasura GraphQL Engine
 
@@ -100,7 +100,7 @@ The following table lists the configurable parameters of this chart and their de
 |healthChecks.startupProbe.timeoutSeconds|int|`5`|Timeout seconds|
 |image|object|-|Hasura image configuration|
 |image.pullPolicy|string|`"IfNotPresent"`|Hasura image pull policy|
-|image.registry|string|`"docker.io"`|Hasura image registry|
+|image.registry|string|`"harbor.settlemint.com/docker.io"`|Hasura image registry|
 |image.repository|string|`"hasura/graphql-engine"`|Hasura image repository|
 |image.tag|string|`"v2.48.6"`|Hasura image tag|
 |imagePullSecrets|list|-|Docker registry secret names as an array|
@@ -114,9 +114,9 @@ The following table lists the configurable parameters of this chart and their de
 |ingress.pathType|string|`"Prefix"`|Ingress path type|
 |ingress.tls|list|-|TLS configuration|
 |initContainers|list|-|Init containers|
-|initContainers[0]|string|`{"command":["/usr/bin/wait-for-it","postgresql:5432","-t","120"],"image":"ghcr.io/settlemint/btp-waitforit:v7.7.11","imagePullPolicy":"IfNotPresent","name":"wait-for-postgresql","resources":{"limits":{"cpu":"300m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}}`|Container name|
+|initContainers[0]|string|`{"command":["/usr/bin/wait-for-it","postgresql:5432","-t","120"],"image":"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit:v7.7.11","imagePullPolicy":"IfNotPresent","name":"wait-for-postgresql","resources":{"limits":{"cpu":"300m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}}`|Container name|
 |initContainers[0].command|list|-|Container command|
-|initContainers[0].image|string|`"ghcr.io/settlemint/btp-waitforit:v7.7.11"`|Container image|
+|initContainers[0].image|string|`"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit:v7.7.11"`|Container image|
 |initContainers[0].imagePullPolicy|string|`"IfNotPresent"`|Image pull policy|
 |initContainers[0].resources|object|-|Resource limits and requests|
 |initContainers[0].resources.limits|object|-|Resource limits|

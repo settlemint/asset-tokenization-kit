@@ -1,6 +1,6 @@
 # dapp
 
-![Version: 2.0.0-alpha.18](https://img.shields.io/badge/Version-2.0.0--alpha.18-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-alpha.18](https://img.shields.io/badge/AppVersion-2.0.0--alpha.18-informational?style=flat-square)
+![Version: 2.0.0-beta.1](https://img.shields.io/badge/Version-2.0.0--beta.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.1](https://img.shields.io/badge/AppVersion-2.0.0--beta.1-informational?style=flat-square)
 
 A Helm chart for the ATK DApp frontend
 
@@ -27,7 +27,7 @@ The following table lists the configurable parameters of this chart and their de
 |global.labels."kots.io/app-slug"|string|`"settlemint-atk"`|KOTS application slug identifier|
 |image|object|-|dApp image configuration|
 |image.pullPolicy|string|`"IfNotPresent"`|dApp image pull policy|
-|image.repository|string|`"ghcr.io/settlemint/asset-tokenization-kit"`|dApp image repository|
+|image.repository|string|`"harbor.settlemint.com/ghcr.io/settlemint/asset-tokenization-kit"`|dApp image repository|
 |image.tag|string|`""`|dApp image tag (defaults to chart appVersion)|
 |ingress|object|-|Ingress configuration|
 |ingress.annotations|object|-|Additional annotations for the Ingress resource|
@@ -46,7 +46,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.graphQLCheck.enabled|bool|`true`|Enable GraphQL endpoint readiness check|
 |initContainer.graphQLCheck.image|object|-|Container image configuration for GraphQL check|
 |initContainer.graphQLCheck.image.pullPolicy|string|`"IfNotPresent"`|Image pull policy|
-|initContainer.graphQLCheck.image.registry|string|`"docker.io"`|Container registry|
+|initContainer.graphQLCheck.image.registry|string|`"harbor.settlemint.com/docker.io"`|Container registry|
 |initContainer.graphQLCheck.image.repository|string|`"curlimages/curl"`|Image repository for curl utility|
 |initContainer.graphQLCheck.image.tag|string|`"8.16.0"`|Image tag|
 |initContainer.graphQLCheck.name|string|`"wait-for-graphql"`|Name of the init container|
@@ -80,7 +80,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.tcpCheck.enabled|bool|`true`|Enable TCP availability checks|
 |initContainer.tcpCheck.image|object|-|Container image configuration for TCP check init container|
 |initContainer.tcpCheck.image.pullPolicy|string|`"IfNotPresent"`|Image pull policy|
-|initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|Image repository for wait-for-it utility|
+|initContainer.tcpCheck.image.repository|string|`"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit"`|Image repository for wait-for-it utility|
 |initContainer.tcpCheck.image.tag|string|`"v7.7.11"`|Image tag for wait-for-it utility|
 |initContainer.tcpCheck.resources|object|-|Resource limits and requests for TCP check init container|
 |initContainer.tcpCheck.resources.limits|object|-|Resource limits|
