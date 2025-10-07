@@ -17,7 +17,7 @@ export const Route = createFileRoute(
 });
 
 function UserManagementPage() {
-  const { t } = useTranslation("navigation");
+  const { t } = useTranslation(["navigation", "user"]);
 
   return (
     <div className="container mx-auto p-6">
@@ -25,14 +25,16 @@ function UserManagementPage() {
       <div className="mb-8 mt-4">
         <h1 className="text-3xl font-bold">{t("userManagement")}</h1>
         <p className="text-muted-foreground mt-2">
-          Manage users, roles, and permissions for your platform.
+          {t("user:management.page.description")}
         </p>
       </div>
 
       <Suspense
         fallback={
           <div className="rounded-lg border bg-card p-6">
-            <p className="text-muted-foreground">Loading users...</p>
+            <p className="text-muted-foreground">
+              {t("user:management.table.emptyState.loading")}
+            </p>
           </div>
         }
       >

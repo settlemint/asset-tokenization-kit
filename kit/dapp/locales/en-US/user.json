@@ -15,6 +15,9 @@
     }
   },
   "management": {
+    "page": {
+      "description": "Manage users, roles, and permissions for your platform."
+    },
     "table": {
       "columns": {
         "name": "Name",
