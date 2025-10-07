@@ -7,6 +7,11 @@ import {
 } from "../../../generated/templates/Custodian/Custodian";
 import { fetchEvent } from "../../event/fetch/event";
 import { updateAccountStatsForBalanceChange } from "../../stats/account-stats";
+import {
+  incrementSystemAssetActivity,
+  SystemAssetActivity,
+} from "../../stats/system-stats";
+import { incrementTokenTypeAssetActivity } from "../../stats/token-type-stats";
 import { trackTokenStats } from "../../stats/token-stats";
 import {
   decreaseTokenBalanceFrozen,
@@ -61,6 +66,9 @@ export function handleForcedTransfer(event: ForcedTransfer): void {
 
   // Update token stats for forced transfer
   trackTokenStats(token, eventEntry);
+
+  incrementSystemAssetActivity(token, SystemAssetActivity.FORCED_TRANSFER);
+  incrementTokenTypeAssetActivity(token, SystemAssetActivity.FORCED_TRANSFER);
 }
 
 export function handleRecoverySuccess(event: RecoverySuccess): void {
@@ -74,6 +82,9 @@ export function handleRecoverySuccess(event: RecoverySuccess): void {
     event.params.newWallet,
     event.block.timestamp
   );
+
+  incrementSystemAssetActivity(token, SystemAssetActivity.CLAWBACK);
+  incrementTokenTypeAssetActivity(token, SystemAssetActivity.CLAWBACK);
 }
 
 export function handleTokensFrozen(event: TokensFrozen): void {
