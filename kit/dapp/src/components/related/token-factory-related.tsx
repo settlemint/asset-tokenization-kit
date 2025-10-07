@@ -33,8 +33,9 @@ interface TokenFactoryRelatedProps {
 export function TokenFactoryRelated({ assetType }: TokenFactoryRelatedProps) {
   const { t } = useTranslation("tokens");
 
+  // TODO: Uncomment this when we have implemented the factory related actions
   return (
-    <RelatedGrid>
+    <RelatedGrid style={{ display: "none" }}>
       <RelatedGridContent columns={3} animate>
         <RelatedGridItem>
           <RelatedGridItemContent>
