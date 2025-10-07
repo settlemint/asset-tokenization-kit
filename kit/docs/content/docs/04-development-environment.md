@@ -133,6 +133,15 @@ The architecture provides complete separation of concerns while maintaining tigh
 | **Docker Compose** | Latest | Included with Docker Desktop | `docker compose version` |
 | **Git** | Latest | System package manager | `git --version` |
 
+### Authenticate with GitHub Container Registry (GHCR)
+
+Many Docker images used by the development environment are hosted on the GitHub Container Registry. Authenticate once per machine so Docker can pull private SettleMint images:
+
+1. Create a [GitHub Personal Access Token](https://github.com/settings/tokens) with the `read:packages` scope (include `write:packages` if you push images).
+2. Run `echo <token> | docker login ghcr.io -u <github-username> --password-stdin` to store credentials securely in the Docker credential helper.
+3. Verify access with `docker pull ghcr.io/settlemint/asset-tokenization-kit:latest` (or any image you are authorized to use).
+4. Repeat the login on any additional machines or after clearing Docker credentials.
+
 ### Initial Setup Process
 
 ```mermaid
