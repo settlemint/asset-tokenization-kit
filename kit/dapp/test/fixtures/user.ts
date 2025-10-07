@@ -123,11 +123,12 @@ export const setupUser = (user: User) =>
         });
 
         const isFullyOnboarded =
-          sessionBeforeWallet.data?.user.wallet &&
-          sessionBeforeWallet.data?.user.pincodeEnabled &&
-          sessionBeforeWallet.data?.user.secretCodesConfirmed;
-        if (isFullyOnboarded) {
-          return sessionBeforeWallet.data?.user;
+          !!sessionBeforeWallet.data?.user?.wallet &&
+          !!sessionBeforeWallet.data?.user?.pincodeEnabled &&
+          !!sessionBeforeWallet.data?.user?.secretCodesConfirmed;
+
+        if (sessionBeforeWallet.data?.user && isFullyOnboarded) {
+          return sessionBeforeWallet.data.user;
         }
 
         const userWallet = sessionBeforeWallet.data?.user.wallet;
