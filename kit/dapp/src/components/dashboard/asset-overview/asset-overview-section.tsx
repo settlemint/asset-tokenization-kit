@@ -69,7 +69,7 @@ function AssetOverviewSectionContent() {
               <ValueStatsWidget />
             </Suspense>
           </div>
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <Suspense fallback={<ChartSkeleton />}>
               <AssetLifecycleAreaChart defaultRange="trailing7Days" />
             </Suspense>
