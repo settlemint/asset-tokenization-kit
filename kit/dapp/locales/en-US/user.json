@@ -24,6 +24,7 @@
         "email": "Email",
         "wallet": "Wallet",
         "role": "Role",
+        "identity": "Identity",
         "status": "Status",
         "created": "Created",
         "lastActive": "Last Active",
@@ -44,6 +45,9 @@
         "notConnectedAriaLabel": "User has not connected a wallet",
         "identityNeededAriaLabel": "User has wallet but no identity registered",
         "pendingRegistrationAriaLabel": "User identity registration is pending"
+      },
+      "identity": {
+        "none": "No identity"
       },
       "actions": {
         "viewDetails": "View Details",

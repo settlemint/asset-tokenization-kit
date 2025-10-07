@@ -1,16 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "@tanstack/react-router";
+import { Link, useRouter } from "@tanstack/react-router";
 import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { Users } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboard";
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
-import { UserStatusBadge } from "@/components/users/user-status-badge";
+import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
 import { UserWithIdentity } from "@/orpc/routes/user/routes/user.list.schema";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
@@ -20,7 +21,7 @@ const columnHelper = createStrictColumnHelper<UserWithIdentity>();
 
 /**
  * Users table component for displaying and managing platform users
- * Shows user information, registration status, and actions for each user with chunked loading
+ * Shows user information, linked identity, and actions for each user with chunked loading
  */
 export function UsersTable() {
   const { t } = useTranslation("user");
@@ -89,30 +90,41 @@ export function UsersTable() {
           },
         }),
         columnHelper.display({
-          id: "status",
-          header: t("management.table.columns.status"),
-          cell: ({ row }) => (
-            <UserStatusBadge
-              user={row.original}
-              isRegistered={row.original.isRegistered}
-              identity={{ id: row.original.identity }}
-              isAdmin={row.original.isAdmin}
-            />
-          ),
+          id: "identity",
+          header: t("management.table.columns.identity"),
+          cell: ({ row }) => {
+            const identityAddress = row.original.identity;
+
+            if (!identityAddress) {
+              return (
+                <span className="text-muted-foreground">
+                  {t("management.table.identity.none")}
+                </span>
+              );
+            }
+
+            return (
+              <CopyToClipboard value={identityAddress} className="max-w-full">
+                <Link
+                  to="/admin/identity-management/$address"
+                  params={{ address: identityAddress }}
+                  className="inline-flex min-w-0 max-w-full items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm transition-colors hover:text-primary"
+                >
+                  <Web3Address
+                    address={identityAddress}
+                    size="small"
+                    showBadge={false}
+                    showPrettyName={false}
+                    showFullAddress={false}
+                    className="max-w-full"
+                  />
+                </Link>
+              </CopyToClipboard>
+            );
+          },
           meta: {
-            displayName: t("management.table.columns.status"),
-            type: "option",
-            options: [
-              {
-                label: t("management.table.status.registered"),
-                value: "registered",
-              },
-              { label: t("management.table.status.pending"), value: "pending" },
-              {
-                label: t("management.table.status.notConnected"),
-                value: "notConnected",
-              },
-            ],
+            displayName: t("management.table.columns.identity"),
+            type: "address",
           },
         }),
         columnHelper.accessor("createdAt", {

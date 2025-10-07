@@ -3,7 +3,6 @@ import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
 import { getUserTabConfiguration } from "@/components/tab-navigation/user-tab-configuration";
-import { UserStatusBadge } from "@/components/users/user-status-badge";
 import { getUserDisplayName } from "@/lib/utils/user-display-name";
 import { ORPCError } from "@orpc/client";
 import { useQuery } from "@tanstack/react-query";
@@ -84,7 +83,7 @@ export const Route = createFileRoute(
  * including header, breadcrumbs, tabs, and renders child routes through Outlet.
  */
 function RouteComponent() {
-  const { user: loaderUser, identity: loaderIdentity } = Route.useLoaderData();
+  const { user: loaderUser } = Route.useLoaderData();
   const { userId } = Route.useParams();
   const { t } = useTranslation(["user", "common"]);
 
@@ -95,14 +94,7 @@ function RouteComponent() {
     })
   );
 
-  const { data: queriedIdentity } = useQuery(
-    Route.useRouteContext().orpc.system.identity.read.queryOptions({
-      input: { wallet: loaderUser.wallet ?? "" },
-    })
-  );
-
   const user = queriedUser ?? loaderUser;
-  const identity = queriedIdentity ?? loaderIdentity;
   const displayName = getUserDisplayName(user);
 
   // Generate tab configuration based on user data
@@ -130,7 +122,6 @@ function RouteComponent() {
             <h1 className="text-3xl font-bold tracking-tight">
               {displayName || user.email}
             </h1>
-            <UserStatusBadge identity={identity} user={user} />
           </div>
           {/* Future: Add ManageUserDropdown here */}
         </div>

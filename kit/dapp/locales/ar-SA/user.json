@@ -16,6 +16,9 @@
   },
   "management": {
     "table": {
+      "identity": {
+        "none": "لا توجد هوية"
+      },
       "status": {
         "registered": "مسجل",
         "pending": "في الانتظار",
