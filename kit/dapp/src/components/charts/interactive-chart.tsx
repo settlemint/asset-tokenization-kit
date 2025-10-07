@@ -1,11 +1,5 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   type ChartConfig,
   ChartContainer,
@@ -35,7 +29,7 @@ import {
   YAxis,
 } from "recharts";
 import { ChartEmptyState } from "./chart-empty-state";
-import { ChartUpdateInfo } from "./chart-update-info";
+import { ChartInfo } from "./chart-info";
 
 export type InteractiveChartData = Record<string, string | number | Date>;
 
@@ -152,31 +146,13 @@ export function InteractiveChartComponent({
   return (
     <Card className={cn("h-full", className)}>
       <CardHeader>
-        <div className="flex items-center justify-between gap-4">
-          {/* Left: Title + Update Info */}
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <CardTitle className="truncate">{title}</CardTitle>
-            {interval && <ChartUpdateInfo interval={interval} />}
+        <div className="flex sm:flex-row items-center gap-2 space-y-0">
+          <div className="flex flex-1 items-center gap-2">
+            <CardTitle>{title}</CardTitle>
+            {description && <ChartInfo description={description} />}
           </div>
 
-          {/* Right: Controls */}
-          <div className="flex items-center gap-2 shrink-0">
-            {/* Timeframe Dropdown */}
-            {availableRangePresets && selectedRange && onRangeChange && (
-              <Select value={selectedRange} onValueChange={onRangeChange}>
-                <SelectTrigger size="sm" className="w-[140px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableRangePresets.map((preset) => (
-                    <SelectItem key={preset} value={preset}>
-                      {t(`timeframes.${preset}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-
+          <div className="items-center gap-2 sm:flex hidden">
             {/* Chart Type Toggle */}
             {enableChartTypeToggle && (
               <div className="flex items-center gap-1">
@@ -206,9 +182,32 @@ export function InteractiveChartComponent({
                 </Button>
               </div>
             )}
+
+            {/* Timeframe Dropdown */}
+            {availableRangePresets && selectedRange && onRangeChange && (
+              <Select value={selectedRange} onValueChange={onRangeChange}>
+                <SelectTrigger
+                  size="sm"
+                  className="w-[160px] rounded-lg sm:ml-auto"
+                  aria-label="Select timeframe"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  {availableRangePresets.map((preset) => (
+                    <SelectItem
+                      key={preset}
+                      value={preset}
+                      className="rounded-lg"
+                    >
+                      {t(`timeframes.${preset}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
         </div>
-        {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
 
       <CardContent className="flex flex-1 items-center">

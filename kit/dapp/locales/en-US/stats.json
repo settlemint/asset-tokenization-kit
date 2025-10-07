@@ -27,7 +27,7 @@
       "title": "Asset supply"
     },
     "assetLifecycle": {
-      "title": "Created and launched assets",
+      "title": "Launched assets",
       "description": "Track how asset launches keep pace with new creations {{overRange}}",
       "createdLabel": "Assets created",
       "launchedLabel": "Assets launched",
