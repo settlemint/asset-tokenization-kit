@@ -137,8 +137,8 @@ export const AssetBasics = withForm({
         <form.Field
           name="available"
           validators={{
-            onChangeListenTo: ["name", "symbol", "decimals", "type"],
-            onChangeAsync: async ({ fieldApi }) => {
+            onBlurListenTo: ["name", "symbol", "decimals", "type"],
+            onBlurAsync: async ({ fieldApi }) => {
               const name = fieldApi.form.getFieldValue("name");
               const symbol = fieldApi.form.getFieldValue("symbol");
               const decimals = fieldApi.form.getFieldValue("decimals");
@@ -153,7 +153,7 @@ export const AssetBasics = withForm({
                 return "error";
               }
             },
-            onChangeAsyncDebounceMs: 500,
+            onBlurAsyncDebounceMs: 500,
           }}
         >
           {(field) => {

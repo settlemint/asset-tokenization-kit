@@ -34,6 +34,10 @@ export function NumberField({
     [field]
   );
 
+  const handleBlur = React.useCallback(() => {
+    field.handleBlur();
+  }, [field]);
+
   const errorClass = React.useMemo(() => {
     return errorClassNames({
       isTouched: field.state.meta.isTouched,
@@ -50,11 +54,12 @@ export function NumberField({
           type="number"
           inputMode="decimal"
           onChange={handleChange}
+          onBlur={handleBlur}
           className={cn(className, errorClass)}
         />
       );
     },
-    [field.name, field.state.value, handleChange, errorClass]
+    [field.name, field.state.value, handleChange, handleBlur, errorClass]
   );
 
   return (
