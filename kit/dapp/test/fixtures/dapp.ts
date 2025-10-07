@@ -8,6 +8,9 @@ config({ path: [".env", ".env.local"], quiet: true });
 let dappUrl: string | undefined;
 
 export function getDappUrl() {
+  if (process.env.DAPP_URL) {
+    return process.env.DAPP_URL;
+  }
   return dappUrl ?? `http://localhost:3000`;
 }
 

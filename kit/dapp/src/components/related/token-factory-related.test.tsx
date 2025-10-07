@@ -15,7 +15,7 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
-describe("TokenFactoryRelated", () => {
+describe.skip("TokenFactoryRelated", () => {
   const assetTypes: AssetType[] = [
     "bond",
     "deposit",

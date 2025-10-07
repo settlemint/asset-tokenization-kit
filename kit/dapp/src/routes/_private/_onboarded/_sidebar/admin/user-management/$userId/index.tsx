@@ -7,8 +7,9 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { Web3Address } from "@/components/web3/web3-address";
 import { getUserDisplayName } from "@/lib/utils/user-display-name";
-import { createFileRoute, useLoaderData } from "@tanstack/react-router";
+import { Link, createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -111,16 +112,34 @@ function RouteComponent() {
           emptyValue={t("user:fields.noWalletConnected")}
         />
 
-        {identity && (
-          <DetailGridItem
-            label={t("user:fields.onChainIdentity")}
-            info={t("user:fields.onChainIdentityInfo")}
-            value={identity.id}
-            type="address"
-            showPrettyName={false}
-            emptyValue={t("user:fields.noIdentityRegistered")}
-          />
-        )}
+        <DetailGridItem
+          label={t("user:fields.onChainIdentity")}
+          info={t("user:fields.onChainIdentityInfo")}
+          emptyValue={t("user:fields.noIdentityRegistered")}
+        >
+          {identity ? (
+            <CopyToClipboard value={identity.id} className="max-w-full">
+              <Link
+                to="/admin/identity-management/$address"
+                params={{ address: identity.id }}
+                className="inline-flex min-w-0 max-w-full items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm transition-colors hover:text-primary"
+              >
+                <Web3Address
+                  address={identity.id}
+                  size="small"
+                  showBadge={false}
+                  showPrettyName={false}
+                  showFullAddress={false}
+                  className="max-w-full"
+                />
+              </Link>
+            </CopyToClipboard>
+          ) : (
+            <span className="text-muted-foreground">
+              {t("user:fields.noIdentityRegistered")}
+            </span>
+          )}
+        </DetailGridItem>
       </DetailGrid>
 
       {/* KYC Information - Separate grid if available */}

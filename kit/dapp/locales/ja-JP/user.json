@@ -16,6 +16,9 @@
   },
   "management": {
     "table": {
+      "identity": {
+        "none": "アイデンティティなし"
+      },
       "status": {
         "registered": "登録済み",
         "pending": "保留中",
