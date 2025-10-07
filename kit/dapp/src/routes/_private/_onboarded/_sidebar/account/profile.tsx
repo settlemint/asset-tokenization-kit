@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/hover-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCountries } from "@/hooks/use-countries";
+import { getErrorCode, isORPCError } from "@/hooks/use-error-info";
 import { getUserDisplayName } from "@/lib/utils/user-display-name";
 import { orpc } from "@/orpc/orpc-client";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
@@ -37,7 +38,6 @@ function Profile() {
     orpc.user.kyc.read.queryOptions({
       input: { userId: user.id },
       enabled: Boolean(user.id),
-      retry: false,
       throwOnError: false,
     })
   );
@@ -64,7 +64,28 @@ function Profile() {
     return new Date(kyc.dob);
   }, [kyc?.dob]);
 
-  const showKycError = kycError && !kyc;
+  const isMissingKycProfile = useMemo(() => {
+    if (!kycError) return false;
+
+    const status = getErrorCode(kycError);
+    if (status === 404 || status === "404") return true;
+
+    const codeCandidate = isORPCError(kycError)
+      ? kycError.code
+      : typeof kycError === "object" && kycError !== null
+        ? (kycError as { code?: unknown }).code
+        : undefined;
+
+    if (typeof codeCandidate === "string") {
+      const normalized = codeCandidate.toUpperCase();
+      return normalized === "NOT_FOUND" || normalized.endsWith("_NOT_FOUND");
+    }
+
+    return false;
+  }, [kycError]);
+
+  // If the KYC profile is missing, we don't want to show an error.
+  const showKycError = Boolean(kycError && !kyc && !isMissingKycProfile);
 
   return (
     <div className="container mx-auto p-6">
