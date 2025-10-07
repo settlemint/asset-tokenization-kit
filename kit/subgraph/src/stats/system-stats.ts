@@ -17,7 +17,6 @@ export class SystemAssetActivity {
   static FORCED_TRANSFER: string = "forcedTransfer";
   static MINT: string = "mint";
   static BURN: string = "burn";
-  static CLAWBACK: string = "clawback";
 }
 
 /**
@@ -47,8 +46,6 @@ export function incrementSystemAssetActivity(
     state.mintEventsCount = state.mintEventsCount + 1;
   } else if (activity == SystemAssetActivity.BURN) {
     state.burnEventsCount = state.burnEventsCount + 1;
-  } else if (activity == SystemAssetActivity.CLAWBACK) {
-    state.clawbackEventsCount = state.clawbackEventsCount + 1;
   } else {
     log.warning("Unknown system asset activity {} for token {}", [
       activity,

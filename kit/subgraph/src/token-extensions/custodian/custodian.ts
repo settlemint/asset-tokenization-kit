@@ -11,8 +11,8 @@ import {
   incrementSystemAssetActivity,
   SystemAssetActivity,
 } from "../../stats/system-stats";
-import { incrementTokenTypeAssetActivity } from "../../stats/token-type-stats";
 import { trackTokenStats } from "../../stats/token-stats";
+import { incrementTokenTypeAssetActivity } from "../../stats/token-type-stats";
 import {
   decreaseTokenBalanceFrozen,
   decreaseTokenBalanceValue,
@@ -82,9 +82,6 @@ export function handleRecoverySuccess(event: RecoverySuccess): void {
     event.params.newWallet,
     event.block.timestamp
   );
-
-  incrementSystemAssetActivity(token, SystemAssetActivity.CLAWBACK);
-  incrementTokenTypeAssetActivity(token, SystemAssetActivity.CLAWBACK);
 }
 
 export function handleTokensFrozen(event: TokensFrozen): void {

@@ -73,8 +73,6 @@ export function incrementTokenTypeAssetActivity(
     state.mintEventsCount = state.mintEventsCount + 1;
   } else if (activity == SystemAssetActivity.BURN) {
     state.burnEventsCount = state.burnEventsCount + 1;
-  } else if (activity == SystemAssetActivity.CLAWBACK) {
-    state.clawbackEventsCount = state.clawbackEventsCount + 1;
   } else {
     log.warning("Unknown token type asset activity {} for token {}", [
       activity,

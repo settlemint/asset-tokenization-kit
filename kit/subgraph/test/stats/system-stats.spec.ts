@@ -70,7 +70,6 @@ describe("SystemStats", () => {
           forcedTransferEventsCount
           mintEventsCount
           burnEventsCount
-          clawbackEventsCount
           totalValueInBaseCurrency
         }
       }
@@ -93,7 +92,6 @@ describe("SystemStats", () => {
     expect(state.forcedTransferEventsCount).toBe(0);
     expect(state.mintEventsCount).toBe(10);
     expect(state.burnEventsCount).toBe(6);
-    expect(state.clawbackEventsCount).toBe(0);
   });
 
   it("should calculate total value based on token supply and base price", async () => {
