@@ -38,7 +38,6 @@ export const factoryPredictAddress =
         PREDICT_ACCESS_MANAGER_QUERY,
         {
           address: tokenFactory.id,
-          from: context.auth.user.wallet,
           name: input.name,
           symbol: input.symbol,
           decimals: input.decimals,
