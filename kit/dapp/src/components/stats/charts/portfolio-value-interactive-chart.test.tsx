@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { type StatsRangePreset } from "@atk/zod/stats-range";
 
-import { PortfolioValueAreaChart } from "./portfolio-value-area-chart";
+import { PortfolioValueInteractiveChart } from "./portfolio-value-interactive-chart";
 
 const mockBaseCurrency = "EUR";
 
@@ -213,7 +213,7 @@ vi.mock("@tanstack/react-query", async () => {
   };
 });
 
-describe("PortfolioValueAreaChart", () => {
+describe("PortfolioValueInteractiveChart", () => {
   let queryClient: QueryClient;
 
   beforeEach(() => {
@@ -239,7 +239,7 @@ describe("PortfolioValueAreaChart", () => {
   };
 
   it("renders portfolio value chart with default range", () => {
-    renderWithQueryClient(<PortfolioValueAreaChart />);
+    renderWithQueryClient(<PortfolioValueInteractiveChart />);
 
     expect(screen.getByTestId("error-boundary")).toBeInTheDocument();
     expect(screen.getByTestId("interactive-chart")).toBeInTheDocument();
@@ -248,7 +248,7 @@ describe("PortfolioValueAreaChart", () => {
 
   it("renders chart with custom defaultRange", () => {
     renderWithQueryClient(
-      <PortfolioValueAreaChart defaultRange="trailing24Hours" />
+      <PortfolioValueInteractiveChart defaultRange="trailing24Hours" />
     );
 
     expect(screen.getByTestId("interactive-chart")).toBeInTheDocument();
@@ -257,7 +257,7 @@ describe("PortfolioValueAreaChart", () => {
 
   it("renders chart with trailing7Days preset", () => {
     renderWithQueryClient(
-      <PortfolioValueAreaChart defaultRange="trailing7Days" />
+      <PortfolioValueInteractiveChart defaultRange="trailing7Days" />
     );
 
     expect(screen.getByTestId("interactive-chart")).toBeInTheDocument();

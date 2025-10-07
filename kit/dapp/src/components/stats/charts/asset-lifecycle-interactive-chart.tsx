@@ -14,13 +14,13 @@ import { useQueries } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-export interface AssetLifecycleAreaChartProps {
+export interface AssetLifecycleInteractiveChartProps {
   defaultRange?: StatsRangePreset;
 }
 
-export function AssetLifecycleAreaChart({
+export function AssetLifecycleInteractiveChart({
   defaultRange = "trailing7Days",
-}: AssetLifecycleAreaChartProps) {
+}: AssetLifecycleInteractiveChartProps) {
   const { t, i18n } = useTranslation("stats");
   const locale = i18n.language;
 

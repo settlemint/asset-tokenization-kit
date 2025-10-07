@@ -10,45 +10,45 @@ import {
   type StatsRangePreset,
   type StatsResolvedRange,
 } from "@atk/zod/stats-range";
-import { useQueries, useSuspenseQuery } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-export interface PortfolioValueAreaChartProps {
+export interface AssetActivityInteractiveChartProps {
   defaultRange?: StatsRangePreset;
 }
 
-/**
- * Portfolio Value Area Chart Component
- *
- * Displays historical portfolio value data for the authenticated user using an area chart.
- * Shows total portfolio value over time to visualize investment performance trends.
- * Uses dnum for safe BigInt handling to prevent precision loss.
- */
-export function PortfolioValueAreaChart({
+export function AssetActivityInteractiveChart({
   defaultRange = "trailing7Days",
-}: PortfolioValueAreaChartProps) {
+}: AssetActivityInteractiveChartProps) {
   const { t, i18n } = useTranslation("stats");
   const locale = i18n.language;
-  const { data: baseCurrency } = useSuspenseQuery(
-    orpc.settings.read.queryOptions({ input: { key: "BASE_CURRENCY" } })
-  );
 
   // Internal state for selected range
   const [selectedRange, setSelectedRange] =
     useState<StatsRangePreset>(defaultRange);
 
-  // Configure chart colors and labels
-  const chartConfig: ChartConfig = {
-    totalValueInBaseCurrency: {
-      label: t("charts.portfolioValue.label"),
-      color: "var(--chart-1)",
-    },
-  };
+  const chartConfig: ChartConfig = useMemo(
+    () => ({
+      transferEventsCount: {
+        label: t("charts.assetActivity.transferEventsLabel"),
+        color: "var(--chart-1)",
+      },
+      mintEventsCount: {
+        label: t("charts.assetActivity.mintEventsLabel"),
+        color: "var(--chart-2)",
+      },
+      burnEventsCount: {
+        label: t("charts.assetActivity.burnEventsLabel"),
+        color: "var(--chart-3)",
+      },
+    }),
+    [t]
+  );
 
   const [trailing24HrRangeData, trailing7DaysRangeData] = useQueries({
     queries: statsRangePresets.map((preset) =>
-      orpc.system.stats.portfolio.queryOptions({
+      orpc.system.stats.assetActivity.queryOptions({
         input: preset,
         ...CHART_QUERY_OPTIONS,
       })
@@ -70,40 +70,38 @@ export function PortfolioValueAreaChart({
   const chartInterval = resolvedRange.interval;
 
   const timeseries = rawData?.data ?? [];
-
-  const dataKeys = ["totalValueInBaseCurrency"];
+  const dataKeys = [
+    "transferEventsCount",
+    "mintEventsCount",
+    "burnEventsCount",
+  ];
 
   return (
-    <ComponentErrorBoundary componentName="Portfolio Value Chart">
+    <ComponentErrorBoundary componentName="Asset Activity Chart">
       <InteractiveChartComponent
-        title={t("charts.portfolioValue.title")}
-        description={t("charts.portfolioValue.description")}
+        title={t("charts.assetActivity.title")}
+        description={t("charts.assetActivity.description")}
         interval={chartInterval}
         data={timeseries}
         config={chartConfig}
         dataKeys={dataKeys}
         nameKey="timestamp"
-        showLegend={false}
+        showLegend
         stacked={false}
+        xTickFormatter={(value: string | Date | number) =>
+          formatChartDate(value, chartInterval, locale)
+        }
+        yTickFormatter={(value: string) =>
+          Number(value).toLocaleString(undefined, {
+            maximumFractionDigits: 0,
+          })
+        }
+        emptyMessage={t("charts.assetActivity.empty.title")}
+        emptyDescription={t("charts.assetActivity.empty.description")}
         defaultChartType="area"
         enableChartTypeToggle={true}
         selectedRange={selectedRange}
         onRangeChange={setSelectedRange}
-        xTickFormatter={(value: string | Date | number) =>
-          formatChartDate(value, chartInterval, locale)
-        }
-        yTickFormatter={(value: string) => {
-          // Format Y-axis ticks with currency notation for better readability
-          const numValue = Number(value);
-          return new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: baseCurrency ?? "USD",
-            notation: "compact",
-            maximumFractionDigits: 1,
-          }).format(numValue);
-        }}
-        emptyMessage={t("charts.portfolioValue.empty.title")}
-        emptyDescription={t("charts.portfolioValue.empty.description")}
       />
     </ComponentErrorBoundary>
   );

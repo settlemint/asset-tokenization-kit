@@ -10,7 +10,7 @@ import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { type StatsRangePreset } from "@atk/zod/stats-range";
 
-import { AssetLifecycleAreaChart } from "./asset-lifecycle-area-chart";
+import { AssetLifecycleInteractiveChart } from "./asset-lifecycle-interactive-chart";
 
 const defaultFrom = new Date(Date.UTC(2024, 0, 1));
 const defaultTo = new Date(Date.UTC(2024, 0, 2));
@@ -39,7 +39,7 @@ vi.mock("@/orpc/orpc-client", () => ({
   },
 }));
 
-describe("AssetLifecycleAreaChart", () => {
+describe("AssetLifecycleInteractiveChart", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -70,7 +70,7 @@ describe("AssetLifecycleAreaChart", () => {
     );
 
     renderWithProviders(
-      <AssetLifecycleAreaChart defaultRange={defaultRange} />
+      <AssetLifecycleInteractiveChart defaultRange={defaultRange} />
     );
 
     expect(
@@ -96,7 +96,7 @@ describe("AssetLifecycleAreaChart", () => {
     );
 
     renderWithProviders(
-      <AssetLifecycleAreaChart defaultRange={defaultRange} />
+      <AssetLifecycleInteractiveChart defaultRange={defaultRange} />
     );
 
     expect(
@@ -119,7 +119,7 @@ describe("AssetLifecycleAreaChart", () => {
 
     expect(() => {
       renderWithProviders(
-        <AssetLifecycleAreaChart defaultRange={defaultRange} />
+        <AssetLifecycleInteractiveChart defaultRange={defaultRange} />
       );
     }).toThrow("ORPC Error: Failed to fetch asset lifecycle stats");
 
