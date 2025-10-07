@@ -16,7 +16,13 @@ import { authClient } from "@/lib/auth/auth.client";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { BadgeCheck, ChevronsUpDown, LogOut } from "lucide-react";
+import {
+  ChevronsUpDown,
+  Fingerprint,
+  LogOut,
+  UserIcon,
+  WalletIcon,
+} from "lucide-react";
 import { useCallback } from "react";
 
 export function UserDropdown() {
@@ -25,6 +31,13 @@ export function UserDropdown() {
   const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
 
   const displayName = user?.name;
+
+  const navigateTo = useCallback(
+    (to: "/profile" | "/wallet" | "/onchain-identity") => {
+      void navigate({ to });
+    },
+    [navigate]
+  );
 
   const handleSignOut = useCallback(async () => {
     await authClient.signOut();
@@ -94,10 +107,34 @@ export function UserDropdown() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <BadgeCheck className="size-4" />
-            Account
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onSelect={() => {
+              navigateTo("/profile");
+            }}
+          >
+            <UserIcon className="size-4" />
+            Profile
           </DropdownMenuItem>
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onSelect={() => {
+              navigateTo("/wallet");
+            }}
+          >
+            <WalletIcon className="size-4" />
+            Wallet
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onSelect={() => {
+              navigateTo("/onchain-identity");
+            }}
+          >
+            <Fingerprint className="size-4" />
+            Onchain identity
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
           <LanguageSwitcher mode="menuItem" />
           <ThemeToggle mode="menuItem" />
         </DropdownMenuGroup>
