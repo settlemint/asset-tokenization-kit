@@ -216,7 +216,6 @@ function fetchSystemStatsState(systemAddress: Address): SystemStatsState {
     state.forcedTransferEventsCount = 0;
     state.mintEventsCount = 0;
     state.burnEventsCount = 0;
-    state.clawbackEventsCount = 0;
     state.save();
   }
 
@@ -240,7 +239,6 @@ function trackSystemStats(systemAddress: Address): void {
   systemStats.forcedTransferEventsCount = state.forcedTransferEventsCount;
   systemStats.mintEventsCount = state.mintEventsCount;
   systemStats.burnEventsCount = state.burnEventsCount;
-  systemStats.clawbackEventsCount = state.clawbackEventsCount;
 
   systemStats.save();
 }

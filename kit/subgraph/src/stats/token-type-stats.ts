@@ -232,7 +232,6 @@ function fetchTokenTypeStatsState(token: Token): TokenTypeStatsState {
     state.forcedTransferEventsCount = 0;
     state.mintEventsCount = 0;
     state.burnEventsCount = 0;
-    state.clawbackEventsCount = 0;
     state.save();
   }
 
@@ -254,7 +253,6 @@ function trackTokenTypeStats(state: TokenTypeStatsState): void {
   tokenTypeStats.forcedTransferEventsCount = state.forcedTransferEventsCount;
   tokenTypeStats.mintEventsCount = state.mintEventsCount;
   tokenTypeStats.burnEventsCount = state.burnEventsCount;
-  tokenTypeStats.clawbackEventsCount = state.clawbackEventsCount;
   tokenTypeStats.save();
 }
 

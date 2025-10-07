@@ -1275,8 +1275,6 @@ type SystemStatsState @entity(immutable: false) {
   mintEventsCount: Int!
   # Total count of burn events
   burnEventsCount: Int!
-  # Total count of clawback/recovery events
-  clawbackEventsCount: Int!
 }
 
 type SystemStatsData @entity(timeseries: true) {
@@ -1300,8 +1298,6 @@ type SystemStatsData @entity(timeseries: true) {
   mintEventsCount: Int!
   # Total count of burn events
   burnEventsCount: Int!
-  # Total count of clawback/recovery events
-  clawbackEventsCount: Int!
 }
 
 type SystemStats
@@ -1333,9 +1329,6 @@ type SystemStats
   # Last count of burn events for the period
   burnEventsCount: Int!
     @aggregate(fn: "last", arg: "burnEventsCount")
-  # Last count of clawback events for the period
-  clawbackEventsCount: Int!
-    @aggregate(fn: "last", arg: "clawbackEventsCount")
 }
 
 type AccountStatsState @entity(immutable: false) {
@@ -1528,8 +1521,6 @@ type TokenTypeStatsState @entity(immutable: false) {
   mintEventsCount: Int!
   # Total count of burn events
   burnEventsCount: Int!
-  # Total count of clawback/recovery events
-  clawbackEventsCount: Int!
 }
 
 type TokenTypeStatsData @entity(timeseries: true) {
@@ -1553,8 +1544,6 @@ type TokenTypeStatsData @entity(timeseries: true) {
   mintEventsCount: Int!
   # Total count of burn events
   burnEventsCount: Int!
-  # Total count of clawback/recovery events
-  clawbackEventsCount: Int!
 }
 
 type TokenTypeStats
@@ -1584,9 +1573,6 @@ type TokenTypeStats
   # Last count of burn events for the period
   burnEventsCount: Int!
     @aggregate(fn: "last", arg: "burnEventsCount")
-  # Last count of clawback events for the period
-  clawbackEventsCount: Int!
-    @aggregate(fn: "last", arg: "clawbackEventsCount")
 }
 
 type TokenStatsState @entity(immutable: false) {
