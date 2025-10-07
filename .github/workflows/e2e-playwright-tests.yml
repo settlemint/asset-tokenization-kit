@@ -20,8 +20,7 @@ jobs:
     runs-on: namespace-profile-atk
     environment: staging
     timeout-minutes: 60 # 1 hour maximum runtime
-    if:
-      ${{ github.ref == 'refs/heads/main' ||
+    if: ${{ github.ref == 'refs/heads/main' ||
       contains(github.event.pull_request.labels.*.name, 'run-playwright-tests')
       }}
     steps:
@@ -82,10 +81,13 @@ jobs:
         run: |
           bun run dev:reset
 
+      - name: Build dApp
+        run: bunx turbo dapp#build
+
       - name: Start dev server
         run: |
-          echo "Starting dev server..."
-          nohup bun run dev > server.log 2>&1 &
+          echo "Starting server..."
+          nohup bun run start > server.log 2>&1 &
           echo "SERVER_PID=$!" >> $GITHUB_ENV
           echo "Waiting for Start to initialize routes (readiness probe)..."
           echo "Performing initial server check..."
@@ -123,37 +125,28 @@ jobs:
             exit 1
           fi
 
-          echo "Dev server is ready at http://localhost:${PORT}!"
-        working-directory: .
+          echo "Server is ready at http://localhost:${PORT}!"
+        working-directory: kit/dapp
         env:
           PORT: ${{ env.PORT }}
           HOST: ${{ env.HOST }}
 
       - name: Verify subgraph SystemFactory address
         run: |
-            echo "Checking SystemFactory address in subgraph.yaml..."
-            EXPECTED_ADDRESS="0x5e771e1417100000000000000000000000020088"
-            ACTUAL_ADDRESS=$(yq '.dataSources[] | select(.name == "SystemFactory") | .source.address' kit/subgraph/subgraph.yaml)
-            if [ "$ACTUAL_ADDRESS" != "$EXPECTED_ADDRESS" ]; then
-              echo "❌ ERROR: SystemFactory address mismatch!"
-              echo "Expected: $EXPECTED_ADDRESS"
-              echo "Actual:   $ACTUAL_ADDRESS"
-              echo ""
-              echo "The subgraph.yaml file has an incorrect SystemFactory address."
-              echo "This needs to be fixed before running tests."
-              exit 1
-            else
-              echo "✅ SystemFactory address is correct: $ACTUAL_ADDRESS"
-            fi
-
-      # - name: Run API Playwright tests
-      #   id: playwright-api
-      #   run:
-      #     bun playwright test --config=playwright.api.config.ts
-      #     --project=api-tests --retries 2 --reporter=html
-      #   working-directory: kit/e2e
-      #   env:
-      #     CI: true
+          echo "Checking SystemFactory address in subgraph.yaml..."
+          EXPECTED_ADDRESS="0x5e771e1417100000000000000000000000020088"
+          ACTUAL_ADDRESS=$(yq '.dataSources[] | select(.name == "SystemFactory") | .source.address' kit/subgraph/subgraph.yaml)
+          if [ "$ACTUAL_ADDRESS" != "$EXPECTED_ADDRESS" ]; then
+            echo "❌ ERROR: SystemFactory address mismatch!"
+            echo "Expected: $EXPECTED_ADDRESS"
+            echo "Actual:   $ACTUAL_ADDRESS"
+            echo ""
+            echo "The subgraph.yaml file has an incorrect SystemFactory address."
+            echo "This needs to be fixed before running tests."
+            exit 1
+          else
+            echo "✅ SystemFactory address is correct: $ACTUAL_ADDRESS"
+          fi
 
       - name: Run UI Playwright tests
         id: playwright-ui
