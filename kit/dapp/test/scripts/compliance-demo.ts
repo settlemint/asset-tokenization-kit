@@ -6,6 +6,7 @@ import {
   bootstrapSystem,
   bootstrapTokenFactories,
   createAndRegisterUserIdentities,
+  issueDefaultKycClaims,
   setDefaultSystemSettings,
   setupDefaultAdminRoles,
   setupDefaultIssuerRoles,
@@ -29,14 +30,16 @@ import {
   JAPANESE_INVESTOR,
 } from "./data";
 
+process.env.DAPP_URL =
+  "https://asset-tokenization-kit-erc-3643-fffd2.gke-europe-staging.settlemint.com/";
+
 // Setup users
 await setupUser(ADMIN); // Admin first to be able to create the system
-await Promise.all([
-  setupUser(GERMAN_INVESTOR_1),
-  setupUser(GERMAN_INVESTOR_2),
-  setupUser(ISSUER),
-  setupUser(JAPANESE_INVESTOR),
-]);
+// Do one by one to avoid hitting the rate limits of better auth
+await setupUser(GERMAN_INVESTOR_1);
+await setupUser(GERMAN_INVESTOR_2);
+await setupUser(ISSUER);
+await setupUser(JAPANESE_INVESTOR);
 
 const adminClient = getOrpcClient(await signInWithUser(ADMIN));
 const issuerClient = getOrpcClient(await signInWithUser(ISSUER));
@@ -53,16 +56,22 @@ await Promise.all([
   bootstrapAddons(adminClient),
   (async () => {
     await setupDefaultAdminRoles(adminClient);
+    await createAndRegisterUserIdentities(adminClient, [ADMIN, ISSUER], "BE");
     await setupTrustedClaimIssuers(adminClient, ISSUER);
+    await createAndRegisterUserIdentities(
+      adminClient,
+      [GERMAN_INVESTOR_1, GERMAN_INVESTOR_2],
+      "DE"
+    );
+    await issueDefaultKycClaims(adminClient, [
+      ADMIN,
+      ISSUER,
+      GERMAN_INVESTOR_1,
+      GERMAN_INVESTOR_2,
+    ]);
   })(),
   setupDefaultIssuerRoles(adminClient, ISSUER),
   setDefaultSystemSettings(adminClient, "EUR"),
-  createAndRegisterUserIdentities(adminClient, [ADMIN, ISSUER], "BE"),
-  createAndRegisterUserIdentities(
-    adminClient,
-    [GERMAN_INVESTOR_1, GERMAN_INVESTOR_2],
-    "DE"
-  ),
   createAndRegisterUserIdentities(adminClient, [JAPANESE_INVESTOR], "JP", true),
 ]);
 

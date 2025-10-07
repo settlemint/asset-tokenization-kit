@@ -122,6 +122,14 @@ export const setupUser = (user: User) =>
           },
         });
 
+        const isFullyOnboarded =
+          sessionBeforeWallet.data?.user.wallet &&
+          sessionBeforeWallet.data?.user.pincodeEnabled &&
+          sessionBeforeWallet.data?.user.secretCodesConfirmed;
+        if (isFullyOnboarded) {
+          return sessionBeforeWallet.data?.user;
+        }
+
         const userWallet = sessionBeforeWallet.data?.user.wallet;
 
         if (!userWallet || userWallet === zeroAddress) {
@@ -144,85 +152,91 @@ export const setupUser = (user: User) =>
           }
         }
 
-        // Step 3: Enable pincode
-        const pincodeHeaders = await signInWithUser(user, true);
-        const { error: pincodeError } = await authClient.pincode.enable(
-          {
-            pincode: DEFAULT_PINCODE,
-          },
-          {
-            headers: {
-              ...Object.fromEntries(pincodeHeaders.entries()),
-            },
-          }
-        );
-
-        if (pincodeError) {
-          if (pincodeError.code !== "PINCODE_ALREADY_SET") {
-            console.error(`[setupUser] Pincode error for ${user.email}:`, {
-              code: pincodeError.code,
-              message: pincodeError.message,
-              status: pincodeError.status,
-              statusText: pincodeError.statusText,
-              fullError: JSON.stringify(pincodeError, null, 2),
-            });
-            throw pincodeError;
-          }
-        }
-
-        // Step 4: Generate secret codes
-        const secretCodeHeaders = await signInWithUser(user, true);
-        const { error: secretCodeError } =
-          await authClient.secretCodes.generate(
+        if (!sessionBeforeWallet.data?.user.pincodeEnabled) {
+          // Step 3: Enable pincode
+          const pincodeHeaders = await signInWithUser(user, true);
+          const { error: pincodeError } = await authClient.pincode.enable(
             {
-              password: user.password,
+              pincode: DEFAULT_PINCODE,
             },
             {
               headers: {
-                ...Object.fromEntries(secretCodeHeaders.entries()),
+                ...Object.fromEntries(pincodeHeaders.entries()),
               },
             }
           );
 
-        if (secretCodeError) {
-          console.error(
-            `[setupUser] Generate secret code error for ${user.email}:`,
-            {
-              code: secretCodeError.code,
-              message: secretCodeError.message,
-              status: secretCodeError.status,
-              statusText: secretCodeError.statusText,
-              fullError: JSON.stringify(secretCodeError, null, 2),
+          if (pincodeError) {
+            if (pincodeError.code !== "PINCODE_ALREADY_SET") {
+              console.error(`[setupUser] Pincode error for ${user.email}:`, {
+                code: pincodeError.code,
+                message: pincodeError.message,
+                status: pincodeError.status,
+                statusText: pincodeError.statusText,
+                fullError: JSON.stringify(pincodeError, null, 2),
+              });
+              throw pincodeError;
             }
-          );
-          throw secretCodeError;
+          }
         }
 
-        // Step 5: Confirm secret codes
-        const confirmSecretCodeHeaders = await signInWithUser(user, true);
-        const { error: confirmSecretCodeError } =
-          await authClient.secretCodes.confirm(
-            {
-              stored: true,
-            },
-            {
-              headers: {
-                ...Object.fromEntries(confirmSecretCodeHeaders.entries()),
+        if (!sessionBeforeWallet.data?.user.secretCodeVerificationId) {
+          // Step 4: Generate secret codes
+          const secretCodeHeaders = await signInWithUser(user, true);
+          const { error: secretCodeError } =
+            await authClient.secretCodes.generate(
+              {
+                password: user.password,
               },
-            }
-          );
-        if (confirmSecretCodeError) {
-          console.error(
-            `[setupUser] Confirm secret code error for ${user.email}:`,
-            {
-              code: confirmSecretCodeError.code,
-              message: confirmSecretCodeError.message,
-              status: confirmSecretCodeError.status,
-              statusText: confirmSecretCodeError.statusText,
-              fullError: JSON.stringify(confirmSecretCodeError, null, 2),
-            }
-          );
-          throw confirmSecretCodeError;
+              {
+                headers: {
+                  ...Object.fromEntries(secretCodeHeaders.entries()),
+                },
+              }
+            );
+
+          if (secretCodeError) {
+            console.error(
+              `[setupUser] Generate secret code error for ${user.email}:`,
+              {
+                code: secretCodeError.code,
+                message: secretCodeError.message,
+                status: secretCodeError.status,
+                statusText: secretCodeError.statusText,
+                fullError: JSON.stringify(secretCodeError, null, 2),
+              }
+            );
+            throw secretCodeError;
+          }
+        }
+
+        if (!sessionBeforeWallet.data?.user.secretCodesConfirmed) {
+          // Step 5: Confirm secret codes
+          const confirmSecretCodeHeaders = await signInWithUser(user, true);
+          const { error: confirmSecretCodeError } =
+            await authClient.secretCodes.confirm(
+              {
+                stored: true,
+              },
+              {
+                headers: {
+                  ...Object.fromEntries(confirmSecretCodeHeaders.entries()),
+                },
+              }
+            );
+          if (confirmSecretCodeError) {
+            console.error(
+              `[setupUser] Confirm secret code error for ${user.email}:`,
+              {
+                code: confirmSecretCodeError.code,
+                message: confirmSecretCodeError.message,
+                status: confirmSecretCodeError.status,
+                statusText: confirmSecretCodeError.statusText,
+                fullError: JSON.stringify(confirmSecretCodeError, null, 2),
+              }
+            );
+            throw confirmSecretCodeError;
+          }
         }
 
         // Step 6: Check onboarding status
@@ -258,7 +272,7 @@ export const setupUser = (user: User) =>
       }
     },
     3,
-    5_000
+    30_000 // Most likely we're hitting the rate limits of better auth, wait long enough
   );
 
 export async function getUserData(user: User) {
