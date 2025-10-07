@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute(
-  "/_private/_onboarded/_sidebar/onchain-identity"
+  "/_private/_onboarded/_sidebar/account/onchain-identity"
 )({
   component: OnchainIdentity,
 });

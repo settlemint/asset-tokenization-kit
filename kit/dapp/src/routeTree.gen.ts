@@ -29,14 +29,14 @@ import { Route as PrivateOnboardingSidebarSystemAssetsRouteImport } from './rout
 import { Route as PrivateOnboardingSidebarSystemAddonsRouteImport } from './routes/_private/onboarding/_sidebar/system-addons'
 import { Route as PrivateOnboardingSidebarIdentitySetupRouteImport } from './routes/_private/onboarding/_sidebar/identity-setup'
 import { Route as PrivateOnboardingSidebarIdentityRouteImport } from './routes/_private/onboarding/_sidebar/identity'
-import { Route as PrivateOnboardedSidebarWalletRouteImport } from './routes/_private/_onboarded/_sidebar/wallet'
-import { Route as PrivateOnboardedSidebarProfileRouteImport } from './routes/_private/_onboarded/_sidebar/profile'
-import { Route as PrivateOnboardedSidebarOnchainIdentityRouteImport } from './routes/_private/_onboarded/_sidebar/onchain-identity'
 import { Route as PrivateOnboardedSidebarMyAssetsRouteImport } from './routes/_private/_onboarded/_sidebar/my-assets'
 import { Route as PrivateOnboardedSidebarAddonDesignerRouteImport } from './routes/_private/_onboarded/_sidebar/addon-designer'
 import { Route as PrivateOnboardedSidebarAddonIndexRouteImport } from './routes/_private/_onboarded/_sidebar/addon/index'
 import { Route as PrivateOnboardedSidebarTokenStatsRouteImport } from './routes/_private/_onboarded/_sidebar/token/stats'
 import { Route as PrivateOnboardedSidebarAddonAddonAddressRouteImport } from './routes/_private/_onboarded/_sidebar/addon/$addonAddress'
+import { Route as PrivateOnboardedSidebarAccountWalletRouteImport } from './routes/_private/_onboarded/_sidebar/account/wallet'
+import { Route as PrivateOnboardedSidebarAccountProfileRouteImport } from './routes/_private/_onboarded/_sidebar/account/profile'
+import { Route as PrivateOnboardedSidebarAccountOnchainIdentityRouteImport } from './routes/_private/_onboarded/_sidebar/account/onchain-identity'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressIndexRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/index'
 import { Route as PrivateOnboardedSidebarAdminUserManagementIndexRouteImport } from './routes/_private/_onboarded/_sidebar/admin/user-management/index'
 import { Route as PrivateOnboardedSidebarAdminIdentityManagementIndexRouteImport } from './routes/_private/_onboarded/_sidebar/admin/identity-management/index'
@@ -161,24 +161,6 @@ const PrivateOnboardingSidebarIdentityRoute =
     path: '/identity',
     getParentRoute: () => PrivateOnboardingSidebarRoute,
   } as any)
-const PrivateOnboardedSidebarWalletRoute =
-  PrivateOnboardedSidebarWalletRouteImport.update({
-    id: '/wallet',
-    path: '/wallet',
-    getParentRoute: () => PrivateOnboardedSidebarRoute,
-  } as any)
-const PrivateOnboardedSidebarProfileRoute =
-  PrivateOnboardedSidebarProfileRouteImport.update({
-    id: '/profile',
-    path: '/profile',
-    getParentRoute: () => PrivateOnboardedSidebarRoute,
-  } as any)
-const PrivateOnboardedSidebarOnchainIdentityRoute =
-  PrivateOnboardedSidebarOnchainIdentityRouteImport.update({
-    id: '/onchain-identity',
-    path: '/onchain-identity',
-    getParentRoute: () => PrivateOnboardedSidebarRoute,
-  } as any)
 const PrivateOnboardedSidebarMyAssetsRoute =
   PrivateOnboardedSidebarMyAssetsRouteImport.update({
     id: '/my-assets',
@@ -207,6 +189,24 @@ const PrivateOnboardedSidebarAddonAddonAddressRoute =
   PrivateOnboardedSidebarAddonAddonAddressRouteImport.update({
     id: '/addon/$addonAddress',
     path: '/addon/$addonAddress',
+    getParentRoute: () => PrivateOnboardedSidebarRoute,
+  } as any)
+const PrivateOnboardedSidebarAccountWalletRoute =
+  PrivateOnboardedSidebarAccountWalletRouteImport.update({
+    id: '/account/wallet',
+    path: '/account/wallet',
+    getParentRoute: () => PrivateOnboardedSidebarRoute,
+  } as any)
+const PrivateOnboardedSidebarAccountProfileRoute =
+  PrivateOnboardedSidebarAccountProfileRouteImport.update({
+    id: '/account/profile',
+    path: '/account/profile',
+    getParentRoute: () => PrivateOnboardedSidebarRoute,
+  } as any)
+const PrivateOnboardedSidebarAccountOnchainIdentityRoute =
+  PrivateOnboardedSidebarAccountOnchainIdentityRouteImport.update({
+    id: '/account/onchain-identity',
+    path: '/account/onchain-identity',
     getParentRoute: () => PrivateOnboardedSidebarRoute,
   } as any)
 const PrivateOnboardedSidebarTokenFactoryAddressIndexRoute =
@@ -385,9 +385,6 @@ export interface FileRoutesByFullPath {
   '/onboarding/': typeof PrivateOnboardingIndexRoute
   '/addon-designer': typeof PrivateOnboardedSidebarAddonDesignerRoute
   '/my-assets': typeof PrivateOnboardedSidebarMyAssetsRoute
-  '/onchain-identity': typeof PrivateOnboardedSidebarOnchainIdentityRoute
-  '/profile': typeof PrivateOnboardedSidebarProfileRoute
-  '/wallet': typeof PrivateOnboardedSidebarWalletRoute
   '/onboarding/identity': typeof PrivateOnboardingSidebarIdentityRoute
   '/onboarding/identity-setup': typeof PrivateOnboardingSidebarIdentitySetupRoute
   '/onboarding/system-addons': typeof PrivateOnboardingSidebarSystemAddonsRoute
@@ -398,6 +395,9 @@ export interface FileRoutesByFullPath {
   '/onboarding/wallet-recovery-codes': typeof PrivateOnboardingSidebarWalletRecoveryCodesRoute
   '/onboarding/wallet-security': typeof PrivateOnboardingSidebarWalletSecurityRoute
   '/': typeof PrivateOnboardedSidebarIndexRoute
+  '/account/onchain-identity': typeof PrivateOnboardedSidebarAccountOnchainIdentityRoute
+  '/account/profile': typeof PrivateOnboardedSidebarAccountProfileRoute
+  '/account/wallet': typeof PrivateOnboardedSidebarAccountWalletRoute
   '/addon/$addonAddress': typeof PrivateOnboardedSidebarAddonAddonAddressRoute
   '/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
   '/addon': typeof PrivateOnboardedSidebarAddonIndexRoute
@@ -429,9 +429,6 @@ export interface FileRoutesByTo {
   '/onboarding': typeof PrivateOnboardingIndexRoute
   '/addon-designer': typeof PrivateOnboardedSidebarAddonDesignerRoute
   '/my-assets': typeof PrivateOnboardedSidebarMyAssetsRoute
-  '/onchain-identity': typeof PrivateOnboardedSidebarOnchainIdentityRoute
-  '/profile': typeof PrivateOnboardedSidebarProfileRoute
-  '/wallet': typeof PrivateOnboardedSidebarWalletRoute
   '/onboarding/identity': typeof PrivateOnboardingSidebarIdentityRoute
   '/onboarding/identity-setup': typeof PrivateOnboardingSidebarIdentitySetupRoute
   '/onboarding/system-addons': typeof PrivateOnboardingSidebarSystemAddonsRoute
@@ -442,6 +439,9 @@ export interface FileRoutesByTo {
   '/onboarding/wallet-recovery-codes': typeof PrivateOnboardingSidebarWalletRecoveryCodesRoute
   '/onboarding/wallet-security': typeof PrivateOnboardingSidebarWalletSecurityRoute
   '/': typeof PrivateOnboardedSidebarIndexRoute
+  '/account/onchain-identity': typeof PrivateOnboardedSidebarAccountOnchainIdentityRoute
+  '/account/profile': typeof PrivateOnboardedSidebarAccountProfileRoute
+  '/account/wallet': typeof PrivateOnboardedSidebarAccountWalletRoute
   '/addon/$addonAddress': typeof PrivateOnboardedSidebarAddonAddonAddressRoute
   '/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
   '/addon': typeof PrivateOnboardedSidebarAddonIndexRoute
@@ -476,9 +476,6 @@ export interface FileRoutesById {
   '/_private/onboarding/': typeof PrivateOnboardingIndexRoute
   '/_private/_onboarded/_sidebar/addon-designer': typeof PrivateOnboardedSidebarAddonDesignerRoute
   '/_private/_onboarded/_sidebar/my-assets': typeof PrivateOnboardedSidebarMyAssetsRoute
-  '/_private/_onboarded/_sidebar/onchain-identity': typeof PrivateOnboardedSidebarOnchainIdentityRoute
-  '/_private/_onboarded/_sidebar/profile': typeof PrivateOnboardedSidebarProfileRoute
-  '/_private/_onboarded/_sidebar/wallet': typeof PrivateOnboardedSidebarWalletRoute
   '/_private/onboarding/_sidebar/identity': typeof PrivateOnboardingSidebarIdentityRoute
   '/_private/onboarding/_sidebar/identity-setup': typeof PrivateOnboardingSidebarIdentitySetupRoute
   '/_private/onboarding/_sidebar/system-addons': typeof PrivateOnboardingSidebarSystemAddonsRoute
@@ -489,6 +486,9 @@ export interface FileRoutesById {
   '/_private/onboarding/_sidebar/wallet-recovery-codes': typeof PrivateOnboardingSidebarWalletRecoveryCodesRoute
   '/_private/onboarding/_sidebar/wallet-security': typeof PrivateOnboardingSidebarWalletSecurityRoute
   '/_private/_onboarded/_sidebar/': typeof PrivateOnboardedSidebarIndexRoute
+  '/_private/_onboarded/_sidebar/account/onchain-identity': typeof PrivateOnboardedSidebarAccountOnchainIdentityRoute
+  '/_private/_onboarded/_sidebar/account/profile': typeof PrivateOnboardedSidebarAccountProfileRoute
+  '/_private/_onboarded/_sidebar/account/wallet': typeof PrivateOnboardedSidebarAccountWalletRoute
   '/_private/_onboarded/_sidebar/addon/$addonAddress': typeof PrivateOnboardedSidebarAddonAddonAddressRoute
   '/_private/_onboarded/_sidebar/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
   '/_private/_onboarded/_sidebar/addon/': typeof PrivateOnboardedSidebarAddonIndexRoute
@@ -523,9 +523,6 @@ export interface FileRouteTypes {
     | '/onboarding/'
     | '/addon-designer'
     | '/my-assets'
-    | '/onchain-identity'
-    | '/profile'
-    | '/wallet'
     | '/onboarding/identity'
     | '/onboarding/identity-setup'
     | '/onboarding/system-addons'
@@ -536,6 +533,9 @@ export interface FileRouteTypes {
     | '/onboarding/wallet-recovery-codes'
     | '/onboarding/wallet-security'
     | '/'
+    | '/account/onchain-identity'
+    | '/account/profile'
+    | '/account/wallet'
     | '/addon/$addonAddress'
     | '/token/stats'
     | '/addon'
@@ -567,9 +567,6 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/addon-designer'
     | '/my-assets'
-    | '/onchain-identity'
-    | '/profile'
-    | '/wallet'
     | '/onboarding/identity'
     | '/onboarding/identity-setup'
     | '/onboarding/system-addons'
@@ -580,6 +577,9 @@ export interface FileRouteTypes {
     | '/onboarding/wallet-recovery-codes'
     | '/onboarding/wallet-security'
     | '/'
+    | '/account/onchain-identity'
+    | '/account/profile'
+    | '/account/wallet'
     | '/addon/$addonAddress'
     | '/token/stats'
     | '/addon'
@@ -613,9 +613,6 @@ export interface FileRouteTypes {
     | '/_private/onboarding/'
     | '/_private/_onboarded/_sidebar/addon-designer'
     | '/_private/_onboarded/_sidebar/my-assets'
-    | '/_private/_onboarded/_sidebar/onchain-identity'
-    | '/_private/_onboarded/_sidebar/profile'
-    | '/_private/_onboarded/_sidebar/wallet'
     | '/_private/onboarding/_sidebar/identity'
     | '/_private/onboarding/_sidebar/identity-setup'
     | '/_private/onboarding/_sidebar/system-addons'
@@ -626,6 +623,9 @@ export interface FileRouteTypes {
     | '/_private/onboarding/_sidebar/wallet-recovery-codes'
     | '/_private/onboarding/_sidebar/wallet-security'
     | '/_private/_onboarded/_sidebar/'
+    | '/_private/_onboarded/_sidebar/account/onchain-identity'
+    | '/_private/_onboarded/_sidebar/account/profile'
+    | '/_private/_onboarded/_sidebar/account/wallet'
     | '/_private/_onboarded/_sidebar/addon/$addonAddress'
     | '/_private/_onboarded/_sidebar/token/stats'
     | '/_private/_onboarded/_sidebar/addon/'
@@ -814,27 +814,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardingSidebarIdentityRouteImport
       parentRoute: typeof PrivateOnboardingSidebarRoute
     }
-    '/_private/_onboarded/_sidebar/wallet': {
-      id: '/_private/_onboarded/_sidebar/wallet'
-      path: '/wallet'
-      fullPath: '/wallet'
-      preLoaderRoute: typeof PrivateOnboardedSidebarWalletRouteImport
-      parentRoute: typeof PrivateOnboardedSidebarRoute
-    }
-    '/_private/_onboarded/_sidebar/profile': {
-      id: '/_private/_onboarded/_sidebar/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof PrivateOnboardedSidebarProfileRouteImport
-      parentRoute: typeof PrivateOnboardedSidebarRoute
-    }
-    '/_private/_onboarded/_sidebar/onchain-identity': {
-      id: '/_private/_onboarded/_sidebar/onchain-identity'
-      path: '/onchain-identity'
-      fullPath: '/onchain-identity'
-      preLoaderRoute: typeof PrivateOnboardedSidebarOnchainIdentityRouteImport
-      parentRoute: typeof PrivateOnboardedSidebarRoute
-    }
     '/_private/_onboarded/_sidebar/my-assets': {
       id: '/_private/_onboarded/_sidebar/my-assets'
       path: '/my-assets'
@@ -868,6 +847,27 @@ declare module '@tanstack/react-router' {
       path: '/addon/$addonAddress'
       fullPath: '/addon/$addonAddress'
       preLoaderRoute: typeof PrivateOnboardedSidebarAddonAddonAddressRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarRoute
+    }
+    '/_private/_onboarded/_sidebar/account/wallet': {
+      id: '/_private/_onboarded/_sidebar/account/wallet'
+      path: '/account/wallet'
+      fullPath: '/account/wallet'
+      preLoaderRoute: typeof PrivateOnboardedSidebarAccountWalletRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarRoute
+    }
+    '/_private/_onboarded/_sidebar/account/profile': {
+      id: '/_private/_onboarded/_sidebar/account/profile'
+      path: '/account/profile'
+      fullPath: '/account/profile'
+      preLoaderRoute: typeof PrivateOnboardedSidebarAccountProfileRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarRoute
+    }
+    '/_private/_onboarded/_sidebar/account/onchain-identity': {
+      id: '/_private/_onboarded/_sidebar/account/onchain-identity'
+      path: '/account/onchain-identity'
+      fullPath: '/account/onchain-identity'
+      preLoaderRoute: typeof PrivateOnboardedSidebarAccountOnchainIdentityRouteImport
       parentRoute: typeof PrivateOnboardedSidebarRoute
     }
     '/_private/_onboarded/_sidebar/token/$factoryAddress/': {
@@ -1114,10 +1114,10 @@ const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren =
 interface PrivateOnboardedSidebarRouteChildren {
   PrivateOnboardedSidebarAddonDesignerRoute: typeof PrivateOnboardedSidebarAddonDesignerRoute
   PrivateOnboardedSidebarMyAssetsRoute: typeof PrivateOnboardedSidebarMyAssetsRoute
-  PrivateOnboardedSidebarOnchainIdentityRoute: typeof PrivateOnboardedSidebarOnchainIdentityRoute
-  PrivateOnboardedSidebarProfileRoute: typeof PrivateOnboardedSidebarProfileRoute
-  PrivateOnboardedSidebarWalletRoute: typeof PrivateOnboardedSidebarWalletRoute
   PrivateOnboardedSidebarIndexRoute: typeof PrivateOnboardedSidebarIndexRoute
+  PrivateOnboardedSidebarAccountOnchainIdentityRoute: typeof PrivateOnboardedSidebarAccountOnchainIdentityRoute
+  PrivateOnboardedSidebarAccountProfileRoute: typeof PrivateOnboardedSidebarAccountProfileRoute
+  PrivateOnboardedSidebarAccountWalletRoute: typeof PrivateOnboardedSidebarAccountWalletRoute
   PrivateOnboardedSidebarAddonAddonAddressRoute: typeof PrivateOnboardedSidebarAddonAddonAddressRoute
   PrivateOnboardedSidebarTokenStatsRoute: typeof PrivateOnboardedSidebarTokenStatsRoute
   PrivateOnboardedSidebarAddonIndexRoute: typeof PrivateOnboardedSidebarAddonIndexRoute
@@ -1139,11 +1139,13 @@ const PrivateOnboardedSidebarRouteChildren: PrivateOnboardedSidebarRouteChildren
     PrivateOnboardedSidebarAddonDesignerRoute:
       PrivateOnboardedSidebarAddonDesignerRoute,
     PrivateOnboardedSidebarMyAssetsRoute: PrivateOnboardedSidebarMyAssetsRoute,
-    PrivateOnboardedSidebarOnchainIdentityRoute:
-      PrivateOnboardedSidebarOnchainIdentityRoute,
-    PrivateOnboardedSidebarProfileRoute: PrivateOnboardedSidebarProfileRoute,
-    PrivateOnboardedSidebarWalletRoute: PrivateOnboardedSidebarWalletRoute,
     PrivateOnboardedSidebarIndexRoute: PrivateOnboardedSidebarIndexRoute,
+    PrivateOnboardedSidebarAccountOnchainIdentityRoute:
+      PrivateOnboardedSidebarAccountOnchainIdentityRoute,
+    PrivateOnboardedSidebarAccountProfileRoute:
+      PrivateOnboardedSidebarAccountProfileRoute,
+    PrivateOnboardedSidebarAccountWalletRoute:
+      PrivateOnboardedSidebarAccountWalletRoute,
     PrivateOnboardedSidebarAddonAddonAddressRoute:
       PrivateOnboardedSidebarAddonAddonAddressRoute,
     PrivateOnboardedSidebarTokenStatsRoute:

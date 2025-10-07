@@ -33,7 +33,9 @@ export function UserDropdown() {
   const displayName = user?.name;
 
   const navigateTo = useCallback(
-    (to: "/profile" | "/wallet" | "/onchain-identity") => {
+    (
+      to: "/account/profile" | "/account/wallet" | "/account/onchain-identity"
+    ) => {
       void navigate({ to });
     },
     [navigate]
@@ -110,7 +112,7 @@ export function UserDropdown() {
           <DropdownMenuItem
             className="cursor-pointer"
             onSelect={() => {
-              navigateTo("/profile");
+              navigateTo("/account/profile");
             }}
           >
             <UserIcon className="size-4" />
@@ -119,7 +121,7 @@ export function UserDropdown() {
           <DropdownMenuItem
             className="cursor-pointer"
             onSelect={() => {
-              navigateTo("/wallet");
+              navigateTo("/account/wallet");
             }}
           >
             <WalletIcon className="size-4" />
@@ -128,7 +130,7 @@ export function UserDropdown() {
           <DropdownMenuItem
             className="cursor-pointer"
             onSelect={() => {
-              navigateTo("/onchain-identity");
+              navigateTo("/account/onchain-identity");
             }}
           >
             <Fingerprint className="size-4" />
