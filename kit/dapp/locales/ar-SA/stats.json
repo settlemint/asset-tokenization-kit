@@ -1,8 +1,15 @@
 {
   "charts": {
     "assetActivity": {
-      "description": "نشاط معاملات الأصول",
-      "title": "نشاط الأصول"
+      "title": "نشاط الأصول",
+      "description": "تتبع أحداث التحويل والسك والحرق {{overRange}}",
+      "transferEventsLabel": "التحويلات",
+      "mintEventsLabel": "السك",
+      "burnEventsLabel": "الحرق",
+      "empty": {
+        "title": "لا يوجد نشاط بعد",
+        "description": "سيظهر نشاط الأصول هنا بمجرد حدوث تحويلات أو عمليات سك أو حرق"
+      }
     },
     "assetSupply": {
       "description": "إجمالي عرض الأصول على مر الزمن",

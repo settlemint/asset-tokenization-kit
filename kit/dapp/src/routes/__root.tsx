@@ -175,7 +175,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <Providers>
           {children}
           <Toaster richColors />
-          <TanStackDevtools
+          {/* <TanStackDevtools
             plugins={[
               {
                 name: "Query",
@@ -190,7 +190,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
                 render: <FormDevtools />,
               },
             ]}
-          />
+          /> */}
         </Providers>
         <Scripts />
       </body>

@@ -19,8 +19,15 @@
       }
     },
     "assetActivity": {
-      "description": "Asset transaction activity",
-      "title": "Asset activity"
+      "title": "Asset activity",
+      "description": "Track transfer, mint, and burn events {{overRange}}",
+      "transferEventsLabel": "Transfers",
+      "mintEventsLabel": "Mints",
+      "burnEventsLabel": "Burns",
+      "empty": {
+        "title": "No activity yet",
+        "description": "Asset activity will appear here once transfers, mints, or burns occur"
+      }
     },
     "assetSupply": {
       "description": "Total supply of assets over time",

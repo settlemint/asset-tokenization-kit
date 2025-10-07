@@ -1,8 +1,15 @@
 {
   "charts": {
     "assetActivity": {
-      "description": "資産取引活動",
-      "title": "資産活動"
+      "title": "資産活動",
+      "description": "転送、発行、焼却イベントを追跡{{overRange}}",
+      "transferEventsLabel": "転送",
+      "mintEventsLabel": "発行",
+      "burnEventsLabel": "焼却",
+      "empty": {
+        "title": "まだ活動がありません",
+        "description": "転送、発行、または焼却が発生すると、ここに資産活動が表示されます"
+      }
     },
     "assetSupply": {
       "description": "時間経過に伴う資産の総供給量",

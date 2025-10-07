@@ -1,8 +1,15 @@
 {
   "charts": {
     "assetActivity": {
-      "description": "Aktivitäten von Vermögensübertragungen",
-      "title": "Vermögensaktivitäten"
+      "title": "Vermögensaktivitäten",
+      "description": "Verfolgen Sie Transfer-, Präge- und Vernichtungsereignisse {{overRange}}",
+      "transferEventsLabel": "Übertragungen",
+      "mintEventsLabel": "Prägungen",
+      "burnEventsLabel": "Vernichtungen",
+      "empty": {
+        "title": "Noch keine Aktivitäten",
+        "description": "Vermögensaktivitäten erscheinen hier, sobald Übertragungen, Prägungen oder Vernichtungen stattfinden"
+      }
     },
     "assetSupply": {
       "description": "Gesamtangebot an Vermögenswerten über die Zeit",

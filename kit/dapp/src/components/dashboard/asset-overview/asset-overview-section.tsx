@@ -2,6 +2,7 @@ import { ChartSkeleton } from "@/components/charts/chart-skeleton";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { SectionSubtitle } from "@/components/dashboard/section-subtitle";
 import { SectionTitle } from "@/components/dashboard/section-title";
+import { AssetActivityAreaChart } from "@/components/stats/charts/asset-activity-area-chart";
 import { AssetLifecycleAreaChart } from "@/components/stats/charts/asset-lifecycle-area-chart";
 import { AssetSupplyPieChart } from "@/components/stats/charts/asset-supply-pie-chart";
 import { AssetStatsWidget } from "@/components/stats/widgets/asset-stats-widget";
@@ -27,7 +28,8 @@ function AssetOverviewSectionSkeleton() {
           <WidgetSkeleton />
           <WidgetSkeleton />
         </div>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <ChartSkeleton />
           <ChartSkeleton />
           <ChartSkeleton />
         </div>
@@ -67,9 +69,13 @@ function AssetOverviewSectionContent() {
               <ValueStatsWidget />
             </Suspense>
           </div>
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <Suspense fallback={<ChartSkeleton />}>
               <AssetLifecycleAreaChart defaultRange="trailing7Days" />
+            </Suspense>
+
+            <Suspense fallback={<ChartSkeleton />}>
+              <AssetActivityAreaChart defaultRange="trailing7Days" />
             </Suspense>
 
             <Suspense fallback={<ChartSkeleton />}>
