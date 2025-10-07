@@ -1,6 +1,7 @@
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { isContractAddress } from "@/test/anvil";
 import type { AccessControlRoles } from "@atk/zod/access-control-roles";
+import { getFactoryTypeIdFromAssetType } from "@atk/zod/asset-types";
 import type { FiatCurrency } from "@atk/zod/fiat-currency";
 import type { RoleRequirement } from "@atk/zod/role-requirement";
 import { ORPCError } from "@orpc/server";
@@ -80,7 +81,10 @@ export async function bootstrapTokenFactories(orpClient: OrpcClient) {
   ];
 
   const nonExistingFactories = factories.filter(
-    (factory) => !tokenFactories.some((t) => t.name === factory.name)
+    (factory) =>
+      !tokenFactories.some(
+        (t) => t.typeId === getFactoryTypeIdFromAssetType(factory.type)
+      )
   );
 
   if (nonExistingFactories.length === 0) {
