@@ -16,6 +16,9 @@
   },
   "management": {
     "table": {
+      "identity": {
+        "none": "Keine Identität"
+      },
       "status": {
         "registered": "Registriert",
         "pending": "Ausstehend",
