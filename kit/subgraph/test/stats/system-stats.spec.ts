@@ -64,6 +64,12 @@ describe("SystemStats", () => {
           system {
             id
           }
+          tokensCreatedCount
+          tokensLaunchedCount
+          transferEventsCount
+          forcedTransferEventsCount
+          mintEventsCount
+          burnEventsCount
           totalValueInBaseCurrency
         }
       }
@@ -76,9 +82,16 @@ describe("SystemStats", () => {
       return;
     }
     const state = states[0]!;
+
     expect(state.id).toBeDefined();
     expect(state.system).toBeDefined();
     expect(state.totalValueInBaseCurrency).toBeDefined();
+    expect(state.tokensCreatedCount).toBe(6);
+    expect(state.tokensLaunchedCount).toBe(6);
+    expect(state.transferEventsCount).toBe(30);
+    expect(state.forcedTransferEventsCount).toBe(0);
+    expect(state.mintEventsCount).toBe(10);
+    expect(state.burnEventsCount).toBe(6);
   });
 
   it("should calculate total value based on token supply and base price", async () => {

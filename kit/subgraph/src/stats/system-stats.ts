@@ -12,6 +12,53 @@ import {
   getTokenSystemAddress,
 } from "../token/utils/token-utils";
 
+export class SystemAssetActivity {
+  static TRANSFER: string = "transfer";
+  static FORCED_TRANSFER: string = "forcedTransfer";
+  static MINT: string = "mint";
+  static BURN: string = "burn";
+}
+
+/**
+ * Increment system-level counters for asset activity events
+ */
+export function incrementSystemAssetActivity(
+  token: Token,
+  activity: string
+): void {
+  const systemAddress = getTokenSystemAddress(token);
+
+  if (systemAddress.equals(Address.zero())) {
+    log.warning(
+      "Skipped incrementing system activity {} for token {} - system not set",
+      [activity, token.id.toHexString()]
+    );
+    return;
+  }
+
+  const state = fetchSystemStatsState(systemAddress);
+
+  if (activity == SystemAssetActivity.TRANSFER) {
+    state.transferEventsCount = state.transferEventsCount + 1;
+  } else if (activity == SystemAssetActivity.FORCED_TRANSFER) {
+    state.forcedTransferEventsCount = state.forcedTransferEventsCount + 1;
+  } else if (activity == SystemAssetActivity.MINT) {
+    state.mintEventsCount = state.mintEventsCount + 1;
+  } else if (activity == SystemAssetActivity.BURN) {
+    state.burnEventsCount = state.burnEventsCount + 1;
+  } else {
+    log.warning("Unknown system asset activity {} for token {}", [
+      activity,
+      token.id.toHexString(),
+    ]);
+    return;
+  }
+
+  state.save();
+
+  trackSystemStats(systemAddress);
+}
+
 /**
  * Update system stats when token supply changes (mint/burn)
  * This calculates the delta and updates the total
@@ -50,7 +97,7 @@ export function updateSystemStatsForSupplyChange(
   state.save();
 
   // Create timeseries entry
-  trackSystemStats(systemAddress, state.totalValueInBaseCurrency);
+  trackSystemStats(systemAddress);
 
   return state.totalValueInBaseCurrency;
 }
@@ -103,7 +150,7 @@ export function updateSystemStatsForPriceChange(
   state.save();
 
   // Create timeseries entry
-  trackSystemStats(systemAddress, state.totalValueInBaseCurrency);
+  trackSystemStats(systemAddress);
 
   return state.totalValueInBaseCurrency;
 }
@@ -127,7 +174,7 @@ export function updateSystemStatsForTokenLaunch(token: Token): void {
   state.save();
 
   // Create timeseries entry
-  trackSystemStats(systemAddress, state.totalValueInBaseCurrency);
+  trackSystemStats(systemAddress);
 }
 
 /**
@@ -150,7 +197,7 @@ export function updateSystemStatsForTokenCreate(token: Token): void {
   state.save();
 
   // Create timeseries entry
-  trackSystemStats(systemAddress, state.totalValueInBaseCurrency);
+  trackSystemStats(systemAddress);
 }
 
 /**
@@ -165,6 +212,10 @@ function fetchSystemStatsState(systemAddress: Address): SystemStatsState {
     state.totalValueInBaseCurrency = BigDecimal.zero();
     state.tokensCreatedCount = 0;
     state.tokensLaunchedCount = 0;
+    state.transferEventsCount = 0;
+    state.forcedTransferEventsCount = 0;
+    state.mintEventsCount = 0;
+    state.burnEventsCount = 0;
     state.save();
   }
 
@@ -174,19 +225,20 @@ function fetchSystemStatsState(systemAddress: Address): SystemStatsState {
 /**
  * Track system statistics in timeseries
  */
-function trackSystemStats(
-  systemAddress: Address,
-  totalValue: BigDecimal
-): void {
+function trackSystemStats(systemAddress: Address): void {
   const state = fetchSystemStatsState(systemAddress);
 
   // Create timeseries entry - ID is auto-generated for timeseries entities
   const systemStats = new SystemStatsData(1);
 
   systemStats.system = fetchSystem(systemAddress).id;
-  systemStats.totalValueInBaseCurrency = totalValue;
+  systemStats.totalValueInBaseCurrency = state.totalValueInBaseCurrency;
   systemStats.tokensCreatedCount = state.tokensCreatedCount;
   systemStats.tokensLaunchedCount = state.tokensLaunchedCount;
+  systemStats.transferEventsCount = state.transferEventsCount;
+  systemStats.forcedTransferEventsCount = state.forcedTransferEventsCount;
+  systemStats.mintEventsCount = state.mintEventsCount;
+  systemStats.burnEventsCount = state.burnEventsCount;
 
   systemStats.save();
 }
