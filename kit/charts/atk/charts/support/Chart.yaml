@@ -2,8 +2,8 @@ apiVersion: v2
 name: support
 description: A Helm chart for the supporting components
 type: application
-version: 2.0.0-alpha.18
-appVersion: 2.0.0-alpha.18
+version: 2.0.0-beta.1
+appVersion: 2.0.0-beta.1
 icon: https://console.settlemint.com/android-chrome-512x512.png
 maintainers:
   - name: SettleMint
@@ -15,12 +15,12 @@ dependencies:
     repository: https://kubernetes.github.io/ingress-nginx
     condition: ingress-nginx.enabled
   - name: postgresql
-    version: 2.0.0-alpha.18
+    version: 2.0.0-beta.1
   - name: redis
-    version: 2.0.0-alpha.18
+    version: 2.0.0-beta.1
   - name: reloader
     version: 2.2.3
     repository: https://stakater.github.io/stakater-charts
   - name: minio
-    version: 2.0.0-alpha.18
+    version: 2.0.0-beta.1
     condition: minio.enabled
