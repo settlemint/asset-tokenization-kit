@@ -71,6 +71,7 @@ export const AssetBasics = withForm({
                   : commonFields
               }
               checkRequiredFn={isRequiredField}
+              revalidateOn="stateChange"
             />
           </>
         }

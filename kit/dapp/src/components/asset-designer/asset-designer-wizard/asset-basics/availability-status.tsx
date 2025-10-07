@@ -1,6 +1,5 @@
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export type AvailabilityStatusState =
@@ -20,59 +19,48 @@ export function AvailabilityStatus({
 }: AvailabilityStatusProps) {
   const { t } = useTranslation("asset-designer");
 
-  if (status === "loading") {
-    return (
-      <Alert className={className}>
-        <Loader2 className="w-4 h-4 animate-spin" />
-        <AlertTitle>
-          {t("wizard.steps.summary.availability.checkingTitle")}
-        </AlertTitle>
-        <AlertDescription>
-          {t("wizard.steps.summary.availability.checking")}
-        </AlertDescription>
-      </Alert>
-    );
-  }
-
-  if (status === "error") {
-    return (
-      <Alert variant="destructive" className={className}>
-        <AlertTitle>{t("wizard.steps.summary.availability.error")}</AlertTitle>
-        <AlertDescription>
-          {t("wizard.steps.summary.availability.errorDescription")}
-        </AlertDescription>
-      </Alert>
-    );
-  }
-
-  if (status === "unavailable") {
-    return (
-      <Alert variant="destructive" className={className}>
-        <AlertTitle>
-          {t("wizard.steps.summary.availability.unavailable")}
-        </AlertTitle>
-        <AlertDescription>
-          {t("wizard.steps.summary.availability.unavailableDescription")}
-        </AlertDescription>
-      </Alert>
-    );
-  }
+  // Determine icon, color, and label per status
+  const {
+    icon: Icon,
+    colorClass,
+    label,
+  } = (() => {
+    switch (status) {
+      case "loading":
+        return {
+          icon: Loader2,
+          colorClass: "text-muted-foreground",
+          label: t("wizard.steps.summary.availability.checking"),
+        };
+      case "error":
+        return {
+          icon: AlertCircle,
+          colorClass: "text-destructive",
+          label: t("wizard.steps.summary.availability.errorDescription"),
+        };
+      case "unavailable":
+        return {
+          icon: AlertCircle,
+          colorClass: "text-destructive",
+          label: t("wizard.steps.summary.availability.unavailableDescription"),
+        };
+      default:
+        return {
+          icon: CheckCircle2,
+          colorClass: "text-success",
+          label: t("wizard.steps.summary.availability.availableDescription"),
+        };
+    }
+  })();
 
   return (
-    <Alert
-      variant="default"
-      className={cn(
-        "border-success bg-success-background text-success",
-        className
-      )}
+    <div
+      className={cn("flex items-center gap-2 text-sm", colorClass, className)}
+      role="status"
+      aria-live="polite"
     >
-      <CheckCircle2 className="text-success" />
-      <AlertTitle>
-        {t("wizard.steps.summary.availability.available")}
-      </AlertTitle>
-      <AlertDescription>
-        {t("wizard.steps.summary.availability.availableDescription")}
-      </AlertDescription>
-    </Alert>
+      <Icon className={cn("size-4", status === "loading" && "animate-spin")} />
+      <span>{label}</span>
+    </div>
   );
 }

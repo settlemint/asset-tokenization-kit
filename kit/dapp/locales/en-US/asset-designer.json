@@ -194,14 +194,10 @@
           "description": "Compliance modules that have been enabled for your {{type}}"
         },
         "availability": {
-          "checkingTitle": "Checking availability",
-          "checking": "Checking if your asset name, symbol, and decimals are available",
-          "available": "Available",
-          "availableDescription": "Your asset name, symbol, and decimals are available.",
-          "unavailable": "Update your asset details",
-          "unavailableDescription": "An asset with this name, symbol, and decimals already exists. Change any one of these to continue.",
-          "error": "Can't check availability",
-          "errorDescription": "Unable to verify availability. Check your asset details and try again."
+          "checking": "Checking availability",
+          "availableDescription": "Your asset name, symbol, and decimals are available",
+          "unavailableDescription": "An asset with this name, symbol, and decimals already exists. Change any one of these to continue",
+          "errorDescription": "Unable to verify availability. Check your asset details and try again"
         }
       }
     },
