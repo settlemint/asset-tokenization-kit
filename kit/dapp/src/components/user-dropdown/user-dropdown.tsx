@@ -107,33 +107,15 @@ export function UserDropdown() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onSelect={() => {
-              navigateTo("/profile");
-            }}
-          >
-            <UserIcon className="size-4" />
-            Profile
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onSelect={() => {
-              navigateTo("/wallet");
-            }}
-          >
-            <WalletIcon className="size-4" />
-            Wallet
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onSelect={() => {
-              navigateTo("/onchain-identity");
-            }}
-          >
-            <Fingerprint className="size-4" />
-            Onchain identity
-          </DropdownMenuItem>
+          {accountMenuItems.map(({ path, icon: Icon, label }) => (
+            <DropdownMenuItem
+              key={path}
+              className="cursor-pointer"
+              onSelect={() => navigateTo(path)}
+            >
+              <Icon className="size-4" /> {label}
+            </DropdownMenuItem>
+          ))}
           <DropdownMenuSeparator />
           <LanguageSwitcher mode="menuItem" />
           <ThemeToggle mode="menuItem" />
