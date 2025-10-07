@@ -18,10 +18,17 @@ import {
 } from "../compliance/fetch/compliance-module-parameters";
 import { fetchEvent } from "../event/fetch/event";
 import { updateAccountStatsForBalanceChange } from "../stats/account-stats";
-import { updateSystemStatsForSupplyChange } from "../stats/system-stats";
+import {
+  incrementSystemAssetActivity,
+  SystemAssetActivity,
+  updateSystemStatsForSupplyChange,
+} from "../stats/system-stats";
 import { trackTokenCollateralStats } from "../stats/token-collateral-stats";
 import { trackTokenStats } from "../stats/token-stats";
-import { updateTokenTypeStatsForSupplyChange } from "../stats/token-type-stats";
+import {
+  incrementTokenTypeAssetActivity,
+  updateTokenTypeStatsForSupplyChange,
+} from "../stats/token-type-stats";
 import { updateTotalDenominationAssetNeeded } from "../token-assets/bond/utils/bond-utils";
 import {
   decreaseTokenBalanceValue,
@@ -130,6 +137,9 @@ export function handleMintCompleted(event: MintCompleted): void {
   if (token.bond) {
     updateTotalDenominationAssetNeeded(token);
   }
+
+  incrementSystemAssetActivity(token, SystemAssetActivity.MINT);
+  incrementTokenTypeAssetActivity(token, SystemAssetActivity.MINT);
 }
 
 export function handleModuleParametersUpdated(
@@ -185,6 +195,9 @@ export function handleTransferCompleted(event: TransferCompleted): void {
 
   // Update token stats for transfer
   trackTokenStats(token, eventEntry);
+
+  incrementSystemAssetActivity(token, SystemAssetActivity.TRANSFER);
+  incrementTokenTypeAssetActivity(token, SystemAssetActivity.TRANSFER);
 
   if (token.yield_) {
     updateYield(token);

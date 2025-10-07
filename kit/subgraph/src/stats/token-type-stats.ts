@@ -11,6 +11,7 @@ import {
   getTokenBasePrice,
   getTokenSystemAddress,
 } from "../token/utils/token-utils";
+import { SystemAssetActivity } from "./system-stats";
 
 /**
  * State management for token type statistics
@@ -52,6 +53,36 @@ export function updateTokenTypeStatsForTokenCreation(token: Token): void {
   state.save();
 
   // Track in timeseries
+  trackTokenTypeStats(state);
+}
+
+/**
+ * Increment token type asset activity counters for mint/burn/transfers
+ */
+export function incrementTokenTypeAssetActivity(
+  token: Token,
+  activity: string
+): void {
+  const state = fetchTokenTypeStatsState(token);
+
+  if (activity == SystemAssetActivity.TRANSFER) {
+    state.transferEventsCount = state.transferEventsCount + 1;
+  } else if (activity == SystemAssetActivity.FORCED_TRANSFER) {
+    state.forcedTransferEventsCount = state.forcedTransferEventsCount + 1;
+  } else if (activity == SystemAssetActivity.MINT) {
+    state.mintEventsCount = state.mintEventsCount + 1;
+  } else if (activity == SystemAssetActivity.BURN) {
+    state.burnEventsCount = state.burnEventsCount + 1;
+  } else {
+    log.warning("Unknown token type asset activity {} for token {}", [
+      activity,
+      token.id.toHexString(),
+    ]);
+    return;
+  }
+
+  state.save();
+
   trackTokenTypeStats(state);
 }
 
@@ -197,6 +228,10 @@ function fetchTokenTypeStatsState(token: Token): TokenTypeStatsState {
     state.count = 0;
     state.type = token.type;
     state.percentageOfTotalSupply = BigDecimal.zero();
+    state.transferEventsCount = 0;
+    state.forcedTransferEventsCount = 0;
+    state.mintEventsCount = 0;
+    state.burnEventsCount = 0;
     state.save();
   }
 
@@ -214,6 +249,10 @@ function trackTokenTypeStats(state: TokenTypeStatsState): void {
   tokenTypeStats.system = state.system;
   tokenTypeStats.count = state.count;
   tokenTypeStats.percentageOfTotalSupply = state.percentageOfTotalSupply;
+  tokenTypeStats.transferEventsCount = state.transferEventsCount;
+  tokenTypeStats.forcedTransferEventsCount = state.forcedTransferEventsCount;
+  tokenTypeStats.mintEventsCount = state.mintEventsCount;
+  tokenTypeStats.burnEventsCount = state.burnEventsCount;
   tokenTypeStats.save();
 }
 

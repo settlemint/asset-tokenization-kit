@@ -7,7 +7,12 @@ import {
 } from "../../../generated/templates/Custodian/Custodian";
 import { fetchEvent } from "../../event/fetch/event";
 import { updateAccountStatsForBalanceChange } from "../../stats/account-stats";
+import {
+  incrementSystemAssetActivity,
+  SystemAssetActivity,
+} from "../../stats/system-stats";
 import { trackTokenStats } from "../../stats/token-stats";
+import { incrementTokenTypeAssetActivity } from "../../stats/token-type-stats";
 import {
   decreaseTokenBalanceFrozen,
   decreaseTokenBalanceValue,
@@ -61,6 +66,9 @@ export function handleForcedTransfer(event: ForcedTransfer): void {
 
   // Update token stats for forced transfer
   trackTokenStats(token, eventEntry);
+
+  incrementSystemAssetActivity(token, SystemAssetActivity.FORCED_TRANSFER);
+  incrementTokenTypeAssetActivity(token, SystemAssetActivity.FORCED_TRANSFER);
 }
 
 export function handleRecoverySuccess(event: RecoverySuccess): void {

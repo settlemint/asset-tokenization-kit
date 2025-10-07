@@ -1267,6 +1267,14 @@ type SystemStatsState @entity(immutable: false) {
   tokensCreatedCount: Int!
   # Total number of tokens launched (unpaused for the first time)
   tokensLaunchedCount: Int!
+  # Total count of transfer events (excluding forced transfers)
+  transferEventsCount: Int!
+  # Total count of forced transfer events
+  forcedTransferEventsCount: Int!
+  # Total count of mint events
+  mintEventsCount: Int!
+  # Total count of burn events
+  burnEventsCount: Int!
 }
 
 type SystemStatsData @entity(timeseries: true) {
@@ -1282,6 +1290,14 @@ type SystemStatsData @entity(timeseries: true) {
   tokensCreatedCount: Int!
   # Total number of tokens launched (unpaused for the first time)
   tokensLaunchedCount: Int!
+  # Total count of transfer events (excluding forced transfers)
+  transferEventsCount: Int!
+  # Total count of forced transfer events
+  forcedTransferEventsCount: Int!
+  # Total count of mint events
+  mintEventsCount: Int!
+  # Total count of burn events
+  burnEventsCount: Int!
 }
 
 type SystemStats
@@ -1301,6 +1317,18 @@ type SystemStats
   # Last count of tokens launched for the period
   tokensLaunchedCount: Int!
     @aggregate(fn: "last", arg: "tokensLaunchedCount")
+  # Last count of transfers for the period
+  transferEventsCount: Int!
+    @aggregate(fn: "last", arg: "transferEventsCount")
+  # Last count of forced transfers for the period
+  forcedTransferEventsCount: Int!
+    @aggregate(fn: "last", arg: "forcedTransferEventsCount")
+  # Last count of mint events for the period
+  mintEventsCount: Int!
+    @aggregate(fn: "last", arg: "mintEventsCount")
+  # Last count of burn events for the period
+  burnEventsCount: Int!
+    @aggregate(fn: "last", arg: "burnEventsCount")
 }
 
 type AccountStatsState @entity(immutable: false) {
@@ -1485,6 +1513,14 @@ type TokenTypeStatsState @entity(immutable: false) {
   totalValueInBaseCurrency: BigDecimal!
   # Percentage of total supply across all token types
   percentageOfTotalSupply: BigDecimal!
+  # Total count of transfer events (excluding forced transfers)
+  transferEventsCount: Int!
+  # Total count of forced transfer events
+  forcedTransferEventsCount: Int!
+  # Total count of mint events
+  mintEventsCount: Int!
+  # Total count of burn events
+  burnEventsCount: Int!
 }
 
 type TokenTypeStatsData @entity(timeseries: true) {
@@ -1500,6 +1536,14 @@ type TokenTypeStatsData @entity(timeseries: true) {
   count: Int!
   # Percentage of total supply across all token types
   percentageOfTotalSupply: BigDecimal!
+  # Total count of transfer events (excluding forced transfers)
+  transferEventsCount: Int!
+  # Total count of forced transfer events
+  forcedTransferEventsCount: Int!
+  # Total count of mint events
+  mintEventsCount: Int!
+  # Total count of burn events
+  burnEventsCount: Int!
 }
 
 type TokenTypeStats
@@ -1517,6 +1561,18 @@ type TokenTypeStats
   # Last percentage of total supply for the period
   percentageOfTotalSupply: BigDecimal!
     @aggregate(fn: "last", arg: "percentageOfTotalSupply")
+  # Last count of transfers for the period
+  transferEventsCount: Int!
+    @aggregate(fn: "last", arg: "transferEventsCount")
+  # Last count of forced transfers for the period
+  forcedTransferEventsCount: Int!
+    @aggregate(fn: "last", arg: "forcedTransferEventsCount")
+  # Last count of mint events for the period
+  mintEventsCount: Int!
+    @aggregate(fn: "last", arg: "mintEventsCount")
+  # Last count of burn events for the period
+  burnEventsCount: Int!
+    @aggregate(fn: "last", arg: "burnEventsCount")
 }
 
 type TokenStatsState @entity(immutable: false) {
