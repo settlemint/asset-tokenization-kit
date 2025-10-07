@@ -53,7 +53,7 @@ export function isStepSubmitDisabled<T extends readonly string[]>(
 ) {
   return fields.some((field) => {
     const meta = form.getFieldMeta(field);
-    if (meta === undefined) {
+    if (meta === undefined || meta.isValidating) {
       return true;
     }
     const errors = meta.errors;
