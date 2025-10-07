@@ -20,7 +20,7 @@
     },
     "assetActivity": {
       "title": "Asset activity",
-      "description": "Track transfer, mint, and burn events {{overRange}}",
+      "description": "Track transfer, mint, and burn events",
       "transferEventsLabel": "Transfers",
       "mintEventsLabel": "Mints",
       "burnEventsLabel": "Burns",
@@ -39,7 +39,7 @@
     },
     "assetLifecycle": {
       "title": "Launched assets",
-      "description": "Track how asset launches keep pace with new creations {{overRange}}",
+      "description": "Track how asset launches keep pace with new creations",
       "createdLabel": "Assets created",
       "launchedLabel": "Assets launched",
       "empty": {
@@ -119,7 +119,7 @@
     },
     "portfolioValue": {
       "title": "Portfolio value",
-      "description": "See how your portfolio value changed {{overRange}}",
+      "description": "See how your portfolio value changed over time",
       "label": "Value",
       "empty": {
         "title": "No data to show yet",

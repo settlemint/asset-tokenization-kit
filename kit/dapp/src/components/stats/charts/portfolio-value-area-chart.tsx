@@ -6,13 +6,13 @@ import { formatChartDate } from "@/lib/utils/timeseries";
 import { orpc } from "@/orpc/orpc-client";
 import {
   resolveStatsRange,
+  statsRangePresets,
   type StatsRangePreset,
   type StatsResolvedRange,
 } from "@atk/zod/stats-range";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useQueries, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { buildChartRangeDescription } from "./chart-range-description";
 
 export interface PortfolioValueAreaChartProps {
   defaultRange?: StatsRangePreset;
@@ -38,14 +38,6 @@ export function PortfolioValueAreaChart({
   const [selectedRange, setSelectedRange] =
     useState<StatsRangePreset>(defaultRange);
 
-  // Fetch portfolio value data with optimized caching
-  const { data: rawData } = useQuery(
-    orpc.system.stats.portfolio.queryOptions({
-      input: selectedRange,
-      ...CHART_QUERY_OPTIONS,
-    })
-  );
-
   // Configure chart colors and labels
   const chartConfig: ChartConfig = {
     totalValueInBaseCurrency: {
@@ -54,32 +46,40 @@ export function PortfolioValueAreaChart({
     },
   };
 
+  const [trailing24HrRangeData, trailing7DaysRangeData] = useQueries({
+    queries: statsRangePresets.map((preset) =>
+      orpc.system.stats.portfolio.queryOptions({
+        input: preset,
+        ...CHART_QUERY_OPTIONS,
+      })
+    ),
+  });
+
+  // Get the raw data for the selected range
+  const rawData =
+    selectedRange === "trailing24Hours"
+      ? trailing24HrRangeData?.data
+      : trailing7DaysRangeData?.data;
+
   const fallbackRange = useMemo<StatsResolvedRange>(() => {
     return resolveStatsRange(selectedRange);
   }, [selectedRange]);
 
   const resolvedRange = rawData?.range ?? fallbackRange;
 
-  const overRange = buildChartRangeDescription({
-    range: resolvedRange,
-    t,
-  });
-
-  const description = t("charts.portfolioValue.description", {
-    overRange,
-  });
-
   const chartInterval = resolvedRange.interval;
-  const chartData = rawData?.data ?? [];
+
+  const timeseries = rawData?.data ?? [];
+
   const dataKeys = ["totalValueInBaseCurrency"];
 
   return (
     <ComponentErrorBoundary componentName="Portfolio Value Chart">
       <InteractiveChartComponent
         title={t("charts.portfolioValue.title")}
-        description={description}
+        description={t("charts.portfolioValue.description")}
         interval={chartInterval}
-        data={chartData}
+        data={timeseries}
         config={chartConfig}
         dataKeys={dataKeys}
         nameKey="timestamp"

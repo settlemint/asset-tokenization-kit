@@ -6,14 +6,13 @@ import { formatChartDate } from "@/lib/utils/timeseries";
 import { orpc } from "@/orpc/orpc-client";
 import {
   resolveStatsRange,
+  statsRangePresets,
   type StatsRangePreset,
   type StatsResolvedRange,
 } from "@atk/zod/stats-range";
-import { useQuery } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-
-import { buildChartRangeDescription } from "./chart-range-description";
 
 export interface AssetLifecycleAreaChartProps {
   defaultRange?: StatsRangePreset;
@@ -43,28 +42,26 @@ export function AssetLifecycleAreaChart({
     [t]
   );
 
-  // Query automatically refetches when selectedRange changes
-  const { data: rawData } = useQuery(
-    orpc.system.stats.assetLifecycle.queryOptions({
-      input: selectedRange,
-      ...CHART_QUERY_OPTIONS,
-    })
-  );
+  const [trailing24HrRangeData, trailing7DaysRangeData] = useQueries({
+    queries: statsRangePresets.map((preset) =>
+      orpc.system.stats.assetLifecycle.queryOptions({
+        input: preset,
+        ...CHART_QUERY_OPTIONS,
+      })
+    ),
+  });
+
+  // Get the raw data for the selected range
+  const rawData =
+    selectedRange === "trailing24Hours"
+      ? trailing24HrRangeData?.data
+      : trailing7DaysRangeData?.data;
 
   const fallbackRange = useMemo<StatsResolvedRange>(() => {
     return resolveStatsRange(selectedRange);
   }, [selectedRange]);
 
   const resolvedRange = rawData?.range ?? fallbackRange;
-
-  const overRange = buildChartRangeDescription({
-    range: resolvedRange,
-    t,
-  });
-
-  const description = t("charts.assetLifecycle.description", {
-    overRange,
-  });
 
   const chartInterval = resolvedRange.interval;
 
@@ -75,7 +72,7 @@ export function AssetLifecycleAreaChart({
     <ComponentErrorBoundary componentName="Asset Lifecycle Chart">
       <InteractiveChartComponent
         title={t("charts.assetLifecycle.title")}
-        description={description}
+        description={t("charts.assetLifecycle.description")}
         interval={chartInterval}
         data={timeseries}
         config={chartConfig}

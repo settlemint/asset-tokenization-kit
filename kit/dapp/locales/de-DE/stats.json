@@ -2,7 +2,7 @@
   "charts": {
     "assetActivity": {
       "title": "Vermögensaktivitäten",
-      "description": "Verfolgen Sie Transfer-, Präge- und Vernichtungsereignisse {{overRange}}",
+      "description": "Verfolgen Sie Transfer-, Präge- und Vernichtungsereignisse",
       "transferEventsLabel": "Übertragungen",
       "mintEventsLabel": "Prägungen",
       "burnEventsLabel": "Vernichtungen",
@@ -21,7 +21,7 @@
     },
     "assetLifecycle": {
       "title": "Asset-Starts vs. Designs",
-      "description": "Vergleichen Sie designte und gestartete Assets der letzten {{days}} Tage",
+      "description": "Verfolgen Sie, wie Asset-Starts mit neuen Erstellungen Schritt halten",
       "createdLabel": "Designte Assets",
       "launchedLabel": "Gestartete Assets",
       "empty": {
@@ -100,7 +100,7 @@
     },
     "portfolioValue": {
       "title": "Ihr Portfoliowert",
-      "description": "Verfolgen Sie die Entwicklung Ihrer Investitionen der letzten {{days}} Tage",
+      "description": "Sehen Sie, wie sich Ihr Portfoliowert im Laufe der Zeit verändert hat",
       "label": "Wert",
       "empty": {
         "title": "Noch keine Daten verfügbar",

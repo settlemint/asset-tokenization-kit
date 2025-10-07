@@ -6,14 +6,13 @@ import { formatChartDate } from "@/lib/utils/timeseries";
 import { orpc } from "@/orpc/orpc-client";
 import {
   resolveStatsRange,
+  statsRangePresets,
   type StatsRangePreset,
   type StatsResolvedRange,
 } from "@atk/zod/stats-range";
-import { useQuery } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-
-import { buildChartRangeDescription } from "./chart-range-description";
 
 export interface AssetActivityAreaChartProps {
   defaultRange?: StatsRangePreset;
@@ -47,28 +46,26 @@ export function AssetActivityAreaChart({
     [t]
   );
 
-  // Query automatically refetches when selectedRange changes
-  const { data: rawData } = useQuery(
-    orpc.system.stats.assetActivity.queryOptions({
-      input: selectedRange,
-      ...CHART_QUERY_OPTIONS,
-    })
-  );
+  const [trailing24HrRangeData, trailing7DaysRangeData] = useQueries({
+    queries: statsRangePresets.map((preset) =>
+      orpc.system.stats.assetActivity.queryOptions({
+        input: preset,
+        ...CHART_QUERY_OPTIONS,
+      })
+    ),
+  });
+
+  // Get the raw data for the selected range
+  const rawData =
+    selectedRange === "trailing24Hours"
+      ? trailing24HrRangeData?.data
+      : trailing7DaysRangeData?.data;
 
   const fallbackRange = useMemo<StatsResolvedRange>(() => {
     return resolveStatsRange(selectedRange);
   }, [selectedRange]);
 
   const resolvedRange = rawData?.range ?? fallbackRange;
-
-  const overRange = buildChartRangeDescription({
-    range: resolvedRange,
-    t,
-  });
-
-  const description = t("charts.assetActivity.description", {
-    overRange,
-  });
 
   const chartInterval = resolvedRange.interval;
 
@@ -83,7 +80,7 @@ export function AssetActivityAreaChart({
     <ComponentErrorBoundary componentName="Asset Activity Chart">
       <InteractiveChartComponent
         title={t("charts.assetActivity.title")}
-        description={description}
+        description={t("charts.assetActivity.description")}
         interval={chartInterval}
         data={timeseries}
         config={chartConfig}

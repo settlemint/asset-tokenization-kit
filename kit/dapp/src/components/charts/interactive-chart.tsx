@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  type ChartConfig,
 } from "@/components/ui/chart";
 import {
   Select,
@@ -63,8 +63,8 @@ export interface InteractiveChartProps {
   enableChartTypeToggle?: boolean;
 
   // Timeframe control (controlled)
-  selectedRange?: StatsRangePreset;
-  onRangeChange?: (range: StatsRangePreset) => void;
+  selectedRange: StatsRangePreset;
+  onRangeChange: (range: StatsRangePreset) => void;
 }
 
 // Static bar radius configuration
@@ -182,28 +182,26 @@ export function InteractiveChartComponent({
             )}
 
             {/* Timeframe Dropdown */}
-            {selectedRange && onRangeChange && (
-              <Select value={selectedRange} onValueChange={onRangeChange}>
-                <SelectTrigger
-                  size="sm"
-                  className="w-[160px] rounded-lg sm:ml-auto"
-                  aria-label="Select timeframe"
-                >
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl">
-                  {statsRangePresets.map((preset) => (
-                    <SelectItem
-                      key={preset}
-                      value={preset}
-                      className="rounded-lg"
-                    >
-                      {t(`timeframes.${preset}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
+            <Select value={selectedRange} onValueChange={onRangeChange}>
+              <SelectTrigger
+                size="sm"
+                className="w-[160px] rounded-lg sm:ml-auto"
+                aria-label="Select timeframe"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                {statsRangePresets.map((preset) => (
+                  <SelectItem
+                    key={preset}
+                    value={preset}
+                    className="rounded-lg"
+                  >
+                    {t(`timeframes.${preset}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </CardHeader>
