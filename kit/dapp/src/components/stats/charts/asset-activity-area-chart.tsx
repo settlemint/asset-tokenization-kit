@@ -29,12 +29,6 @@ export function AssetActivityAreaChart({
   const [selectedRange, setSelectedRange] =
     useState<StatsRangePreset>(defaultRange);
 
-  // Available timeframe presets
-  const availableRangePresets: StatsRangePreset[] = [
-    "trailing24Hours",
-    "trailing7Days",
-  ];
-
   const chartConfig: ChartConfig = useMemo(
     () => ({
       transferEventsCount: {
@@ -109,7 +103,6 @@ export function AssetActivityAreaChart({
         emptyDescription={t("charts.assetActivity.empty.description")}
         defaultChartType="area"
         enableChartTypeToggle={true}
-        availableRangePresets={availableRangePresets}
         selectedRange={selectedRange}
         onRangeChange={setSelectedRange}
       />

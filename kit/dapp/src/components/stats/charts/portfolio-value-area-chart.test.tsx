@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { type StatsRangeInput } from "@atk/zod/stats-range";
+import { type StatsRangePreset } from "@atk/zod/stats-range";
 
 import { PortfolioValueAreaChart } from "./portfolio-value-area-chart";
 
@@ -10,12 +10,6 @@ const mockBaseCurrency = "EUR";
 
 const defaultFrom = new Date("2024-01-01T00:00:00Z");
 const defaultTo = new Date("2024-01-31T23:59:59Z");
-
-const defaultRange: StatsRangeInput = {
-  from: defaultFrom,
-  to: defaultTo,
-  interval: "day",
-};
 
 // Mock the ORPC client
 vi.mock("@/orpc/orpc-client", () => ({
@@ -31,18 +25,19 @@ vi.mock("@/orpc/orpc-client", () => ({
             }: { enabled?: boolean; input?: unknown } = {}) => ({
               ...rest,
               enabled,
-              queryKey: ["system", "stats", "portfolio"],
+              queryKey: ["system", "stats", "portfolio", input],
               queryFn: vi.fn(() => {
-                const typedInput = input as StatsRangeInput | undefined;
+                const typedInput = input as StatsRangePreset | undefined;
 
                 let interval: "day" | "hour" = "day";
-                let from = new Date("2024-01-01T00:00:00Z");
-                let to = new Date("2024-01-31T23:59:59Z");
+                let from = defaultFrom;
+                let to = defaultTo;
 
-                if (typedInput && typeof typedInput !== "string") {
-                  interval = typedInput.interval;
-                  from = typedInput.from;
-                  to = typedInput.to;
+                // Handle preset strings
+                if (typedInput === "trailing24Hours") {
+                  interval = "hour";
+                  from = new Date("2024-01-31T00:00:00Z");
+                  to = defaultTo;
                 }
 
                 return Promise.resolve({
@@ -50,7 +45,7 @@ vi.mock("@/orpc/orpc-client", () => ({
                     interval,
                     from,
                     to,
-                    isPreset: false,
+                    isPreset: true,
                   },
                   data: [
                     {
@@ -90,8 +85,16 @@ vi.mock("@/orpc/orpc-client", () => ({
 
 // Mock react-i18next
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
+  useTranslation: (namespace?: string) => ({
     t: (key: string, options: Record<string, unknown> = {}) => {
+      // Handle common namespace timeframe translations
+      if (namespace === "common" && key.startsWith("timeframes.")) {
+        const preset = key.replace("timeframes.", "");
+        if (preset === "trailing24Hours") return "Last 24 hours";
+        if (preset === "trailing7Days") return "Last 7 days";
+        return preset;
+      }
+
       if (key === "charts.portfolioValue.title") {
         return "Your portfolio value";
       }
@@ -169,8 +172,8 @@ vi.mock("date-fns/format", () => ({
 }));
 
 // Mock the chart components
-vi.mock("@/components/charts/area-chart", () => ({
-  AreaChartComponent: ({
+vi.mock("@/components/charts/interactive-chart", () => ({
+  InteractiveChartComponent: ({
     title,
     description,
     data,
@@ -180,7 +183,7 @@ vi.mock("@/components/charts/area-chart", () => ({
     data: unknown[];
     chartContainerClassName?: string;
   }) => (
-    <div data-testid="area-chart">
+    <div data-testid="interactive-chart">
       <h2>{title}</h2>
       {description && <p>{description}</p>}
       <div data-testid="chart-data">{JSON.stringify(data)}</div>
@@ -235,51 +238,29 @@ describe("PortfolioValueAreaChart", () => {
     );
   };
 
-  it("renders portfolio value chart with required props", () => {
-    renderWithQueryClient(<PortfolioValueAreaChart range={defaultRange} />);
+  it("renders portfolio value chart with default range", () => {
+    renderWithQueryClient(<PortfolioValueAreaChart />);
 
     expect(screen.getByTestId("error-boundary")).toBeInTheDocument();
-    expect(screen.getByTestId("area-chart")).toBeInTheDocument();
+    expect(screen.getByTestId("interactive-chart")).toBeInTheDocument();
     expect(screen.getByText("Your portfolio value")).toBeInTheDocument();
   });
 
-  it("renders chart with custom interval", () => {
+  it("renders chart with custom defaultRange", () => {
     renderWithQueryClient(
-      <PortfolioValueAreaChart range={{ ...defaultRange, interval: "hour" }} />
+      <PortfolioValueAreaChart defaultRange="trailing24Hours" />
     );
 
-    expect(screen.getByTestId("area-chart")).toBeInTheDocument();
+    expect(screen.getByTestId("interactive-chart")).toBeInTheDocument();
     expect(screen.getByText("Your portfolio value")).toBeInTheDocument();
   });
 
-  it("renders chart with custom date range", () => {
-    const from = new Date("2024-02-01T00:00:00Z");
-    const to = new Date("2024-02-08T00:00:00Z");
-
+  it("renders chart with trailing7Days preset", () => {
     renderWithQueryClient(
-      <PortfolioValueAreaChart range={{ from, to, interval: "day" }} />
+      <PortfolioValueAreaChart defaultRange="trailing7Days" />
     );
 
-    expect(screen.getByTestId("area-chart")).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "See how your portfolio value changed from Feb 01 to Feb 08"
-      )
-    ).toBeInTheDocument();
-  });
-
-  it("renders chart with explicit date range overrides", () => {
-    renderWithQueryClient(
-      <PortfolioValueAreaChart
-        range={{
-          from: new Date("2024-03-01T00:00:00Z"),
-          to: new Date("2024-03-15T23:59:59Z"),
-          interval: "day",
-        }}
-      />
-    );
-
-    expect(screen.getByTestId("area-chart")).toBeInTheDocument();
+    expect(screen.getByTestId("interactive-chart")).toBeInTheDocument();
     expect(screen.getByText("Your portfolio value")).toBeInTheDocument();
   });
 });

@@ -1,4 +1,4 @@
-import { AreaChartComponent } from "@/components/charts/area-chart";
+import { InteractiveChartComponent } from "@/components/charts/interactive-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
@@ -6,17 +6,17 @@ import { formatChartDate } from "@/lib/utils/timeseries";
 import { orpc } from "@/orpc/orpc-client";
 import {
   resolveStatsRange,
-  type StatsRangeInput,
+  type StatsRangePreset,
   type StatsResolvedRange,
 } from "@atk/zod/stats-range";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { buildChartRangeDescription } from "./chart-range-description";
 
-export type PortfolioValueAreaChartProps = {
-  range: StatsRangeInput;
-};
+export interface PortfolioValueAreaChartProps {
+  defaultRange?: StatsRangePreset;
+}
 
 /**
  * Portfolio Value Area Chart Component
@@ -26,7 +26,7 @@ export type PortfolioValueAreaChartProps = {
  * Uses dnum for safe BigInt handling to prevent precision loss.
  */
 export function PortfolioValueAreaChart({
-  range,
+  defaultRange = "trailing7Days",
 }: PortfolioValueAreaChartProps) {
   const { t, i18n } = useTranslation("stats");
   const locale = i18n.language;
@@ -34,10 +34,14 @@ export function PortfolioValueAreaChart({
     orpc.settings.read.queryOptions({ input: { key: "BASE_CURRENCY" } })
   );
 
+  // Internal state for selected range
+  const [selectedRange, setSelectedRange] =
+    useState<StatsRangePreset>(defaultRange);
+
   // Fetch portfolio value data with optimized caching
   const { data: rawData } = useQuery(
     orpc.system.stats.portfolio.queryOptions({
-      input: range,
+      input: selectedRange,
       ...CHART_QUERY_OPTIONS,
     })
   );
@@ -51,8 +55,8 @@ export function PortfolioValueAreaChart({
   };
 
   const fallbackRange = useMemo<StatsResolvedRange>(() => {
-    return resolveStatsRange(range);
-  }, [range]);
+    return resolveStatsRange(selectedRange);
+  }, [selectedRange]);
 
   const resolvedRange = rawData?.range ?? fallbackRange;
 
@@ -71,7 +75,7 @@ export function PortfolioValueAreaChart({
 
   return (
     <ComponentErrorBoundary componentName="Portfolio Value Chart">
-      <AreaChartComponent
+      <InteractiveChartComponent
         title={t("charts.portfolioValue.title")}
         description={description}
         interval={chartInterval}
@@ -81,6 +85,10 @@ export function PortfolioValueAreaChart({
         nameKey="timestamp"
         showLegend={false}
         stacked={false}
+        defaultChartType="area"
+        enableChartTypeToggle={true}
+        selectedRange={selectedRange}
+        onRangeChange={setSelectedRange}
         xTickFormatter={(value: string | Date | number) =>
           formatChartDate(value, chartInterval, locale)
         }

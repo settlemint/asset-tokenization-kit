@@ -29,7 +29,7 @@ export function PortfolioBreakdown({
         hasAssets={hasAssets}
         interval={interval}
       />
-      <PortfolioValueAreaChart range="trailing7Days" />
+      <PortfolioValueAreaChart defaultRange="trailing7Days" />
     </div>
   );
 }

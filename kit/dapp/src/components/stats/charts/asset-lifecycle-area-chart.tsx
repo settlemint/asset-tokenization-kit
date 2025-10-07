@@ -29,12 +29,6 @@ export function AssetLifecycleAreaChart({
   const [selectedRange, setSelectedRange] =
     useState<StatsRangePreset>(defaultRange);
 
-  // Available timeframe presets
-  const availableRangePresets: StatsRangePreset[] = [
-    "trailing24Hours",
-    "trailing7Days",
-  ];
-
   const chartConfig: ChartConfig = useMemo(
     () => ({
       assetsCreated: {
@@ -101,7 +95,6 @@ export function AssetLifecycleAreaChart({
         emptyDescription={t("charts.assetLifecycle.empty.description")}
         defaultChartType="area"
         enableChartTypeToggle={true}
-        availableRangePresets={availableRangePresets}
         selectedRange={selectedRange}
         onRangeChange={setSelectedRange}
       />

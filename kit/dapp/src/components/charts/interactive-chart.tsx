@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import type { StatsRangePreset } from "@atk/zod/stats-range";
+import { statsRangePresets, type StatsRangePreset } from "@atk/zod/stats-range";
 import { AreaChart as AreaChartIcon, BarChart3 } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -63,7 +63,6 @@ export interface InteractiveChartProps {
   enableChartTypeToggle?: boolean;
 
   // Timeframe control (controlled)
-  availableRangePresets?: StatsRangePreset[];
   selectedRange?: StatsRangePreset;
   onRangeChange?: (range: StatsRangePreset) => void;
 }
@@ -105,7 +104,6 @@ export function InteractiveChartComponent({
   interval,
   defaultChartType = "area",
   enableChartTypeToggle = true,
-  availableRangePresets,
   selectedRange,
   onRangeChange,
 }: InteractiveChartProps) {
@@ -184,7 +182,7 @@ export function InteractiveChartComponent({
             )}
 
             {/* Timeframe Dropdown */}
-            {availableRangePresets && selectedRange && onRangeChange && (
+            {selectedRange && onRangeChange && (
               <Select value={selectedRange} onValueChange={onRangeChange}>
                 <SelectTrigger
                   size="sm"
@@ -194,7 +192,7 @@ export function InteractiveChartComponent({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
-                  {availableRangePresets.map((preset) => (
+                  {statsRangePresets.map((preset) => (
                     <SelectItem
                       key={preset}
                       value={preset}
