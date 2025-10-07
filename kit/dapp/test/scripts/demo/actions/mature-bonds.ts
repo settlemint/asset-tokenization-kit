@@ -2,13 +2,13 @@ import { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { getAnvilTimeMilliseconds, increaseAnvilTime } from "@/test/anvil";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import { DEFAULT_PINCODE, signInWithUser } from "@test/fixtures/user";
+import { BONDS } from "@test/scripts/demo/data/demo-assets";
 import {
   ADMIN,
-  BONDS,
   GERMAN_INVESTOR_1,
   GERMAN_INVESTOR_2,
   ISSUER,
-} from "@test/scripts/data";
+} from "@test/scripts/demo/data/demo-users";
 import { differenceInMilliseconds, isAfter } from "date-fns";
 
 const adminClient = getOrpcClient(await signInWithUser(ADMIN));
@@ -22,7 +22,7 @@ const germanInvestor2Client = getOrpcClient(
 
 const tokens = await adminClient.token.list({});
 
-const createdBonds = tokens.filter((t) =>
+const createdBonds = tokens.tokens.filter((t) =>
   BONDS.some((b) => b.symbol === t.symbol && b.name === t.name)
 );
 

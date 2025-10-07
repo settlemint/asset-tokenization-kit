@@ -1,4 +1,6 @@
 import { TimeIntervalEnum } from "@atk/zod/time-interval";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+import { getDappUrl } from "@test/fixtures/dapp";
 import { createFixedYieldSchedule } from "@test/fixtures/fixed-yield-schedule";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import {
@@ -20,19 +22,21 @@ import {
   signInWithUser,
 } from "@test/fixtures/user";
 import { from } from "dnum";
+import { BONDS } from "./data/demo-assets";
+import { DE_COUNTRY_CODE } from "./data/demo-country-codes";
 import {
   ADMIN,
-  BONDS,
-  DE_COUNTRY_CODE,
   GERMAN_INVESTOR_1,
   GERMAN_INVESTOR_2,
   ISSUER,
   JAPANESE_INVESTOR,
-} from "./data";
+} from "./data/demo-users";
 
-process.env.DAPP_URL =
-  "https://asset-tokenization-kit-erc-3643-fffd2.gke-europe-staging.settlemint.com/";
+const logger = createLogger({ level: "info" });
 
+logger.info(`Setting up demo environment (dApp url: ${getDappUrl()})`);
+
+logger.info("Setting up users");
 // Setup users
 await setupUser(ADMIN); // Admin first to be able to create the system
 // Do one by one to avoid hitting the rate limits of better auth
@@ -51,6 +55,7 @@ const issuer = await getUserData(ISSUER);
 // Setup system
 const system = await bootstrapSystem(adminClient);
 
+logger.info("Bootstrapping system");
 await Promise.all([
   bootstrapTokenFactories(adminClient),
   bootstrapAddons(adminClient),
@@ -74,6 +79,8 @@ await Promise.all([
   setDefaultSystemSettings(adminClient, "EUR"),
   createAndRegisterUserIdentities(adminClient, [JAPANESE_INVESTOR], "JP", true),
 ]);
+
+logger.info("Creating denomination token");
 
 // Create tokens with compliance enabled
 const denominationToken = await createToken(
@@ -116,6 +123,7 @@ const amlTopic = topics.find((t) => t.name === "antiMoneyLaundering");
 const kycTopic = topics.find((t) => t.name === "knowYourCustomer");
 
 for (const bondToCreate of BONDS) {
+  logger.info(`Creating bond: ${bondToCreate.name}`);
   const initialModulePairs: Parameters<
     typeof createToken
   >[1]["initialModulePairs"] = [];
@@ -184,6 +192,7 @@ for (const bondToCreate of BONDS) {
 
   // Give the issuer some tokens so the yield can be paid out
   // And the bond some tokens so the bond can be matured
+  logger.info("Minting tokens to the issuer and bond");
   await issuerClient.token.mint({
     contract: denominationToken.id,
     recipients: [issuer.wallet, bond.id],
@@ -196,6 +205,7 @@ for (const bondToCreate of BONDS) {
 
   if (!bond.yield?.schedule?.id) {
     // Set yield schedule
+    logger.info("Creating yield schedule");
     const schedule = await createFixedYieldSchedule(adminClient, {
       yieldRate: bondToCreate.yieldRate,
       paymentInterval: TimeIntervalEnum.YEARLY,
@@ -209,6 +219,7 @@ for (const bondToCreate of BONDS) {
       },
     });
 
+    logger.info("Setting yield schedule");
     await issuerClient.token.setYieldSchedule({
       contract: bond.id,
       schedule: schedule.address,
@@ -219,6 +230,7 @@ for (const bondToCreate of BONDS) {
     });
 
     // Top up the denomination asset so the yield can be paid out
+    logger.info("Topping up yield schedule");
     await issuerClient.fixedYieldSchedule.topUp({
       contract: schedule.address,
       amount: from(500, 18),
@@ -230,6 +242,7 @@ for (const bondToCreate of BONDS) {
   }
 
   // Mint some tokens to the german investors
+  logger.info("Minting tokens to the german investors");
   await issuerClient.token.mint({
     contract: bond.id,
     recipients: [germanInvestor1.wallet, germanInvestor2.wallet],
