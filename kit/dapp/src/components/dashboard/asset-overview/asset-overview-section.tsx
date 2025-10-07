@@ -5,6 +5,7 @@ import { SectionTitle } from "@/components/dashboard/section-title";
 import { AssetActivityAreaChart } from "@/components/stats/charts/asset-activity-area-chart";
 import { AssetLifecycleAreaChart } from "@/components/stats/charts/asset-lifecycle-area-chart";
 import { AssetSupplyPieChart } from "@/components/stats/charts/asset-supply-pie-chart";
+import { AssetValuePieChart } from "@/components/stats/charts/asset-value-pie-chart";
 import { AssetStatsWidget } from "@/components/stats/widgets/asset-stats-widget";
 import { PendingLaunchesWidget } from "@/components/stats/widgets/pending-launches-widget";
 import { ValueStatsWidget } from "@/components/stats/widgets/value-stats-widget";
@@ -80,6 +81,10 @@ function AssetOverviewSectionContent() {
 
             <Suspense fallback={<ChartSkeleton />}>
               <AssetSupplyPieChart />
+            </Suspense>
+
+            <Suspense fallback={<ChartSkeleton />}>
+              <AssetValuePieChart />
             </Suspense>
           </div>
         </div>

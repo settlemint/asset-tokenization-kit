@@ -15,6 +15,10 @@
       "description": "時間経過に伴う資産の総供給量",
       "title": "資産供給"
     },
+    "assetValue": {
+      "description": "資産タイプ別の総価値の内訳",
+      "title": "資産価値配分"
+    },
     "assetLifecycle": {
       "title": "資産のローンチとデザインの比較",
       "description": "過去{{days}}日間にデザインされた資産とローンチされた資産を比較します",

@@ -33,6 +33,10 @@
       "description": "Total supply of assets over time",
       "title": "Asset supply"
     },
+    "assetValue": {
+      "description": "Total value breakdown by asset type",
+      "title": "Asset value distribution"
+    },
     "assetLifecycle": {
       "title": "Launched assets",
       "description": "Track how asset launches keep pace with new creations {{overRange}}",

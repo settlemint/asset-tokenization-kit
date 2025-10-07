@@ -15,6 +15,10 @@
       "description": "Gesamtangebot an Vermögenswerten über die Zeit",
       "title": "Vermögensangebot"
     },
+    "assetValue": {
+      "description": "Gesamtwertaufschlüsselung nach Vermögensart",
+      "title": "Vermögenswertverteilung"
+    },
     "assetLifecycle": {
       "title": "Asset-Starts vs. Designs",
       "description": "Vergleichen Sie designte und gestartete Assets der letzten {{days}} Tage",
