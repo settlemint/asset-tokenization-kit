@@ -2,7 +2,9 @@ import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboard";
 import { DetailGrid } from "@/components/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
+import { EditKycSheet } from "@/components/manage-dropdown/sheets/edit-kyc-sheet";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
@@ -14,7 +16,7 @@ import { getUserDisplayName } from "@/lib/utils/user-display-name";
 import { orpc } from "@/orpc/orpc-client";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
@@ -28,6 +30,7 @@ function Profile() {
   const { getCountryMap } = useCountries();
 
   const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
+  const [isKycSheetOpen, setIsKycSheetOpen] = useState(false);
 
   const {
     data: kyc,
@@ -116,76 +119,98 @@ function Profile() {
         />
       </DetailGrid>
 
-      {isKycLoading ? (
-        <DetailGrid title={t("user:details.kycInformation")} className="mt-4">
-          <DetailGridItem label={t("components:kycForm.firstName")}>
-            <Skeleton className="h-5 w-full" />
-          </DetailGridItem>
-          <DetailGridItem label={t("components:kycForm.lastName")}>
-            <Skeleton className="h-5 w-full" />
-          </DetailGridItem>
-          <DetailGridItem label={t("components:kycForm.dob")}>
-            <Skeleton className="h-5 w-full" />
-          </DetailGridItem>
-          <DetailGridItem label={t("components:kycForm.country")}>
-            <Skeleton className="h-5 w-full" />
-          </DetailGridItem>
-          <DetailGridItem label={t("components:kycForm.residencyStatus")}>
-            <Skeleton className="h-5 w-full" />
-          </DetailGridItem>
-          <DetailGridItem label={t("components:kycForm.nationalId")}>
-            <Skeleton className="h-5 w-full" />
-          </DetailGridItem>
-        </DetailGrid>
-      ) : kyc ? (
-        <DetailGrid title={t("user:details.kycInformation")} className="mt-4">
-          <DetailGridItem
-            label={t("components:kycForm.firstName")}
-            value={kyc.firstName}
-            emptyValue="-"
-          />
-          <DetailGridItem
-            label={t("components:kycForm.lastName")}
-            value={kyc.lastName}
-            emptyValue="-"
-          />
-          <DetailGridItem
-            label={t("components:kycForm.dob")}
-            value={formattedDob}
-            type="date"
-            emptyValue="-"
-          />
-          <DetailGridItem
-            label={t("components:kycForm.country")}
-            value={countryName}
-            emptyValue="-"
-          />
-          <DetailGridItem
-            label={t("components:kycForm.residencyStatus")}
-            value={residencyStatusLabel}
-            emptyValue="-"
-          />
-          <DetailGridItem
-            label={t("components:kycForm.nationalId")}
-            value={kyc.nationalId}
-            emptyValue="-"
-          />
-        </DetailGrid>
-      ) : showKycError ? (
-        <Alert variant="destructive">
-          <AlertTitle>{t("user:details.kycInformation")}</AlertTitle>
-          <AlertDescription>
-            {t("common:errors.somethingWentWrong")}
-          </AlertDescription>
-        </Alert>
-      ) : (
-        <Alert>
-          <AlertTitle>{t("user:details.kycInformation")}</AlertTitle>
-          <AlertDescription>
-            {t("components:kycForm.identity.confirm-description")}
-          </AlertDescription>
-        </Alert>
-      )}
+      <section className="mt-6">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-xl font-medium text-accent">
+            {t("user:details.kycInformation")}
+          </h2>
+          <Button
+            variant="outline"
+            onClick={() => setIsKycSheetOpen(true)}
+            type="button"
+          >
+            {t("user:profile.editKyc", { defaultValue: "Edit KYC" })}
+          </Button>
+        </div>
+
+        {isKycLoading ? (
+          <DetailGrid className="mt-4">
+            <DetailGridItem label={t("components:kycForm.firstName")}>
+              <Skeleton className="h-5 w-full" />
+            </DetailGridItem>
+            <DetailGridItem label={t("components:kycForm.lastName")}>
+              <Skeleton className="h-5 w-full" />
+            </DetailGridItem>
+            <DetailGridItem label={t("components:kycForm.dob")}>
+              <Skeleton className="h-5 w-full" />
+            </DetailGridItem>
+            <DetailGridItem label={t("components:kycForm.country")}>
+              <Skeleton className="h-5 w-full" />
+            </DetailGridItem>
+            <DetailGridItem label={t("components:kycForm.residencyStatus")}>
+              <Skeleton className="h-5 w-full" />
+            </DetailGridItem>
+            <DetailGridItem label={t("components:kycForm.nationalId")}>
+              <Skeleton className="h-5 w-full" />
+            </DetailGridItem>
+          </DetailGrid>
+        ) : kyc ? (
+          <DetailGrid className="mt-4">
+            <DetailGridItem
+              label={t("components:kycForm.firstName")}
+              value={kyc.firstName}
+              emptyValue="-"
+            />
+            <DetailGridItem
+              label={t("components:kycForm.lastName")}
+              value={kyc.lastName}
+              emptyValue="-"
+            />
+            <DetailGridItem
+              label={t("components:kycForm.dob")}
+              value={formattedDob}
+              type="date"
+              emptyValue="-"
+            />
+            <DetailGridItem
+              label={t("components:kycForm.country")}
+              value={countryName}
+              emptyValue="-"
+            />
+            <DetailGridItem
+              label={t("components:kycForm.residencyStatus")}
+              value={residencyStatusLabel}
+              emptyValue="-"
+            />
+            <DetailGridItem
+              label={t("components:kycForm.nationalId")}
+              value={kyc.nationalId}
+              emptyValue="-"
+            />
+          </DetailGrid>
+        ) : showKycError ? (
+          <Alert variant="destructive" className="mt-4">
+            <AlertTitle>{t("user:details.kycInformation")}</AlertTitle>
+            <AlertDescription>
+              {t("common:errors.somethingWentWrong")}
+            </AlertDescription>
+          </Alert>
+        ) : (
+          <Alert className="mt-4">
+            <AlertTitle>{t("user:details.kycInformation")}</AlertTitle>
+            <AlertDescription>
+              {t("components:kycForm.identity.confirm-description")}
+            </AlertDescription>
+          </Alert>
+        )}
+      </section>
+
+      <EditKycSheet
+        open={isKycSheetOpen}
+        onOpenChange={setIsKycSheetOpen}
+        userId={user.id}
+        initialKyc={kyc ?? null}
+      />
     </div>
   );
 }
