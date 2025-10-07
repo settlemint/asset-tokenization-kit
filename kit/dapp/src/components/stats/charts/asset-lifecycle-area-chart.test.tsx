@@ -8,18 +8,14 @@ import {
 } from "@test/mocks/suspense-query";
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { type StatsRangeInput } from "@atk/zod/stats-range";
+import { type StatsRangePreset } from "@atk/zod/stats-range";
 
 import { AssetLifecycleAreaChart } from "./asset-lifecycle-area-chart";
 
 const defaultFrom = new Date(Date.UTC(2024, 0, 1));
 const defaultTo = new Date(Date.UTC(2024, 0, 2));
 
-const defaultInput: StatsRangeInput = {
-  interval: "day",
-  from: defaultFrom,
-  to: defaultTo,
-};
+const defaultRange: StatsRangePreset = "trailing7Days";
 
 // Mock useQuery while keeping other exports
 vi.mock("@tanstack/react-query", async (importOriginal) => {
@@ -73,7 +69,9 @@ describe("AssetLifecycleAreaChart", () => {
       })
     );
 
-    renderWithProviders(<AssetLifecycleAreaChart range={defaultInput} />);
+    renderWithProviders(
+      <AssetLifecycleAreaChart defaultRange={defaultRange} />
+    );
 
     expect(
       await screen.findByText("charts.assetLifecycle.title")
@@ -97,7 +95,9 @@ describe("AssetLifecycleAreaChart", () => {
       })
     );
 
-    renderWithProviders(<AssetLifecycleAreaChart range={defaultInput} />);
+    renderWithProviders(
+      <AssetLifecycleAreaChart defaultRange={defaultRange} />
+    );
 
     expect(
       await screen.findByText("charts.assetLifecycle.empty.title")
@@ -118,7 +118,9 @@ describe("AssetLifecycleAreaChart", () => {
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     expect(() => {
-      renderWithProviders(<AssetLifecycleAreaChart range={defaultInput} />);
+      renderWithProviders(
+        <AssetLifecycleAreaChart defaultRange={defaultRange} />
+      );
     }).toThrow("ORPC Error: Failed to fetch asset lifecycle stats");
 
     consoleSpy.mockRestore();

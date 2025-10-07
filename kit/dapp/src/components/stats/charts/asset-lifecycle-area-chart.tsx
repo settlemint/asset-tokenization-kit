@@ -1,4 +1,4 @@
-import { AreaChartComponent } from "@/components/charts/area-chart";
+import { InteractiveChartComponent } from "@/components/charts/interactive-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
@@ -6,24 +6,34 @@ import { formatChartDate } from "@/lib/utils/timeseries";
 import { orpc } from "@/orpc/orpc-client";
 import {
   resolveStatsRange,
-  type StatsRangeInput,
+  type StatsRangePreset,
   type StatsResolvedRange,
 } from "@atk/zod/stats-range";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { buildChartRangeDescription } from "./chart-range-description";
 
-export type AssetLifecycleAreaChartProps = {
-  range: StatsRangeInput;
-};
+export interface AssetLifecycleAreaChartProps {
+  defaultRange?: StatsRangePreset;
+}
 
 export function AssetLifecycleAreaChart({
-  range,
+  defaultRange = "trailing7Days",
 }: AssetLifecycleAreaChartProps) {
   const { t, i18n } = useTranslation("stats");
   const locale = i18n.language;
+
+  // Internal state for selected range
+  const [selectedRange, setSelectedRange] =
+    useState<StatsRangePreset>(defaultRange);
+
+  // Available timeframe presets
+  const availableRangePresets: StatsRangePreset[] = [
+    "trailing24Hours",
+    "trailing7Days",
+  ];
 
   const chartConfig: ChartConfig = useMemo(
     () => ({
@@ -39,16 +49,17 @@ export function AssetLifecycleAreaChart({
     [t]
   );
 
+  // Query automatically refetches when selectedRange changes
   const { data: rawData } = useQuery(
     orpc.system.stats.assetLifecycle.queryOptions({
-      input: range,
+      input: selectedRange,
       ...CHART_QUERY_OPTIONS,
     })
   );
 
   const fallbackRange = useMemo<StatsResolvedRange>(() => {
-    return resolveStatsRange(range);
-  }, [range]);
+    return resolveStatsRange(selectedRange);
+  }, [selectedRange]);
 
   const resolvedRange = rawData?.range ?? fallbackRange;
 
@@ -68,7 +79,7 @@ export function AssetLifecycleAreaChart({
 
   return (
     <ComponentErrorBoundary componentName="Asset Lifecycle Chart">
-      <AreaChartComponent
+      <InteractiveChartComponent
         title={t("charts.assetLifecycle.title")}
         description={description}
         interval={chartInterval}
@@ -88,6 +99,11 @@ export function AssetLifecycleAreaChart({
         }
         emptyMessage={t("charts.assetLifecycle.empty.title")}
         emptyDescription={t("charts.assetLifecycle.empty.description")}
+        defaultChartType="area"
+        enableChartTypeToggle={true}
+        availableRangePresets={availableRangePresets}
+        selectedRange={selectedRange}
+        onRangeChange={setSelectedRange}
       />
     </ComponentErrorBoundary>
   );

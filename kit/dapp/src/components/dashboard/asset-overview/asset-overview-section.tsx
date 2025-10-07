@@ -69,7 +69,7 @@ function AssetOverviewSectionContent() {
           </div>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <Suspense fallback={<ChartSkeleton />}>
-              <AssetLifecycleAreaChart range="trailing7Days" />
+              <AssetLifecycleAreaChart defaultRange="trailing7Days" />
             </Suspense>
 
             <Suspense fallback={<ChartSkeleton />}>

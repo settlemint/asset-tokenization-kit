@@ -51,6 +51,10 @@
     "today": "Today",
     "yesterday": "Yesterday"
   },
+  "timeframes": {
+    "trailing24Hours": "Last 24 hours",
+    "trailing7Days": "Last 7 days"
+  },
   "chart": {
     "update": {
       "refreshing": "Refreshing...",
