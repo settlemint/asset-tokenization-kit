@@ -1,16 +1,27 @@
 {
   "charts": {
     "assetActivity": {
-      "description": "نشاط معاملات الأصول",
-      "title": "نشاط الأصول"
+      "title": "نشاط الأصول",
+      "description": "تتبع أحداث التحويل والسك والحرق",
+      "transferEventsLabel": "التحويلات",
+      "mintEventsLabel": "السك",
+      "burnEventsLabel": "الحرق",
+      "empty": {
+        "title": "لا يوجد نشاط بعد",
+        "description": "سيظهر نشاط الأصول هنا بمجرد حدوث تحويلات أو عمليات سك أو حرق"
+      }
     },
     "assetSupply": {
       "description": "إجمالي عرض الأصول على مر الزمن",
       "title": "عرض الأصول"
     },
+    "assetValue": {
+      "description": "توزيع القيمة الإجمالية حسب نوع الأصل",
+      "title": "توزيع قيمة الأصول"
+    },
     "assetLifecycle": {
       "title": "إطلاق الأصول مقابل تصميمها",
-      "description": "قارن بين الأصول التي تم تصميمها وتلك التي تم إطلاقها خلال آخر {{days}} يومًا",
+      "description": "تتبع كيف تواكب عمليات إطلاق الأصول الإنشاءات الجديدة",
       "createdLabel": "الأصول التي تم تصميمها",
       "launchedLabel": "الأصول التي تم إطلاقها",
       "empty": {
@@ -85,7 +96,7 @@
     },
     "portfolioValue": {
       "title": "قيمة محفظتك",
-      "description": "تتبع أداء استثماراتك خلال آخر {{days}} يومًا",
+      "description": "شاهد كيف تغيرت قيمة محفظتك مع مرور الوقت",
       "label": "القيمة",
       "empty": {
         "title": "لا توجد بيانات للعرض بعد",

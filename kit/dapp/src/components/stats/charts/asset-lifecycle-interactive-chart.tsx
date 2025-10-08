@@ -1,4 +1,4 @@
-import { AreaChartComponent } from "@/components/charts/area-chart";
+import { InteractiveChartComponent } from "@/components/charts/interactive-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
@@ -6,24 +6,27 @@ import { formatChartDate } from "@/lib/utils/timeseries";
 import { orpc } from "@/orpc/orpc-client";
 import {
   resolveStatsRange,
-  type StatsRangeInput,
+  statsRangePresets,
+  type StatsRangePreset,
   type StatsResolvedRange,
 } from "@atk/zod/stats-range";
-import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useQueries } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { buildChartRangeDescription } from "./chart-range-description";
+export interface AssetLifecycleInteractiveChartProps {
+  defaultRange?: StatsRangePreset;
+}
 
-export type AssetLifecycleAreaChartProps = {
-  range: StatsRangeInput;
-};
-
-export function AssetLifecycleAreaChart({
-  range,
-}: AssetLifecycleAreaChartProps) {
+export function AssetLifecycleInteractiveChart({
+  defaultRange = "trailing7Days",
+}: AssetLifecycleInteractiveChartProps) {
   const { t, i18n } = useTranslation("stats");
   const locale = i18n.language;
+
+  // Internal state for selected range
+  const [selectedRange, setSelectedRange] =
+    useState<StatsRangePreset>(defaultRange);
 
   const chartConfig: ChartConfig = useMemo(
     () => ({
@@ -39,27 +42,26 @@ export function AssetLifecycleAreaChart({
     [t]
   );
 
-  const { data: rawData } = useQuery(
-    orpc.system.stats.assetLifecycle.queryOptions({
-      input: range,
-      ...CHART_QUERY_OPTIONS,
-    })
-  );
+  const [trailing24HrRangeData, trailing7DaysRangeData] = useQueries({
+    queries: statsRangePresets.map((preset) =>
+      orpc.system.stats.assetLifecycle.queryOptions({
+        input: preset,
+        ...CHART_QUERY_OPTIONS,
+      })
+    ),
+  });
+
+  // Get the raw data for the selected range
+  const rawData =
+    selectedRange === "trailing24Hours"
+      ? trailing24HrRangeData?.data
+      : trailing7DaysRangeData?.data;
 
   const fallbackRange = useMemo<StatsResolvedRange>(() => {
-    return resolveStatsRange(range);
-  }, [range]);
+    return resolveStatsRange(selectedRange);
+  }, [selectedRange]);
 
   const resolvedRange = rawData?.range ?? fallbackRange;
-
-  const overRange = buildChartRangeDescription({
-    range: resolvedRange,
-    t,
-  });
-
-  const description = t("charts.assetLifecycle.description", {
-    overRange,
-  });
 
   const chartInterval = resolvedRange.interval;
 
@@ -68,9 +70,9 @@ export function AssetLifecycleAreaChart({
 
   return (
     <ComponentErrorBoundary componentName="Asset Lifecycle Chart">
-      <AreaChartComponent
+      <InteractiveChartComponent
         title={t("charts.assetLifecycle.title")}
-        description={description}
+        description={t("charts.assetLifecycle.description")}
         interval={chartInterval}
         data={timeseries}
         config={chartConfig}
@@ -88,6 +90,10 @@ export function AssetLifecycleAreaChart({
         }
         emptyMessage={t("charts.assetLifecycle.empty.title")}
         emptyDescription={t("charts.assetLifecycle.empty.description")}
+        defaultChartType="area"
+        enableChartTypeToggle={true}
+        selectedRange={selectedRange}
+        onRangeChange={setSelectedRange}
       />
     </ComponentErrorBoundary>
   );

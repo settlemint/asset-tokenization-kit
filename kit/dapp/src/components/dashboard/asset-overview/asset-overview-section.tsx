@@ -2,8 +2,10 @@ import { ChartSkeleton } from "@/components/charts/chart-skeleton";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { SectionSubtitle } from "@/components/dashboard/section-subtitle";
 import { SectionTitle } from "@/components/dashboard/section-title";
-import { AssetLifecycleAreaChart } from "@/components/stats/charts/asset-lifecycle-area-chart";
+import { AssetActivityInteractiveChart } from "@/components/stats/charts/asset-activity-interactive-chart";
+import { AssetLifecycleInteractiveChart } from "@/components/stats/charts/asset-lifecycle-interactive-chart";
 import { AssetSupplyPieChart } from "@/components/stats/charts/asset-supply-pie-chart";
+import { AssetValuePieChart } from "@/components/stats/charts/asset-value-pie-chart";
 import { AssetStatsWidget } from "@/components/stats/widgets/asset-stats-widget";
 import { PendingLaunchesWidget } from "@/components/stats/widgets/pending-launches-widget";
 import { ValueStatsWidget } from "@/components/stats/widgets/value-stats-widget";
@@ -27,7 +29,8 @@ function AssetOverviewSectionSkeleton() {
           <WidgetSkeleton />
           <WidgetSkeleton />
         </div>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <ChartSkeleton />
           <ChartSkeleton />
           <ChartSkeleton />
         </div>
@@ -69,11 +72,19 @@ function AssetOverviewSectionContent() {
           </div>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <Suspense fallback={<ChartSkeleton />}>
-              <AssetLifecycleAreaChart range="trailing7Days" />
+              <AssetLifecycleInteractiveChart defaultRange="trailing7Days" />
+            </Suspense>
+
+            <Suspense fallback={<ChartSkeleton />}>
+              <AssetActivityInteractiveChart defaultRange="trailing7Days" />
             </Suspense>
 
             <Suspense fallback={<ChartSkeleton />}>
               <AssetSupplyPieChart />
+            </Suspense>
+
+            <Suspense fallback={<ChartSkeleton />}>
+              <AssetValuePieChart />
             </Suspense>
           </div>
         </div>

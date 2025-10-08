@@ -1,16 +1,27 @@
 {
   "charts": {
     "assetActivity": {
-      "description": "資産取引活動",
-      "title": "資産活動"
+      "title": "資産活動",
+      "description": "転送、発行、焼却イベントを追跡",
+      "transferEventsLabel": "転送",
+      "mintEventsLabel": "発行",
+      "burnEventsLabel": "焼却",
+      "empty": {
+        "title": "まだ活動がありません",
+        "description": "転送、発行、または焼却が発生すると、ここに資産活動が表示されます"
+      }
     },
     "assetSupply": {
       "description": "時間経過に伴う資産の総供給量",
       "title": "資産供給"
     },
+    "assetValue": {
+      "description": "資産タイプ別の総価値の内訳",
+      "title": "資産価値配分"
+    },
     "assetLifecycle": {
       "title": "資産のローンチとデザインの比較",
-      "description": "過去{{days}}日間にデザインされた資産とローンチされた資産を比較します",
+      "description": "資産のローンチが新しい作成に追いついているかを追跡",
       "createdLabel": "デザインされた資産",
       "launchedLabel": "ローンチされた資産",
       "empty": {
@@ -82,6 +93,15 @@
       "available": "利用可能な担保",
       "used": "使用中の担保",
       "ratio": "担保比率: {{ratio}}%"
+    },
+    "portfolioValue": {
+      "title": "ポートフォリオ価値",
+      "description": "ポートフォリオの価値が時間の経過とともにどのように変化したかを確認",
+      "label": "価値",
+      "empty": {
+        "title": "まだデータがありません",
+        "description": "最初の資産を受け取ると、ここにポートフォリオの価値が表示されます"
+      }
     }
   },
   "title": "統計",
