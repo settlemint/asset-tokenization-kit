@@ -38,11 +38,6 @@
       "matchPackageNames": ["/^bun/", "/^oven/bun/"]
     },
     {
-      "groupName": "Tanstack",
-      "groupSlug": "tanstack",
-      "matchPackageNames": ["/^@tanstack//"]
-    },
-    {
       "groupName": "Better Auth",
       "groupSlug": "better-auth",
       "matchPackageNames": ["/^@better-auth//", "better-auth"]
