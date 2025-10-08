@@ -26,7 +26,7 @@ fullnameOverride: "graph-node"
 # -- (object) Graph Node image configuration
 image:
   # -- (string) Image for Graph Node
-  repository: docker.io/graphprotocol/graph-node
+  repository: graphprotocol/graph-node
   # -- (string) Graph Node image pull policy
   pullPolicy: IfNotPresent
   # -- (string) Overrides the image tag. Defaults to Chart.appVersion if not set
