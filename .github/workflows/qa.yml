@@ -230,6 +230,14 @@ jobs:
         run: |
           bun run docs
 
+      # Build Codestudio before release PR resets the workspace to the tagged commit
+      - name: Build and Push Codestudio
+        if: |
+          github.event_name == 'push' &&
+          (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+        run: |
+          bun run docker:codestudio
+
       - name: Create release assets pull request
         if: |
           github.event_name == 'push' &&
@@ -343,13 +351,6 @@ jobs:
           qa_status: ${{ steps.pr-review-check.outputs.qa_status }}
           is_draft: ${{ github.event.pull_request.draft }}
           merge_method: "squash"
-
-      - name: Build and Push Codestudio
-        if: |
-          github.event_name == 'push' &&
-          (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
-        run: |
-          bun run docker:codestudio
 
   # Handle merged PR notifications
   merged:
