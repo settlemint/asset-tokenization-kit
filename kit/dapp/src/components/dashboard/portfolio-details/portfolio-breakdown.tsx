@@ -1,5 +1,5 @@
 import { PortfolioBreakdownPieChart } from "@/components/stats/charts/portfolio-breakdown-pie-chart";
-import { PortfolioValueAreaChart } from "@/components/stats/charts/portfolio-value-area-chart";
+import { PortfolioValueInteractiveChart } from "@/components/stats/charts/portfolio-value-interactive-chart";
 import type { StatsPortfolioDetailsOutput } from "@/orpc/routes/system/stats/routes/portfolio-details.schema";
 
 interface PortfolioBreakdownProps {
@@ -29,7 +29,7 @@ export function PortfolioBreakdown({
         hasAssets={hasAssets}
         interval={interval}
       />
-      <PortfolioValueAreaChart range="trailing7Days" />
+      <PortfolioValueInteractiveChart defaultRange="trailing7Days" />
     </div>
   );
 }

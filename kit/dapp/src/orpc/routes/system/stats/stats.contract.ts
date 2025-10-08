@@ -1,4 +1,5 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
+import { StatsAssetActivityOutputSchema } from "@/orpc/routes/system/stats/routes/asset-activity.schema";
 import { StatsAssetLifecycleOutputSchema } from "@/orpc/routes/system/stats/routes/asset-lifecycle.schema";
 import { StatsAssetsOutputSchema } from "@/orpc/routes/system/stats/routes/assets.schema";
 import { StatsIdentityCountOutputSchema } from "@/orpc/routes/system/stats/routes/identity-count.schema";
@@ -39,6 +40,18 @@ const statsAssetLifecycle = baseContract
   })
   .input(StatsRangeInputSchema)
   .output(StatsAssetLifecycleOutputSchema);
+
+const statsAssetActivity = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/asset-activity",
+    description:
+      "Retrieve counts for transfer, mint, and burn events over time",
+    successDescription: "System asset activity metrics retrieved successfully",
+    tags: ["stats", "system", "assets"],
+  })
+  .input(StatsRangeInputSchema)
+  .output(StatsAssetActivityOutputSchema);
 
 const statsIdentityCount = baseContract
   .route({
@@ -120,6 +133,7 @@ const statsPortfolioDetails = baseContract
 export const statsContract = {
   assets: statsAssets,
   assetLifecycle: statsAssetLifecycle,
+  assetActivity: statsAssetActivity,
   identityCount: statsIdentityCount,
   identityStatsOverTime: statsIdentityStatsOverTime,
   transactionCount: statsTransactionCount,

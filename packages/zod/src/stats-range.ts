@@ -20,10 +20,8 @@ const StatsRangeObjectSchema = z
     }
   });
 
-export const StatsRangePresetSchema = z.enum([
-  "trailing24Hours",
-  "trailing7Days",
-]);
+export const statsRangePresets = ["trailing24Hours", "trailing7Days"] as const;
+export const StatsRangePresetSchema = z.enum(statsRangePresets);
 
 export const StatsRangeInputSchema = StatsRangeObjectSchema.or(
   StatsRangePresetSchema

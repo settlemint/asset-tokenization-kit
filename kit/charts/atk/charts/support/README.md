@@ -1,6 +1,6 @@
 # support
 
-![Version: 2.0.0-beta.1](https://img.shields.io/badge/Version-2.0.0--beta.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.1](https://img.shields.io/badge/AppVersion-2.0.0--beta.1-informational?style=flat-square)
+![Version: 2.0.0-beta.2](https://img.shields.io/badge/Version-2.0.0--beta.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.2](https://img.shields.io/badge/AppVersion-2.0.0--beta.2-informational?style=flat-square)
 
 A Helm chart for the supporting components
 
@@ -297,8 +297,8 @@ The following table lists the configurable parameters of this chart and their de
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | minio | 2.0.0-beta.1 |
-|  | postgresql | 2.0.0-beta.1 |
-|  | redis | 2.0.0-beta.1 |
+|  | minio | 2.0.0-beta.2 |
+|  | postgresql | 2.0.0-beta.2 |
+|  | redis | 2.0.0-beta.2 |
 | https://kubernetes.github.io/ingress-nginx | ingress-nginx | 4.13.3 |
 | https://stakater.github.io/stakater-charts | reloader | 2.2.3 |
