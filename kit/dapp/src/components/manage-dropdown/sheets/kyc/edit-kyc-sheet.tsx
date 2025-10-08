@@ -224,6 +224,10 @@ export function EditKycSheet({
           const currentValue = mergedValues[key];
           const initialValue = baseValues[key];
           if (key === "dob") {
+            // Safely compare dates, handling null/undefined
+            if (!currentValue || !initialValue) {
+              return currentValue !== initialValue;
+            }
             return currentValue instanceof Date && initialValue instanceof Date
               ? currentValue.getTime() !== initialValue.getTime()
               : currentValue !== initialValue;
@@ -277,12 +281,14 @@ export function EditKycSheet({
                     <span className="font-medium">
                       {formatDate(mergedValues.dob)}
                     </span>
-                    {mergedValues.dob.getTime() !==
-                      baseValues.dob.getTime() && (
-                      <span className="text-xs text-muted-foreground">
-                        {previousLabel}: {formatDate(baseValues.dob)}
-                      </span>
-                    )}
+                    {mergedValues.dob &&
+                      baseValues.dob &&
+                      mergedValues.dob.getTime() !==
+                        baseValues.dob.getTime() && (
+                        <span className="text-xs text-muted-foreground">
+                          {previousLabel}: {formatDate(baseValues.dob)}
+                        </span>
+                      )}
                   </div>
                 </DetailGridItem>
                 <DetailGridItem label={t("components:kycForm.country")}>
