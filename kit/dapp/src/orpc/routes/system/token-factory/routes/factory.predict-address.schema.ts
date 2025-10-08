@@ -1,45 +1,62 @@
 /**
- * Factory Predict Access Manager Address Schema
+ * Factory Predict Address Schema
  *
- * This schema provides a simplified interface for predicting access manager addresses
- * for different token types. Access manager prediction only requires the basic token
- * parameters (name, symbol, decimals) and asset type.
+ * This schema provides a unified interface for predicting addresses of different token types
+ * before they are deployed. It reuses the token creation schemas but excludes verification
+ * requirements since no transaction is being executed.
  *
  * @example
  * ```typescript
- * // Predict access manager for any token type
- * const input = {
- *   type: "equity",
- *   name: "Tech Company Shares",
- *   symbol: "TECH",
- *   decimals: 18
+ * // Predict deposit token address
+ * const depositInput = {
+ *   type: "deposit",
+ *   name: "USD Deposit Token",
+ *   symbol: "USDD",
+ *   decimals: 2,
+ *   initialModulePairs: []
+ * };
+ *
+ * // Predict bond token address
+ * const bondInput = {
+ *   type: "bond",
+ *   name: "Corporate Bond Token",
+ *   symbol: "CORP",
+ *   decimals: 2,
+ *   cap: "1000000",
+ *   faceValue: "1000",
+ *   maturityDate: "2025-12-31",
+ *   denominationAsset: "0x...",
+ *   initialModulePairs: []
  * };
  * ```
  */
 
-import { assetSymbol } from "@atk/zod/asset-symbol";
-import { assetType } from "@atk/zod/asset-types";
-import { decimals } from "@atk/zod/decimals";
+import { BondTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/bond.create.schema";
+import { DepositTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/deposit.create.schema";
+import { EquityTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/equity.create.schema";
+import { FundTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/fund.create.schema";
+import { StablecoinTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/stablecoin.create.schema";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { z } from "zod";
 
 /**
- * Predict access manager address input schema.
- * Only requires basic token parameters that are common across all asset types.
+ * Predict address input schema - reuses token creation schemas but removes verification field
+ * Uses discriminated union pattern for type-safe validation
  */
-export const PredictAddressInputSchema = z.object({
-  type: assetType().describe("The type of asset token"),
-  name: z.string().max(50).describe("The name of the token"),
-  symbol: assetSymbol().describe("The symbol of the token"),
-  decimals: decimals().describe("The number of decimals for the token"),
-});
+export const PredictAddressInputSchema = z.discriminatedUnion("type", [
+  DepositTokenSchema.omit({ walletVerification: true }),
+  BondTokenSchema.omit({ walletVerification: true }),
+  EquityTokenSchema.omit({ walletVerification: true }),
+  FundTokenSchema.omit({ walletVerification: true }),
+  StablecoinTokenSchema.omit({ walletVerification: true }),
+]);
 
 /**
- * Output schema for access manager address prediction
+ * Output schema for address prediction
  */
 export const PredictAddressOutputSchema = z.object({
   predictedAddress: ethereumAddress.describe(
-    "The predicted address of the access manager"
+    "The predicted address of the token"
   ),
 });
 

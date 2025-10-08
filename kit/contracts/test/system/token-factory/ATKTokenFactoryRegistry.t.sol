@@ -44,20 +44,6 @@ contract MockTokenFactory is IATKTokenFactory, IWithTypeIdentifier {
         return true;
     }
 
-    function predictAccessManagerAddress(
-        string memory,
-        string memory,
-        uint8,
-        address
-    )
-        external
-        pure
-        override
-        returns (address)
-    {
-        return address(0);
-    }
-
     function typeId() external pure override returns (bytes32) {
         return TYPE_ID;
     }
@@ -90,20 +76,6 @@ contract MockInvalidTokenFactory is IATKTokenFactory {
 
     function hasSystemRole(bytes32, address) external pure override returns (bool) {
         return true;
-    }
-
-    function predictAccessManagerAddress(
-        string memory,
-        string memory,
-        uint8,
-        address
-    )
-        external
-        pure
-        override
-        returns (address)
-    {
-        return address(0);
     }
 
     function supportsInterface(bytes4 interfaceId) external pure override returns (bool) {
