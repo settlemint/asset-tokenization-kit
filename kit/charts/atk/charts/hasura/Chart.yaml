@@ -2,8 +2,8 @@ apiVersion: v2
 name: hasura
 description: A Helm chart for Hasura GraphQL Engine
 type: application
-version: 2.0.0-beta.2
-appVersion: 2.0.0-beta.2
+version: 2.0.0-beta.3
+appVersion: 2.0.0-beta.3
 icon: https://console.settlemint.com/android-chrome-512x512.png
 maintainers:
   - name: SettleMint

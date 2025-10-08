@@ -2,5 +2,5 @@ apiVersion: v2
 name: ipfs
 description: A Helm chart for deploying IPFS Cluster and IPFS peer nodes for ATK
 type: application
-version: 2.0.0-beta.2
-appVersion: 2.0.0-beta.2
+version: 2.0.0-beta.3
+appVersion: 2.0.0-beta.3
