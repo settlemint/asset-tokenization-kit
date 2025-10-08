@@ -28,6 +28,7 @@ import enUSAssetClass from "@/locales/en-US/asset-class.json";
 import enUSAssetDesigner from "@/locales/en-US/asset-designer.json";
 import enUSAssetExtensions from "@/locales/en-US/asset-extensions.json";
 import enUSAssetTypes from "@/locales/en-US/asset-types.json";
+import enUSActions from "@/locales/en-US/actions.json";
 import enUSAssets from "@/locales/en-US/assets.json";
 import enUSAuth from "@/locales/en-US/auth.json";
 import enUSBlockchain from "@/locales/en-US/blockchain.json";
@@ -86,6 +87,7 @@ export const fallbackLng = "en-US";
  * Available translation namespaces
  */
 export const namespaces = [
+  "actions",
   "accessibility",
   "asset-class",
   "asset-designer",
@@ -139,6 +141,7 @@ const translationModules = {
     // Already loaded synchronously above
   },
   "de-DE": {
+    actions: () => import("@/locales/de-DE/actions.json"),
     accessibility: () => import("@/locales/de-DE/accessibility.json"),
     "asset-class": () => import("@/locales/de-DE/asset-class.json"),
     "asset-designer": () => import("@/locales/de-DE/asset-designer.json"),
@@ -183,6 +186,7 @@ const translationModules = {
     wallet: () => import("@/locales/de-DE/wallet.json"),
   },
   "ar-SA": {
+    actions: () => import("@/locales/ar-SA/actions.json"),
     accessibility: () => import("@/locales/ar-SA/accessibility.json"),
     "asset-class": () => import("@/locales/ar-SA/asset-class.json"),
     "asset-designer": () => import("@/locales/ar-SA/asset-designer.json"),
@@ -227,6 +231,7 @@ const translationModules = {
     wallet: () => import("@/locales/ar-SA/wallet.json"),
   },
   "ja-JP": {
+    actions: () => import("@/locales/ja-JP/actions.json"),
     accessibility: () => import("@/locales/ja-JP/accessibility.json"),
     "asset-class": () => import("@/locales/ja-JP/asset-class.json"),
     "asset-designer": () => import("@/locales/ja-JP/asset-designer.json"),
@@ -281,6 +286,7 @@ async function loadResource(lng: SupportedLanguage, ns: Namespace) {
     // For en-US, return the already imported resources
     if (lng === "en-US") {
       const enUSResources: Record<Namespace, unknown> = {
+        actions: enUSActions,
         accessibility: enUSAccessibility,
         "asset-class": enUSAssetClass,
         "asset-designer": enUSAssetDesigner,
@@ -392,6 +398,7 @@ i18n.use(lazyLoadBackend).use(initReactI18next);
 void i18n.init({
   resources: {
     "en-US": {
+      actions: enUSActions,
       accessibility: enUSAccessibility,
       "asset-class": enUSAssetClass,
       "asset-designer": enUSAssetDesigner,
