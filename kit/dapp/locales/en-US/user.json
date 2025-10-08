@@ -134,6 +134,11 @@
   },
   "profile": {
     "title": "Profile",
-    "description": "View and manage your profile information."
+    "description": "View and manage your profile information.",
+    "manage": "Manage Profile",
+    "editKyc": {
+      "title": "Edit KYC",
+      "description": "Edit your KYC information."
+    }
   }
 }
