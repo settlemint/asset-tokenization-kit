@@ -11,7 +11,7 @@ maintainers:
     url: https://settlemint.com
 dependencies:
   - name: victoria-metrics-single
-    version: 0.24.6
+    version: 0.25.1
     repository: https://victoriametrics.github.io/helm-charts/
     condition: victoria-metrics-single.enabled
   - name: alloy
