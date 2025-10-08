@@ -1,6 +1,6 @@
 # support
 
-![Version: 2.0.0-beta.1](https://img.shields.io/badge/Version-2.0.0--beta.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.1](https://img.shields.io/badge/AppVersion-2.0.0--beta.1-informational?style=flat-square)
+![Version: 2.0.0-beta.2](https://img.shields.io/badge/Version-2.0.0--beta.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.2](https://img.shields.io/badge/AppVersion-2.0.0--beta.2-informational?style=flat-square)
 
 A Helm chart for the supporting components
 
@@ -101,7 +101,7 @@ The following table lists the configurable parameters of this chart and their de
 |ingress-nginx.controller.image|object|-|Controller container image configuration|
 |ingress-nginx.controller.image.digest|string|`""`|Image digest for immutable deployments|
 |ingress-nginx.controller.image.digestChroot|string|`""`|Image digest for chroot variant|
-|ingress-nginx.controller.image.image|string|`"ingress-nginx/controller"`|Ingress NGINX controller image name|
+|ingress-nginx.controller.image.image|string|`"harbor.settlemint.com/docker.io/ingress-nginx/controller"`|Ingress NGINX controller image name|
 |ingress-nginx.controller.ingressClass|string|`"atk-nginx"`|Ingress class name|
 |ingress-nginx.controller.ingressClassResource|object|-|Ingress class resource configuration|
 |ingress-nginx.controller.ingressClassResource.controllerValue|string|`"k8s.io/atk-nginx"`|Controller value for IngressClass resource|
@@ -119,10 +119,10 @@ The following table lists the configurable parameters of this chart and their de
 |ingress-nginx.controller.opentelemetry|object|-|OpenTelemetry configuration|
 |ingress-nginx.controller.opentelemetry.enabled|bool|`true`|Enable OpenTelemetry sidecar for distributed tracing|
 |ingress-nginx.controller.opentelemetry.image|object|-|OpenTelemetry image configuration|
-|ingress-nginx.controller.opentelemetry.image.registry|string|`"registry.k8s.io"`|OpenTelemetry image registry|
+|ingress-nginx.controller.opentelemetry.image.registry|string|`"harbor.settlemint.com/registry.k8s.io"`|OpenTelemetry image registry|
 |ingress-nginx.controller.patch|object|-|Patch configuration|
 |ingress-nginx.controller.patch.image|object|-|Patch job image configuration|
-|ingress-nginx.controller.patch.image.registry|string|`"registry.k8s.io"`|Patch job image registry|
+|ingress-nginx.controller.patch.image.registry|string|`"harbor.settlemint.com/registry.k8s.io"`|Patch job image registry|
 |ingress-nginx.controller.podAnnotations|object|-|Pod annotations|
 |ingress-nginx.controller.podAnnotations."prometheus.io/port"|string|`"10254"`|Prometheus metrics port|
 |ingress-nginx.controller.podAnnotations."prometheus.io/scrape"|string|`"true"`|Enable Prometheus scraping for metrics|
@@ -155,7 +155,7 @@ The following table lists the configurable parameters of this chart and their de
 |ingress-nginx.fullnameOverride|string|`"ingress-nginx"`|String to fully override common.names.fullname (string)|
 |ingress-nginx.global|object|-|Global configuration|
 |ingress-nginx.global.image|object|-|Global image configuration|
-|ingress-nginx.global.image.registry|string|`"registry.k8s.io"`|Global image registry|
+|ingress-nginx.global.image.registry|string|`"harbor.settlemint.com/registry.k8s.io"`|Global image registry|
 |ingress-nginx.imagePullSecrets|list|-|Global Docker registry secret names as an array (list)|
 |minio|object|-|MinIO configuration (object)|
 |minio.buckets|list|-|Automatic bucket creation|
@@ -170,7 +170,7 @@ The following table lists the configurable parameters of this chart and their de
 |minio.enabled|bool|`true`|Enable MinIO deployment (bool)|
 |minio.fullnameOverride|string|`"minio"`|String to fully override common.names.fullname (string)|
 |minio.image|object|-|MinIO image configuration|
-|minio.image.repository|string|`"docker.io/minio/minio"`|MinIO image repository|
+|minio.image.repository|string|`"harbor.settlemint.com/docker.io/minio/minio"`|MinIO image repository|
 |minio.image.tag|string|`"RELEASE.2025-09-07T16-13-09Z"`|MinIO image tag (immutable tags are recommended)|
 |minio.ingress|object|-|Ingress configuration for MinIO API (object)|
 |minio.ingress.enabled|bool|`true`|Enable ingress for MinIO API|
@@ -203,7 +203,7 @@ The following table lists the configurable parameters of this chart and their de
 |postgresql.fullnameOverride|string|`"postgresql"`|String to fully override common.names.fullname (string)|
 |postgresql.image|object|-|PostgreSQL image configuration|
 |postgresql.image.pullPolicy|string|`"IfNotPresent"`|PostgreSQL image pull policy|
-|postgresql.image.registry|string|`"docker.io"`|PostgreSQL image registry|
+|postgresql.image.registry|string|`"harbor.settlemint.com/docker.io"`|PostgreSQL image registry|
 |postgresql.image.repository|string|`"postgres"`|PostgreSQL image repository|
 |postgresql.image.tag|string|`"18.0-alpine"`|PostgreSQL image tag (immutable tags are recommended)|
 |postgresql.imagePullSecrets|list|-|Global Docker registry secret names as an array (list)|
@@ -250,7 +250,7 @@ The following table lists the configurable parameters of this chart and their de
 |reloader.global.imagePullSecrets|list|-|Global Docker registry secret names as an array (list)|
 |reloader.image|object|-|Reloader image configuration|
 |reloader.image.name|string|`"stakater/reloader"`|Reloader image name|
-|reloader.image.repository|string|`"ghcr.io/stakater/reloader"`|Reloader image repository|
+|reloader.image.repository|string|`"harbor.settlemint.com/ghcr.io/stakater/reloader"`|Reloader image repository|
 |reloader.reloader|object|-|Reloader specific configuration (object)|
 |reloader.reloader.autoReloadAll|bool|`true`|Enable auto reload for all resources (bool)|
 |reloader.reloader.containerSecurityContext|object|-|Container security context configuration|
@@ -297,8 +297,8 @@ The following table lists the configurable parameters of this chart and their de
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | minio | 2.0.0-beta.1 |
-|  | postgresql | 2.0.0-beta.1 |
-|  | redis | 2.0.0-beta.1 |
+|  | minio | 2.0.0-beta.2 |
+|  | postgresql | 2.0.0-beta.2 |
+|  | redis | 2.0.0-beta.2 |
 | https://kubernetes.github.io/ingress-nginx | ingress-nginx | 4.13.3 |
 | https://stakater.github.io/stakater-charts | reloader | 2.2.3 |
