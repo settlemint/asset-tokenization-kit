@@ -1,6 +1,6 @@
 # portal
 
-![Version: 2.0.0-beta.2](https://img.shields.io/badge/Version-2.0.0--beta.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.2](https://img.shields.io/badge/AppVersion-2.0.0--beta.2-informational?style=flat-square)
+![Version: 2.0.0-beta.3](https://img.shields.io/badge/Version-2.0.0--beta.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.3](https://img.shields.io/badge/AppVersion-2.0.0--beta.3-informational?style=flat-square)
 
 Portal is a comprehensive blockchain data management and querying service that provides
 real-time access to on-chain data through GraphQL APIs. It serves as the central data
@@ -63,7 +63,7 @@ The following table lists the configurable parameters of this chart and their de
 |image.digest|string|`""`|Portal image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag|
 |image.pullPolicy|string|`"IfNotPresent"`|Portal image pull policy|
 |image.pullSecrets|list|-|Portal image pull secrets|
-|image.registry|string|`"ghcr.io"`|Portal image registry|
+|image.registry|string|`"harbor.settlemint.com/ghcr.io"`|Portal image registry|
 |image.repository|string|`"settlemint/btp-scs-portal"`|Portal image repository|
 |image.tag|string|`"8.6.9"`|Portal image tag (immutable tags are recommended)|
 |ingress|object|-|Ingress parameters|
@@ -87,7 +87,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.downloadAbi.enabled|bool|`true`|Enable the ABI download init container that syncs ConfigMaps via network-bootstrapper.|
 |initContainer.downloadAbi.image|object|-|Container image configuration for the ABI downloader|
 |initContainer.downloadAbi.image.pullPolicy|string|`"IfNotPresent"`|Image pull policy for the ABI download init container.|
-|initContainer.downloadAbi.image.repository|string|`"ghcr.io/settlemint/network-bootstrapper"`|OCI image hosting the network-bootstrapper CLI.|
+|initContainer.downloadAbi.image.repository|string|`"harbor.settlemint.com/ghcr.io/settlemint/network-bootstrapper"`|OCI image hosting the network-bootstrapper CLI.|
 |initContainer.downloadAbi.image.tag|string|`"1.2.3"`|Image tag for the network-bootstrapper CLI.|
 |initContainer.downloadAbi.outputDirectory|string|`"/shared-abis"`|Directory where ABI files are written before being shared with the portal container.|
 |initContainer.downloadAbi.resources|object|-|Resource requests and limits for the ABI download init container|
@@ -105,7 +105,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.tcpCheck.enabled|bool|`true`|Enable TCP check init container to wait for dependent services|
 |initContainer.tcpCheck.image|object|-|Container image configuration for TCP check|
 |initContainer.tcpCheck.image.pullPolicy|string|`"IfNotPresent"`|Image pull policy for the TCP check init container|
-|initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|Repository for the TCP check init container image|
+|initContainer.tcpCheck.image.repository|string|`"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit"`|Repository for the TCP check init container image|
 |initContainer.tcpCheck.image.tag|string|`"v7.7.11"`|Image tag for the TCP check init container|
 |initContainer.tcpCheck.resources|object|-|Resource requests and limits for the TCP check init container|
 |initContainer.tcpCheck.resources.limits|object|-|Resource limits for the TCP check init container|
@@ -265,7 +265,7 @@ The following table lists the configurable parameters of this chart and their de
 |tests|object|-|Test parameters|
 |tests.image|object|-|Image for test pods|
 |tests.image.pullPolicy|string|`"IfNotPresent"`|Test image pull policy|
-|tests.image.registry|string|`"docker.io"`|Test image registry|
+|tests.image.registry|string|`"harbor.settlemint.com/docker.io"`|Test image registry|
 |tests.image.repository|string|`"busybox"`|Test image repository|
 |tests.image.tag|string|`"1.37.0"`|Test image tag|
 |tolerations|list|-|Tolerations for pod assignment|
