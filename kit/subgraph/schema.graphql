@@ -484,6 +484,8 @@ type TopicSchemeRegistry @entity(immutable: false) {
   account: Account!
   # List of topic schemes in this registry
   schemes: [TopicScheme!]! @derivedFrom(field: "registry")
+  # Statistical data for this registry
+  stats: TopicsStatsState @derivedFrom(field: "topicSchemeRegistry")
   # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
 }
@@ -561,6 +563,53 @@ type TopicSchemeStats
   totalRevokedClaims: Int! @aggregate(fn: "last", arg: "totalRevokedClaims")
 }
 
+type TopicsStatsState @entity(immutable: false) {
+  # TopicSchemeRegistry address
+  id: Bytes!
+  # Reference to the registry
+  topicSchemeRegistry: TopicSchemeRegistry!
+  # Total topic schemes registered (lifetime count)
+  totalRegisteredTopicSchemes: Int!
+  # Currently active topic schemes (enabled)
+  totalActiveTopicSchemes: Int!
+  # Topic schemes removed/disabled (lifetime count)
+  totalRemovedTopicSchemes: Int!
+}
+
+type TopicsStatsData @entity(timeseries: true) {
+  # Auto-generated ID for timeseries
+  id: Int8!
+  # Timestamp of this data point
+  timestamp: Timestamp!
+  # Reference to the registry
+  topicSchemeRegistry: TopicSchemeRegistry!
+  # Total registered topic schemes
+  totalRegisteredTopicSchemes: Int!
+  # Active topic schemes count
+  totalActiveTopicSchemes: Int!
+  # Removed topic schemes count
+  totalRemovedTopicSchemes: Int!
+}
+
+type TopicsStats
+  @aggregation(intervals: ["hour", "day"], source: "TopicsStatsData") {
+  # Auto-generated ID
+  id: Int8!
+  # Timestamp of aggregation period
+  timestamp: Timestamp!
+  # Reference to the registry
+  topicSchemeRegistry: TopicSchemeRegistry!
+  # Last count of registered topics
+  totalRegisteredTopicSchemes: Int!
+    @aggregate(fn: "last", arg: "totalRegisteredTopicSchemes")
+  # Last count of active topics
+  totalActiveTopicSchemes: Int!
+    @aggregate(fn: "last", arg: "totalActiveTopicSchemes")
+  # Last count of removed topics
+  totalRemovedTopicSchemes: Int!
+    @aggregate(fn: "last", arg: "totalRemovedTopicSchemes")
+}
+
 # Base interface
 type TrustedIssuersRegistry @entity(immutable: false) {
   # Unique identifier - registry contract address
@@ -579,6 +628,8 @@ type TrustedIssuersRegistry @entity(immutable: false) {
   systemRegistry: TrustedIssuersRegistry
   # Subject-specific registry mappings
   subjectRegistries: [SubjectRegistryMapping!]! @derivedFrom(field: "metaRegistry")
+  # Statistical data for this registry
+  stats: TrustedIssuerStatsState @derivedFrom(field: "trustedIssuersRegistry")
 }
 
 # Mapping between a subject and its trusted issuers registry
@@ -610,6 +661,53 @@ type TrustedIssuer @entity(immutable: false) {
   addedAt: BigInt
   # Unix timestamp when this issuer was revoked
   revokedAt: BigInt
+}
+
+type TrustedIssuerStatsState @entity(immutable: false) {
+  # Trusted issuers registry address
+  id: Bytes!
+  # Reference to the trusted issuers registry
+  trustedIssuersRegistry: TrustedIssuersRegistry!
+  # Total issuers added (lifetime count)
+  totalAddedTrustedIssuers: Int!
+  # Active issuers (addedAt set, revokedAt = 0)
+  totalActiveTrustedIssuers: Int!
+  # Removed issuers (lifetime count)
+  totalRemovedTrustedIssuers: Int!
+}
+
+type TrustedIssuerStatsData @entity(timeseries: true) {
+  # Unique identifier for timeseries entry (auto-generated)
+  id: Int8!
+  # Timestamp of this data point
+  timestamp: Timestamp!
+  # Reference to the trusted issuers registry
+  trustedIssuersRegistry: TrustedIssuersRegistry!
+  # Total issuers added
+  totalAddedTrustedIssuers: Int!
+  # Active issuers count
+  totalActiveTrustedIssuers: Int!
+  # Removed issuers count
+  totalRemovedTrustedIssuers: Int!
+}
+
+type TrustedIssuerStats
+  @aggregation(intervals: ["hour", "day"], source: "TrustedIssuerStatsData") {
+  # Unique identifier for aggregated entry
+  id: Int8!
+  # Timestamp of aggregation period
+  timestamp: Timestamp!
+  # Reference to the trusted issuers registry
+  trustedIssuersRegistry: TrustedIssuersRegistry!
+  # Last count of total added issuers
+  totalAddedTrustedIssuers: Int!
+    @aggregate(fn: "last", arg: "totalAddedTrustedIssuers")
+  # Last count of active issuers
+  totalActiveTrustedIssuers: Int!
+    @aggregate(fn: "last", arg: "totalActiveTrustedIssuers")
+  # Last count of removed issuers
+  totalRemovedTrustedIssuers: Int!
+    @aggregate(fn: "last", arg: "totalRemovedTrustedIssuers")
 }
 
 type ComplianceModuleRegistry @entity(immutable: false) {
