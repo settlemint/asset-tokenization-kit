@@ -30,6 +30,11 @@ import {
   incrementClaimsRemoved,
   incrementClaimsRevoked,
 } from "../stats/topic-scheme-stats";
+import {
+  incrementClaimsIssued as incrementRegistryClaimsIssued,
+  incrementClaimsRemoved as incrementRegistryClaimsRemoved,
+  incrementClaimsRevoked as incrementRegistryClaimsRevoked,
+} from "../stats/claims-stats";
 import { fetchSystem } from "../system/fetch/system";
 import {
   isCollateralClaim,
@@ -134,6 +139,8 @@ export function handleClaimAdded(event: ClaimAdded): void {
 
   // Update topic scheme statistics
   incrementClaimsIssued(topicScheme);
+  // Update registry-level statistics
+  incrementRegistryClaimsIssued(topicScheme);
 
   if (isCollateralClaim(identityClaim)) {
     updateCollateral(identityClaim);
@@ -229,6 +236,8 @@ export function handleClaimRemoved(event: ClaimRemoved): void {
   const topicScheme = TopicScheme.load(identityClaim.topicScheme);
   if (topicScheme) {
     incrementClaimsRemoved(topicScheme);
+    // Update registry-level statistics
+    incrementRegistryClaimsRemoved(topicScheme);
   }
 
   if (isCollateralClaim(identityClaim)) {
@@ -315,6 +324,8 @@ export function handleClaimRevoked(event: ClaimRevoked): void {
       const topicScheme = TopicScheme.load(identityClaim.topicScheme);
       if (topicScheme) {
         incrementClaimsRevoked(topicScheme);
+        // Update registry-level statistics
+        incrementRegistryClaimsRevoked(topicScheme);
       }
 
       if (isCollateralClaim(identityClaim)) {

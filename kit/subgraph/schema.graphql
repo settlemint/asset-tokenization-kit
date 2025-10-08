@@ -486,6 +486,8 @@ type TopicSchemeRegistry @entity(immutable: false) {
   schemes: [TopicScheme!]! @derivedFrom(field: "registry")
   # Statistical data for this registry
   stats: TopicsStatsState @derivedFrom(field: "topicSchemeRegistry")
+  # Statistical data for all claims in this registry
+  claimsStats: ClaimsStatsState @derivedFrom(field: "topicSchemeRegistry")
   # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
 }
@@ -576,6 +578,21 @@ type TopicsStatsState @entity(immutable: false) {
   totalRemovedTopicSchemes: Int!
 }
 
+type ClaimsStatsState @entity(immutable: false) {
+  # TopicSchemeRegistry address
+  id: Bytes!
+  # Reference to the registry
+  topicSchemeRegistry: TopicSchemeRegistry!
+  # Total claims issued across all topics (lifetime count)
+  totalIssuedClaims: Int!
+  # Active claims (non-revoked, non-removed)
+  totalActiveClaims: Int!
+  # Removed claims (lifetime count)
+  totalRemovedClaims: Int!
+  # Revoked claims (lifetime count)
+  totalRevokedClaims: Int!
+}
+
 type TopicsStatsData @entity(timeseries: true) {
   # Auto-generated ID for timeseries
   id: Int8!
@@ -589,6 +606,23 @@ type TopicsStatsData @entity(timeseries: true) {
   totalActiveTopicSchemes: Int!
   # Removed topic schemes count
   totalRemovedTopicSchemes: Int!
+}
+
+type ClaimsStatsData @entity(timeseries: true) {
+  # Auto-generated ID for timeseries
+  id: Int8!
+  # Timestamp of this data point
+  timestamp: Timestamp!
+  # Reference to the registry
+  topicSchemeRegistry: TopicSchemeRegistry!
+  # Total claims issued
+  totalIssuedClaims: Int!
+  # Active claims count
+  totalActiveClaims: Int!
+  # Removed claims count
+  totalRemovedClaims: Int!
+  # Revoked claims count
+  totalRevokedClaims: Int!
 }
 
 type TopicsStats
@@ -608,6 +642,24 @@ type TopicsStats
   # Last count of removed topics
   totalRemovedTopicSchemes: Int!
     @aggregate(fn: "last", arg: "totalRemovedTopicSchemes")
+}
+
+type ClaimsStats
+  @aggregation(intervals: ["hour", "day"], source: "ClaimsStatsData") {
+  # Auto-generated ID
+  id: Int8!
+  # Timestamp of aggregation period
+  timestamp: Timestamp!
+  # Reference to the registry
+  topicSchemeRegistry: TopicSchemeRegistry!
+  # Last count of total issued claims
+  totalIssuedClaims: Int! @aggregate(fn: "last", arg: "totalIssuedClaims")
+  # Last count of active claims
+  totalActiveClaims: Int! @aggregate(fn: "last", arg: "totalActiveClaims")
+  # Last count of removed claims
+  totalRemovedClaims: Int! @aggregate(fn: "last", arg: "totalRemovedClaims")
+  # Last count of revoked claims
+  totalRevokedClaims: Int! @aggregate(fn: "last", arg: "totalRevokedClaims")
 }
 
 # Base interface
