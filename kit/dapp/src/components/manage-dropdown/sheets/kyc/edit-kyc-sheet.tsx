@@ -188,15 +188,18 @@ export function EditKycSheet({
         return;
       }
 
-      const promise = upsertKyc(parsed.data);
-
-      toast.promise(promise, {
-        loading: t("common:saving"),
-        success: t("user:kyc.actions.upsert.success"),
-        error: (error: Error) => t("common:error", { message: error.message }),
-      });
-
-      handleClose();
+      toast
+        .promise(upsertKyc(parsed.data), {
+          loading: t("common:saving"),
+          success: t("user:kyc.actions.upsert.success"),
+          error: (error: Error) =>
+            t("common:error", { message: error.message }),
+        })
+        .unwrap()
+        .then(() => {
+          handleClose();
+        })
+        .catch(() => undefined);
     },
     [baseValues, form, handleClose, t, upsertKyc]
   );
