@@ -4,6 +4,7 @@ import { ComponentErrorBoundary } from "@/components/error/component-error-bound
 import { type ChartConfig } from "@/components/ui/chart";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { toNumber } from "dnum";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -16,46 +17,46 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 /**
- * Asset Supply Chart Component
+ * Asset Value Distribution Chart Component
  *
- * Displays the distribution of total supply across different asset types
+ * Displays the distribution of total value across different asset types
  * using a pie chart visualization based on real API data.
  */
-export function AssetSupplyPieChart() {
+export function AssetValuePieChart() {
   const { t } = useTranslation("stats");
 
-  // Fetch supply distribution data
+  // Fetch value distribution data
   const { data: metrics } = useSuspenseQuery(
     orpc.system.stats.assets.queryOptions({
       input: {},
     })
   );
 
-  // Convert asset breakdown to chart data format
+  // Convert value breakdown to chart data format
   const chartData = useMemo(() => {
-    return Object.entries(metrics.assetBreakdown).map(([assetType, count]) => ({
+    return Object.entries(metrics.valueBreakdown).map(([assetType, value]) => ({
       assetType,
-      totalSupply: count,
+      totalValue: toNumber(value),
     }));
-  }, [metrics.assetBreakdown]);
+  }, [metrics.valueBreakdown]);
 
   // Only include config for asset types that have data
   const activeChartConfig = useMemo(() => {
     return Object.fromEntries(
       Object.entries(chartConfig).filter(([key]) =>
-        chartData.some((item) => item.assetType === key)
+        chartData.some((item) => item.assetType === key && item.totalValue > 0)
       )
     ) satisfies ChartConfig;
   }, [chartData]);
 
   return (
-    <ComponentErrorBoundary componentName="Asset Supply Chart">
+    <ComponentErrorBoundary componentName="Asset Value Distribution Chart">
       <PieChartComponent
-        title={t("charts.assetSupply.title")}
-        description={t("charts.assetSupply.description")}
+        title={t("charts.assetValue.title")}
+        description={t("charts.assetValue.description")}
         data={chartData}
         config={activeChartConfig}
-        dataKey="totalSupply"
+        dataKey="totalValue"
         nameKey="assetType"
       />
     </ComponentErrorBoundary>

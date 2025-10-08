@@ -19,16 +19,27 @@
       }
     },
     "assetActivity": {
-      "description": "Asset transaction activity",
-      "title": "Asset activity"
+      "title": "Asset activity",
+      "description": "Track transfer, mint, and burn events",
+      "transferEventsLabel": "Transfers",
+      "mintEventsLabel": "Mints",
+      "burnEventsLabel": "Burns",
+      "empty": {
+        "title": "No activity yet",
+        "description": "Asset activity will appear here once transfers, mints, or burns occur"
+      }
     },
     "assetSupply": {
       "description": "Total supply of assets over time",
       "title": "Asset supply"
     },
+    "assetValue": {
+      "description": "Total value breakdown by asset type",
+      "title": "Asset value distribution"
+    },
     "assetLifecycle": {
-      "title": "Created and launched assets",
-      "description": "Track how asset launches keep pace with new creations {{overRange}}",
+      "title": "Launched assets",
+      "description": "Track how asset launches keep pace with new creations",
       "createdLabel": "Assets created",
       "launchedLabel": "Assets launched",
       "empty": {
@@ -108,7 +119,7 @@
     },
     "portfolioValue": {
       "title": "Portfolio value",
-      "description": "See how your portfolio value changed {{overRange}}",
+      "description": "See how your portfolio value changed over time",
       "label": "Value",
       "empty": {
         "title": "No data to show yet",

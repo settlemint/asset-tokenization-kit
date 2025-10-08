@@ -1,6 +1,6 @@
 import { FormStepContent } from "@/components/form/multi-step/form-step";
 import { useAppForm } from "@/hooks/use-app-form";
-import { authClient } from "@/lib/auth/auth.client";
+import { useSession } from "@/hooks/use-auth";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { KycUpsertInput } from "@/orpc/routes/user/kyc/routes/kyc.upsert.schema";
@@ -50,7 +50,7 @@ interface KycFormProps {
  */
 export function KycForm({ onComplete }: KycFormProps) {
   const { t } = useTranslation(["components"]);
-  const { data: session } = authClient.useSession();
+  const { data: session } = useSession();
   const queryClient = useQueryClient();
 
   // RBAC: Only admin users can register new identities on-chain

@@ -1,6 +1,6 @@
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { ChartSkeleton } from "@/components/charts/chart-skeleton";
-import { AssetActivityBarChart } from "@/components/stats/charts/asset-activity-bar-chart";
+import { AssetActivityInteractiveChart } from "@/components/stats/charts/asset-activity-interactive-chart";
 import { AssetSupplyPieChart } from "@/components/stats/charts/asset-supply-pie-chart";
 import { TransactionHistoryAreaChart } from "@/components/stats/charts/transaction-history-area-chart";
 import { UserGrowthAreaChart } from "@/components/stats/charts/user-growth-area-chart";
@@ -72,7 +72,7 @@ function RouteComponent() {
           <AssetSupplyPieChart />
         </Suspense>
         <Suspense fallback={<ChartSkeleton />}>
-          <AssetActivityBarChart />
+          <AssetActivityInteractiveChart />
         </Suspense>
         <Suspense fallback={<ChartSkeleton />}>
           <UserGrowthAreaChart />

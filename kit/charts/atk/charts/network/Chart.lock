@@ -1,9 +1,9 @@
 dependencies:
 - name: network-bootstrapper
   repository: ""
-  version: 2.0.0-beta.1
+  version: 2.0.0-beta.2
 - name: network-nodes
   repository: ""
-  version: 2.0.0-beta.1
-digest: sha256:26f99ba833c2a7bd63ce7b750cb2ad28b9ed76c7a5689b2cd53f420be3ab0761
-generated: "2025-10-08T08:37:26.400655+02:00"
+  version: 2.0.0-beta.2
+digest: sha256:e177817975afd535301dc16b1b4f35bc66970dc44163e1dcd47cde23552ac018
+generated: "2025-10-08T15:19:59.065865+03:00"

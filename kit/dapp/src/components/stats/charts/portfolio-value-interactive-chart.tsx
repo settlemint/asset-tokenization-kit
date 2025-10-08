@@ -1,4 +1,4 @@
-import { AreaChartComponent } from "@/components/charts/area-chart";
+import { InteractiveChartComponent } from "@/components/charts/interactive-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
@@ -6,41 +6,38 @@ import { formatChartDate } from "@/lib/utils/timeseries";
 import { orpc } from "@/orpc/orpc-client";
 import {
   resolveStatsRange,
-  type StatsRangeInput,
+  statsRangePresets,
+  type StatsRangePreset,
   type StatsResolvedRange,
 } from "@atk/zod/stats-range";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useQueries, useSuspenseQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { buildChartRangeDescription } from "./chart-range-description";
 
-export type PortfolioValueAreaChartProps = {
-  range: StatsRangeInput;
-};
+export interface PortfolioValueInteractiveChartProps {
+  defaultRange?: StatsRangePreset;
+}
 
 /**
- * Portfolio Value Area Chart Component
+ * Portfolio Value Interactive Chart Component
  *
- * Displays historical portfolio value data for the authenticated user using an area chart.
+ * Displays historical portfolio value data for the authenticated user using an interactive chart.
  * Shows total portfolio value over time to visualize investment performance trends.
+ * Supports switching between area and bar chart views.
  * Uses dnum for safe BigInt handling to prevent precision loss.
  */
-export function PortfolioValueAreaChart({
-  range,
-}: PortfolioValueAreaChartProps) {
+export function PortfolioValueInteractiveChart({
+  defaultRange = "trailing7Days",
+}: PortfolioValueInteractiveChartProps) {
   const { t, i18n } = useTranslation("stats");
   const locale = i18n.language;
   const { data: baseCurrency } = useSuspenseQuery(
     orpc.settings.read.queryOptions({ input: { key: "BASE_CURRENCY" } })
   );
 
-  // Fetch portfolio value data with optimized caching
-  const { data: rawData } = useQuery(
-    orpc.system.stats.portfolio.queryOptions({
-      input: range,
-      ...CHART_QUERY_OPTIONS,
-    })
-  );
+  // Internal state for selected range
+  const [selectedRange, setSelectedRange] =
+    useState<StatsRangePreset>(defaultRange);
 
   // Configure chart colors and labels
   const chartConfig: ChartConfig = {
@@ -50,37 +47,49 @@ export function PortfolioValueAreaChart({
     },
   };
 
+  const [trailing24HrRangeData, trailing7DaysRangeData] = useQueries({
+    queries: statsRangePresets.map((preset) =>
+      orpc.system.stats.portfolio.queryOptions({
+        input: preset,
+        ...CHART_QUERY_OPTIONS,
+      })
+    ),
+  });
+
+  // Get the raw data for the selected range
+  const rawData =
+    selectedRange === "trailing24Hours"
+      ? trailing24HrRangeData?.data
+      : trailing7DaysRangeData?.data;
+
   const fallbackRange = useMemo<StatsResolvedRange>(() => {
-    return resolveStatsRange(range);
-  }, [range]);
+    return resolveStatsRange(selectedRange);
+  }, [selectedRange]);
 
   const resolvedRange = rawData?.range ?? fallbackRange;
 
-  const overRange = buildChartRangeDescription({
-    range: resolvedRange,
-    t,
-  });
-
-  const description = t("charts.portfolioValue.description", {
-    overRange,
-  });
-
   const chartInterval = resolvedRange.interval;
-  const chartData = rawData?.data ?? [];
+
+  const timeseries = rawData?.data ?? [];
+
   const dataKeys = ["totalValueInBaseCurrency"];
 
   return (
     <ComponentErrorBoundary componentName="Portfolio Value Chart">
-      <AreaChartComponent
+      <InteractiveChartComponent
         title={t("charts.portfolioValue.title")}
-        description={description}
+        description={t("charts.portfolioValue.description")}
         interval={chartInterval}
-        data={chartData}
+        data={timeseries}
         config={chartConfig}
         dataKeys={dataKeys}
         nameKey="timestamp"
         showLegend={false}
         stacked={false}
+        defaultChartType="area"
+        enableChartTypeToggle={true}
+        selectedRange={selectedRange}
+        onRangeChange={setSelectedRange}
         xTickFormatter={(value: string | Date | number) =>
           formatChartDate(value, chartInterval, locale)
         }

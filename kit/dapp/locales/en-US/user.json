@@ -131,5 +131,9 @@
   },
   "details": {
     "kycInformation": "KYC Information"
+  },
+  "profile": {
+    "title": "Profile",
+    "description": "View and manage your profile information."
   }
 }
