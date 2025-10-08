@@ -14,9 +14,9 @@ import type {
 } from "@/orpc/routes/actions/routes/actions.list.schema";
 import { useRouter } from "@tanstack/react-router";
 import type { ColumnDef, SortingState } from "@tanstack/react-table";
+import { ClipboardList } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { ClipboardList } from "lucide-react";
 
 const columnHelper = createStrictColumnHelper<Action>();
 
@@ -71,12 +71,13 @@ function formatRelative(date: Date, locale: string): string {
   ];
 
   for (const [unit, unitMs] of units) {
-    if (absMs >= unitMs || unit === "minute") {
+    if (absMs >= unitMs) {
       const value = Math.round(diffMs / unitMs);
       return formatter.format(value, unit);
     }
   }
 
+  // For sub-minute differences, avoid -0 by using the sign-aware approach
   return formatter.format(0, "minute");
 }
 
