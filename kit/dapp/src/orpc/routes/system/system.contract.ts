@@ -4,6 +4,7 @@ import { addonContract } from "@/orpc/routes/system/addon/addon.contract";
 import { claimTopicsContract } from "@/orpc/routes/system/claim-topics/claim-topics.contract";
 import { complianceModuleContract } from "@/orpc/routes/system/compliance-module/compliance-module.contract";
 import { identityContract } from "@/orpc/routes/system/identity/identity.contract";
+import { apiKeysContract } from "@/orpc/routes/system/api-keys/api-keys.contract";
 import { SystemCreateSchema } from "@/orpc/routes/system/routes/system.create.schema";
 import { SystemSchema } from "@/orpc/routes/system/routes/system.read.schema";
 import { statsContract } from "@/orpc/routes/system/stats/stats.contract";
@@ -126,4 +127,5 @@ export const systemContract = {
   stats: statsContract,
   accessManager: accessManagerContract,
   factory: factoryContract,
+  apiKeys: apiKeysContract,
 };

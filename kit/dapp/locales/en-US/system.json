@@ -1,4 +1,73 @@
 {
+  "apiKeys": {
+    "description": "Generate API keys for automated integrations and service-to-service communication.",
+    "adminRequired": {
+      "title": "Administrator access required",
+      "description": "Only administrators can create or manage API keys. Contact your system administrator if you need access."
+    },
+    "table": {
+      "title": "API keys",
+      "description": "Each API key can optionally impersonate a user to mirror their permissions.",
+      "empty": "No API keys have been created yet.",
+      "columns": {
+        "name": "Name",
+        "owner": "Owner",
+        "impersonation": "Impersonation",
+        "status": "Status",
+        "created": "Created",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "disabled": "Disabled"
+      },
+      "impersonates": "Acts as {{email}} ({{role}})",
+      "noImpersonation": "Acts as the creator"
+    },
+    "create": {
+      "openButton": "Create API key",
+      "title": "Create API key",
+      "description": "Define a display name, optional impersonation target, and expiration date.",
+      "nameLabel": "Display name",
+      "namePlaceholder": "Operations dashboard",
+      "impersonateLabel": "Impersonate user email",
+      "impersonatePlaceholder": "user@example.com",
+      "impersonateDescription": "Requests authenticated with this key will run with the impersonated user's permissions.",
+      "expiresAtLabel": "Expiration date",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Describe how this key will be used",
+      "submit": "Generate key",
+      "success": "API key {{name}} created",
+      "error": "We couldn't create the API key. Please try again.",
+      "secretTitle": "Copy your API key",
+      "secretDescription": "This secret is shown only once. Store it securely before closing this window.",
+      "secretLabel": "API key secret",
+      "secretWarning": "Share this secret only with trusted services. Anyone with this key can perform actions on your behalf.",
+      "copySuccess": "API key copied to clipboard",
+      "secretWarningShort": "Keep this key safe.",
+      "done": "Done"
+    },
+    "revoke": {
+      "label": "Disable",
+      "confirmTitle": "Disable this API key?",
+      "confirmDescription": "Requests using {{name}} will stop working immediately.",
+      "cancel": "Cancel",
+      "confirm": "Disable",
+      "success": "API key disabled",
+      "error": "We couldn't disable the API key. Please try again."
+    },
+    "spec": {
+      "title": "API reference",
+      "description": "Download the OpenAPI specification that documents the available REST endpoints.",
+      "refresh": "Refresh",
+      "download": "Download spec",
+      "loading": "Loading the OpenAPI specification…",
+      "errorTitle": "Specification unavailable",
+      "loadError": "We couldn't load the API specification. Refresh to try again."
+    },
+    "lastUsed": "Last used",
+    "never": "Never"
+  },
   "addons": {
     "messages": {
       "allFailed": "Failed to register any addons",

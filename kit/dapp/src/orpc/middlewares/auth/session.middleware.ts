@@ -1,6 +1,16 @@
 import { auth, type Session, type SessionUser } from "@/lib/auth";
+import * as authSchema from "@/lib/auth/db/auth";
+import {
+  hashApiKey,
+  parseApiKeyMetadata,
+} from "@/lib/auth/utils/api-keys";
+import { db } from "@/lib/db";
 import type { Context } from "@/orpc/context/context";
 import { baseRouter } from "@/orpc/procedures/base.router";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
+import type { UserRole } from "@atk/zod/user-roles";
+import { eq, inArray } from "drizzle-orm";
+import { zeroAddress } from "viem";
 
 /**
  * Session middleware for optional authentication context.
@@ -67,12 +77,119 @@ export const sessionMiddleware = baseRouter.middleware<
   const session = await auth.api.getSession({
     headers,
   });
+
+  if (session?.user) {
+    return next({
+      context: {
+        auth: {
+          user: session.user as SessionUser,
+          session: session as Session,
+        },
+      },
+    });
+  }
+
+  const apiKeySecret = headers.get("x-api-key") ?? headers.get("X-Api-Key");
+
+  if (apiKeySecret) {
+    const apiKeyAuth = await resolveApiKeySession(apiKeySecret);
+
+    if (apiKeyAuth) {
+      return next({
+        context: {
+          auth: apiKeyAuth,
+        },
+      });
+    }
+  }
+
   return next({
     context: {
-      auth: {
-        user: session?.user as SessionUser,
-        session: session as Session,
-      },
+      auth: undefined,
     },
   });
 });
+
+async function resolveApiKeySession(
+  secret: string
+): Promise<{ user: SessionUser; session: Session } | undefined> {
+  const hashed = hashApiKey(secret);
+
+  const apiKeyRecord = await db.query.apikey.findFirst({
+    where: eq(authSchema.apikey.key, hashed),
+  });
+
+  if (!apiKeyRecord) {
+    return undefined;
+  }
+
+  if (apiKeyRecord.enabled === false) {
+    return undefined;
+  }
+
+  if (apiKeyRecord.expiresAt && apiKeyRecord.expiresAt.getTime() < Date.now()) {
+    return undefined;
+  }
+
+  const metadata = parseApiKeyMetadata(apiKeyRecord.metadata);
+  const impersonatedUserId =
+    metadata.impersonatedUserId ?? apiKeyRecord.userId;
+
+  const userIds = new Set<string>();
+  userIds.add(apiKeyRecord.userId);
+  if (impersonatedUserId) {
+    userIds.add(impersonatedUserId);
+  }
+
+  const users = userIds.size
+    ? await db
+        .select()
+        .from(authSchema.user)
+        .where(inArray(authSchema.user.id, Array.from(userIds)))
+    : [];
+
+  const userMap = new Map(users.map((user) => [user.id, user]));
+
+  const impersonatedUser = impersonatedUserId
+    ? userMap.get(impersonatedUserId)
+    : undefined;
+
+  if (!impersonatedUser) {
+    return undefined;
+  }
+
+  const sessionUser = {
+    ...impersonatedUser,
+    wallet: (impersonatedUser.wallet ?? zeroAddress) as EthereumAddress,
+    role: (impersonatedUser.role ?? "user") as UserRole,
+  } as SessionUser;
+
+  const now = new Date();
+
+  await db
+    .update(authSchema.apikey)
+    .set({
+      lastRequest: now,
+      requestCount: (apiKeyRecord.requestCount ?? 0) + 1,
+      updatedAt: now,
+    })
+    .where(eq(authSchema.apikey.id, apiKeyRecord.id));
+
+  const sessionData = {
+    id: `api-key:${apiKeyRecord.id}`,
+    userId: impersonatedUser.id,
+    expiresAt:
+      apiKeyRecord.expiresAt ?? new Date(now.getTime() + 1000 * 60 * 60 * 24),
+    token: hashed,
+    createdAt: apiKeyRecord.createdAt,
+    updatedAt: now,
+    ipAddress: null,
+    userAgent: "api-key",
+    impersonatedBy: apiKeyRecord.userId,
+  } as unknown as Session;
+
+  return {
+    user: sessionUser,
+    session: sessionData,
+  };
+}

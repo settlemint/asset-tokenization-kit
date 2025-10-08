@@ -281,7 +281,7 @@ const options = {
      * API key plugin configuration for programmatic access.
      */
     apiKey({
-      defaultKeyLength: 16,
+      defaultKeyLength: 24,
       defaultPrefix: "sm_atk_", // SettleMint Asset Tokenization Kit prefix
       enableMetadata: true,
       rateLimit: {
@@ -290,9 +290,9 @@ const options = {
         maxRequests: 60, // 60 requests per minute
       },
       permissions: {
-        // TODO: assing a role to the api key when created
         defaultPermissions: {
-          planets: ["read"], // Default read-only permissions
+          system: ["read", "list"],
+          setting: ["read"],
         },
       },
     }),

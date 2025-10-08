@@ -1,4 +1,73 @@
 {
+  "apiKeys": {
+    "description": "إنشاء مفاتيح API للتكاملات الآلية والاتصالات بين الخدمات.",
+    "adminRequired": {
+      "title": "يتطلب صلاحيات المسؤول",
+      "description": "يمكن للمسؤولين فقط إدارة مفاتيح الـ API. تواصل مع المسؤول إذا كنت بحاجة إلى صلاحية."
+    },
+    "table": {
+      "title": "مفاتيح API",
+      "description": "يمكن لكل مفتاح API انتحال هوية مستخدم لاستخدام صلاحياته.",
+      "empty": "لم يتم إنشاء أي مفاتيح API بعد.",
+      "columns": {
+        "name": "الاسم",
+        "owner": "المالك",
+        "impersonation": "الهوية المنتحلة",
+        "status": "الحالة",
+        "created": "تاريخ الإنشاء",
+        "actions": "الإجراءات"
+      },
+      "status": {
+        "active": "نشط",
+        "disabled": "معطل"
+      },
+      "impersonates": "يعمل كمستخدم {{email}} ({{role}})",
+      "noImpersonation": "يعمل بصلاحيات المنشئ"
+    },
+    "create": {
+      "openButton": "إنشاء مفتاح API",
+      "title": "إنشاء مفتاح API",
+      "description": "حدد اسم العرض، مستخدمًا اختياريًا للانتحال، وتاريخ انتهاء الصلاحية.",
+      "nameLabel": "اسم العرض",
+      "namePlaceholder": "لوحة العمليات",
+      "impersonateLabel": "بريد المستخدم الذي سيتم انتحاله",
+      "impersonatePlaceholder": "user@example.com",
+      "impersonateDescription": "تعمل الطلبات التي تستخدم هذا المفتاح بصلاحيات المستخدم المنتحل.",
+      "expiresAtLabel": "تاريخ الانتهاء",
+      "descriptionLabel": "الوصف",
+      "descriptionPlaceholder": "صف كيف سيتم استخدام هذا المفتاح",
+      "submit": "إنشاء المفتاح",
+      "success": "تم إنشاء مفتاح API {{name}}",
+      "error": "تعذر إنشاء مفتاح الـ API. حاول مرة أخرى.",
+      "secretTitle": "انسخ مفتاح الـ API",
+      "secretDescription": "يتم عرض هذا السر مرة واحدة فقط. احفظه في مكان آمن قبل الإغلاق.",
+      "secretLabel": "سر مفتاح API",
+      "secretWarning": "شارك هذا السر مع الخدمات الموثوقة فقط.",
+      "copySuccess": "تم نسخ مفتاح الـ API",
+      "secretWarningShort": "احتفظ بهذا المفتاح بأمان.",
+      "done": "تم"
+    },
+    "revoke": {
+      "label": "تعطيل",
+      "confirmTitle": "هل تريد تعطيل هذا المفتاح؟",
+      "confirmDescription": "لن تعمل الطلبات التي تستخدم {{name}} بعد الآن.",
+      "cancel": "إلغاء",
+      "confirm": "تعطيل",
+      "success": "تم تعطيل مفتاح الـ API",
+      "error": "تعذر تعطيل مفتاح الـ API."
+    },
+    "spec": {
+      "title": "مرجع API",
+      "description": "قم بتنزيل مواصفة OpenAPI التي توثق نقاط النهاية المتاحة.",
+      "refresh": "تحديث",
+      "download": "تنزيل المواصفة",
+      "loading": "جارٍ تحميل مواصفة OpenAPI…",
+      "errorTitle": "المواصفة غير متاحة",
+      "loadError": "تعذر تحميل المواصفة. أعد المحاولة."
+    },
+    "lastUsed": "آخر استخدام",
+    "never": "لم يُستخدم"
+  },
   "addons": {
     "messages": {
       "accessDenied": "تم رفض الوصول لـ {{name}}",

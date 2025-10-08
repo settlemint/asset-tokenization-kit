@@ -1,4 +1,73 @@
 {
+  "apiKeys": {
+    "description": "Erstellen Sie API-Schlüssel für automatisierte Integrationen und serviceübergreifende Kommunikation.",
+    "adminRequired": {
+      "title": "Administratorzugriff erforderlich",
+      "description": "Nur Administratoren können API-Schlüssel verwalten. Wenden Sie sich an Ihren Administrator, wenn Sie Zugriff benötigen."
+    },
+    "table": {
+      "title": "API-Schlüssel",
+      "description": "Jeder API-Schlüssel kann optional einen Benutzer imitieren, um dessen Berechtigungen zu übernehmen.",
+      "empty": "Es wurden noch keine API-Schlüssel erstellt.",
+      "columns": {
+        "name": "Name",
+        "owner": "Eigentümer",
+        "impersonation": "Imitation",
+        "status": "Status",
+        "created": "Erstellt",
+        "actions": "Aktionen"
+      },
+      "status": {
+        "active": "Aktiv",
+        "disabled": "Deaktiviert"
+      },
+      "impersonates": "Handelt als {{email}} ({{role}})",
+      "noImpersonation": "Handelt als Ersteller"
+    },
+    "create": {
+      "openButton": "API-Schlüssel erstellen",
+      "title": "API-Schlüssel erstellen",
+      "description": "Legen Sie einen Anzeigenamen, eine optionale Imitation und ein Ablaufdatum fest.",
+      "nameLabel": "Anzeigename",
+      "namePlaceholder": "Operations-Dashboard",
+      "impersonateLabel": "E-Mail des zu imitierenden Benutzers",
+      "impersonatePlaceholder": "user@example.com",
+      "impersonateDescription": "Anfragen mit diesem Schlüssel laufen mit den Berechtigungen des imitierten Benutzers.",
+      "expiresAtLabel": "Ablaufdatum",
+      "descriptionLabel": "Beschreibung",
+      "descriptionPlaceholder": "Beschreiben Sie den Einsatzzweck dieses Schlüssels",
+      "submit": "Schlüssel erzeugen",
+      "success": "API-Schlüssel {{name}} erstellt",
+      "error": "Der API-Schlüssel konnte nicht erstellt werden.",
+      "secretTitle": "API-Schlüssel kopieren",
+      "secretDescription": "Dieses Geheimnis wird nur einmal angezeigt. Speichern Sie es sicher, bevor Sie dieses Fenster schließen.",
+      "secretLabel": "API-Schlüssel",
+      "secretWarning": "Geben Sie diesen Schlüssel nur an vertrauenswürdige Dienste weiter.",
+      "copySuccess": "API-Schlüssel kopiert",
+      "secretWarningShort": "Bewahren Sie diesen Schlüssel sicher auf.",
+      "done": "Fertig"
+    },
+    "revoke": {
+      "label": "Deaktivieren",
+      "confirmTitle": "Diesen API-Schlüssel deaktivieren?",
+      "confirmDescription": "Anfragen mit {{name}} funktionieren danach nicht mehr.",
+      "cancel": "Abbrechen",
+      "confirm": "Deaktivieren",
+      "success": "API-Schlüssel deaktiviert",
+      "error": "Der API-Schlüssel konnte nicht deaktiviert werden."
+    },
+    "spec": {
+      "title": "API-Referenz",
+      "description": "Laden Sie die OpenAPI-Spezifikation der verfügbaren Endpunkte herunter.",
+      "refresh": "Aktualisieren",
+      "download": "Spezifikation herunterladen",
+      "loading": "Spezifikation wird geladen…",
+      "errorTitle": "Spezifikation nicht verfügbar",
+      "loadError": "Die API-Spezifikation konnte nicht geladen werden. Versuchen Sie es erneut."
+    },
+    "lastUsed": "Zuletzt verwendet",
+    "never": "Nie"
+  },
   "addons": {
     "messages": {
       "accessDenied": "Zugriff verweigert für {{name}}",

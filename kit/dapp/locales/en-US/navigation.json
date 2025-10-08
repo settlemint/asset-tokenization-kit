@@ -43,6 +43,9 @@
         "title": "Admin Access Required",
         "description": "You need administrator privileges to manage roles. Please contact your system administrator for access."
       }
+    },
+    "apiKeys": {
+      "title": "API keys"
     }
   }
 }

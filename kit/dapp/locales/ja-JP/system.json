@@ -1,4 +1,73 @@
 {
+  "apiKeys": {
+    "description": "自動化された統合やサービス間通信のために API キーを生成します。",
+    "adminRequired": {
+      "title": "管理者権限が必要です",
+      "description": "API キーの管理は管理者のみが実行できます。アクセスが必要な場合は管理者にお問い合わせください。"
+    },
+    "table": {
+      "title": "API キー",
+      "description": "各 API キーは任意のユーザーを偽装してその権限で動作できます。",
+      "empty": "まだ API キーが作成されていません。",
+      "columns": {
+        "name": "名前",
+        "owner": "所有者",
+        "impersonation": "偽装ユーザー",
+        "status": "ステータス",
+        "created": "作成日",
+        "actions": "操作"
+      },
+      "status": {
+        "active": "有効",
+        "disabled": "無効"
+      },
+      "impersonates": "{{role}} 権限で {{email}} として動作",
+      "noImpersonation": "作成者として動作"
+    },
+    "create": {
+      "openButton": "API キーを作成",
+      "title": "API キーを作成",
+      "description": "表示名、任意の偽装先、期限を指定します。",
+      "nameLabel": "表示名",
+      "namePlaceholder": "オペレーションダッシュボード",
+      "impersonateLabel": "偽装するユーザーのメール",
+      "impersonatePlaceholder": "user@example.com",
+      "impersonateDescription": "このキーで認証されたリクエストは指定したユーザーの権限で実行されます。",
+      "expiresAtLabel": "有効期限",
+      "descriptionLabel": "説明",
+      "descriptionPlaceholder": "このキーの用途を記述",
+      "submit": "キーを生成",
+      "success": "API キー {{name}} を作成しました",
+      "error": "API キーを作成できませんでした。",
+      "secretTitle": "API キーをコピー",
+      "secretDescription": "この秘密鍵は一度しか表示されません。閉じる前に安全な場所へ保存してください。",
+      "secretLabel": "API キー秘密",
+      "secretWarning": "信頼できるサービスにのみ共有してください。",
+      "copySuccess": "API キーをコピーしました",
+      "secretWarningShort": "このキーを安全に保管してください。",
+      "done": "完了"
+    },
+    "revoke": {
+      "label": "無効化",
+      "confirmTitle": "この API キーを無効化しますか?",
+      "confirmDescription": "{{name}} を利用したリクエストは直ちに失敗します。",
+      "cancel": "キャンセル",
+      "confirm": "無効化",
+      "success": "API キーを無効化しました",
+      "error": "API キーを無効化できませんでした。"
+    },
+    "spec": {
+      "title": "API リファレンス",
+      "description": "利用可能な REST エンドポイントを説明する OpenAPI 仕様をダウンロードできます。",
+      "refresh": "再読み込み",
+      "download": "仕様をダウンロード",
+      "loading": "OpenAPI 仕様を読み込み中…",
+      "errorTitle": "仕様を読み込めません",
+      "loadError": "API 仕様を取得できませんでした。再読み込みしてください。"
+    },
+    "lastUsed": "最終利用",
+    "never": "未使用"
+  },
   "addons": {
     "messages": {
       "accessDenied": "アクセスが拒否されました: {{name}}",
