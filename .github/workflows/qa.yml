@@ -338,7 +338,7 @@ jobs:
           merge_method: 'squash'
 
       - name: Build and Push Codestudio
-        if: github.event_name == 'push' && github.event.ref == 'refs/heads/main'
+        if: github.event_name == 'push'
         run: |
           bun run docker:codestudio
 
