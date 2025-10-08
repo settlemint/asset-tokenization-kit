@@ -2,6 +2,7 @@ import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboard";
 import { DetailGrid } from "@/components/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
+import { ManageProfileDropdown } from "@/components/manage-dropdown/manage-profile-dropdown";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   HoverCard,
@@ -91,10 +92,15 @@ function Profile() {
     <div className="container mx-auto p-6">
       <RouterBreadcrumb />
       <div className="mb-8 mt-4">
-        <h1 className="text-3xl font-bold">{t("user:profile.title")}</h1>
-        <p className="text-muted-foreground mt-2">
-          {t("user:profile.description")}
-        </p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold">{t("user:profile.title")}</h1>
+            <p className="text-muted-foreground mt-2">
+              {t("user:profile.description")}
+            </p>
+          </div>
+          <ManageProfileDropdown user={user} kyc={kyc ?? null} />
+        </div>
       </div>
 
       <DetailGrid title={t("user:tabs.details")}>
