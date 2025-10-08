@@ -1,36 +1,36 @@
 dependencies:
 - name: support
   repository: ""
-  version: 2.0.0-alpha.18
+  version: 2.0.0-beta.2
 - name: observability
   repository: ""
-  version: 2.0.0-alpha.18
+  version: 2.0.0-beta.2
 - name: network
   repository: ""
-  version: 2.0.0-alpha.18
+  version: 2.0.0-beta.2
 - name: erpc
   repository: ""
-  version: 2.0.0-alpha.18
+  version: 2.0.0-beta.2
 - name: ipfs
   repository: ""
-  version: 2.0.0-alpha.18
+  version: 2.0.0-beta.2
 - name: blockscout
   repository: ""
-  version: 2.0.0-alpha.18
+  version: 2.0.0-beta.2
 - name: graph-node
   repository: ""
-  version: 2.0.0-alpha.18
+  version: 2.0.0-beta.2
 - name: portal
   repository: ""
-  version: 2.0.0-alpha.18
+  version: 2.0.0-beta.2
 - name: hasura
   repository: ""
-  version: 2.0.0-alpha.18
+  version: 2.0.0-beta.2
 - name: txsigner
   repository: ""
-  version: 2.0.0-alpha.18
+  version: 2.0.0-beta.2
 - name: dapp
   repository: ""
-  version: 2.0.0-alpha.18
-digest: sha256:3023ebae9e3d12bd4a940cd2cf32dc5d3937a1fc562a01ca689699b6efd9303e
-generated: "2025-10-04T08:02:09.068878+02:00"
+  version: 2.0.0-beta.2
+digest: sha256:05a24623cdc9e0e3af568c9ec0dd53452a3a87b31a9cc6960c1f0ae2546b60b7
+generated: "2025-10-08T15:19:58.069211+03:00"
