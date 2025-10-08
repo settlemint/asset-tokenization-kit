@@ -460,6 +460,8 @@ type IdentityClaim @entity(immutable: false) {
   revoked: Boolean!
   # Key-value data within the claim
   values: [IdentityClaimValue!]! @derivedFrom(field: "claim")
+  # Topic scheme this claim belongs to
+  topicScheme: TopicScheme!
   # Transaction hash where this was added
   deployedInTransaction: Bytes!
 }
@@ -501,6 +503,62 @@ type TopicScheme @entity(immutable: false) {
   enabled: Boolean!
   # Transaction hash where this was added
   deployedInTransaction: Bytes!
+  # Bidirectional relationship for trusted issuers
+  trustedIssuers: [TrustedIssuer!]! @derivedFrom(field: "claimTopics")
+  # Bidirectional relationship for claims
+  claims: [IdentityClaim!]! @derivedFrom(field: "topicScheme")
+  # Statistics state entity
+  stats: TopicSchemeStatsState @derivedFrom(field: "topicScheme")
+}
+
+type TopicSchemeStatsState @entity(immutable: false) {
+  # Composite key: topic scheme ID
+  id: Bytes!
+  # Reference to the topic scheme
+  topicScheme: TopicScheme!
+  # Total claims issued for this topic (lifetime count)
+  totalIssuedClaims: Int!
+  # Active claims (non-revoked, non-removed)
+  totalActiveClaims: Int!
+  # Removed claims (lifetime count)
+  totalRemovedClaims: Int!
+  # Revoked claims (lifetime count)
+  totalRevokedClaims: Int!
+}
+
+type TopicSchemeStatsData @entity(timeseries: true) {
+  # Unique identifier for timeseries entry (auto-generated)
+  id: Int8!
+  # Timestamp of this data point
+  timestamp: Timestamp!
+  # Reference to the topic scheme
+  topicScheme: TopicScheme!
+  # Total claims issued
+  totalIssuedClaims: Int!
+  # Active claims count
+  totalActiveClaims: Int!
+  # Removed claims count
+  totalRemovedClaims: Int!
+  # Revoked claims count
+  totalRevokedClaims: Int!
+}
+
+type TopicSchemeStats
+  @aggregation(intervals: ["hour", "day"], source: "TopicSchemeStatsData") {
+  # Unique identifier for aggregated entry
+  id: Int8!
+  # Timestamp of aggregation period
+  timestamp: Timestamp!
+  # Reference to the topic scheme
+  topicScheme: TopicScheme!
+  # Last count of total issued claims
+  totalIssuedClaims: Int! @aggregate(fn: "last", arg: "totalIssuedClaims")
+  # Last count of active claims
+  totalActiveClaims: Int! @aggregate(fn: "last", arg: "totalActiveClaims")
+  # Last count of removed claims
+  totalRemovedClaims: Int! @aggregate(fn: "last", arg: "totalRemovedClaims")
+  # Last count of revoked claims
+  totalRevokedClaims: Int! @aggregate(fn: "last", arg: "totalRevokedClaims")
 }
 
 # Base interface

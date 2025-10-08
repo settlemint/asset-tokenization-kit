@@ -16,6 +16,8 @@ export function fetchIdentityClaim(
     identityClaim.revoked = false;
     identityClaim.deployedInTransaction = Bytes.empty();
     identityClaim.signature = Bytes.empty().toHexString();
+    identityClaim.topicScheme = Bytes.empty();
+
     identityClaim.save();
   }
 
