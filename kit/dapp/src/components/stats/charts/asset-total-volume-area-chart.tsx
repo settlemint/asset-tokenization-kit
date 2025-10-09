@@ -42,7 +42,7 @@ export function AssetTotalVolumeAreaChart({
     }
 
     return data.volumeHistory.map((item) => ({
-      timestamp: format(new Date(item.timestamp * 1000), "MMM dd"),
+      timestamp: format(new Date(item.timestamp / 1000), "MMM dd"),
       totalVolume: safeToNumber(item.totalVolume),
     }));
   }, [data.volumeHistory]);

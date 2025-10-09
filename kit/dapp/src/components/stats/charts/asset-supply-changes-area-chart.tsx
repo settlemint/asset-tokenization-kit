@@ -43,7 +43,7 @@ export function AssetSupplyChangesAreaChart({
 
     // Convert burned amounts to negative values for visualization
     return data.supplyChangesHistory.map((item) => ({
-      timestamp: format(new Date(item.timestamp * 1000), "MMM dd"),
+      timestamp: format(new Date(item.timestamp / 1000), "MMM dd"),
       totalMinted: safeToNumber(item.totalMinted),
       totalBurned: -safeToNumber(item.totalBurned), // Negative for burned amounts
     }));

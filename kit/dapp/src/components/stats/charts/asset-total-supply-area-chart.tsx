@@ -41,7 +41,7 @@ export function AssetTotalSupplyAreaChart({
     }
 
     return data.totalSupplyHistory.map((item) => ({
-      timestamp: format(new Date(item.timestamp * 1000), "MMM dd"),
+      timestamp: format(new Date(item.timestamp / 1000), "MMM dd"),
       totalSupply: safeToNumber(item.totalSupply),
     }));
   }, [data.totalSupplyHistory]);
