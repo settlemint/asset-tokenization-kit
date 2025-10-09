@@ -228,7 +228,7 @@ const options = {
         // Eg when you do a custom deployment the db could be deployed after the dApp
         await migrateDatabase();
       } catch (error) {
-        throw new APIError(500, {
+        throw new APIError("INTERNAL_SERVER_ERROR", {
           message: "Failed to migrate the database",
           cause: error instanceof Error ? error : undefined,
         });
