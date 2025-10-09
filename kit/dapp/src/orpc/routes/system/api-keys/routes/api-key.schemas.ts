@@ -1,14 +1,5 @@
 import { z } from "zod";
 
-export const ApiKeyImpersonationSchema = z
-  .object({
-    id: z.string(),
-    email: z.string().email(),
-    name: z.string().nullable(),
-    role: z.string(),
-  })
-  .nullable();
-
 export const ApiKeyOwnerSchema = z
   .object({
     id: z.string(),
@@ -28,7 +19,6 @@ export const ApiKeySchema = z.object({
   expiresAt: z.coerce.date().nullable(),
   lastUsedAt: z.coerce.date().nullable(),
   description: z.string().nullable(),
-  impersonation: ApiKeyImpersonationSchema,
   owner: ApiKeyOwnerSchema,
 });
 
@@ -39,8 +29,6 @@ export const ApiKeyWithSecretSchema = ApiKeySchema.extend({
 export const ApiKeyCreateInputSchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().max(256).nullable().optional(),
-  impersonateUserId: z.string().nullable().optional(),
-  impersonateUserEmail: z.string().email().nullable().optional(),
   expiresAt: z.coerce.date().nullable().optional(),
 });
 

@@ -27,12 +27,8 @@ export const apiKeyList = authRouter.system.apiKeys.list
       apiKeys.map((key) => [key.id, parseApiKeyMetadata(key.metadata)])
     );
 
-    const impersonatedIds = apiKeys
-      .map((key) => metadataById.get(key.id)?.impersonatedUserId)
-      .filter((value): value is string => Boolean(value));
-
     const ownerIds = apiKeys.map((key) => key.userId);
-    const uniqueIds = Array.from(new Set([...impersonatedIds, ...ownerIds]));
+    const uniqueIds = Array.from(new Set(ownerIds));
 
     const users = uniqueIds.length
       ? await context.db
@@ -45,10 +41,6 @@ export const apiKeyList = authRouter.system.apiKeys.list
 
     return apiKeys.map((key) => {
       const metadata = metadataById.get(key.id) ?? {};
-      const impersonatedUserId = metadata.impersonatedUserId ?? key.userId;
-      const impersonatedUser = impersonatedUserId
-        ? userMap.get(impersonatedUserId)
-        : undefined;
       const ownerUser = userMap.get(key.userId);
 
       return {
@@ -62,14 +54,6 @@ export const apiKeyList = authRouter.system.apiKeys.list
         expiresAt: key.expiresAt,
         lastUsedAt: key.lastRequest,
         description: metadata.description ?? null,
-        impersonation: impersonatedUser
-          ? {
-              id: impersonatedUser.id,
-              email: impersonatedUser.email,
-              name: impersonatedUser.name,
-              role: impersonatedUser.role ?? "user",
-            }
-          : null,
         owner: ownerUser
           ? {
               id: ownerUser.id,

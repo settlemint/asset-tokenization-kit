@@ -1,18 +1,17 @@
 {
   "apiKeys": {
-    "description": "Generate API keys for automated integrations and service-to-service communication.",
+    "description": "Generate API keys for automated integrations. Each request must include the target user id alongside the key.",
     "adminRequired": {
       "title": "Administrator access required",
       "description": "Only administrators can create or manage API keys. Contact your system administrator if you need access."
     },
     "table": {
       "title": "API keys",
-      "description": "Each API key can optionally impersonate a user to mirror their permissions.",
+      "description": "API keys authenticate machine-to-machine traffic. Provide the user id to impersonate per request.",
       "empty": "No API keys have been created yet.",
       "columns": {
         "name": "Name",
         "owner": "Owner",
-        "impersonation": "Impersonation",
         "status": "Status",
         "created": "Created",
         "actions": "Actions"
@@ -20,19 +19,14 @@
       "status": {
         "active": "Active",
         "disabled": "Disabled"
-      },
-      "impersonates": "Acts as {{email}} ({{role}})",
-      "noImpersonation": "Acts as the creator"
+      }
     },
     "create": {
       "openButton": "Create API key",
       "title": "Create API key",
-      "description": "Define a display name, optional impersonation target, and expiration date.",
+      "description": "Define a display name, optional expiration date, and contextual description.",
       "nameLabel": "Display name",
       "namePlaceholder": "Operations dashboard",
-      "impersonateLabel": "Impersonate user email",
-      "impersonatePlaceholder": "user@example.com",
-      "impersonateDescription": "Requests authenticated with this key will run with the impersonated user's permissions.",
       "expiresAtLabel": "Expiration date",
       "descriptionLabel": "Description",
       "descriptionPlaceholder": "Describe how this key will be used",
@@ -44,7 +38,6 @@
       "secretLabel": "API key secret",
       "secretWarning": "Share this secret only with trusted services. Anyone with this key can perform actions on your behalf.",
       "copySuccess": "API key copied to clipboard",
-      "secretWarningShort": "Keep this key safe.",
       "done": "Done"
     },
     "revoke": {
@@ -66,7 +59,11 @@
       "loadError": "We couldn't load the API specification. Refresh to try again."
     },
     "lastUsed": "Last used",
-    "never": "Never"
+    "never": "Never",
+    "usage": {
+      "title": "Authenticate API requests",
+      "description": "Send the API key in the {{apiKeyHeader}} header and the user to impersonate in the {{userHeader}} header on every request."
+    }
   },
   "addons": {
     "messages": {

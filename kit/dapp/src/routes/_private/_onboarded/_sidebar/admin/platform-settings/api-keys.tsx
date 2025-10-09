@@ -109,7 +109,6 @@ function ApiKeysPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formState, setFormState] = useState({
     name: "",
-    email: "",
     description: "",
     expiresAt: "",
   });
@@ -127,13 +126,12 @@ function ApiKeysPage() {
       return await orpc.system.apiKeys.create.mutate({
         name: formState.name,
         description: formState.description || null,
-        impersonateUserEmail: formState.email || undefined,
         expiresAt: expiresAtValue,
       });
     },
     onSuccess: async (data) => {
       setGeneratedKey(data);
-      setFormState({ name: "", email: "", description: "", expiresAt: "" });
+      setFormState({ name: "", description: "", expiresAt: "" });
       await queryClient.invalidateQueries({
         queryKey: apiKeysQuery.queryKey,
       });
@@ -235,7 +233,26 @@ function ApiKeysPage() {
             {t("system:apiKeys.create.openButton")}
           </Button>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
+          <Alert className="bg-muted/40">
+            <AlertTitle>{t("system:apiKeys.usage.title")}</AlertTitle>
+            <AlertDescription className="space-y-3">
+              <p>
+                {t("system:apiKeys.usage.description", {
+                  apiKeyHeader: "X-Api-Key",
+                  userHeader: "X-Api-User-Id",
+                })}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <code className="rounded-md bg-background px-2 py-1 text-xs font-semibold">
+                  X-Api-Key
+                </code>
+                <code className="rounded-md bg-background px-2 py-1 text-xs font-semibold">
+                  X-Api-User-Id
+                </code>
+              </div>
+            </AlertDescription>
+          </Alert>
           {apiKeys.length === 0 ? (
             <p className="text-muted-foreground text-sm">
               {t("system:apiKeys.table.empty")}
@@ -247,9 +264,6 @@ function ApiKeysPage() {
                   <TableRow>
                     <TableHead>{t("system:apiKeys.table.columns.name")}</TableHead>
                     <TableHead>{t("system:apiKeys.table.columns.owner")}</TableHead>
-                    <TableHead>
-                      {t("system:apiKeys.table.columns.impersonation")}
-                    </TableHead>
                     <TableHead>{t("system:apiKeys.table.columns.status")}</TableHead>
                     <TableHead>{t("system:apiKeys.table.columns.created")}</TableHead>
                     <TableHead>{t("system:apiKeys.lastUsed")}</TableHead>
@@ -272,23 +286,6 @@ function ApiKeysPage() {
                         <div className="text-xs text-muted-foreground">
                           {key.owner?.email ?? ""}
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        {key.impersonation ? (
-                          <div className="space-y-1">
-                            <div>{key.impersonation.name ?? key.impersonation.email}</div>
-                            <div className="text-xs text-muted-foreground">
-                              {t("system:apiKeys.table.impersonates", {
-                                email: key.impersonation.email,
-                                role: key.impersonation.role,
-                              })}
-                            </div>
-                          </div>
-                        ) : (
-                          <span className="text-muted-foreground text-sm">
-                            {t("system:apiKeys.table.noImpersonation")}
-                          </span>
-                        )}
                       </TableCell>
                       <TableCell>
                         <Badge variant={key.enabled ? "default" : "secondary"}>
@@ -464,28 +461,7 @@ function ApiKeysPage() {
                     required
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="api-key-email">
-                    {t("system:apiKeys.create.impersonateLabel")}
-                  </Label>
-                  <Input
-                    id="api-key-email"
-                    type="email"
-                    value={formState.email}
-                    onChange={(event) =>
-                      setFormState((state) => ({
-                        ...state,
-                        email: event.target.value,
-                      }))
-                    }
-                    placeholder={t(
-                      "system:apiKeys.create.impersonatePlaceholder"
-                    )}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {t("system:apiKeys.create.impersonateDescription")}
-                  </p>
-                </div>
+                
                 <div className="space-y-2">
                   <Label htmlFor="api-key-expires">
                     {t("system:apiKeys.create.expiresAtLabel")}

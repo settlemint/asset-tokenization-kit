@@ -1,18 +1,17 @@
 {
   "apiKeys": {
-    "description": "自動化された統合やサービス間通信のために API キーを生成します。",
+    "description": "自動連携のために API キーを発行します。各リクエストではキーと一緒に対象ユーザー ID を渡す必要があります。",
     "adminRequired": {
       "title": "管理者権限が必要です",
       "description": "API キーの管理は管理者のみが実行できます。アクセスが必要な場合は管理者にお問い合わせください。"
     },
     "table": {
       "title": "API キー",
-      "description": "各 API キーは任意のユーザーを偽装してその権限で動作できます。",
+      "description": "API キーはシステム間通信を認証します。各リクエストでなり替えるユーザー ID を指定してください。",
       "empty": "まだ API キーが作成されていません。",
       "columns": {
         "name": "名前",
         "owner": "所有者",
-        "impersonation": "偽装ユーザー",
         "status": "ステータス",
         "created": "作成日",
         "actions": "操作"
@@ -20,19 +19,14 @@
       "status": {
         "active": "有効",
         "disabled": "無効"
-      },
-      "impersonates": "{{role}} 権限で {{email}} として動作",
-      "noImpersonation": "作成者として動作"
+      }
     },
     "create": {
       "openButton": "API キーを作成",
       "title": "API キーを作成",
-      "description": "表示名、任意の偽装先、期限を指定します。",
+      "description": "表示名、任意の有効期限、用途の説明を設定します。",
       "nameLabel": "表示名",
       "namePlaceholder": "オペレーションダッシュボード",
-      "impersonateLabel": "偽装するユーザーのメール",
-      "impersonatePlaceholder": "user@example.com",
-      "impersonateDescription": "このキーで認証されたリクエストは指定したユーザーの権限で実行されます。",
       "expiresAtLabel": "有効期限",
       "descriptionLabel": "説明",
       "descriptionPlaceholder": "このキーの用途を記述",
@@ -44,7 +38,6 @@
       "secretLabel": "API キー秘密",
       "secretWarning": "信頼できるサービスにのみ共有してください。",
       "copySuccess": "API キーをコピーしました",
-      "secretWarningShort": "このキーを安全に保管してください。",
       "done": "完了"
     },
     "revoke": {
@@ -66,7 +59,11 @@
       "loadError": "API 仕様を取得できませんでした。再読み込みしてください。"
     },
     "lastUsed": "最終利用",
-    "never": "未使用"
+    "never": "未使用",
+    "usage": {
+      "title": "API リクエストの認証",
+      "description": "{{apiKeyHeader}} ヘッダーに API キーを、{{userHeader}} ヘッダーになり替えるユーザー ID を必ず含めてください。"
+    }
   },
   "addons": {
     "messages": {

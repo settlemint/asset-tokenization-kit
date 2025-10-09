@@ -14,9 +14,9 @@ const list = baseContract
     method: "GET",
     path: "/systems/api-keys",
     description:
-      "List API keys configured for the platform, including impersonation details and usage metadata",
+      "List API keys configured for the platform with usage metadata and activity logs",
     successDescription:
-      "Current API keys with impersonation targets and audit metadata",
+      "Current API keys with audit metadata",
     tags: TAGS,
   })
   .output(ApiKeySchema.array());
@@ -26,7 +26,7 @@ const create = baseContract
     method: "POST",
     path: "/systems/api-keys",
     description:
-      "Create a new API key that can optionally impersonate a specific user",
+      "Create a new API key for programmatic access",
     successDescription:
       "API key created successfully. The secret is returned once and cannot be retrieved again.",
     tags: TAGS,

@@ -1,4 +1,5 @@
 import * as authSchema from "@/lib/auth/db/auth";
+import { auth } from "@/lib/auth";
 import {
   ApiKeyRevokeInputSchema,
   ApiKeyRevokeResultSchema,
@@ -22,18 +23,26 @@ export const apiKeyRevoke = authRouter.system.apiKeys.revoke
       });
     }
 
-    const [updated] = await context.db
-      .update(authSchema.apikey)
-      .set({
-        enabled: false,
-        updatedAt: new Date(),
-      })
-      .where(eq(authSchema.apikey.id, input.id))
-      .returning();
+    const existing = await context.db.query.apikey.findFirst({
+      where: eq(authSchema.apikey.id, input.id),
+    });
 
-    if (!updated) {
+    if (!existing) {
       throw errors.NOT_FOUND({
         message: `API key with id ${input.id} was not found`,
+      });
+    }
+
+    const deleteResult = await (auth.apiKeys as unknown as {
+      deleteKey: (payload: Record<string, unknown>) => Promise<{
+        data?: Record<string, any> | null;
+        error?: { message?: string } | null;
+      }>;
+    }).deleteKey({ id: input.id });
+
+    if (!deleteResult || deleteResult.error) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: deleteResult?.error?.message ?? "Failed to revoke API key",
       });
     }
 

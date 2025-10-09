@@ -9,7 +9,7 @@ import type { Context } from "@/orpc/context/context";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import type { UserRole } from "@atk/zod/user-roles";
-import { eq, inArray } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { zeroAddress } from "viem";
 
 /**
@@ -90,9 +90,17 @@ export const sessionMiddleware = baseRouter.middleware<
   }
 
   const apiKeySecret = headers.get("x-api-key") ?? headers.get("X-Api-Key");
+  const impersonatedUserIdHeader =
+    headers.get("x-api-user-id") ??
+    headers.get("X-Api-User-Id") ??
+    headers.get("x-user-id") ??
+    headers.get("X-User-Id");
 
   if (apiKeySecret) {
-    const apiKeyAuth = await resolveApiKeySession(apiKeySecret);
+    const apiKeyAuth = await resolveApiKeySession(
+      apiKeySecret,
+      impersonatedUserIdHeader ?? undefined
+    );
 
     if (apiKeyAuth) {
       return next({
@@ -111,13 +119,32 @@ export const sessionMiddleware = baseRouter.middleware<
 });
 
 async function resolveApiKeySession(
-  secret: string
+  secret: string,
+  requestedUserId?: string
 ): Promise<{ user: SessionUser; session: Session } | undefined> {
-  const hashed = hashApiKey(secret);
+  const verifyResult = await (auth.apiKeys as unknown as {
+    verifyApiKey: (payload: Record<string, unknown>) => Promise<{
+      data?: Record<string, any> | null;
+      error?: { message?: string } | null;
+    }>;
+  }).verifyApiKey({ apiKey: secret });
 
-  const apiKeyRecord = await db.query.apikey.findFirst({
-    where: eq(authSchema.apikey.key, hashed),
-  });
+  if (!verifyResult || verifyResult.error) {
+    return undefined;
+  }
+
+  const hashed = hashApiKey(secret);
+  const verifiedData = verifyResult.data ?? {};
+  const verifiedId =
+    verifiedData?.apiKey?.id ?? verifiedData?.id ?? verifiedData?.key?.id;
+
+  const apiKeyRecord = verifiedId
+    ? await db.query.apikey.findFirst({
+        where: eq(authSchema.apikey.id, verifiedId),
+      })
+    : await db.query.apikey.findFirst({
+        where: eq(authSchema.apikey.key, hashed),
+      });
 
   if (!apiKeyRecord) {
     return undefined;
@@ -131,40 +158,27 @@ async function resolveApiKeySession(
     return undefined;
   }
 
-  const metadata = parseApiKeyMetadata(apiKeyRecord.metadata);
-  const impersonatedUserId =
-    metadata.impersonatedUserId ?? apiKeyRecord.userId;
-
-  const userIds = new Set<string>();
-  userIds.add(apiKeyRecord.userId);
-  if (impersonatedUserId) {
-    userIds.add(impersonatedUserId);
+  if (!requestedUserId) {
+    return undefined;
   }
 
-  const users = userIds.size
-    ? await db
-        .select()
-        .from(authSchema.user)
-        .where(inArray(authSchema.user.id, Array.from(userIds)))
-    : [];
+  const targetUser = await db.query.user.findFirst({
+    where: eq(authSchema.user.id, requestedUserId),
+  });
 
-  const userMap = new Map(users.map((user) => [user.id, user]));
-
-  const impersonatedUser = impersonatedUserId
-    ? userMap.get(impersonatedUserId)
-    : undefined;
-
-  if (!impersonatedUser) {
+  if (!targetUser) {
     return undefined;
   }
 
   const sessionUser = {
-    ...impersonatedUser,
-    wallet: (impersonatedUser.wallet ?? zeroAddress) as EthereumAddress,
-    role: (impersonatedUser.role ?? "user") as UserRole,
+    ...targetUser,
+    wallet: (targetUser.wallet ?? zeroAddress) as EthereumAddress,
+    role: (targetUser.role ?? "user") as UserRole,
   } as SessionUser;
 
   const now = new Date();
+
+  const metadata = parseApiKeyMetadata(apiKeyRecord.metadata);
 
   await db
     .update(authSchema.apikey)
@@ -177,7 +191,7 @@ async function resolveApiKeySession(
 
   const sessionData = {
     id: `api-key:${apiKeyRecord.id}`,
-    userId: impersonatedUser.id,
+    userId: targetUser.id,
     expiresAt:
       apiKeyRecord.expiresAt ?? new Date(now.getTime() + 1000 * 60 * 60 * 24),
     token: hashed,
@@ -185,7 +199,7 @@ async function resolveApiKeySession(
     updatedAt: now,
     ipAddress: null,
     userAgent: "api-key",
-    impersonatedBy: apiKeyRecord.userId,
+    impersonatedBy: metadata.createdByUserId ?? apiKeyRecord.userId,
   } as unknown as Session;
 
   return {

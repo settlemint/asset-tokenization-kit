@@ -1,17 +1,13 @@
-import crypto from "node:crypto";
-
 import * as authSchema from "@/lib/auth/db/auth";
 import {
   ApiKeyCreateInputSchema,
   ApiKeyWithSecretSchema,
 } from "@/orpc/routes/system/api-keys/routes/api-key.schemas";
-import {
-  generateApiKeySecret,
-  serializeApiKeyMetadata,
-} from "@/lib/auth/utils/api-keys";
+import { parseApiKeyMetadata } from "@/lib/auth/utils/api-keys";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { eq } from "drizzle-orm";
+import { auth } from "@/lib/auth";
 
 export const apiKeyCreate = authRouter.system.apiKeys.create
   .use(databaseMiddleware)
@@ -28,70 +24,61 @@ export const apiKeyCreate = authRouter.system.apiKeys.create
       });
     }
 
-    const { name, description, impersonateUserEmail, impersonateUserId, expiresAt } =
-      input;
+    const { name, description, expiresAt } = input;
 
-    let impersonatedUserId = impersonateUserId ?? null;
-
-    if (!impersonatedUserId && impersonateUserEmail) {
-      const [impersonatedByEmail] = await context.db
-        .select()
-        .from(authSchema.user)
-        .where(eq(authSchema.user.email, impersonateUserEmail.toLowerCase()));
-
-      if (!impersonatedByEmail) {
-        throw errors.NOT_FOUND({
-          message: `User with email ${impersonateUserEmail} was not found`,
-        });
-      }
-
-      impersonatedUserId = impersonatedByEmail.id;
-    }
-
-    let impersonatedUser = null;
-
-    if (impersonatedUserId) {
-      const [foundImpersonated] = await context.db
-        .select()
-        .from(authSchema.user)
-        .where(eq(authSchema.user.id, impersonatedUserId));
-
-      if (!foundImpersonated) {
-        throw errors.NOT_FOUND({
-          message: `User with id ${impersonatedUserId} was not found`,
-        });
-      }
-
-      impersonatedUser = foundImpersonated;
-    }
-
-    const metadata = serializeApiKeyMetadata({
-      impersonatedUserId: impersonatedUser?.id ?? undefined,
+    const metadata = {
       description: description ?? undefined,
       createdByUserId: user.id,
+    };
+
+    const createResult = await (auth.apiKeys as unknown as {
+      createKey: (payload: Record<string, unknown>) => Promise<{
+        data?: Record<string, any> | null;
+        error?: { message?: string } | null;
+      }>;
+    }).createKey({
+      userId: user.id,
+      name,
+      metadata,
+      expiresAt: expiresAt ?? undefined,
     });
 
-    const generated = generateApiKeySecret();
-    const [created] = await context.db
-      .insert(authSchema.apikey)
-      .values({
-        id: crypto.randomUUID(),
-        name,
-        prefix: generated.prefix,
-        start: generated.start,
-        key: generated.hashed,
-        userId: user.id,
-        enabled: true,
-        metadata,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        expiresAt: expiresAt ?? null,
-      })
-      .returning();
+    if (!createResult || createResult.error) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: createResult?.error?.message ?? "Failed to create API key",
+      });
+    }
+
+    const createdData = createResult.data ?? {};
+    const createdId =
+      createdData?.apiKey?.id ?? createdData?.id ?? createdData?.key?.id;
+
+    if (!createdId) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: "Failed to determine created API key identifier",
+      });
+    }
+
+    const created = await context.db.query.apikey.findFirst({
+      where: eq(authSchema.apikey.id, createdId),
+    });
 
     if (!created) {
       throw errors.INTERNAL_SERVER_ERROR({
-        message: "Failed to create API key",
+        message: "API key was created but could not be loaded",
+      });
+    }
+
+    const parsedMetadata = parseApiKeyMetadata(created.metadata);
+    const secret =
+      createdData?.secret ??
+      createdData?.apiKey?.secret ??
+      createdData?.plainTextKey ??
+      createdData?.key?.secret;
+
+    if (!secret) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: "API key secret was not returned by Better Auth",
       });
     }
 
@@ -105,25 +92,12 @@ export const apiKeyCreate = authRouter.system.apiKeys.create
       updatedAt: created.updatedAt,
       expiresAt: created.expiresAt,
       lastUsedAt: created.lastRequest,
-      description: description ?? null,
-      impersonation: impersonatedUser
-        ? {
-            id: impersonatedUser.id,
-            email: impersonatedUser.email,
-            name: impersonatedUser.name,
-            role: impersonatedUser.role ?? "user",
-          }
-        : {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            role: user.role,
-          },
+      description: parsedMetadata.description ?? null,
       owner: {
         id: user.id,
         email: user.email,
         name: user.name,
       },
-      secret: generated.secret,
+      secret,
     };
   });

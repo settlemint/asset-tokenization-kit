@@ -1,18 +1,17 @@
 {
   "apiKeys": {
-    "description": "Erstellen Sie API-Schlüssel für automatisierte Integrationen und serviceübergreifende Kommunikation.",
+    "description": "Erstellen Sie API-Schlüssel für automatisierte Integrationen. Jede Anfrage muss die Zielbenutzer-ID zusammen mit dem Schlüssel enthalten.",
     "adminRequired": {
       "title": "Administratorzugriff erforderlich",
       "description": "Nur Administratoren können API-Schlüssel verwalten. Wenden Sie sich an Ihren Administrator, wenn Sie Zugriff benötigen."
     },
     "table": {
       "title": "API-Schlüssel",
-      "description": "Jeder API-Schlüssel kann optional einen Benutzer imitieren, um dessen Berechtigungen zu übernehmen.",
+      "description": "API-Schlüssel authentifizieren systemübergreifende Aufrufe. Geben Sie pro Anfrage die zu vertretende Benutzer-ID an.",
       "empty": "Es wurden noch keine API-Schlüssel erstellt.",
       "columns": {
         "name": "Name",
         "owner": "Eigentümer",
-        "impersonation": "Imitation",
         "status": "Status",
         "created": "Erstellt",
         "actions": "Aktionen"
@@ -20,19 +19,14 @@
       "status": {
         "active": "Aktiv",
         "disabled": "Deaktiviert"
-      },
-      "impersonates": "Handelt als {{email}} ({{role}})",
-      "noImpersonation": "Handelt als Ersteller"
+      }
     },
     "create": {
       "openButton": "API-Schlüssel erstellen",
       "title": "API-Schlüssel erstellen",
-      "description": "Legen Sie einen Anzeigenamen, eine optionale Imitation und ein Ablaufdatum fest.",
+      "description": "Legen Sie einen Anzeigenamen, ein optionales Ablaufdatum und eine beschreibende Notiz fest.",
       "nameLabel": "Anzeigename",
       "namePlaceholder": "Operations-Dashboard",
-      "impersonateLabel": "E-Mail des zu imitierenden Benutzers",
-      "impersonatePlaceholder": "user@example.com",
-      "impersonateDescription": "Anfragen mit diesem Schlüssel laufen mit den Berechtigungen des imitierten Benutzers.",
       "expiresAtLabel": "Ablaufdatum",
       "descriptionLabel": "Beschreibung",
       "descriptionPlaceholder": "Beschreiben Sie den Einsatzzweck dieses Schlüssels",
@@ -44,7 +38,6 @@
       "secretLabel": "API-Schlüssel",
       "secretWarning": "Geben Sie diesen Schlüssel nur an vertrauenswürdige Dienste weiter.",
       "copySuccess": "API-Schlüssel kopiert",
-      "secretWarningShort": "Bewahren Sie diesen Schlüssel sicher auf.",
       "done": "Fertig"
     },
     "revoke": {
@@ -66,7 +59,11 @@
       "loadError": "Die API-Spezifikation konnte nicht geladen werden. Versuchen Sie es erneut."
     },
     "lastUsed": "Zuletzt verwendet",
-    "never": "Nie"
+    "never": "Nie",
+    "usage": {
+      "title": "API-Anfragen authentifizieren",
+      "description": "Senden Sie den API-Schlüssel im Header {{apiKeyHeader}} und den zu vertretenden Benutzer im Header {{userHeader}} bei jeder Anfrage."
+    }
   },
   "addons": {
     "messages": {
