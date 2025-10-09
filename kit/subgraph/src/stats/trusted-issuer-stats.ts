@@ -1,4 +1,4 @@
-import { Bytes } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   TrustedIssuersRegistry,
   TrustedIssuerStatsData,
@@ -16,9 +16,9 @@ function fetchTrustedIssuerStatsState(
   if (!state) {
     state = new TrustedIssuerStatsState(trustedIssuersRegistryId);
     state.trustedIssuersRegistry = trustedIssuersRegistryId;
-    state.totalAddedTrustedIssuers = 0;
-    state.totalActiveTrustedIssuers = 0;
-    state.totalRemovedTrustedIssuers = 0;
+    state.totalAddedTrustedIssuers = BigInt.fromI32(0);
+    state.totalActiveTrustedIssuers = BigInt.fromI32(0);
+    state.totalRemovedTrustedIssuers = BigInt.fromI32(0);
     state.save();
   }
 
@@ -47,8 +47,12 @@ export function incrementTrustedIssuersAdded(
   trustedIssuersRegistry: TrustedIssuersRegistry
 ): void {
   const state = fetchTrustedIssuerStatsState(trustedIssuersRegistry.id);
-  state.totalAddedTrustedIssuers = state.totalAddedTrustedIssuers + 1;
-  state.totalActiveTrustedIssuers = state.totalActiveTrustedIssuers + 1;
+  state.totalAddedTrustedIssuers = state.totalAddedTrustedIssuers.plus(
+    BigInt.fromI32(1)
+  );
+  state.totalActiveTrustedIssuers = state.totalActiveTrustedIssuers.plus(
+    BigInt.fromI32(1)
+  );
   state.save();
 
   trackTrustedIssuerStats(trustedIssuersRegistry.id);
@@ -61,8 +65,12 @@ export function incrementTrustedIssuersRemoved(
   trustedIssuersRegistry: TrustedIssuersRegistry
 ): void {
   const state = fetchTrustedIssuerStatsState(trustedIssuersRegistry.id);
-  state.totalActiveTrustedIssuers = state.totalActiveTrustedIssuers - 1;
-  state.totalRemovedTrustedIssuers = state.totalRemovedTrustedIssuers + 1;
+  state.totalActiveTrustedIssuers = state.totalActiveTrustedIssuers.minus(
+    BigInt.fromI32(1)
+  );
+  state.totalRemovedTrustedIssuers = state.totalRemovedTrustedIssuers.plus(
+    BigInt.fromI32(1)
+  );
   state.save();
 
   trackTrustedIssuerStats(trustedIssuersRegistry.id);

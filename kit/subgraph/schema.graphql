@@ -721,11 +721,11 @@ type TrustedIssuerStatsState @entity(immutable: false) {
   # Reference to the trusted issuers registry
   trustedIssuersRegistry: TrustedIssuersRegistry!
   # Total issuers added (lifetime count)
-  totalAddedTrustedIssuers: Int!
+  totalAddedTrustedIssuers: BigInt!
   # Active issuers (addedAt set, revokedAt = 0)
-  totalActiveTrustedIssuers: Int!
+  totalActiveTrustedIssuers: BigInt!
   # Removed issuers (lifetime count)
-  totalRemovedTrustedIssuers: Int!
+  totalRemovedTrustedIssuers: BigInt!
 }
 
 type TrustedIssuerStatsData @entity(timeseries: true) {
@@ -736,11 +736,11 @@ type TrustedIssuerStatsData @entity(timeseries: true) {
   # Reference to the trusted issuers registry
   trustedIssuersRegistry: TrustedIssuersRegistry!
   # Total issuers added
-  totalAddedTrustedIssuers: Int!
+  totalAddedTrustedIssuers: BigInt!
   # Active issuers count
-  totalActiveTrustedIssuers: Int!
+  totalActiveTrustedIssuers: BigInt!
   # Removed issuers count
-  totalRemovedTrustedIssuers: Int!
+  totalRemovedTrustedIssuers: BigInt!
 }
 
 type TrustedIssuerStats
@@ -752,13 +752,13 @@ type TrustedIssuerStats
   # Reference to the trusted issuers registry
   trustedIssuersRegistry: TrustedIssuersRegistry!
   # Last count of total added issuers
-  totalAddedTrustedIssuers: Int!
+  totalAddedTrustedIssuers: BigInt!
     @aggregate(fn: "last", arg: "totalAddedTrustedIssuers")
   # Last count of active issuers
-  totalActiveTrustedIssuers: Int!
+  totalActiveTrustedIssuers: BigInt!
     @aggregate(fn: "last", arg: "totalActiveTrustedIssuers")
   # Last count of removed issuers
-  totalRemovedTrustedIssuers: Int!
+  totalRemovedTrustedIssuers: BigInt!
     @aggregate(fn: "last", arg: "totalRemovedTrustedIssuers")
 }
 
