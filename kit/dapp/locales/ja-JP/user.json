@@ -177,5 +177,11 @@
   "tabs": {
     "claims": "Claims",
     "details": "Details"
+  },
+  "wallet": {
+    "passwordPromptTitle": "パスワードを確認",
+    "passwordPromptDescription": "新しいリカバリーコードを生成するにはパスワードを入力してください。",
+    "passwordLabel": "パスワード",
+    "passwordRequired": "パスワードは必須です"
   }
 }

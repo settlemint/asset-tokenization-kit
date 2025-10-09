@@ -177,5 +177,11 @@
   "tabs": {
     "claims": "Claims",
     "details": "Details"
+  },
+  "wallet": {
+    "passwordPromptTitle": "Passwort bestätigen",
+    "passwordPromptDescription": "Geben Sie Ihr Passwort ein, um neue Wiederherstellungscodes zu generieren.",
+    "passwordLabel": "Passwort",
+    "passwordRequired": "Passwort ist erforderlich"
   }
 }
