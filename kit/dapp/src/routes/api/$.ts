@@ -91,7 +91,8 @@ const handler = new OpenAPIHandler(router, {
               type: "apiKey",
               in: "header",
               name: "X-Api-Key",
-              description: "API key",
+              description:
+                "API key used together with the X-Api-User-Id header identifying the user to impersonate.",
             },
           },
         },

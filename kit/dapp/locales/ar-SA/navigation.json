@@ -36,6 +36,7 @@
     "compliance": "الامتثال",
     "addons": "الإضافات",
     "claimTopicsIssuers": "مواضيع المطالبات والمُصدرين",
-    "permissions": "الأذونات"
+    "permissions": "الأذونات",
+    "apiKeys": "مفاتيح API"
   }
 }

@@ -36,6 +36,7 @@
     "compliance": "コンプライアンス",
     "addons": "アドオン",
     "claimTopicsIssuers": "クレームトピック＆発行者",
-    "permissions": "権限"
+    "permissions": "権限",
+    "apiKeys": "API キー"
   }
 }

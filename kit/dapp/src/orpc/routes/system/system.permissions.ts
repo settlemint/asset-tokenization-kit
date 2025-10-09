@@ -53,6 +53,7 @@ export const SYSTEM_PERMISSIONS = {
   accountSearch: { any: ["identityManager", "systemManager", "claimIssuer"] },
   addonCreate: "addonManager",
   addonFactoryCreate: { any: ["addonManager", "systemManager"] },
+  apiKeyManage: { any: ["admin"] },
   claimCreate: { any: ["claimIssuer", "systemModule"] },
   claimList: { any: ["identityManager", "claimIssuer"] },
   claimRevoke: { any: ["claimIssuer", "systemModule"] },
