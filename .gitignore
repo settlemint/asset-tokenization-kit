@@ -84,3 +84,5 @@ tools/eslint-config/tsconfig.tsbuildinfo
 
 # Docker
 Dockerfile
+
+PLAN.md
