@@ -11,6 +11,7 @@ understand the resulting environment at a glance.
 ## Actors
 
 ### System Administrator (`ADMIN`)
+
 - **Roles**: Granted every role required for full system management, including
   `admin`, `systemManager`, `identityManager`, `tokenManager`, `addonManager`,
   `claimIssuer`, `claimPolicyManager`, `complianceManager`, and `systemModule`.
@@ -19,21 +20,24 @@ understand the resulting environment at a glance.
 - **Identity & Country**: Identity is created and registered in Belgium (`BE`).
 
 ### Asset Issuer (`ISSUER`)
+
 - **Roles**: Receives on-chain `tokenManager` and `claimIssuer` roles so the
   issuer can create tokens, attach compliance modules, and issue claims.
-- **Claims**: Same KYC and AML claims as the administrator
-  (`kyc-verified` and `aml-verified`).
+- **Claims**: Same KYC and AML claims as the administrator (`kyc-verified` and
+  `aml-verified`).
 - **Identity & Country**: Identity is created and registered in Belgium (`BE`).
 
 ### German Investor 1 (`GERMAN_INVESTOR_1`)
+
 - **Roles**: No elevated blockchain roles are assigned.
 - **Claims**: Issued both `knowYourCustomer` (`kyc-verified`) and
-  `antiMoneyLaundering` (`aml-verified`) claims so they can pass bond
-  compliance checks.
+  `antiMoneyLaundering` (`aml-verified`) claims so they can pass bond compliance
+  checks.
 - **Identity & Country**: Identity is created, KYC information is stored, and it
   is registered in Germany (`DE`).
 
 ### German Investor 2 (`GERMAN_INVESTOR_2`)
+
 - **Roles**: No elevated blockchain roles are assigned.
 - **Claims**: Issued the same KYC (`kyc-verified`) and AML (`aml-verified`)
   claims as German Investor 1.
@@ -41,6 +45,7 @@ understand the resulting environment at a glance.
   is registered in Germany (`DE`).
 
 ### Japanese Investor (`JAPANESE_INVESTOR`)
+
 - **Roles**: No elevated blockchain roles are assigned.
 - **Claims**: No claims are issued during the setup; the investor therefore
   lacks KYC/AML attestation until granted later.
@@ -50,7 +55,10 @@ understand the resulting environment at a glance.
 
 ## Assets
 
-### Proof-of-Deposit (`POD`)
+### Deposits
+
+#### Proof-of-Deposit (`POD`)
+
 - **Type & Extension**: Deposit token used as the denomination asset for bond
   issuances.
 - **Claims**: No compliance claims are required; it acts as an internal
@@ -58,16 +66,28 @@ understand the resulting environment at a glance.
 - **Compliance Rules**: No compliance modules are attached, so any wallet can
   hold POD.
 
-### Bund7 (`BUND7`)
+### Bonds
+
+#### Short-term bond (`STB`)
+
+- **Type & Extension**: Bond token that references the `POD` denomination token
+  and a yearly fixed-yield schedule (1.10%).
+- **Claims**: No compliance claims are required.
+- **Compliance Rules**: No compliance modules are attached, so any wallet can
+  hold STB.
+
+#### Bund7 (`BUND7`)
+
 - **Type & Extension**: Bond token with ISIN `DE000BU27014` that references the
   `POD` denomination token and a yearly fixed-yield schedule (2.50%).
 - **Claims**: Requires holders to present `kyc-verified` and `aml-verified`
   claims through the SMART Identity Verification module.
 - **Compliance Rules**: Country allow-list restricts holders to Germany (`DE`).
 
-### Bund10 (`BUND10`)
-- **Type & Extension**: Bond token with ISIN `DE000BU2Z056` using the same
-  `POD` denomination token and yearly fixed-yield schedule (2.60%).
+#### Bund10 (`BUND10`)
+
+- **Type & Extension**: Bond token with ISIN `DE000BU2Z056` using the same `POD`
+  denomination token and yearly fixed-yield schedule (2.60%).
 - **Claims**: Requires the same `kyc-verified` and `aml-verified` claims via the
   SMART Identity Verification module.
 - **Compliance Rules**: Country allow-list admits both Germany (`DE`) and Japan
