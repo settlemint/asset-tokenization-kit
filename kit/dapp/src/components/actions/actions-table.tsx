@@ -39,6 +39,10 @@ const ACTION_TYPE_MAP = {
 
 const UNKNOWN_ACTION_TYPE = "generic" as const;
 
+type ActionTypeMetaValue =
+  | (typeof ACTION_TYPE_MAP)[keyof typeof ACTION_TYPE_MAP]
+  | typeof UNKNOWN_ACTION_TYPE;
+
 const ACTION_STATUSES: readonly ActionStatus[] = [
   "PENDING",
   "ACTIVE",
@@ -148,18 +152,34 @@ export function ActionsTable({
 
     const typeLabelOptions: ColumnOption[] = [
       ...new Set([...Object.values(ACTION_TYPE_MAP), UNKNOWN_ACTION_TYPE]),
-    ].map((value) => {
-      const label = resolveTypeLabelFromValue(value);
-      return { value: label, label };
-    });
+    ].map((value) => ({
+      value,
+      label: resolveTypeLabelFromValue(value),
+    }));
 
     const baseColumns = [
-      columnHelper.accessor("id", {
+      columnHelper.accessor("name", {
         header: t("table.columns.name"),
         meta: {
           displayName: t("table.columns.name"),
           type: "option",
-          renderCell: ({ row }) => {
+          options: (
+            Object.keys(ACTION_LABEL_MAP) as Array<
+              keyof typeof ACTION_LABEL_MAP
+            >
+          ).map((action) => ({
+            value: action,
+            label: resolveActionLabel(action),
+          })),
+          transformOptionFn: (value: unknown): ColumnOption => {
+            const actionName = typeof value === "string" ? value : "";
+            return {
+              value: actionName,
+              label: resolveActionLabel(actionName),
+            };
+          },
+          renderCell: (context) => {
+            const { row } = context;
             const actionName = row.original.name;
             const label = resolveActionLabel(actionName);
             const authorizedCount = row.original.executor.executors.length;
@@ -180,17 +200,43 @@ export function ActionsTable({
               </div>
             );
           },
-        } satisfies ColumnMeta<Action, string>,
+        } satisfies ColumnMeta<Action, Action["name"]>,
       }),
-      columnHelper.accessor((row) => resolveTypeLabel(row.name), {
-        id: "name",
-        header: t("table.columns.type"),
-        meta: {
-          displayName: t("table.columns.type"),
-          type: "option",
-          options: typeLabelOptions,
-        } satisfies ColumnMeta<Action, unknown>,
-      }),
+
+      columnHelper.accessor(
+        (row) =>
+          isKnownTypeAction(row.name)
+            ? ACTION_TYPE_MAP[row.name]
+            : UNKNOWN_ACTION_TYPE,
+        {
+          id: "type",
+          header: t("table.columns.type"),
+          meta: {
+            displayName: t("table.columns.type"),
+            type: "option",
+            options: typeLabelOptions,
+            transformOptionFn: (value: unknown): ColumnOption => {
+              const normalized: ActionTypeMetaValue =
+                typeof value === "string" && value.trim().length > 0
+                  ? (value as ActionTypeMetaValue)
+                  : UNKNOWN_ACTION_TYPE;
+              return {
+                value: normalized,
+                label: resolveTypeLabelFromValue(normalized),
+              };
+            },
+            renderCell: (context) => {
+              const { row } = context;
+              return (
+                <span className="text-sm text-muted-foreground">
+                  {resolveTypeLabel(row.original.name)}
+                </span>
+              );
+            },
+          } satisfies ColumnMeta<Action, ActionTypeMetaValue>,
+        }
+      ),
+
       columnHelper.accessor("status", {
         header: t("table.columns.status"),
         meta: {
@@ -200,7 +246,8 @@ export function ActionsTable({
             value: status,
             label: t(`status.${status}`),
           })),
-          renderCell: ({ row }) => {
+          renderCell: (context) => {
+            const { row } = context;
             const executedAt = row.original.executedAt;
             const activeAt = new Date(Number(row.original.activeAt) * 1000);
             const executedDate =
@@ -236,6 +283,7 @@ export function ActionsTable({
           },
         } satisfies ColumnMeta<Action, ActionStatus>,
       }),
+
       columnHelper.accessor(
         (row) => new Date(Number(row.activeAt) * 1000).toISOString(),
         {
@@ -249,6 +297,7 @@ export function ActionsTable({
           } satisfies ColumnMeta<Action, unknown>,
         }
       ),
+
       columnHelper.accessor(
         (row) =>
           row.executedAt
@@ -266,6 +315,7 @@ export function ActionsTable({
           } satisfies ColumnMeta<Action, unknown>,
         }
       ),
+
       columnHelper.accessor("executedBy", {
         header: t("table.columns.executedBy"),
         meta: {
