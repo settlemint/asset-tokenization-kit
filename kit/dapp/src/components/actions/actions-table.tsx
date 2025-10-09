@@ -154,26 +154,11 @@ export function ActionsTable({
     });
 
     const baseColumns = [
-      columnHelper.accessor("name", {
+      columnHelper.accessor("id", {
         header: t("table.columns.name"),
         meta: {
           displayName: t("table.columns.name"),
           type: "option",
-          options: (
-            Object.keys(ACTION_LABEL_MAP) as Array<
-              keyof typeof ACTION_LABEL_MAP
-            >
-          ).map((action) => ({
-            value: action,
-            label: t(ACTION_LABEL_MAP[action]),
-          })),
-          transformOptionFn: (value: unknown): ColumnOption => {
-            const actionName = typeof value === "string" ? value : "";
-            return {
-              value: actionName,
-              label: resolveActionLabel(actionName),
-            };
-          },
           renderCell: ({ row }) => {
             const actionName = row.original.name;
             const label = resolveActionLabel(actionName);
@@ -198,23 +183,12 @@ export function ActionsTable({
         } satisfies ColumnMeta<Action, string>,
       }),
       columnHelper.accessor((row) => resolveTypeLabel(row.name), {
-        id: "type",
+        id: "name",
         header: t("table.columns.type"),
         meta: {
           displayName: t("table.columns.type"),
           type: "option",
           options: typeLabelOptions,
-          transformOptionFn: (value: unknown): ColumnOption => {
-            if (typeof value === "string" && value.trim().length > 0) {
-              return { value, label: value };
-            }
-            const fallbackLabel =
-              resolveTypeLabelFromValue(UNKNOWN_ACTION_TYPE);
-            return {
-              value: fallbackLabel,
-              label: fallbackLabel,
-            };
-          },
         } satisfies ColumnMeta<Action, unknown>,
       }),
       columnHelper.accessor("status", {
