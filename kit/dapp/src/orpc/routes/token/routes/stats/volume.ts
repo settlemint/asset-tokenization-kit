@@ -1,5 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { tokenRouter } from "@/orpc/procedures/token.router";
+import { timestamp } from "@atk/zod/timestamp";
 import { z } from "zod";
 
 /**
@@ -24,33 +25,11 @@ const TOKEN_VOLUME_QUERY = theGraphGraphql(`
 const StatsVolumeResponseSchema = z.object({
   tokenStats_collection: z.array(
     z.object({
-      timestamp: z.string(),
+      timestamp: timestamp(),
       totalTransferred: z.string(),
     })
   ),
 });
-
-/**
- * Helper function to process token stats into total volume history data
- * Converts raw token statistics into timestamped total volume data points
- *
- * @param tokenStats - Token statistics from TheGraph
- * @returns Processed total volume history data
- */
-function processVolumeHistoryData(
-  tokenStats: {
-    timestamp: string;
-    totalTransferred: string;
-  }[]
-): {
-  timestamp: number;
-  totalVolume: string;
-}[] {
-  return tokenStats.map((stat) => ({
-    timestamp: Number.parseInt(stat.timestamp, 10),
-    totalVolume: stat.totalTransferred,
-  }));
-}
 
 /**
  * Asset-specific total volume history route handler.
@@ -112,9 +91,10 @@ export const statsVolume = tokenRouter.token.statsVolume.handler(
     });
 
     // Process the raw data into the expected output format
-    const volumeHistory = processVolumeHistoryData(
-      response.tokenStats_collection
-    );
+    const volumeHistory = response.tokenStats_collection.map((stat) => ({
+      ...stat,
+      totalVolume: stat.totalTransferred,
+    }));
 
     return {
       volumeHistory,
