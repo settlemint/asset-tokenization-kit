@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppForm } from "@/hooks/use-app-form";
-import { getErrorCode, isORPCError } from "@/hooks/use-error-info";
+import { getErrorCode } from "@/hooks/use-error-info";
 import { orpc } from "@/orpc/orpc-client";
 import {
   KycUpsertInputSchema,
@@ -177,20 +177,7 @@ export function ProfileKycCard({ userId }: ProfileKycCardProps) {
     if (!kycError) return false;
 
     const status = getErrorCode(kycError);
-    if (status === 404 || status === "404") return true;
-
-    const codeCandidate = isORPCError(kycError)
-      ? kycError.code
-      : typeof kycError === "object" && kycError !== null
-        ? (kycError as { code?: unknown }).code
-        : undefined;
-
-    if (typeof codeCandidate === "string") {
-      const normalized = codeCandidate.toUpperCase();
-      return normalized === "NOT_FOUND" || normalized.endsWith("_NOT_FOUND");
-    }
-
-    return false;
+    return status === 404 || status === "404";
   }, [kycError]);
 
   const showKycError = Boolean(kycError && !kyc && !isMissingKycProfile);
