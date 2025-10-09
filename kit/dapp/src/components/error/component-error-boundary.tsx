@@ -18,7 +18,12 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { AlertCircle, RefreshCw } from "lucide-react";
-import { Component, type ErrorInfo, type ReactNode } from "react";
+import {
+  Component,
+  type ComponentType,
+  type ErrorInfo,
+  type ReactNode,
+} from "react";
 
 const logger = createLogger();
 
@@ -162,12 +167,12 @@ class ComponentErrorBoundary extends Component<
  * @param ComponentInstance - The component to wrap
  * @returns The wrapped component as a function that accepts props
  */
-export function withErrorBoundary<T extends object>(
-  ComponentInstance: (props: T) => ReactNode
+export function withErrorBoundary<Props extends object>(
+  ComponentInstance: ComponentType<Props>
 ) {
   const componentName = ComponentInstance.name;
   // Return a new component that renders the error boundary around the wrapped component
-  return function WrappedWithErrorBoundary(props: T) {
+  return function WrappedWithErrorBoundary(props: Props) {
     return (
       <ComponentErrorBoundary componentName={componentName}>
         <ComponentInstance {...props} />
