@@ -2,6 +2,7 @@
 
 import { ActionStatusBadge } from "@/components/actions/action-status-badge";
 import { DataTable } from "@/components/data-table/data-table";
+import type { ColumnOption } from "@/components/data-table/filters/types/column-types";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
@@ -13,7 +14,11 @@ import type {
   ActionStatus,
 } from "@/orpc/routes/actions/routes/actions.list.schema";
 import { useRouter } from "@tanstack/react-router";
-import type { ColumnDef, SortingState } from "@tanstack/react-table";
+import type {
+  ColumnDef,
+  ColumnMeta,
+  SortingState,
+} from "@tanstack/react-table";
 import { ClipboardList } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -27,10 +32,19 @@ const ACTION_LABEL_MAP = {
 } as const;
 
 const ACTION_TYPE_MAP = {
-  MatureBond: "types.bond",
-  ApproveXvPSettlement: "types.settlement",
-  ExecuteXvPSettlement: "types.settlement",
+  MatureBond: "bond",
+  ApproveXvPSettlement: "settlement",
+  ExecuteXvPSettlement: "settlement",
 } as const;
+
+const UNKNOWN_ACTION_TYPE = "generic" as const;
+
+const ACTION_STATUSES: readonly ActionStatus[] = [
+  "PENDING",
+  "ACTIVE",
+  "EXECUTED",
+  "EXPIRED",
+] as const;
 
 function isKnownLabelAction(
   name: string
@@ -101,19 +115,68 @@ export function ActionsTable({
     });
   }, [actions, filterPredicate, statuses]);
 
-  const columns = useMemo(
-    () =>
-      withAutoFeatures([
-        columnHelper.display({
-          id: "name",
-          header: t("table.columns.name"),
-          cell: ({ row }) => {
-            const labelKey = isKnownLabelAction(row.original.name)
-              ? ACTION_LABEL_MAP[row.original.name]
-              : undefined;
-            const label = labelKey
-              ? t(labelKey)
-              : toTitleCase(row.original.name);
+  const columns = useMemo(() => {
+    const resolveActionLabel = (actionName: string): string => {
+      const labelKey = isKnownLabelAction(actionName)
+        ? ACTION_LABEL_MAP[actionName]
+        : undefined;
+      if (!labelKey) {
+        return toTitleCase(actionName);
+      }
+      const translation = t(labelKey as never);
+      return translation === labelKey ? toTitleCase(actionName) : translation;
+    };
+
+    const resolveTypeLabelFromValue = (typeValue: string): string => {
+      const labelKey = `types.${typeValue}`;
+      const translation = t(labelKey as never);
+      return translation === labelKey ? toTitleCase(typeValue) : translation;
+    };
+
+    const resolveTypeLabel = (actionName: string): string => {
+      if (isKnownTypeAction(actionName)) {
+        return resolveTypeLabelFromValue(ACTION_TYPE_MAP[actionName]);
+      }
+      const fallbackTranslation =
+        resolveTypeLabelFromValue(UNKNOWN_ACTION_TYPE);
+      if (fallbackTranslation !== toTitleCase(UNKNOWN_ACTION_TYPE)) {
+        return fallbackTranslation;
+      }
+      const fallback = actionName.split(/(?=[A-Z])/).at(-1) ?? actionName;
+      return toTitleCase(fallback);
+    };
+
+    const typeLabelOptions: ColumnOption[] = [
+      ...new Set([...Object.values(ACTION_TYPE_MAP), UNKNOWN_ACTION_TYPE]),
+    ].map((value) => {
+      const label = resolveTypeLabelFromValue(value);
+      return { value: label, label };
+    });
+
+    const baseColumns = [
+      columnHelper.accessor("name", {
+        header: t("table.columns.name"),
+        meta: {
+          displayName: t("table.columns.name"),
+          type: "option",
+          options: (
+            Object.keys(ACTION_LABEL_MAP) as Array<
+              keyof typeof ACTION_LABEL_MAP
+            >
+          ).map((action) => ({
+            value: action,
+            label: t(ACTION_LABEL_MAP[action]),
+          })),
+          transformOptionFn: (value: unknown): ColumnOption => {
+            const actionName = typeof value === "string" ? value : "";
+            return {
+              value: actionName,
+              label: resolveActionLabel(actionName),
+            };
+          },
+          renderCell: ({ row }) => {
+            const actionName = row.original.name;
+            const label = resolveActionLabel(actionName);
             const authorizedCount = row.original.executor.executors.length;
 
             return (
@@ -132,38 +195,38 @@ export function ActionsTable({
               </div>
             );
           },
-          meta: {
-            displayName: t("table.columns.name"),
-            type: "text",
+        } satisfies ColumnMeta<Action, string>,
+      }),
+      columnHelper.accessor((row) => resolveTypeLabel(row.name), {
+        id: "type",
+        header: t("table.columns.type"),
+        meta: {
+          displayName: t("table.columns.type"),
+          type: "option",
+          options: typeLabelOptions,
+          transformOptionFn: (value: unknown): ColumnOption => {
+            if (typeof value === "string" && value.trim().length > 0) {
+              return { value, label: value };
+            }
+            const fallbackLabel =
+              resolveTypeLabelFromValue(UNKNOWN_ACTION_TYPE);
+            return {
+              value: fallbackLabel,
+              label: fallbackLabel,
+            };
           },
-        }),
-        columnHelper.display({
-          id: "type",
-          header: t("table.columns.type"),
-          cell: ({ row }) => {
-            const typeKey = isKnownTypeAction(row.original.name)
-              ? ACTION_TYPE_MAP[row.original.name]
-              : undefined;
-            const typeLabel = typeKey
-              ? t(typeKey)
-              : toTitleCase(
-                  row.original.name.split(/(?=[A-Z])/).at(-1) ??
-                    row.original.name
-                );
-
-            return (
-              <span className="text-sm text-muted-foreground">{typeLabel}</span>
-            );
-          },
-          meta: {
-            displayName: t("table.columns.type"),
-            type: "text",
-          },
-        }),
-        columnHelper.display({
-          id: "status",
-          header: t("table.columns.status"),
-          cell: ({ row }) => {
+        } satisfies ColumnMeta<Action, unknown>,
+      }),
+      columnHelper.accessor("status", {
+        header: t("table.columns.status"),
+        meta: {
+          displayName: t("table.columns.status"),
+          type: "status",
+          options: ACTION_STATUSES.map((status) => ({
+            value: status,
+            label: t(`status.${status}`),
+          })),
+          renderCell: ({ row }) => {
             const executedAt = row.original.executedAt;
             const activeAt = new Date(Number(row.original.activeAt) * 1000);
             const executedDate =
@@ -197,89 +260,51 @@ export function ActionsTable({
               </div>
             );
           },
-          meta: {
-            displayName: t("table.columns.status"),
-            type: "text",
-          },
-        }),
-        columnHelper.display({
+        } satisfies ColumnMeta<Action, ActionStatus>,
+      }),
+      columnHelper.accessor(
+        (row) => new Date(Number(row.activeAt) * 1000).toISOString(),
+        {
           id: "activeAt",
           header: t("table.columns.activeAt"),
-          cell: ({ row }) => {
-            const date = new Date(Number(row.original.activeAt) * 1000);
-
-            return (
-              <span className="text-sm text-muted-foreground">
-                {formatDate(
-                  date,
-                  {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  },
-                  i18n.language
-                )}
-              </span>
-            );
-          },
           meta: {
             displayName: t("table.columns.activeAt"),
-            type: "text",
-          },
-        }),
-        columnHelper.display({
+            type: "date",
+            dateOptions: { includeTime: true },
+            className: "text-muted-foreground",
+          } satisfies ColumnMeta<Action, unknown>,
+        }
+      ),
+      columnHelper.accessor(
+        (row) =>
+          row.executedAt
+            ? new Date(Number(row.executedAt) * 1000).toISOString()
+            : null,
+        {
           id: "executedAt",
           header: t("table.columns.executedAt"),
-          cell: ({ row }) => {
-            if (!row.original.executedAt) {
-              return <span className="text-sm text-muted-foreground">—</span>;
-            }
-
-            const date = new Date(Number(row.original.executedAt) * 1000);
-
-            return (
-              <span className="text-sm text-muted-foreground">
-                {formatDate(
-                  date,
-                  {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  },
-                  i18n.language
-                )}
-              </span>
-            );
-          },
           meta: {
             displayName: t("table.columns.executedAt"),
-            type: "text",
-          },
-        }),
-        columnHelper.display({
-          id: "executedBy",
-          header: t("table.columns.executedBy"),
-          cell: ({ row }) => {
-            if (!row.original.executedBy) {
-              return <span className="text-sm text-muted-foreground">—</span>;
-            }
+            type: "date",
+            dateOptions: { includeTime: true },
+            className: "text-muted-foreground",
+            emptyValue: "—",
+          } satisfies ColumnMeta<Action, unknown>,
+        }
+      ),
+      columnHelper.accessor("executedBy", {
+        header: t("table.columns.executedBy"),
+        meta: {
+          displayName: t("table.columns.executedBy"),
+          type: "address",
+          showPrettyName: false,
+          emptyValue: "—",
+        } satisfies ColumnMeta<Action, unknown>,
+      }),
+    ];
 
-            return (
-              <Web3Address
-                address={row.original.executedBy}
-                copyToClipboard
-                size="small"
-                showPrettyName={false}
-                skipDataQueries
-              />
-            );
-          },
-          meta: {
-            displayName: t("table.columns.executedBy"),
-            type: "text",
-          },
-        }),
-      ] as ColumnDef<Action>[]),
-    [t, i18n.language]
-  );
+    return withAutoFeatures(baseColumns) as ColumnDef<Action>[];
+  }, [t, i18n.language]);
 
   return (
     <DataTable
