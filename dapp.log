@@ -1,0 +1,42 @@
+Generated route tree in 190ms
+
+  VITE v7.1.9  ready in 1709 ms
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+[vite] connected.
+A query that was dehydrated as pending ended up rejecting. [[["system","addon","list"],{"input":{},"type":"query"}]]: Error: Authentication missing or failed; The error will be redacted in production builds
+Sourcemap for "/~start/default-client-entry.tsx" points to missing source files
+10:27:33 PM [vite] (client) ✨ new dependencies optimized: @tanstack/query-async-storage-persister, @tanstack/query-broadcast-client-experimental, superjson, @orpc/client, @orpc/client/fetch, @orpc/tanstack-query, @settlemint/sdk-utils/logging, lucide-react, zod, dnum, date-fns, class-variance-authority, motion/react, better-auth/client/plugins, better-auth/react, viem, clsx, tailwind-merge, @daveyplate/better-auth-ui/tanstack, better-auth/plugins/access, better-auth/plugins/admin/access, i18next
+10:27:33 PM [vite] (client) ✨ optimized dependencies changed. reloading
+A query that was dehydrated as pending ended up rejecting. [[["system","addon","list"],{"input":{},"type":"query"}]]: Error: Authentication missing or failed; The error will be redacted in production builds
+10:27:37 PM [vite] (client) ✨ new dependencies optimized: crypto-js/md5, react-jazzicon, change-case, recharts, drizzle-orm/pg-core, lodash/capitalize, date-fns/locale, i18n-iso-countries
+10:27:37 PM [vite] (client) ✨ optimized dependencies changed. reloading
+A query that was dehydrated as pending ended up rejecting. [[["system","addon","list"],{"input":{},"type":"query"}]]: Error: Authentication missing or failed; The error will be redacted in production builds
+10:28:14 PM [vite] (client) hmr update /src/styles/app.css?direct, /src/providers/i18n-provider.tsx
+10:28:14 PM [vite] (ssr) page reload src/lib/i18n/use-language-detection.ts
+[vite] program reload
+A query that was dehydrated as pending ended up rejecting. [[["system","addon","list"],{"input":{},"type":"query"}]]: Error: Authentication missing or failed; The error will be redacted in production builds
+10:28:38 PM [vite] (client) ✨ new dependencies optimized: @tanstack/store
+10:28:38 PM [vite] (client) ✨ optimized dependencies changed. reloading
+tried to stream query ["session"] after stream was already closed
+tried to stream query ["session"] after stream was already closed
+tried to stream query ["session"] after stream was already closed
+tried to stream query ["session"] after stream was already closed
+tried to stream query ["session"] after stream was already closed
+tried to stream query ["session"] after stream was already closed
+tried to stream query ["session"] after stream was already closed
+10:39:33 PM [vite] .env.local changed, restarting server...
+10:39:33 PM [vite] .env changed, restarting server...
+10:39:33 PM [vite] .env changed, restarting server...
+10:39:36 PM [vite] .env.local changed, restarting server...
+Generated route tree in 372ms
+10:39:36 PM [vite] server restarted.
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: use --host to expose
+10:40:39 PM [vite] changed tsconfig file detected: /Users/gyan/Desktop/asset-tokenization-kit/kit/dapp/tsconfig.json - Clearing cache and forcing full-reload to ensure TypeScript is compiled with updated config values.
+[vite] connected.
+Sourcemap for "/~start/default-client-entry.tsx" points to missing source files
+tried to stream query ["session"] after stream was already closed

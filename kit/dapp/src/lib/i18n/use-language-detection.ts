@@ -51,7 +51,16 @@ export function useLanguageDetection() {
    */
   useEffect(() => {
     // Check if language is already set (e.g., from localStorage)
-    const storedLang = localStorage.getItem("i18nextLng");
+    let storedLang: string | null = null;
+    try {
+      storedLang = localStorage.getItem("i18nextLng");
+    } catch (error) {
+      console.warn(
+        "Failed to read language preference from localStorage:",
+        error
+      );
+    }
+
     if (
       storedLang &&
       supportedLanguages.includes(
@@ -82,10 +91,43 @@ export function useLanguageDetection() {
    *
    * Saves the current language to localStorage whenever it changes.
    * This ensures the user's language preference persists across sessions.
+   * Includes error handling for storage quota exceeded scenarios.
    */
   useEffect(() => {
     if (i18n.language) {
-      localStorage.setItem("i18nextLng", i18n.language);
+      try {
+        localStorage.setItem("i18nextLng", i18n.language);
+      } catch (error) {
+        // Handle storage quota exceeded or other storage errors
+        if (error instanceof Error && error.name === "QuotaExceededError") {
+          console.warn(
+            "Storage quota exceeded. Language preference will not be persisted."
+          );
+          // Clear old storage entries to make space
+          try {
+            const keys = Object.keys(localStorage);
+            for (const key of keys) {
+              if (
+                key.startsWith("i18next") ||
+                key.startsWith("vite-ui-theme")
+              ) {
+                localStorage.removeItem(key);
+              }
+            }
+            // Retry setting the language
+            localStorage.setItem("i18nextLng", i18n.language);
+          } catch {
+            console.warn(
+              "Failed to clear storage and retry. Language preference will not be persisted."
+            );
+          }
+        } else {
+          console.warn(
+            "Failed to save language preference to localStorage:",
+            error
+          );
+        }
+      }
     }
   }, [i18n.language]);
 
