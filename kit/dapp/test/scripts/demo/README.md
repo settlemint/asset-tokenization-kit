@@ -5,6 +5,9 @@ This document summarizes the demo setup performed by
 actors that are provisioned and the assets that are created so the team can
 understand the resulting environment at a glance.
 
+> **Access credentials**: Unless otherwise noted, every demo identity is
+> provisioned with the password `settlemint` and the pincode `123456`.
+
 ## Actors
 
 ### System Administrator (`ADMIN`)
