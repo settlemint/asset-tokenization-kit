@@ -160,8 +160,7 @@ export function ActionsTable({
               label: resolveActionLabel(actionName),
             };
           },
-          renderCell: (context) => {
-            const { row } = context;
+          renderCell: ({ row }) => {
             const actionName = row.original.name;
             const label = resolveActionLabel(actionName);
             const authorizedCount = row.original.executor.executors.length;
@@ -207,8 +206,7 @@ export function ActionsTable({
                 label: resolveTypeLabelFromValue(normalized),
               };
             },
-            renderCell: (context) => {
-              const { row } = context;
+            renderCell: ({ row }) => {
               return (
                 <span className="text-sm text-muted-foreground">
                   {resolveTypeLabel(row.original.name)}
@@ -228,8 +226,7 @@ export function ActionsTable({
             value: status,
             label: t(`status.${status}`),
           })),
-          renderCell: (context) => {
-            const { row } = context;
+          renderCell: ({ row }) => {
             const executedAt = row.original.executedAt;
             const activeAt = new Date(Number(row.original.activeAt) * 1000);
             const executedDate =
