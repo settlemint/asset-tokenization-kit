@@ -1,5 +1,5 @@
 import { AreaChartComponent } from "@/components/charts/area-chart";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
 import { safeToNumber } from "@/lib/utils/format-value/safe-to-number";
@@ -21,47 +21,47 @@ export interface AssetTotalVolumeAreaChartProps {
  * Shows cumulative transaction volume over time to visualize trading activity trends.
  * Uses dnum for safe BigInt handling to prevent precision loss.
  */
-export function AssetTotalVolumeAreaChart({
-  assetAddress,
-  timeRange = 30,
-}: AssetTotalVolumeAreaChartProps) {
-  const { t } = useTranslation("stats");
+export const AssetTotalVolumeAreaChart = withErrorBoundary(
+  function AssetTotalVolumeAreaChart({
+    assetAddress,
+    timeRange = 30,
+  }: AssetTotalVolumeAreaChartProps) {
+    const { t } = useTranslation("stats");
 
-  // Fetch total volume history data with optimized caching
-  const { data } = useSuspenseQuery(
-    orpc.token.statsVolume.queryOptions({
-      input: { tokenAddress: assetAddress, days: timeRange },
-      ...CHART_QUERY_OPTIONS,
-    })
-  );
+    // Fetch total volume history data with optimized caching
+    const { data } = useSuspenseQuery(
+      orpc.token.statsVolume.queryOptions({
+        input: { tokenAddress: assetAddress, days: timeRange },
+        ...CHART_QUERY_OPTIONS,
+      })
+    );
 
-  // Transform the response data to chart format using safe conversion
-  const chartData = useMemo(() => {
-    if (!data.volumeHistory?.length) {
-      return [];
-    }
+    // Transform the response data to chart format using safe conversion
+    const chartData = useMemo(() => {
+      if (!data.volumeHistory?.length) {
+        return [];
+      }
 
-    return data.volumeHistory.map((item) => ({
-      timestamp: format(new Date(item.timestamp / 1000), "MMM dd"),
-      totalVolume: safeToNumber(item.totalVolume),
-    }));
-  }, [data.volumeHistory]);
+      return data.volumeHistory.map((item) => ({
+        timestamp: format(new Date(item.timestamp / 1000), "MMM dd"),
+        totalVolume: safeToNumber(item.totalVolume),
+      }));
+    }, [data.volumeHistory]);
 
-  // Configure chart colors and labels
-  const chartConfig: ChartConfig = useMemo(
-    () => ({
-      totalVolume: {
-        label: t("charts.totalVolume.label"),
-        color: "var(--chart-1)",
-      },
-    }),
-    [t]
-  );
+    // Configure chart colors and labels
+    const chartConfig: ChartConfig = useMemo(
+      () => ({
+        totalVolume: {
+          label: t("charts.totalVolume.label"),
+          color: "var(--chart-1)",
+        },
+      }),
+      [t]
+    );
 
-  const dataKeys = ["totalVolume"];
+    const dataKeys = ["totalVolume"];
 
-  return (
-    <ComponentErrorBoundary componentName="Asset Total Volume Chart">
+    return (
       <AreaChartComponent
         title={t("charts.totalVolume.title")}
         description={t("charts.totalVolume.description", { days: timeRange })}
@@ -80,6 +80,6 @@ export function AssetTotalVolumeAreaChart({
           }).format(numValue);
         }}
       />
-    </ComponentErrorBoundary>
-  );
-}
+    );
+  }
+);

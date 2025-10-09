@@ -10,7 +10,7 @@ import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
 import { UserWithIdentity } from "@/orpc/routes/user/routes/user.list.schema";
@@ -23,7 +23,7 @@ const columnHelper = createStrictColumnHelper<UserWithIdentity>();
  * Users table component for displaying and managing platform users
  * Shows user information, linked identity, and actions for each user with chunked loading
  */
-export function UsersTable() {
+export const UsersTable = withErrorBoundary(function UsersTable() {
   const { t } = useTranslation("user");
   const router = useRouter();
 
@@ -151,66 +151,62 @@ export function UsersTable() {
   // Handle loading and error states
   if (error) {
     return (
-      <ComponentErrorBoundary componentName="Users Table">
-        <div className="flex items-center justify-center p-8">
-          <p className="text-muted-foreground">
-            {t("management.table.errors.loadFailed")}
-          </p>
-        </div>
-      </ComponentErrorBoundary>
+      <div className="flex items-center justify-center p-8">
+        <p className="text-muted-foreground">
+          {t("management.table.errors.loadFailed")}
+        </p>
+      </div>
     );
   }
 
   return (
-    <ComponentErrorBoundary componentName="Users Table">
-      <DataTable
-        name="users"
-        data={users}
-        columns={columns}
-        isLoading={isLoading}
-        serverSidePagination={{
-          enabled: true,
-          totalCount,
-        }}
-        externalState={{
-          pagination,
-          sorting,
-          onPaginationChange: setPagination,
-          onGlobalFilterChange: setGlobalFilter,
-          onSortingChange: setSorting,
-        }}
-        urlState={{
-          enabled: false, // Disable URL state since we're managing it manually
-        }}
-        advancedToolbar={{
-          enableGlobalSearch: true, // Search by name (server side)
-          enableFilters: false,
-          enableExport: true,
-          enableViewOptions: true,
-          placeholder: t("management.table.search.placeholder"),
-        }}
-        pagination={{
-          enablePagination: true,
-          totalCount,
-        }}
-        initialPageSize={20}
-        initialSorting={[
-          {
-            id: "createdAt",
-            desc: true,
-          },
-        ]}
-        customEmptyState={{
-          title: isLoading
-            ? t("management.table.emptyState.loading")
-            : t("management.table.emptyState.title"),
-          description: isLoading
-            ? ""
-            : t("management.table.emptyState.description"),
-          icon: Users,
-        }}
-        onRowClick={handleRowClick}
-      />
-    </ComponentErrorBoundary>
+    <DataTable
+      name="users"
+      data={users}
+      columns={columns}
+      isLoading={isLoading}
+      serverSidePagination={{
+        enabled: true,
+        totalCount,
+      }}
+      externalState={{
+        pagination,
+        sorting,
+        onPaginationChange: setPagination,
+        onGlobalFilterChange: setGlobalFilter,
+        onSortingChange: setSorting,
+      }}
+      urlState={{
+        enabled: false, // Disable URL state since we're managing it manually
+      }}
+      advancedToolbar={{
+        enableGlobalSearch: true, // Search by name (server side)
+        enableFilters: false,
+        enableExport: true,
+        enableViewOptions: true,
+        placeholder: t("management.table.search.placeholder"),
+      }}
+      pagination={{
+        enablePagination: true,
+        totalCount,
+      }}
+      initialPageSize={20}
+      initialSorting={[
+        {
+          id: "createdAt",
+          desc: true,
+        },
+      ]}
+      customEmptyState={{
+        title: isLoading
+          ? t("management.table.emptyState.loading")
+          : t("management.table.emptyState.title"),
+        description: isLoading
+          ? ""
+          : t("management.table.emptyState.description"),
+        icon: Users,
+      }}
+      onRowClick={handleRowClick}
+    />
   );
-}
+});
