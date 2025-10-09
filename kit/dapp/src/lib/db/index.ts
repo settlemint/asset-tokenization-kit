@@ -51,6 +51,8 @@ export const migrateDatabase = async () => {
     });
     logger.info("Completed migrating the database");
   } catch (error_) {
+    // Reset migration status to none to allow a retry
+    migrationStatus = "none";
     const error = error_ as Error;
     logger.error(`Error migrating the database: ${error.message}`, error);
     // If migration fails the app will not function properly
@@ -105,14 +107,6 @@ const getDb = serverOnly(() => {
 });
 
 /**
- * Creates the Drizzle ORM database instance and migrates the database to the latest version.
- */
-const getMigratedDb = serverOnly(async () => {
-  await migrateDatabase();
-  return getDb();
-});
-
-/**
  * The main database client instance.
  *
  * This instance is used throughout the application for all database operations.
@@ -139,4 +133,4 @@ const getMigratedDb = serverOnly(async () => {
  *   .leftJoin(schema.session, eq(schema.user.id, schema.session.userId));
  * ```
  */
-export const db = await getMigratedDb();
+export const db = getDb();
