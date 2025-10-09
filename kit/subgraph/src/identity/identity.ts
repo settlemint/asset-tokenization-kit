@@ -23,6 +23,11 @@ import {
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentityFactory } from "../identity-factory/fetch/identity-factory";
 import { updateAccountStatsForPriceChange } from "../stats/account-stats";
+import {
+  incrementClaimsIssued as incrementRegistryClaimsIssued,
+  incrementClaimsRemoved as incrementRegistryClaimsRemoved,
+  incrementClaimsRevoked as incrementRegistryClaimsRevoked,
+} from "../stats/claims-stats";
 import { updateSystemStatsForPriceChange } from "../stats/system-stats";
 import { updateTokenTypeStatsForPriceChange } from "../stats/token-type-stats";
 import {
@@ -30,11 +35,6 @@ import {
   incrementClaimsRemoved,
   incrementClaimsRevoked,
 } from "../stats/topic-scheme-stats";
-import {
-  incrementClaimsIssued as incrementRegistryClaimsIssued,
-  incrementClaimsRemoved as incrementRegistryClaimsRemoved,
-  incrementClaimsRevoked as incrementRegistryClaimsRevoked,
-} from "../stats/claims-stats";
 import { fetchSystem } from "../system/fetch/system";
 import {
   isCollateralClaim,
@@ -229,15 +229,18 @@ export function handleClaimRemoved(event: ClaimRemoved): void {
   fetchEvent(event, "ClaimRemoved");
   const identity = fetchIdentity(event.address);
   const identityClaim = fetchIdentityClaim(identity, event.params.claimId);
+
+  const wasAlreadyRevoked = identityClaim.revoked;
+
   identityClaim.revoked = true;
   identityClaim.save();
 
   // Update topic scheme statistics
   const topicScheme = TopicScheme.load(identityClaim.topicScheme);
   if (topicScheme) {
-    incrementClaimsRemoved(topicScheme);
+    incrementClaimsRemoved(topicScheme, wasAlreadyRevoked);
     // Update registry-level statistics
-    incrementRegistryClaimsRemoved(topicScheme);
+    incrementRegistryClaimsRemoved(topicScheme, wasAlreadyRevoked);
   }
 
   if (isCollateralClaim(identityClaim)) {

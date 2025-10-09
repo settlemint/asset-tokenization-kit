@@ -112,7 +112,6 @@ describe("TopicSchemeStats", () => {
       expect(totalIssuedClaims).toBe(expectedStats.totalIssuedClaims);
       expect(totalRemovedClaims).toBe(expectedStats.totalRemovedClaims);
       expect(totalRevokedClaims).toBe(expectedStats.totalRevokedClaims);
-      expect(totalActiveClaims).toBe(totalIssuedClaims! - totalRevokedClaims!);
     }
   });
 

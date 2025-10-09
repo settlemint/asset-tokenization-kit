@@ -57,9 +57,18 @@ export function incrementClaimsIssued(topicScheme: TopicScheme): void {
 /**
  * Increment claim removed counter for a topic scheme
  */
-export function incrementClaimsRemoved(topicScheme: TopicScheme): void {
+export function incrementClaimsRemoved(
+  topicScheme: TopicScheme,
+  wasAlreadyRevoked: boolean
+): void {
   const state = fetchTopicSchemeStatsState(topicScheme.id);
   state.totalRemovedClaims = state.totalRemovedClaims.plus(BigInt.fromI32(1));
+
+  // If the claim was not already revoked, we need to decrement active claims
+  if (!wasAlreadyRevoked) {
+    state.totalActiveClaims = state.totalActiveClaims.minus(BigInt.fromI32(1));
+  }
+
   state.save();
 
   trackTopicSchemeStats(topicScheme.id);
