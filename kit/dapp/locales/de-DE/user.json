@@ -28,5 +28,24 @@
         "notConnectedAriaLabel": "Benutzer hat keine Brieftasche verbunden"
       }
     }
+  },
+  "profile": {
+    "title": "Profil",
+    "description": "Zeigen Sie Ihre Profilinformationen an und verwalten Sie sie.",
+    "manage": "Profil verwalten",
+    "editKyc": {
+      "title": "KYC bearbeiten",
+      "description": "Bearbeiten Sie Ihre KYC-Informationen."
+    },
+    "changePassword": {
+      "title": "Passwort ändern",
+      "description": "Aktualisieren Sie Ihr Kontopasswort für mehr Sicherheit.",
+      "success": "Ihr Passwort wurde erfolgreich geändert.",
+      "currentPassword": "Aktuelles Passwort",
+      "newPassword": "Neues Passwort",
+      "confirmPassword": "Passwort bestätigen",
+      "revokeOtherSessions": "Andere Geräte abmelden",
+      "revokeOtherSessionsDescription": "Dies meldet Sie von allen anderen Geräten und Browsern ab."
+    }
   }
 }
