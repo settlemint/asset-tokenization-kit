@@ -33,6 +33,34 @@
     "title": "プロファイル",
     "description": "プロファイル情報を表示し、管理します。",
     "manage": "プロファイルを管理",
+    "email": {
+      "change-disabled": "この環境ではメールアドレスの変更は無効になっています。",
+      "current": "現在のメールアドレス"
+    },
+    "messages": {
+      "genericError": "問題が発生しました。もう一度お試しください。"
+    },
+    "kyc": {
+      "cardDescription": "オンチェーンIDを作成するために、あなたの身元を確認してください。",
+      "missing": "オンチェーンIDを作成するために、あなたの身元を確認してください。",
+      "actions": {
+        "success": "KYCプロファイルが正常に更新されました。"
+      },
+      "fields": {
+        "firstName": "名",
+        "lastName": "姓",
+        "dob": "生年月日",
+        "country": "居住国",
+        "residencyStatus": "居住状況",
+        "nationalId": "国民ID"
+      },
+      "residencyStatusOptions": {
+        "resident": "単独居住者 - 私は上記の国にのみ住んでおり、法的/税務上の居住者です",
+        "non_resident": "非居住者 - 私は上記の国に住んでいないか、居住者とは見なされていません",
+        "dual_resident": "二重居住者 - 私は複数の国において法的/税務上の居住者です",
+        "unknown": "言いたくない"
+      }
+    },
     "editKyc": {
       "title": "KYCを編集",
       "description": "KYC情報を編集します。"

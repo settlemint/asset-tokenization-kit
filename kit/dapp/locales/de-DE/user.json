@@ -33,6 +33,34 @@
     "title": "Profil",
     "description": "Zeigen Sie Ihre Profilinformationen an und verwalten Sie sie.",
     "manage": "Profil verwalten",
+    "email": {
+      "change-disabled": "Das Ändern der E-Mail-Adresse ist in dieser Umgebung deaktiviert.",
+      "current": "Aktuelle E-Mail"
+    },
+    "messages": {
+      "genericError": "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+    },
+    "kyc": {
+      "cardDescription": "Bitte verifizieren Sie Ihre Identität, um Ihre On-Chain-Identität zu erstellen.",
+      "missing": "Bitte verifizieren Sie Ihre Identität, um Ihre On-Chain-Identität zu erstellen.",
+      "actions": {
+        "success": "Das KYC-Profil wurde erfolgreich aktualisiert."
+      },
+      "fields": {
+        "firstName": "Vorname",
+        "lastName": "Nachname",
+        "dob": "Geburtsdatum",
+        "country": "Wohnsitzland",
+        "residencyStatus": "Aufenthaltsstatus",
+        "nationalId": "Nationale ID"
+      },
+      "residencyStatusOptions": {
+        "resident": "Alleinansässiger - Ich lebe im oben genannten Land und bin dort rechtlich/steuerlich ansässig",
+        "non_resident": "Nichtansässiger - Ich lebe nicht im oben genannten Land oder werde dort nicht als ansässig betrachtet",
+        "dual_resident": "Doppelansässiger - Ich bin rechtlich/steuerlich in mehr als einem Land ansässig",
+        "unknown": "Bevorzuge es, nichts zu sagen"
+      }
+    },
     "editKyc": {
       "title": "KYC bearbeiten",
       "description": "Bearbeiten Sie Ihre KYC-Informationen."
