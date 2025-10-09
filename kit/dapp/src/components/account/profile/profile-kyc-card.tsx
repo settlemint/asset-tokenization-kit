@@ -20,6 +20,17 @@ import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
+function isValidDate(value: unknown): value is Date {
+  return value instanceof Date && !Number.isNaN(value.getTime());
+}
+
+function datesEqual(a: unknown, b: unknown): boolean {
+  const aDate = isValidDate(a) ? a : undefined;
+  const bDate = isValidDate(b) ? b : undefined;
+  if (aDate && bDate) return aDate.getTime() === bDate.getTime();
+  return Boolean(aDate) === Boolean(bDate);
+}
+
 type InlineKycFormValues = {
   id?: string;
   userId: string;
@@ -238,13 +249,7 @@ export function ProfileKycCard({ userId }: ProfileKycCardProps) {
                 const initialValue = baseKycValues[key];
 
                 if (key === "dob") {
-                  if (!currentValue || !initialValue) {
-                    return Boolean(currentValue) !== Boolean(initialValue);
-                  }
-
-                  const currentDate = currentValue as Date;
-                  const initialDate = initialValue as Date;
-                  return currentDate.getTime() !== initialDate.getTime();
+                  return !datesEqual(currentValue, initialValue);
                 }
 
                 if (
