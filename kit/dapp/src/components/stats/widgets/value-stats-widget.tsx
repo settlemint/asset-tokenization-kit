@@ -1,4 +1,4 @@
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import {
   Card,
   CardContent,
@@ -23,7 +23,7 @@ const logger = createLogger();
  * Displays the total value of all assets formatted in the system's base currency.
  * Uses the consolidated metrics endpoint for optimal performance.
  */
-export function ValueStatsWidget() {
+export const ValueStatsWidget = withErrorBoundary(function ValueStatsWidget() {
   const { t, i18n } = useTranslation("stats");
 
   // Fetch just the total value metrics - more efficient than fetching all metrics
@@ -79,18 +79,14 @@ export function ValueStatsWidget() {
   }
 
   return (
-    <ComponentErrorBoundary componentName="Value Stats Widget">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("widgets.value.title")}</CardTitle>
-        </CardHeader>
-        <CardContent className="font-bold text-3xl">
-          {formattedValue}
-        </CardContent>
-        <CardFooter className="text-muted-foreground text-sm">
-          {t("widgets.value.description")}
-        </CardFooter>
-      </Card>
-    </ComponentErrorBoundary>
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("widgets.value.title")}</CardTitle>
+      </CardHeader>
+      <CardContent className="font-bold text-3xl">{formattedValue}</CardContent>
+      <CardFooter className="text-muted-foreground text-sm">
+        {t("widgets.value.description")}
+      </CardFooter>
+    </Card>
   );
-}
+});

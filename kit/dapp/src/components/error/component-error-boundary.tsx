@@ -18,7 +18,12 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { AlertCircle, RefreshCw } from "lucide-react";
-import { Component, type ErrorInfo, type ReactNode } from "react";
+import {
+  Component,
+  type ComponentType,
+  type ErrorInfo,
+  type ReactNode,
+} from "react";
 
 const logger = createLogger();
 
@@ -93,7 +98,7 @@ function DefaultErrorFallback({
 /**
  * Unified error boundary component for component-level error isolation
  */
-export class ComponentErrorBoundary extends Component<
+class ComponentErrorBoundary extends Component<
   ComponentErrorBoundaryProps,
   ErrorBoundaryState
 > {
@@ -155,4 +160,23 @@ export class ComponentErrorBoundary extends Component<
 
     return this.props.children;
   }
+}
+
+/**
+ * Higher-order component to wrap a component with a error boundary
+ * @param ComponentInstance - The component to wrap
+ * @returns The wrapped component as a function that accepts props
+ */
+export function withErrorBoundary<Props extends object>(
+  ComponentInstance: ComponentType<Props>
+) {
+  const componentName = ComponentInstance.name;
+  // Return a new component that renders the error boundary around the wrapped component
+  return function WrappedWithErrorBoundary(props: Props) {
+    return (
+      <ComponentErrorBoundary componentName={componentName}>
+        <ComponentInstance {...props} />
+      </ComponentErrorBoundary>
+    );
+  };
 }

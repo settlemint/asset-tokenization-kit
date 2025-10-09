@@ -1,5 +1,5 @@
 import { AreaChartComponent } from "@/components/charts/area-chart";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
 import { safeToNumber } from "@/lib/utils/format-value/safe-to-number";
@@ -20,47 +20,47 @@ export interface AssetTotalSupplyAreaChartProps {
  * Displays historical total supply data for a specific asset using an area chart.
  * Uses dnum for safe BigInt handling to prevent precision loss.
  */
-export function AssetTotalSupplyAreaChart({
-  assetAddress,
-  timeRange = 30,
-}: AssetTotalSupplyAreaChartProps) {
-  const { t } = useTranslation("stats");
+export const AssetTotalSupplyAreaChart = withErrorBoundary(
+  function AssetTotalSupplyAreaChart({
+    assetAddress,
+    timeRange = 30,
+  }: AssetTotalSupplyAreaChartProps) {
+    const { t } = useTranslation("stats");
 
-  // Fetch total supply history data with optimized caching
-  const { data } = useSuspenseQuery(
-    orpc.token.statsTotalSupply.queryOptions({
-      input: { tokenAddress: assetAddress, days: timeRange },
-      ...CHART_QUERY_OPTIONS,
-    })
-  );
+    // Fetch total supply history data with optimized caching
+    const { data } = useSuspenseQuery(
+      orpc.token.statsTotalSupply.queryOptions({
+        input: { tokenAddress: assetAddress, days: timeRange },
+        ...CHART_QUERY_OPTIONS,
+      })
+    );
 
-  // Transform the response data to chart format using safe conversion
-  const chartData = useMemo(() => {
-    if (!data.totalSupplyHistory?.length) {
-      return [];
-    }
+    // Transform the response data to chart format using safe conversion
+    const chartData = useMemo(() => {
+      if (!data.totalSupplyHistory?.length) {
+        return [];
+      }
 
-    return data.totalSupplyHistory.map((item) => ({
-      timestamp: format(new Date(item.timestamp * 1000), "MMM dd"),
-      totalSupply: safeToNumber(item.totalSupply),
-    }));
-  }, [data.totalSupplyHistory]);
+      return data.totalSupplyHistory.map((item) => ({
+        timestamp: format(item.timestamp, "MMM dd"),
+        totalSupply: safeToNumber(item.totalSupply),
+      }));
+    }, [data.totalSupplyHistory]);
 
-  // Configure chart colors and labels
-  const chartConfig: ChartConfig = useMemo(
-    () => ({
-      totalSupply: {
-        label: t("charts.totalSupply.label"),
-        color: "var(--chart-1)",
-      },
-    }),
-    [t]
-  );
+    // Configure chart colors and labels
+    const chartConfig: ChartConfig = useMemo(
+      () => ({
+        totalSupply: {
+          label: t("charts.totalSupply.label"),
+          color: "var(--chart-1)",
+        },
+      }),
+      [t]
+    );
 
-  const dataKeys = ["totalSupply"];
+    const dataKeys = ["totalSupply"];
 
-  return (
-    <ComponentErrorBoundary componentName="Asset Total Supply Chart">
+    return (
       <AreaChartComponent
         title={t("charts.totalSupply.title")}
         description={t("charts.totalSupply.description", { days: timeRange })}
@@ -79,6 +79,6 @@ export function AssetTotalSupplyAreaChart({
           }).format(numValue);
         }}
       />
-    </ComponentErrorBoundary>
-  );
-}
+    );
+  }
+);

@@ -1,13 +1,13 @@
 /**
  * @vitest-environment happy-dom
  */
-import { screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "@test/helpers/test-utils";
 import {
   createMockSuspenseQueryError,
   createMockSuspenseQueryResult,
 } from "@test/mocks/suspense-query";
-import { renderWithProviders } from "@test/helpers/test-utils";
+import { screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AssetSupplyPieChart } from "./asset-supply-pie-chart";
 
 // Mock useSuspenseQuery while keeping other exports
@@ -104,7 +104,7 @@ describe("AssetSupplyPieChart", () => {
     // Expect the component to throw an error, which will be caught by error boundary
     expect(() => {
       renderWithProviders(<AssetSupplyPieChart />);
-    }).toThrow("ORPC Error: Failed to fetch stats");
+    }).not.toThrow();
 
     consoleSpy.mockRestore();
   });

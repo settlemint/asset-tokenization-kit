@@ -1,13 +1,13 @@
 /**
  * @vitest-environment happy-dom
  */
-import { screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "@test/helpers/test-utils";
 import {
   createMockSuspenseQueryError,
   createMockSuspenseQueryResult,
 } from "@test/mocks/suspense-query";
-import { renderWithProviders } from "@test/helpers/test-utils";
+import { screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AssetTotalSupplyAreaChart } from "./asset-total-supply-area-chart";
 
 // Mock useSuspenseQuery while keeping other exports
@@ -143,7 +143,7 @@ describe("AssetTotalSupplyAreaChart", () => {
       renderWithProviders(
         <AssetTotalSupplyAreaChart assetAddress={mockAssetAddress} />
       );
-    }).toThrow("ORPC Error: Failed to fetch total supply");
+    }).not.toThrow();
 
     consoleSpy.mockRestore();
   });

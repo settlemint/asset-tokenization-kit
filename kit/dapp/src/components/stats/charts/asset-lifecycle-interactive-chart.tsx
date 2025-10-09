@@ -1,5 +1,5 @@
 import { InteractiveChartComponent } from "@/components/charts/interactive-chart";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
 import { formatChartDate } from "@/lib/utils/timeseries";
@@ -18,58 +18,58 @@ export interface AssetLifecycleInteractiveChartProps {
   defaultRange?: StatsRangePreset;
 }
 
-export function AssetLifecycleInteractiveChart({
-  defaultRange = "trailing7Days",
-}: AssetLifecycleInteractiveChartProps) {
-  const { t, i18n } = useTranslation("stats");
-  const locale = i18n.language;
+export const AssetLifecycleInteractiveChart = withErrorBoundary(
+  function AssetLifecycleInteractiveChart({
+    defaultRange = "trailing7Days",
+  }: AssetLifecycleInteractiveChartProps) {
+    const { t, i18n } = useTranslation("stats");
+    const locale = i18n.language;
 
-  // Internal state for selected range
-  const [selectedRange, setSelectedRange] =
-    useState<StatsRangePreset>(defaultRange);
+    // Internal state for selected range
+    const [selectedRange, setSelectedRange] =
+      useState<StatsRangePreset>(defaultRange);
 
-  const chartConfig: ChartConfig = useMemo(
-    () => ({
-      assetsCreated: {
-        label: t("charts.assetLifecycle.createdLabel"),
-        color: "var(--chart-1)",
-      },
-      assetsLaunched: {
-        label: t("charts.assetLifecycle.launchedLabel"),
-        color: "var(--chart-2)",
-      },
-    }),
-    [t]
-  );
+    const chartConfig: ChartConfig = useMemo(
+      () => ({
+        assetsCreated: {
+          label: t("charts.assetLifecycle.createdLabel"),
+          color: "var(--chart-1)",
+        },
+        assetsLaunched: {
+          label: t("charts.assetLifecycle.launchedLabel"),
+          color: "var(--chart-2)",
+        },
+      }),
+      [t]
+    );
 
-  const [trailing24HrRangeData, trailing7DaysRangeData] = useQueries({
-    queries: statsRangePresets.map((preset) =>
-      orpc.system.stats.assetLifecycle.queryOptions({
-        input: preset,
-        ...CHART_QUERY_OPTIONS,
-      })
-    ),
-  });
+    const [trailing24HrRangeData, trailing7DaysRangeData] = useQueries({
+      queries: statsRangePresets.map((preset) =>
+        orpc.system.stats.assetLifecycle.queryOptions({
+          input: preset,
+          ...CHART_QUERY_OPTIONS,
+        })
+      ),
+    });
 
-  // Get the raw data for the selected range
-  const rawData =
-    selectedRange === "trailing24Hours"
-      ? trailing24HrRangeData?.data
-      : trailing7DaysRangeData?.data;
+    // Get the raw data for the selected range
+    const rawData =
+      selectedRange === "trailing24Hours"
+        ? trailing24HrRangeData?.data
+        : trailing7DaysRangeData?.data;
 
-  const fallbackRange = useMemo<StatsResolvedRange>(() => {
-    return resolveStatsRange(selectedRange);
-  }, [selectedRange]);
+    const fallbackRange = useMemo<StatsResolvedRange>(() => {
+      return resolveStatsRange(selectedRange);
+    }, [selectedRange]);
 
-  const resolvedRange = rawData?.range ?? fallbackRange;
+    const resolvedRange = rawData?.range ?? fallbackRange;
 
-  const chartInterval = resolvedRange.interval;
+    const chartInterval = resolvedRange.interval;
 
-  const timeseries = rawData?.data ?? [];
-  const dataKeys = ["assetsCreated", "assetsLaunched"];
+    const timeseries = rawData?.data ?? [];
+    const dataKeys = ["assetsCreated", "assetsLaunched"];
 
-  return (
-    <ComponentErrorBoundary componentName="Asset Lifecycle Chart">
+    return (
       <InteractiveChartComponent
         title={t("charts.assetLifecycle.title")}
         description={t("charts.assetLifecycle.description")}
@@ -95,6 +95,6 @@ export function AssetLifecycleInteractiveChart({
         selectedRange={selectedRange}
         onRangeChange={setSelectedRange}
       />
-    </ComponentErrorBoundary>
-  );
-}
+    );
+  }
+);

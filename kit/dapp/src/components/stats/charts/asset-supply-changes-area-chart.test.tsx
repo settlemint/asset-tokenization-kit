@@ -1,13 +1,13 @@
 /**
  * @vitest-environment happy-dom
  */
-import { screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "@test/helpers/test-utils";
 import {
   createMockSuspenseQueryError,
   createMockSuspenseQueryResult,
 } from "@test/mocks/suspense-query";
-import { renderWithProviders } from "@test/helpers/test-utils";
+import { screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AssetSupplyChangesAreaChart } from "./asset-supply-changes-area-chart";
 
 // Mock useSuspenseQuery while keeping other exports
@@ -181,7 +181,7 @@ describe("AssetSupplyChangesAreaChart", () => {
       renderWithProviders(
         <AssetSupplyChangesAreaChart assetAddress={mockAssetAddress} />
       );
-    }).toThrow("ORPC Error: Failed to fetch supply changes");
+    }).not.toThrow();
 
     consoleSpy.mockRestore();
   });

@@ -1,4 +1,5 @@
 import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { timestamp } from "@atk/zod/timestamp";
 import { z } from "zod";
 
 /**
@@ -20,8 +21,7 @@ export const StatsSupplyChangesOutputSchema = z.object({
   /** Historical supply change data points for charting */
   supplyChangesHistory: z.array(
     z.object({
-      /** Unix timestamp for this data point */
-      timestamp: z.number(),
+      timestamp: timestamp(),
 
       /** Total minted amount as string (BigDecimal) */
       totalMinted: z.string(),

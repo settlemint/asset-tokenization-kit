@@ -1,5 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { tokenRouter } from "@/orpc/procedures/token.router";
+import { timestamp } from "@atk/zod/timestamp";
 import { z } from "zod";
 
 /**
@@ -25,37 +26,12 @@ const TOKEN_SUPPLY_CHANGES_QUERY = theGraphGraphql(`
 const TokenSupplyChangesResponseSchema = z.object({
   tokenStats_collection: z.array(
     z.object({
-      timestamp: z.string(),
+      timestamp: timestamp(),
       totalMinted: z.string(),
       totalBurned: z.string(),
     })
   ),
 });
-
-/**
- * Helper function to process token stats into supply changes history data
- * Converts raw token statistics into timestamped minted/burned data points
- *
- * @param tokenStats - Token statistics from TheGraph
- * @returns Processed supply changes history data
- */
-function processSupplyChangesHistoryData(
-  tokenStats: {
-    timestamp: string;
-    totalMinted: string;
-    totalBurned: string;
-  }[]
-): {
-  timestamp: number;
-  totalMinted: string;
-  totalBurned: string;
-}[] {
-  return tokenStats.map((stat) => ({
-    timestamp: Number.parseInt(stat.timestamp, 10),
-    totalMinted: stat.totalMinted,
-    totalBurned: stat.totalBurned,
-  }));
-}
 
 /**
  * Asset-specific supply changes history route handler.
@@ -119,13 +95,8 @@ export const statsSupplyChanges = tokenRouter.token.statsSupplyChanges.handler(
       }
     );
 
-    // Process the raw data into the expected output format
-    const supplyChangesHistory = processSupplyChangesHistoryData(
-      response.tokenStats_collection
-    );
-
     return {
-      supplyChangesHistory,
+      supplyChangesHistory: response.tokenStats_collection,
     };
   }
 );
