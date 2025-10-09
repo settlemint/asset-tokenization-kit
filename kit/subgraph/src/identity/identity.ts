@@ -23,8 +23,18 @@ import {
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentityFactory } from "../identity-factory/fetch/identity-factory";
 import { updateAccountStatsForPriceChange } from "../stats/account-stats";
+import {
+  incrementClaimsIssued as incrementRegistryClaimsIssued,
+  incrementClaimsRemoved as incrementRegistryClaimsRemoved,
+  incrementClaimsRevoked as incrementRegistryClaimsRevoked,
+} from "../stats/claims-stats";
 import { updateSystemStatsForPriceChange } from "../stats/system-stats";
 import { updateTokenTypeStatsForPriceChange } from "../stats/token-type-stats";
+import {
+  incrementClaimsIssued,
+  incrementClaimsRemoved,
+  incrementClaimsRevoked,
+} from "../stats/topic-scheme-claims";
 import { fetchSystem } from "../system/fetch/system";
 import {
   isCollateralClaim,
@@ -107,6 +117,13 @@ export function handleApproved(event: Approved): void {
 export function handleClaimAdded(event: ClaimAdded): void {
   fetchEvent(event, "ClaimAdded");
   const identity = fetchIdentity(event.address);
+
+  // Decode claim data and create IdentityClaimValue entities
+  const topicScheme = getTopicSchemeFromIdentity(event.params.topic, identity);
+  if (!topicScheme) {
+    return;
+  }
+
   const identityClaim = fetchIdentityClaim(identity, event.params.claimId);
   if (identityClaim.deployedInTransaction.equals(Bytes.empty())) {
     identityClaim.deployedInTransaction = event.transaction.hash;
@@ -114,14 +131,16 @@ export function handleClaimAdded(event: ClaimAdded): void {
   identityClaim.issuer = fetchIdentity(event.params.issuer).id;
   identityClaim.uri = event.params.uri;
   identityClaim.signature = event.params.signature.toHexString();
+  identityClaim.topicScheme = topicScheme.id;
   identityClaim.save();
 
   // Decode claim data and create IdentityClaimValue entities
-  const topicScheme = getTopicSchemeFromIdentity(event.params.topic, identity);
-  if (!topicScheme) {
-    return;
-  }
   decodeClaimValues(identityClaim, topicScheme, event.params.data);
+
+  // Update topic scheme statistics
+  incrementClaimsIssued(topicScheme);
+  // Update registry-level statistics
+  incrementRegistryClaimsIssued(topicScheme);
 
   if (isCollateralClaim(identityClaim)) {
     updateCollateral(identityClaim);
@@ -156,10 +175,17 @@ export function handleClaimAdded(event: ClaimAdded): void {
 export function handleClaimChanged(event: ClaimChanged): void {
   fetchEvent(event, "ClaimChanged");
   const identity = fetchIdentity(event.address);
+
+  // Decode claim data and create IdentityClaimValue entities
+  const topicScheme = getTopicSchemeFromIdentity(event.params.topic, identity);
+  if (!topicScheme) {
+    return;
+  }
   const identityClaim = fetchIdentityClaim(identity, event.params.claimId);
   identityClaim.issuer = fetchIdentity(event.params.issuer).id;
   identityClaim.uri = event.params.uri;
   identityClaim.signature = event.params.signature.toHexString();
+  identityClaim.topicScheme = topicScheme.id;
   identityClaim.save();
 
   // Get old price before updating claim
@@ -167,11 +193,6 @@ export function handleClaimChanged(event: ClaimChanged): void {
     ? getTokenBasePrice(identityClaim.id)
     : BigDecimal.zero();
 
-  // Decode claim data and create IdentityClaimValue entities
-  const topicScheme = getTopicSchemeFromIdentity(event.params.topic, identity);
-  if (!topicScheme) {
-    return;
-  }
   decodeClaimValues(identityClaim, topicScheme, event.params.data);
 
   if (isCollateralClaim(identityClaim)) {
@@ -208,8 +229,19 @@ export function handleClaimRemoved(event: ClaimRemoved): void {
   fetchEvent(event, "ClaimRemoved");
   const identity = fetchIdentity(event.address);
   const identityClaim = fetchIdentityClaim(identity, event.params.claimId);
+
+  const wasAlreadyRevoked = identityClaim.revoked;
+
   identityClaim.revoked = true;
   identityClaim.save();
+
+  // Update topic scheme statistics
+  const topicScheme = TopicScheme.load(identityClaim.topicScheme);
+  if (topicScheme) {
+    incrementClaimsRemoved(topicScheme, wasAlreadyRevoked);
+    // Update registry-level statistics
+    incrementRegistryClaimsRemoved(topicScheme, wasAlreadyRevoked);
+  }
 
   if (isCollateralClaim(identityClaim)) {
     updateCollateral(identityClaim);
@@ -290,6 +322,14 @@ export function handleClaimRevoked(event: ClaimRevoked): void {
     if (signatureHash == event.params.signature.toHexString()) {
       identityClaim.revoked = true;
       identityClaim.save();
+
+      // Update topic scheme statistics
+      const topicScheme = TopicScheme.load(identityClaim.topicScheme);
+      if (topicScheme) {
+        incrementClaimsRevoked(topicScheme);
+        // Update registry-level statistics
+        incrementRegistryClaimsRevoked(topicScheme);
+      }
 
       if (isCollateralClaim(identityClaim)) {
         updateCollateral(identityClaim);

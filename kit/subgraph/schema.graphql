@@ -460,6 +460,8 @@ type IdentityClaim @entity(immutable: false) {
   revoked: Boolean!
   # Key-value data within the claim
   values: [IdentityClaimValue!]! @derivedFrom(field: "claim")
+  # Topic scheme this claim belongs to
+  topicScheme: TopicScheme!
   # Transaction hash where this was added
   deployedInTransaction: Bytes!
 }
@@ -482,6 +484,10 @@ type TopicSchemeRegistry @entity(immutable: false) {
   account: Account!
   # List of topic schemes in this registry
   schemes: [TopicScheme!]! @derivedFrom(field: "registry")
+  # Statistical data for topic scheme registration
+  stats: TopicSchemesState @derivedFrom(field: "topicSchemeRegistry")
+  # Statistical data for all claims in this registry
+  claimsStats: ClaimsStatsState @derivedFrom(field: "topicSchemeRegistry")
   # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
 }
@@ -501,6 +507,159 @@ type TopicScheme @entity(immutable: false) {
   enabled: Boolean!
   # Transaction hash where this was added
   deployedInTransaction: Bytes!
+  # Bidirectional relationship for trusted issuers
+  trustedIssuers: [TrustedIssuer!]! @derivedFrom(field: "claimTopics")
+  # Bidirectional relationship for claims
+  claims: [IdentityClaim!]! @derivedFrom(field: "topicScheme")
+  # Statistics state entity for claims issued under this topic scheme
+  stats: TopicSchemeClaimsState @derivedFrom(field: "topicScheme")
+}
+
+type TopicSchemeClaimsState @entity(immutable: false) {
+  # Composite key: topic scheme ID
+  id: Bytes!
+  # Reference to the topic scheme
+  topicScheme: TopicScheme!
+  # Total claims issued for this topic (lifetime count)
+  totalIssuedClaims: BigInt!
+  # Active claims (non-revoked, non-removed)
+  totalActiveClaims: BigInt!
+  # Removed claims (lifetime count)
+  totalRemovedClaims: BigInt!
+  # Revoked claims (lifetime count)
+  totalRevokedClaims: BigInt!
+}
+
+type TopicSchemeClaimsData @entity(timeseries: true) {
+  # Unique identifier for timeseries entry (auto-generated)
+  id: Int8!
+  # Timestamp of this data point
+  timestamp: Timestamp!
+  # Reference to the topic scheme
+  topicScheme: TopicScheme!
+  # Total claims issued
+  totalIssuedClaims: BigInt!
+  # Active claims count
+  totalActiveClaims: BigInt!
+  # Removed claims count
+  totalRemovedClaims: BigInt!
+  # Revoked claims count
+  totalRevokedClaims: BigInt!
+}
+
+type TopicSchemeClaimsStats
+  @aggregation(intervals: ["hour", "day"], source: "TopicSchemeClaimsData") {
+  # Unique identifier for aggregated entry
+  id: Int8!
+  # Timestamp of aggregation period
+  timestamp: Timestamp!
+  # Reference to the topic scheme
+  topicScheme: TopicScheme!
+  # Last count of total issued claims
+  totalIssuedClaims: BigInt! @aggregate(fn: "last", arg: "totalIssuedClaims")
+  # Last count of active claims
+  totalActiveClaims: BigInt! @aggregate(fn: "last", arg: "totalActiveClaims")
+  # Last count of removed claims
+  totalRemovedClaims: BigInt! @aggregate(fn: "last", arg: "totalRemovedClaims")
+  # Last count of revoked claims
+  totalRevokedClaims: BigInt! @aggregate(fn: "last", arg: "totalRevokedClaims")
+}
+
+type TopicSchemesState @entity(immutable: false) {
+  # TopicSchemeRegistry address
+  id: Bytes!
+  # Reference to the registry
+  topicSchemeRegistry: TopicSchemeRegistry!
+  # Total topic schemes registered (lifetime count)
+  totalRegisteredTopicSchemes: BigInt!
+  # Currently active topic schemes (enabled)
+  totalActiveTopicSchemes: BigInt!
+  # Topic schemes removed/disabled (lifetime count)
+  totalRemovedTopicSchemes: BigInt!
+}
+
+type ClaimsStatsState @entity(immutable: false) {
+  # TopicSchemeRegistry address
+  id: Bytes!
+  # Reference to the registry
+  topicSchemeRegistry: TopicSchemeRegistry!
+  # Total claims issued across all topics (lifetime count)
+  totalIssuedClaims: BigInt!
+  # Active claims (non-revoked, non-removed)
+  totalActiveClaims: BigInt!
+  # Removed claims (lifetime count)
+  totalRemovedClaims: BigInt!
+  # Revoked claims (lifetime count)
+  totalRevokedClaims: BigInt!
+}
+
+type TopicSchemesData @entity(timeseries: true) {
+  # Auto-generated ID for timeseries
+  id: Int8!
+  # Timestamp of this data point
+  timestamp: Timestamp!
+  # Reference to the registry
+  topicSchemeRegistry: TopicSchemeRegistry!
+  # Total registered topic schemes
+  totalRegisteredTopicSchemes: BigInt!
+  # Active topic schemes count
+  totalActiveTopicSchemes: BigInt!
+  # Removed topic schemes count
+  totalRemovedTopicSchemes: BigInt!
+}
+
+type ClaimsStatsData @entity(timeseries: true) {
+  # Auto-generated ID for timeseries
+  id: Int8!
+  # Timestamp of this data point
+  timestamp: Timestamp!
+  # Reference to the registry
+  topicSchemeRegistry: TopicSchemeRegistry!
+  # Total claims issued
+  totalIssuedClaims: BigInt!
+  # Active claims count
+  totalActiveClaims: BigInt!
+  # Removed claims count
+  totalRemovedClaims: BigInt!
+  # Revoked claims count
+  totalRevokedClaims: BigInt!
+}
+
+type TopicSchemesStats
+  @aggregation(intervals: ["hour", "day"], source: "TopicSchemesData") {
+  # Auto-generated ID
+  id: Int8!
+  # Timestamp of aggregation period
+  timestamp: Timestamp!
+  # Reference to the registry
+  topicSchemeRegistry: TopicSchemeRegistry!
+  # Last count of registered topics
+  totalRegisteredTopicSchemes: BigInt!
+    @aggregate(fn: "last", arg: "totalRegisteredTopicSchemes")
+  # Last count of active topics
+  totalActiveTopicSchemes: BigInt!
+    @aggregate(fn: "last", arg: "totalActiveTopicSchemes")
+  # Last count of removed topics
+  totalRemovedTopicSchemes: BigInt!
+    @aggregate(fn: "last", arg: "totalRemovedTopicSchemes")
+}
+
+type ClaimsStats
+  @aggregation(intervals: ["hour", "day"], source: "ClaimsStatsData") {
+  # Auto-generated ID
+  id: Int8!
+  # Timestamp of aggregation period
+  timestamp: Timestamp!
+  # Reference to the registry
+  topicSchemeRegistry: TopicSchemeRegistry!
+  # Last count of total issued claims
+  totalIssuedClaims: BigInt! @aggregate(fn: "last", arg: "totalIssuedClaims")
+  # Last count of active claims
+  totalActiveClaims: BigInt! @aggregate(fn: "last", arg: "totalActiveClaims")
+  # Last count of removed claims
+  totalRemovedClaims: BigInt! @aggregate(fn: "last", arg: "totalRemovedClaims")
+  # Last count of revoked claims
+  totalRevokedClaims: BigInt! @aggregate(fn: "last", arg: "totalRevokedClaims")
 }
 
 # Base interface
@@ -521,6 +680,8 @@ type TrustedIssuersRegistry @entity(immutable: false) {
   systemRegistry: TrustedIssuersRegistry
   # Subject-specific registry mappings
   subjectRegistries: [SubjectRegistryMapping!]! @derivedFrom(field: "metaRegistry")
+  # Statistical data for this registry
+  stats: TrustedIssuerStatsState @derivedFrom(field: "trustedIssuersRegistry")
 }
 
 # Mapping between a subject and its trusted issuers registry
@@ -552,6 +713,53 @@ type TrustedIssuer @entity(immutable: false) {
   addedAt: BigInt
   # Unix timestamp when this issuer was revoked
   revokedAt: BigInt
+}
+
+type TrustedIssuerStatsState @entity(immutable: false) {
+  # Trusted issuers registry address
+  id: Bytes!
+  # Reference to the trusted issuers registry
+  trustedIssuersRegistry: TrustedIssuersRegistry!
+  # Total issuers added (lifetime count)
+  totalAddedTrustedIssuers: BigInt!
+  # Active issuers (addedAt set, revokedAt = 0)
+  totalActiveTrustedIssuers: BigInt!
+  # Removed issuers (lifetime count)
+  totalRemovedTrustedIssuers: BigInt!
+}
+
+type TrustedIssuerStatsData @entity(timeseries: true) {
+  # Unique identifier for timeseries entry (auto-generated)
+  id: Int8!
+  # Timestamp of this data point
+  timestamp: Timestamp!
+  # Reference to the trusted issuers registry
+  trustedIssuersRegistry: TrustedIssuersRegistry!
+  # Total issuers added
+  totalAddedTrustedIssuers: BigInt!
+  # Active issuers count
+  totalActiveTrustedIssuers: BigInt!
+  # Removed issuers count
+  totalRemovedTrustedIssuers: BigInt!
+}
+
+type TrustedIssuerStats
+  @aggregation(intervals: ["hour", "day"], source: "TrustedIssuerStatsData") {
+  # Unique identifier for aggregated entry
+  id: Int8!
+  # Timestamp of aggregation period
+  timestamp: Timestamp!
+  # Reference to the trusted issuers registry
+  trustedIssuersRegistry: TrustedIssuersRegistry!
+  # Last count of total added issuers
+  totalAddedTrustedIssuers: BigInt!
+    @aggregate(fn: "last", arg: "totalAddedTrustedIssuers")
+  # Last count of active issuers
+  totalActiveTrustedIssuers: BigInt!
+    @aggregate(fn: "last", arg: "totalActiveTrustedIssuers")
+  # Last count of removed issuers
+  totalRemovedTrustedIssuers: BigInt!
+    @aggregate(fn: "last", arg: "totalRemovedTrustedIssuers")
 }
 
 type ComplianceModuleRegistry @entity(immutable: false) {

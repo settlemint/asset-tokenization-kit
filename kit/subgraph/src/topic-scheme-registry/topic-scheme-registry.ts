@@ -6,7 +6,12 @@ import {
   TopicSchemesBatchRegistered,
 } from "../../generated/templates/TopicSchemeRegistry/TopicSchemeRegistry";
 import { fetchEvent } from "../event/fetch/event";
+import {
+  incrementTopicSchemesRegistered,
+  incrementTopicSchemesRemoved,
+} from "../stats/topic-schemes";
 import { fetchTopicScheme } from "./fetch/topic-scheme";
+import { fetchTopicSchemeRegistry } from "./fetch/topic-scheme-registry";
 
 export function handleTopicSchemeRegistered(
   event: TopicSchemeRegistered
@@ -20,6 +25,9 @@ export function handleTopicSchemeRegistered(
   topicScheme.topicId = event.params.topicId;
   topicScheme.signature = event.params.signature;
   topicScheme.save();
+
+  const registry = fetchTopicSchemeRegistry(event.address);
+  incrementTopicSchemesRegistered(registry);
 }
 
 export function handleTopicSchemeRemoved(event: TopicSchemeRemoved): void {
@@ -27,6 +35,9 @@ export function handleTopicSchemeRemoved(event: TopicSchemeRemoved): void {
   const topicScheme = fetchTopicScheme(event.params.topicId, event.address);
   topicScheme.enabled = false;
   topicScheme.save();
+
+  const registry = fetchTopicSchemeRegistry(event.address);
+  incrementTopicSchemesRemoved(registry);
 }
 
 export function handleTopicSchemeUpdated(event: TopicSchemeUpdated): void {
@@ -46,6 +57,8 @@ export function handleTopicSchemesBatchRegistered(
   const topicIds = event.params.topicIds;
   const names = event.params.names;
   const signatures = event.params.signatures;
+
+  const registry = fetchTopicSchemeRegistry(event.address);
 
   for (let i = 0; i < topicIds.length; i++) {
     const topicScheme = fetchTopicScheme(topicIds[i], event.address);
