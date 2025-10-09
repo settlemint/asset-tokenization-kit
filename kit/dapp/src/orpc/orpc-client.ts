@@ -26,17 +26,6 @@ import type { router } from "./routes/router";
 
 const logger = createLogger();
 
-// Prevent errors of libraries that try to stringify BigInt values
-// See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt#use_within_json
-declare global {
-  interface BigInt {
-    toJSON: () => string;
-  }
-}
-BigInt.prototype.toJSON = function () {
-  return this.toString();
-};
-
 /**
  * Creates an isomorphic ORPC client that adapts based on the runtime environment.
  *
