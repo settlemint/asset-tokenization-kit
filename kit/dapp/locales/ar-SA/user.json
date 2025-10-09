@@ -28,5 +28,24 @@
         "notConnectedAriaLabel": "المستخدم لم يربط محفظة"
       }
     }
+  },
+  "profile": {
+    "title": "الملف الشخصي",
+    "description": "عرض وإدارة معلومات ملفك الشخصي.",
+    "manage": "إدارة الملف الشخصي",
+    "editKyc": {
+      "title": "تحرير KYC",
+      "description": "تحرير معلومات KYC الخاصة بك."
+    },
+    "changePassword": {
+      "title": "تغيير كلمة المرور",
+      "description": "تحديث كلمة مرور حسابك للأمان.",
+      "success": "تم تغيير كلمة المرور بنجاح.",
+      "currentPassword": "كلمة المرور الحالية",
+      "newPassword": "كلمة المرور الجديدة",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "revokeOtherSessions": "تسجيل الخروج من الأجهزة الأخرى",
+      "revokeOtherSessionsDescription": "سيؤدي هذا إلى تسجيل خروجك من جميع الأجهزة والمتصفحات الأخرى."
+    }
   }
 }

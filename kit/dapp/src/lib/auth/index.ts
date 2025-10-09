@@ -42,7 +42,7 @@ import { passkey } from "better-auth/plugins/passkey";
 import { reactStartCookies } from "better-auth/react-start";
 import { eq } from "drizzle-orm/sql";
 import { zeroAddress } from "viem";
-import { db } from "../db";
+import { db, migrateDatabase } from "../db";
 import * as authSchema from "./db/auth";
 
 const options = {
@@ -220,7 +220,21 @@ const options = {
     window: 10, // time window in seconds
     max: 100, // max requests in the window
   },
-
+  hooks: {
+    before: async () => {
+      try {
+        // This will only migrate the database if it is not already migrated
+        // Doing this here will allow the app to automatically migrate once the db becomes available
+        // Eg when you do a custom deployment the db could be deployed after the dApp
+        await migrateDatabase();
+      } catch (error) {
+        throw new APIError("INTERNAL_SERVER_ERROR", {
+          message: "Failed to migrate the database",
+          cause: error instanceof Error ? error : undefined,
+        });
+      }
+    },
+  },
   databaseHooks: {
     user: {
       create: {

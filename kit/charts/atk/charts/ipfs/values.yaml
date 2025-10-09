@@ -130,7 +130,7 @@ ipfs:
     # -- (string) IPFS image repository
     repository: ipfs/kubo
     # -- (string) IPFS image tag
-    tag: v0.38.0
+    tag: v0.38.1
     # -- (string) IPFS image pull policy
     pullPolicy: IfNotPresent
   # -- (object) Additional pod labels

@@ -6,6 +6,10 @@ import {
   TrustedIssuerRemoved as TrustedIssuerRemovedEvent,
 } from "../../generated/templates/TrustedIssuersRegistry/TrustedIssuersRegistry";
 import { fetchEvent } from "../event/fetch/event";
+import {
+  incrementTrustedIssuersAdded,
+  incrementTrustedIssuersRemoved,
+} from "../stats/trusted-issuer-stats";
 import { fetchSystem } from "../system/fetch/system";
 import { fetchTokenFactory } from "../token-factory/fetch/token-factory";
 import { fetchTokenFactoryRegistry } from "../token-factory/fetch/token-factory-registry";
@@ -59,6 +63,9 @@ export function handleTrustedIssuerAdded(event: TrustedIssuerAddedEvent): void {
   trustedIssuer.addedAt = event.block.timestamp;
   trustedIssuer.revokedAt = BigInt.zero();
   trustedIssuer.save();
+
+  // Track stats
+  incrementTrustedIssuersAdded(trustedIssuerRegistry);
 }
 
 export function handleTrustedIssuerRemoved(
@@ -69,6 +76,12 @@ export function handleTrustedIssuerRemoved(
   const trustedIssuer = fetchTrustedIssuer(event.params._trustedIssuer);
   trustedIssuer.revokedAt = event.block.timestamp;
   trustedIssuer.save();
+
+  // Track stats
+  const trustedIssuerRegistry = fetchTrustedIssuersRegistry(
+    Address.fromBytes(trustedIssuer.registry)
+  );
+  incrementTrustedIssuersRemoved(trustedIssuerRegistry);
 }
 
 function getTopicSchemeFromTrustedIssuer(
