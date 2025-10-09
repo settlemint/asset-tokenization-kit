@@ -20,8 +20,8 @@ import type {
   ColumnMeta,
   SortingState,
 } from "@tanstack/react-table";
-import { ClipboardList } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { ClipboardList } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -102,20 +102,21 @@ export function ActionsTable({
 
   const columns = useMemo(() => {
     const resolveActionLabel = (actionName: string): string => {
-      const labelKey = isKnownLabelAction(actionName)
-        ? ACTION_LABEL_MAP[actionName]
-        : undefined;
-      if (!labelKey) {
+      if (!isKnownLabelAction(actionName)) {
         return toTitleCase(actionName);
       }
-      const translation = t(labelKey as never);
-      return translation === labelKey ? toTitleCase(actionName) : translation;
+
+      const labelKey = ACTION_LABEL_MAP[actionName];
+      return t(labelKey as never, {
+        defaultValue: toTitleCase(actionName),
+      });
     };
 
     const resolveTypeLabelFromValue = (typeValue: string): string => {
       const labelKey = `types.${typeValue}`;
-      const translation = t(labelKey as never);
-      return translation === labelKey ? toTitleCase(typeValue) : translation;
+      return t(labelKey as never, {
+        defaultValue: toTitleCase(typeValue),
+      });
     };
 
     const resolveTypeLabel = (actionName: string): string => {
@@ -278,7 +279,7 @@ export function ActionsTable({
           meta: {
             displayName: t("table.columns.activeAt"),
             type: "date",
-            dateOptions: { includeTime: true },
+            dateOptions: { relative: true },
             className: "text-muted-foreground",
           } satisfies ColumnMeta<Action, unknown>,
         }
