@@ -9,6 +9,7 @@ import { createStrictColumnHelper } from "@/components/data-table/utils/typed-co
 import { Badge } from "@/components/ui/badge";
 import { Web3Address } from "@/components/web3/web3-address";
 import { formatDate } from "@/lib/utils/date";
+import { getDateLocale } from "@/lib/utils/date-locale";
 import type {
   Action,
   ActionStatus,
@@ -20,6 +21,7 @@ import type {
   SortingState,
 } from "@tanstack/react-table";
 import { ClipboardList } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -76,27 +78,6 @@ function toTitleCase(input: string): string {
     .replaceAll(/([a-z0-9])([A-Z])/g, "$1 $2")
     .replaceAll(/[_-]+/g, " ")
     .trim();
-}
-
-function formatRelative(date: Date, locale: string): string {
-  const diffMs = date.getTime() - Date.now();
-  const absMs = Math.abs(diffMs);
-  const formatter = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
-  const units: [Intl.RelativeTimeFormatUnit, number][] = [
-    ["day", 86_400_000],
-    ["hour", 3_600_000],
-    ["minute", 60_000],
-  ];
-
-  for (const [unit, unitMs] of units) {
-    if (absMs >= unitMs) {
-      const value = Math.round(diffMs / unitMs);
-      return formatter.format(value, unit);
-    }
-  }
-
-  // For sub-minute differences, avoid -0 by using the sign-aware approach
-  return formatter.format(0, "minute");
 }
 
 export function ActionsTable({
@@ -252,18 +233,23 @@ export function ActionsTable({
             const activeAt = new Date(Number(row.original.activeAt) * 1000);
             const executedDate =
               executedAt === null ? null : new Date(Number(executedAt) * 1000);
+            const dateLocale = getDateLocale(i18n.language);
+            const relativeActive = formatDistanceToNow(activeAt, {
+              addSuffix: true,
+              locale: dateLocale,
+            });
 
             return (
               <div className="flex flex-col gap-1">
                 <ActionStatusBadge status={row.original.status} />
                 {row.original.status === "PENDING" && (
                   <span className="text-xs text-muted-foreground">
-                    {formatRelative(activeAt, i18n.language)}
+                    {relativeActive}
                   </span>
                 )}
                 {row.original.status === "ACTIVE" && (
                   <span className="text-xs text-muted-foreground">
-                    {formatRelative(activeAt, i18n.language)}
+                    {relativeActive}
                   </span>
                 )}
                 {row.original.status === "EXECUTED" && executedDate && (
