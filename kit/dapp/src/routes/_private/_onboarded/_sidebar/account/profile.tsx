@@ -12,7 +12,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
-import { ProfileKycCard } from "./profile-kyc-card";
+import { ProfileKycCard } from "@/components/account/profile/profile-kyc-card";
 import { orpc } from "@/orpc/orpc-client";
 
 export const Route = createFileRoute(
