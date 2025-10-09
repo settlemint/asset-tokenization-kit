@@ -1,6 +1,7 @@
 import { statsAssetActivity } from "@/orpc/routes/system/stats/routes/asset-activity";
 import { statsAssetLifecycle } from "@/orpc/routes/system/stats/routes/asset-lifecycle";
 import { statsAssets } from "@/orpc/routes/system/stats/routes/assets";
+import { statsClaimsStats } from "@/orpc/routes/system/stats/routes/claims-stats";
 import { statsIdentityCount } from "@/orpc/routes/system/stats/routes/identity-count";
 import { statsIdentityStatsOverTime } from "@/orpc/routes/system/stats/routes/identity-stats-over-time";
 import { statsPortfolio } from "@/orpc/routes/system/stats/routes/portfolio";
@@ -13,6 +14,7 @@ const routes = {
   assets: statsAssets,
   assetLifecycle: statsAssetLifecycle,
   assetActivity: statsAssetActivity,
+  claimsStats: statsClaimsStats,
   identityCount: statsIdentityCount,
   identityStatsOverTime: statsIdentityStatsOverTime,
   portfolio: statsPortfolio,
