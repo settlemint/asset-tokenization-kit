@@ -48,4 +48,4 @@ export const AssetStatsWidget = withErrorBoundary(function AssetStatsWidget() {
       </CardFooter>
     </Card>
   );
-}, "Asset Stats Widget");
+});

@@ -145,8 +145,7 @@ const BondYieldCoverageChartLoader = withErrorBoundary(
         className={className}
       />
     );
-  },
-  "Bond Yield Coverage Chart"
+  }
 );
 
 /**

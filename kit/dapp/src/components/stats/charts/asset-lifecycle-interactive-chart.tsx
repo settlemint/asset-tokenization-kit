@@ -96,6 +96,5 @@ export const AssetLifecycleInteractiveChart = withErrorBoundary(
         onRangeChange={setSelectedRange}
       />
     );
-  },
-  "Asset Lifecycle Chart"
+  }
 );

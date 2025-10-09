@@ -1,7 +1,7 @@
 import { LatestEventsTable } from "@/components/dashboard/latest-events/latest-events-table";
 import { SectionSubtitle } from "@/components/dashboard/section-subtitle";
 import { SectionTitle } from "@/components/dashboard/section-title";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { Skeleton } from "@/components/ui/skeleton";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -28,15 +28,13 @@ export function LatestEvents() {
       </div>
 
       <Suspense fallback={<LatestEventsSkeleton />}>
-        <ComponentErrorBoundary componentName="Latest Events">
-          <LatestEventsContent />
-        </ComponentErrorBoundary>
+        <LatestEventsContent />
       </Suspense>
     </div>
   );
 }
 
-function LatestEventsContent() {
+const LatestEventsContent = withErrorBoundary(function LatestEventsContent() {
   const { data } = useSuspenseQuery(
     orpc.user.events.queryOptions({
       input: { limit: 5 },
@@ -46,7 +44,7 @@ function LatestEventsContent() {
   const events = data.events ?? [];
 
   return <LatestEventsTable events={events} />;
-}
+});
 
 export function LatestEventsSkeleton() {
   return (

@@ -160,13 +160,12 @@ class ComponentErrorBoundary extends Component<
 /**
  * Higher-order component to wrap a component with a error boundary
  * @param ComponentInstance - The component to wrap
- * @param componentName - The name of the component
  * @returns The wrapped component as a function that accepts props
  */
 export function withErrorBoundary<T extends object>(
-  ComponentInstance: (props: T) => ReactNode,
-  componentName: string
+  ComponentInstance: (props: T) => ReactNode
 ) {
+  const componentName = ComponentInstance.name;
   // Return a new component that renders the error boundary around the wrapped component
   return function WrappedWithErrorBoundary(props: T) {
     return (

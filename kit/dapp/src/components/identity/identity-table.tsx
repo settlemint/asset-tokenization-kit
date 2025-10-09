@@ -269,4 +269,4 @@ export const IdentityTable = withErrorBoundary(function IdentityTable() {
       onRowClick={handleRowClick}
     />
   );
-}, "Identity Table");
+});
