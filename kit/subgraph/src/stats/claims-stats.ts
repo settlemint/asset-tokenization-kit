@@ -1,4 +1,4 @@
-import { Bytes } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   ClaimsStatsData,
   ClaimsStatsState,
@@ -15,10 +15,10 @@ function fetchClaimsStatsState(registryId: Bytes): ClaimsStatsState {
   if (!state) {
     state = new ClaimsStatsState(registryId);
     state.topicSchemeRegistry = registryId;
-    state.totalIssuedClaims = 0;
-    state.totalActiveClaims = 0;
-    state.totalRemovedClaims = 0;
-    state.totalRevokedClaims = 0;
+    state.totalIssuedClaims = BigInt.fromI32(0);
+    state.totalActiveClaims = BigInt.fromI32(0);
+    state.totalRemovedClaims = BigInt.fromI32(0);
+    state.totalRevokedClaims = BigInt.fromI32(0);
     state.save();
   }
 
@@ -51,8 +51,8 @@ export function incrementClaimsIssued(topicScheme: TopicScheme): void {
   }
 
   const state = fetchClaimsStatsState(registry.id);
-  state.totalIssuedClaims = state.totalIssuedClaims + 1;
-  state.totalActiveClaims = state.totalActiveClaims + 1;
+  state.totalIssuedClaims = state.totalIssuedClaims.plus(BigInt.fromI32(1));
+  state.totalActiveClaims = state.totalActiveClaims.plus(BigInt.fromI32(1));
   state.save();
 
   trackClaimsStats(registry.id);
@@ -68,8 +68,7 @@ export function incrementClaimsRemoved(topicScheme: TopicScheme): void {
   }
 
   const state = fetchClaimsStatsState(registry.id);
-  state.totalActiveClaims = state.totalActiveClaims - 1;
-  state.totalRemovedClaims = state.totalRemovedClaims + 1;
+  state.totalRemovedClaims = state.totalRemovedClaims.plus(BigInt.fromI32(1));
   state.save();
 
   trackClaimsStats(registry.id);
@@ -85,8 +84,8 @@ export function incrementClaimsRevoked(topicScheme: TopicScheme): void {
   }
 
   const state = fetchClaimsStatsState(registry.id);
-  state.totalActiveClaims = state.totalActiveClaims - 1;
-  state.totalRevokedClaims = state.totalRevokedClaims + 1;
+  state.totalActiveClaims = state.totalActiveClaims.minus(BigInt.fromI32(1));
+  state.totalRevokedClaims = state.totalRevokedClaims.plus(BigInt.fromI32(1));
   state.save();
 
   trackClaimsStats(registry.id);

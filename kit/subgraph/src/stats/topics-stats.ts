@@ -1,4 +1,4 @@
-import { Bytes } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   TopicSchemeRegistry,
   TopicsStatsData,
@@ -14,9 +14,9 @@ function fetchTopicsStatsState(topicSchemeRegistryId: Bytes): TopicsStatsState {
   if (!state) {
     state = new TopicsStatsState(topicSchemeRegistryId);
     state.topicSchemeRegistry = topicSchemeRegistryId;
-    state.totalRegisteredTopicSchemes = 0;
-    state.totalActiveTopicSchemes = 0;
-    state.totalRemovedTopicSchemes = 0;
+    state.totalRegisteredTopicSchemes = BigInt.fromI32(0);
+    state.totalActiveTopicSchemes = BigInt.fromI32(0);
+    state.totalRemovedTopicSchemes = BigInt.fromI32(0);
     state.save();
   }
 
@@ -45,8 +45,12 @@ export function incrementTopicSchemesRegistered(
   topicSchemeRegistry: TopicSchemeRegistry
 ): void {
   const state = fetchTopicsStatsState(topicSchemeRegistry.id);
-  state.totalRegisteredTopicSchemes = state.totalRegisteredTopicSchemes + 1;
-  state.totalActiveTopicSchemes = state.totalActiveTopicSchemes + 1;
+  state.totalRegisteredTopicSchemes = state.totalRegisteredTopicSchemes.plus(
+    BigInt.fromI32(1)
+  );
+  state.totalActiveTopicSchemes = state.totalActiveTopicSchemes.plus(
+    BigInt.fromI32(1)
+  );
   state.save();
 
   trackTopicsStats(topicSchemeRegistry);
@@ -59,8 +63,12 @@ export function incrementTopicSchemesRemoved(
   topicSchemeRegistry: TopicSchemeRegistry
 ): void {
   const state = fetchTopicsStatsState(topicSchemeRegistry.id);
-  state.totalActiveTopicSchemes = state.totalActiveTopicSchemes - 1;
-  state.totalRemovedTopicSchemes = state.totalRemovedTopicSchemes + 1;
+  state.totalActiveTopicSchemes = state.totalActiveTopicSchemes.minus(
+    BigInt.fromI32(1)
+  );
+  state.totalRemovedTopicSchemes = state.totalRemovedTopicSchemes.plus(
+    BigInt.fromI32(1)
+  );
   state.save();
 
   trackTopicsStats(topicSchemeRegistry);

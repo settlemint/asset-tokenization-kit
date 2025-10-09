@@ -1,4 +1,4 @@
-import { Bytes } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   TopicScheme,
   TopicSchemeStatsData,
@@ -16,10 +16,10 @@ function fetchTopicSchemeStatsState(
   if (!state) {
     state = new TopicSchemeStatsState(topicSchemeId);
     state.topicScheme = topicSchemeId;
-    state.totalIssuedClaims = 0;
-    state.totalActiveClaims = 0;
-    state.totalRemovedClaims = 0;
-    state.totalRevokedClaims = 0;
+    state.totalIssuedClaims = BigInt.fromI32(0);
+    state.totalActiveClaims = BigInt.fromI32(0);
+    state.totalRemovedClaims = BigInt.fromI32(0);
+    state.totalRevokedClaims = BigInt.fromI32(0);
     state.save();
   }
 
@@ -47,8 +47,8 @@ function trackTopicSchemeStats(topicSchemeId: Bytes): void {
  */
 export function incrementClaimsIssued(topicScheme: TopicScheme): void {
   const state = fetchTopicSchemeStatsState(topicScheme.id);
-  state.totalIssuedClaims = state.totalIssuedClaims + 1;
-  state.totalActiveClaims = state.totalActiveClaims + 1;
+  state.totalIssuedClaims = state.totalIssuedClaims.plus(BigInt.fromI32(1));
+  state.totalActiveClaims = state.totalActiveClaims.plus(BigInt.fromI32(1));
   state.save();
 
   trackTopicSchemeStats(topicScheme.id);
@@ -59,8 +59,7 @@ export function incrementClaimsIssued(topicScheme: TopicScheme): void {
  */
 export function incrementClaimsRemoved(topicScheme: TopicScheme): void {
   const state = fetchTopicSchemeStatsState(topicScheme.id);
-  state.totalActiveClaims = state.totalActiveClaims - 1;
-  state.totalRemovedClaims = state.totalRemovedClaims + 1;
+  state.totalRemovedClaims = state.totalRemovedClaims.plus(BigInt.fromI32(1));
   state.save();
 
   trackTopicSchemeStats(topicScheme.id);
@@ -71,8 +70,8 @@ export function incrementClaimsRemoved(topicScheme: TopicScheme): void {
  */
 export function incrementClaimsRevoked(topicScheme: TopicScheme): void {
   const state = fetchTopicSchemeStatsState(topicScheme.id);
-  state.totalActiveClaims = state.totalActiveClaims - 1;
-  state.totalRevokedClaims = state.totalRevokedClaims + 1;
+  state.totalActiveClaims = state.totalActiveClaims.minus(BigInt.fromI32(1));
+  state.totalRevokedClaims = state.totalRevokedClaims.plus(BigInt.fromI32(1));
   state.save();
 
   trackTopicSchemeStats(topicScheme.id);

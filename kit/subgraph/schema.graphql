@@ -521,13 +521,13 @@ type TopicSchemeStatsState @entity(immutable: false) {
   # Reference to the topic scheme
   topicScheme: TopicScheme!
   # Total claims issued for this topic (lifetime count)
-  totalIssuedClaims: Int!
+  totalIssuedClaims: BigInt!
   # Active claims (non-revoked, non-removed)
-  totalActiveClaims: Int!
+  totalActiveClaims: BigInt!
   # Removed claims (lifetime count)
-  totalRemovedClaims: Int!
+  totalRemovedClaims: BigInt!
   # Revoked claims (lifetime count)
-  totalRevokedClaims: Int!
+  totalRevokedClaims: BigInt!
 }
 
 type TopicSchemeStatsData @entity(timeseries: true) {
@@ -538,13 +538,13 @@ type TopicSchemeStatsData @entity(timeseries: true) {
   # Reference to the topic scheme
   topicScheme: TopicScheme!
   # Total claims issued
-  totalIssuedClaims: Int!
+  totalIssuedClaims: BigInt!
   # Active claims count
-  totalActiveClaims: Int!
+  totalActiveClaims: BigInt!
   # Removed claims count
-  totalRemovedClaims: Int!
+  totalRemovedClaims: BigInt!
   # Revoked claims count
-  totalRevokedClaims: Int!
+  totalRevokedClaims: BigInt!
 }
 
 type TopicSchemeStats
@@ -556,13 +556,13 @@ type TopicSchemeStats
   # Reference to the topic scheme
   topicScheme: TopicScheme!
   # Last count of total issued claims
-  totalIssuedClaims: Int! @aggregate(fn: "last", arg: "totalIssuedClaims")
+  totalIssuedClaims: BigInt! @aggregate(fn: "last", arg: "totalIssuedClaims")
   # Last count of active claims
-  totalActiveClaims: Int! @aggregate(fn: "last", arg: "totalActiveClaims")
+  totalActiveClaims: BigInt! @aggregate(fn: "last", arg: "totalActiveClaims")
   # Last count of removed claims
-  totalRemovedClaims: Int! @aggregate(fn: "last", arg: "totalRemovedClaims")
+  totalRemovedClaims: BigInt! @aggregate(fn: "last", arg: "totalRemovedClaims")
   # Last count of revoked claims
-  totalRevokedClaims: Int! @aggregate(fn: "last", arg: "totalRevokedClaims")
+  totalRevokedClaims: BigInt! @aggregate(fn: "last", arg: "totalRevokedClaims")
 }
 
 type TopicsStatsState @entity(immutable: false) {
@@ -571,11 +571,11 @@ type TopicsStatsState @entity(immutable: false) {
   # Reference to the registry
   topicSchemeRegistry: TopicSchemeRegistry!
   # Total topic schemes registered (lifetime count)
-  totalRegisteredTopicSchemes: Int!
+  totalRegisteredTopicSchemes: BigInt!
   # Currently active topic schemes (enabled)
-  totalActiveTopicSchemes: Int!
+  totalActiveTopicSchemes: BigInt!
   # Topic schemes removed/disabled (lifetime count)
-  totalRemovedTopicSchemes: Int!
+  totalRemovedTopicSchemes: BigInt!
 }
 
 type ClaimsStatsState @entity(immutable: false) {
@@ -584,13 +584,13 @@ type ClaimsStatsState @entity(immutable: false) {
   # Reference to the registry
   topicSchemeRegistry: TopicSchemeRegistry!
   # Total claims issued across all topics (lifetime count)
-  totalIssuedClaims: Int!
+  totalIssuedClaims: BigInt!
   # Active claims (non-revoked, non-removed)
-  totalActiveClaims: Int!
+  totalActiveClaims: BigInt!
   # Removed claims (lifetime count)
-  totalRemovedClaims: Int!
+  totalRemovedClaims: BigInt!
   # Revoked claims (lifetime count)
-  totalRevokedClaims: Int!
+  totalRevokedClaims: BigInt!
 }
 
 type TopicsStatsData @entity(timeseries: true) {
@@ -601,11 +601,11 @@ type TopicsStatsData @entity(timeseries: true) {
   # Reference to the registry
   topicSchemeRegistry: TopicSchemeRegistry!
   # Total registered topic schemes
-  totalRegisteredTopicSchemes: Int!
+  totalRegisteredTopicSchemes: BigInt!
   # Active topic schemes count
-  totalActiveTopicSchemes: Int!
+  totalActiveTopicSchemes: BigInt!
   # Removed topic schemes count
-  totalRemovedTopicSchemes: Int!
+  totalRemovedTopicSchemes: BigInt!
 }
 
 type ClaimsStatsData @entity(timeseries: true) {
@@ -616,13 +616,13 @@ type ClaimsStatsData @entity(timeseries: true) {
   # Reference to the registry
   topicSchemeRegistry: TopicSchemeRegistry!
   # Total claims issued
-  totalIssuedClaims: Int!
+  totalIssuedClaims: BigInt!
   # Active claims count
-  totalActiveClaims: Int!
+  totalActiveClaims: BigInt!
   # Removed claims count
-  totalRemovedClaims: Int!
+  totalRemovedClaims: BigInt!
   # Revoked claims count
-  totalRevokedClaims: Int!
+  totalRevokedClaims: BigInt!
 }
 
 type TopicsStats
@@ -634,13 +634,13 @@ type TopicsStats
   # Reference to the registry
   topicSchemeRegistry: TopicSchemeRegistry!
   # Last count of registered topics
-  totalRegisteredTopicSchemes: Int!
+  totalRegisteredTopicSchemes: BigInt!
     @aggregate(fn: "last", arg: "totalRegisteredTopicSchemes")
   # Last count of active topics
-  totalActiveTopicSchemes: Int!
+  totalActiveTopicSchemes: BigInt!
     @aggregate(fn: "last", arg: "totalActiveTopicSchemes")
   # Last count of removed topics
-  totalRemovedTopicSchemes: Int!
+  totalRemovedTopicSchemes: BigInt!
     @aggregate(fn: "last", arg: "totalRemovedTopicSchemes")
 }
 
@@ -653,13 +653,13 @@ type ClaimsStats
   # Reference to the registry
   topicSchemeRegistry: TopicSchemeRegistry!
   # Last count of total issued claims
-  totalIssuedClaims: Int! @aggregate(fn: "last", arg: "totalIssuedClaims")
+  totalIssuedClaims: BigInt! @aggregate(fn: "last", arg: "totalIssuedClaims")
   # Last count of active claims
-  totalActiveClaims: Int! @aggregate(fn: "last", arg: "totalActiveClaims")
+  totalActiveClaims: BigInt! @aggregate(fn: "last", arg: "totalActiveClaims")
   # Last count of removed claims
-  totalRemovedClaims: Int! @aggregate(fn: "last", arg: "totalRemovedClaims")
+  totalRemovedClaims: BigInt! @aggregate(fn: "last", arg: "totalRemovedClaims")
   # Last count of revoked claims
-  totalRevokedClaims: Int! @aggregate(fn: "last", arg: "totalRevokedClaims")
+  totalRevokedClaims: BigInt! @aggregate(fn: "last", arg: "totalRevokedClaims")
 }
 
 # Base interface
