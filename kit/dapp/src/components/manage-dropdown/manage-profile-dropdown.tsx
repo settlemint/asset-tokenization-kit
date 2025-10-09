@@ -7,9 +7,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { KycReadOutput } from "@/orpc/routes/user/kyc/routes/kyc.read.schema";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
-import { ChevronDown, Edit } from "lucide-react";
+import { ChevronDown, Edit, Lock } from "lucide-react";
 import { useMemo, useState, type ComponentType } from "react";
 import { useTranslation } from "react-i18next";
+import { ChangePasswordSheet } from "./sheets/change-password-sheet";
 import { EditKycSheet } from "./sheets/kyc/edit-kyc-sheet";
 
 interface ManageProfileDropdownProps {
@@ -17,7 +18,7 @@ interface ManageProfileDropdownProps {
   kyc: KycReadOutput | null | undefined;
 }
 
-type Action = "editKyc";
+type Action = "editKyc" | "changePassword";
 
 function isCurrentAction({
   target,
@@ -55,6 +56,15 @@ export function ManageProfileDropdown({
         disabled: false,
       });
     }
+
+    // Change Password - always available
+    arr.push({
+      id: "changePassword",
+      label: t("user:profile.changePassword.title"),
+      icon: Lock,
+      openAction: "changePassword",
+      disabled: false,
+    });
 
     return arr;
   }, [kyc, t]);
@@ -109,6 +119,15 @@ export function ManageProfileDropdown({
           currentKyc={kyc}
         />
       )}
+
+      <ChangePasswordSheet
+        open={isCurrentAction({
+          target: "changePassword",
+          current: openAction,
+        })}
+        onOpenChange={onActionOpenChange}
+        user={user}
+      />
     </>
   );
 }

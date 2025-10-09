@@ -139,6 +139,16 @@
     "editKyc": {
       "title": "Edit KYC",
       "description": "Edit your KYC information."
+    },
+    "changePassword": {
+      "title": "Change Password",
+      "description": "Update your account password for security.",
+      "success": "Your password has been successfully changed.",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
+      "revokeOtherSessions": "Sign out other devices",
+      "revokeOtherSessionsDescription": "This will sign you out of all other devices and browsers."
     }
   }
 }

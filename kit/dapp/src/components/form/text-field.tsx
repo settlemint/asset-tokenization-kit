@@ -17,12 +17,16 @@ export function TextField({
   endAddon,
   description,
   required = false,
+  type = "text",
+  autoComplete,
 }: {
   label: string;
   startAddon?: string;
   endAddon?: string;
   description?: string;
   required?: boolean;
+  type?: React.InputHTMLAttributes<HTMLInputElement>["type"];
+  autoComplete?: string;
 }) {
   // The `Field` infers that it should have a `value` type of `string`
   const field = useFieldContext<string>();
@@ -49,16 +53,25 @@ export function TextField({
     ({ className }: { className?: string }) => {
       return (
         <Input
-          type="text"
+          type={type}
           id={field.name}
           value={field.state.value ?? ""}
           onChange={handleChange}
           onBlur={handleBlur}
+          autoComplete={autoComplete}
           className={cn(className, errorClass)}
         />
       );
     },
-    [field.name, field.state.value, handleChange, handleBlur, errorClass]
+    [
+      type,
+      autoComplete,
+      field.name,
+      field.state.value,
+      handleChange,
+      handleBlur,
+      errorClass,
+    ]
   );
 
   return (
