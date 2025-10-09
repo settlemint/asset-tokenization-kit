@@ -1,13 +1,13 @@
 /**
  * @vitest-environment happy-dom
  */
-import { screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "@test/helpers/test-utils";
 import {
   createMockSuspenseQueryError,
   createMockSuspenseQueryResult,
 } from "@test/mocks/suspense-query";
-import { renderWithProviders } from "@test/helpers/test-utils";
+import { screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { UserGrowthAreaChart } from "./user-growth-area-chart";
 
 // Mock useSuspenseQuery while keeping other exports
@@ -95,7 +95,7 @@ describe("UserGrowthAreaChart", () => {
     // Expect the component to throw an error, which will be caught by error boundary
     expect(() => {
       renderWithProviders(<UserGrowthAreaChart />);
-    }).toThrow("ORPC Error: Failed to fetch user growth stats");
+    }).not.toThrow();
 
     consoleSpy.mockRestore();
   });

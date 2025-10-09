@@ -1,5 +1,5 @@
 import { InteractiveChartComponent } from "@/components/charts/interactive-chart";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
 import { formatChartDate } from "@/lib/utils/timeseries";
@@ -18,66 +18,66 @@ export interface AssetActivityInteractiveChartProps {
   defaultRange?: StatsRangePreset;
 }
 
-export function AssetActivityInteractiveChart({
-  defaultRange = "trailing7Days",
-}: AssetActivityInteractiveChartProps) {
-  const { t, i18n } = useTranslation("stats");
-  const locale = i18n.language;
+export const AssetActivityInteractiveChart = withErrorBoundary(
+  function AssetActivityInteractiveChart({
+    defaultRange = "trailing7Days",
+  }: AssetActivityInteractiveChartProps) {
+    const { t, i18n } = useTranslation("stats");
+    const locale = i18n.language;
 
-  // Internal state for selected range
-  const [selectedRange, setSelectedRange] =
-    useState<StatsRangePreset>(defaultRange);
+    // Internal state for selected range
+    const [selectedRange, setSelectedRange] =
+      useState<StatsRangePreset>(defaultRange);
 
-  const chartConfig: ChartConfig = useMemo(
-    () => ({
-      transferEventsCount: {
-        label: t("charts.assetActivity.transferEventsLabel"),
-        color: "var(--chart-1)",
-      },
-      mintEventsCount: {
-        label: t("charts.assetActivity.mintEventsLabel"),
-        color: "var(--chart-2)",
-      },
-      burnEventsCount: {
-        label: t("charts.assetActivity.burnEventsLabel"),
-        color: "var(--chart-3)",
-      },
-    }),
-    [t]
-  );
+    const chartConfig: ChartConfig = useMemo(
+      () => ({
+        transferEventsCount: {
+          label: t("charts.assetActivity.transferEventsLabel"),
+          color: "var(--chart-1)",
+        },
+        mintEventsCount: {
+          label: t("charts.assetActivity.mintEventsLabel"),
+          color: "var(--chart-2)",
+        },
+        burnEventsCount: {
+          label: t("charts.assetActivity.burnEventsLabel"),
+          color: "var(--chart-3)",
+        },
+      }),
+      [t]
+    );
 
-  const [trailing24HrRangeData, trailing7DaysRangeData] = useQueries({
-    queries: statsRangePresets.map((preset) =>
-      orpc.system.stats.assetActivity.queryOptions({
-        input: preset,
-        ...CHART_QUERY_OPTIONS,
-      })
-    ),
-  });
+    const [trailing24HrRangeData, trailing7DaysRangeData] = useQueries({
+      queries: statsRangePresets.map((preset) =>
+        orpc.system.stats.assetActivity.queryOptions({
+          input: preset,
+          ...CHART_QUERY_OPTIONS,
+        })
+      ),
+    });
 
-  // Get the raw data for the selected range
-  const rawData =
-    selectedRange === "trailing24Hours"
-      ? trailing24HrRangeData?.data
-      : trailing7DaysRangeData?.data;
+    // Get the raw data for the selected range
+    const rawData =
+      selectedRange === "trailing24Hours"
+        ? trailing24HrRangeData?.data
+        : trailing7DaysRangeData?.data;
 
-  const fallbackRange = useMemo<StatsResolvedRange>(() => {
-    return resolveStatsRange(selectedRange);
-  }, [selectedRange]);
+    const fallbackRange = useMemo<StatsResolvedRange>(() => {
+      return resolveStatsRange(selectedRange);
+    }, [selectedRange]);
 
-  const resolvedRange = rawData?.range ?? fallbackRange;
+    const resolvedRange = rawData?.range ?? fallbackRange;
 
-  const chartInterval = resolvedRange.interval;
+    const chartInterval = resolvedRange.interval;
 
-  const timeseries = rawData?.data ?? [];
-  const dataKeys = [
-    "transferEventsCount",
-    "mintEventsCount",
-    "burnEventsCount",
-  ];
+    const timeseries = rawData?.data ?? [];
+    const dataKeys = [
+      "transferEventsCount",
+      "mintEventsCount",
+      "burnEventsCount",
+    ];
 
-  return (
-    <ComponentErrorBoundary componentName="Asset Activity Chart">
+    return (
       <InteractiveChartComponent
         title={t("charts.assetActivity.title")}
         description={t("charts.assetActivity.description")}
@@ -103,6 +103,6 @@ export function AssetActivityInteractiveChart({
         selectedRange={selectedRange}
         onRangeChange={setSelectedRange}
       />
-    </ComponentErrorBoundary>
-  );
-}
+    );
+  }
+);

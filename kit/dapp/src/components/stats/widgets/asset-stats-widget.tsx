@@ -1,4 +1,4 @@
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import {
   Card,
   CardContent,
@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
  * Displays the total number of tokenized assets with dynamic breakdown by asset type.
  * Shows counts for all asset types found in the system with proper pluralization for all languages.
  */
-export function AssetStatsWidget() {
+export const AssetStatsWidget = withErrorBoundary(function AssetStatsWidget() {
   const { t } = useTranslation("stats");
   const pluralizeAsset = useAssetTypePlural();
 
@@ -36,18 +36,16 @@ export function AssetStatsWidget() {
     .join(", ");
 
   return (
-    <ComponentErrorBoundary componentName="Asset Stats Widget">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("widgets.assets.title")}</CardTitle>
-        </CardHeader>
-        <CardContent className="font-bold text-3xl">
-          {metrics.totalAssets.toLocaleString()}
-        </CardContent>
-        <CardFooter className="text-muted-foreground text-sm">
-          {assetBreakdownText || t("widgets.assets.empty")}
-        </CardFooter>
-      </Card>
-    </ComponentErrorBoundary>
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("widgets.assets.title")}</CardTitle>
+      </CardHeader>
+      <CardContent className="font-bold text-3xl">
+        {metrics.totalAssets.toLocaleString()}
+      </CardContent>
+      <CardFooter className="text-muted-foreground text-sm">
+        {assetBreakdownText || t("widgets.assets.empty")}
+      </CardFooter>
+    </Card>
   );
-}
+});

@@ -1,4 +1,5 @@
 import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { timestamp } from "@atk/zod/timestamp";
 import { z } from "zod";
 
 /**
@@ -20,9 +21,7 @@ export const StatsVolumeOutputSchema = z.object({
   /** Historical total volume data points for charting */
   volumeHistory: z.array(
     z.object({
-      /** Unix timestamp for this data point */
-      timestamp: z.number(),
-
+      timestamp: timestamp(),
       /** Total volume value as string (BigDecimal) */
       totalVolume: z.string(),
     })

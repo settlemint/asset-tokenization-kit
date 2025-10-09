@@ -1,4 +1,4 @@
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import {
   Card,
   CardContent,
@@ -17,39 +17,39 @@ import { useTranslation } from "react-i18next";
  * Shows how many tokens are awaiting launch by comparing created vs launched counts.
  * Relies on the cached asset stats query to avoid duplicate network requests.
  */
-export function PendingLaunchesWidget() {
-  const { t } = useTranslation("stats");
-  const { i18n } = useTranslation();
-  const locale = i18n.language;
+export const PendingLaunchesWidget = withErrorBoundary(
+  function PendingLaunchesWidget() {
+    const { t } = useTranslation("stats");
+    const { i18n } = useTranslation();
+    const locale = i18n.language;
 
-  const { data: metrics } = useSuspenseQuery(
-    orpc.system.stats.assets.queryOptions({ input: {} })
-  );
+    const { data: metrics } = useSuspenseQuery(
+      orpc.system.stats.assets.queryOptions({ input: {} })
+    );
 
-  const pendingLaunches = formatNumber(
-    metrics.pendingLaunchesCount,
-    {
-      type: "number",
-    },
-    locale
-  );
-  const createdCount = formatNumber(
-    metrics.tokensCreatedCount,
-    {
-      type: "number",
-    },
-    locale
-  );
-  const launchedCount = formatNumber(
-    metrics.tokensLaunchedCount,
-    {
-      type: "number",
-    },
-    locale
-  );
+    const pendingLaunches = formatNumber(
+      metrics.pendingLaunchesCount,
+      {
+        type: "number",
+      },
+      locale
+    );
+    const createdCount = formatNumber(
+      metrics.tokensCreatedCount,
+      {
+        type: "number",
+      },
+      locale
+    );
+    const launchedCount = formatNumber(
+      metrics.tokensLaunchedCount,
+      {
+        type: "number",
+      },
+      locale
+    );
 
-  return (
-    <ComponentErrorBoundary componentName="Pending Launches Widget">
+    return (
       <Card>
         <CardHeader>
           <CardTitle>{t("widgets.pendingLaunches.title")}</CardTitle>
@@ -64,6 +64,6 @@ export function PendingLaunchesWidget() {
           })}
         </CardFooter>
       </Card>
-    </ComponentErrorBoundary>
-  );
-}
+    );
+  }
+);

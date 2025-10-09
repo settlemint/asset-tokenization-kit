@@ -1,5 +1,5 @@
 import { PieChartComponent } from "@/components/charts/pie-chart";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { useBondStatusData } from "@/hooks/use-bond-status-data";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
 import { orpc } from "@/orpc/orpc-client";
@@ -23,42 +23,44 @@ export interface AssetBondStatusProgressChartProps {
  * - Type-safe with comprehensive interfaces
  * - Easily testable with isolated business logic
  */
-export function AssetBondStatusProgressChart({
-  assetAddress,
-}: AssetBondStatusProgressChartProps) {
-  // Fetch token data and bond status data in parallel
-  const { data: token } = useSuspenseQuery(
-    orpc.token.read.queryOptions({
-      input: { tokenAddress: assetAddress },
-      ...CHART_QUERY_OPTIONS,
-    })
-  );
+export const AssetBondStatusProgressChart = withErrorBoundary(
+  function AssetBondStatusProgressChart({
+    assetAddress,
+  }: AssetBondStatusProgressChartProps) {
+    // Fetch token data and bond status data in parallel
+    const { data: token } = useSuspenseQuery(
+      orpc.token.read.queryOptions({
+        input: { tokenAddress: assetAddress },
+        ...CHART_QUERY_OPTIONS,
+      })
+    );
 
-  const { data: bondStatus } = useSuspenseQuery(
-    orpc.token.statsBondStatus.queryOptions({
-      input: { tokenAddress: assetAddress },
-      ...CHART_QUERY_OPTIONS,
-    })
-  );
+    const { data: bondStatus } = useSuspenseQuery(
+      orpc.token.statsBondStatus.queryOptions({
+        input: { tokenAddress: assetAddress },
+        ...CHART_QUERY_OPTIONS,
+      })
+    );
 
-  // Transform data using our custom hook with strategy pattern
-  const chartData = useBondStatusData(token, bondStatus);
+    // Transform data using our custom hook with strategy pattern
+    const chartData = useBondStatusData(token, bondStatus);
 
-  // Create footer JSX from footer data
-  const chartFooter = chartData.footerData ? (
-    <div className="flex flex-col items-center justify-center space-y-2">
-      <div className="text-2xl font-bold">{chartData.footerData.progress}%</div>
-      <div className="text-sm text-muted-foreground text-center">
-        <div className="capitalize font-medium text-foreground">
-          {chartData.footerData.label}
+    // Create footer JSX from footer data
+    const chartFooter = chartData.footerData ? (
+      <div className="flex flex-col items-center justify-center space-y-2">
+        <div className="text-2xl font-bold">
+          {chartData.footerData.progress}%
+        </div>
+        <div className="text-sm text-muted-foreground text-center">
+          <div className="capitalize font-medium text-foreground">
+            {chartData.footerData.label}
+          </div>
         </div>
       </div>
-    </div>
-  ) : null;
+    ) : null;
 
-  // Render the chart with processed data
-  return (
-    <ComponentErrorBoundary componentName="Asset Bond Status Progress Chart">
+    // Render the chart with processed data
+    return (
       <PieChartComponent
         title={chartData.title}
         description={chartData.description}
@@ -68,6 +70,6 @@ export function AssetBondStatusProgressChart({
         nameKey="name"
         footer={chartFooter}
       />
-    </ComponentErrorBoundary>
-  );
-}
+    );
+  }
+);

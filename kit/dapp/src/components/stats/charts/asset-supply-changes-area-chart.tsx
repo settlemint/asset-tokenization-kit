@@ -1,5 +1,5 @@
 import { AreaChartComponent } from "@/components/charts/area-chart";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
 import { safeToNumber } from "@/lib/utils/format-value/safe-to-number";
@@ -21,53 +21,53 @@ export interface AssetSupplyChangesAreaChartProps {
  * Shows minted amounts as positive values and burned amounts as negative values.
  * Uses dnum for safe BigInt handling to prevent precision loss.
  */
-export function AssetSupplyChangesAreaChart({
-  assetAddress,
-  timeRange = 30,
-}: AssetSupplyChangesAreaChartProps) {
-  const { t } = useTranslation("stats");
+export const AssetSupplyChangesAreaChart = withErrorBoundary(
+  function AssetSupplyChangesAreaChart({
+    assetAddress,
+    timeRange = 30,
+  }: AssetSupplyChangesAreaChartProps) {
+    const { t } = useTranslation("stats");
 
-  // Fetch supply changes history data with optimized caching
-  const { data } = useSuspenseQuery(
-    orpc.token.statsSupplyChanges.queryOptions({
-      input: { tokenAddress: assetAddress, days: timeRange },
-      ...CHART_QUERY_OPTIONS,
-    })
-  );
+    // Fetch supply changes history data with optimized caching
+    const { data } = useSuspenseQuery(
+      orpc.token.statsSupplyChanges.queryOptions({
+        input: { tokenAddress: assetAddress, days: timeRange },
+        ...CHART_QUERY_OPTIONS,
+      })
+    );
 
-  // Transform the response data to chart format using safe conversion
-  const chartData = useMemo(() => {
-    if (!data.supplyChangesHistory?.length) {
-      return [];
-    }
+    // Transform the response data to chart format using safe conversion
+    const chartData = useMemo(() => {
+      if (!data.supplyChangesHistory?.length) {
+        return [];
+      }
 
-    // Convert burned amounts to negative values for visualization
-    return data.supplyChangesHistory.map((item) => ({
-      timestamp: format(new Date(item.timestamp * 1000), "MMM dd"),
-      totalMinted: safeToNumber(item.totalMinted),
-      totalBurned: -safeToNumber(item.totalBurned), // Negative for burned amounts
-    }));
-  }, [data.supplyChangesHistory]);
+      // Convert burned amounts to negative values for visualization
+      return data.supplyChangesHistory.map((item) => ({
+        timestamp: format(item.timestamp, "MMM dd"),
+        totalMinted: safeToNumber(item.totalMinted),
+        totalBurned: -safeToNumber(item.totalBurned), // Negative for burned amounts
+      }));
+    }, [data.supplyChangesHistory]);
 
-  // Configure chart colors and labels
-  const chartConfig: ChartConfig = useMemo(
-    () => ({
-      totalMinted: {
-        label: t("charts.supplyChanges.minted"),
-        color: "var(--chart-1)", // Green for minted
-      },
-      totalBurned: {
-        label: t("charts.supplyChanges.burned"),
-        color: "var(--chart-3)", // Red for burned
-      },
-    }),
-    [t]
-  );
+    // Configure chart colors and labels
+    const chartConfig: ChartConfig = useMemo(
+      () => ({
+        totalMinted: {
+          label: t("charts.supplyChanges.minted"),
+          color: "var(--chart-1)", // Green for minted
+        },
+        totalBurned: {
+          label: t("charts.supplyChanges.burned"),
+          color: "var(--chart-3)", // Red for burned
+        },
+      }),
+      [t]
+    );
 
-  const dataKeys = ["totalMinted", "totalBurned"];
+    const dataKeys = ["totalMinted", "totalBurned"];
 
-  return (
-    <ComponentErrorBoundary componentName="Asset Supply Changes Chart">
+    return (
       <AreaChartComponent
         title={t("charts.supplyChanges.title")}
         description={t("charts.supplyChanges.description", { days: timeRange })}
@@ -91,6 +91,6 @@ export function AssetSupplyChangesAreaChart({
           return isNegative ? `-${formatted}` : formatted;
         }}
       />
-    </ComponentErrorBoundary>
-  );
-}
+    );
+  }
+);

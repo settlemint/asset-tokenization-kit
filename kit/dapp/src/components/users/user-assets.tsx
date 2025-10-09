@@ -6,7 +6,7 @@ import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { TransferAssetSheet } from "@/components/manage-dropdown/sheets/transfer-asset-sheet";
 import { formatValue } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
@@ -56,7 +56,7 @@ const INITIAL_SORTING = [
  * <UserAssetsTable />
  * ```
  */
-export function UserAssetsTable() {
+export const UserAssetsTable = withErrorBoundary(function UserAssetsTable() {
   const router = useRouter();
   const { t } = useTranslation(["user-assets", "common"]);
   // Get the current route's path pattern from the matched route
@@ -223,53 +223,51 @@ export function UserAssetsTable() {
   );
 
   return (
-    <ComponentErrorBoundary componentName="User Assets Table">
-      <>
-        <DataTable
-          name="user-assets"
-          data={assets}
-          columns={columns}
-          urlState={{
-            enabled: true,
-            enableUrlPersistence: true,
-            routePath,
-            defaultPageSize: 20,
-            enableGlobalFilter: true,
-            enableRowSelection: true,
-            debounceMs: 300,
-          }}
-          initialColumnVisibility={{
-            name: false,
-          }}
-          advancedToolbar={{
-            enableGlobalSearch: true,
-            enableFilters: true,
-            enableExport: true,
-            enableViewOptions: true,
-            placeholder: t("user-assets:searchPlaceholder"),
-          }}
-          bulkActions={{
-            enabled: false,
-          }}
-          pagination={{
-            enablePagination: true,
-          }}
-          initialSorting={INITIAL_SORTING}
-          customEmptyState={{
-            title: t("user-assets:emptyState.title"),
-            description: t("user-assets:emptyState.description"),
-            icon: Package,
-          }}
-        />
+    <>
+      <DataTable
+        name="user-assets"
+        data={assets}
+        columns={columns}
+        urlState={{
+          enabled: true,
+          enableUrlPersistence: true,
+          routePath,
+          defaultPageSize: 20,
+          enableGlobalFilter: true,
+          enableRowSelection: true,
+          debounceMs: 300,
+        }}
+        initialColumnVisibility={{
+          name: false,
+        }}
+        advancedToolbar={{
+          enableGlobalSearch: true,
+          enableFilters: true,
+          enableExport: true,
+          enableViewOptions: true,
+          placeholder: t("user-assets:searchPlaceholder"),
+        }}
+        bulkActions={{
+          enabled: false,
+        }}
+        pagination={{
+          enablePagination: true,
+        }}
+        initialSorting={INITIAL_SORTING}
+        customEmptyState={{
+          title: t("user-assets:emptyState.title"),
+          description: t("user-assets:emptyState.description"),
+          icon: Package,
+        }}
+      />
 
-        {selectedAsset ? (
-          <TransferAssetSheet
-            open={isTransferSheetOpen}
-            onOpenChange={handleTransferSheetOpenChange}
-            asset={selectedAsset}
-          />
-        ) : null}
-      </>
-    </ComponentErrorBoundary>
+      {selectedAsset ? (
+        <TransferAssetSheet
+          open={isTransferSheetOpen}
+          onOpenChange={handleTransferSheetOpenChange}
+          asset={selectedAsset}
+        />
+      ) : null}
+    </>
   );
-}
+});

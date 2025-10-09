@@ -1,6 +1,6 @@
 import { ASSET_COLORS } from "@/components/assets/asset-colors";
 import { PieChartComponent } from "@/components/charts/pie-chart";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -22,35 +22,39 @@ const chartConfig = {
  * Displays the distribution of total value across different asset types
  * using a pie chart visualization based on real API data.
  */
-export function AssetValuePieChart() {
-  const { t } = useTranslation("stats");
+export const AssetValuePieChart = withErrorBoundary(
+  function AssetValuePieChart() {
+    const { t } = useTranslation("stats");
 
-  // Fetch value distribution data
-  const { data: metrics } = useSuspenseQuery(
-    orpc.system.stats.assets.queryOptions({
-      input: {},
-    })
-  );
+    // Fetch value distribution data
+    const { data: metrics } = useSuspenseQuery(
+      orpc.system.stats.assets.queryOptions({
+        input: {},
+      })
+    );
 
-  // Convert value breakdown to chart data format
-  const chartData = useMemo(() => {
-    return Object.entries(metrics.valueBreakdown).map(([assetType, value]) => ({
-      assetType,
-      totalValue: toNumber(value),
-    }));
-  }, [metrics.valueBreakdown]);
+    // Convert value breakdown to chart data format
+    const chartData = useMemo(() => {
+      return Object.entries(metrics.valueBreakdown).map(
+        ([assetType, value]) => ({
+          assetType,
+          totalValue: toNumber(value),
+        })
+      );
+    }, [metrics.valueBreakdown]);
 
-  // Only include config for asset types that have data
-  const activeChartConfig = useMemo(() => {
-    return Object.fromEntries(
-      Object.entries(chartConfig).filter(([key]) =>
-        chartData.some((item) => item.assetType === key && item.totalValue > 0)
-      )
-    ) satisfies ChartConfig;
-  }, [chartData]);
+    // Only include config for asset types that have data
+    const activeChartConfig = useMemo(() => {
+      return Object.fromEntries(
+        Object.entries(chartConfig).filter(([key]) =>
+          chartData.some(
+            (item) => item.assetType === key && item.totalValue > 0
+          )
+        )
+      ) satisfies ChartConfig;
+    }, [chartData]);
 
-  return (
-    <ComponentErrorBoundary componentName="Asset Value Distribution Chart">
+    return (
       <PieChartComponent
         title={t("charts.assetValue.title")}
         description={t("charts.assetValue.description")}
@@ -59,6 +63,6 @@ export function AssetValuePieChart() {
         dataKey="totalValue"
         nameKey="assetType"
       />
-    </ComponentErrorBoundary>
-  );
-}
+    );
+  }
+);

@@ -1,4 +1,4 @@
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { useBondYieldCoverage } from "@/hooks/use-bond-yield-coverage";
 import { Suspense, useMemo } from "react";
@@ -34,119 +34,119 @@ export function BondYieldCoverageChart({
   className,
 }: BondYieldCoverageChartProps) {
   return (
-    <ComponentErrorBoundary componentName="Bond Yield Coverage Chart">
-      <Suspense fallback={<ChartSkeleton />}>
-        <BondYieldCoverageChartLoader
-          assetAddress={assetAddress}
+    <Suspense fallback={<ChartSkeleton />}>
+      <BondYieldCoverageChartLoader
+        assetAddress={assetAddress}
+        title={title}
+        description={description}
+        className={className}
+      />
+    </Suspense>
+  );
+}
+
+const BondYieldCoverageChartLoader = withErrorBoundary(
+  function BondYieldCoverageChartComp({
+    assetAddress,
+    title,
+    description,
+    className,
+  }: BondYieldCoverageChartProps) {
+    const { t } = useTranslation("stats");
+    const { data, isLoading, error } = useBondYieldCoverage({ assetAddress });
+
+    // Transform data for pie chart display showing coverage status
+    const chartData = useMemo(() => {
+      if (!data?.hasYieldSchedule) {
+        return [];
+      }
+
+      // For pie chart, show coverage as percentage filled
+      const coverage = Math.min(data.yieldCoverage, 100);
+      const uncovered = Math.max(0, 100 - coverage);
+
+      return [
+        {
+          name: "Covered",
+          value: coverage,
+          fill: getCoverageColor(data.yieldCoverage),
+        },
+        {
+          name: "Uncovered",
+          value: uncovered,
+          fill: "hsl(var(--muted))",
+        },
+      ].filter((item) => item.value > 0);
+    }, [data]);
+
+    // Chart configuration for pie chart
+    const chartConfig: ChartConfig = useMemo(
+      () => ({
+        covered: {
+          label: "Covered",
+          color: data ? getCoverageColor(data.yieldCoverage) : "var(--chart-1)",
+        },
+        uncovered: {
+          label: "Uncovered",
+          color: "var(--muted)",
+        },
+      }),
+      [data]
+    );
+
+    if (isLoading) {
+      return <ChartSkeleton />;
+    }
+
+    if (error) {
+      return (
+        <ChartEmptyState
           title={title}
           description={description}
           className={className}
+          emptyMessage={t("charts.common.noData")}
+          emptyDescription="Unable to load yield coverage data"
         />
-      </Suspense>
-    </ComponentErrorBoundary>
-  );
-}
-
-function BondYieldCoverageChartLoader({
-  assetAddress,
-  title,
-  description,
-  className,
-}: BondYieldCoverageChartProps) {
-  const { t } = useTranslation("stats");
-  const { data, isLoading, error } = useBondYieldCoverage({ assetAddress });
-
-  // Transform data for pie chart display showing coverage status
-  const chartData = useMemo(() => {
-    if (!data?.hasYieldSchedule) {
-      return [];
+      );
     }
 
-    // For pie chart, show coverage as percentage filled
-    const coverage = Math.min(data.yieldCoverage, 100);
-    const uncovered = Math.max(0, 100 - coverage);
+    if (!data?.hasYieldSchedule) {
+      return (
+        <ChartEmptyState
+          title={title}
+          description={description}
+          className={className}
+          emptyMessage={"No yield schedule configured"}
+          emptyDescription="This bond has no yield schedule configured"
+        />
+      );
+    }
 
-    return [
-      {
-        name: "Covered",
-        value: coverage,
-        fill: getCoverageColor(data.yieldCoverage),
-      },
-      {
-        name: "Uncovered",
-        value: uncovered,
-        fill: "hsl(var(--muted))",
-      },
-    ].filter((item) => item.value > 0);
-  }, [data]);
+    if (!data.isRunning) {
+      return (
+        <ChartEmptyState
+          title={title}
+          description={description}
+          className={className}
+          emptyMessage={"Yield schedule is not active"}
+          emptyDescription="Yield schedule is not currently active"
+        />
+      );
+    }
 
-  // Chart configuration for pie chart
-  const chartConfig: ChartConfig = useMemo(
-    () => ({
-      covered: {
-        label: "Covered",
-        color: data ? getCoverageColor(data.yieldCoverage) : "var(--chart-1)",
-      },
-      uncovered: {
-        label: "Uncovered",
-        color: "var(--muted)",
-      },
-    }),
-    [data]
-  );
-
-  if (isLoading) {
-    return <ChartSkeleton />;
-  }
-
-  if (error) {
     return (
-      <ChartEmptyState
+      <PieChartComponent
         title={title}
         description={description}
+        data={chartData}
+        config={chartConfig}
+        dataKey="value"
+        nameKey="name"
         className={className}
-        emptyMessage={t("charts.common.noData")}
-        emptyDescription="Unable to load yield coverage data"
       />
     );
   }
-
-  if (!data?.hasYieldSchedule) {
-    return (
-      <ChartEmptyState
-        title={title}
-        description={description}
-        className={className}
-        emptyMessage={"No yield schedule configured"}
-        emptyDescription="This bond has no yield schedule configured"
-      />
-    );
-  }
-
-  if (!data.isRunning) {
-    return (
-      <ChartEmptyState
-        title={title}
-        description={description}
-        className={className}
-        emptyMessage={"Yield schedule is not active"}
-        emptyDescription="Yield schedule is not currently active"
-      />
-    );
-  }
-
-  return (
-    <PieChartComponent
-      title={title}
-      description={description}
-      data={chartData}
-      config={chartConfig}
-      dataKey="value"
-      nameKey="name"
-      className={className}
-    />
-  );
-}
+);
 
 /**
  * Determines the color based on coverage percentage
