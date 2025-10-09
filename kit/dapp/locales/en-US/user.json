@@ -177,5 +177,12 @@
       "revokeOtherSessions": "Sign out other devices",
       "revokeOtherSessionsDescription": "This will sign you out of all other devices and browsers."
     }
+  },
+  "wallet": {
+    "title": "Wallet",
+    "description": "Manage your wallet address and security settings.",
+    "userWallet": "User Wallet",
+    "userWalletDescription": "Your wallet address and QR code for receiving payments.",
+    "qrCode": "QR Code"
   }
 }
