@@ -1,0 +1,43 @@
+{
+  "title": "Actions",
+  "description": "Track upcoming, pending, and completed actions you are authorized to execute.",
+  "tabs": {
+    "pending": "Pending",
+    "upcoming": "Upcoming",
+    "completed": "Completed"
+  },
+  "table": {
+    "columns": {
+      "name": "Action",
+      "status": "Status",
+      "type": "Type",
+      "activeAt": "Scheduled",
+      "executedAt": "Completed",
+      "executedBy": "Executed by"
+    },
+    "empty": {
+      "title": "No actions to show",
+      "description": "You’re all caught up. We’ll list new actions here as they become available."
+    },
+    "authorizedBadge": "{{count}} authorized"
+  },
+  "filters": {
+    "searchPlaceholder": "Search actions"
+  },
+  "status": {
+    "PENDING": "Upcoming",
+    "ACTIVE": "Pending",
+    "EXECUTED": "Completed",
+    "EXPIRED": "Expired"
+  },
+  "labels": {
+    "MatureBond": "Mature bond",
+    "ApproveXvPSettlement": "Approve settlement",
+    "ExecuteXvPSettlement": "Execute settlement"
+  },
+  "types": {
+    "bond": "Bond",
+    "settlement": "Settlement",
+    "generic": "Action"
+  }
+}
