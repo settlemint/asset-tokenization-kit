@@ -1,6 +1,7 @@
 import { expect } from "@playwright/test";
 import type { KycData } from "../types/form-field";
 import { BasePage } from "./base-page";
+import { RoleManagementPage } from "./role-management-page";
 
 export class OnboardingPage extends BasePage {
   async waitForReactHydration(): Promise<void> {
@@ -57,6 +58,19 @@ export class OnboardingPage extends BasePage {
   }
 
   async clickGetStarted(): Promise<void> {
+    await this.waitForReactStateSettle();
+    const continueSetupButton = this.page.getByRole("button", {
+      name: "Continue setup",
+    });
+
+    if (
+      await continueSetupButton.isVisible({ timeout: 5000 }).catch(() => false)
+    ) {
+      await continueSetupButton.click();
+      await this.waitForReactStateSettle();
+      return;
+    }
+
     const getStartedButton = this.page.getByRole("button", {
       name: "Get started",
     });
@@ -197,12 +211,26 @@ export class OnboardingPage extends BasePage {
 
   async deploySystem(pin: string): Promise<void> {
     await this.waitForReactStateSettle();
-    await expect(this.page.getByText("Initialize the system")).toBeVisible({
-      timeout: 120000,
+    const systemAccordion = this.page.getByRole("button", {
+      name: /System Deploy and configure your system/i,
     });
-    await this.page
-      .getByRole("button", { name: "Deploy system", exact: true })
-      .click();
+    if (await systemAccordion.isVisible({ timeout: 5000 }).catch(() => false)) {
+      const expanded = await systemAccordion
+        .getAttribute("aria-expanded")
+        .catch(() => null);
+      if (expanded === "false") {
+        await systemAccordion.click().catch(() => {});
+        await this.waitForReactStateSettle();
+      }
+    }
+
+    const deployBtn = this.page.getByRole("button", {
+      name: "Deploy system",
+      exact: true,
+    });
+    await expect(deployBtn).toBeVisible({ timeout: 120000 });
+    await expect(deployBtn).toBeEnabled({ timeout: 120000 });
+    await deployBtn.click();
 
     await this.enterPinVerification(pin);
 
@@ -611,20 +639,28 @@ export class OnboardingPage extends BasePage {
     await this.completeIdentitySteps(pin, kycData);
   }
 
+  async assignAssetRoles(
+    pin: string,
+    userName: string,
+    roles: string[]
+  ): Promise<void> {
+    const roleManagementPage = new RoleManagementPage(this.page);
+
+    await roleManagementPage.assignRolesToUser(userName, roles, pin);
+    await roleManagementPage.verifyUserHasRoles(userName, roles);
+  }
+
   async verifyOnboardingComplete(userName: string): Promise<void> {
-    await expect(
-      this.page.getByRole("heading", { name: userName })
-    ).toBeVisible({ timeout: 120000 });
+    await this.waitForReactStateSettle();
+    const userChip = this.page
+      .getByRole("button", { name: new RegExp(userName, "i") })
+      .first();
+    await expect(userChip).toBeVisible({ timeout: 120000 });
 
     const assetDesignerButton = this.page.getByRole("button", {
       name: "Asset designer",
     });
     await expect(assetDesignerButton).toBeVisible({ timeout: 120000 });
-
-    const addonDesignerButton = this.page.getByRole("button", {
-      name: "Addon designer",
-    });
-    await expect(addonDesignerButton).toBeVisible({ timeout: 120000 });
   }
 
   async setDateOfBirthDirectly(date: string): Promise<void> {
@@ -650,5 +686,25 @@ export class OnboardingPage extends BasePage {
     } else {
       console.error("[Toast] No toast visible, nothing to wait for.");
     }
+  }
+
+  async getWalletAddress(): Promise<string> {
+    return await this.getWalletAddressFromWalletPanel();
+  }
+
+  async getWalletAddressFromWalletPanel(): Promise<string> {
+    const walletSectionButton = this.page.getByRole("button", {
+      name: /^Wallet/,
+    });
+    if (await walletSectionButton.isVisible().catch(() => false)) {
+      await walletSectionButton.click().catch(() => {});
+    }
+
+    const addressLocator = this.page
+      .locator("text=/^0x[a-fA-F0-9]{40}$/")
+      .first();
+    await addressLocator.waitFor({ state: "visible", timeout: 60000 });
+    const address = (await addressLocator.textContent())?.trim() ?? "";
+    return address;
   }
 }

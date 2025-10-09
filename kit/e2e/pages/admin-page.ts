@@ -2,6 +2,7 @@ import type { Locator } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { formatAmount, searchAndSelectFromDialog } from "../utils/page-utils";
 import { BasePage } from "./base-page";
+import { confirmPinCode } from "../utils/form-utils";
 
 export class AdminPage extends BasePage {
   private static readonly CURRENCY_CODE_REGEX = /[A-Z]+$/;
@@ -615,6 +616,144 @@ export class AdminPage extends BasePage {
     await nextButton.click();
   }
 
+  async unpauseAsset(options: {
+    pincode: string;
+    user: string;
+  }): Promise<void> {
+    await this.page.reload();
+
+    const manageBtn = this.page.getByRole("button", { name: "Manage Asset" });
+    await manageBtn.click();
+
+    const unpauseOption = this.page.getByRole("menuitem", {
+      name: "Unpause Token",
+    });
+    await expect(unpauseOption).toBeVisible({ timeout: 15000 });
+    await unpauseOption.click();
+
+    await this.page.waitForSelector(
+      "button[data-slot='button']:has-text('Unpause Token')",
+      { timeout: 15000 }
+    );
+    await this.page.getByRole("button", { name: "Unpause Token" }).click();
+    await confirmPinCode(this.page, options.pincode, "Unpause Token Transfers");
+
+    const activeBadge = this.page
+      .locator('[data-slot="badge"]')
+      .filter({ hasText: /^Active$/ });
+    await expect(activeBadge).toBeVisible();
+  }
+
+  async grantAssetPermissions(options: {
+    walletAddress?: string;
+    user: string;
+    permissions: string[];
+    pincode: string;
+    assetName?: string;
+  }): Promise<void> {
+    await expect(this.page.getByRole("heading", { level: 1 })).toBeVisible({
+      timeout: 10000,
+    });
+    if (options.assetName) {
+      await expect
+        .poll(
+          () =>
+            this.page
+              .getByRole("heading", { level: 1 })
+              .filter({ hasText: options.assetName })
+              .isVisible(),
+          { timeout: 30000 }
+        )
+        .toBe(true);
+    }
+
+    await this.page.waitForLoadState("networkidle");
+    const permissionsTab = this.page.getByRole("link", { name: "Permissions" });
+
+    await this.page.waitForLoadState("networkidle");
+    await expect
+      .poll(() => permissionsTab.isVisible(), { timeout: 30000 })
+      .toBe(true);
+
+    await permissionsTab.click();
+    await this.page.waitForSelector("table tbody tr", { timeout: 10000 });
+
+    const changeRolesBtn = this.page.getByRole("button", {
+      name: "Change roles",
+    });
+    await expect
+      .poll(() => changeRolesBtn.isVisible(), { timeout: 30000 })
+      .toBe(true);
+    await changeRolesBtn.click();
+
+    const dialog = this.page.getByRole("dialog");
+    await expect(dialog).toBeVisible({ timeout: 10000 });
+
+    const searchTerm = options.user.split(/\s+/)[0] ?? options.user;
+    const userCombobox = dialog.getByRole("combobox").first();
+    await expect(userCombobox).toBeVisible({ timeout: 10000 });
+    await userCombobox.click();
+
+    const userInput = userCombobox.locator("input").first();
+    if ((await userInput.count()) > 0) {
+      await userInput.fill("");
+      await userInput.type(searchTerm, { delay: 140 });
+    } else {
+      await this.page.keyboard.type(searchTerm, { delay: 140 });
+    }
+
+    await this.page
+      .getByRole("option")
+      .first()
+      .waitFor({ state: "visible", timeout: 5000 })
+      .catch(async () => {
+        await this.page.waitForTimeout(300);
+      });
+    await this.page.keyboard.press("ArrowDown");
+    await this.page.waitForTimeout(150);
+    await this.page.keyboard.press("Enter");
+    await this.waitForReactStateSettle();
+
+    const roleButtons = this.page.locator(
+      "button[data-slot='tooltip-trigger']"
+    );
+    for (const permission of options.permissions) {
+      const btn = roleButtons.filter({ hasText: permission }).first();
+      await expect(btn).toBeVisible({ timeout: 5000 });
+      const isSelected =
+        (await btn.locator("svg.lucide-square-check-big").count()) > 0;
+      if (!isSelected) {
+        await btn.click();
+      }
+    }
+
+    await this.page.getByRole("button", { name: "Continue" }).click();
+
+    await this.page.getByRole("button", { name: /Save|Confirm/i }).click();
+
+    await confirmPinCode(this.page, options.pincode, "Change roles");
+
+    await this.page.waitForSelector("table tbody tr", { timeout: 15000 });
+
+    const row = this.page
+      .locator("tr")
+      .filter({ has: this.page.getByText(options.user, { exact: true }) });
+    await expect(row).toBeVisible();
+
+    const badges = row.locator('[data-slot="badge"]');
+    await expect(badges).toHaveCount(4);
+
+    const expectedRoles = [
+      "Default Admin",
+      "Emergency",
+      "Governance",
+      "Supply Management",
+    ];
+    for (let i = 0; i < expectedRoles.length; i++) {
+      await expect(badges.nth(i)).toHaveText(expectedRoles[i]);
+    }
+  }
+
   async topUpAsset(options: {
     sidebarAssetTypes: string;
     name: string;
@@ -790,38 +929,48 @@ export class AdminPage extends BasePage {
   }
 
   async chooseAssetTypeFromSidebar(options: { sidebarAssetTypes: string }) {
-    const isExpanded = await this.isSidebarMenuExpanded(
-      options.sidebarAssetTypes
-    );
+    const groupMap: Record<string, string> = {
+      Equities: "Flexible Income",
+      Funds: "Flexible Income",
+      Bonds: "Fixed Income",
+      Stablecoins: "Cash Equivalent",
+      Deposits: "Cash Equivalent",
+    };
+    const groupName =
+      groupMap[options.sidebarAssetTypes] ?? options.sidebarAssetTypes;
 
-    const assetTypeButton = this.page.getByRole("button", {
-      name: options.sidebarAssetTypes,
-    });
-
+    const isExpanded = await this.isSidebarMenuExpanded(groupName);
+    const groupButton = this.page.getByRole("button", { name: groupName });
     if (!isExpanded) {
-      await assetTypeButton.click();
+      await groupButton.click();
     }
 
     const singularForm = this.getSingularForm(options.sidebarAssetTypes);
 
-    const viewAllLink = this.page
+    let viewAllLink = this.page
       .locator(
         `a[data-sidebar="menu-sub-button"][href*="/assets/${singularForm}"]`
       )
       .filter({ hasText: "View all" });
 
-    await viewAllLink.waitFor({ state: "visible", timeout: 15000 });
+    if ((await viewAllLink.count()) === 0) {
+      viewAllLink = this.page
+        .locator(`a[data-sidebar="menu-sub-button"]`)
+        .filter({ hasText: options.sidebarAssetTypes });
+    }
 
-    await viewAllLink.evaluate((element: HTMLElement) => {
+    await viewAllLink.first().waitFor({ state: "visible", timeout: 20000 });
+    await viewAllLink.first().evaluate((element: HTMLElement) => {
       element.scrollIntoView({ behavior: "smooth", block: "center" });
       return new Promise((resolve) => setTimeout(resolve, 100));
     });
+    await viewAllLink.first().click();
 
-    await viewAllLink.click();
-    await this.page.waitForURL(`**/${singularForm}`);
     await Promise.all([
-      this.page.waitForSelector("table tbody"),
-      this.page.getByRole("button", { name: "Filter" }),
+      this.page.waitForSelector("table tbody", { timeout: 20000 }),
+      this.page
+        .getByRole("button", { name: "Filter" })
+        .waitFor({ state: "visible", timeout: 20000 }),
     ]);
   }
 
@@ -867,30 +1016,20 @@ export class AdminPage extends BasePage {
   }
 
   async clickAssetDetails(assetName: string): Promise<void> {
-    const rows = this.page.locator("tbody tr");
-    const rowCount = await rows.count();
+    const nameCell = this.page
+      .locator("td")
+      .filter({ hasText: assetName })
+      .first();
+    await expect
+      .poll(() => nameCell.isVisible(), { timeout: 30000 })
+      .toBe(true);
 
-    let assetFound = false;
-    for (let i = 0; i < rowCount; i++) {
-      const row = rows.nth(i);
-      const nameCell = row.locator("td").nth(1);
-      const nameText = await nameCell.textContent();
+    await nameCell.click();
 
-      if (nameText?.trim() === assetName) {
-        const detailsLink = row.getByRole("link", { name: "Details" });
-        await detailsLink.click();
-        assetFound = true;
-        break;
-      }
-    }
-
-    if (!assetFound) {
-      throw new Error(
-        `Asset with name "${assetName}" not found in the current table view`
-      );
-    }
-
-    await this.page.waitForURL(/.*\/assets\/.*\/0x[a-fA-F0-9]{40}/);
+    await this.page.waitForURL(
+      /\/token\/0x[a-fA-F0-9]{40}\/0x[a-fA-F0-9]{40}/,
+      { timeout: 30000 }
+    );
   }
 
   public getTableBodyLocator(): Locator {
