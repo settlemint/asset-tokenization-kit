@@ -130,15 +130,42 @@
     "lastNameInfo": "Legal last name"
   },
   "details": {
-    "kycInformation": "KYC Information"
+    "kycInformation": "Information"
   },
   "profile": {
     "title": "Profile",
     "description": "View and manage your profile information.",
     "manage": "Manage Profile",
+    "email": {
+      "change-disabled": "Email changes are disabled in this environment.",
+      "current": "Current email"
+    },
+    "messages": {
+      "genericError": "Something went wrong. Please try again."
+    },
+    "kyc": {
+      "cardDescription": "Manage your personal information.",
+      "actions": {
+        "success": "Your information has been successfully updated."
+      },
+      "fields": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "dob": "Date of birth",
+        "country": "Country of residence",
+        "residencyStatus": "Residency status",
+        "nationalId": "National ID"
+      },
+      "residencyStatusOptions": {
+        "resident": "Sole resident - I live in and am legally/tax resident only in the country above",
+        "non_resident": "Non-resident - I do not live in or am not considered a resident of the country above",
+        "dual_resident": "Dual resident - I am legally/tax resident in more than one country",
+        "unknown": "Prefer not to say"
+      }
+    },
     "editKyc": {
-      "title": "Edit KYC",
-      "description": "Edit your KYC information."
+      "title": "Edit information",
+      "description": "Edit your information."
     },
     "changePassword": {
       "title": "Change Password",

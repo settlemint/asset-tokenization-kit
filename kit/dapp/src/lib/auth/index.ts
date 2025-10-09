@@ -16,6 +16,7 @@
  * @see {@link ../db/schemas/auth} - Database schema for authentication
  */
 
+import { authPublicConfig } from "@/lib/auth/public-config";
 import { pincode } from "@/lib/auth/plugins/pincode-plugin";
 import { secretCodes } from "@/lib/auth/plugins/secret-codes-plugin";
 import { twoFactor } from "@/lib/auth/plugins/two-factor";
@@ -103,7 +104,7 @@ const options = {
      * Allow users to change their email addresses.
      */
     changeEmail: {
-      enabled: false,
+      enabled: authPublicConfig.changeEmailEnabled,
     },
 
     /**
