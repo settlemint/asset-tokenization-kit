@@ -9,7 +9,7 @@ import { fetchEvent } from "../event/fetch/event";
 import {
   incrementTopicSchemesRegistered,
   incrementTopicSchemesRemoved,
-} from "../stats/topics-stats";
+} from "../stats/topic-schemes";
 import { fetchTopicScheme } from "./fetch/topic-scheme";
 import { fetchTopicSchemeRegistry } from "./fetch/topic-scheme-registry";
 

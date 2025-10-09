@@ -34,7 +34,7 @@ import {
   incrementClaimsIssued,
   incrementClaimsRemoved,
   incrementClaimsRevoked,
-} from "../stats/topic-scheme-stats";
+} from "../stats/topic-scheme-claims";
 import { fetchSystem } from "../system/fetch/system";
 import {
   isCollateralClaim,

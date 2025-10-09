@@ -108,10 +108,18 @@ describe("TopicSchemeStats", () => {
       const totalRevokedClaims = topicScheme.stats?.totalRevokedClaims;
 
       expect(topicScheme.stats).not.toBeNull();
-      expect(totalActiveClaims).toBe(expectedStats.totalActiveClaims);
-      expect(totalIssuedClaims).toBe(expectedStats.totalIssuedClaims);
-      expect(totalRemovedClaims).toBe(expectedStats.totalRemovedClaims);
-      expect(totalRevokedClaims).toBe(expectedStats.totalRevokedClaims);
+      expect(totalActiveClaims).toBe(
+        expectedStats.totalActiveClaims.toString()
+      );
+      expect(totalIssuedClaims).toBe(
+        expectedStats.totalIssuedClaims.toString()
+      );
+      expect(totalRemovedClaims).toBe(
+        expectedStats.totalRemovedClaims.toString()
+      );
+      expect(totalRevokedClaims).toBe(
+        expectedStats.totalRevokedClaims.toString()
+      );
     }
   });
 
@@ -151,19 +159,19 @@ describe("TopicSchemeStats", () => {
 
     for (const topicScheme of topicSchemes) {
       if (topicScheme.stats) {
-        sumIssuedClaims += topicScheme.stats.totalIssuedClaims;
-        sumActiveClaims += topicScheme.stats.totalActiveClaims;
-        sumRemovedClaims += topicScheme.stats.totalRemovedClaims;
-        sumRevokedClaims += topicScheme.stats.totalRevokedClaims;
+        sumIssuedClaims += Number(topicScheme.stats.totalIssuedClaims);
+        sumActiveClaims += Number(topicScheme.stats.totalActiveClaims);
+        sumRemovedClaims += Number(topicScheme.stats.totalRemovedClaims);
+        sumRevokedClaims += Number(topicScheme.stats.totalRevokedClaims);
       }
     }
 
     const overallStats = claimsStatsStates[0]!;
 
     // The sum of all topic scheme stats should equal the overall claims stats
-    expect(sumIssuedClaims).toBe(overallStats.totalIssuedClaims);
-    expect(sumActiveClaims).toBe(overallStats.totalActiveClaims);
-    expect(sumRemovedClaims).toBe(overallStats.totalRemovedClaims);
-    expect(sumRevokedClaims).toBe(overallStats.totalRevokedClaims);
+    expect(sumIssuedClaims).toBe(Number(overallStats.totalIssuedClaims));
+    expect(sumActiveClaims).toBe(Number(overallStats.totalActiveClaims));
+    expect(sumRemovedClaims).toBe(Number(overallStats.totalRemovedClaims));
+    expect(sumRevokedClaims).toBe(Number(overallStats.totalRevokedClaims));
   });
 });

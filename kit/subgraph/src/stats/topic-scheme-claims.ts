@@ -1,20 +1,20 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   TopicScheme,
-  TopicSchemeStatsData,
-  TopicSchemeStatsState,
+  TopicSchemeClaimsData,
+  TopicSchemeClaimsState,
 } from "../../generated/schema";
 
 /**
- * Fetch or create TopicSchemeStatsState entity
+ * Fetch or create TopicSchemeClaimsState entity
  */
-function fetchTopicSchemeStatsState(
+function fetchTopicSchemeClaimsState(
   topicSchemeId: Bytes
-): TopicSchemeStatsState {
-  let state = TopicSchemeStatsState.load(topicSchemeId);
+): TopicSchemeClaimsState {
+  let state = TopicSchemeClaimsState.load(topicSchemeId);
 
   if (!state) {
-    state = new TopicSchemeStatsState(topicSchemeId);
+    state = new TopicSchemeClaimsState(topicSchemeId);
     state.topicScheme = topicSchemeId;
     state.totalIssuedClaims = BigInt.fromI32(0);
     state.totalActiveClaims = BigInt.fromI32(0);
@@ -27,13 +27,13 @@ function fetchTopicSchemeStatsState(
 }
 
 /**
- * Track topic scheme stats by creating a timeseries data point
+ * Track topic scheme claims stats by creating a timeseries data point
  */
-function trackTopicSchemeStats(topicSchemeId: Bytes): void {
-  const state = fetchTopicSchemeStatsState(topicSchemeId);
+function trackTopicSchemeClaims(topicSchemeId: Bytes): void {
+  const state = fetchTopicSchemeClaimsState(topicSchemeId);
 
   // Create timeseries entry - ID is auto-generated for timeseries entities
-  const statsData = new TopicSchemeStatsData(1);
+  const statsData = new TopicSchemeClaimsData(1);
   statsData.topicScheme = topicSchemeId;
   statsData.totalIssuedClaims = state.totalIssuedClaims;
   statsData.totalActiveClaims = state.totalActiveClaims;
@@ -46,12 +46,12 @@ function trackTopicSchemeStats(topicSchemeId: Bytes): void {
  * Increment claim issued counter for a topic scheme
  */
 export function incrementClaimsIssued(topicScheme: TopicScheme): void {
-  const state = fetchTopicSchemeStatsState(topicScheme.id);
+  const state = fetchTopicSchemeClaimsState(topicScheme.id);
   state.totalIssuedClaims = state.totalIssuedClaims.plus(BigInt.fromI32(1));
   state.totalActiveClaims = state.totalActiveClaims.plus(BigInt.fromI32(1));
   state.save();
 
-  trackTopicSchemeStats(topicScheme.id);
+  trackTopicSchemeClaims(topicScheme.id);
 }
 
 /**
@@ -61,7 +61,7 @@ export function incrementClaimsRemoved(
   topicScheme: TopicScheme,
   wasAlreadyRevoked: boolean
 ): void {
-  const state = fetchTopicSchemeStatsState(topicScheme.id);
+  const state = fetchTopicSchemeClaimsState(topicScheme.id);
   state.totalRemovedClaims = state.totalRemovedClaims.plus(BigInt.fromI32(1));
 
   // If the claim was not already revoked, we need to decrement active claims
@@ -71,17 +71,17 @@ export function incrementClaimsRemoved(
 
   state.save();
 
-  trackTopicSchemeStats(topicScheme.id);
+  trackTopicSchemeClaims(topicScheme.id);
 }
 
 /**
  * Increment claim revoked counter for a topic scheme
  */
 export function incrementClaimsRevoked(topicScheme: TopicScheme): void {
-  const state = fetchTopicSchemeStatsState(topicScheme.id);
+  const state = fetchTopicSchemeClaimsState(topicScheme.id);
   state.totalActiveClaims = state.totalActiveClaims.minus(BigInt.fromI32(1));
   state.totalRevokedClaims = state.totalRevokedClaims.plus(BigInt.fromI32(1));
   state.save();
 
-  trackTopicSchemeStats(topicScheme.id);
+  trackTopicSchemeClaims(topicScheme.id);
 }

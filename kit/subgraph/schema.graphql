@@ -484,8 +484,8 @@ type TopicSchemeRegistry @entity(immutable: false) {
   account: Account!
   # List of topic schemes in this registry
   schemes: [TopicScheme!]! @derivedFrom(field: "registry")
-  # Statistical data for this registry
-  stats: TopicsStatsState @derivedFrom(field: "topicSchemeRegistry")
+  # Statistical data for topic scheme registration
+  stats: TopicSchemesState @derivedFrom(field: "topicSchemeRegistry")
   # Statistical data for all claims in this registry
   claimsStats: ClaimsStatsState @derivedFrom(field: "topicSchemeRegistry")
   # Transaction hash where this was deployed
@@ -511,11 +511,11 @@ type TopicScheme @entity(immutable: false) {
   trustedIssuers: [TrustedIssuer!]! @derivedFrom(field: "claimTopics")
   # Bidirectional relationship for claims
   claims: [IdentityClaim!]! @derivedFrom(field: "topicScheme")
-  # Statistics state entity
-  stats: TopicSchemeStatsState @derivedFrom(field: "topicScheme")
+  # Statistics state entity for claims issued under this topic scheme
+  stats: TopicSchemeClaimsState @derivedFrom(field: "topicScheme")
 }
 
-type TopicSchemeStatsState @entity(immutable: false) {
+type TopicSchemeClaimsState @entity(immutable: false) {
   # Composite key: topic scheme ID
   id: Bytes!
   # Reference to the topic scheme
@@ -530,7 +530,7 @@ type TopicSchemeStatsState @entity(immutable: false) {
   totalRevokedClaims: BigInt!
 }
 
-type TopicSchemeStatsData @entity(timeseries: true) {
+type TopicSchemeClaimsData @entity(timeseries: true) {
   # Unique identifier for timeseries entry (auto-generated)
   id: Int8!
   # Timestamp of this data point
@@ -547,8 +547,8 @@ type TopicSchemeStatsData @entity(timeseries: true) {
   totalRevokedClaims: BigInt!
 }
 
-type TopicSchemeStats
-  @aggregation(intervals: ["hour", "day"], source: "TopicSchemeStatsData") {
+type TopicSchemeClaimsStats
+  @aggregation(intervals: ["hour", "day"], source: "TopicSchemeClaimsData") {
   # Unique identifier for aggregated entry
   id: Int8!
   # Timestamp of aggregation period
@@ -565,7 +565,7 @@ type TopicSchemeStats
   totalRevokedClaims: BigInt! @aggregate(fn: "last", arg: "totalRevokedClaims")
 }
 
-type TopicsStatsState @entity(immutable: false) {
+type TopicSchemesState @entity(immutable: false) {
   # TopicSchemeRegistry address
   id: Bytes!
   # Reference to the registry
@@ -593,7 +593,7 @@ type ClaimsStatsState @entity(immutable: false) {
   totalRevokedClaims: BigInt!
 }
 
-type TopicsStatsData @entity(timeseries: true) {
+type TopicSchemesData @entity(timeseries: true) {
   # Auto-generated ID for timeseries
   id: Int8!
   # Timestamp of this data point
@@ -625,8 +625,8 @@ type ClaimsStatsData @entity(timeseries: true) {
   totalRevokedClaims: BigInt!
 }
 
-type TopicsStats
-  @aggregation(intervals: ["hour", "day"], source: "TopicsStatsData") {
+type TopicSchemesStats
+  @aggregation(intervals: ["hour", "day"], source: "TopicSchemesData") {
   # Auto-generated ID
   id: Int8!
   # Timestamp of aggregation period

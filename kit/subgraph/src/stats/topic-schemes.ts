@@ -1,18 +1,20 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   TopicSchemeRegistry,
-  TopicsStatsData,
-  TopicsStatsState,
+  TopicSchemesData,
+  TopicSchemesState,
 } from "../../generated/schema";
 
 /**
- * Fetch or create TopicsStatsState entity
+ * Fetch or create TopicSchemesState entity
  */
-function fetchTopicsStatsState(topicSchemeRegistryId: Bytes): TopicsStatsState {
-  let state = TopicsStatsState.load(topicSchemeRegistryId);
+function fetchTopicSchemesState(
+  topicSchemeRegistryId: Bytes
+): TopicSchemesState {
+  let state = TopicSchemesState.load(topicSchemeRegistryId);
 
   if (!state) {
-    state = new TopicsStatsState(topicSchemeRegistryId);
+    state = new TopicSchemesState(topicSchemeRegistryId);
     state.topicSchemeRegistry = topicSchemeRegistryId;
     state.totalRegisteredTopicSchemes = BigInt.fromI32(0);
     state.totalActiveTopicSchemes = BigInt.fromI32(0);
@@ -24,13 +26,13 @@ function fetchTopicsStatsState(topicSchemeRegistryId: Bytes): TopicsStatsState {
 }
 
 /**
- * Track topics stats by creating a timeseries data point
+ * Track topic schemes stats by creating a timeseries data point
  */
-function trackTopicsStats(topicSchemeRegistry: TopicSchemeRegistry): void {
-  const state = fetchTopicsStatsState(topicSchemeRegistry.id);
+function trackTopicSchemes(topicSchemeRegistry: TopicSchemeRegistry): void {
+  const state = fetchTopicSchemesState(topicSchemeRegistry.id);
 
   // Create timeseries entry - ID is auto-generated for timeseries entities
-  const statsData = new TopicsStatsData(1);
+  const statsData = new TopicSchemesData(1);
   statsData.topicSchemeRegistry = topicSchemeRegistry.id;
   statsData.totalRegisteredTopicSchemes = state.totalRegisteredTopicSchemes;
   statsData.totalActiveTopicSchemes = state.totalActiveTopicSchemes;
@@ -44,7 +46,7 @@ function trackTopicsStats(topicSchemeRegistry: TopicSchemeRegistry): void {
 export function incrementTopicSchemesRegistered(
   topicSchemeRegistry: TopicSchemeRegistry
 ): void {
-  const state = fetchTopicsStatsState(topicSchemeRegistry.id);
+  const state = fetchTopicSchemesState(topicSchemeRegistry.id);
   state.totalRegisteredTopicSchemes = state.totalRegisteredTopicSchemes.plus(
     BigInt.fromI32(1)
   );
@@ -53,7 +55,7 @@ export function incrementTopicSchemesRegistered(
   );
   state.save();
 
-  trackTopicsStats(topicSchemeRegistry);
+  trackTopicSchemes(topicSchemeRegistry);
 }
 
 /**
@@ -62,7 +64,7 @@ export function incrementTopicSchemesRegistered(
 export function incrementTopicSchemesRemoved(
   topicSchemeRegistry: TopicSchemeRegistry
 ): void {
-  const state = fetchTopicsStatsState(topicSchemeRegistry.id);
+  const state = fetchTopicSchemesState(topicSchemeRegistry.id);
   state.totalActiveTopicSchemes = state.totalActiveTopicSchemes.minus(
     BigInt.fromI32(1)
   );
@@ -71,5 +73,5 @@ export function incrementTopicSchemesRemoved(
   );
   state.save();
 
-  trackTopicsStats(topicSchemeRegistry);
+  trackTopicSchemes(topicSchemeRegistry);
 }

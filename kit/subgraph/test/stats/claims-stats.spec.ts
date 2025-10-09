@@ -32,9 +32,9 @@ describe("ClaimsStats", () => {
     expect(state?.totalRevokedClaims).toBeDefined();
 
     // Based on the hardhat scripts, we should have 40 issued claims, 38 active claims, 1 removed claim, and 1 revoked claim
-    expect(state?.totalIssuedClaims).toBe(40);
-    expect(state?.totalActiveClaims).toBe(38);
-    expect(state?.totalRemovedClaims).toBe(1);
-    expect(state?.totalRevokedClaims).toBe(1);
+    expect(state?.totalIssuedClaims).toBe("40");
+    expect(state?.totalActiveClaims).toBe("38");
+    expect(state?.totalRemovedClaims).toBe("1");
+    expect(state?.totalRevokedClaims).toBe("1");
   });
 });
