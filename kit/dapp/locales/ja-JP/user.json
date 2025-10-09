@@ -28,5 +28,24 @@
         "notConnectedAriaLabel": "ユーザーはウォレットを接続していません"
       }
     }
+  },
+  "profile": {
+    "title": "プロファイル",
+    "description": "プロファイル情報を表示し、管理します。",
+    "manage": "プロファイルを管理",
+    "editKyc": {
+      "title": "KYCを編集",
+      "description": "KYC情報を編集します。"
+    },
+    "changePassword": {
+      "title": "パスワードを変更",
+      "description": "セキュリティのためにアカウントのパスワードを更新します。",
+      "success": "パスワードが正常に変更されました。",
+      "currentPassword": "現在のパスワード",
+      "newPassword": "新しいパスワード",
+      "confirmPassword": "パスワードを確認",
+      "revokeOtherSessions": "他のデバイスからサインアウト",
+      "revokeOtherSessionsDescription": "これにより、他のすべてのデバイスとブラウザからサインアウトされます。"
+    }
   }
 }
