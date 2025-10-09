@@ -322,7 +322,9 @@ export function ActionsTable({
       urlState={{
         enabled: true,
         enableUrlPersistence: true,
-        routePath: router.state.matches.at(-1)?.pathname,
+        routePath:
+          router.state.matches.at(-1)?.pathname ??
+          router.state.location.pathname,
         defaultPageSize: 10,
         enableGlobalFilter: true,
       }}
