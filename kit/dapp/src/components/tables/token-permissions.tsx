@@ -11,7 +11,7 @@ import {
 } from "@/components/data-table/cells/actions-cell";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { ChangeTokenRolesSheet } from "@/components/manage-dropdown/sheets/change-role/change-token-roles-sheet";
 import { Button } from "@/components/ui/button";
 import { getAccessControlEntries } from "@/orpc/helpers/access-control-helpers";
@@ -25,146 +25,148 @@ type PermissionRow = {
 
 const columnHelper = createStrictColumnHelper<PermissionRow>();
 
-export function TokenPermissionsTable({ token }: { token: Token }) {
-  const { t } = useTranslation(["tokens", "common"]);
-  const [openChangeRoles, setOpenChangeRoles] = useState(false);
-  const [presetAccount, setPresetAccount] = useState<
-    EthereumAddress | undefined
-  >(undefined);
-  const canGrant = token.userPermissions?.actions.grantRole ?? false;
+export const TokenPermissionsTable = withErrorBoundary(
+  function TokenPermissionsTable({ token }: { token: Token }) {
+    const { t } = useTranslation(["tokens", "common"]);
+    const [openChangeRoles, setOpenChangeRoles] = useState(false);
+    const [presetAccount, setPresetAccount] = useState<
+      EthereumAddress | undefined
+    >(undefined);
+    const canGrant = token.userPermissions?.actions.grantRole ?? false;
 
-  const rows: PermissionRow[] = useMemo(() => {
-    const map = new Map<string, Set<AccessControlRoles>>();
-    for (const [role, accounts] of getAccessControlEntries(
-      token.accessControl
-    )) {
-      for (const account of accounts) {
-        const set = map.get(account.id) ?? new Set<AccessControlRoles>();
-        set.add(role);
-        map.set(account.id, set);
+    const rows: PermissionRow[] = useMemo(() => {
+      const map = new Map<string, Set<AccessControlRoles>>();
+      for (const [role, accounts] of getAccessControlEntries(
+        token.accessControl
+      )) {
+        for (const account of accounts) {
+          const set = map.get(account.id) ?? new Set<AccessControlRoles>();
+          set.add(role);
+          map.set(account.id, set);
+        }
       }
-    }
-    return [...map.entries()].map(([id, roles]) => ({
-      id,
-      roles: [...roles.values()],
-    }));
-  }, [token.accessControl]);
+      return [...map.entries()].map(([id, roles]) => ({
+        id,
+        roles: [...roles.values()],
+      }));
+    }, [token.accessControl]);
 
-  const columns = useMemo(
-    () =>
-      withAutoFeatures([
-        columnHelper.accessor("id", {
-          header: t("tokens:permissions.columns.address"),
-          meta: {
-            displayName: t("tokens:permissions.columns.address"),
-            type: "address",
-          },
-        }),
-        columnHelper.accessor("roles", {
-          id: "roles",
-          header: t("tokens:permissions.columns.roles"),
-          filterFn: (
-            row,
-            _id,
-            value: {
-              operator: "include";
-              values: [string[]];
-            }
-          ) => {
-            const roles = new Set(
-              row.original.roles.map((item) => item.toLowerCase())
-            );
-            return value.values[0]?.every((valueFilter) =>
-              roles.has(valueFilter.toLowerCase())
-            );
-          },
-          enableSorting: true,
-          sortingFn: (rowA, rowB) =>
-            (rowB.original.roles?.length ?? 0) -
-            (rowA.original.roles?.length ?? 0),
-          meta: {
-            displayName: t("tokens:permissions.columns.roles"),
-            type: "multiOption",
-            multiOptionOptions: {
-              getLabel: (value: AccessControlRoles) =>
-                t(
+    const columns = useMemo(
+      () =>
+        withAutoFeatures([
+          columnHelper.accessor("id", {
+            header: t("tokens:permissions.columns.address"),
+            meta: {
+              displayName: t("tokens:permissions.columns.address"),
+              type: "address",
+            },
+          }),
+          columnHelper.accessor("roles", {
+            id: "roles",
+            header: t("tokens:permissions.columns.roles"),
+            filterFn: (
+              row,
+              _id,
+              value: {
+                operator: "include";
+                values: [string[]];
+              }
+            ) => {
+              const roles = new Set(
+                row.original.roles.map((item) => item.toLowerCase())
+              );
+              return value.values[0]?.every((valueFilter) =>
+                roles.has(valueFilter.toLowerCase())
+              );
+            },
+            enableSorting: true,
+            sortingFn: (rowA, rowB) =>
+              (rowB.original.roles?.length ?? 0) -
+              (rowA.original.roles?.length ?? 0),
+            meta: {
+              displayName: t("tokens:permissions.columns.roles"),
+              type: "multiOption",
+              multiOptionOptions: {
+                getLabel: (value: AccessControlRoles) =>
+                  t(
+                    `common:roles.${value.toLowerCase() as Lowercase<AccessControlRoles>}.title`
+                  ),
+              },
+              transformOptionFn: (value) => ({
+                label: t(
                   `common:roles.${value.toLowerCase() as Lowercase<AccessControlRoles>}.title`
                 ),
+                value: value,
+              }),
             },
-            transformOptionFn: (value) => ({
-              label: t(
-                `common:roles.${value.toLowerCase() as Lowercase<AccessControlRoles>}.title`
-              ),
-              value: value,
-            }),
-          },
-        }),
-        columnHelper.display({
-          id: "actions",
-          header: "",
-          cell: ({ row }) => (
-            <RowActions
-              token={token}
-              row={row.original}
-              onOpenChangeRoles={(account: EthereumAddress) => {
-                setPresetAccount(account);
-                setOpenChangeRoles(true);
-              }}
-            />
-          ),
-          meta: { type: "none", enableCsvExport: false },
-        }),
-      ]),
-    [t, token]
-  );
+          }),
+          columnHelper.display({
+            id: "actions",
+            header: "",
+            cell: ({ row }) => (
+              <RowActions
+                token={token}
+                row={row.original}
+                onOpenChangeRoles={(account: EthereumAddress) => {
+                  setPresetAccount(account);
+                  setOpenChangeRoles(true);
+                }}
+              />
+            ),
+            meta: { type: "none", enableCsvExport: false },
+          }),
+        ]),
+      [t, token]
+    );
 
-  return (
-    <ComponentErrorBoundary>
-      <RowActionSheets token={token} />
-      <DataTable
-        name="token-permissions"
-        data={rows}
-        columns={columns}
-        advancedToolbar={{
-          enableGlobalSearch: true,
-          enableFilters: true,
-          enableExport: true,
-          enableViewOptions: true,
-          customActions: (
-            <Button
-              size="sm"
-              onClick={() => {
-                setPresetAccount(undefined);
-                setOpenChangeRoles(true);
-              }}
-              disabled={!canGrant}
-            >
-              {t("tokens:permissions.changeRoles.cta")}
-            </Button>
-          ),
-          placeholder: t("tokens:permissions.searchPlaceholder"),
-        }}
-        initialSorting={[
-          {
-            id: "roles",
-            desc: true,
-          },
-        ]}
-        customEmptyState={{
-          icon: Shield,
-          title: t("tokens:permissions.empty.title"),
-          description: t("tokens:permissions.empty.description"),
-        }}
-      />
-      <ChangeTokenRolesSheet
-        open={openChangeRoles}
-        onOpenChange={setOpenChangeRoles}
-        asset={token}
-        presetAccount={presetAccount}
-      />
-    </ComponentErrorBoundary>
-  );
-}
+    return (
+      <>
+        <RowActionSheets token={token} />
+        <DataTable
+          name="token-permissions"
+          data={rows}
+          columns={columns}
+          advancedToolbar={{
+            enableGlobalSearch: true,
+            enableFilters: true,
+            enableExport: true,
+            enableViewOptions: true,
+            customActions: (
+              <Button
+                size="sm"
+                onClick={() => {
+                  setPresetAccount(undefined);
+                  setOpenChangeRoles(true);
+                }}
+                disabled={!canGrant}
+              >
+                {t("tokens:permissions.changeRoles.cta")}
+              </Button>
+            ),
+            placeholder: t("tokens:permissions.searchPlaceholder"),
+          }}
+          initialSorting={[
+            {
+              id: "roles",
+              desc: true,
+            },
+          ]}
+          customEmptyState={{
+            icon: Shield,
+            title: t("tokens:permissions.empty.title"),
+            description: t("tokens:permissions.empty.description"),
+          }}
+        />
+        <ChangeTokenRolesSheet
+          open={openChangeRoles}
+          onOpenChange={setOpenChangeRoles}
+          asset={token}
+          presetAccount={presetAccount}
+        />
+      </>
+    );
+  }
+);
 
 function RowActions({
   token,

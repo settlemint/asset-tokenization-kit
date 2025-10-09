@@ -7,7 +7,7 @@ import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Sheet,
@@ -240,7 +240,9 @@ function EventDetailsSheet({
  * <TokenEventsTable token={tokenData} />
  * ```
  */
-export function TokenEventsTable({ token }: TokenEventsTableProps) {
+export const TokenEventsTable = withErrorBoundary(function TokenEventsTable({
+  token,
+}: TokenEventsTableProps) {
   const { t } = useTranslation(["tokens", "common"]);
   const [selectedEvent, setSelectedEvent] = useState<TokenEvent | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -361,7 +363,7 @@ export function TokenEventsTable({ token }: TokenEventsTableProps) {
   );
 
   return (
-    <ComponentErrorBoundary componentName="Token Events Table">
+    <>
       <DataTable
         name="token-events"
         data={events}
@@ -399,6 +401,6 @@ export function TokenEventsTable({ token }: TokenEventsTableProps) {
           onOpenChange={setIsSheetOpen}
         />
       )}
-    </ComponentErrorBoundary>
+    </>
   );
-}
+});

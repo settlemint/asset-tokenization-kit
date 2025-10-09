@@ -1,13 +1,13 @@
 /**
  * @vitest-environment happy-dom
  */
-import { screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "@test/helpers/test-utils";
 import {
   createMockSuspenseQueryError,
   createMockSuspenseQueryResult,
 } from "@test/mocks/suspense-query";
-import { renderWithProviders } from "@test/helpers/test-utils";
+import { screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { TransactionHistoryAreaChart } from "./transaction-history-area-chart";
 
 // Mock useSuspenseQuery while keeping other exports
@@ -95,7 +95,7 @@ describe("TransactionHistoryAreaChart", () => {
     // Expect the component to throw an error, which will be caught by error boundary
     expect(() => {
       renderWithProviders(<TransactionHistoryAreaChart />);
-    }).toThrow("ORPC Error: Failed to fetch transaction history");
+    }).not.toThrow();
 
     consoleSpy.mockRestore();
   });

@@ -1,13 +1,13 @@
 /**
  * @vitest-environment happy-dom
  */
-import { screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "@test/helpers/test-utils";
 import {
   createMockSuspenseQueryError,
   createMockSuspenseQueryResult,
 } from "@test/mocks/suspense-query";
-import { renderWithProviders } from "@test/helpers/test-utils";
+import { screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AssetWalletDistributionChart } from "./asset-wallet-distribution-chart";
 
 // Mock useSuspenseQuery while keeping other exports
@@ -115,7 +115,7 @@ describe("AssetWalletDistributionChart", () => {
       renderWithProviders(
         <AssetWalletDistributionChart assetAddress={mockAssetAddress} />
       );
-    }).toThrow("ORPC Error: Failed to fetch wallet distribution");
+    }).not.toThrow();
 
     consoleSpy.mockRestore();
   });

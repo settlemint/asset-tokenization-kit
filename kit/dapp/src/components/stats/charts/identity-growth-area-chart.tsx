@@ -1,5 +1,5 @@
 import { AreaChartComponent } from "@/components/charts/area-chart";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
 import { formatNumber } from "@/lib/utils/format-value/format-number";
@@ -19,52 +19,50 @@ export type IdentityGrowthAreaChartProps = {
   range: StatsRangeInput;
 };
 
-export function IdentityGrowthAreaChart({
-  range,
-}: IdentityGrowthAreaChartProps) {
-  const { t } = useTranslation("stats");
-  const { i18n } = useTranslation();
-  const locale = i18n.language;
+export const IdentityGrowthAreaChart = withErrorBoundary(
+  function IdentityGrowthAreaChart({ range }: IdentityGrowthAreaChartProps) {
+    const { t } = useTranslation("stats");
+    const { i18n } = useTranslation();
+    const locale = i18n.language;
 
-  const chartConfig: ChartConfig = useMemo(
-    () => ({
-      activeUserIdentitiesCount: {
-        label: t("charts.identityGrowth.label"),
-        color: "var(--chart-1)",
-      },
-    }),
-    [t]
-  );
+    const chartConfig: ChartConfig = useMemo(
+      () => ({
+        activeUserIdentitiesCount: {
+          label: t("charts.identityGrowth.label"),
+          color: "var(--chart-1)",
+        },
+      }),
+      [t]
+    );
 
-  const { data: rawData } = useQuery(
-    orpc.system.stats.identityStatsOverTime.queryOptions({
-      input: range,
-      ...CHART_QUERY_OPTIONS,
-    })
-  );
+    const { data: rawData } = useQuery(
+      orpc.system.stats.identityStatsOverTime.queryOptions({
+        input: range,
+        ...CHART_QUERY_OPTIONS,
+      })
+    );
 
-  const fallbackRange = useMemo<StatsResolvedRange>(() => {
-    return resolveStatsRange(range);
-  }, [range]);
+    const fallbackRange = useMemo<StatsResolvedRange>(() => {
+      return resolveStatsRange(range);
+    }, [range]);
 
-  const resolvedRange = rawData?.range ?? fallbackRange;
+    const resolvedRange = rawData?.range ?? fallbackRange;
 
-  const overRange = buildChartRangeDescription({
-    range: resolvedRange,
-    t,
-  });
+    const overRange = buildChartRangeDescription({
+      range: resolvedRange,
+      t,
+    });
 
-  const chartInterval = resolvedRange.interval;
-  const timeseries = rawData?.identityStats ?? [];
+    const chartInterval = resolvedRange.interval;
+    const timeseries = rawData?.identityStats ?? [];
 
-  const description = t("charts.identityGrowth.description", {
-    overRange,
-  });
+    const description = t("charts.identityGrowth.description", {
+      overRange,
+    });
 
-  const dataKeys = ["activeUserIdentitiesCount"];
+    const dataKeys = ["activeUserIdentitiesCount"];
 
-  return (
-    <ComponentErrorBoundary componentName="Identity Growth Chart">
+    return (
       <AreaChartComponent
         title={t("charts.identityGrowth.title")}
         description={description}
@@ -91,6 +89,6 @@ export function IdentityGrowthAreaChart({
         emptyMessage={t("charts.identityGrowth.empty.title")}
         emptyDescription={t("charts.identityGrowth.empty.description")}
       />
-    </ComponentErrorBoundary>
-  );
-}
+    );
+  }
+);

@@ -1,13 +1,13 @@
 /**
  * @vitest-environment happy-dom
  */
-import { screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "@test/helpers/test-utils";
 import {
   createMockSuspenseQueryError,
   createMockSuspenseQueryResult,
 } from "@test/mocks/suspense-query";
-import { renderWithProviders } from "@test/helpers/test-utils";
+import { screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AssetTotalVolumeAreaChart } from "./asset-total-volume-area-chart";
 
 // Mock useSuspenseQuery while keeping other exports
@@ -143,7 +143,7 @@ describe("AssetTotalVolumeAreaChart", () => {
       renderWithProviders(
         <AssetTotalVolumeAreaChart assetAddress={mockAssetAddress} />
       );
-    }).toThrow("ORPC Error: Failed to fetch volume data");
+    }).not.toThrow();
 
     consoleSpy.mockRestore();
   });

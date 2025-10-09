@@ -4,6 +4,32 @@
       "success": "Die Brieftasche wurde erfolgreich erstellt"
     }
   },
+  "details": {
+    "kycInformation": "Information"
+  },
+  "fields": {
+    "accountCreated": "Account Created",
+    "accountCreatedInfo": "When the user account was created",
+    "email": "Email",
+    "emailInfo": "User's email address",
+    "firstName": "First Name",
+    "firstNameInfo": "Legal first name",
+    "fullName": "Full Name",
+    "fullNameInfo": "User's display name",
+    "lastLogin": "Last Login",
+    "lastLoginInfo": "Most recent login time",
+    "lastName": "Last Name",
+    "lastNameInfo": "Legal last name",
+    "neverLoggedIn": "Never logged in",
+    "noIdentityRegistered": "No identity registered",
+    "noWalletConnected": "No wallet connected",
+    "onChainIdentity": "On-chain Identity",
+    "onChainIdentityInfo": "User's on-chain identity contract",
+    "role": "Role",
+    "roleInfo": "User's system role",
+    "walletAddress": "Wallet Address",
+    "walletAddressInfo": "User's connected wallet address"
+  },
   "kyc": {
     "actions": {
       "delete": {
@@ -15,37 +41,141 @@
     }
   },
   "management": {
+    "page": {
+      "description": "Manage users, roles, and permissions for your platform."
+    },
     "table": {
+      "actions": {
+        "menu": "Actions menu",
+        "openMenu": "Open actions menu",
+        "viewDetails": "View Details"
+      },
+      "columns": {
+        "actions": "Actions",
+        "created": "Created",
+        "email": "Email",
+        "identity": "Identity",
+        "lastActive": "Last Active",
+        "name": "Name",
+        "role": "Role",
+        "status": "Status",
+        "wallet": "Wallet"
+      },
+      "emptyState": {
+        "description": "No users have been registered yet.",
+        "loading": "Loading users...",
+        "title": "No users found"
+      },
+      "errors": {
+        "loadFailed": "Failed to load users. Please try again.",
+        "navigationFailed": "Failed to navigate to user details"
+      },
+      "fallback": {
+        "never": "Never"
+      },
       "identity": {
         "none": "Keine Identität"
       },
+      "noWallet": "No wallet",
+      "search": {
+        "placeholder": "Search by name, email, or wallet..."
+      },
       "status": {
-        "registered": "Registriert",
-        "pending": "Ausstehend",
+        "admin": "Admin",
+        "adminAriaLabel": "User has any admin role in the system",
+        "identityNeeded": "Identity needed",
+        "identityNeededAriaLabel": "User has wallet but no identity registered",
         "notConnected": "Nicht verbunden",
-        "registeredAriaLabel": "Benutzer ist registriert und on-chain verifiziert",
+        "notConnectedAriaLabel": "Benutzer hat keine Brieftasche verbunden",
+        "notRegistered": "Not Registered",
+        "notRegisteredAriaLabel": "User is not registered on-chain",
+        "pending": "Ausstehend",
         "pendingAriaLabel": "Benutzer hat eine Brieftasche verbunden, ist aber noch nicht on-chain registriert",
-        "notConnectedAriaLabel": "Benutzer hat keine Brieftasche verbunden"
+        "pendingRegistration": "Pending registration",
+        "pendingRegistrationAriaLabel": "User identity registration is pending",
+        "registered": "Registriert",
+        "registeredAriaLabel": "Benutzer ist registriert und on-chain verifiziert"
+      }
+    }
+  },
+  "permissions": {
+    "groups": {
+      "assets-management": "Assets Management",
+      "compliance": "Compliance",
+      "identity-management": "Identity Management",
+      "other": "Other",
+      "system-administration": "System Administration"
+    },
+    "table": {
+      "actions": {
+        "changeRoles": "Change roles"
+      },
+      "columns": {
+        "name": "Name",
+        "role": "Roles"
+      },
+      "emptyState": {
+        "description": "No users have been registered yet.",
+        "loading": "Loading users...",
+        "title": "No users found"
+      },
+      "errors": {
+        "loadFailed": "Failed to load users. Please try again.",
+        "navigationFailed": "Failed to navigate to user details"
+      },
+      "search": {
+        "placeholder": "Search by wallet address..."
       }
     }
   },
   "profile": {
-    "title": "Profil",
-    "description": "Zeigen Sie Ihre Profilinformationen an und verwalten Sie sie.",
-    "manage": "Profil verwalten",
-    "editKyc": {
-      "title": "KYC bearbeiten",
-      "description": "Bearbeiten Sie Ihre KYC-Informationen."
-    },
     "changePassword": {
-      "title": "Passwort ändern",
-      "description": "Aktualisieren Sie Ihr Kontopasswort für mehr Sicherheit.",
-      "success": "Ihr Passwort wurde erfolgreich geändert.",
-      "currentPassword": "Aktuelles Passwort",
-      "newPassword": "Neues Passwort",
       "confirmPassword": "Passwort bestätigen",
+      "currentPassword": "Aktuelles Passwort",
+      "description": "Aktualisieren Sie Ihr Kontopasswort für mehr Sicherheit.",
+      "newPassword": "Neues Passwort",
       "revokeOtherSessions": "Andere Geräte abmelden",
-      "revokeOtherSessionsDescription": "Dies meldet Sie von allen anderen Geräten und Browsern ab."
-    }
+      "revokeOtherSessionsDescription": "Dies meldet Sie von allen anderen Geräten und Browsern ab.",
+      "success": "Ihr Passwort wurde erfolgreich geändert.",
+      "title": "Passwort ändern"
+    },
+    "description": "Zeigen Sie Ihre Profilinformationen an und verwalten Sie sie.",
+    "editKyc": {
+      "description": "Bearbeiten Sie Ihre KYC-Informationen.",
+      "title": "KYC bearbeiten"
+    },
+    "email": {
+      "change-disabled": "Das Ändern der E-Mail-Adresse ist in dieser Umgebung deaktiviert.",
+      "current": "Aktuelle E-Mail"
+    },
+    "kyc": {
+      "actions": {
+        "success": "Das KYC-Profil wurde erfolgreich aktualisiert."
+      },
+      "cardDescription": "Bitte verifizieren Sie Ihre Identität, um Ihre On-Chain-Identität zu erstellen.",
+      "fields": {
+        "country": "Wohnsitzland",
+        "dob": "Geburtsdatum",
+        "firstName": "Vorname",
+        "lastName": "Nachname",
+        "nationalId": "Nationale ID",
+        "residencyStatus": "Aufenthaltsstatus"
+      },
+      "residencyStatusOptions": {
+        "dual_resident": "Doppelansässiger - Ich bin rechtlich/steuerlich in mehr als einem Land ansässig",
+        "non_resident": "Nichtansässiger - Ich lebe nicht im oben genannten Land oder werde dort nicht als ansässig betrachtet",
+        "resident": "Alleinansässiger - Ich lebe im oben genannten Land und bin dort rechtlich/steuerlich ansässig",
+        "unknown": "Bevorzuge es, nichts zu sagen"
+      }
+    },
+    "manage": "Profil verwalten",
+    "messages": {
+      "genericError": "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+    },
+    "title": "Profil"
+  },
+  "tabs": {
+    "claims": "Claims",
+    "details": "Details"
   }
 }

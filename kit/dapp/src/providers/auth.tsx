@@ -20,6 +20,7 @@
  */
 
 import { authClient } from "@/lib/auth/auth.client";
+import { authPublicConfig } from "@/lib/auth/public-config";
 import { AuthQueryProvider } from "@daveyplate/better-auth-tanstack";
 import { AuthUIProviderTanstack } from "@daveyplate/better-auth-ui/tanstack";
 import { Link, useRouter } from "@tanstack/react-router";
@@ -609,6 +610,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
          */
         toast={handleToast}
         localization={localization}
+        changeEmail={authPublicConfig.changeEmailEnabled}
       >
         <div className="AuthProvider max-h-screen">{children}</div>
       </AuthUIProviderTanstack>

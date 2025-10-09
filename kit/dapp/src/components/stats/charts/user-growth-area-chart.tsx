@@ -1,5 +1,5 @@
 import { AreaChartComponent } from "@/components/charts/area-chart";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -21,26 +21,26 @@ const dataKeys = ["users"];
  * Displays registered users in an area chart format.
  * Shows user growth over time using real API data.
  */
-export function UserGrowthAreaChart() {
-  const { t } = useTranslation("stats");
+export const UserGrowthAreaChart = withErrorBoundary(
+  function UserGrowthAreaChart() {
+    const { t } = useTranslation("stats");
 
-  // Fetch user growth data
-  const { data: metrics } = useSuspenseQuery(
-    orpc.user.statsGrowthOverTime.queryOptions({
-      input: { timeRange: 30 }, // 30 days of data
-    })
-  );
+    // Fetch user growth data
+    const { data: metrics } = useSuspenseQuery(
+      orpc.user.statsGrowthOverTime.queryOptions({
+        input: { timeRange: 30 }, // 30 days of data
+      })
+    );
 
-  // Transform the data for the chart
-  const chartData = useMemo(() => {
-    return metrics.userGrowth.map((dataPoint) => ({
-      timestamp: dataPoint.timestamp,
-      users: dataPoint.users,
-    }));
-  }, [metrics.userGrowth]);
+    // Transform the data for the chart
+    const chartData = useMemo(() => {
+      return metrics.userGrowth.map((dataPoint) => ({
+        timestamp: dataPoint.timestamp,
+        users: dataPoint.users,
+      }));
+    }, [metrics.userGrowth]);
 
-  return (
-    <ComponentErrorBoundary componentName="User Growth Chart">
+    return (
       <AreaChartComponent
         title={t("charts.userGrowth.title")}
         description={t("charts.userGrowth.description")}
@@ -51,6 +51,6 @@ export function UserGrowthAreaChart() {
         showYAxis={true}
         showLegend={false}
       />
-    </ComponentErrorBoundary>
-  );
-}
+    );
+  }
+);
