@@ -56,10 +56,10 @@ const CLAIMS_STATS_QUERY = theGraphGraphql(`
 
 const ClaimsStatsDataItem = z.object({
   timestamp: timestamp(),
-  totalIssuedClaims: z.number(),
-  totalActiveClaims: z.number(),
-  totalRemovedClaims: z.number(),
-  totalRevokedClaims: z.number(),
+  totalIssuedClaims: z.coerce.number(),
+  totalActiveClaims: z.coerce.number(),
+  totalRemovedClaims: z.coerce.number(),
+  totalRevokedClaims: z.coerce.number(),
 });
 
 const ClaimsStatsResponseSchema = z.object({
@@ -67,10 +67,10 @@ const ClaimsStatsResponseSchema = z.object({
   baseline: z.array(ClaimsStatsDataItem),
   current: z
     .object({
-      totalIssuedClaims: z.number(),
-      totalActiveClaims: z.number(),
-      totalRemovedClaims: z.number(),
-      totalRevokedClaims: z.number(),
+      totalIssuedClaims: z.coerce.number(),
+      totalActiveClaims: z.coerce.number(),
+      totalRemovedClaims: z.coerce.number(),
+      totalRevokedClaims: z.coerce.number(),
     })
     .nullable(),
 });

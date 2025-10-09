@@ -53,9 +53,9 @@ const TOPIC_SCHEMES_STATS_QUERY = theGraphGraphql(`
 
 const TopicSchemesStatsDataItem = z.object({
   timestamp: timestamp(),
-  totalRegisteredTopicSchemes: z.number(),
-  totalActiveTopicSchemes: z.number(),
-  totalRemovedTopicSchemes: z.number(),
+  totalRegisteredTopicSchemes: z.coerce.number(),
+  totalActiveTopicSchemes: z.coerce.number(),
+  totalRemovedTopicSchemes: z.coerce.number(),
 });
 
 const TopicSchemesStatsResponseSchema = z.object({
@@ -63,9 +63,9 @@ const TopicSchemesStatsResponseSchema = z.object({
   baseline: z.array(TopicSchemesStatsDataItem),
   current: z
     .object({
-      totalRegisteredTopicSchemes: z.number(),
-      totalActiveTopicSchemes: z.number(),
-      totalRemovedTopicSchemes: z.number(),
+      totalRegisteredTopicSchemes: z.coerce.number(),
+      totalActiveTopicSchemes: z.coerce.number(),
+      totalRemovedTopicSchemes: z.coerce.number(),
     })
     .nullable(),
 });

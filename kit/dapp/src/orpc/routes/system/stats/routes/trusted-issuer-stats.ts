@@ -53,9 +53,9 @@ const TRUSTED_ISSUER_STATS_QUERY = theGraphGraphql(`
 
 const TrustedIssuerStatsDataItem = z.object({
   timestamp: timestamp(),
-  totalAddedTrustedIssuers: z.number(),
-  totalActiveTrustedIssuers: z.number(),
-  totalRemovedTrustedIssuers: z.number(),
+  totalAddedTrustedIssuers: z.coerce.number(),
+  totalActiveTrustedIssuers: z.coerce.number(),
+  totalRemovedTrustedIssuers: z.coerce.number(),
 });
 
 const TrustedIssuerStatsResponseSchema = z.object({
@@ -63,9 +63,9 @@ const TrustedIssuerStatsResponseSchema = z.object({
   baseline: z.array(TrustedIssuerStatsDataItem),
   current: z
     .object({
-      totalAddedTrustedIssuers: z.number(),
-      totalActiveTrustedIssuers: z.number(),
-      totalRemovedTrustedIssuers: z.number(),
+      totalAddedTrustedIssuers: z.coerce.number(),
+      totalActiveTrustedIssuers: z.coerce.number(),
+      totalRemovedTrustedIssuers: z.coerce.number(),
     })
     .nullable(),
 });
