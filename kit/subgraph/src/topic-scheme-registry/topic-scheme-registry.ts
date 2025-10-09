@@ -69,7 +69,5 @@ export function handleTopicSchemesBatchRegistered(
     topicScheme.topicId = topicIds[i];
     topicScheme.signature = signatures[i];
     topicScheme.save();
-
-    incrementTopicSchemesRegistered(registry);
   }
 }
