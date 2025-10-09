@@ -105,14 +105,6 @@ const getDb = serverOnly(() => {
 });
 
 /**
- * Creates the Drizzle ORM database instance and migrates the database to the latest version.
- */
-const getMigratedDb = serverOnly(async () => {
-  await migrateDatabase();
-  return getDb();
-});
-
-/**
  * The main database client instance.
  *
  * This instance is used throughout the application for all database operations.
@@ -139,4 +131,4 @@ const getMigratedDb = serverOnly(async () => {
  *   .leftJoin(schema.session, eq(schema.user.id, schema.session.userId));
  * ```
  */
-export const db = await getMigratedDb();
+export const db = getDb();
