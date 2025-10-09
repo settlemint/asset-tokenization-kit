@@ -2,7 +2,7 @@ import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { IdentityTypeBadge } from "@/components/identity/identity-type-badge";
 import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
@@ -19,7 +19,7 @@ type IdentityRow = IdentityListOutput["items"][number];
 
 const columnHelper = createStrictColumnHelper<IdentityRow>();
 
-export function IdentityTable() {
+export const IdentityTable = withErrorBoundary(function IdentityTable() {
   const router = useRouter();
   const { t } = useTranslation("identities");
   const [pagination, setPagination] = useState({
@@ -218,59 +218,55 @@ export function IdentityTable() {
 
   if (error) {
     return (
-      <ComponentErrorBoundary componentName="Identity Table">
-        <div className="flex items-center justify-center p-8">
-          <p className="text-muted-foreground">
-            {t("identityTable.errors.loadFailed")}
-          </p>
-        </div>
-      </ComponentErrorBoundary>
+      <div className="flex items-center justify-center p-8">
+        <p className="text-muted-foreground">
+          {t("identityTable.errors.loadFailed")}
+        </p>
+      </div>
     );
   }
 
   return (
-    <ComponentErrorBoundary componentName="Identity Table">
-      <DataTable
-        name="identity-management"
-        data={items}
-        columns={columns}
-        isLoading={isLoading}
-        serverSidePagination={{
-          enabled: true,
-          totalCount,
-        }}
-        externalState={{
-          pagination,
-          onPaginationChange: setPagination,
-        }}
-        urlState={{
-          enabled: false,
-        }}
-        advancedToolbar={{
-          enableGlobalSearch: false,
-          enableFilters: true,
-          enableExport: true,
-          enableViewOptions: true,
-        }}
-        pagination={{
-          enablePagination: true,
-        }}
-        initialPageSize={20}
-        // Hide the filter-only columns which are used for filtering functionality
-        // The visible display columns handle the UI presentation
-        initialColumnVisibility={{
-          linkedEntity_filter: false,
-          type_filter: false,
-        }}
-        customEmptyState={{
-          title: t("identityTable.emptyState.title"),
-          description: isLoading
-            ? t("identityTable.emptyState.loading")
-            : t("identityTable.emptyState.description"),
-          icon: Fingerprint,
-        }}
-        onRowClick={handleRowClick}
-      />
-    </ComponentErrorBoundary>
+    <DataTable
+      name="identity-management"
+      data={items}
+      columns={columns}
+      isLoading={isLoading}
+      serverSidePagination={{
+        enabled: true,
+        totalCount,
+      }}
+      externalState={{
+        pagination,
+        onPaginationChange: setPagination,
+      }}
+      urlState={{
+        enabled: false,
+      }}
+      advancedToolbar={{
+        enableGlobalSearch: false,
+        enableFilters: true,
+        enableExport: true,
+        enableViewOptions: true,
+      }}
+      pagination={{
+        enablePagination: true,
+      }}
+      initialPageSize={20}
+      // Hide the filter-only columns which are used for filtering functionality
+      // The visible display columns handle the UI presentation
+      initialColumnVisibility={{
+        linkedEntity_filter: false,
+        type_filter: false,
+      }}
+      customEmptyState={{
+        title: t("identityTable.emptyState.title"),
+        description: isLoading
+          ? t("identityTable.emptyState.loading")
+          : t("identityTable.emptyState.description"),
+        icon: Fingerprint,
+      }}
+      onRowClick={handleRowClick}
+    />
   );
-}
+}, "Identity Table");
