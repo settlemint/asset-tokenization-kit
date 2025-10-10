@@ -177,5 +177,30 @@
       "revokeOtherSessions": "Sign out other devices",
       "revokeOtherSessionsDescription": "This will sign you out of all other devices and browsers."
     }
+  },
+  "wallet": {
+    "title": "Wallet",
+    "description": "Manage your wallet address and security settings.",
+    "userWallet": "User Wallet",
+    "userWalletDescription": "Your wallet address and QR code for receiving payments.",
+    "qrCode": "QR Code",
+    "verificationFactors": "Verification Factors",
+    "verificationFactorsDescription": "Security methods enabled for your wallet.",
+    "recoveryCodesCard": "Recovery Codes",
+    "recoveryCodesDescription": "Backup codes for account recovery when other verification methods are unavailable.",
+    "passwordPromptTitle": "Confirm password",
+    "passwordPromptDescription": "Enter your password to generate new recovery codes.",
+    "passwordLabel": "Password",
+    "passwordRequired": "Password is required",
+    "pinCodeEnabled": "PIN Code",
+    "otpEnabled": "OTP",
+    "recoveryCodesEnabled": "Recovery Codes",
+    "regenerateRecoveryCodes": "Regenerate Recovery Codes",
+    "downloadRecoveryCodes": "Download Recovery Codes",
+    "copyAllRecoveryCodes": "Copy All",
+    "confirmRecoveryCodesStored": "I have stored these recovery codes in a safe place",
+    "noVerificationMethods": "No verification methods enabled",
+    "enabled": "Enabled",
+    "disabled": "Disabled"
   }
 }
