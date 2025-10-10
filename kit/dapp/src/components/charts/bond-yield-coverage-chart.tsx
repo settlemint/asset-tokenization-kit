@@ -1,7 +1,7 @@
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { useBondYieldCoverage } from "@/hooks/use-bond-yield-coverage";
-import { Suspense, useMemo } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ChartEmptyState } from "./chart-empty-state";
 import { ChartSkeleton } from "./chart-skeleton";
@@ -34,14 +34,12 @@ export function BondYieldCoverageChart({
   className,
 }: BondYieldCoverageChartProps) {
   return (
-    <Suspense fallback={<ChartSkeleton />}>
-      <BondYieldCoverageChartLoader
-        assetAddress={assetAddress}
-        title={title}
-        description={description}
-        className={className}
-      />
-    </Suspense>
+    <BondYieldCoverageChartLoader
+      assetAddress={assetAddress}
+      title={title}
+      description={description}
+      className={className}
+    />
   );
 }
 

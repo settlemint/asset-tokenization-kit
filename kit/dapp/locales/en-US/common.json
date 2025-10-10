@@ -43,9 +43,9 @@
   "timeInterval": {
     "DAILY": "Daily",
     "WEEKLY": "Weekly",
-    "MONTHLY": "Monthly",
-    "QUARTERLY": "Quarterly",
-    "YEARLY": "Yearly"
+    "MONTHLY": "Monthly (30 days)",
+    "QUARTERLY": "Quarterly (90 days)",
+    "YEARLY": "Yearly (365 days)"
   },
   "dates": {
     "today": "Today",

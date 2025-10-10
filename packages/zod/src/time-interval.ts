@@ -123,16 +123,16 @@ export function getTimeInterval(value: unknown): TimeInterval {
  * Maps time interval constants to their equivalent seconds:
  * - `DAILY`: 86,400 seconds (1 day)
  * - `WEEKLY`: 604,800 seconds (7 days)
- * - `MONTHLY`: 2,629,746 seconds (30.44 days average month)
- * - `QUARTERLY`: 7,889,238 seconds (~91.33 days)
- * - `YEARLY`: 31,556,926 seconds (365.24 days)
+ * - `MONTHLY`: 2,592,000 seconds (30 days)
+ * - `QUARTERLY`: 7,776,000 seconds (90 days)
+ * - `YEARLY`: 31,536,000 seconds (365 days)
  */
 export const TIME_INTERVAL_SECONDS: Record<TimeInterval, number> = {
   DAILY: 86_400, // 1 day
   WEEKLY: 604_800, // 7 days
-  MONTHLY: 2_629_746, // 30.44 days (average month)
-  QUARTERLY: 7_889_238, // ~91.33 days
-  YEARLY: 31_556_926, // 365.24 days
+  MONTHLY: 2_592_000, // 30 days
+  QUARTERLY: 7_776_000, // 90 days
+  YEARLY: 31_536_000, // 365 days
 } as const;
 
 /**

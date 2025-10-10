@@ -63,7 +63,7 @@ export function handleFixedYieldScheduleSet(
     const isFirstPeriod = i == 1;
     period.startDate = isFirstPeriod
       ? event.params.startDate
-      : event.params.periodEndTimestamps[i - 1];
+      : event.params.periodEndTimestamps[i - 2];
     period.endDate = event.params.periodEndTimestamps[i - 1];
     setBigNumber(
       period,

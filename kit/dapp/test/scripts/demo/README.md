@@ -10,52 +10,64 @@ understand the resulting environment at a glance.
 
 ## Actors
 
-### System Administrator (`ADMIN`)
+### System Administrator (`admin@settlemint.com`)
 
-- **Roles**: Granted every role required for full system management, including
-  `admin`, `systemManager`, `identityManager`, `tokenManager`, `addonManager`,
+- **Who is this?** The primary platform owner who configures settings, onboards
+  new teams, and generally keeps the environment running smoothly.
+- **Access level:** Receives every management role, including `admin`,
+  `systemManager`, `identityManager`, `tokenManager`, `addonManager`,
   `claimIssuer`, `claimPolicyManager`, `complianceManager`, and `systemModule`.
-- **Claims**: Receives both `knowYourCustomer` (`kyc-verified`) and
-  `antiMoneyLaundering` (`aml-verified`) identity claims.
-- **Identity & Country**: Identity is created and registered in Belgium (`BE`).
+- **Compliance status:** Pre-loaded with `knowYourCustomer` (`kyc-verified`) and
+  `antiMoneyLaundering` (`aml-verified`) claims.
+- **Profile location:** Account identity is registered in Belgium (`BE`).
 
-### Asset Issuer (`ISSUER`)
+### Asset Issuer (`issuer@settlemint.com`)
 
-- **Roles**: Receives on-chain `tokenManager` and `claimIssuer` roles so the
-  issuer can create tokens, attach compliance modules, and issue claims.
-- **Claims**: Same KYC and AML claims as the administrator (`kyc-verified` and
-  `aml-verified`).
-- **Identity & Country**: Identity is created and registered in Belgium (`BE`).
+- **Who is this?** The demo organization responsible for creating new asset
+  tokens and attaching the right compliance modules before they reach investors.
+- **Access level:** Assigned the on-chain `tokenManager` and `claimIssuer` roles
+  so it can mint tokens, link compliance requirements, and issue investor
+  claims.
+- **Compliance status:** Receives the same KYC (`kyc-verified`) and AML
+  (`aml-verified`) approvals as the administrator.
+- **Profile location:** Account identity is registered in Belgium (`BE`).
 
-### German Investor 1 (`GERMAN_INVESTOR_1`)
+### German Investor 1 (`german.investor1@settlemint.com`)
 
-- **Roles**: No elevated blockchain roles are assigned.
-- **Claims**: Issued both `knowYourCustomer` (`kyc-verified`) and
-  `antiMoneyLaundering` (`aml-verified`) claims so they can pass bond compliance
-  checks.
-- **Identity & Country**: Identity is created, KYC information is stored, and it
-  is registered in Germany (`DE`).
+- **Who is this?** A ready-to-go German investor wallet that can participate in
+  the bond demos.
+- **Access level:** No administrative roles; behaves like a standard investor
+  account.
+- **Compliance status:** Equipped with `kyc-verified` and `aml-verified` claims
+  so it easily passes bond checks.
+- **Profile location:** Identity details are stored and registered in Germany
+  (`DE`).
 
-### German Investor 2 (`GERMAN_INVESTOR_2`)
+### German Investor 2 (`german.investor2@settlemint.com`)
 
-- **Roles**: No elevated blockchain roles are assigned.
-- **Claims**: Issued the same KYC (`kyc-verified`) and AML (`aml-verified`)
-  claims as German Investor 1.
-- **Identity & Country**: Identity is created, KYC information is stored, and it
-  is registered in Germany (`DE`).
+- **Who is this?** A second German investor, useful for showing transfers or
+  comparing user journeys.
+- **Access level:** Same as Investor 1—no special blockchain permissions.
+- **Compliance status:** Shares the `kyc-verified` and `aml-verified` claims
+  from setup, mirroring the first investor.
+- **Profile location:** Identity details are stored and registered in Germany
+  (`DE`).
 
-### Japanese Investor (`JAPANESE_INVESTOR`)
+### Japanese Investor (`japanese.investor@settlemint.com`)
 
-- **Roles**: No elevated blockchain roles are assigned.
-- **Claims**: No claims are issued during the setup; the investor therefore
-  lacks KYC/AML attestation until granted later.
-- **Identity & Country**: Identity is created with Japanese (`JP`) details but
-  registration is intentionally skipped to simulate an investor pending
-  onboarding.
+- **Who is this?** An investor from Japan deliberately left partially onboarded
+  to demonstrate pending-compliance flows.
+- **Access level:** No elevated blockchain roles; acts like a standard prospect.
+- **Compliance status:** Starts without KYC/AML claims so teams can walk through
+  the approval process.
+- **Profile location:** Identity details use Japanese (`JP`) information, but
+  registration is intentionally left unfinished to simulate onboarding.
 
 ## Assets
 
-### Proof-of-Deposit (`POD`)
+### Deposits
+
+#### Proof-of-Deposit (`POD`)
 
 - **Type & Extension**: Deposit token used as the denomination asset for bond
   issuances.
@@ -64,7 +76,17 @@ understand the resulting environment at a glance.
 - **Compliance Rules**: No compliance modules are attached, so any wallet can
   hold POD.
 
-### Bund7 (`BUND7`)
+### Bonds
+
+#### Short-term bond (`STB`)
+
+- **Type & Extension**: Bond token that references the `POD` denomination token
+  and a yearly fixed-yield schedule (1.10%).
+- **Claims**: No compliance claims are required.
+- **Compliance Rules**: No compliance modules are attached, so any wallet can
+  hold STB.
+
+#### Bund7 (`BUND7`)
 
 - **Type & Extension**: Bond token with ISIN `DE000BU27014` that references the
   `POD` denomination token and a yearly fixed-yield schedule (2.50%).
@@ -72,7 +94,7 @@ understand the resulting environment at a glance.
   claims through the SMART Identity Verification module.
 - **Compliance Rules**: Country allow-list restricts holders to Germany (`DE`).
 
-### Bund10 (`BUND10`)
+#### Bund10 (`BUND10`)
 
 - **Type & Extension**: Bond token with ISIN `DE000BU2Z056` using the same `POD`
   denomination token and yearly fixed-yield schedule (2.60%).

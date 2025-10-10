@@ -19,6 +19,7 @@
 
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { NotFound } from "@/components/error/not-found";
+import { patchBigIntToJSON } from "@/lib/utils/json";
 import type { orpc } from "@/orpc/orpc-client";
 import { Providers } from "@/providers";
 import appCss from "@/styles/app.css?url";
@@ -38,6 +39,8 @@ import {
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { useMemo, type ReactNode } from "react";
 import { Toaster } from "sonner";
+
+patchBigIntToJSON();
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
