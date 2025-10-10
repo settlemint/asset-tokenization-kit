@@ -127,7 +127,6 @@ export function useSecretCodesManager({
     setHasPerformedAction(false);
   }, []);
 
-  const canConfirm = useMemo(() => codes.length > 0, [codes.length]);
 
   return {
     codes,
