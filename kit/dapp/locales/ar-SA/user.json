@@ -4,6 +4,32 @@
       "success": "تم إنشاء المحفظة بنجاح"
     }
   },
+  "details": {
+    "kycInformation": "Information"
+  },
+  "fields": {
+    "accountCreated": "Account Created",
+    "accountCreatedInfo": "When the user account was created",
+    "email": "Email",
+    "emailInfo": "User's email address",
+    "firstName": "First Name",
+    "firstNameInfo": "Legal first name",
+    "fullName": "Full Name",
+    "fullNameInfo": "User's display name",
+    "lastLogin": "Last Login",
+    "lastLoginInfo": "Most recent login time",
+    "lastName": "Last Name",
+    "lastNameInfo": "Legal last name",
+    "neverLoggedIn": "Never logged in",
+    "noIdentityRegistered": "No identity registered",
+    "noWalletConnected": "No wallet connected",
+    "onChainIdentity": "On-chain Identity",
+    "onChainIdentityInfo": "User's on-chain identity contract",
+    "role": "Role",
+    "roleInfo": "User's system role",
+    "walletAddress": "Wallet Address",
+    "walletAddressInfo": "User's connected wallet address"
+  },
   "kyc": {
     "actions": {
       "delete": {
@@ -15,37 +41,141 @@
     }
   },
   "management": {
+    "page": {
+      "description": "Manage users, roles, and permissions for your platform."
+    },
     "table": {
+      "actions": {
+        "menu": "Actions menu",
+        "openMenu": "Open actions menu",
+        "viewDetails": "View Details"
+      },
+      "columns": {
+        "actions": "Actions",
+        "created": "Created",
+        "email": "Email",
+        "identity": "Identity",
+        "lastActive": "Last Active",
+        "name": "Name",
+        "role": "Role",
+        "status": "Status",
+        "wallet": "Wallet"
+      },
+      "emptyState": {
+        "description": "No users have been registered yet.",
+        "loading": "Loading users...",
+        "title": "No users found"
+      },
+      "errors": {
+        "loadFailed": "Failed to load users. Please try again.",
+        "navigationFailed": "Failed to navigate to user details"
+      },
+      "fallback": {
+        "never": "Never"
+      },
       "identity": {
         "none": "لا توجد هوية"
       },
+      "noWallet": "No wallet",
+      "search": {
+        "placeholder": "Search by name, email, or wallet..."
+      },
       "status": {
-        "registered": "مسجل",
-        "pending": "في الانتظار",
+        "admin": "Admin",
+        "adminAriaLabel": "User has any admin role in the system",
+        "identityNeeded": "Identity needed",
+        "identityNeededAriaLabel": "User has wallet but no identity registered",
         "notConnected": "غير متصل",
-        "registeredAriaLabel": "المستخدم مسجل ومتحقق منه على البلوك تشين",
+        "notConnectedAriaLabel": "المستخدم لم يربط محفظة",
+        "notRegistered": "Not Registered",
+        "notRegisteredAriaLabel": "User is not registered on-chain",
+        "pending": "في الانتظار",
         "pendingAriaLabel": "المستخدم ربط المحفظة ولكنه غير مسجل بعد على البلوك تشين",
-        "notConnectedAriaLabel": "المستخدم لم يربط محفظة"
+        "pendingRegistration": "Pending registration",
+        "pendingRegistrationAriaLabel": "User identity registration is pending",
+        "registered": "مسجل",
+        "registeredAriaLabel": "المستخدم مسجل ومتحقق منه على البلوك تشين"
+      }
+    }
+  },
+  "permissions": {
+    "groups": {
+      "assets-management": "Assets Management",
+      "compliance": "Compliance",
+      "identity-management": "Identity Management",
+      "other": "Other",
+      "system-administration": "System Administration"
+    },
+    "table": {
+      "actions": {
+        "changeRoles": "Change roles"
+      },
+      "columns": {
+        "name": "Name",
+        "role": "Roles"
+      },
+      "emptyState": {
+        "description": "No users have been registered yet.",
+        "loading": "Loading users...",
+        "title": "No users found"
+      },
+      "errors": {
+        "loadFailed": "Failed to load users. Please try again.",
+        "navigationFailed": "Failed to navigate to user details"
+      },
+      "search": {
+        "placeholder": "Search by wallet address..."
       }
     }
   },
   "profile": {
-    "title": "الملف الشخصي",
-    "description": "عرض وإدارة معلومات ملفك الشخصي.",
-    "manage": "إدارة الملف الشخصي",
-    "editKyc": {
-      "title": "تحرير KYC",
-      "description": "تحرير معلومات KYC الخاصة بك."
-    },
     "changePassword": {
-      "title": "تغيير كلمة المرور",
-      "description": "تحديث كلمة مرور حسابك للأمان.",
-      "success": "تم تغيير كلمة المرور بنجاح.",
-      "currentPassword": "كلمة المرور الحالية",
-      "newPassword": "كلمة المرور الجديدة",
       "confirmPassword": "تأكيد كلمة المرور",
+      "currentPassword": "كلمة المرور الحالية",
+      "description": "تحديث كلمة مرور حسابك للأمان.",
+      "newPassword": "كلمة المرور الجديدة",
       "revokeOtherSessions": "تسجيل الخروج من الأجهزة الأخرى",
-      "revokeOtherSessionsDescription": "سيؤدي هذا إلى تسجيل خروجك من جميع الأجهزة والمتصفحات الأخرى."
-    }
+      "revokeOtherSessionsDescription": "سيؤدي هذا إلى تسجيل خروجك من جميع الأجهزة والمتصفحات الأخرى.",
+      "success": "تم تغيير كلمة المرور بنجاح.",
+      "title": "تغيير كلمة المرور"
+    },
+    "description": "عرض وإدارة معلومات ملفك الشخصي.",
+    "editKyc": {
+      "description": "تحرير معلومات KYC الخاصة بك.",
+      "title": "تحرير KYC"
+    },
+    "email": {
+      "change-disabled": "تغيير البريد الإلكتروني معطل في هذه البيئة.",
+      "current": "البريد الإلكتروني الحالي"
+    },
+    "kyc": {
+      "actions": {
+        "success": "تم تحديث ملف KYC بنجاح."
+      },
+      "cardDescription": "يرجى التحقق من هويتك لإنشاء هويتك على السلسلة.",
+      "fields": {
+        "country": "بلد الإقامة",
+        "dob": "تاريخ الميلاد",
+        "firstName": "الاسم الأول",
+        "lastName": "اسم العائلة",
+        "nationalId": "رقم الهوية الوطنية",
+        "residencyStatus": "حالة الإقامة"
+      },
+      "residencyStatusOptions": {
+        "dual_resident": "مقيم مزدوج - أنا مقيم قانونيًا/ضريبيًا في أكثر من دولة واحدة",
+        "non_resident": "غير مقيم - لا أعيش في أو لا أعتبر مقيمًا في الدولة المذكورة أعلاه",
+        "resident": "مقيم وحيد - أعيش وأعتبر مقيمًا قانونيًا/ضريبيًا فقط في الدولة المذكورة أعلاه",
+        "unknown": "أفضل عدم القول"
+      }
+    },
+    "manage": "إدارة الملف الشخصي",
+    "messages": {
+      "genericError": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
+    },
+    "title": "الملف الشخصي"
+  },
+  "tabs": {
+    "claims": "Claims",
+    "details": "Details"
   }
 }

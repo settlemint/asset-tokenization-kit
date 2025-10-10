@@ -1,5 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { tokenRouter } from "@/orpc/procedures/token.router";
+import { timestamp } from "@atk/zod/timestamp";
 import { z } from "zod";
 
 /**
@@ -24,33 +25,11 @@ const TOKEN_TOTAL_SUPPLY_QUERY = theGraphGraphql(`
 const StatsTotalSupplyResponseSchema = z.object({
   tokenStats_collection: z.array(
     z.object({
-      timestamp: z.string(),
+      timestamp: timestamp(),
       totalSupply: z.string(),
     })
   ),
 });
-
-/**
- * Helper function to process token stats into total supply history data
- * Converts raw token statistics into timestamped total supply data points
- *
- * @param tokenStats - Token statistics from TheGraph
- * @returns Processed total supply history data
- */
-function processTotalSupplyHistoryData(
-  tokenStats: {
-    timestamp: string;
-    totalSupply: string;
-  }[]
-): {
-  timestamp: number;
-  totalSupply: string;
-}[] {
-  return tokenStats.map((stat) => ({
-    timestamp: Number.parseInt(stat.timestamp, 10),
-    totalSupply: stat.totalSupply,
-  }));
-}
 
 /**
  * Asset-specific total supply history route handler.
@@ -114,13 +93,8 @@ export const statsTotalSupply = tokenRouter.token.statsTotalSupply.handler(
       }
     );
 
-    // Process the raw data into the expected output format
-    const totalSupplyHistory = processTotalSupplyHistoryData(
-      response.tokenStats_collection
-    );
-
     return {
-      totalSupplyHistory,
+      totalSupplyHistory: response.tokenStats_collection,
     };
   }
 );

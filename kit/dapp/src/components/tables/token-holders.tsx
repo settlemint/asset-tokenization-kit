@@ -8,7 +8,7 @@ import { useBulkActions } from "@/components/data-table/data-table-bulk-actions"
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { BurnSheet } from "@/components/manage-dropdown/sheets/burn-sheet";
 import { Badge } from "@/components/ui/badge";
 import { orpc } from "@/orpc/orpc-client";
@@ -77,7 +77,9 @@ interface TokenHoldersTableProps {
  * <TokenHoldersTable tokenAddress="0x1234...abcd" token={tokenData} />
  * ```
  */
-export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
+export const TokenHoldersTable = withErrorBoundary(function TokenHoldersTable({
+  token,
+}: TokenHoldersTableProps) {
   const { t } = useTranslation(["tokens", "common"]);
   const router = useRouter();
   const routePath = router.state.matches.at(-1)?.pathname;
@@ -347,7 +349,7 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
   );
 
   return (
-    <ComponentErrorBoundary componentName="Token Holders Table">
+    <>
       {canBurn && (
         <BurnSheet
           open={!!burnTarget}
@@ -357,7 +359,10 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
           asset={token}
           preset={
             burnTarget
-              ? { address: burnTarget.address, available: burnTarget.available }
+              ? {
+                  address: burnTarget.address,
+                  available: burnTarget.available,
+                }
               : undefined
           }
         />
@@ -413,6 +418,6 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
           initialSorting={INITIAL_SORTING}
         />
       </div>
-    </ComponentErrorBoundary>
+    </>
   );
-}
+});

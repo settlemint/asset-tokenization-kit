@@ -8,7 +8,7 @@ import { useBulkActions } from "@/components/data-table/data-table-bulk-actions"
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
 import { parseClaim } from "@/lib/utils/claims/parse-claim";
 import { formatValue } from "@/lib/utils/format-value";
@@ -125,7 +125,9 @@ interface TokensTableProps {
  * // - Allows users to show/hide columns based on their needs
  * ```
  */
-export function TokensTable({ factoryAddress }: TokensTableProps) {
+export const TokensTable = withErrorBoundary(function TokensTable({
+  factoryAddress,
+}: TokensTableProps) {
   const router = useRouter();
   const { t } = useTranslation("tokens");
   // Get the current route's path pattern from the matched route
@@ -588,72 +590,70 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
   );
 
   return (
-    <ComponentErrorBoundary componentName="Tokens Table">
-      <DataTable
-        name="tokens"
-        data={tokens}
-        columns={columns}
-        urlState={{
-          enabled: true,
-          enableUrlPersistence: true,
-          routePath,
-          defaultPageSize: 20,
-          enableGlobalFilter: true,
-          enableRowSelection: true,
-          debounceMs: 300,
-        }}
-        /**
-         * Dynamic column visibility configuration.
-         *
-         * Why columns are shown/hidden:
-         * 1. name: Usually redundant with symbol, saves horizontal space
-         * 2. createdAt: Detailed timestamp less important for overview tables
-         * 3. price: Automatically shown when tokens have asset classification claims
-         *
-         * Design Philosophy:
-         * - Automatically surface relevant information based on data context
-         * - Price column appears when financial assets are present
-         * - Users can still manually control visibility via column options
-         * - Reduces cognitive load while maintaining contextual relevance
-         *
-         * Dynamic Behavior:
-         * - price: Shown when any token has asset classification claims
-         * - This ensures financial data is visible when relevant without manual configuration
-         */
-        initialColumnVisibility={{
-          name: false, // Symbol is usually sufficient for token identification
-          createdAt: false, // Detailed timestamp less critical for overview
-          price: true, // Always show price column; row cells decide visibility
-          category: hasAssetClassification, // Show when classification exists
-          class: hasAssetClassification, // Show when classification exists
-        }}
-        advancedToolbar={{
-          enableGlobalSearch: false,
-          enableFilters: true,
-          enableExport: true,
-          enableViewOptions: true,
-          placeholder: t("searchPlaceholder"),
-        }}
-        bulkActions={{
-          enabled: true,
-          actions,
-          actionGroups,
-          position: "bottom",
-          showSelectionCount: true,
-          enableSelectAll: true,
-        }}
-        pagination={{
-          enablePagination: true,
-          totalCount,
-        }}
-        initialSorting={INITIAL_SORTING}
-        customEmptyState={{
-          title: t("emptyState.title"),
-          description: t("emptyState.description"),
-          icon: Package,
-        }}
-        onRowClick={handleRowClick}
-      />
-    </ComponentErrorBoundary>
+    <DataTable
+      name="tokens"
+      data={tokens}
+      columns={columns}
+      urlState={{
+        enabled: true,
+        enableUrlPersistence: true,
+        routePath,
+        defaultPageSize: 20,
+        enableGlobalFilter: true,
+        enableRowSelection: true,
+        debounceMs: 300,
+      }}
+      /**
+       * Dynamic column visibility configuration.
+       *
+       * Why columns are shown/hidden:
+       * 1. name: Usually redundant with symbol, saves horizontal space
+       * 2. createdAt: Detailed timestamp less important for overview tables
+       * 3. price: Automatically shown when tokens have asset classification claims
+       *
+       * Design Philosophy:
+       * - Automatically surface relevant information based on data context
+       * - Price column appears when financial assets are present
+       * - Users can still manually control visibility via column options
+       * - Reduces cognitive load while maintaining contextual relevance
+       *
+       * Dynamic Behavior:
+       * - price: Shown when any token has asset classification claims
+       * - This ensures financial data is visible when relevant without manual configuration
+       */
+      initialColumnVisibility={{
+        name: false, // Symbol is usually sufficient for token identification
+        createdAt: false, // Detailed timestamp less critical for overview
+        price: true, // Always show price column; row cells decide visibility
+        category: hasAssetClassification, // Show when classification exists
+        class: hasAssetClassification, // Show when classification exists
+      }}
+      advancedToolbar={{
+        enableGlobalSearch: false,
+        enableFilters: true,
+        enableExport: true,
+        enableViewOptions: true,
+        placeholder: t("searchPlaceholder"),
+      }}
+      bulkActions={{
+        enabled: true,
+        actions,
+        actionGroups,
+        position: "bottom",
+        showSelectionCount: true,
+        enableSelectAll: true,
+      }}
+      pagination={{
+        enablePagination: true,
+        totalCount,
+      }}
+      initialSorting={INITIAL_SORTING}
+      customEmptyState={{
+        title: t("emptyState.title"),
+        description: t("emptyState.description"),
+        icon: Package,
+      }}
+      onRowClick={handleRowClick}
+    />
   );
-}
+});

@@ -2,7 +2,7 @@ import { PortfolioBreakdownTable } from "@/components/dashboard/portfolio-detail
 import { SectionSubtitle } from "@/components/dashboard/section-subtitle";
 import { SectionTitle } from "@/components/dashboard/section-title";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { Skeleton } from "@/components/ui/skeleton";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -22,56 +22,54 @@ import { PortfolioSummaryCard } from "./portfolio-summary-card";
  * Only shown for registered users who can receive assets.
  */
 export function PortfolioDetails() {
-  const { t } = useTranslation("dashboard");
-
   return (
     <div className="space-y-6">
       <Suspense fallback={<PortfolioDetailsSkeleton />}>
-        <ComponentErrorBoundary componentName={t("portfolioDetails.name")}>
-          <PortfolioDetailsContent />
-        </ComponentErrorBoundary>
+        <PortfolioDetailsContent />
       </Suspense>
     </div>
   );
 }
 
-function PortfolioDetailsContent() {
-  const { t } = useTranslation("dashboard");
-  const { data: portfolioData } = useSuspenseQuery(
-    orpc.system.stats.portfolioDetails.queryOptions({
-      input: {},
-    })
-  );
+const PortfolioDetailsContent = withErrorBoundary(
+  function PortfolioDetailsContent() {
+    const { t } = useTranslation("dashboard");
+    const { data: portfolioData } = useSuspenseQuery(
+      orpc.system.stats.portfolioDetails.queryOptions({
+        input: {},
+      })
+    );
 
-  const hasAssets = portfolioData.totalTokenFactories > 0;
+    const hasAssets = portfolioData.totalTokenFactories > 0;
 
-  return (
-    <div className="space-y-8">
-      {/* Portfolio Summary Section */}
-      <div className="space-y-4">
-        <div className="flex flex-col gap-2">
-          <SectionTitle>{t("portfolioDetails.summary.title")}</SectionTitle>
-          <SectionSubtitle>
-            {t("portfolioDetails.summary.description")}
-          </SectionSubtitle>
+    return (
+      <div className="space-y-8">
+        {/* Portfolio Summary Section */}
+        <div className="space-y-4">
+          <div className="flex flex-col gap-2">
+            <SectionTitle>{t("portfolioDetails.summary.title")}</SectionTitle>
+            <SectionSubtitle>
+              {t("portfolioDetails.summary.description")}
+            </SectionSubtitle>
+          </div>
+          <PortfolioSummaryCard
+            totalValue={portfolioData.totalValue}
+            totalTokenFactories={portfolioData.totalTokenFactories}
+            totalAssetsHeld={portfolioData.totalAssetsHeld}
+            hasAssets={hasAssets}
+          />
+          <PortfolioBreakdown
+            breakdown={portfolioData.tokenFactoryBreakdown}
+            hasAssets={hasAssets}
+          />
+          <PortfolioBreakdownTable
+            breakdown={portfolioData.tokenFactoryBreakdown}
+          />
         </div>
-        <PortfolioSummaryCard
-          totalValue={portfolioData.totalValue}
-          totalTokenFactories={portfolioData.totalTokenFactories}
-          totalAssetsHeld={portfolioData.totalAssetsHeld}
-          hasAssets={hasAssets}
-        />
-        <PortfolioBreakdown
-          breakdown={portfolioData.tokenFactoryBreakdown}
-          hasAssets={hasAssets}
-        />
-        <PortfolioBreakdownTable
-          breakdown={portfolioData.tokenFactoryBreakdown}
-        />
       </div>
-    </div>
-  );
-}
+    );
+  }
+);
 
 function PortfolioDetailsSkeleton() {
   return (

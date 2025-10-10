@@ -1,7 +1,7 @@
 import { DataTable } from "@/components/data-table/data-table";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { Badge } from "@/components/ui/badge";
 import { orpc } from "@/orpc/orpc-client";
 import type { TopicScheme } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
@@ -49,7 +49,7 @@ const isSystemTopic = (topic: TopicScheme): boolean => {
  * Topics table component for displaying claim topics
  * Shows system topics (read-only) and custom topics (editable/deletable)
  */
-export function TopicsTable() {
+export const TopicsTable = withErrorBoundary(function TopicsTable() {
   const [editingTopic, setEditingTopic] = useState<TopicScheme | null>(null);
   const { t } = useTranslation("claim-topics-issuers");
 
@@ -171,7 +171,7 @@ export function TopicsTable() {
   );
 
   return (
-    <ComponentErrorBoundary componentName="Topics Table">
+    <>
       <DataTable
         name="claim-topics"
         data={topics}
@@ -206,6 +206,6 @@ export function TopicsTable() {
           }}
         />
       )}
-    </ComponentErrorBoundary>
+    </>
   );
-}
+});

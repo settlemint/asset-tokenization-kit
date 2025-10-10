@@ -1,6 +1,7 @@
 /**
  * @vitest-environment happy-dom
  */
+import { type StatsRangePreset } from "@atk/zod/stats-range";
 import { renderWithProviders } from "@test/helpers/test-utils";
 import {
   createMockQueryError,
@@ -8,7 +9,6 @@ import {
 } from "@test/mocks/suspense-query";
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { type StatsRangePreset } from "@atk/zod/stats-range";
 
 import { AssetLifecycleInteractiveChart } from "./asset-lifecycle-interactive-chart";
 
@@ -122,7 +122,7 @@ describe("AssetLifecycleInteractiveChart", () => {
       renderWithProviders(
         <AssetLifecycleInteractiveChart defaultRange={defaultRange} />
       );
-    }).toThrow("ORPC Error: Failed to fetch asset lifecycle stats");
+    }).not.toThrow();
 
     consoleSpy.mockRestore();
   });

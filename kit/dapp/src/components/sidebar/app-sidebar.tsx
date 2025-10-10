@@ -14,7 +14,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { HomeIcon } from "lucide-react";
+import { ClipboardList, HomeIcon } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -27,6 +27,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { t } = useTranslation("navigation");
   const isHomeActive = useRouterState({
     select: (state) => state.location.pathname === "/",
+  });
+  const isActionsActive = useRouterState({
+    select: (state) => state.location.pathname.startsWith("/actions"),
   });
 
   return (
@@ -46,6 +49,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 >
                   <HomeIcon />
                   <span>{t("home")}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive={isActionsActive}>
+                <Link
+                  to="/actions"
+                  aria-current={isActionsActive ? "page" : undefined}
+                  className={isActionsActive ? "font-semibold" : undefined}
+                >
+                  <ClipboardList />
+                  <span>{t("actions")}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

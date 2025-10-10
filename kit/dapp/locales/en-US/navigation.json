@@ -1,5 +1,6 @@
 {
   "asset": "Asset",
+  "actions": "Actions",
   "assetClasses": "Asset classes",
   "assetManagement": "Asset management",
   "cashEquivalent": "Cash equivalent",

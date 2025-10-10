@@ -191,12 +191,6 @@ vi.mock("@/components/charts/interactive-chart", () => ({
   ),
 }));
 
-vi.mock("@/components/error/component-error-boundary", () => ({
-  ComponentErrorBoundary: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="error-boundary">{children}</div>
-  ),
-}));
-
 vi.mock("@tanstack/react-query", async () => {
   const actual = await vi.importActual("@tanstack/react-query");
   return {
@@ -241,7 +235,6 @@ describe("PortfolioValueInteractiveChart", () => {
   it("renders portfolio value chart with default range", () => {
     renderWithQueryClient(<PortfolioValueInteractiveChart />);
 
-    expect(screen.getByTestId("error-boundary")).toBeInTheDocument();
     expect(screen.getByTestId("interactive-chart")).toBeInTheDocument();
     expect(screen.getByText("Your portfolio value")).toBeInTheDocument();
   });

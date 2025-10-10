@@ -1,4 +1,4 @@
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import {
   Card,
   CardContent,
@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next";
  * Displays the total number of users with recent activity count.
  * Shows users active in the last X days (configurable) with proper pluralization.
  */
-export function UserStatsWidget() {
+export const UserStatsWidget = withErrorBoundary(function UserStatsWidget() {
   const { t } = useTranslation("stats");
 
   // Fetch just the user count metrics - more efficient than fetching all metrics
@@ -25,21 +25,19 @@ export function UserStatsWidget() {
   );
 
   return (
-    <ComponentErrorBoundary componentName="User Stats Widget">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("widgets.users.title")}</CardTitle>
-        </CardHeader>
-        <CardContent className="font-bold text-3xl">
-          {metrics.totalUsers.toLocaleString()}
-        </CardContent>
-        <CardFooter className="text-muted-foreground text-sm">
-          {t("widgets.users.description", {
-            count: metrics.recentUsers,
-            days: metrics.timeRangeDays,
-          })}
-        </CardFooter>
-      </Card>
-    </ComponentErrorBoundary>
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("widgets.users.title")}</CardTitle>
+      </CardHeader>
+      <CardContent className="font-bold text-3xl">
+        {metrics.totalUsers.toLocaleString()}
+      </CardContent>
+      <CardFooter className="text-muted-foreground text-sm">
+        {t("widgets.users.description", {
+          count: metrics.recentUsers,
+          days: metrics.timeRangeDays,
+        })}
+      </CardFooter>
+    </Card>
   );
-}
+});

@@ -1,5 +1,5 @@
 import { FormatValueOptions } from "@/lib/utils/format-value/types";
-import type { RowData } from "@tanstack/react-table";
+import type { CellContext, RowData } from "@tanstack/react-table";
 import type { LucideIcon } from "lucide-react";
 import type { BulkActionGroup } from "../../types/bulk-actions";
 import type { ColumnOption, ElementType } from "./column-types";
@@ -32,7 +32,7 @@ declare module "@tanstack/react-table" {
    * }];
    * ```
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   interface ColumnMeta<TData extends RowData, TValue>
     extends FormatValueOptions {
     /**
@@ -98,6 +98,11 @@ declare module "@tanstack/react-table" {
      * @example "/items/{id}" where {id} is replaced with the row's ID value
      */
     detailUrl?: string;
+    /**
+     * Custom cell renderer that takes precedence over automatic formatting
+     * @remarks Enables complex cell layouts while retaining accessor-based sorting/filtering
+     */
+    renderCell?: (context: CellContext<TData, TValue>) => React.ReactNode;
   }
 }
 

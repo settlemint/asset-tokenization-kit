@@ -1,5 +1,5 @@
 import { InteractiveChartComponent } from "@/components/charts/interactive-chart";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
 import { formatChartDate } from "@/lib/utils/timeseries";
@@ -26,56 +26,56 @@ export interface PortfolioValueInteractiveChartProps {
  * Supports switching between area and bar chart views.
  * Uses dnum for safe BigInt handling to prevent precision loss.
  */
-export function PortfolioValueInteractiveChart({
-  defaultRange = "trailing7Days",
-}: PortfolioValueInteractiveChartProps) {
-  const { t, i18n } = useTranslation("stats");
-  const locale = i18n.language;
-  const { data: baseCurrency } = useSuspenseQuery(
-    orpc.settings.read.queryOptions({ input: { key: "BASE_CURRENCY" } })
-  );
+export const PortfolioValueInteractiveChart = withErrorBoundary(
+  function PortfolioValueInteractiveChart({
+    defaultRange = "trailing7Days",
+  }: PortfolioValueInteractiveChartProps) {
+    const { t, i18n } = useTranslation("stats");
+    const locale = i18n.language;
+    const { data: baseCurrency } = useSuspenseQuery(
+      orpc.settings.read.queryOptions({ input: { key: "BASE_CURRENCY" } })
+    );
 
-  // Internal state for selected range
-  const [selectedRange, setSelectedRange] =
-    useState<StatsRangePreset>(defaultRange);
+    // Internal state for selected range
+    const [selectedRange, setSelectedRange] =
+      useState<StatsRangePreset>(defaultRange);
 
-  // Configure chart colors and labels
-  const chartConfig: ChartConfig = {
-    totalValueInBaseCurrency: {
-      label: t("charts.portfolioValue.label"),
-      color: "var(--chart-1)",
-    },
-  };
+    // Configure chart colors and labels
+    const chartConfig: ChartConfig = {
+      totalValueInBaseCurrency: {
+        label: t("charts.portfolioValue.label"),
+        color: "var(--chart-1)",
+      },
+    };
 
-  const [trailing24HrRangeData, trailing7DaysRangeData] = useQueries({
-    queries: statsRangePresets.map((preset) =>
-      orpc.system.stats.portfolio.queryOptions({
-        input: preset,
-        ...CHART_QUERY_OPTIONS,
-      })
-    ),
-  });
+    const [trailing24HrRangeData, trailing7DaysRangeData] = useQueries({
+      queries: statsRangePresets.map((preset) =>
+        orpc.system.stats.portfolio.queryOptions({
+          input: preset,
+          ...CHART_QUERY_OPTIONS,
+        })
+      ),
+    });
 
-  // Get the raw data for the selected range
-  const rawData =
-    selectedRange === "trailing24Hours"
-      ? trailing24HrRangeData?.data
-      : trailing7DaysRangeData?.data;
+    // Get the raw data for the selected range
+    const rawData =
+      selectedRange === "trailing24Hours"
+        ? trailing24HrRangeData?.data
+        : trailing7DaysRangeData?.data;
 
-  const fallbackRange = useMemo<StatsResolvedRange>(() => {
-    return resolveStatsRange(selectedRange);
-  }, [selectedRange]);
+    const fallbackRange = useMemo<StatsResolvedRange>(() => {
+      return resolveStatsRange(selectedRange);
+    }, [selectedRange]);
 
-  const resolvedRange = rawData?.range ?? fallbackRange;
+    const resolvedRange = rawData?.range ?? fallbackRange;
 
-  const chartInterval = resolvedRange.interval;
+    const chartInterval = resolvedRange.interval;
 
-  const timeseries = rawData?.data ?? [];
+    const timeseries = rawData?.data ?? [];
 
-  const dataKeys = ["totalValueInBaseCurrency"];
+    const dataKeys = ["totalValueInBaseCurrency"];
 
-  return (
-    <ComponentErrorBoundary componentName="Portfolio Value Chart">
+    return (
       <InteractiveChartComponent
         title={t("charts.portfolioValue.title")}
         description={t("charts.portfolioValue.description")}
@@ -106,6 +106,6 @@ export function PortfolioValueInteractiveChart({
         emptyMessage={t("charts.portfolioValue.empty.title")}
         emptyDescription={t("charts.portfolioValue.empty.description")}
       />
-    </ComponentErrorBoundary>
-  );
-}
+    );
+  }
+);
