@@ -3,6 +3,7 @@ import { StatsAssetActivityOutputSchema } from "@/orpc/routes/system/stats/route
 import { StatsAssetLifecycleOutputSchema } from "@/orpc/routes/system/stats/routes/asset-lifecycle.schema";
 import { StatsAssetsOutputSchema } from "@/orpc/routes/system/stats/routes/assets.schema";
 import { StatsClaimsStatsOutputSchema } from "@/orpc/routes/system/stats/routes/claims-stats.schema";
+import { StatsClaimsStatsStateOutputSchema } from "@/orpc/routes/system/stats/routes/claims-stats-state.schema";
 import { StatsIdentityCountOutputSchema } from "@/orpc/routes/system/stats/routes/identity-count.schema";
 import { StatsIdentityStatsOverTimeOutputSchema } from "@/orpc/routes/system/stats/routes/identity-stats-over-time.schema";
 import {
@@ -67,6 +68,17 @@ const statsClaimsStats = baseContract
   })
   .input(StatsRangeInputSchema)
   .output(StatsClaimsStatsOutputSchema);
+
+const statsClaimsStatsState = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/claims-stats-state",
+    description:
+      "Retrieve current claims statistics state including issued, active, removed, and revoked claims",
+    successDescription: "Claims statistics state retrieved successfully",
+    tags: ["stats", "system", "claims"],
+  })
+  .output(StatsClaimsStatsStateOutputSchema);
 
 const statsIdentityCount = baseContract
   .route({
@@ -174,6 +186,7 @@ export const statsContract = {
   assetLifecycle: statsAssetLifecycle,
   assetActivity: statsAssetActivity,
   claimsStats: statsClaimsStats,
+  claimsStatsState: statsClaimsStatsState,
   identityCount: statsIdentityCount,
   identityStatsOverTime: statsIdentityStatsOverTime,
   transactionCount: statsTransactionCount,
