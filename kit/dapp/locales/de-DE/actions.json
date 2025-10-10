@@ -1,0 +1,43 @@
+{
+  "title": "Aktionen",
+  "description": "Behalten Sie anstehende, kommende und abgeschlossene Aktionen im Blick, die Sie ausführen dürfen.",
+  "tabs": {
+    "pending": "Ausstehend",
+    "upcoming": "Bevorstehend",
+    "completed": "Abgeschlossen"
+  },
+  "table": {
+    "columns": {
+      "name": "Aktion",
+      "status": "Status",
+      "type": "Typ",
+      "activeAt": "Geplant",
+      "executedAt": "Abgeschlossen am",
+      "executedBy": "Ausgeführt von"
+    },
+    "empty": {
+      "title": "Keine Aktionen vorhanden",
+      "description": "Sie sind auf dem neuesten Stand. Neue Aktionen erscheinen hier, sobald sie verfügbar sind."
+    },
+    "authorizedBadge": "{{count}} berechtigt"
+  },
+  "filters": {
+    "searchPlaceholder": "Aktionen durchsuchen"
+  },
+  "status": {
+    "PENDING": "Bevorstehend",
+    "ACTIVE": "Ausstehend",
+    "EXECUTED": "Abgeschlossen",
+    "EXPIRED": "Abgelaufen"
+  },
+  "labels": {
+    "MatureBond": "Anleihe fällig stellen",
+    "ApproveXvPSettlement": "Settlement genehmigen",
+    "ExecuteXvPSettlement": "Settlement ausführen"
+  },
+  "types": {
+    "bond": "Anleihe",
+    "settlement": "Settlement",
+    "generic": "Aktion"
+  }
+}

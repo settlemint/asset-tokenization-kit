@@ -1,13 +1,13 @@
+import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
-import { ChartEmptyState } from "./chart-empty-state";
-import { AreaChartComponent } from "./area-chart";
-import { Suspense } from "react";
-import { ChartSkeleton } from "./chart-skeleton";
 import {
   useBondYieldDistribution,
   type YieldDistributionItem,
 } from "@/hooks/use-bond-yield-distribution";
 import { useTranslation } from "react-i18next";
+import { AreaChartComponent } from "./area-chart";
+import { ChartEmptyState } from "./chart-empty-state";
+import { ChartSkeleton } from "./chart-skeleton";
 
 interface BondYieldDistributionChartProps {
   data: YieldDistributionItem[];
@@ -16,7 +16,11 @@ interface BondYieldDistributionChartProps {
   className?: string;
 }
 
-export function BondYieldDistributionChart({
+export const BondYieldDistributionChart = withErrorBoundary(
+  BondYieldDistributionChartLoader
+);
+
+function BondYieldDistributionChartLoader({
   data,
   title,
   description,
@@ -77,25 +81,11 @@ interface AsyncBondYieldDistributionChartProps {
   className?: string;
 }
 
-export function AsyncBondYieldDistributionChart({
-  assetAddress,
-  title,
-  description,
-  className,
-}: AsyncBondYieldDistributionChartProps) {
-  return (
-    <Suspense fallback={<ChartSkeleton />}>
-      <BondYieldDistributionChartLoader
-        assetAddress={assetAddress}
-        title={title}
-        description={description}
-        className={className}
-      />
-    </Suspense>
-  );
-}
+export const AsyncBondYieldDistributionChart = withErrorBoundary(
+  AsyncBondYieldDistributionChartLoader
+);
 
-function BondYieldDistributionChartLoader({
+function AsyncBondYieldDistributionChartLoader({
   assetAddress,
   title,
   description,
