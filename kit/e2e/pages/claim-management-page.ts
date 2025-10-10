@@ -116,11 +116,13 @@ export class ClaimManagementPage extends BasePage {
 
     await dialog.waitFor({ state: "hidden", timeout: 30000 }).catch(() => {});
     await this.waitForReactStateSettle();
-    await this.page
-      .getByText(/Issuer added successfully|Trusted issuer added successfully/i)
-      .first()
-      .waitFor({ state: "visible", timeout: 5000 })
-      .catch(() => {});
+    await expect(
+      this.page
+        .getByText(
+          /Issuer added successfully|Trusted issuer added successfully/i
+        )
+        .first()
+    ).toBeVisible({ timeout: 15000 });
   }
 
   private escapeRegex(value: string): string {
