@@ -1,21 +1,14 @@
-import { TimeIntervalEnum } from "@atk/zod/time-interval";
 import {
   DE_COUNTRY_CODE,
   JP_COUNTRY_CODE,
 } from "@test/scripts/demo/data/demo-country-codes";
 import { from } from "dnum";
 
-const oneMinuteFromNow = new Date();
-oneMinuteFromNow.setMinutes(oneMinuteFromNow.getMinutes() + 1);
-
-const twoMinutesFromNow = new Date();
-twoMinutesFromNow.setMinutes(twoMinutesFromNow.getMinutes() + 2);
-
 const tomorrow = new Date();
-tomorrow.setDate(tomorrow.getDate() + 5);
+tomorrow.setDate(tomorrow.getDate() + 1);
 
 const dayAfterTomorrow = new Date();
-dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 6);
+dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
 
 const threeYearsFromTomorrow = new Date();
 threeYearsFromTomorrow.setFullYear(threeYearsFromTomorrow.getFullYear() + 3);
@@ -29,9 +22,16 @@ export const BONDS = [
     symbol: "STB",
     yieldRate: 110,
     cap: from(1_000_000_000, 18),
-    issueDate: oneMinuteFromNow,
-    maturityDate: twoMinutesFromNow,
-    paymentInterval: TimeIntervalEnum.DAILY,
+    issueDate: new Date(
+      tomorrow.getFullYear(),
+      tomorrow.getMonth(),
+      tomorrow.getDate()
+    ),
+    maturityDate: new Date(
+      dayAfterTomorrow.getFullYear(),
+      dayAfterTomorrow.getMonth(),
+      dayAfterTomorrow.getDate()
+    ),
   },
   {
     name: "Bund7",
@@ -49,7 +49,6 @@ export const BONDS = [
       threeYearsFromTomorrow.getMonth(),
       threeYearsFromTomorrow.getDate()
     ),
-    paymentInterval: TimeIntervalEnum.YEARLY,
     countries: [DE_COUNTRY_CODE],
   },
   {
@@ -68,7 +67,6 @@ export const BONDS = [
       fiveYearsFromTomorrow.getMonth(),
       fiveYearsFromTomorrow.getDate()
     ),
-    paymentInterval: TimeIntervalEnum.YEARLY,
     countries: [DE_COUNTRY_CODE, JP_COUNTRY_CODE],
   },
 ];
