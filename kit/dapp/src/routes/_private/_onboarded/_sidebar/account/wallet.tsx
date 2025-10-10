@@ -1,7 +1,7 @@
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { RecoveryCodesActions } from "@/components/onboarding/recovery-codes/recovery-codes-actions";
 import { RecoveryCodesDisplay } from "@/components/onboarding/recovery-codes/recovery-codes-display";
-import { useRecoveryCodes } from "@/components/onboarding/recovery-codes/use-recovery-codes";
+import { useSecretCodesManager } from "@/components/onboarding/recovery-codes/use-secret-codes-manager";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,13 +23,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Web3Address } from "@/components/web3/web3-address";
-import { authClient } from "@/lib/auth/auth.client";
 import { orpc } from "@/orpc/orpc-client";
 import type { CheckedState } from "@radix-ui/react-checkbox";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { RefreshCw } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import QRCode from "react-qr-code";
 import { toast } from "sonner";
@@ -45,8 +44,6 @@ function Wallet() {
   const { data: user, refetch: refetchUser } = useSuspenseQuery(
     orpc.user.me.queryOptions()
   );
-  const [isGeneratingCodes, setIsGeneratingCodes] = useState(false);
-  const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
   const [codesConfirmed, setCodesConfirmed] = useState(false);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [password, setPassword] = useState("");
@@ -54,52 +51,44 @@ function Wallet() {
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [isSubmittingPassword, setIsSubmittingPassword] = useState(false);
 
-  const { handleCopyAll, handleDownload } = useRecoveryCodes(recoveryCodes);
+  const fallbackError = useMemo(
+    () =>
+      t("common:errors.somethingWentWrong", {
+        defaultValue: "Something went wrong",
+      }),
+    [t]
+  );
+
+  const {
+    codes,
+    isGenerating,
+    isConfirming,
+    generate,
+    confirm,
+    copyAll,
+    download,
+    resetCodes,
+  } = useSecretCodesManager({
+    onGenerateSuccess: async () => {
+      setCodesConfirmed(false);
+      setGenerationError(null);
+      toast.success(
+        t("onboarding:wallet-security.recovery-codes.generated-success")
+      );
+      await refetchUser();
+    },
+    onGenerateError: (message) => {
+      const errorMessage = message || fallbackError;
+      setGenerationError(errorMessage);
+      toast.error(errorMessage);
+    },
+    onConfirmError: (message) => {
+      const errorMessage = message || fallbackError;
+      toast.error(errorMessage);
+    },
+  });
 
   const passwordRequired = user.onboardingState.walletRecoveryCodes;
-
-  const handleGenerateRecoveryCodes = useCallback(
-    async (passwordValue?: string) => {
-      setGenerationError(null);
-      setIsGeneratingCodes(true);
-      try {
-        const payload = passwordValue ? { password: passwordValue } : {};
-        const response = await authClient.secretCodes.generate(payload);
-        if (response.error) {
-          const message =
-            response.error.message ||
-            t("common:errors.somethingWentWrong", {
-              defaultValue: "Something went wrong",
-            });
-          setGenerationError(message);
-          toast.error(message);
-          return false;
-        }
-        if (response.data?.secretCodes) {
-          setRecoveryCodes(response.data.secretCodes);
-          setCodesConfirmed(false);
-          toast.success(
-            t("onboarding:wallet-security.recovery-codes.generated-success")
-          );
-        }
-        await refetchUser();
-        return true;
-      } catch (error) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : t("common:errors.somethingWentWrong", {
-                defaultValue: "Something went wrong",
-              });
-        setGenerationError(message);
-        toast.error(message);
-        return false;
-      } finally {
-        setIsGeneratingCodes(false);
-      }
-    },
-    [refetchUser, t]
-  );
 
   const handlePasswordSubmit = useCallback(async () => {
     setPasswordError(null);
@@ -108,13 +97,13 @@ function Wallet() {
       return;
     }
     setIsSubmittingPassword(true);
-    const success = await handleGenerateRecoveryCodes(password);
+    const result = await generate({ password });
     setIsSubmittingPassword(false);
-    if (success) {
+    if (result.success) {
       setPassword("");
       setIsPasswordDialogOpen(false);
     }
-  }, [handleGenerateRecoveryCodes, password, t]);
+  }, [generate, password, t]);
 
   const handleRegenerateClick = useCallback(() => {
     if (passwordRequired) {
@@ -124,22 +113,22 @@ function Wallet() {
       setIsPasswordDialogOpen(true);
       return;
     }
-    void handleGenerateRecoveryCodes();
-  }, [handleGenerateRecoveryCodes, passwordRequired]);
+    void generate();
+  }, [generate, passwordRequired]);
 
   const handleConfirmCodes = useCallback(async () => {
-    if (codesConfirmed) {
-      try {
-        await authClient.secretCodes.confirm({
-          stored: true,
-        });
-        setRecoveryCodes([]);
-        setCodesConfirmed(false);
-      } finally {
-        // Handle completion
-      }
+    if (!codesConfirmed) {
+      return;
     }
-  }, [codesConfirmed]);
+    const result = await confirm();
+    if (result.success) {
+      await refetchUser();
+      resetCodes();
+      setCodesConfirmed(false);
+      setGenerationError(null);
+      toast.success(t("common:saved"));
+    }
+  }, [codesConfirmed, confirm, refetchUser, resetCodes, t]);
 
   const handleCodesConfirmedChange = useCallback((checked: CheckedState) => {
     setCodesConfirmed(checked === true);
@@ -249,15 +238,15 @@ function Wallet() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex-1">
-            {recoveryCodes.length > 0 ? (
+            {codes.length > 0 ? (
               <div className="space-y-6">
                 <RecoveryCodesDisplay
-                  isGenerating={isGeneratingCodes}
-                  recoveryCodes={recoveryCodes}
+                  isGenerating={isGenerating}
+                  recoveryCodes={codes}
                 />
                 <RecoveryCodesActions
-                  onCopyAll={handleCopyAll}
-                  onDownload={handleDownload}
+                  onCopyAll={copyAll}
+                  onDownload={download}
                 />
                 <div className="flex items-center space-x-2">
                   <Checkbox
@@ -274,10 +263,10 @@ function Wallet() {
                 </div>
                 <Button
                   onClick={handleConfirmCodes}
-                  disabled={!codesConfirmed}
+                  disabled={!codesConfirmed || isConfirming}
                   className="w-full"
                 >
-                  Continue
+                  {isConfirming ? t("common:generating") : t("common:continue")}
                 </Button>
               </div>
             ) : (
@@ -285,10 +274,10 @@ function Wallet() {
                 <div className="flex flex-col items-center gap-4">
                   <Button
                     onClick={handleRegenerateClick}
-                    disabled={isGeneratingCodes}
+                    disabled={isGenerating}
                     className="gap-2"
                   >
-                    {isGeneratingCodes && (
+                    {isGenerating && (
                       <RefreshCw className="h-4 w-4 animate-spin" />
                     )}
                     {t("wallet.regenerateRecoveryCodes")}

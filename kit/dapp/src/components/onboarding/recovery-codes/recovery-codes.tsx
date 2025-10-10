@@ -4,7 +4,6 @@ import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { WarningAlert } from "@/components/ui/warning-alert";
-import { authClient } from "@/lib/auth/auth.client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { getRouteApi } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -12,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { RecoveryCodesActions } from "./recovery-codes-actions";
 import { RecoveryCodesDisplay } from "./recovery-codes-display";
-import { useRecoveryCodes } from "./use-recovery-codes";
+import { useSecretCodesManager } from "./use-secret-codes-manager";
 
 const routeApi = getRouteApi(
   "/_private/onboarding/_sidebar/wallet-recovery-codes"
@@ -101,44 +100,54 @@ function RecoveryCodesContent({
   onComplete,
 }: RecoveryCodesContentProps) {
   const { t } = useTranslation(["onboarding"]);
-  const [isConfirmed, setIsConfirmed] = useState(false);
-  const [hasPerformedAction, setHasPerformedAction] = useState(false);
-
-  const recoveryCodes = useMemo(
+  const initialCodes = useMemo(
     () => recoveryCodesData?.secretCodes ?? [],
     [recoveryCodesData]
   );
 
-  const onConfirm = useCallback(async () => {
-    try {
-      await authClient.secretCodes.confirm({
-        stored: true,
+  const {
+    codes,
+    isConfirming,
+    hasPerformedAction,
+    confirm,
+    copyAll,
+    download,
+  } = useSecretCodesManager({
+    initialCodes,
+    onConfirmSuccess: onComplete,
+    onConfirmError: (message, error) => {
+      logger.error("Failed to confirm recovery codes", {
+        message,
+        error,
       });
-      await onComplete();
-    } catch (error) {
-      logger.error("Failed to confirm recovery codes", error);
-      toast.error(t("wallet-security.recovery-codes.confirm-error"));
-    }
-  }, [onComplete, t]);
+      toast.error(message || t("wallet-security.recovery-codes.confirm-error"));
+    },
+    onGenerateError: (message, error) => {
+      logger.error("Failed to generate recovery codes", {
+        message,
+        error,
+      });
+      toast.error(
+        message || t("wallet-security.recovery-codes.generated-error")
+      );
+    },
+  });
 
-  const { handleCopyAll, handleDownload } = useRecoveryCodes(recoveryCodes);
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
-  const handleCopyAllWithTracking = useCallback(() => {
-    handleCopyAll();
-    setHasPerformedAction(true);
-  }, [handleCopyAll]);
+  const handleConfirm = useCallback(() => {
+    void confirm();
+  }, [confirm]);
 
-  const handleDownloadWithTracking = useCallback(() => {
-    handleDownload();
-    setHasPerformedAction(true);
-  }, [handleDownload]);
-
-  // Show success toast when component mounts with codes
   useEffect(() => {
-    if (recoveryCodes.length > 0) {
+    setIsConfirmed(false);
+  }, [codes]);
+
+  useEffect(() => {
+    if (codes.length > 0) {
       toast.success(t("wallet-security.recovery-codes.generated-success"));
     }
-  }, [recoveryCodes.length, t]);
+  }, [codes.length, t]);
 
   return (
     <FormStepLayout
@@ -147,10 +156,12 @@ function RecoveryCodesContent({
       fullWidth={true}
       actions={
         <Button
-          onClick={onConfirm}
-          disabled={recoveryCodes.length === 0 || !isConfirmed}
+          onClick={handleConfirm}
+          disabled={codes.length === 0 || !isConfirmed || isConfirming}
         >
-          {t("wallet-security.recovery-codes.confirm")}
+          {isConfirming
+            ? t("wallet-security.recovery-codes.generating")
+            : t("wallet-security.recovery-codes.confirm")}
         </Button>
       }
     >
@@ -160,12 +171,9 @@ function RecoveryCodesContent({
 
       <div className="flex-1 overflow-y-auto">
         <div className="w-full space-y-6">
-          <RecoveryCodesDisplay
-            isGenerating={false}
-            recoveryCodes={recoveryCodes}
-          />
+          <RecoveryCodesDisplay isGenerating={false} recoveryCodes={codes} />
 
-          {recoveryCodes.length > 0 && (
+          {codes.length > 0 && (
             <WarningAlert
               description={t("wallet-security.recovery-codes.warning")}
             />
@@ -173,13 +181,10 @@ function RecoveryCodesContent({
         </div>
       </div>
 
-      {recoveryCodes.length > 0 && (
+      {codes.length > 0 && (
         <div className="mt-6 space-y-4 border-t pt-6">
           {/* Action Buttons in Footer */}
-          <RecoveryCodesActions
-            onCopyAll={handleCopyAllWithTracking}
-            onDownload={handleDownloadWithTracking}
-          />
+          <RecoveryCodesActions onCopyAll={copyAll} onDownload={download} />
           {/* Checkbox Section with Better Visual Prominence */}
           <div className="rounded-lg bg-muted/50 border-2 border-muted p-4">
             <div className="flex items-start space-x-3">
