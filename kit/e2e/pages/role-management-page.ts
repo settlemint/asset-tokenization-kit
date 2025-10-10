@@ -1,4 +1,5 @@
 import { expect } from "@playwright/test";
+import { confirmPinCode } from "../utils/form-utils";
 import { BasePage } from "./base-page";
 
 export class RoleManagementPage extends BasePage {
@@ -15,14 +16,9 @@ export class RoleManagementPage extends BasePage {
       await this.waitForReactStateSettle();
     }
 
-    await this.page.waitForTimeout(5000);
+    const adminsTable = this.page.locator("table").first();
+    await expect(adminsTable).toBeVisible({ timeout: 15000 });
     await this.waitForReactStateSettle();
-
-    const pageText = await this.page.textContent("body");
-    // const hasErrorText = pageText?.includes("Error") || false;
-    // const hasTableText =
-    //   (pageText?.includes("Name") && pageText?.includes("Roles")) || false;
-    // const hasPlatformAdmins = pageText?.includes("Platform admins") || false;
   }
 
   async openUserRolesMenu(userName: string): Promise<void> {
@@ -50,7 +46,6 @@ export class RoleManagementPage extends BasePage {
 
     await expect(menuButton).toBeVisible({ timeout: 10000 });
     await menuButton.click();
-
   }
 
   async selectChangeRoles(): Promise<void> {
@@ -93,22 +88,7 @@ export class RoleManagementPage extends BasePage {
     await saveButton.click();
     await this.waitForReactStateSettle();
 
-    const dialog = this.page.getByRole("dialog");
-    const dialogVisible = await dialog
-      .isVisible({ timeout: 10000 })
-      .catch(() => false);
-    if (dialogVisible) {
-      let pinInput = dialog.getByPlaceholder(/pin code/i);
-      if ((await pinInput.count()) === 0) {
-        pinInput = dialog.getByLabel(/pin code/i);
-      }
-      if ((await pinInput.count()) === 0) {
-        pinInput = dialog.getByRole("textbox");
-      }
-      await expect(pinInput.first()).toBeVisible({ timeout: 10000 });
-      await pinInput.first().fill(pin);
-      await dialog.getByRole("button", { name: /confirm/i }).click();
-    }
+    await confirmPinCode(this.page, pin, "Change roles");
 
     await this.page
       .getByRole("heading", { name: "Change roles" })

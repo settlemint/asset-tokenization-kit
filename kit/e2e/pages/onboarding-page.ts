@@ -700,9 +700,7 @@ export class OnboardingPage extends BasePage {
       await walletSectionButton.click().catch(() => {});
     }
 
-    const addressLocator = this.page
-      .locator("text=/^0x[a-fA-F0-9]{40}$/")
-      .first();
+    const addressLocator = this.page.getByText(/^0x[a-fA-F0-9]{40}$/).first();
     await addressLocator.waitFor({ state: "visible", timeout: 60000 });
     const address = (await addressLocator.textContent())?.trim() ?? "";
     return address;

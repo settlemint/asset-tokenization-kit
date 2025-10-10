@@ -1,4 +1,4 @@
-import { type BrowserContext, type Page, test } from "@playwright/test";
+import { type BrowserContext, type Page, expect, test } from "@playwright/test";
 import { CreateAssetForm } from "../pages/create-asset-form";
 import { Pages } from "../pages/pages";
 import { bondData, stablecoinData } from "../test-data/asset-data";
@@ -354,7 +354,9 @@ test.describe.serial("Bond Creation Validation", () => {
 
       await createAssetForm.clickNextButton();
       await adminPage.waitForLoadState("networkidle");
-      await adminPage.waitForTimeout(2000);
+      await expect(
+        adminPage.getByRole("heading", { name: "Bond Details" })
+      ).toBeVisible({ timeout: 10000 });
 
       await createAssetForm.fillBondDetails({
         decimals: bondDataWithStablecoin.decimals,

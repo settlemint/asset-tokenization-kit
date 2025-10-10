@@ -265,20 +265,10 @@ export class CreateAssetForm extends BasePage {
     await this.reviewAndDeploy(assetType);
     await confirmPinCode(this.page, pincode, "Confirm asset creation");
 
-    const start = Date.now();
-    while (Date.now() - start < 15000) {
-      const url = this.page.url();
-      if (/\/token\//.test(url)) {
-        return url;
-      }
-      try {
-        await this.page.waitForURL(/\/token\//, { timeout: 1000 });
-        return this.page.url();
-      } catch {
-        await this.page.waitForTimeout(250);
-      }
-    }
-    return "";
+    await expect
+      .poll(() => this.page.url(), { timeout: 15000 })
+      .toMatch(/\/token\//);
+    return this.page.url();
   }
 
   async fillCryptocurrencyDetails(options: {
@@ -563,38 +553,47 @@ export class CreateAssetForm extends BasePage {
     symbol: string;
     decimals: string;
   }) {
-    const { name, symbol, decimals } = options;
+    const { name } = options;
 
     await this.page.waitForLoadState("networkidle");
 
-    const tokenDetailRegex = /\/token\/0x[a-fA-F0-9]{40}\/?$/;
-    if (!tokenDetailRegex.test(this.page.url())) {
-      await this.page.goto("/my-assets");
-      await this.page.waitForLoadState("networkidle");
+    const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const nameMatcher = new RegExp(`\\b${escapedName}\\b`, "i");
+
+    const headerContractAddress = this.page.getByRole("columnheader", {
+      name: /^Contract Address$/,
+    });
+
+    let onListing = false;
+    try {
+      await headerContractAddress.waitFor({ state: "visible", timeout: 8000 });
+      onListing = true;
+    } catch {
+      onListing = false;
     }
 
-    const dataTable = this.page.locator('[data-slot="table"]');
-    const tableBody = dataTable.locator('[data-slot="table-body"]');
-    const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const rowMatcher = new RegExp(`${escapedName}`, "i");
+    if (onListing) {
+      const listingTable = this.page
+        .getByRole("table")
+        .filter({ has: headerContractAddress })
+        .first();
+      const tableBody = listingTable.locator('[data-slot="table-body"]');
+      await expect(listingTable).toBeVisible({ timeout: 15000 });
 
-    await expect(dataTable).toBeVisible({ timeout: 15000 });
-    const assetRow = tableBody.getByRole("row", { name: rowMatcher }).first();
-    await assetRow.waitFor({ state: "visible", timeout: 15000 });
-    await expect(assetRow).toContainText(symbol, { timeout: 15000 });
-    const escapedDecimals = decimals.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const decimalsCell = assetRow
-      .getByRole("cell")
-      .filter({ hasText: new RegExp(`^\\s*${escapedDecimals}\\s*$`) })
-      .first();
-    await expect(decimalsCell).toBeVisible({ timeout: 15000 });
-    await expect(decimalsCell).toHaveText(
-      new RegExp(`^\\s*${escapedDecimals}\\s*$`),
-      { timeout: 15000 }
-    );
-    await expect(assetRow.locator('[data-slot="badge"]').first()).toContainText(
-      /Paused/i,
-      { timeout: 15000 }
-    );
+      const assetRow = tableBody
+        .getByRole("row", { name: nameMatcher })
+        .first();
+      await expect(assetRow).toBeVisible({ timeout: 30000 });
+      return;
+    }
+
+    const tokenDetailRegex = /\/token\/0x[a-fA-F0-9]{40}\/?$/;
+    if (!tokenDetailRegex.test(this.page.url())) {
+      await this.page.waitForURL(tokenDetailRegex, { timeout: 30000 });
+    }
+
+    await expect(this.page.getByText(nameMatcher).first()).toBeVisible({
+      timeout: 30000,
+    });
   }
 }

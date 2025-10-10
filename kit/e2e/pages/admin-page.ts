@@ -1,8 +1,8 @@
 import type { Locator } from "@playwright/test";
 import { expect } from "@playwright/test";
+import { confirmPinCode } from "../utils/form-utils";
 import { formatAmount, searchAndSelectFromDialog } from "../utils/page-utils";
 import { BasePage } from "./base-page";
-import { confirmPinCode } from "../utils/form-utils";
 
 export class AdminPage extends BasePage {
   private static readonly CURRENCY_CODE_REGEX = /[A-Z]+$/;
@@ -709,9 +709,9 @@ export class AdminPage extends BasePage {
       .catch(async () => {
         await this.page.waitForTimeout(300);
       });
-    await this.page.keyboard.press("ArrowDown");
-    await this.page.waitForTimeout(150);
-    await this.page.keyboard.press("Enter");
+    const userOption = this.page.getByRole("option", { name: options.user });
+    await userOption.waitFor({ state: "visible", timeout: 15000 });
+    await userOption.click();
     await this.waitForReactStateSettle();
 
     const roleButtons = this.page.locator(
