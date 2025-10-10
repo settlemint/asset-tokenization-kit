@@ -179,9 +179,28 @@
     "details": "Details"
   },
   "wallet": {
+    "title": "ウォレット",
+    "description": "ウォレットアドレスとセキュリティ設定を管理します。",
+    "userWallet": "ユーザーウォレット",
+    "userWalletDescription": "支払いを受け取るためのウォレットアドレスとQRコードです。",
+    "qrCode": "QRコード",
+    "verificationFactors": "認証要素",
+    "verificationFactorsDescription": "ウォレットで有効になっているセキュリティ方法です。",
+    "recoveryCodesCard": "リカバリーコード",
+    "recoveryCodesDescription": "他の認証方法が利用できない場合のためのバックアップコードです。",
     "passwordPromptTitle": "パスワードを確認",
     "passwordPromptDescription": "新しいリカバリーコードを生成するにはパスワードを入力してください。",
     "passwordLabel": "パスワード",
-    "passwordRequired": "パスワードは必須です"
+    "passwordRequired": "パスワードは必須です",
+    "pinCodeEnabled": "PINコード",
+    "otpEnabled": "OTP",
+    "recoveryCodesEnabled": "リカバリーコード",
+    "regenerateRecoveryCodes": "リカバリーコードを再生成",
+    "downloadRecoveryCodes": "リカバリーコードをダウンロード",
+    "copyAllRecoveryCodes": "すべてコピー",
+    "confirmRecoveryCodesStored": "これらのリカバリーコードを安全な場所に保存しました",
+    "noVerificationMethods": "有効な認証方法がありません",
+    "enabled": "有効",
+    "disabled": "無効"
   }
 }

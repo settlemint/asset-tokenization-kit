@@ -179,9 +179,28 @@
     "details": "Details"
   },
   "wallet": {
+    "title": "Wallet",
+    "description": "Verwalten Sie Ihre Wallet-Adresse und Sicherheitseinstellungen.",
+    "userWallet": "Benutzer-Wallet",
+    "userWalletDescription": "Ihre Wallet-Adresse und der QR-Code zum Empfang von Zahlungen.",
+    "qrCode": "QR-Code",
+    "verificationFactors": "Verifizierungsfaktoren",
+    "verificationFactorsDescription": "Aktivierte Sicherheitsmethoden für Ihre Wallet.",
+    "recoveryCodesCard": "Wiederherstellungscodes",
+    "recoveryCodesDescription": "Backup-Codes für die Kontowiederherstellung, wenn andere Verifizierungsmethoden nicht verfügbar sind.",
     "passwordPromptTitle": "Passwort bestätigen",
     "passwordPromptDescription": "Geben Sie Ihr Passwort ein, um neue Wiederherstellungscodes zu generieren.",
     "passwordLabel": "Passwort",
-    "passwordRequired": "Passwort ist erforderlich"
+    "passwordRequired": "Passwort ist erforderlich",
+    "pinCodeEnabled": "PIN-Code",
+    "otpEnabled": "OTP",
+    "recoveryCodesEnabled": "Wiederherstellungscodes",
+    "regenerateRecoveryCodes": "Wiederherstellungscodes neu generieren",
+    "downloadRecoveryCodes": "Wiederherstellungscodes herunterladen",
+    "copyAllRecoveryCodes": "Alles kopieren",
+    "confirmRecoveryCodesStored": "Ich habe diese Wiederherstellungscodes sicher gespeichert",
+    "noVerificationMethods": "Keine Verifizierungsmethoden aktiviert",
+    "enabled": "Aktiviert",
+    "disabled": "Deaktiviert"
   }
 }

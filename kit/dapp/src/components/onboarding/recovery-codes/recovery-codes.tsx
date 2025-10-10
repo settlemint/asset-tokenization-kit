@@ -61,8 +61,8 @@ function RecoveryCodesError({ error }: { error: { message?: string } }) {
 
   return (
     <FormStepLayout
-      title={t("wallet-security.recovery-codes.title")}
-      description={t("wallet-security.recovery-codes.description")}
+      title={t("onboarding:wallet-security.recovery-codes.title")}
+      description={t("onboarding:wallet-security.recovery-codes.description")}
       fullWidth={true}
       actions={
         <Button
@@ -70,14 +70,14 @@ function RecoveryCodesError({ error }: { error: { message?: string } }) {
             globalThis.location.reload();
           }}
         >
-          {t("wallet-security.recovery-codes.confirm")}
+          {t("onboarding:wallet-security.recovery-codes.confirm")}
         </Button>
       }
     >
       <div className="flex flex-col items-center justify-center py-12 space-y-4">
         <div className="text-center space-y-2">
           <p className="text-sm font-medium text-destructive">
-            {t("wallet-security.recovery-codes.generated-error")}
+            {t("onboarding:wallet-security.recovery-codes.generated-error")}
           </p>
           {error?.message && (
             <p className="text-xs text-muted-foreground">{error.message}</p>
@@ -99,7 +99,7 @@ function RecoveryCodesContent({
   recoveryCodesData,
   onComplete,
 }: RecoveryCodesContentProps) {
-  const { t } = useTranslation(["onboarding"]);
+  const { t } = useTranslation(["common", "onboarding"]);
   const initialCodes = useMemo(
     () => recoveryCodesData?.secretCodes ?? [],
     [recoveryCodesData]
@@ -120,7 +120,9 @@ function RecoveryCodesContent({
         message,
         error,
       });
-      toast.error(message || t("wallet-security.recovery-codes.confirm-error"));
+      toast.error(
+        message || t("onboarding:wallet-security.recovery-codes.confirm-error")
+      );
     },
     onGenerateError: (message, error) => {
       logger.error("Failed to generate recovery codes", {
@@ -128,7 +130,8 @@ function RecoveryCodesContent({
         error,
       });
       toast.error(
-        message || t("wallet-security.recovery-codes.generated-error")
+        message ||
+          t("onboarding:wallet-security.recovery-codes.generated-error")
       );
     },
   });
@@ -145,14 +148,16 @@ function RecoveryCodesContent({
 
   useEffect(() => {
     if (codes.length > 0) {
-      toast.success(t("wallet-security.recovery-codes.generated-success"));
+      toast.success(
+        t("onboarding:wallet-security.recovery-codes.generated-success")
+      );
     }
   }, [codes.length, t]);
 
   return (
     <FormStepLayout
-      title={t("wallet-security.recovery-codes.title")}
-      description={t("wallet-security.recovery-codes.description")}
+      title={t("onboarding:wallet-security.recovery-codes.title")}
+      description={t("onboarding:wallet-security.recovery-codes.description")}
       fullWidth={true}
       actions={
         <Button
@@ -160,13 +165,13 @@ function RecoveryCodesContent({
           disabled={codes.length === 0 || !isConfirmed || isConfirming}
         >
           {isConfirming
-            ? t("wallet-security.recovery-codes.generating")
-            : t("wallet-security.recovery-codes.confirm")}
+            ? t("common:generating")
+            : t("onboarding:wallet-security.recovery-codes.confirm")}
         </Button>
       }
     >
       <p className="text-sm mb-6">
-        {t("wallet-security.recovery-codes.description-2")}
+        {t("onboarding:wallet-security.recovery-codes.description-2")}
       </p>
 
       <div className="flex-1 overflow-y-auto">
@@ -175,7 +180,9 @@ function RecoveryCodesContent({
 
           {codes.length > 0 && (
             <WarningAlert
-              description={t("wallet-security.recovery-codes.warning")}
+              description={t(
+                "onboarding:wallet-security.recovery-codes.warning"
+              )}
             />
           )}
         </div>
@@ -203,14 +210,14 @@ function RecoveryCodesContent({
                   className="text-sm font-medium leading-none cursor-pointer"
                 >
                   {t(
-                    "wallet-security.recovery-codes.confirm-stored",
+                    "onboarding:wallet-security.recovery-codes.confirm-stored",
                     "Confirm you stored your recovery keys in a safe place."
                   )}
                 </label>
                 {!hasPerformedAction && (
                   <p className="text-xs text-muted-foreground">
                     {t(
-                      "wallet-security.recovery-codes.action-required",
+                      "onboarding:wallet-security.recovery-codes.action-required",
                       "Copy or download your codes first before confirming"
                     )}
                   </p>

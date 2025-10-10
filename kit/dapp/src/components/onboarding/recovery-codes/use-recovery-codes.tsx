@@ -6,7 +6,9 @@ export function useRecoveryCodes(recoveryCodes: string[]) {
   const { t } = useTranslation(["onboarding"]);
   const handleCopyAll = useCallback(() => {
     void navigator.clipboard.writeText(recoveryCodes.join("\n"));
-    toast.success(t("wallet-security.recovery-codes.copied-to-clipboard"));
+    toast.success(
+      t("onboarding:wallet-security.recovery-codes.copied-to-clipboard")
+    );
   }, [recoveryCodes, t]);
 
   const handleDownload = useCallback(() => {
@@ -21,7 +23,7 @@ export function useRecoveryCodes(recoveryCodes: string[]) {
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-    toast.success(t("wallet-security.recovery-codes.downloaded"));
+    toast.success(t("onboarding:wallet-security.recovery-codes.downloaded"));
   }, [recoveryCodes, t]);
 
   return {
