@@ -3,7 +3,7 @@ import { useAppForm } from "@/hooks/use-app-form";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenBalance } from "@/orpc/routes/user/routes/user.assets.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { format, from, greaterThan, type Dnum } from "dnum";
+import { format, from, greaterThan, lessThanOrEqual, type Dnum } from "dnum";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -31,6 +31,11 @@ export function RedeemSheet({ open, onClose, assetBalance }: RedeemSheetProps) {
           }),
           qc.invalidateQueries({
             queryKey: orpc.user.assets.queryKey(),
+          }),
+          qc.invalidateQueries({
+            queryKey: orpc.actions.list.queryOptions({
+              input: {},
+            }).queryKey,
           }),
         ]);
       },
@@ -108,7 +113,10 @@ export function RedeemSheet({ open, onClose, assetBalance }: RedeemSheetProps) {
             title={t("tokens:actions.redeem.title")}
             description={t("tokens:actions.redeem.description")}
             submitLabel={t("tokens:actions.redeem.submit")}
-            canContinue={() => greaterThan(amount, 0n)}
+            canContinue={() =>
+              greaterThan(amount, 0n) &&
+              lessThanOrEqual(amount, maxAmountToRedeem)
+            }
             confirm={confirmView}
             showAssetDetailsOnConfirm={false}
             isSubmitting={isPending}
@@ -117,7 +125,7 @@ export function RedeemSheet({ open, onClose, assetBalance }: RedeemSheetProps) {
               const promise = redeem({
                 contract: assetBalance.token.id,
                 walletVerification: verification,
-                amount: amount,
+                amount,
               });
 
               toast

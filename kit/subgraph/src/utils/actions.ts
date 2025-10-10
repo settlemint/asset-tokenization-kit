@@ -59,9 +59,10 @@ export function createActionIdentifier(
         "createActionIdentifier: RedeemBond requires bond address as primaryEntity and participant address as secondaryEntity",
         []
       );
-      throw new Error("ApproveXvPSettlement requires participant address");
+      throw new Error(
+        "RedeemBond requires bond address as primaryEntity and participant address as secondaryEntit"
+      );
     }
-    // For redeem bond actions, use bond address as identifier
     return primaryEntity.concat(secondaryEntity).toHexString();
   }
 
