@@ -2,7 +2,7 @@ import { AssetDesignerStepSchema } from "@/components/asset-designer/asset-desig
 import { isRequiredFieldForZodIntersection } from "@/lib/utils/schema-field";
 import type { KeysOfUnion } from "@/lib/utils/union";
 import { TokenCreateSchema } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
-import { assetClass, AssetTypeEnum } from "@atk/zod/asset-types";
+import { assetClass } from "@atk/zod/asset-types";
 import { formOptions } from "@tanstack/react-form";
 import { z } from "zod";
 
@@ -23,19 +23,24 @@ import { z } from "zod";
  */
 export const AssetDesignerFormSchema = TokenCreateSchema.and(
   AssetDesignerStepSchema
-)
-  .and(
-    z.object({
-      assetClass: assetClass(),
-      available: z.boolean().optional().default(true),
-    })
-  )
-  .and(
-    z.object({
-      type: z.literal(AssetTypeEnum.bond),
-      denominationAssetSymbol: z.string().optional(),
-    })
-  );
+).and(
+  z.object({
+    assetClass: assetClass(),
+    available: z
+      .boolean()
+      .optional()
+      .default(true)
+      .describe(
+        "Whether the asset is available and can be created (not a duplicate)"
+      ),
+    denominationAssetSymbol: z
+      .string()
+      .optional()
+      .describe(
+        "The symbol of the denomination asset (used on the summary page for assets with a denomination asset)"
+      ),
+  })
+);
 
 /**
  * Input type for asset designer form data, derived from the composite schema.
