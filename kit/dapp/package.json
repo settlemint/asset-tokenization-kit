@@ -115,7 +115,7 @@
     "@settlemint/sdk-thegraph": "2.6.2",
     "@settlemint/sdk-utils": "2.6.2",
     "@settlemint/sdk-viem": "2.6.2",
-    "@tanstack/devtools-vite": "0.3.5",
+    "@tanstack/devtools-vite": "0.3.6",
     "@tanstack/query-async-storage-persister": "5.90.2",
     "@tanstack/query-broadcast-client-experimental": "5.90.2",
     "@tanstack/react-devtools": "0.7.4",
