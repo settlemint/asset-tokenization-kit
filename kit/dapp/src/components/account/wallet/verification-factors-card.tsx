@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -17,10 +18,12 @@ const VERIFICATION_TYPE_TRANSLATIONS = {
 
 interface VerificationFactorsCardProps {
   verificationTypes: VerificationType[];
+  onChangePincode?: () => void;
 }
 
 export function VerificationFactorsCard({
   verificationTypes,
+  onChangePincode,
 }: VerificationFactorsCardProps) {
   const { t } = useTranslation(["user", "common", "onboarding"]);
 
@@ -41,15 +44,32 @@ export function VerificationFactorsCard({
               const translationKey = VERIFICATION_TYPE_TRANSLATIONS[type];
               const label = translationKey ? t(translationKey) : type;
 
+              const isPincode = type === "PINCODE";
+
               return (
-                <div key={type} className="flex items-center justify-between">
+                <div
+                  key={type}
+                  className="flex items-center justify-between gap-3"
+                >
                   <span className="text-sm">{label}</span>
-                  <Badge
-                    variant="default"
-                    className="bg-sm-state-success-background text-sm-state-success hover:bg-sm-state-success-background/90"
-                  >
-                    {t("wallet.enabled")}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    {isPincode && onChangePincode ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={onChangePincode}
+                      >
+                        {t("wallet.changePincode.button")}
+                      </Button>
+                    ) : null}
+                    <Badge
+                      variant="default"
+                      className="bg-sm-state-success-background text-sm-state-success hover:bg-sm-state-success-background/90"
+                    >
+                      {t("wallet.enabled")}
+                    </Badge>
+                  </div>
                 </div>
               );
             })

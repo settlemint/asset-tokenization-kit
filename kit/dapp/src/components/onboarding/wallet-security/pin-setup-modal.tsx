@@ -19,9 +19,28 @@ import { toast } from "sonner";
 interface PinSetupModalProps {
   open: boolean;
   onClose: () => void;
+  onSubmitPincode?: (pincode: string) => Promise<void>;
+  title?: string;
+  description?: string;
+  submitLabel?: string;
+  submittingLabel?: string;
+  successMessage?: string | null;
+  skipSuccessToast?: boolean;
+  mode?: "enable" | "update";
 }
 
-export function PinSetupModal({ open, onClose }: PinSetupModalProps) {
+export function PinSetupModal({
+  open,
+  onClose,
+  onSubmitPincode,
+  title,
+  description,
+  submitLabel,
+  submittingLabel,
+  successMessage,
+  skipSuccessToast,
+  mode = "enable",
+}: PinSetupModalProps) {
   const { refreshUserState } = useOnboardingNavigation();
   const { t } = useTranslation(["onboarding", "common"]);
 
@@ -57,11 +76,20 @@ export function PinSetupModal({ open, onClose }: PinSetupModalProps) {
       }
 
       try {
-        await authClient.pincode.enable({
-          pincode: value.pincode,
-        });
-        await refreshUserState();
-        toast.success(t("wallet-security.pincode.success"));
+        if (onSubmitPincode) {
+          await onSubmitPincode(value.pincode);
+        } else {
+          await authClient.pincode.enable({
+            pincode: value.pincode,
+          });
+          await refreshUserState();
+        }
+
+        if (!skipSuccessToast) {
+          const resolvedSuccessMessage =
+            successMessage ?? t("wallet-security.pincode.success");
+          toast.success(resolvedSuccessMessage);
+        }
         handleClose();
       } catch (error: unknown) {
         const errorMessage =
@@ -82,9 +110,11 @@ export function PinSetupModal({ open, onClose }: PinSetupModalProps) {
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{t("wallet-security.pincode.title")}</DialogTitle>
+          <DialogTitle>
+            {title ?? t("wallet-security.pincode.title")}
+          </DialogTitle>
           <DialogDescription>
-            {t("wallet-security.pincode.description")}
+            {description ?? t("wallet-security.pincode.description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -98,6 +128,7 @@ export function PinSetupModal({ open, onClose }: PinSetupModalProps) {
           <form.Subscribe>
             {(state) => {
               const showConfirmField = state.values.pincode.length === 6;
+              const requiresCurrentPin = false;
               const isValid =
                 state.values.pincode.length === 6 &&
                 state.values.confirmPincode.length === 6 &&
@@ -171,8 +202,9 @@ export function PinSetupModal({ open, onClose }: PinSetupModalProps) {
                       disabled={!isValid || state.isSubmitting}
                     >
                       {state.isSubmitting
-                        ? t("wallet-security.pincode.submitting")
-                        : t("wallet-security.pincode.set-pin")}
+                        ? (submittingLabel ??
+                          t("wallet-security.pincode.submitting"))
+                        : (submitLabel ?? t("wallet-security.pincode.set-pin"))}
                     </Button>
                   </DialogFooter>
                 </div>

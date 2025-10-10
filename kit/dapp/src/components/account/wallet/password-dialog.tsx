@@ -20,6 +20,10 @@ interface PasswordDialogProps {
   onPasswordChange: (password: string) => void;
   onCancel: () => void;
   onSubmit: () => void;
+  title?: string;
+  description?: string;
+  submitLabel?: string;
+  submittingLabel?: string;
 }
 
 export function PasswordDialog({
@@ -31,6 +35,10 @@ export function PasswordDialog({
   onPasswordChange,
   onCancel,
   onSubmit,
+  title,
+  description,
+  submitLabel,
+  submittingLabel,
 }: PasswordDialogProps) {
   const { t } = useTranslation(["user", "common"]);
 
@@ -45,9 +53,11 @@ export function PasswordDialog({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t("user:wallet.passwordPromptTitle")}</DialogTitle>
+          <DialogTitle>
+            {title ?? t("user:wallet.passwordPromptTitle")}
+          </DialogTitle>
           <DialogDescription>
-            {t("user:wallet.passwordPromptDescription")}
+            {description ?? t("user:wallet.passwordPromptDescription")}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
@@ -84,8 +94,8 @@ export function PasswordDialog({
           </Button>
           <Button type="button" onClick={onSubmit} disabled={isSubmitting}>
             {isSubmitting
-              ? t("common:generating")
-              : t("user:wallet.regenerateRecoveryCodes")}
+              ? (submittingLabel ?? t("common:generating"))
+              : (submitLabel ?? t("user:wallet.regenerateRecoveryCodes"))}
           </Button>
         </DialogFooter>
       </DialogContent>

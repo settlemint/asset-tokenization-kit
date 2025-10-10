@@ -201,6 +201,18 @@
     "confirmRecoveryCodesStored": "I have stored these recovery codes in a safe place",
     "noVerificationMethods": "No verification methods enabled",
     "enabled": "Enabled",
-    "disabled": "Disabled"
+    "disabled": "Disabled",
+    "changePincode": {
+      "button": "Change PIN code",
+      "title": "Change PIN code",
+      "description": "Set a new 6-digit PIN to secure sensitive wallet actions.",
+      "submit": "Continue",
+      "submitting": "Preparing...",
+      "success": "Your PIN code has been updated.",
+      "passwordTitle": "Confirm password",
+      "passwordDescription": "Enter your account password to finish updating your PIN code.",
+      "passwordSubmit": "Update PIN code",
+      "passwordSubmitting": "Updating PIN..."
+    }
   }
 }

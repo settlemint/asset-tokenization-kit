@@ -4,6 +4,8 @@ import { UserWalletCard } from "@/components/account/wallet/user-wallet-card";
 import { VerificationFactorsCard } from "@/components/account/wallet/verification-factors-card";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { useSecretCodesManager } from "@/components/onboarding/recovery-codes/use-secret-codes-manager";
+import { PinSetupModal } from "@/components/onboarding/wallet-security/pin-setup-modal";
+import { authClient } from "@/lib/auth/auth.client";
 import { orpc } from "@/orpc/orpc-client";
 import type { CheckedState } from "@radix-ui/react-checkbox";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -24,11 +26,15 @@ function Wallet() {
     orpc.user.me.queryOptions()
   );
   const [codesConfirmed, setCodesConfirmed] = useState(false);
-  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
+  const [passwordDialogMode, setPasswordDialogMode] = useState<
+    "recoveryCodes" | "changePincode" | null
+  >(null);
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [isSubmittingPassword, setIsSubmittingPassword] = useState(false);
+  const [isPinSetupOpen, setIsPinSetupOpen] = useState(false);
+  const [pendingPincode, setPendingPincode] = useState<string | null>(null);
 
   const fallbackError = useMemo(
     () =>
@@ -76,20 +82,61 @@ function Wallet() {
       return;
     }
     setIsSubmittingPassword(true);
-    const result = await generate({ password });
-    setIsSubmittingPassword(false);
-    if (result.success) {
-      setPassword("");
-      setIsPasswordDialogOpen(false);
+    try {
+      if (passwordDialogMode === "recoveryCodes") {
+        const result = await generate({ password });
+        if (result.success) {
+          setPassword("");
+          setPasswordDialogMode(null);
+        }
+      } else if (passwordDialogMode === "changePincode") {
+        if (!pendingPincode) {
+          throw new Error("Missing pincode");
+        }
+        const { data, error } = await authClient.pincode.update({
+          newPincode: pendingPincode,
+          password,
+        });
+        if (error) {
+          const message = error.message ?? fallbackError;
+          setPasswordError(message);
+          toast.error(message);
+          return;
+        }
+        if (!data?.success) {
+          toast.error(fallbackError);
+          return;
+        }
+        toast.success(t("wallet.changePincode.success"));
+        await refetchUser();
+        setPendingPincode(null);
+        setPassword("");
+        setPasswordDialogMode(null);
+      }
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : fallbackError;
+      setPasswordError(message);
+      toast.error(message);
+    } finally {
+      setIsSubmittingPassword(false);
     }
-  }, [generate, password, t]);
+  }, [
+    fallbackError,
+    generate,
+    password,
+    passwordDialogMode,
+    pendingPincode,
+    refetchUser,
+    t,
+  ]);
 
   const handleRegenerateClick = useCallback(() => {
     if (passwordRequired) {
       setPassword("");
       setPasswordError(null);
       setGenerationError(null);
-      setIsPasswordDialogOpen(true);
+      setPendingPincode(null);
+      setPasswordDialogMode("recoveryCodes");
       return;
     }
     void generate();
@@ -124,7 +171,13 @@ function Wallet() {
       <div className="grid gap-6 lg:grid-cols-2">
         <UserWalletCard address={user.wallet} />
 
-        <VerificationFactorsCard verificationTypes={user.verificationTypes} />
+        <VerificationFactorsCard
+          verificationTypes={user.verificationTypes}
+          onChangePincode={() => {
+            setPendingPincode(null);
+            setIsPinSetupOpen(true);
+          }}
+        />
 
         <RecoveryCodesCard
           codes={codes}
@@ -140,21 +193,63 @@ function Wallet() {
         />
       </div>
 
+      <PinSetupModal
+        open={isPinSetupOpen}
+        onClose={() => {
+          setIsPinSetupOpen(false);
+        }}
+        onSubmitPincode={async (value) => {
+          setPendingPincode(value);
+          setPassword("");
+          setPasswordError(null);
+          setGenerationError(null);
+          setPasswordDialogMode("changePincode");
+          setIsPinSetupOpen(false);
+        }}
+        title={t("wallet.changePincode.title")}
+        description={t("wallet.changePincode.description")}
+        submitLabel={t("wallet.changePincode.submit")}
+        submittingLabel={t("wallet.changePincode.submitting")}
+        skipSuccessToast
+        mode="update"
+      />
+
       <PasswordDialog
-        open={isPasswordDialogOpen}
+        open={passwordDialogMode !== null}
         password={password}
         passwordError={passwordError}
         generationError={generationError}
         isSubmitting={isSubmittingPassword}
         onPasswordChange={setPassword}
         onCancel={() => {
-          setIsPasswordDialogOpen(false);
+          setPasswordDialogMode(null);
           setPassword("");
           setPasswordError(null);
           setGenerationError(null);
           setIsSubmittingPassword(false);
+          setPendingPincode(null);
         }}
         onSubmit={() => void handlePasswordSubmit()}
+        title={
+          passwordDialogMode === "changePincode"
+            ? t("wallet.changePincode.passwordTitle")
+            : undefined
+        }
+        description={
+          passwordDialogMode === "changePincode"
+            ? t("wallet.changePincode.passwordDescription")
+            : undefined
+        }
+        submitLabel={
+          passwordDialogMode === "changePincode"
+            ? t("wallet.changePincode.passwordSubmit")
+            : undefined
+        }
+        submittingLabel={
+          passwordDialogMode === "changePincode"
+            ? t("wallet.changePincode.passwordSubmitting")
+            : undefined
+        }
       />
     </div>
   );
