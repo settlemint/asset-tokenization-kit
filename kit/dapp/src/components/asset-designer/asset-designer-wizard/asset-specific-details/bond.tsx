@@ -17,8 +17,12 @@ export const bondFields: KeysOfUnion<AssetDesignerFormInputData>[] = [
   "denominationAsset",
 ];
 
+export type BondFieldsInputData = AssetDesignerFormInputData & {
+  denominationAssetSymbol: string;
+};
+
 export const BondFields = withForm({
-  defaultValues: {} as AssetDesignerFormInputData,
+  defaultValues: {} as BondFieldsInputData,
   props: {},
   render: function Render({ form }) {
     const { t } = useTranslation(["asset-designer", "asset-types"]);
@@ -46,6 +50,7 @@ export const BondFields = withForm({
           });
 
           setDenominationAssetDetails(result);
+          form.setFieldValue("denominationAssetSymbol", result.symbol);
 
           return undefined; // no error
         } catch {

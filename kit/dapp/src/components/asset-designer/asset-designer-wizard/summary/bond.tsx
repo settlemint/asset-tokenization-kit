@@ -1,4 +1,4 @@
-import type { AssetDesignerFormInputData } from "@/components/asset-designer/asset-designer-wizard/asset-designer-form";
+import type { BondFieldsInputData } from "@/components/asset-designer/asset-designer-wizard/asset-specific-details/bond";
 import {
   FormSummaryCard,
   FormSummaryItem,
@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 import { getAddress } from "viem";
 
 export const BondSummaryFields = withForm({
-  defaultValues: {} as AssetDesignerFormInputData,
+  defaultValues: {} as BondFieldsInputData,
   props: {},
   render: function Render({ form }) {
     const { t } = useTranslation(["asset-designer", "asset-types"]);
@@ -54,7 +54,10 @@ export const BondSummaryFields = withForm({
         />
         <FormSummaryItem
           label={t("form.fields.faceValue.label")}
-          value={values.faceValue as string}
+          value={formatValue(values.faceValue, {
+            type: "currency",
+            currency: { assetSymbol: values.denominationAssetSymbol },
+          })}
         />
       </FormSummaryCard>
     );
