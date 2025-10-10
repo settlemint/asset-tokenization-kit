@@ -10,6 +10,7 @@
  * 2. MotionConfig - Motion/Framer Motion animation context
  * 3. NextThemesProvider - Theme management (light/dark mode)
  * 4. AuthProvider - Authentication state and functionality
+ * 5. BrandingProvider - Platform branding customization
  *
  * This ordering ensures that:
  * - Translation services are available to all components, including theme and auth UI
@@ -22,6 +23,7 @@
  */
 
 import { AuthProvider } from "@/providers/auth";
+import { BrandingProvider } from "@/providers/branding";
 import { MotionConfig } from "motion/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { I18nProvider } from "./i18n-provider";
@@ -76,7 +78,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
            */
           storageKey="vite-ui-theme"
         >
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <BrandingProvider>{children}</BrandingProvider>
+          </AuthProvider>
         </NextThemesProvider>
       </MotionConfig>
     </I18nProvider>

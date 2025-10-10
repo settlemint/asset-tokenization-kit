@@ -1580,30 +1580,71 @@ seed_database() {
 
     # Verify dApp server is responding to API calls before seeding
     log_step "Verifying dApp API is ready for seeding..."
-    local max_wait=60
+    local max_wait=120
     local elapsed=0
     local api_ready=false
+    local router_ready=false
+    local db_ready=false
+
+    log_info "Checking for:"
+    echo "  ${YELLOW}•${NC} Server responding"
+    echo "  ${YELLOW}•${NC} ORPC router initialized"
+    echo "  ${YELLOW}•${NC} Database connected"
+    echo ""
 
     while [ $elapsed -lt $max_wait ]; do
-        # Try to access the API health endpoint or root
-        if curl -s http://localhost:3000/api/health >/dev/null 2>&1 || \
-           curl -s http://localhost:3000/ >/dev/null 2>&1; then
-            api_ready=true
-            break
+        # Check 1: Is server responding?
+        if curl -s http://localhost:3000/ >/dev/null 2>&1; then
+            if [ "$api_ready" = false ]; then
+                echo -ne "\r${GREEN}✓${NC} Server responding                                                  \n"
+                api_ready=true
+            fi
+            
+            # Check 2: Is ORPC router ready? (check for ORPC endpoint)
+            if curl -s -X POST http://localhost:3000/api/rpc/user.me \
+                   -H "Content-Type: application/json" \
+                   -d '{}' 2>&1 | grep -q -E '(UNAUTHORIZED|error|data)'; then
+                if [ "$router_ready" = false ]; then
+                    echo -ne "\r${GREEN}✓${NC} ORPC router initialized                                            \n"
+                    router_ready=true
+                fi
+                
+                # Check 3: Is database ready? (router responding means DB is connected)
+                if [ "$db_ready" = false ]; then
+                    echo -ne "\r${GREEN}✓${NC} Database connected                                                 \n"
+                    db_ready=true
+                fi
+                
+                # All checks passed!
+                echo ""
+                log_success "dApp API is fully initialized and ready!"
+                break
+            fi
         fi
 
-        echo -ne "\r${YELLOW}⏳${NC} Waiting for dApp API to be ready... ${elapsed}s / ${max_wait}s"
+        # Show appropriate waiting message based on what's ready
+        if [ "$api_ready" = false ]; then
+            echo -ne "\r${YELLOW}⏳${NC} Waiting for server to respond... ${elapsed}s / ${max_wait}s                    "
+        elif [ "$router_ready" = false ]; then
+            echo -ne "\r${YELLOW}⏳${NC} Waiting for ORPC router... ${elapsed}s / ${max_wait}s                         "
+        else
+            echo -ne "\r${YELLOW}⏳${NC} Waiting for database connection... ${elapsed}s / ${max_wait}s                 "
+        fi
+        
         sleep 3
         elapsed=$((elapsed + 3))
     done
-    echo ""
+    echo "" # New line after waiting
 
-    if [ "$api_ready" = false ]; then
-        log_warning "dApp API not responding after ${max_wait}s"
-        log_warning "Attempting to seed anyway - integration tests may initialize the system"
+    if [ "$api_ready" = false ] || [ "$router_ready" = false ] || [ "$db_ready" = false ]; then
+        log_warning "dApp API not fully ready after ${max_wait}s"
         echo ""
-    else
-        log_success "dApp API is ready!"
+        log_info "Status:"
+        [ "$api_ready" = true ] && echo "  ${GREEN}✓${NC} Server responding" || echo "  ${RED}✗${NC} Server not responding"
+        [ "$router_ready" = true ] && echo "  ${GREEN}✓${NC} ORPC router initialized" || echo "  ${RED}✗${NC} ORPC router not ready"
+        [ "$db_ready" = true ] && echo "  ${GREEN}✓${NC} Database connected" || echo "  ${RED}✗${NC} Database not connected"
+        echo ""
+        log_warning "Attempting to seed anyway - integration tests may initialize the system"
         echo ""
     fi
 

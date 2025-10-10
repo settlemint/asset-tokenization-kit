@@ -21,6 +21,7 @@ import {
   ClipboardCheck,
   FileText,
   Key,
+  Palette,
   Puzzle,
   Settings,
   Shield,
@@ -84,6 +85,13 @@ export function NavSettings() {
       enabled:
         system.userPermissions?.actions.grantRole ||
         system.userPermissions?.actions.revokeRole,
+    },
+    {
+      name: t("settings.branding.title"),
+      icon: Palette,
+      path: "/admin/platform-settings/branding",
+      // Branding is always enabled for admins (checked via route permissions)
+      enabled: true,
     },
   ].filter((item) => item.enabled);
 

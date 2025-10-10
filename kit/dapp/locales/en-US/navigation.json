@@ -44,6 +44,10 @@
         "title": "Admin Access Required",
         "description": "You need administrator privileges to manage roles. Please contact your system administrator for access."
       }
+    },
+    "branding": {
+      "title": "Branding",
+      "description": "Customize the platform's appearance including logos, colors, and backgrounds to match your brand identity."
     }
   }
 }

@@ -1,5 +1,6 @@
 import { accountContract } from "@/orpc/routes/account/account.contract";
 import { actionsContract } from "@/orpc/routes/actions/actions.contract";
+import { brandingContract } from "@/orpc/routes/branding/branding.contract";
 import { exchangeRatesContract } from "@/orpc/routes/exchange-rates/exchange-rates.contract";
 import { fixedYieldScheduleContract } from "@/orpc/routes/fixed-yield-schedule/fixed-yield-schedule.contract";
 import { settingsContract } from "@/orpc/routes/settings/settings.contract";
@@ -48,6 +49,17 @@ export const contract = {
    * @see {@link ./actions/actions.router} - Corresponding router implementation
    */
   actions: actionsContract,
+
+  /**
+   * Branding-related API contract.
+   *
+   * Contains type definitions for platform branding customization procedures.
+   * Provides access to branding configuration management, including application title,
+   * logos, backgrounds, and color schemes for comprehensive white-labeling support.
+   * @see {@link ./branding/branding.contract} - Branding contract implementation
+   * @see {@link ./branding/branding.router} - Corresponding router implementation
+   */
+  branding: brandingContract,
 
   /**
    * Exchange rates API contract.

@@ -20,6 +20,7 @@
  */
 
 export * from "../auth/db/auth";
+export * from "./schemas/branding";
 export * from "./schemas/exchange-rates";
 export * from "./schemas/kyc";
 export * from "./schemas/settings";

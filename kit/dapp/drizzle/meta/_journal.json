@@ -57,6 +57,20 @@
       "when": 1754575096732,
       "tag": "0007_classy_ghost_rider",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1754600000000,
+      "tag": "0008_brave_thunderbolt",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1754610000000,
+      "tag": "0009_silly_banshee",
+      "breakpoints": true
     }
   ]
 }
