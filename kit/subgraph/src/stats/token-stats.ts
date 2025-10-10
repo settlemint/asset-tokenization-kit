@@ -1,6 +1,7 @@
 import { Address, BigDecimal, BigInt, log } from "@graphprotocol/graph-ts";
 import {
   Event,
+  EventValue,
   Token,
   TokenStatsData,
   TokenStatsState,
@@ -88,14 +89,25 @@ export function updateTokenStatsTotalValueInBaseCurrency(token: Token): void {
  * Track token statistics for a given event
  * @param token - The token to track statistics for
  * @param amount - The amount of the event
+ * @param amountFieldName - The name of the field that contains the amount
  */
-export function trackTokenStats(token: Token, event: Event): void {
+export function trackTokenStats(
+  token: Token,
+  event: Event,
+  amountFieldName: string
+): void {
   const state = fetchTokenStatsState(Address.fromBytes(token.id));
 
   const data = createTokenStatsData(state);
   const eventValues = event.values.load();
-  const amountIndex = eventValues.findIndex((entry) => entry.name == "amount");
-  const amount = amountIndex >= 0 ? eventValues[amountIndex] : null;
+
+  let amount: EventValue | null = null;
+  for (let i = 0; i < eventValues.length; i++) {
+    if (eventValues[i].name == amountFieldName) {
+      amount = eventValues[i];
+      break;
+    }
+  }
   if (!amount) {
     log.error("Failed to track token stats for event {}, no amount found", [
       event.eventName,

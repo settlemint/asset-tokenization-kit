@@ -1,7 +1,10 @@
+import { BigInt } from "@graphprotocol/graph-ts";
+import { TokenBalance } from "../../../generated/schema";
 import {
   BondMatured,
   BondRedeemed,
 } from "../../../generated/templates/Bond/Bond";
+import { fetchAccount } from "../../account/fetch/account";
 import { fetchEvent } from "../../event/fetch/event";
 import { fetchToken } from "../../token/fetch/token";
 import {
@@ -51,14 +54,20 @@ export function handleBondMatured(event: BondMatured): void {
 export function handleBondRedeemed(event: BondRedeemed): void {
   fetchEvent(event, "BondRedeemed");
 
-  actionExecuted(
-    event,
-    ActionName.RedeemBond,
-    event.address,
-    createActionIdentifier(
+  const token = fetchToken(event.address);
+  const account = fetchAccount(event.params.holder);
+  const tokenBalance = TokenBalance.load(token.id.concat(account.id));
+
+  if (tokenBalance == null || tokenBalance.valueExact.le(BigInt.zero())) {
+    actionExecuted(
+      event,
       ActionName.RedeemBond,
       event.address,
-      event.params.holder
-    )
-  );
+      createActionIdentifier(
+        ActionName.RedeemBond,
+        event.address,
+        event.params.holder
+      )
+    );
+  }
 }

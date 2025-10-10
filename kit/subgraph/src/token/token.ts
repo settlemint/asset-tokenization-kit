@@ -177,7 +177,7 @@ function handleMintCompleted(event: Transfer): void {
   updateAccountStatsForBalanceChange(event.params.to, token, amountDeltaExact);
 
   // Update token stats
-  trackTokenStats(token, eventEntry);
+  trackTokenStats(token, eventEntry, "value");
 
   // Update token collateral stats
   if (token.collateral) {
@@ -225,7 +225,7 @@ function handleTransferCompleted(event: Transfer): void {
   updateAccountStatsForBalanceChange(event.params.to, token, amountExact);
 
   // Update token stats for transfer
-  trackTokenStats(token, eventEntry);
+  trackTokenStats(token, eventEntry, "value");
 
   incrementSystemAssetActivity(token, SystemAssetActivity.TRANSFER);
   incrementTokenTypeAssetActivity(token, SystemAssetActivity.TRANSFER);
@@ -272,7 +272,7 @@ function handleBurnCompleted(event: Transfer): void {
   );
 
   // Update token stats
-  trackTokenStats(token, eventEntry);
+  trackTokenStats(token, eventEntry, "value");
 
   // Update token collateral stats
   if (token.collateral) {

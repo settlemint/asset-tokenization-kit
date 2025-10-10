@@ -83,7 +83,7 @@ export function RedeemSheet({ open, onClose, assetBalance }: RedeemSheetProps) {
                     {t("tokens:actions.redeem.form.balance.available")}
                   </div>
                   <div className="text-sm font-medium">
-                    {format(maxAmountToRedeem, { digits: 4 })} {tokenSymbol}
+                    {format(maxAmountToRedeem)} {tokenSymbol}
                   </div>
                 </div>
                 <span className="text-muted-foreground">→</span>
@@ -92,7 +92,7 @@ export function RedeemSheet({ open, onClose, assetBalance }: RedeemSheetProps) {
                     {t("tokens:actions.redeem.submit")}
                   </div>
                   <div className="text-sm font-medium">
-                    {format(redeemAmount, { digits: 4 })} {tokenSymbol}
+                    {format(redeemAmount)} {tokenSymbol}
                   </div>
                 </div>
               </div>
@@ -124,7 +124,7 @@ export function RedeemSheet({ open, onClose, assetBalance }: RedeemSheetProps) {
                 .promise(promise, {
                   loading: t("tokens:actions.redeem.toasts.loading"),
                   success: t("tokens:actions.redeem.toasts.success", {
-                    amount: format(redeemAmount, { digits: 4 }),
+                    amount: format(redeemAmount),
                     symbol: tokenSymbol,
                   }),
                   error: (error) =>
@@ -153,7 +153,7 @@ export function RedeemSheet({ open, onClose, assetBalance }: RedeemSheetProps) {
                         {t("tokens:actions.redeem.form.balance.available")}
                       </span>
                       <span className="font-medium">
-                        {format(maxAmountToRedeem, { digits: 4 })} {tokenSymbol}
+                        {format(maxAmountToRedeem)} {tokenSymbol}
                       </span>
                     </div>
                   </CardContent>

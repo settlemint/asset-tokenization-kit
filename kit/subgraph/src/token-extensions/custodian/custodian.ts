@@ -65,7 +65,7 @@ export function handleForcedTransfer(event: ForcedTransfer): void {
   updateAccountStatsForBalanceChange(event.params.to, token, amountExact);
 
   // Update token stats for forced transfer
-  trackTokenStats(token, eventEntry);
+  trackTokenStats(token, eventEntry, "amount");
 
   incrementSystemAssetActivity(token, SystemAssetActivity.FORCED_TRANSFER);
   incrementTokenTypeAssetActivity(token, SystemAssetActivity.FORCED_TRANSFER);
