@@ -1,8 +1,7 @@
+import { RecoveryCodesCard } from "@/components/account/wallet/recovery-codes-card";
+import { VerificationFactorsCard } from "@/components/account/wallet/verification-factors-card";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
-import { RecoveryCodesActions } from "@/components/onboarding/recovery-codes/recovery-codes-actions";
-import { RecoveryCodesDisplay } from "@/components/onboarding/recovery-codes/recovery-codes-display";
 import { useSecretCodesManager } from "@/components/onboarding/recovery-codes/use-secret-codes-manager";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -27,7 +25,6 @@ import { orpc } from "@/orpc/orpc-client";
 import type { CheckedState } from "@radix-ui/react-checkbox";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { RefreshCw } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import QRCode from "react-qr-code";
@@ -189,109 +186,20 @@ function Wallet() {
           </Card>
         )}
 
-        {/* Verification Factors Card */}
-        <Card className="flex h-full flex-col">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              {t("wallet.verificationFactors")}
-            </CardTitle>
-            <CardDescription>
-              {t("wallet.verificationFactorsDescription")}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex-1">
-            <div className="space-y-4">
-              {user.verificationTypes.length > 0 ? (
-                user.verificationTypes.map((type) => (
-                  <div key={type} className="flex items-center justify-between">
-                    <span className="text-sm">
-                      {type === "PINCODE" && t("wallet.pinCodeEnabled")}
-                      {type === "OTP" && t("wallet.otpEnabled")}
-                      {type === "SECRET_CODES" &&
-                        t("wallet.recoveryCodesEnabled")}
-                    </span>
-                    <Badge
-                      variant="default"
-                      className="bg-green-500 hover:bg-green-600"
-                    >
-                      {t("wallet.enabled")}
-                    </Badge>
-                  </div>
-                ))
-              ) : (
-                <p className="text-muted-foreground text-center py-4">
-                  {t("wallet.noVerificationMethods")}
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <VerificationFactorsCard verificationTypes={user.verificationTypes} />
 
-        {/* Recovery Codes Card */}
-        <Card className="flex h-full flex-col lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              {t("wallet.recoveryCodesCard")}
-            </CardTitle>
-            <CardDescription>
-              {t("wallet.recoveryCodesDescription")}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex-1">
-            {codes.length > 0 ? (
-              <div className="space-y-6">
-                <RecoveryCodesDisplay
-                  isGenerating={isGenerating}
-                  recoveryCodes={codes}
-                />
-                <RecoveryCodesActions
-                  onCopyAll={copyAll}
-                  onDownload={download}
-                />
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="confirm-stored"
-                    checked={codesConfirmed}
-                    onCheckedChange={handleCodesConfirmedChange}
-                  />
-                  <label
-                    htmlFor="confirm-stored"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    {t("wallet.confirmRecoveryCodesStored")}
-                  </label>
-                </div>
-                <Button
-                  onClick={handleConfirmCodes}
-                  disabled={!codesConfirmed || isConfirming}
-                  className="w-full"
-                >
-                  {isConfirming ? t("common:generating") : t("common:continue")}
-                </Button>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-8">
-                <div className="flex flex-col items-center gap-4">
-                  <Button
-                    onClick={handleRegenerateClick}
-                    disabled={isGenerating}
-                    className="gap-2"
-                  >
-                    {isGenerating && (
-                      <RefreshCw className="h-4 w-4 animate-spin" />
-                    )}
-                    {t("wallet.regenerateRecoveryCodes")}
-                  </Button>
-                  {generationError && (
-                    <p className="text-sm text-destructive text-center">
-                      {generationError}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <RecoveryCodesCard
+          codes={codes}
+          isGenerating={isGenerating}
+          isConfirming={isConfirming}
+          codesConfirmed={codesConfirmed}
+          generationError={generationError}
+          onConfirmCodes={handleConfirmCodes}
+          onCodesConfirmedChange={handleCodesConfirmedChange}
+          onRegenerateClick={handleRegenerateClick}
+          onCopyAll={copyAll}
+          onDownload={download}
+        />
       </div>
 
       <Dialog
