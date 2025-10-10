@@ -22,6 +22,7 @@ import {
   StatsTransactionHistoryOutputSchema,
 } from "@/orpc/routes/system/stats/routes/transaction-history.schema";
 import { StatsTrustedIssuerStatsOutputSchema } from "@/orpc/routes/system/stats/routes/trusted-issuer-stats.schema";
+import { StatsTrustedIssuerStatsStateOutputSchema } from "@/orpc/routes/system/stats/routes/trusted-issuer-stats-state.schema";
 import { StatsValueOutputSchema } from "@/orpc/routes/system/stats/routes/value.schema";
 import { StatsRangeInputSchema } from "@atk/zod/stats-range";
 
@@ -138,6 +139,18 @@ const statsTrustedIssuerStats = baseContract
   .input(StatsRangeInputSchema)
   .output(StatsTrustedIssuerStatsOutputSchema);
 
+const statsTrustedIssuerStatsState = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/trusted-issuer-stats-state",
+    description:
+      "Retrieve current trusted issuer statistics state including added, active, and removed issuers",
+    successDescription:
+      "Trusted issuer statistics state retrieved successfully",
+    tags: ["stats", "system", "trusted-issuers"],
+  })
+  .output(StatsTrustedIssuerStatsStateOutputSchema);
+
 const statsValue = baseContract
   .route({
     method: "GET",
@@ -206,6 +219,7 @@ export const statsContract = {
   topicSchemesStats: statsTopicSchemesStats,
   topicSchemesStatsState: statsTopicSchemesStatsState,
   trustedIssuerStats: statsTrustedIssuerStats,
+  trustedIssuerStatsState: statsTrustedIssuerStatsState,
   value: statsValue,
   portfolio: statsPortfolio,
   portfolioDetails: statsPortfolioDetails,

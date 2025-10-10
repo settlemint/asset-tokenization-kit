@@ -12,6 +12,7 @@ import { statsTopicSchemesStatsState } from "@/orpc/routes/system/stats/routes/t
 import { statsTransactionCount } from "@/orpc/routes/system/stats/routes/transaction-count";
 import { statsTransactionHistory } from "@/orpc/routes/system/stats/routes/transaction-history";
 import { statsTrustedIssuerStats } from "@/orpc/routes/system/stats/routes/trusted-issuer-stats";
+import { statsTrustedIssuerStatsState } from "@/orpc/routes/system/stats/routes/trusted-issuer-stats-state";
 import { statsValue } from "@/orpc/routes/system/stats/routes/value";
 
 const routes = {
@@ -29,6 +30,7 @@ const routes = {
   transactionCount: statsTransactionCount,
   transactionHistory: statsTransactionHistory,
   trustedIssuerStats: statsTrustedIssuerStats,
+  trustedIssuerStatsState: statsTrustedIssuerStatsState,
   value: statsValue,
 };
 
