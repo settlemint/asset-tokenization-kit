@@ -15,6 +15,7 @@ export class ActionName {
   static ApproveXvPSettlement: string = "ApproveXvPSettlement";
   static ExecuteXvPSettlement: string = "ExecuteXvPSettlement";
   static MatureBond: string = "MatureBond";
+  static RedeemBond: string = "RedeemBond";
 }
 
 /**
@@ -50,6 +51,18 @@ export function createActionIdentifier(
   if (actionName === ActionName.MatureBond) {
     // For bond actions, use bond address as identifier
     return primaryEntity.toHexString();
+  }
+
+  if (actionName === ActionName.RedeemBond) {
+    if (secondaryEntity === null) {
+      log.error(
+        "createActionIdentifier: RedeemBond requires bond address as primaryEntity and participant address as secondaryEntity",
+        []
+      );
+      throw new Error("ApproveXvPSettlement requires participant address");
+    }
+    // For redeem bond actions, use bond address as identifier
+    return primaryEntity.concat(secondaryEntity).toHexString();
   }
 
   log.error("createActionIdentifier: Unknown action name: {}", [actionName]);
