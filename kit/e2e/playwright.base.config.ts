@@ -40,7 +40,7 @@ const baseConfig: PlaywrightTestConfig = {
   use: {
     actionTimeout: 65000,
     navigationTimeout: 120000,
-    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000",
+    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000/",
     trace: process.env.CI ? "on-first-retry" : "retain-on-failure",
     viewport: { width: 1920, height: 1080 },
     screenshot: "only-on-failure",

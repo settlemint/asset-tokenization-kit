@@ -12,6 +12,11 @@ export class BasePage {
     await this.page.locator('[data-input-otp="true"]').fill(pincode);
     await this.page.getByRole("button", { name: "Yes, confirm" }).click();
   }
+
+  public async waitForReactStateSettle(): Promise<void> {
+    await this.page.waitForTimeout(100);
+    await this.page.waitForLoadState("networkidle");
+  }
 }
 
 export { expect } from "@playwright/test";
