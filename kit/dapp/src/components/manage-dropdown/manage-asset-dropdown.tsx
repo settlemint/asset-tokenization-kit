@@ -35,8 +35,8 @@ import { MatureConfirmationSheet } from "./sheets/mature-confirmation-sheet";
 import { MintSheet } from "./sheets/mint-sheet";
 import { PauseUnpauseConfirmationSheet } from "./sheets/pause-unpause-confirmation-sheet";
 import { SetYieldScheduleSheet } from "./sheets/set-yield-schedule-sheet";
-import { TransferAssetSheet } from "./sheets/transfer-asset-sheet";
 import { TopUpDenominationAssetSheet } from "./sheets/top-up-denomination-asset-sheet";
+import { TransferAssetSheet } from "./sheets/transfer-asset-sheet";
 import { UnfreezePartialSheet } from "./sheets/unfreeze-partial-sheet";
 import { WithdrawDenominationAssetSheet } from "./sheets/withdraw-denomination-asset-sheet";
 
@@ -451,8 +451,8 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
       {transferSheetAsset && (
         <TransferAssetSheet
           open={isCurrentAction({ target: "transfer", current: openAction })}
-          onOpenChange={onActionOpenChange}
-          asset={transferSheetAsset}
+          onClose={onActionOpenChange}
+          assetBalance={transferSheetAsset}
         />
       )}
 

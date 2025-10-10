@@ -21,6 +21,12 @@ export const TokenAssetSchema = z.object({
   symbol: assetSymbol().describe("The token symbol"),
   decimals: decimals().describe("The number of decimal places"),
   totalSupply: bigDecimal().describe("The total supply of the token"),
+  bond: z
+    .object({
+      isMatured: z.boolean().describe("Whether the bond is matured"),
+    })
+    .optional()
+    .describe("The bond details"),
 });
 
 export const TokenBalanceSchema = z.object({

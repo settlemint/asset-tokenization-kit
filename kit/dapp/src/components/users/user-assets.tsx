@@ -7,6 +7,7 @@ import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
+import { RedeemSheet } from "@/components/manage-dropdown/sheets/redeem-sheet";
 import { TransferAssetSheet } from "@/components/manage-dropdown/sheets/transfer-asset-sheet";
 import { formatValue } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
@@ -18,6 +19,7 @@ import { from, greaterThan } from "dnum";
 import {
   Coins,
   Copy,
+  Flame,
   Hash,
   Lock,
   Package,
@@ -30,6 +32,11 @@ import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const columnHelper = createStrictColumnHelper<TokenBalance>();
+
+enum AssetAction {
+  Transfer,
+  Redeem,
+}
 
 /**
  * Initial sorting configuration for the user assets table
@@ -63,26 +70,23 @@ export const UserAssetsTable = withErrorBoundary(function UserAssetsTable() {
   const routePath = router.state.matches.at(-1)?.pathname;
 
   const { data: assets } = useSuspenseQuery(orpc.user.assets.queryOptions());
-  const [isTransferSheetOpen, setTransferSheetOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<TokenBalance | null>(null);
+  const [selectedAction, setSelectedAction] = useState<AssetAction | null>(
+    null
+  );
 
-  const openTransferSheet = useCallback(
-    (asset: TokenBalance) => {
+  const openActionSheet = useCallback(
+    (asset: TokenBalance, action: AssetAction) => {
       setSelectedAsset(asset);
-      setTransferSheetOpen(true);
+      setSelectedAction(action);
     },
-    [setSelectedAsset, setTransferSheetOpen]
+    []
   );
 
-  const handleTransferSheetOpenChange = useCallback(
-    (open: boolean) => {
-      setTransferSheetOpen(open);
-      if (!open) {
-        setSelectedAsset(null);
-      }
-    },
-    [setSelectedAsset, setTransferSheetOpen]
-  );
+  const handleActionSheetClose = useCallback(() => {
+    setSelectedAction(null);
+    setSelectedAsset(null);
+  }, []);
 
   /**
    * Creates action items for each row in the table
@@ -98,18 +102,32 @@ export const UserAssetsTable = withErrorBoundary(function UserAssetsTable() {
         from(0n, row.original.token.decimals)
       );
 
-      return [
+      const actions: ActionItem[] = [
         {
           label: t("user-assets:actions.transfer.label"),
           icon: <Send className="h-4 w-4" />,
           onClick: () => {
-            openTransferSheet(row.original);
+            openActionSheet(row.original, AssetAction.Transfer);
           },
           disabled: !hasTransferableBalance,
         },
       ];
+
+      const canRedeem = row.original.token.bond?.isMatured;
+
+      if (canRedeem) {
+        actions.push({
+          label: t("user-assets:actions.redeem.label"),
+          icon: <Flame className="h-4 w-4" />,
+          onClick: () => {
+            openActionSheet(row.original, AssetAction.Redeem);
+          },
+        });
+      }
+
+      return actions;
     },
-    [openTransferSheet, t]
+    [openActionSheet, t]
   );
 
   /**
@@ -263,9 +281,17 @@ export const UserAssetsTable = withErrorBoundary(function UserAssetsTable() {
 
       {selectedAsset ? (
         <TransferAssetSheet
-          open={isTransferSheetOpen}
-          onOpenChange={handleTransferSheetOpenChange}
-          asset={selectedAsset}
+          open={selectedAction === AssetAction.Transfer}
+          onClose={handleActionSheetClose}
+          assetBalance={selectedAsset}
+        />
+      ) : null}
+
+      {selectedAsset ? (
+        <RedeemSheet
+          open={selectedAction === AssetAction.Redeem}
+          onClose={handleActionSheetClose}
+          assetBalance={selectedAsset}
         />
       ) : null}
     </>
