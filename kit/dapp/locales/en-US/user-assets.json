@@ -26,6 +26,9 @@
       "addRecipient": "Add recipient",
       "totalLabel": "Total",
       "overAvailable": "Lower the total so it stays within your available balance."
+    },
+    "redeem": {
+      "label": "Redeem"
     }
   },
   "bulkActions": {

@@ -1,8 +1,8 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import type { VariablesOf } from "@settlemint/sdk-thegraph";
+import { z } from "zod";
 import {
-  ActionsGraphResponseSchema,
   ActionsListDataSchema,
   type ActionsListResponse,
 } from "./actions.list.schema";
@@ -98,16 +98,11 @@ export const list = authRouter.actions.list.handler(
     // Execute query
     const response = await context.theGraphClient.query(LIST_ACTIONS_QUERY, {
       input: { where },
-      output: ActionsGraphResponseSchema,
+      output: z.object({
+        actions: ActionsListDataSchema,
+      }),
     });
 
-    // Transform Graph scalars (strings) to domain types and validate
-    const transformed = response.actions.map((a) => ({
-      ...a,
-      activeAt: BigInt(a.activeAt),
-      executedAt: a.executedAt === null ? null : BigInt(a.executedAt),
-    }));
-
-    return ActionsListDataSchema.parse(transformed);
+    return response.actions;
   }
 );

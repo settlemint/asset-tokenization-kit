@@ -1,11 +1,10 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppForm } from "@/hooks/use-app-form";
 import { orpc } from "@/orpc/orpc-client";
-import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import type { TokenBalance } from "@/orpc/routes/user/routes/user.assets.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, from, greaterThan, lessThanOrEqual, type Dnum } from "dnum";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { ActionFormSheet } from "../core/action-form-sheet";
@@ -13,28 +12,45 @@ import { createActionFormStore } from "../core/action-form-sheet.store";
 
 interface RedeemSheetProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
-  asset: Token;
+  onClose: () => void;
+  assetBalance: TokenBalance;
 }
 
-export function RedeemSheet({ open, onOpenChange, asset }: RedeemSheetProps) {
+export function RedeemSheet({ open, onClose, assetBalance }: RedeemSheetProps) {
   const { t } = useTranslation(["tokens", "common"]);
   const qc = useQueryClient();
 
   const { mutateAsync: redeem, isPending } = useMutation(
     orpc.token.redeem.mutationOptions({
       onSuccess: async () => {
-        await qc.invalidateQueries({
-          queryKey: orpc.token.read.queryOptions({
-            input: { tokenAddress: asset.id },
-          }).queryKey,
-        });
+        await Promise.all([
+          qc.invalidateQueries({
+            queryKey: orpc.token.read.queryOptions({
+              input: { tokenAddress: assetBalance.token.id },
+            }).queryKey,
+          }),
+          qc.invalidateQueries({
+            queryKey: orpc.user.assets.queryKey(),
+          }),
+          qc.invalidateQueries({
+            queryKey: orpc.actions.list.queryOptions({
+              input: {},
+            }).queryKey,
+          }),
+        ]);
       },
     })
   );
 
+  const tokenDecimals = assetBalance.token.decimals;
+  const tokenSymbol = assetBalance.token.symbol;
+  const maxAmountToRedeem = from(assetBalance.available, tokenDecimals);
+
   const sheetStoreRef = useRef(createActionFormStore({ hasValuesStep: true }));
-  const form = useAppForm({ onSubmit: () => {} });
+  const form = useAppForm({
+    defaultValues: { amount: maxAmountToRedeem },
+    onSubmit: () => {},
+  });
 
   useEffect(() => {
     if (open) {
@@ -43,16 +59,10 @@ export function RedeemSheet({ open, onOpenChange, asset }: RedeemSheetProps) {
     }
   }, [open, form]);
 
-  const userBalance: Dnum = useMemo(() => {
-    // For now, use zero as default - the backend will handle validation
-    // TODO: Add proper balance fetching from a separate query
-    return [0n, asset.decimals];
-  }, [asset.decimals]);
-
   const handleClose = () => {
     form.reset();
     sheetStoreRef.current.setState((s) => ({ ...s, step: "values" }));
-    onOpenChange(false);
+    onClose();
   };
 
   return (
@@ -60,19 +70,9 @@ export function RedeemSheet({ open, onOpenChange, asset }: RedeemSheetProps) {
       {() => {
         const amount =
           (form.getFieldValue("amount") as Dnum | undefined) ??
-          from(0n, asset.decimals);
-        const redeemAll =
-          (form.getFieldValue("redeemAll") as boolean | undefined) ?? false;
+          from(0n, tokenDecimals);
 
-        const redeemAmount = redeemAll ? userBalance : amount;
-
-        const canContinue = () => {
-          if (redeemAll) return greaterThan(userBalance, [0n, asset.decimals]);
-          return (
-            greaterThan(amount, [0n, asset.decimals]) &&
-            lessThanOrEqual(amount, userBalance)
-          );
-        };
+        const redeemAmount = amount;
 
         const confirmView = (
           <Card>
@@ -88,7 +88,7 @@ export function RedeemSheet({ open, onOpenChange, asset }: RedeemSheetProps) {
                     {t("tokens:actions.redeem.form.balance.available")}
                   </div>
                   <div className="text-sm font-medium">
-                    {format(userBalance, { digits: 4 })} {asset.symbol}
+                    {format(maxAmountToRedeem)} {tokenSymbol}
                   </div>
                 </div>
                 <span className="text-muted-foreground">→</span>
@@ -97,7 +97,7 @@ export function RedeemSheet({ open, onOpenChange, asset }: RedeemSheetProps) {
                     {t("tokens:actions.redeem.submit")}
                   </div>
                   <div className="text-sm font-medium">
-                    {format(redeemAmount, { digits: 4 })} {asset.symbol}
+                    {format(redeemAmount)} {tokenSymbol}
                   </div>
                 </div>
               </div>
@@ -109,36 +109,42 @@ export function RedeemSheet({ open, onOpenChange, asset }: RedeemSheetProps) {
           <ActionFormSheet
             open={open}
             onOpenChange={handleClose}
-            asset={asset}
+            asset={assetBalance.token}
             title={t("tokens:actions.redeem.title")}
             description={t("tokens:actions.redeem.description")}
             submitLabel={t("tokens:actions.redeem.submit")}
-            canContinue={canContinue}
+            canContinue={() =>
+              greaterThan(amount, 0n) &&
+              lessThanOrEqual(amount, maxAmountToRedeem)
+            }
             confirm={confirmView}
             showAssetDetailsOnConfirm={false}
             isSubmitting={isPending}
             store={sheetStoreRef.current}
             onSubmit={(verification) => {
               const promise = redeem({
-                contract: asset.id,
+                contract: assetBalance.token.id,
                 walletVerification: verification,
-                amount: redeemAll ? undefined : redeemAmount[0].toString(),
-                redeemAll,
+                amount,
               });
 
-              toast.promise(promise, {
-                loading: t("tokens:actions.redeem.toasts.loading"),
-                success: t("tokens:actions.redeem.toasts.success", {
-                  amount: format(redeemAmount, { digits: 4 }),
-                  symbol: asset.symbol,
-                }),
-                error: (error) =>
-                  t("tokens:actions.redeem.toasts.error", {
-                    error: error.message,
+              toast
+                .promise(promise, {
+                  loading: t("tokens:actions.redeem.toasts.loading"),
+                  success: t("tokens:actions.redeem.toasts.success", {
+                    amount: format(redeemAmount),
+                    symbol: tokenSymbol,
                   }),
-              });
-
-              handleClose();
+                  error: (error) =>
+                    t("tokens:actions.redeem.toasts.error", {
+                      error: error.message,
+                    }),
+                })
+                .unwrap()
+                .then(() => {
+                  handleClose();
+                })
+                .catch(() => undefined);
             }}
           >
             <Card>
@@ -155,49 +161,25 @@ export function RedeemSheet({ open, onOpenChange, asset }: RedeemSheetProps) {
                         {t("tokens:actions.redeem.form.balance.available")}
                       </span>
                       <span className="font-medium">
-                        {format(userBalance, { digits: 4 })} {asset.symbol}
+                        {format(maxAmountToRedeem)} {tokenSymbol}
                       </span>
                     </div>
                   </CardContent>
                 </Card>
 
                 <div className="space-y-4">
-                  <form.AppField name="redeemAll">
-                    {(field) => (
-                      <field.CheckboxField
-                        label={t("tokens:actions.redeem.form.redeemAll")}
-                      />
-                    )}
-                  </form.AppField>
-
-                  {!redeemAll && (
-                    <div className="space-y-2">
-                      <form.AppField name="amount">
-                        {(field) => (
-                          <div className="space-y-2">
-                            <field.DnumField
-                              label={t(
-                                "tokens:actions.redeem.form.amount.label"
-                              )}
-                              endAddon={asset.symbol}
-                              decimals={asset.decimals}
-                              required
-                            />
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                field.handleChange(userBalance);
-                              }}
-                            >
-                              {t("tokens:actions.redeem.form.amount.max")}
-                            </Button>
-                          </div>
-                        )}
-                      </form.AppField>
-                    </div>
-                  )}
+                  <div className="space-y-2">
+                    <form.AppField name="amount">
+                      {(field) => (
+                        <field.DnumField
+                          label={t("tokens:actions.redeem.form.amount.label")}
+                          endAddon={tokenSymbol}
+                          decimals={tokenDecimals}
+                          required
+                        />
+                      )}
+                    </form.AppField>
+                  </div>
                 </div>
               </CardContent>
             </Card>

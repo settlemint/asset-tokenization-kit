@@ -6,6 +6,7 @@ import { FixedYieldSchedulePeriodsTable } from "@/components/tables/fixed-yield-
 import { Button } from "@/components/ui/button";
 import { useTokenLoaderQuery } from "@/hooks/use-token-loader-query";
 import { orpc } from "@/orpc/orpc-client";
+import { TIME_INTERVAL_SECONDS } from "@atk/zod/src/time-interval";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Calendar } from "lucide-react";
@@ -132,16 +133,16 @@ function RouteComponent() {
   // Helper function to format interval from seconds to readable format
   const formatInterval = (seconds: string) => {
     const secondsNum = Number.parseInt(seconds, 10);
-    const days = Math.floor(secondsNum / 86_400);
-
-    if (days === 30 || days === 31) return t("common:timeInterval.MONTHLY");
-    if (days === 365) return t("common:timeInterval.YEARLY");
-    if (days === 90 || days === 91) return t("common:timeInterval.QUARTERLY");
-    if (days % 7 === 0) {
-      const weeks = days / 7;
-      return t("common:timeInterval.WEEKLY", { count: weeks });
+    const timeIntervals = Object.keys(
+      TIME_INTERVAL_SECONDS
+    ) as (keyof typeof TIME_INTERVAL_SECONDS)[];
+    const key = timeIntervals.find((key) => {
+      return TIME_INTERVAL_SECONDS[key] === secondsNum;
+    });
+    if (!key) {
+      return `${seconds}s`;
     }
-    return t("common:timeInterval.DAILY", { count: days });
+    return t(`common:timeInterval.${key}`);
   };
 
   return (
@@ -152,12 +153,14 @@ function RouteComponent() {
           info={t("tokens:yield.fields.startDateInfo")}
           value={yieldSchedule.startDate}
           type="date"
+          dateOptions={{ includeTime: true }}
         />
         <DetailGridItem
           label={t("tokens:yield.fields.endDate")}
           info={t("tokens:yield.fields.endDateInfo")}
           value={yieldSchedule.endDate}
           type="date"
+          dateOptions={{ includeTime: true }}
         />
         <DetailGridItem
           label={t("tokens:yield.fields.rate")}
@@ -225,12 +228,14 @@ function RouteComponent() {
             info={t("tokens:yield.fields.periodStartInfo")}
             value={yieldSchedule.currentPeriod.startDate}
             type="date"
+            dateOptions={{ includeTime: true }}
           />
           <DetailGridItem
             label={t("tokens:yield.fields.periodEnd")}
             info={t("tokens:yield.fields.periodEndInfo")}
             value={yieldSchedule.currentPeriod.endDate}
             type="date"
+            dateOptions={{ includeTime: true }}
           />
           <DetailGridItem
             label={t("tokens:yield.fields.periodYield")}
@@ -256,12 +261,14 @@ function RouteComponent() {
             info={t("tokens:yield.fields.periodStartInfo")}
             value={yieldSchedule.nextPeriod.startDate}
             type="date"
+            dateOptions={{ includeTime: true }}
           />
           <DetailGridItem
             label={t("tokens:yield.fields.periodEnd")}
             info={t("tokens:yield.fields.periodEndInfo")}
             value={yieldSchedule.nextPeriod.endDate}
             type="date"
+            dateOptions={{ includeTime: true }}
           />
           <DetailGridItem
             label={t("tokens:yield.fields.periodYield")}

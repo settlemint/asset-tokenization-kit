@@ -1,4 +1,3 @@
-import { TimeIntervalEnum } from "@atk/zod/time-interval";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { getDappUrl } from "@test/fixtures/dapp";
 import { createFixedYieldSchedule } from "@test/fixtures/fixed-yield-schedule";
@@ -212,7 +211,7 @@ for (const bondToCreate of BONDS) {
     logger.info("Creating yield schedule");
     const schedule = await createFixedYieldSchedule(adminClient, {
       yieldRate: bondToCreate.yieldRate,
-      paymentInterval: TimeIntervalEnum.YEARLY,
+      paymentInterval: bondToCreate.paymentInterval,
       startTime: bondToCreate.issueDate,
       endTime: bondToCreate.maturityDate,
       token: bond.id,

@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 interface BaseActionSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  asset?: Token;
+  asset?: Pick<Token, "id" | "name" | "symbol">;
   title: string;
   description: string;
   submit: ReactNode;
