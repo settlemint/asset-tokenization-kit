@@ -11,6 +11,7 @@ understand the resulting environment at a glance.
 ## Actors
 
 ### System Administrator (`admin@settlemint.com`)
+
 - **Who is this?** The primary platform owner who configures settings, onboards
   new teams, and generally keeps the environment running smoothly.
 - **Script reference:** `ADMIN`.
@@ -22,6 +23,7 @@ understand the resulting environment at a glance.
 - **Profile location:** Account identity is registered in Belgium (`BE`).
 
 ### Asset Issuer (`issuer@settlemint.com`)
+
 - **Who is this?** The demo organization responsible for creating new asset
   tokens and attaching the right compliance modules before they reach investors.
 - **Script reference:** `ISSUER`.
@@ -33,6 +35,7 @@ understand the resulting environment at a glance.
 - **Profile location:** Account identity is registered in Belgium (`BE`).
 
 ### German Investor 1 (`german.investor1@settlemint.com`)
+
 - **Who is this?** A ready-to-go German investor wallet that can participate in
   the bond demos.
 - **Script reference:** `GERMAN_INVESTOR_1`.
@@ -44,16 +47,18 @@ understand the resulting environment at a glance.
   (`DE`).
 
 ### German Investor 2 (`german.investor2@settlemint.com`)
+
 - **Who is this?** A second German investor, useful for showing transfers or
   comparing user journeys.
 - **Script reference:** `GERMAN_INVESTOR_2`.
 - **Access level:** Same as Investor 1—no special blockchain permissions.
-- **Compliance status:** Shares the `kyc-verified` and `aml-verified` claims from
-  setup, mirroring the first investor.
+- **Compliance status:** Shares the `kyc-verified` and `aml-verified` claims
+  from setup, mirroring the first investor.
 - **Profile location:** Identity details are stored and registered in Germany
   (`DE`).
 
 ### Japanese Investor (`japanese.investor@settlemint.com`)
+
 - **Who is this?** An investor from Japan deliberately left partially onboarded
   to demonstrate pending-compliance flows.
 - **Script reference:** `JAPANESE_INVESTOR`.
@@ -66,6 +71,7 @@ understand the resulting environment at a glance.
 ## Assets
 
 ### Proof-of-Deposit (`POD`)
+
 - **Type & Extension**: Deposit token used as the denomination asset for bond
   issuances.
 - **Claims**: No compliance claims are required; it acts as an internal
@@ -74,6 +80,7 @@ understand the resulting environment at a glance.
   hold POD.
 
 ### Bund7 (`BUND7`)
+
 - **Type & Extension**: Bond token with ISIN `DE000BU27014` that references the
   `POD` denomination token and a yearly fixed-yield schedule (2.50%).
 - **Claims**: Requires holders to present `kyc-verified` and `aml-verified`
@@ -81,8 +88,9 @@ understand the resulting environment at a glance.
 - **Compliance Rules**: Country allow-list restricts holders to Germany (`DE`).
 
 ### Bund10 (`BUND10`)
-- **Type & Extension**: Bond token with ISIN `DE000BU2Z056` using the same
-  `POD` denomination token and yearly fixed-yield schedule (2.60%).
+
+- **Type & Extension**: Bond token with ISIN `DE000BU2Z056` using the same `POD`
+  denomination token and yearly fixed-yield schedule (2.60%).
 - **Claims**: Requires the same `kyc-verified` and `aml-verified` claims via the
   SMART Identity Verification module.
 - **Compliance Rules**: Country allow-list admits both Germany (`DE`) and Japan

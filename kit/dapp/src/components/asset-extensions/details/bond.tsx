@@ -120,7 +120,7 @@ export function BondExtensionDetails({
         />
       )}
       <DetailGridItem
-        label={"Price"}
+        label={t("tokens:fields.price")}
         value={unitPrice ?? undefined}
         type="currency"
         currency={

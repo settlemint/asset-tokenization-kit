@@ -108,6 +108,9 @@ export function FixedYieldSchedulePeriodsTable({
           meta: {
             displayName: t("tokens:yield.periodsTable.columns.startDate"),
             type: "date",
+            dateOptions: {
+              includeTime: true,
+            },
           },
         }),
         columnHelper.accessor("endDate", {
@@ -115,6 +118,9 @@ export function FixedYieldSchedulePeriodsTable({
           meta: {
             displayName: t("tokens:yield.periodsTable.columns.endDate"),
             type: "date",
+            dateOptions: {
+              includeTime: true,
+            },
           },
         }),
         columnHelper.accessor(

@@ -48,6 +48,13 @@ function FormattedCell<TData, TValue>({
 export function withAutoCell<TData, TValue = unknown>(
   column: ColumnDef<TData, TValue>
 ): ColumnDef<TData, TValue> {
+  if (column.meta?.renderCell) {
+    return {
+      ...column,
+      cell: column.meta.renderCell,
+    };
+  }
+
   if (column.cell) {
     return column;
   }
