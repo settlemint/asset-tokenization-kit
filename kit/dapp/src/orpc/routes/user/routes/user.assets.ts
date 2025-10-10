@@ -20,9 +20,6 @@ const USER_ASSETS_QUERY = theGraphGraphql(`
         bond {
           isMatured
         }
-        redeemable {
-          redeemedAmount
-        }
       }
     }
   }

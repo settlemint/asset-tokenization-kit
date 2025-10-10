@@ -154,6 +154,8 @@ templates:
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
         - event: ComplianceAdded(indexed address,indexed address)
           handler: handleComplianceAdded
         - event: ComplianceModuleAdded(indexed address,indexed address,bytes)
@@ -162,13 +164,8 @@ templates:
           handler: handleComplianceModuleRemoved
         - event: IdentityRegistryAdded(indexed address,indexed address)
           handler: handleIdentityRegistryAdded
-        - event: MintCompleted(indexed address,indexed address,indexed uint256)
-          handler: handleMintCompleted
         - event: ModuleParametersUpdated(indexed address,indexed address,bytes)
           handler: handleModuleParametersUpdated
-        - event: TransferCompleted(indexed address,indexed address,indexed
-            address,uint256)
-          handler: handleTransferCompleted
         - event: UpdatedTokenInformation(indexed address,indexed uint8,indexed address)
           handler: handleUpdatedTokenInformation
         - event: ERC20TokenRecovered(indexed address,indexed address,indexed
@@ -196,25 +193,6 @@ templates:
         - event: Unpaused(indexed address)
           handler: handleUnpaused
       file: ./src/token-extensions/pausable/pausable.ts
-  - kind: ethereum
-    name: Burnable
-    network: settlemint
-    source:
-      abi: Burnable
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Address
-        - Event
-      abis:
-        - name: Burnable
-          file: ../contracts/.generated/artifacts/contracts/smart/extensions/burnable/ISMARTBurnable.sol/ISMARTBurnable.json
-      eventHandlers:
-        - event: BurnCompleted(indexed address,indexed address,indexed uint256)
-          handler: handleBurnCompleted
-      file: ./src/token-extensions/burnable/burnable.ts
   - kind: ethereum
     name: Identity
     network: settlemint

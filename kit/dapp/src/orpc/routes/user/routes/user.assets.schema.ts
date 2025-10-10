@@ -28,13 +28,6 @@ export const TokenAssetSchema = z.object({
     .optional()
     .nullable()
     .describe("The bond details"),
-  redeemable: z
-    .object({
-      redeemedAmount: bigDecimal().describe("The amount of tokens redeemed"),
-    })
-    .optional()
-    .nullable()
-    .describe("The redeemable details"),
 });
 
 export const TokenBalanceSchema = z.object({

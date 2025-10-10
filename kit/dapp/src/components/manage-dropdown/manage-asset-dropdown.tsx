@@ -451,7 +451,9 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
       {transferSheetAsset && (
         <TransferAssetSheet
           open={isCurrentAction({ target: "transfer", current: openAction })}
-          onClose={onActionOpenChange}
+          onClose={() => {
+            onActionOpenChange(false);
+          }}
           assetBalance={transferSheetAsset}
         />
       )}

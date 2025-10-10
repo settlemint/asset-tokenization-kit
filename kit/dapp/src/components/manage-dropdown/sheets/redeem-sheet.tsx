@@ -3,7 +3,7 @@ import { useAppForm } from "@/hooks/use-app-form";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenBalance } from "@/orpc/routes/user/routes/user.assets.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { format, from, greaterThan, subtract, type Dnum } from "dnum";
+import { format, from, greaterThan, type Dnum } from "dnum";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -23,21 +23,23 @@ export function RedeemSheet({ open, onClose, assetBalance }: RedeemSheetProps) {
   const { mutateAsync: redeem, isPending } = useMutation(
     orpc.token.redeem.mutationOptions({
       onSuccess: async () => {
-        await qc.invalidateQueries({
-          queryKey: orpc.token.read.queryOptions({
-            input: { tokenAddress: assetBalance.token.id },
-          }).queryKey,
-        });
+        await Promise.all([
+          qc.invalidateQueries({
+            queryKey: orpc.token.read.queryOptions({
+              input: { tokenAddress: assetBalance.token.id },
+            }).queryKey,
+          }),
+          qc.invalidateQueries({
+            queryKey: orpc.user.assets.queryKey(),
+          }),
+        ]);
       },
     })
   );
 
   const tokenDecimals = assetBalance.token.decimals;
   const tokenSymbol = assetBalance.token.symbol;
-  const maxAmountToRedeem = subtract(
-    from(assetBalance.available, tokenDecimals),
-    from(assetBalance.token.redeemable?.redeemedAmount ?? 0, tokenDecimals)
-  );
+  const maxAmountToRedeem = from(assetBalance.available, tokenDecimals);
 
   const sheetStoreRef = useRef(createActionFormStore({ hasValuesStep: true }));
   const form = useAppForm({
