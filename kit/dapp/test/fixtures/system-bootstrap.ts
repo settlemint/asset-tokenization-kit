@@ -25,21 +25,18 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
     }
     const systemId = firstSystem.id;
     // For existing system, fetch and verify it's fully initialized
-    const system = await orpClient.system.read({ id: systemId });
-    if (!system.tokenFactoryRegistry) {
-      // Wait for system to be fully initialized
-      await retryWhenFailed(
-        async () => {
-          const sys = await orpClient.system.read({ id: systemId });
-          if (!sys.tokenFactoryRegistry) {
-            throw new Error("System not yet fully initialized");
-          }
-          return sys;
-        },
-        10, // max retries
-        1000 // wait 1 second between retries
-      );
-    }
+    // Use retry logic in case TheGraph hasn't fully indexed it yet
+    const system = await retryWhenFailed(
+      async () => {
+        const sys = await orpClient.system.read({ id: systemId });
+        if (!sys.tokenFactoryRegistry) {
+          throw new Error("System not yet fully initialized");
+        }
+        return sys;
+      },
+      15, // max retries
+      2000 // wait 2 seconds between retries
+    );
     return system;
   }
 

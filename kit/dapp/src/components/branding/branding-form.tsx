@@ -1,6 +1,8 @@
 "use client";
 
+import { ColorField } from "@/components/branding/color-field";
 import { ImageUpload } from "@/components/branding/image-upload";
+import { SizeControl } from "@/components/branding/size-control";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,15 +11,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ColorPicker } from "@/components/ui/color-picker";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DEFAULT_BRANDING } from "@/lib/db/schema";
 import { orpc } from "@/orpc/orpc-client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, RotateCcw, Save } from "lucide-react";
+import { Loader2, Moon, Save, Sun } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -25,11 +25,10 @@ import { toast } from "sonner";
 /**
  * Branding Form Component
  *
- * Comprehensive form for managing platform branding:
- * - Application title
- * - Logos (main, sidebar, favicon)
- * - Backgrounds (light/dark mode)
- * - Color scheme (primary, secondary, state colors, etc.)
+ * Comprehensive form for managing platform branding with separate light/dark mode configurations:
+ * - General: Application title
+ * - Light Mode: Logos, backgrounds, and color scheme for light mode
+ * - Dark Mode: Logos, backgrounds, and color scheme for dark mode
  */
 
 export function BrandingForm() {
@@ -44,41 +43,80 @@ export function BrandingForm() {
   // Form state
   const [formData, setFormData] = React.useState({
     applicationTitle: "",
-    logoMain: null as string | null,
-    logoSidebar: null as string | null,
-    logoFavicon: null as string | null,
+    logoSize: null as string | null,
+    titleSize: null as string | null,
+    // Light mode assets
+    logoMainLight: null as string | null,
+    logoSidebarLight: null as string | null,
+    logoFaviconLight: null as string | null,
     backgroundLight: null as string | null,
+    // Dark mode assets
+    logoMainDark: null as string | null,
+    logoSidebarDark: null as string | null,
+    logoFaviconDark: null as string | null,
     backgroundDark: null as string | null,
-    colorPrimary: null as string | null,
-    colorPrimaryHover: null as string | null,
-    colorSecondary: null as string | null,
-    colorAccent: null as string | null,
-    colorBackgroundDarkest: null as string | null,
-    colorBackgroundLightest: null as string | null,
-    colorBackgroundGradientStart: null as string | null,
-    colorBackgroundGradientEnd: null as string | null,
-    colorStateSuccess: null as string | null,
-    colorStateSuccessBackground: null as string | null,
-    colorStateWarning: null as string | null,
-    colorStateWarningBackground: null as string | null,
-    colorStateError: null as string | null,
-    colorStateErrorBackground: null as string | null,
-    colorGraphicsPrimary: null as string | null,
-    colorGraphicsSecondary: null as string | null,
-    colorGraphicsTertiary: null as string | null,
-    colorGraphicsQuaternary: null as string | null,
-    colorText: null as string | null,
-    colorTextContrast: null as string | null,
-    colorBorder: null as string | null,
-    colorMuted: null as string | null,
-    colorSidebar: null as string | null,
-    colorSidebarForeground: null as string | null,
-    colorSidebarPrimary: null as string | null,
-    colorSidebarPrimaryForeground: null as string | null,
-    colorSidebarAccent: null as string | null,
-    colorSidebarAccentForeground: null as string | null,
-    colorSidebarBorder: null as string | null,
-    colorSidebarRing: null as string | null,
+    // Light mode colors
+    colorPrimaryLight: null as string | null,
+    colorPrimaryHoverLight: null as string | null,
+    colorSecondaryLight: null as string | null,
+    colorAccentLight: null as string | null,
+    colorBackgroundDarkestLight: null as string | null,
+    colorBackgroundLightestLight: null as string | null,
+    colorBackgroundGradientStartLight: null as string | null,
+    colorBackgroundGradientEndLight: null as string | null,
+    colorStateSuccessLight: null as string | null,
+    colorStateSuccessBackgroundLight: null as string | null,
+    colorStateWarningLight: null as string | null,
+    colorStateWarningBackgroundLight: null as string | null,
+    colorStateErrorLight: null as string | null,
+    colorStateErrorBackgroundLight: null as string | null,
+    colorGraphicsPrimaryLight: null as string | null,
+    colorGraphicsSecondaryLight: null as string | null,
+    colorGraphicsTertiaryLight: null as string | null,
+    colorGraphicsQuaternaryLight: null as string | null,
+    colorTextLight: null as string | null,
+    colorTextContrastLight: null as string | null,
+    colorBorderLight: null as string | null,
+    colorMutedLight: null as string | null,
+    colorSidebarLight: null as string | null,
+    colorSidebarForegroundLight: null as string | null,
+    colorSidebarPrimaryLight: null as string | null,
+    colorSidebarPrimaryForegroundLight: null as string | null,
+    colorSidebarAccentLight: null as string | null,
+    colorSidebarAccentForegroundLight: null as string | null,
+    colorSidebarBorderLight: null as string | null,
+    colorSidebarRingLight: null as string | null,
+    // Dark mode colors
+    colorPrimaryDark: null as string | null,
+    colorPrimaryHoverDark: null as string | null,
+    colorSecondaryDark: null as string | null,
+    colorAccentDark: null as string | null,
+    colorBackgroundDarkestDark: null as string | null,
+    colorBackgroundLightestDark: null as string | null,
+    colorBackgroundGradientStartDark: null as string | null,
+    colorBackgroundGradientEndDark: null as string | null,
+    colorStateSuccessDark: null as string | null,
+    colorStateSuccessBackgroundDark: null as string | null,
+    colorStateWarningDark: null as string | null,
+    colorStateWarningBackgroundDark: null as string | null,
+    colorStateErrorDark: null as string | null,
+    colorStateErrorBackgroundDark: null as string | null,
+    colorGraphicsPrimaryDark: null as string | null,
+    colorGraphicsSecondaryDark: null as string | null,
+    colorGraphicsTertiaryDark: null as string | null,
+    colorGraphicsQuaternaryDark: null as string | null,
+    colorTextDark: null as string | null,
+    colorTextContrastDark: null as string | null,
+    colorBorderDark: null as string | null,
+    colorMutedDark: null as string | null,
+    colorSidebarDark: null as string | null,
+    colorSidebarForegroundDark: null as string | null,
+    colorSidebarPrimaryDark: null as string | null,
+    colorSidebarPrimaryForegroundDark: null as string | null,
+    colorSidebarAccentDark: null as string | null,
+    colorSidebarAccentForegroundDark: null as string | null,
+    colorSidebarBorderDark: null as string | null,
+    colorSidebarRingDark: null as string | null,
   });
 
   // Update form when branding data loads
@@ -86,41 +124,91 @@ export function BrandingForm() {
     if (branding) {
       setFormData({
         applicationTitle: branding.applicationTitle || "",
-        logoMain: branding.logoMain,
-        logoSidebar: branding.logoSidebar,
-        logoFavicon: branding.logoFavicon,
+        logoSize: branding.logoSize,
+        titleSize: branding.titleSize,
+        // Light mode assets
+        logoMainLight: branding.logoMainLight,
+        logoSidebarLight: branding.logoSidebarLight,
+        logoFaviconLight: branding.logoFaviconLight,
         backgroundLight: branding.backgroundLight,
+        // Dark mode assets
+        logoMainDark: branding.logoMainDark,
+        logoSidebarDark: branding.logoSidebarDark,
+        logoFaviconDark: branding.logoFaviconDark,
         backgroundDark: branding.backgroundDark,
-        colorPrimary: branding.colorPrimary,
-        colorPrimaryHover: branding.colorPrimaryHover,
-        colorSecondary: branding.colorSecondary,
-        colorAccent: branding.colorAccent,
-        colorBackgroundDarkest: branding.colorBackgroundDarkest,
-        colorBackgroundLightest: branding.colorBackgroundLightest,
-        colorBackgroundGradientStart: branding.colorBackgroundGradientStart,
-        colorBackgroundGradientEnd: branding.colorBackgroundGradientEnd,
-        colorStateSuccess: branding.colorStateSuccess,
-        colorStateSuccessBackground: branding.colorStateSuccessBackground,
-        colorStateWarning: branding.colorStateWarning,
-        colorStateWarningBackground: branding.colorStateWarningBackground,
-        colorStateError: branding.colorStateError,
-        colorStateErrorBackground: branding.colorStateErrorBackground,
-        colorGraphicsPrimary: branding.colorGraphicsPrimary,
-        colorGraphicsSecondary: branding.colorGraphicsSecondary,
-        colorGraphicsTertiary: branding.colorGraphicsTertiary,
-        colorGraphicsQuaternary: branding.colorGraphicsQuaternary,
-        colorText: branding.colorText,
-        colorTextContrast: branding.colorTextContrast,
-        colorBorder: branding.colorBorder,
-        colorMuted: branding.colorMuted,
-        colorSidebar: branding.colorSidebar,
-        colorSidebarForeground: branding.colorSidebarForeground,
-        colorSidebarPrimary: branding.colorSidebarPrimary,
-        colorSidebarPrimaryForeground: branding.colorSidebarPrimaryForeground,
-        colorSidebarAccent: branding.colorSidebarAccent,
-        colorSidebarAccentForeground: branding.colorSidebarAccentForeground,
-        colorSidebarBorder: branding.colorSidebarBorder,
-        colorSidebarRing: branding.colorSidebarRing,
+        // Light mode colors
+        colorPrimaryLight: branding.colorPrimaryLight,
+        colorPrimaryHoverLight: branding.colorPrimaryHoverLight,
+        colorSecondaryLight: branding.colorSecondaryLight,
+        colorAccentLight: branding.colorAccentLight,
+        colorBackgroundDarkestLight: branding.colorBackgroundDarkestLight,
+        colorBackgroundLightestLight: branding.colorBackgroundLightestLight,
+        colorBackgroundGradientStartLight:
+          branding.colorBackgroundGradientStartLight,
+        colorBackgroundGradientEndLight:
+          branding.colorBackgroundGradientEndLight,
+        colorStateSuccessLight: branding.colorStateSuccessLight,
+        colorStateSuccessBackgroundLight:
+          branding.colorStateSuccessBackgroundLight,
+        colorStateWarningLight: branding.colorStateWarningLight,
+        colorStateWarningBackgroundLight:
+          branding.colorStateWarningBackgroundLight,
+        colorStateErrorLight: branding.colorStateErrorLight,
+        colorStateErrorBackgroundLight: branding.colorStateErrorBackgroundLight,
+        colorGraphicsPrimaryLight: branding.colorGraphicsPrimaryLight,
+        colorGraphicsSecondaryLight: branding.colorGraphicsSecondaryLight,
+        colorGraphicsTertiaryLight: branding.colorGraphicsTertiaryLight,
+        colorGraphicsQuaternaryLight: branding.colorGraphicsQuaternaryLight,
+        colorTextLight: branding.colorTextLight,
+        colorTextContrastLight: branding.colorTextContrastLight,
+        colorBorderLight: branding.colorBorderLight,
+        colorMutedLight: branding.colorMutedLight,
+        colorSidebarLight: branding.colorSidebarLight,
+        colorSidebarForegroundLight: branding.colorSidebarForegroundLight,
+        colorSidebarPrimaryLight: branding.colorSidebarPrimaryLight,
+        colorSidebarPrimaryForegroundLight:
+          branding.colorSidebarPrimaryForegroundLight,
+        colorSidebarAccentLight: branding.colorSidebarAccentLight,
+        colorSidebarAccentForegroundLight:
+          branding.colorSidebarAccentForegroundLight,
+        colorSidebarBorderLight: branding.colorSidebarBorderLight,
+        colorSidebarRingLight: branding.colorSidebarRingLight,
+        // Dark mode colors
+        colorPrimaryDark: branding.colorPrimaryDark,
+        colorPrimaryHoverDark: branding.colorPrimaryHoverDark,
+        colorSecondaryDark: branding.colorSecondaryDark,
+        colorAccentDark: branding.colorAccentDark,
+        colorBackgroundDarkestDark: branding.colorBackgroundDarkestDark,
+        colorBackgroundLightestDark: branding.colorBackgroundLightestDark,
+        colorBackgroundGradientStartDark:
+          branding.colorBackgroundGradientStartDark,
+        colorBackgroundGradientEndDark: branding.colorBackgroundGradientEndDark,
+        colorStateSuccessDark: branding.colorStateSuccessDark,
+        colorStateSuccessBackgroundDark:
+          branding.colorStateSuccessBackgroundDark,
+        colorStateWarningDark: branding.colorStateWarningDark,
+        colorStateWarningBackgroundDark:
+          branding.colorStateWarningBackgroundDark,
+        colorStateErrorDark: branding.colorStateErrorDark,
+        colorStateErrorBackgroundDark: branding.colorStateErrorBackgroundDark,
+        colorGraphicsPrimaryDark: branding.colorGraphicsPrimaryDark,
+        colorGraphicsSecondaryDark: branding.colorGraphicsSecondaryDark,
+        colorGraphicsTertiaryDark: branding.colorGraphicsTertiaryDark,
+        colorGraphicsQuaternaryDark: branding.colorGraphicsQuaternaryDark,
+        colorTextDark: branding.colorTextDark,
+        colorTextContrastDark: branding.colorTextContrastDark,
+        colorBorderDark: branding.colorBorderDark,
+        colorMutedDark: branding.colorMutedDark,
+        colorSidebarDark: branding.colorSidebarDark,
+        colorSidebarForegroundDark: branding.colorSidebarForegroundDark,
+        colorSidebarPrimaryDark: branding.colorSidebarPrimaryDark,
+        colorSidebarPrimaryForegroundDark:
+          branding.colorSidebarPrimaryForegroundDark,
+        colorSidebarAccentDark: branding.colorSidebarAccentDark,
+        colorSidebarAccentForegroundDark:
+          branding.colorSidebarAccentForegroundDark,
+        colorSidebarBorderDark: branding.colorSidebarBorderDark,
+        colorSidebarRingDark: branding.colorSidebarRingDark,
       });
     }
   }, [branding]);
@@ -129,11 +217,9 @@ export function BrandingForm() {
   const saveMutation = useMutation(
     orpc.branding.upsert.mutationOptions({
       onSuccess: () => {
-        // Force refetch to update the UI immediately
         queryClient.invalidateQueries({
           queryKey: orpc.branding.read.queryKey(),
         });
-        // Also invalidate the branding provider query
         queryClient.refetchQueries({
           queryKey: orpc.branding.read.queryKey(),
         });
@@ -153,22 +239,31 @@ export function BrandingForm() {
   };
 
   const handleAutoSave = (newUrl: string, imageType: string) => {
-    // Auto-save the form data with the new image URL
     const updatedFormData = { ...formData };
 
-    // Update the specific image field
     switch (imageType) {
-      case "logo_main":
-        updatedFormData.logoMain = newUrl;
+      // Light mode assets
+      case "logo_main_light":
+        updatedFormData.logoMainLight = newUrl;
         break;
-      case "logo_sidebar":
-        updatedFormData.logoSidebar = newUrl;
+      case "logo_sidebar_light":
+        updatedFormData.logoSidebarLight = newUrl;
         break;
-      case "logo_favicon":
-        updatedFormData.logoFavicon = newUrl;
+      case "logo_favicon_light":
+        updatedFormData.logoFaviconLight = newUrl;
         break;
       case "background_light":
         updatedFormData.backgroundLight = newUrl;
+        break;
+      // Dark mode assets
+      case "logo_main_dark":
+        updatedFormData.logoMainDark = newUrl;
+        break;
+      case "logo_sidebar_dark":
+        updatedFormData.logoSidebarDark = newUrl;
+        break;
+      case "logo_favicon_dark":
+        updatedFormData.logoFaviconDark = newUrl;
         break;
       case "background_dark":
         updatedFormData.backgroundDark = newUrl;
@@ -178,90 +273,105 @@ export function BrandingForm() {
     saveMutation.mutate(updatedFormData);
   };
 
-  const handleReset = () => {
+  const handleResetLightMode = () => {
     if (
       window.confirm(
-        "Are you sure you want to reset all branding to defaults? This will remove all customizations."
+        "Are you sure you want to reset all light mode branding to defaults? This will remove all light mode customizations."
       )
     ) {
-      setFormData({
-        applicationTitle: DEFAULT_BRANDING.applicationTitle,
-        logoMain: null,
-        logoSidebar: null,
-        logoFavicon: null,
+      const resetData = {
+        // Light mode assets
+        logoMainLight: null,
+        logoSidebarLight: null,
+        logoFaviconLight: null,
         backgroundLight: null,
+        // Light mode colors
+        colorPrimaryLight: null,
+        colorPrimaryHoverLight: null,
+        colorSecondaryLight: null,
+        colorAccentLight: null,
+        colorBackgroundDarkestLight: null,
+        colorBackgroundLightestLight: null,
+        colorBackgroundGradientStartLight: null,
+        colorBackgroundGradientEndLight: null,
+        colorStateSuccessLight: null,
+        colorStateSuccessBackgroundLight: null,
+        colorStateWarningLight: null,
+        colorStateWarningBackgroundLight: null,
+        colorStateErrorLight: null,
+        colorStateErrorBackgroundLight: null,
+        colorGraphicsPrimaryLight: null,
+        colorGraphicsSecondaryLight: null,
+        colorGraphicsTertiaryLight: null,
+        colorGraphicsQuaternaryLight: null,
+        colorTextLight: null,
+        colorTextContrastLight: null,
+        colorBorderLight: null,
+        colorMutedLight: null,
+        colorSidebarLight: null,
+        colorSidebarForegroundLight: null,
+        colorSidebarPrimaryLight: null,
+        colorSidebarPrimaryForegroundLight: null,
+        colorSidebarAccentLight: null,
+        colorSidebarAccentForegroundLight: null,
+        colorSidebarBorderLight: null,
+        colorSidebarRingLight: null,
+      };
+
+      setFormData((prev) => ({ ...prev, ...resetData }));
+      saveMutation.mutate({ ...formData, ...resetData });
+      toast.success("Light mode branding reset to defaults");
+    }
+  };
+
+  const handleResetDarkMode = () => {
+    if (
+      window.confirm(
+        "Are you sure you want to reset all dark mode branding to defaults? This will remove all dark mode customizations."
+      )
+    ) {
+      const resetData = {
+        // Dark mode assets
+        logoMainDark: null,
+        logoSidebarDark: null,
+        logoFaviconDark: null,
         backgroundDark: null,
-        colorPrimary: null,
-        colorPrimaryHover: null,
-        colorSecondary: null,
-        colorAccent: null,
-        colorBackgroundDarkest: null,
-        colorBackgroundLightest: null,
-        colorBackgroundGradientStart: null,
-        colorBackgroundGradientEnd: null,
-        colorStateSuccess: null,
-        colorStateSuccessBackground: null,
-        colorStateWarning: null,
-        colorStateWarningBackground: null,
-        colorStateError: null,
-        colorStateErrorBackground: null,
-        colorGraphicsPrimary: null,
-        colorGraphicsSecondary: null,
-        colorGraphicsTertiary: null,
-        colorGraphicsQuaternary: null,
-        colorText: null,
-        colorTextContrast: null,
-        colorBorder: null,
-        colorMuted: null,
-        colorSidebar: null,
-        colorSidebarForeground: null,
-        colorSidebarPrimary: null,
-        colorSidebarPrimaryForeground: null,
-        colorSidebarAccent: null,
-        colorSidebarAccentForeground: null,
-        colorSidebarBorder: null,
-        colorSidebarRing: null,
-      });
-      // Immediately save the defaults
-      saveMutation.mutate({
-        applicationTitle: DEFAULT_BRANDING.applicationTitle,
-        logoMain: null,
-        logoSidebar: null,
-        logoFavicon: null,
-        backgroundLight: null,
-        backgroundDark: null,
-        colorPrimary: null,
-        colorPrimaryHover: null,
-        colorSecondary: null,
-        colorAccent: null,
-        colorBackgroundDarkest: null,
-        colorBackgroundLightest: null,
-        colorBackgroundGradientStart: null,
-        colorBackgroundGradientEnd: null,
-        colorStateSuccess: null,
-        colorStateSuccessBackground: null,
-        colorStateWarning: null,
-        colorStateWarningBackground: null,
-        colorStateError: null,
-        colorStateErrorBackground: null,
-        colorGraphicsPrimary: null,
-        colorGraphicsSecondary: null,
-        colorGraphicsTertiary: null,
-        colorGraphicsQuaternary: null,
-        colorText: null,
-        colorTextContrast: null,
-        colorBorder: null,
-        colorMuted: null,
-        colorSidebar: null,
-        colorSidebarForeground: null,
-        colorSidebarPrimary: null,
-        colorSidebarPrimaryForeground: null,
-        colorSidebarAccent: null,
-        colorSidebarAccentForeground: null,
-        colorSidebarBorder: null,
-        colorSidebarRing: null,
-      });
-      toast.success("Branding reset to defaults");
+        // Dark mode colors
+        colorPrimaryDark: null,
+        colorPrimaryHoverDark: null,
+        colorSecondaryDark: null,
+        colorAccentDark: null,
+        colorBackgroundDarkestDark: null,
+        colorBackgroundLightestDark: null,
+        colorBackgroundGradientStartDark: null,
+        colorBackgroundGradientEndDark: null,
+        colorStateSuccessDark: null,
+        colorStateSuccessBackgroundDark: null,
+        colorStateWarningDark: null,
+        colorStateWarningBackgroundDark: null,
+        colorStateErrorDark: null,
+        colorStateErrorBackgroundDark: null,
+        colorGraphicsPrimaryDark: null,
+        colorGraphicsSecondaryDark: null,
+        colorGraphicsTertiaryDark: null,
+        colorGraphicsQuaternaryDark: null,
+        colorTextDark: null,
+        colorTextContrastDark: null,
+        colorBorderDark: null,
+        colorMutedDark: null,
+        colorSidebarDark: null,
+        colorSidebarForegroundDark: null,
+        colorSidebarPrimaryDark: null,
+        colorSidebarPrimaryForegroundDark: null,
+        colorSidebarAccentDark: null,
+        colorSidebarAccentForegroundDark: null,
+        colorSidebarBorderDark: null,
+        colorSidebarRingDark: null,
+      };
+
+      setFormData((prev) => ({ ...prev, ...resetData }));
+      saveMutation.mutate({ ...formData, ...resetData });
+      toast.success("Dark mode branding reset to defaults");
     }
   };
 
@@ -276,25 +386,30 @@ export function BrandingForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="logos">Logos</TabsTrigger>
-          <TabsTrigger value="backgrounds">Backgrounds</TabsTrigger>
-          <TabsTrigger value="colors">Colors</TabsTrigger>
+          <TabsTrigger value="light">
+            <Sun className="h-4 w-4 mr-2" />
+            Light Mode
+          </TabsTrigger>
+          <TabsTrigger value="dark">
+            <Moon className="h-4 w-4 mr-2" />
+            Dark Mode
+          </TabsTrigger>
         </TabsList>
 
-        {/* General Tab */}
-        <TabsContent value="general" className="space-y-6">
+        {/* ========== GENERAL TAB ========== */}
+        <TabsContent value="general" className="space-y-6 mt-6">
           <Card>
             <CardHeader>
               <CardTitle>Application Settings</CardTitle>
               <CardDescription>
-                Configure the general application settings and title
+                Configure the general application settings
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="applicationTitle">Application Title</Label>
+                <Label htmlFor="applicationTitle">Application Name</Label>
                 <Input
                   id="applicationTitle"
                   value={formData.applicationTitle}
@@ -307,75 +422,104 @@ export function BrandingForm() {
                   placeholder="Asset Tokenization Kit"
                 />
                 <p className="text-sm text-muted-foreground">
-                  This title appears in the browser tab and application header
+                  This name appears in the browser tab and application header.
+                  It is shared across both light and dark modes.
                 </p>
+              </div>
+
+              <Separator />
+
+              <div className="grid gap-6 md:grid-cols-2">
+                <SizeControl
+                  label="Logo Size"
+                  description="Controls the size of all logos throughout the application"
+                  value={formData.logoSize}
+                  onChange={(size) =>
+                    setFormData({ ...formData, logoSize: size })
+                  }
+                  min={0.5}
+                  max={2.0}
+                  step={0.1}
+                  defaultSize={1.0}
+                />
+
+                <SizeControl
+                  label="Title Text Size"
+                  description="Controls the size of application title text"
+                  value={formData.titleSize}
+                  onChange={(size) =>
+                    setFormData({ ...formData, titleSize: size })
+                  }
+                  min={0.5}
+                  max={2.0}
+                  step={0.1}
+                  defaultSize={1.0}
+                />
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Logos Tab */}
-        <TabsContent value="logos" className="space-y-6">
+        {/* ========== LIGHT MODE TAB ========== */}
+        <TabsContent value="light" className="space-y-6 mt-6">
+          {/* Light Mode Logos */}
           <Card>
             <CardHeader>
-              <CardTitle>Logo Assets</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Sun className="h-5 w-5" />
+                Light Mode Logos & Images
+              </CardTitle>
               <CardDescription>
-                Upload logos for different parts of the application
+                Upload logos and images specifically for light mode
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <ImageUpload
-                label="Main Logo"
-                description="Primary logo displayed in the header (recommended: horizontal format, transparent background)"
-                value={formData.logoMain}
-                onChange={(url) => setFormData({ ...formData, logoMain: url })}
-                onAutoSave={(newUrl) => handleAutoSave(newUrl, "logo_main")}
-                imageType="logo_main"
+                label="Main Logo (Light Mode)"
+                description="Primary logo displayed in the header for light mode (recommended: horizontal format, transparent background)"
+                value={formData.logoMainLight}
+                onChange={(url) =>
+                  setFormData({ ...formData, logoMainLight: url })
+                }
+                onAutoSave={(newUrl) =>
+                  handleAutoSave(newUrl, "logo_main_light")
+                }
+                imageType="logo_main_light"
                 accept="image/png,image/svg+xml"
               />
               <Separator />
               <ImageUpload
-                label="Sidebar Logo"
-                description="Logo for collapsed sidebar (recommended: square format, icon-style)"
-                value={formData.logoSidebar}
+                label="Sidebar Logo (Light Mode)"
+                description="Logo for collapsed sidebar in light mode (recommended: square format, icon-style)"
+                value={formData.logoSidebarLight}
                 onChange={(url) =>
-                  setFormData({ ...formData, logoSidebar: url })
+                  setFormData({ ...formData, logoSidebarLight: url })
                 }
-                onAutoSave={(newUrl) => handleAutoSave(newUrl, "logo_sidebar")}
-                imageType="logo_sidebar"
+                onAutoSave={(newUrl) =>
+                  handleAutoSave(newUrl, "logo_sidebar_light")
+                }
+                imageType="logo_sidebar_light"
                 accept="image/png,image/svg+xml"
               />
               <Separator />
               <ImageUpload
-                label="Favicon"
-                description="Browser tab icon (recommended: 32x32 or 64x64 pixels)"
-                value={formData.logoFavicon}
+                label="Favicon (Light Mode)"
+                description="Browser tab icon for light mode (recommended: 32x32 or 64x64 pixels)"
+                value={formData.logoFaviconLight}
                 onChange={(url) =>
-                  setFormData({ ...formData, logoFavicon: url })
+                  setFormData({ ...formData, logoFaviconLight: url })
                 }
-                onAutoSave={(newUrl) => handleAutoSave(newUrl, "logo_favicon")}
-                imageType="logo_favicon"
+                onAutoSave={(newUrl) =>
+                  handleAutoSave(newUrl, "logo_favicon_light")
+                }
+                imageType="logo_favicon_light"
                 accept="image/png,image/x-icon"
                 maxSizeMB={1}
               />
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Backgrounds Tab */}
-        <TabsContent value="backgrounds" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Background Images</CardTitle>
-              <CardDescription>
-                Upload background images for authentication and onboarding
-                screens
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+              <Separator />
               <ImageUpload
-                label="Light Mode Background"
-                description="Background image for light mode (recommended: landscape, high resolution)"
+                label="Background Image (Light Mode)"
+                description="Background image for authentication and onboarding screens in light mode"
                 value={formData.backgroundLight}
                 onChange={(url) =>
                   setFormData({ ...formData, backgroundLight: url })
@@ -387,10 +531,456 @@ export function BrandingForm() {
                 accept="image/png,image/jpeg,image/svg+xml"
                 maxSizeMB={10}
               />
+            </CardContent>
+          </Card>
+
+          {/* Light Mode Primary Colors */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Primary Colors (Light Mode)</CardTitle>
+              <CardDescription>
+                Main brand colors used throughout the application in light mode
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6 md:grid-cols-2">
+              <ColorField
+                label="Primary Color"
+                description="Used for primary buttons, links, and key UI elements"
+                value={formData.colorPrimaryLight}
+                onChange={(color) =>
+                  setFormData({ ...formData, colorPrimaryLight: color })
+                }
+                placeholder="oklch(0.5745 0.2028 263.15)"
+                cssVariable="--sm-accent"
+              />
+              <ColorField
+                label="Primary Hover"
+                description="Darker shade when hovering over primary elements"
+                value={formData.colorPrimaryHoverLight}
+                onChange={(color) =>
+                  setFormData({ ...formData, colorPrimaryHoverLight: color })
+                }
+                placeholder="oklch(0.5 0.2028 263.15)"
+                cssVariable="--sm-accent-hover"
+              />
+              <ColorField
+                label="Secondary Color"
+                description="Used for secondary actions and supporting elements"
+                value={formData.colorSecondaryLight}
+                onChange={(color) =>
+                  setFormData({ ...formData, colorSecondaryLight: color })
+                }
+                placeholder="oklch(0.7675 0.0982 182.83)"
+                cssVariable="--sm-graphics-primary"
+              />
+              <ColorField
+                label="Accent Color"
+                description="Used for highlights and emphasis"
+                value={formData.colorAccentLight}
+                onChange={(color) =>
+                  setFormData({ ...formData, colorAccentLight: color })
+                }
+                placeholder="oklch(0.5745 0.2028 263.15)"
+                cssVariable="--sm-accent"
+              />
+            </CardContent>
+          </Card>
+
+          {/* Light Mode Background Colors */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Background Colors (Light Mode)</CardTitle>
+              <CardDescription>
+                Colors for backgrounds and surfaces in light mode
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6 md:grid-cols-2">
+              <ColorField
+                label="Background Darkest"
+                description="Deepest background color, used for cards and elevated surfaces"
+                value={formData.colorBackgroundDarkestLight}
+                onChange={(color) =>
+                  setFormData({
+                    ...formData,
+                    colorBackgroundDarkestLight: color,
+                  })
+                }
+                cssVariable="--sm-background-darkest"
+              />
+              <ColorField
+                label="Background Lightest"
+                description="Lightest background color, used for main page background"
+                value={formData.colorBackgroundLightestLight}
+                onChange={(color) =>
+                  setFormData({
+                    ...formData,
+                    colorBackgroundLightestLight: color,
+                  })
+                }
+                cssVariable="--sm-background-lightest"
+              />
+              <ColorField
+                label="Gradient Start"
+                description="Starting color for gradient backgrounds on cards and panels"
+                value={formData.colorBackgroundGradientStartLight}
+                onChange={(color) =>
+                  setFormData({
+                    ...formData,
+                    colorBackgroundGradientStartLight: color,
+                  })
+                }
+                cssVariable="--sm-background-gradient-start"
+              />
+              <ColorField
+                label="Gradient End"
+                description="Ending color for gradient backgrounds"
+                value={formData.colorBackgroundGradientEndLight}
+                onChange={(color) =>
+                  setFormData({
+                    ...formData,
+                    colorBackgroundGradientEndLight: color,
+                  })
+                }
+                cssVariable="--sm-background-gradient-end"
+              />
+            </CardContent>
+          </Card>
+
+          {/* Light Mode State Colors */}
+          <Card>
+            <CardHeader>
+              <CardTitle>State Colors (Light Mode)</CardTitle>
+              <CardDescription>
+                Colors for success, warning, and error states in light mode
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6 md:grid-cols-2">
+              <ColorField
+                label="Success Color"
+                description="Used for positive feedback, confirmations, and success messages"
+                value={formData.colorStateSuccessLight}
+                onChange={(color) =>
+                  setFormData({ ...formData, colorStateSuccessLight: color })
+                }
+                cssVariable="--sm-state-success"
+              />
+              <ColorField
+                label="Success Background"
+                description="Background color for success messages and alerts"
+                value={formData.colorStateSuccessBackgroundLight}
+                onChange={(color) =>
+                  setFormData({
+                    ...formData,
+                    colorStateSuccessBackgroundLight: color,
+                  })
+                }
+                cssVariable="--sm-state-success-background"
+              />
+              <ColorField
+                label="Warning Color"
+                description="Used for caution messages and warnings"
+                value={formData.colorStateWarningLight}
+                onChange={(color) =>
+                  setFormData({ ...formData, colorStateWarningLight: color })
+                }
+                cssVariable="--sm-state-warning"
+              />
+              <ColorField
+                label="Warning Background"
+                description="Background color for warning messages"
+                value={formData.colorStateWarningBackgroundLight}
+                onChange={(color) =>
+                  setFormData({
+                    ...formData,
+                    colorStateWarningBackgroundLight: color,
+                  })
+                }
+                cssVariable="--sm-state-warning-background"
+              />
+              <ColorField
+                label="Error Color"
+                description="Used for error messages and validation failures"
+                value={formData.colorStateErrorLight}
+                onChange={(color) =>
+                  setFormData({ ...formData, colorStateErrorLight: color })
+                }
+                cssVariable="--sm-state-error"
+              />
+              <ColorField
+                label="Error Background"
+                description="Background color for error messages and alerts"
+                value={formData.colorStateErrorBackgroundLight}
+                onChange={(color) =>
+                  setFormData({
+                    ...formData,
+                    colorStateErrorBackgroundLight: color,
+                  })
+                }
+                cssVariable="--sm-state-error-background"
+              />
+            </CardContent>
+          </Card>
+
+          {/* Light Mode Graphics Colors */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Graphics Colors (Light Mode)</CardTitle>
+              <CardDescription>
+                Colors used for charts, graphs, and data visualization in light
+                mode
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6 md:grid-cols-2">
+              <ColorField
+                label="Graphics Primary"
+                description="Primary color for charts and graphs"
+                value={formData.colorGraphicsPrimaryLight}
+                onChange={(color) =>
+                  setFormData({ ...formData, colorGraphicsPrimaryLight: color })
+                }
+                cssVariable="--sm-graphics-primary"
+              />
+              <ColorField
+                label="Graphics Secondary"
+                description="Secondary color for charts and graphs"
+                value={formData.colorGraphicsSecondaryLight}
+                onChange={(color) =>
+                  setFormData({
+                    ...formData,
+                    colorGraphicsSecondaryLight: color,
+                  })
+                }
+                cssVariable="--sm-graphics-secondary"
+              />
+              <ColorField
+                label="Graphics Tertiary"
+                description="Third color option for data visualization"
+                value={formData.colorGraphicsTertiaryLight}
+                onChange={(color) =>
+                  setFormData({
+                    ...formData,
+                    colorGraphicsTertiaryLight: color,
+                  })
+                }
+                cssVariable="--sm-graphics-tertiary"
+              />
+              <ColorField
+                label="Graphics Quaternary"
+                description="Fourth color option for complex charts"
+                value={formData.colorGraphicsQuaternaryLight}
+                onChange={(color) =>
+                  setFormData({
+                    ...formData,
+                    colorGraphicsQuaternaryLight: color,
+                  })
+                }
+                cssVariable="--sm-graphics-quaternary"
+              />
+            </CardContent>
+          </Card>
+
+          {/* Light Mode Text & Border Colors */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Text & Border Colors (Light Mode)</CardTitle>
+              <CardDescription>
+                Colors for text, borders, and muted elements in light mode
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6 md:grid-cols-2">
+              <ColorField
+                label="Text Color"
+                description="Main text color used throughout the application"
+                value={formData.colorTextLight}
+                onChange={(color) =>
+                  setFormData({ ...formData, colorTextLight: color })
+                }
+                cssVariable="--sm-text"
+              />
+              <ColorField
+                label="Text Contrast"
+                description="Text color for use on colored backgrounds"
+                value={formData.colorTextContrastLight}
+                onChange={(color) =>
+                  setFormData({ ...formData, colorTextContrastLight: color })
+                }
+                cssVariable="--sm-text-contrast"
+              />
+              <ColorField
+                label="Border Color"
+                description="Used for borders, dividers, and outlines"
+                value={formData.colorBorderLight}
+                onChange={(color) =>
+                  setFormData({ ...formData, colorBorderLight: color })
+                }
+                cssVariable="--sm-border"
+              />
+              <ColorField
+                label="Muted Color"
+                description="Used for less important text and disabled states"
+                value={formData.colorMutedLight}
+                onChange={(color) =>
+                  setFormData({ ...formData, colorMutedLight: color })
+                }
+                cssVariable="--sm-muted"
+              />
+            </CardContent>
+          </Card>
+
+          {/* Light Mode Sidebar Colors */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Sidebar Colors (Light Mode)</CardTitle>
+              <CardDescription>
+                Customize the navigation sidebar colors in light mode
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6 md:grid-cols-2">
+              <ColorField
+                label="Sidebar Background"
+                description="Background color of the navigation sidebar"
+                value={formData.colorSidebarLight}
+                onChange={(color) =>
+                  setFormData({ ...formData, colorSidebarLight: color })
+                }
+                cssVariable="--sidebar"
+              />
+              <ColorField
+                label="Sidebar Text"
+                description="Text color in the sidebar"
+                value={formData.colorSidebarForegroundLight}
+                onChange={(color) =>
+                  setFormData({
+                    ...formData,
+                    colorSidebarForegroundLight: color,
+                  })
+                }
+                cssVariable="--sidebar-foreground"
+              />
+              <ColorField
+                label="Sidebar Primary"
+                description="Highlighted items in sidebar"
+                value={formData.colorSidebarPrimaryLight}
+                onChange={(color) =>
+                  setFormData({ ...formData, colorSidebarPrimaryLight: color })
+                }
+                cssVariable="--sidebar-primary"
+              />
+              <ColorField
+                label="Sidebar Primary Text"
+                description="Text on highlighted sidebar items"
+                value={formData.colorSidebarPrimaryForegroundLight}
+                onChange={(color) =>
+                  setFormData({
+                    ...formData,
+                    colorSidebarPrimaryForegroundLight: color,
+                  })
+                }
+                cssVariable="--sidebar-primary-foreground"
+              />
+              <ColorField
+                label="Sidebar Accent"
+                description="Accent elements in sidebar"
+                value={formData.colorSidebarAccentLight}
+                onChange={(color) =>
+                  setFormData({ ...formData, colorSidebarAccentLight: color })
+                }
+                cssVariable="--sidebar-accent"
+              />
+              <ColorField
+                label="Sidebar Accent Text"
+                description="Text on accent sidebar elements"
+                value={formData.colorSidebarAccentForegroundLight}
+                onChange={(color) =>
+                  setFormData({
+                    ...formData,
+                    colorSidebarAccentForegroundLight: color,
+                  })
+                }
+                cssVariable="--sidebar-accent-foreground"
+              />
+              <ColorField
+                label="Sidebar Border"
+                description="Border color in sidebar"
+                value={formData.colorSidebarBorderLight}
+                onChange={(color) =>
+                  setFormData({ ...formData, colorSidebarBorderLight: color })
+                }
+                cssVariable="--sidebar-border"
+              />
+              <ColorField
+                label="Sidebar Focus Ring"
+                description="Focus indicator color in sidebar"
+                value={formData.colorSidebarRingLight}
+                onChange={(color) =>
+                  setFormData({ ...formData, colorSidebarRingLight: color })
+                }
+                cssVariable="--sidebar-ring"
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* ========== DARK MODE TAB ========== */}
+        <TabsContent value="dark" className="space-y-6 mt-6">
+          {/* Dark Mode Logos */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Moon className="h-5 w-5" />
+                Dark Mode Logos & Images
+              </CardTitle>
+              <CardDescription>
+                Upload logos and images specifically for dark mode
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <ImageUpload
+                label="Main Logo (Dark Mode)"
+                description="Primary logo displayed in the header for dark mode (recommended: horizontal format, transparent background)"
+                value={formData.logoMainDark}
+                onChange={(url) =>
+                  setFormData({ ...formData, logoMainDark: url })
+                }
+                onAutoSave={(newUrl) =>
+                  handleAutoSave(newUrl, "logo_main_dark")
+                }
+                imageType="logo_main_dark"
+                accept="image/png,image/svg+xml"
+              />
               <Separator />
               <ImageUpload
-                label="Dark Mode Background"
-                description="Background image for dark mode (recommended: landscape, high resolution)"
+                label="Sidebar Logo (Dark Mode)"
+                description="Logo for collapsed sidebar in dark mode (recommended: square format, icon-style)"
+                value={formData.logoSidebarDark}
+                onChange={(url) =>
+                  setFormData({ ...formData, logoSidebarDark: url })
+                }
+                onAutoSave={(newUrl) =>
+                  handleAutoSave(newUrl, "logo_sidebar_dark")
+                }
+                imageType="logo_sidebar_dark"
+                accept="image/png,image/svg+xml"
+              />
+              <Separator />
+              <ImageUpload
+                label="Favicon (Dark Mode)"
+                description="Browser tab icon for dark mode (recommended: 32x32 or 64x64 pixels)"
+                value={formData.logoFaviconDark}
+                onChange={(url) =>
+                  setFormData({ ...formData, logoFaviconDark: url })
+                }
+                onAutoSave={(newUrl) =>
+                  handleAutoSave(newUrl, "logo_favicon_dark")
+                }
+                imageType="logo_favicon_dark"
+                accept="image/png,image/x-icon"
+                maxSizeMB={1}
+              />
+              <Separator />
+              <ImageUpload
+                label="Background Image (Dark Mode)"
+                description="Background image for authentication and onboarding screens in dark mode"
                 value={formData.backgroundDark}
                 onChange={(url) =>
                   setFormData({ ...formData, backgroundDark: url })
@@ -404,313 +994,367 @@ export function BrandingForm() {
               />
             </CardContent>
           </Card>
-        </TabsContent>
 
-        {/* Colors Tab */}
-        <TabsContent value="colors" className="space-y-6">
-          {/* Primary Colors */}
+          {/* Dark Mode Primary Colors */}
           <Card>
             <CardHeader>
-              <CardTitle>Primary Colors</CardTitle>
+              <CardTitle>Primary Colors (Dark Mode)</CardTitle>
               <CardDescription>
-                Main brand colors used throughout the application
+                Main brand colors used throughout the application in dark mode
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-2">
-              <ColorPicker
+            <CardContent className="grid gap-6 md:grid-cols-2">
+              <ColorField
                 label="Primary Color"
-                value={formData.colorPrimary}
+                description="Used for primary buttons, links, and key UI elements"
+                value={formData.colorPrimaryDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorPrimary: color })
+                  setFormData({ ...formData, colorPrimaryDark: color })
                 }
-                placeholder="oklch(0.5745 0.2028 263.15)"
+                placeholder="oklch(0.6 0.2028 263.15)"
               />
-              <ColorPicker
+              <ColorField
                 label="Primary Hover"
-                value={formData.colorPrimaryHover}
+                description="Lighter shade when hovering over primary elements"
+                value={formData.colorPrimaryHoverDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorPrimaryHover: color })
+                  setFormData({ ...formData, colorPrimaryHoverDark: color })
                 }
-                placeholder="oklch(0.5745 0.2028 263.15 / 0.2)"
+                placeholder="oklch(0.65 0.2028 263.15)"
               />
-              <ColorPicker
+              <ColorField
                 label="Secondary Color"
-                value={formData.colorSecondary}
+                description="Used for secondary actions and supporting elements"
+                value={formData.colorSecondaryDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorSecondary: color })
+                  setFormData({ ...formData, colorSecondaryDark: color })
                 }
-                placeholder="oklch(0.7675 0.0982 182.83)"
+                placeholder="oklch(0.7 0.0982 182.83)"
               />
-              <ColorPicker
+              <ColorField
                 label="Accent Color"
-                value={formData.colorAccent}
+                description="Used for highlights and emphasis"
+                value={formData.colorAccentDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorAccent: color })
+                  setFormData({ ...formData, colorAccentDark: color })
                 }
-                placeholder="oklch(0.5745 0.2028 263.15)"
+                placeholder="oklch(0.6 0.2028 263.15)"
               />
             </CardContent>
           </Card>
 
-          {/* Background Colors */}
+          {/* Dark Mode Background Colors */}
           <Card>
             <CardHeader>
-              <CardTitle>Background Colors</CardTitle>
+              <CardTitle>Background Colors (Dark Mode)</CardTitle>
               <CardDescription>
-                Colors for backgrounds and surfaces
+                Colors for backgrounds and surfaces in dark mode
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-2">
-              <ColorPicker
+            <CardContent className="grid gap-6 md:grid-cols-2">
+              <ColorField
                 label="Background Darkest"
-                value={formData.colorBackgroundDarkest}
+                description="Deepest background color, used for main page background"
+                value={formData.colorBackgroundDarkestDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorBackgroundDarkest: color })
+                  setFormData({
+                    ...formData,
+                    colorBackgroundDarkestDark: color,
+                  })
                 }
               />
-              <ColorPicker
+              <ColorField
                 label="Background Lightest"
-                value={formData.colorBackgroundLightest}
+                description="Lightest background color, used for cards and elevated surfaces"
+                value={formData.colorBackgroundLightestDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorBackgroundLightest: color })
+                  setFormData({
+                    ...formData,
+                    colorBackgroundLightestDark: color,
+                  })
                 }
               />
-              <ColorPicker
+              <ColorField
                 label="Gradient Start"
-                value={formData.colorBackgroundGradientStart}
+                description="Starting color for gradient backgrounds on cards and panels"
+                value={formData.colorBackgroundGradientStartDark}
                 onChange={(color) =>
                   setFormData({
                     ...formData,
-                    colorBackgroundGradientStart: color,
+                    colorBackgroundGradientStartDark: color,
                   })
                 }
               />
-              <ColorPicker
+              <ColorField
                 label="Gradient End"
-                value={formData.colorBackgroundGradientEnd}
+                description="Ending color for gradient backgrounds"
+                value={formData.colorBackgroundGradientEndDark}
                 onChange={(color) =>
                   setFormData({
                     ...formData,
-                    colorBackgroundGradientEnd: color,
+                    colorBackgroundGradientEndDark: color,
                   })
                 }
               />
             </CardContent>
           </Card>
 
-          {/* State Colors */}
+          {/* Dark Mode State Colors */}
           <Card>
             <CardHeader>
-              <CardTitle>State Colors</CardTitle>
+              <CardTitle>State Colors (Dark Mode)</CardTitle>
               <CardDescription>
-                Colors for success, warning, and error states
+                Colors for success, warning, and error states in dark mode
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-2">
-              <ColorPicker
+            <CardContent className="grid gap-6 md:grid-cols-2">
+              <ColorField
                 label="Success Color"
-                value={formData.colorStateSuccess}
+                description="Used for positive feedback, confirmations, and success messages"
+                value={formData.colorStateSuccessDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorStateSuccess: color })
+                  setFormData({ ...formData, colorStateSuccessDark: color })
                 }
               />
-              <ColorPicker
+              <ColorField
                 label="Success Background"
-                value={formData.colorStateSuccessBackground}
+                description="Background color for success messages and alerts"
+                value={formData.colorStateSuccessBackgroundDark}
                 onChange={(color) =>
                   setFormData({
                     ...formData,
-                    colorStateSuccessBackground: color,
+                    colorStateSuccessBackgroundDark: color,
                   })
                 }
               />
-              <ColorPicker
+              <ColorField
                 label="Warning Color"
-                value={formData.colorStateWarning}
+                description="Used for caution messages and warnings"
+                value={formData.colorStateWarningDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorStateWarning: color })
+                  setFormData({ ...formData, colorStateWarningDark: color })
                 }
               />
-              <ColorPicker
+              <ColorField
                 label="Warning Background"
-                value={formData.colorStateWarningBackground}
+                description="Background color for warning messages"
+                value={formData.colorStateWarningBackgroundDark}
                 onChange={(color) =>
                   setFormData({
                     ...formData,
-                    colorStateWarningBackground: color,
+                    colorStateWarningBackgroundDark: color,
                   })
                 }
               />
-              <ColorPicker
+              <ColorField
                 label="Error Color"
-                value={formData.colorStateError}
+                description="Used for error messages and validation failures"
+                value={formData.colorStateErrorDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorStateError: color })
+                  setFormData({ ...formData, colorStateErrorDark: color })
                 }
               />
-              <ColorPicker
+              <ColorField
                 label="Error Background"
-                value={formData.colorStateErrorBackground}
+                description="Background color for error messages and alerts"
+                value={formData.colorStateErrorBackgroundDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorStateErrorBackground: color })
+                  setFormData({
+                    ...formData,
+                    colorStateErrorBackgroundDark: color,
+                  })
                 }
               />
             </CardContent>
           </Card>
 
-          {/* Graphics Colors */}
+          {/* Dark Mode Graphics Colors */}
           <Card>
             <CardHeader>
-              <CardTitle>Graphics Colors</CardTitle>
+              <CardTitle>Graphics Colors (Dark Mode)</CardTitle>
               <CardDescription>
-                Colors used for charts and visual elements
+                Colors used for charts, graphs, and data visualization in dark
+                mode
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-2">
-              <ColorPicker
+            <CardContent className="grid gap-6 md:grid-cols-2">
+              <ColorField
                 label="Graphics Primary"
-                value={formData.colorGraphicsPrimary}
+                description="Primary color for charts and graphs"
+                value={formData.colorGraphicsPrimaryDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorGraphicsPrimary: color })
+                  setFormData({ ...formData, colorGraphicsPrimaryDark: color })
                 }
               />
-              <ColorPicker
+              <ColorField
                 label="Graphics Secondary"
-                value={formData.colorGraphicsSecondary}
+                description="Secondary color for charts and graphs"
+                value={formData.colorGraphicsSecondaryDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorGraphicsSecondary: color })
+                  setFormData({
+                    ...formData,
+                    colorGraphicsSecondaryDark: color,
+                  })
                 }
               />
-              <ColorPicker
+              <ColorField
                 label="Graphics Tertiary"
-                value={formData.colorGraphicsTertiary}
+                description="Third color option for data visualization"
+                value={formData.colorGraphicsTertiaryDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorGraphicsTertiary: color })
+                  setFormData({
+                    ...formData,
+                    colorGraphicsTertiaryDark: color,
+                  })
                 }
               />
-              <ColorPicker
+              <ColorField
                 label="Graphics Quaternary"
-                value={formData.colorGraphicsQuaternary}
+                description="Fourth color option for complex charts"
+                value={formData.colorGraphicsQuaternaryDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorGraphicsQuaternary: color })
+                  setFormData({
+                    ...formData,
+                    colorGraphicsQuaternaryDark: color,
+                  })
                 }
               />
             </CardContent>
           </Card>
 
-          {/* Text Colors */}
+          {/* Dark Mode Text & Border Colors */}
           <Card>
             <CardHeader>
-              <CardTitle>Text & Border Colors</CardTitle>
+              <CardTitle>Text & Border Colors (Dark Mode)</CardTitle>
               <CardDescription>
-                Colors for text, borders, and muted elements
+                Colors for text, borders, and muted elements in dark mode
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-2">
-              <ColorPicker
+            <CardContent className="grid gap-6 md:grid-cols-2">
+              <ColorField
                 label="Text Color"
-                value={formData.colorText}
+                description="Main text color used throughout the application"
+                value={formData.colorTextDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorText: color })
+                  setFormData({ ...formData, colorTextDark: color })
                 }
               />
-              <ColorPicker
+              <ColorField
                 label="Text Contrast"
-                value={formData.colorTextContrast}
+                description="Text color for use on colored backgrounds"
+                value={formData.colorTextContrastDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorTextContrast: color })
+                  setFormData({ ...formData, colorTextContrastDark: color })
                 }
               />
-              <ColorPicker
+              <ColorField
                 label="Border Color"
-                value={formData.colorBorder}
+                description="Used for borders, dividers, and outlines"
+                value={formData.colorBorderDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorBorder: color })
+                  setFormData({ ...formData, colorBorderDark: color })
                 }
               />
-              <ColorPicker
+              <ColorField
                 label="Muted Color"
-                value={formData.colorMuted}
+                description="Used for less important text and disabled states"
+                value={formData.colorMutedDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorMuted: color })
+                  setFormData({ ...formData, colorMutedDark: color })
                 }
               />
             </CardContent>
           </Card>
 
-          {/* Sidebar Colors */}
+          {/* Dark Mode Sidebar Colors */}
           <Card>
             <CardHeader>
-              <CardTitle>Sidebar Colors</CardTitle>
+              <CardTitle>Sidebar Colors (Dark Mode)</CardTitle>
               <CardDescription>
-                Customize the sidebar navigation colors (background, text,
-                borders, etc.)
+                Customize the navigation sidebar colors in dark mode
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-2">
-              <ColorPicker
+            <CardContent className="grid gap-6 md:grid-cols-2">
+              <ColorField
                 label="Sidebar Background"
-                value={formData.colorSidebar}
+                description="Background color of the navigation sidebar"
+                value={formData.colorSidebarDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorSidebar: color })
+                  setFormData({ ...formData, colorSidebarDark: color })
                 }
-                placeholder="oklch(0.2809 0 0)"
+                cssVariable="--sidebar"
               />
-              <ColorPicker
+              <ColorField
                 label="Sidebar Text"
-                value={formData.colorSidebarForeground}
+                description="Text color in the sidebar"
+                value={formData.colorSidebarForegroundDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorSidebarForeground: color })
+                  setFormData({
+                    ...formData,
+                    colorSidebarForegroundDark: color,
+                  })
                 }
-                placeholder="oklch(1 0 87)"
+                cssVariable="--sidebar-foreground"
               />
-              <ColorPicker
+              <ColorField
                 label="Sidebar Primary"
-                value={formData.colorSidebarPrimary}
+                description="Highlighted items in sidebar"
+                value={formData.colorSidebarPrimaryDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorSidebarPrimary: color })
+                  setFormData({ ...formData, colorSidebarPrimaryDark: color })
                 }
+                cssVariable="--sidebar-primary"
               />
-              <ColorPicker
+              <ColorField
                 label="Sidebar Primary Text"
-                value={formData.colorSidebarPrimaryForeground}
+                description="Text on highlighted sidebar items"
+                value={formData.colorSidebarPrimaryForegroundDark}
                 onChange={(color) =>
                   setFormData({
                     ...formData,
-                    colorSidebarPrimaryForeground: color,
+                    colorSidebarPrimaryForegroundDark: color,
                   })
                 }
+                cssVariable="--sidebar-primary-foreground"
               />
-              <ColorPicker
+              <ColorField
                 label="Sidebar Accent"
-                value={formData.colorSidebarAccent}
+                description="Accent elements in sidebar"
+                value={formData.colorSidebarAccentDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorSidebarAccent: color })
+                  setFormData({ ...formData, colorSidebarAccentDark: color })
                 }
+                cssVariable="--sidebar-accent"
               />
-              <ColorPicker
+              <ColorField
                 label="Sidebar Accent Text"
-                value={formData.colorSidebarAccentForeground}
+                description="Text on accent sidebar elements"
+                value={formData.colorSidebarAccentForegroundDark}
                 onChange={(color) =>
                   setFormData({
                     ...formData,
-                    colorSidebarAccentForeground: color,
+                    colorSidebarAccentForegroundDark: color,
                   })
                 }
+                cssVariable="--sidebar-accent-foreground"
               />
-              <ColorPicker
+              <ColorField
                 label="Sidebar Border"
-                value={formData.colorSidebarBorder}
+                description="Border color in sidebar"
+                value={formData.colorSidebarBorderDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorSidebarBorder: color })
+                  setFormData({ ...formData, colorSidebarBorderDark: color })
                 }
+                cssVariable="--sidebar-border"
               />
-              <ColorPicker
+              <ColorField
                 label="Sidebar Focus Ring"
-                value={formData.colorSidebarRing}
+                description="Focus indicator color in sidebar"
+                value={formData.colorSidebarRingDark}
                 onChange={(color) =>
-                  setFormData({ ...formData, colorSidebarRing: color })
+                  setFormData({ ...formData, colorSidebarRingDark: color })
                 }
+                cssVariable="--sidebar-ring"
               />
             </CardContent>
           </Card>
@@ -719,16 +1363,28 @@ export function BrandingForm() {
 
       {/* Action Buttons */}
       <div className="flex justify-between gap-4 sticky bottom-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-4 border-t">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleReset}
-          disabled={saveMutation.isPending}
-          size="lg"
-        >
-          <RotateCcw className="h-4 w-4 mr-2" />
-          Reset to Defaults
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleResetLightMode}
+            disabled={saveMutation.isPending}
+            size="lg"
+          >
+            <Sun className="h-4 w-4 mr-2" />
+            Reset Light Mode
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleResetDarkMode}
+            disabled={saveMutation.isPending}
+            size="lg"
+          >
+            <Moon className="h-4 w-4 mr-2" />
+            Reset Dark Mode
+          </Button>
+        </div>
         <Button type="submit" disabled={saveMutation.isPending} size="lg">
           {saveMutation.isPending ? (
             <>

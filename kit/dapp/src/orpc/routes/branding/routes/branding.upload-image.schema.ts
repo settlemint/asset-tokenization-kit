@@ -13,10 +13,15 @@ export const brandingUploadImageInputSchema = z.object({
   mimeType: z.string(),
   /** Purpose of the image (for organizing in storage) */
   imageType: z.enum([
-    "logo_main",
-    "logo_sidebar",
-    "logo_favicon",
+    // Light mode assets
+    "logo_main_light",
+    "logo_sidebar_light",
+    "logo_favicon_light",
     "background_light",
+    // Dark mode assets
+    "logo_main_dark",
+    "logo_sidebar_dark",
+    "logo_favicon_dark",
     "background_dark",
   ]),
 });

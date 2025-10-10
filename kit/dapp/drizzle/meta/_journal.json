@@ -71,6 +71,20 @@
       "when": 1754610000000,
       "tag": "0009_silly_banshee",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1754620000000,
+      "tag": "0010_separate_light_dark_branding",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1754630000000,
+      "tag": "0011_add_logo_title_size",
+      "breakpoints": true
     }
   ]
 }

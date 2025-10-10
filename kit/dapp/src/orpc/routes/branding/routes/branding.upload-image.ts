@@ -72,17 +72,28 @@ export const uploadImage = authRouter.branding.uploadImage
       if (currentBranding) {
         // Get the old image URL for this image type
         switch (imageType) {
-          case "logo_main":
-            oldImageUrl = currentBranding.logoMain;
+          // Light mode assets
+          case "logo_main_light":
+            oldImageUrl = currentBranding.logoMainLight;
             break;
-          case "logo_sidebar":
-            oldImageUrl = currentBranding.logoSidebar;
+          case "logo_sidebar_light":
+            oldImageUrl = currentBranding.logoSidebarLight;
             break;
-          case "logo_favicon":
-            oldImageUrl = currentBranding.logoFavicon;
+          case "logo_favicon_light":
+            oldImageUrl = currentBranding.logoFaviconLight;
             break;
           case "background_light":
             oldImageUrl = currentBranding.backgroundLight;
+            break;
+          // Dark mode assets
+          case "logo_main_dark":
+            oldImageUrl = currentBranding.logoMainDark;
+            break;
+          case "logo_sidebar_dark":
+            oldImageUrl = currentBranding.logoSidebarDark;
+            break;
+          case "logo_favicon_dark":
+            oldImageUrl = currentBranding.logoFaviconDark;
             break;
           case "background_dark":
             oldImageUrl = currentBranding.backgroundDark;

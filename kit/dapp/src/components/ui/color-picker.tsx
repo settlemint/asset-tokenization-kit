@@ -9,7 +9,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Pipette } from "lucide-react";
 import * as React from "react";
 
 /**
@@ -39,15 +38,88 @@ export interface ColorPickerProps {
 }
 
 /**
- * Parse OKLCH color string to get the lightness value for display
+ * Parse OKLCH color string to get components
  */
-function parseOklchLightness(oklch: string): number {
-  const match = oklch.match(/oklch\(([\d.]+)\s/);
-  return match ? parseFloat(match[1]) * 100 : 50;
+function parseOklch(oklch: string): { l: number; c: number; h: number } | null {
+  const match = oklch.match(/oklch\(([\d.]+)\s+([\d.]+)\s+([\d.]+)\)/);
+  if (!match) return null;
+
+  return {
+    l: parseFloat(match[1]),
+    c: parseFloat(match[2]),
+    h: parseFloat(match[3]),
+  };
+}
+
+/**
+ * Convert OKLCH to RGB (simplified conversion)
+ */
+function oklchToRgb(oklch: string): { r: number; g: number; b: number } | null {
+  const parsed = parseOklch(oklch);
+  if (!parsed) return null;
+
+  const { l, c: chroma, h } = parsed;
+
+  // Simple OKLCH to RGB approximation
+  // Convert OKLCH to Lab-like values first
+  const lightness = l;
+  const chromaValue = chroma;
+  const hue = h;
+
+  // Convert to HSL-like values for easier RGB conversion
+  const hNorm = hue / 360;
+  const s = Math.min(chromaValue * 0.8, 1); // Scale chroma to saturation
+  const lNorm = lightness;
+
+  // HSL to RGB conversion
+  const c = (1 - Math.abs(2 * lNorm - 1)) * s;
+  const x = c * (1 - Math.abs(((hNorm * 6) % 2) - 1));
+  const m = lNorm - c / 2;
+
+  let r, g, b;
+  if (hNorm < 1 / 6) {
+    r = c;
+    g = x;
+    b = 0;
+  } else if (hNorm < 2 / 6) {
+    r = x;
+    g = c;
+    b = 0;
+  } else if (hNorm < 3 / 6) {
+    r = 0;
+    g = c;
+    b = x;
+  } else if (hNorm < 4 / 6) {
+    r = 0;
+    g = x;
+    b = c;
+  } else if (hNorm < 5 / 6) {
+    r = x;
+    g = 0;
+    b = c;
+  } else {
+    r = c;
+    g = 0;
+    b = x;
+  }
+
+  return {
+    r: Math.max(0, Math.min(255, Math.round((r + m) * 255))),
+    g: Math.max(0, Math.min(255, Math.round((g + m) * 255))),
+    b: Math.max(0, Math.min(255, Math.round((b + m) * 255))),
+  };
+}
+
+/**
+ * Convert RGB to hex
+ */
+function rgbToHex(r: number, g: number, b: number): string {
+  return `#${[r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("")}`;
 }
 
 /**
  * Parse OKLCH or hex color to a displayable hex color
+ * For OKLCH colors, we'll use CSS to render the actual color
  */
 function colorToHex(color: string | null | undefined): string {
   if (!color) return "#808080";
@@ -55,12 +127,50 @@ function colorToHex(color: string | null | undefined): string {
   // If it's already hex, return it
   if (color.startsWith("#")) return color;
 
-  // For OKLCH, we'll just create a gray representation based on lightness
-  // In a real implementation, you'd want proper OKLCH to sRGB conversion
-  const lightness = parseOklchLightness(color);
-  const gray = Math.round((lightness / 100) * 255);
-  const hexValue = gray.toString(16).padStart(2, "0");
-  return `#${hexValue}${hexValue}${hexValue}`;
+  // For OKLCH, we'll create a temporary element to get the actual rendered color
+  if (color.startsWith("oklch(")) {
+    try {
+      // Check if we're in a browser environment
+      if (typeof document === "undefined") {
+        return "#808080";
+      }
+
+      // Create a temporary div to get the actual rendered color
+      const tempDiv = document.createElement("div");
+      tempDiv.style.backgroundColor = color;
+      tempDiv.style.position = "absolute";
+      tempDiv.style.visibility = "hidden";
+      tempDiv.style.top = "-9999px";
+      tempDiv.style.left = "-9999px";
+      document.body.appendChild(tempDiv);
+
+      // Force a reflow to ensure the style is applied
+      tempDiv.offsetHeight;
+
+      const computedColor = getComputedStyle(tempDiv).backgroundColor;
+      document.body.removeChild(tempDiv);
+
+      // Convert rgb() to hex
+      if (
+        computedColor &&
+        computedColor !== "rgba(0, 0, 0, 0)" &&
+        computedColor !== "transparent"
+      ) {
+        const rgbMatch = computedColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+        if (rgbMatch) {
+          const r = parseInt(rgbMatch[1]);
+          const g = parseInt(rgbMatch[2]);
+          const b = parseInt(rgbMatch[3]);
+          return rgbToHex(r, g, b);
+        }
+      }
+    } catch (error) {
+      console.warn("Failed to convert OKLCH to hex:", error);
+    }
+  }
+
+  // Fallback to gray
+  return "#808080";
 }
 
 export function ColorPicker({
@@ -68,17 +178,72 @@ export function ColorPicker({
   onChange,
   label,
   disabled = false,
-  placeholder = "Enter color value",
+  placeholder = "Select color",
   className,
 }: ColorPickerProps) {
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState(value || "");
+  const [displayColor, setDisplayColor] = React.useState("#808080");
 
   React.useEffect(() => {
     setInputValue(value || "");
   }, [value]);
 
-  const displayColor = colorToHex(value);
+  // Convert color to hex with proper React state management
+  React.useEffect(() => {
+    console.log("ColorPicker useEffect triggered with value:", value);
+
+    if (!value) {
+      console.log("No value, setting grey");
+      setDisplayColor("#808080");
+      return;
+    }
+
+    if (value.startsWith("#")) {
+      console.log("Hex color detected:", value);
+      setDisplayColor(value);
+      return;
+    }
+
+    if (value.startsWith("oklch(")) {
+      console.log("OKLCH color detected:", value);
+
+      // Use a timeout to ensure DOM is ready
+      const timer = setTimeout(() => {
+        try {
+          // Create a canvas to get the actual color
+          const canvas = document.createElement("canvas");
+          canvas.width = 1;
+          canvas.height = 1;
+          const ctx = canvas.getContext("2d");
+
+          if (ctx) {
+            console.log("Setting canvas fillStyle to:", value);
+            ctx.fillStyle = value;
+            ctx.fillRect(0, 0, 1, 1);
+            const imageData = ctx.getImageData(0, 0, 1, 1);
+            const [r, g, b] = imageData.data;
+
+            console.log("Canvas conversion result:", { r, g, b });
+            const hexColor = rgbToHex(r, g, b);
+            console.log("Final hex color:", hexColor);
+            setDisplayColor(hexColor);
+          } else {
+            console.warn("Canvas context not available");
+            setDisplayColor("#808080");
+          }
+        } catch (error) {
+          console.warn("Failed to convert OKLCH to hex:", error);
+          setDisplayColor("#808080");
+        }
+      }, 0);
+
+      return () => clearTimeout(timer);
+    }
+
+    console.log("Unknown color format, setting grey:", value);
+    setDisplayColor("#808080");
+  }, [value]);
 
   const handleInputChange = (newValue: string) => {
     setInputValue(newValue);
@@ -86,100 +251,78 @@ export function ColorPicker({
   };
 
   return (
-    <div className={cn("space-y-2", className)}>
-      {label && <Label>{label}</Label>}
-      <div className="flex gap-2">
-        <div className="relative flex-1">
-          <Input
-            type="text"
-            value={inputValue}
-            onChange={(e) => handleInputChange(e.target.value)}
-            placeholder={placeholder}
-            disabled={disabled}
-            className="pr-10"
-          />
-          <div
-            className="absolute right-2 top-1/2 -translate-y-1/2 size-6 rounded border border-border"
-            style={{ backgroundColor: displayColor }}
-          />
-        </div>
+    <div className={cn("space-y-3", className)}>
+      {label && <Label className="text-sm font-medium">{label}</Label>}
+      <div className="flex gap-3">
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              disabled={disabled}
-              className="shrink-0"
-            >
-              <Pipette className="h-4 w-4" />
+            <Button variant="outline" disabled={disabled} className="h-10 px-3">
+              <span className="text-sm">Change color</span>
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-80" align="end">
+          <PopoverContent className="w-80 p-4" align="end">
             <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>OKLCH Color</Label>
-                <Input
-                  type="text"
-                  value={inputValue}
-                  onChange={(e) => handleInputChange(e.target.value)}
-                  placeholder="oklch(0.5745 0.2028 263.15)"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Use OKLCH format for best color fidelity
+              {/* Header */}
+              <div className="text-center">
+                <h3 className="font-semibold text-sm">Color Picker</h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Choose a color
                 </p>
               </div>
 
+              {/* Preview */}
               <div className="space-y-2">
-                <Label>Hex Color (approximate)</Label>
+                <Label className="text-sm font-medium">Preview</Label>
+                <div className="relative">
+                  <div
+                    className="h-16 w-full rounded-md border-2 border-border shadow-sm"
+                    style={{ backgroundColor: displayColor }}
+                  />
+                  <div className="absolute bottom-1.5 left-1.5 bg-black/70 text-white text-xs px-2 py-0.5 rounded">
+                    {displayColor}
+                  </div>
+                </div>
+              </div>
+
+              {/* Hex Color Input */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Hex Color</Label>
                 <div className="flex gap-2">
                   <Input
                     type="color"
                     value={displayColor}
                     onChange={(e) => handleInputChange(e.target.value)}
-                    className="h-10 w-full"
+                    className="h-10 w-16 p-1 border-2 border-border rounded cursor-pointer"
                   />
                   <Input
                     type="text"
                     value={displayColor}
                     onChange={(e) => handleInputChange(e.target.value)}
                     placeholder="#000000"
-                    className="flex-1"
+                    className="flex-1 font-mono text-sm"
                   />
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Note: Hex colors will be converted to OKLCH for consistency
-                </p>
               </div>
 
-              <div className="space-y-2">
-                <Label>Preview</Label>
-                <div
-                  className="h-20 rounded-md border border-border"
-                  style={{ backgroundColor: displayColor }}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-xs">Common Presets</Label>
-                <div className="grid grid-cols-6 gap-2">
-                  {[
-                    { name: "Primary", value: "oklch(0.5745 0.2028 263.15)" },
-                    { name: "Secondary", value: "oklch(0.7675 0.0982 182.83)" },
-                    { name: "Success", value: "oklch(0.812 0.1064 153.89)" },
-                    { name: "Warning", value: "oklch(0.8354 0.1274 72.2)" },
-                    { name: "Error", value: "oklch(0.7044 0.1872 23.19)" },
-                    { name: "Gray", value: "oklch(0.5 0 0)" },
-                  ].map((preset) => (
-                    <button
-                      key={preset.name}
-                      type="button"
-                      onClick={() => handleInputChange(preset.value)}
-                      className="size-8 rounded border border-border hover:ring-2 hover:ring-ring transition-shadow"
-                      style={{ backgroundColor: colorToHex(preset.value) }}
-                      title={preset.name}
-                    />
-                  ))}
-                </div>
+              {/* Actions */}
+              <div className="flex gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleInputChange("")}
+                  className="flex-1"
+                >
+                  Clear
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => setOpen(false)}
+                  className="flex-1"
+                >
+                  Done
+                </Button>
               </div>
             </div>
           </PopoverContent>

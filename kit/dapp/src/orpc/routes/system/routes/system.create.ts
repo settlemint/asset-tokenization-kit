@@ -27,6 +27,7 @@ import { read } from "@/orpc/routes/system/routes/system.read";
 import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
+import { retryWhenFailed } from "@settlemint/sdk-utils";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { z } from "zod";
 
@@ -260,12 +261,25 @@ export const create = onboardedRouter.system.create
       { context }
     );
 
-    const systemDetails = await call(
-      read,
-      {
-        id: system.id,
+    // Wait for TheGraph to index the newly created system
+    // TheGraph indexing is asynchronous, so we need to retry until it's available
+    const systemDetails = await retryWhenFailed(
+      async () => {
+        return await call(
+          read,
+          {
+            id: system.id,
+          },
+          { context }
+        );
       },
-      { context }
+      15, // max 15 retries
+      2000, // wait 2 seconds between retries
+      (error) => {
+        logger.info(
+          `Waiting for system to be indexed by TheGraph... (${error.message})`
+        );
+      }
     );
 
     // Create all compliance modules if compliance module registry exists
@@ -285,12 +299,24 @@ export const create = onboardedRouter.system.create
       }
     }
 
-    const updatedSystemDetails = await call(
-      read,
-      {
-        id: system.id,
+    // Read again to get the updated system with compliance modules
+    const updatedSystemDetails = await retryWhenFailed(
+      async () => {
+        return await call(
+          read,
+          {
+            id: system.id,
+          },
+          { context }
+        );
       },
-      { context }
+      10, // max 10 retries
+      1000, // wait 1 second between retries
+      (error) => {
+        logger.info(
+          `Waiting for system updates to be indexed... (${error.message})`
+        );
+      }
     );
 
     // Return the complete system details

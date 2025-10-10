@@ -29,10 +29,13 @@ export interface ImageUploadProps {
   onAutoSave?: (newUrl: string) => void;
   /** Type of image being uploaded */
   imageType:
-    | "logo_main"
-    | "logo_sidebar"
-    | "logo_favicon"
+    | "logo_main_light"
+    | "logo_sidebar_light"
+    | "logo_favicon_light"
     | "background_light"
+    | "logo_main_dark"
+    | "logo_sidebar_dark"
+    | "logo_favicon_dark"
     | "background_dark";
   /** Accepted image formats */
   accept?: string;
