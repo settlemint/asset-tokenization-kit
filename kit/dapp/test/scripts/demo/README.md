@@ -14,7 +14,6 @@ understand the resulting environment at a glance.
 
 - **Who is this?** The primary platform owner who configures settings, onboards
   new teams, and generally keeps the environment running smoothly.
-- **Script reference:** `ADMIN`.
 - **Access level:** Receives every management role, including `admin`,
   `systemManager`, `identityManager`, `tokenManager`, `addonManager`,
   `claimIssuer`, `claimPolicyManager`, `complianceManager`, and `systemModule`.
@@ -26,7 +25,6 @@ understand the resulting environment at a glance.
 
 - **Who is this?** The demo organization responsible for creating new asset
   tokens and attaching the right compliance modules before they reach investors.
-- **Script reference:** `ISSUER`.
 - **Access level:** Assigned the on-chain `tokenManager` and `claimIssuer` roles
   so it can mint tokens, link compliance requirements, and issue investor
   claims.
@@ -38,7 +36,6 @@ understand the resulting environment at a glance.
 
 - **Who is this?** A ready-to-go German investor wallet that can participate in
   the bond demos.
-- **Script reference:** `GERMAN_INVESTOR_1`.
 - **Access level:** No administrative roles; behaves like a standard investor
   account.
 - **Compliance status:** Equipped with `kyc-verified` and `aml-verified` claims
@@ -50,7 +47,6 @@ understand the resulting environment at a glance.
 
 - **Who is this?** A second German investor, useful for showing transfers or
   comparing user journeys.
-- **Script reference:** `GERMAN_INVESTOR_2`.
 - **Access level:** Same as Investor 1—no special blockchain permissions.
 - **Compliance status:** Shares the `kyc-verified` and `aml-verified` claims
   from setup, mirroring the first investor.
@@ -61,7 +57,6 @@ understand the resulting environment at a glance.
 
 - **Who is this?** An investor from Japan deliberately left partially onboarded
   to demonstrate pending-compliance flows.
-- **Script reference:** `JAPANESE_INVESTOR`.
 - **Access level:** No elevated blockchain roles; acts like a standard prospect.
 - **Compliance status:** Starts without KYC/AML claims so teams can walk through
   the approval process.
