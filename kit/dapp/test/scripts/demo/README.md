@@ -65,7 +65,9 @@ understand the resulting environment at a glance.
 
 ## Assets
 
-### Proof-of-Deposit (`POD`)
+### Deposits
+
+#### Proof-of-Deposit (`POD`)
 
 - **Type & Extension**: Deposit token used as the denomination asset for bond
   issuances.
@@ -74,7 +76,17 @@ understand the resulting environment at a glance.
 - **Compliance Rules**: No compliance modules are attached, so any wallet can
   hold POD.
 
-### Bund7 (`BUND7`)
+### Bonds
+
+#### Short-term bond (`STB`)
+
+- **Type & Extension**: Bond token that references the `POD` denomination token
+  and a yearly fixed-yield schedule (1.10%).
+- **Claims**: No compliance claims are required.
+- **Compliance Rules**: No compliance modules are attached, so any wallet can
+  hold STB.
+
+#### Bund7 (`BUND7`)
 
 - **Type & Extension**: Bond token with ISIN `DE000BU27014` that references the
   `POD` denomination token and a yearly fixed-yield schedule (2.50%).
@@ -82,7 +94,7 @@ understand the resulting environment at a glance.
   claims through the SMART Identity Verification module.
 - **Compliance Rules**: Country allow-list restricts holders to Germany (`DE`).
 
-### Bund10 (`BUND10`)
+#### Bund10 (`BUND10`)
 
 - **Type & Extension**: Bond token with ISIN `DE000BU2Z056` using the same `POD`
   denomination token and yearly fixed-yield schedule (2.60%).

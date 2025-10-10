@@ -46,6 +46,7 @@ export const BondFields = withForm({
           });
 
           setDenominationAssetDetails(result);
+          form.setFieldValue("denominationAssetSymbol", result.symbol);
 
           return undefined; // no error
         } catch {
@@ -55,7 +56,7 @@ export const BondFields = withForm({
           };
         }
       },
-      [type, t]
+      [type, t, form.setFieldValue]
     );
 
     // Initialize the denomination asset decimals when denomination asset is set

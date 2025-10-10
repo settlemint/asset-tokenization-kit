@@ -54,7 +54,10 @@ export const BondSummaryFields = withForm({
         />
         <FormSummaryItem
           label={t("form.fields.faceValue.label")}
-          value={values.faceValue as string}
+          value={formatValue(values.faceValue, {
+            type: "currency",
+            currency: { assetSymbol: values.denominationAssetSymbol ?? "" },
+          })}
         />
       </FormSummaryCard>
     );
