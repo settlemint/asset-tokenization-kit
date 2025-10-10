@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { authClient } from "@/lib/auth/auth.client";
 
@@ -127,7 +127,6 @@ export function useSecretCodesManager({
     setHasPerformedAction(false);
   }, []);
 
-
   return {
     codes,
     isGenerating,
@@ -139,6 +138,5 @@ export function useSecretCodesManager({
     copyAll,
     download,
     resetCodes,
-    canConfirm,
   };
 }
