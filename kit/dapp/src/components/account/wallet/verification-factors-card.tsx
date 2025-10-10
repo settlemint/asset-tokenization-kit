@@ -46,7 +46,7 @@ export function VerificationFactorsCard({
                   <span className="text-sm">{label}</span>
                   <Badge
                     variant="default"
-                    className="bg-green-500 hover:bg-green-600"
+                    className="bg-sm-state-success-background text-sm-state-success hover:bg-sm-state-success-background/90"
                   >
                     {t("wallet.enabled")}
                   </Badge>

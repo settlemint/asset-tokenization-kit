@@ -1,33 +1,15 @@
+import { PasswordDialog } from "@/components/account/wallet/password-dialog";
 import { RecoveryCodesCard } from "@/components/account/wallet/recovery-codes-card";
+import { UserWalletCard } from "@/components/account/wallet/user-wallet-card";
 import { VerificationFactorsCard } from "@/components/account/wallet/verification-factors-card";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { useSecretCodesManager } from "@/components/onboarding/recovery-codes/use-secret-codes-manager";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { CheckedState } from "@radix-ui/react-checkbox";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import QRCode from "react-qr-code";
 import { toast } from "sonner";
 
 export const Route = createFileRoute(
@@ -140,51 +122,7 @@ function Wallet() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* User Wallet Card */}
-        {user.wallet ? (
-          <Card className="flex h-full flex-col">
-            <CardHeader>
-              <CardTitle>{t("wallet.userWallet")}</CardTitle>
-              <CardDescription>
-                {t("wallet.userWalletDescription")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-1 flex-col items-center gap-6">
-              <div className="rounded-lg bg-white p-4 shadow-sm border">
-                <QRCode
-                  value={user.wallet}
-                  size={200}
-                  level="H"
-                  fgColor="#000000"
-                  bgColor="#ffffff"
-                />
-              </div>
-              <div className="w-full max-w-md">
-                <Web3Address
-                  address={user.wallet}
-                  showFullAddress={true}
-                  copyToClipboard={true}
-                  showPrettyName={false}
-                  className="justify-center"
-                />
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <Card className="flex h-full flex-col">
-            <CardHeader>
-              <CardTitle>{t("wallet.userWallet")}</CardTitle>
-              <CardDescription>
-                {t("wallet.userWalletDescription")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-1 flex-col items-center justify-center">
-              <p className="text-muted-foreground text-center">
-                {t("fields.noWalletConnected")}
-              </p>
-            </CardContent>
-          </Card>
-        )}
+        <UserWalletCard address={user.wallet} />
 
         <VerificationFactorsCard verificationTypes={user.verificationTypes} />
 
@@ -202,74 +140,22 @@ function Wallet() {
         />
       </div>
 
-      <Dialog
+      <PasswordDialog
         open={isPasswordDialogOpen}
-        onOpenChange={(open) => {
-          setIsPasswordDialogOpen(open);
-          if (!open) {
-            setPassword("");
-            setPasswordError(null);
-            setGenerationError(null);
-            setIsSubmittingPassword(false);
-          }
+        password={password}
+        passwordError={passwordError}
+        generationError={generationError}
+        isSubmitting={isSubmittingPassword}
+        onPasswordChange={setPassword}
+        onCancel={() => {
+          setIsPasswordDialogOpen(false);
+          setPassword("");
+          setPasswordError(null);
+          setGenerationError(null);
+          setIsSubmittingPassword(false);
         }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t("user:wallet.passwordPromptTitle")}</DialogTitle>
-            <DialogDescription>
-              {t("user:wallet.passwordPromptDescription")}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="regenerate-password">
-                {t("user:wallet.passwordLabel")}
-              </Label>
-              <Input
-                id="regenerate-password"
-                type="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(event) => {
-                  setPassword(event.target.value);
-                }}
-              />
-              {passwordError && (
-                <p className="text-sm text-destructive">{passwordError}</p>
-              )}
-            </div>
-            {generationError && (
-              <p className="text-sm text-destructive">{generationError}</p>
-            )}
-          </div>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                if (!isSubmittingPassword) {
-                  setIsPasswordDialogOpen(false);
-                }
-              }}
-              disabled={isSubmittingPassword}
-            >
-              {t("common:actions.cancel")}
-            </Button>
-            <Button
-              type="button"
-              onClick={() => {
-                void handlePasswordSubmit();
-              }}
-              disabled={isSubmittingPassword}
-            >
-              {isSubmittingPassword
-                ? t("common:generating")
-                : t("user:wallet.regenerateRecoveryCodes")}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        onSubmit={() => void handlePasswordSubmit()}
+      />
     </div>
   );
 }
