@@ -23,9 +23,6 @@ export async function confirmPinCode(
   await expect(page.getByRole("button", { name: "Confirm" })).toBeEnabled();
 
   await page.getByRole("button", { name: "Confirm" }).click();
-  // await page.waitForTimeout(1000);
-
-  // Fail fast if an error toast appears
   const errorToast = toastOf(page, "error");
   const hasError = await errorToast
     .isVisible({ timeout: 500 })

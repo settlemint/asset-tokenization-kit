@@ -653,7 +653,9 @@ export class OnboardingPage extends BasePage {
   async verifyOnboardingComplete(userName: string): Promise<void> {
     await this.waitForReactStateSettle();
     const userChip = this.page
-      .getByRole("button", { name: new RegExp(userName, "i") })
+      .getByRole("button", {
+        name: new RegExp(userName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"),
+      })
       .first();
     await expect(userChip).toBeVisible({ timeout: 120000 });
 

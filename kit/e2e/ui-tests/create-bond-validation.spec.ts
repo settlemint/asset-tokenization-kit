@@ -57,6 +57,7 @@ test.describe.serial("Bond Creation Validation", () => {
     test("validates empty symbol field prevents submission", async () => {
       await createAssetForm.fillBasicFields({
         name: bondData.name,
+        symbol: "",
         decimals: bondData.decimals,
         isin: bondData.isin,
         country: bondData.country,
