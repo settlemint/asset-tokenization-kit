@@ -28,11 +28,53 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 BOLD='\033[1m'
 
+# Global variables for progress tracking
+TOTAL_STEPS=13
+CURRENT_STEP=0
+ENABLE_SEED_DATA=false
+
+# Progress bar functions
+show_progress_bar() {
+    local current=$1
+    local total=$2
+    local width=50
+    local percentage=$((current * 100 / total))
+    local completed=$((width * current / total))
+    local remaining=$((width - completed))
+
+    printf "\r${BOLD}${CYAN}Overall Progress: [${NC}"
+    printf "%${completed}s" | tr ' ' '█'
+    printf "%${remaining}s" | tr ' ' '░'
+    printf "${BOLD}${CYAN}] ${percentage}%% (${current}/${total})${NC}"
+}
+
+update_progress() {
+    CURRENT_STEP=$((CURRENT_STEP + 1))
+    show_progress_bar $CURRENT_STEP $TOTAL_STEPS
+    echo ""
+}
+
+show_partial_progress() {
+    local message=$1
+    local current=$2
+    local total=$3
+    local width=30
+    local percentage=$((current * 100 / total))
+    local completed=$((width * current / total))
+    local remaining=$((width - completed))
+
+    printf "\r  ${CYAN}${message}: [${NC}"
+    printf "%${completed}s" | tr ' ' '▓'
+    printf "%${remaining}s" | tr ' ' '░'
+    printf "${CYAN}] ${percentage}%%${NC}"
+}
+
 # Logging functions
 log_header() {
     echo -e "\n${BOLD}${MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo -e "${BOLD}${MAGENTA}  $1${NC}"
     echo -e "${BOLD}${MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}\n"
+    update_progress
 }
 
 log_step() {
@@ -299,47 +341,77 @@ check_git() {
 cleanup_environment() {
     log_header "CLEANING UP PREVIOUS ENVIRONMENT"
 
-    log_step "Checking for running Bun processes..."
-    if pgrep -f "bun install" > /dev/null 2>&1; then
-        log_warning "Found running bun install processes. Terminating..."
-        pkill -9 -f "bun install" 2>/dev/null || true
-        sleep 2
-        log_success "Terminated bun install processes"
-    else
-        log_info "No bun install processes running"
+    log_info "This will ensure a completely fresh setup:"
+    echo "  • Kill all running processes"
+    echo "  • Free all ports (3000, 5432, 8545, etc.)"
+    echo "  • Remove all Docker containers and volumes"
+    echo "  • Clean all caches and build artifacts"
+    echo "  • Reset database to empty state"
+    echo "  • Ensure new blockchain with fresh genesis"
+    echo ""
+
+    log_step "Killing all related processes..."
+    local pids_killed=0
+
+    # Kill bun processes
+    if pgrep -f "bun" > /dev/null 2>&1; then
+        log_info "Terminating bun processes..."
+        pkill -9 -f "bun" 2>/dev/null || true
+        pids_killed=1
+        sleep 1
     fi
 
-    log_step "Checking for running dApp processes..."
-    if [ -f .dapp.pid ]; then
-        local dapp_pid=$(cat .dapp.pid)
-        if kill -0 "$dapp_pid" 2>/dev/null; then
-            log_warning "Found running dApp (PID: $dapp_pid). Stopping..."
-            kill "$dapp_pid" 2>/dev/null || true
-            sleep 2
-            log_success "Stopped dApp process"
+    # Kill node/vite processes
+    if pgrep -f "node.*vite" > /dev/null 2>&1; then
+        log_info "Terminating vite processes..."
+        pkill -9 -f "node.*vite" 2>/dev/null || true
+        pids_killed=1
+        sleep 1
+    fi
+
+    # Kill any process on port 3000, 5432, 8545, 8547
+    for port in 3000 42069 5432 8545 8547 8080 7700 7701 8000 9000 9001 4000 4001; do
+        if lsof -ti:$port >/dev/null 2>&1; then
+            log_info "Freeing port $port..."
+            lsof -ti:$port | xargs kill -9 2>/dev/null || true
+            pids_killed=1
         fi
-        rm -f .dapp.pid
+    done
+
+    if [ $pids_killed -eq 1 ]; then
+        log_success "All processes terminated and ports freed"
+        sleep 2
     else
-        log_info "No dApp process running"
+        log_info "No processes to terminate"
     fi
 
-    log_step "Checking for Docker Compose services..."
+    log_step "Stopping Docker Compose services and removing volumes..."
     if docker compose -p atk ps -q 2>/dev/null | grep -q .; then
-        log_warning "Found running Docker Compose services. Stopping..."
-        docker compose -p atk down -v 2>/dev/null || true
+        log_info "Stopping Docker services..."
+        docker compose -p atk down -v --remove-orphans 2>/dev/null || true
         log_success "Stopped Docker Compose services"
     else
         log_info "No Docker Compose services running"
     fi
 
-    log_step "Cleaning Docker volumes..."
-    local volumes=$(docker volume ls -q --filter name=^atk 2>/dev/null)
+    log_step "Removing all Docker volumes (ensures fresh database and blockchain)..."
+    local volumes=$(docker volume ls -q --filter name=atk 2>/dev/null)
     if [ -n "$volumes" ]; then
-        log_warning "Found Docker volumes. Removing..."
-        echo "$volumes" | xargs -r docker volume rm 2>/dev/null || true
-        log_success "Removed Docker volumes"
+        log_info "Removing Docker volumes for fresh state..."
+        echo "$volumes" | xargs docker volume rm 2>/dev/null || true
+        log_success "Removed all Docker volumes"
     else
         log_info "No Docker volumes to clean"
+    fi
+
+    log_step "Removing any orphaned containers..."
+    local orphaned=$(docker ps -a -q --filter "name=atk-" 2>/dev/null)
+    if [ -n "$orphaned" ]; then
+        log_info "Removing orphaned containers..."
+        echo "$orphaned" | xargs docker rm -f 2>/dev/null || true
+        log_success "Removed orphaned containers"
+    else
+        log_info "No orphaned containers"
     fi
 
     log_step "Clearing Bun cache..."
@@ -405,10 +477,10 @@ cleanup_environment() {
     rm -f .dapp-cleanup.html 2>/dev/null || true
     rm -f .dapp-terminal.sh 2>/dev/null || true
     log_success "Cleaned temporary files"
-    
+
     log_step "Cleaning Vite and build caches..."
     local cache_cleaned=0
-    
+
     # Vite caches
     if [ -d "kit/dapp/.vite" ]; then
         rm -rf kit/dapp/.vite
@@ -425,35 +497,35 @@ cleanup_environment() {
         log_info "Removed kit/dapp/.cache"
         cache_cleaned=1
     fi
-    
+
     # Next.js caches (if any)
     if [ -d "kit/dapp/.next" ]; then
         rm -rf kit/dapp/.next
         log_info "Removed kit/dapp/.next"
         cache_cleaned=1
     fi
-    
+
     # TanStack Router cache
     if [ -d "kit/dapp/.tanstack" ]; then
         rm -rf kit/dapp/.tanstack
         log_info "Removed kit/dapp/.tanstack"
         cache_cleaned=1
     fi
-    
+
     # Build output directories
     if [ -d "kit/dapp/dist" ]; then
         rm -rf kit/dapp/dist
         log_info "Removed kit/dapp/dist"
         cache_cleaned=1
     fi
-    
+
     # TypeScript build info
     if [ -f "kit/dapp/*.tsbuildinfo" ]; then
         rm -f kit/dapp/*.tsbuildinfo
         log_info "Removed TypeScript build info files"
         cache_cleaned=1
     fi
-    
+
     if [ $cache_cleaned -eq 1 ]; then
         log_success "Vite and build caches cleaned"
     else
@@ -495,11 +567,24 @@ setup_environment() {
 
     if [ ! -f .env.local ]; then
         log_step "Creating .env.local file..."
-
-        # Create .env.local with local development defaults
-        cat > .env.local << 'EOF'
+        
+        # Check if example file exists
+        if [ -f .env.local.example ]; then
+            log_info "Copying from .env.local.example template..."
+            cp .env.local.example .env.local
+            log_success ".env.local created from template"
+            log_warning "Remember to update GITHUB_TOKEN and GITHUB_USERNAME with your actual credentials!"
+        else
+            log_warning ".env.local.example not found, creating basic .env.local..."
+            
+            # Create .env.local with local development defaults
+            cat > .env.local << 'EOF'
 # Local development environment configuration
 # Auto-generated by dev.sh
+
+# GitHub Container Registry Authentication (update with your credentials!)
+GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+GITHUB_USERNAME=your_github_username
 
 # Hasura Configuration
 SETTLEMINT_HASURA_ADMIN_SECRET=hasura
@@ -515,8 +600,9 @@ SETTLEMINT_MINIO_SECRET_KEY=atk-service-secret
 DISABLE_MIGRATIONS_ON_STARTUP=true
 EOF
 
-        log_success ".env.local file created with local development defaults"
-        log_info "For GitHub Container Registry access, you can add GITHUB_TOKEN and GITHUB_USERNAME"
+            log_success ".env.local file created with local development defaults"
+            log_warning "Update GITHUB_TOKEN and GITHUB_USERNAME before continuing"
+        fi
     else
         log_success ".env.local file already exists"
     fi
@@ -714,12 +800,12 @@ install_project_dependencies() {
         # Now run postinstall hooks separately
         echo ""
         run_postinstall_hooks
-        
+
         # Verify workspace linking
         echo ""
         log_step "Verifying workspace dependencies are linked..."
         local workspaces_ok=true
-        
+
         # Check critical workspace folders
         if [ ! -d "kit/dapp/node_modules" ]; then
             log_warning "kit/dapp/node_modules not found"
@@ -729,7 +815,7 @@ install_project_dependencies() {
             log_warning "kit/contracts/node_modules not found"
             workspaces_ok=false
         fi
-        
+
         if [ "$workspaces_ok" = true ]; then
             log_success "All critical workspace dependencies are linked"
         else
@@ -958,7 +1044,7 @@ check_docker_auth() {
 # Start Docker Compose services
 start_docker_services() {
     log_header "STARTING DOCKER SERVICES"
-    
+
     # Check for local PostgreSQL running on port 5432
     log_step "Checking for local PostgreSQL service..."
     if ps aux | grep -E "postgres.*5432|postgres.*postgresql@14" | grep -v grep > /dev/null 2>&1; then
@@ -966,7 +1052,7 @@ start_docker_services() {
         log_info "This will conflict with Docker's PostgreSQL container"
         echo ""
         log_step "Stopping local PostgreSQL service..."
-        
+
         # Try to stop PostgreSQL using brew services
         if command_exists brew; then
             if brew services list 2>/dev/null | grep postgresql | grep started > /dev/null 2>&1; then
@@ -977,7 +1063,7 @@ start_docker_services() {
                 log_success "Stopped local PostgreSQL service"
             fi
         fi
-        
+
         # Double check it's stopped
         if ps aux | grep -E "postgres.*5432|postgres.*postgresql@14" | grep -v grep > /dev/null 2>&1; then
             log_error "Local PostgreSQL is still running"
@@ -991,7 +1077,7 @@ start_docker_services() {
         log_success "No local PostgreSQL service running on port 5432"
     fi
     echo ""
-    
+
     log_step "Checking for existing Docker containers..."
     if docker compose -p atk ps -q 2>/dev/null | grep -q .; then
         log_warning "Existing containers found. Stopping and cleaning up..."
@@ -1006,11 +1092,11 @@ start_docker_services() {
     check_docker_auth
 
     log_step "Starting Docker Compose services..."
-    log_info "This will start 9 services required for development:"
+    log_info "This will start 9 services with FRESH STATE (new blockchain + clean database):"
     echo ""
-    echo "  ${CYAN}1.${NC} Anvil          - Local blockchain (port 8545)"
+    echo "  ${CYAN}1.${NC} Anvil          - ${BOLD}NEW${NC} blockchain with fresh genesis (port 8545)"
     echo "  ${CYAN}2.${NC} TxSigner       - Transaction signing service (port 8547)"
-    echo "  ${CYAN}3.${NC} PostgreSQL     - Database for all services (port 5432)"
+    echo "  ${CYAN}3.${NC} PostgreSQL     - ${BOLD}CLEAN${NC} database (port 5432)"
     echo "  ${CYAN}4.${NC} Redis          - Cache for Portal"
     echo "  ${CYAN}5.${NC} Hasura         - GraphQL API (port 8080)"
     echo "  ${CYAN}6.${NC} Graph Node     - Subgraph indexing (port 8000)"
@@ -1018,6 +1104,8 @@ start_docker_services() {
     echo "  ${CYAN}8.${NC} MinIO          - File storage (ports 9000, 9001)"
     echo "  ${CYAN}9.${NC} Blockscout     - Blockchain explorer (port 4001)"
     echo ""
+    log_info "Starting containers with timestamp: $(date +'%s')"
+    log_info "This ensures a completely new blockchain state"
     log_info "Starting containers... (this may take 30-60 seconds)"
     echo ""
 
@@ -1058,72 +1146,72 @@ start_docker_services() {
     echo "  ${GREEN}✓${NC} MinIO Console:             http://localhost:9001"
     echo "  ${GREEN}✓${NC} Blockscout Explorer:       http://localhost:4001"
     echo ""
-    
+
     # Verify critical service connectivity
     log_step "Verifying service connectivity..."
-    
+
     # Test Anvil blockchain
     if curl -s -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' http://localhost:8545 | grep -q "result"; then
         log_success "Anvil blockchain: Connected"
     else
         log_warning "Anvil blockchain: Not responding properly"
     fi
-    
+
     # Test Hasura
     if curl -s http://localhost:8080/healthz | grep -q "OK"; then
         log_success "Hasura GraphQL: Connected"
     else
         log_warning "Hasura GraphQL: Not responding properly"
     fi
-    
+
     # Test The Graph subgraph
     if curl -s -X POST -H "Content-Type: application/json" --data '{"query":"{_meta{block{number}}}"}' http://localhost:8000/subgraphs/name/kit 2>/dev/null | grep -q '"data"'; then
         log_success "The Graph subgraph: Connected and indexed"
     else
         log_warning "The Graph subgraph: Not responding (may still be indexing)"
     fi
-    
+
     # Test Portal
     if curl -s http://localhost:7700/health | grep -q "OK"; then
         log_success "SettleMint Portal: Connected"
     else
         log_warning "SettleMint Portal: Not responding properly"
     fi
-    
+
     # Test PostgreSQL
     if PGPASSWORD=postgres psql -h localhost -U postgres -d postgres -c "SELECT 1;" >/dev/null 2>&1; then
         log_success "PostgreSQL: Connected"
     else
         log_warning "PostgreSQL: Connection failed"
     fi
-    
+
     echo ""
 }
 
 # Wait for PostgreSQL database to be fully ready
 wait_for_postgres() {
     log_header "WAITING FOR DATABASE TO BE READY"
-    
+
     log_step "Checking PostgreSQL database readiness..."
     log_info "Ensuring database initialization and migrations can succeed"
     echo ""
-    
+
     # Find the postgres container name dynamically
     local postgres_container=$(docker compose -p atk ps --format json 2>/dev/null | jq -r 'select(.Service == "postgres") | .Name' | head -1)
-    
+
     if [ -z "$postgres_container" ]; then
         log_error "Cannot find PostgreSQL container"
         log_info "Make sure Docker services are running: ${CYAN}docker compose -p atk ps${NC}"
         exit 1
     fi
-    
+
     log_info "Found PostgreSQL container: ${CYAN}${postgres_container}${NC}"
     echo ""
-    
+
     local max_wait=120
     local elapsed=0
     local init_complete=false
-    
+
     # First, wait for PostgreSQL to be accepting connections
     log_step "Step 1: Waiting for PostgreSQL to accept connections..."
     while [ $elapsed -lt 30 ]; do
@@ -1136,34 +1224,34 @@ wait_for_postgres() {
         elapsed=$((elapsed + 2))
     done
     echo ""
-    
+
     if [ $elapsed -ge 30 ]; then
         log_error "PostgreSQL did not start accepting connections"
         exit 1
     fi
-    
+
     # Wait for initialization script to complete (creates hasura db and user)
     log_step "Step 2: Waiting for database initialization (creating users and databases)..."
     log_info "This includes running init.sql to create hasura database and user"
     echo ""
-    
+
     elapsed=0
     while [ $elapsed -lt $max_wait ]; do
         # Check if hasura database exists
         local hasura_exists=$(docker exec "$postgres_container" psql -U postgres -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='hasura';" 2>/dev/null || echo "0")
-        
+
         if [ "$hasura_exists" = "1" ]; then
             log_success "Hasura database exists"
-            
+
             # Check if we can connect as hasura user
             if docker exec "$postgres_container" psql -U hasura -d hasura -c "SELECT 1;" >/dev/null 2>&1; then
                 log_success "Can connect as hasura user"
                 echo ""
-                
+
                 # Wait a bit more for full initialization
                 log_info "Waiting 5 more seconds for complete initialization..."
                 sleep 5
-                
+
                 # Drop and recreate public schema to ensure clean state
                 log_step "Step 3: Resetting public schema for fresh migrations..."
                 log_info "Dropping and recreating public schema to ensure clean state..."
@@ -1174,6 +1262,27 @@ wait_for_postgres() {
                     log_step "Step 4: Creating Drizzle schema for migration tracking..."
                     if docker exec "$postgres_container" psql -U hasura -d hasura -c "CREATE SCHEMA IF NOT EXISTS drizzle; GRANT ALL ON SCHEMA drizzle TO hasura;" >/dev/null 2>&1; then
                         log_success "Successfully created 'drizzle' schema with proper permissions"
+                        
+                        # Clean Blockscout database for fresh blockchain indexing
+                        log_step "Step 5: Cleaning Blockscout database for fresh blockchain..."
+                        log_info "This ensures Blockscout shows only current blockchain data"
+                        if docker exec "$postgres_container" psql -U postgres -d postgres -c "DROP DATABASE IF EXISTS blockscout; CREATE DATABASE blockscout OWNER blockscout;" >/dev/null 2>&1; then
+                            log_success "Successfully reset Blockscout database"
+                            log_info "✓ Blockscout will index from block 0 of new blockchain"
+                        else
+                            log_warning "Could not reset Blockscout database (will recreate on startup)"
+                        fi
+                        
+                        # Clean TheGraph database for fresh subgraph indexing
+                        log_step "Step 6: Cleaning TheGraph database for fresh subgraph..."
+                        log_info "This ensures TheGraph indexes from genesis block"
+                        if docker exec "$postgres_container" psql -U postgres -d postgres -c "DROP DATABASE IF EXISTS thegraph; CREATE DATABASE thegraph OWNER thegraph;" >/dev/null 2>&1; then
+                            log_success "Successfully reset TheGraph database"
+                            log_info "✓ TheGraph will index from block 0 of new blockchain"
+                        else
+                            log_warning "Could not reset TheGraph database (will recreate on startup)"
+                        fi
+                        
                         init_complete=true
                         break
                     else
@@ -1198,7 +1307,7 @@ wait_for_postgres() {
         fi
     done
     echo ""
-    
+
     if [ "$init_complete" = false ]; then
         log_error "Database initialization did not complete in time (timeout: ${max_wait}s)"
         echo ""
@@ -1208,14 +1317,16 @@ wait_for_postgres() {
         echo "  ${YELLOW}3.${NC} Manually check hasura user: ${CYAN}docker exec $postgres_container psql -U postgres -c '\\du'${NC}"
         exit 1
     fi
-    
+
     echo ""
     log_success "PostgreSQL is fully initialized and ready!"
     log_info "✓ Hasura database exists"
     log_info "✓ Hasura user has proper permissions"
     log_info "✓ Public schema reset (clean state)"
     log_info "✓ Drizzle schema ready for migration tracking"
-    log_info "Safe to apply migrations - database is in clean state"
+    log_info "✓ Blockscout database reset (will index fresh blockchain)"
+    log_info "✓ TheGraph database reset (will index from genesis)"
+    log_info "Safe to apply migrations - all databases are in clean state"
 }
 
 # Connect to local blockchain
@@ -1243,12 +1354,12 @@ connect_blockchain() {
 # Setup dApp - Generate SettleMint SDK types and GraphQL schemas
 setup_dapp() {
     log_header "SETTING UP DAPP"
-    
+
     log_step "Navigating to dApp directory..."
     cd kit/dapp
     log_success "In kit/dapp"
     echo ""
-    
+
     # Ensure dApp dependencies are properly installed/linked
     log_step "Installing dApp dependencies..."
     log_info "Running bun install in kit/dapp to ensure all dependencies are available"
@@ -1262,7 +1373,7 @@ setup_dapp() {
         log_info "Check /tmp/dapp-install.log for details"
     fi
     echo ""
-    
+
     # Create/update dApp .env.local with required settings
     log_step "Configuring dApp environment..."
     cat > .env.local << 'EOF'
@@ -1286,28 +1397,34 @@ EOF
     log_info "Applying Drizzle ORM migrations to create dApp tables (Better Auth, etc.)"
     log_info "Database is in clean state - public schema was reset earlier"
     echo ""
-    
+
     # Count migration files
     local migration_count=$(ls -1 drizzle/[0-9]*.sql 2>/dev/null | wc -l | tr -d ' ')
-    
+
     if [ "$migration_count" -eq 0 ]; then
         log_error "No migration files found in drizzle/ directory"
         log_info "Expected migration files like: drizzle/0000_perpetual_joseph.sql"
         cd ../..
         exit 1
     fi
-    
+
     log_info "Found ${migration_count} migration file(s) to apply"
     echo ""
-    
+
     local migrations_applied=0
     local migrations_failed=0
-    
+    local migration_index=0
+
     for migration_file in drizzle/[0-9]*.sql; do
         if [ -f "$migration_file" ]; then
+            migration_index=$((migration_index + 1))
             local migration_name=$(basename "$migration_file")
+
+            # Show progress bar
+            show_partial_progress "Migrations" $migration_index $migration_count
+            echo ""
             log_info "Applying: ${CYAN}${migration_name}${NC}"
-            
+
             # Apply migration and capture output
             local migration_log="/tmp/dapp_migrate_${migration_name}.log"
             if PGPASSWORD=hasura psql -h localhost -U hasura -d hasura -f "$migration_file" > "$migration_log" 2>&1; then
@@ -1327,9 +1444,9 @@ EOF
             fi
         fi
     done
-    
+
     echo ""
-    
+
     if [ $migrations_failed -gt 0 ]; then
         log_error "Some migrations failed: ${migrations_failed} failed, ${migrations_applied} succeeded"
         log_info "Check logs in /tmp/dapp_migrate_*.log for details"
@@ -1342,12 +1459,12 @@ EOF
         log_info "✓ dApp will skip automatic migrations (DISABLE_MIGRATIONS_ON_STARTUP=true)"
     fi
     echo ""
-    
+
     # Track tables in Hasura
     log_step "Tracking tables in Hasura..."
     log_info "This ensures all database tables are available in the Hasura GraphQL API"
     echo ""
-    
+
     # We'll track tables after the dApp starts (it has the trackAllTables function)
     # For now, just inform the user that it will happen automatically
     log_info "Note: Tables will be automatically tracked when dApp starts"
@@ -1366,7 +1483,7 @@ EOF
     # Wait for each critical GraphQL service to be ready
     local max_wait=120
     local elapsed=0
-    
+
     # Wait for Hasura GraphQL
     log_step "Checking Hasura GraphQL readiness..."
     while [ $elapsed -lt $max_wait ]; do
@@ -1382,14 +1499,14 @@ EOF
         elapsed=$((elapsed + 3))
     done
     echo ""
-    
+
     if [ $elapsed -ge $max_wait ]; then
         log_error "Hasura GraphQL not ready after ${max_wait}s"
         log_info "Check logs: ${CYAN}docker compose -p atk logs hasura${NC}"
         cd ../..
         exit 1
     fi
-    
+
     # Wait for TheGraph subgraph
     log_step "Checking TheGraph subgraph readiness..."
     elapsed=0
@@ -1405,12 +1522,12 @@ EOF
         elapsed=$((elapsed + 5))
     done
     echo ""
-    
+
     if [ $elapsed -ge $max_wait ]; then
         log_warning "TheGraph subgraph not ready after ${max_wait}s - continuing anyway"
         log_info "TheGraph codegen may fail but other schemas should work"
     fi
-    
+
     # Wait for Blockscout GraphQL
     log_step "Checking Blockscout GraphQL readiness..."
     elapsed=0
@@ -1426,7 +1543,7 @@ EOF
         elapsed=$((elapsed + 3))
     done
     echo ""
-    
+
     if [ $elapsed -ge 60 ]; then
         log_warning "Blockscout GraphQL not ready after 60s - continuing anyway"
     fi
@@ -1454,57 +1571,49 @@ EOF
     cd ../..
 }
 
-# Ask if user wants to seed database with test data
-ask_seed_data() {
-    log_header "SEED DATABASE WITH TEST DATA"
-    
-    echo -e "${BOLD}${CYAN}Would you like to seed the database with test data?${NC}\n"
-    echo -e "This will create test users and demo assets by running integration tests:"
-    echo -e "   • ${GREEN}admin@settlemint.com${NC}    (password: settlemint, PIN: 123456)"
-    echo -e "   • ${GREEN}issuer@settlemint.com${NC}   (password: settlemint, PIN: 123456)"
-    echo -e "   • ${GREEN}investor@settlemint.com${NC} (password: settlemint, PIN: 123456)"
-    echo ""
-    echo -e "   ${YELLOW}Note:${NC} This takes 2-3 minutes to complete"
-    echo ""
-    echo -e "${BOLD}Options:${NC}"
-    echo -e "   ${CYAN}1.${NC} Yes, seed database with test data"
-    echo -e "   ${CYAN}2.${NC} No, start with empty database"
-    echo ""
-    
-    while true; do
-        read -p "Enter your choice [1-2]: " choice
-        case $choice in
-            1)
-                echo ""
-                log_info "Selected: Seed database with test data"
-                return 0
-                ;;
-            2)
-                echo ""
-                log_info "Selected: Start with empty database"
-                return 1
-                ;;
-            *)
-                echo -e "${RED}✗${NC} Invalid choice. Please enter 1 or 2."
-                ;;
-        esac
-    done
-}
-
 # Seed database with test data
 seed_database() {
     log_header "SEEDING DATABASE WITH TEST DATA"
-    
+
     local PROJECT_ROOT=$(pwd)
     cd "${PROJECT_ROOT}/kit/dapp"
-    
+
+    # Verify dApp server is responding to API calls before seeding
+    log_step "Verifying dApp API is ready for seeding..."
+    local max_wait=60
+    local elapsed=0
+    local api_ready=false
+
+    while [ $elapsed -lt $max_wait ]; do
+        # Try to access the API health endpoint or root
+        if curl -s http://localhost:3000/api/health >/dev/null 2>&1 || \
+           curl -s http://localhost:3000/ >/dev/null 2>&1; then
+            api_ready=true
+            break
+        fi
+
+        echo -ne "\r${YELLOW}⏳${NC} Waiting for dApp API to be ready... ${elapsed}s / ${max_wait}s"
+        sleep 3
+        elapsed=$((elapsed + 3))
+    done
+    echo ""
+
+    if [ "$api_ready" = false ]; then
+        log_warning "dApp API not responding after ${max_wait}s"
+        log_warning "Attempting to seed anyway - integration tests may initialize the system"
+        echo ""
+    else
+        log_success "dApp API is ready!"
+        echo ""
+    fi
+
     log_step "Running integration tests to create seed data..."
     log_info "This will create test users, system setup, and demo assets"
     log_info "Expected time: 2-3 minutes"
     echo ""
-    
+
     local start_time=$(date +%s)
-    
+
     if bun run test:integration 2>&1 | tee /tmp/seed-data.log | grep -E "(✓|✗|PASS|FAIL|Error)" | while IFS= read -r line; do
         echo "  ${CYAN}→${NC} $line"
     done; then
@@ -1522,13 +1631,54 @@ seed_database() {
         local end_time=$(date +%s)
         local total_time=$((end_time - start_time))
         echo ""
-        log_warning "Test data seeding had some issues (took ${total_time}s)"
-        log_info "Check /tmp/seed-data.log for details"
-        log_info "You can still use the dApp, but without test data"
+        log_error "Test data seeding failed (took ${total_time}s)"
         echo ""
-        read -p "Press Enter to continue..."
+
+        # Check for common error patterns
+        if grep -q "System not created" /tmp/seed-data.log 2>/dev/null; then
+            log_error "Error: System not created"
+            log_info "This usually means the dApp server is not fully initialized"
+            echo ""
+            log_info "Troubleshooting steps:"
+            echo "  ${YELLOW}1.${NC} Check dApp logs: ${CYAN}tail -f ${PROJECT_ROOT}/dapp.log${NC}"
+            echo "  ${YELLOW}2.${NC} Verify dApp is running: ${CYAN}curl http://localhost:3000${NC}"
+            echo "  ${YELLOW}3.${NC} Check for errors in dApp startup"
+            echo "  ${YELLOW}4.${NC} Try seeding manually after dApp stabilizes:"
+            echo "      ${CYAN}cd kit/dapp && bun run test:integration${NC}"
+            echo ""
+        elif grep -q "ECONNREFUSED" /tmp/seed-data.log 2>/dev/null; then
+            log_error "Error: Connection refused"
+            log_info "Cannot connect to dApp server or services"
+            echo ""
+            log_info "Check if all services are running:"
+            echo "  ${CYAN}docker compose -p atk ps${NC}"
+            echo "  ${CYAN}curl http://localhost:3000${NC}"
+            echo ""
+        else
+            log_warning "Integration tests encountered errors"
+            log_info "Check /tmp/seed-data.log for details"
+            echo ""
+            log_info "Common causes:"
+            echo "  • dApp server still initializing (wait a few minutes)"
+            echo "  • Database connection issues"
+            echo "  • Smart contracts not properly deployed"
+            echo ""
+            log_info "You can try seeding manually later:"
+            echo "  ${CYAN}cd kit/dapp && bun run test:integration${NC}"
+            echo ""
+        fi
+
+        # Show last 10 lines of error log
+        log_info "Last 10 lines from error log:"
+        echo ""
+        tail -10 /tmp/seed-data.log | sed 's/^/  /'
+        echo ""
+
+        log_warning "Continuing without seed data..."
+        log_info "You can create test users manually or run seeding later"
+        sleep 3
     fi
-    
+
     cd "${PROJECT_ROOT}"
 }
 
@@ -1556,17 +1706,17 @@ start_dapp() {
     export SETTLEMINT_HASURA_DATABASE_URL="${SETTLEMINT_HASURA_DATABASE_URL:-postgresql://hasura:hasura@localhost:5432/hasura}"
     export SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT="${SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT:-http://localhost:8547}"
     export DISABLE_MIGRATIONS_ON_STARTUP="true"
-    
+
     log_success "Environment variables configured for dApp"
     log_info "✓ DISABLE_MIGRATIONS_ON_STARTUP=true (migrations applied manually earlier)"
-    
+
     # Verify database tables exist (should have been created by setup_dapp)
     log_step "Verifying database schema..."
     local table_count=$(PGPASSWORD=hasura psql -h localhost -U hasura -d hasura -tAc "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE';" 2>/dev/null || echo "0")
-    
+
     if [ "$table_count" -gt 0 ]; then
         log_success "Database has $table_count tables - schema is ready"
-        
+
         # List some key tables to confirm migrations worked
         local key_tables=$(PGPASSWORD=hasura psql -h localhost -U hasura -d hasura -tAc "SELECT string_agg(tablename, ', ') FROM pg_tables WHERE schemaname='public' AND tablename IN ('user', 'session', 'account');" 2>/dev/null)
         if [ -n "$key_tables" ]; then
@@ -1583,7 +1733,7 @@ start_dapp() {
 
     # Kill any existing dev server processes to free ports
     log_step "Checking for existing development server processes..."
-    
+
     # Kill bun processes (including bun dev, bun vite, etc.)
     local bun_pids=$(pgrep -f "bun.*(dev|vite)" 2>/dev/null || true)
     if [ -n "$bun_pids" ]; then
@@ -1596,7 +1746,7 @@ start_dapp() {
         done
         log_success "Terminated bun processes"
     fi
-    
+
     # Kill node processes running vite (fallback from npm/yarn)
     local node_vite_pids=$(pgrep -f "node.*vite.*dev" 2>/dev/null || true)
     if [ -n "$node_vite_pids" ]; then
@@ -1609,13 +1759,13 @@ start_dapp() {
         done
         log_success "Terminated node vite processes"
     fi
-    
+
     if [ -z "$bun_pids" ] && [ -z "$node_vite_pids" ]; then
         log_info "No existing development server processes found"
     fi
-    
+
     sleep 2
-    
+
     # Double-check port 3000 is free (dApp main port)
     log_step "Verifying port 3000 is available..."
     if lsof -ti:3000 >/dev/null 2>&1; then
@@ -1626,7 +1776,7 @@ start_dapp() {
     else
         log_success "Port 3000 is available"
     fi
-    
+
     # Also check port 42069 (Vite HMR/WebSocket port)
     log_step "Verifying port 42069 (Vite HMR) is available..."
     if lsof -ti:42069 >/dev/null 2>&1; then
@@ -1654,7 +1804,7 @@ start_dapp() {
     nohup bun --bun vite dev > "${LOG_FILE}" 2>&1 &
     local DAPP_PID=$!
     echo $DAPP_PID > "${PID_FILE}"
-    
+
     log_success "dApp server started in background"
     log_info "✓ Process ID: ${CYAN}${DAPP_PID}${NC}"
     log_info "✓ URL: ${BLUE}http://localhost:3000${NC}"
@@ -1708,13 +1858,13 @@ start_dapp() {
         if curl -s http://localhost:3000 >/dev/null 2>&1; then
             echo "" # New line after waiting message
             log_success "dApp is ready and responding at http://localhost:3000"
-            
+
             # Show compilation time from logs
             local compile_time=$(grep "ready in" "${LOG_FILE}" 2>/dev/null | tail -1 | grep -oE '[0-9]+ ms' || echo "")
             if [ -n "$compile_time" ]; then
                 log_info "Compilation completed in ${compile_time}"
             fi
-            
+
             return 0
         fi
 
@@ -1741,14 +1891,14 @@ start_dapp() {
     log_warning "dApp may still be starting (timeout reached after ${max_wait}s)"
     log_info "The dApp is running in background (PID: $DAPP_PID)"
     log_info "Check progress: ${CYAN}tail -f dapp.log${NC}"
-    
+
     # Show what's in the log so far
     if [ -f "${LOG_FILE}" ]; then
         echo ""
         log_info "Current log output:"
         tail -20 "${LOG_FILE}"
     fi
-    
+
     log_info "Once ready, open: ${BLUE}http://localhost:3000${NC}"
 }
 
@@ -1803,11 +1953,11 @@ display_final_instructions() {
     log_header "SETUP COMPLETE! 🎉"
 
     echo -e "${GREEN}${BOLD}Your development environment is ready!${NC}\n"
-    
+
     echo -e "${BOLD}${MAGENTA}═══════════════════════════════════════════════════════════════════${NC}"
     echo -e "${BOLD}${CYAN}                    SERVICE ACCESS INFORMATION                      ${NC}"
     echo -e "${BOLD}${MAGENTA}═══════════════════════════════════════════════════════════════════${NC}\n"
-    
+
     echo -e "${BOLD}1. dApp (Web Application)${NC}"
     echo -e "   ${CYAN}URL:${NC}        ${BLUE}http://localhost:3000${NC}"
     echo -e "   ${CYAN}Status:${NC}     Web interface for asset tokenization"
@@ -1815,13 +1965,13 @@ display_final_instructions() {
     echo -e "      • ${GREEN}admin@settlemint.com${NC}    | Password: ${CYAN}settlemint${NC} | PIN: ${CYAN}123456${NC}"
     echo -e "      • ${GREEN}issuer@settlemint.com${NC}   | Password: ${CYAN}settlemint${NC} | PIN: ${CYAN}123456${NC}"
     echo -e "      • ${GREEN}investor@settlemint.com${NC} | Password: ${CYAN}settlemint${NC} | PIN: ${CYAN}123456${NC}\n"
-    
+
     echo -e "${BOLD}2. Hasura Console (GraphQL API)${NC}"
     echo -e "   ${CYAN}URL:${NC}        ${BLUE}http://localhost:8080${NC}"
     echo -e "   ${CYAN}Port:${NC}       8080"
     echo -e "   ${CYAN}Admin Secret:${NC} ${YELLOW}hasura${NC}"
     echo -e "   ${CYAN}Usage:${NC}      GraphQL API and database management\n"
-    
+
     echo -e "${BOLD}3. PostgreSQL Database${NC}"
     echo -e "   ${CYAN}Host:${NC}       localhost"
     echo -e "   ${CYAN}Port:${NC}       5432"
@@ -1833,7 +1983,7 @@ display_final_instructions() {
     echo -e "      • Database: ${YELLOW}txsigner${NC}   | User: ${YELLOW}txsigner${NC}   | Password: ${YELLOW}txsigner${NC}"
     echo -e "      • Admin:    ${YELLOW}postgres${NC}   | User: ${YELLOW}postgres${NC}   | Password: ${YELLOW}postgres${NC}"
     echo -e "   ${CYAN}Connect:${NC}    ${YELLOW}psql postgresql://hasura:hasura@localhost:5432/hasura${NC}\n"
-    
+
     echo -e "${BOLD}4. MinIO Console (Object Storage)${NC}"
     echo -e "   ${CYAN}URL:${NC}        ${BLUE}http://localhost:9001${NC}"
     echo -e "   ${CYAN}API Port:${NC}   9000"
@@ -1844,26 +1994,26 @@ display_final_instructions() {
     echo -e "      • Access Key: ${YELLOW}atk-service${NC}"
     echo -e "      • Secret Key: ${YELLOW}atk-service-secret${NC}"
     echo -e "   ${CYAN}Usage:${NC}      File storage and document management\n"
-    
+
     echo -e "${BOLD}5. Portal API (SettleMint Backend)${NC}"
     echo -e "   ${CYAN}API URL:${NC}       ${BLUE}http://localhost:7700${NC}"
     echo -e "   ${CYAN}GraphQL URL:${NC}   ${BLUE}http://localhost:7701${NC}"
     echo -e "   ${CYAN}Usage:${NC}         Backend services and blockchain integration\n"
-    
+
     echo -e "${BOLD}6. Graph Node (Subgraph Indexing)${NC}"
     echo -e "   ${CYAN}URL:${NC}        ${BLUE}http://localhost:8000${NC}"
     echo -e "   ${CYAN}Usage:${NC}      Blockchain data indexing and querying\n"
-    
+
     echo -e "${BOLD}7. Blockscout Explorer${NC}"
     echo -e "   ${CYAN}URL:${NC}        ${BLUE}http://localhost:4001${NC}"
     echo -e "   ${CYAN}Usage:${NC}      Blockchain explorer and transaction viewer\n"
-    
+
     echo -e "${BOLD}8. Blockchain Node (Anvil)${NC}"
     echo -e "   ${CYAN}JSON-RPC:${NC}   http://localhost:8545"
     echo -e "   ${CYAN}Via Signer:${NC} http://localhost:8547"
     echo -e "   ${CYAN}Chain ID:${NC}   31337 (local development)"
     echo -e "   ${CYAN}Usage:${NC}      Local Ethereum-compatible blockchain\n"
-    
+
     echo -e "${BOLD}${MAGENTA}═══════════════════════════════════════════════════════════════════${NC}\n"
 
     echo -e "${BOLD}dApp Process:${NC}\n"
@@ -1882,10 +2032,10 @@ display_final_instructions() {
     fi
 
     echo -e "${BOLD}${CYAN}Next Steps:${NC}\n"
-    
+
     echo -e "${YELLOW}1.${NC} ${BOLD}Access dApp:${NC}"
     echo -e "   ${BLUE}http://localhost:3000${NC}"
-    
+
     # Check if we have seed data by looking for test users
     if PGPASSWORD=hasura psql -h localhost -U hasura -d hasura -tAc "SELECT COUNT(*) FROM \"user\" WHERE email='admin@settlemint.com';" 2>/dev/null | grep -q "1"; then
         echo -e "   ${GREEN}✓${NC} Test users available:"
@@ -1897,7 +2047,7 @@ display_final_instructions() {
         echo -e "      ${CYAN}cd kit/dapp && bun run test:integration${NC}"
     fi
     echo ""
-    
+
     echo -e "${YELLOW}2.${NC} ${BOLD}View Live Logs:${NC}"
     echo -e "   ${CYAN}tail -f dapp.log${NC}"
     echo -e "   ${BLUE}→${NC} Shows real-time compilation and server logs\n"
@@ -1922,36 +2072,200 @@ display_final_instructions() {
     echo -e "   2. Run: ${CYAN}bun run artifacts${NC}"
     echo -e "   3. Run: ${CYAN}bun run dev:reset${NC}"
     echo -e "   4. Run this script again: ${CYAN}bash dev.sh${NC}\n"
-    
+
     echo -e "${BOLD}${MAGENTA}═══════════════════════════════════════════════════════════════════${NC}"
     echo -e "${BOLD}${CYAN}                      QUICK REFERENCE                               ${NC}"
     echo -e "${BOLD}${MAGENTA}═══════════════════════════════════════════════════════════════════${NC}\n"
-    
+
     echo -e "${BOLD}Most Used Services:${NC}"
     echo -e "   • dApp:             ${BLUE}http://localhost:3000${NC}"
     echo -e "   • Hasura (secret: ${YELLOW}hasura${NC}):    ${BLUE}http://localhost:8080${NC}"
     echo -e "   • MinIO (user: ${YELLOW}minio${NC}, pass: ${YELLOW}miniominio${NC}): ${BLUE}http://localhost:9001${NC}"
     echo -e "   • Blockscout:       ${BLUE}http://localhost:4001${NC}\n"
-    
+
     echo -e "${BOLD}Database Connection Strings:${NC}"
     echo -e "   ${CYAN}postgresql://hasura:hasura@localhost:5432/hasura${NC}"
     echo -e "   ${CYAN}postgresql://portal:portal@localhost:5432/portal${NC}\n"
-    
+
     echo -e "${BOLD}View Logs:${NC}"
     echo -e "   ${CYAN}tail -f dapp.log${NC}                    - dApp logs"
     echo -e "   ${CYAN}docker compose -p atk logs -f${NC}       - All service logs"
     echo -e "   ${CYAN}docker compose -p atk logs postgres${NC}  - PostgreSQL logs\n"
-    
+
     echo -e "${BOLD}${MAGENTA}═══════════════════════════════════════════════════════════════════${NC}\n"
-    
+
     echo -e "${GREEN}${BOLD}Happy coding! 🚀${NC}\n"
     echo -e "${YELLOW}Tip:${NC} Save this output or run ${CYAN}./dev.sh --help${NC} to see credentials again\n"
+}
+
+# Check and configure GitHub credentials upfront
+check_github_credentials() {
+    log_header "CHECKING GITHUB CREDENTIALS"
+
+    log_step "Checking for GitHub Container Registry credentials..."
+
+    # Check if credentials are already in .env.local
+    if [ -f .env.local ]; then
+        source .env.local 2>/dev/null || true
+    fi
+
+    if [ -n "${GITHUB_TOKEN:-}" ] && [ -n "${GITHUB_USERNAME:-}" ]; then
+        log_success "GitHub credentials found in .env.local"
+        log_info "Username: ${CYAN}${GITHUB_USERNAME}${NC}"
+        log_info "Token: ${CYAN}${GITHUB_TOKEN:0:10}...${NC} (hidden)"
+        echo ""
+
+        # Test if credentials work
+        log_step "Testing GitHub credentials..."
+        if echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_USERNAME" --password-stdin >/dev/null 2>&1; then
+            log_success "GitHub credentials are valid!"
+            return 0
+        else
+            log_warning "Existing GitHub credentials failed authentication"
+            echo ""
+        fi
+    else
+        log_info "No GitHub credentials found in .env.local"
+        echo ""
+    fi
+
+    # Ask user if they want to add credentials now
+    echo -e "${BOLD}${YELLOW}GitHub Container Registry Access${NC}\n"
+    echo -e "This project uses private Docker images from GitHub Container Registry."
+    echo -e "You need a GitHub Personal Access Token with ${CYAN}read:packages${NC} permission."
+    echo ""
+    echo -e "${BOLD}Options:${NC}"
+    echo -e "   ${CYAN}1.${NC} I have credentials and want to add them now ${GREEN}(Recommended)${NC}"
+    echo -e "   ${CYAN}2.${NC} Add them to .env.local manually and re-run this script"
+    echo -e "   ${CYAN}3.${NC} Skip (setup will fail when trying to pull Docker images)"
+    echo ""
+
+    while true; do
+        read -p "Enter your choice [1-3]: " choice
+        case $choice in
+            1)
+                echo ""
+                log_info "Please enter your GitHub credentials"
+                echo ""
+                read -p "GitHub Username: " gh_username
+                read -s -p "GitHub Token (input hidden): " gh_token
+                echo ""
+                echo ""
+
+                if [ -z "$gh_username" ] || [ -z "$gh_token" ]; then
+                    log_error "Username and token cannot be empty"
+                    continue
+                fi
+
+                # Test the credentials
+                log_step "Testing credentials..."
+                if echo "$gh_token" | docker login ghcr.io -u "$gh_username" --password-stdin >/dev/null 2>&1; then
+                    log_success "Credentials are valid!"
+
+                    # Add to .env.local
+                    if [ ! -f .env.local ]; then
+                        touch .env.local
+                    fi
+
+                    # Remove old credentials if they exist
+                    grep -v "^GITHUB_TOKEN=" .env.local > .env.local.tmp 2>/dev/null || true
+                    grep -v "^GITHUB_USERNAME=" .env.local.tmp > .env.local 2>/dev/null || true
+                    rm -f .env.local.tmp
+
+                    # Add new credentials
+                    echo "" >> .env.local
+                    echo "# GitHub Container Registry credentials" >> .env.local
+                    echo "GITHUB_TOKEN=${gh_token}" >> .env.local
+                    echo "GITHUB_USERNAME=${gh_username}" >> .env.local
+
+                    export GITHUB_TOKEN="${gh_token}"
+                    export GITHUB_USERNAME="${gh_username}"
+
+                    log_success "Credentials saved to .env.local"
+                    return 0
+                else
+                    log_error "Invalid credentials. Please try again."
+                    echo ""
+                    continue
+                fi
+                ;;
+            2)
+                echo ""
+                log_info "You can use the template file to get started:"
+                echo ""
+                if [ -f .env.local.example ]; then
+                    echo -e "   ${CYAN}cp .env.local.example .env.local${NC}"
+                else
+                    echo -e "   ${CYAN}# Create .env.local manually${NC}"
+                fi
+                echo ""
+                log_info "Then add your GitHub credentials:"
+                echo ""
+                echo -e "   ${CYAN}GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx${NC}"
+                echo -e "   ${CYAN}GITHUB_USERNAME=your_github_username${NC}"
+                echo ""
+                echo -e "Get your token from: ${BLUE}https://github.com/settings/tokens${NC}"
+                echo -e "Required scope: ${CYAN}read:packages${NC}"
+                echo ""
+                log_warning "Exiting script. Please re-run after adding credentials."
+                exit 1
+                ;;
+            3)
+                echo ""
+                log_warning "Skipping GitHub credentials - setup may fail"
+                log_info "You can add credentials to .env.local later and re-run"
+                return 0
+                ;;
+            *)
+                echo -e "${RED}✗${NC} Invalid choice. Please enter 1, 2, or 3."
+                ;;
+        esac
+    done
+}
+
+# Ask about seed data upfront
+ask_seed_data_upfront() {
+    log_header "SEED DATA CONFIGURATION"
+
+    echo -e "${BOLD}${CYAN}Would you like to seed the database with test data?${NC}\n"
+    echo -e "This will create test users and demo assets after setup completes:"
+    echo -e "   • ${GREEN}admin@settlemint.com${NC}    (password: settlemint, PIN: 123456)"
+    echo -e "   • ${GREEN}issuer@settlemint.com${NC}   (password: settlemint, PIN: 123456)"
+    echo -e "   • ${GREEN}investor@settlemint.com${NC} (password: settlemint, PIN: 123456)"
+    echo ""
+    echo -e "   ${YELLOW}Note:${NC} Seeding takes 2-3 minutes and runs integration tests"
+    echo ""
+    echo -e "${BOLD}Options:${NC}"
+    echo -e "   ${CYAN}1.${NC} Yes, seed database with test data ${GREEN}(Recommended for development)${NC}"
+    echo -e "   ${CYAN}2.${NC} No, start with empty database"
+    echo ""
+
+    while true; do
+        read -p "Enter your choice [1-2]: " choice
+        case $choice in
+            1)
+                echo ""
+                log_info "Selected: Seed database with test data"
+                ENABLE_SEED_DATA=true
+                return 0
+                ;;
+            2)
+                echo ""
+                log_info "Selected: Start with empty database"
+                ENABLE_SEED_DATA=false
+                return 0
+                ;;
+            *)
+                echo -e "${RED}✗${NC} Invalid choice. Please enter 1 or 2."
+                ;;
+        esac
+    done
 }
 
 # Show startup menu
 show_startup_menu() {
     clear
-    
+
     # Output to stderr so it's not captured by command substitution
     printf "${BOLD}${MAGENTA}" >&2
     printf "╔═══════════════════════════════════════════════════════════════════════════╗\n" >&2
@@ -1961,12 +2275,12 @@ show_startup_menu() {
     printf "║                                                                           ║\n" >&2
     printf "╚═══════════════════════════════════════════════════════════════════════════╝\n" >&2
     printf "${NC}\n" >&2
-    
+
     printf "${BLUE}ℹ${NC} This script will set up your development environment for M1 Mac using OrbStack\n" >&2
     printf "\n" >&2
-    
+
     printf "${BOLD}${CYAN}Please select an installation mode:${NC}\n\n" >&2
-    
+
     printf "${BOLD}Option 1: Clean Install${NC} ${GREEN}(Recommended for first time or when having issues)${NC}\n" >&2
     printf "   ${YELLOW}What it does:${NC}\n" >&2
     printf "   ${YELLOW}•${NC} Stops and removes all Docker containers and volumes\n" >&2
@@ -1977,7 +2291,7 @@ show_startup_menu() {
     printf "   ${BLUE}When to use:${NC} First time setup, after major updates, or to fix errors\n" >&2
     printf "   ${CYAN}⏱  Estimated time: 7-10 minutes${NC}\n" >&2
     printf "\n" >&2
-    
+
     printf "${BOLD}Option 2: Quick Update${NC} ${GREEN}(Faster if environment is already working)${NC}\n" >&2
     printf "   ${YELLOW}What it does:${NC}\n" >&2
     printf "   ${YELLOW}•${NC} Keeps existing Docker containers and data\n" >&2
@@ -1987,11 +2301,11 @@ show_startup_menu() {
     printf "   ${BLUE}When to use:${NC} Quick iterations, testing changes, or restarting after code edits\n" >&2
     printf "   ${CYAN}⏱  Estimated time: 3-5 minutes${NC}\n" >&2
     printf "\n" >&2
-    
+
     printf "${BOLD}Option 3: Exit${NC}\n" >&2
     printf "   ${YELLOW}→${NC} Exit this setup script without making changes\n" >&2
     printf "\n" >&2
-    
+
     while true; do
         printf "${CYAN}Enter your choice [1-3]:${NC} " >&2
         read choice
@@ -2025,11 +2339,24 @@ show_startup_menu() {
 main() {
     # Show menu and get user choice
     local install_mode=$(show_startup_menu)
-    
+
     # Don't clear immediately - let user see their selection
     echo ""
     echo ""
-    
+
+    # Perform upfront checks before starting the installation
+    # This ensures no further user input is needed during the process
+    CURRENT_STEP=0  # Reset progress counter
+
+    # Check GitHub credentials
+    check_github_credentials
+
+    # Ask about seed data
+    ask_seed_data_upfront
+
+    echo ""
+    echo ""
+
     printf "${BOLD}${MAGENTA}"
     printf "╔═══════════════════════════════════════════════════════════════════════════╗\n"
     printf "║                                                                           ║\n"
@@ -2042,6 +2369,37 @@ main() {
     printf "║                                                                           ║\n"
     printf "╚═══════════════════════════════════════════════════════════════════════════╝\n"
     printf "${NC}\n"
+
+    # Show configuration summary
+    echo -e "${BOLD}${CYAN}Configuration Summary:${NC}"
+    echo -e "  ${GREEN}✓${NC} GitHub Credentials: ${CYAN}${GITHUB_USERNAME:-Not configured}${NC}"
+    echo -e "  ${GREEN}✓${NC} Seed Test Data: ${CYAN}$([ "$ENABLE_SEED_DATA" = true ] && echo 'Yes' || echo 'No')${NC}"
+    echo -e "  ${GREEN}✓${NC} Clean Setup: ${CYAN}$([ "$install_mode" = "clean" ] && echo 'Yes - Fresh database and blockchain' || echo 'No - Reusing existing data')${NC}"
+    echo ""
+
+    log_info "Setup will proceed without further user input"
+    log_info "Sit back and relax while we set up your environment!"
+    echo ""
+
+    echo -e "${BOLD}What's happening:${NC}"
+    echo -e "  ${CYAN}1.${NC}  Clean up previous environment (if clean mode)"
+    echo -e "  ${CYAN}2.${NC}  Check dependencies (Homebrew, Bun, Docker, Git)"
+    echo -e "  ${CYAN}3.${NC}  Setup environment variables"
+    echo -e "  ${CYAN}4.${NC}  Install project dependencies"
+    echo -e "  ${CYAN}5.${NC}  Generate contract artifacts"
+    echo -e "  ${CYAN}6.${NC}  Start Docker services (fresh blockchain + database)"
+    echo -e "  ${CYAN}7.${NC}  Setup database with clean schema"
+    echo -e "  ${CYAN}8.${NC}  Connect to blockchain"
+    echo -e "  ${CYAN}9.${NC}  Setup dApp and generate types"
+    echo -e "  ${CYAN}10.${NC} Start dApp development server"
+    echo -e "  ${CYAN}11.${NC} Seed test data (if enabled, requires running dApp)"
+    echo -e "  ${CYAN}12.${NC} Open services in browser"
+    echo ""
+
+    sleep 3
+
+    # Reset progress counter for actual setup
+    CURRENT_STEP=0
 
     # Clean up any previous environment (only in clean mode)
     if [ "$install_mode" = "clean" ]; then
@@ -2075,14 +2433,18 @@ main() {
     # Setup dApp
     setup_dapp
 
-    # Ask if user wants to seed database
-    if ask_seed_data; then
+    # Start dApp development server FIRST (required for seeding)
+    start_dapp
+
+    # Seed database if user requested it (AFTER dApp is running)
+    if [ "$ENABLE_SEED_DATA" = true ]; then
+        log_info "dApp server is now running, proceeding with seed data..."
+        echo ""
         seed_database
+    else
+        log_info "Skipping seed data (user selected empty database)"
     fi
 
-    # Start dApp development server
-    start_dapp
-    
     # Open services in browser
     open_services_in_browser
 
