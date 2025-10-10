@@ -2,6 +2,8 @@ import { baseContract } from "@/orpc/procedures/base.contract";
 import { StatsAssetActivityOutputSchema } from "@/orpc/routes/system/stats/routes/asset-activity.schema";
 import { StatsAssetLifecycleOutputSchema } from "@/orpc/routes/system/stats/routes/asset-lifecycle.schema";
 import { StatsAssetsOutputSchema } from "@/orpc/routes/system/stats/routes/assets.schema";
+import { StatsClaimsStatsOutputSchema } from "@/orpc/routes/system/stats/routes/claims-stats.schema";
+import { StatsClaimsStatsStateOutputSchema } from "@/orpc/routes/system/stats/routes/claims-stats-state.schema";
 import { StatsIdentityCountOutputSchema } from "@/orpc/routes/system/stats/routes/identity-count.schema";
 import { StatsIdentityStatsOverTimeOutputSchema } from "@/orpc/routes/system/stats/routes/identity-stats-over-time.schema";
 import {
@@ -9,6 +11,8 @@ import {
   StatsPortfolioDetailsOutputSchema,
 } from "@/orpc/routes/system/stats/routes/portfolio-details.schema";
 import { StatsPortfolioOutputSchema } from "@/orpc/routes/system/stats/routes/portfolio.schema";
+import { StatsTopicSchemesStatsOutputSchema } from "@/orpc/routes/system/stats/routes/topic-schemes-stats.schema";
+import { StatsTopicSchemesStatsStateOutputSchema } from "@/orpc/routes/system/stats/routes/topic-schemes-stats-state.schema";
 import {
   StatsTransactionCountInputSchema,
   StatsTransactionCountOutputSchema,
@@ -17,6 +21,8 @@ import {
   StatsTransactionHistoryInputSchema,
   StatsTransactionHistoryOutputSchema,
 } from "@/orpc/routes/system/stats/routes/transaction-history.schema";
+import { StatsTrustedIssuerStatsOutputSchema } from "@/orpc/routes/system/stats/routes/trusted-issuer-stats.schema";
+import { StatsTrustedIssuerStatsStateOutputSchema } from "@/orpc/routes/system/stats/routes/trusted-issuer-stats-state.schema";
 import { StatsValueOutputSchema } from "@/orpc/routes/system/stats/routes/value.schema";
 import { StatsRangeInputSchema } from "@atk/zod/stats-range";
 
@@ -52,6 +58,29 @@ const statsAssetActivity = baseContract
   })
   .input(StatsRangeInputSchema)
   .output(StatsAssetActivityOutputSchema);
+
+const statsClaimsStats = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/claims-stats",
+    description:
+      "Retrieve claims statistics over time including issued, active, removed, and revoked claims",
+    successDescription: "Claims statistics retrieved successfully",
+    tags: ["stats", "system", "claims"],
+  })
+  .input(StatsRangeInputSchema)
+  .output(StatsClaimsStatsOutputSchema);
+
+const statsClaimsStatsState = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/claims-stats-state",
+    description:
+      "Retrieve current claims statistics state including issued, active, removed, and revoked claims",
+    successDescription: "Claims statistics state retrieved successfully",
+    tags: ["stats", "system", "claims"],
+  })
+  .output(StatsClaimsStatsStateOutputSchema);
 
 const statsIdentityCount = baseContract
   .route({
@@ -98,6 +127,30 @@ const statsTransactionHistory = baseContract
   .input(StatsTransactionHistoryInputSchema)
   .output(StatsTransactionHistoryOutputSchema);
 
+const statsTrustedIssuerStats = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/trusted-issuer-stats",
+    description:
+      "Retrieve trusted issuer statistics over time including added, active, and removed issuers",
+    successDescription: "Trusted issuer statistics retrieved successfully",
+    tags: ["stats", "system", "trusted-issuers"],
+  })
+  .input(StatsRangeInputSchema)
+  .output(StatsTrustedIssuerStatsOutputSchema);
+
+const statsTrustedIssuerStatsState = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/trusted-issuer-stats-state",
+    description:
+      "Retrieve current trusted issuer statistics state including added, active, and removed issuers",
+    successDescription:
+      "Trusted issuer statistics state retrieved successfully",
+    tags: ["stats", "system", "trusted-issuers"],
+  })
+  .output(StatsTrustedIssuerStatsStateOutputSchema);
+
 const statsValue = baseContract
   .route({
     method: "GET",
@@ -130,14 +183,43 @@ const statsPortfolioDetails = baseContract
   .input(StatsPortfolioDetailsInputSchema)
   .output(StatsPortfolioDetailsOutputSchema);
 
+const statsTopicSchemesStats = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/topic-schemes-stats",
+    description:
+      "Retrieve topic schemes statistics over time including registered, active, and removed schemes",
+    successDescription: "Topic schemes statistics retrieved successfully",
+    tags: ["stats", "system", "topic-schemes"],
+  })
+  .input(StatsRangeInputSchema)
+  .output(StatsTopicSchemesStatsOutputSchema);
+
+const statsTopicSchemesStatsState = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/topic-schemes-stats-state",
+    description:
+      "Retrieve current topic schemes statistics state including registered, active, and removed schemes",
+    successDescription: "Topic schemes statistics state retrieved successfully",
+    tags: ["stats", "system", "topic-schemes"],
+  })
+  .output(StatsTopicSchemesStatsStateOutputSchema);
+
 export const statsContract = {
   assets: statsAssets,
   assetLifecycle: statsAssetLifecycle,
   assetActivity: statsAssetActivity,
+  claimsStats: statsClaimsStats,
+  claimsStatsState: statsClaimsStatsState,
   identityCount: statsIdentityCount,
   identityStatsOverTime: statsIdentityStatsOverTime,
   transactionCount: statsTransactionCount,
   transactionHistory: statsTransactionHistory,
+  topicSchemesStats: statsTopicSchemesStats,
+  topicSchemesStatsState: statsTopicSchemesStatsState,
+  trustedIssuerStats: statsTrustedIssuerStats,
+  trustedIssuerStatsState: statsTrustedIssuerStatsState,
   value: statsValue,
   portfolio: statsPortfolio,
   portfolioDetails: statsPortfolioDetails,

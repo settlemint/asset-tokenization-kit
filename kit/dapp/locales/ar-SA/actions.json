@@ -1,0 +1,43 @@
+{
+  "title": "الإجراءات",
+  "description": "تابع الإجراءات القادمة والمعلقة والمكتملة المصرح لك بتنفيذها.",
+  "tabs": {
+    "pending": "معلقة",
+    "upcoming": "قادمة",
+    "completed": "مكتملة"
+  },
+  "table": {
+    "columns": {
+      "name": "الإجراء",
+      "status": "الحالة",
+      "type": "النوع",
+      "activeAt": "موعد التنفيذ",
+      "executedAt": "اكتمل في",
+      "executedBy": "منفذ الإجراء"
+    },
+    "empty": {
+      "title": "لا توجد إجراءات حاليًا",
+      "description": "أنت على اطلاع كامل. ستظهر الإجراءات الجديدة هنا بمجرد توفرها."
+    },
+    "authorizedBadge": "{{count}} مفوض"
+  },
+  "filters": {
+    "searchPlaceholder": "ابحث في الإجراءات"
+  },
+  "status": {
+    "PENDING": "قادمة",
+    "ACTIVE": "معلقة",
+    "EXECUTED": "مكتملة",
+    "EXPIRED": "منتهية"
+  },
+  "labels": {
+    "MatureBond": "استحقاق السند",
+    "ApproveXvPSettlement": "الموافقة على التسوية",
+    "ExecuteXvPSettlement": "تنفيذ التسوية"
+  },
+  "types": {
+    "bond": "سند",
+    "settlement": "تسوية",
+    "generic": "إجراء"
+  }
+}
