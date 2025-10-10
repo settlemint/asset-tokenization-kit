@@ -75,7 +75,7 @@ describe("Claims stats (integration)", () => {
     expect(lastDataPoint?.totalRevokedClaims).toBeGreaterThanOrEqual(0);
   });
 
-  // TODO: Enable when revoke claims is fixed
+  // TODO: Enable when revoke claims is fixed: https://linear.app/settlemint/issue/ENG-4105/revoke-claim-orpc-endpoint-doesnt-work
   it.skip("should reflect claim revocation in stats", async () => {
     // Issue an AML claim that we'll revoke
     await adminClient.system.identity.claims.issue({
