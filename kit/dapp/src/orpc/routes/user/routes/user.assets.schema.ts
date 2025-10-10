@@ -26,7 +26,15 @@ export const TokenAssetSchema = z.object({
       isMatured: z.boolean().describe("Whether the bond is matured"),
     })
     .optional()
+    .nullable()
     .describe("The bond details"),
+  redeemable: z
+    .object({
+      redeemedAmount: bigDecimal().describe("The amount of tokens redeemed"),
+    })
+    .optional()
+    .nullable()
+    .describe("The redeemable details"),
 });
 
 export const TokenBalanceSchema = z.object({

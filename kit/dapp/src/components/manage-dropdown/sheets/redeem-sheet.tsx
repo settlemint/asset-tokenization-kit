@@ -3,7 +3,7 @@ import { useAppForm } from "@/hooks/use-app-form";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenBalance } from "@/orpc/routes/user/routes/user.assets.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { format, from, greaterThan, type Dnum } from "dnum";
+import { format, from, greaterThan, subtract, type Dnum } from "dnum";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -31,10 +31,17 @@ export function RedeemSheet({ open, onClose, assetBalance }: RedeemSheetProps) {
       },
     })
   );
-  const userBalance = assetBalance.available;
+
+  const tokenDecimals = assetBalance.token.decimals;
+  const tokenSymbol = assetBalance.token.symbol;
+  const maxAmountToRedeem = subtract(
+    from(assetBalance.available, tokenDecimals),
+    from(assetBalance.token.redeemable?.redeemedAmount ?? 0, tokenDecimals)
+  );
+
   const sheetStoreRef = useRef(createActionFormStore({ hasValuesStep: true }));
   const form = useAppForm({
-    defaultValues: { amount: userBalance },
+    defaultValues: { amount: maxAmountToRedeem },
     onSubmit: () => {},
   });
 
@@ -56,7 +63,7 @@ export function RedeemSheet({ open, onClose, assetBalance }: RedeemSheetProps) {
       {() => {
         const amount =
           (form.getFieldValue("amount") as Dnum | undefined) ??
-          from(0n, assetBalance.token.decimals);
+          from(0n, tokenDecimals);
 
         const redeemAmount = amount;
 
@@ -74,8 +81,7 @@ export function RedeemSheet({ open, onClose, assetBalance }: RedeemSheetProps) {
                     {t("tokens:actions.redeem.form.balance.available")}
                   </div>
                   <div className="text-sm font-medium">
-                    {format(userBalance, { digits: 4 })}{" "}
-                    {assetBalance.token.symbol}
+                    {format(maxAmountToRedeem, { digits: 4 })} {tokenSymbol}
                   </div>
                 </div>
                 <span className="text-muted-foreground">→</span>
@@ -84,8 +90,7 @@ export function RedeemSheet({ open, onClose, assetBalance }: RedeemSheetProps) {
                     {t("tokens:actions.redeem.submit")}
                   </div>
                   <div className="text-sm font-medium">
-                    {format(redeemAmount, { digits: 4 })}{" "}
-                    {assetBalance.token.symbol}
+                    {format(redeemAmount, { digits: 4 })} {tokenSymbol}
                   </div>
                 </div>
               </div>
@@ -118,7 +123,7 @@ export function RedeemSheet({ open, onClose, assetBalance }: RedeemSheetProps) {
                   loading: t("tokens:actions.redeem.toasts.loading"),
                   success: t("tokens:actions.redeem.toasts.success", {
                     amount: format(redeemAmount, { digits: 4 }),
-                    symbol: assetBalance.token.symbol,
+                    symbol: tokenSymbol,
                   }),
                   error: (error) =>
                     t("tokens:actions.redeem.toasts.error", {
@@ -146,8 +151,7 @@ export function RedeemSheet({ open, onClose, assetBalance }: RedeemSheetProps) {
                         {t("tokens:actions.redeem.form.balance.available")}
                       </span>
                       <span className="font-medium">
-                        {format(userBalance, { digits: 4 })}{" "}
-                        {assetBalance.token.symbol}
+                        {format(maxAmountToRedeem, { digits: 4 })} {tokenSymbol}
                       </span>
                     </div>
                   </CardContent>
@@ -157,14 +161,12 @@ export function RedeemSheet({ open, onClose, assetBalance }: RedeemSheetProps) {
                   <div className="space-y-2">
                     <form.AppField name="amount">
                       {(field) => (
-                        <div className="space-y-2">
-                          <field.DnumField
-                            label={t("tokens:actions.redeem.form.amount.label")}
-                            endAddon={assetBalance.token.symbol}
-                            decimals={assetBalance.token.decimals}
-                            required
-                          />
-                        </div>
+                        <field.DnumField
+                          label={t("tokens:actions.redeem.form.amount.label")}
+                          endAddon={tokenSymbol}
+                          decimals={tokenDecimals}
+                          required
+                        />
                       )}
                     </form.AppField>
                   </div>
