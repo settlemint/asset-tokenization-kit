@@ -25,6 +25,8 @@ export interface ImageUploadProps {
   value?: string | null;
   /** Callback when image URL changes */
   onChange: (url: string | null) => void;
+  /** Callback to auto-save the form when image is uploaded */
+  onAutoSave?: (newUrl: string) => void;
   /** Type of image being uploaded */
   imageType:
     | "logo_main"
@@ -47,6 +49,7 @@ export function ImageUpload({
   description,
   value,
   onChange,
+  onAutoSave,
   imageType,
   accept = "image/png,image/jpeg,image/svg+xml",
   maxSizeMB = 5,
@@ -60,6 +63,10 @@ export function ImageUpload({
       onSuccess: (data) => {
         onChange(data.url);
         toast.success("Image uploaded successfully");
+        // Auto-save the form to persist the image URL
+        if (onAutoSave) {
+          onAutoSave(data.url);
+        }
       },
       onError: (error) => {
         toast.error(`Failed to upload image: ${error.message}`);

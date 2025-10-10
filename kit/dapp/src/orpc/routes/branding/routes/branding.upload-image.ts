@@ -1,4 +1,5 @@
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
+import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { minioMiddleware } from "@/orpc/middlewares/services/minio.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -43,6 +44,7 @@ export const uploadImage = authRouter.branding.uploadImage
     })
   )
   .use(minioMiddleware)
+  .use(databaseMiddleware)
   .handler(async ({ input, context, errors }) => {
     const { imageData, fileName, mimeType, imageType } = input;
 
@@ -63,6 +65,36 @@ export const uploadImage = authRouter.branding.uploadImage
     }
 
     try {
+      // Get current branding to find old image URLs
+      const currentBranding = await context.db.query.branding.findFirst();
+      let oldImageUrl: string | null = null;
+
+      if (currentBranding) {
+        // Get the old image URL for this image type
+        switch (imageType) {
+          case "logo_main":
+            oldImageUrl = currentBranding.logoMain;
+            break;
+          case "logo_sidebar":
+            oldImageUrl = currentBranding.logoSidebar;
+            break;
+          case "logo_favicon":
+            oldImageUrl = currentBranding.logoFavicon;
+            break;
+          case "background_light":
+            oldImageUrl = currentBranding.backgroundLight;
+            break;
+          case "background_dark":
+            oldImageUrl = currentBranding.backgroundDark;
+            break;
+        }
+      }
+
+      logger.info("[Branding] Found old image URL", {
+        oldImageUrl,
+        imageType,
+      });
+
       // Ensure bucket exists
       logger.info("[Branding] Checking if bucket exists", {
         bucket: BRANDING_BUCKET,
@@ -143,8 +175,19 @@ export const uploadImage = authRouter.branding.uploadImage
       // Remove s3:// prefix if present
       minioEndpoint = minioEndpoint.replace(/^s3:\/\//, "");
 
-      const protocol = minioEndpoint.includes("localhost") ? "http" : "https";
-      const url = `${protocol}://${minioEndpoint}/${BRANDING_BUCKET}/${objectName}`;
+      // Ensure endpoint has proper protocol
+      let url;
+      if (
+        minioEndpoint.startsWith("http://") ||
+        minioEndpoint.startsWith("https://")
+      ) {
+        // Endpoint already has protocol
+        url = `${minioEndpoint}/${BRANDING_BUCKET}/${objectName}`;
+      } else {
+        // Add protocol based on localhost detection
+        const protocol = minioEndpoint.includes("localhost") ? "http" : "https";
+        url = `${protocol}://${minioEndpoint}/${BRANDING_BUCKET}/${objectName}`;
+      }
 
       logger.info("[Branding] Generated public URL", {
         url,
@@ -156,6 +199,38 @@ export const uploadImage = authRouter.branding.uploadImage
         url,
         objectName,
       });
+
+      // Delete old image if it exists
+      if (oldImageUrl) {
+        try {
+          // Extract object name from old URL
+          const urlParts = oldImageUrl.split("/");
+          const oldObjectName = urlParts[urlParts.length - 1];
+
+          logger.info("[Branding] Deleting old image", {
+            oldObjectName,
+            oldImageUrl,
+          });
+
+          await context.minioClient.removeObject(
+            BRANDING_BUCKET,
+            oldObjectName
+          );
+
+          logger.info("[Branding] Old image deleted successfully", {
+            oldObjectName,
+          });
+        } catch (deleteError) {
+          // Log error but don't fail the upload
+          logger.warn("[Branding] Failed to delete old image", {
+            error:
+              deleteError instanceof Error
+                ? deleteError.message
+                : String(deleteError),
+            oldImageUrl,
+          });
+        }
+      }
 
       return {
         url,

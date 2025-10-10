@@ -1382,6 +1382,8 @@ SETTLEMINT_HASURA_ADMIN_SECRET=hasura
 SETTLEMINT_HASURA_DATABASE_URL=postgresql://hasura:hasura@localhost:5432/hasura
 
 # MinIO Configuration
+SETTLEMINT_MINIO_ENDPOINT=http://localhost:9000
+SETTLEMINT_MINIO_ACCESS_KEY=atk-service
 SETTLEMINT_MINIO_SECRET_KEY=atk-service-secret
 
 # Disable automatic migrations (we handle them manually)
@@ -1389,6 +1391,7 @@ DISABLE_MIGRATIONS_ON_STARTUP=true
 EOF
     log_success "dApp environment configured"
     log_info "✓ Database connection: postgresql://hasura:hasura@localhost:5432/hasura"
+    log_info "✓ MinIO object storage: localhost:9000"
     log_info "✓ Automatic migrations: DISABLED (will apply manually)"
     echo ""
 
@@ -1578,88 +1581,122 @@ seed_database() {
     local PROJECT_ROOT=$(pwd)
     cd "${PROJECT_ROOT}/kit/dapp"
 
-    # Verify dApp server is responding to API calls before seeding
-    log_step "Verifying dApp API is ready for seeding..."
-    local max_wait=120
-    local elapsed=0
-    local api_ready=false
-    local router_ready=false
-    local db_ready=false
+    # Verify dApp server is responding before seeding
+    log_step "Verifying dApp server is ready for seeding..."
+    local stabilization_time=45  # Give server time to fully initialize (45 seconds)
+    local server_ready=false
 
-    log_info "Checking for:"
-    echo "  ${YELLOW}•${NC} Server responding"
-    echo "  ${YELLOW}•${NC} ORPC router initialized"
-    echo "  ${YELLOW}•${NC} Database connected"
+    log_info "The server needs time to:"
+    echo "  ${CYAN}→${NC} Connect to database"
+    echo "  ${CYAN}→${NC} Initialize ORPC routes"
+    echo "  ${CYAN}→${NC} Connect to blockchain"
+    echo "  ${CYAN}→${NC} Load all middleware"
     echo ""
 
+    # First, ensure server is responding at all
+    local max_wait=60
+    local elapsed=0
+    log_step "Step 1: Checking if server responds..."
     while [ $elapsed -lt $max_wait ]; do
-        # Check 1: Is server responding?
-        if curl -s http://localhost:3000/ >/dev/null 2>&1; then
-            if [ "$api_ready" = false ]; then
-                echo -ne "\r${GREEN}✓${NC} Server responding                                                  \n"
-                api_ready=true
-            fi
-            
-            # Check 2: Is ORPC router ready? (check for ORPC endpoint)
-            if curl -s -X POST http://localhost:3000/api/rpc/user.me \
-                   -H "Content-Type: application/json" \
-                   -d '{}' 2>&1 | grep -q -E '(UNAUTHORIZED|error|data)'; then
-                if [ "$router_ready" = false ]; then
-                    echo -ne "\r${GREEN}✓${NC} ORPC router initialized                                            \n"
-                    router_ready=true
-                fi
-                
-                # Check 3: Is database ready? (router responding means DB is connected)
-                if [ "$db_ready" = false ]; then
-                    echo -ne "\r${GREEN}✓${NC} Database connected                                                 \n"
-                    db_ready=true
-                fi
-                
-                # All checks passed!
-                echo ""
-                log_success "dApp API is fully initialized and ready!"
-                break
-            fi
+        if curl -s --max-time 2 http://localhost:3000/ >/dev/null 2>&1; then
+            log_success "Server is responding at http://localhost:3000"
+            server_ready=true
+            break
         fi
-
-        # Show appropriate waiting message based on what's ready
-        if [ "$api_ready" = false ]; then
-            echo -ne "\r${YELLOW}⏳${NC} Waiting for server to respond... ${elapsed}s / ${max_wait}s                    "
-        elif [ "$router_ready" = false ]; then
-            echo -ne "\r${YELLOW}⏳${NC} Waiting for ORPC router... ${elapsed}s / ${max_wait}s                         "
-        else
-            echo -ne "\r${YELLOW}⏳${NC} Waiting for database connection... ${elapsed}s / ${max_wait}s                 "
-        fi
-        
+        echo -ne "\r${YELLOW}⏳${NC} Waiting for server... ${elapsed}s / ${max_wait}s   "
         sleep 3
         elapsed=$((elapsed + 3))
     done
-    echo "" # New line after waiting
+    echo ""
 
-    if [ "$api_ready" = false ] || [ "$router_ready" = false ] || [ "$db_ready" = false ]; then
-        log_warning "dApp API not fully ready after ${max_wait}s"
+    if [ "$server_ready" = false ]; then
+        log_error "Server not responding after ${max_wait}s"
         echo ""
-        log_info "Status:"
-        [ "$api_ready" = true ] && echo "  ${GREEN}✓${NC} Server responding" || echo "  ${RED}✗${NC} Server not responding"
-        [ "$router_ready" = true ] && echo "  ${GREEN}✓${NC} ORPC router initialized" || echo "  ${RED}✗${NC} ORPC router not ready"
-        [ "$db_ready" = true ] && echo "  ${GREEN}✓${NC} Database connected" || echo "  ${RED}✗${NC} Database not connected"
+        log_info "Troubleshooting:"
+        echo "  ${YELLOW}1.${NC} Check dApp logs: ${CYAN}tail -f ${PROJECT_ROOT}/dapp.log${NC}"
+        echo "  ${YELLOW}2.${NC} Check if process is running: ${CYAN}ps aux | grep 'bun.*vite'${NC}"
+        echo "  ${YELLOW}3.${NC} Check for port conflicts: ${CYAN}lsof -i:3000${NC}"
         echo ""
-        log_warning "Attempting to seed anyway - integration tests may initialize the system"
-        echo ""
+        cd "${PROJECT_ROOT}"
+        return 1
     fi
 
+    # Give the server additional time to fully initialize all connections
+    log_step "Step 2: Allowing server to fully initialize..."
+    log_info "Waiting ${stabilization_time} seconds for complete initialization"
+    log_info "This ensures:"
+    echo "  • Database connections are established"
+    echo "  • ORPC routes are fully registered"
+    echo "  • Blockchain RPC client is connected"
+    echo "  • All middleware is loaded"
+    echo ""
+    
+    local count=0
+    while [ $count -lt $stabilization_time ]; do
+        echo -ne "\r${CYAN}⏳${NC} Stabilizing... ${count}s / ${stabilization_time}s   "
+        sleep 1
+        count=$((count + 1))
+    done
+    echo ""
+    
+    log_success "Server initialization period complete!"
+    log_info "Server should now be fully ready for integration tests"
+    echo ""
+
     log_step "Running integration tests to create seed data..."
-    log_info "This will create test users, system setup, and demo assets"
+    log_info "This will:"
+    echo "  ${CYAN}→${NC} Create system configuration on blockchain"
+    echo "  ${CYAN}→${NC} Deploy token factories and addons"
+    echo "  ${CYAN}→${NC} Create test user accounts"
+    echo "  ${CYAN}→${NC} Set up identity contracts"
+    echo "  ${CYAN}→${NC} Issue KYC/AML claims"
     log_info "Expected time: 2-3 minutes"
     echo ""
 
     local start_time=$(date +%s)
+    local seed_success=false
 
-    if bun run test:integration 2>&1 | tee /tmp/seed-data.log | grep -E "(✓|✗|PASS|FAIL|Error)" | while IFS= read -r line; do
-        echo "  ${CYAN}→${NC} $line"
-    done; then
-        local end_time=$(date +%s)
-        local total_time=$((end_time - start_time))
+    # Try seeding with retry logic
+    local max_retries=2
+    local retry_count=0
+
+    while [ $retry_count -le $max_retries ]; do
+        if [ $retry_count -gt 0 ]; then
+            log_info "Retry attempt ${retry_count}/${max_retries}..."
+            echo ""
+            sleep 5
+        fi
+
+        if bun run test:integration 2>&1 | tee /tmp/seed-data.log | grep -E "(✓|✗|PASS|FAIL|Error)" | while IFS= read -r line; do
+            echo "  ${CYAN}→${NC} $line"
+        done; then
+            seed_success=true
+            break
+        else
+            retry_count=$((retry_count + 1))
+            
+            # Check if it's a transient error or permanent failure
+            if grep -q "ECONNREFUSED" /tmp/seed-data.log 2>/dev/null; then
+                log_warning "Connection refused - services may still be starting..."
+                if [ $retry_count -le $max_retries ]; then
+                    log_info "Will retry in 5 seconds..."
+                fi
+            elif grep -q "timeout" /tmp/seed-data.log 2>/dev/null; then
+                log_warning "Request timeout - network may be slow..."
+                if [ $retry_count -le $max_retries ]; then
+                    log_info "Will retry in 5 seconds..."
+                fi
+            else
+                # Other errors - don't retry
+                break
+            fi
+        fi
+    done
+
+    local end_time=$(date +%s)
+    local total_time=$((end_time - start_time))
+
+    if [ "$seed_success" = true ]; then
         echo ""
         log_success "Test data seeded successfully! (took ${total_time}s)"
         echo ""
@@ -1669,31 +1706,50 @@ seed_database() {
         echo "  ${GREEN}•${NC} investor@settlemint.com | password: ${CYAN}settlemint${NC} | PIN: ${CYAN}123456${NC}"
         echo ""
     else
-        local end_time=$(date +%s)
-        local total_time=$((end_time - start_time))
         echo ""
-        log_error "Test data seeding failed (took ${total_time}s)"
+        log_error "Test data seeding failed after ${retry_count} attempt(s) (took ${total_time}s)"
         echo ""
 
-        # Check for common error patterns
+        # Check for common error patterns and provide specific guidance
         if grep -q "System not created" /tmp/seed-data.log 2>/dev/null; then
             log_error "Error: System not created"
-            log_info "This usually means the dApp server is not fully initialized"
+            log_info "The system configuration couldn't be initialized on the blockchain"
             echo ""
-            log_info "Troubleshooting steps:"
-            echo "  ${YELLOW}1.${NC} Check dApp logs: ${CYAN}tail -f ${PROJECT_ROOT}/dapp.log${NC}"
-            echo "  ${YELLOW}2.${NC} Verify dApp is running: ${CYAN}curl http://localhost:3000${NC}"
-            echo "  ${YELLOW}3.${NC} Check for errors in dApp startup"
-            echo "  ${YELLOW}4.${NC} Try seeding manually after dApp stabilizes:"
+            log_info "This could be because:"
+            echo "  • Blockchain contracts not properly deployed"
+            echo "  • Transaction signer not responding"
+            echo "  • Gas estimation failures"
+            echo ""
+            log_info "Troubleshooting:"
+            echo "  ${YELLOW}1.${NC} Check blockchain is responding:"
+            echo "      ${CYAN}curl -X POST -H 'Content-Type: application/json' --data '{\"jsonrpc\":\"2.0\",\"method\":\"eth_blockNumber\",\"params\":[],\"id\":1}' http://localhost:8545${NC}"
+            echo "  ${YELLOW}2.${NC} Check transaction signer:"
+            echo "      ${CYAN}docker compose -p atk logs txsigner${NC}"
+            echo "  ${YELLOW}3.${NC} Check dApp logs for contract deployment errors:"
+            echo "      ${CYAN}tail -f ${PROJECT_ROOT}/dapp.log${NC}"
+            echo "  ${YELLOW}4.${NC} Try seeding manually after services stabilize:"
             echo "      ${CYAN}cd kit/dapp && bun run test:integration${NC}"
             echo ""
         elif grep -q "ECONNREFUSED" /tmp/seed-data.log 2>/dev/null; then
             log_error "Error: Connection refused"
-            log_info "Cannot connect to dApp server or services"
+            log_info "Cannot connect to required services"
             echo ""
             log_info "Check if all services are running:"
             echo "  ${CYAN}docker compose -p atk ps${NC}"
             echo "  ${CYAN}curl http://localhost:3000${NC}"
+            echo "  ${CYAN}curl http://localhost:8545${NC}"
+            echo ""
+        elif grep -q "timeout" /tmp/seed-data.log 2>/dev/null; then
+            log_error "Error: Request timeout"
+            log_info "Operations are taking longer than expected"
+            echo ""
+            log_info "This could indicate:"
+            echo "  • Slow blockchain transaction processing"
+            echo "  • Database performance issues"
+            echo "  • Network connectivity problems"
+            echo ""
+            log_info "Try seeding manually with more time:"
+            echo "  ${CYAN}cd kit/dapp && bun run test:integration${NC}"
             echo ""
         else
             log_warning "Integration tests encountered errors"
@@ -1703,21 +1759,23 @@ seed_database() {
             echo "  • dApp server still initializing (wait a few minutes)"
             echo "  • Database connection issues"
             echo "  • Smart contracts not properly deployed"
+            echo "  • Insufficient gas for transactions"
             echo ""
             log_info "You can try seeding manually later:"
             echo "  ${CYAN}cd kit/dapp && bun run test:integration${NC}"
             echo ""
         fi
 
-        # Show last 10 lines of error log
-        log_info "Last 10 lines from error log:"
+        # Show last 20 lines of error log for more context
+        log_info "Last 20 lines from error log:"
         echo ""
-        tail -10 /tmp/seed-data.log | sed 's/^/  /'
+        tail -20 /tmp/seed-data.log | sed 's/^/  /'
         echo ""
 
         log_warning "Continuing without seed data..."
-        log_info "You can create test users manually or run seeding later"
-        sleep 3
+        log_info "The application will work, but you'll need to create users manually"
+        log_info "or run the seeding script later once services are fully stable"
+        sleep 5
     fi
 
     cd "${PROJECT_ROOT}"
@@ -1746,10 +1804,14 @@ start_dapp() {
     export SETTLEMINT_HASURA_ADMIN_SECRET="${SETTLEMINT_HASURA_ADMIN_SECRET:-hasura}"
     export SETTLEMINT_HASURA_DATABASE_URL="${SETTLEMINT_HASURA_DATABASE_URL:-postgresql://hasura:hasura@localhost:5432/hasura}"
     export SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT="${SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT:-http://localhost:8547}"
+    export SETTLEMINT_MINIO_ENDPOINT="${SETTLEMINT_MINIO_ENDPOINT:-http://localhost:9000}"
+    export SETTLEMINT_MINIO_ACCESS_KEY="${SETTLEMINT_MINIO_ACCESS_KEY:-atk-service}"
+    export SETTLEMINT_MINIO_SECRET_KEY="${SETTLEMINT_MINIO_SECRET_KEY:-atk-service-secret}"
     export DISABLE_MIGRATIONS_ON_STARTUP="true"
 
     log_success "Environment variables configured for dApp"
     log_info "✓ DISABLE_MIGRATIONS_ON_STARTUP=true (migrations applied manually earlier)"
+    log_info "✓ MinIO configured at localhost:9000"
 
     # Verify database tables exist (should have been created by setup_dapp)
     log_step "Verifying database schema..."

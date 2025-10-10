@@ -152,6 +152,32 @@ export function BrandingForm() {
     saveMutation.mutate(formData);
   };
 
+  const handleAutoSave = (newUrl: string, imageType: string) => {
+    // Auto-save the form data with the new image URL
+    const updatedFormData = { ...formData };
+
+    // Update the specific image field
+    switch (imageType) {
+      case "logo_main":
+        updatedFormData.logoMain = newUrl;
+        break;
+      case "logo_sidebar":
+        updatedFormData.logoSidebar = newUrl;
+        break;
+      case "logo_favicon":
+        updatedFormData.logoFavicon = newUrl;
+        break;
+      case "background_light":
+        updatedFormData.backgroundLight = newUrl;
+        break;
+      case "background_dark":
+        updatedFormData.backgroundDark = newUrl;
+        break;
+    }
+
+    saveMutation.mutate(updatedFormData);
+  };
+
   const handleReset = () => {
     if (
       window.confirm(
@@ -303,6 +329,7 @@ export function BrandingForm() {
                 description="Primary logo displayed in the header (recommended: horizontal format, transparent background)"
                 value={formData.logoMain}
                 onChange={(url) => setFormData({ ...formData, logoMain: url })}
+                onAutoSave={(newUrl) => handleAutoSave(newUrl, "logo_main")}
                 imageType="logo_main"
                 accept="image/png,image/svg+xml"
               />
@@ -314,6 +341,7 @@ export function BrandingForm() {
                 onChange={(url) =>
                   setFormData({ ...formData, logoSidebar: url })
                 }
+                onAutoSave={(newUrl) => handleAutoSave(newUrl, "logo_sidebar")}
                 imageType="logo_sidebar"
                 accept="image/png,image/svg+xml"
               />
@@ -325,6 +353,7 @@ export function BrandingForm() {
                 onChange={(url) =>
                   setFormData({ ...formData, logoFavicon: url })
                 }
+                onAutoSave={(newUrl) => handleAutoSave(newUrl, "logo_favicon")}
                 imageType="logo_favicon"
                 accept="image/png,image/x-icon"
                 maxSizeMB={1}
@@ -351,6 +380,9 @@ export function BrandingForm() {
                 onChange={(url) =>
                   setFormData({ ...formData, backgroundLight: url })
                 }
+                onAutoSave={(newUrl) =>
+                  handleAutoSave(newUrl, "background_light")
+                }
                 imageType="background_light"
                 accept="image/png,image/jpeg,image/svg+xml"
                 maxSizeMB={10}
@@ -362,6 +394,9 @@ export function BrandingForm() {
                 value={formData.backgroundDark}
                 onChange={(url) =>
                   setFormData({ ...formData, backgroundDark: url })
+                }
+                onAutoSave={(newUrl) =>
+                  handleAutoSave(newUrl, "background_dark")
                 }
                 imageType="background_dark"
                 accept="image/png,image/jpeg,image/svg+xml"
