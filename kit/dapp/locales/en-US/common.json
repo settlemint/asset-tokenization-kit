@@ -27,6 +27,14 @@
       "label": "Verification Code"
     }
   },
+  "password-confirmation": {
+    "title": "Confirm password",
+    "description": "Enter your password to continue.",
+    "passwordLabel": "Password",
+    "submit": "Continue",
+    "submitting": "Processing...",
+    "cancel": "Cancel"
+  },
   "errors": {
     "somethingWentWrong": "Something went wrong here"
   },
@@ -43,9 +51,9 @@
   "timeInterval": {
     "DAILY": "Daily",
     "WEEKLY": "Weekly",
-    "MONTHLY": "Monthly",
-    "QUARTERLY": "Quarterly",
-    "YEARLY": "Yearly"
+    "MONTHLY": "Monthly (30 days)",
+    "QUARTERLY": "Quarterly (90 days)",
+    "YEARLY": "Yearly (365 days)"
   },
   "dates": {
     "today": "Today",

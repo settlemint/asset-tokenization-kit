@@ -112,13 +112,6 @@ describe("Fixed yield", () => {
                 totalClaimed: "0",
                 totalUnclaimedYield: "0",
               },
-              {
-                startDate: expect.any(String),
-                endDate: expect.any(String),
-                totalYield: "0",
-                totalClaimed: "0",
-                totalUnclaimedYield: "0",
-              },
             ],
             denominationAsset: {
               name: "Euro Deposits",
@@ -147,7 +140,34 @@ describe("Fixed yield", () => {
     // there should be no periods which have overlapping dates
     for (const token of response.tokens) {
       const periods = token.yield_?.schedule?.periods ?? [];
+      let periodIndex = 0;
       for (const period1 of periods) {
+        const isFirstPeriod = periodIndex === 0;
+        if (isFirstPeriod) {
+          expect(period1.startDate).toBe(
+            token.yield_?.schedule?.startDate ?? "0"
+          );
+          expect(period1.endDate).toBe(
+            token.yield_?.schedule?.periods[1]?.startDate ?? "0"
+          );
+        } else {
+          expect(period1.startDate).toBe(
+            token.yield_?.schedule?.periods[periodIndex - 1]?.endDate ?? "0"
+          );
+          const hasNextPeriod =
+            !!token.yield_?.schedule?.periods[periodIndex + 1];
+          if (hasNextPeriod) {
+            expect(period1.endDate).toBe(
+              token.yield_?.schedule?.periods[periodIndex + 1]?.startDate ?? "0"
+            );
+          } else {
+            expect(period1.endDate).toBe(
+              token.yield_?.schedule?.endDate ?? "0"
+            );
+          }
+        }
+        // Start and end date are not on the same day
+        expect(period1.startDate).not.toBe(period1.endDate);
         for (const period2 of periods) {
           if (period1 === period2) continue;
           expect(
@@ -157,6 +177,7 @@ describe("Fixed yield", () => {
             )
           ).toBe(true);
         }
+        periodIndex++;
       }
     }
 

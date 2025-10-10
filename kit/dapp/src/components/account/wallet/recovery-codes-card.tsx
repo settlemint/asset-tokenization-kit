@@ -1,6 +1,6 @@
 import { RecoveryCodesActions } from "@/components/onboarding/recovery-codes/recovery-codes-actions";
 import { RecoveryCodesDisplay } from "@/components/onboarding/recovery-codes/recovery-codes-display";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { CheckedState } from "@radix-ui/react-checkbox";
 import { RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";

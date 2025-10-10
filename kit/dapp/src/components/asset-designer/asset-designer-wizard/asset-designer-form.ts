@@ -26,7 +26,19 @@ export const AssetDesignerFormSchema = TokenCreateSchema.and(
 ).and(
   z.object({
     assetClass: assetClass(),
-    available: z.boolean().optional().default(true),
+    available: z
+      .boolean()
+      .optional()
+      .default(true)
+      .describe(
+        "Whether the asset is available and can be created (not a duplicate)"
+      ),
+    denominationAssetSymbol: z
+      .string()
+      .optional()
+      .describe(
+        "The symbol of the denomination asset (used on the summary page for assets with a denomination asset)"
+      ),
   })
 );
 

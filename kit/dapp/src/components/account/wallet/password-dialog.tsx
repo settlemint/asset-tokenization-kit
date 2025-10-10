@@ -11,6 +11,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTranslation } from "react-i18next";
 
+export interface PasswordDialogCopy {
+  title: string;
+  description: string;
+  submitLabel: string;
+  submittingLabel: string;
+}
+
 interface PasswordDialogProps {
   open: boolean;
   password: string;
@@ -20,10 +27,7 @@ interface PasswordDialogProps {
   onPasswordChange: (password: string) => void;
   onCancel: () => void;
   onSubmit: () => void;
-  title?: string;
-  description?: string;
-  submitLabel?: string;
-  submittingLabel?: string;
+  copy?: Partial<PasswordDialogCopy>;
 }
 
 export function PasswordDialog({
@@ -35,13 +39,8 @@ export function PasswordDialog({
   onPasswordChange,
   onCancel,
   onSubmit,
-  title,
-  description,
-  submitLabel,
-  submittingLabel,
 }: PasswordDialogProps) {
-  const { t } = useTranslation(["user", "common"]);
-
+  const { t } = useTranslation("common");
   return (
     <Dialog
       open={open}
@@ -53,17 +52,15 @@ export function PasswordDialog({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            {title ?? t("user:wallet.passwordPromptTitle")}
-          </DialogTitle>
+          <DialogTitle>{t("password-confirmation.title")}</DialogTitle>
           <DialogDescription>
-            {description ?? t("user:wallet.passwordPromptDescription")}
+            {t("password-confirmation.description")}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="regenerate-password">
-              {t("user:wallet.passwordLabel")}
+              {t("password-confirmation.passwordLabel")}
             </Label>
             <Input
               id="regenerate-password"
@@ -90,12 +87,12 @@ export function PasswordDialog({
             onClick={onCancel}
             disabled={isSubmitting}
           >
-            {t("common:actions.cancel")}
+            {t("password-confirmation.cancel")}
           </Button>
           <Button type="button" onClick={onSubmit} disabled={isSubmitting}>
             {isSubmitting
-              ? (submittingLabel ?? t("common:generating"))
-              : (submitLabel ?? t("user:wallet.regenerateRecoveryCodes"))}
+              ? t("password-confirmation.submitting")
+              : t("password-confirmation.submit")}
           </Button>
         </DialogFooter>
       </DialogContent>

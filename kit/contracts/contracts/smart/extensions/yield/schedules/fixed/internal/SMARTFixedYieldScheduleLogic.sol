@@ -138,7 +138,9 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         _tokenDecimals = IERC20Metadata(tokenAddress_).decimals();
 
         // Calculate and cache all period end timestamps.
-        uint256 totalPeriods = ((_endDate - _startDate) / _interval) + 1;
+        // use ceil division to avoid an extra period when aligned
+        uint256 totalPeriods = Math.ceilDiv(_endDate - _startDate, _interval);
+
         _periodEndTimestamps = new uint256[](totalPeriods);
         for (uint256 i = 0; i < totalPeriods; ++i) {
             uint256 timestamp = _startDate + ((i + 1) * _interval);

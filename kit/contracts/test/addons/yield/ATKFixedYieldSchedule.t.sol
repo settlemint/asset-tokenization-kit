@@ -13,6 +13,7 @@ import { ISMARTTokenAccessManager } from
     "../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ATKAssetRoles } from "../../../contracts/assets/ATKAssetRoles.sol";
+import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
 
 contract MockAccessManager is ISMARTTokenAccessManager {
     mapping(bytes32 => mapping(address => bool)) private _roles;
@@ -219,7 +220,7 @@ contract ATKFixedYieldScheduleTest is Test {
 
         // Move to end date
         vm.warp(endDate);
-        uint256 totalPeriods = ((endDate - startDate) / INTERVAL) + 1;
+        uint256 totalPeriods = Math.ceilDiv(endDate - startDate, INTERVAL);
         assertEq(yieldSchedule.currentPeriod(), totalPeriods);
         assertEq(yieldSchedule.lastCompletedPeriod(), totalPeriods);
     }
@@ -230,6 +231,14 @@ contract ATKFixedYieldScheduleTest is Test {
 
         // Check first period end
         assertEq(yieldSchedule.periodEnd(1), startDate + INTERVAL);
+
+        // Check that there are no duplicate end dates
+        for (uint256 period1 = 0; period1 < periods.length; period1++) {
+            for (uint256 period2 = 0; period2 < periods.length; period2++) {
+                if (period1 == period2) continue; // Ignore if it is the same period
+                assertNotEq(periods[period1], periods[period2]);
+            }
+        }
 
         // Check last period doesn't exceed end date
         uint256 lastPeriod = periods.length;

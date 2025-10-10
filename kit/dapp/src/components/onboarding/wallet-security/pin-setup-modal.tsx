@@ -39,7 +39,6 @@ export function PinSetupModal({
   submittingLabel,
   successMessage,
   skipSuccessToast,
-  mode = "enable",
 }: PinSetupModalProps) {
   const { refreshUserState } = useOnboardingNavigation();
   const { t } = useTranslation(["onboarding", "common"]);
@@ -128,7 +127,6 @@ export function PinSetupModal({
           <form.Subscribe>
             {(state) => {
               const showConfirmField = state.values.pincode.length === 6;
-              const requiresCurrentPin = false;
               const isValid =
                 state.values.pincode.length === 6 &&
                 state.values.confirmPincode.length === 6 &&

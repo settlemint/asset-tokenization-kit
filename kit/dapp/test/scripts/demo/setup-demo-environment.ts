@@ -127,7 +127,11 @@ for (const bondToCreate of BONDS) {
   const initialModulePairs: Parameters<
     typeof createToken
   >[1]["initialModulePairs"] = [];
-  if (countryAllowListModule) {
+  if (
+    countryAllowListModule &&
+    Array.isArray(bondToCreate.countries) &&
+    bondToCreate.countries.length > 0
+  ) {
     initialModulePairs.push({
       typeId: "CountryAllowListComplianceModule",
       module: countryAllowListModule.id,

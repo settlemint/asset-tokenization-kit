@@ -75,51 +75,47 @@ function Wallet() {
 
   const passwordRequired = user.onboardingState.walletRecoveryCodes;
 
-  const handlePasswordSubmit = useCallback(async () => {
-    setPasswordError(null);
-    if (!password.trim()) {
-      setPasswordError(t("user:wallet.passwordRequired"));
-      return;
+  const activePasswordDialogConfig = useMemo<{
+    submit: () => Promise<void>;
+  } | null>(() => {
+    if (passwordDialogMode === "recoveryCodes") {
+      return {
+        submit: async () => {
+          const result = await generate({ password });
+          if (result.success) {
+            setPassword("");
+            setPasswordDialogMode(null);
+          }
+        },
+      };
     }
-    setIsSubmittingPassword(true);
-    try {
-      if (passwordDialogMode === "recoveryCodes") {
-        const result = await generate({ password });
-        if (result.success) {
+
+    if (passwordDialogMode === "changePincode") {
+      return {
+        submit: async () => {
+          if (!pendingPincode) {
+            throw new Error("Missing pincode");
+          }
+          const { data, error } = await authClient.pincode.update({
+            newPincode: pendingPincode,
+            password,
+          });
+          if (error) {
+            throw new Error(error.message ?? fallbackError);
+          }
+          if (!data?.success) {
+            throw new Error(fallbackError);
+          }
+          toast.success(t("wallet.changePincode.success"));
+          await refetchUser();
+          setPendingPincode(null);
           setPassword("");
           setPasswordDialogMode(null);
-        }
-      } else if (passwordDialogMode === "changePincode") {
-        if (!pendingPincode) {
-          throw new Error("Missing pincode");
-        }
-        const { data, error } = await authClient.pincode.update({
-          newPincode: pendingPincode,
-          password,
-        });
-        if (error) {
-          const message = error.message ?? fallbackError;
-          setPasswordError(message);
-          toast.error(message);
-          return;
-        }
-        if (!data?.success) {
-          toast.error(fallbackError);
-          return;
-        }
-        toast.success(t("wallet.changePincode.success"));
-        await refetchUser();
-        setPendingPincode(null);
-        setPassword("");
-        setPasswordDialogMode(null);
-      }
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : fallbackError;
-      setPasswordError(message);
-      toast.error(message);
-    } finally {
-      setIsSubmittingPassword(false);
+        },
+      };
     }
+
+    return null;
   }, [
     fallbackError,
     generate,
@@ -129,6 +125,27 @@ function Wallet() {
     refetchUser,
     t,
   ]);
+
+  const handlePasswordSubmit = useCallback(async () => {
+    if (!activePasswordDialogConfig) {
+      return;
+    }
+    setPasswordError(null);
+    if (!password.trim()) {
+      setPasswordError(t("user:wallet.passwordRequired"));
+      return;
+    }
+    setIsSubmittingPassword(true);
+    try {
+      await activePasswordDialogConfig.submit();
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : fallbackError;
+      setPasswordError(message);
+      toast.error(message);
+    } finally {
+      setIsSubmittingPassword(false);
+    }
+  }, [activePasswordDialogConfig, fallbackError, password, t]);
 
   const handleRegenerateClick = useCallback(() => {
     if (passwordRequired) {
@@ -198,13 +215,14 @@ function Wallet() {
         onClose={() => {
           setIsPinSetupOpen(false);
         }}
-        onSubmitPincode={async (value) => {
+        onSubmitPincode={(value) => {
           setPendingPincode(value);
           setPassword("");
           setPasswordError(null);
           setGenerationError(null);
           setPasswordDialogMode("changePincode");
           setIsPinSetupOpen(false);
+          return Promise.resolve();
         }}
         title={t("wallet.changePincode.title")}
         description={t("wallet.changePincode.description")}
@@ -230,26 +248,6 @@ function Wallet() {
           setPendingPincode(null);
         }}
         onSubmit={() => void handlePasswordSubmit()}
-        title={
-          passwordDialogMode === "changePincode"
-            ? t("wallet.changePincode.passwordTitle")
-            : undefined
-        }
-        description={
-          passwordDialogMode === "changePincode"
-            ? t("wallet.changePincode.passwordDescription")
-            : undefined
-        }
-        submitLabel={
-          passwordDialogMode === "changePincode"
-            ? t("wallet.changePincode.passwordSubmit")
-            : undefined
-        }
-        submittingLabel={
-          passwordDialogMode === "changePincode"
-            ? t("wallet.changePincode.passwordSubmitting")
-            : undefined
-        }
       />
     </div>
   );
