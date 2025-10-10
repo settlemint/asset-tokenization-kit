@@ -8,6 +8,7 @@ import { statsIdentityStatsOverTime } from "@/orpc/routes/system/stats/routes/id
 import { statsPortfolio } from "@/orpc/routes/system/stats/routes/portfolio";
 import { statsPortfolioDetails } from "@/orpc/routes/system/stats/routes/portfolio-details";
 import { statsTopicSchemesStats } from "@/orpc/routes/system/stats/routes/topic-schemes-stats";
+import { statsTopicSchemesStatsState } from "@/orpc/routes/system/stats/routes/topic-schemes-stats-state";
 import { statsTransactionCount } from "@/orpc/routes/system/stats/routes/transaction-count";
 import { statsTransactionHistory } from "@/orpc/routes/system/stats/routes/transaction-history";
 import { statsTrustedIssuerStats } from "@/orpc/routes/system/stats/routes/trusted-issuer-stats";
@@ -24,6 +25,7 @@ const routes = {
   portfolio: statsPortfolio,
   portfolioDetails: statsPortfolioDetails,
   topicSchemesStats: statsTopicSchemesStats,
+  topicSchemesStatsState: statsTopicSchemesStatsState,
   transactionCount: statsTransactionCount,
   transactionHistory: statsTransactionHistory,
   trustedIssuerStats: statsTrustedIssuerStats,

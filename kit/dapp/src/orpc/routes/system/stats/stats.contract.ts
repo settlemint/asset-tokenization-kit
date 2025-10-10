@@ -12,6 +12,7 @@ import {
 } from "@/orpc/routes/system/stats/routes/portfolio-details.schema";
 import { StatsPortfolioOutputSchema } from "@/orpc/routes/system/stats/routes/portfolio.schema";
 import { StatsTopicSchemesStatsOutputSchema } from "@/orpc/routes/system/stats/routes/topic-schemes-stats.schema";
+import { StatsTopicSchemesStatsStateOutputSchema } from "@/orpc/routes/system/stats/routes/topic-schemes-stats-state.schema";
 import {
   StatsTransactionCountInputSchema,
   StatsTransactionCountOutputSchema,
@@ -181,6 +182,17 @@ const statsTopicSchemesStats = baseContract
   .input(StatsRangeInputSchema)
   .output(StatsTopicSchemesStatsOutputSchema);
 
+const statsTopicSchemesStatsState = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/topic-schemes-stats-state",
+    description:
+      "Retrieve current topic schemes statistics state including registered, active, and removed schemes",
+    successDescription: "Topic schemes statistics state retrieved successfully",
+    tags: ["stats", "system", "topic-schemes"],
+  })
+  .output(StatsTopicSchemesStatsStateOutputSchema);
+
 export const statsContract = {
   assets: statsAssets,
   assetLifecycle: statsAssetLifecycle,
@@ -192,6 +204,7 @@ export const statsContract = {
   transactionCount: statsTransactionCount,
   transactionHistory: statsTransactionHistory,
   topicSchemesStats: statsTopicSchemesStats,
+  topicSchemesStatsState: statsTopicSchemesStatsState,
   trustedIssuerStats: statsTrustedIssuerStats,
   value: statsValue,
   portfolio: statsPortfolio,
