@@ -1,6 +1,7 @@
 import { baseRouter } from "../procedures/base.router";
 import accountRouter from "./account/account.router";
 import actionsRouter from "./actions/actions.router";
+import brandingRouter from "./branding/branding.router";
 import exchangeRatesRouter from "./exchange-rates/exchange-rates.router";
 import fixedYieldScheduleRouter from "./fixed-yield-schedule/fixed-yield-schedule.router";
 import settingsRouter from "./settings/settings.router";
@@ -46,6 +47,15 @@ export const router = baseRouter.router({
    * @see {@link ./actions/actions.router} - Actions router implementation
    */
   actions: actionsRouter,
+
+  /**
+   * Branding-related API procedures.
+   *
+   * Eagerly loaded module containing platform branding customization operations.
+   * Provides endpoints for reading and updating branding configuration, including
+   * application title, logos, backgrounds, and color schemes.
+   */
+  branding: brandingRouter,
 
   /**
    * Exchange rates API procedures.

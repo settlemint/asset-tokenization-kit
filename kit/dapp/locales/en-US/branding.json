@@ -1,0 +1,108 @@
+{
+  "title": "Platform Branding",
+  "description": "Customize the look and feel of your platform",
+  "tabs": {
+    "general": "General",
+    "logos": "Logos",
+    "backgrounds": "Backgrounds",
+    "colors": "Colors"
+  },
+  "general": {
+    "title": "Application Settings",
+    "description": "Configure the general application settings and title",
+    "applicationTitle": {
+      "label": "Application Title",
+      "placeholder": "Asset Tokenization Kit",
+      "description": "This title appears in the browser tab and application header"
+    }
+  },
+  "logos": {
+    "title": "Logo Assets",
+    "description": "Upload logos for different parts of the application",
+    "main": {
+      "label": "Main Logo",
+      "description": "Primary logo displayed in the header (recommended: horizontal format, transparent background)"
+    },
+    "sidebar": {
+      "label": "Sidebar Logo",
+      "description": "Logo for collapsed sidebar (recommended: square format, icon-style)"
+    },
+    "favicon": {
+      "label": "Favicon",
+      "description": "Browser tab icon (recommended: 32x32 or 64x64 pixels)"
+    }
+  },
+  "backgrounds": {
+    "title": "Background Images",
+    "description": "Upload background images for authentication and onboarding screens",
+    "light": {
+      "label": "Light Mode Background",
+      "description": "Background image for light mode (recommended: landscape, high resolution)"
+    },
+    "dark": {
+      "label": "Dark Mode Background",
+      "description": "Background image for dark mode (recommended: landscape, high resolution)"
+    }
+  },
+  "colors": {
+    "primary": {
+      "title": "Primary Colors",
+      "description": "Main brand colors used throughout the application",
+      "primary": "Primary Color",
+      "primaryHover": "Primary Hover",
+      "secondary": "Secondary Color",
+      "accent": "Accent Color"
+    },
+    "background": {
+      "title": "Background Colors",
+      "description": "Colors for backgrounds and surfaces",
+      "darkest": "Background Darkest",
+      "lightest": "Background Lightest",
+      "gradientStart": "Gradient Start",
+      "gradientEnd": "Gradient End"
+    },
+    "state": {
+      "title": "State Colors",
+      "description": "Colors for success, warning, and error states",
+      "success": "Success Color",
+      "successBackground": "Success Background",
+      "warning": "Warning Color",
+      "warningBackground": "Warning Background",
+      "error": "Error Color",
+      "errorBackground": "Error Background"
+    },
+    "graphics": {
+      "title": "Graphics Colors",
+      "description": "Colors used for charts and visual elements",
+      "primary": "Graphics Primary",
+      "secondary": "Graphics Secondary",
+      "tertiary": "Graphics Tertiary",
+      "quaternary": "Graphics Quaternary"
+    },
+    "text": {
+      "title": "Text & Border Colors",
+      "description": "Colors for text, borders, and muted elements",
+      "text": "Text Color",
+      "textContrast": "Text Contrast",
+      "border": "Border Color",
+      "muted": "Muted Color"
+    }
+  },
+  "actions": {
+    "save": "Save Branding",
+    "saving": "Saving...",
+    "upload": "Upload Image",
+    "uploading": "Uploading...",
+    "remove": "Remove",
+    "replace": "Replace Image"
+  },
+  "messages": {
+    "saveSuccess": "Branding settings saved successfully",
+    "saveError": "Failed to save branding: {{error}}",
+    "uploadSuccess": "Image uploaded successfully",
+    "uploadError": "Failed to upload image: {{error}}",
+    "removeSuccess": "Image removed",
+    "fileSizeError": "File size must be less than {{maxSize}}MB",
+    "fileTypeError": "Please select an image file"
+  }
+}

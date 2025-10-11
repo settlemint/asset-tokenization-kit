@@ -1,0 +1,14 @@
+{
+  "id": "0010_separate_light_dark_branding",
+  "prevId": "0009_silly_banshee",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {},
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}

@@ -46,6 +46,7 @@ import { Route as PrivateOnboardedSidebarAdminUserManagementUserIdRouteImport } 
 import { Route as PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/permissions'
 import { Route as PrivateOnboardedSidebarAdminPlatformSettingsComplianceRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/compliance'
 import { Route as PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/claim-topics-issuers'
+import { Route as PrivateOnboardedSidebarAdminPlatformSettingsBrandingRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/branding'
 import { Route as PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/asset-types'
 import { Route as PrivateOnboardedSidebarAdminPlatformSettingsAddonsRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/addons'
 import { Route as PrivateOnboardedSidebarAdminIdentityManagementAddressRouteImport } from './routes/_private/_onboarded/_sidebar/admin/identity-management/$address'
@@ -266,6 +267,12 @@ const PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute =
       getParentRoute: () => PrivateOnboardedSidebarRoute,
     } as any,
   )
+const PrivateOnboardedSidebarAdminPlatformSettingsBrandingRoute =
+  PrivateOnboardedSidebarAdminPlatformSettingsBrandingRouteImport.update({
+    id: '/admin/platform-settings/branding',
+    path: '/admin/platform-settings/branding',
+    getParentRoute: () => PrivateOnboardedSidebarRoute,
+  } as any)
 const PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRoute =
   PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRouteImport.update({
     id: '/admin/platform-settings/asset-types',
@@ -412,6 +419,7 @@ export interface FileRoutesByFullPath {
   '/admin/identity-management/$address': typeof PrivateOnboardedSidebarAdminIdentityManagementAddressRouteWithChildren
   '/admin/platform-settings/addons': typeof PrivateOnboardedSidebarAdminPlatformSettingsAddonsRoute
   '/admin/platform-settings/asset-types': typeof PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRoute
+  '/admin/platform-settings/branding': typeof PrivateOnboardedSidebarAdminPlatformSettingsBrandingRoute
   '/admin/platform-settings/claim-topics-issuers': typeof PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute
   '/admin/platform-settings/compliance': typeof PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute
   '/admin/platform-settings/permissions': typeof PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute
@@ -456,6 +464,7 @@ export interface FileRoutesByTo {
   '/addon': typeof PrivateOnboardedSidebarAddonIndexRoute
   '/admin/platform-settings/addons': typeof PrivateOnboardedSidebarAdminPlatformSettingsAddonsRoute
   '/admin/platform-settings/asset-types': typeof PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRoute
+  '/admin/platform-settings/branding': typeof PrivateOnboardedSidebarAdminPlatformSettingsBrandingRoute
   '/admin/platform-settings/claim-topics-issuers': typeof PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute
   '/admin/platform-settings/compliance': typeof PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute
   '/admin/platform-settings/permissions': typeof PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute
@@ -505,6 +514,7 @@ export interface FileRoutesById {
   '/_private/_onboarded/_sidebar/admin/identity-management/$address': typeof PrivateOnboardedSidebarAdminIdentityManagementAddressRouteWithChildren
   '/_private/_onboarded/_sidebar/admin/platform-settings/addons': typeof PrivateOnboardedSidebarAdminPlatformSettingsAddonsRoute
   '/_private/_onboarded/_sidebar/admin/platform-settings/asset-types': typeof PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRoute
+  '/_private/_onboarded/_sidebar/admin/platform-settings/branding': typeof PrivateOnboardedSidebarAdminPlatformSettingsBrandingRoute
   '/_private/_onboarded/_sidebar/admin/platform-settings/claim-topics-issuers': typeof PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute
   '/_private/_onboarded/_sidebar/admin/platform-settings/compliance': typeof PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute
   '/_private/_onboarded/_sidebar/admin/platform-settings/permissions': typeof PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute
@@ -553,6 +563,7 @@ export interface FileRouteTypes {
     | '/admin/identity-management/$address'
     | '/admin/platform-settings/addons'
     | '/admin/platform-settings/asset-types'
+    | '/admin/platform-settings/branding'
     | '/admin/platform-settings/claim-topics-issuers'
     | '/admin/platform-settings/compliance'
     | '/admin/platform-settings/permissions'
@@ -597,6 +608,7 @@ export interface FileRouteTypes {
     | '/addon'
     | '/admin/platform-settings/addons'
     | '/admin/platform-settings/asset-types'
+    | '/admin/platform-settings/branding'
     | '/admin/platform-settings/claim-topics-issuers'
     | '/admin/platform-settings/compliance'
     | '/admin/platform-settings/permissions'
@@ -645,6 +657,7 @@ export interface FileRouteTypes {
     | '/_private/_onboarded/_sidebar/admin/identity-management/$address'
     | '/_private/_onboarded/_sidebar/admin/platform-settings/addons'
     | '/_private/_onboarded/_sidebar/admin/platform-settings/asset-types'
+    | '/_private/_onboarded/_sidebar/admin/platform-settings/branding'
     | '/_private/_onboarded/_sidebar/admin/platform-settings/claim-topics-issuers'
     | '/_private/_onboarded/_sidebar/admin/platform-settings/compliance'
     | '/_private/_onboarded/_sidebar/admin/platform-settings/permissions'
@@ -946,6 +959,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRouteImport
       parentRoute: typeof PrivateOnboardedSidebarRoute
     }
+    '/_private/_onboarded/_sidebar/admin/platform-settings/branding': {
+      id: '/_private/_onboarded/_sidebar/admin/platform-settings/branding'
+      path: '/admin/platform-settings/branding'
+      fullPath: '/admin/platform-settings/branding'
+      preLoaderRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsBrandingRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarRoute
+    }
     '/_private/_onboarded/_sidebar/admin/platform-settings/asset-types': {
       id: '/_private/_onboarded/_sidebar/admin/platform-settings/asset-types'
       path: '/admin/platform-settings/asset-types'
@@ -1145,6 +1165,7 @@ interface PrivateOnboardedSidebarRouteChildren {
   PrivateOnboardedSidebarAdminIdentityManagementAddressRoute: typeof PrivateOnboardedSidebarAdminIdentityManagementAddressRouteWithChildren
   PrivateOnboardedSidebarAdminPlatformSettingsAddonsRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsAddonsRoute
   PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRoute
+  PrivateOnboardedSidebarAdminPlatformSettingsBrandingRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsBrandingRoute
   PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute
   PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute
   PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute
@@ -1180,6 +1201,8 @@ const PrivateOnboardedSidebarRouteChildren: PrivateOnboardedSidebarRouteChildren
       PrivateOnboardedSidebarAdminPlatformSettingsAddonsRoute,
     PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRoute:
       PrivateOnboardedSidebarAdminPlatformSettingsAssetTypesRoute,
+    PrivateOnboardedSidebarAdminPlatformSettingsBrandingRoute:
+      PrivateOnboardedSidebarAdminPlatformSettingsBrandingRoute,
     PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute:
       PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute,
     PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute:

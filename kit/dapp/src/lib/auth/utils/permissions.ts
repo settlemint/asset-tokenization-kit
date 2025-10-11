@@ -7,6 +7,7 @@ const customPermissions = {
   setting: ["read", "list", "upsert", "remove"],
   system: ["read", "list", "create"],
   exchangeRates: ["read", "list", "remove", "sync", "update"],
+  branding: ["read", "upsert", "upload"],
 } as const;
 
 type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };
@@ -26,6 +27,7 @@ export const adminRole = accessControl.newRole({
   setting: ["read", "list", "upsert", "remove"],
   system: ["read", "list", "create"],
   exchangeRates: ["read", "list", "remove", "sync", "update"],
+  branding: ["read", "upsert", "upload"],
 });
 
 /**
@@ -35,4 +37,5 @@ export const userRole = accessControl.newRole({
   setting: ["read", "list"],
   system: ["read", "list"],
   exchangeRates: ["read", "list"],
+  branding: ["read"],
 });
