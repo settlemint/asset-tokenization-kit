@@ -7,6 +7,7 @@ import { orpc } from "@/orpc/orpc-client";
 import type {
   Action,
   ActionStatus,
+  ActionsListInput,
 } from "@/orpc/routes/actions/routes/actions.list.schema";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import type { SortingState } from "@tanstack/react-table";
@@ -68,14 +69,23 @@ function countByStatuses(
   }, 0);
 }
 
+interface ActionsOverviewProps {
+  input?: ActionsListInput;
+  tableIdPrefix?: string;
+}
+
 /**
  * Renders the tabbed Actions overview with filters for pending, upcoming, and completed items.
  */
-export function ActionsOverview() {
+export function ActionsOverview({
+  input,
+  tableIdPrefix = "actions-overview",
+}: ActionsOverviewProps = {}) {
   const { t } = useTranslation("actions");
+  const queryInput: ActionsListInput = input ?? {};
   const { data: actions } = useSuspenseQuery(
     orpc.actions.list.queryOptions({
-      input: {},
+      input: queryInput,
     })
   );
 
@@ -124,7 +134,7 @@ export function ActionsOverview() {
       {tabDefinitions.map((tab) => (
         <TabsContent key={tab.id} value={tab.id} className="space-y-4">
           <ActionsTable
-            tableId={tab.id}
+            tableId={`${tableIdPrefix}-${tab.id}`}
             actions={actions}
             statuses={tab.statuses}
             defaultSorting={tab.defaultSorting}
