@@ -14,7 +14,7 @@
     "test:ci": "bun run test:integration"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.97.1",
+    "@graphprotocol/graph-cli": "0.98.0",
     "@graphprotocol/graph-ts": "0.38.2"
   },
   "devDependencies": {
