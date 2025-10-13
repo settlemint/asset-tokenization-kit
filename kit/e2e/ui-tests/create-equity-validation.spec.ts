@@ -204,8 +204,8 @@ test.describe.serial("Equity Creation Validation", () => {
         country: equityData.country,
       });
       await createAssetForm.fillEquityConfigurationFields({
-        equityClass: "Common Stock",
-        equityCategory: "Public",
+        equityClass: equityData.equityClass,
+        equityCategory: equityData.equityCategory,
       });
 
       testData.name = equityData.name;
