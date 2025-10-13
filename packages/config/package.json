@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@tools/eslint-config": "workspace:*",
+    "@tools/typescript-config": "workspace:*",
     "@types/bun": "latest",
     "eslint": "9.37.0"
   },
