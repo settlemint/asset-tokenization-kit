@@ -19,13 +19,21 @@
     }
   },
   "devDependencies": {
+    "@tools/eslint-config": "workspace:*",
     "@tools/typescript-config": "workspace:*",
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "eslint": "9.37.0"
   },
   "peerDependencies": {
     "typescript": "5.9.3"
   },
   "dependencies": {
+    "date-fns": "4.1.0",
+    "@orpc/client": "1.9.3",
+    "currency-codes": "2.2.0",
+    "dnum": "2.15.0",
+    "i18n-iso-countries": "7.14.0",
+    "viem": "2.38.1",
     "zod": "4.1.12"
   }
 }
