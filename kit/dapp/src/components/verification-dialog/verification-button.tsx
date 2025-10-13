@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
+import type { ComponentProps } from "react";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -9,6 +10,7 @@ export function VerificationButton({
   disabled,
   walletVerification,
   onSubmit,
+  buttonProps,
 }: {
   children: React.ReactNode;
   disabled?: boolean;
@@ -17,6 +19,10 @@ export function VerificationButton({
     description: string;
   };
   onSubmit: (verification: UserVerification) => void | Promise<void>;
+  buttonProps?: Omit<
+    ComponentProps<typeof Button>,
+    "onClick" | "children" | "type"
+  >;
 }) {
   const { t } = useTranslation(["common"]);
 
@@ -43,13 +49,17 @@ export function VerificationButton({
     [onSubmit, t]
   );
 
+  const triggerDisabled = disabled ?? buttonProps?.disabled ?? false;
+
   return (
     <>
       <Button
+        type="button"
+        {...buttonProps}
         onClick={() => {
           setShowVerificationModal(true);
         }}
-        disabled={disabled}
+        disabled={triggerDisabled}
       >
         {children}
       </Button>

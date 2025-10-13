@@ -13,13 +13,19 @@
       "type": "Type",
       "activeAt": "Scheduled",
       "executedAt": "Completed",
-      "executedBy": "Executed by"
+      "executedBy": "Executed by",
+      "execute": "Execute"
     },
     "empty": {
       "title": "No actions to show",
       "description": "You’re all caught up. We’ll list new actions here as they become available."
     },
-    "authorizedBadge": "{{count}} authorized"
+    "authorizedBadge": "{{count}} authorized",
+    "execute": {
+      "label": "Execute",
+      "loading": "Executing…",
+      "unavailable": "Unavailable"
+    }
   },
   "filters": {
     "searchPlaceholder": "Search actions"
@@ -39,5 +45,15 @@
     "bond": "Bond",
     "settlement": "Settlement",
     "generic": "Action"
+  },
+  "execute": {
+    "messages": {
+      "loading": "Executing {{action}}…",
+      "success": "{{action}} executed successfully."
+    },
+    "errors": {
+      "notAuthorized": "You do not have permission to execute this action.",
+      "unsupported": "This action cannot be executed from the portal yet."
+    }
   }
 }
