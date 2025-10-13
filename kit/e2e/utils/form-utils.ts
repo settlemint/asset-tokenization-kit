@@ -60,9 +60,14 @@ export async function selectDropdownOption(
   params: SelectDropdownOptionParams
 ) {
   const { label, value, fallback } = params;
-  if (value.length === 0) {
-    throw new Error("selectDropdownOption requires a non-empty value argument");
+  const labelForError = typeof label === "string" ? label : label.toString();
+  if (typeof value !== "string" || value.trim().length === 0) {
+    throw new Error(
+      `selectDropdownOption requires a non-empty string value argument for label ${labelForError}`
+    );
   }
+
+  const normalizedValue = value.trim();
 
   const normalizedLabel =
     typeof label === "string"
@@ -89,7 +94,7 @@ export async function selectDropdownOption(
   await expect(trigger).toBeVisible({ timeout: 15000 });
   await trigger.click();
 
-  const optionPattern = new RegExp(`^${escapeForRegex(value)}$`, "i");
+  const optionPattern = new RegExp(`^${escapeForRegex(normalizedValue)}$`, "i");
   const option = page.getByRole("option", { name: optionPattern }).first();
 
   if ((await option.count()) > 0) {
@@ -97,14 +102,15 @@ export async function selectDropdownOption(
     return;
   }
 
-  const partialLength = fallback?.partialLength ?? Math.min(6, value.length);
+  const partialLength =
+    fallback?.partialLength ?? Math.min(6, normalizedValue.length);
   if (partialLength === 0) {
     throw new Error(
-      `selectDropdownOption could not find option ${value} and fallback typing is disabled`
+      `selectDropdownOption could not find option ${normalizedValue} and fallback typing is disabled`
     );
   }
 
-  const partialValue = value.slice(0, partialLength);
+  const partialValue = normalizedValue.slice(0, partialLength);
   await page.keyboard.type(partialValue, {
     delay: fallback?.typeDelayMs ?? 80,
   });
