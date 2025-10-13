@@ -7,6 +7,7 @@ export interface SetupUser {
   password: string;
   pincode: string;
   name: string;
+  roles?: string[];
 }
 
 export function getSetupUserPath(): string {

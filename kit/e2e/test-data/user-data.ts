@@ -227,31 +227,15 @@ export const onboardingTestData = {
   identitySteps: ["Setup ONCHAINID", "Verify Identity"],
 } as const;
 
-export const signUpTestData = {
-  generateTestUser: (type: "regular" | "admin" = "regular") => ({
-    email: `test-${type}-${Date.now()}@settlemint.com`,
-    password: "TestPassword123!",
-    pincode: "123456",
-    name: `Test ${type} User ${Date.now()}`,
-  }),
-  onboardingSteps: {
-    regular: [
-      "wallet",
-      "wallet-security",
-      "wallet-recovery-codes",
-      "identity-setup",
-      "identity",
-    ],
-    admin: [
-      "wallet",
-      "wallet-security",
-      "wallet-recovery-codes",
-      "system-deploy",
-      "system-settings",
-      "system-assets",
-      "system-addons",
-      "identity-setup",
-      "identity",
-    ],
-  },
-} as const;
+export const userAdminRoles = [
+  "Claim Issuer",
+  "Claim Policy Manager",
+  "Token Manager",
+];
+
+export const userAdminTrustedTopics = [
+  "basePrice",
+  "collateral",
+  "assetClassification",
+  "isin",
+];
