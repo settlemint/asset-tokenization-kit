@@ -1914,7 +1914,7 @@ type TokenBondStatsState @entity(immutable: false) {
   denominationAssetBalanceRequired: BigDecimal!
   # Required balance to fully collateralize bond (exact, raw units)
   denominationAssetBalanceRequiredExact: BigInt!
-  # Percentage of required collateral covered (available/required * 100)
+  # Percentage of required denomination asset balance covered (available/required * 100)
   coveredPercentage: BigDecimal!
 }
 

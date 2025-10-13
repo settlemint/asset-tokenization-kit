@@ -22,10 +22,7 @@ export function BondExtensionDetails({
     "stats",
     "data-table",
   ]);
-  const denominationAssetData = useDenominationAsset(
-    bond.denominationAsset.id,
-    asset
-  );
+  const denominationAssetData = useDenominationAsset(bond.denominationAsset.id);
 
   const denominationBasePriceClaim = parseClaim<{
     amount: string;
@@ -58,8 +55,8 @@ export function BondExtensionDetails({
     if (!hasReachedMaturity || isMatured) return null;
     if (denominationAssetData.isLoading) return null;
 
-    const available = denominationAssetData?.assetHolding?.available;
-    const needed = bond.denominationAssetNeeded;
+    const available = bondStatus?.denominationAssetBalanceAvailable ?? from(0);
+    const needed = bondStatus?.denominationAssetBalanceRequired ?? from(0);
     if (!available) {
       return needed;
     }
@@ -67,7 +64,7 @@ export function BondExtensionDetails({
     const deficit = sub(needed, available);
 
     return greaterThan(deficit, 0n) ? deficit : null;
-  }, [bond, denominationAssetData]);
+  }, [bond, denominationAssetData, bondStatus]);
 
   return (
     <DetailGrid title={t("tokens:details.bondInformation")}>
@@ -81,7 +78,7 @@ export function BondExtensionDetails({
       <DetailGridItem
         label={t("tokens:fields.denominationAssetNeeded")}
         info={t("tokens:fields.denominationAssetNeededInfo")}
-        value={bond.denominationAssetNeeded}
+        value={bondStatus?.denominationAssetBalanceRequired ?? from(0)}
         type="currency"
         currency={{ assetSymbol: bond.denominationAsset.symbol }}
       />
@@ -105,7 +102,7 @@ export function BondExtensionDetails({
         value={
           denominationAssetData.isLoading
             ? t("data-table:loading")
-            : (denominationAssetData.assetHolding?.available ?? 0n)
+            : (bondStatus?.denominationAssetBalanceAvailable ?? from(0))
         }
         type="currency"
         currency={{ assetSymbol: bond.denominationAsset.symbol }}
