@@ -97,12 +97,12 @@ export class ClaimManagementPage extends BasePage {
         .toBe(previousCount + 1);
 
       await sheetTitle.click();
-      await listbox.waitFor({ state: "hidden", timeout: 3000 }).catch(() => {});
+      await expect(listbox).toBeHidden({ timeout: 3000 });
       await this.waitForReactStateSettle();
     }
 
-    await sheetTitle.click().catch(() => {});
-    await listbox.waitFor({ state: "hidden", timeout: 3000 }).catch(() => {});
+    await sheetTitle.click();
+    await expect(listbox).toBeHidden({ timeout: 3000 });
     await dialog.evaluate((el) => el.scrollTo(0, el.scrollHeight));
     await this.waitForReactStateSettle();
 
@@ -114,7 +114,7 @@ export class ClaimManagementPage extends BasePage {
 
     await confirmPinCode(this.page, pin, "Confirm issuer addition");
 
-    await dialog.waitFor({ state: "hidden", timeout: 30000 }).catch(() => {});
+    await expect(dialog).toBeHidden({ timeout: 30000 });
     await this.waitForReactStateSettle();
     await expect(
       this.page
