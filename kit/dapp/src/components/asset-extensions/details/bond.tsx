@@ -57,9 +57,6 @@ export function BondExtensionDetails({
 
     const available = bondStatus?.denominationAssetBalanceAvailable ?? from(0);
     const needed = bondStatus?.denominationAssetBalanceRequired ?? from(0);
-    if (!available) {
-      return needed;
-    }
 
     const deficit = sub(needed, available);
 
