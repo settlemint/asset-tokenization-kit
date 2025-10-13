@@ -29,14 +29,14 @@ type Entry = { id: string };
 
 interface TransferAssetSheetProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
-  asset: TokenBalance;
+  onClose: () => void;
+  assetBalance: TokenBalance;
 }
 
 export function TransferAssetSheet({
   open,
-  onOpenChange,
-  asset,
+  onClose,
+  assetBalance,
 }: TransferAssetSheetProps) {
   const { t } = useTranslation(["user-assets", "common"]);
   const { data: session } = useSession();
@@ -62,7 +62,7 @@ export function TransferAssetSheet({
           qc.invalidateQueries({ queryKey: orpc.user.assets.queryKey() }),
           qc.invalidateQueries({
             queryKey: orpc.token.holders.queryKey({
-              input: { tokenAddress: asset.token.id },
+              input: { tokenAddress: assetBalance.token.id },
             }),
           }),
         ];
@@ -72,7 +72,7 @@ export function TransferAssetSheet({
             qc.invalidateQueries({
               queryKey: orpc.token.holder.queryKey({
                 input: {
-                  tokenAddress: asset.token.id,
+                  tokenAddress: assetBalance.token.id,
                   holderAddress: senderWallet,
                 },
               }),
@@ -85,7 +85,7 @@ export function TransferAssetSheet({
             qc.invalidateQueries({
               queryKey: orpc.token.holder.queryKey({
                 input: {
-                  tokenAddress: asset.token.id,
+                  tokenAddress: assetBalance.token.id,
                   holderAddress: recipient,
                 },
               }),
@@ -109,15 +109,15 @@ export function TransferAssetSheet({
     }
   }, [open, form]);
 
-  const availableBalance = asset.available;
-  const tokenDecimals = asset.token.decimals;
-  const tokenSymbol = asset.token.symbol;
+  const availableBalance = assetBalance.available;
+  const tokenDecimals = assetBalance.token.decimals;
+  const tokenSymbol = assetBalance.token.symbol;
 
   const handleClose = () => {
     form.reset();
     setEntries([newEntry()]);
     sheetStoreRef.current.setState((state) => ({ ...state, step: "values" }));
-    onOpenChange(false);
+    onClose();
   };
 
   return (
@@ -276,19 +276,23 @@ export function TransferAssetSheet({
               );
 
               const promise = transfer({
-                contract: asset.token.id,
+                contract: assetBalance.token.id,
                 recipients,
                 amounts,
                 walletVerification: verification,
               });
 
-              toast.promise(promise, {
-                loading: t("common:saving"),
-                success: t("common:saved"),
-                error: (data) => t("common:error", { message: data.message }),
-              });
-
-              handleClose();
+              toast
+                .promise(promise, {
+                  loading: t("common:saving"),
+                  success: t("common:saved"),
+                  error: (data) => t("common:error", { message: data.message }),
+                })
+                .unwrap()
+                .then(() => {
+                  handleClose();
+                })
+                .catch(() => undefined);
             }}
           >
             <div className="space-y-4">

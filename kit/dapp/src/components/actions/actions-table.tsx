@@ -38,12 +38,14 @@ const ACTION_LABEL_MAP = {
   MatureBond: "labels.MatureBond",
   ApproveXvPSettlement: "labels.ApproveXvPSettlement",
   ExecuteXvPSettlement: "labels.ExecuteXvPSettlement",
+  RedeemBond: "labels.RedeemBond",
 } as const;
 
 const ACTION_TYPE_MAP = {
   MatureBond: "bond",
   ApproveXvPSettlement: "settlement",
   ExecuteXvPSettlement: "settlement",
+  RedeemBond: "bond",
 } as const;
 
 const UNKNOWN_ACTION_TYPE = "generic" as const;
@@ -234,10 +236,8 @@ export function ActionsTable({
             label: t(`status.${status}`),
           })),
           renderCell: ({ row }) => {
-            const executedAt = row.original.executedAt;
-            const activeAt = new Date(Number(row.original.activeAt) * 1000);
-            const executedDate =
-              executedAt === null ? null : new Date(Number(executedAt) * 1000);
+            const executedDate = row.original.executedAt ?? null;
+            const activeAt = row.original.activeAt;
             const dateLocale = getDateLocale(i18n.language);
             const relativeActive = formatDistanceToNow(activeAt, {
               addSuffix: true,
@@ -275,37 +275,28 @@ export function ActionsTable({
         } satisfies ColumnMeta<Action, ActionStatus>,
       }),
 
-      columnHelper.accessor(
-        (row) => new Date(Number(row.activeAt) * 1000).toISOString(),
-        {
-          id: "activeAt",
-          header: t("table.columns.activeAt"),
-          meta: {
-            displayName: t("table.columns.activeAt"),
-            type: "date",
-            dateOptions: { relative: true },
-            className: "text-muted-foreground",
-          } satisfies ColumnMeta<Action, unknown>,
-        }
-      ),
+      columnHelper.accessor("activeAt", {
+        id: "activeAt",
+        header: t("table.columns.activeAt"),
+        meta: {
+          displayName: t("table.columns.activeAt"),
+          type: "date",
+          dateOptions: { relative: true },
+          className: "text-muted-foreground",
+        } satisfies ColumnMeta<Action, unknown>,
+      }),
 
-      columnHelper.accessor(
-        (row) =>
-          row.executedAt
-            ? new Date(Number(row.executedAt) * 1000).toISOString()
-            : null,
-        {
-          id: "executedAt",
-          header: t("table.columns.executedAt"),
-          meta: {
-            displayName: t("table.columns.executedAt"),
-            type: "date",
-            dateOptions: { includeTime: true },
-            className: "text-muted-foreground",
-            emptyValue: "—",
-          } satisfies ColumnMeta<Action, unknown>,
-        }
-      ),
+      columnHelper.accessor("executedAt", {
+        id: "executedAt",
+        header: t("table.columns.executedAt"),
+        meta: {
+          displayName: t("table.columns.executedAt"),
+          type: "date",
+          dateOptions: { includeTime: true },
+          className: "text-muted-foreground",
+          emptyValue: "—",
+        } satisfies ColumnMeta<Action, unknown>,
+      }),
 
       columnHelper.accessor("executedBy", {
         header: t("table.columns.executedBy"),

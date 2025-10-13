@@ -1,3 +1,4 @@
+import { TimeIntervalEnum } from "@atk/zod/time-interval";
 import {
   DE_COUNTRY_CODE,
   JP_COUNTRY_CODE,
@@ -32,6 +33,7 @@ export const BONDS = [
       dayAfterTomorrow.getMonth(),
       dayAfterTomorrow.getDate()
     ),
+    paymentInterval: TimeIntervalEnum.DAILY,
   },
   {
     name: "Bund7",
@@ -49,6 +51,7 @@ export const BONDS = [
       threeYearsFromTomorrow.getMonth(),
       threeYearsFromTomorrow.getDate()
     ),
+    paymentInterval: TimeIntervalEnum.YEARLY,
     countries: [DE_COUNTRY_CODE],
   },
   {
@@ -67,6 +70,7 @@ export const BONDS = [
       fiveYearsFromTomorrow.getMonth(),
       fiveYearsFromTomorrow.getDate()
     ),
+    paymentInterval: TimeIntervalEnum.YEARLY,
     countries: [DE_COUNTRY_CODE, JP_COUNTRY_CODE],
   },
 ];

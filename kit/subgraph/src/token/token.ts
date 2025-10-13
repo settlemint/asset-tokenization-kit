@@ -21,25 +21,17 @@ import { updateAccountStatsForBalanceChange } from "../stats/account-stats";
 import {
   incrementSystemAssetActivity,
   SystemAssetActivity,
-  updateSystemStatsForSupplyChange,
 } from "../stats/system-stats";
-import { trackTokenCollateralStats } from "../stats/token-collateral-stats";
 import { trackTokenStats } from "../stats/token-stats";
-import {
-  incrementTokenTypeAssetActivity,
-  updateTokenTypeStatsForSupplyChange,
-} from "../stats/token-type-stats";
-import { updateTotalDenominationAssetNeeded } from "../token-assets/bond/utils/bond-utils";
+import { incrementTokenTypeAssetActivity } from "../stats/token-type-stats";
 import {
   decreaseTokenBalanceValue,
   increaseTokenBalanceValue,
 } from "../token-balance/utils/token-balance-utils";
-import { fetchCollateral } from "../token-extensions/collateral/fetch/collateral";
 import { updateYield } from "../token-extensions/fixed-yield-schedule/utils/fixed-yield-schedule-utils";
-import { toBigDecimal } from "../utils/token-decimals";
 import { fetchToken } from "./fetch/token";
 import { fetchTokenComplianceModuleConfig } from "./fetch/token-compliance-module-config";
-import { increaseTokenSupply } from "./utils/token-utils";
+import { handleMint } from "./utils/token-mint-utils";
 
 export function handleApproval(event: Approval): void {
   fetchEvent(event, "Approval");
@@ -95,51 +87,13 @@ export function handleIdentityRegistryAdded(
 export function handleMintCompleted(event: MintCompleted): void {
   const eventEntry = fetchEvent(event, "MintCompleted");
   const token = fetchToken(event.address);
-  increaseTokenSupply(token, event.params.amount);
-
-  // Update token balance
-  increaseTokenBalanceValue(
+  handleMint(
+    eventEntry,
     token,
     event.params.to,
     event.params.amount,
     event.block.timestamp
   );
-
-  const amountDeltaExact = event.params.amount;
-  const amountDelta = toBigDecimal(event.params.amount, token.decimals);
-
-  // Update system stats
-  const totalSystemValueInBaseCurrency = updateSystemStatsForSupplyChange(
-    token,
-    amountDelta
-  );
-
-  // Update token type stats
-  updateTokenTypeStatsForSupplyChange(
-    totalSystemValueInBaseCurrency,
-    token,
-    amountDelta
-  );
-
-  // Update account stats
-  updateAccountStatsForBalanceChange(event.params.to, token, amountDeltaExact);
-
-  // Update token stats
-  trackTokenStats(token, eventEntry);
-
-  // Update token collateral stats
-  if (token.collateral) {
-    const collateral = fetchCollateral(event.address);
-    trackTokenCollateralStats(token, collateral);
-  }
-
-  // Update total denomination asset needed on maturity if this is a bond token
-  if (token.bond) {
-    updateTotalDenominationAssetNeeded(token);
-  }
-
-  incrementSystemAssetActivity(token, SystemAssetActivity.MINT);
-  incrementTokenTypeAssetActivity(token, SystemAssetActivity.MINT);
 }
 
 export function handleModuleParametersUpdated(

@@ -12,7 +12,6 @@ import {
   ActionExecutorSchema,
   ActionSchema,
   ActionStatusSchema,
-  ActionsGraphResponseSchema,
   ActionsListDataSchema,
   ActionsListResponseSchema,
   ActionsListSchema,
@@ -96,7 +95,7 @@ describe("Actions Schemas", () => {
       id: "action-123",
       name: "Test Action",
       target: "0x1234567890123456789012345678901234567890",
-      activeAt: 1_700_000_100n,
+      activeAt: "1700000100",
       status: "ACTIVE" as const,
       executedAt: null,
       executedBy: null,
@@ -111,7 +110,7 @@ describe("Actions Schemas", () => {
       expect(result.id).toBe("action-123");
       expect(result.name).toBe("Test Action");
       expect(result.status).toBe("ACTIVE");
-      expect(result.activeAt).toBe(1_700_000_100n);
+      expect(result.activeAt.getTime()).toBe(1_700_000_100_000);
     });
 
     it("should handle null optional fields", () => {
@@ -175,7 +174,7 @@ describe("Actions Schemas", () => {
         activeAt: "1700000100", // String instead of bigint
       } as unknown;
       const result = ActionSchema.parse(stringTimestamps);
-      expect(result.activeAt).toBe(1_700_000_100n);
+      expect(result.activeAt.getTime()).toBe(1_700_000_100_000);
     });
   });
 
@@ -241,7 +240,7 @@ describe("Actions Schemas", () => {
       id: "action-123",
       name: "Test Action",
       target: "0x1234567890123456789012345678901234567890",
-      activeAt: 1_700_000_100n,
+      activeAt: "1700000100",
       status: "ACTIVE" as const,
       executedAt: null,
       executedBy: null,
@@ -264,24 +263,6 @@ describe("Actions Schemas", () => {
       expect(result).toHaveLength(0);
     });
 
-    it("should validate ActionsGraphResponseSchema (GraphQL response)", () => {
-      const validGraphQLResponse = {
-        actions: [
-          {
-            ...mockAction,
-            activeAt: String(mockAction.activeAt),
-            executedAt:
-              mockAction.executedAt === null
-                ? null
-                : String(mockAction.executedAt),
-          } as unknown,
-        ],
-      };
-      const result = ActionsGraphResponseSchema.parse(validGraphQLResponse);
-      expect(result.actions).toHaveLength(1);
-      expect(result.actions[0]?.id).toBe("action-123");
-    });
-
     it("should validate ActionsListDataSchema", () => {
       const validDataArray = [mockAction];
       const result = ActionsListDataSchema.parse(validDataArray);
@@ -291,24 +272,6 @@ describe("Actions Schemas", () => {
   });
 
   describe("Edge Cases and Boundary Values", () => {
-    it("should handle very large BigInt timestamps", () => {
-      const largeTimestamp = {
-        id: "action-123",
-        name: "Test Action",
-        target: "0x1234567890123456789012345678901234567890",
-        activeAt: 99_999_999_999_999_999n,
-        status: "PENDING" as const,
-        executedAt: null,
-        executedBy: null,
-        executor: {
-          id: "executor-1",
-          executors: [],
-        },
-      };
-      const result = ActionSchema.parse(largeTimestamp);
-      expect(result.activeAt).toBe(99_999_999_999_999_999n);
-    });
-
     it("should handle maximum array length for executors", () => {
       const manyExecutors = Array.from(
         { length: 100 },
@@ -328,7 +291,7 @@ describe("Actions Schemas", () => {
         id: longString,
         name: longString,
         target: "0x1234567890123456789012345678901234567890",
-        activeAt: 1_700_000_100n,
+        activeAt: "1700000100",
         status: "PENDING" as const,
         executedAt: null,
         executedBy: null,

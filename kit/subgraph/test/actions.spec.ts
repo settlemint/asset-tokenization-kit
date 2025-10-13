@@ -1,3 +1,5 @@
+import { isEthereumAddress } from "@atk/zod/ethereum-address";
+import { isEthereumCompositeId } from "@atk/zod/ethereum-composite-id";
 import { describe, expect, it } from "bun:test";
 import { theGraphClient, theGraphGraphql } from "./utils/thegraph-client";
 
@@ -129,6 +131,8 @@ describe("Actions", () => {
     );
     const response = await theGraphClient.request(query);
 
+    expect(response.actions.length).toBeGreaterThanOrEqual(1);
+
     // Should have at least 1 bond maturity action if bonds exist
     if (response.actions.length > 0) {
       const bondActions = response.actions;
@@ -142,7 +146,7 @@ describe("Actions", () => {
         expect(action.activeAt).toBeDefined(); // Should be set to maturity date
         expect(typeof action.executed).toBe("boolean"); // Can be true or false depending on test scenario
         expect(action.identifier).toBeDefined(); // Bond actions use bond address as identifier
-        expect(action.identifier).toMatch(/^0x[a-fA-F0-9]{40}$/); // Should be a valid address
+        expect(isEthereumAddress(action.identifier)).toBe(true); // Should be a valid address
 
         // Verify execution state consistency
         if (action.executed) {
@@ -160,6 +164,80 @@ describe("Actions", () => {
         expect(action.executor.executors.length).toBeGreaterThan(0);
       });
     }
+  });
+
+  it("should fetch bond redeem actions", async () => {
+    const query = theGraphGraphql(
+      `query {
+        actions(
+          where: {
+            name: "RedeemBond"
+          },
+          orderBy: createdAt,
+          orderDirection: desc
+        ) {
+          id
+          name
+          target
+          createdAt
+          activeAt
+          expiresAt
+          executed
+          executedAt
+          executedBy
+          identifier
+          executor {
+            id
+            executors
+            actions {
+              id
+              name
+            }
+          }
+        }
+      }`
+    );
+    const response = await theGraphClient.request(query);
+
+    expect(response.actions.length).toBeGreaterThanOrEqual(1);
+
+    // Should have at least 1 bond redeem action if bonds exist
+    if (response.actions.length > 0) {
+      const bondActions = response.actions;
+
+      // Verify bond maturity action structure
+      bondActions.forEach((action) => {
+        expect(action.id).toBeDefined();
+        expect(action.name).toBe("RedeemBond");
+        expect(action.target).toBeDefined();
+        expect(action.createdAt).toBeDefined();
+        expect(action.activeAt).toBeDefined(); // Should be set to maturity date
+        expect(typeof action.executed).toBe("boolean"); // Can be true or false depending on test scenario
+        expect(action.identifier).toBeDefined(); // Bond actions use bond address as identifier
+        expect(isEthereumCompositeId(action.identifier)).toBe(true); // Should be a valid composite id (token address + account address)
+
+        // Verify execution state consistency
+        if (action.executed) {
+          expect(action.executedAt).toBeDefined();
+          expect(action.executedBy).toBeDefined();
+        } else {
+          expect(action.executedAt).toBeNull();
+          expect(action.executedBy).toBeNull();
+        }
+
+        // Verify executor relationship
+        expect(action.executor).toBeDefined();
+        expect(action.executor.id).toBeDefined();
+        expect(Array.isArray(action.executor.executors)).toBe(true);
+        expect(action.executor.executors.length).toBeGreaterThan(0);
+      });
+    }
+
+    // Has 1 bond redeem executed action
+    const executedActions = response.actions.filter(
+      (action) => action.executed
+    );
+    expect(executedActions.length).toBe(1);
   });
 
   it("should have proper action-executor relationships", async () => {
