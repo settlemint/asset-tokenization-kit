@@ -352,13 +352,11 @@ describe("Token mature", () => {
           },
           {
             context: {
-              skipLoggingFor: [CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.PORTAL_ERROR],
             },
           }
         )
-      ).rejects.toThrow(
-        /Insufficient denomination asset balance|transfer amount exceeds balance|ERC20: transfer amount exceeds balance/
-      );
+      ).rejects.toThrow("InsufficientDenominationAssetBalance");
     }
   );
 });
