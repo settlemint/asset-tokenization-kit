@@ -22,6 +22,8 @@ import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.s
 import { ISMART } from "../../smart/interface/ISMART.sol";
 import { _SMARTLogic } from "../../smart/extensions/core/internal/_SMARTLogic.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { ISMARTRedeemable } from "../../smart/extensions/redeemable/ISMARTRedeemable.sol";
+import { _SMARTRedeemableLogic } from "../../smart/extensions/redeemable/internal/_SMARTRedeemableLogic.sol";
 
 // Core extensions
 import { SMARTUpgradeable } from "../../smart/extensions/core/SMARTUpgradeable.sol"; // Base SMART logic + ERC20
@@ -727,6 +729,7 @@ contract ATKBondImplementation is
         bondRedeemed[owner] = currentRedeemed + amount;
 
         // Interactions: transfer denomination asset to redeemer
+        // Note: External ERC20 call occurs here; entrypoints `redeem`/`redeemAll` are guarded with `nonReentrant`.
         _denominationAsset.safeTransfer(owner, denominationAssetAmount);
 
         // Emit custom bond redemption event (base Redeemed is emitted after this hook)
@@ -793,6 +796,42 @@ contract ATKBondImplementation is
         override(SMARTCustodianUpgradeable, SMARTHooks)
     {
         super._afterRecoverTokens(lostWallet, newWallet);
+    }
+
+    // --- ISMARTRedeemable Implementation ---
+
+    /// @notice Redeems a specific amount of the caller's bond tokens
+    /// @dev Override applies `nonReentrant` at the external entrypoint so the entire
+    ///      before→burn→after hook sequence is protected while `_afterRedeem` performs
+    ///      an external ERC20 `safeTransfer`. Delegates to `__smart_redeemLogic` to
+    ///      preserve hook order and base `Redeemed` event emission.
+    /// @param amount The amount of tokens to redeem
+    /// @return success True if the redemption succeeded
+    function redeem(uint256 amount)
+        external
+        virtual
+        override(ISMARTRedeemable, _SMARTRedeemableLogic)
+        nonReentrant
+        returns (bool success)
+    {
+        __smart_redeemLogic(amount);
+        return true;
+    }
+
+    /// @notice Redeems the caller's entire bond token balance
+    /// @dev Same rationale as `redeem`: entrypoint is `nonReentrant` to protect
+    ///      the hook flow during external ERC20 transfer in `_afterRedeem`.
+    /// @return success True if the redemption succeeded
+    function redeemAll()
+        external
+        virtual
+        override(ISMARTRedeemable, _SMARTRedeemableLogic)
+        nonReentrant
+        returns (bool success)
+    {
+        uint256 balance = __redeemable_getBalance(_msgSender());
+        __smart_redeemLogic(balance);
+        return true;
     }
 
     // --- IContractWithIdentity Implementation ---
