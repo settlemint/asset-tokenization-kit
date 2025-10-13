@@ -1,4 +1,5 @@
 import { Bytes } from "@graphprotocol/graph-ts";
+import { Burnable as BurnableTemplate } from "../../generated/templates";
 import {
   TokenAssetCreated,
   TokenImplementationUpdated,
@@ -74,6 +75,9 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
 
   if (event.params.interfaces.includes(InterfaceIds.ISMARTPausable)) {
     token.pausable = fetchPausable(event.params.tokenAddress).id;
+  }
+  if (event.params.interfaces.includes(InterfaceIds.ISMARTBurnable)) {
+    BurnableTemplate.create(event.params.tokenAddress);
   }
   if (event.params.interfaces.includes(InterfaceIds.ISMARTCustodian)) {
     fetchCustodian(event.params.tokenAddress);
