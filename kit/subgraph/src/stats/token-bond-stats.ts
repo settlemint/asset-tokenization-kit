@@ -70,10 +70,9 @@ export function updateTokenBondStats(token: Token): void {
       .toBigDecimal()
       .div(requiredBalanceExact.toBigDecimal())
       .times(BigDecimal.fromString("100"));
-    state.coveredPercentage =
-      coveredPercentage > BigDecimal.fromString("100")
-        ? BigDecimal.fromString("100")
-        : coveredPercentage;
+    state.coveredPercentage = coveredPercentage.gt(BigDecimal.fromString("100"))
+      ? BigDecimal.fromString("100")
+      : coveredPercentage;
   } else {
     state.coveredPercentage = BigDecimal.zero();
   }

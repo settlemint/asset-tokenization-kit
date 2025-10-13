@@ -60,7 +60,7 @@ export function createActionIdentifier(
         []
       );
       throw new Error(
-        "RedeemBond requires bond address as primaryEntity and participant address as secondaryEntit"
+        "RedeemBond requires bond address as primaryEntity and participant address as secondaryEntity"
       );
     }
     return primaryEntity.concat(secondaryEntity).toHexString();
