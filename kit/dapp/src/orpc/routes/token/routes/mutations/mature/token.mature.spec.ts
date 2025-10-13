@@ -352,11 +352,11 @@ describe("Token mature", () => {
           },
           {
             context: {
-              skipLoggingFor: [CUSTOM_ERROR_CODES.PORTAL_ERROR],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED],
             },
           }
         )
-      ).rejects.toThrow("InsufficientDenominationAssetBalance");
+      ).rejects.toThrow("Insufficient denomination asset balance");
     }
   );
 });
