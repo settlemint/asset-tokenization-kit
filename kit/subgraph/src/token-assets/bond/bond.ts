@@ -1,4 +1,3 @@
-import { BigInt } from "@graphprotocol/graph-ts";
 import { TokenBalance } from "../../../generated/schema";
 import {
   BondMatured,
@@ -58,7 +57,10 @@ export function handleBondRedeemed(event: BondRedeemed): void {
   const account = fetchAccount(event.params.holder);
   const tokenBalance = TokenBalance.load(token.id.concat(account.id));
 
-  if (tokenBalance == null || tokenBalance.valueExact.le(BigInt.zero())) {
+  const redeemedEntireBalance =
+    tokenBalance == null || event.params.bondAmount.ge(tokenBalance.valueExact);
+
+  if (redeemedEntireBalance) {
     actionExecuted(
       event,
       ActionName.RedeemBond,
