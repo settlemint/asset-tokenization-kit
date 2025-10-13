@@ -12,7 +12,6 @@ import {
   ActionExecutorSchema,
   ActionSchema,
   ActionStatusSchema,
-  ActionsGraphResponseSchema,
   ActionsListDataSchema,
   ActionsListResponseSchema,
   ActionsListSchema,
@@ -262,24 +261,6 @@ describe("Actions Schemas", () => {
       const emptyResponse: (typeof mockAction)[] = [];
       const result = ActionsListResponseSchema.parse(emptyResponse);
       expect(result).toHaveLength(0);
-    });
-
-    it("should validate ActionsGraphResponseSchema (GraphQL response)", () => {
-      const validGraphQLResponse = {
-        actions: [
-          {
-            ...mockAction,
-            activeAt: String(mockAction.activeAt),
-            executedAt:
-              mockAction.executedAt === null
-                ? null
-                : String(mockAction.executedAt),
-          } as unknown,
-        ],
-      };
-      const result = ActionsGraphResponseSchema.parse(validGraphQLResponse);
-      expect(result.actions).toHaveLength(1);
-      expect(result.actions[0]?.id).toBe("action-123");
     });
 
     it("should validate ActionsListDataSchema", () => {

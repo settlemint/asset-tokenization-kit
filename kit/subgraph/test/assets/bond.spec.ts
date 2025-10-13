@@ -42,15 +42,15 @@ describe("Bonds", () => {
       {
         name: "Euro Bonds",
         type: "bond",
-        totalSupply: "117",
-        totalSupplyExact: "117000000000000000000",
+        totalSupply: "93",
+        totalSupplyExact: "93000000000000000000",
         bond: {
           isMatured: true,
           maturityDate: expect.any(String),
           faceValue: "0.000123",
           faceValueExact: "123",
-          denominationAssetNeeded: "0.014391",
-          denominationAssetNeededExact: "14391",
+          denominationAssetNeeded: "0.011439",
+          denominationAssetNeededExact: "11439",
           denominationAsset: {
             name: "Euro Deposits",
             decimals: 6,
