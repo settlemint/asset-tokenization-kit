@@ -701,7 +701,36 @@ contract ATKBondImplementation is
         if (!isMatured) revert BondNotYetMatured(block.timestamp, _maturityDate);
         if (amount == 0) revert InvalidRedemptionAmount();
 
+        // Ensure sufficient denomination assets are available for this redemption
+        uint256 denominationAssetAmount = _calculateDenominationAssetAmount(amount);
+        uint256 contractBalance = denominationAssetBalance();
+        if (contractBalance < denominationAssetAmount) {
+            revert InsufficientDenominationAssetBalance(contractBalance, denominationAssetAmount);
+        }
+
         super._beforeRedeem(owner, amount);
+    }
+
+    /// @inheritdoc SMARTHooks
+    /// @notice Hook that is called after redeeming tokens
+    /// @param owner The address that redeemed the tokens
+    /// @param amount The amount of tokens that were redeemed
+    function _afterRedeem(address owner, uint256 amount) internal virtual override(SMARTHooks) {
+        // Chain to parent hooks first per convention
+        super._afterRedeem(owner, amount);
+
+        // Calculate payout amount deterministically (cheap math)
+        uint256 denominationAssetAmount = _calculateDenominationAssetAmount(amount);
+
+        // Effects: update redeemed accounting prior to external interaction
+        uint256 currentRedeemed = bondRedeemed[owner];
+        bondRedeemed[owner] = currentRedeemed + amount;
+
+        // Interactions: transfer denomination asset to redeemer
+        _denominationAsset.safeTransfer(owner, denominationAssetAmount);
+
+        // Emit custom bond redemption event (base Redeemed is emitted after this hook)
+        emit BondRedeemed(_msgSender(), owner, amount, denominationAssetAmount);
     }
 
     /// @inheritdoc SMARTHooks
@@ -764,37 +793,6 @@ contract ATKBondImplementation is
         override(SMARTCustodianUpgradeable, SMARTHooks)
     {
         super._afterRecoverTokens(lostWallet, newWallet);
-    }
-
-    // --- Internal Functions (Overrides) ---
-
-    /// @notice Implementation of the abstract burn execution using the base ERC20Upgradeable `_burn` function.
-    /// @dev Assumes the inheriting contract includes an ERC20Upgradeable implementation with an internal `_burn`
-    /// function. Uses reentrancy protection to prevent external call exploits.
-    /// @param from The address to redeem tokens from
-    /// @param amount The amount of tokens to redeem
-    function __redeemable_redeem(address from, uint256 amount) internal virtual override nonReentrant {
-        uint256 currentBalance = balanceOf(from);
-
-        // Simple check: user can only redeem what they currently have
-        if (amount > currentBalance) revert InsufficientRedeemableBalance(currentBalance, amount);
-
-        uint256 denominationAssetAmount = _calculateDenominationAssetAmount(amount);
-
-        uint256 contractBalance = denominationAssetBalance();
-        if (contractBalance < denominationAssetAmount) {
-            revert InsufficientDenominationAssetBalance(contractBalance, denominationAssetAmount);
-        }
-
-        // State changes BEFORE external calls (checks-effects-interactions pattern)
-        uint256 currentRedeemed = bondRedeemed[from];
-        bondRedeemed[from] = currentRedeemed + amount;
-        _burn(from, amount);
-
-        // External call AFTER all state changes
-        _denominationAsset.safeTransfer(from, denominationAssetAmount);
-
-        emit BondRedeemed(_msgSender(), from, amount, denominationAssetAmount);
     }
 
     // --- IContractWithIdentity Implementation ---
