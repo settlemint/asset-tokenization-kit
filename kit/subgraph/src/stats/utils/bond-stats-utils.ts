@@ -18,7 +18,8 @@ export function updateBondStatsForAssetBalanceChange(
       const bondToken = fetchToken(Address.fromBytes(potentialBondToken.id));
       updateTokenBondStats(bondToken);
     }
-  } else if (token.bond) {
+  }
+  if (token.bond) {
     updateTokenBondStats(token);
   }
 }
