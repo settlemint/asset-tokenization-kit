@@ -15,11 +15,16 @@ describe("Bonds", () => {
             maturityDate
             faceValue
             faceValueExact
-            denominationAssetNeeded
-            denominationAssetNeededExact
             denominationAsset {
               name
               decimals
+            }
+            stats {
+              denominationAssetBalanceRequired
+              denominationAssetBalanceRequiredExact
+              denominationAssetBalanceAvailable
+              denominationAssetBalanceAvailableExact
+              coveredPercentage
             }
           }
           yield_ {
@@ -49,11 +54,16 @@ describe("Bonds", () => {
           maturityDate: expect.any(String),
           faceValue: "0.000123",
           faceValueExact: "123",
-          denominationAssetNeeded: "0.011439",
-          denominationAssetNeededExact: "11439",
           denominationAsset: {
             name: "Euro Deposits",
             decimals: 6,
+          },
+          stats: {
+            denominationAssetBalanceRequired: "0.011439",
+            denominationAssetBalanceRequiredExact: "11439",
+            denominationAssetBalanceAvailable: "149.997048",
+            denominationAssetBalanceAvailableExact: "149997048",
+            coveredPercentage: "100",
           },
         },
         yield_: {

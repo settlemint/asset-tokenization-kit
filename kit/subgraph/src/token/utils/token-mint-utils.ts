@@ -12,7 +12,6 @@ import {
   incrementTokenTypeAssetActivity,
   updateTokenTypeStatsForSupplyChange,
 } from "../../stats/token-type-stats";
-import { updateTotalDenominationAssetNeeded } from "../../token-assets/bond/utils/bond-utils";
 import { increaseTokenBalanceValue } from "../../token-balance/utils/token-balance-utils";
 import { fetchCollateral } from "../../token-extensions/collateral/fetch/collateral";
 import { toBigDecimal } from "../../utils/token-decimals";
@@ -56,11 +55,6 @@ export function handleMint(
   if (token.collateral) {
     const collateral = fetchCollateral(Address.fromBytes(token.id));
     trackTokenCollateralStats(token, collateral);
-  }
-
-  // Update total denomination asset needed on maturity if this is a bond token
-  if (token.bond) {
-    updateTotalDenominationAssetNeeded(token);
   }
 
   incrementSystemAssetActivity(token, SystemAssetActivity.MINT);

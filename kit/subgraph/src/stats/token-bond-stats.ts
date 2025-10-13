@@ -32,12 +32,23 @@ export function updateTokenBondStats(token: Token): void {
     bondAccount
   );
   const denominationAssetBalanceExact = denominationAssetBalance.valueExact;
+  const denominationAssetDecimals = denominationAsset.decimals;
+  const bondDecimals = token.decimals;
 
   // Calculate required denomination asset balance
   // Required = totalSupply * faceValue
-  const requiredBalanceExact = token.totalSupplyExact.times(
-    bond.faceValueExact
-  );
+  let requiredBalanceExact: BigInt;
+
+  if (token.totalSupplyExact.equals(BigInt.zero())) {
+    requiredBalanceExact = BigInt.zero();
+  } else {
+    // Calculate: (totalSupply * faceValue) / 10^bondDecimals
+    // Note: faceValueExact is already in denomination asset base units
+    const divisor = BigInt.fromI32(10).pow(bondDecimals as u8);
+    requiredBalanceExact = token.totalSupplyExact
+      .times(bond.faceValueExact)
+      .div(divisor);
+  }
 
   // Update the persistent state entity
   const state = fetchTokenBondStatsState(Address.fromBytes(token.id));
@@ -56,10 +67,14 @@ export function updateTokenBondStats(token: Token): void {
 
   // Calculate covered percentage
   if (requiredBalanceExact.gt(BigInt.zero())) {
-    state.coveredPercentage = denominationAssetBalanceExact
+    const coveredPercentage = denominationAssetBalanceExact
       .toBigDecimal()
       .div(requiredBalanceExact.toBigDecimal())
       .times(BigDecimal.fromString("100"));
+    state.coveredPercentage =
+      coveredPercentage > BigDecimal.fromString("100")
+        ? BigDecimal.fromString("100")
+        : coveredPercentage;
   } else {
     state.coveredPercentage = BigDecimal.zero();
   }
