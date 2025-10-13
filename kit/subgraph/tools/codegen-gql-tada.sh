@@ -7,8 +7,8 @@ max_attempts=10
 OUTPUT_FILE="./the-graph-env.d.ts"
 
 until [ $n -ge $max_attempts ]; do
-    if bunx gql-tada generate-schema http://localhost:8000/subgraphs/name/kit-integration-tests -c ./test/tsconfig.json && \
-       bunx gql-tada generate-output -c ./test/tsconfig.json --output "${OUTPUT_FILE}"; then
+    if bunx gql.tada generate-schema http://localhost:8000/subgraphs/name/kit-integration-tests -c ./test/tsconfig.json && \
+       bunx gql.tada generate-output -c ./test/tsconfig.json --output "${OUTPUT_FILE}"; then
         break
     else
         n=$((n+1))

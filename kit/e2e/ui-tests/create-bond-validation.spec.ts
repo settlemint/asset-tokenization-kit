@@ -1,30 +1,36 @@
-import { type BrowserContext, test } from "@playwright/test";
+import { type BrowserContext, type Page, expect, test } from "@playwright/test";
 import { CreateAssetForm } from "../pages/create-asset-form";
 import { Pages } from "../pages/pages";
 import { bondData, stablecoinData } from "../test-data/asset-data";
-import {
-  errorMessageData,
-  successMessageData,
-} from "../test-data/message-data";
-import { adminUser } from "../test-data/user-data";
-import { ensureUserIsAdmin } from "../utils/db-utils";
+import { errorMessageData } from "../test-data/message-data";
+import { getSetupUser } from "../utils/setup-user";
 
 const testData = {
   stablecoinName: "",
+  name: "",
+  symbol: "",
+  decimals: "",
 };
 
 test.describe.serial("Bond Creation Validation", () => {
   let adminContext: BrowserContext;
   let adminPages: ReturnType<typeof Pages>;
   let createAssetForm: CreateAssetForm;
+  let adminPage: Page;
 
   test.beforeAll(async ({ browser }) => {
-    await ensureUserIsAdmin(adminUser.email);
+    const setupUser = getSetupUser();
     adminContext = await browser.newContext();
-    const adminPage = await adminContext.newPage();
+    adminPage = await adminContext.newPage();
     adminPages = Pages(adminPage);
     createAssetForm = new CreateAssetForm(adminPage);
-    await adminPages.adminPage.goto();
+    await adminPages.signInPage.goto();
+    await adminPages.signInPage.fillSignInForm(
+      setupUser.email,
+      setupUser.password
+    );
+    await adminPages.signInPage.submitSignInForm();
+    await adminPages.signInPage.expectSuccessfulSignIn();
   });
 
   test.afterAll(async () => {
@@ -33,45 +39,50 @@ test.describe.serial("Bond Creation Validation", () => {
 
   test.describe("First Screen - Basic Fields", () => {
     test.beforeAll(async () => {
-      await createAssetForm.selectAssetType(bondData.assetType);
+      await adminPage.goto("/");
+      await createAssetForm.openAssetDesigner();
+      await createAssetForm.selectAssetClass("Fixed Income");
+      await createAssetForm.selectAssetTypeFromDialog("Bond");
     });
-    test("validates name field is empty", async () => {
+    test("validates empty name field prevents submission", async () => {
       await createAssetForm.fillBasicFields({
-        name: "",
-        symbol: "TBO",
+        symbol: bondData.symbol,
+        decimals: bondData.decimals,
+        isin: bondData.isin,
+        country: bondData.country,
       });
-      await createAssetForm.clickOnNextButton();
-      await createAssetForm.expectErrorMessage(
-        errorMessageData.errorMessageName
-      );
+
+      await createAssetForm.expectNextButtonDisabled();
     });
-    test("validates symbol field is empty", async () => {
+    test("validates empty symbol field prevents submission", async () => {
       await createAssetForm.fillBasicFields({
-        name: "Test Bond",
+        name: bondData.name,
         symbol: "",
+        decimals: bondData.decimals,
+        isin: bondData.isin,
+        country: bondData.country,
       });
-      await createAssetForm.clickOnNextButton();
-      await createAssetForm.expectErrorMessage(
-        errorMessageData.errorMessageSymbol
-      );
+      await createAssetForm.expectNextButtonDisabled();
     });
-    test("validates symbol field is with lower case", async () => {
+    test("validates symbol field with lowercase letters prevents submission", async () => {
       await createAssetForm.fillBasicFields({
-        name: "Test Bond",
+        name: bondData.name,
         symbol: "tbo",
+        decimals: bondData.decimals,
+        isin: bondData.isin,
+        country: bondData.country,
       });
-      await createAssetForm.expectErrorMessage(
-        errorMessageData.errorMessageSymbol
-      );
+      await createAssetForm.expectNextButtonDisabled();
     });
-    test("validates symbol field can not contain special characters", async () => {
+    test("validates symbol field with special characters prevents submission", async () => {
       await createAssetForm.fillBasicFields({
-        name: "Test Bond",
+        name: bondData.name,
         symbol: "TBO$",
+        decimals: bondData.decimals,
+        isin: bondData.isin,
+        country: bondData.country,
       });
-      await createAssetForm.expectErrorMessage(
-        errorMessageData.errorMessageSymbol
-      );
+      await createAssetForm.expectNextButtonDisabled();
     });
     //Update this check name constraint after this ticket is fixed https://linear.app/settlemint/issue/ENG-3136/asset-designererror-message-is-wrong-for-asset-name-field
     test("verifies name field length constraints", async () => {
@@ -80,27 +91,25 @@ test.describe.serial("Bond Creation Validation", () => {
     test("verifies symbol field length constraints", async () => {
       await createAssetForm.verifyInputAttribute("Symbol", "maxlength", "10");
     });
-    test("validates ISIN format", async () => {
+    test("validates ISIN format prevents submission", async () => {
       await createAssetForm.fillBasicFields({
-        name: "Test Bond",
-        symbol: "TBO",
+        name: bondData.name,
+        symbol: bondData.symbol,
+        decimals: bondData.decimals,
         isin: "invalid-isin",
+        country: bondData.country,
       });
-      await createAssetForm.clickOnNextButton();
-      await createAssetForm.expectErrorMessage(
-        errorMessageData.errorMessageISIN
-      );
+      await createAssetForm.expectNextButtonDisabled();
     });
-    test("validates ISIN no special characters", async () => {
+    test("validates ISIN with special characters prevents submission", async () => {
       await createAssetForm.fillBasicFields({
-        name: "Test Bond",
-        symbol: "TBO",
+        name: bondData.name,
+        symbol: bondData.symbol,
+        decimals: bondData.decimals,
         isin: "BE03$833%005",
+        country: bondData.country,
       });
-      await createAssetForm.clickOnNextButton();
-      await createAssetForm.expectErrorMessage(
-        errorMessageData.errorMessageISIN
-      );
+      await createAssetForm.expectNextButtonDisabled();
     });
     test("validates ISIN field length constraints", async () => {
       await createAssetForm.verifyInputAttribute("ISIN", "maxlength", "12");
@@ -117,12 +126,19 @@ test.describe.serial("Bond Creation Validation", () => {
 
   test.describe("Second Screen - Bond Details", () => {
     test.beforeAll(async () => {
+      await adminPage.goto("/");
+      await createAssetForm.openAssetDesigner();
+      await createAssetForm.selectAssetClass("Fixed Income");
+      await createAssetForm.selectAssetTypeFromDialog("Bond");
+
       await createAssetForm.fillBasicFields({
         name: bondData.name,
         symbol: bondData.symbol,
         isin: bondData.isin,
+        country: bondData.country,
       });
-      await createAssetForm.clickOnNextButton();
+      await createAssetForm.clickNextButton();
+      await adminPage.waitForTimeout(1000);
     });
 
     test("validates decimals field is empty", async () => {
@@ -289,37 +305,79 @@ test.describe.serial("Bond Creation Validation", () => {
   test.describe
     .serial("Dependent assets, first create stablecoin and then create dependent bond", () => {
     test("Create Stablecoin asset", async () => {
-      await createAssetForm.fillAssetFields({
+      const setupUser = getSetupUser();
+      await adminPage.goto("/");
+      await createAssetForm.openAssetDesigner();
+      await createAssetForm.selectAssetClass("Cash Equivalent");
+      await createAssetForm.selectAssetTypeFromDialog("Stablecoin");
+
+      await createAssetForm.fillAssetDetails({
         name: stablecoinData.name,
         symbol: stablecoinData.symbol,
         decimals: stablecoinData.decimals,
         isin: stablecoinData.isin,
+        basePrice: stablecoinData.basePrice,
         country: stablecoinData.country,
-        pincode: stablecoinData.pincode,
       });
+
       testData.stablecoinName = stablecoinData.name;
-      await adminPages.adminPage.verifySuccessMessage(
-        successMessageData.successMessageStablecoin
+
+      await createAssetForm.completeAssetCreation(
+        setupUser.pincode,
+        "stablecoin"
       );
-      await adminPages.adminPage.checkIfAssetExists({
-        sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
+      await createAssetForm.verifyAssetCreated({
         name: stablecoinData.name,
+        symbol: stablecoinData.symbol,
+        decimals: stablecoinData.decimals,
       });
     });
 
     test("Create Bond asset", async () => {
+      const setupUser = getSetupUser();
+      await adminPage.goto("/");
+      await createAssetForm.openAssetDesigner();
+      await createAssetForm.selectAssetClass("Fixed Income");
+      await createAssetForm.selectAssetTypeFromDialog("Bond");
+
       const bondDataWithStablecoin = {
         ...bondData,
         denominationAsset: testData.stablecoinName,
       };
-      await adminPages.adminPage.createBond(bondDataWithStablecoin);
-      await adminPages.adminPage.verifySuccessMessage(
-        successMessageData.successMessageBond
-      );
-      await adminPages.adminPage.checkIfAssetExists({
-        sidebarAssetTypes: bondDataWithStablecoin.sidebarAssetTypes,
+
+      await createAssetForm.fillBasicFields({
         name: bondDataWithStablecoin.name,
-        totalSupply: bondDataWithStablecoin.initialSupply,
+        symbol: bondDataWithStablecoin.symbol,
+        decimals: bondDataWithStablecoin.decimals,
+        isin: bondDataWithStablecoin.isin,
+        country: bondDataWithStablecoin.country,
+      });
+
+      await createAssetForm.clickNextButton();
+      await adminPage.waitForLoadState("networkidle");
+      await expect(
+        adminPage.getByRole("heading", { name: "Bond Details" })
+      ).toBeVisible({ timeout: 10000 });
+
+      await createAssetForm.fillBondDetails({
+        decimals: bondDataWithStablecoin.decimals,
+        maximumSupply: bondDataWithStablecoin.maximumSupply,
+        faceValue: bondDataWithStablecoin.faceValue,
+        maturityDate: createAssetForm.getMaturityDate({ daysOffset: 365 }),
+        denominationAsset: bondDataWithStablecoin.denominationAsset,
+      });
+
+      await createAssetForm.clickNextButton();
+
+      testData.name = bondDataWithStablecoin.name;
+      testData.symbol = bondDataWithStablecoin.symbol;
+      testData.decimals = bondDataWithStablecoin.decimals;
+
+      await createAssetForm.completeAssetCreation(setupUser.pincode, "bond");
+      await createAssetForm.verifyAssetCreated({
+        name: testData.name,
+        symbol: testData.symbol,
+        decimals: testData.decimals,
       });
     });
   });

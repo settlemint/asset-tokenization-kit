@@ -7,7 +7,11 @@ import { timestampSerializer } from "@atk/zod/timestamp";
 import { RPCHandler } from "@orpc/server/node";
 import { BatchHandlerPlugin } from "@orpc/server/plugins";
 import { toNodeHandler } from "better-auth/node";
-import { createServer } from "node:http";
+import {
+  createServer,
+  type IncomingMessage,
+  type ServerResponse,
+} from "node:http";
 
 const handler = new RPCHandler(router, {
   plugins: [new BatchHandlerPlugin()],
@@ -20,26 +24,28 @@ const handler = new RPCHandler(router, {
 const authHandler = toNodeHandler(auth);
 
 export function startServer(port: number) {
-  const server = createServer(async (req, res) => {
-    if (req.url?.toLowerCase().startsWith("/api/auth")) {
-      return authHandler(req, res);
+  const server = createServer(
+    async (req: IncomingMessage, res: ServerResponse) => {
+      if (req.url?.toLowerCase().startsWith("/api/auth")) {
+        return authHandler(req, res);
+      }
+
+      // Strip /api/rpc from the url
+      const url = req.url?.startsWith("/api/rpc")
+        ? req.url.replace("/api/rpc", "")
+        : req.url;
+      req.url = url;
+
+      const result = await handler.handle(req, res, {
+        context: { headers: normalizeHeaders(req.headers) },
+      });
+
+      if (!result.matched) {
+        res.statusCode = 404;
+        res.end("No procedure matched");
+      }
     }
-
-    // Strip /api/rpc from the url
-    const url = req.url?.startsWith("/api/rpc")
-      ? req.url.replace("/api/rpc", "")
-      : req.url;
-    req.url = url;
-
-    const result = await handler.handle(req, res, {
-      context: { headers: normalizeHeaders(req.headers) },
-    });
-
-    if (!result.matched) {
-      res.statusCode = 404;
-      res.end("No procedure matched");
-    }
-  });
+  );
   return new Promise<{ stop: () => void; url: string }>((resolve, reject) => {
     server
       .listen(port, "127.0.0.1", () => {
@@ -58,7 +64,7 @@ export function startServer(port: number) {
           url,
         });
       })
-      .on("error", (error) => {
+      .on("error", (error: Error) => {
         reject(error);
       });
   });

@@ -30,7 +30,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
-import capitalize from "lodash/capitalize";
+import capitalize from "lodash.capitalize";
 import type { JSX } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
