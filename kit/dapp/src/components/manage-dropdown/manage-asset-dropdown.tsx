@@ -88,21 +88,15 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
 
   // Fetch denomination asset details
   const denominationAssetId = yieldSchedule?.denominationAsset?.id;
-  const { data: denominationAsset } = useQuery(
-    orpc.token.read.queryOptions({
-      input: { tokenAddress: denominationAssetId ?? "" },
-      enabled: !!denominationAssetId,
-    })
-  );
 
   // Fetch yield schedule's denomination asset balance to check if withdrawal is possible
   const { data: yieldScheduleBalance } = useQuery(
     orpc.token.holder.queryOptions({
       input: {
-        tokenAddress: denominationAsset?.id ?? "",
+        tokenAddress: denominationAssetId ?? "",
         holderAddress: yieldSchedule?.id ?? "",
       },
-      enabled: !!denominationAsset && !!yieldSchedule,
+      enabled: !!denominationAssetId && !!yieldSchedule,
     })
   );
 
@@ -110,10 +104,10 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   const { data: userDenominationAssetBalance } = useQuery(
     orpc.token.holder.queryOptions({
       input: {
-        tokenAddress: denominationAsset?.id ?? "",
+        tokenAddress: denominationAssetId ?? "",
         holderAddress: userWallet ?? "",
       },
-      enabled: !!userWallet && !!denominationAsset,
+      enabled: !!userWallet && !!denominationAssetId,
     })
   );
 
