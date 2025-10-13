@@ -104,9 +104,15 @@ export function trackTokenStats(token: Token, event: Event): void {
   }
   const amountValue = BigInt.fromString(amount.value);
 
-  if (event.eventName == "MintCompleted") {
+  if (
+    event.eventName == "MintCompleted" ||
+    event.eventName == "ManagementFeeCollected"
+  ) {
     setBigNumber(data, "minted", amountValue, token.decimals);
-  } else if (event.eventName == "BurnCompleted") {
+  } else if (
+    event.eventName == "BurnCompleted" ||
+    event.eventName == "Redeemed"
+  ) {
     setBigNumber(data, "burned", amountValue, token.decimals);
   } else if (
     event.eventName == "TransferCompleted" ||

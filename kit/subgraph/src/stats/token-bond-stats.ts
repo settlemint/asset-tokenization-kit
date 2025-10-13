@@ -32,7 +32,6 @@ export function updateTokenBondStats(token: Token): void {
     bondAccount
   );
   const denominationAssetBalanceExact = denominationAssetBalance.valueExact;
-  const denominationAssetDecimals = denominationAsset.decimals;
   const bondDecimals = token.decimals;
 
   // Calculate required denomination asset balance

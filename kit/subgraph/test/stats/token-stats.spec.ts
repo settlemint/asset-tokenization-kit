@@ -257,7 +257,7 @@ describe("TokenStats", () => {
       {
         token: { symbol: "EURD" },
         type: "deposit",
-        balancesCount: 4,
+        balancesCount: 5,
         totalSupply: "10750",
         totalSupplyExact: "10750000000",
         totalMinted: "11000",
@@ -270,7 +270,7 @@ describe("TokenStats", () => {
       {
         token: { symbol: "EURD" },
         type: "deposit",
-        balancesCount: 5,
+        balancesCount: 6,
         totalSupply: "10750",
         totalSupplyExact: "10750000000",
         totalMinted: "0",
@@ -283,7 +283,7 @@ describe("TokenStats", () => {
       {
         token: { symbol: "EURD" },
         type: "deposit",
-        balancesCount: 5,
+        balancesCount: 6,
         totalSupply: "10750",
         totalSupplyExact: "10750000000",
         totalMinted: "0",

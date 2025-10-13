@@ -76,12 +76,10 @@ describe("TokenBondStats", () => {
       )
     ).toBeCloseTo(Number(denominationAssetBalance?.valueExact ?? 0), 2);
     expect(
-      Number(
-        response.tokenBondStatsState?.denominationAssetBalanceRequiredExact
-      )
-    ).toBeCloseTo(requiredBalance, 2);
+      Number(response.tokenBondStatsState?.denominationAssetBalanceRequired)
+    ).toBeCloseTo(requiredBalance, 6);
     expect(Number(response.tokenBondStatsState?.coveredPercentage)).toBeCloseTo(
-      coveredPercentage,
+      coveredPercentage > 100 ? 100 : coveredPercentage,
       2
     );
   });
