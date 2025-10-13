@@ -50,7 +50,7 @@ initContainer:
       # -- (string) TCP check image repository
       repository: ghcr.io/settlemint/btp-waitforit
       # -- (string) TCP check image tag
-      tag: v7.7.11
+      tag: v7.7.13
       # -- (string) TCP check image pull policy
       pullPolicy: IfNotPresent
     # -- (int) Timeout in seconds for each dependency check
