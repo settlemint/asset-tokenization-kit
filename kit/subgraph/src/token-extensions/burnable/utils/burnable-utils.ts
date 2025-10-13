@@ -1,5 +1,5 @@
-import type { Address, BigInt } from "@graphprotocol/graph-ts";
-import type { Event, Token } from "../../../../generated/schema";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Event, Token } from "../../../../generated/schema";
 import { updateAccountStatsForBalanceChange } from "../../../stats/account-stats";
 import {
   incrementSystemAssetActivity,
@@ -53,7 +53,7 @@ export function handleBurn(
 
   // Update token collateral stats
   if (token.collateral) {
-    const collateral = fetchCollateral(token.id);
+    const collateral = fetchCollateral(Address.fromBytes(token.id));
     trackTokenCollateralStats(token, collateral);
   }
 
