@@ -64,14 +64,11 @@ describe("TokenBondStats", () => {
       bondToken.bond?.denominationAsset.balances.find(
         (balance) => balance.account.id === bondToken.id
       );
-    const requiredBalanceExact =
-      Number(bondToken.totalSupplyExact) *
-      Number(bondToken.bond?.faceValueExact ?? 0);
+    const requiredBalance =
+      Number(bondToken.totalSupply) * Number(bondToken.bond?.faceValue ?? 0);
     const coveredPercentage =
-      requiredBalanceExact > 0
-        ? (Number(denominationAssetBalance?.valueExact ?? 0) /
-            requiredBalanceExact) *
-          100
+      requiredBalance > 0
+        ? (Number(denominationAssetBalance?.value ?? 0) / requiredBalance) * 100
         : 0;
     expect(
       Number(
@@ -79,12 +76,10 @@ describe("TokenBondStats", () => {
       )
     ).toBeCloseTo(Number(denominationAssetBalance?.valueExact ?? 0), 2);
     expect(
-      Number(
-        response.tokenBondStatsState?.denominationAssetBalanceRequiredExact
-      )
-    ).toBeCloseTo(requiredBalanceExact, 2);
+      Number(response.tokenBondStatsState?.denominationAssetBalanceRequired)
+    ).toBeCloseTo(requiredBalance, 6);
     expect(Number(response.tokenBondStatsState?.coveredPercentage)).toBeCloseTo(
-      coveredPercentage,
+      coveredPercentage > 100 ? 100 : coveredPercentage,
       2
     );
   });

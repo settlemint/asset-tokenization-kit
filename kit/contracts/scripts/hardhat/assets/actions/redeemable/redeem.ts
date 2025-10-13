@@ -9,7 +9,7 @@ import { waitForSuccess } from "../../../utils/wait-for-success";
 export const redeem = async (
   asset: Asset<any>,
   actor: Actor,
-  amount: bigint
+  amount: string | number | bigint
 ) => {
   console.log(`[Redeemed] → Starting redemption...`);
 

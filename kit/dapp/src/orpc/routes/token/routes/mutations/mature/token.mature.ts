@@ -6,11 +6,11 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { holder } from "@/orpc/routes/token/routes/token.holder";
+import { statsBondStatus } from "@/orpc/routes/token/routes/stats/bond-status";
 import { read } from "@/orpc/routes/token/routes/token.read";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
-import { format, from, lessThan } from "dnum";
+import { format, lessThan } from "dnum";
 
 /**
  * GraphQL mutation to mature a bond token.
@@ -61,13 +61,10 @@ export const mature = tokenRouter.token.mature
       });
     }
 
-    const denominationAsset = token.bond.denominationAsset;
-
-    const denominationAssetBalance = await call(
-      holder,
+    const bondStatus = await call(
+      statsBondStatus,
       {
-        tokenAddress: denominationAsset.id,
-        holderAddress: token.id,
+        tokenAddress: contract,
       },
       {
         context,
@@ -75,8 +72,8 @@ export const mature = tokenRouter.token.mature
     );
 
     const denominationAssetAmount =
-      denominationAssetBalance.holder?.available ?? from(0);
-    const requiredAmount = token.bond.denominationAssetNeeded;
+      bondStatus.denominationAssetBalanceAvailable;
+    const requiredAmount = bondStatus.denominationAssetBalanceRequired;
 
     if (lessThan(denominationAssetAmount, requiredAmount)) {
       throw errors.INPUT_VALIDATION_FAILED({

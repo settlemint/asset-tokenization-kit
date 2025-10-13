@@ -25,7 +25,7 @@ interface ActionFormSheetProps {
   /** Callback when sheet open state changes */
   onOpenChange: (open: boolean) => void;
   /** Token/asset being operated on */
-  asset?: Token;
+  asset?: Pick<Token, "id" | "name" | "symbol">;
   /** Sheet title displayed to user */
   title: string;
   /** Description of the operation */

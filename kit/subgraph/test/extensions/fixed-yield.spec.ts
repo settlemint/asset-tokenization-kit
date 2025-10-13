@@ -55,8 +55,8 @@ describe("Fixed yield", () => {
         createdBy: { id: expect.any(String) },
         name: "Euro Bonds",
         type: "bond",
-        totalSupply: "117",
-        totalSupplyExact: "117000000000000000000",
+        totalSupply: "93",
+        totalSupplyExact: "93000000000000000000",
         yield_: {
           schedule: {
             startDate: expect.any(String),

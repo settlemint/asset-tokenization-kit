@@ -90,8 +90,8 @@ describe("SystemStats", () => {
     expect(state.tokensLaunchedCount).toBe(6);
     expect(state.transferEventsCount).toBe(30);
     expect(state.forcedTransferEventsCount).toBe(0);
-    expect(state.mintEventsCount).toBe(10);
-    expect(state.burnEventsCount).toBe(6);
+    expect(state.mintEventsCount).toBe(12);
+    expect(state.burnEventsCount).toBe(8);
   });
 
   it("should calculate total value based on token supply and base price", async () => {

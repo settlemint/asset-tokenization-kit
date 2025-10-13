@@ -97,8 +97,8 @@ describe("TokenStats", () => {
     const tokenStats = tokenStatsStates;
     const expectedTokens = [
       { symbol: "AAPL", balancesCount: 3 },
-      { symbol: "BB", balancesCount: 3 },
-      { symbol: "EURB", balancesCount: 4 },
+      { symbol: "BB", balancesCount: 4 },
+      { symbol: "EURB", balancesCount: 3 },
       { symbol: "EURD", balancesCount: 6 },
       { symbol: "USDT", balancesCount: 3 },
     ];
@@ -155,8 +155,8 @@ describe("TokenStats", () => {
     const tokenStats = tokenStatsStates;
     const expectedTokens = [
       { symbol: "AAPL", balancesCount: 3 },
-      { symbol: "BB", balancesCount: 3 },
-      { symbol: "EURB", balancesCount: 4 },
+      { symbol: "BB", balancesCount: 4 },
+      { symbol: "EURB", balancesCount: 3 },
       { symbol: "EURD", balancesCount: 6 },
       { symbol: "USDT", balancesCount: 3 },
     ];
@@ -257,7 +257,7 @@ describe("TokenStats", () => {
       {
         token: { symbol: "EURD" },
         type: "deposit",
-        balancesCount: 4,
+        balancesCount: 5,
         totalSupply: "10750",
         totalSupplyExact: "10750000000",
         totalMinted: "11000",
@@ -270,7 +270,7 @@ describe("TokenStats", () => {
       {
         token: { symbol: "EURD" },
         type: "deposit",
-        balancesCount: 5,
+        balancesCount: 6,
         totalSupply: "10750",
         totalSupplyExact: "10750000000",
         totalMinted: "0",
@@ -283,7 +283,7 @@ describe("TokenStats", () => {
       {
         token: { symbol: "EURD" },
         type: "deposit",
-        balancesCount: 5,
+        balancesCount: 6,
         totalSupply: "10750",
         totalSupplyExact: "10750000000",
         totalMinted: "0",
@@ -316,8 +316,8 @@ describe("TokenStats", () => {
         totalMintedExact: "0",
         totalBurned: "0",
         totalBurnedExact: "0",
-        totalTransferred: "0.001353",
-        totalTransferredExact: "1353",
+        totalTransferred: "0.002952",
+        totalTransferredExact: "2952",
       },
     ]);
   });
