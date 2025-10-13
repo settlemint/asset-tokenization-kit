@@ -70,6 +70,7 @@ function Profile() {
               content: "flex-1",
               footer:
                 "p-6 py-4 md:py-3 grid grid-cols-2 gap-4 bg-transparent border-none [&>*:first-child]:justify-self-start [&>*:last-child]:justify-self-end",
+              title: "!text-base md:!text-base",
             }}
           />
         </div>

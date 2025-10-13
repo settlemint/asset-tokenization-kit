@@ -21,7 +21,7 @@ export function RecoveryCodesActions({
         size="lg"
       >
         <Copy className="h-4 w-4" />
-        {t("wallet-security.recovery-codes.copy-all")}
+        {t("onboarding:wallet-security.recovery-codes.copy-all")}
       </Button>
       <Button
         variant="outline"
@@ -30,7 +30,7 @@ export function RecoveryCodesActions({
         size="lg"
       >
         <Download className="h-4 w-4" />
-        {t("wallet-security.recovery-codes.download")}
+        {t("onboarding:wallet-security.recovery-codes.download")}
       </Button>
     </div>
   );

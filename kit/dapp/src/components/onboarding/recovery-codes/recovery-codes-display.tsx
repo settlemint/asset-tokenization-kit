@@ -18,7 +18,7 @@ export function RecoveryCodesDisplay({
       <div className="flex flex-col items-center justify-center py-12 space-y-4">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         <p className="text-sm text-muted-foreground">
-          {t("wallet-security.recovery-codes.generating")}
+          {t("onboarding:wallet-security.recovery-codes.generating")}
         </p>
       </div>
     );
@@ -29,7 +29,7 @@ export function RecoveryCodesDisplay({
       <div className="flex flex-col items-center justify-center py-12 space-y-4">
         <AlertCircle className="h-8 w-8 text-muted-foreground" />
         <p className="text-sm text-muted-foreground">
-          {t("wallet-security.recovery-codes.generated-error")}
+          {t("onboarding:wallet-security.recovery-codes.generated-error")}
         </p>
       </div>
     );
@@ -38,7 +38,7 @@ export function RecoveryCodesDisplay({
   return (
     <div className="bg-background border rounded-lg p-6">
       <h4 className="text-sm font-medium mb-4 text-center">
-        {t("wallet-security.recovery-codes.your-recovery-codes", {
+        {t("onboarding:wallet-security.recovery-codes.your-recovery-codes", {
           count: recoveryCodes.length,
         })}
       </h4>

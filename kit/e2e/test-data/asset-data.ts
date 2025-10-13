@@ -333,6 +333,7 @@ export const bondData = {
   pincode: pincode,
   sidebarAssetTypes: "Bonds",
   initialSupply: "0",
+  country: "United States of America",
 };
 
 export const cryptocurrencyData = {
@@ -517,3 +518,9 @@ export const xvpSettlementData = {
   autoExecute: true,
   pincode: pincode,
 };
+
+export const assetPermissions = [
+  "Governance",
+  "Supply Management",
+  "Emergency",
+];
