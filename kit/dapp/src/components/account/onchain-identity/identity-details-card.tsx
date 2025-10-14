@@ -27,24 +27,13 @@ export function OnchainIdentityDetailsCard({
   const registrationCountryDisplay = registrationCountry
     ? registrationCountry.toUpperCase()
     : undefined;
-  const noIdentityMessage = t("user:fields.noIdentityRegistered", {
-    defaultValue: "No identity registered",
-  });
+  const noIdentityMessage = t("user:fields.noIdentityRegistered");
 
   return (
     <Card className="flex h-full flex-col">
       <CardHeader>
-        <CardTitle>
-          {t("identities:tabs.details", {
-            defaultValue: "Details",
-          })}
-        </CardTitle>
-        <CardDescription>
-          {t("identities:page.description", {
-            defaultValue:
-              "Manage identity claims, verification status, and compliance for users.",
-          })}
-        </CardDescription>
+        <CardTitle>{t("identities:tabs.details")}</CardTitle>
+        <CardDescription>{t("identities:page.description")}</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">
         <DetailGridItem
