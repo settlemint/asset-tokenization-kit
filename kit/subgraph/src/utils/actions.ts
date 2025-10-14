@@ -16,58 +16,61 @@ export class ActionName {
   static ExecuteXvPSettlement: string = "ExecuteXvPSettlement";
   static MatureBond: string = "MatureBond";
   static RedeemBond: string = "RedeemBond";
+  static ClaimYield: string = "ClaimYield";
 }
 
 /**
  * Identifier patterns for different action types:
- * - ApproveXvPSettlement: use participant address as identifier (approval.account.toHexString())
- * - ExecuteXvPSettlement: use settlement address as identifier (settlement.address.toHexString())
- * - MatureBond: use bond address as identifier (bond.address.toHexString())
+ * - ApproveXvPSettlement: uses participant address as identifier
+ * - ExecuteXvPSettlement: uses settlement address as identifier
+ * - MatureBond: uses token address as identifier
+ * - RedeemBond: uses token address and account address as identifiers
+ * - ClaimYield: uses fixed yield schedule address, acccount and period as identifiers
  *
  * This ensures consistent and predictable action IDs across all action types.
  */
 export function createActionIdentifier(
   actionName: string,
-  primaryEntity: Bytes,
-  secondaryEntity: Bytes | null = null
+  identifiers: Bytes[]
 ): string {
-  if (actionName === ActionName.ApproveXvPSettlement) {
-    // For approval actions, use participant address as identifier
-    if (secondaryEntity === null) {
-      log.error(
-        "createActionIdentifier: ApproveXvPSettlement requires participant address as secondaryEntity",
-        []
-      );
-      throw new Error("ApproveXvPSettlement requires participant address");
-    }
-    return secondaryEntity.toHexString();
+  if (identifiers.length === 0) {
+    log.error("createActionIdentifier: identifiers array cannot be empty", []);
+    throw new Error(
+      "createActionIdentifier: identifiers array cannot be empty"
+    );
   }
-
-  if (actionName === ActionName.ExecuteXvPSettlement) {
-    // For execution actions, use settlement address as identifier
-    return primaryEntity.toHexString();
+  if (
+    (actionName === ActionName.ApproveXvPSettlement ||
+      actionName === ActionName.ExecuteXvPSettlement ||
+      actionName === ActionName.MatureBond) &&
+    identifiers.length !== 1
+  ) {
+    log.error("createActionIdentifier: Expected 1 identifier, got {}", [
+      identifiers.length.toString(),
+    ]);
+    throw new Error(
+      `createActionIdentifier: Expected 1 identifier, got ${identifiers.length}`
+    );
   }
-
-  if (actionName === ActionName.MatureBond) {
-    // For bond actions, use bond address as identifier
-    return primaryEntity.toHexString();
+  if (actionName === ActionName.RedeemBond && identifiers.length !== 2) {
+    log.error("createActionIdentifier: Expected 2 identifiers, got {}", [
+      identifiers.length.toString(),
+    ]);
+    throw new Error(
+      `createActionIdentifier: Expected 2 identifiers, got ${identifiers.length}`
+    );
   }
-
-  if (actionName === ActionName.RedeemBond) {
-    if (secondaryEntity === null) {
-      log.error(
-        "createActionIdentifier: RedeemBond requires bond address as primaryEntity and participant address as secondaryEntity",
-        []
-      );
-      throw new Error(
-        "RedeemBond requires bond address as primaryEntity and participant address as secondaryEntity"
-      );
-    }
-    return primaryEntity.concat(secondaryEntity).toHexString();
+  if (actionName === ActionName.ClaimYield && identifiers.length !== 3) {
+    log.error("createActionIdentifier: Expected 3 identifiers, got {}", [
+      identifiers.length.toString(),
+    ]);
+    throw new Error(
+      `createActionIdentifier: Expected 3 identifiers, got ${identifiers.length}`
+    );
   }
-
-  log.error("createActionIdentifier: Unknown action name: {}", [actionName]);
-  throw new Error("Unknown action name");
+  return actionName.concat(
+    identifiers.map<string>((entity) => entity.toHexString()).join("-")
+  );
 }
 
 function getActionStatus(

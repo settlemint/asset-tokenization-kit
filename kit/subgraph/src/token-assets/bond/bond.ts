@@ -25,7 +25,7 @@ export function handleBondMatured(event: BondMatured): void {
     event,
     ActionName.MatureBond,
     event.address,
-    createActionIdentifier(ActionName.MatureBond, event.address)
+    createActionIdentifier(ActionName.MatureBond, [event.address])
   );
 
   // Create RedeemBond actions for all holders
@@ -41,11 +41,10 @@ export function handleBondMatured(event: BondMatured): void {
       null,
       [balance.account],
       null,
-      createActionIdentifier(
-        ActionName.RedeemBond,
+      createActionIdentifier(ActionName.RedeemBond, [
         event.address,
-        balance.account
-      )
+        balance.account,
+      ])
     );
   }
 }
@@ -65,11 +64,10 @@ export function handleBondRedeemed(event: BondRedeemed): void {
       event,
       ActionName.RedeemBond,
       event.address,
-      createActionIdentifier(
-        ActionName.RedeemBond,
+      createActionIdentifier(ActionName.RedeemBond, [
         event.address,
-        event.params.holder
-      )
+        event.params.holder,
+      ])
     );
   }
 }

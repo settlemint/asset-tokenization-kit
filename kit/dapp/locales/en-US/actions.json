@@ -34,7 +34,8 @@
     "MatureBond": "Mature bond",
     "ApproveXvPSettlement": "Approve settlement",
     "ExecuteXvPSettlement": "Execute settlement",
-    "RedeemBond": "Redeem bond"
+    "RedeemBond": "Redeem bond",
+    "ClaimYield": "Claim yield"
   },
   "types": {
     "bond": "Bond",

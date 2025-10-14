@@ -60,11 +60,10 @@ export function handleATKXvPSettlementCreated(
         xvpSettlement.cutoffDate,
         [approval.account],
         null,
-        createActionIdentifier(
-          ActionName.ApproveXvPSettlement,
+        createActionIdentifier(ActionName.ApproveXvPSettlement, [
           event.params.settlement,
-          approval.account
-        )
+          approval.account,
+        ])
       );
     }
   }

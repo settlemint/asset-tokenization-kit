@@ -8,6 +8,13 @@ import {
 } from "../../../generated/templates/FixedYieldSchedule/FixedYieldSchedule";
 import { fetchAccount } from "../../account/fetch/account";
 import { fetchEvent } from "../../event/fetch/event";
+import { fetchToken } from "../../token/fetch/token";
+import {
+  actionExecuted,
+  ActionName,
+  createAction,
+  createActionIdentifier,
+} from "../../utils/actions";
 import { setBigNumber } from "../../utils/bignumber";
 import { getTokenDecimals } from "../../utils/token-decimals";
 import { fetchFixedYieldSchedule } from "./fetch/fixed-yield-schedule";
@@ -89,6 +96,32 @@ export function handleFixedYieldScheduleSet(
     }
   }
   fixedYieldSchedule.save();
+
+  // Create ClaimYield actions for all holders for each period
+  const token = fetchToken(event.address);
+  const balances = token.balances.load();
+  for (let i = 0; i < balances.length; i++) {
+    const balance = balances[i];
+    for (let i = 1; i <= event.params.periodEndTimestamps.length; i++) {
+      const period = fetchFixedYieldSchedulePeriod(
+        getPeriodId(event.address, i)
+      );
+      createAction(
+        event,
+        ActionName.ClaimYield,
+        event.address,
+        period.endDate,
+        null,
+        [balance.account],
+        null,
+        createActionIdentifier(ActionName.ClaimYield, [
+          event.address,
+          balance.account,
+          period.id,
+        ])
+      );
+    }
+  }
 }
 
 export function handleDenominationAssetTopUp(
@@ -144,6 +177,17 @@ export function handleYieldClaimed(event: YieldClaimed): void {
       denominationAssetDecimals
     );
     period.save();
+
+    actionExecuted(
+      event,
+      ActionName.ClaimYield,
+      event.address,
+      createActionIdentifier(ActionName.ClaimYield, [
+        event.address,
+        event.params.holder,
+        period.id,
+      ])
+    );
   }
 
   const currentPeriod = fetchFixedYieldSchedulePeriod(

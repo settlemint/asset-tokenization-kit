@@ -54,6 +54,6 @@ export function handleBondCreated(event: BondCreated): void {
     null,
     [creator.id],
     null,
-    createActionIdentifier(ActionName.MatureBond, event.params.tokenAddress)
+    createActionIdentifier(ActionName.MatureBond, [event.params.tokenAddress])
   );
 }

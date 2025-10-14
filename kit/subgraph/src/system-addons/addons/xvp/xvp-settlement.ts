@@ -175,11 +175,10 @@ export function handleXvPSettlementApproved(
     event,
     ActionName.ApproveXvPSettlement,
     event.address,
-    createActionIdentifier(
-      ActionName.ApproveXvPSettlement,
+    createActionIdentifier(ActionName.ApproveXvPSettlement, [
       event.address,
-      approval.account
-    )
+      approval.account,
+    ])
   );
 
   if (xvpSettlement.autoExecute) {
@@ -230,7 +229,7 @@ export function handleXvPSettlementApproved(
     // Check if ExecuteXvPSettlement action already exists to prevent duplicates
     const executeActionIdentifier = createActionIdentifier(
       ActionName.ExecuteXvPSettlement,
-      event.address
+      [event.address]
     );
     const executeActionId = actionId(
       ActionName.ExecuteXvPSettlement,
@@ -281,7 +280,7 @@ export function handleXvPSettlementExecuted(
     event,
     ActionName.ExecuteXvPSettlement,
     event.address,
-    createActionIdentifier(ActionName.ExecuteXvPSettlement, event.address)
+    createActionIdentifier(ActionName.ExecuteXvPSettlement, [event.address])
   );
 }
 
