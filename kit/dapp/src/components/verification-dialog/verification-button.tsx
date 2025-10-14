@@ -49,7 +49,9 @@ export function VerificationButton({
     [onSubmit, t]
   );
 
-  const triggerDisabled = disabled ?? buttonProps?.disabled ?? false;
+  // Disable if either source requests it; top-level `disabled` is authoritative
+  const triggerDisabled =
+    (disabled ?? false) || (buttonProps?.disabled ?? false);
 
   return (
     <>

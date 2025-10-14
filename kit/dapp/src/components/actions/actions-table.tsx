@@ -7,25 +7,24 @@ import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { VerificationButton } from "@/components/verification-dialog/verification-button";
 import { Web3Address } from "@/components/web3/web3-address";
+import { isORPCError } from "@/hooks/use-error-info";
 import { formatDate } from "@/lib/utils/date";
 import { getDateLocale } from "@/lib/utils/date-locale";
+import { orpc } from "@/orpc/orpc-client";
 import type {
   Action,
   ActionStatus,
 } from "@/orpc/routes/actions/routes/actions.list.schema";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
-import { orpc } from "@/orpc/orpc-client";
-import { isORPCError } from "@/hooks/use-error-info";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import type {
   ColumnDef,
   ColumnMeta,
   SortingState,
 } from "@tanstack/react-table";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import { ClipboardList, Loader2 } from "lucide-react";
 import { useMemo } from "react";
@@ -372,9 +371,9 @@ function ExecuteActionButton({
   const { t } = useTranslation(["actions", "tokens", "common"]);
   const queryClient = useQueryClient();
 
-  const isMatureBond = action.name === "MatureBond";
+  const isSupportedAction = action.name === "MatureBond";
   const isActive = action.status === "ACTIVE";
-  const isDisabled = !isActive;
+  const canExecute = isSupportedAction && isActive;
 
   const mutation = useMutation(
     orpc.token.mature.mutationOptions({
@@ -413,7 +412,7 @@ function ExecuteActionButton({
   };
 
   const handleExecute = async (verification: UserVerification) => {
-    if (!isMatureBond) {
+    if (!isSupportedAction) {
       const message = t("actions:execute.errors.unsupported");
       toast.info(message);
       throw new Error(message);
@@ -434,6 +433,10 @@ function ExecuteActionButton({
       error: (error) => formatErrorMessage(error),
     });
 
+    // Note: We rethrow here to signal failure to `VerificationButton` so the
+    // verification dialog stays open and can show an inline error message.
+    // `toast.promise` handles user-facing toasts, but the rejection is still
+    // required for the dialog flow. This is handled (not unhandled) upstream.
     try {
       await execution;
     } catch (error) {
@@ -441,21 +444,7 @@ function ExecuteActionButton({
     }
   };
 
-  if (!isMatureBond) {
-    return (
-      <Button
-        type="button"
-        size="sm"
-        variant="secondary"
-        disabled
-        className="press-effect opacity-60"
-      >
-        {t("actions:table.execute.unavailable")}
-      </Button>
-    );
-  }
-
-  const triggerDisabled = isDisabled || mutation.isPending;
+  const triggerDisabled = !canExecute || mutation.isPending;
 
   return (
     <VerificationButton
@@ -477,8 +466,10 @@ function ExecuteActionButton({
           <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
           {t("actions:table.execute.loading")}
         </span>
-      ) : (
+      ) : isSupportedAction ? (
         t("actions:table.execute.label")
+      ) : (
+        t("actions:table.execute.unavailable")
       )}
     </VerificationButton>
   );
