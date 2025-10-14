@@ -11,6 +11,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTranslation } from "react-i18next";
 
+export interface PasswordDialogCopy {
+  title: string;
+  description: string;
+  submitLabel: string;
+  submittingLabel: string;
+}
+
+// Reusable confirmation dialog that collects the user's current password
+// before allowing sensitive wallet and security mutations to proceed.
 interface PasswordDialogProps {
   open: boolean;
   password: string;
@@ -20,6 +29,7 @@ interface PasswordDialogProps {
   onPasswordChange: (password: string) => void;
   onCancel: () => void;
   onSubmit: () => void;
+  copy?: Partial<PasswordDialogCopy>;
 }
 
 export function PasswordDialog({
@@ -31,13 +41,19 @@ export function PasswordDialog({
   onPasswordChange,
   onCancel,
   onSubmit,
+  copy,
 }: PasswordDialogProps) {
-  const { t } = useTranslation(["user", "common"]);
-
+  const { t } = useTranslation("common");
+  const title = copy?.title ?? t("password-confirmation.title");
+  const description =
+    copy?.description ?? t("password-confirmation.description");
+  const submitLabel = copy?.submitLabel ?? t("password-confirmation.submit");
+  const submittingLabel =
+    copy?.submittingLabel ?? t("password-confirmation.submitting");
   return (
     <Dialog
       open={open}
-      onOpenChange={(isOpen) => {
+      onOpenChange={(isOpen: boolean) => {
         if (!isOpen) {
           onCancel();
         }
@@ -45,15 +61,13 @@ export function PasswordDialog({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t("user:wallet.passwordPromptTitle")}</DialogTitle>
-          <DialogDescription>
-            {t("user:wallet.passwordPromptDescription")}
-          </DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="regenerate-password">
-              {t("user:wallet.passwordLabel")}
+              {t("password-confirmation.passwordLabel")}
             </Label>
             <Input
               id="regenerate-password"
@@ -80,12 +94,10 @@ export function PasswordDialog({
             onClick={onCancel}
             disabled={isSubmitting}
           >
-            {t("common:actions.cancel")}
+            {t("password-confirmation.cancel")}
           </Button>
           <Button type="button" onClick={onSubmit} disabled={isSubmitting}>
-            {isSubmitting
-              ? t("common:generating")
-              : t("user:wallet.regenerateRecoveryCodes")}
+            {isSubmitting ? submittingLabel : submitLabel}
           </Button>
         </DialogFooter>
       </DialogContent>
