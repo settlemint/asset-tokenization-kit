@@ -1,12 +1,9 @@
 import { OnchainIdentityAddressCard } from "@/components/account/onchain-identity/identity-address-card";
 import { OnchainIdentityDetailsCard } from "@/components/account/onchain-identity/identity-details-card";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
-import { ClaimsTable } from "@/components/identity/claims-table";
-import { isOrpcNotFoundError } from "@/orpc/helpers/error";
-import { orpc } from "@/orpc/orpc-client";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { OnchainIdentityClaimsSection } from "./onchain-identity-claims-section";
 
 export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/account/onchain-identity"
@@ -16,15 +13,6 @@ export const Route = createFileRoute(
 
 function OnchainIdentity() {
   const { t } = useTranslation(["user", "common", "identities"]);
-  const identityQuery = useSuspenseQuery(
-    orpc.system.identity.me.queryOptions({
-      throwOnError: (error) => !isOrpcNotFoundError(error),
-    })
-  );
-  const identityError = identityQuery.error;
-  const identity = isOrpcNotFoundError(identityError)
-    ? null
-    : (identityQuery.data ?? null);
 
   return (
     <div className="container mx-auto space-y-6 p-6">
@@ -47,18 +35,7 @@ function OnchainIdentity() {
         <OnchainIdentityDetailsCard />
       </div>
 
-      {identity ? (
-        <div className="space-y-3">
-          <h2 className="text-2xl font-semibold">
-            {t("identities:tabs.claims")}
-          </h2>
-          <ClaimsTable identityAddress={identity.id} />
-        </div>
-      ) : (
-        <p className="text-sm text-muted-foreground">
-          {t("user:fields.noIdentityRegistered")}
-        </p>
-      )}
+      <OnchainIdentityClaimsSection />
     </div>
   );
 }
