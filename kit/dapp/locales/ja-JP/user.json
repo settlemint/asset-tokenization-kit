@@ -201,6 +201,18 @@
     "confirmRecoveryCodesStored": "これらのリカバリーコードを安全な場所に保存しました",
     "noVerificationMethods": "有効な認証方法がありません",
     "enabled": "有効",
-    "disabled": "無効"
+    "disabled": "無効",
+    "changePincode": {
+      "button": "PINコードを変更",
+      "title": "PINコードを変更",
+      "description": "ウォレット操作を保護するために新しい6桁のPINコードを設定します。",
+      "submit": "続行",
+      "submitting": "準備中...",
+      "success": "PINコードが更新されました。",
+      "passwordTitle": "パスワードを確認",
+      "passwordDescription": "PINコードの更新を完了するためにアカウントのパスワードを入力してください。",
+      "passwordSubmit": "PINコードを更新",
+      "passwordSubmitting": "PINを更新中..."
+    }
   }
 }
