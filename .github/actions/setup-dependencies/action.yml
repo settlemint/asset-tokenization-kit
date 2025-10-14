@@ -47,7 +47,7 @@ runs:
 
     - name: Install Node.js
       if: inputs.disable_node == 'false'
-      uses: actions/setup-node@v5
+      uses: actions/setup-node@v6
       with:
         node-version-file: .nvmrc
         token: ${{ inputs.github_token }}
