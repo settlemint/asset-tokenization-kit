@@ -6,7 +6,7 @@
  * and styles (not investor share classes).
  * @module FundClassValidation
  */
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Canonical fund classes used across the platform.

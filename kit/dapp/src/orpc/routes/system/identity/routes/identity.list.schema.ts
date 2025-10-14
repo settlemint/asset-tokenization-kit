@@ -1,6 +1,6 @@
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Filters for narrowing identity listings.

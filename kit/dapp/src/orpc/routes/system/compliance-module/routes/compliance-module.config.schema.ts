@@ -1,6 +1,6 @@
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { ethereumCompositeId } from "@atk/zod/ethereum-composite-id";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Schema for compliance module parameters that can be configured

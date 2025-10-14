@@ -1,5 +1,5 @@
 import { UserSchema } from "@/orpc/routes/user/routes/user.me.schema";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Admin list response schema.

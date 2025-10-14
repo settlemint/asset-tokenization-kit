@@ -3,7 +3,7 @@ import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mu
 import { bigDecimal } from "@atk/zod/bigdecimal";
 import { apiBigInt } from "@atk/zod/bigint";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import { z } from "zod";
+import * as z from "zod";
 
 export const TokenBurnInputSchema = MutationInputSchemaWithContract.extend({
   addresses: z

@@ -1,7 +1,7 @@
 import { assetFactoryTypeId, assetType } from "@atk/zod/asset-types";
 import { bigDecimal } from "@atk/zod/bigdecimal";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Input schema for portfolio details endpoint

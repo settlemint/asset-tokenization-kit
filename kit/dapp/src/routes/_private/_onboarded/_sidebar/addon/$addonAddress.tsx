@@ -5,7 +5,7 @@ import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { createFileRoute } from "@tanstack/react-router";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
-import { z } from "zod";
+import * as z from "zod";
 
 const routeParamsSchema = z.object({
   addonAddress: ethereumAddress,

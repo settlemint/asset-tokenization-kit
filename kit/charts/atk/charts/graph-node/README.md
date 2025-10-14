@@ -1,6 +1,6 @@
 # graph-node
 
-![Version: 2.0.0-beta.3](https://img.shields.io/badge/Version-2.0.0--beta.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.3](https://img.shields.io/badge/AppVersion-2.0.0--beta.3-informational?style=flat-square)
+![Version: 2.0.0-beta.4](https://img.shields.io/badge/Version-2.0.0--beta.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.4](https://img.shields.io/badge/AppVersion-2.0.0--beta.4-informational?style=flat-square)
 
 A Helm chart for Graph Node
 
@@ -75,7 +75,7 @@ The following table lists the configurable parameters of this chart and their de
 |global.artifacts|object|-|Artifacts configuration for contract ABIs and genesis files|
 |global.artifacts.image|object|-|Image containing contract ABIs and genesis files|
 |global.artifacts.image.pullPolicy|string|`"IfNotPresent"`|Image pull policy|
-|global.artifacts.image.registry|string|`"ghcr.io"`|Image registry|
+|global.artifacts.image.registry|string|`"harbor.settlemint.com/ghcr.io"`|Image registry|
 |global.artifacts.image.repository|string|`"settlemint/asset-tokenization-kit-artifacts"`|Image repository|
 |global.artifacts.image.tag|string|`""`|Image tag (empty string uses Chart.appVersion)|
 |global.labels|object|-|Labels applied to all resources|
@@ -86,7 +86,7 @@ The following table lists the configurable parameters of this chart and their de
 |graph-node.graphNodeDefaults.subgraph.configMapName|string|`"besu-subgraph"`|Default ConfigMap name for subgraph deployment|
 |image|object|-|Graph Node image configuration|
 |image.pullPolicy|string|`"IfNotPresent"`|Graph Node image pull policy|
-|image.repository|string|`"graphprotocol/graph-node"`|Image for Graph Node|
+|image.repository|string|`"harbor.settlemint.com/docker.io/graphprotocol/graph-node"`|Image for Graph Node|
 |image.tag|string|`"v0.40.2"`|Overrides the image tag. Defaults to Chart.appVersion if not set|
 |imagePullSecrets|list|-|Pull secrets required to fetch the Image|
 |ingress|object|-|Ingress configuration|
@@ -116,7 +116,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer|object|-|Init container configuration|
 |initContainer.image|object|-|Image for init container kubectl|
 |initContainer.image.pullPolicy|string|`"IfNotPresent"`|Kubectl image pull policy|
-|initContainer.image.repository|string|`"docker.io/kubesphere/kubectl"`|Kubectl image repository|
+|initContainer.image.repository|string|`"harbor.settlemint.com/docker.io/kubesphere/kubectl"`|Kubectl image repository|
 |initContainer.image.tag|string|`"v1.33.4"`|Kubectl image tag|
 |initContainer.tcpCheck|object|-|TCP check configuration|
 |initContainer.tcpCheck.dependencies|list|-|List of dependencies to check|
@@ -128,7 +128,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.tcpCheck.enabled|bool|`true`|Enable TCP check init container|
 |initContainer.tcpCheck.image|object|-|TCP check image configuration|
 |initContainer.tcpCheck.image.pullPolicy|string|`"IfNotPresent"`|TCP check image pull policy|
-|initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|TCP check image repository|
+|initContainer.tcpCheck.image.repository|string|`"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit"`|TCP check image repository|
 |initContainer.tcpCheck.image.tag|string|`"v7.7.13"`|TCP check image tag|
 |initContainer.tcpCheck.ipfsClusterProxy.enabled|bool|`true`|Enable readiness checks against the IPFS cluster proxy|
 |initContainer.tcpCheck.ipfsClusterProxy.host|string|`"ipfs-cluster"`|Hostname for the IPFS cluster proxy service|
@@ -200,7 +200,7 @@ The following table lists the configurable parameters of this chart and their de
 |podSecurityContext|object|-|Pod-wide security context|
 |postgresReadinessCheck|object|-|PostgreSQL readiness check configuration|
 |postgresReadinessCheck.enabled|bool|`true`|Enable PostgreSQL readiness check init container|
-|postgresReadinessCheck.image|string|`"docker.io/postgres:18.0-alpine"`|Docker image for PostgreSQL readiness check|
+|postgresReadinessCheck.image|string|`"harbor.settlemint.com/docker.io/postgres:18.0-alpine"`|Docker image for PostgreSQL readiness check|
 |postgresReadinessCheck.initialWaitTime|int|`2`|Initial wait time between retries (doubles with exponential backoff)|
 |postgresReadinessCheck.maxRetries|int|`30`|Maximum number of connection retries|
 |postgresReadinessCheck.maxWaitTime|int|`30`|Maximum wait time between retries|

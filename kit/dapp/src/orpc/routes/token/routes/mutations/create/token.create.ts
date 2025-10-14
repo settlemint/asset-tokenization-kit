@@ -18,7 +18,7 @@ import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { call, InferRouterCurrentContexts } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { z } from "zod";
+import * as z from "zod";
 
 const logger = createLogger();
 

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Schema for a simplified system object used in GraphQL list responses.

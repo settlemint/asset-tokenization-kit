@@ -1,5 +1,5 @@
 import { isAfter, isBefore, subDays, subHours } from "date-fns";
-import { z } from "zod";
+import * as z from "zod";
 import { getUnixTimeMicroseconds, timestamp } from "./timestamp";
 
 export const StatsIntervalSchema = z.enum(["hour", "day"]);

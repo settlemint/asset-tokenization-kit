@@ -1,7 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import type { VariablesOf } from "@settlemint/sdk-thegraph";
-import { z } from "zod";
+import * as z from "zod";
 import {
   ActionsListDataSchema,
   type ActionsListResponse,

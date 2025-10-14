@@ -2,7 +2,7 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { getTokenFactory } from "@/orpc/routes/system/token-factory/helpers/factory-context";
 import { PredictAddressOutputSchema } from "@/orpc/routes/system/token-factory/routes/factory.predict-address.schema";
-import { z } from "zod";
+import * as z from "zod";
 
 const PREDICT_ACCESS_MANAGER_QUERY = portalGraphql(`
   query PredictAccessManagerAddress(

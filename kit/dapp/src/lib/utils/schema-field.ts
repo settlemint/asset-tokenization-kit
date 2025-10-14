@@ -1,5 +1,5 @@
 import type { KeysOfUnion } from "@/lib/utils/union";
-import { z } from "zod";
+import * as z from "zod";
 export const isRequiredFieldForZodObject = <
   TSchema extends z.ZodObject<z.ZodRawShape>,
 >(

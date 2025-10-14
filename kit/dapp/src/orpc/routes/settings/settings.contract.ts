@@ -1,5 +1,5 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
-import { z } from "zod";
+import * as z from "zod";
 import { SettingsDeleteSchema } from "./routes/settings.delete.schema";
 import {
   SettingsListOutputSchema,

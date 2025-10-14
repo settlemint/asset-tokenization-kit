@@ -4,7 +4,7 @@ import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { isAddress } from "viem";
-import { z } from "zod";
+import * as z from "zod";
 
 const SEARCH_ACCOUNT_QUERY = theGraphGraphql(`
   query SearchAccountQuery($address: ID!) {
