@@ -10,6 +10,7 @@ import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import QRCode from "react-qr-code";
+import { zeroAddress } from "viem";
 
 export function UserWalletCard() {
   const { t } = useTranslation(["user"]);
@@ -22,7 +23,7 @@ export function UserWalletCard() {
         <CardDescription>{t("wallet.userWalletDescription")}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col items-center justify-center">
-        {user.wallet ? (
+        {user.wallet && user.wallet !== zeroAddress ? (
           <>
             <div className="rounded-lg bg-white p-4 shadow-sm border mb-6">
               <QRCode
