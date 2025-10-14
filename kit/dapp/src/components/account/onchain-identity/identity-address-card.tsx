@@ -1,15 +1,22 @@
 import { AddressQrCard } from "@/components/account/shared/address-qr-card";
-import type { Identity } from "@/orpc/routes/system/identity/routes/identity.read.schema";
+import { isOrpcNotFoundError } from "@/orpc/helpers/error";
+import { orpc } from "@/orpc/orpc-client";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
-interface OnchainIdentityAddressCardProps {
-  identityId: Identity["id"] | null;
-}
-
-export function OnchainIdentityAddressCard({
-  identityId,
-}: OnchainIdentityAddressCardProps) {
+export function OnchainIdentityAddressCard() {
   const { t } = useTranslation(["user"]);
+  const identityQuery = useSuspenseQuery(
+    orpc.system.identity.me.queryOptions({
+      throwOnError: (error) => !isOrpcNotFoundError(error),
+    })
+  );
+
+  const identityError = identityQuery.error;
+  const identity = isOrpcNotFoundError(identityError)
+    ? null
+    : identityQuery.data ?? null;
+  const identityId = identity?.id ?? null;
 
   return (
     <AddressQrCard

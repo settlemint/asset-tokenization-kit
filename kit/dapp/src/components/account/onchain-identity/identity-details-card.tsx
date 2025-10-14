@@ -7,27 +7,30 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { Identity } from "@/orpc/routes/system/identity/routes/identity.read.schema";
+import { isOrpcNotFoundError } from "@/orpc/helpers/error";
+import { orpc } from "@/orpc/orpc-client";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
-interface OnchainIdentityDetailsCardProps {
-  identity: Identity | null;
-}
-
-export function OnchainIdentityDetailsCard({
-  identity,
-}: OnchainIdentityDetailsCardProps) {
+export function OnchainIdentityDetailsCard() {
   const { t } = useTranslation(["identities", "user", "common"]);
+  const identityQuery = useSuspenseQuery(
+    orpc.system.identity.me.queryOptions({
+      throwOnError: (error) => !isOrpcNotFoundError(error),
+    })
+  );
 
-  const registration = identity?.registered;
-  const registrationDetails =
-    registration !== undefined && registration !== false ? registration : null;
-  const isRegistered = Boolean(registrationDetails);
-  const registrationCountry = registrationDetails?.country ?? null;
-  const registrationCountryDisplay = registrationCountry
-    ? registrationCountry.toUpperCase()
-    : undefined;
-  const noIdentityMessage = t("user:fields.noIdentityRegistered");
+  const identityError = identityQuery.error;
+  const identity = isOrpcNotFoundError(identityError)
+    ? null
+    : (identityQuery.data ?? null);
+
+  const isRegistered = !!identity?.registered;
+  const registrationDetails = isRegistered
+    ? (identity?.registered ?? null)
+    : null;
+  const registrationCountryDisplay =
+    registrationDetails?.country?.toUpperCase();
 
   return (
     <Card className="flex h-full flex-col">
@@ -44,7 +47,7 @@ export function OnchainIdentityDetailsCard({
             <IdentityStatusBadge isRegistered={isRegistered} />
           ) : (
             <span className="text-sm text-muted-foreground">
-              {noIdentityMessage}
+              {t("user:fields.noIdentityRegistered")}
             </span>
           )}
         </DetailGridItem>
@@ -52,7 +55,7 @@ export function OnchainIdentityDetailsCard({
         <DetailGridItem
           label={t("identities:register.form.country")}
           info={t("identities:register.form.countryInfo")}
-          value={isRegistered ? registrationCountryDisplay : undefined}
+          value={registrationCountryDisplay}
           type="text"
           emptyValue={t("common:none")}
         />

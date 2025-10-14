@@ -1,8 +1,6 @@
 import { OnchainIdentityAddressCard } from "@/components/account/onchain-identity/identity-address-card";
 import { OnchainIdentityDetailsCard } from "@/components/account/onchain-identity/identity-details-card";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
-import { orpc } from "@/orpc/orpc-client";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
@@ -14,9 +12,6 @@ export const Route = createFileRoute(
 
 function OnchainIdentity() {
   const { t } = useTranslation(["user", "common", "identities"]);
-  const { data: identity } = useSuspenseQuery(
-    orpc.system.identity.me.queryOptions()
-  );
 
   return (
     <div className="container mx-auto space-y-6 p-6">
@@ -35,8 +30,8 @@ function OnchainIdentity() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <OnchainIdentityAddressCard identityId={identity?.id ?? null} />
-        <OnchainIdentityDetailsCard identity={identity ?? null} />
+        <OnchainIdentityAddressCard />
+        <OnchainIdentityDetailsCard />
       </div>
     </div>
   );

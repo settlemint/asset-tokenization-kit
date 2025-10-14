@@ -11,6 +11,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useAppForm } from "@/hooks/use-app-form";
+import { isOrpcNotFoundError } from "@/orpc/helpers/error";
 import { client, orpc } from "@/orpc/orpc-client";
 import type { TopicListOutput } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import {
@@ -98,11 +99,7 @@ export function AddTrustedIssuerSheet({
             wallet: issuerAddress,
           })
           .catch((error: unknown) => {
-            const maybeOrpcError = error as {
-              code?: string;
-            };
-
-            if (maybeOrpcError?.code === "NOT_FOUND") {
+            if (isOrpcNotFoundError(error)) {
               throw new Error(missingIdentityErrorMessage);
             }
 
