@@ -1,5 +1,5 @@
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Schema for collateral ratio input parameters

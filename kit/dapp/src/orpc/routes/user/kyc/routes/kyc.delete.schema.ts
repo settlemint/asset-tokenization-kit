@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 
 export const KycDeleteInputSchema = z.object({
   userId: z.string().min(1),

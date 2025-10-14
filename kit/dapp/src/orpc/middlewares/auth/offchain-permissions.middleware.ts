@@ -2,7 +2,7 @@ import { authClient } from "@/lib/auth/auth.client";
 import type { Permissions } from "@/lib/auth/utils/permissions";
 import type { Context } from "@/orpc/context/context";
 import { baseRouter } from "@/orpc/procedures/base.router";
-import { z } from "zod";
+import * as z from "zod";
 
 interface OffChainPermissionsMiddlewareOptions<InputSchema extends z.ZodType> {
   requiredPermissions: Partial<Permissions>;

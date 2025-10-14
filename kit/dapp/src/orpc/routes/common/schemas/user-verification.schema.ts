@@ -1,5 +1,5 @@
 import { verificationType } from "@atk/zod/verification-type";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * User verification schema

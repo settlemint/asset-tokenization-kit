@@ -7,7 +7,7 @@
  * @module FixedYieldScheduleValidation
  */
 
-import { z } from "zod";
+import * as z from "zod";
 import { bigDecimal } from "./bigdecimal";
 import { ethereumAddress } from "./ethereum-address";
 import { ethereumHex } from "./ethereum-hex";

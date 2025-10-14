@@ -1,6 +1,6 @@
 import { assetFactoryTypeId } from "@atk/zod/asset-types";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Schema for reading a specific token factory

@@ -7,7 +7,7 @@
  * @module AccountValidation
  */
 
-import { z } from "zod";
+import * as z from "zod";
 import { ethereumAddress } from "./ethereum-address";
 
 /**

@@ -6,7 +6,7 @@
  * asset tokenization platform's various addon categories for airdrops, yield, and XvP.
  * @module AddonTypeValidation
  */
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Tuple of valid addon types for type-safe iteration.

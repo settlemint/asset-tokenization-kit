@@ -6,7 +6,7 @@
  * @module EthereumHexValidation
  */
 import { type Hex, isHex } from "viem";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Zod schema for validating Ethereum hex data (variable length)

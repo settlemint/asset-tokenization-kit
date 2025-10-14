@@ -6,7 +6,7 @@
  * Authenticator, Authy, and similar security applications.
  * @module TwoFactorCodeValidation
  */
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Creates a Zod schema that validates 6-digit two-factor authentication codes.

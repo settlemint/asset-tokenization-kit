@@ -5,7 +5,7 @@
  * @module ExchangeRatesHistorySchema
  */
 import { type FiatCurrency, fiatCurrency } from "@atk/zod/fiat-currency";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Schema for querying historical exchange rates.

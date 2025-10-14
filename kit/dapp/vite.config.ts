@@ -2,7 +2,6 @@ import tailwindcss from "@tailwindcss/vite";
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
-import path from "node:path";
 import { defineConfig } from "vite";
 import { analyzer } from "vite-bundle-analyzer";
 import tsConfigPaths from "vite-tsconfig-paths";
@@ -58,19 +57,4 @@ export default defineConfig({
       enabled: process.env.ANALYZE === "true",
     }),
   ],
-  // https://github.com/colinhacks/zod/issues/4907
-  resolve: {
-    alias: [
-      {
-        find: /zod\/v4\/core/,
-        replacement: path.resolve(
-          __dirname,
-          "node_modules",
-          "zod",
-          "v4",
-          "core"
-        ),
-      },
-    ],
-  },
 });

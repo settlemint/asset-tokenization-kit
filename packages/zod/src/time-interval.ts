@@ -6,7 +6,7 @@
  * time-based operations in financial applications.
  * @module TimeIntervalValidation
  */
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Tuple of valid time intervals for type-safe iteration.

@@ -1,6 +1,6 @@
 import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
 import { type ComplianceTypeId, complianceTypeId } from "@atk/zod/compliance";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Default implementation addresses for each compliance module type

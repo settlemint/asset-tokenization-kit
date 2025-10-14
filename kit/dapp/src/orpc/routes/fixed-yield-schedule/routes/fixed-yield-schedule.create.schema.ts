@@ -4,7 +4,7 @@ import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { isoCountryCodeNumeric } from "@atk/zod/iso-country-code";
 import { timeInterval } from "@atk/zod/time-interval";
 import { timestamp } from "@atk/zod/timestamp";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Input schema for creating a fixed yield schedule.

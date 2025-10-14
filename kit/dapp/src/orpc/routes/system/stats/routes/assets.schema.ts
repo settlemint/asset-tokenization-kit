@@ -1,6 +1,6 @@
 import { assetType } from "@atk/zod/asset-types";
 import { bigDecimal } from "@atk/zod/bigdecimal";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Input schema for system assets endpoint

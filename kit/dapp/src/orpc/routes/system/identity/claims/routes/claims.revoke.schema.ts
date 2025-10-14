@@ -1,7 +1,7 @@
 import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
-import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { ClaimTopicSchema } from "@atk/zod/claim";
-import { z } from "zod";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
+import * as z from "zod";
 
 /**
  * Alias for claim topics that can be revoked via API.

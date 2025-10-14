@@ -6,7 +6,7 @@
  * user permissions and access levels.
  * @module UserRoleValidation
  */
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Available user roles with different permission levels.

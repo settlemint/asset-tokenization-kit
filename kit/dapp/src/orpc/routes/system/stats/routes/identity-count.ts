@@ -1,6 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { systemRouter } from "@/orpc/procedures/system.router";
-import { z } from "zod";
+import * as z from "zod";
 
 const IDENTITY_COUNT_QUERY = theGraphGraphql(`
   query IdentityCount($systemId: ID!) {

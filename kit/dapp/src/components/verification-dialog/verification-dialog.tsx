@@ -20,7 +20,7 @@ import { useForm } from "@tanstack/react-form";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { z } from "zod";
+import * as z from "zod";
 interface VerificationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
