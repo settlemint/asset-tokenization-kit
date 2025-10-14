@@ -1,6 +1,5 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
-  Action,
   XvPSettlement,
   XvPSettlementApproval,
   XvPSettlementFlow,
@@ -18,7 +17,7 @@ import { fetchEvent } from "../../../event/fetch/event";
 import { fetchToken } from "../../../token/fetch/token";
 import {
   actionExecuted,
-  actionId,
+  actionExists,
   ActionName,
   createAction,
   createActionIdentifier,
@@ -231,14 +230,13 @@ export function handleXvPSettlementApproved(
       ActionName.ExecuteXvPSettlement,
       [event.address]
     );
-    const executeActionId = actionId(
+    const exists = actionExists(
       ActionName.ExecuteXvPSettlement,
       event.address,
       executeActionIdentifier
     );
-    const existingExecuteAction = Action.load(executeActionId);
 
-    if (!existingExecuteAction) {
+    if (!exists) {
       createAction(
         event,
         ActionName.ExecuteXvPSettlement,

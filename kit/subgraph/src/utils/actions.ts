@@ -71,9 +71,7 @@ export function createActionIdentifier(
       `createActionIdentifier: Expected 3 identifiers, got ${identifiers.length}`
     );
   }
-  return actionName.concat(
-    identifiers.map<string>((entity) => entity.toHexString()).join("-")
-  );
+  return identifiers.map<string>((entity) => entity.toHexString()).join("");
 }
 
 function getActionStatus(
@@ -138,7 +136,7 @@ export function updateActionStatus(action: Action, currentTime: BigInt): void {
     currentTime,
     action.activeAt,
     action.expiresAt,
-    action.executed
+    action.status === ActionStatus.EXECUTED
   );
 
   // Validate status transition
@@ -163,7 +161,7 @@ export function updateActionStatus(action: Action, currentTime: BigInt): void {
   }
 }
 
-export function actionId(
+function actionId(
   actionName: string,
   target: Bytes,
   identifier: string | null
@@ -179,7 +177,7 @@ export function actionId(
   return Bytes.fromUTF8(idString);
 }
 
-export function actionExecutorId(
+function actionExecutorId(
   target: Bytes,
   requiredRole: string | null,
   identifier: string | null
@@ -197,6 +195,15 @@ export function actionExecutorId(
     idString += "-null";
   }
   return Bytes.fromUTF8(idString);
+}
+
+export function actionExists(
+  actionName: string,
+  target: Bytes,
+  identifier: string
+): boolean {
+  const id = actionId(actionName, target, identifier);
+  return Action.load(id) !== null;
 }
 
 export function createAction(
@@ -267,7 +274,6 @@ export function createAction(
   action.activeAt = activeAt;
   action.expiresAt = expiresAt;
   action.requiredRole = requiredRole;
-  action.executed = false;
   action.executedAt = null;
   action.executedBy = null;
   action.identifier = identifier;
@@ -357,24 +363,6 @@ function createActionExecutorInternal(
   return actionExecutor;
 }
 
-export function createActionExecutor(
-  action: Action,
-  executors: Bytes[],
-  identifier: string | null
-): ActionExecutor {
-  const actionExecutor = createActionExecutorInternal(
-    action,
-    executors,
-    identifier
-  );
-
-  // Set the executor field on the Action entity to establish the relationship
-  action.executor = actionExecutor.id;
-  action.save();
-
-  return actionExecutor;
-}
-
 export function actionExecuted(
   event: ethereum.Event,
   actionName: string,
@@ -397,7 +385,7 @@ export function actionExecuted(
     return;
   }
 
-  if (action.executed) {
+  if (action.status === ActionStatus.EXECUTED) {
     log.warning(
       "Action already executed: {} - actionName: {}, target: {}, identifier: {}",
       [
@@ -410,7 +398,6 @@ export function actionExecuted(
     return;
   }
 
-  action.executed = true;
   action.executedAt = event.block.timestamp;
   const executedBy = fetchAccount(event.transaction.from);
   action.executedBy = executedBy.id;
