@@ -16,7 +16,6 @@ export type ClaimRow = Identity["claims"][number];
 
 export interface ClaimsTableProps {
   identityAddress: Address;
-  initialClaims?: ClaimRow[];
   name?: string;
   initialPageSize?: number;
 }
