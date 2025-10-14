@@ -6,16 +6,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Web3Address } from "@/components/web3/web3-address";
+import { orpc } from "@/orpc/orpc-client";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import QRCode from "react-qr-code";
-import type { Address } from "viem";
 
-interface UserWalletCardProps {
-  address: Address | null;
-}
-
-export function UserWalletCard({ address }: UserWalletCardProps) {
+export function UserWalletCard() {
   const { t } = useTranslation(["user"]);
+  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
 
   return (
     <Card className="flex h-full flex-col">
@@ -24,11 +22,11 @@ export function UserWalletCard({ address }: UserWalletCardProps) {
         <CardDescription>{t("wallet.userWalletDescription")}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col items-center justify-center">
-        {address ? (
+        {user.wallet ? (
           <>
             <div className="rounded-lg bg-white p-4 shadow-sm border mb-6">
               <QRCode
-                value={address}
+                value={user.wallet}
                 size={200}
                 level="H"
                 fgColor="#000000"
@@ -37,7 +35,7 @@ export function UserWalletCard({ address }: UserWalletCardProps) {
             </div>
             <div className="w-full max-w-md">
               <Web3Address
-                address={address}
+                address={user.wallet}
                 showFullAddress={true}
                 copyToClipboard={true}
                 showPrettyName={false}
