@@ -2,7 +2,7 @@ import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { assetExtensionArray } from "@atk/zod/asset-extensions";
 import { assetFactoryTypeId } from "@atk/zod/asset-types";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Schema for a token factory in the list

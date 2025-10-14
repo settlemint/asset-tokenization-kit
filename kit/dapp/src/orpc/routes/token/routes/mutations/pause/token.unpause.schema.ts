@@ -1,7 +1,7 @@
-import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
 import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
+import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
-import { z } from "zod";
+import * as z from "zod";
 
 export const TokenUnpauseInputSchema = MutationInputSchemaWithContract;
 

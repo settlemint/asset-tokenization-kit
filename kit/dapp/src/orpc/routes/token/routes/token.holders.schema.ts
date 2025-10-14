@@ -1,5 +1,5 @@
 import { assetBalance } from "@atk/zod/asset-balance";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Schema for token holder response from TheGraph

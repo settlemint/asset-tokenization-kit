@@ -1,6 +1,6 @@
-import { ethereumAddress } from "@atk/zod/ethereum-address";
-import { z } from "zod";
 import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
+import * as z from "zod";
 
 /**
  * Input schema for deleting a trusted issuer

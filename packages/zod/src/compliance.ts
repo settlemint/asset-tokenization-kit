@@ -7,7 +7,7 @@
  * @module ComplianceValidation
  */
 
-import { z } from "zod";
+import * as z from "zod";
 import { ethereumAddress } from "./ethereum-address";
 import { expressionNodeWithGroups } from "./expression-node";
 import { isoCountryCodeNumeric } from "./iso-country-code";

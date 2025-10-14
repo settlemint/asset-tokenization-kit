@@ -5,7 +5,7 @@ import {
   SystemAddonSchema,
 } from "@/orpc/routes/system/addon/routes/addon.list.schema";
 import { SystemSchema } from "@/orpc/routes/system/routes/system.read.schema";
-import { z } from "zod";
+import * as z from "zod";
 
 const TAGS = ["system", "addon"];
 

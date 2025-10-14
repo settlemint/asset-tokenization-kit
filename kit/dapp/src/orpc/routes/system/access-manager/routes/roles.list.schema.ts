@@ -1,6 +1,6 @@
 import { accessControlRole } from "@atk/zod/access-control-roles";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import { z } from "zod";
+import * as z from "zod";
 
 export const SystemRolesInputSchema = z.object({
   /**

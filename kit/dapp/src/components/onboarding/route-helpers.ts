@@ -6,7 +6,7 @@ import type { orpc } from "@/orpc/orpc-client";
 import type { QueryClient } from "@tanstack/react-query";
 import { redirect } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
-import { z } from "zod";
+import * as z from "zod";
 
 const onboardingSearchSchema = z.object({
   step: z.enum(Object.values(OnboardingStep)).optional(),

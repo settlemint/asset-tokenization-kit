@@ -9,7 +9,7 @@
  */
 import type { StandardRPCCustomJsonSerializer } from "@orpc/client/standard";
 import { getUnixTime } from "date-fns";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Creates a Zod schema that validates and normalizes timestamps in various formats.

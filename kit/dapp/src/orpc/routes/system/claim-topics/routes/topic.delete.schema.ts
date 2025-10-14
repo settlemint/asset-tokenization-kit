@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
+import * as z from "zod";
 
 /**
  * Topic Delete Input Schema

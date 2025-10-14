@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 import { roles } from "./access-control-roles";
 
 type AccessControlRoles = (typeof roles)[number];

@@ -6,7 +6,7 @@
  * data structure and validation across the application.
  * @module AssetBalanceValidation
  */
-import { z } from "zod";
+import * as z from "zod";
 import { bigDecimal } from "./bigdecimal";
 import { ethereumAddress } from "./ethereum-address";
 import { timestamp } from "./timestamp";
