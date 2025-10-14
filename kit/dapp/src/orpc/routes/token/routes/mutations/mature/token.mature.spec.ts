@@ -356,9 +356,7 @@ describe("Token mature", () => {
             },
           }
         )
-      ).rejects.toThrow(
-        /Insufficient denomination asset balance|transfer amount exceeds balance|ERC20: transfer amount exceeds balance/
-      );
+      ).rejects.toThrow("Insufficient denomination asset balance");
     }
   );
 });

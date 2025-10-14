@@ -33,7 +33,8 @@
   "labels": {
     "MatureBond": "Mature bond",
     "ApproveXvPSettlement": "Approve settlement",
-    "ExecuteXvPSettlement": "Execute settlement"
+    "ExecuteXvPSettlement": "Execute settlement",
+    "RedeemBond": "Redeem bond"
   },
   "types": {
     "bond": "Bond",

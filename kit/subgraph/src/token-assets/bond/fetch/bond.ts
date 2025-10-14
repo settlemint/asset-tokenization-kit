@@ -1,4 +1,4 @@
-import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { TokenBond } from "../../../../generated/schema";
 import { Bond as BondTemplate } from "../../../../generated/templates";
 import { setBigNumber } from "../../../utils/bignumber";
@@ -12,8 +12,6 @@ export function fetchBond(address: Address): TokenBond {
     bond.maturityDate = BigInt.zero();
     bond.isMatured = false;
     bond.denominationAsset = Address.zero();
-    bond.denominationAssetNeeded = BigDecimal.zero();
-    bond.denominationAssetNeededExact = BigInt.zero();
     bond.save();
     BondTemplate.create(address);
   }

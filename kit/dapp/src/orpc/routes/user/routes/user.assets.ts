@@ -17,6 +17,9 @@ const USER_ASSETS_QUERY = theGraphGraphql(`
         symbol
         decimals
         totalSupply
+        bond {
+          isMatured
+        }
       }
     }
   }

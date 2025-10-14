@@ -27,8 +27,8 @@ describe("Token redeemable extension", () => {
         name: "Euro Bonds",
         type: "bond",
         redeemable: {
-          redeemedAmount: "11",
-          redeemedAmountExact: "11000000000000000000",
+          redeemedAmount: "24",
+          redeemedAmountExact: "24000000000000000000",
         },
       },
       {
