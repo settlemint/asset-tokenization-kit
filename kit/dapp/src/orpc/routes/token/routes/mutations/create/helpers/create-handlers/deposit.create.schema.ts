@@ -19,7 +19,7 @@
 import { TokenBaseSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
 import { AssetTypeEnum } from "@atk/zod/asset-types";
 import { bigDecimal } from "@atk/zod/bigdecimal";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Deposit token specific schema

@@ -10,7 +10,7 @@ import {
   createAuthEndpoint,
   sessionMiddleware,
 } from "better-auth/api";
-import { z } from "zod";
+import * as z from "zod";
 import { isOnboarded, updateSession, validatePassword } from "../utils";
 
 export const pincode = () => {

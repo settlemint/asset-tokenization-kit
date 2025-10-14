@@ -6,7 +6,7 @@
  * @module ExchangeRatesContract
  */
 import { baseContract } from "@/orpc/procedures/base.contract";
-import { z } from "zod";
+import * as z from "zod";
 import { ExchangeRatesDeleteSchema } from "./routes/exchange-rates.delete.schema";
 import { ExchangeRatesHistorySchema } from "./routes/exchange-rates.history.schema";
 import {

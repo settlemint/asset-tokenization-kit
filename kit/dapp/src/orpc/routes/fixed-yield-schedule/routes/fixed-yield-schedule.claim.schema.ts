@@ -1,5 +1,5 @@
 import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
-import { z } from "zod";
+import * as z from "zod";
 
 export const FixedYieldScheduleClaimInputSchema =
   MutationInputSchemaWithContract;

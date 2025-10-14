@@ -1,5 +1,5 @@
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import { z } from "zod";
+import * as z from "zod";
 
 export const CreateWalletOutputSchema = z.object({
   wallet: ethereumAddress,

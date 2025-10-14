@@ -7,7 +7,7 @@ import {
 } from "@/orpc/routes/system/identity/routes/identity.list.schema";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import type { VariablesOf } from "@settlemint/sdk-thegraph";
-import { z } from "zod";
+import * as z from "zod";
 
 const IDENTITY_LIST_QUERY = theGraphGraphql(`
   query IdentityList(

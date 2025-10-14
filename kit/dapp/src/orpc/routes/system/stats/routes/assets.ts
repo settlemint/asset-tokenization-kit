@@ -5,7 +5,7 @@ import { bigDecimal } from "@atk/zod/bigdecimal";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { BigDecimal } from "@atk/zod/src/bigdecimal";
 import { from } from "dnum";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * GraphQL query to fetch asset count, value, and breakdown metrics

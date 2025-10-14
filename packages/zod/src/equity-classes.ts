@@ -6,7 +6,7 @@
  * based on rights, structure, and investment style.
  * @module EquityClassValidation
  */
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Canonical equity classes used across the platform.

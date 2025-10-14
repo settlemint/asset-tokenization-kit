@@ -7,7 +7,7 @@
  * @module YieldScheduleValidation
  */
 
-import { z } from "zod";
+import * as z from "zod";
 import { bigDecimal } from "./bigdecimal";
 import { ethereumAddress } from "./ethereum-address";
 import { ethereumHash } from "./ethereum-hash";

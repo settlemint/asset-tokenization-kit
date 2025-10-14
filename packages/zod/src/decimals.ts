@@ -6,7 +6,7 @@
  * of decimal places for token amounts and monetary values.
  * @module DecimalsValidation
  */
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Creates a Zod schema that validates decimal precision values.

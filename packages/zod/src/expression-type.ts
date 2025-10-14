@@ -7,7 +7,7 @@
  * Based on kit/contracts/scripts/hardhat/utils/expression-builder.ts
  * @module ExpressionTypeValidation
  */
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Tuple of valid expression type values for type-safe iteration.

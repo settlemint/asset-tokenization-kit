@@ -1,7 +1,7 @@
 import type { StepGroup } from "@/components/stepper/types";
 import type { AssetType } from "@atk/zod/asset-types";
 import { useTranslation } from "react-i18next";
-import { z } from "zod";
+import * as z from "zod";
 
 export const AssetDesignerSteps = [
   "assetClass",

@@ -6,7 +6,7 @@
  * systems. Ensures appropriate length for security without being impractical.
  * @module SecretCodeValidation
  */
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Creates a Zod schema that validates secret authentication codes.

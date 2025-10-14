@@ -1,7 +1,7 @@
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { ethereumHash } from "@atk/zod/ethereum-hash";
 import { timestamp } from "@atk/zod/timestamp";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Schema for an event value (key-value pair within an event)

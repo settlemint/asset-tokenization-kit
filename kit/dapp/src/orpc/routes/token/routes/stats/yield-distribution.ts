@@ -1,7 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { from, format } from "dnum";
-import { z } from "zod";
+import { format, from } from "dnum";
+import * as z from "zod";
 
 /**
  * GraphQL query to fetch yield schedule and period data for a bond token

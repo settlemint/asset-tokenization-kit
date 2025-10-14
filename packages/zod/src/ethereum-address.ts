@@ -7,7 +7,7 @@
  * @module EthereumAddressValidation
  */
 import { type Address, getAddress, isAddress } from "viem";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Zod schema for validating and normalizing Ethereum addresses

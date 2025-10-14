@@ -6,7 +6,7 @@
  * and trading systems. Ensures precision and format consistency.
  * @module PriceValidation
  */
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Creates a Zod schema that validates price values.

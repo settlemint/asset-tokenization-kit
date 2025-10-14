@@ -6,7 +6,7 @@ import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { AddonFactoryTypeIdEnum } from "@atk/zod/addon-types";
 import { ethereumAddress, getEthereumAddress } from "@atk/zod/ethereum-address";
 import { timeIntervalToSeconds } from "@atk/zod/time-interval";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Portal GraphQL mutation for creating a fixed yield schedule contract.

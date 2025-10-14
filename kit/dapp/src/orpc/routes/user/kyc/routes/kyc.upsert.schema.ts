@@ -1,6 +1,6 @@
 import { isoCountryCode } from "@atk/zod/iso-country-code";
 import { residencyStatus } from "@atk/zod/residency-status";
-import { z } from "zod";
+import * as z from "zod";
 
 // Strict field definitions shared between input and output
 const strictFirstName = z.string().min(1).max(64).trim();

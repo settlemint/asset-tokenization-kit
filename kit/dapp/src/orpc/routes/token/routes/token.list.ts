@@ -5,7 +5,7 @@ import {
   TokenListResponseSchema,
   TokenListSchema,
 } from "@/orpc/routes/token/routes/token.list.schema";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Schema for TheGraph response with nested identity claims.
