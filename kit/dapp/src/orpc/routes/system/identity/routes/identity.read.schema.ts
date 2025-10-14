@@ -1,7 +1,7 @@
 import { identityClaim } from "@atk/zod/claim";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { isoCountryCode } from "@atk/zod/iso-country-code";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Account metadata returned with an identity item.

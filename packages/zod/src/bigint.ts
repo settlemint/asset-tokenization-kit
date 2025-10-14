@@ -15,7 +15,7 @@ import {
   type Numberish,
   toString,
 } from "dnum";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Flexible BigInt validator that accepts strings, numbers, or bigints.

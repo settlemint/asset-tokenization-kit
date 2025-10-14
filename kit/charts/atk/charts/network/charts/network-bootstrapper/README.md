@@ -1,6 +1,6 @@
 # network-bootstrapper
 
-![Version: 2.0.0-beta.3](https://img.shields.io/badge/Version-2.0.0--beta.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.3](https://img.shields.io/badge/AppVersion-2.0.0--beta.3-informational?style=flat-square)
+![Version: 2.0.0-beta.4](https://img.shields.io/badge/Version-2.0.0--beta.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.4](https://img.shields.io/badge/AppVersion-2.0.0--beta.4-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -47,7 +47,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.tcpCheck.image|object|-|Container image configuration for the tcp-check init container.|
 |initContainer.tcpCheck.image.pullPolicy|string|`"IfNotPresent"`|Image pull policy for the tcp-check init container.|
 |initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|OCI image hosting the tcp-check utility.|
-|initContainer.tcpCheck.image.tag|string|`"v7.7.11"`|Image tag for the tcp-check utility.|
+|initContainer.tcpCheck.image.tag|string|`"v7.7.13"`|Image tag for the tcp-check utility.|
 |initContainer.tcpCheck.resources|object|-|CPU and memory resource constraints for the tcp-check init container.|
 |initContainer.tcpCheck.resources.limits|object|-|Maximum resource limits for the tcp-check init container.|
 |initContainer.tcpCheck.resources.limits.cpu|string|`"300m"`|Maximum CPU allocation for the tcp-check init container.|

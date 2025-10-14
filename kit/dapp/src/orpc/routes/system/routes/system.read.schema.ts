@@ -9,7 +9,7 @@ import { complianceTypeId } from "@atk/zod/compliance";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { ethereumHex } from "@atk/zod/ethereum-hex";
 import { isoCountryCode } from "@atk/zod/iso-country-code";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Schema for token factory entries

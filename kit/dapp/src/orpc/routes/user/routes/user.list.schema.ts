@@ -3,7 +3,7 @@ import { UserSchema } from "@/orpc/routes/user/routes/user.me.schema";
 import { accessControlRoles } from "@atk/zod/access-control-roles";
 import { identityClaim } from "@atk/zod/claim";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Schema for user listing parameters.

@@ -57,7 +57,7 @@ import {
   type RequestDocument,
   type Variables,
 } from "graphql-request";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Creates a validated TheGraph client with advanced querying capabilities

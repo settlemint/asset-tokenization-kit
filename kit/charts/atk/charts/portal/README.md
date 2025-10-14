@@ -1,6 +1,6 @@
 # portal
 
-![Version: 2.0.0-beta.3](https://img.shields.io/badge/Version-2.0.0--beta.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.3](https://img.shields.io/badge/AppVersion-2.0.0--beta.3-informational?style=flat-square)
+![Version: 2.0.0-beta.4](https://img.shields.io/badge/Version-2.0.0--beta.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.4](https://img.shields.io/badge/AppVersion-2.0.0--beta.4-informational?style=flat-square)
 
 Portal is a comprehensive blockchain data management and querying service that provides
 real-time access to on-chain data through GraphQL APIs. It serves as the central data
@@ -106,7 +106,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.tcpCheck.image|object|-|Container image configuration for TCP check|
 |initContainer.tcpCheck.image.pullPolicy|string|`"IfNotPresent"`|Image pull policy for the TCP check init container|
 |initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|Repository for the TCP check init container image|
-|initContainer.tcpCheck.image.tag|string|`"v7.7.11"`|Image tag for the TCP check init container|
+|initContainer.tcpCheck.image.tag|string|`"v7.7.13"`|Image tag for the TCP check init container|
 |initContainer.tcpCheck.resources|object|-|Resource requests and limits for the TCP check init container|
 |initContainer.tcpCheck.resources.limits|object|-|Resource limits for the TCP check init container|
 |initContainer.tcpCheck.resources.limits.cpu|string|`"300m"`|CPU limit for the TCP check init container|

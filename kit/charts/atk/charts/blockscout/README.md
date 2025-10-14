@@ -1,6 +1,6 @@
 # blockscout
 
-![Version: 2.0.0-beta.3](https://img.shields.io/badge/Version-2.0.0--beta.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.3](https://img.shields.io/badge/AppVersion-2.0.0--beta.3-informational?style=flat-square)
+![Version: 2.0.0-beta.4](https://img.shields.io/badge/Version-2.0.0--beta.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.4](https://img.shields.io/badge/AppVersion-2.0.0--beta.4-informational?style=flat-square)
 
 A Helm chart for Blockscout blockchain explorer stack
 
@@ -66,7 +66,7 @@ The following table lists the configurable parameters of this chart and their de
 |blockscout.initContainer.tcpCheck.image|object|-|TCP check container image configuration|
 |blockscout.initContainer.tcpCheck.image.pullPolicy|string|`"IfNotPresent"`|TCP check container image pull policy|
 |blockscout.initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|TCP check container image repository|
-|blockscout.initContainer.tcpCheck.image.tag|string|`"v7.7.11"`|TCP check container image tag|
+|blockscout.initContainer.tcpCheck.image.tag|string|`"v7.7.13"`|TCP check container image tag|
 |blockscout.initContainer.tcpCheck.resources|object|-|TCP check container resource requests and limits|
 |blockscout.initContainer.tcpCheck.resources.dependencies|list|-|List of service dependencies to check|
 |blockscout.initContainer.tcpCheck.resources.dependencies[0]|string|`{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"blockscout\" \"local\" $.Values.postgresql) }}","name":"postgresql"}`|Dependency name|

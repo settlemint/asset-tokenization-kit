@@ -8,7 +8,7 @@ import {
 import { bigDecimal } from "@atk/zod/bigdecimal";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { div, eq, from, multiply, toNumber } from "dnum";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * GraphQL query to fetch account system stats for total portfolio value

@@ -3,7 +3,7 @@ import { createTimeSeries } from "@/lib/utils/timeseries";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { buildStatsRangeQuery } from "@atk/zod/stats-range";
 import { timestamp } from "@atk/zod/timestamp";
-import { z } from "zod";
+import * as z from "zod";
 
 const TOPIC_SCHEMES_STATS_QUERY = theGraphGraphql(`
   query TopicSchemesStats(

@@ -165,7 +165,7 @@ jobs:
             bunx turbo run ci:gha --concurrency=100% --affected
           else
             echo "Running full Turbo for main branch"
-            bun run ci:gha:main --concurrency=100%
+            bunx turbo run ci:gha:main --concurrency=100%
           fi
         env:
           BUILD_ID: ${{ github.run_number }}.${{ github.run_attempt }}

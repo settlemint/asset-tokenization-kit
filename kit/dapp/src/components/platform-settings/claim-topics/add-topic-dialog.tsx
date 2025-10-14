@@ -17,7 +17,7 @@ import type { TopicScheme } from "@/orpc/routes/system/claim-topics/routes/topic
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { z } from "zod";
+import * as z from "zod";
 
 // Form-level schema to make verificationType required for the form input
 const AddTopicFormSchema = TopicCreateInputSchema.extend({

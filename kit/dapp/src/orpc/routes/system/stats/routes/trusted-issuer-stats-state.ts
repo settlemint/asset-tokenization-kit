@@ -1,6 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { systemRouter } from "@/orpc/procedures/system.router";
-import { z } from "zod";
+import * as z from "zod";
 
 const TRUSTED_ISSUER_STATS_STATE_QUERY = theGraphGraphql(`
   query TrustedIssuerStatsState($trustedIssuersRegistryId: ID!) {

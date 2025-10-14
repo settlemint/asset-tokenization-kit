@@ -1,5 +1,5 @@
 import { settingKeySchema } from "@atk/zod/settings-key";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Schema for deleting a setting.

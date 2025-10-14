@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Common list schema for paginated entity retrieval with auto-pagination support.

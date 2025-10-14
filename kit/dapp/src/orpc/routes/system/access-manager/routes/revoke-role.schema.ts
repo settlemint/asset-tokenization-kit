@@ -1,7 +1,7 @@
 import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { accessControlRole } from "@atk/zod/access-control-roles";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Input schema for revoking roles from accounts

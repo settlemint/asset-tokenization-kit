@@ -1,6 +1,6 @@
 # txsigner
 
-![Version: 2.0.0-beta.3](https://img.shields.io/badge/Version-2.0.0--beta.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.3](https://img.shields.io/badge/AppVersion-2.0.0--beta.3-informational?style=flat-square)
+![Version: 2.0.0-beta.4](https://img.shields.io/badge/Version-2.0.0--beta.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.4](https://img.shields.io/badge/AppVersion-2.0.0--beta.4-informational?style=flat-square)
 
 TxSigner is a secure transaction signing service for blockchain applications that provides
 automated transaction signing, key management, and transaction queuing capabilities. It offers
@@ -136,7 +136,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.tcpCheck.image|object|-|Init container image configuration|
 |initContainer.tcpCheck.image.pullPolicy|string|`"IfNotPresent"`|Init container image pull policy|
 |initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|Init container image repository|
-|initContainer.tcpCheck.image.tag|string|`"v7.7.11"`|Init container image tag|
+|initContainer.tcpCheck.image.tag|string|`"v7.7.13"`|Init container image tag|
 |initContainer.tcpCheck.resources|object|-|Init container resource requests and limits|
 |initContainer.tcpCheck.resources.limits|object|-|Resource limits|
 |initContainer.tcpCheck.resources.limits.cpu|string|`"300m"`|CPU limit|

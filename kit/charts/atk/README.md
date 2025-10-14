@@ -1,6 +1,6 @@
 # atk
 
-![Version: 2.0.0-beta.3](https://img.shields.io/badge/Version-2.0.0--beta.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.3](https://img.shields.io/badge/AppVersion-2.0.0--beta.3-informational?style=flat-square)
+![Version: 2.0.0-beta.4](https://img.shields.io/badge/Version-2.0.0--beta.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.4](https://img.shields.io/badge/AppVersion-2.0.0--beta.4-informational?style=flat-square)
 
 A Helm chart for the SettleMint Asset Tokenization Kit
 
@@ -574,14 +574,14 @@ The following table lists the configurable parameters of this chart and their de
 
 | Repository | Name | Version |
 |------------|------|---------|
-|  | blockscout | 2.0.0-beta.3 |
-|  | dapp | 2.0.0-beta.3 |
-|  | erpc | 2.0.0-beta.3 |
-|  | graph-node | 2.0.0-beta.3 |
-|  | hasura | 2.0.0-beta.3 |
-|  | ipfs | 2.0.0-beta.3 |
-|  | network | 2.0.0-beta.3 |
-|  | observability | 2.0.0-beta.3 |
-|  | portal | 2.0.0-beta.3 |
-|  | support | 2.0.0-beta.3 |
-|  | txsigner | 2.0.0-beta.3 |
+|  | blockscout | 2.0.0-beta.4 |
+|  | dapp | 2.0.0-beta.4 |
+|  | erpc | 2.0.0-beta.4 |
+|  | graph-node | 2.0.0-beta.4 |
+|  | hasura | 2.0.0-beta.4 |
+|  | ipfs | 2.0.0-beta.4 |
+|  | network | 2.0.0-beta.4 |
+|  | observability | 2.0.0-beta.4 |
+|  | portal | 2.0.0-beta.4 |
+|  | support | 2.0.0-beta.4 |
+|  | txsigner | 2.0.0-beta.4 |

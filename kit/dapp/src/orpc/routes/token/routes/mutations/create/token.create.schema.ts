@@ -38,7 +38,7 @@ import { EquityTokenSchema } from "@/orpc/routes/token/routes/mutations/create/h
 import { FundTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/fund.create.schema";
 import { StablecoinTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/stablecoin.create.schema";
 import { assetTypeArray } from "@atk/zod/asset-types";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Main unified token creation schema using discriminated union

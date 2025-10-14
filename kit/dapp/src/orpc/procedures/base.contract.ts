@@ -1,7 +1,7 @@
 import { RoleRequirementSchema } from "@atk/zod/role-requirement";
 import { type ErrorMap, type ErrorMapItem, oc } from "@orpc/contract";
 import { oo } from "@orpc/openapi";
-import { z } from "zod";
+import * as z from "zod";
 
 export const CUSTOM_ERROR_CODES = {
   USER_NOT_AUTHORIZED: "USER_NOT_AUTHORIZED",

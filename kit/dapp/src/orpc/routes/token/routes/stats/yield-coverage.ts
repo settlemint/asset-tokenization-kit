@@ -1,7 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { from } from "dnum";
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * GraphQL query to fetch bond data needed for yield coverage calculation

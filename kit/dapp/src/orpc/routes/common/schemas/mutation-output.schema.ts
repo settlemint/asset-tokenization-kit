@@ -6,7 +6,7 @@
  * post-mutation data fetching.
  */
 
-import { z } from "zod";
+import * as z from "zod";
 
 export const BaseMutationOutputSchema = z.object({
   /**
