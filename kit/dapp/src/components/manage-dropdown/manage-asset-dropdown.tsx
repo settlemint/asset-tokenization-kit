@@ -35,8 +35,8 @@ import { MatureConfirmationSheet } from "./sheets/mature-confirmation-sheet";
 import { MintSheet } from "./sheets/mint-sheet";
 import { PauseUnpauseConfirmationSheet } from "./sheets/pause-unpause-confirmation-sheet";
 import { SetYieldScheduleSheet } from "./sheets/set-yield-schedule-sheet";
-import { TransferAssetSheet } from "./sheets/transfer-asset-sheet";
 import { TopUpDenominationAssetSheet } from "./sheets/top-up-denomination-asset-sheet";
+import { TransferAssetSheet } from "./sheets/transfer-asset-sheet";
 import { UnfreezePartialSheet } from "./sheets/unfreeze-partial-sheet";
 import { WithdrawDenominationAssetSheet } from "./sheets/withdraw-denomination-asset-sheet";
 
@@ -88,21 +88,15 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
 
   // Fetch denomination asset details
   const denominationAssetId = yieldSchedule?.denominationAsset?.id;
-  const { data: denominationAsset } = useQuery(
-    orpc.token.read.queryOptions({
-      input: { tokenAddress: denominationAssetId ?? "" },
-      enabled: !!denominationAssetId,
-    })
-  );
 
   // Fetch yield schedule's denomination asset balance to check if withdrawal is possible
   const { data: yieldScheduleBalance } = useQuery(
     orpc.token.holder.queryOptions({
       input: {
-        tokenAddress: denominationAsset?.id ?? "",
+        tokenAddress: denominationAssetId ?? "",
         holderAddress: yieldSchedule?.id ?? "",
       },
-      enabled: !!denominationAsset && !!yieldSchedule,
+      enabled: !!denominationAssetId && !!yieldSchedule,
     })
   );
 
@@ -110,10 +104,10 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   const { data: userDenominationAssetBalance } = useQuery(
     orpc.token.holder.queryOptions({
       input: {
-        tokenAddress: denominationAsset?.id ?? "",
+        tokenAddress: denominationAssetId ?? "",
         holderAddress: userWallet ?? "",
       },
-      enabled: !!userWallet && !!denominationAsset,
+      enabled: !!userWallet && !!denominationAssetId,
     })
   );
 
@@ -451,8 +445,10 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
       {transferSheetAsset && (
         <TransferAssetSheet
           open={isCurrentAction({ target: "transfer", current: openAction })}
-          onOpenChange={onActionOpenChange}
-          asset={transferSheetAsset}
+          onClose={() => {
+            onActionOpenChange(false);
+          }}
+          assetBalance={transferSheetAsset}
         />
       )}
 

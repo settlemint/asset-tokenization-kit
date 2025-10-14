@@ -31,8 +31,8 @@ describe("Tokens", () => {
       {
         name: "Bens Bugs",
         type: "fund",
-        totalSupply: "8",
-        totalSupplyExact: "800000000",
+        totalSupply: "8.0016658",
+        totalSupplyExact: "800166580",
         extensions: [
           "ACCESS_MANAGED",
           "BURNABLE",
@@ -46,8 +46,8 @@ describe("Tokens", () => {
       {
         name: "Euro Bonds",
         type: "bond",
-        totalSupply: "117",
-        totalSupplyExact: "117000000000000000000",
+        totalSupply: "93",
+        totalSupplyExact: "93000000000000000000",
         extensions: [
           "ACCESS_MANAGED",
           "BOND",

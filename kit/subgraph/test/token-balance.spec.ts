@@ -90,4 +90,38 @@ describe("TokenBalances", () => {
       )
     ).toBe(true);
   });
+
+  it("investor b should have no balances for bond as it redeemed the entire amount", async () => {
+    const query = theGraphGraphql(
+      `query {
+        tokenBalances(where: {token_: {bond_not: null}, isFrozen: false}) {
+          id
+          value
+          frozen
+          isFrozen
+          lastUpdatedAt
+          token {
+            id
+            bond {
+              isMatured
+            }
+          }
+          account {
+            id
+            isContract
+          }
+        }
+      }`
+    );
+    const response = await theGraphClient.request(query, {});
+    const maturedBondBalances = response.tokenBalances.filter(
+      (balance) => balance.token.bond?.isMatured
+    );
+    expect(response.tokenBalances).toBeDefined();
+    expect(Array.isArray(response.tokenBalances)).toBe(true);
+    // Holders (investor b redeemed the entire balance)
+    // - Owner
+    // - Investor A
+    expect(maturedBondBalances.length).toBe(2);
+  });
 });

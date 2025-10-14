@@ -16,7 +16,7 @@ import { call } from "@orpc/server";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import countries from "i18n-iso-countries";
 import { isAddress } from "viem";
-import z from "zod";
+import { z } from "zod";
 
 const SYSTEM_QUERY = theGraphGraphql(
   `

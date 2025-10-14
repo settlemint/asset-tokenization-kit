@@ -4,7 +4,7 @@ import { fetchAccount } from "../../account/fetch/account";
 import { decreaseAccountStatsBalanceCount } from "../../stats/account-stats";
 import { updateTokenDistributionStats } from "../../stats/token-distribution-stats";
 import { decreaseTokenStatsBalanceCount } from "../../stats/token-stats";
-import { updateBondStatsForDenominationAssetBalanceChange } from "../../stats/utils/bond-stats-utils";
+import { updateBondStatsForAssetBalanceChange } from "../../stats/utils/bond-stats-utils";
 import { setBigNumber } from "../../utils/bignumber";
 import { fetchTokenBalance } from "../fetch/token-balance";
 
@@ -39,7 +39,7 @@ export function increaseTokenBalanceValue(
   );
 
   // Check if this balance change affects any bond token's denomination asset balance
-  updateBondStatsForDenominationAssetBalanceChange(token, account);
+  updateBondStatsForAssetBalanceChange(token, account);
 }
 
 export function decreaseTokenBalanceValue(
@@ -73,7 +73,7 @@ export function decreaseTokenBalanceValue(
   );
 
   // Check if this balance change affects any bond token's denomination asset balance
-  updateBondStatsForDenominationAssetBalanceChange(token, account);
+  updateBondStatsForAssetBalanceChange(token, account);
 }
 
 export function increaseTokenBalanceFrozen(

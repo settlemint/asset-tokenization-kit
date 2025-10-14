@@ -60,7 +60,7 @@
       "name": "Debug Current Test File",
       "autoAttachChildProcesses": true,
       "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
-      "program": "${workspaceRoot}/node_modules/vitest/vitest.mjs",
+      "program": "${workspaceRoot}/kit/dapp/node_modules/vitest/vitest.mjs",
       "args": ["run", "${fileBasename}", "--config", "vitest.config.ts"],
       "smartStep": true,
       "console": "integratedTerminal",
