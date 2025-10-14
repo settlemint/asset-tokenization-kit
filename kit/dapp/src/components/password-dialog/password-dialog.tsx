@@ -18,6 +18,8 @@ export interface PasswordDialogCopy {
   submittingLabel: string;
 }
 
+// Reusable confirmation dialog that collects the user's current password
+// before allowing sensitive wallet and security mutations to proceed.
 interface PasswordDialogProps {
   open: boolean;
   password: string;
@@ -44,7 +46,7 @@ export function PasswordDialog({
   return (
     <Dialog
       open={open}
-      onOpenChange={(isOpen) => {
+      onOpenChange={(isOpen: boolean) => {
         if (!isOpen) {
           onCancel();
         }

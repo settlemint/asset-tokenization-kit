@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
 
-import { PasswordDialog } from "@/components/account/wallet/password-dialog";
 import { RecoveryCodesActions } from "@/components/onboarding/recovery-codes/recovery-codes-actions";
 import { RecoveryCodesDisplay } from "@/components/onboarding/recovery-codes/recovery-codes-display";
 import { useSecretCodesManager } from "@/components/onboarding/recovery-codes/use-secret-codes-manager";
+import { PasswordDialog } from "@/components/password-dialog/password-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Card,

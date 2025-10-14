@@ -1,5 +1,5 @@
-import { PasswordDialog } from "@/components/account/wallet/password-dialog";
 import { PinSetupModal } from "@/components/onboarding/wallet-security/pin-setup-modal";
+import { PasswordDialog } from "@/components/password-dialog/password-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/auth.client";
