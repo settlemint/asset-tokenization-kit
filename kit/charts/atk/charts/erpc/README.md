@@ -231,7 +231,7 @@ The following table lists the configurable parameters of this chart and their de
 |image.digest|string|`""`|eRPC image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag|
 |image.pullPolicy|string|`"IfNotPresent"`|eRPC image pull policy|
 |image.pullSecrets|list|-|eRPC image pull secrets|
-|image.registry|string|`"ghcr.io"`|eRPC image registry|
+|image.registry|string|`"harbor.settlemint.com/ghcr.io"`|eRPC image registry|
 |image.repository|string|`"erpc/erpc"`|eRPC image repository|
 |image.tag|string|`"0.0.57"`|eRPC image tag (immutable tags are recommended)|
 |ingress|object|-|Ingress parameters|
@@ -261,7 +261,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.tcpCheck.enabled|bool|`true`|Enable TCP dependency checking init container|
 |initContainer.tcpCheck.image|object|-|Container image for TCP check init container|
 |initContainer.tcpCheck.image.pullPolicy|string|`"IfNotPresent"`|TCP check image pull policy|
-|initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|TCP check image repository|
+|initContainer.tcpCheck.image.repository|string|`"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit"`|TCP check image repository|
 |initContainer.tcpCheck.image.tag|string|`"v7.7.13"`|TCP check image tag|
 |initContainer.tcpCheck.resources|object|-|Resource limits and requests for TCP check container|
 |initContainer.tcpCheck.resources.limits|object|-|Resource limits for TCP check container|
@@ -419,7 +419,7 @@ The following table lists the configurable parameters of this chart and their de
 |tests|object|-|Test parameters|
 |tests.image|object|-|Image for test pods|
 |tests.image.pullPolicy|string|`"IfNotPresent"`|Test image pull policy|
-|tests.image.registry|string|`"docker.io"`|Test image registry|
+|tests.image.registry|string|`"harbor.settlemint.com/docker.io"`|Test image registry|
 |tests.image.repository|string|`"busybox"`|Test image repository|
 |tests.image.tag|string|`"1.37.0"`|Test image tag|
 |tolerations|list|-|Tolerations for pod assignment|

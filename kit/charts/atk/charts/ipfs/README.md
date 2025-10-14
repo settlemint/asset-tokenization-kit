@@ -21,7 +21,7 @@ The following table lists the configurable parameters of this chart and their de
 |cluster.extraVolumeMounts|list|-|Additional volume mounts for the cluster container|
 |cluster.extraVolumes|object|-|Additional volumes for the pod|
 |cluster.image.pullPolicy|string|`"IfNotPresent"`|Cluster image pull policy|
-|cluster.image.registry|string|`"docker.io"`|Cluster image registry|
+|cluster.image.registry|string|`"harbor.settlemint.com/docker.io"`|Cluster image registry|
 |cluster.image.repository|string|`"ipfs/ipfs-cluster"`|Cluster image repository|
 |cluster.image.tag|string|`"v1.1.4"`|Cluster image tag|
 |cluster.nodeSelector|object|-|Node selector|
@@ -188,7 +188,7 @@ The following table lists the configurable parameters of this chart and their de
 |ipfs.extraVolumeMounts|list|-|Additional volume mounts for the IPFS container|
 |ipfs.extraVolumes|object|-|Additional volumes for the pod|
 |ipfs.image.pullPolicy|string|`"IfNotPresent"`|IPFS image pull policy|
-|ipfs.image.registry|string|`"docker.io"`|IPFS image registry|
+|ipfs.image.registry|string|`"harbor.settlemint.com/docker.io"`|IPFS image registry|
 |ipfs.image.repository|string|`"ipfs/kubo"`|IPFS image repository|
 |ipfs.image.tag|string|`"v0.38.1"`|IPFS image tag|
 |ipfs.initContainers|list|-|Additional init containers|
@@ -260,7 +260,7 @@ The following table lists the configurable parameters of this chart and their de
 |sharedSecret|string|`""`|Shared secret for cluster peers. Leave empty to auto-generate.|
 |tests|object|-|Test hook image configuration|
 |tests.image.pullPolicy|string|`"IfNotPresent"`|Test image pull policy|
-|tests.image.registry|string|`"docker.io"`|Test image registry|
+|tests.image.registry|string|`"harbor.settlemint.com/docker.io"`|Test image registry|
 |tests.image.repository|string|`"busybox"`|Test image repository|
 |tests.image.tag|string|`"1.37"`|Test image tag|
 

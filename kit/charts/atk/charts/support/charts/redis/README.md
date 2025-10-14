@@ -32,7 +32,7 @@ The following table lists the configurable parameters of this chart and their de
 |image|object|-|Redis image configuration|
 |image.pullPolicy|string|`"IfNotPresent"`|Redis image pull policy|
 |image.pullSecrets|list|-|Redis image pull secrets (list)|
-|image.registry|string|`"docker.io"`|Redis image registry|
+|image.registry|string|`"harbor.settlemint.com/docker.io"`|Redis image registry|
 |image.repository|string|`"redis"`|Redis image repository|
 |image.tag|string|`"8.2.2-alpine"`|Redis image tag|
 |livenessProbe|object|-|Liveness probe configuration|
