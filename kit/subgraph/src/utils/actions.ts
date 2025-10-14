@@ -21,7 +21,7 @@ export class ActionName {
 
 /**
  * Identifier patterns for different action types:
- * - ApproveXvPSettlement: uses participant address as identifier
+ * - ApproveXvPSettlement: uses settlement address and acccount address as identifiers
  * - ExecuteXvPSettlement: uses settlement address as identifier
  * - MatureBond: uses token address as identifier
  * - RedeemBond: uses token address and account address as identifiers
@@ -40,8 +40,7 @@ export function createActionIdentifier(
     );
   }
   if (
-    (actionName === ActionName.ApproveXvPSettlement ||
-      actionName === ActionName.ExecuteXvPSettlement ||
+    (actionName === ActionName.ExecuteXvPSettlement ||
       actionName === ActionName.MatureBond) &&
     identifiers.length !== 1
   ) {
@@ -52,7 +51,11 @@ export function createActionIdentifier(
       `createActionIdentifier: Expected 1 identifier, got ${identifiers.length}`
     );
   }
-  if (actionName === ActionName.RedeemBond && identifiers.length !== 2) {
+  if (
+    (actionName === ActionName.ApproveXvPSettlement ||
+      actionName === ActionName.RedeemBond) &&
+    identifiers.length !== 2
+  ) {
     log.error("createActionIdentifier: Expected 2 identifiers, got {}", [
       identifiers.length.toString(),
     ]);
