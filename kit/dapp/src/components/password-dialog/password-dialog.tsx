@@ -41,8 +41,15 @@ export function PasswordDialog({
   onPasswordChange,
   onCancel,
   onSubmit,
+  copy,
 }: PasswordDialogProps) {
   const { t } = useTranslation("common");
+  const title = copy?.title ?? t("password-confirmation.title");
+  const description =
+    copy?.description ?? t("password-confirmation.description");
+  const submitLabel = copy?.submitLabel ?? t("password-confirmation.submit");
+  const submittingLabel =
+    copy?.submittingLabel ?? t("password-confirmation.submitting");
   return (
     <Dialog
       open={open}
@@ -54,10 +61,8 @@ export function PasswordDialog({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t("password-confirmation.title")}</DialogTitle>
-          <DialogDescription>
-            {t("password-confirmation.description")}
-          </DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
@@ -92,9 +97,7 @@ export function PasswordDialog({
             {t("password-confirmation.cancel")}
           </Button>
           <Button type="button" onClick={onSubmit} disabled={isSubmitting}>
-            {isSubmitting
-              ? t("password-confirmation.submitting")
-              : t("password-confirmation.submit")}
+            {isSubmitting ? submittingLabel : submitLabel}
           </Button>
         </DialogFooter>
       </DialogContent>

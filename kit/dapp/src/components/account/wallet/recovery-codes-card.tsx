@@ -107,16 +107,15 @@ export function RecoveryCodesCard() {
         setPasswordError(result.error);
       }
     } catch (error: unknown) {
+      const fallbackMessage = t("common:errors.somethingWentWrong");
       const message =
-        error instanceof Error
-          ? error.message
-          : t("common:errors.somethingWentWrong");
+        error instanceof Error ? error.message : fallbackMessage;
       setPasswordError(message);
       toast.error(message);
     } finally {
       setIsSubmittingPassword(false);
     }
-  }, [t("common:errors.somethingWentWrong"), generate, password, t]);
+  }, [generate, password, t]);
 
   return (
     <>
