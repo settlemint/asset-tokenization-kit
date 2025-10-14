@@ -26,9 +26,10 @@ export function OnchainIdentityDetailsCard() {
     : (identityQuery.data ?? null);
 
   const isRegistered = !!identity?.registered;
-  const registrationDetails = isRegistered
-    ? (identity?.registered ?? null)
-    : null;
+  const registrationDetails =
+    identity && typeof identity.registered === "object"
+      ? identity.registered
+      : null;
   const registrationCountryDisplay =
     registrationDetails?.country?.toUpperCase();
 
