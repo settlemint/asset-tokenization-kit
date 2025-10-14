@@ -29,7 +29,7 @@ The following table lists the configurable parameters of this chart and their de
 |global.artifacts|object|-|Container artifacts configuration for contract ABIs and genesis files.|
 |global.artifacts.image|object|-|Image containing contract ABIs and genesis files.|
 |global.artifacts.image.pullPolicy|string|`"IfNotPresent"`|Image pull policy for the artifacts container.|
-|global.artifacts.image.registry|string|`"ghcr.io"`|OCI registry hosting the artifacts image.|
+|global.artifacts.image.registry|string|`"harbor.settlemint.com/ghcr.io"`|OCI registry hosting the artifacts image.|
 |global.artifacts.image.repository|string|`"settlemint/asset-tokenization-kit-artifacts"`|Repository path for the artifacts container image.|
 |global.artifacts.image.tag|string|`""`|Image tag for the artifacts container; leave empty to use chart default.|
 |global.chainId|int|`nil`|Chain ID applied when `settings.chainId` is unset.|
@@ -37,7 +37,7 @@ The following table lists the configurable parameters of this chart and their de
 |global.labels."kots.io/app-slug"|string|`"settlemint-atk"`|KOTS application slug for Replicated platform integration.|
 |image|object|-|Container image configuration for the network bootstrapper.|
 |image.pullPolicy|string|`"IfNotPresent"`|Image pull policy controlling when Kubernetes fetches updated image layers.|
-|image.repository|string|`"ghcr.io/settlemint/network-bootstrapper"`|OCI registry path hosting the network bootstrapper image.|
+|image.repository|string|`"harbor.settlemint.com/ghcr.io/settlemint/network-bootstrapper"`|OCI registry path hosting the network bootstrapper image.|
 |image.tag|string|`"1.2.3"`|Image tag override; leave empty to inherit the chart appVersion.|
 |imagePullSecrets|list|-|Image pull secrets enabling access to private registries.|
 |initContainer|object|-|Init container configuration shared across the bootstrapper job.|
@@ -46,7 +46,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.tcpCheck.enabled|bool|`false`|Enable a tcp-check init container before the bootstrapper job starts.|
 |initContainer.tcpCheck.image|object|-|Container image configuration for the tcp-check init container.|
 |initContainer.tcpCheck.image.pullPolicy|string|`"IfNotPresent"`|Image pull policy for the tcp-check init container.|
-|initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|OCI image hosting the tcp-check utility.|
+|initContainer.tcpCheck.image.repository|string|`"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit"`|OCI image hosting the tcp-check utility.|
 |initContainer.tcpCheck.image.tag|string|`"v7.7.13"`|Image tag for the tcp-check utility.|
 |initContainer.tcpCheck.resources|object|-|CPU and memory resource constraints for the tcp-check init container.|
 |initContainer.tcpCheck.resources.limits|object|-|Maximum resource limits for the tcp-check init container.|
