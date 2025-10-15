@@ -4,7 +4,6 @@ pragma solidity ^0.8.28;
 import { AbstractATKAssetTest } from "../../assets/AbstractATKAssetTest.sol";
 import { ATKXvPSettlementFactoryImplementation } from
     "../../../contracts/addons/xvp/ATKXvPSettlementFactoryImplementation.sol";
-import { ATKXvPSettlementImplementation } from "../../../contracts/addons/xvp/ATKXvPSettlementImplementation.sol";
 import { IATKXvPSettlementFactory } from "../../../contracts/addons/xvp/IATKXvPSettlementFactory.sol";
 import { IATKXvPSettlement } from "../../../contracts/addons/xvp/IATKXvPSettlement.sol";
 import { ERC20Mock } from "../../mocks/ERC20Mock.sol";
@@ -98,9 +97,62 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         vm.stopPrank();
     }
 
+    bytes32 internal constant NO_HASHLOCK = bytes32(0);
+
+    function _localFlow(address asset, address from, address to, uint256 amount)
+        internal
+        pure
+        returns (IATKXvPSettlement.Flow memory)
+    {
+        return IATKXvPSettlement.Flow({ asset: asset, from: from, to: to, amount: amount, externalChainId: 0 });
+    }
+
+    function _externalFlow(address asset, address from, address to, uint256 amount, uint64 chainId)
+        internal
+        pure
+        returns (IATKXvPSettlement.Flow memory)
+    {
+        return IATKXvPSettlement.Flow({ asset: asset, from: from, to: to, amount: amount, externalChainId: chainId });
+    }
+
+    function _deploySettlement(
+        address creator,
+        string memory name,
+        IATKXvPSettlement.Flow[] memory flows,
+        uint256 cutoffDate,
+        bool autoExecute,
+        bytes32 hashlock
+    )
+        internal
+        returns (IATKXvPSettlement settlement, address settlementAddr)
+    {
+        vm.prank(creator);
+        settlementAddr = factory.create(name, flows, cutoffDate, autoExecute, hashlock);
+        settlement = IATKXvPSettlement(settlementAddr);
+    }
+
+    function _predictAddress(
+        address caller,
+        string memory name,
+        IATKXvPSettlement.Flow[] memory flows,
+        uint256 cutoffDate,
+        bool autoExecute,
+        bytes32 hashlock
+    )
+        internal
+        returns (address)
+    {
+        vm.prank(caller);
+        return factory.predictAddress(name, flows, cutoffDate, autoExecute, hashlock);
+    }
+
     // ========================================================================
     // Tests for XvP Settlement with Flow structure and allowance checks
     // ========================================================================
+
+    // ---------------------------------------------------------------------
+    // Local Settlements
+    // ---------------------------------------------------------------------
 
     function test_SuccessfulSwapWithSingleFlow() public {
         // Setup actors
@@ -116,29 +168,21 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Test data
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(tokenC),
-            from: alice,
-            to: bob,
-            amount: 100 * 10 ** 18,
-            externalChainId: 0
-        });
+        flows[0] = _localFlow(address(tokenC), alice, bob, 100 * 10 ** 18);
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
 
         // Step 1: Create settlement
-        vm.startPrank(alice);
         // Get the predicted address first
-        address expectedAddr = factory.predictAddress("Settlement Name", flows, cutoffDate, autoExecute, bytes32(0));
+        address expectedAddr = _predictAddress(alice, "Settlement Name", flows, cutoffDate, autoExecute, NO_HASHLOCK);
         vm.expectEmit(true, true, false, false);
         emit ATKXvPSettlementCreated(expectedAddr, alice);
-        address settlementAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute, bytes32(0));
-        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
-        vm.stopPrank();
+        (IATKXvPSettlement settlement, address settlementAddr) =
+            _deploySettlement(alice, "Settlement Name", flows, cutoffDate, autoExecute, NO_HASHLOCK);
 
         assertFalse(settlement.hasExternalFlows(), "Pure local settlement should not flag external flows");
-        assertEq(settlement.hashlock(), bytes32(0), "Hashlock should be empty for local settlements");
+        assertEq(settlement.hashlock(), NO_HASHLOCK, "Hashlock should be empty for local settlements");
         assertFalse(settlement.secretRevealed(), "Secret should not be marked for local flows");
 
         // Step 2: Approve token and settlement
@@ -185,24 +229,18 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Test data
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(tokenD),
-            from: alice,
-            to: bob,
-            amount: 100 * 10 ** 18,
-            externalChainId: 0
-        });
+        flows[0] = _localFlow(address(tokenD), alice, bob, 100 * 10 ** 18);
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
 
         // Step 1: Create settlement
-        vm.startPrank(alice);
-        address settlementAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute, bytes32(0));
-        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
+        (IATKXvPSettlement settlement, address settlementAddr) =
+            _deploySettlement(alice, "Settlement Name", flows, cutoffDate, autoExecute, NO_HASHLOCK);
 
         // Step 2: Try to approve the settlement WITHOUT approving token allowance first
         // This should revert with InsufficientAllowance
+        vm.startPrank(alice);
         vm.expectRevert(
             abi.encodeWithSelector(
                 IATKXvPSettlement.InsufficientAllowance.selector,
@@ -253,28 +291,15 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Test data - Bidirectional swap between Alice and Bob
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](2);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(tokenX),
-            from: alice,
-            to: bob,
-            amount: 200 * 10 ** 18,
-            externalChainId: 0
-        });
-        flows[1] = IATKXvPSettlement.Flow({
-            asset: address(tokenY),
-            from: bob,
-            to: alice,
-            amount: 100 * 10 ** 18,
-            externalChainId: 0
-        });
+        flows[0] = _localFlow(address(tokenX), alice, bob, 200 * 10 ** 18);
+        flows[1] = _localFlow(address(tokenY), bob, alice, 100 * 10 ** 18);
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
 
         // Step 1: Create settlement (alice creates)
-        vm.prank(alice);
-        address settlementAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute, bytes32(0));
-        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
+        (IATKXvPSettlement settlement, address settlementAddr) =
+            _deploySettlement(alice, "Settlement Name", flows, cutoffDate, autoExecute, NO_HASHLOCK);
 
         // Step 2: Approve tokens and settlement
         // Alice approves
@@ -304,6 +329,10 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         assertEq(tokenY.balanceOf(bob), 400 * 10 ** 18, "Bob should have sent tokenY");
     }
 
+    // ---------------------------------------------------------------------
+    // External Settlements & Hashlock Coordination
+    // ---------------------------------------------------------------------
+
     function test_ExecuteRequiresSecretForExternalFlows() public {
         address alice = makeAddr("alice");
         address bob = makeAddr("bob");
@@ -316,30 +345,16 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         localToken.mint(alice, 1000 * 10 ** 18);
 
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](2);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(localToken),
-            from: alice,
-            to: bob,
-            amount: 90 * 10 ** 18,
-            externalChainId: 0
-        });
-        flows[1] = IATKXvPSettlement.Flow({
-            asset: address(externalToken),
-            from: bob,
-            to: alice,
-            amount: 100 * 10 ** 6,
-            externalChainId: EXTERNAL_CHAIN_ID
-        });
+        flows[0] = _localFlow(address(localToken), alice, bob, 90 * 10 ** 18);
+        flows[1] = _externalFlow(address(externalToken), bob, alice, 100 * 10 ** 6, EXTERNAL_CHAIN_ID);
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
         bytes memory secret = bytes("shared-secret");
         bytes32 hashlock = keccak256(secret);
 
-        vm.startPrank(alice);
-        address settlementAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute, hashlock);
-        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
-        vm.stopPrank();
+        (IATKXvPSettlement settlement, address settlementAddr) =
+            _deploySettlement(alice, "Settlement Name", flows, cutoffDate, autoExecute, hashlock);
 
         assertTrue(settlement.hasExternalFlows(), "Settlement should detect external flows");
         assertEq(settlement.hashlock(), hashlock, "Hashlock mismatch");
@@ -389,21 +404,14 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Test data
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(tokenZ),
-            from: alice,
-            to: bob,
-            amount: 300 * 10 ** 18,
-            externalChainId: 0
-        });
+        flows[0] = _localFlow(address(tokenZ), alice, bob, 300 * 10 ** 18);
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = true;
 
         // Step 1: Create settlement with auto-execution
-        vm.prank(alice);
-        address settlementAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute, bytes32(0));
-        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
+        (IATKXvPSettlement settlement, address settlementAddr) =
+            _deploySettlement(alice, "Settlement Name", flows, cutoffDate, autoExecute, NO_HASHLOCK);
 
         // Step 2: Approve token and settlement (should trigger auto-execution)
         vm.startPrank(alice);
@@ -429,30 +437,16 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         localToken.mint(alice, 1000 * 10 ** 18);
 
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](2);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(localToken),
-            from: alice,
-            to: bob,
-            amount: 120 * 10 ** 18,
-            externalChainId: 0
-        });
-        flows[1] = IATKXvPSettlement.Flow({
-            asset: address(externalToken),
-            from: bob,
-            to: alice,
-            amount: 150 * 10 ** 6,
-            externalChainId: EXTERNAL_CHAIN_ID
-        });
+        flows[0] = _localFlow(address(localToken), alice, bob, 120 * 10 ** 18);
+        flows[1] = _externalFlow(address(externalToken), bob, alice, 150 * 10 ** 6, EXTERNAL_CHAIN_ID);
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = true;
         bytes memory secret = bytes("auto-exec-secret");
         bytes32 hashlock = keccak256(secret);
 
-        vm.startPrank(alice);
-        address settlementAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute, hashlock);
-        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
-        vm.stopPrank();
+        (IATKXvPSettlement settlement, address settlementAddr) =
+            _deploySettlement(alice, "Settlement Name", flows, cutoffDate, autoExecute, hashlock);
 
         vm.startPrank(alice);
         localToken.approve(settlementAddr, 120 * 10 ** 18);
@@ -485,28 +479,14 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         localToken.mint(alice, 1000 * 10 ** 18);
 
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](2);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(localToken),
-            from: alice,
-            to: bob,
-            amount: 70 * 10 ** 18,
-            externalChainId: 0
-        });
-        flows[1] = IATKXvPSettlement.Flow({
-            asset: address(externalToken),
-            from: bob,
-            to: alice,
-            amount: 80 * 10 ** 6,
-            externalChainId: EXTERNAL_CHAIN_ID
-        });
+        flows[0] = _localFlow(address(localToken), alice, bob, 70 * 10 ** 18);
+        flows[1] = _externalFlow(address(externalToken), bob, alice, 80 * 10 ** 6, EXTERNAL_CHAIN_ID);
 
         bytes memory secret = bytes("secret-before-approvals");
         bytes32 hashlock = keccak256(secret);
 
-        vm.startPrank(alice);
-        address settlementAddr = factory.create("Settlement Name", flows, block.timestamp + 1 days, true, hashlock);
-        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
-        vm.stopPrank();
+        (IATKXvPSettlement settlement, address settlementAddr) =
+            _deploySettlement(alice, "Settlement Name", flows, block.timestamp + 1 days, true, hashlock);
 
         vm.prank(relayer);
         settlement.revealSecret(secret);
@@ -523,6 +503,10 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         assertEq(localToken.balanceOf(bob), 70 * 10 ** 18, "Bob should receive tokens");
     }
 
+    // ---------------------------------------------------------------------
+    // Guard Rails & Lifecycle
+    // ---------------------------------------------------------------------
+
     function test_RevokeApproval() public {
         // Setup actors
         address alice = makeAddr("alice");
@@ -537,21 +521,14 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Test data
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(tokenR),
-            from: alice,
-            to: bob,
-            amount: 150 * 10 ** 18,
-            externalChainId: 0
-        });
+        flows[0] = _localFlow(address(tokenR), alice, bob, 150 * 10 ** 18);
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
 
         // Step 1: Create settlement
-        vm.prank(alice);
-        address settlementAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute, bytes32(0));
-        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
+        (IATKXvPSettlement settlement, address settlementAddr) =
+            _deploySettlement(alice, "Settlement Name", flows, cutoffDate, autoExecute, NO_HASHLOCK);
 
         // Step 2: Approve token and settlement
         vm.startPrank(alice);
@@ -589,21 +566,14 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Test data
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(tokenE),
-            from: alice,
-            to: bob,
-            amount: 400 * 10 ** 18,
-            externalChainId: 0
-        });
+        flows[0] = _localFlow(address(tokenE), alice, bob, 400 * 10 ** 18);
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
 
         // Step 1: Create settlement
-        vm.prank(alice);
-        address settlementAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute, bytes32(0));
-        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
+        (IATKXvPSettlement settlement, address settlementAddr) =
+            _deploySettlement(alice, "Settlement Name", flows, cutoffDate, autoExecute, NO_HASHLOCK);
 
         // Step 2: Fast forward time past cutoff date
         vm.warp(block.timestamp + 2 days);
@@ -634,21 +604,14 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Test data
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(tokenF),
-            from: alice,
-            to: bob,
-            amount: 250 * 10 ** 18,
-            externalChainId: 0
-        });
+        flows[0] = _localFlow(address(tokenF), alice, bob, 250 * 10 ** 18);
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
 
         // Step 1: Create settlement
-        vm.prank(alice);
-        address settlementAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute, bytes32(0));
-        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
+        (IATKXvPSettlement settlement, address settlementAddr) =
+            _deploySettlement(alice, "Settlement Name", flows, cutoffDate, autoExecute, NO_HASHLOCK);
 
         // Step 2: Cancel the settlement as a party involved
         vm.prank(alice);
@@ -682,21 +645,14 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Test data
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(tokenG),
-            from: alice,
-            to: bob,
-            amount: 350 * 10 ** 18,
-            externalChainId: 0
-        });
+        flows[0] = _localFlow(address(tokenG), alice, bob, 350 * 10 ** 18);
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
 
         // Step 1: Create settlement (as Alice)
-        vm.prank(alice);
-        address settlementAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute, bytes32(0));
-        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
+        (IATKXvPSettlement settlement, address settlementAddr) =
+            _deploySettlement(alice, "Settlement Name", flows, cutoffDate, autoExecute, NO_HASHLOCK);
 
         // Step 2: Try to cancel as Charlie (not involved)
         vm.prank(charlie);
@@ -723,13 +679,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Test with invalid cutoff date (in the past)
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(tokenJ),
-            from: alice,
-            to: bob,
-            amount: 100 * 10 ** 18,
-            externalChainId: 0
-        });
+        flows[0] = _localFlow(address(tokenJ), alice, bob, 100 * 10 ** 18);
 
         vm.warp(10 hours); // Set block.timestamp to 10 hours
         uint256 pastCutoffDate = block.timestamp - 1 hours; // 9 hours (in the past)
@@ -737,53 +687,39 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         // Should revert with InvalidCutoffDate
         vm.prank(alice);
         vm.expectRevert(ATKXvPSettlementFactoryImplementation.InvalidCutoffDate.selector);
-        factory.create("Settlement Name", flows, pastCutoffDate, false, bytes32(0));
+        factory.create("Settlement Name", flows, pastCutoffDate, false, NO_HASHLOCK);
 
         // Test with zero amount
         IATKXvPSettlement.Flow[] memory flowsZeroAmount = new IATKXvPSettlement.Flow[](1);
-        flowsZeroAmount[0] = IATKXvPSettlement.Flow({
-            asset: address(tokenJ),
-            from: alice,
-            to: bob,
-            amount: 0, // Zero amount
-            externalChainId: 0
-        });
+        flowsZeroAmount[0] = _localFlow(address(tokenJ), alice, bob, 0); // Zero amount
 
         // Should revert with ZeroAmount
         vm.prank(alice);
         vm.expectRevert(IATKXvPSettlement.ZeroAmount.selector);
-        factory.create("Settlement Name", flowsZeroAmount, block.timestamp + 1 days, false, bytes32(0));
+        factory.create("Settlement Name", flowsZeroAmount, block.timestamp + 1 days, false, NO_HASHLOCK);
 
         // Test with zero address
         IATKXvPSettlement.Flow[] memory flowsZeroAddress = new IATKXvPSettlement.Flow[](1);
-        flowsZeroAddress[0] = IATKXvPSettlement.Flow({
-            asset: address(tokenJ),
-            from: alice,
-            to: address(0), // Zero address
-            amount: 100 * 10 ** 18,
-            externalChainId: 0
-        });
+        flowsZeroAddress[0] = _localFlow(address(tokenJ), alice, address(0), 100 * 10 ** 18); // Zero address
 
         // Should revert with ZeroAddress
         vm.prank(alice);
         vm.expectRevert(IATKXvPSettlement.ZeroAddress.selector);
-        factory.create("Settlement Name", flowsZeroAddress, block.timestamp + 1 days, false, bytes32(0));
+        factory.create("Settlement Name", flowsZeroAddress, block.timestamp + 1 days, false, NO_HASHLOCK);
 
         // Test with invalid token
         IATKXvPSettlement.Flow[] memory flowsInvalidToken = new IATKXvPSettlement.Flow[](1);
-        flowsInvalidToken[0] = IATKXvPSettlement.Flow({
-            asset: address(0), // Invalid token (zero address)
-            from: alice,
-            to: bob,
-            amount: 100 * 10 ** 18,
-            externalChainId: 0
-        });
+        flowsInvalidToken[0] = _localFlow(address(0), alice, bob, 100 * 10 ** 18); // Invalid token (zero address)
 
         // Should revert with InvalidToken
         vm.prank(alice);
         vm.expectRevert(IATKXvPSettlement.InvalidToken.selector);
-        factory.create("Settlement Name", flowsInvalidToken, block.timestamp + 1 days, false, bytes32(0));
+        factory.create("Settlement Name", flowsInvalidToken, block.timestamp + 1 days, false, NO_HASHLOCK);
     }
+
+    // ---------------------------------------------------------------------
+    // Factory & Deployment
+    // ---------------------------------------------------------------------
 
     function test_HashlockRequiredWhenExternalFlowsPresent() public {
         address alice = makeAddr("alice");
@@ -796,24 +732,12 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         localToken.mint(alice, 1000 * 10 ** 18);
 
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](2);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(localToken),
-            from: alice,
-            to: bob,
-            amount: 50 * 10 ** 18,
-            externalChainId: 0
-        });
-        flows[1] = IATKXvPSettlement.Flow({
-            asset: address(externalToken),
-            from: bob,
-            to: alice,
-            amount: 60 * 10 ** 6,
-            externalChainId: EXTERNAL_CHAIN_ID
-        });
+        flows[0] = _localFlow(address(localToken), alice, bob, 50 * 10 ** 18);
+        flows[1] = _externalFlow(address(externalToken), bob, alice, 60 * 10 ** 6, EXTERNAL_CHAIN_ID);
 
         vm.startPrank(alice);
         vm.expectRevert(IATKXvPSettlement.HashlockRequired.selector);
-        factory.create("Settlement Name", flows, block.timestamp + 1 days, false, bytes32(0));
+        factory.create("Settlement Name", flows, block.timestamp + 1 days, false, NO_HASHLOCK);
         vm.stopPrank();
     }
 
@@ -826,13 +750,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         ERC20Mock externalToken = new ERC20Mock("External Token", "EXT", 6);
 
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(externalToken),
-            from: bob,
-            to: alice,
-            amount: 60 * 10 ** 6,
-            externalChainId: uint64(block.chainid)
-        });
+        flows[0] = _externalFlow(address(externalToken), bob, alice, 60 * 10 ** 6, uint64(block.chainid));
 
         vm.startPrank(alice);
         bytes32 hashlock = bytes32(uint256(1));
@@ -854,18 +772,10 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         token.mint(alice, 1000 * 10 ** 18);
 
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(token),
-            from: alice,
-            to: bob,
-            amount: 100 * 10 ** 18,
-            externalChainId: 0
-        });
+        flows[0] = _localFlow(address(token), alice, bob, 100 * 10 ** 18);
 
-        vm.startPrank(alice);
-        address settlementAddr = factory.create("Settlement Name", flows, block.timestamp + 1 days, false, bytes32(0));
-        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
-        vm.stopPrank();
+        (IATKXvPSettlement settlement, address settlementAddr) =
+            _deploySettlement(alice, "Settlement Name", flows, block.timestamp + 1 days, false, NO_HASHLOCK);
 
         vm.prank(relayer);
         vm.expectRevert(IATKXvPSettlement.HashlockRevealNotRequired.selector);
@@ -883,28 +793,14 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         localToken.mint(alice, 1000 * 10 ** 18);
 
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](2);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(localToken),
-            from: alice,
-            to: bob,
-            amount: 60 * 10 ** 18,
-            externalChainId: 0
-        });
-        flows[1] = IATKXvPSettlement.Flow({
-            asset: address(externalToken),
-            from: bob,
-            to: alice,
-            amount: 70 * 10 ** 6,
-            externalChainId: EXTERNAL_CHAIN_ID
-        });
+        flows[0] = _localFlow(address(localToken), alice, bob, 60 * 10 ** 18);
+        flows[1] = _externalFlow(address(externalToken), bob, alice, 70 * 10 ** 6, EXTERNAL_CHAIN_ID);
 
         bytes memory secret = bytes("double-reveal");
         bytes32 hashlock = keccak256(secret);
 
-        vm.startPrank(alice);
-        address settlementAddr = factory.create("Settlement Name", flows, block.timestamp + 1 days, false, hashlock);
-        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
-        vm.stopPrank();
+        (IATKXvPSettlement settlement, address settlementAddr) =
+            _deploySettlement(alice, "Settlement Name", flows, block.timestamp + 1 days, false, hashlock);
 
         vm.prank(bob);
         settlement.revealSecret(secret);
@@ -926,28 +822,14 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         localToken.mint(alice, 1000 * 10 ** 18);
 
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](2);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(localToken),
-            from: alice,
-            to: bob,
-            amount: 80 * 10 ** 18,
-            externalChainId: 0
-        });
-        flows[1] = IATKXvPSettlement.Flow({
-            asset: address(externalToken),
-            from: bob,
-            to: alice,
-            amount: 90 * 10 ** 6,
-            externalChainId: EXTERNAL_CHAIN_ID
-        });
+        flows[0] = _localFlow(address(localToken), alice, bob, 80 * 10 ** 18);
+        flows[1] = _externalFlow(address(externalToken), bob, alice, 90 * 10 ** 6, EXTERNAL_CHAIN_ID);
 
         bytes memory secret = bytes("allowance-free");
         bytes32 hashlock = keccak256(secret);
 
-        vm.startPrank(alice);
-        address settlementAddr = factory.create("Settlement Name", flows, block.timestamp + 1 days, true, hashlock);
-        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
-        vm.stopPrank();
+        (IATKXvPSettlement settlement, address settlementAddr) =
+            _deploySettlement(alice, "Settlement Name", flows, block.timestamp + 1 days, true, hashlock);
 
         vm.prank(bob);
         bool bobApproved = settlement.approve();
@@ -983,28 +865,15 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Test data - Bidirectional swap between Alice and Bob
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](2);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(tokenP),
-            from: alice,
-            to: bob,
-            amount: 200 * 10 ** 18,
-            externalChainId: 0
-        });
-        flows[1] = IATKXvPSettlement.Flow({
-            asset: address(tokenQ),
-            from: bob,
-            to: alice,
-            amount: 100 * 10 ** 18,
-            externalChainId: 0
-        });
+        flows[0] = _localFlow(address(tokenP), alice, bob, 200 * 10 ** 18);
+        flows[1] = _localFlow(address(tokenQ), bob, alice, 100 * 10 ** 18);
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
 
         // Step 1: Create settlement (alice creates)
-        vm.prank(alice);
-        address settlementAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute, bytes32(0));
-        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
+        (IATKXvPSettlement settlement, address settlementAddr) =
+            _deploySettlement(alice, "Settlement Name", flows, cutoffDate, autoExecute, NO_HASHLOCK);
 
         // Step 2: Alice approves token and settlement
         vm.startPrank(alice);
@@ -1043,24 +912,17 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Test data
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(tokenM),
-            from: alice,
-            to: bob,
-            amount: 150 * 10 ** 18,
-            externalChainId: 0
-        });
+        flows[0] = _localFlow(address(tokenM), alice, bob, 150 * 10 ** 18);
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
 
         // Predict settlement address (from alice's context to match create call)
-        vm.prank(alice);
-        address predictedAddr = factory.predictAddress("Settlement Name", flows, cutoffDate, autoExecute, bytes32(0));
+        address predictedAddr = _predictAddress(alice, "Settlement Name", flows, cutoffDate, autoExecute, NO_HASHLOCK);
 
         // Create settlement and verify address matches prediction
-        vm.prank(alice);
-        address actualAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute, bytes32(0));
+        (, address actualAddr) =
+            _deploySettlement(alice, "Settlement Name", flows, cutoffDate, autoExecute, NO_HASHLOCK);
 
         assertEq(actualAddr, predictedAddr, "Actual address should match predicted address");
     }
@@ -1079,55 +941,18 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Test data
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(tokenN),
-            from: alice,
-            to: bob,
-            amount: 150 * 10 ** 18,
-            externalChainId: 0
-        });
+        flows[0] = _localFlow(address(tokenN), alice, bob, 150 * 10 ** 18);
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
 
         // Create settlement
-        vm.prank(alice);
-        factory.create("Settlement Name", flows, cutoffDate, autoExecute, bytes32(0));
+        _deploySettlement(alice, "Settlement Name", flows, cutoffDate, autoExecute, NO_HASHLOCK);
 
         // Try to create the same settlement again
         vm.prank(alice);
         vm.expectRevert();
-        factory.create("Settlement Name", flows, cutoffDate, autoExecute, bytes32(0));
-    }
-
-    function test_DirectXvPSettlementDeployment() public {
-        // Setup actors
-        address alice = makeAddr("alice");
-        address bob = makeAddr("bob");
-
-        // Setup tokens
-        ERC20Mock tokenO = new ERC20Mock("Token O", "TKNO", 18);
-        tokenO.mint(alice, 1000 * 10 ** 18);
-
-        // Test data
-        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(tokenO),
-            from: alice,
-            to: bob,
-            amount: 150 * 10 ** 18,
-            externalChainId: 0
-        });
-
-        // Deploy a fresh XvPSettlement implementation for direct testing
-        vm.prank(admin);
-        ATKXvPSettlementImplementation directSettlementImpl = new ATKXvPSettlementImplementation(address(forwarder));
-
-        // For a simple test, let's just verify that we can deploy the implementation
-        // The full proxy pattern is tested through the factory
-
-        // Verify the implementation was deployed (by checking if it has code)
-        assertTrue(address(directSettlementImpl).code.length > 0, "Implementation should have been deployed");
+        factory.create("Settlement Name", flows, cutoffDate, autoExecute, NO_HASHLOCK);
     }
 
     function test_SettlementNameIsStoredCorrectly() public {
@@ -1145,21 +970,14 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         // Test data with specific settlement name
         string memory expectedName = "Test Settlement for Name Verification";
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
-        flows[0] = IATKXvPSettlement.Flow({
-            asset: address(tokenS),
-            from: alice,
-            to: bob,
-            amount: 100 * 10 ** 18,
-            externalChainId: 0
-        });
+        flows[0] = _localFlow(address(tokenS), alice, bob, 100 * 10 ** 18);
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
 
         // Create settlement with specific name
-        vm.prank(alice);
-        address settlementAddr = factory.create(expectedName, flows, cutoffDate, autoExecute, bytes32(0));
-        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
+        (IATKXvPSettlement settlement,) =
+            _deploySettlement(alice, expectedName, flows, cutoffDate, autoExecute, NO_HASHLOCK);
 
         // Verify the name is stored correctly
         string memory actualName = settlement.name();
