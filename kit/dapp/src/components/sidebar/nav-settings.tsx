@@ -85,6 +85,12 @@ export function NavSettings() {
         system.userPermissions?.actions.grantRole ||
         system.userPermissions?.actions.revokeRole,
     },
+    {
+      name: t("settings.apiKeys.title"),
+      icon: Key,
+      path: "/admin/platform-settings/api-keys",
+      enabled: Boolean(system.userPermissions?.roles.admin),
+    },
   ].filter((item) => item.enabled);
 
   // Check if any settings route is active to highlight the parent

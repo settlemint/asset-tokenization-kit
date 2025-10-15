@@ -1,4 +1,70 @@
 {
+  "apiKeys": {
+    "description": "Erstellen Sie API-Schlüssel für automatisierte Integrationen. Jede Anfrage muss die Zielbenutzer-ID zusammen mit dem Schlüssel enthalten.",
+    "adminRequired": {
+      "title": "Administratorzugriff erforderlich",
+      "description": "Nur Administratoren können API-Schlüssel verwalten. Wenden Sie sich an Ihren Administrator, wenn Sie Zugriff benötigen."
+    },
+    "table": {
+      "title": "API-Schlüssel",
+      "description": "API-Schlüssel authentifizieren systemübergreifende Aufrufe. Geben Sie pro Anfrage die zu vertretende Benutzer-ID an.",
+      "empty": "Es wurden noch keine API-Schlüssel erstellt.",
+      "columns": {
+        "name": "Name",
+        "owner": "Eigentümer",
+        "status": "Status",
+        "created": "Erstellt",
+        "actions": "Aktionen"
+      },
+      "status": {
+        "active": "Aktiv",
+        "disabled": "Deaktiviert"
+      }
+    },
+    "create": {
+      "openButton": "API-Schlüssel erstellen",
+      "title": "API-Schlüssel erstellen",
+      "description": "Legen Sie einen Anzeigenamen, ein optionales Ablaufdatum und eine beschreibende Notiz fest.",
+      "nameLabel": "Anzeigename",
+      "namePlaceholder": "Operations-Dashboard",
+      "expiresAtLabel": "Ablaufdatum",
+      "descriptionLabel": "Beschreibung",
+      "descriptionPlaceholder": "Beschreiben Sie den Einsatzzweck dieses Schlüssels",
+      "submit": "Schlüssel erzeugen",
+      "success": "API-Schlüssel {{name}} erstellt",
+      "error": "Der API-Schlüssel konnte nicht erstellt werden.",
+      "secretTitle": "API-Schlüssel kopieren",
+      "secretDescription": "Dieses Geheimnis wird nur einmal angezeigt. Speichern Sie es sicher, bevor Sie dieses Fenster schließen.",
+      "secretLabel": "API-Schlüssel",
+      "secretWarning": "Geben Sie diesen Schlüssel nur an vertrauenswürdige Dienste weiter.",
+      "copySuccess": "API-Schlüssel kopiert",
+      "done": "Fertig"
+    },
+    "revoke": {
+      "label": "Deaktivieren",
+      "confirmTitle": "Diesen API-Schlüssel deaktivieren?",
+      "confirmDescription": "Anfragen mit {{name}} funktionieren danach nicht mehr.",
+      "cancel": "Abbrechen",
+      "confirm": "Deaktivieren",
+      "success": "API-Schlüssel deaktiviert",
+      "error": "Der API-Schlüssel konnte nicht deaktiviert werden."
+    },
+    "spec": {
+      "title": "API-Referenz",
+      "description": "Laden Sie die OpenAPI-Spezifikation der verfügbaren Endpunkte herunter.",
+      "refresh": "Aktualisieren",
+      "download": "Spezifikation herunterladen",
+      "loading": "Spezifikation wird geladen…",
+      "errorTitle": "Spezifikation nicht verfügbar",
+      "loadError": "Die API-Spezifikation konnte nicht geladen werden. Versuchen Sie es erneut."
+    },
+    "lastUsed": "Zuletzt verwendet",
+    "never": "Nie",
+    "usage": {
+      "title": "API-Anfragen authentifizieren",
+      "description": "Senden Sie den API-Schlüssel im Header {{apiKeyHeader}} und den zu vertretenden Benutzer im Header {{userHeader}} bei jeder Anfrage."
+    }
+  },
   "addons": {
     "messages": {
       "accessDenied": "Zugriff verweigert für {{name}}",

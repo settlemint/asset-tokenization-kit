@@ -27,6 +27,7 @@
     "compliance": "Compliance",
     "addons": "Zusatzmodule",
     "claimTopicsIssuers": "Claim-Themen & Aussteller",
-    "permissions": "Berechtigungen"
+    "permissions": "Berechtigungen",
+    "apiKeys": "API-Schlüssel"
   }
 }
