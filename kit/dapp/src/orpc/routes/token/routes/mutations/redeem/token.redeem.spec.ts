@@ -1,4 +1,3 @@
-import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import {
   getAnvilTimeMilliseconds,
   increaseAnvilTimeForDate,
@@ -14,7 +13,7 @@ import {
   signInWithUser,
 } from "@test/fixtures/user";
 import { format, from } from "dnum";
-import { beforeAll, describe, expect, test } from "vitest";
+import { beforeEach, describe, expect, test } from "vitest";
 
 describe(
   "Token redeem",
@@ -29,7 +28,7 @@ describe(
     let adminClient: OrpcClient;
     let adminUserData: Awaited<ReturnType<typeof getUserData>>;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       const headers = await signInWithUser(DEFAULT_ADMIN);
       adminClient = getOrpcClient(headers);
       adminUserData = await getUserData(DEFAULT_ADMIN);
@@ -193,25 +192,17 @@ describe(
           target: bond.id,
         },
       ]);
-    });
 
-    test("cannot redeem an already redeemed bond", async () => {
+      // Cannot redeem an already redeemed bond
       await expect(
-        adminClient.token.redeem(
-          {
-            contract: bond.id,
-            redeemAll: true,
-            walletVerification: {
-              secretVerificationCode: DEFAULT_PINCODE,
-              verificationType: "PINCODE",
-            },
+        adminClient.token.redeem({
+          contract: bond.id,
+          redeemAll: true,
+          walletVerification: {
+            secretVerificationCode: DEFAULT_PINCODE,
+            verificationType: "PINCODE",
           },
-          {
-            context: {
-              skipLoggingFor: [CUSTOM_ERROR_CODES.PORTAL_ERROR],
-            },
-          }
-        )
+        })
       ).rejects.toThrow("InvalidRedemptionAmount");
     });
   }

@@ -13,7 +13,7 @@ import {
   signInWithUser,
 } from "@test/fixtures/user";
 import { from } from "dnum";
-import { beforeAll, describe, expect, test } from "vitest";
+import { beforeEach, describe, expect, test } from "vitest";
 
 describe(
   "Fixed yield schedule claim",
@@ -28,7 +28,7 @@ describe(
     let adminClient: OrpcClient;
     let adminUserData: Awaited<ReturnType<typeof getUserData>>;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       const headers = await signInWithUser(DEFAULT_ADMIN);
       adminClient = getOrpcClient(headers);
       adminUserData = await getUserData(DEFAULT_ADMIN);
@@ -176,26 +176,25 @@ describe(
             action.name === "ClaimYield" && action.status === "EXECUTED"
         );
         expect(executedClaimYieldActionsAfter.length).toBe(processedPeriods);
-      }
-    });
 
-    test("cannot claim yield if all has been claimed", async () => {
-      await expect(
-        adminClient.fixedYieldSchedule.claim(
-          {
-            contract: yieldSchedule.id,
-            walletVerification: {
-              secretVerificationCode: DEFAULT_PINCODE,
-              verificationType: "PINCODE",
+        // Cannot claim yield again
+        await expect(
+          adminClient.fixedYieldSchedule.claim(
+            {
+              contract: yieldSchedule.id,
+              walletVerification: {
+                secretVerificationCode: DEFAULT_PINCODE,
+                verificationType: "PINCODE",
+              },
             },
-          },
-          {
-            context: {
-              skipLoggingFor: [CUSTOM_ERROR_CODES.PORTAL_ERROR],
-            },
-          }
-        )
-      ).rejects.toThrow("NoYieldAvailable");
+            {
+              context: {
+                skipLoggingFor: [CUSTOM_ERROR_CODES.PORTAL_ERROR],
+              },
+            }
+          )
+        ).rejects.toThrow("NoYieldAvailable");
+      }
     });
   }
 );
