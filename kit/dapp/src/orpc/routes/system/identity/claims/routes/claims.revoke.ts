@@ -1,14 +1,38 @@
 // Revoke flow handled via helper
 import { revokeClaim } from "@/orpc/helpers/claims/revoke-claim";
-import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { trustedIssuerMiddleware } from "@/orpc/middlewares/auth/trusted-issuer.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { fetchClaimByTopicAndIdentity } from "@/orpc/routes/user/utils/identity.util";
-import { type ClaimsRevokeInput } from "./claims.revoke.schema";
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { getAddress, type Address } from "viem";
+import * as z from "zod";
+
+const READ_USER_TRUSTED_ISSUER_TOPICS_QUERY = theGraphGraphql(`
+  query GetUserTrustedIssuerTopics($userWallet: Bytes!) {
+    trustedIssuers(where: { account_: { id: $userWallet } }) {
+      id
+      claimTopics {
+        name
+      }
+    }
+  }
+`);
+
+const TrustedIssuerTopicsResponseSchema = z.object({
+  trustedIssuers: z.array(
+    z.object({
+      id: ethereumAddress,
+      claimTopics: z.array(
+        z.object({
+          name: z.string(),
+        })
+      ),
+    })
+  ),
+});
 
 /**
  * Claims revoke route handler.
@@ -17,10 +41,10 @@ import { type ClaimsRevokeInput } from "./claims.revoke.schema";
  * removes a previously issued claim from the user's identity contract.
  *
  * **Key Requirements:**
- * - ✅ User must have claimIssuer role
- * - ✅ Target user must have a wallet and identity
+ * - ✅ Target user must have an identity
  * - ✅ Revoker must provide valid wallet verification
  * - ✅ Claim must exist on the target user's identity
+ * - ✅ Either the revoker controls the target identity or is an authorized issuer for the claim topic
  *
  * **Blockchain Interaction:**
  * - Calls identity contract to remove the claim
@@ -65,35 +89,61 @@ import { type ClaimsRevokeInput } from "./claims.revoke.schema";
  *
  * @remarks
  * - Revocation is permanent and cannot be undone
- * - Reason field is optional but recommended for audit trails
- * - Only the original issuer or identity manager can revoke claims
  * - Revoked claims are removed from user's active claims list immediately
  */
 export const revoke = authRouter.system.identity.claims.revoke
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .use(portalMiddleware)
-  .use(
-    blockchainPermissionsMiddleware({
-      requiredRoles: SYSTEM_PERMISSIONS.claimRevoke,
-      getAccessControl: ({ context }) => {
-        return context.system?.systemAccessManager?.accessControl;
-      },
-    })
-  )
-  .use(
-    trustedIssuerMiddleware<ClaimsRevokeInput>({
-      selectTopics: (i) => [i.claimTopic],
-    })
-  )
   .handler(async ({ context, input, errors }) => {
     const { claimTopic, walletVerification, targetIdentityAddress } = input;
 
-    // Ensure user has issuer identity
-    const issuerIdentity = context.userIssuerIdentity;
+    const userIdentityAddress = context.system?.userIdentity?.address;
+    const normalizedUserIdentity = userIdentityAddress?.toLowerCase();
+    const normalizedTargetIdentity = targetIdentityAddress.toLowerCase();
+    const isSelfRevocation = normalizedUserIdentity === normalizedTargetIdentity;
+
+    let issuerIdentity: Address | null = null;
+
+    if (isSelfRevocation) {
+      issuerIdentity = targetIdentityAddress as Address;
+    } else {
+      if (!context.theGraphClient) {
+        throw errors.INTERNAL_SERVER_ERROR({
+          message: "The Graph client is unavailable",
+        });
+      }
+
+      const { trustedIssuers } = await context.theGraphClient.query(
+        READ_USER_TRUSTED_ISSUER_TOPICS_QUERY,
+        {
+          input: { userWallet: context.auth.user.wallet },
+          output: TrustedIssuerTopicsResponseSchema,
+        }
+      );
+
+      if (!trustedIssuers || trustedIssuers.length === 0) {
+        throw errors.FORBIDDEN({
+          message: "You are not authorized to revoke claims for this topic",
+        });
+      }
+
+      const authorizedIssuer = trustedIssuers.find((issuer) =>
+        issuer.claimTopics.some((topic) => topic.name === claimTopic)
+      );
+
+      if (!authorizedIssuer) {
+        throw errors.FORBIDDEN({
+          message: `You are not registered as a trusted issuer for topic '${claimTopic}'`,
+        });
+      }
+
+      issuerIdentity = getAddress(authorizedIssuer.id);
+    }
+
     if (!issuerIdentity) {
-      throw errors.UNAUTHORIZED({
-        message: "User does not have an issuer identity",
+      throw errors.FORBIDDEN({
+        message: "Unable to determine issuer identity for claim revocation",
       });
     }
 

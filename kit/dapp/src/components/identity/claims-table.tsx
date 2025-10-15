@@ -1,4 +1,5 @@
 import { DataTable } from "@/components/data-table/data-table";
+import { DataTableRowActions } from "@/components/data-table/data-table-row-actions";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
@@ -8,9 +9,10 @@ import type { Identity } from "@/orpc/routes/system/identity/routes/identity.rea
 import { useQuery } from "@tanstack/react-query";
 import type { CellContext, ColumnDef } from "@tanstack/table-core";
 import { Shield } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { Address } from "viem";
+import { RevokeClaimDialog } from "./dialogs/revoke-claim-dialog";
 
 export type ClaimRow = Identity["claims"][number];
 
@@ -28,10 +30,18 @@ export function ClaimsTable({
   initialPageSize = 10,
 }: ClaimsTableProps) {
   const { t } = useTranslation("identities");
+  const [selectedClaim, setSelectedClaim] = useState<ClaimRow | null>(null);
+  const [isRevokeDialogOpen, setIsRevokeDialogOpen] = useState(false);
 
   const { data, isLoading, isFetching, isError, error } = useQuery(
     orpc.system.identity.read.queryOptions({
       input: { identityId: identityAddress },
+    })
+  );
+
+  const { data: system } = useQuery(
+    orpc.system.read.queryOptions({
+      input: { id: "default" },
     })
   );
 
@@ -42,144 +52,217 @@ export function ClaimsTable({
       ? error.message
       : t("claimsTable.emptyState.description");
 
-  const columns = useMemo(
-    (): ColumnDef<ClaimRow>[] => {
-      const statusLabels = {
-        active: t("claimsTable.status.active"),
-        revoked: t("claimsTable.status.revoked"),
-      } as const;
+  const hasClaimRevokePermission = Boolean(
+    system?.userPermissions?.actions.claimRevoke
+  );
+  const userIdentityAddressLower =
+    system?.userIdentity?.address?.toLowerCase() ?? null;
+  const tableIdentityAddressLower = identityAddress.toLowerCase();
 
-      const statusOptions = (Object.entries(statusLabels) as Array<
-        [keyof typeof statusLabels, string]
-      >).map(([value, label]) => ({
-        value,
-        label,
-      }));
+  const columns = useMemo((): ColumnDef<ClaimRow>[] => {
+    const statusLabels = {
+      active: t("claimsTable.status.active"),
+      revoked: t("claimsTable.status.revoked"),
+    } as const;
 
-      return withAutoFeatures([
-        columnHelper.accessor("name", {
-          id: "name",
-          header: t("claimsTable.columns.claimName"),
+    const statusOptions = (
+      Object.entries(statusLabels) as Array<[keyof typeof statusLabels, string]>
+    ).map(([value, label]) => ({
+      value,
+      label,
+    }));
+
+    return withAutoFeatures([
+      columnHelper.accessor("name", {
+        id: "name",
+        header: t("claimsTable.columns.claimName"),
+        enableHiding: false,
+        meta: {
+          displayName: t("claimsTable.columns.claimName"),
+          type: "text",
+        },
+      }),
+      columnHelper.accessor(
+        (row: ClaimRow) => (row.revoked ? "revoked" : "active"),
+        {
+          id: "status_filter",
+          header: "",
           enableHiding: false,
-          meta: {
-            displayName: t("claimsTable.columns.claimName"),
-            type: "text",
-          },
-        }),
-        columnHelper.accessor(
-          (row: ClaimRow) => (row.revoked ? "revoked" : "active"),
-          {
-            id: "status_filter",
-            header: "",
-            enableHiding: false,
-            meta: {
-              displayName: t("claimsTable.columns.status"),
-              type: "option",
-              options: statusOptions,
-              transformOptionFn: (value) => {
-                const normalizedValue =
-                  typeof value === "string"
-                    ? value
-                    : value == null
-                      ? ""
-                      : String(value);
-                const label =
-                  statusLabels[
-                    normalizedValue as keyof typeof statusLabels
-                  ];
-
-                return {
-                  value: normalizedValue,
-                  label: label ?? normalizedValue,
-                };
-              },
-            },
-          }
-        ),
-        columnHelper.display({
-          id: "status",
-          header: t("claimsTable.columns.status"),
-          cell: ({ row }: CellContext<ClaimRow, boolean>) => {
-            const isRevoked = row.original.revoked;
-            return (
-              <Badge
-                variant={isRevoked ? "destructive" : "default"}
-                className="capitalize"
-              >
-                {isRevoked
-                  ? t("claimsTable.status.revoked")
-                  : t("claimsTable.status.active")}
-              </Badge>
-            );
-          },
           meta: {
             displayName: t("claimsTable.columns.status"),
-            type: "none",
-          },
-        }),
-        columnHelper.accessor("issuer.id", {
-          id: "issuer",
-          header: t("claimsTable.columns.issuer"),
-          enableHiding: false,
-          meta: {
-            displayName: t("claimsTable.columns.issuer"),
-            type: "address",
-          },
-        }),
-        columnHelper.display({
-          id: "claimData",
-          header: t("claimsTable.columns.claimData"),
-          cell: ({ row }: CellContext<ClaimRow, unknown>) => {
-            const values = row.original.values;
-            if (!values || values.length === 0) {
-              return (
-                <span className="text-muted-foreground text-sm">
-                  {t("claimsTable.noClaimData")}
-                </span>
-              );
-            }
+            type: "option",
+            options: statusOptions,
+            transformOptionFn: (value) => {
+              const normalizedValue =
+                typeof value === "string"
+                  ? value
+                  : value == null
+                    ? ""
+                    : String(value);
+              const label =
+                statusLabels[normalizedValue as keyof typeof statusLabels];
 
+              return {
+                value: normalizedValue,
+                label: label ?? normalizedValue,
+              };
+            },
+          },
+        }
+      ),
+      columnHelper.display({
+        id: "status",
+        header: t("claimsTable.columns.status"),
+        cell: ({ row }: CellContext<ClaimRow, boolean>) => {
+          const isRevoked = row.original.revoked;
+          return (
+            <Badge
+              variant={isRevoked ? "destructive" : "default"}
+              className="capitalize"
+            >
+              {isRevoked
+                ? t("claimsTable.status.revoked")
+                : t("claimsTable.status.active")}
+            </Badge>
+          );
+        },
+        meta: {
+          displayName: t("claimsTable.columns.status"),
+          type: "none",
+        },
+      }),
+      columnHelper.accessor("issuer.id", {
+        id: "issuer",
+        header: t("claimsTable.columns.issuer"),
+        enableHiding: false,
+        meta: {
+          displayName: t("claimsTable.columns.issuer"),
+          type: "address",
+        },
+      }),
+      columnHelper.display({
+        id: "claimData",
+        header: t("claimsTable.columns.claimData"),
+        cell: ({ row }: CellContext<ClaimRow, unknown>) => {
+          const values = row.original.values;
+          if (!values || values.length === 0) {
             return (
-              <div className="flex flex-wrap gap-1">
-                {values.map((item, index) => (
-                  <Badge key={index} variant="secondary" className="text-xs">
-                    {item.key}: {item.value}
-                  </Badge>
-                ))}
-              </div>
+              <span className="text-muted-foreground text-sm">
+                {t("claimsTable.noClaimData")}
+              </span>
             );
-          },
-          meta: {
-            displayName: t("claimsTable.columns.claimData"),
-            type: "none",
-          },
-        }),
-      ] as ColumnDef<ClaimRow>[]);
-    },
-    [t]
-  );
+          }
+
+          return (
+            <div className="flex flex-wrap gap-1">
+              {values.map((item, index) => (
+                <Badge key={index} variant="secondary" className="text-xs">
+                  {item.key}: {item.value}
+                </Badge>
+              ))}
+            </div>
+          );
+        },
+        meta: {
+          displayName: t("claimsTable.columns.claimData"),
+          type: "none",
+        },
+      }),
+      columnHelper.display({
+        id: "actions",
+        header: "",
+        cell: ({ row }: CellContext<ClaimRow, unknown>) => {
+          const claim = row.original;
+          const isRevoked = claim.revoked;
+          const issuerAddress = claim.issuer?.id;
+          const normalizedIssuerAddress = issuerAddress
+            ? issuerAddress.toLowerCase()
+            : null;
+          const canRevokeAsIssuer = Boolean(
+            hasClaimRevokePermission &&
+              userIdentityAddressLower &&
+              normalizedIssuerAddress &&
+              userIdentityAddressLower === normalizedIssuerAddress
+          );
+          const canRevokeOwnIdentity = Boolean(
+            userIdentityAddressLower &&
+              userIdentityAddressLower === tableIdentityAddressLower
+          );
+
+          if (isRevoked || !(canRevokeAsIssuer || canRevokeOwnIdentity)) {
+            return null;
+          }
+
+          return (
+            <DataTableRowActions
+              actions={[
+                {
+                  id: "revoke",
+                  label: t("claimsTable.actions.revoke"),
+                  component: ({ open }) => {
+                    if (open) {
+                      setSelectedClaim(claim);
+                      setIsRevokeDialogOpen(true);
+                    }
+                    return null;
+                  },
+                },
+              ]}
+            />
+          );
+        },
+        meta: {
+          displayName: "Actions",
+          type: "none",
+        },
+      }),
+    ] as ColumnDef<ClaimRow>[]);
+  }, [
+    t,
+    identityAddress,
+    isRevokeDialogOpen,
+    selectedClaim,
+    hasClaimRevokePermission,
+    userIdentityAddressLower,
+    tableIdentityAddressLower,
+  ]);
 
   return (
-    <DataTable
-      name={name}
-      columns={columns}
-      data={claims}
-      isLoading={showLoadingState}
-      initialPageSize={initialPageSize}
-      advancedToolbar={{
-        enableGlobalSearch: false,
-        enableFilters: true,
-        enableExport: true,
-        enableViewOptions: true,
-      }}
-      initialColumnVisibility={{
-        status_filter: false,
-      }}
-      customEmptyState={{
-        icon: Shield,
-        title: t("claimsTable.emptyState.title"),
-        description: emptyStateDescription,
-      }}
-    />
+    <>
+      <DataTable
+        name={name}
+        columns={columns}
+        data={claims}
+        isLoading={showLoadingState}
+        initialPageSize={initialPageSize}
+        advancedToolbar={{
+          enableGlobalSearch: false,
+          enableFilters: true,
+          enableExport: true,
+          enableViewOptions: true,
+        }}
+        initialColumnVisibility={{
+          status_filter: false,
+        }}
+        customEmptyState={{
+          icon: Shield,
+          title: t("claimsTable.emptyState.title"),
+          description: emptyStateDescription,
+        }}
+      />
+      {selectedClaim && (
+        <RevokeClaimDialog
+          open={isRevokeDialogOpen}
+          onOpenChange={(open) => {
+            setIsRevokeDialogOpen(open);
+            if (!open) {
+              setSelectedClaim(null);
+            }
+          }}
+          claim={selectedClaim}
+          identityAddress={identityAddress}
+        />
+      )}
+    </>
   );
 }
