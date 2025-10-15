@@ -13,7 +13,7 @@ describe("Actions", () => {
           createdAt
           activeAt
           expiresAt
-          status
+          executed
           executedAt
           executedBy
           identifier
@@ -41,7 +41,8 @@ describe("Actions", () => {
     expect(action?.target).toBeDefined();
     expect(action?.createdAt).toBeDefined();
     expect(action?.activeAt).toBeDefined();
-    expect(action?.status).toBeDefined();
+    expect(action?.executed).toBeDefined();
+    expect(typeof action?.executed).toBe("boolean");
 
     // Verify executor relationship
     expect(action?.executor).toBeDefined();
@@ -85,7 +86,7 @@ describe("Actions", () => {
       expect(action.id).toBeDefined();
       expect(action.name).toBe("ApproveXvPSettlement");
       expect(action.target).toBeDefined();
-      expect(typeof action?.executed).toBe("boolean");
+      expect(typeof action.executed).toBe("boolean");
       expect(action.identifier).toBeDefined();
 
       // Verify executor relationship
@@ -371,17 +372,17 @@ describe("Actions", () => {
   it("should filter actions by execution status", async () => {
     const query = theGraphGraphql(
       `query {
-        executedActions: actions(where: { status: EXECUTED }) {
+        executedActions: actions(where: { executed: true }) {
           id
           name
-          status
+          executed
           executedAt
           executedBy
         }
-        pendingActions: actions(where: { status: PENDING }) {
+        pendingActions: actions(where: { executed: false }) {
           id
           name
-          status
+          executed
           executedAt
           executedBy
         }
@@ -391,14 +392,14 @@ describe("Actions", () => {
 
     // Verify executed actions
     response.executedActions.forEach((action) => {
-      expect(action.status).toBe("EXECUTED");
+      expect(action.executed).toBe(true);
       expect(action.executedAt).toBeDefined();
       expect(action.executedBy).toBeDefined();
     });
 
     // Verify pending actions
     response.pendingActions.forEach((action) => {
-      expect(action.status).not.toBe("EXECUTED");
+      expect(action.executed).toBe(false);
       expect(action.executedAt).toBeNull();
       expect(action.executedBy).toBeNull();
     });
