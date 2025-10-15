@@ -137,7 +137,7 @@ export const revoke = authRouter.system.identity.claims.revoke
       const { trustedIssuers } = await context.theGraphClient.query(
         READ_USER_TRUSTED_ISSUER_TOPICS_QUERY,
         {
-          input: { userWallet: context.auth.user.wallet },
+          input: { userWallet: context.auth.user.wallet.toLowerCase() },
           output: TrustedIssuerTopicsResponseSchema,
         }
       );
