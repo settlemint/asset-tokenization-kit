@@ -106,7 +106,14 @@ export const revoke = authRouter.system.identity.claims.revoke
     let issuerIdentity: Address | null = null;
 
     if (isSelfRevocation) {
-      issuerIdentity = targetIdentityAddress;
+      if (!userIdentityAddress) {
+        throw errors.FORBIDDEN({
+          message:
+            "Authenticated issuer identity required to revoke own claims",
+        });
+      }
+
+      issuerIdentity = getAddress(userIdentityAddress);
     } else {
       if (!context.theGraphClient) {
         throw errors.INTERNAL_SERVER_ERROR({

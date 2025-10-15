@@ -9,7 +9,7 @@ import type { Identity } from "@/orpc/routes/system/identity/routes/identity.rea
 import { useQuery } from "@tanstack/react-query";
 import type { CellContext, ColumnDef } from "@tanstack/table-core";
 import { Shield } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { Address } from "viem";
 import { RevokeClaimDialog } from "./dialogs/revoke-claim-dialog";
@@ -30,8 +30,6 @@ export function ClaimsTable({
   initialPageSize = 10,
 }: ClaimsTableProps) {
   const { t } = useTranslation("identities");
-  const [selectedClaim, setSelectedClaim] = useState<ClaimRow | null>(null);
-  const [isRevokeDialogOpen, setIsRevokeDialogOpen] = useState(false);
 
   const { data, isLoading, isFetching, isError, error } = useQuery(
     orpc.system.identity.read.queryOptions({
@@ -199,13 +197,14 @@ export function ClaimsTable({
                 {
                   id: "revoke",
                   label: t("claimsTable.actions.revoke"),
-                  component: ({ open }) => {
-                    if (open) {
-                      setSelectedClaim(claim);
-                      setIsRevokeDialogOpen(true);
-                    }
-                    return null;
-                  },
+                  component: ({ open, onOpenChange }) => (
+                    <RevokeClaimDialog
+                      open={open}
+                      onOpenChange={onOpenChange}
+                      claim={claim}
+                      identityAddress={identityAddress}
+                    />
+                  ),
                 },
               ]}
             />
@@ -220,8 +219,6 @@ export function ClaimsTable({
   }, [
     t,
     identityAddress,
-    isRevokeDialogOpen,
-    selectedClaim,
     hasClaimRevokePermission,
     userIdentityAddressLower,
     tableIdentityAddressLower,
@@ -250,19 +247,6 @@ export function ClaimsTable({
           description: emptyStateDescription,
         }}
       />
-      {selectedClaim && (
-        <RevokeClaimDialog
-          open={isRevokeDialogOpen}
-          onOpenChange={(open) => {
-            setIsRevokeDialogOpen(open);
-            if (!open) {
-              setSelectedClaim(null);
-            }
-          }}
-          claim={selectedClaim}
-          identityAddress={identityAddress}
-        />
-      )}
     </>
   );
 }
