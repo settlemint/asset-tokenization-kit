@@ -105,8 +105,8 @@ const ManagementKeyResponseSchema = z.object({
  * - This replaces the previous trusted issuer authorization model
  */
 export const revoke = authRouter.system.identity.claims.revoke
-  .use(systemMiddleware)
   .use(theGraphMiddleware)
+  .use(systemMiddleware)
   .use(portalMiddleware)
   .handler(async ({ context, input, errors }) => {
     const { claimTopic, walletVerification, targetIdentityAddress } = input;
