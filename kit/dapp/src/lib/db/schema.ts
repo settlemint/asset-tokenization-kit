@@ -19,7 +19,7 @@
  * @see {@link ./schemas/auth} - Authentication and authorization schemas
  */
 
-export * from "../auth/db/auth";
+export * from "./schemas/auth";
 export * from "./schemas/exchange-rates";
 export * from "./schemas/kyc";
 export * from "./schemas/settings";
