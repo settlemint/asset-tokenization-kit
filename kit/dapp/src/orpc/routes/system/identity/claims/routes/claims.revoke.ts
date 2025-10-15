@@ -102,6 +102,7 @@ export const revoke = authRouter.system.identity.claims.revoke
     const userIdentityAddress = context.system?.userIdentity?.address;
     const normalizedUserIdentity = userIdentityAddress?.toLowerCase();
     const normalizedTargetIdentity = targetIdentityAddress.toLowerCase();
+    const targetIdentityChecksummed = getAddress(targetIdentityAddress);
     const isSelfRevocation = normalizedUserIdentity === normalizedTargetIdentity;
 
     if (!isSelfRevocation) {
@@ -170,7 +171,7 @@ export const revoke = authRouter.system.identity.claims.revoke
     // Fetch the claim by topic and identity; let utility surface standardized ORPC errors
     const { extractedClaimId } = await fetchClaimByTopicAndIdentity({
       claimTopic,
-      identityAddress: targetIdentityAddress,
+      identityAddress: targetIdentityChecksummed,
       context,
       errors,
     });
@@ -180,7 +181,7 @@ export const revoke = authRouter.system.identity.claims.revoke
       user: context.auth.user,
       issuer: issuerIdentity,
       walletVerification,
-      identity: targetIdentityAddress,
+      identity: targetIdentityChecksummed,
       claimId: extractedClaimId,
       portalClient: context.portalClient,
     });

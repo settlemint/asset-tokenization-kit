@@ -43,6 +43,10 @@ export function ClaimsTable({
     })
   );
 
+  const { data: trustedIssuers } = useQuery(
+    orpc.system.trustedIssuers.list.queryOptions()
+  );
+
   const claims = data?.claims ?? [];
   const showLoadingState = isLoading || isFetching;
   const emptyStateDescription =
@@ -172,22 +176,21 @@ export function ClaimsTable({
         cell: ({ row }: CellContext<ClaimRow, unknown>) => {
           const claim = row.original;
           const isRevoked = claim.revoked;
-          const issuerAddress = claim.issuer?.id;
-          const normalizedIssuerAddress = issuerAddress
-            ? issuerAddress.toLowerCase()
-            : null;
-          const canRevokeAsIssuer = Boolean(
+          const canRevokeAsTrustedIssuer = Boolean(
             hasClaimRevokePermission &&
-              userIdentityAddressLower &&
-              normalizedIssuerAddress &&
-              userIdentityAddressLower === normalizedIssuerAddress
+              trustedIssuers?.some((issuer) =>
+                issuer.claimTopics.some((topic) => topic.name === claim.name)
+              )
           );
           const canRevokeOwnIdentity = Boolean(
             userIdentityAddressLower &&
               userIdentityAddressLower === tableIdentityAddressLower
           );
 
-          if (isRevoked || !(canRevokeAsIssuer || canRevokeOwnIdentity)) {
+          if (
+            isRevoked ||
+            !(canRevokeAsTrustedIssuer || canRevokeOwnIdentity)
+          ) {
             return null;
           }
 
@@ -222,6 +225,7 @@ export function ClaimsTable({
     hasClaimRevokePermission,
     userIdentityAddressLower,
     tableIdentityAddressLower,
+    trustedIssuers,
   ]);
 
   return (
