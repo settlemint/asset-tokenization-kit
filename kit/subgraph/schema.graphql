@@ -1191,6 +1191,20 @@ type XvPSettlement @entity(immutable: false) {
   executed: Boolean!
   # Whether this settlement was cancelled
   cancelled: Boolean!
+  # Hashlock gating the settlement (bytes32)
+  hashlock: Bytes!
+  # True if any flow references an external chain
+  hasExternalFlows: Boolean!
+  # True if the HTLC secret has been revealed on-chain
+  secretRevealed: Boolean!
+  # Raw secret that satisfied the hashlock (optional)
+  secret: Bytes
+  # Unix timestamp when the secret was relayed
+  secretRevealedAt: BigInt
+  # Account that relayed the secret on-chain
+  secretRevealedBy: Account
+  # Transaction hash that revealed the secret
+  secretRevealTx: Bytes
   # Unix timestamp when created
   createdAt: BigInt!
   # List of payment flows in this settlement
@@ -1216,6 +1230,10 @@ type XvPSettlementFlow @entity(immutable: false) {
   amount: BigDecimal!
   # Transfer amount (exact, raw units)
   amountExact: BigInt!
+  # External chain identifier (0 for local flows)
+  externalChainId: BigInt!
+  # Convenience flag indicating whether this flow is external
+  isExternal: Boolean!
 }
 
 type XvPSettlementApproval @entity(immutable: false) {

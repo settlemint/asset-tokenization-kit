@@ -11,6 +11,15 @@ describe("XVP Settlements", () => {
           autoExecute
           executed
           cancelled
+          hashlock
+          hasExternalFlows
+          secretRevealed
+          secret
+          secretRevealedAt
+          secretRevealTx
+          secretRevealedBy {
+            id
+          }
           createdAt
           flows {
             id
@@ -27,6 +36,8 @@ describe("XVP Settlements", () => {
             }
             amount
             amountExact
+            externalChainId
+            isExternal
           }
           approvals {
             id
@@ -52,6 +63,12 @@ describe("XVP Settlements", () => {
     expect(settlement?.executed).toBe(false); // Should not be executed by default
     expect(settlement?.cancelled).toBe(false);
     expect(settlement?.autoExecute).toBe(false); // Script sets this to false
+    expect(settlement?.hasExternalFlows).toBe(false);
+    expect(settlement?.secretRevealed).toBe(false);
+    expect(settlement?.secret).toBeNull();
+    expect(settlement?.secretRevealedAt).toBeNull();
+    expect(settlement?.secretRevealTx).toBeNull();
+    expect(settlement?.secretRevealedBy).toBeNull();
 
     // Derive participants from flows (unique from/to addresses)
     const participantAddresses = new Set();
@@ -72,6 +89,8 @@ describe("XVP Settlements", () => {
       expect(flow.to.id).toBeDefined();
       expect(flow.amount).toBeDefined();
       expect(flow.amountExact).toBeDefined();
+      expect(typeof flow.isExternal).toBe("boolean");
+      expect(flow.externalChainId).toBeDefined();
     });
 
     // Verify approvals structure - different scenarios may have different approval states
@@ -153,6 +172,8 @@ describe("XVP Settlements", () => {
           }
           amount
           amountExact
+          externalChainId
+          isExternal
           xvpSettlement {
             id
             executed

@@ -26,19 +26,20 @@ export function fetchXvPSettlementFlow(
   from: Address,
   to: Address,
   amountExact: BigInt,
+  externalChainId: BigInt,
   index: i32
 ): XvPSettlementFlow {
   const flowId = settlementId.concat(Bytes.fromI32(index));
   let flow = XvPSettlementFlow.load(flowId);
-  if (flow) {
-    return flow;
+  if (!flow) {
+    flow = new XvPSettlementFlow(flowId);
+    flow.xvpSettlement = settlementId;
   }
-
-  flow = new XvPSettlementFlow(flowId);
-  flow.xvpSettlement = settlementId;
   flow.asset = fetchToken(asset).id;
   flow.from = fetchAccount(from).id;
   flow.to = fetchAccount(to).id;
+  flow.externalChainId = externalChainId;
+  flow.isExternal = !externalChainId.equals(BigInt.zero());
 
   const token = fetchToken(asset);
   setBigNumber(flow, "amount", amountExact, token.decimals);
@@ -82,6 +83,9 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
     const flows = endpoint.try_flows();
     const createdAt = endpoint.try_createdAt();
     const name = endpoint.try_name();
+    const hashlock = endpoint.try_hashlock();
+    const hasExternalFlowsResult = endpoint.try_hasExternalFlows();
+    const secretRevealedResult = endpoint.try_secretRevealed();
 
     xvpSettlement = new XvPSettlement(id);
     xvpSettlement.cutoffDate = cutoffDate.reverted
@@ -97,6 +101,22 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
       : createdAt.value;
     xvpSettlement.name = name.reverted ? "" : name.value;
     xvpSettlement.deployedInTransaction = Bytes.empty();
+    xvpSettlement.hashlock = hashlock.reverted ? Bytes.empty() : hashlock.value;
+
+    const secretRevealedValue = secretRevealedResult.reverted
+      ? false
+      : secretRevealedResult.value;
+    xvpSettlement.secretRevealed = secretRevealedValue;
+    if (!secretRevealedValue) {
+      xvpSettlement.secret = null;
+      xvpSettlement.secretRevealedAt = null;
+      xvpSettlement.secretRevealedBy = null;
+      xvpSettlement.secretRevealTx = null;
+    }
+
+    let hasExternal = hasExternalFlowsResult.reverted
+      ? false
+      : hasExternalFlowsResult.value;
 
     const approvers: Address[] = [];
 
@@ -111,8 +131,13 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
           flow.from,
           flow.to,
           flow.amount,
+          flow.externalChainId,
           i
         );
+
+        if (!flow.externalChainId.equals(BigInt.zero())) {
+          hasExternal = true;
+        }
 
         // Collect unique approvers (from addresses)
         let fromExists = false;
@@ -127,6 +152,8 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
         }
       }
     }
+
+    xvpSettlement.hasExternalFlows = hasExternal;
 
     xvpSettlement.save();
 

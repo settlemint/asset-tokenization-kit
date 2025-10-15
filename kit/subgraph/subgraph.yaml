@@ -725,6 +725,8 @@ templates:
           handler: handleXvPSettlementExecuted
         - event: XvPSettlementCancelled(indexed address)
           handler: handleXvPSettlementCancelled
+        - event: XvPSettlementSecretRevealed(indexed address,bytes)
+          handler: handleXvPSettlementSecretRevealed
       file: ./src/system-addons/addons/xvp/xvp-settlement.ts
   - kind: ethereum
     name: Airdrop
