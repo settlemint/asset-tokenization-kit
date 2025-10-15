@@ -1,3 +1,4 @@
+import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import {
   getAnvilTimeMilliseconds,
   increaseAnvilTimeForDate,
@@ -195,14 +196,21 @@ describe(
 
       // Cannot redeem an already redeemed bond
       await expect(
-        adminClient.token.redeem({
-          contract: bond.id,
-          redeemAll: true,
-          walletVerification: {
-            secretVerificationCode: DEFAULT_PINCODE,
-            verificationType: "PINCODE",
+        adminClient.token.redeem(
+          {
+            contract: bond.id,
+            redeemAll: true,
+            walletVerification: {
+              secretVerificationCode: DEFAULT_PINCODE,
+              verificationType: "PINCODE",
+            },
           },
-        })
+          {
+            context: {
+              skipLoggingFor: [CUSTOM_ERROR_CODES.PORTAL_ERROR],
+            },
+          }
+        )
       ).rejects.toThrow("InvalidRedemptionAmount");
     });
   }
