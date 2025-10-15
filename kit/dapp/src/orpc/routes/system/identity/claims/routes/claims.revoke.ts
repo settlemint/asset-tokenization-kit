@@ -5,6 +5,7 @@ import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middle
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { fetchClaimByTopicAndIdentity } from "@/orpc/routes/user/utils/identity.util";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { getAddress, type Address } from "viem";
@@ -103,6 +104,18 @@ export const revoke = authRouter.system.identity.claims.revoke
     const normalizedTargetIdentity = targetIdentityAddress.toLowerCase();
     const isSelfRevocation = normalizedUserIdentity === normalizedTargetIdentity;
 
+    if (!isSelfRevocation) {
+      const canRevoke = context.system?.userPermissions.actions.claimRevoke;
+
+      if (!canRevoke) {
+        throw errors.USER_NOT_AUTHORIZED({
+          data: {
+            requiredRoles: SYSTEM_PERMISSIONS.claimRevoke,
+          },
+        });
+      }
+    }
+
     let issuerIdentity: Address | null = null;
 
     if (isSelfRevocation) {
@@ -131,7 +144,7 @@ export const revoke = authRouter.system.identity.claims.revoke
 
       if (!trustedIssuers || trustedIssuers.length === 0) {
         throw errors.FORBIDDEN({
-          message: "You are not authorized to revoke claims for this topic",
+          message: `You are not a trusted issuer for topic(s): ${claimTopic}`,
         });
       }
 
@@ -141,7 +154,7 @@ export const revoke = authRouter.system.identity.claims.revoke
 
       if (!authorizedIssuer) {
         throw errors.FORBIDDEN({
-          message: `You are not registered as a trusted issuer for topic '${claimTopic}'`,
+          message: `You are not a trusted issuer for topic(s): ${claimTopic}`,
         });
       }
 
