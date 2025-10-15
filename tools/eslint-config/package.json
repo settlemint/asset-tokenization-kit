@@ -17,7 +17,7 @@
     "typescript": "5.9.3",
     "typescript-eslint": "8.46.1",
     "eslint": "9.37.0",
-    "eslint-plugin-boundaries": "5.0.2",
+    "eslint-plugin-boundaries": "5.1.0",
     "eslint-plugin-no-barrel-files": "1.2.2",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-compiler": "19.1.0-rc.2",
