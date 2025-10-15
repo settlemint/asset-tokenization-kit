@@ -9,7 +9,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { zeroAddress } from "viem";
 
 interface ClaimYieldSheetProps {
   open: boolean;
@@ -43,6 +42,9 @@ export function ClaimYieldSheet({
             }).queryKey,
           }),
           qc.invalidateQueries({
+            queryKey: orpc.user.assets.queryKey(),
+          }),
+          qc.invalidateQueries({
             queryKey: orpc.actions.list.queryOptions({
               input: {},
             }).queryKey,
@@ -61,7 +63,7 @@ export function ClaimYieldSheet({
 
   const handleSubmit = useCallback((verification: UserVerification) => {
     const promise = claimYield({
-      contract: assetBalance.token.id,
+      contract: yieldSchedule?.id ?? "",
       walletVerification: verification,
     });
 
@@ -111,15 +113,17 @@ export function ClaimYieldSheet({
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-sm font-medium">
-            <Web3Address
-              address={denominationAsset?.id ?? zeroAddress}
-              copyToClipboard
-              showFullAddress={false}
-              showPrettyName={true}
-              showBadge={false}
-              size="tiny"
-              className="font-mono text-sm"
-            />
+            {denominationAsset?.id ? (
+              <Web3Address
+                address={denominationAsset.id}
+                copyToClipboard
+                showFullAddress={false}
+                showPrettyName={true}
+                showBadge={false}
+                size="tiny"
+                className="font-mono text-sm"
+              />
+            ) : null}
           </div>
         </CardContent>
       </Card>
