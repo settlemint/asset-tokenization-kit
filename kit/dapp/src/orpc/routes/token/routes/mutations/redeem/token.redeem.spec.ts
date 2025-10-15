@@ -181,8 +181,8 @@ describe(
       ).toEqual([
         {
           activeAt: expect.any(Date),
-          executedAt: null,
-          executedBy: null,
+          executedAt: expect.any(Date),
+          executedBy: adminUserData.wallet,
           executor: {
             executors: [adminUserData.wallet],
             id: expect.any(String),
