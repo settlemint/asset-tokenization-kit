@@ -60,7 +60,7 @@ export function RevokeClaimDialog({
       }),
       {
         loading: t("claimsTable.actions.revokeLoading"),
-        success: t("claimsTable.actions.revokeSuccess"),
+        success: t("claimsTable.actions.success.revoke"),
         error: (mutationError) => resolveErrorMessage(mutationError),
       }
     );
