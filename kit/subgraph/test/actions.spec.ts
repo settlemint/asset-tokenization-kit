@@ -64,7 +64,7 @@ describe("Actions", () => {
           id
           name
           target
-          status
+          executed
           identifier
           executor {
             id
@@ -85,7 +85,7 @@ describe("Actions", () => {
       expect(action.id).toBeDefined();
       expect(action.name).toBe("ApproveXvPSettlement");
       expect(action.target).toBeDefined();
-      expect(action.status).toBeDefined();
+      expect(typeof action?.executed).toBe("boolean");
       expect(action.identifier).toBeDefined();
 
       // Verify executor relationship
@@ -112,7 +112,7 @@ describe("Actions", () => {
           createdAt
           activeAt
           expiresAt
-          status
+          executed
           executedAt
           executedBy
           identifier
@@ -142,12 +142,12 @@ describe("Actions", () => {
         expect(action.target).toBeDefined();
         expect(action.createdAt).toBeDefined();
         expect(action.activeAt).toBeDefined(); // Should be set to maturity date
-        expect(action.status).toBeDefined();
+        expect(typeof action.executed).toBe("boolean"); // Can be true or false depending on test scenario
         expect(action.identifier).toBeDefined(); // Bond actions use bond address as identifier
         expect(isEthereumAddress(action.identifier)).toBe(true); // Should be a valid address
 
         // Verify execution state consistency
-        if (action.status === "EXECUTED") {
+        if (action.executed) {
           expect(action.executedAt).toBeDefined();
           expect(action.executedBy).toBeDefined();
         } else {
@@ -165,7 +165,7 @@ describe("Actions", () => {
 
     // Has 1 bond maturity executed action
     const executedActions = response.actions.filter(
-      (action) => action.status === "EXECUTED"
+      (action) => action.executed
     );
     expect(executedActions.length).toBe(1);
   });
@@ -186,10 +186,10 @@ describe("Actions", () => {
           createdAt
           activeAt
           expiresAt
+          executed
           executedAt
           executedBy
           identifier
-          status
           executor {
             id
             executors
@@ -216,12 +216,12 @@ describe("Actions", () => {
         expect(action.target).toBeDefined();
         expect(action.createdAt).toBeDefined();
         expect(action.activeAt).toBeDefined(); // Should be set to maturity date
-        expect(action.status).toBeDefined();
+        expect(typeof action.executed).toBe("boolean"); // Can be true or false depending on test scenario
         expect(action.identifier).toBeDefined(); // Bond actions use bond address as identifier
         expect(action.identifier?.startsWith("0x")).toBe(true); // Should be a valid composite id (token address + account address)
 
         // Verify execution state consistency
-        if (action.status === "EXECUTED") {
+        if (action.executed) {
           expect(action.executedAt).toBeDefined();
           expect(action.executedBy).toBeDefined();
         } else {
@@ -239,7 +239,7 @@ describe("Actions", () => {
 
     // Has 1 bond redeem executed action
     const executedActions = response.actions.filter(
-      (action) => action.status === "EXECUTED"
+      (action) => action.executed
     );
     expect(executedActions.length).toBe(1);
   });
@@ -260,10 +260,10 @@ describe("Actions", () => {
           createdAt
           activeAt
           expiresAt
+          executed
           executedAt
           executedBy
           identifier
-          status
           executor {
             id
             executors
@@ -290,12 +290,12 @@ describe("Actions", () => {
         expect(action.target).toBeDefined();
         expect(action.createdAt).toBeDefined();
         expect(action.activeAt).toBeDefined(); // Should be set to maturity date
-        expect(action.status).toBeDefined();
+        expect(typeof action.executed).toBe("boolean"); // Can be true or false depending on test scenario
         expect(action.identifier).toBeDefined(); // Bond actions use bond address as identifier
         expect(action.identifier?.startsWith("0x")).toBe(true); // Should be a valid composite id (token address + account address)
 
         // Verify execution state consistency
-        if (action.status === "EXECUTED") {
+        if (action.executed) {
           expect(action.executedAt).toBeDefined();
           expect(action.executedBy).toBeDefined();
         } else {
@@ -313,7 +313,7 @@ describe("Actions", () => {
 
     // Has 3 claim yield executed actions (for 3 periods)
     const executedActions = response.actions.filter(
-      (action) => action.status === "EXECUTED"
+      (action) => action.executed
     );
     expect(executedActions.length).toBe(3);
     // Executed actions are on the same target
@@ -334,7 +334,7 @@ describe("Actions", () => {
             id
             name
             target
-            status
+            executed
             executor {
               id
             }
@@ -362,7 +362,7 @@ describe("Actions", () => {
         expect(action.id).toBeDefined();
         expect(action.name).toBeDefined();
         expect(action.target).toBeDefined();
-        expect(action.status).toBeDefined();
+        expect(typeof action.executed).toBe("boolean");
         expect(action.executor.id).toBe(executor.id); // Reverse relationship should match
       });
     });
@@ -410,15 +410,15 @@ describe("Actions", () => {
   it("should have actions in different execution states", async () => {
     const query = theGraphGraphql(
       `query {
-        executedActions: actions(where: { status: EXECUTED }) {
+        executedActions: actions(where: { executed: true }) {
           id
           name
-          status
+          executed
         }
-        otherActions: actions(where: { status_not: EXECUTED }) {
+        pendingActions: actions(where: { executed: false }) {
           id
           name
-          status
+          executed
         }
       }`
     );
@@ -426,16 +426,16 @@ describe("Actions", () => {
 
     // Should have both executed and pending actions from different settlement scenarios
     expect(response.executedActions.length).toBeGreaterThan(0);
-    expect(response.otherActions.length).toBeGreaterThan(0);
+    expect(response.pendingActions.length).toBeGreaterThan(0);
 
     // Verify executed actions
     response.executedActions.forEach((action) => {
-      expect(action.status).toBe("EXECUTED");
+      expect(action.executed).toBe(true);
     });
 
     // Verify pending actions
-    response.otherActions.forEach((action) => {
-      expect(action.status).not.toBe("EXECUTED");
+    response.pendingActions.forEach((action) => {
+      expect(action.executed).toBe(false);
     });
   });
 });

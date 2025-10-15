@@ -15,11 +15,14 @@ export function getPeriodId(address: Address, periodNumber: i32): Bytes {
   return address.concat(Bytes.fromUTF8(`-period-${periodNumber.toString()}`));
 }
 
-export function updateYield(token: Token): void {
+export function updateYield(token: Token): TokenFixedYieldSchedule | null {
+  if (!token.yield_) {
+    return null;
+  }
   const yield_ = fetchYield(Address.fromBytes(token.id));
   if (yield_.schedule === null) {
     log.info("FixedYieldSchedule: no schedule set", []);
-    return;
+    return null;
   }
   const fixedYieldScheduleAddress = Address.fromBytes(yield_.schedule!);
   const fixedYieldSchedule = fetchFixedYieldSchedule(fixedYieldScheduleAddress);
@@ -29,7 +32,7 @@ export function updateYield(token: Token): void {
   const denominationAssetDecimals = getTokenDecimals(denominationAssetAddress);
   if (!fixedYieldSchedule.nextPeriod) {
     // There is no next period, the schedule has ended
-    return;
+    return fixedYieldSchedule;
   }
 
   const fixedYieldScheduleContract = FixedYieldScheduleContract.bind(
@@ -39,7 +42,7 @@ export function updateYield(token: Token): void {
   const currentPeriod = fixedYieldScheduleContract.try_currentPeriod();
   if (currentPeriod.reverted) {
     log.error("FixedYieldSchedule: currentPeriod reverted", []);
-    return;
+    return fixedYieldSchedule;
   }
 
   const currentPeriodValue = currentPeriod.value.toI32();
@@ -58,7 +61,7 @@ export function updateYield(token: Token): void {
     // There is no next period, the schedule has ended
     fixedYieldSchedule.nextPeriod = null;
     fixedYieldSchedule.save();
-    return;
+    return fixedYieldSchedule;
   }
 
   if (
@@ -67,21 +70,21 @@ export function updateYield(token: Token): void {
   ) {
     // The next period has already a yield set and we are after the start date as there is a current period set
     // At this point, the yield will not change anymore
-    return;
+    return fixedYieldSchedule;
   }
 
   const nextPeriodYield =
     fixedYieldScheduleContract.try_totalYieldForNextPeriod();
   if (nextPeriodYield.reverted) {
     log.error("FixedYieldSchedule: totalYieldForNextPeriod reverted", []);
-    return;
+    return fixedYieldSchedule;
   }
 
   if (nextPeriodYield.value.equals(BigInt.zero())) {
     // There is no next period, the schedule has ended
     fixedYieldSchedule.nextPeriod = null;
     fixedYieldSchedule.save();
-    return;
+    return fixedYieldSchedule;
   }
 
   setBigNumber(
@@ -96,7 +99,7 @@ export function updateYield(token: Token): void {
   const unclaimedYield = fixedYieldScheduleContract.try_totalUnclaimedYield();
   if (unclaimedYield.reverted) {
     log.error("FixedYieldSchedule: totalUnclaimedYield reverted", []);
-    return;
+    return fixedYieldSchedule;
   }
 
   setBigNumber(
@@ -113,6 +116,8 @@ export function updateYield(token: Token): void {
   );
 
   fixedYieldSchedule.save();
+
+  return fixedYieldSchedule;
 }
 
 export function calculateTotalYield(

@@ -24,9 +24,14 @@ export const FixedYieldScheduleCreateInputSchema = MutationInputSchema.extend({
   yieldRate: basisPoints().describe(
     "The yield rate in basis points (1% = 100)"
   ),
-  paymentInterval: timeInterval().describe(
-    "The payment interval (DAILY, WEEKLY, MONTHLY, QUARTERLY, YEARLY)"
-  ),
+  paymentInterval: z
+    .union([
+      timeInterval().describe(
+        "The payment interval (DAILY, WEEKLY, MONTHLY, QUARTERLY, YEARLY)"
+      ),
+      z.int().describe("The payment interval in seconds"),
+    ])
+    .describe("The payment interval"),
   startTime: timestamp().describe(
     "The start time for yield payments as Unix timestamp"
   ),

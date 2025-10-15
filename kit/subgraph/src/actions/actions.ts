@@ -95,72 +95,6 @@ function getActionStatus(
   return ActionStatus.PENDING;
 }
 
-function isValidStatusTransition(
-  currentStatus: string,
-  newStatus: string
-): boolean {
-  // EXECUTED status is terminal - no transitions allowed
-  if (currentStatus === ActionStatus.EXECUTED) {
-    return newStatus === ActionStatus.EXECUTED;
-  }
-
-  // EXPIRED status is terminal - no transitions allowed
-  if (currentStatus === ActionStatus.EXPIRED) {
-    return newStatus === ActionStatus.EXPIRED;
-  }
-
-  // Valid transitions from PENDING
-  if (currentStatus === ActionStatus.PENDING) {
-    return (
-      newStatus === ActionStatus.PENDING ||
-      newStatus === ActionStatus.ACTIVE ||
-      newStatus === ActionStatus.EXECUTED ||
-      newStatus === ActionStatus.EXPIRED
-    );
-  }
-
-  // Valid transitions from ACTIVE
-  if (currentStatus === ActionStatus.ACTIVE) {
-    return (
-      newStatus === ActionStatus.ACTIVE ||
-      newStatus === ActionStatus.EXECUTED ||
-      newStatus === ActionStatus.EXPIRED
-    );
-  }
-
-  return false;
-}
-
-export function updateActionStatus(action: Action, currentTime: BigInt): void {
-  const newStatus = getActionStatus(
-    currentTime,
-    action.activeAt,
-    action.expiresAt,
-    action.status === ActionStatus.EXECUTED
-  );
-
-  // Validate status transition
-  if (!isValidStatusTransition(action.status, newStatus)) {
-    log.error(
-      "Invalid status transition attempted for action: {} - from: {} to: {}",
-      [action.id.toHexString(), action.status, newStatus]
-    );
-    return;
-  }
-
-  if (action.status !== newStatus) {
-    const oldStatus = action.status;
-    action.status = newStatus;
-    action.save();
-
-    log.info("Action status updated: {} - from: {} to: {}", [
-      action.id.toHexString(),
-      oldStatus,
-      newStatus,
-    ]);
-  }
-}
-
 function actionId(
   actionName: string,
   target: Bytes,
@@ -274,6 +208,7 @@ export function createAction(
   action.activeAt = activeAt;
   action.expiresAt = expiresAt;
   action.requiredRole = requiredRole;
+  action.executed = false;
   action.executedAt = null;
   action.executedBy = null;
   action.identifier = identifier;
@@ -392,7 +327,7 @@ export function actionExecuted(
     return;
   }
 
-  if (action.status === ActionStatus.EXECUTED) {
+  if (action.executed) {
     log.warning(
       "Action already executed: {} - actionName: {}, target: {}, identifier: {}",
       [
@@ -405,6 +340,7 @@ export function actionExecuted(
     return;
   }
 
+  action.executed = true;
   action.executedAt = event.block.timestamp;
   const executedBy = fetchAccount(event.transaction.from);
   action.executedBy = executedBy.id;

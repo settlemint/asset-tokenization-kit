@@ -13,11 +13,11 @@ import {
   getUserData,
   signInWithUser,
 } from "@test/fixtures/user";
-import { from } from "dnum";
+import { format, from } from "dnum";
 import { beforeAll, describe, expect, test } from "vitest";
 
 describe(
-  "Fixed yield schedule claim",
+  "Token redeem",
   {
     // Test can be flaky due to blockchain time manipulation
     retry: 3,
@@ -43,7 +43,7 @@ describe(
             verificationType: "PINCODE",
           },
           type: "deposit" as const,
-          name: `Claim Yield Deposit`,
+          name: `Redeem Deposit`,
           symbol: "TDD",
           decimals: 18,
           initialModulePairs: [],
@@ -64,7 +64,7 @@ describe(
         adminClient,
         {
           type: "bond",
-          name: `Claim Yield Bond`,
+          name: `Redeem Bond`,
           symbol: "TB",
           decimals: 18,
           cap: from(1_000_000, 18),
@@ -107,8 +107,8 @@ describe(
 
       await adminClient.token.mint({
         contract: depositToken.id,
-        recipients: [yieldSchedule.address, bond.id],
-        amounts: [from(1000, 18), from(100_000, 18)],
+        recipients: [bond.id],
+        amounts: [from(100_000, 18)],
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -123,21 +123,25 @@ describe(
           verificationType: "PINCODE",
         },
       });
+
+      await increaseAnvilTimeForDate(bond.bond?.maturityDate);
+
+      await adminClient.token.mature({
+        contract: bond.id,
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+      });
     }, 120_000);
 
-    test("can claim yield from fixed yield schedule", async () => {
-      const schedule = await adminClient.fixedYieldSchedule.read({
-        id: yieldSchedule.address,
-      });
-      expect(schedule).not.toBeNull();
-      expect(schedule.nextPeriod).not.toBeNull();
+    test("can redeem bond after maturity", async () => {
+      await increaseAnvilTimeForDate(bond.bond?.maturityDate);
 
-      await increaseAnvilTimeForDate(schedule.nextPeriod?.endDate);
-
-      const actionsBeforeClaim = await adminClient.token.actions({
+      const actionsBeforeRedeem = await adminClient.token.actions({
         tokenAddress: bond.id,
       });
-      expect(actionsBeforeClaim).toMatchObject([
+      expect(actionsBeforeRedeem).toMatchObject([
         {
           activeAt: expect.any(Date),
           executedAt: null,
@@ -151,34 +155,6 @@ describe(
           status: "PENDING",
           target: bond.id,
         },
-        {
-          activeAt: expect.any(Date),
-          executedAt: null,
-          executedBy: null,
-          executor: {
-            executors: [adminUserData.wallet],
-            id: expect.any(String),
-          },
-          id: expect.any(String),
-          name: "MatureBond",
-          status: "PENDING",
-          target: bond.id,
-        },
-      ]);
-      const result = await adminClient.fixedYieldSchedule.claim({
-        contract: yieldSchedule.address,
-        walletVerification: {
-          secretVerificationCode: DEFAULT_PINCODE,
-          verificationType: "PINCODE",
-        },
-      });
-      expect(result).toBeDefined();
-      expect(result.txHash).toBeDefined();
-
-      const actionsAfterClaim = await adminClient.token.actions({
-        tokenAddress: bond.id,
-      });
-      expect(actionsAfterClaim).toMatchObject([
         {
           activeAt: expect.any(Date),
           executedAt: expect.any(Date),
@@ -188,7 +164,7 @@ describe(
             id: expect.any(String),
           },
           id: expect.any(String),
-          name: "ClaimYield",
+          name: "MatureBond",
           status: "EXECUTED",
           target: bond.id,
         },
@@ -201,18 +177,77 @@ describe(
             id: expect.any(String),
           },
           id: expect.any(String),
-          name: "MatureBond",
+          name: "RedeemBond",
+          status: "ACTIVE",
+          target: bond.id,
+        },
+      ]);
+      const result = await adminClient.token.redeem({
+        contract: bond.id,
+        redeemAll: true,
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+      });
+      expect(result).toBeDefined();
+      const totalRedeemedAmount = format(
+        result?.redeemable?.redeemedAmount ?? from(0)
+      );
+      expect(totalRedeemedAmount).toBe("10");
+
+      const actionsAfterRedeem = await adminClient.token.actions({
+        tokenAddress: bond.id,
+      });
+      expect(actionsAfterRedeem).toMatchObject([
+        {
+          activeAt: expect.any(Date),
+          executedAt: null,
+          executedBy: null,
+          executor: {
+            executors: [adminUserData.wallet],
+            id: expect.any(String),
+          },
+          id: expect.any(String),
+          name: "ClaimYield",
           status: "PENDING",
+          target: bond.id,
+        },
+        {
+          activeAt: expect.any(Date),
+          executedAt: expect.any(Date),
+          executedBy: adminUserData.wallet,
+          executor: {
+            executors: [adminUserData.wallet],
+            id: expect.any(String),
+          },
+          id: expect.any(String),
+          name: "MatureBond",
+          status: "EXECUTED",
+          target: bond.id,
+        },
+        {
+          activeAt: expect.any(Date),
+          executedAt: expect.any(Date),
+          executedBy: adminUserData.wallet,
+          executor: {
+            executors: [adminUserData.wallet],
+            id: expect.any(String),
+          },
+          id: expect.any(String),
+          name: "RedeemBond",
+          status: "EXECUTED",
           target: bond.id,
         },
       ]);
     });
 
-    test("cannot claim yield if all has been claimed", async () => {
+    test("cannot redeem an already redeemed bond", async () => {
       await expect(
-        adminClient.fixedYieldSchedule.claim(
+        adminClient.token.redeem(
           {
-            contract: yieldSchedule.address,
+            contract: bond.id,
+            redeemAll: true,
             walletVerification: {
               secretVerificationCode: DEFAULT_PINCODE,
               verificationType: "PINCODE",
@@ -224,7 +259,7 @@ describe(
             },
           }
         )
-      ).rejects.toThrow("NoYieldAvailable");
+      ).rejects.toThrow("InvalidRedemptionAmount");
     });
   }
 );

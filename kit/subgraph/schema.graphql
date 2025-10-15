@@ -1259,6 +1259,8 @@ type Action @entity(immutable: false) {
   requiredRole: String
   # Current status of the action
   status: ActionStatus!
+  # DEPRECATED: Use status field instead
+  executed: Boolean!
   # Unix timestamp when executed (if executed)
   executedAt: BigInt
   # Account that executed the action (if executed)
@@ -1959,7 +1961,7 @@ type TokenBondStats
   coveredPercentage: BigDecimal!
     @aggregate(
       fn: "last"
-      arg: "(denominationAssetBalanceAvailable / denominationAssetBalanceRequired) * 100"
+      arg: "COALESCE((denominationAssetBalanceAvailable / NULLIF(denominationAssetBalanceRequired, 0)) * 100, 0)"
     )
 }
 
