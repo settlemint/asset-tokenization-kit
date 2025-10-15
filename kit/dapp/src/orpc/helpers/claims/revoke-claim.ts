@@ -52,7 +52,6 @@ export interface RevokeClaimInput {
  */
 export async function revokeClaim({
   user,
-  issuer,
   walletVerification,
   identity,
   claimId,
@@ -61,7 +60,7 @@ export async function revokeClaim({
   const txHash = await portalClient.mutate(
     REVOKE_CLAIM_MUTATION,
     {
-      address: issuer,
+      address: identity,
       from: user.wallet,
       claimId,
       identity,

@@ -3,6 +3,7 @@ import { OnchainIdentityDetailsCard } from "@/components/account/onchain-identit
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { OnchainIdentityClaimsSection } from "./onchain-identity-claims-section";
 
 export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/account/onchain-identity"
@@ -33,6 +34,8 @@ function OnchainIdentity() {
         <OnchainIdentityAddressCard />
         <OnchainIdentityDetailsCard />
       </div>
+
+      <OnchainIdentityClaimsSection />
     </div>
   );
 }

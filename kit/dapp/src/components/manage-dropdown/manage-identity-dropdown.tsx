@@ -16,6 +16,7 @@ import type { LucideIcon } from "lucide-react";
 import { ChevronDown, FilePlus, UserPlus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import type { Address } from "viem";
 import { RegisterIdentitySheet } from "./sheets/register-identity-sheet";
 
 type Action = "registerIdentity" | "issueClaim";
@@ -26,7 +27,7 @@ interface ManagedIdentityAccount {
 }
 
 export interface ManagedIdentity {
-  identity: string;
+  identity: Address;
   account: ManagedIdentityAccount;
   isRegistered: boolean;
 }
