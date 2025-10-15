@@ -49,9 +49,8 @@ export function ClaimsTable({
     })
   );
 
-  const { data: trustedIssuers } = useQuery(
-    orpc.system.trustedIssuers.list.queryOptions()
-  );
+  // Trusted issuers data is not needed for revocation logic
+  // as only identity owners can revoke claims through the UI
 
   const claims = data?.claims ?? [];
   const showLoadingState = isLoading || isFetching;
@@ -60,9 +59,9 @@ export function ClaimsTable({
       ? error.message
       : t("claimsTable.emptyState.description");
 
-  const hasClaimRevokePermission = Boolean(
-    system?.userPermissions?.actions.claimRevoke
-  );
+  // Note: Claim revoke permission is not used in the current implementation
+  // as we only allow users to revoke claims on their own identity
+  // (users with MANAGEMENT_KEY, which identity owners have by default)
   const userIdentityAddressLower =
     system?.userIdentity?.address?.toLowerCase() ?? null;
   const tableIdentityAddressLower = identityAddress.toLowerCase();
@@ -130,7 +129,7 @@ export function ClaimsTable({
       columnHelper.display({
         id: "status",
         header: t("claimsTable.columns.status"),
-        cell: ({ row }: CellContext<ClaimRow, boolean>) => {
+        cell: ({ row }) => {
           const isRevoked = row.original.revoked;
           return (
             <Badge
@@ -191,21 +190,14 @@ export function ClaimsTable({
         cell: ({ row }: CellContext<ClaimRow, unknown>) => {
           const claim = row.original;
           const isRevoked = claim.revoked;
-          const canRevokeAsTrustedIssuer = Boolean(
-            hasClaimRevokePermission &&
-              trustedIssuers?.some((issuer) =>
-                issuer.claimTopics.some((topic) => topic.name === claim.name)
-              )
-          );
-          const canRevokeOwnIdentity = Boolean(
+          // Only allow revocation if the user's identity matches the table's identity
+          // This aligns with the API which requires MANAGEMENT_KEY on the target identity
+          const canRevoke = Boolean(
             userIdentityAddressLower &&
               userIdentityAddressLower === tableIdentityAddressLower
           );
 
-          if (
-            isRevoked ||
-            !(canRevokeAsTrustedIssuer || canRevokeOwnIdentity)
-          ) {
+          if (isRevoked || !canRevoke) {
             return null;
           }
 
@@ -239,14 +231,7 @@ export function ClaimsTable({
         },
       }),
     ] as ColumnDef<ClaimRow>[]);
-  }, [
-    t,
-    identityAddress,
-    hasClaimRevokePermission,
-    userIdentityAddressLower,
-    tableIdentityAddressLower,
-    trustedIssuers,
-  ]);
+  }, [t, identityAddress, userIdentityAddressLower, tableIdentityAddressLower]);
 
   return (
     <>

@@ -14,12 +14,13 @@ import {
 import { waitForGraphIndexing } from "@test/helpers/test-helpers";
 import { beforeAll, describe, expect, it } from "vitest";
 
-describe("Claims revoke (integration)", () => {
+describe("Claims revoke with MANAGEMENT_KEY authorization (integration)", () => {
   let adminClient: ReturnType<typeof getOrpcClient>;
   let issuerClient: ReturnType<typeof getOrpcClient>;
   let investorClient: ReturnType<typeof getOrpcClient>;
   let targetTestUser: Awaited<ReturnType<typeof createTestUser>>;
   let targetUserData: Awaited<ReturnType<typeof getUserData>>;
+  let targetUserClient: ReturnType<typeof getOrpcClient>;
   let targetIdentityAddress: string;
 
   beforeAll(async () => {
@@ -27,11 +28,11 @@ describe("Claims revoke (integration)", () => {
     targetTestUser = await createTestUser("claim-target");
     targetUserData = await getUserData(targetTestUser.user);
 
-    // Admin user has claimIssuer role and is trusted issuer for ALL claim topics
+    // Admin user - will be used to issue claims
     const adminHeaders = await signInWithUser(DEFAULT_ADMIN);
     adminClient = getOrpcClient(adminHeaders);
 
-    // Issuer user has claimIssuer role but is only trusted for specific topics (not KYC)
+    // Issuer user - will NOT have MANAGEMENT_KEY on target identity
     const issuerHeaders = await signInWithUser(DEFAULT_ISSUER);
     issuerClient = getOrpcClient(issuerHeaders);
     const issuerIdentity = await issuerClient.system.identity.me({});
@@ -39,8 +40,13 @@ describe("Claims revoke (integration)", () => {
       throw new Error("Issuer account does not have an identity setup");
     }
 
+    // Investor user - will NOT have MANAGEMENT_KEY on target identity
     const investorHeaders = await signInWithUser(DEFAULT_INVESTOR);
     investorClient = getOrpcClient(investorHeaders);
+
+    // Target user client - WILL have MANAGEMENT_KEY on their own identity
+    const targetUserHeaders = await signInWithUser(targetTestUser.user);
+    targetUserClient = getOrpcClient(targetUserHeaders);
 
     // Register identity for the target test user
     if (targetUserData.wallet) {
@@ -59,9 +65,9 @@ describe("Claims revoke (integration)", () => {
     targetIdentityAddress = targetIdentity.id;
   });
 
-  it("should successfully revoke a collateral claim when user has proper permissions", async () => {
-    // First issue a claim to later revoke
-    const issueResult = await issuerClient.system.identity.claims.issue({
+  it("should successfully revoke a claim when user is the identity owner (has MANAGEMENT_KEY)", async () => {
+    // First, admin issues a claim to the target user
+    const issueResult = await adminClient.system.identity.claims.issue({
       targetIdentityAddress,
       claim: {
         topic: "collateral",
@@ -86,8 +92,8 @@ describe("Claims revoke (integration)", () => {
     // Wait for graph sync before attempting to revoke
     await waitForGraphIndexing();
 
-    // Now revoke the claim by topic
-    const result = await issuerClient.system.identity.claims.revoke({
+    // Target user (identity owner) revokes their own claim
+    const result = await targetUserClient.system.identity.claims.revoke({
       targetIdentityAddress,
       claimTopic: "collateral",
       walletVerification: {
@@ -101,31 +107,8 @@ describe("Claims revoke (integration)", () => {
     expect(result.transactionHash).toBeDefined();
   });
 
-  it("should fail when user lacks claimIssuer role", async () => {
-    // Investor user should NOT have claimIssuer role
-    await expect(
-      investorClient.system.identity.claims.revoke(
-        {
-          targetIdentityAddress,
-          claimTopic: "collateral",
-          walletVerification: {
-            verificationType: VerificationType.pincode,
-            secretVerificationCode: DEFAULT_PINCODE,
-          },
-        },
-        {
-          context: {
-            skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
-          },
-        }
-      )
-    ).rejects.toThrow(
-      errorMessageForCode(CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED)
-    );
-  });
-
-  it("should fail when user has claimIssuer role but is not a trusted issuer for the claim topic", async () => {
-    // Admin issues a KYC claim first so that it exists on-chain
+  it("should fail when user does not have MANAGEMENT_KEY on the target identity", async () => {
+    // First, admin issues a claim that we'll try to revoke
     await adminClient.system.identity.claims.issue({
       targetIdentityAddress,
       claim: {
@@ -140,9 +123,11 @@ describe("Claims revoke (integration)", () => {
       },
     });
 
-    // Issuer (not trusted for KYC) attempts to revoke
+    await waitForGraphIndexing();
+
+    // Investor user does NOT have MANAGEMENT_KEY on target identity
     await expect(
-      issuerClient.system.identity.claims.revoke(
+      investorClient.system.identity.claims.revoke(
         {
           targetIdentityAddress,
           claimTopic: "knowYourCustomer",
@@ -158,7 +143,69 @@ describe("Claims revoke (integration)", () => {
         }
       )
     ).rejects.toThrow(
-      "You are not a trusted issuer for topic(s): knowYourCustomer"
+      "You do not have a MANAGEMENT_KEY on this identity. Only users with management rights can revoke claims."
     );
+  });
+
+  it("should fail when issuer tries to revoke without MANAGEMENT_KEY (even if they issued the claim)", async () => {
+    // Issuer issues a collateral claim
+    await issuerClient.system.identity.claims.issue({
+      targetIdentityAddress,
+      claim: {
+        topic: "collateral",
+        data: {
+          amount: "2000000000000000000",
+          expiryTimestamp: "1735689600",
+        },
+      },
+      walletVerification: {
+        verificationType: VerificationType.pincode,
+        secretVerificationCode: DEFAULT_PINCODE,
+      },
+    });
+
+    await waitForGraphIndexing();
+
+    // Same issuer tries to revoke but doesn't have MANAGEMENT_KEY
+    await expect(
+      issuerClient.system.identity.claims.revoke(
+        {
+          targetIdentityAddress,
+          claimTopic: "collateral",
+          walletVerification: {
+            verificationType: VerificationType.pincode,
+            secretVerificationCode: DEFAULT_PINCODE,
+          },
+        },
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
+          },
+        }
+      )
+    ).rejects.toThrow(
+      "You do not have a MANAGEMENT_KEY on this identity. Only users with management rights can revoke claims."
+    );
+  });
+
+  it("should fail gracefully when claim does not exist", async () => {
+    // Try to revoke a non-existent claim (even as identity owner)
+    await expect(
+      targetUserClient.system.identity.claims.revoke(
+        {
+          targetIdentityAddress,
+          claimTopic: "amlKnowYourTransaction", // This claim doesn't exist
+          walletVerification: {
+            verificationType: VerificationType.pincode,
+            secretVerificationCode: DEFAULT_PINCODE,
+          },
+        },
+        {
+          context: {
+            skipLoggingFor: [CUSTOM_ERROR_CODES.NOT_FOUND],
+          },
+        }
+      )
+    ).rejects.toThrow(errorMessageForCode(CUSTOM_ERROR_CODES.NOT_FOUND));
   });
 });
