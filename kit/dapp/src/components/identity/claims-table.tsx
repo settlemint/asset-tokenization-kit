@@ -1,15 +1,21 @@
 import { DataTable } from "@/components/data-table/data-table";
-import { DataTableRowActions } from "@/components/data-table/data-table-row-actions";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { orpc } from "@/orpc/orpc-client";
 import type { Identity } from "@/orpc/routes/system/identity/routes/identity.read.schema";
 import { useQuery } from "@tanstack/react-query";
 import type { CellContext, ColumnDef } from "@tanstack/table-core";
-import { Shield } from "lucide-react";
-import { useMemo } from "react";
+import { MoreHorizontal, Shield } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { Address } from "viem";
 import { RevokeClaimDialog } from "./dialogs/revoke-claim-dialog";
@@ -60,6 +66,15 @@ export function ClaimsTable({
   const userIdentityAddressLower =
     system?.userIdentity?.address?.toLowerCase() ?? null;
   const tableIdentityAddressLower = identityAddress.toLowerCase();
+  const [isRevokeDialogOpen, setIsRevokeDialogOpen] = useState(false);
+  const [selectedClaim, setSelectedClaim] = useState<ClaimRow | null>(null);
+
+  const handleRevokeDialogOpenChange = (open: boolean) => {
+    setIsRevokeDialogOpen(open);
+    if (!open) {
+      setSelectedClaim(null);
+    }
+  };
 
   const columns = useMemo((): ColumnDef<ClaimRow>[] => {
     const statusLabels = {
@@ -195,22 +210,27 @@ export function ClaimsTable({
           }
 
           return (
-            <DataTableRowActions
-              actions={[
-                {
-                  id: "revoke",
-                  label: t("claimsTable.actions.revoke"),
-                  component: ({ open, onOpenChange }) => (
-                    <RevokeClaimDialog
-                      open={open}
-                      onOpenChange={onOpenChange}
-                      claim={claim}
-                      identityAddress={identityAddress}
-                    />
-                  ),
-                },
-              ]}
-            />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+                >
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-[160px]">
+                <DropdownMenuItem
+                  onSelect={() => {
+                    setSelectedClaim(claim);
+                    setIsRevokeDialogOpen(true);
+                  }}
+                >
+                  {t("claimsTable.actions.revoke")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           );
         },
         meta: {
@@ -251,6 +271,14 @@ export function ClaimsTable({
           description: emptyStateDescription,
         }}
       />
+      {selectedClaim ? (
+        <RevokeClaimDialog
+          open={isRevokeDialogOpen}
+          onOpenChange={handleRevokeDialogOpenChange}
+          claim={selectedClaim}
+          identityAddress={identityAddress}
+        />
+      ) : null}
     </>
   );
 }

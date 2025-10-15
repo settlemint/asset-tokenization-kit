@@ -1,6 +1,7 @@
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { ClaimsTable } from "@/components/identity/claims-table";
-import { createFileRoute, useLoaderData } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import type { Address } from "viem";
 
 /**
  * Claims tab page that displays all claims associated with an identity
@@ -18,13 +19,11 @@ export const Route = createFileRoute(
 });
 
 function ClaimsPage() {
-  const { claimsData } = useLoaderData({
-    from: "/_private/_onboarded/_sidebar/admin/identity-management/$address",
-  });
+  const { address } = Route.useParams();
 
   return (
     <div className="space-y-4">
-      <ClaimsTable identityAddress={claimsData.identity} />
+      <ClaimsTable identityAddress={address as Address} />
     </div>
   );
 }
