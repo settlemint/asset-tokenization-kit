@@ -11,10 +11,11 @@ interface IATKXvPSettlement is IERC165 {
     /// @notice A struct representing a token flow in the settlement
     /// @dev Each flow represents a transfer from one address to another of a specific token amount
     struct Flow {
-        address asset; // The token contract address
+        address asset; // The token contract address (local or external reference)
         address from; // The sender's address
         address to; // The recipient's address
         uint256 amount; // The amount to transfer
+        uint64 externalChainId; // 0 for local flows, foreign chain id for external flows
     }
 
     /// @notice The current status of the settlement
@@ -42,6 +43,11 @@ interface IATKXvPSettlement is IERC165 {
     /// @notice Event emitted when an XvP settlement is cancelled
     /// @param sender The address that cancelled the settlement
     event XvPSettlementCancelled(address indexed sender);
+
+    /// @notice Event emitted when the settlement hashlock secret is revealed
+    /// @param revealer The address that submitted the valid secret
+    /// @param secret The raw secret that unlocked the settlement
+    event XvPSettlementSecretRevealed(address indexed revealer, bytes secret);
 
     // Custom errors
     /// @notice Error thrown when attempting to execute an already executed settlement
@@ -77,6 +83,19 @@ interface IATKXvPSettlement is IERC165 {
     /// @param required The required allowance amount
     /// @param allowed The current allowance amount
     error InsufficientAllowance(address token, address owner, address spender, uint256 required, uint256 allowed);
+    /// @notice Error thrown when an external flow specifies the current chain id
+    /// @param externalChainId The invalid external chain identifier
+    error InvalidExternalChainId(uint64 externalChainId);
+    /// @notice Error thrown when a hashlock is required but missing
+    error HashlockRequired();
+    /// @notice Error thrown when attempting to reveal a secret without a hashlock gate
+    error HashlockRevealNotRequired();
+    /// @notice Error thrown when attempting to reveal a secret more than once
+    error SecretAlreadyRevealed();
+    /// @notice Error thrown when the provided secret does not match the hashlock
+    error InvalidSecret();
+    /// @notice Error thrown when attempting to execute before the secret is revealed
+    error SecretNotRevealed();
 
     // View functions
     /// @notice Returns the cutoff date after which the settlement expires
@@ -90,6 +109,18 @@ interface IATKXvPSettlement is IERC165 {
     /// @notice Returns whether the settlement has been executed
     /// @return True if the settlement has been executed
     function executed() external view returns (bool);
+
+    /// @notice Returns the hashlock associated with the settlement
+    /// @return The keccak256 hashlock value
+    function hashlock() external view returns (bytes32);
+
+    /// @notice Returns whether any external flows exist
+    /// @return True if at least one flow targets an external chain
+    function hasExternalFlows() external view returns (bool);
+
+    /// @notice Returns whether the reveal secret has been provided
+    /// @return True if the secret has been revealed
+    function secretRevealed() external view returns (bool);
 
     /// @notice Returns whether the settlement has been cancelled
     /// @return True if the settlement has been cancelled
@@ -134,4 +165,9 @@ interface IATKXvPSettlement is IERC165 {
     /// @notice Cancels the settlement
     /// @return True if the cancellation was successful
     function cancel() external returns (bool);
+
+    /// @notice Reveals the HTLC secret to unlock execution of local flows
+    /// @param secret The preimage whose keccak256 hash must match the settlement hashlock
+    /// @return True if the secret was accepted
+    function revealSecret(bytes calldata secret) external returns (bool);
 }

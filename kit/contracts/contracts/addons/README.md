@@ -251,8 +251,9 @@ together or none at all.
 - Multi-party atomic settlements
 - Support for any number of participants
 - Configurable expiration dates
-- Per-sender approval system
-- Automatic execution options
+- Per-sender approval system for local senders only
+- Automatic execution options gated by HTLC coordination
+- Optional cross-chain hashlock enforcement
 
 **XvP-Specific Features:**
 
@@ -273,9 +274,26 @@ together or none at all.
 #### Settlement Flows
 
 - **Token Flows**: ERC20 token transfers between parties
-- **ETH Flows**: Native currency transfers
-- **Complex Exchanges**: Multiple assets in single settlement
-- **Validation**: Pre-execution validation of all flows
+- **External References**: Each flow now includes an `externalChainId`
+  - `0` designates a local transfer executed on the current chain
+  - Non-zero values record an external leg (no local transfer is attempted)
+- **Approval Scope**: Only senders in local flows must provide ERC20 allowances
+  and approvals
+- **Validation**: Local flows are probed for ERC20 compliance; external flows
+  skip token introspection
+
+#### Hashlock Coordination
+
+- **Shared Hashlock (`hashlock`)**: Required whenever any flow targets an
+  external chain; optional for pure local settlements
+- **Permissionless Reveal**: Anyone may call `revealSecret(bytes secret)` once
+  the external HTLC reveals the preimage
+- **Execution Gate**: Local transfers execute only after both all local
+  approvals and the hashlock are satisfied
+- **Auto-Execution Alignment**: Auto mode now waits for approvals _and_ a
+  successful secret reveal before triggering transfers
+- **Withholding Protection**: Since `revealSecret` is open to all,
+  counterparties cannot block completion once the secret is public
 
 **Use Cases:**
 
@@ -304,6 +322,16 @@ sequenceDiagram
     Settlement->>PartyA: Settlement executed
     Settlement->>PartyB: Settlement executed
 ```
+
+**Hashlock Lifecycle (for external flows):**
+
+1. Any flow with `externalChainId != 0` requires a non-zero `hashlock` during
+   creation.
+2. External counterparties deploy HTLCs using the shared hashlock and eventually
+   reveal the secret on their chain.
+3. Anyone can relay the revealed secret via `revealSecret(bytes secret)`.
+4. Execution (manual or auto) proceeds only after both the secret is accepted
+   and all local approvals are present.
 
 ### 4. **Yield** (`yield/`)
 

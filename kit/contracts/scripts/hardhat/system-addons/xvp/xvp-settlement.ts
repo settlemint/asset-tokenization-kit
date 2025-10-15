@@ -10,6 +10,7 @@ type FlowStruct = {
   from: Address;
   to: Address;
   amount: bigint;
+  externalChainId: bigint;
 };
 
 /**
@@ -58,12 +59,14 @@ export async function createXvpSettlement(
         from: fromActor.address,
         to: toActor.address,
         amount: fromAmount,
+        externalChainId: 0n,
       },
       {
         asset: toAssetAddress,
         from: toActor.address,
         to: fromActor.address,
         amount: toAmount,
+        externalChainId: 0n,
       },
     ];
 
@@ -78,11 +81,15 @@ export async function createXvpSettlement(
     );
 
     // Create the settlement
+    const zeroHashlock =
+      "0x0000000000000000000000000000000000000000000000000000000000000000";
+
     const txHash = await xvpFactory.write.create([
       settlementName,
       flows,
       BigInt(cutoffDate),
       autoExecute,
+      zeroHashlock,
     ]);
 
     console.log(`⏳ Settlement creation transaction sent: ${txHash}`);

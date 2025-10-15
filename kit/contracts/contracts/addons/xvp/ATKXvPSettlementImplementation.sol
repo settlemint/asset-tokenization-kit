@@ -38,6 +38,15 @@ contract ATKXvPSettlementImplementation is
     /// @notice Whether the settlement should auto-execute when all approvals are received
     bool private _autoExecute;
 
+    /// @notice Hashlock that must be satisfied before executing local transfers when external flows are present
+    bytes32 private _hashlock;
+
+    /// @notice Tracks whether the HTLC secret has been revealed
+    bool private _secretRevealed;
+
+    /// @notice Tracks if the settlement contains any external flows
+    bool private _hasExternalFlows;
+
     /// @notice Whether the settlement has been executed
     bool private _executed;
 
@@ -101,7 +110,8 @@ contract ATKXvPSettlementImplementation is
         string calldata settlementName,
         uint256 settlementCutoffDate,
         bool settlementAutoExecute,
-        Flow[] calldata settlementFlows
+        Flow[] calldata settlementFlows,
+        bytes32 settlementHashlock
     )
         external
         initializer
@@ -112,6 +122,9 @@ contract ATKXvPSettlementImplementation is
         _name = settlementName;
         _cutoffDate = settlementCutoffDate;
         _autoExecute = settlementAutoExecute;
+        _hashlock = settlementHashlock;
+        _secretRevealed = false;
+        _hasExternalFlows = false;
         _createdAt = block.timestamp;
         if (settlementFlows.length == 0) revert EmptyFlows();
 
@@ -122,11 +135,22 @@ contract ATKXvPSettlementImplementation is
             if (flow.to == address(0)) revert ZeroAddress();
             if (flow.amount == 0) revert ZeroAmount();
 
-            // Validate ERC20 token by checking if it has decimals() function
-            (bool success, bytes memory result) = flow.asset.staticcall(abi.encodeWithSelector(bytes4(0x313ce567)));
-            if (!success || result.length != 32) revert InvalidToken();
+            if (flow.externalChainId == 0) {
+                // Validate ERC20 token by checking if it has decimals() function
+                (bool success, bytes memory result) = flow.asset.staticcall(abi.encodeWithSelector(bytes4(0x313ce567)));
+                if (!success || result.length != 32) revert InvalidToken();
+            } else {
+                if (flow.externalChainId == block.chainid) {
+                    revert InvalidExternalChainId(flow.externalChainId);
+                }
+                _hasExternalFlows = true;
+            }
 
             _flows.push(flow);
+        }
+
+        if (_hasExternalFlows && _hashlock == bytes32(0)) {
+            revert HashlockRequired();
         }
     }
 
@@ -146,6 +170,24 @@ contract ATKXvPSettlementImplementation is
     /// @return True if the settlement has been executed, false otherwise
     function executed() public view returns (bool) {
         return _executed;
+    }
+
+    /// @notice Returns the hashlock guarding the settlement
+    /// @return The keccak256 hashlock value
+    function hashlock() public view returns (bytes32) {
+        return _hashlock;
+    }
+
+    /// @notice Returns whether the settlement contains external flows
+    /// @return True if at least one flow targets an external chain
+    function hasExternalFlows() public view returns (bool) {
+        return _hasExternalFlows;
+    }
+
+    /// @notice Returns whether the settlement secret has been revealed
+    /// @return True if the secret has been revealed
+    function secretRevealed() public view returns (bool) {
+        return _secretRevealed;
     }
 
     /// @notice Returns whether the settlement has been cancelled
@@ -188,7 +230,7 @@ contract ATKXvPSettlementImplementation is
         uint256 flowsLength = _flows.length;
         for (uint256 i = 0; i < flowsLength; ++i) {
             Flow storage flow = _flows[i];
-            if (flow.from == _msgSender()) {
+            if (flow.from == _msgSender() && flow.externalChainId == 0) {
                 uint256 currentAllowance = IERC20(flow.asset).allowance(_msgSender(), address(this));
                 if (currentAllowance < flow.amount) {
                     revert InsufficientAllowance(flow.asset, _msgSender(), address(this), flow.amount, currentAllowance);
@@ -201,9 +243,7 @@ contract ATKXvPSettlementImplementation is
         emit XvPSettlementApproved(_msgSender());
 
         // If auto-execution and all parties approved, execute swap directly
-        if (_autoExecute && isFullyApproved()) {
-            _executeSettlement();
-        }
+        _maybeAutoExecute();
 
         return true;
     }
@@ -218,9 +258,13 @@ contract ATKXvPSettlementImplementation is
     /// @return success True if execution was successful
     function _executeSettlement() private returns (bool) {
         if (!isFullyApproved()) revert XvPSettlementNotApproved();
+        if (!_hashlockSatisfied()) revert SecretNotRevealed();
 
         for (uint256 i = 0; i < _flows.length; ++i) {
             Flow storage flow = _flows[i];
+            if (flow.externalChainId != 0) {
+                continue;
+            }
             IERC20(flow.asset).safeTransferFrom(flow.from, flow.to, flow.amount);
         }
 
@@ -252,12 +296,45 @@ contract ATKXvPSettlementImplementation is
         return true;
     }
 
+    /// @notice Reveals the HTLC secret to unlock execution for settlements with external flows
+    /// @param secret The secret preimage whose keccak256 hash must match the hashlock
+    /// @return True if the secret was accepted
+    function revealSecret(bytes calldata secret) external nonReentrant onlyOpen returns (bool) {
+        if (!_hasExternalFlows) revert HashlockRevealNotRequired();
+        if (_hashlock == bytes32(0)) revert HashlockRequired();
+        if (_secretRevealed) revert SecretAlreadyRevealed();
+        if (keccak256(secret) != _hashlock) revert InvalidSecret();
+
+        _secretRevealed = true;
+
+        emit XvPSettlementSecretRevealed(_msgSender(), secret);
+
+        _maybeAutoExecute();
+        return true;
+    }
+
+    /// @notice Determines whether both approvals and hashlock gate are satisfied for execution
+    /// @return True if no external gating is active or the secret has been revealed
+    function _hashlockSatisfied() private view returns (bool) {
+        return !_hasExternalFlows || _secretRevealed;
+    }
+
+    /// @notice Executes the settlement automatically when conditions are met
+    function _maybeAutoExecute() private {
+        if (_autoExecute && isFullyApproved() && _hashlockSatisfied()) {
+            _executeSettlement();
+        }
+    }
+
     /// @notice Checks if all parties have approved the settlement
     /// @return approved True if all parties have approved
     function isFullyApproved() public view returns (bool) {
         // Check all unique "from" addresses for approval
         for (uint256 i = 0; i < _flows.length; ++i) {
             address from = _flows[i].from;
+            if (_flows[i].externalChainId != 0) {
+                continue;
+            }
             if (!_approvals[from]) {
                 return false;
             }
