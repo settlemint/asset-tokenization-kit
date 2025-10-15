@@ -371,11 +371,17 @@ function ExecuteActionButton({
   const { t } = useTranslation(["actions", "tokens", "common"]);
   const queryClient = useQueryClient();
 
-  const isSupportedAction = action.name === "MatureBond";
+  const isMatureAction = action.name === "MatureBond";
+  const isRedeemAction = action.name === "RedeemBond";
+  const isSupportedAction = isMatureAction || isRedeemAction;
   const isActive = action.status === "ACTIVE";
-  const canExecute = isSupportedAction && isActive;
+  const activeAtTime = new Date(action.activeAt).getTime();
+  const hasReachedSchedule =
+    Number.isFinite(activeAtTime) && activeAtTime <= Date.now();
+  // Allow execution once the scheduled time has passed even if status reconciliation lags.
+  const canExecute = isSupportedAction && (isActive || hasReachedSchedule);
 
-  const mutation = useMutation(
+  const matureMutation = useMutation(
     orpc.token.mature.mutationOptions({
       onSuccess: async () => {
         await queryClient.invalidateQueries({
@@ -398,6 +404,44 @@ function ExecuteActionButton({
     })
   );
 
+  const redeemMutation = useMutation(
+    orpc.token.redeem.mutationOptions({
+      onSuccess: async () => {
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: orpc.actions.list.queryKey({ input: {} }),
+            exact: false,
+          }),
+          queryClient.invalidateQueries({
+            queryKey: orpc.actions.list.queryKey({
+              input: { target: action.target },
+            }),
+          }),
+          queryClient.invalidateQueries({
+            queryKey: orpc.token.read.queryKey({
+              input: { tokenAddress: action.target },
+            }),
+          }),
+          queryClient.invalidateQueries({
+            queryKey: orpc.user.assets.queryKey(),
+          }),
+          queryClient.invalidateQueries({
+            queryKey: orpc.token.holders.queryKey({
+              input: { tokenAddress: action.target },
+            }),
+          }),
+        ]);
+      },
+    })
+  );
+
+  const currentMutation = isMatureAction
+    ? matureMutation
+    : isRedeemAction
+      ? redeemMutation
+      : null;
+  const isMutationPending = currentMutation?.isPending ?? false;
+
   const formatErrorMessage = (error: unknown): string => {
     if (isORPCError(error) && error.code === "USER_NOT_AUTHORIZED") {
       return t("actions:execute.errors.notAuthorized");
@@ -418,10 +462,24 @@ function ExecuteActionButton({
       throw new Error(message);
     }
 
-    const execution = mutation.mutateAsync({
-      contract: action.target,
-      walletVerification: verification,
-    });
+    let execution: Promise<unknown>;
+
+    if (isMatureAction) {
+      execution = matureMutation.mutateAsync({
+        contract: action.target,
+        walletVerification: verification,
+      });
+    } else if (isRedeemAction) {
+      execution = redeemMutation.mutateAsync({
+        contract: action.target,
+        walletVerification: verification,
+        redeemAll: true,
+      });
+    } else {
+      const message = t("actions:execute.errors.unsupported");
+      toast.info(message);
+      throw new Error(message);
+    }
 
     toast.promise(execution, {
       loading: t("actions:execute.messages.loading", {
@@ -444,7 +502,7 @@ function ExecuteActionButton({
     }
   };
 
-  const triggerDisabled = !canExecute || mutation.isPending;
+  const triggerDisabled = !canExecute || isMutationPending;
 
   return (
     <VerificationButton
@@ -461,7 +519,7 @@ function ExecuteActionButton({
       }}
       onSubmit={handleExecute}
     >
-      {mutation.isPending ? (
+      {isMutationPending ? (
         <span className="flex items-center gap-2">
           <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
           {t("actions:table.execute.loading")}
