@@ -552,6 +552,50 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         settlement.execute();
     }
 
+    function test_RevokeApprovalBlockedWhenArmed() public {
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+
+        grantDeployerRole(alice);
+
+        ERC20Mock localToken = new ERC20Mock("Local Token", "LOC", 18);
+        ERC20Mock externalToken = new ERC20Mock("External Token", "EXT", 6);
+        localToken.mint(alice, 1_000 * 10 ** 18);
+
+        bytes memory secret = bytes("arm-revoke");
+        bytes32 hashlock = keccak256(secret);
+
+        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](2);
+        flows[0] = _localFlow(address(localToken), alice, bob, 80 * 10 ** 18);
+        flows[1] = _externalFlow(address(externalToken), bob, alice, 90 * 10 ** 6, EXTERNAL_CHAIN_ID);
+
+        (IATKXvPSettlement settlement, address settlementAddr) =
+            _deploySettlement(alice, "Armed Revoke Block", flows, block.timestamp + 1 days, false, hashlock);
+
+        vm.startPrank(alice);
+        localToken.approve(settlementAddr, 80 * 10 ** 18);
+        settlement.approve();
+        vm.stopPrank();
+
+        assertTrue(settlement.hasExternalFlows(), "Settlement should detect external flows");
+        assertTrue(settlement.isFullyApproved(), "Settlement should report fully approved");
+        assertTrue(settlement.isArmed(), "Settlement should be armed waiting for secret");
+
+        vm.prank(alice);
+        vm.expectRevert(IATKXvPSettlement.RevocationNotAllowedWhileArmed.selector);
+        settlement.revokeApproval();
+
+        // After secret reveal, revocation should still be blocked
+        vm.prank(makeAddr("relayer"));
+        settlement.revealSecret(secret);
+        assertTrue(settlement.secretRevealed(), "Secret should be recorded");
+        assertTrue(settlement.readyToExecute(), "Settlement should remain ready to execute");
+
+        vm.prank(alice);
+        vm.expectRevert(IATKXvPSettlement.RevocationNotAllowedWhileArmed.selector);
+        settlement.revokeApproval();
+    }
+
     function test_ExpireSettlement() public {
         // Setup actors
         address alice = makeAddr("alice");
@@ -891,7 +935,9 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         assertFalse(settlement.cancelled(), "Settlement should remain active after vote withdrawal");
 
         vm.startPrank(alice);
-        vm.expectRevert(IATKXvPSettlement.CancelVoteNotCast.selector);
+        vm.expectRevert(
+            abi.encodeWithSelector(IATKXvPSettlement.CancelVoteNotCast.selector, alice)
+        );
         settlement.withdrawCancelProposal();
         vm.stopPrank();
     }

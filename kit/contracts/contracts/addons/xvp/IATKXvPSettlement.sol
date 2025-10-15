@@ -112,6 +112,8 @@ interface IATKXvPSettlement is IERC165 {
     /// @notice Error thrown when attempting to withdraw a non-existent cancel vote
     /// @param voter The voter without a recorded cancel vote
     error CancelVoteNotCast(address voter);
+    /// @notice Error thrown when revoking approval while the settlement is armed
+    error RevocationNotAllowedWhileArmed();
 
     // View functions
     /// @notice Returns the cutoff date after which the settlement expires

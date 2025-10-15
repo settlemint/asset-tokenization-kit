@@ -62,6 +62,14 @@ contract ATKXvPSettlementImplementation is
     /// @notice Mapping to track cancel votes cast by local participants
     /// @dev participant address => hasActiveCancelVote
     mapping(address => bool) private _cancelVotes;
+    /// @notice Array of unique local senders (flows executing on this chain)
+    address[] private _localSenders;
+    /// @notice Array of unique local participants (senders and recipients of local flows)
+    address[] private _localParticipants;
+    /// @notice Tracks whether an address is registered as a local sender
+    mapping(address => bool) private _localSenderSet;
+    /// @notice Tracks whether an address is registered as a local participant
+    mapping(address => bool) private _localParticipantSet;
 
     /// @notice The timestamp when this settlement was created (in seconds since epoch)
     uint256 private _createdAt;
@@ -148,6 +156,14 @@ contract ATKXvPSettlementImplementation is
                 // Validate ERC20 token by checking if it has decimals() function
                 (bool success, bytes memory result) = flow.asset.staticcall(abi.encodeWithSelector(bytes4(0x313ce567)));
                 if (!success || result.length != 32) revert InvalidToken();
+
+                // Track unique local senders and participants
+                if (!_localSenderSet[flow.from]) {
+                    _localSenderSet[flow.from] = true;
+                    _localSenders.push(flow.from);
+                }
+                _registerLocalParticipant(flow.from);
+                _registerLocalParticipant(flow.to);
             } else {
                 if (flow.externalChainId == block.chainid) {
                     revert InvalidExternalChainId(flow.externalChainId);
@@ -305,8 +321,9 @@ contract ATKXvPSettlementImplementation is
     /// @notice Revokes approval for a XvP settlement
     /// @dev The caller must have previously approved the settlement
     /// @return True if the revocation was successful
-    function revokeApproval() external nonReentrant onlyInvolvedSender returns (bool) {
+    function revokeApproval() external nonReentrant onlyOpen onlyInvolvedSender returns (bool) {
         if (!_approvals[_msgSender()]) revert SenderNotApprovedSettlement();
+        if (_hasExternalFlows && isFullyApproved()) revert RevocationNotAllowedWhileArmed();
 
         _approvals[_msgSender()] = false;
         emit XvPSettlementApprovalRevoked(_msgSender());
@@ -406,13 +423,13 @@ contract ATKXvPSettlementImplementation is
     /// @notice Checks whether all local senders have active cancel votes
     /// @return True if every unique local sender has cast a cancel vote
     function _allLocalCancelVotesCast() private view returns (bool) {
-        (address[] memory participants, uint256 count) = _collectLocalParticipants();
+        uint256 count = _localParticipants.length;
         if (count == 0) {
             return false;
         }
 
         for (uint256 i = 0; i < count; ++i) {
-            if (!_cancelVotes[participants[i]]) {
+            if (!_cancelVotes[_localParticipants[i]]) {
                 return false;
             }
         }
@@ -422,11 +439,11 @@ contract ATKXvPSettlementImplementation is
 
     /// @notice Clears all active cancel votes for local senders
     function _clearAllCancelVotes() private {
-        (address[] memory participants, uint256 count) = _collectLocalParticipants();
-        for (uint256 i = 0; i < count; ++i) {
-            if (_cancelVotes[participants[i]]) {
-                _cancelVotes[participants[i]] = false;
-                emit XvPSettlementCancelVoteWithdrawn(participants[i]);
+        for (uint256 i = 0; i < _localParticipants.length; ++i) {
+            address participant = _localParticipants[i];
+            if (_cancelVotes[participant]) {
+                _cancelVotes[participant] = false;
+                emit XvPSettlementCancelVoteWithdrawn(participant);
             }
         }
     }
@@ -435,49 +452,7 @@ contract ATKXvPSettlementImplementation is
     /// @param account The account to check
     /// @return True if the account is associated with a local flow as sender or recipient
     function _isLocalParticipant(address account) private view returns (bool) {
-        for (uint256 i = 0; i < _flows.length; ++i) {
-            Flow storage flow = _flows[i];
-            if (flow.externalChainId != 0) {
-                continue;
-            }
-            if (flow.from == account || flow.to == account) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /// @notice Collects all unique local participants (senders and recipients) involved in on-chain flows
-    /// @return participants Array containing unique participant addresses
-    /// @return count Number of unique participants stored in the array
-    function _collectLocalParticipants() private view returns (address[] memory participants, uint256 count) {
-        address[] memory temp = new address[](_flows.length * 2);
-        uint256 uniqueCount = 0;
-
-        for (uint256 i = 0; i < _flows.length; ++i) {
-            Flow storage flow = _flows[i];
-            if (flow.externalChainId != 0) {
-                continue;
-            }
-
-            address[2] memory candidates = [flow.from, flow.to];
-            for (uint256 c = 0; c < 2; ++c) {
-                address participant = candidates[c];
-                bool exists = false;
-                for (uint256 j = 0; j < uniqueCount; ++j) {
-                    if (temp[j] == participant) {
-                        exists = true;
-                        break;
-                    }
-                }
-                if (!exists) {
-                    temp[uniqueCount] = participant;
-                    uniqueCount++;
-                }
-            }
-        }
-
-        return (temp, uniqueCount);
+        return _localParticipantSet[account];
     }
 
     /// @notice Determines whether the settlement is open (not executed/cancelled/expired)
@@ -489,15 +464,20 @@ contract ATKXvPSettlementImplementation is
         return block.timestamp < _cutoffDate;
     }
 
+    /// @notice Registers a local participant if not already tracked
+    /// @param account The participant address to register
+    function _registerLocalParticipant(address account) private {
+        if (!_localParticipantSet[account]) {
+            _localParticipantSet[account] = true;
+            _localParticipants.push(account);
+        }
+    }
+
     /// @notice Checks if all parties have approved the settlement
     /// @return approved True if all parties have approved
     function isFullyApproved() public view returns (bool) {
-        // Check all unique "from" addresses for approval
-        for (uint256 i = 0; i < _flows.length; ++i) {
-            address from = _flows[i].from;
-            if (_flows[i].externalChainId != 0) {
-                continue;
-            }
+        for (uint256 i = 0; i < _localSenders.length; ++i) {
+            address from = _localSenders[i];
             if (!_approvals[from]) {
                 return false;
             }
