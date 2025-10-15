@@ -4,6 +4,7 @@ import { Pages } from "../pages/pages";
 import { fundData } from "../test-data/asset-data";
 import { errorMessageData } from "../test-data/message-data";
 import { getSetupUser } from "../utils/setup-user";
+import { assetPermissions } from "../test-data/asset-data";
 
 test.describe.serial("Fund Creation Validation", () => {
   let adminContext: BrowserContext;
@@ -193,29 +194,45 @@ test.describe.serial("Fund Creation Validation", () => {
 
     test("Create Fund asset", async () => {
       const setupUser = getSetupUser();
-
-      await adminPage.waitForLoadState("networkidle");
-      await adminPage.waitForTimeout(2000);
-      await createAssetForm.fillAssetFields({
+      await adminPage.goto("/");
+      await createAssetForm.openAssetDesigner();
+      await createAssetForm.selectAssetClass("Flexible Income");
+      await createAssetForm.selectAssetTypeFromDialog("Fund");
+      await createAssetForm.fillAssetDetails({
         name: fundData.name,
         symbol: fundData.symbol,
         decimals: fundData.decimals,
         isin: fundData.isin,
         country: fundData.country,
         basePrice: fundData.basePrice,
-        assetType: fundData.assetType,
-        managementFee: fundData.managementFee,
-        pincode: setupUser.pincode,
+      });
+      await createAssetForm.fillFundConfigurationFields({
+        fundClass: fundData.fundClass,
+        fundCategory: fundData.fundCategory,
+        managementFeeBps: fundData.managementFeeBps,
       });
 
       testData.name = fundData.name;
       testData.symbol = fundData.symbol;
       testData.decimals = fundData.decimals;
 
+      await createAssetForm.completeAssetCreation(setupUser.pincode, "fund");
+
       await createAssetForm.verifyAssetCreated({
         name: testData.name,
         symbol: testData.symbol,
         decimals: testData.decimals,
+      });
+      await adminPages.adminPage.clickAssetDetails(testData.name);
+      await adminPages.adminPage.grantAssetPermissions({
+        user: setupUser.name,
+        permissions: assetPermissions,
+        pincode: setupUser.pincode,
+        assetName: testData.name,
+      });
+      await adminPages.adminPage.unpauseAsset({
+        pincode: setupUser.pincode,
+        user: setupUser.name,
       });
     });
   });
