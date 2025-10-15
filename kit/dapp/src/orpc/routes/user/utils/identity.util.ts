@@ -259,9 +259,7 @@ export async function fetchClaimByTopicAndIdentity({
 
   // Check if any claims exist
   if (!claimData.identityClaims || claimData.identityClaims.length === 0) {
-    throw errors.NOT_FOUND({
-      message: `No active claim found for topic '${claimTopic}' on identity ${identityAddress}`,
-    });
+    throw errors.NOT_FOUND();
   }
 
   // Check for multiple active claims (shouldn't happen, but handle gracefully)

@@ -1,4 +1,9 @@
+import { OnchainIdentityAddressCard } from "@/components/account/onchain-identity/identity-address-card";
+import { OnchainIdentityDetailsCard } from "@/components/account/onchain-identity/identity-details-card";
+import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { createFileRoute } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
+import { OnchainIdentityClaimsSection } from "./onchain-identity-claims-section";
 
 export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/account/onchain-identity"
@@ -7,5 +12,30 @@ export const Route = createFileRoute(
 });
 
 function OnchainIdentity() {
-  return <div className="p-6" />;
+  const { t } = useTranslation(["user", "common", "identities"]);
+
+  return (
+    <div className="container mx-auto space-y-6 p-6">
+      <RouterBreadcrumb />
+      <div className="mt-4 space-y-2">
+        <h1 className="text-3xl font-bold">
+          {t("onchainIdentity.title", {
+            defaultValue: "Onchain identity",
+          })}
+        </h1>
+        <p className="text-muted-foreground">
+          {t("onchainIdentity.description", {
+            defaultValue: "Manage your onchain identity settings.",
+          })}
+        </p>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <OnchainIdentityAddressCard />
+        <OnchainIdentityDetailsCard />
+      </div>
+
+      <OnchainIdentityClaimsSection />
+    </div>
+  );
 }

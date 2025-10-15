@@ -171,12 +171,38 @@
       "status": "Status",
       "issuer": "Issuer",
       "claimData": "Claim Data",
-      "issuedDate": "Issued Date"
+      "issuedDate": "Issued Date",
+      "actions": "Actions"
     },
     "noClaimData": "No data",
     "status": {
       "active": "Active",
       "revoked": "Revoked"
+    },
+    "actions": {
+      "revoke": "Revoke claim",
+      "remove": "Remove claim",
+      "revokeTitle": "Revoke claim",
+      "revokeDescription": "Revoking marks this claim as invalid while preserving it for audit history.",
+      "revokeConfirm": "Revoke claim",
+      "revokeSubmitting": "Revoking...",
+      "revokeSuccess": "Claim revoked successfully",
+      "revokeLoading": "Revoking claim...",
+      "revokeError": "Failed to revoke claim",
+      "removeTitle": "Remove claim",
+      "removeDescription": "Removing deletes the claim from this identity. This action cannot be undone.",
+      "removeConfirm": "Remove claim",
+      "removeSubmitting": "Removing...",
+      "verification": {
+        "revokeTitle": "Verify to revoke",
+        "revokeDescription": "Enter your verification code to revoke this claim.",
+        "removeTitle": "Verify to remove",
+        "removeDescription": "Enter your verification code to remove this claim."
+      },
+      "success": {
+        "revoke": "Claim revoked successfully",
+        "remove": "Claim removed successfully"
+      }
     },
     "emptyState": {
       "title": "No claims found",

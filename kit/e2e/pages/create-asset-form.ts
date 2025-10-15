@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { confirmPinCode } from "../utils/form-utils";
+import { confirmPinCode, selectDropdownOption } from "../utils/form-utils";
 import { BasePage } from "./base-page";
 
 export class CreateAssetForm extends BasePage {
@@ -74,40 +74,6 @@ export class CreateAssetForm extends BasePage {
         .getByRole("option", { name: options.denominationAsset })
         .click();
     }
-  }
-
-  async fillAssetFields(options: {
-    name?: string;
-    symbol?: string;
-    decimals?: string;
-    isin?: string;
-    country?: string;
-    basePrice?: string;
-    assetType?: string;
-    managementFee?: string;
-    managementFeeBps?: string;
-    pincode: string;
-  }) {
-    await this.fillBasicFields(options);
-
-    await this.clickNextButton();
-    const feeField = this.page.getByLabel("Management fee", { exact: false });
-    const feeFieldCount = await feeField.count();
-    if (feeFieldCount > 0 && (await feeField.first().isVisible())) {
-      const managementFeeBps =
-        options.managementFeeBps ??
-        (options.managementFee !== undefined
-          ? Math.round(parseFloat(options.managementFee) * 100).toString()
-          : undefined);
-      await this.fillFundConfigurationFields({
-        managementFeeBps,
-        managementFee: options.managementFee,
-      });
-      await this.clickNextButton();
-    }
-    await this.configureComplianceModules();
-    await this.reviewAndDeploy();
-    await confirmPinCode(this.page, options.pincode, "Confirm asset creation");
   }
 
   getMaturityDate(options: { isPast?: boolean; daysOffset?: number } = {}) {
@@ -288,73 +254,20 @@ export class CreateAssetForm extends BasePage {
   }
 
   async fillEquityConfigurationFields(options: {
-    decimals?: string;
-    price?: string;
     equityClass?: string;
     equityCategory?: string;
   }) {
-    if (options.decimals !== undefined) {
-      await this.page.getByLabel("Decimals").fill(options.decimals);
-    }
-    if (options.price !== undefined) {
-      await this.page.getByLabel("Price").fill(options.price);
-    }
-
     if (options.equityCategory !== undefined) {
-      const categoryTrigger = this.page
-        .getByRole("combobox", { name: /Equity category|Category/i })
-        .first();
-      const categoryButton = this.page
-        .getByRole("button", { name: /Equity category|Category/i })
-        .first();
-      const trigger =
-        (await categoryTrigger.count()) > 0 ? categoryTrigger : categoryButton;
-      await expect(trigger).toBeVisible({ timeout: 15000 });
-      await trigger.click();
-      const categoryOption = this.page
-        .getByRole("option", {
-          name: new RegExp(`^${options.equityCategory}$`, "i"),
-        })
-        .first();
-      if ((await categoryOption.count()) > 0) {
-        await categoryOption.click();
-      } else {
-        const partial = options.equityCategory.slice(
-          0,
-          Math.min(6, options.equityCategory.length)
-        );
-        await this.page.keyboard.type(partial, { delay: 80 });
-        await this.page.keyboard.press("ArrowDown");
-        await this.page.keyboard.press("Enter");
-      }
+      await selectDropdownOption(this.page, {
+        label: /Equity category|Category/i,
+        value: options.equityCategory,
+      });
     }
     if (options.equityClass !== undefined) {
-      const classTrigger = this.page
-        .getByRole("combobox", { name: /Equity class|Class/i })
-        .first();
-      const classButton = this.page
-        .getByRole("button", { name: /Equity class|Class/i })
-        .first();
-      const trigger =
-        (await classTrigger.count()) > 0 ? classTrigger : classButton;
-      await expect(trigger).toBeVisible({ timeout: 15000 });
-      await trigger.click();
-      const classOption = this.page
-        .getByRole("option", {
-          name: new RegExp(`^${options.equityClass}$`, "i"),
-        })
-        .first();
-      if ((await classOption.count()) > 0) {
-        await classOption.click();
-      } else {
-        const partial = options.equityClass.slice(
-          0,
-          Math.min(6, options.equityClass.length)
-        );
-        await this.page.keyboard.type(partial, { delay: 80 });
-        await this.page.keyboard.press("ArrowDown");
-        await this.page.keyboard.press("Enter");
-      }
+      await selectDropdownOption(this.page, {
+        label: /Equity class|Class/i,
+        value: options.equityClass,
+      });
     }
 
     await this.clickNextButton();
@@ -368,29 +281,30 @@ export class CreateAssetForm extends BasePage {
 
   async fillFundConfigurationFields(
     options: {
+      fundCategory?: string;
+      fundClass?: string;
       managementFeeBps?: string;
-      managementFee?: string;
     } = {}
   ) {
-    const actions: Record<string, (value: string) => Promise<void>> = {
-      managementFeeBps: async (value) => {
-        await this.page
-          .getByLabel("Management fee", { exact: false })
-          .fill(value);
-      },
-      managementFee: async (value) => {
-        const bps = Math.round(parseFloat(value) * 100).toString();
-        await this.page
-          .getByLabel("Management fee", { exact: false })
-          .fill(bps);
-      },
-    };
-    for (const key in options) {
-      const value = options[key as keyof typeof options];
-      if (value && actions[key]) {
-        await actions[key](value);
-      }
+    if (options.fundCategory !== undefined) {
+      await selectDropdownOption(this.page, {
+        label: /Fund category|Category/i,
+        value: options.fundCategory,
+      });
     }
+    if (options.fundClass !== undefined) {
+      await selectDropdownOption(this.page, {
+        label: /Fund class|Class/i,
+        value: options.fundClass,
+      });
+    }
+    if (options.managementFeeBps !== undefined) {
+      await this.page
+        .getByLabel("Management fee", { exact: false })
+        .fill(options.managementFeeBps);
+    }
+
+    await this.clickNextButton();
   }
 
   async fillStablecoinConfigurationFields(

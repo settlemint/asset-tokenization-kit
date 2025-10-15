@@ -29,11 +29,11 @@
   },
   "dependencies": {
     "date-fns": "4.1.0",
-    "@orpc/client": "1.9.3",
+    "@orpc/client": "1.9.4",
     "currency-codes": "2.2.0",
     "dnum": "2.15.0",
     "i18n-iso-countries": "7.14.0",
-    "viem": "2.38.1",
+    "viem": "2.38.2",
     "zod": "4.1.12"
   }
 }
