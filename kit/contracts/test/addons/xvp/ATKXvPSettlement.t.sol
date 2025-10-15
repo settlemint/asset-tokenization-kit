@@ -1016,7 +1016,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         });
 
         vm.prank(alice);
-        vm.expectRevert(IATKXvPSettlement.InvalidExternalChainId.selector);
+        vm.expectRevert(abi.encodeWithSelector(IATKXvPSettlement.InvalidExternalChainId.selector, uint64(block.chainid)));
         factory.create("Invalid Chain", flows, block.timestamp + 1 days, false, bytes32(uint256(1)));
     }
 
@@ -1189,8 +1189,8 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         vm.prank(alice);
         settlement.proposeCancel();
 
+        vm.expectRevert(abi.encodeWithSelector(IATKXvPSettlement.CancelVoteAlreadyCast.selector, alice));
         vm.prank(alice);
-        vm.expectRevert(IATKXvPSettlement.CancelVoteAlreadyCast.selector);
         settlement.proposeCancel();
     }
 
