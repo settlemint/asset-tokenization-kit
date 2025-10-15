@@ -2,6 +2,7 @@ import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   XvPSettlement,
   XvPSettlementApproval,
+  XvPSettlementCancelVote,
   XvPSettlementFlow,
 } from "../../../../../generated/schema";
 import { XvPSettlement as XvPSettlementTemplate } from "../../../../../generated/templates";
@@ -45,6 +46,23 @@ export function fetchXvPSettlementFlow(
   setBigNumber(flow, "amount", amountExact, token.decimals);
   flow.save();
   return flow;
+}
+
+export function fetchXvPSettlementCancelVote(
+  contractAddress: Address,
+  voterAddress: Address
+): XvPSettlementCancelVote {
+  const id = contractAddress.concat(voterAddress);
+  let vote = XvPSettlementCancelVote.load(id);
+  if (vote == null) {
+    vote = new XvPSettlementCancelVote(id);
+    vote.xvpSettlement = contractAddress;
+    vote.account = fetchAccount(voterAddress).id;
+    vote.active = false;
+    vote.votedAt = null;
+    vote.save();
+  }
+  return vote;
 }
 
 export function fetchXvPSettlementApproval(
@@ -137,6 +155,11 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
 
         if (!flow.externalChainId.equals(BigInt.zero())) {
           hasExternal = true;
+        }
+
+        if (flow.externalChainId.equals(BigInt.zero())) {
+          fetchXvPSettlementCancelVote(id, flow.from);
+          fetchXvPSettlementCancelVote(id, flow.to);
         }
 
         // Collect unique approvers (from addresses)

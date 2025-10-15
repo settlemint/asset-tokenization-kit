@@ -725,6 +725,10 @@ templates:
           handler: handleXvPSettlementExecuted
         - event: XvPSettlementCancelled(indexed address)
           handler: handleXvPSettlementCancelled
+        - event: XvPSettlementCancelVoteCast(indexed address)
+          handler: handleXvPSettlementCancelVoteCast
+        - event: XvPSettlementCancelVoteWithdrawn(indexed address)
+          handler: handleXvPSettlementCancelVoteWithdrawn
         - event: XvPSettlementSecretRevealed(indexed address,bytes)
           handler: handleXvPSettlementSecretRevealed
       file: ./src/system-addons/addons/xvp/xvp-settlement.ts

@@ -59,6 +59,9 @@ contract ATKXvPSettlementImplementation is
     /// @notice Mapping to track which addresses have approved the settlement
     /// @dev sender address => isApproved
     mapping(address => bool) private _approvals;
+    /// @notice Mapping to track cancel votes cast by local participants
+    /// @dev participant address => hasActiveCancelVote
+    mapping(address => bool) private _cancelVotes;
 
     /// @notice The timestamp when this settlement was created (in seconds since epoch)
     uint256 private _createdAt;
@@ -70,7 +73,7 @@ contract ATKXvPSettlementImplementation is
     modifier onlyOpen() {
         if (_executed) revert XvPSettlementAlreadyExecuted();
         if (_cancelled) revert XvPSettlementAlreadyCancelled();
-        if (block.timestamp > _cutoffDate - 1) revert XvPSettlementExpired();
+        if (block.timestamp >= _cutoffDate) revert XvPSettlementExpired();
         _;
     }
 
@@ -90,6 +93,12 @@ contract ATKXvPSettlementImplementation is
             }
         }
         if (!involved) revert SenderNotInvolvedInSettlement();
+        _;
+    }
+
+    /// @notice Modifier to ensure the caller is a local participant (involved in a local flow)
+    modifier onlyLocalParticipant() {
+        if (!_isLocalParticipant(_msgSender())) revert SenderNotLocal();
         _;
     }
 
@@ -196,6 +205,25 @@ contract ATKXvPSettlementImplementation is
         return _cancelled;
     }
 
+    /// @notice Returns whether the settlement is armed (awaiting secret reveal after full approvals)
+    /// @return True if the settlement is armed
+    function isArmed() public view returns (bool) {
+        return _hasExternalFlows && isFullyApproved() && !_secretRevealed && _isOpen();
+    }
+
+    /// @notice Returns whether the settlement conditions for execution are met
+    /// @return True if the settlement is ready to execute
+    function readyToExecute() public view returns (bool) {
+        return isFullyApproved() && _hashlockSatisfied() && _isOpen();
+    }
+
+    /// @notice Returns whether an account has an active cancel vote
+    /// @param account The account to check cancel votes for
+    /// @return True if a cancel vote exists for the account
+    function cancelVotes(address account) public view returns (bool) {
+        return _cancelVotes[account];
+    }
+
     /// @notice Returns all flows in the settlement
     /// @return Array of all flows defined in the settlement
     function flows() public view returns (Flow[] memory) {
@@ -289,10 +317,51 @@ contract ATKXvPSettlementImplementation is
     /// @notice Cancels the settlement
     /// @dev The caller must be involved in the settlement and it must not be executed yet
     /// @return True if the cancellation was successful
-    function cancel() external nonReentrant onlyNotExecuted onlyInvolvedSender returns (bool) {
-        _cancelled = true;
+    function cancel() external nonReentrant onlyOpen onlyLocalParticipant returns (bool) {
+        if (_secretRevealed) revert CancelNotAllowed();
 
-        emit XvPSettlementCancelled(_msgSender());
+        // No external flows or not all approvals in: unilateral cancel allowed
+        if (!_hasExternalFlows || !isFullyApproved()) {
+            _cancelSettlement(_msgSender());
+            return true;
+        }
+
+        // Armed settlements require unanimous cancel votes
+        revert CancelNotAllowed();
+    }
+
+    /// @notice Records a cancel vote for unanimous cancellation when armed
+    /// @return True if the vote was recorded successfully
+    function proposeCancel() external nonReentrant onlyOpen onlyLocalParticipant returns (bool) {
+        if (_secretRevealed) revert CancelNotAllowed();
+
+        if (!_hasExternalFlows || !isFullyApproved()) {
+            _cancelSettlement(_msgSender());
+            return true;
+        }
+
+        if (_cancelVotes[_msgSender()]) revert CancelVoteAlreadyCast(_msgSender());
+
+        _cancelVotes[_msgSender()] = true;
+        emit XvPSettlementCancelVoteCast(_msgSender());
+
+        if (_allLocalCancelVotesCast()) {
+            _cancelSettlement(_msgSender());
+        }
+
+        return true;
+    }
+
+    /// @notice Withdraws a previously recorded cancel vote
+    /// @return True if the vote was withdrawn successfully
+    function withdrawCancelProposal() external nonReentrant onlyOpen onlyLocalParticipant returns (bool) {
+        if (!_hasExternalFlows || !isFullyApproved()) revert CancelNotAllowed();
+        if (_secretRevealed) revert CancelNotAllowed();
+        if (!_cancelVotes[_msgSender()]) revert CancelVoteNotCast(_msgSender());
+
+        _cancelVotes[_msgSender()] = false;
+        emit XvPSettlementCancelVoteWithdrawn(_msgSender());
+
         return true;
     }
 
@@ -324,6 +393,100 @@ contract ATKXvPSettlementImplementation is
         if (_autoExecute && isFullyApproved() && _hashlockSatisfied()) {
             _executeSettlement();
         }
+    }
+
+    /// @notice Finalizes settlement cancellation and emits the cancellation event
+    /// @param caller The address initiating the cancellation
+    function _cancelSettlement(address caller) private {
+        _clearAllCancelVotes();
+        _cancelled = true;
+        emit XvPSettlementCancelled(caller);
+    }
+
+    /// @notice Checks whether all local senders have active cancel votes
+    /// @return True if every unique local sender has cast a cancel vote
+    function _allLocalCancelVotesCast() private view returns (bool) {
+        (address[] memory participants, uint256 count) = _collectLocalParticipants();
+        if (count == 0) {
+            return false;
+        }
+
+        for (uint256 i = 0; i < count; ++i) {
+            if (!_cancelVotes[participants[i]]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// @notice Clears all active cancel votes for local senders
+    function _clearAllCancelVotes() private {
+        (address[] memory participants, uint256 count) = _collectLocalParticipants();
+        for (uint256 i = 0; i < count; ++i) {
+            if (_cancelVotes[participants[i]]) {
+                _cancelVotes[participants[i]] = false;
+                emit XvPSettlementCancelVoteWithdrawn(participants[i]);
+            }
+        }
+    }
+
+    /// @notice Determines if an account is a local participant within the settlement flows
+    /// @param account The account to check
+    /// @return True if the account is associated with a local flow as sender or recipient
+    function _isLocalParticipant(address account) private view returns (bool) {
+        for (uint256 i = 0; i < _flows.length; ++i) {
+            Flow storage flow = _flows[i];
+            if (flow.externalChainId != 0) {
+                continue;
+            }
+            if (flow.from == account || flow.to == account) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /// @notice Collects all unique local participants (senders and recipients) involved in on-chain flows
+    /// @return participants Array containing unique participant addresses
+    /// @return count Number of unique participants stored in the array
+    function _collectLocalParticipants() private view returns (address[] memory participants, uint256 count) {
+        address[] memory temp = new address[](_flows.length * 2);
+        uint256 uniqueCount = 0;
+
+        for (uint256 i = 0; i < _flows.length; ++i) {
+            Flow storage flow = _flows[i];
+            if (flow.externalChainId != 0) {
+                continue;
+            }
+
+            address[2] memory candidates = [flow.from, flow.to];
+            for (uint256 c = 0; c < 2; ++c) {
+                address participant = candidates[c];
+                bool exists = false;
+                for (uint256 j = 0; j < uniqueCount; ++j) {
+                    if (temp[j] == participant) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) {
+                    temp[uniqueCount] = participant;
+                    uniqueCount++;
+                }
+            }
+        }
+
+        return (temp, uniqueCount);
+    }
+
+    /// @notice Determines whether the settlement is open (not executed/cancelled/expired)
+    /// @return True if the settlement is open
+    function _isOpen() private view returns (bool) {
+        if (_executed || _cancelled) {
+            return false;
+        }
+        return block.timestamp < _cutoffDate;
     }
 
     /// @notice Checks if all parties have approved the settlement

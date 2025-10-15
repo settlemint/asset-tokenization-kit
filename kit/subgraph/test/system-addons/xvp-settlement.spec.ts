@@ -47,6 +47,14 @@ describe("XVP Settlements", () => {
             approved
             timestamp
           }
+          cancelVotes {
+            id
+            account {
+              id
+            }
+            active
+            votedAt
+          }
         }
       }`
     );
@@ -93,6 +101,15 @@ describe("XVP Settlements", () => {
       expect(flow.externalChainId).toBeDefined();
     });
 
+    expect(Array.isArray(settlement?.cancelVotes)).toBe(true);
+    expect(settlement?.hashlock).toBeDefined();
+    expect(typeof settlement?.hasExternalFlows).toBe("boolean");
+    expect(typeof settlement?.secretRevealed).toBe("boolean");
+    expect(settlement?.secretRevealedBy === null || typeof settlement?.secretRevealedBy.id === "string").toBe(true);
+    settlement?.cancelVotes.forEach((vote) => {
+      expect(vote.account.id).toBeDefined();
+      expect(typeof vote.active).toBe("boolean");
+    });
     // Verify approvals structure - different scenarios may have different approval states
     settlement?.approvals.forEach((approval) => {
       expect(approval.account.id).toBeDefined();

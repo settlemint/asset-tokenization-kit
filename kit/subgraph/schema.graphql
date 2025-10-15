@@ -1211,6 +1211,7 @@ type XvPSettlement @entity(immutable: false) {
   flows: [XvPSettlementFlow!]! @derivedFrom(field: "xvpSettlement")
   # List of approvals for this settlement
   approvals: [XvPSettlementApproval!]! @derivedFrom(field: "xvpSettlement")
+  cancelVotes: [XvPSettlementCancelVote!]! @derivedFrom(field: "xvpSettlement")
   # Transaction hash where this was created
   deployedInTransaction: Bytes!
 }
@@ -2221,4 +2222,12 @@ type IdentityStats
   # Last count of pending contract identities for the period
   pendingContractIdentitiesCount: Int!
     @aggregate(fn: "last", arg: "pendingContractIdentitiesCount")
+}
+
+type XvPSettlementCancelVote @entity(immutable: false) {
+  id: Bytes!
+  xvpSettlement: XvPSettlement!
+  account: Account!
+  active: Boolean!
+  votedAt: BigInt
 }

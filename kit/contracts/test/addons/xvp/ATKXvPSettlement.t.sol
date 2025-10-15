@@ -655,9 +655,10 @@ contract XvPSettlementTest is AbstractATKAssetTest {
             _deploySettlement(alice, "Settlement Name", flows, cutoffDate, autoExecute, NO_HASHLOCK);
 
         // Step 2: Try to cancel as Charlie (not involved)
-        vm.prank(charlie);
-        vm.expectRevert(IATKXvPSettlement.SenderNotInvolvedInSettlement.selector);
+        vm.startPrank(charlie);
+        vm.expectRevert(IATKXvPSettlement.SenderNotLocal.selector);
         settlement.cancel();
+        vm.stopPrank();
 
         // Step 3: Cancel as Alice (involved) should succeed
         vm.prank(alice);
@@ -715,6 +716,225 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         vm.prank(alice);
         vm.expectRevert(IATKXvPSettlement.InvalidToken.selector);
         factory.create("Settlement Name", flowsInvalidToken, block.timestamp + 1 days, false, NO_HASHLOCK);
+    }
+
+    function test_LocalRecipientPreArmedCancel() public {
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+
+        grantDeployerRole(alice);
+
+        ERC20Mock token = new ERC20Mock("Token", "TOK", 18);
+        token.mint(alice, 1_000 * 10 ** 18);
+
+        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
+        flows[0] = _localFlow(address(token), alice, bob, 40 * 10 ** 18);
+
+        (IATKXvPSettlement settlement,) =
+            _deploySettlement(alice, "Recipient Cancel", flows, block.timestamp + 1 days, false, NO_HASHLOCK);
+
+        assertFalse(settlement.isArmed(), "Settlement should not be armed before approvals");
+        assertFalse(settlement.readyToExecute(), "Settlement should not be ready before approvals");
+
+        vm.prank(bob);
+        bool cancelled = settlement.cancel();
+        assertTrue(cancelled, "Recipient should be able to cancel before arming");
+        assertTrue(settlement.cancelled(), "Settlement should be cancelled");
+    }
+
+    function test_CancelPreArmedWithExternalFlowSucceeds() public {
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+
+        grantDeployerRole(alice);
+
+        ERC20Mock localToken = new ERC20Mock("Local Token", "LOC", 18);
+        ERC20Mock externalToken = new ERC20Mock("External Token", "EXT", 6);
+        localToken.mint(alice, 1_000 * 10 ** 18);
+
+        bytes memory secret = bytes("cancel-pre-armed");
+        bytes32 hashlock = keccak256(secret);
+
+        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](2);
+        flows[0] = _localFlow(address(localToken), alice, bob, 50 * 10 ** 18);
+        flows[1] = _externalFlow(address(externalToken), bob, alice, 60 * 10 ** 6, EXTERNAL_CHAIN_ID);
+
+        (IATKXvPSettlement settlement,) =
+            _deploySettlement(alice, "Settlement Name", flows, block.timestamp + 1 days, false, hashlock);
+
+        assertFalse(settlement.isArmed(), "Settlement should not be armed before approvals");
+        assertFalse(settlement.readyToExecute(), "Settlement should not be ready before approvals");
+
+        vm.prank(alice);
+        bool cancelled = settlement.cancel();
+        assertTrue(cancelled, "Pre-armed cancel should succeed");
+        assertTrue(settlement.cancelled(), "Settlement should be cancelled");
+    }
+
+    function test_CancelArmedRequiresConsensus() public {
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+        address carol = makeAddr("carol");
+        address dave = makeAddr("dave");
+
+        grantDeployerRole(alice);
+
+        ERC20Mock tokenLocalA = new ERC20Mock("Local A", "LOCA", 18);
+        ERC20Mock tokenLocalB = new ERC20Mock("Local B", "LOCB", 18);
+        ERC20Mock externalToken = new ERC20Mock("External", "EXT", 6);
+
+        tokenLocalA.mint(alice, 1_000 * 10 ** 18);
+        tokenLocalB.mint(carol, 1_000 * 10 ** 18);
+
+        bytes memory secret = bytes("armed-votes");
+        bytes32 hashlock = keccak256(secret);
+
+        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](3);
+        flows[0] = _localFlow(address(tokenLocalA), alice, bob, 80 * 10 ** 18);
+        flows[1] = _localFlow(address(tokenLocalB), carol, dave, 90 * 10 ** 18);
+        flows[2] = _externalFlow(address(externalToken), bob, alice, 70 * 10 ** 6, EXTERNAL_CHAIN_ID);
+
+        (IATKXvPSettlement settlement, address settlementAddr) =
+            _deploySettlement(alice, "Consensus Cancel", flows, block.timestamp + 1 days, false, hashlock);
+
+        vm.startPrank(alice);
+        tokenLocalA.approve(settlementAddr, 80 * 10 ** 18);
+        settlement.approve();
+        vm.stopPrank();
+
+        vm.startPrank(carol);
+        tokenLocalB.approve(settlementAddr, 90 * 10 ** 18);
+        settlement.approve();
+        vm.stopPrank();
+
+        assertTrue(settlement.isArmed(), "Settlement should be armed awaiting secret reveal");
+        assertFalse(settlement.readyToExecute(), "Secret not revealed yet");
+
+        // Armed: unilateral cancel should fail
+        vm.startPrank(alice);
+        vm.expectRevert(IATKXvPSettlement.CancelNotAllowed.selector);
+        settlement.cancel();
+        vm.stopPrank();
+
+        // First vote recorded
+        vm.prank(alice);
+        settlement.proposeCancel();
+        assertTrue(settlement.cancelVotes(alice), "Alice vote should be recorded");
+        assertFalse(settlement.cancelled(), "Settlement should remain open until unanimous");
+
+        vm.prank(carol);
+        settlement.proposeCancel();
+        assertTrue(settlement.cancelVotes(carol), "Carol vote should be recorded");
+        assertFalse(settlement.cancelled(), "Settlement should remain open until all participants vote");
+
+        vm.prank(bob);
+        settlement.proposeCancel();
+        assertTrue(settlement.cancelVotes(bob), "Bob vote should be recorded");
+        assertFalse(settlement.cancelled(), "Settlement should remain open until final participant votes");
+
+        vm.prank(dave);
+        settlement.proposeCancel();
+        assertTrue(settlement.cancelled(), "Settlement should cancel after unanimous votes");
+        assertFalse(settlement.isArmed(), "Settlement should no longer be armed after cancellation");
+        assertFalse(settlement.cancelVotes(alice), "Votes should be cleared after cancellation");
+        assertFalse(settlement.cancelVotes(carol), "Votes should be cleared after cancellation");
+        assertFalse(settlement.cancelVotes(bob), "Votes should be cleared after cancellation");
+        assertFalse(settlement.cancelVotes(dave), "Votes should be cleared after cancellation");
+    }
+
+    function test_WithdrawCancelProposal() public {
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+        address carol = makeAddr("carol");
+        address dave = makeAddr("dave");
+
+        grantDeployerRole(alice);
+
+        ERC20Mock tokenLocalA = new ERC20Mock("Local A", "LOCA", 18);
+        ERC20Mock tokenLocalB = new ERC20Mock("Local B", "LOCB", 18);
+        ERC20Mock externalToken = new ERC20Mock("External", "EXT", 6);
+        tokenLocalA.mint(alice, 1_000 * 10 ** 18);
+        tokenLocalB.mint(carol, 1_000 * 10 ** 18);
+
+        bytes memory secret = bytes("withdraw-cancel");
+        bytes32 hashlock = keccak256(secret);
+
+        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](3);
+        flows[0] = _localFlow(address(tokenLocalA), alice, bob, 80 * 10 ** 18);
+        flows[1] = _localFlow(address(tokenLocalB), carol, dave, 65 * 10 ** 18);
+        flows[2] = _externalFlow(address(externalToken), bob, alice, 55 * 10 ** 6, EXTERNAL_CHAIN_ID);
+
+        (IATKXvPSettlement settlement, address settlementAddr) =
+            _deploySettlement(alice, "Withdraw Cancel", flows, block.timestamp + 1 days, false, hashlock);
+
+        vm.startPrank(alice);
+        tokenLocalA.approve(settlementAddr, 80 * 10 ** 18);
+        settlement.approve();
+        vm.stopPrank();
+
+        vm.startPrank(carol);
+        tokenLocalB.approve(settlementAddr, 65 * 10 ** 18);
+        settlement.approve();
+        vm.stopPrank();
+
+        assertTrue(settlement.isArmed(), "Settlement should be armed awaiting secret reveal");
+        assertFalse(settlement.readyToExecute(), "Secret not revealed yet");
+
+        vm.prank(alice);
+        settlement.proposeCancel();
+        assertTrue(settlement.cancelVotes(alice), "Vote should be active");
+        assertFalse(settlement.cancelled(), "Settlement should remain active");
+
+        vm.prank(alice);
+        settlement.withdrawCancelProposal();
+        assertFalse(settlement.cancelVotes(alice), "Vote should be cleared");
+        assertFalse(settlement.cancelled(), "Settlement should remain active after vote withdrawal");
+
+        vm.startPrank(alice);
+        vm.expectRevert(IATKXvPSettlement.CancelVoteNotCast.selector);
+        settlement.withdrawCancelProposal();
+        vm.stopPrank();
+    }
+
+    function test_CancelAfterSecretRevealReverts() public {
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+
+        grantDeployerRole(alice);
+
+        ERC20Mock localToken = new ERC20Mock("Local Token", "LOC", 18);
+        ERC20Mock externalToken = new ERC20Mock("External", "EXT", 6);
+        localToken.mint(alice, 1_000 * 10 ** 18);
+
+        bytes memory secret = bytes("after-reveal");
+        bytes32 hashlock = keccak256(secret);
+
+        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](2);
+        flows[0] = _localFlow(address(localToken), alice, bob, 75 * 10 ** 18);
+        flows[1] = _externalFlow(address(externalToken), bob, alice, 90 * 10 ** 6, EXTERNAL_CHAIN_ID);
+
+        (IATKXvPSettlement settlement, address settlementAddr) =
+            _deploySettlement(alice, "Post Reveal", flows, block.timestamp + 1 days, false, hashlock);
+
+        vm.startPrank(alice);
+        localToken.approve(settlementAddr, 75 * 10 ** 18);
+        settlement.approve();
+        vm.stopPrank();
+
+        vm.prank(makeAddr("relayer"));
+        settlement.revealSecret(secret);
+        assertTrue(settlement.secretRevealed(), "Secret should be marked as revealed");
+        assertFalse(settlement.isArmed(), "Settlement should not be armed after secret reveal");
+        assertTrue(settlement.readyToExecute(), "Settlement should be ready after secret reveal");
+
+        vm.startPrank(alice);
+        vm.expectRevert(IATKXvPSettlement.CancelNotAllowed.selector);
+        settlement.cancel();
+        vm.expectRevert(IATKXvPSettlement.CancelNotAllowed.selector);
+        settlement.proposeCancel();
+        vm.expectRevert(IATKXvPSettlement.CancelNotAllowed.selector);
+        settlement.withdrawCancelProposal();
+        vm.stopPrank();
     }
 
     // ---------------------------------------------------------------------

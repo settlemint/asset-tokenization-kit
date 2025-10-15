@@ -3,6 +3,7 @@ import {
   Action,
   XvPSettlement,
   XvPSettlementApproval,
+  XvPSettlementCancelVote,
   XvPSettlementFlow,
 } from "../../../../generated/schema";
 import { XvPSettlement as XvPSettlementTemplate } from "../../../../generated/templates";
@@ -11,6 +12,8 @@ import {
   XvPSettlementApproved,
   XvPSettlementCancelled,
   XvPSettlement as XvPSettlementContract,
+  XvPSettlementCancelVoteCast,
+  XvPSettlementCancelVoteWithdrawn,
   XvPSettlementExecuted,
   XvPSettlementSecretRevealed,
 } from "../../../../generated/templates/XvPSettlement/XvPSettlement";
@@ -61,6 +64,23 @@ export function fetchXvPSettlementFlow(
   setBigNumber(flow, "amount", amountExact, token.decimals);
   flow.save();
   return flow;
+}
+
+export function fetchXvPSettlementCancelVote(
+  contractAddress: Address,
+  voterAddress: Address
+): XvPSettlementCancelVote {
+  const id = contractAddress.concat(voterAddress);
+  let vote = XvPSettlementCancelVote.load(id);
+  if (vote == null) {
+    vote = new XvPSettlementCancelVote(id);
+    vote.xvpSettlement = contractAddress;
+    vote.account = fetchAccount(voterAddress).id;
+    vote.active = false;
+    vote.votedAt = null;
+    vote.save();
+  }
+  return vote;
 }
 
 export function fetchXvPSettlementApproval(
@@ -311,6 +331,28 @@ export function handleXvPSettlementExecuted(
     event.address,
     createActionIdentifier(ActionName.ExecuteXvPSettlement, event.address)
   );
+}
+
+export function handleXvPSettlementCancelVoteCast(
+  event: XvPSettlementCancelVoteCast
+): void {
+  fetchEvent(event, "XvPSettlementCancelVoteCast");
+  fetchXvPSettlement(event.address);
+  const vote = fetchXvPSettlementCancelVote(event.address, event.params.voter);
+  vote.active = true;
+  vote.votedAt = event.block.timestamp;
+  vote.save();
+}
+
+export function handleXvPSettlementCancelVoteWithdrawn(
+  event: XvPSettlementCancelVoteWithdrawn
+): void {
+  fetchEvent(event, "XvPSettlementCancelVoteWithdrawn");
+  fetchXvPSettlement(event.address);
+  const vote = fetchXvPSettlementCancelVote(event.address, event.params.voter);
+  vote.active = false;
+  vote.votedAt = null;
+  vote.save();
 }
 
 export function handleXvPSettlementCancelled(

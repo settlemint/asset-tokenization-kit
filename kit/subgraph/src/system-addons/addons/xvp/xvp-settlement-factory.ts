@@ -8,7 +8,7 @@ import {
   createActionIdentifier,
 } from "../../../utils/actions";
 import { fetchXvPSettlement } from "./fetch/xvp-settlement";
-import { fetchXvPSettlementApproval } from "./xvp-settlement";
+import { fetchXvPSettlementApproval, fetchXvPSettlementCancelVote } from "./xvp-settlement";
 
 export function handleATKXvPSettlementCreated(
   event: ATKXvPSettlementCreated
@@ -51,6 +51,7 @@ export function handleATKXvPSettlementCreated(
         event.params.settlement,
         approver
       );
+      fetchXvPSettlementCancelVote(event.params.settlement, approver);
 
       createAction(
         event,
