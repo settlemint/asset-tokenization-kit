@@ -1,7 +1,6 @@
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
-import type { RevokableClaimTopic } from "@/orpc/routes/system/identity/claims/routes/claims.revoke.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -55,7 +54,7 @@ export function RevokeClaimDialog({
     toast.promise(
       revokeMutation.mutateAsync({
         targetIdentityAddress: identityAddress,
-        claimTopic: claim.name as RevokableClaimTopic,
+        claimTopic: claim.name,
         walletVerification: verification,
       }),
       {

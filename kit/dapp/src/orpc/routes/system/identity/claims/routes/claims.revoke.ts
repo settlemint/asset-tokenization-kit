@@ -1,12 +1,12 @@
 // Revoke flow handled via helper
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { revokeClaim } from "@/orpc/helpers/claims/revoke-claim";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { fetchClaimByTopicAndIdentity } from "@/orpc/routes/user/utils/identity.util";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
-import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { fetchClaimByTopicAndIdentity } from "@/orpc/routes/user/utils/identity.util";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { getAddress, type Address } from "viem";
 import * as z from "zod";
@@ -103,10 +103,11 @@ export const revoke = authRouter.system.identity.claims.revoke
     const normalizedUserIdentity = userIdentityAddress?.toLowerCase();
     const normalizedTargetIdentity = targetIdentityAddress.toLowerCase();
     const targetIdentityChecksummed = getAddress(targetIdentityAddress);
-    const isSelfRevocation = normalizedUserIdentity === normalizedTargetIdentity;
+    const isSelfRevocation =
+      normalizedUserIdentity === normalizedTargetIdentity;
 
     if (!isSelfRevocation) {
-      const canRevoke = context.system?.userPermissions.actions.claimRevoke;
+      const canRevoke = context.system?.userPermissions?.actions.claimRevoke;
 
       if (!canRevoke) {
         throw errors.USER_NOT_AUTHORIZED({
