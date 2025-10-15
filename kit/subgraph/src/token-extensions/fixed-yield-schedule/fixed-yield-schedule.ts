@@ -7,12 +7,12 @@ import {
   YieldClaimed,
 } from "../../../generated/templates/FixedYieldSchedule/FixedYieldSchedule";
 import { fetchAccount } from "../../account/fetch/account";
-import { fetchEvent } from "../../event/fetch/event";
 import {
   actionExecuted,
   ActionName,
   createActionIdentifier,
-} from "../../utils/actions";
+} from "../../actions/actions";
+import { fetchEvent } from "../../event/fetch/event";
 import { setBigNumber } from "../../utils/bignumber";
 import { getTokenDecimals } from "../../utils/token-decimals";
 import { fetchFixedYieldSchedule } from "./fetch/fixed-yield-schedule";

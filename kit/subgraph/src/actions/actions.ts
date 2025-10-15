@@ -1,4 +1,4 @@
-import { BigInt, Bytes, ethereum, log } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes, ethereum, log, store } from "@graphprotocol/graph-ts";
 
 import { Action, ActionExecutor } from "../../generated/schema";
 import { fetchAccount } from "../account/fetch/account";
@@ -200,14 +200,14 @@ function actionExecutorId(
 export function actionExists(
   actionName: string,
   target: Bytes,
-  identifier: string
+  identifier: string | null
 ): boolean {
   const id = actionId(actionName, target, identifier);
   return Action.load(id) !== null;
 }
 
 export function createAction(
-  event: ethereum.Event,
+  timestamp: BigInt,
   actionName: string,
   target: Bytes,
   activeAt: BigInt,
@@ -230,14 +230,14 @@ export function createAction(
     throw new Error("createAction: executors array cannot be empty");
   }
 
-  if (activeAt.lt(event.block.timestamp)) {
+  if (activeAt.lt(timestamp)) {
     log.warning(
       "createAction: activeAt is in the past - actionName: {}, target: {}, activeAt: {}, currentTime: {}",
       [
         actionName,
         target.toHexString(),
         activeAt.toString(),
-        event.block.timestamp.toString(),
+        timestamp.toString(),
       ]
     );
   }
@@ -270,19 +270,14 @@ export function createAction(
   const action = new Action(id);
   action.name = actionName;
   action.target = target;
-  action.createdAt = event.block.timestamp;
+  action.createdAt = timestamp;
   action.activeAt = activeAt;
   action.expiresAt = expiresAt;
   action.requiredRole = requiredRole;
   action.executedAt = null;
   action.executedBy = null;
   action.identifier = identifier;
-  action.status = getActionStatus(
-    event.block.timestamp,
-    activeAt,
-    expiresAt,
-    false
-  );
+  action.status = getActionStatus(timestamp, activeAt, expiresAt, false);
 
   // Create/update the executor and establish relationship without saving action yet
   const actionExecutor = createActionExecutorInternal(
@@ -301,6 +296,18 @@ export function createAction(
   );
 
   return action;
+}
+
+export function deleteAction(
+  actionName: string,
+  target: Bytes,
+  identifier: string | null
+): void {
+  const id = actionId(actionName, target, identifier);
+  const existingAction = Action.load(id);
+  if (existingAction !== null) {
+    store.remove("Action", id.toHexString());
+  }
 }
 
 // Internal function used by createAction to avoid double save

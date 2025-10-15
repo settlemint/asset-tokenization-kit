@@ -1,6 +1,10 @@
 import { Address, BigInt, store } from "@graphprotocol/graph-ts";
 import { Token, TokenBalance } from "../../../generated/schema";
 import { fetchAccount } from "../../account/fetch/account";
+import {
+  updateClaimYieldActionsOnBalanceIncrease,
+  updateClaimYieldActionsOnBalanceRemove,
+} from "../../actions/claim-yield-action";
 import { decreaseAccountStatsBalanceCount } from "../../stats/account-stats";
 import { updateTokenDistributionStats } from "../../stats/token-distribution-stats";
 import { decreaseTokenStatsBalanceCount } from "../../stats/token-stats";
@@ -40,6 +44,9 @@ export function increaseTokenBalanceValue(
 
   // Check if this balance change affects any bond token's denomination asset balance
   updateBondStatsForAssetBalanceChange(token, account);
+
+  // Update claim yield actions
+  updateClaimYieldActionsOnBalanceIncrease(timestamp, token, balance);
 }
 
 export function decreaseTokenBalanceValue(
@@ -205,9 +212,11 @@ function removeTokenBalance(tokenBalance: TokenBalance): void {
   );
 
   store.remove("TokenBalance", tokenBalance.id.toHexString());
-  decreaseAccountStatsBalanceCount(
-    Address.fromBytes(tokenBalance.account),
-    token
-  );
+
+  const accountAddress = Address.fromBytes(tokenBalance.account);
+  decreaseAccountStatsBalanceCount(accountAddress, token);
   decreaseTokenStatsBalanceCount(Address.fromBytes(tokenBalance.token));
+
+  // Update claim yield actions
+  updateClaimYieldActionsOnBalanceRemove(token, accountAddress);
 }

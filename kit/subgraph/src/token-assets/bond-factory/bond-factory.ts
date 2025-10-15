@@ -1,13 +1,13 @@
 import { BondCreated } from "../../../generated/templates/BondFactory/BondFactory";
 import { fetchAccount } from "../../account/fetch/account";
-import { fetchEvent } from "../../event/fetch/event";
-import { updateTokenTypeStatsForTokenCreation } from "../../stats/token-type-stats";
-import { fetchToken } from "../../token/fetch/token";
 import {
   ActionName,
   createAction,
   createActionIdentifier,
-} from "../../utils/actions";
+} from "../../actions/actions";
+import { fetchEvent } from "../../event/fetch/event";
+import { updateTokenTypeStatsForTokenCreation } from "../../stats/token-type-stats";
+import { fetchToken } from "../../token/fetch/token";
 import { setBigNumber } from "../../utils/bignumber";
 import { fetchBond } from "../bond/fetch/bond";
 
@@ -47,7 +47,7 @@ export function handleBondCreated(event: BondCreated): void {
   const creator = fetchAccount(event.transaction.from);
 
   createAction(
-    event,
+    event.block.timestamp,
     ActionName.MatureBond,
     event.params.tokenAddress,
     bond.maturityDate,

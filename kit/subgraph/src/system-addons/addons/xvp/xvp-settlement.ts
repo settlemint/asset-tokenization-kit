@@ -13,15 +13,15 @@ import {
   XvPSettlementExecuted,
 } from "../../../../generated/templates/XvPSettlement/XvPSettlement";
 import { fetchAccount } from "../../../account/fetch/account";
-import { fetchEvent } from "../../../event/fetch/event";
-import { fetchToken } from "../../../token/fetch/token";
 import {
   actionExecuted,
   actionExists,
   ActionName,
   createAction,
   createActionIdentifier,
-} from "../../../utils/actions";
+} from "../../../actions/actions";
+import { fetchEvent } from "../../../event/fetch/event";
+import { fetchToken } from "../../../token/fetch/token";
 import { setBigNumber } from "../../../utils/bignumber";
 
 /**
@@ -238,7 +238,7 @@ export function handleXvPSettlementApproved(
 
     if (!exists) {
       createAction(
-        event,
+        event.block.timestamp,
         ActionName.ExecuteXvPSettlement,
         event.address,
         event.block.timestamp,

@@ -2,13 +2,13 @@ import {
   CheckpointUpdated,
   YieldScheduleSet,
 } from "../../../generated/templates/Yield/Yield";
-import { fetchEvent } from "../../event/fetch/event";
-import { fetchToken } from "../../token/fetch/token";
 import {
   ActionName,
   createAction,
   createActionIdentifier,
-} from "../../utils/actions";
+} from "../../actions/actions";
+import { fetchEvent } from "../../event/fetch/event";
+import { fetchToken } from "../../token/fetch/token";
 import { fetchFixedYieldSchedule } from "../fixed-yield-schedule/fetch/fixed-yield-schedule";
 import { fetchFixedYieldSchedulePeriod } from "../fixed-yield-schedule/fetch/fixed-yield-schedule-period";
 import { fetchYield } from "./fetch/yield";
@@ -36,7 +36,7 @@ export function handleYieldScheduleSet(event: YieldScheduleSet): void {
     for (let periodIndex = 0; periodIndex < periods.length; periodIndex++) {
       const period = fetchFixedYieldSchedulePeriod(periods[periodIndex].id);
       createAction(
-        event,
+        event.block.timestamp,
         ActionName.ClaimYield,
         event.params.schedule,
         period.endDate,

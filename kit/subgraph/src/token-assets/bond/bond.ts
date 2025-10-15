@@ -4,14 +4,14 @@ import {
   BondRedeemed,
 } from "../../../generated/templates/Bond/Bond";
 import { fetchAccount } from "../../account/fetch/account";
-import { fetchEvent } from "../../event/fetch/event";
-import { fetchToken } from "../../token/fetch/token";
 import {
   ActionName,
   actionExecuted,
   createAction,
   createActionIdentifier,
-} from "../../utils/actions";
+} from "../../actions/actions";
+import { fetchEvent } from "../../event/fetch/event";
+import { fetchToken } from "../../token/fetch/token";
 import { fetchBond } from "./fetch/bond";
 
 export function handleBondMatured(event: BondMatured): void {
@@ -34,7 +34,7 @@ export function handleBondMatured(event: BondMatured): void {
   for (let i = 0; i < balances.length; i++) {
     const balance = balances[i];
     createAction(
-      event,
+      event.block.timestamp,
       ActionName.RedeemBond,
       event.address,
       bond.maturityDate,
