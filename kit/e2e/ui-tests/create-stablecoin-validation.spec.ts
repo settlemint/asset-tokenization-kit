@@ -4,6 +4,7 @@ import { Pages } from "../pages/pages";
 import { stablecoinData } from "../test-data/asset-data";
 import { errorMessageData } from "../test-data/message-data";
 import { getSetupUser } from "../utils/setup-user";
+import { assetPermissions } from "../test-data/asset-data";
 
 test.describe.serial("Stablecoin Creation Validation", () => {
   let adminContext: BrowserContext;
@@ -215,6 +216,17 @@ test.describe.serial("Stablecoin Creation Validation", () => {
         name: testData.name,
         symbol: testData.symbol,
         decimals: testData.decimals,
+      });
+      await adminPages.adminPage.clickAssetDetails(testData.name);
+      await adminPages.adminPage.grantAssetPermissions({
+        user: setupUser.name,
+        permissions: assetPermissions,
+        pincode: setupUser.pincode,
+        assetName: testData.name,
+      });
+      await adminPages.adminPage.unpauseAsset({
+        pincode: setupUser.pincode,
+        user: setupUser.name,
       });
     });
   });
