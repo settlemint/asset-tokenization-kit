@@ -43,8 +43,20 @@ export function ClaimsTable({
       : t("claimsTable.emptyState.description");
 
   const columns = useMemo(
-    (): ColumnDef<ClaimRow>[] =>
-      withAutoFeatures([
+    (): ColumnDef<ClaimRow>[] => {
+      const statusLabels = {
+        active: t("claimsTable.status.active"),
+        revoked: t("claimsTable.status.revoked"),
+      } as const;
+
+      const statusOptions = (Object.entries(statusLabels) as Array<
+        [keyof typeof statusLabels, string]
+      >).map(([value, label]) => ({
+        value,
+        label,
+      }));
+
+      return withAutoFeatures([
         columnHelper.accessor("name", {
           id: "name",
           header: t("claimsTable.columns.claimName"),
@@ -62,7 +74,25 @@ export function ClaimsTable({
             enableHiding: false,
             meta: {
               displayName: t("claimsTable.columns.status"),
-              type: "text",
+              type: "option",
+              options: statusOptions,
+              transformOptionFn: (value) => {
+                const normalizedValue =
+                  typeof value === "string"
+                    ? value
+                    : value == null
+                      ? ""
+                      : String(value);
+                const label =
+                  statusLabels[
+                    normalizedValue as keyof typeof statusLabels
+                  ];
+
+                return {
+                  value: normalizedValue,
+                  label: label ?? normalizedValue,
+                };
+              },
             },
           }
         ),
@@ -124,7 +154,8 @@ export function ClaimsTable({
             type: "none",
           },
         }),
-      ] as ColumnDef<ClaimRow>[]),
+      ] as ColumnDef<ClaimRow>[]);
+    },
     [t]
   );
 
