@@ -47,32 +47,9 @@ export const FixedYieldScheduleCreateInputSchema = MutationInputSchema.extend({
 });
 
 /**
- * Output schema for fixed yield schedule creation.
- *
- * This schema defines the structure of the response returned when
- * creating a fixed yield schedule, providing the contract address
- * of the newly deployed yield schedule.
- *
- * @property {string} address - The deployed yield schedule contract address
- */
-export const FixedYieldScheduleCreateOutputSchema = z.object({
-  address: ethereumAddress.describe(
-    "The deployed yield schedule contract address"
-  ),
-});
-
-/**
  * Type representing the validated fixed yield schedule create input.
  * Ensures type safety for request parameters.
  */
 export type FixedYieldScheduleCreateInput = z.infer<
   typeof FixedYieldScheduleCreateInputSchema
->;
-
-/**
- * Type representing the validated fixed yield schedule create response.
- * Ensures type safety for response data structure.
- */
-export type FixedYieldScheduleCreateOutput = z.infer<
-  typeof FixedYieldScheduleCreateOutputSchema
 >;

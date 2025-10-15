@@ -146,11 +146,11 @@ describe("Token holder", () => {
         },
         {
           context: {
-            skipLoggingFor: [CUSTOM_ERROR_CODES.THE_GRAPH_ERROR],
+            skipLoggingFor: [CUSTOM_ERROR_CODES.NOT_FOUND],
           },
         }
       )
-    ).rejects.toThrow();
+    ).rejects.toThrow(`Token with address '${nonExistentToken}' not found`);
   });
 
   it("investor can query their own balance", async () => {

@@ -1,6 +1,6 @@
 import {
-  getAnvilTimeMilliseconds,
   getAnvilBasedFutureDate,
+  getAnvilTimeMilliseconds,
 } from "@/test/anvil";
 import { TimeIntervalEnum } from "@atk/zod/time-interval";
 import { createFixedYieldSchedule } from "@test/fixtures/fixed-yield-schedule";
@@ -88,16 +88,16 @@ describe("Fixed yield schedule read", async () => {
     });
 
     expect(yieldSchedule).toBeDefined();
-    expect(yieldSchedule.address).toBeDefined();
+    expect(yieldSchedule.id).toBeDefined();
   });
 
   test("can read fixed yield schedule details", async () => {
     const result = await adminClient.fixedYieldSchedule.read({
-      id: yieldSchedule.address,
+      id: yieldSchedule.id,
     });
 
     expect(result).toBeDefined();
-    expect(result.id).toBe(yieldSchedule.address);
+    expect(result.id).toBe(yieldSchedule.id);
     expect(result.startDate).toBeDefined();
     expect(result.endDate).toBeDefined();
     expect(result.rate).toBeDefined();
@@ -116,11 +116,11 @@ describe("Fixed yield schedule read", async () => {
     const investorClient = getOrpcClient(headers);
 
     const result = await investorClient.fixedYieldSchedule.read({
-      id: yieldSchedule.address,
+      id: yieldSchedule.id,
     });
 
     expect(result).toBeDefined();
-    expect(result.id).toBe(yieldSchedule.address);
+    expect(result.id).toBe(yieldSchedule.id);
     expect(result.startDate).toBeDefined();
     expect(result.endDate).toBeDefined();
     expect(result.rate).toBeDefined();
@@ -129,7 +129,7 @@ describe("Fixed yield schedule read", async () => {
 
   test("yield schedule structure matches expected schema", async () => {
     const result = await adminClient.fixedYieldSchedule.read({
-      id: yieldSchedule.address,
+      id: yieldSchedule.id,
     });
 
     // Verify the structure matches our Zod schema

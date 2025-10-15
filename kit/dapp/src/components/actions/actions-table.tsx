@@ -387,7 +387,7 @@ function ExecuteActionButton({
 
         await queryClient.invalidateQueries({
           queryKey: orpc.actions.list.queryKey({
-            input: { target: action.target },
+            input: { targets: [action.target] },
           }),
         });
 

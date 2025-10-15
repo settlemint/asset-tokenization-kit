@@ -98,7 +98,7 @@ describe(
       });
       await adminClient.token.setYieldSchedule({
         contract: bond.id,
-        schedule: yieldSchedule.address,
+        schedule: yieldSchedule.id,
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -141,33 +141,9 @@ describe(
       const actionsBeforeRedeem = await adminClient.token.actions({
         tokenAddress: bond.id,
       });
-      expect(actionsBeforeRedeem).toMatchObject([
-        {
-          activeAt: expect.any(Date),
-          executedAt: null,
-          executedBy: null,
-          executor: {
-            executors: [adminUserData.wallet],
-            id: expect.any(String),
-          },
-          id: expect.any(String),
-          name: "ClaimYield",
-          status: "PENDING",
-          target: bond.id,
-        },
-        {
-          activeAt: expect.any(Date),
-          executedAt: expect.any(Date),
-          executedBy: adminUserData.wallet,
-          executor: {
-            executors: [adminUserData.wallet],
-            id: expect.any(String),
-          },
-          id: expect.any(String),
-          name: "MatureBond",
-          status: "EXECUTED",
-          target: bond.id,
-        },
+      expect(
+        actionsBeforeRedeem.filter((action) => action.name === "RedeemBond")
+      ).toEqual([
         {
           activeAt: expect.any(Date),
           executedAt: null,
@@ -182,6 +158,7 @@ describe(
           target: bond.id,
         },
       ]);
+
       const result = await adminClient.token.redeem({
         contract: bond.id,
         redeemAll: true,
@@ -199,37 +176,13 @@ describe(
       const actionsAfterRedeem = await adminClient.token.actions({
         tokenAddress: bond.id,
       });
-      expect(actionsAfterRedeem).toMatchObject([
+      expect(
+        actionsAfterRedeem.filter((action) => action.name === "RedeemBond")
+      ).toEqual([
         {
           activeAt: expect.any(Date),
           executedAt: null,
           executedBy: null,
-          executor: {
-            executors: [adminUserData.wallet],
-            id: expect.any(String),
-          },
-          id: expect.any(String),
-          name: "ClaimYield",
-          status: "PENDING",
-          target: bond.id,
-        },
-        {
-          activeAt: expect.any(Date),
-          executedAt: expect.any(Date),
-          executedBy: adminUserData.wallet,
-          executor: {
-            executors: [adminUserData.wallet],
-            id: expect.any(String),
-          },
-          id: expect.any(String),
-          name: "MatureBond",
-          status: "EXECUTED",
-          target: bond.id,
-        },
-        {
-          activeAt: expect.any(Date),
-          executedAt: expect.any(Date),
-          executedBy: adminUserData.wallet,
           executor: {
             executors: [adminUserData.wallet],
             id: expect.any(String),

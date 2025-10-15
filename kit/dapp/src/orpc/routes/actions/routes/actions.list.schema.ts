@@ -71,7 +71,7 @@ export const ActionsListDataSchema = z.array(ActionSchema);
  * Note that user filtering is handled automatically server-side - only actions
  * accessible to the authenticated user are returned.
  */
-export const ActionsListSchema = z.object({
+export const ActionsListInputSchema = z.object({
   /**
    * Filter by action status.
    *
@@ -88,9 +88,10 @@ export const ActionsListSchema = z.object({
    * When specified, only actions targeting the specified address will be returned.
    * This is useful for showing actions related to a specific token or contract.
    */
-  target: ethereumAddress
+  targets: z
+    .array(ethereumAddress)
     .optional()
-    .describe("Filter actions by their target address"),
+    .describe("Filter actions by their target addresses"),
 
   /**
    * Filter by action name.
@@ -112,5 +113,5 @@ export const ActionsListResponseSchema = ActionsListDataSchema;
 export type Action = z.infer<typeof ActionSchema>;
 export type ActionExecutor = z.infer<typeof ActionExecutorSchema>;
 export type ActionsListData = z.infer<typeof ActionsListDataSchema>;
-export type ActionsListInput = z.infer<typeof ActionsListSchema>;
+export type ActionsListInput = z.infer<typeof ActionsListInputSchema>;
 export type ActionsListResponse = z.infer<typeof ActionsListResponseSchema>;

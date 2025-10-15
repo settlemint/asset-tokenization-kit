@@ -162,14 +162,23 @@ export function handleYieldClaimed(event: YieldClaimed): void {
     );
   }
 
-  const currentPeriod = fetchFixedYieldSchedulePeriod(
-    getPeriodId(event.address, event.params.toPeriod.toI32())
+  const currentPeriodId = getPeriodId(
+    event.address,
+    event.params.toPeriod.toI32() + 1 // To period is the last completed period (prev period)
   );
+  const currentPeriod = TokenFixedYieldSchedulePeriod.load(currentPeriodId);
+  if (!currentPeriod) {
+    // There is no current period, the schedule has ended
+    fixedYieldSchedule.currentPeriod = null;
+    fixedYieldSchedule.nextPeriod = null;
+    fixedYieldSchedule.save();
+    return;
+  }
   fixedYieldSchedule.currentPeriod = currentPeriod.id;
 
   const nextPeriodId = getPeriodId(
     event.address,
-    event.params.toPeriod.toI32() + 1
+    event.params.toPeriod.toI32() + 2 // To period is the last completed period (prev period) + 1
   );
   const nextPeriod = TokenFixedYieldSchedulePeriod.load(nextPeriodId);
   if (nextPeriod) {
@@ -182,9 +191,10 @@ export function handleYieldClaimed(event: YieldClaimed): void {
     nextPeriod.save();
     fixedYieldSchedule.nextPeriod = nextPeriod.id;
   } else {
-    // There is no next period, the schedule has ended
+    // There is no next period, current period is the last period
     fixedYieldSchedule.nextPeriod = null;
     fixedYieldSchedule.save();
+    return;
   }
 
   const totalClaimed = fixedYieldSchedule.totalClaimedExact.plus(

@@ -42,17 +42,19 @@ export function updateClaimYieldActionsOnBalanceIncrease(
       continue;
     }
     const identifier = createActionIdentifier(ActionName.ClaimYield, [
-      yield_,
+      fixedYieldSchedule.id,
       balance.account,
       period.id,
     ]);
-    if (actionExists(ActionName.ClaimYield, yield_, identifier)) {
+    if (
+      actionExists(ActionName.ClaimYield, fixedYieldSchedule.id, identifier)
+    ) {
       continue;
     }
     createAction(
       timestamp,
       ActionName.ClaimYield,
-      yield_,
+      fixedYieldSchedule.id,
       period.endDate,
       null,
       [balance.account],
@@ -90,10 +92,10 @@ export function updateClaimYieldActionsOnBalanceRemove(
       continue;
     }
     const identifier = createActionIdentifier(ActionName.ClaimYield, [
-      yield_,
+      fixedYieldSchedule.id,
       account,
       period.id,
     ]);
-    deleteAction(ActionName.ClaimYield, yield_, identifier);
+    deleteAction(ActionName.ClaimYield, fixedYieldSchedule.id, identifier);
   }
 }

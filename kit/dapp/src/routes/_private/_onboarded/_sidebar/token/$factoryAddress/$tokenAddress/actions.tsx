@@ -31,7 +31,7 @@ function RouteComponent() {
 
   return (
     <ActionsOverview
-      input={{ target: targetAddress }}
+      input={{ targets: [targetAddress] }}
       tableIdPrefix={`asset-${targetAddress.toLowerCase()}`}
     />
   );

@@ -115,7 +115,7 @@ describe("Actions API", () => {
         if (!targetAddress) return;
 
         const filteredActions = await client.actions.list({
-          target: targetAddress,
+          targets: [targetAddress],
         });
 
         expect(filteredActions).toBeInstanceOf(Array);
@@ -151,7 +151,7 @@ describe("Actions API", () => {
     test("should handle empty filter results", async () => {
       const emptyResults = await client.actions.list({
         status: "EXECUTED",
-        target: "0x0000000000000000000000000000000000000000",
+        targets: ["0x0000000000000000000000000000000000000000"],
       });
       expect(emptyResults).toBeInstanceOf(Array);
       expect(emptyResults.length).toBe(0);
