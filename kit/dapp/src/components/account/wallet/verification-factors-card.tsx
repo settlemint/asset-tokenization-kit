@@ -1,4 +1,8 @@
-import { Badge } from "@/components/ui/badge";
+import {
+  DefaultVerificationFactorItem,
+  VERIFICATION_FACTOR_COMPONENTS,
+  type VerificationFactorComponentProps,
+} from "@/components/account/wallet/verification-factor-item";
 import {
   Card,
   CardContent,
@@ -6,7 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { VerificationType } from "@atk/zod/verification-type";
+import { orpc } from "@/orpc/orpc-client";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 const VERIFICATION_TYPE_TRANSLATIONS = {
@@ -15,51 +21,53 @@ const VERIFICATION_TYPE_TRANSLATIONS = {
   SECRET_CODES: "wallet.recoveryCodesEnabled",
 } as const;
 
-interface VerificationFactorsCardProps {
-  verificationTypes: VerificationType[];
-}
-
-export function VerificationFactorsCard({
-  verificationTypes,
-}: VerificationFactorsCardProps) {
+export function VerificationFactorsCard() {
   const { t } = useTranslation(["user", "common", "onboarding"]);
+  const { data: user, refetch } = useSuspenseQuery(orpc.user.me.queryOptions());
+
+  const fallbackError = useMemo(
+    () => t("common:errors.somethingWentWrong"),
+    [t]
+  );
 
   return (
-    <Card className="flex h-full flex-col">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          {t("wallet.verificationFactors")}
-        </CardTitle>
-        <CardDescription>
-          {t("wallet.verificationFactorsDescription")}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1">
-        <div className="space-y-4">
-          {verificationTypes.length > 0 ? (
-            verificationTypes.map((type) => {
-              const translationKey = VERIFICATION_TYPE_TRANSLATIONS[type];
-              const label = translationKey ? t(translationKey) : type;
+    <>
+      <Card className="flex h-full flex-col">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            {t("wallet.verificationFactors")}
+          </CardTitle>
+          <CardDescription>
+            {t("wallet.verificationFactorsDescription")}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex-1">
+          <div className="space-y-4">
+            {user.verificationTypes.length > 0 ? (
+              user.verificationTypes.map((type) => {
+                const translationKey = VERIFICATION_TYPE_TRANSLATIONS[type];
+                const label = translationKey ? t(translationKey) : type;
+                const enabledLabel = t("wallet.enabled");
+                const Component =
+                  VERIFICATION_FACTOR_COMPONENTS[type] ??
+                  DefaultVerificationFactorItem;
+                const componentProps: VerificationFactorComponentProps = {
+                  label,
+                  enabledLabel,
+                  fallbackError,
+                  onRefetch: refetch,
+                };
 
-              return (
-                <div key={type} className="flex items-center justify-between">
-                  <span className="text-sm">{label}</span>
-                  <Badge
-                    variant="default"
-                    className="bg-sm-state-success-background text-sm-state-success hover:bg-sm-state-success-background/90"
-                  >
-                    {t("wallet.enabled")}
-                  </Badge>
-                </div>
-              );
-            })
-          ) : (
-            <p className="py-4 text-center text-muted-foreground">
-              {t("wallet.noVerificationMethods")}
-            </p>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+                return <Component key={type} {...componentProps} />;
+              })
+            ) : (
+              <p className="py-4 text-center text-muted-foreground">
+                {t("wallet.noVerificationMethods")}
+              </p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 }

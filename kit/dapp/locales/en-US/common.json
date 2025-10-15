@@ -27,6 +27,14 @@
       "label": "Verification Code"
     }
   },
+  "password-confirmation": {
+    "title": "Confirm password",
+    "description": "Enter your password to continue.",
+    "passwordLabel": "Password",
+    "submit": "Continue",
+    "submitting": "Processing...",
+    "cancel": "Cancel"
+  },
   "errors": {
     "somethingWentWrong": "Something went wrong here"
   },

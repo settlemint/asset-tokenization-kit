@@ -13,13 +13,19 @@
       "type": "タイプ",
       "activeAt": "予定時刻",
       "executedAt": "完了時刻",
-      "executedBy": "実行者"
+      "executedBy": "実行者",
+      "execute": "実行"
     },
     "empty": {
       "title": "表示できるアクションはありません",
       "description": "現在すべて完了しています。新しいアクションが利用可能になるとここに表示されます。"
     },
-    "authorizedBadge": "認可 {{count}} 件"
+    "authorizedBadge": "認可 {{count}} 件",
+    "execute": {
+      "label": "実行",
+      "loading": "実行中…",
+      "unavailable": "利用不可"
+    }
   },
   "filters": {
     "searchPlaceholder": "アクションを検索"
@@ -39,5 +45,15 @@
     "bond": "債券",
     "settlement": "決済",
     "generic": "アクション"
+  },
+  "execute": {
+    "messages": {
+      "loading": "{{action}} を実行しています…",
+      "success": "{{action}} を正常に実行しました。"
+    },
+    "errors": {
+      "notAuthorized": "このアクションを実行する権限がありません。",
+      "unsupported": "このアクションはポータルからはまだ実行できません。"
+    }
   }
 }

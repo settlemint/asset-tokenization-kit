@@ -18,12 +18,21 @@ describe("Tokens", () => {
     );
     const response = await theGraphClient.request(query);
     expect(response.tokens.length).toBe(6);
-    expect(response.tokens).toEqual([
+    const tokens = response.tokens.map(
+      ({ totalSupply, totalSupplyExact, ...token }) => ({
+        ...token,
+        totalSupply: totalSupply ? Number(totalSupply) : undefined,
+        totalSupplyExact: totalSupplyExact
+          ? Number(totalSupplyExact)
+          : undefined,
+      })
+    );
+    expect(tokens).toEqual([
       {
         name: "Apple",
         type: "equity",
-        totalSupply: "75",
-        totalSupplyExact: "75000000000000000000",
+        totalSupply: 75,
+        totalSupplyExact: 75000000000000000000,
         extensions: ["ACCESS_MANAGED", "BURNABLE", "CUSTODIAN", "PAUSABLE"],
         implementsERC3643: false,
         implementsSMART: true,
@@ -31,8 +40,9 @@ describe("Tokens", () => {
       {
         name: "Bens Bugs",
         type: "fund",
-        totalSupply: "8.0016658",
-        totalSupplyExact: "800166580",
+        // The total supply includes the management fee which is calculated based on time, we cannot do an exact match here
+        totalSupply: expect.closeTo(8.0016658, 7),
+        totalSupplyExact: expect.closeTo(800166580, 1),
         extensions: [
           "ACCESS_MANAGED",
           "BURNABLE",
@@ -46,8 +56,8 @@ describe("Tokens", () => {
       {
         name: "Euro Bonds",
         type: "bond",
-        totalSupply: "93",
-        totalSupplyExact: "93000000000000000000",
+        totalSupply: 93,
+        totalSupplyExact: 93000000000000000000,
         extensions: [
           "ACCESS_MANAGED",
           "BOND",
@@ -65,8 +75,8 @@ describe("Tokens", () => {
       {
         name: "Euro Deposits",
         type: "deposit",
-        totalSupply: "10900",
-        totalSupplyExact: "10900000000",
+        totalSupply: 10900,
+        totalSupplyExact: 10900000000,
         extensions: ["ACCESS_MANAGED", "BURNABLE", "CUSTODIAN", "PAUSABLE"],
         implementsERC3643: false,
         implementsSMART: true,
@@ -74,8 +84,8 @@ describe("Tokens", () => {
       {
         name: "Paused Stablecoin",
         type: "stablecoin",
-        totalSupply: "0",
-        totalSupplyExact: "0",
+        totalSupply: 0,
+        totalSupplyExact: 0,
         extensions: [
           "ACCESS_MANAGED",
           "BURNABLE",
@@ -90,8 +100,8 @@ describe("Tokens", () => {
       {
         name: "Tether",
         type: "stablecoin",
-        totalSupply: "760",
-        totalSupplyExact: "760000000",
+        totalSupply: 760,
+        totalSupplyExact: 760000000,
         extensions: [
           "ACCESS_MANAGED",
           "BURNABLE",

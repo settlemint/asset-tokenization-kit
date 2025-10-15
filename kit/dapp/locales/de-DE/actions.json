@@ -13,13 +13,19 @@
       "type": "Typ",
       "activeAt": "Geplant",
       "executedAt": "Abgeschlossen am",
-      "executedBy": "Ausgeführt von"
+      "executedBy": "Ausgeführt von",
+      "execute": "Ausführen"
     },
     "empty": {
       "title": "Keine Aktionen vorhanden",
       "description": "Sie sind auf dem neuesten Stand. Neue Aktionen erscheinen hier, sobald sie verfügbar sind."
     },
-    "authorizedBadge": "{{count}} berechtigt"
+    "authorizedBadge": "{{count}} berechtigt",
+    "execute": {
+      "label": "Ausführen",
+      "loading": "Wird ausgeführt…",
+      "unavailable": "Nicht verfügbar"
+    }
   },
   "filters": {
     "searchPlaceholder": "Aktionen durchsuchen"
@@ -39,5 +45,15 @@
     "bond": "Anleihe",
     "settlement": "Settlement",
     "generic": "Aktion"
+  },
+  "execute": {
+    "messages": {
+      "loading": "„{{action}}“ wird ausgeführt…",
+      "success": "„{{action}}“ wurde erfolgreich ausgeführt."
+    },
+    "errors": {
+      "notAuthorized": "Sie haben keine Berechtigung, diese Aktion auszuführen.",
+      "unsupported": "Diese Aktion kann im Portal noch nicht ausgeführt werden."
+    }
   }
 }
