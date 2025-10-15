@@ -267,7 +267,7 @@
         "@tools/typescript-config": "workspace:*",
         "eslint": "9.37.0",
         "eslint-config-prettier": "10.1.8",
-        "eslint-plugin-boundaries": "5.0.2",
+        "eslint-plugin-boundaries": "5.1.0",
         "eslint-plugin-no-barrel-files": "1.2.2",
         "eslint-plugin-only-warn": "1.1.0",
         "eslint-plugin-react": "7.37.5",
@@ -2383,7 +2383,7 @@
 
     "eslint-module-utils": ["eslint-module-utils@2.12.1", "", { "dependencies": { "debug": "^3.2.7" } }, "sha512-L8jSWTze7K2mTg0vos/RuLRS5soomksDPoJLXIslC7c8Wmut3bx7CPpJijDcBZtxQ5lrbUdM+s0OlNbz0DCDNw=="],
 
-    "eslint-plugin-boundaries": ["eslint-plugin-boundaries@5.0.2", "", { "dependencies": { "chalk": "4.1.2", "eslint-import-resolver-node": "0.3.9", "eslint-module-utils": "2.12.1", "micromatch": "4.0.8" }, "peerDependencies": { "eslint": ">=6.0.0" } }, "sha512-fF1TuWffQw3KnTvhFCKB5om00BgzUxQ2HISitTCB1tcMJuoWfHYndO/QmaXK5Nm8elT4CTTg4ZSTwSNJmvbpXw=="],
+    "eslint-plugin-boundaries": ["eslint-plugin-boundaries@5.1.0", "", { "dependencies": { "chalk": "4.1.2", "eslint-import-resolver-node": "0.3.9", "eslint-module-utils": "2.12.1", "micromatch": "4.0.8" }, "peerDependencies": { "eslint": ">=6.0.0" } }, "sha512-tgmq22Z+hEb40D8SDr+QavrioSuMvpymA5AT0t0JoDc4lJ6+AQ1S5EzoRo5kfqoA5YEcTKlTTd0a4gYrWSNj0Q=="],
 
     "eslint-plugin-no-barrel-files": ["eslint-plugin-no-barrel-files@1.2.2", "", { "dependencies": { "@typescript-eslint/utils": "^8.13.0" } }, "sha512-DF2bnHuEHClmL1+maBO5TD2HnnRsLj8J69FFtVkjObkELyjCXaWBsk+URJkqBpdOWURlL+raGX9AEpWCAiOV0g=="],
 
