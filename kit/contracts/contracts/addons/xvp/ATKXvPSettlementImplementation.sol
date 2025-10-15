@@ -41,17 +41,15 @@ contract ATKXvPSettlementImplementation is
     /// @notice Hashlock that must be satisfied before executing local transfers when external flows are present
     bytes32 private _hashlock;
 
-    /// @notice Tracks whether the HTLC secret has been revealed
-    bool private _secretRevealed;
+    /// @notice Aggregated status flags for the settlement lifecycle
+    struct SettlementFlags {
+        bool secretRevealed;
+        bool hasExternalFlows;
+        bool executed;
+        bool cancelled;
+    }
 
-    /// @notice Tracks if the settlement contains any external flows
-    bool private _hasExternalFlows;
-
-    /// @notice Whether the settlement has been executed
-    bool private _executed;
-
-    /// @notice Whether the settlement has been cancelled
-    bool private _cancelled;
+    SettlementFlags private _status;
 
     /// @notice Array of all flows that need to be executed in this settlement
     Flow[] private _flows;
@@ -79,15 +77,15 @@ contract ATKXvPSettlementImplementation is
 
     /// @notice Modifier to check if a settlement is open
     modifier onlyOpen() {
-        if (_executed) revert XvPSettlementAlreadyExecuted();
-        if (_cancelled) revert XvPSettlementAlreadyCancelled();
-        if (block.timestamp >= _cutoffDate) revert XvPSettlementExpired();
+        if (_status.executed) revert XvPSettlementAlreadyExecuted();
+        if (_status.cancelled) revert XvPSettlementAlreadyCancelled();
+        if (block.timestamp > _cutoffDate || block.timestamp == _cutoffDate) revert XvPSettlementExpired();
         _;
     }
 
     /// @notice Modifier to check if a settlement is not executed
     modifier onlyNotExecuted() {
-        if (_executed) revert XvPSettlementAlreadyExecuted();
+        if (_status.executed) revert XvPSettlementAlreadyExecuted();
         _;
     }
 
@@ -123,6 +121,7 @@ contract ATKXvPSettlementImplementation is
     /// @param settlementCutoffDate Timestamp after which the settlement expires
     /// @param settlementAutoExecute Whether to auto-execute after all approvals
     /// @param settlementFlows Array of token flows for this settlement
+    /// @param settlementHashlock Hashlock required when external flows are present
     function initialize(
         string calldata settlementName,
         uint256 settlementCutoffDate,
@@ -136,12 +135,13 @@ contract ATKXvPSettlementImplementation is
         __ReentrancyGuard_init();
         __ERC165_init();
 
+        uint256 minCutoff = block.timestamp + 1;
+        if (settlementCutoffDate < minCutoff) revert InvalidCutoffDate();
+
         _name = settlementName;
         _cutoffDate = settlementCutoffDate;
         _autoExecute = settlementAutoExecute;
         _hashlock = settlementHashlock;
-        _secretRevealed = false;
-        _hasExternalFlows = false;
         _createdAt = block.timestamp;
         if (settlementFlows.length == 0) revert EmptyFlows();
 
@@ -168,13 +168,13 @@ contract ATKXvPSettlementImplementation is
                 if (flow.externalChainId == block.chainid) {
                     revert InvalidExternalChainId(flow.externalChainId);
                 }
-                _hasExternalFlows = true;
+                _status.hasExternalFlows = true;
             }
 
             _flows.push(flow);
         }
 
-        if (_hasExternalFlows && _hashlock == bytes32(0)) {
+        if (_status.hasExternalFlows && _hashlock == bytes32(0)) {
             revert HashlockRequired();
         }
     }
@@ -194,7 +194,7 @@ contract ATKXvPSettlementImplementation is
     /// @notice Returns whether the settlement has been executed
     /// @return True if the settlement has been executed, false otherwise
     function executed() public view returns (bool) {
-        return _executed;
+        return _status.executed;
     }
 
     /// @notice Returns the hashlock guarding the settlement
@@ -206,25 +206,25 @@ contract ATKXvPSettlementImplementation is
     /// @notice Returns whether the settlement contains external flows
     /// @return True if at least one flow targets an external chain
     function hasExternalFlows() public view returns (bool) {
-        return _hasExternalFlows;
+        return _status.hasExternalFlows;
     }
 
     /// @notice Returns whether the settlement secret has been revealed
     /// @return True if the secret has been revealed
     function secretRevealed() public view returns (bool) {
-        return _secretRevealed;
+        return _status.secretRevealed;
     }
 
     /// @notice Returns whether the settlement has been cancelled
     /// @return True if the settlement has been cancelled, false otherwise
     function cancelled() public view returns (bool) {
-        return _cancelled;
+        return _status.cancelled;
     }
 
     /// @notice Returns whether the settlement is armed (awaiting secret reveal after full approvals)
     /// @return True if the settlement is armed
     function isArmed() public view returns (bool) {
-        return _hasExternalFlows && isFullyApproved() && !_secretRevealed && _isOpen();
+        return _status.hasExternalFlows && isFullyApproved() && !_status.secretRevealed && _isOpen();
     }
 
     /// @notice Returns whether the settlement conditions for execution are met
@@ -312,7 +312,7 @@ contract ATKXvPSettlementImplementation is
             IERC20(flow.asset).safeTransferFrom(flow.from, flow.to, flow.amount);
         }
 
-        _executed = true;
+        _status.executed = true;
         emit XvPSettlementExecuted(_msgSender());
 
         return true;
@@ -323,7 +323,7 @@ contract ATKXvPSettlementImplementation is
     /// @return True if the revocation was successful
     function revokeApproval() external nonReentrant onlyOpen onlyInvolvedSender returns (bool) {
         if (!_approvals[_msgSender()]) revert SenderNotApprovedSettlement();
-        if (_hasExternalFlows && isFullyApproved()) revert RevocationNotAllowedWhileArmed();
+        if (_status.hasExternalFlows && isFullyApproved()) revert RevocationNotAllowedWhileArmed();
 
         _approvals[_msgSender()] = false;
         emit XvPSettlementApprovalRevoked(_msgSender());
@@ -335,10 +335,10 @@ contract ATKXvPSettlementImplementation is
     /// @dev The caller must be involved in the settlement and it must not be executed yet
     /// @return True if the cancellation was successful
     function cancel() external nonReentrant onlyOpen onlyLocalParticipant returns (bool) {
-        if (_secretRevealed) revert CancelNotAllowed();
+        if (_status.secretRevealed) revert CancelNotAllowed();
 
         // No external flows or not all approvals in: unilateral cancel allowed
-        if (!_hasExternalFlows || !isFullyApproved()) {
+        if (!_status.hasExternalFlows || !isFullyApproved()) {
             _cancelSettlement(_msgSender());
             return true;
         }
@@ -350,9 +350,9 @@ contract ATKXvPSettlementImplementation is
     /// @notice Records a cancel vote for unanimous cancellation when armed
     /// @return True if the vote was recorded successfully
     function proposeCancel() external nonReentrant onlyOpen onlyLocalParticipant returns (bool) {
-        if (_secretRevealed) revert CancelNotAllowed();
+        if (_status.secretRevealed) revert CancelNotAllowed();
 
-        if (!_hasExternalFlows || !isFullyApproved()) {
+        if (!_status.hasExternalFlows || !isFullyApproved()) {
             _cancelSettlement(_msgSender());
             return true;
         }
@@ -372,8 +372,8 @@ contract ATKXvPSettlementImplementation is
     /// @notice Withdraws a previously recorded cancel vote
     /// @return True if the vote was withdrawn successfully
     function withdrawCancelProposal() external nonReentrant onlyOpen onlyLocalParticipant returns (bool) {
-        if (!_hasExternalFlows || !isFullyApproved()) revert CancelNotAllowed();
-        if (_secretRevealed) revert CancelNotAllowed();
+        if (!_status.hasExternalFlows || !isFullyApproved()) revert CancelNotAllowed();
+        if (_status.secretRevealed) revert CancelNotAllowed();
         if (!_cancelVotes[_msgSender()]) revert CancelVoteNotCast(_msgSender());
 
         _cancelVotes[_msgSender()] = false;
@@ -386,12 +386,12 @@ contract ATKXvPSettlementImplementation is
     /// @param secret The secret preimage whose keccak256 hash must match the hashlock
     /// @return True if the secret was accepted
     function revealSecret(bytes calldata secret) external nonReentrant onlyOpen returns (bool) {
-        if (!_hasExternalFlows) revert HashlockRevealNotRequired();
+        if (!_status.hasExternalFlows) revert HashlockRevealNotRequired();
         if (_hashlock == bytes32(0)) revert HashlockRequired();
-        if (_secretRevealed) revert SecretAlreadyRevealed();
+        if (_status.secretRevealed) revert SecretAlreadyRevealed();
         if (keccak256(secret) != _hashlock) revert InvalidSecret();
 
-        _secretRevealed = true;
+        _status.secretRevealed = true;
 
         emit XvPSettlementSecretRevealed(_msgSender(), secret);
 
@@ -402,7 +402,7 @@ contract ATKXvPSettlementImplementation is
     /// @notice Determines whether both approvals and hashlock gate are satisfied for execution
     /// @return True if no external gating is active or the secret has been revealed
     function _hashlockSatisfied() private view returns (bool) {
-        return !_hasExternalFlows || _secretRevealed;
+        return !_status.hasExternalFlows || _status.secretRevealed;
     }
 
     /// @notice Executes the settlement automatically when conditions are met
@@ -416,7 +416,7 @@ contract ATKXvPSettlementImplementation is
     /// @param caller The address initiating the cancellation
     function _cancelSettlement(address caller) private {
         _clearAllCancelVotes();
-        _cancelled = true;
+        _status.cancelled = true;
         emit XvPSettlementCancelled(caller);
     }
 
@@ -458,7 +458,7 @@ contract ATKXvPSettlementImplementation is
     /// @notice Determines whether the settlement is open (not executed/cancelled/expired)
     /// @return True if the settlement is open
     function _isOpen() private view returns (bool) {
-        if (_executed || _cancelled) {
+        if (_status.executed || _status.cancelled) {
             return false;
         }
         return block.timestamp < _cutoffDate;

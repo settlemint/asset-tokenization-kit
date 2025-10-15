@@ -10,6 +10,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 interface IATKXvPSettlement is IERC165 {
     /// @notice A struct representing a token flow in the settlement
     /// @dev Each flow represents a transfer from one address to another of a specific token amount
+    // solhint-disable-next-line gas-struct-packing
     struct Flow {
         address asset; // The token contract address (local or external reference)
         address from; // The sender's address
