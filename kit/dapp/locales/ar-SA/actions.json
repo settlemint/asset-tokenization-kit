@@ -13,13 +13,19 @@
       "type": "النوع",
       "activeAt": "موعد التنفيذ",
       "executedAt": "اكتمل في",
-      "executedBy": "منفذ الإجراء"
+      "executedBy": "منفذ الإجراء",
+      "execute": "تنفيذ"
     },
     "empty": {
       "title": "لا توجد إجراءات حاليًا",
       "description": "أنت على اطلاع كامل. ستظهر الإجراءات الجديدة هنا بمجرد توفرها."
     },
-    "authorizedBadge": "{{count}} مفوض"
+    "authorizedBadge": "{{count}} مفوض",
+    "execute": {
+      "label": "تنفيذ",
+      "loading": "جارٍ التنفيذ…",
+      "unavailable": "غير متاح"
+    }
   },
   "filters": {
     "searchPlaceholder": "ابحث في الإجراءات"
@@ -39,5 +45,15 @@
     "bond": "سند",
     "settlement": "تسوية",
     "generic": "إجراء"
+  },
+  "execute": {
+    "messages": {
+      "loading": "جاري تنفيذ {{action}}…",
+      "success": "تم تنفيذ {{action}} بنجاح."
+    },
+    "errors": {
+      "notAuthorized": "لا تملك الصلاحية لتنفيذ هذا الإجراء.",
+      "unsupported": "لا يمكن تنفيذ هذا الإجراء من البوابة بعد."
+    }
   }
 }
