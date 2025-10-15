@@ -16,16 +16,17 @@
  * @see {@link ../db/schemas/auth} - Database schema for authentication
  */
 
-import { authPublicConfig } from "@/lib/auth/public-config";
 import { pincode } from "@/lib/auth/plugins/pincode-plugin";
 import { secretCodes } from "@/lib/auth/plugins/secret-codes-plugin";
 import { twoFactor } from "@/lib/auth/plugins/two-factor";
+import { authPublicConfig } from "@/lib/auth/public-config";
 import {
   accessControl,
   adminRole,
   userRole,
 } from "@/lib/auth/utils/permissions";
 import { kycProfiles } from "@/lib/db/schema";
+import * as authSchema from "@/lib/db/schemas/auth";
 import { env } from "@atk/config/env";
 import { metadata } from "@atk/config/metadata";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
@@ -44,7 +45,6 @@ import { reactStartCookies } from "better-auth/react-start";
 import { eq } from "drizzle-orm/sql";
 import { zeroAddress } from "viem";
 import { db, migrateDatabase } from "../db";
-import * as authSchema from "./db/auth";
 
 const options = {
   /**

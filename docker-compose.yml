@@ -327,7 +327,7 @@ services:
     ports:
       - "${BLOCKSCOUT_BACKEND_PORT:-4000}:4000"
   blockscout-frontend:
-    image: ghcr.io/blockscout/frontend:v2.3.4
+    image: ghcr.io/blockscout/frontend:v2.3.5
     platform: linux/amd64
     restart: unless-stopped
     container_name: ${CONTAINER_PREFIX:-atk}-blockscout-frontend

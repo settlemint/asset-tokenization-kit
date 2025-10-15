@@ -1,26 +1,22 @@
 import type { PlaywrightTestConfig } from "@playwright/test";
-import * as dotenv from "dotenv";
 import * as path from "node:path";
+import process from "node:process";
 import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const e2eDir = path.dirname(__filename);
 const projectRoot = path.resolve(e2eDir, "../../");
-
-dotenv.config({ path: path.join(projectRoot, ".env"), quiet: true });
-dotenv.config({
-  path: path.join(projectRoot, ".env.local"),
-  override: true,
-  quiet: true,
-});
-
-const requiredEnvVars = ["SETTLEMINT_HASURA_DATABASE_URL"] as const;
-
-for (const envVar of requiredEnvVars) {
-  if (!process.env[envVar]) {
-    throw new Error(
-      `[Base Config] Missing required environment variable: ${envVar}`
-    );
+const envFiles = [".env", ".env.local"] as const;
+if (typeof process.loadEnvFile === "function") {
+  for (const file of envFiles) {
+    const filePath = path.join(projectRoot, file);
+    try {
+      process.loadEnvFile(filePath);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+        throw error;
+      }
+    }
   }
 }
 

@@ -42,3 +42,78 @@ export async function confirmPinCode(
     );
   }
 }
+
+const escapeForRegex = (value: string) =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+type SelectDropdownOptionParams = {
+  label: RegExp | string;
+  value: string;
+  fallback?: {
+    partialLength?: number;
+    typeDelayMs?: number;
+  };
+};
+
+export async function selectDropdownOption(
+  page: Page,
+  params: SelectDropdownOptionParams
+) {
+  const { label, value, fallback } = params;
+  const labelForError = typeof label === "string" ? label : label.toString();
+  if (typeof value !== "string" || value.trim().length === 0) {
+    throw new Error(
+      `selectDropdownOption requires a non-empty string value argument for label ${labelForError}`
+    );
+  }
+
+  const normalizedValue = value.trim();
+
+  const normalizedLabel =
+    typeof label === "string"
+      ? new RegExp(`^${escapeForRegex(label)}$`, "i")
+      : label;
+
+  const comboboxTrigger = page
+    .getByRole("combobox", { name: normalizedLabel })
+    .first();
+  const buttonTrigger = page
+    .getByRole("button", { name: normalizedLabel })
+    .first();
+
+  const comboboxCount = await comboboxTrigger.count();
+  const buttonCount = await buttonTrigger.count();
+
+  if (comboboxCount === 0 && buttonCount === 0) {
+    throw new Error(
+      `selectDropdownOption could not find a combobox or button with label matching ${normalizedLabel}`
+    );
+  }
+
+  const trigger = comboboxCount > 0 ? comboboxTrigger : buttonTrigger;
+  await expect(trigger).toBeVisible({ timeout: 15000 });
+  await trigger.click();
+
+  const optionPattern = new RegExp(`^${escapeForRegex(normalizedValue)}$`, "i");
+  const option = page.getByRole("option", { name: optionPattern }).first();
+
+  if ((await option.count()) > 0) {
+    await option.click();
+    return;
+  }
+
+  const partialLength =
+    fallback?.partialLength ?? Math.min(6, normalizedValue.length);
+  if (partialLength === 0) {
+    throw new Error(
+      `selectDropdownOption could not find option ${normalizedValue} and fallback typing is disabled`
+    );
+  }
+
+  const partialValue = normalizedValue.slice(0, partialLength);
+  await page.keyboard.type(partialValue, {
+    delay: fallback?.typeDelayMs ?? 80,
+  });
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+}

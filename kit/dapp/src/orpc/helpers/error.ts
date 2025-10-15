@@ -8,6 +8,29 @@ import { createLogger } from "@settlemint/sdk-utils/logging";
 
 const logger = createLogger();
 
+type OrpcErrorCode = {
+  code?: unknown;
+};
+
+function hasErrorCode(error: unknown): error is OrpcErrorCode {
+  return Boolean(error) && typeof error === "object";
+}
+
+export function isOrpcErrorWithCode<TCode extends string>(
+  error: unknown,
+  code: TCode
+): error is { code: TCode } {
+  if (!hasErrorCode(error)) return false;
+  const maybeCode = error.code;
+  return typeof maybeCode === "string" && maybeCode === code;
+}
+
+export function isOrpcNotFoundError(
+  error: unknown
+): error is { code: "NOT_FOUND" } {
+  return isOrpcErrorWithCode(error, "NOT_FOUND");
+}
+
 /**
  * Logs unexpected errors while filtering out expected client-side errors (4xx status codes).
  * Skips logging for NOT_FOUND and UNAUTHORIZED errors to reduce noise.
@@ -26,13 +49,12 @@ export function logUnexpectedError(error: unknown) {
   };
 
   const status = typeof e?.status === "number" ? e.status : undefined;
-  const code = typeof e?.code === "string" ? e.code : undefined;
 
   // Skip common/expected client-side errors
   if (
     (status && status < 500) /* 4xx */ ||
-    code === "NOT_FOUND" ||
-    code === "UNAUTHORIZED"
+    isOrpcNotFoundError(error) ||
+    isOrpcErrorWithCode(error, "UNAUTHORIZED")
   ) {
     return;
   }
