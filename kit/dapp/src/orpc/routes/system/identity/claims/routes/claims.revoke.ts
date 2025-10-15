@@ -106,7 +106,7 @@ export const revoke = authRouter.system.identity.claims.revoke
     let issuerIdentity: Address | null = null;
 
     if (isSelfRevocation) {
-      issuerIdentity = targetIdentityAddress as Address;
+      issuerIdentity = targetIdentityAddress;
     } else {
       if (!context.theGraphClient) {
         throw errors.INTERNAL_SERVER_ERROR({

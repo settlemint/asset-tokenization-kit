@@ -212,7 +212,7 @@ export function ClaimsTable({
           );
         },
         meta: {
-          displayName: "Actions",
+          displayName: t("claimsTable.columns.actions"),
           type: "none",
         },
       }),
