@@ -170,7 +170,7 @@ The following table lists the configurable parameters of this chart and their de
 |frontend.image|object|-|Blockscout frontend image configuration|
 |frontend.image.pullPolicy|string|`"IfNotPresent"`|Blockscout frontend image pull policy|
 |frontend.image.repository|string|`"ghcr.io/blockscout/frontend"`|Blockscout frontend image repository|
-|frontend.image.tag|string|`"v2.3.4"`|Blockscout frontend image tag (immutable tags are recommended)|
+|frontend.image.tag|string|`"v2.3.5"`|Blockscout frontend image tag (immutable tags are recommended)|
 |frontend.ingress|object|-|Ingress parameters for Blockscout frontend|
 |frontend.ingress.annotations|object|-|Additional annotations for the Ingress resource|
 |frontend.ingress.className|string|`"atk-nginx"`|IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)|
