@@ -55,7 +55,7 @@ export function handleFixedYieldScheduleSet(
   setBigNumber(
     fixedYieldSchedule,
     "totalYield",
-    event.params.yieldForNextPeriod,
+    BigInt.zero(),
     denominationAssetDecimals
   );
 
@@ -79,7 +79,7 @@ export function handleFixedYieldScheduleSet(
     setBigNumber(
       period,
       "totalYield",
-      isFirstPeriod ? event.params.yieldForNextPeriod : BigInt.zero(),
+      BigInt.zero(),
       denominationAssetDecimals
     );
     setBigNumber(
@@ -148,6 +148,8 @@ export function handleYieldClaimed(event: YieldClaimed): void {
       totalUnclaimedYieldForPeriod,
       denominationAssetDecimals
     );
+    // Mark the period as completed
+    period.completed = true;
     period.save();
 
     actionExecuted(
@@ -193,18 +195,25 @@ export function handleYieldClaimed(event: YieldClaimed): void {
   const currentPeriod = TokenFixedYieldSchedulePeriod.load(currentPeriodId);
   if (!currentPeriod) {
     // There is no current period, the schedule has ended
-    fixedYieldSchedule.currentPeriod = null;
     fixedYieldSchedule.nextPeriod = null;
     fixedYieldSchedule.save();
     return;
   }
-  setBigNumber(
-    currentPeriod,
-    "totalYield",
-    event.params.yieldForNextPeriod, // Is the yield of any not completed period
-    denominationAssetDecimals
-  );
-  currentPeriod.save();
+
+  // Set the same total yield for all periods that are not completed
+  const periods = fixedYieldSchedule.periods.load();
+  for (let i = 0; i < periods.length; i++) {
+    const period = fetchFixedYieldSchedulePeriod(periods[i].id);
+    if (!period.completed) {
+      setBigNumber(
+        currentPeriod,
+        "totalYield",
+        event.params.totalYieldForCurrentPeriod,
+        denominationAssetDecimals
+      );
+      period.save();
+    }
+  }
   fixedYieldSchedule.currentPeriod = currentPeriod.id;
 
   const nextPeriodId = getPeriodId(
@@ -213,18 +222,10 @@ export function handleYieldClaimed(event: YieldClaimed): void {
   );
   const nextPeriod = TokenFixedYieldSchedulePeriod.load(nextPeriodId);
   if (nextPeriod) {
-    setBigNumber(
-      nextPeriod,
-      "totalYield",
-      event.params.yieldForNextPeriod, // Is the yield of any not completed period
-      denominationAssetDecimals
-    );
-    nextPeriod.save();
     fixedYieldSchedule.nextPeriod = nextPeriod.id;
-    fixedYieldSchedule.save();
   } else {
     // There is no next period, current period is the last period
     fixedYieldSchedule.nextPeriod = null;
-    fixedYieldSchedule.save();
   }
+  fixedYieldSchedule.save();
 }

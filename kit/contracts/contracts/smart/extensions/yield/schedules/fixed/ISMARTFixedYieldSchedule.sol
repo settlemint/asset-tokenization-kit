@@ -73,15 +73,13 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     /// @param interval The interval of the yield schedule.
     /// @param periodEndTimestamps The timestamps of the end of each period.
     /// @param denominationAsset The denomination asset of the yield schedule.
-    /// @param yieldForNextPeriod The yield for the next period.
     event FixedYieldScheduleSet(
         uint256 startDate,
         uint256 endDate,
         uint256 rate,
         uint256 interval,
         uint256[] periodEndTimestamps,
-        IERC20 denominationAsset,
-        uint256 yieldForNextPeriod
+        IERC20 denominationAsset
     );
 
     /// @notice Emitted when an administrator or funder successfully deposits `_denominationAsset` into the contract to
@@ -108,7 +106,7 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     /// The length of this array is `toPeriod - fromPeriod + 1`.
     /// @param totalUnclaimedYield The total amount of unclaimed yield remaining in the contract across all holders
     /// after this claim.
-    /// @param yieldForNextPeriod The yield for the next period.
+    /// @param totalYieldForCurrentPeriod The estimated total yield required for the current period.
     event YieldClaimed( // Amounts per period, matches the range fromPeriod to toPeriod
         address indexed holder,
         uint256 claimedAmount,
@@ -117,7 +115,7 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
         uint256[] periodAmounts,
         uint256[] periodYields,
         uint256 totalUnclaimedYield,
-        uint256 yieldForNextPeriod
+        uint256 totalYieldForCurrentPeriod
     );
 
     /// @notice Returns an array of all period end timestamps for this yield schedule.
@@ -169,14 +167,14 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     /// @return totalAmount The total sum of unclaimed yield tokens.
     function totalUnclaimedYield() external view returns (uint256 totalAmount);
 
-    /// @notice Calculates the total amount of yield that will be required to cover all token holders for the next
-    /// upcoming distribution period.
+    /// @notice Calculates the total amount of yield that will be required to cover all token holders for the
+    /// current distribution period.
     /// @dev This is a projection based on current total supply (or relevant historical supply measure) and the yield
     /// rate.
     /// Useful for administrators to ensure sufficient denomination assets are available in the contract for future
     /// payouts.
-    /// @return totalAmount The estimated total yield tokens needed for the next period's distribution.
-    function totalYieldForNextPeriod() external view returns (uint256 totalAmount);
+    /// @return totalAmount The estimated total yield tokens needed for the current period's distribution.
+    function estimateTotalYieldForCurrentPeriod() external view returns (uint256 totalAmount);
 
     /// @notice Calculates the total accrued yield for a specific token holder up to the current moment, including any
     /// pro-rata share for the ongoing period.

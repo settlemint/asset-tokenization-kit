@@ -150,11 +150,8 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
             _periodEndTimestamps[i] = timestamp;
         }
 
-        // Calculate the for the next period for the event.
-        uint256 yieldForNextPeriod = totalYieldForNextPeriod();
-
         emit FixedYieldScheduleSet(
-            startDate_, endDate_, rate_, interval_, _periodEndTimestamps, _denominationAsset, yieldForNextPeriod
+            startDate_, endDate_, rate_, interval_, _periodEndTimestamps, _denominationAsset
         );
     }
 
@@ -271,8 +268,8 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
     /// @inheritdoc ISMARTFixedYieldSchedule
     /// @dev This calculation uses the current total supply. For a more precise estimate if supply changes rapidly,
     /// one might need a more complex projection. Assumes a generic basis from `_token.yieldBasisPerUnit(address(0))`.
-    function totalYieldForNextPeriod() public view override returns (uint256) {
-        if (block.timestamp > _endDate || block.timestamp == _endDate) return 0; // Schedule ended, no next period.
+    function estimateTotalYieldForCurrentPeriod() public view override returns (uint256) {
+        if (block.timestamp > _endDate || block.timestamp == _endDate) return 0; // Schedule ended, no current period.
 
         // Get the current total supply of the associated token.
         uint256 totalSupply = IERC20(address(_token)).totalSupply();
@@ -399,8 +396,8 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         // Calculate the remaining total unclaimed yield in the contract for the event.
         uint256 remainingUnclaimed = totalUnclaimedYield();
 
-        // Calculate the for the next period for the event.
-        uint256 yieldForNextPeriod = totalYieldForNextPeriod();
+        // Calculate the required yield for the current period for the event.
+        uint256 totalYieldForCurrentPeriod = estimateTotalYieldForCurrentPeriod();
 
         emit YieldClaimed(
             sender,
@@ -410,7 +407,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
             periodAmounts,
             periodYields,
             remainingUnclaimed,
-            yieldForNextPeriod
+            totalYieldForCurrentPeriod
         );
     }
 

@@ -417,7 +417,7 @@ templates:
         - name: FixedYieldSchedule
           file: ../contracts/.generated/artifacts/contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json
       eventHandlers:
-        - event: FixedYieldScheduleSet(uint256,uint256,uint256,uint256,uint256[],address,uint256)
+        - event: FixedYieldScheduleSet(uint256,uint256,uint256,uint256,uint256[],address)
           handler: handleFixedYieldScheduleSet
         - event: DenominationAssetTopUp(indexed address,indexed uint256)
           handler: handleDenominationAssetTopUp

@@ -1444,6 +1444,8 @@ type TokenFixedYieldSchedulePeriod @entity(immutable: false) {
   startDate: BigInt!
   # Unix timestamp when period ends
   endDate: BigInt!
+  # Whether this period has been completed (end date has been reached)
+  completed: Boolean!
   # Yield claimed in this period (human-readable)
   totalClaimed: BigDecimal!
   # Yield claimed in this period (exact, raw units)
