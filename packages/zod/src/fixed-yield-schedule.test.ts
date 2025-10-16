@@ -71,7 +71,8 @@ describe("fixedYieldSchedule", () => {
       totalYield: "15000.75",
       denominationAsset: {
         id: "0x1111111111111111111111111111111111111111",
-        balance: "1000000.0",
+        decimals: 18,
+        symbol: "USDC",
       },
       currentPeriod: {
         id: "0x2222222222222222222222222222222222222222",
@@ -128,7 +129,8 @@ describe("fixedYieldSchedule", () => {
       totalYield: "4500",
       denominationAsset: {
         id: "0x5555555555555555555555555555555555555555",
-        balance: "2500.75",
+        decimals: 18,
+        symbol: "WETH",
       },
       currentPeriod: null,
       nextPeriod: period1,
@@ -156,7 +158,8 @@ describe("fixedYieldSchedule", () => {
       totalYield: "999999999999999999999999999999.999999999", // Very large decimal
       denominationAsset: {
         id: "0x2222222222222222222222222222222222222222",
-        balance: "0.000000000000000001",
+        decimals: 18,
+        symbol: "USDC",
       },
       currentPeriod: null,
       nextPeriod: null,
@@ -193,7 +196,8 @@ describe("fixedYieldSchedule", () => {
         totalYield: "0",
         denominationAsset: {
           id: "0x1111111111111111111111111111111111111111",
-          balance: "500.0",
+          decimals: 18,
+          symbol: "USDC",
         },
         currentPeriod: null,
         nextPeriod: null,
@@ -213,7 +217,7 @@ describe("fixedYieldSchedule", () => {
         totalUnclaimedYield: "0",
         totalYield: "0",
         denominationAsset: {
-          // Missing id field
+          // Missing fields
         },
         currentPeriod: null,
         nextPeriod: null,
@@ -234,7 +238,8 @@ describe("fixedYieldSchedule", () => {
       totalYield: "0",
       denominationAsset: {
         id: "0x1111111111111111111111111111111111111111",
-        balance: "10000.0",
+        decimals: 18,
+        symbol: "USDC",
       },
       currentPeriod: null,
       nextPeriod: null,
@@ -260,7 +265,8 @@ describe("fixedYieldSchedule", () => {
       totalYield: "12345678901234567890123456789.123456789", // Very large with decimals
       denominationAsset: {
         id: "0x1111111111111111111111111111111111111111",
-        balance: "50000000000.0",
+        decimals: 18,
+        symbol: "USDC",
       },
       currentPeriod: null,
       nextPeriod: null,

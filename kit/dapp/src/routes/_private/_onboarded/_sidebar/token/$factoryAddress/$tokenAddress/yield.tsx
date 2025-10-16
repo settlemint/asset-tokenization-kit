@@ -61,15 +61,6 @@ function RouteComponent() {
     })
   );
 
-  // Fetch denomination asset details when available
-  const denominationAssetId = yieldSchedule?.denominationAsset?.id;
-  const { data: denominationAsset } = useQuery(
-    orpc.token.read.queryOptions({
-      input: { tokenAddress: denominationAssetId ?? "" },
-      enabled: !!denominationAssetId,
-    })
-  );
-
   // Fetch yield schedule's denomination asset balance
   const { data: yieldScheduleBalance } = useQuery(
     orpc.token.holder.queryOptions({
@@ -190,21 +181,21 @@ function RouteComponent() {
           info={t("tokens:yield.fields.totalYieldInfo")}
           value={yieldSchedule.totalYield}
           type="currency"
-          currency={{ assetSymbol: asset.symbol }}
+          currency={{ assetSymbol: yieldSchedule.denominationAsset.symbol }}
         />
         <DetailGridItem
           label={t("tokens:yield.fields.totalClaimed")}
           info={t("tokens:yield.fields.totalClaimedInfo")}
           value={yieldSchedule.totalClaimed}
           type="currency"
-          currency={{ assetSymbol: asset.symbol }}
+          currency={{ assetSymbol: yieldSchedule.denominationAsset.symbol }}
         />
         <DetailGridItem
           label={t("tokens:yield.fields.totalUnclaimed")}
           info={t("tokens:yield.fields.totalUnclaimedInfo")}
           value={yieldSchedule.totalUnclaimedYield}
           type="currency"
-          currency={{ assetSymbol: asset.symbol }}
+          currency={{ assetSymbol: yieldSchedule.denominationAsset.symbol }}
         />
         <DetailGridItem
           label={t("tokens:yield.fields.denominationAsset")}
@@ -217,7 +208,7 @@ function RouteComponent() {
           info={t("tokens:yield.fields.denominationAssetBalanceInfo")}
           value={yieldScheduleBalance?.holder?.available ?? 0}
           type="currency"
-          currency={{ assetSymbol: denominationAsset?.symbol ?? "" }}
+          currency={{ assetSymbol: yieldSchedule.denominationAsset.symbol }}
         />
       </DetailGrid>
 
@@ -242,14 +233,14 @@ function RouteComponent() {
             info={t("tokens:yield.fields.periodYieldInfo")}
             value={yieldSchedule.currentPeriod.totalYield}
             type="currency"
-            currency={{ assetSymbol: asset.symbol }}
+            currency={{ assetSymbol: yieldSchedule.denominationAsset.symbol }}
           />
           <DetailGridItem
             label={t("tokens:yield.fields.periodClaimed")}
             info={t("tokens:yield.fields.periodClaimedInfo")}
             value={yieldSchedule.currentPeriod.totalClaimed}
             type="currency"
-            currency={{ assetSymbol: asset.symbol }}
+            currency={{ assetSymbol: yieldSchedule.denominationAsset.symbol }}
           />
         </DetailGrid>
       )}
@@ -275,7 +266,7 @@ function RouteComponent() {
             info={t("tokens:yield.fields.periodYieldInfo")}
             value={yieldSchedule.nextPeriod.totalYield}
             type="currency"
-            currency={{ assetSymbol: asset.symbol }}
+            currency={{ assetSymbol: yieldSchedule.denominationAsset.symbol }}
           />
         </DetailGrid>
       )}
@@ -283,7 +274,7 @@ function RouteComponent() {
       {yieldSchedule.periods && yieldSchedule.periods.length > 0 && (
         <FixedYieldSchedulePeriodsTable
           periods={yieldSchedule.periods}
-          assetSymbol={asset.symbol}
+          assetSymbol={yieldSchedule.denominationAsset.symbol}
         />
       )}
 

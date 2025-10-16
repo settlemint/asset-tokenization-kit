@@ -46,11 +46,15 @@ export function updateYield(token: Token): TokenFixedYieldSchedule | null {
   }
 
   const currentPeriodValue = currentPeriod.value.toI32();
-  const fixedYieldCurrentPeriod = fetchFixedYieldSchedulePeriod(
-    getPeriodId(fixedYieldScheduleAddress, currentPeriodValue)
-  );
-  fixedYieldSchedule.currentPeriod = fixedYieldCurrentPeriod.id;
-  fixedYieldSchedule.save();
+  let fixedYieldCurrentPeriod: TokenFixedYieldSchedulePeriod | null = null;
+  if (currentPeriodValue === 0) {
+    fixedYieldSchedule.currentPeriod = null;
+  } else {
+    fixedYieldCurrentPeriod = fetchFixedYieldSchedulePeriod(
+      getPeriodId(fixedYieldScheduleAddress, currentPeriodValue)
+    );
+    fixedYieldSchedule.currentPeriod = fixedYieldCurrentPeriod.id;
+  }
 
   const nextPeriodId = getPeriodId(
     fixedYieldScheduleAddress,
@@ -68,6 +72,7 @@ export function updateYield(token: Token): TokenFixedYieldSchedule | null {
     fixedYieldScheduleContract.try_totalYieldForNextPeriod();
   if (currentAndNextPeriodYield.reverted) {
     log.error("FixedYieldSchedule: totalYieldForNextPeriod reverted", []);
+    fixedYieldSchedule.save();
     return fixedYieldSchedule;
   }
 
@@ -78,20 +83,22 @@ export function updateYield(token: Token): TokenFixedYieldSchedule | null {
     return fixedYieldSchedule;
   }
 
-  setBigNumber(
-    fixedYieldCurrentPeriod,
-    "totalYield",
-    currentAndNextPeriodYield.value,
-    denominationAssetDecimals
-  );
-  setBigNumber(
-    fixedYieldCurrentPeriod,
-    "totalUnclaimedYield",
-    currentAndNextPeriodYield.value.minus(
-      fixedYieldCurrentPeriod.totalClaimedExact
-    ),
-    denominationAssetDecimals
-  );
+  if (fixedYieldCurrentPeriod) {
+    setBigNumber(
+      fixedYieldCurrentPeriod,
+      "totalYield",
+      currentAndNextPeriodYield.value,
+      denominationAssetDecimals
+    );
+    setBigNumber(
+      fixedYieldCurrentPeriod,
+      "totalUnclaimedYield",
+      currentAndNextPeriodYield.value.minus(
+        fixedYieldCurrentPeriod.totalClaimedExact
+      ),
+      denominationAssetDecimals
+    );
+  }
   setBigNumber(
     fixedYieldNextPeriod,
     "totalYield",
