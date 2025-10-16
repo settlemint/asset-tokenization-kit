@@ -25,7 +25,7 @@ image:
   # -- (string) Kubernetes image pull policy for Besu containers.
   pullPolicy: IfNotPresent
   # -- (string) Specific Besu image tag to deploy.
-  tag: "25.9.0"
+  tag: "25.10.0"
 
 # -- (list) Image pull secrets granting registry access for the Besu image.
 imagePullSecrets: []
