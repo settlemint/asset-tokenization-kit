@@ -122,7 +122,7 @@ export function SetYieldScheduleSheet({
       // Step 2: Set the yield schedule on the token
       await setYieldSchedule({
         contract: asset.id,
-        schedule: scheduleResult.address,
+        schedule: scheduleResult.id,
         walletVerification: {
           secretVerificationCode: verification.secretVerificationCode,
           verificationType: verification.verificationType || "PINCODE",
@@ -206,9 +206,11 @@ export function SetYieldScheduleSheet({
                         {t("tokens:yield.fields.interval")}
                       </div>
                       <div className="text-sm font-medium">
-                        {values.paymentInterval
-                          ? t(`common:timeInterval.${values.paymentInterval}`)
-                          : "—"}
+                        {typeof values.paymentInterval === "number"
+                          ? `${values.paymentInterval}s`
+                          : values.paymentInterval
+                            ? t(`common:timeInterval.${values.paymentInterval}`)
+                            : "-"}
                       </div>
                     </div>
                   </div>

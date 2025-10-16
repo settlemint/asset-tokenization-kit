@@ -20,6 +20,17 @@ const USER_ASSETS_QUERY = theGraphGraphql(`
         bond {
           isMatured
         }
+        yield: yield_ {
+          schedule {
+            id
+            denominationAsset {
+              id
+              symbol
+              decimals
+              name
+            }
+          }
+        }
       }
     }
   }

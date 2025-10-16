@@ -165,6 +165,12 @@ export const tokenMiddleware = baseRouter.middleware<
   });
 
   const token = result.token;
+  if (!token) {
+    throw errors.NOT_FOUND({
+      message: `Token with address '${tokenAddress}' not found`,
+    });
+  }
+
   const identity = token.account?.identities?.[0];
   const identityAccount = identity?.account ?? undefined;
 

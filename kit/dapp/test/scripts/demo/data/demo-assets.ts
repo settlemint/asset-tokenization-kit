@@ -5,6 +5,16 @@ import {
 } from "@test/scripts/demo/data/demo-country-codes";
 import { from } from "dnum";
 
+const threeMinutesFromNow = new Date();
+threeMinutesFromNow.setMilliseconds(0);
+threeMinutesFromNow.setSeconds(0);
+threeMinutesFromNow.setMinutes(threeMinutesFromNow.getMinutes() + 3);
+
+const fiveMinutesFromNow = new Date();
+fiveMinutesFromNow.setMilliseconds(0);
+fiveMinutesFromNow.setSeconds(0);
+fiveMinutesFromNow.setMinutes(fiveMinutesFromNow.getMinutes() + 5);
+
 const tomorrow = new Date();
 tomorrow.setDate(tomorrow.getDate() + 1);
 
@@ -23,17 +33,9 @@ export const BONDS = [
     symbol: "STB",
     yieldRate: 110,
     cap: from(1_000_000_000, 18),
-    issueDate: new Date(
-      tomorrow.getFullYear(),
-      tomorrow.getMonth(),
-      tomorrow.getDate()
-    ),
-    maturityDate: new Date(
-      dayAfterTomorrow.getFullYear(),
-      dayAfterTomorrow.getMonth(),
-      dayAfterTomorrow.getDate()
-    ),
-    paymentInterval: TimeIntervalEnum.DAILY,
+    issueDate: threeMinutesFromNow,
+    maturityDate: fiveMinutesFromNow,
+    paymentInterval: 30, // 30 seconds
   },
   {
     name: "Bund7",

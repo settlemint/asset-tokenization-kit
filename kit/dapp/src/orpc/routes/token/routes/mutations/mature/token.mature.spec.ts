@@ -1,9 +1,8 @@
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
-import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import {
   getAnvilBasedFutureDate,
   getAnvilTimeMilliseconds,
-  increaseAnvilTime,
+  increaseAnvilTimeForDate,
 } from "@/test/anvil";
 import {
   errorMessageForCode,
@@ -17,8 +16,7 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "@test/fixtures/user";
-import { waitForGraphIndexing } from "@test/helpers/test-helpers";
-import { addSeconds, differenceInMilliseconds, isAfter } from "date-fns";
+import { addSeconds } from "date-fns";
 import { from } from "dnum";
 import { beforeAll, describe, expect, test } from "vitest";
 
@@ -186,7 +184,7 @@ describe("Token mature", () => {
         }
       );
 
-      await increaseAnvilTimeToPassMaturityDate(bond);
+      await increaseAnvilTimeForDate(bond.bond?.maturityDate);
 
       // Fund the bond contract with denomination assets
       await adminClient.token.mint({
@@ -249,7 +247,7 @@ describe("Token mature", () => {
         }
       );
 
-      await increaseAnvilTimeToPassMaturityDate(bond);
+      await increaseAnvilTimeForDate(bond.bond?.maturityDate);
 
       await adminClient.token.mint({
         contract: depositToken.id,
@@ -328,7 +326,7 @@ describe("Token mature", () => {
         }
       );
 
-      await increaseAnvilTimeToPassMaturityDate(bond);
+      await increaseAnvilTimeForDate(bond.bond?.maturityDate);
 
       // Mint some bonds to have a non-zero amount of denomination asset required for maturity
       await adminClient.token.mint({
@@ -360,22 +358,3 @@ describe("Token mature", () => {
     }
   );
 });
-
-async function increaseAnvilTimeToPassMaturityDate(bond: Token) {
-  const currentTime = await getAnvilTimeMilliseconds();
-  const maturityDate = bond.bond?.maturityDate;
-
-  if (!maturityDate) {
-    throw new Error("Maturity date is undefined");
-  }
-
-  const differenceMs = isAfter(maturityDate, currentTime)
-    ? differenceInMilliseconds(maturityDate, currentTime)
-    : 0;
-  const differenceSeconds = Math.ceil(differenceMs / 1000) + 5; // Add 5 seconds to be safe
-
-  if (differenceSeconds > 0) {
-    await increaseAnvilTime(differenceSeconds);
-    await waitForGraphIndexing();
-  }
-}

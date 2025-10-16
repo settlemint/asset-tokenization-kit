@@ -33,8 +33,7 @@ export const claim = systemRouter.fixedYieldSchedule.claim.handler(
 
     const sender = auth.user;
 
-    // Execute the withdraw transaction
-    const transactionHash = await context.portalClient.mutate(
+    const txHash = await context.portalClient.mutate(
       CLAIM_YIELD_MUTATION,
       {
         address: contract,
@@ -48,7 +47,7 @@ export const claim = systemRouter.fixedYieldSchedule.claim.handler(
     );
 
     return {
-      transactionHash,
+      txHash,
     };
   }
 );

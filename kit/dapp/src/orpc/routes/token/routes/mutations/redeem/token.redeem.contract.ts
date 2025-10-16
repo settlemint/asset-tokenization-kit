@@ -1,8 +1,6 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
-import {
-  TokenRedeemInputSchema,
-  TokenRedeemOutputSchema,
-} from "@/orpc/routes/token/routes/mutations/redeem/token.redeem.schema";
+import { TokenRedeemInputSchema } from "@/orpc/routes/token/routes/mutations/redeem/token.redeem.schema";
+import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 
 export const tokenRedeemContract = baseContract
   .route({
@@ -13,4 +11,4 @@ export const tokenRedeemContract = baseContract
     tags: ["token"],
   })
   .input(TokenRedeemInputSchema)
-  .output(TokenRedeemOutputSchema);
+  .output(TokenSchema);

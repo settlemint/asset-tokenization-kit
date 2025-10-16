@@ -1,12 +1,12 @@
 import { Address } from "@graphprotocol/graph-ts";
 import { XvPSettlement as XvPSettlementContract } from "../../../../generated/templates/XvPSettlement/XvPSettlement";
 import { ATKXvPSettlementCreated } from "../../../../generated/templates/XvPSettlementFactory/XvPSettlementFactory";
-import { fetchEvent } from "../../../event/fetch/event";
 import {
   ActionName,
   createAction,
   createActionIdentifier,
-} from "../../../utils/actions";
+} from "../../../actions/actions";
+import { fetchEvent } from "../../../event/fetch/event";
 import { fetchXvPSettlement } from "./fetch/xvp-settlement";
 import { fetchXvPSettlementApproval } from "./xvp-settlement";
 
@@ -53,18 +53,17 @@ export function handleATKXvPSettlementCreated(
       );
 
       createAction(
-        event,
+        event.block.timestamp,
         ActionName.ApproveXvPSettlement,
         event.params.settlement,
         event.block.timestamp,
         xvpSettlement.cutoffDate,
         [approval.account],
         null,
-        createActionIdentifier(
-          ActionName.ApproveXvPSettlement,
+        createActionIdentifier(ActionName.ApproveXvPSettlement, [
           event.params.settlement,
-          approval.account
-        )
+          approval.account,
+        ])
       );
     }
   }

@@ -7,6 +7,11 @@ import {
   YieldClaimed,
 } from "../../../generated/templates/FixedYieldSchedule/FixedYieldSchedule";
 import { fetchAccount } from "../../account/fetch/account";
+import {
+  actionExecuted,
+  ActionName,
+  createActionIdentifier,
+} from "../../actions/actions";
 import { fetchEvent } from "../../event/fetch/event";
 import { setBigNumber } from "../../utils/bignumber";
 import { getTokenDecimals } from "../../utils/token-decimals";
@@ -144,31 +149,17 @@ export function handleYieldClaimed(event: YieldClaimed): void {
       denominationAssetDecimals
     );
     period.save();
-  }
 
-  const currentPeriod = fetchFixedYieldSchedulePeriod(
-    getPeriodId(event.address, event.params.toPeriod.toI32())
-  );
-  fixedYieldSchedule.currentPeriod = currentPeriod.id;
-
-  const nextPeriodId = getPeriodId(
-    event.address,
-    event.params.toPeriod.toI32() + 1
-  );
-  const nextPeriod = TokenFixedYieldSchedulePeriod.load(nextPeriodId);
-  if (nextPeriod) {
-    setBigNumber(
-      nextPeriod,
-      "totalYield",
-      event.params.yieldForNextPeriod,
-      denominationAssetDecimals
+    actionExecuted(
+      event,
+      ActionName.ClaimYield,
+      event.address,
+      createActionIdentifier(ActionName.ClaimYield, [
+        event.address,
+        event.params.holder,
+        period.id,
+      ])
     );
-    nextPeriod.save();
-    fixedYieldSchedule.nextPeriod = nextPeriod.id;
-  } else {
-    // There is no next period, the schedule has ended
-    fixedYieldSchedule.nextPeriod = null;
-    fixedYieldSchedule.save();
   }
 
   const totalClaimed = fixedYieldSchedule.totalClaimedExact.plus(
@@ -194,4 +185,46 @@ export function handleYieldClaimed(event: YieldClaimed): void {
     denominationAssetDecimals
   );
   fixedYieldSchedule.save();
+
+  const currentPeriodId = getPeriodId(
+    event.address,
+    event.params.toPeriod.toI32() + 1 // To period is the last completed period (prev period)
+  );
+  const currentPeriod = TokenFixedYieldSchedulePeriod.load(currentPeriodId);
+  if (!currentPeriod) {
+    // There is no current period, the schedule has ended
+    fixedYieldSchedule.currentPeriod = null;
+    fixedYieldSchedule.nextPeriod = null;
+    fixedYieldSchedule.save();
+    return;
+  }
+  setBigNumber(
+    currentPeriod,
+    "totalYield",
+    event.params.yieldForNextPeriod, // Is the yield of any not completed period
+    denominationAssetDecimals
+  );
+  currentPeriod.save();
+  fixedYieldSchedule.currentPeriod = currentPeriod.id;
+
+  const nextPeriodId = getPeriodId(
+    event.address,
+    event.params.toPeriod.toI32() + 2 // To period is the last completed period (prev period) + 1
+  );
+  const nextPeriod = TokenFixedYieldSchedulePeriod.load(nextPeriodId);
+  if (nextPeriod) {
+    setBigNumber(
+      nextPeriod,
+      "totalYield",
+      event.params.yieldForNextPeriod, // Is the yield of any not completed period
+      denominationAssetDecimals
+    );
+    nextPeriod.save();
+    fixedYieldSchedule.nextPeriod = nextPeriod.id;
+    fixedYieldSchedule.save();
+  } else {
+    // There is no next period, current period is the last period
+    fixedYieldSchedule.nextPeriod = null;
+    fixedYieldSchedule.save();
+  }
 }
