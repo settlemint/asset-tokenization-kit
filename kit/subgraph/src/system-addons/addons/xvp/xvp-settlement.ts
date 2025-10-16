@@ -10,9 +10,9 @@ import {
   XvPSettlementApprovalRevoked,
   XvPSettlementApproved,
   XvPSettlementCancelled,
-  XvPSettlement as XvPSettlementContract,
   XvPSettlementCancelVoteCast,
   XvPSettlementCancelVoteWithdrawn,
+  XvPSettlement as XvPSettlementContract,
   XvPSettlementExecuted,
   XvPSettlementSecretRevealed,
 } from "../../../../generated/templates/XvPSettlement/XvPSettlement";
@@ -24,6 +24,7 @@ import {
   createAction,
   createActionIdentifier,
 } from "../../../actions/actions";
+import { fetchAssetReference } from "../../../asset-reference/fetch/asset-reference";
 import { fetchEvent } from "../../../event/fetch/event";
 import { fetchToken } from "../../../token/fetch/token";
 import { setBigNumber } from "../../../utils/bignumber";
