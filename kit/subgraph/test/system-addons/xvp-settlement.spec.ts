@@ -11,6 +11,15 @@ describe("XVP Settlements", () => {
           autoExecute
           executed
           cancelled
+          hashlock
+          hasExternalFlows
+          secretRevealed
+          secret
+          secretRevealedAt
+          secretRevealTx
+          secretRevealedBy {
+            id
+          }
           createdAt
           flows {
             id
@@ -18,6 +27,14 @@ describe("XVP Settlements", () => {
               id
               symbol
               name
+            }
+            assetReference {
+              id
+              chainId
+              address
+              token {
+                id
+              }
             }
             from {
               id
@@ -27,6 +44,8 @@ describe("XVP Settlements", () => {
             }
             amount
             amountExact
+            externalChainId
+            isExternal
           }
           approvals {
             id
@@ -35,6 +54,14 @@ describe("XVP Settlements", () => {
             }
             approved
             timestamp
+          }
+          cancelVotes {
+            id
+            account {
+              id
+            }
+            active
+            votedAt
           }
         }
       }`
@@ -52,6 +79,12 @@ describe("XVP Settlements", () => {
     expect(settlement?.executed).toBe(false); // Should not be executed by default
     expect(settlement?.cancelled).toBe(false);
     expect(settlement?.autoExecute).toBe(false); // Script sets this to false
+    expect(settlement?.hasExternalFlows).toBe(false);
+    expect(settlement?.secretRevealed).toBe(false);
+    expect(settlement?.secret).toBeNull();
+    expect(settlement?.secretRevealedAt).toBeNull();
+    expect(settlement?.secretRevealTx).toBeNull();
+    expect(settlement?.secretRevealedBy).toBeNull();
 
     // Derive participants from flows (unique from/to addresses)
     const participantAddresses = new Set();
@@ -66,14 +99,34 @@ describe("XVP Settlements", () => {
 
     // Verify flows structure
     settlement?.flows.forEach((flow) => {
-      expect(flow.asset).toBeDefined();
-      expect(flow.asset.symbol).toBeDefined();
+      expect(flow.assetReference).toBeDefined();
+      expect(flow.assetReference.chainId).toBeDefined();
+      expect(flow.assetReference.address).toBeDefined();
+      if (flow.isExternal) {
+        expect(flow.asset).toBeNull();
+        expect(flow.assetReference.token).toBeNull();
+      } else {
+        expect(flow.asset).toBeDefined();
+        expect(flow.asset.symbol).toBeDefined();
+        expect(flow.assetReference.token?.id).toBeDefined();
+      }
       expect(flow.from.id).toBeDefined();
       expect(flow.to.id).toBeDefined();
       expect(flow.amount).toBeDefined();
       expect(flow.amountExact).toBeDefined();
+      expect(typeof flow.isExternal).toBe("boolean");
+      expect(flow.externalChainId).toBeDefined();
     });
 
+    expect(Array.isArray(settlement?.cancelVotes)).toBe(true);
+    expect(settlement?.hashlock).toBeDefined();
+    expect(typeof settlement?.hasExternalFlows).toBe("boolean");
+    expect(typeof settlement?.secretRevealed).toBe("boolean");
+    expect(settlement?.secretRevealedBy === null || typeof settlement?.secretRevealedBy.id === "string").toBe(true);
+    settlement?.cancelVotes.forEach((vote) => {
+      expect(vote.account.id).toBeDefined();
+      expect(typeof vote.active).toBe("boolean");
+    });
     // Verify approvals structure - different scenarios may have different approval states
     settlement?.approvals.forEach((approval) => {
       expect(approval.account.id).toBeDefined();
@@ -145,6 +198,14 @@ describe("XVP Settlements", () => {
             name
             type
           }
+          assetReference {
+            id
+            chainId
+            address
+            token {
+              id
+            }
+          }
           from {
             id
           }
@@ -153,6 +214,8 @@ describe("XVP Settlements", () => {
           }
           amount
           amountExact
+          externalChainId
+          isExternal
           xvpSettlement {
             id
             executed
@@ -170,9 +233,16 @@ describe("XVP Settlements", () => {
     // Verify flow structure and relationships
     flows.forEach((flow) => {
       expect(flow.id).toBeDefined();
-      expect(flow.asset.id).toBeDefined();
-      expect(flow.asset.symbol).toBeDefined();
-      expect(flow.asset.type).toBeDefined();
+      expect(flow.assetReference).toBeDefined();
+      if (flow.isExternal) {
+        expect(flow.asset).toBeNull();
+        expect(flow.assetReference.token).toBeNull();
+      } else {
+        expect(flow.asset?.id).toBeDefined();
+        expect(flow.asset?.symbol).toBeDefined();
+        expect(flow.asset?.type).toBeDefined();
+        expect(flow.assetReference.token?.id).toBeDefined();
+      }
       expect(flow.from.id).toBeDefined();
       expect(flow.to.id).toBeDefined();
       expect(flow.amount).toBeDefined();
@@ -182,7 +252,7 @@ describe("XVP Settlements", () => {
     });
 
     // The flows should represent our expected asset types from the script
-    const assetTypes = flows.map((flow) => flow.asset.type);
+    const assetTypes = flows.filter((flow) => !flow.isExternal).map((flow) => flow.asset?.type);
     expect(assetTypes).toContain("stablecoin");
     expect(assetTypes).toContain("equity");
   });
