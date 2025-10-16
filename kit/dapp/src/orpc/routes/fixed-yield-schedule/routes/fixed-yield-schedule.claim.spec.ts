@@ -13,22 +13,21 @@ import {
   signInWithUser,
 } from "@test/fixtures/user";
 import { from } from "dnum";
-import { beforeEach, describe, expect, test } from "vitest";
+import { beforeAll, describe, expect, test } from "vitest";
 
 describe(
   "Fixed yield schedule claim",
   {
     // Test can be flaky due to blockchain time manipulation
     retry: 3,
+    timeout: 120_000,
   },
   () => {
     let depositToken: Awaited<ReturnType<typeof createToken>>;
-    let bond: Awaited<ReturnType<typeof createToken>>;
-    let yieldSchedule: Awaited<ReturnType<typeof createFixedYieldSchedule>>;
     let adminClient: OrpcClient;
     let adminUserData: Awaited<ReturnType<typeof getUserData>>;
 
-    beforeEach(async () => {
+    beforeAll(async () => {
       const headers = await signInWithUser(DEFAULT_ADMIN);
       adminClient = getOrpcClient(headers);
       adminUserData = await getUserData(DEFAULT_ADMIN);
@@ -54,12 +53,14 @@ describe(
           unpause: true,
         }
       );
+    }, 120_000);
 
+    test("can claim yield from fixed yield schedule", async () => {
       const anvilTime = await getAnvilTimeMilliseconds();
       const oneMinuteFromNow = new Date(anvilTime + 1 * 60 * 1000);
       const threeMinutesFromNow = new Date(anvilTime + 3 * 60 * 1000);
 
-      bond = await createToken(
+      const bond = await createToken(
         adminClient,
         {
           type: "bond",
@@ -83,7 +84,7 @@ describe(
         }
       );
 
-      yieldSchedule = await createFixedYieldSchedule(adminClient, {
+      const yieldSchedule = await createFixedYieldSchedule(adminClient, {
         yieldRate: 300, // 3%
         paymentInterval: 30, // 30 seconds
         startTime: oneMinuteFromNow,
@@ -122,9 +123,6 @@ describe(
           verificationType: "PINCODE",
         },
       });
-    }, 120_000);
-
-    test("can claim yield from fixed yield schedule", async () => {
       let processedPeriods = 0;
       for (const period of yieldSchedule.periods) {
         await increaseAnvilTimeForDate(period.endDate);
