@@ -32,12 +32,14 @@ interface IATKXvPSettlementFactory is IERC165 {
     /// @param flows The array of token flows to include in the settlement
     /// @param cutoffDate Timestamp after which the settlement expires
     /// @param autoExecute If true, settlement executes automatically when all approvals are received
+    /// @param hashlock The optional HTLC hashlock (required if external flows are present)
     /// @return contractAddress The address of the newly created settlement contract
     function create(
         string memory name,
         IATKXvPSettlement.Flow[] memory flows,
         uint256 cutoffDate,
-        bool autoExecute
+        bool autoExecute,
+        bytes32 hashlock
     )
         external
         returns (address contractAddress);
@@ -47,12 +49,14 @@ interface IATKXvPSettlementFactory is IERC165 {
     /// @param flows The array of token flows that will be used in deployment
     /// @param cutoffDate Timestamp after which the settlement expires
     /// @param autoExecute If true, settlement executes automatically when all approvals are received
+    /// @param hashlock The optional HTLC hashlock (required if external flows are present)
     /// @return predicted The address where the settlement contract would be deployed
     function predictAddress(
         string memory name,
         IATKXvPSettlement.Flow[] memory flows,
         uint256 cutoffDate,
-        bool autoExecute
+        bool autoExecute,
+        bytes32 hashlock
     )
         external
         view

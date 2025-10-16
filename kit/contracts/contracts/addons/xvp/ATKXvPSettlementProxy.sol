@@ -37,12 +37,14 @@ contract ATKXvPSettlementProxy is Proxy {
     /// @param cutoffDate Timestamp after which the settlement expires
     /// @param autoExecute Whether to auto-execute after all approvals
     /// @param flows Array of token flows for this settlement
+    /// @param hashlock The optional HTLC hashlock (required if external flows are present)
     constructor(
         address factoryAddress,
         string memory name,
         uint256 cutoffDate,
         bool autoExecute,
-        IATKXvPSettlement.Flow[] memory flows
+        IATKXvPSettlement.Flow[] memory flows,
+        bytes32 hashlock
     ) {
         if (factoryAddress == address(0)) {
             revert InvalidFactoryAddress();
@@ -57,7 +59,7 @@ contract ATKXvPSettlementProxy is Proxy {
         address implementationAddress = _getImplementationAddressFromFactory();
 
         bytes memory initData = abi.encodeWithSelector(
-            ATKXvPSettlementImplementation.initialize.selector, name, cutoffDate, autoExecute, flows
+            ATKXvPSettlementImplementation.initialize.selector, name, cutoffDate, autoExecute, flows, hashlock
         );
 
         _performInitializationDelegatecall(implementationAddress, initData);
