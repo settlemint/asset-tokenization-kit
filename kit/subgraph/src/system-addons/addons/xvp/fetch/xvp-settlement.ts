@@ -2,11 +2,13 @@ import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   XvPSettlement,
   XvPSettlementApproval,
+  XvPSettlementCancelVote,
   XvPSettlementFlow,
 } from "../../../../../generated/schema";
 import { XvPSettlement as XvPSettlementTemplate } from "../../../../../generated/templates";
 import { XvPSettlement as XvPSettlementContract } from "../../../../../generated/templates/XvPSettlement/XvPSettlement";
 import { fetchAccount } from "../../../../account/fetch/account";
+import { fetchAssetReference } from "../../../../asset-reference/fetch/asset-reference";
 import { fetchToken } from "../../../../token/fetch/token";
 import { setBigNumber } from "../../../../utils/bignumber";
 
@@ -26,24 +28,48 @@ export function fetchXvPSettlementFlow(
   from: Address,
   to: Address,
   amountExact: BigInt,
+  externalChainId: BigInt,
   index: i32
 ): XvPSettlementFlow {
   const flowId = settlementId.concat(Bytes.fromI32(index));
   let flow = XvPSettlementFlow.load(flowId);
-  if (flow) {
-    return flow;
+  if (!flow) {
+    flow = new XvPSettlementFlow(flowId);
+    flow.xvpSettlement = settlementId;
   }
-
-  flow = new XvPSettlementFlow(flowId);
-  flow.xvpSettlement = settlementId;
-  flow.asset = fetchToken(asset).id;
+  const assetReference = fetchAssetReference(asset, externalChainId);
+  flow.assetReference = assetReference.id;
+  if (externalChainId.equals(BigInt.zero())) {
+    const token = fetchToken(asset);
+    flow.asset = token.id;
+    setBigNumber(flow, "amount", amountExact, token.decimals);
+  } else {
+    flow.asset = null;
+    setBigNumber(flow, "amount", amountExact, 0);
+  }
   flow.from = fetchAccount(from).id;
   flow.to = fetchAccount(to).id;
-
-  const token = fetchToken(asset);
-  setBigNumber(flow, "amount", amountExact, token.decimals);
+  flow.externalChainId = externalChainId;
+  flow.isExternal = !externalChainId.equals(BigInt.zero());
   flow.save();
   return flow;
+}
+
+export function fetchXvPSettlementCancelVote(
+  contractAddress: Address,
+  voterAddress: Address
+): XvPSettlementCancelVote {
+  const id = contractAddress.concat(voterAddress);
+  let vote = XvPSettlementCancelVote.load(id);
+  if (vote == null) {
+    vote = new XvPSettlementCancelVote(id);
+    vote.xvpSettlement = contractAddress;
+    vote.account = fetchAccount(voterAddress).id;
+    vote.active = false;
+    vote.votedAt = null;
+    vote.save();
+  }
+  return vote;
 }
 
 export function fetchXvPSettlementApproval(
@@ -82,6 +108,9 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
     const flows = endpoint.try_flows();
     const createdAt = endpoint.try_createdAt();
     const name = endpoint.try_name();
+    const hashlock = endpoint.try_hashlock();
+    const hasExternalFlowsResult = endpoint.try_hasExternalFlows();
+    const secretRevealedResult = endpoint.try_secretRevealed();
 
     xvpSettlement = new XvPSettlement(id);
     xvpSettlement.cutoffDate = cutoffDate.reverted
@@ -97,6 +126,22 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
       : createdAt.value;
     xvpSettlement.name = name.reverted ? "" : name.value;
     xvpSettlement.deployedInTransaction = Bytes.empty();
+    xvpSettlement.hashlock = hashlock.reverted ? Bytes.empty() : hashlock.value;
+
+    const secretRevealedValue = secretRevealedResult.reverted
+      ? false
+      : secretRevealedResult.value;
+    xvpSettlement.secretRevealed = secretRevealedValue;
+    if (!secretRevealedValue) {
+      xvpSettlement.secret = null;
+      xvpSettlement.secretRevealedAt = null;
+      xvpSettlement.secretRevealedBy = null;
+      xvpSettlement.secretRevealTx = null;
+    }
+
+    let hasExternal = hasExternalFlowsResult.reverted
+      ? false
+      : hasExternalFlowsResult.value;
 
     const approvers: Address[] = [];
 
@@ -111,22 +156,36 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
           flow.from,
           flow.to,
           flow.amount,
+          flow.externalChainId,
           i
         );
 
-        // Collect unique approvers (from addresses)
-        let fromExists = false;
-        for (let j = 0; j < approvers.length; j++) {
-          if (approvers[j].equals(flow.from)) {
-            fromExists = true;
-            break;
-          }
+        if (!flow.externalChainId.equals(BigInt.zero())) {
+          hasExternal = true;
         }
-        if (!fromExists) {
-          approvers.push(flow.from);
+
+        if (flow.externalChainId.equals(BigInt.zero())) {
+          fetchXvPSettlementCancelVote(id, flow.from);
+          fetchXvPSettlementCancelVote(id, flow.to);
+        }
+
+        if (flow.externalChainId.equals(BigInt.zero())) {
+          // Collect unique approvers (from addresses)
+          let fromExists = false;
+          for (let j = 0; j < approvers.length; j++) {
+            if (approvers[j].equals(flow.from)) {
+              fromExists = true;
+              break;
+            }
+          }
+          if (!fromExists) {
+            approvers.push(flow.from);
+          }
         }
       }
     }
+
+    xvpSettlement.hasExternalFlows = hasExternal;
 
     xvpSettlement.save();
 

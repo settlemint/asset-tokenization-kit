@@ -1,6 +1,7 @@
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
 import { orpc } from "@/orpc/orpc-client";
 import { useQuery } from "@tanstack/react-query";
+import type { Dnum } from "dnum";
 import { useMemo } from "react";
 
 /**
@@ -11,11 +12,11 @@ import { useMemo } from "react";
  */
 export interface YieldDistributionItem {
   /** Unix timestamp in milliseconds for chart x-axis positioning */
-  timestamp: number;
+  timestamp: Date;
   /** Total yield generated in this period (human-readable format) */
-  totalYield: number;
+  totalYield: Dnum;
   /** Amount of yield claimed by holders (human-readable format) */
-  claimed: number;
+  claimed: Dnum;
 }
 
 /**

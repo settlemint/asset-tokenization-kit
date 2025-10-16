@@ -616,10 +616,7 @@ export class AdminPage extends BasePage {
     await nextButton.click();
   }
 
-  async unpauseAsset(options: {
-    pincode: string;
-    user: string;
-  }): Promise<void> {
+  async unpauseAsset(options: { pincode: string }): Promise<void> {
     await this.page.reload();
 
     const manageBtn = this.page.getByRole("button", { name: "Manage Asset" });

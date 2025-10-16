@@ -29,6 +29,9 @@
     },
     "redeem": {
       "label": "Redeem"
+    },
+    "claimYield": {
+      "label": "Claim yield"
     }
   },
   "bulkActions": {

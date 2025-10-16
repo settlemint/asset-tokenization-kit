@@ -12,8 +12,8 @@
  */
 
 import {
+  ActionsListInputSchema,
   ActionsListResponseSchema,
-  ActionsListSchema,
 } from "@/orpc/routes/actions/routes/actions.list.schema";
 import { kycContract } from "@/orpc/routes/user/kyc/kyc.contract";
 import { AdminListOutputSchema } from "@/orpc/routes/user/routes/admins.list.schema";
@@ -94,7 +94,7 @@ const actions = baseContract
     successDescription: "User actions retrieved successfully",
     tags: ["user", "actions"],
   })
-  .input(ActionsListSchema)
+  .input(ActionsListInputSchema)
   .output(ActionsListResponseSchema);
 
 /**

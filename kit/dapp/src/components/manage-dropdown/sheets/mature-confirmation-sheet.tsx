@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { invalidateTokenActionQueries } from "@/components/manage-dropdown/core/invalidate-token-action-queries";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
@@ -31,10 +32,8 @@ export function MatureConfirmationSheet({
   const { mutateAsync: matureAsset, isPending: isMaturing } = useMutation(
     orpc.token.mature.mutationOptions({
       onSuccess: async () => {
-        await queryClient.invalidateQueries({
-          queryKey: orpc.token.read.queryKey({
-            input: { tokenAddress: asset.id },
-          }),
+        await invalidateTokenActionQueries(queryClient, {
+          tokenAddress: asset.id,
         });
       },
     })

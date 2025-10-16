@@ -1,4 +1,4 @@
-import { BigInt, Bytes, ethereum, log } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes, ethereum, log, store } from "@graphprotocol/graph-ts";
 
 import { Action, ActionExecutor } from "../../generated/schema";
 import { fetchAccount } from "../account/fetch/account";
@@ -16,58 +16,62 @@ export class ActionName {
   static ExecuteXvPSettlement: string = "ExecuteXvPSettlement";
   static MatureBond: string = "MatureBond";
   static RedeemBond: string = "RedeemBond";
+  static ClaimYield: string = "ClaimYield";
 }
 
 /**
  * Identifier patterns for different action types:
- * - ApproveXvPSettlement: use participant address as identifier (approval.account.toHexString())
- * - ExecuteXvPSettlement: use settlement address as identifier (settlement.address.toHexString())
- * - MatureBond: use bond address as identifier (bond.address.toHexString())
+ * - ApproveXvPSettlement: uses settlement address and acccount address as identifiers
+ * - ExecuteXvPSettlement: uses settlement address as identifier
+ * - MatureBond: uses token address as identifier
+ * - RedeemBond: uses token address and account address as identifiers
+ * - ClaimYield: uses fixed yield schedule address, acccount and period as identifiers
  *
  * This ensures consistent and predictable action IDs across all action types.
  */
 export function createActionIdentifier(
   actionName: string,
-  primaryEntity: Bytes,
-  secondaryEntity: Bytes | null = null
+  identifiers: Bytes[]
 ): string {
-  if (actionName === ActionName.ApproveXvPSettlement) {
-    // For approval actions, use participant address as identifier
-    if (secondaryEntity === null) {
-      log.error(
-        "createActionIdentifier: ApproveXvPSettlement requires participant address as secondaryEntity",
-        []
-      );
-      throw new Error("ApproveXvPSettlement requires participant address");
-    }
-    return secondaryEntity.toHexString();
+  if (identifiers.length === 0) {
+    log.error("createActionIdentifier: identifiers array cannot be empty", []);
+    throw new Error(
+      "createActionIdentifier: identifiers array cannot be empty"
+    );
   }
-
-  if (actionName === ActionName.ExecuteXvPSettlement) {
-    // For execution actions, use settlement address as identifier
-    return primaryEntity.toHexString();
+  if (
+    (actionName === ActionName.ExecuteXvPSettlement ||
+      actionName === ActionName.MatureBond) &&
+    identifiers.length !== 1
+  ) {
+    log.error("createActionIdentifier: Expected 1 identifier, got {}", [
+      identifiers.length.toString(),
+    ]);
+    throw new Error(
+      `createActionIdentifier: Expected 1 identifier, got ${identifiers.length}`
+    );
   }
-
-  if (actionName === ActionName.MatureBond) {
-    // For bond actions, use bond address as identifier
-    return primaryEntity.toHexString();
+  if (
+    (actionName === ActionName.ApproveXvPSettlement ||
+      actionName === ActionName.RedeemBond) &&
+    identifiers.length !== 2
+  ) {
+    log.error("createActionIdentifier: Expected 2 identifiers, got {}", [
+      identifiers.length.toString(),
+    ]);
+    throw new Error(
+      `createActionIdentifier: Expected 2 identifiers, got ${identifiers.length}`
+    );
   }
-
-  if (actionName === ActionName.RedeemBond) {
-    if (secondaryEntity === null) {
-      log.error(
-        "createActionIdentifier: RedeemBond requires bond address as primaryEntity and participant address as secondaryEntity",
-        []
-      );
-      throw new Error(
-        "RedeemBond requires bond address as primaryEntity and participant address as secondaryEntity"
-      );
-    }
-    return primaryEntity.concat(secondaryEntity).toHexString();
+  if (actionName === ActionName.ClaimYield && identifiers.length !== 3) {
+    log.error("createActionIdentifier: Expected 3 identifiers, got {}", [
+      identifiers.length.toString(),
+    ]);
+    throw new Error(
+      `createActionIdentifier: Expected 3 identifiers, got ${identifiers.length}`
+    );
   }
-
-  log.error("createActionIdentifier: Unknown action name: {}", [actionName]);
-  throw new Error("Unknown action name");
+  return identifiers.map<string>((entity) => entity.toHexString()).join("");
 }
 
 function getActionStatus(
@@ -91,73 +95,7 @@ function getActionStatus(
   return ActionStatus.PENDING;
 }
 
-function isValidStatusTransition(
-  currentStatus: string,
-  newStatus: string
-): boolean {
-  // EXECUTED status is terminal - no transitions allowed
-  if (currentStatus === ActionStatus.EXECUTED) {
-    return newStatus === ActionStatus.EXECUTED;
-  }
-
-  // EXPIRED status is terminal - no transitions allowed
-  if (currentStatus === ActionStatus.EXPIRED) {
-    return newStatus === ActionStatus.EXPIRED;
-  }
-
-  // Valid transitions from PENDING
-  if (currentStatus === ActionStatus.PENDING) {
-    return (
-      newStatus === ActionStatus.PENDING ||
-      newStatus === ActionStatus.ACTIVE ||
-      newStatus === ActionStatus.EXECUTED ||
-      newStatus === ActionStatus.EXPIRED
-    );
-  }
-
-  // Valid transitions from ACTIVE
-  if (currentStatus === ActionStatus.ACTIVE) {
-    return (
-      newStatus === ActionStatus.ACTIVE ||
-      newStatus === ActionStatus.EXECUTED ||
-      newStatus === ActionStatus.EXPIRED
-    );
-  }
-
-  return false;
-}
-
-export function updateActionStatus(action: Action, currentTime: BigInt): void {
-  const newStatus = getActionStatus(
-    currentTime,
-    action.activeAt,
-    action.expiresAt,
-    action.executed
-  );
-
-  // Validate status transition
-  if (!isValidStatusTransition(action.status, newStatus)) {
-    log.error(
-      "Invalid status transition attempted for action: {} - from: {} to: {}",
-      [action.id.toHexString(), action.status, newStatus]
-    );
-    return;
-  }
-
-  if (action.status !== newStatus) {
-    const oldStatus = action.status;
-    action.status = newStatus;
-    action.save();
-
-    log.info("Action status updated: {} - from: {} to: {}", [
-      action.id.toHexString(),
-      oldStatus,
-      newStatus,
-    ]);
-  }
-}
-
-export function actionId(
+function actionId(
   actionName: string,
   target: Bytes,
   identifier: string | null
@@ -173,7 +111,7 @@ export function actionId(
   return Bytes.fromUTF8(idString);
 }
 
-export function actionExecutorId(
+function actionExecutorId(
   target: Bytes,
   requiredRole: string | null,
   identifier: string | null
@@ -193,8 +131,17 @@ export function actionExecutorId(
   return Bytes.fromUTF8(idString);
 }
 
+export function actionExists(
+  actionName: string,
+  target: Bytes,
+  identifier: string | null
+): boolean {
+  const id = actionId(actionName, target, identifier);
+  return Action.load(id) !== null;
+}
+
 export function createAction(
-  event: ethereum.Event,
+  timestamp: BigInt,
   actionName: string,
   target: Bytes,
   activeAt: BigInt,
@@ -217,14 +164,14 @@ export function createAction(
     throw new Error("createAction: executors array cannot be empty");
   }
 
-  if (activeAt.lt(event.block.timestamp)) {
+  if (activeAt.lt(timestamp)) {
     log.warning(
       "createAction: activeAt is in the past - actionName: {}, target: {}, activeAt: {}, currentTime: {}",
       [
         actionName,
         target.toHexString(),
         activeAt.toString(),
-        event.block.timestamp.toString(),
+        timestamp.toString(),
       ]
     );
   }
@@ -257,7 +204,7 @@ export function createAction(
   const action = new Action(id);
   action.name = actionName;
   action.target = target;
-  action.createdAt = event.block.timestamp;
+  action.createdAt = timestamp;
   action.activeAt = activeAt;
   action.expiresAt = expiresAt;
   action.requiredRole = requiredRole;
@@ -265,12 +212,7 @@ export function createAction(
   action.executedAt = null;
   action.executedBy = null;
   action.identifier = identifier;
-  action.status = getActionStatus(
-    event.block.timestamp,
-    activeAt,
-    expiresAt,
-    false
-  );
+  action.status = getActionStatus(timestamp, activeAt, expiresAt, false);
 
   // Create/update the executor and establish relationship without saving action yet
   const actionExecutor = createActionExecutorInternal(
@@ -289,6 +231,18 @@ export function createAction(
   );
 
   return action;
+}
+
+export function deleteAction(
+  actionName: string,
+  target: Bytes,
+  identifier: string | null
+): void {
+  const id = actionId(actionName, target, identifier);
+  const existingAction = Action.load(id);
+  if (existingAction !== null) {
+    store.remove("Action", id.toHexString());
+  }
 }
 
 // Internal function used by createAction to avoid double save
@@ -347,24 +301,6 @@ function createActionExecutorInternal(
       executors.length.toString(),
     ]);
   }
-
-  return actionExecutor;
-}
-
-export function createActionExecutor(
-  action: Action,
-  executors: Bytes[],
-  identifier: string | null
-): ActionExecutor {
-  const actionExecutor = createActionExecutorInternal(
-    action,
-    executors,
-    identifier
-  );
-
-  // Set the executor field on the Action entity to establish the relationship
-  action.executor = actionExecutor.id;
-  action.save();
 
   return actionExecutor;
 }

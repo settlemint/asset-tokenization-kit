@@ -10,7 +10,7 @@ export const Route = createFileRoute(
   loader: ({ context: { queryClient, orpc }, params: { tokenAddress } }) => {
     void queryClient.prefetchQuery(
       orpc.actions.list.queryOptions({
-        input: { target: getEthereumAddress(tokenAddress) },
+        input: { targets: [getEthereumAddress(tokenAddress)] },
       })
     );
   },
@@ -31,7 +31,7 @@ function RouteComponent() {
 
   return (
     <ActionsOverview
-      input={{ target: targetAddress }}
+      input={{ targets: [targetAddress] }}
       tableIdPrefix={`asset-${targetAddress.toLowerCase()}`}
     />
   );

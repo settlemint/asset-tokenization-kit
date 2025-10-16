@@ -24,9 +24,14 @@ export const FixedYieldScheduleCreateInputSchema = MutationInputSchema.extend({
   yieldRate: basisPoints().describe(
     "The yield rate in basis points (1% = 100)"
   ),
-  paymentInterval: timeInterval().describe(
-    "The payment interval (DAILY, WEEKLY, MONTHLY, QUARTERLY, YEARLY)"
-  ),
+  paymentInterval: z
+    .union([
+      timeInterval().describe(
+        "The payment interval (DAILY, WEEKLY, MONTHLY, QUARTERLY, YEARLY)"
+      ),
+      z.int().positive().describe("The payment interval in seconds"),
+    ])
+    .describe("The payment interval"),
   startTime: timestamp().describe(
     "The start time for yield payments as Unix timestamp"
   ),
@@ -42,32 +47,9 @@ export const FixedYieldScheduleCreateInputSchema = MutationInputSchema.extend({
 });
 
 /**
- * Output schema for fixed yield schedule creation.
- *
- * This schema defines the structure of the response returned when
- * creating a fixed yield schedule, providing the contract address
- * of the newly deployed yield schedule.
- *
- * @property {string} address - The deployed yield schedule contract address
- */
-export const FixedYieldScheduleCreateOutputSchema = z.object({
-  address: ethereumAddress.describe(
-    "The deployed yield schedule contract address"
-  ),
-});
-
-/**
  * Type representing the validated fixed yield schedule create input.
  * Ensures type safety for request parameters.
  */
 export type FixedYieldScheduleCreateInput = z.infer<
   typeof FixedYieldScheduleCreateInputSchema
->;
-
-/**
- * Type representing the validated fixed yield schedule create response.
- * Ensures type safety for response data structure.
- */
-export type FixedYieldScheduleCreateOutput = z.infer<
-  typeof FixedYieldScheduleCreateOutputSchema
 >;

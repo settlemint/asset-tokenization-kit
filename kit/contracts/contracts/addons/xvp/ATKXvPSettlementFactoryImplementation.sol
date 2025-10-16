@@ -99,12 +99,14 @@ contract ATKXvPSettlementFactoryImplementation is
     /// @param flows The array of token flows to include in the settlement
     /// @param cutoffDate Timestamp after which the settlement expires
     /// @param autoExecute If true, settlement executes automatically when all approvals are received
+    /// @param hashlock The optional HTLC hashlock (required if external flows are present)
     /// @return contractAddress The address of the newly created settlement contract
     function create(
         string calldata name,
         IATKXvPSettlement.Flow[] calldata flows,
         uint256 cutoffDate,
-        bool autoExecute
+        bool autoExecute,
+        bytes32 hashlock
     )
         external
         onlySystemRole(ATKPeopleRoles.ADDON_MANAGER_ROLE)
@@ -113,8 +115,9 @@ contract ATKXvPSettlementFactoryImplementation is
         if (cutoffDate < block.timestamp + 1) revert InvalidCutoffDate();
         if (flows.length == 0) revert EmptyFlows();
 
-        bytes memory saltInputData = abi.encode(address(this), name, flows, cutoffDate, autoExecute, _msgSender());
-        bytes memory constructorArgs = abi.encode(address(this), name, cutoffDate, autoExecute, flows);
+        bytes memory saltInputData =
+            abi.encode(address(this), name, flows, cutoffDate, autoExecute, hashlock, _msgSender());
+        bytes memory constructorArgs = abi.encode(address(this), name, cutoffDate, autoExecute, flows, hashlock);
         bytes memory proxyBytecode = type(ATKXvPSettlementProxy).creationCode;
 
         // Predict the address first for validation
@@ -138,19 +141,22 @@ contract ATKXvPSettlementFactoryImplementation is
     /// @param flows The array of token flows that will be used in deployment
     /// @param cutoffDate Timestamp after which the settlement expires
     /// @param autoExecute If true, settlement executes automatically when all approvals are received
+    /// @param hashlock The optional HTLC hashlock (required if external flows are present)
     /// @return predicted The address where the settlement contract would be deployed
     function predictAddress(
         string memory name,
         IATKXvPSettlement.Flow[] memory flows,
         uint256 cutoffDate,
-        bool autoExecute
+        bool autoExecute,
+        bytes32 hashlock
     )
         public
         view
         returns (address predicted)
     {
-        bytes memory saltInputData = abi.encode(address(this), name, flows, cutoffDate, autoExecute, _msgSender());
-        bytes memory constructorArgs = abi.encode(address(this), name, cutoffDate, autoExecute, flows);
+        bytes memory saltInputData =
+            abi.encode(address(this), name, flows, cutoffDate, autoExecute, hashlock, _msgSender());
+        bytes memory constructorArgs = abi.encode(address(this), name, cutoffDate, autoExecute, flows, hashlock);
         bytes memory proxyBytecode = type(ATKXvPSettlementProxy).creationCode;
 
         return _predictProxyAddress(proxyBytecode, constructorArgs, saltInputData);

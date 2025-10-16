@@ -4,6 +4,8 @@ import {
   useBondYieldDistribution,
   type YieldDistributionItem,
 } from "@/hooks/use-bond-yield-distribution";
+import { formatDate } from "@/lib/utils/date";
+import { safeToNumber } from "@/lib/utils/format-value/safe-to-number";
 import { useTranslation } from "react-i18next";
 import { AreaChartComponent } from "./area-chart";
 import { ChartEmptyState } from "./chart-empty-state";
@@ -26,7 +28,7 @@ function BondYieldDistributionChartLoader({
   description,
   className,
 }: BondYieldDistributionChartProps) {
-  const { t } = useTranslation("stats");
+  const { t, i18n } = useTranslation("stats");
 
   const chartConfig = {
     totalYield: {
@@ -53,9 +55,15 @@ function BondYieldDistributionChartLoader({
 
   // Format data for the area chart
   const chartData = data.map((item) => ({
-    timestamp: new Date(item.timestamp).toLocaleDateString(),
-    totalYield: item.totalYield,
-    claimed: item.claimed,
+    timestamp: formatDate(
+      item.timestamp,
+      {
+        dateStyle: "medium",
+      },
+      i18n.language
+    ),
+    totalYield: safeToNumber(item.totalYield),
+    claimed: safeToNumber(item.claimed),
   }));
 
   return (

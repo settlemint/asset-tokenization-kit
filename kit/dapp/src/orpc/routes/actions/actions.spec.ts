@@ -65,6 +65,7 @@ describe("Actions API", () => {
         expect(action).toMatchObject({
           id: expect.stringMatching(/^0x[a-fA-F0-9]+$/),
           name: expect.any(String),
+          activeAt: expect.any(Date),
           target: expect.stringMatching(/^0x[a-fA-F0-9]{40}$/),
           status: expect.stringMatching(/^(PENDING|ACTIVE|EXECUTED|EXPIRED)$/),
           executor: expect.objectContaining({
@@ -74,9 +75,6 @@ describe("Actions API", () => {
             ]),
           }),
         });
-
-        // Check BigInt fields separately since expect.any(BigInt) doesn't work with bigint primitives
-        expect(typeof action.activeAt).toBe("bigint");
 
         // Optional fields
         if (action.executedAt !== null) {
@@ -117,7 +115,7 @@ describe("Actions API", () => {
         if (!targetAddress) return;
 
         const filteredActions = await client.actions.list({
-          target: targetAddress,
+          targets: [targetAddress],
         });
 
         expect(filteredActions).toBeInstanceOf(Array);
@@ -153,7 +151,7 @@ describe("Actions API", () => {
     test("should handle empty filter results", async () => {
       const emptyResults = await client.actions.list({
         status: "EXECUTED",
-        target: "0x0000000000000000000000000000000000000000",
+        targets: ["0x0000000000000000000000000000000000000000"],
       });
       expect(emptyResults).toBeInstanceOf(Array);
       expect(emptyResults.length).toBe(0);

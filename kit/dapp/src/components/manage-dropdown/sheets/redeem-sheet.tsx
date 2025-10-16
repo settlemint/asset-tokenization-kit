@@ -1,3 +1,4 @@
+import { invalidateTokenActionQueries } from "@/components/manage-dropdown/core/invalidate-token-action-queries";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppForm } from "@/hooks/use-app-form";
 import { orpc } from "@/orpc/orpc-client";
@@ -9,35 +10,32 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { ActionFormSheet } from "../core/action-form-sheet";
 import { createActionFormStore } from "../core/action-form-sheet.store";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 
 interface RedeemSheetProps {
   open: boolean;
   onClose: () => void;
   assetBalance: TokenBalance;
+  holderAddress: EthereumAddress | null;
 }
 
-export function RedeemSheet({ open, onClose, assetBalance }: RedeemSheetProps) {
+export function RedeemSheet({
+  open,
+  onClose,
+  assetBalance,
+  holderAddress,
+}: RedeemSheetProps) {
   const { t } = useTranslation(["tokens", "common"]);
   const qc = useQueryClient();
 
   const { mutateAsync: redeem, isPending } = useMutation(
     orpc.token.redeem.mutationOptions({
       onSuccess: async () => {
-        await Promise.all([
-          qc.invalidateQueries({
-            queryKey: orpc.token.read.queryOptions({
-              input: { tokenAddress: assetBalance.token.id },
-            }).queryKey,
-          }),
-          qc.invalidateQueries({
-            queryKey: orpc.user.assets.queryKey(),
-          }),
-          qc.invalidateQueries({
-            queryKey: orpc.actions.list.queryOptions({
-              input: {},
-            }).queryKey,
-          }),
-        ]);
+        await invalidateTokenActionQueries(qc, {
+          tokenAddress: assetBalance.token.id,
+          includeUserAssets: true,
+          holderAddresses: holderAddress ? [holderAddress] : [],
+        });
       },
     })
   );

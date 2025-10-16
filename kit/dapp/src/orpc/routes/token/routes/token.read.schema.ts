@@ -296,29 +296,31 @@ export const TokenReadInputSchema = z.object({
 });
 
 export const TokenReadResponseSchema = z.object({
-  token: TokenSchema.omit({ identity: true }).extend({
-    account: z.object({
-      identities: z
-        .array(
-          z.object({
-            id: ethereumAddress,
-            account: z.object({
+  token: TokenSchema.omit({ identity: true })
+    .extend({
+      account: z.object({
+        identities: z
+          .array(
+            z.object({
               id: ethereumAddress,
-              contractName: z.string().nullable().optional(),
-            }),
-            claims: z.array(identityClaim),
-            registered: z
-              .array(
-                z.object({
-                  country: z.number(),
-                })
-              )
-              .nullable()
-              .optional(),
-          })
-        )
-        .nullable()
-        .optional(),
-    }),
-  }),
+              account: z.object({
+                id: ethereumAddress,
+                contractName: z.string().nullable().optional(),
+              }),
+              claims: z.array(identityClaim),
+              registered: z
+                .array(
+                  z.object({
+                    country: z.number(),
+                  })
+                )
+                .nullable()
+                .optional(),
+            })
+          )
+          .nullable()
+          .optional(),
+      }),
+    })
+    .nullable(),
 });

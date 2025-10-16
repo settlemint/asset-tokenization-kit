@@ -6,10 +6,12 @@ import type { ColumnOption } from "@/components/data-table/filters/types/column-
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
+import { MatureConfirmationSheet } from "@/components/manage-dropdown/sheets/mature-confirmation-sheet";
+import { RedeemSheet } from "@/components/manage-dropdown/sheets/redeem-sheet";
 import { Badge } from "@/components/ui/badge";
-import { VerificationButton } from "@/components/verification-dialog/verification-button";
+import { Button } from "@/components/ui/button";
 import { Web3Address } from "@/components/web3/web3-address";
-import { isORPCError } from "@/hooks/use-error-info";
+import { useSession } from "@/hooks/use-auth";
 import { formatDate } from "@/lib/utils/date";
 import { getDateLocale } from "@/lib/utils/date-locale";
 import { orpc } from "@/orpc/orpc-client";
@@ -17,8 +19,9 @@ import type {
   Action,
   ActionStatus,
 } from "@/orpc/routes/actions/routes/actions.list.schema";
-import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import type { TokenBalance } from "@/orpc/routes/user/routes/user.assets.schema";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import type {
   ColumnDef,
@@ -26,10 +29,12 @@ import type {
   SortingState,
 } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
-import { ClipboardList, Loader2 } from "lucide-react";
-import { useMemo } from "react";
+import { from } from "dnum";
+import { ClipboardList } from "lucide-react";
+import { useMemo, useState } from "react";
+import { getAddress } from "viem";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 
 const columnHelper = createStrictColumnHelper<Action>();
 
@@ -38,6 +43,7 @@ const ACTION_LABEL_MAP = {
   ApproveXvPSettlement: "labels.ApproveXvPSettlement",
   ExecuteXvPSettlement: "labels.ExecuteXvPSettlement",
   RedeemBond: "labels.RedeemBond",
+  ClaimYield: "labels.ClaimYield",
 } as const;
 
 const ACTION_TYPE_MAP = {
@@ -45,6 +51,7 @@ const ACTION_TYPE_MAP = {
   ApproveXvPSettlement: "settlement",
   ExecuteXvPSettlement: "settlement",
   RedeemBond: "bond",
+  ClaimYield: "bond",
 } as const;
 
 const UNKNOWN_ACTION_TYPE = "generic" as const;
@@ -89,14 +96,53 @@ function toTitleCase(input: string): string {
 }
 
 export function ActionsTable({
-  tableId,
-  statuses,
-  defaultSorting,
-  actions,
-  filterPredicate,
-}: ActionsTableProps) {
+                               tableId,
+                               statuses,
+                               defaultSorting,
+                               actions,
+                               filterPredicate,
+                             }: ActionsTableProps) {
   const { t, i18n } = useTranslation("actions");
   const router = useRouter();
+  const { data: session } = useSession();
+  const userWallet = session?.user?.wallet ?? null;
+  const normalizedWallet = useMemo<EthereumAddress | null>(() => {
+    if (!userWallet) return null;
+
+    try {
+      return getAddress(userWallet);
+    } catch {
+      return null;
+    }
+  }, [userWallet]);
+
+  const [matureAction, setMatureAction] = useState<Action | null>(null);
+  const [redeemAction, setRedeemAction] = useState<Action | null>(null);
+
+  // Preload token data for sheets (hooks must be top-level and unconditional)
+  const matureTokenQuery = useQuery(
+    orpc.token.read.queryOptions({
+      input: { tokenAddress: matureAction?.target ?? "" },
+      enabled: !!matureAction,
+    })
+  );
+
+  const redeemTokenQuery = useQuery(
+    orpc.token.read.queryOptions({
+      input: { tokenAddress: redeemAction?.target ?? "" },
+      enabled: !!redeemAction,
+    })
+  );
+
+  const redeemHolderQuery = useQuery(
+    orpc.token.holder.queryOptions({
+      input: {
+        tokenAddress: redeemAction?.target ?? "",
+        holderAddress: normalizedWallet ?? "",
+      },
+      enabled: !!redeemAction && !!normalizedWallet,
+    })
+  );
 
   const filteredActions = useMemo(() => {
     return actions.filter((action) => {
@@ -319,6 +365,12 @@ export function ActionsTable({
           <ExecuteActionButton
             action={row.original}
             actionLabel={resolveActionLabel(row.original.name)}
+            onOpenMature={(a) => {
+              setMatureAction(a);
+            }}
+            onOpenRedeem={(a) => {
+              setRedeemAction(a);
+            }}
           />
         ),
       }),
@@ -328,149 +380,129 @@ export function ActionsTable({
   }, [t, i18n.language]);
 
   return (
-    <DataTable
-      name={`actions-${tableId}`}
-      data={filteredActions}
-      columns={columns}
-      urlState={{
-        enabled: true,
-        enableUrlPersistence: true,
-        routePath:
-          router.state.matches.at(-1)?.pathname ??
-          router.state.location.pathname,
-        defaultPageSize: 10,
-        enableGlobalFilter: true,
-      }}
-      initialSorting={defaultSorting}
-      advancedToolbar={{
-        enableGlobalSearch: true,
-        enableFilters: true,
-        enableExport: true,
-        enableViewOptions: true,
-        placeholder: t("filters.searchPlaceholder"),
-      }}
-      pagination={{ enablePagination: true }}
-      customEmptyState={{
-        icon: ClipboardList,
-        title: t("table.empty.title"),
-        description: t("table.empty.description"),
-      }}
-    />
+    <>
+      <DataTable
+        name={`actions-${tableId}`}
+        data={filteredActions}
+        columns={columns}
+        urlState={{
+          enabled: true,
+          enableUrlPersistence: true,
+          routePath:
+            router.state.matches.at(-1)?.pathname ??
+            router.state.location.pathname,
+          defaultPageSize: 10,
+          enableGlobalFilter: true,
+        }}
+        initialSorting={defaultSorting}
+        advancedToolbar={{
+          enableGlobalSearch: true,
+          enableFilters: true,
+          enableExport: true,
+          enableViewOptions: true,
+          placeholder: t("filters.searchPlaceholder"),
+        }}
+        pagination={{ enablePagination: true }}
+        customEmptyState={{
+          icon: ClipboardList,
+          title: t("table.empty.title"),
+          description: t("table.empty.description"),
+        }}
+      />
+
+      {matureAction ? (
+        <MatureConfirmationSheet
+          open={!!matureAction}
+          onOpenChange={(open) => {
+            setMatureAction(open ? matureAction : null);
+          }}
+          asset={matureTokenQuery.data as Token}
+        />
+      ) : null}
+
+      {redeemAction
+        ? (() => {
+          const token = redeemTokenQuery.data;
+          if (!token) return null;
+
+          const zero = from(0n, token.decimals);
+          const holderResult = redeemHolderQuery.data;
+
+          const assetBalance: TokenBalance = {
+            id: token.id,
+            value: holderResult?.holder?.value ?? zero,
+            frozen: holderResult?.holder?.frozen ?? zero,
+            available: holderResult?.holder?.available ?? zero,
+            token: {
+              id: token.id,
+              name: token.name,
+              symbol: token.symbol,
+              decimals: token.decimals,
+              totalSupply: token.totalSupply,
+            },
+          };
+
+          return (
+            <RedeemSheet
+              open={!!redeemAction}
+              onClose={() => {
+                setRedeemAction(null);
+              }}
+              assetBalance={assetBalance}
+              holderAddress={normalizedWallet}
+            />
+          );
+        })()
+        : null}
+    </>
   );
 }
 
 interface ExecuteActionButtonProps {
   action: Action;
   actionLabel: string;
+  onOpenMature: (action: Action) => void;
+  onOpenRedeem: (action: Action) => void;
 }
 
 function ExecuteActionButton({
-  action,
-  actionLabel,
-}: ExecuteActionButtonProps) {
+                               action,
+                               actionLabel,
+                               onOpenMature,
+                               onOpenRedeem,
+                             }: ExecuteActionButtonProps) {
   const { t } = useTranslation(["actions", "tokens", "common"]);
-  const queryClient = useQueryClient();
 
-  const isSupportedAction = action.name === "MatureBond";
+  const isMatureAction = action.name === "MatureBond";
+  const isRedeemAction = action.name === "RedeemBond";
+  const isSupportedAction = isMatureAction || isRedeemAction;
   const isActive = action.status === "ACTIVE";
-  const canExecute = isSupportedAction && isActive;
-
-  const mutation = useMutation(
-    orpc.token.mature.mutationOptions({
-      onSuccess: async () => {
-        await queryClient.invalidateQueries({
-          queryKey: orpc.actions.list.queryKey({ input: {} }),
-          exact: false,
-        });
-
-        await queryClient.invalidateQueries({
-          queryKey: orpc.actions.list.queryKey({
-            input: { target: action.target },
-          }),
-        });
-
-        await queryClient.invalidateQueries({
-          queryKey: orpc.token.read.queryKey({
-            input: { tokenAddress: action.target },
-          }),
-        });
-      },
-    })
-  );
-
-  const formatErrorMessage = (error: unknown): string => {
-    if (isORPCError(error) && error.code === "USER_NOT_AUTHORIZED") {
-      return t("actions:execute.errors.notAuthorized");
-    }
-
-    const message =
-      error instanceof Error
-        ? error.message
-        : t("common:errors.somethingWentWrong");
-
-    return t("common:error", { message });
-  };
-
-  const handleExecute = async (verification: UserVerification) => {
-    if (!isSupportedAction) {
-      const message = t("actions:execute.errors.unsupported");
-      toast.info(message);
-      throw new Error(message);
-    }
-
-    const execution = mutation.mutateAsync({
-      contract: action.target,
-      walletVerification: verification,
-    });
-
-    toast.promise(execution, {
-      loading: t("actions:execute.messages.loading", {
-        action: actionLabel,
-      }),
-      success: t("actions:execute.messages.success", {
-        action: actionLabel,
-      }),
-      error: (error) => formatErrorMessage(error),
-    });
-
-    // Note: We rethrow here to signal failure to `VerificationButton` so the
-    // verification dialog stays open and can show an inline error message.
-    // `toast.promise` handles user-facing toasts, but the rejection is still
-    // required for the dialog flow. This is handled (not unhandled) upstream.
-    try {
-      await execution;
-    } catch (error) {
-      throw new Error(formatErrorMessage(error));
-    }
-  };
-
-  const triggerDisabled = !canExecute || mutation.isPending;
+  const activeAtTime =
+    action.activeAt == null ? null : new Date(action.activeAt).getTime();
+  const hasReachedSchedule =
+    activeAtTime !== null &&
+    Number.isFinite(activeAtTime) &&
+    activeAtTime <= Date.now();
+  // Allow execution once the scheduled time has passed, but only when a schedule exists,
+  // so execution stays blocked for actions without an activation timestamp.
+  const canExecute = isSupportedAction && (isActive || hasReachedSchedule);
 
   return (
-    <VerificationButton
-      disabled={triggerDisabled}
-      buttonProps={{
-        size: "sm",
-        variant: "secondary",
-        className: "press-effect",
-        disabled: triggerDisabled,
+    <Button
+      size="sm"
+      variant="secondary"
+      className="press-effect"
+      disabled={!canExecute}
+      onClick={() => {
+        if (!canExecute) return;
+        if (isMatureAction) onOpenMature(action);
+        else if (isRedeemAction) onOpenRedeem(action);
       }}
-      walletVerification={{
-        title: t("tokens:actions.mature.title"),
-        description: t("tokens:actions.mature.description"),
-      }}
-      onSubmit={handleExecute}
+      aria-label={actionLabel}
     >
-      {mutation.isPending ? (
-        <span className="flex items-center gap-2">
-          <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
-          {t("actions:table.execute.loading")}
-        </span>
-      ) : isSupportedAction ? (
-        t("actions:table.execute.label")
-      ) : (
-        t("actions:table.execute.unavailable")
-      )}
-    </VerificationButton>
+      {isSupportedAction
+        ? t("actions:table.execute.label")
+        : t("actions:table.execute.unavailable")}
+    </Button>
   );
 }

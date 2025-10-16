@@ -1,7 +1,7 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import {
+  ActionsListInputSchema,
   ActionsListResponseSchema,
-  ActionsListSchema,
 } from "@/orpc/routes/actions/routes/actions.list.schema";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import * as z from "zod";
@@ -16,7 +16,7 @@ const TokenActionsInputSchema = z
       "The token contract address to filter actions by"
     ),
   })
-  .extend(ActionsListSchema.shape);
+  .extend(ActionsListInputSchema.shape);
 
 export const tokenActionsContract = baseContract
   .route({
