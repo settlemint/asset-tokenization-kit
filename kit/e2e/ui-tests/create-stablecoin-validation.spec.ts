@@ -1,7 +1,7 @@
-import { type BrowserContext, test, type Page } from "@playwright/test";
+import { test, type BrowserContext, type Page } from "@playwright/test";
 import { CreateAssetForm } from "../pages/create-asset-form";
 import { Pages } from "../pages/pages";
-import { stablecoinData } from "../test-data/asset-data";
+import { assetPermissions, stablecoinData } from "../test-data/asset-data";
 import { errorMessageData } from "../test-data/message-data";
 import { getSetupUser } from "../utils/setup-user";
 
@@ -215,6 +215,16 @@ test.describe.serial("Stablecoin Creation Validation", () => {
         name: testData.name,
         symbol: testData.symbol,
         decimals: testData.decimals,
+      });
+      await adminPages.adminPage.clickAssetDetails(testData.name);
+      await adminPages.adminPage.grantAssetPermissions({
+        user: setupUser.name,
+        permissions: assetPermissions,
+        pincode: setupUser.pincode,
+        assetName: testData.name,
+      });
+      await adminPages.adminPage.unpauseAsset({
+        pincode: setupUser.pincode,
       });
     });
   });

@@ -225,7 +225,7 @@ for (const bondToCreate of BONDS) {
     logger.info("Setting yield schedule");
     await issuerClient.token.setYieldSchedule({
       contract: bond.id,
-      schedule: schedule.address,
+      schedule: schedule.id,
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
@@ -235,7 +235,7 @@ for (const bondToCreate of BONDS) {
     // Top up the denomination asset so the yield can be paid out
     logger.info("Topping up yield schedule");
     await issuerClient.fixedYieldSchedule.topUp({
-      contract: schedule.address,
+      contract: schedule.id,
       amount: from(500, 18),
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,

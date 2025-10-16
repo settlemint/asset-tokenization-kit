@@ -2,10 +2,12 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { systemRouter } from "@/orpc/procedures/system.router";
+import { read } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { AddonFactoryTypeIdEnum } from "@atk/zod/addon-types";
-import { ethereumAddress, getEthereumAddress } from "@atk/zod/ethereum-address";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { timeIntervalToSeconds } from "@atk/zod/time-interval";
+import { call } from "@orpc/server";
 import * as z from "zod";
 
 /**
@@ -148,7 +150,10 @@ export const create = systemRouter.fixedYieldSchedule.create
         address: yieldScheduleAddon.id,
         from: sender.wallet,
         endTime: Math.floor(endTime.getTime() / 1000).toString(),
-        interval: timeIntervalToSeconds(paymentInterval).toString(),
+        interval:
+          typeof paymentInterval === "number"
+            ? paymentInterval.toString()
+            : timeIntervalToSeconds(paymentInterval).toString(),
         rate: yieldRate.toString(),
         startTime: Math.floor(startTime.getTime() / 1000).toString(),
         token: token,
@@ -194,7 +199,11 @@ export const create = systemRouter.fixedYieldSchedule.create
       });
     }
 
-    return {
-      address: getEthereumAddress(schedule),
-    };
+    return await call(
+      read,
+      {
+        id: schedule,
+      },
+      { context }
+    );
   });

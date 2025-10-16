@@ -38,6 +38,7 @@ const ACTION_LABEL_MAP = {
   ApproveXvPSettlement: "labels.ApproveXvPSettlement",
   ExecuteXvPSettlement: "labels.ExecuteXvPSettlement",
   RedeemBond: "labels.RedeemBond",
+  ClaimYield: "labels.ClaimYield",
 } as const;
 
 const ACTION_TYPE_MAP = {
@@ -45,6 +46,7 @@ const ACTION_TYPE_MAP = {
   ApproveXvPSettlement: "settlement",
   ExecuteXvPSettlement: "settlement",
   RedeemBond: "bond",
+  ClaimYield: "bond",
 } as const;
 
 const UNKNOWN_ACTION_TYPE = "generic" as const;
@@ -385,7 +387,7 @@ function ExecuteActionButton({
 
         await queryClient.invalidateQueries({
           queryKey: orpc.actions.list.queryKey({
-            input: { target: action.target },
+            input: { targets: [action.target] },
           }),
         });
 

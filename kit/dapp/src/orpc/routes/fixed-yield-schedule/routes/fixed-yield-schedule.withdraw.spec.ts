@@ -108,7 +108,7 @@ describe("Fixed yield schedule withdraw", async () => {
 
     const yieldScheduleResult =
       await adminClient.fixedYieldSchedule.create(yieldScheduleData);
-    yieldScheduleAddress = yieldScheduleResult.address;
+    yieldScheduleAddress = yieldScheduleResult.id;
 
     expect(yieldScheduleAddress).toBeDefined();
     expect(yieldScheduleAddress).toBe(getEthereumAddress(yieldScheduleAddress));

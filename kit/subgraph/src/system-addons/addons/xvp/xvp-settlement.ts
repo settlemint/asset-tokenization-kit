@@ -1,6 +1,5 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
-  Action,
   XvPSettlement,
   XvPSettlementApproval,
   XvPSettlementCancelVote,
@@ -18,16 +17,15 @@ import {
   XvPSettlementSecretRevealed,
 } from "../../../../generated/templates/XvPSettlement/XvPSettlement";
 import { fetchAccount } from "../../../account/fetch/account";
-import { fetchEvent } from "../../../event/fetch/event";
-import { fetchToken } from "../../../token/fetch/token";
-import { fetchAssetReference } from "../../../asset-reference/fetch/asset-reference";
 import {
   actionExecuted,
-  actionId,
+  actionExists,
   ActionName,
   createAction,
   createActionIdentifier,
-} from "../../../utils/actions";
+} from "../../../actions/actions";
+import { fetchEvent } from "../../../event/fetch/event";
+import { fetchToken } from "../../../token/fetch/token";
 import { setBigNumber } from "../../../utils/bignumber";
 
 /**
@@ -232,11 +230,10 @@ export function handleXvPSettlementApproved(
     event,
     ActionName.ApproveXvPSettlement,
     event.address,
-    createActionIdentifier(
-      ActionName.ApproveXvPSettlement,
+    createActionIdentifier(ActionName.ApproveXvPSettlement, [
       event.address,
-      approval.account
-    )
+      approval.account,
+    ])
   );
 
   if (xvpSettlement.autoExecute) {
@@ -289,18 +286,17 @@ export function handleXvPSettlementApproved(
     // Check if ExecuteXvPSettlement action already exists to prevent duplicates
     const executeActionIdentifier = createActionIdentifier(
       ActionName.ExecuteXvPSettlement,
-      event.address
+      [event.address]
     );
-    const executeActionId = actionId(
+    const exists = actionExists(
       ActionName.ExecuteXvPSettlement,
       event.address,
       executeActionIdentifier
     );
-    const existingExecuteAction = Action.load(executeActionId);
 
-    if (!existingExecuteAction) {
+    if (!exists) {
       createAction(
-        event,
+        event.block.timestamp,
         ActionName.ExecuteXvPSettlement,
         event.address,
         event.block.timestamp,
@@ -340,7 +336,7 @@ export function handleXvPSettlementExecuted(
     event,
     ActionName.ExecuteXvPSettlement,
     event.address,
-    createActionIdentifier(ActionName.ExecuteXvPSettlement, event.address)
+    createActionIdentifier(ActionName.ExecuteXvPSettlement, [event.address])
   );
 }
 

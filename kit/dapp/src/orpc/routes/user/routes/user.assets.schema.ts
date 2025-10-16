@@ -28,6 +28,28 @@ export const TokenAssetSchema = z.object({
     .optional()
     .nullable()
     .describe("The bond details"),
+  yield: z
+    .object({
+      schedule: z
+        .object({
+          id: ethereumAddress.describe("The yield schedule contract address"),
+          denominationAsset: z
+            .object({
+              id: ethereumAddress.describe(
+                "The denomination asset contract address"
+              ),
+              symbol: assetSymbol().describe("The denomination asset symbol"),
+              decimals: decimals().describe("The denomination asset decimals"),
+            })
+
+            .describe("The denomination asset details"),
+        })
+        .nullable()
+        .describe("The yield schedule details"),
+    })
+    .optional()
+    .nullable()
+    .describe("The yield details"),
 });
 
 export const TokenBalanceSchema = z.object({
