@@ -88,7 +88,7 @@ The following table lists the configurable parameters of this chart and their de
 |image|object|-|Container image configuration shared by validator and RPC pods.|
 |image.pullPolicy|string|`"IfNotPresent"`|Kubernetes image pull policy for Besu containers.|
 |image.repository|string|`"docker.io/hyperledger/besu"`|OCI image repository hosting Hyperledger Besu.|
-|image.tag|string|`"25.10.0"`|Specific Besu image tag to deploy.|
+|image.tag|string|`"25.9.0"`|Specific Besu image tag to deploy.|
 |imagePullSecrets|list|-|Image pull secrets granting registry access for the Besu image.|
 |ingress|object|-|Ingress configuration used to expose RPC services via Kubernetes Ingress resources.|
 |ingress.annotations|object|-|Metadata annotations applied to the Ingress resource.|
@@ -296,4 +296,3 @@ The following table lists the configurable parameters of this chart and their de
 | Name | Email | Url |
 | ---- | ------ | --- |
 | SettleMint | <support@settlemint.com> | <https://settlemint.com> |
-
