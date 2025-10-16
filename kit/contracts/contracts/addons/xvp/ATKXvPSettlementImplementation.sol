@@ -323,7 +323,7 @@ contract ATKXvPSettlementImplementation is
     /// @return True if the revocation was successful
     function revokeApproval() external nonReentrant onlyOpen onlyInvolvedSender returns (bool) {
         if (!_approvals[_msgSender()]) revert SenderNotApprovedSettlement();
-        if (_status.hasExternalFlows && isFullyApproved()) revert RevocationNotAllowedWhileArmed();
+        if (_status.hasExternalFlows && isFullyApproved()) revert RevocationNotAllowedAfterCommit();
 
         _approvals[_msgSender()] = false;
         emit XvPSettlementApprovalRevoked(_msgSender());

@@ -1,4 +1,4 @@
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { XvPSettlement as XvPSettlementContract } from "../../../../generated/templates/XvPSettlement/XvPSettlement";
 import { ATKXvPSettlementCreated } from "../../../../generated/templates/XvPSettlementFactory/XvPSettlementFactory";
 import { fetchEvent } from "../../../event/fetch/event";
@@ -27,10 +27,16 @@ export function handleATKXvPSettlementCreated(
 
   if (!flows.reverted) {
     const approvers: Address[] = [];
+    const localParticipants: Address[] = [];
 
     // Collect unique approvers (from addresses) from flows
     for (let i = 0; i < flows.value.length; i++) {
       const flow = flows.value[i];
+
+      const isLocal = flow.externalChainId.equals(BigInt.zero());
+      if (!isLocal) {
+        continue;
+      }
 
       let fromExists = false;
       for (let j = 0; j < approvers.length; j++) {
@@ -42,6 +48,28 @@ export function handleATKXvPSettlementCreated(
       if (!fromExists) {
         approvers.push(flow.from);
       }
+
+      let senderRegistered = false;
+      for (let j = 0; j < localParticipants.length; j++) {
+        if (localParticipants[j].equals(flow.from)) {
+          senderRegistered = true;
+          break;
+        }
+      }
+      if (!senderRegistered) {
+        localParticipants.push(flow.from);
+      }
+
+      let recipientRegistered = false;
+      for (let j = 0; j < localParticipants.length; j++) {
+        if (localParticipants[j].equals(flow.to)) {
+          recipientRegistered = true;
+          break;
+        }
+      }
+      if (!recipientRegistered) {
+        localParticipants.push(flow.to);
+      }
     }
 
     // Create approval actions for each approver
@@ -51,8 +79,6 @@ export function handleATKXvPSettlementCreated(
         event.params.settlement,
         approver
       );
-      fetchXvPSettlementCancelVote(event.params.settlement, approver);
-
       createAction(
         event,
         ActionName.ApproveXvPSettlement,
@@ -67,6 +93,10 @@ export function handleATKXvPSettlementCreated(
           approval.account
         )
       );
+    }
+
+    for (let i = 0; i < localParticipants.length; i++) {
+      fetchXvPSettlementCancelVote(event.params.settlement, localParticipants[i]);
     }
   }
 }

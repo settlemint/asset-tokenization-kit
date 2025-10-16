@@ -8,6 +8,7 @@ import {
 import { XvPSettlement as XvPSettlementTemplate } from "../../../../../generated/templates";
 import { XvPSettlement as XvPSettlementContract } from "../../../../../generated/templates/XvPSettlement/XvPSettlement";
 import { fetchAccount } from "../../../../account/fetch/account";
+import { fetchAssetReference } from "../../../../asset-reference/fetch/asset-reference";
 import { fetchToken } from "../../../../token/fetch/token";
 import { setBigNumber } from "../../../../utils/bignumber";
 
@@ -36,14 +37,20 @@ export function fetchXvPSettlementFlow(
     flow = new XvPSettlementFlow(flowId);
     flow.xvpSettlement = settlementId;
   }
-  flow.asset = fetchToken(asset).id;
+  const assetReference = fetchAssetReference(asset, externalChainId);
+  flow.assetReference = assetReference.id;
+  if (externalChainId.equals(BigInt.zero())) {
+    const token = fetchToken(asset);
+    flow.asset = token.id;
+    setBigNumber(flow, "amount", amountExact, token.decimals);
+  } else {
+    flow.asset = null;
+    setBigNumber(flow, "amount", amountExact, 0);
+  }
   flow.from = fetchAccount(from).id;
   flow.to = fetchAccount(to).id;
   flow.externalChainId = externalChainId;
   flow.isExternal = !externalChainId.equals(BigInt.zero());
-
-  const token = fetchToken(asset);
-  setBigNumber(flow, "amount", amountExact, token.decimals);
   flow.save();
   return flow;
 }
@@ -162,16 +169,18 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
           fetchXvPSettlementCancelVote(id, flow.to);
         }
 
-        // Collect unique approvers (from addresses)
-        let fromExists = false;
-        for (let j = 0; j < approvers.length; j++) {
-          if (approvers[j].equals(flow.from)) {
-            fromExists = true;
-            break;
+        if (flow.externalChainId.equals(BigInt.zero())) {
+          // Collect unique approvers (from addresses)
+          let fromExists = false;
+          for (let j = 0; j < approvers.length; j++) {
+            if (approvers[j].equals(flow.from)) {
+              fromExists = true;
+              break;
+            }
           }
-        }
-        if (!fromExists) {
-          approvers.push(flow.from);
+          if (!fromExists) {
+            approvers.push(flow.from);
+          }
         }
       }
     }

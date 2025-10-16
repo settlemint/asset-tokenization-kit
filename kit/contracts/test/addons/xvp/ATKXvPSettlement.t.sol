@@ -751,7 +751,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         assertTrue(settlement.isArmed(), "Settlement should be armed waiting for secret");
 
         vm.prank(alice);
-        vm.expectRevert(IATKXvPSettlement.RevocationNotAllowedWhileArmed.selector);
+        vm.expectRevert(IATKXvPSettlement.RevocationNotAllowedAfterCommit.selector);
         settlement.revokeApproval();
 
         // After secret reveal, revocation should still be blocked
@@ -761,7 +761,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         assertTrue(settlement.readyToExecute(), "Settlement should remain ready to execute");
 
         vm.prank(alice);
-        vm.expectRevert(IATKXvPSettlement.RevocationNotAllowedWhileArmed.selector);
+        vm.expectRevert(IATKXvPSettlement.RevocationNotAllowedAfterCommit.selector);
         settlement.revokeApproval();
     }
 
