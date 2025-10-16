@@ -154,17 +154,28 @@ export const statsYieldDistribution =
 
       // Transform periods into distribution format
       const periods = schedule.periods.map((period) => {
-        const totalYield = from(period.totalYieldExact, decimals);
-        const claimed = from(period.totalClaimedExact, decimals);
-        const unclaimed = from(period.totalUnclaimedYieldExact, decimals);
+        // Coerce null/undefined to "0" to avoid NaN during formatting
+        const totalYieldD = from(period.totalYieldExact ?? "0", decimals);
+        const claimedD = from(period.totalClaimedExact ?? "0", decimals);
+        const unclaimedD = from(
+          period.totalUnclaimedYieldExact ?? "0",
+          decimals
+        );
+
+        const toSafeNumber = (value: ReturnType<typeof from>): number => {
+          const n = Number(format(value));
+          return Number.isFinite(n) ? n : 0;
+        };
+
+        const timestampMs = Number(period.startDate) * 1000;
 
         return {
           id: period.id,
           // Convert to milliseconds for JavaScript Date compatibility
-          timestamp: Number(period.startDate) * 1000,
-          totalYield: Number(format(totalYield)),
-          claimed: Number(format(claimed)),
-          unclaimed: Number(format(unclaimed)),
+          timestamp: Number.isFinite(timestampMs) ? timestampMs : 0,
+          totalYield: toSafeNumber(totalYieldD),
+          claimed: toSafeNumber(claimedD),
+          unclaimed: toSafeNumber(unclaimedD),
         };
       });
 
