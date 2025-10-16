@@ -29,7 +29,7 @@ export const FixedYieldScheduleCreateInputSchema = MutationInputSchema.extend({
       timeInterval().describe(
         "The payment interval (DAILY, WEEKLY, MONTHLY, QUARTERLY, YEARLY)"
       ),
-      z.int().describe("The payment interval in seconds"),
+      z.int().positive().describe("The payment interval in seconds"),
     ])
     .describe("The payment interval"),
   startTime: timestamp().describe(
