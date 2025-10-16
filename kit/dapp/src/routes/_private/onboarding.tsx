@@ -1,4 +1,4 @@
-import { AssetTokenizationKitLogo } from "@/components/asset-tokenization-kit-logo";
+import { Logo } from "@/components/logo/logo";
 import { LanguageSwitcher } from "@/components/language/language-switcher";
 import { DialogCardLayout } from "@/components/layout/dialog-card-layout";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
@@ -14,7 +14,11 @@ function OnboardingLayout() {
       <DialogCardLayout
         header={
           <div className="flex-shrink-0 flex justify-between items-center p-4">
-            <AssetTokenizationKitLogo className="text-primary-foreground" />
+            <Logo
+              variant="horizontal"
+              forcedColorMode="light"
+              className="h-8"
+            />
             <div className="flex gap-2">
               <LanguageSwitcher />
               <ThemeToggle />

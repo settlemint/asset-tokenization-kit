@@ -6,6 +6,11 @@ import { defineConfig } from "vite";
 import { analyzer } from "vite-bundle-analyzer";
 import tsConfigPaths from "vite-tsconfig-paths";
 
+type MinimalRollupWarning = {
+  code?: string;
+  message?: string;
+};
+
 export default defineConfig({
   logLevel: process.env.CLAUDECODE ? "warn" : "info",
   server: {
@@ -15,7 +20,10 @@ export default defineConfig({
     target: "es2023",
     sourcemap: true,
     rollupOptions: {
-      onwarn(warning, warn) {
+      onwarn(
+        warning: MinimalRollupWarning,
+        warn: (warning: MinimalRollupWarning) => void
+      ) {
         // Suppress unused import warnings from external modules
         if (warning.code === "UNUSED_EXTERNAL_IMPORT") {
           return;

@@ -26,7 +26,25 @@
     "assetTypes": "Asset-Typen",
     "compliance": "Compliance",
     "addons": "Zusatzmodule",
+    "theme": {
+      "title": "Theme",
+      "description": "Configure branding assets, typography und Farbvarianten für Ihre Mandantenoberfläche.",
+      "placeholder": "Der Theme-Editor befindet sich in Vorbereitung. Bitte schauen Sie bald wieder vorbei.",
+      "dirtyBadge": "Nicht gespeicherte Änderungen",
+      "pristineBadge": "Auf dem neuesten Stand",
+      "versionBadgeTitle": "Aktuelle Theme-Version",
+      "updatedLabel": "Aktualisiert",
+      "updatedUnknown": "Aktualisierungszeit nicht verfügbar",
+      "updatedBadgeTitle": "Zuletzt gespeichert {{timestamp}}"
+    },
     "claimTopicsIssuers": "Claim-Themen & Aussteller",
-    "permissions": "Berechtigungen"
+    "permissions": {
+      "title": "Administratorberechtigungen",
+      "description": "Verwalten Sie Administratorrollen und Zugriffsrechte für die Plattform.",
+      "adminRequired": {
+        "title": "Administratorzugriff erforderlich",
+        "description": "Für diesen Bereich benötigen Sie Administratorrechte. Wenden Sie sich an Ihren Systemadministrator, um Zugriff zu erhalten."
+      }
+    }
   }
 }

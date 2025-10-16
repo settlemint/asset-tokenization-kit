@@ -66,6 +66,7 @@
     "db:studio": "turbo run db:studio "
   },
   "dependencies": {
+    "@noble/hashes": "2.0.1",
     "@types/js-yaml": "4.0.9",
     "js-yaml": "4.1.0",
     "lefthook": "1.13.6"
