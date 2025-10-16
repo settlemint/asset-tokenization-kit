@@ -1,10 +1,9 @@
-import { type BrowserContext, test, type Page } from "@playwright/test";
+import { test, type BrowserContext, type Page } from "@playwright/test";
 import { CreateAssetForm } from "../pages/create-asset-form";
 import { Pages } from "../pages/pages";
-import { fundData } from "../test-data/asset-data";
+import { assetPermissions, fundData } from "../test-data/asset-data";
 import { errorMessageData } from "../test-data/message-data";
 import { getSetupUser } from "../utils/setup-user";
-import { assetPermissions } from "../test-data/asset-data";
 
 test.describe.serial("Fund Creation Validation", () => {
   let adminContext: BrowserContext;
@@ -232,7 +231,6 @@ test.describe.serial("Fund Creation Validation", () => {
       });
       await adminPages.adminPage.unpauseAsset({
         pincode: setupUser.pincode,
-        user: setupUser.name,
       });
     });
   });
