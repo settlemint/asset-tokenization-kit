@@ -503,6 +503,38 @@ describe("ChangeRolesSheet", () => {
         screen.getByRole("button", { name: "Custodian" })
       ).not.toBeDisabled();
     });
+
+    it("keeps unrestricted roles enabled when other roles require admins", () => {
+      vi.mocked(getAccessControlEntries).mockReturnValue([]);
+
+      const accessControlWithPartialAdmins = {
+        roleAdmins: [
+          {
+            roleFieldName: "custodian",
+            adminFieldName: "tokenAdmin",
+          },
+        ],
+      } as unknown as AccessControl;
+
+      renderWithProviders(
+        <ChangeRolesSheet
+          open
+          onOpenChange={mockOnOpenChange}
+          asset={mockToken}
+          presetAccount={
+            "0x5555555555555555555555555555555555555555" as `0x${string}`
+          }
+          accessControl={accessControlWithPartialAdmins}
+          revokeRole={mockRevokeRole}
+          grantRole={mockGrantRole}
+          groupedRoles={groupedRoles}
+        />
+      );
+
+      expect(
+        screen.getByRole("button", { name: "Token Manager" })
+      ).not.toBeDisabled();
+    });
   });
 
   describe("Submission", () => {

@@ -193,20 +193,22 @@ export function ChangeRolesSheet({
   };
 
   // No effects needed: we derive current selection from overrides or current roles
-  
+
   // Memoize role permission checks for performance
   const rolePermissions = useMemo(() => {
     const permissions = new Map<AccessControlRoles, boolean>();
     const allRoles = [...ACCESS_CONTROL_ROLES] as AccessControlRoles[];
-    
+
     for (const role of allRoles) {
       const adminRoles = roleAdminMap.get(role);
-      const hasPermission = adminRoles
-        ? adminRoles.some((adminRole) => walletRoles.has(adminRole))
-        : roleAdminMap.size === 0;
+      // Treat roles lacking admin mappings as unrestricted.
+      const hasPermission =
+        adminRoles && adminRoles.length > 0
+          ? adminRoles.some((adminRole) => walletRoles.has(adminRole))
+          : true;
       permissions.set(role, hasPermission);
     }
-    
+
     return permissions;
   }, [roleAdminMap, walletRoles]);
 
