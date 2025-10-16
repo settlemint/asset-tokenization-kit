@@ -1,5 +1,6 @@
 import { bigDecimal } from "@atk/zod/bigdecimal";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { timestamp } from "@atk/zod/timestamp";
 import * as z from "zod";
 
 /**
@@ -28,35 +29,15 @@ export const StatsYieldDistributionInputSchema = z.object({
  * for easier consumption by frontend components.
  */
 export const YieldDistributionPeriodSchema = z.object({
-  /**
-   * Unique identifier for this period (schedule address + period index).
-   * Used for React keys and data tracking across re-renders.
-   */
-  id: z.string(),
-
-  /**
-   * Period start time as Unix timestamp in milliseconds.
-   * Converted to milliseconds for JavaScript Date compatibility and chart libraries.
-   */
-  timestamp: z.number(),
-
-  /**
-   * Total yield amount generated for this specific period.
-   * Represented as a decimal number for direct use in UI components.
-   */
-  totalYield: z.number(),
-
-  /**
-   * Amount of yield claimed by token holders during this period.
-   * Always less than or equal to totalYield.
-   */
-  claimed: z.number(),
-
-  /**
-   * Remaining unclaimed yield available for this period.
-   * Calculated as totalYield - claimed.
-   */
-  unclaimed: z.number(),
+  id: z.string().describe("Unique identifier for this period"),
+  timestamp: timestamp().describe("Timestamp when period starts"),
+  totalYield: bigDecimal().describe("Total yield generated for this period"),
+  claimed: bigDecimal().describe(
+    "Amount of yield claimed by token holders during this period"
+  ),
+  unclaimed: bigDecimal().describe(
+    "Remaining unclaimed yield available for this period"
+  ),
 });
 
 /**
@@ -67,29 +48,16 @@ export const YieldDistributionPeriodSchema = z.object({
  * - Totals: Use bigDecimal to preserve precision for financial calculations
  */
 export const StatsYieldDistributionOutputSchema = z.object({
-  /**
-   * Time-ordered array of yield distribution periods.
-   * Sorted chronologically to support chart libraries that expect sequential data.
-   */
-  periods: z.array(YieldDistributionPeriodSchema),
-
-  /**
-   * Aggregate yield generated across all periods.
-   * Uses bigDecimal for full precision in financial calculations.
-   */
-  totalYield: bigDecimal(),
-
-  /**
-   * Total yield claimed by all holders across all periods.
-   * Maintains precision for reconciliation with blockchain state.
-   */
-  totalClaimed: bigDecimal(),
-
-  /**
-   * Total unclaimed yield remaining across all periods.
-   * Critical for displaying available yield and triggering claim actions.
-   */
-  totalUnclaimed: bigDecimal(),
+  periods: z
+    .array(YieldDistributionPeriodSchema)
+    .describe("Array of yield distribution periods"),
+  totalYield: bigDecimal().describe("Total yield generated across all periods"),
+  totalClaimed: bigDecimal().describe(
+    "Total yield claimed by all holders across all periods"
+  ),
+  totalUnclaimed: bigDecimal().describe(
+    "Total unclaimed yield remaining across all periods"
+  ),
 });
 
 /**

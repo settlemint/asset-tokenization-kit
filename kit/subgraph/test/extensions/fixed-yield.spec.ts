@@ -68,7 +68,7 @@ describe("Fixed yield", () => {
             nextPeriod: null,
             totalYield: "0.000355",
             totalClaimed: "0.000183",
-            totalUnclaimedYield: "0.00003",
+            totalUnclaimedYield: "0.000172",
             periods: [
               {
                 startDate: expect.any(String),
@@ -96,14 +96,14 @@ describe("Fixed yield", () => {
                 endDate: expect.any(String),
                 totalYield: "0.000071",
                 totalClaimed: "0",
-                totalUnclaimedYield: "0",
+                totalUnclaimedYield: "0.000071",
               },
               {
                 startDate: expect.any(String),
                 endDate: expect.any(String),
                 totalYield: "0.000071",
                 totalClaimed: "0",
-                totalUnclaimedYield: "0",
+                totalUnclaimedYield: "0.000071",
               },
               {
                 startDate: expect.any(String),

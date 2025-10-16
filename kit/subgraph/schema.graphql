@@ -1961,7 +1961,7 @@ type TokenBondStats
   coveredPercentage: BigDecimal!
     @aggregate(
       fn: "last"
-      arg: "(denominationAssetBalanceAvailable / denominationAssetBalanceRequired) * 100"
+      arg: "COALESCE((denominationAssetBalanceAvailable / NULLIF(denominationAssetBalanceRequired, 0)) * 100, 0)"
     )
 }
 

@@ -92,19 +92,21 @@ describe("Token read", () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
 
+    const nonExistentToken = "0x0000000000000000000000000000000000000001";
+
     // Use a valid but non-existent address
     await expect(
       client.token.read(
         {
-          tokenAddress: "0x0000000000000000000000000000000000000001",
+          tokenAddress: nonExistentToken,
         },
         {
           context: {
-            skipLoggingFor: [CUSTOM_ERROR_CODES.THE_GRAPH_ERROR],
+            skipLoggingFor: [CUSTOM_ERROR_CODES.NOT_FOUND],
           },
         }
       )
-    ).rejects.toThrow();
+    ).rejects.toThrow(`Token with address '${nonExistentToken}' not found`);
   });
 
   it("throws error for invalid token address", async () => {

@@ -1,6 +1,6 @@
 import {
-  getAnvilTimeMilliseconds,
   getAnvilBasedFutureDate,
+  getAnvilTimeMilliseconds,
 } from "@/test/anvil";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { TimeIntervalEnum } from "@atk/zod/time-interval";
@@ -101,7 +101,7 @@ describe("Fixed yield schedule top up", async () => {
 
     const yieldScheduleResult =
       await adminClient.fixedYieldSchedule.create(yieldScheduleData);
-    yieldScheduleAddress = yieldScheduleResult.address;
+    yieldScheduleAddress = yieldScheduleResult.id;
 
     expect(yieldScheduleAddress).toBeDefined();
     expect(yieldScheduleAddress).toBe(getEthereumAddress(yieldScheduleAddress));

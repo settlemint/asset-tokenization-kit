@@ -1,5 +1,5 @@
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { addMonths } from "date-fns";
+import { addMonths, differenceInMilliseconds, isAfter } from "date-fns";
 import {
   createTestClient,
   http,
@@ -41,6 +41,29 @@ export async function increaseAnvilTime(seconds: number): Promise<void> {
   logger.info(
     `[ANVIL] Time increase: ${(afterTime - beforeTime) / 1000} seconds`
   );
+}
+
+/**
+ * Increase anvil time to a specific date
+ * @param date - The date to increase to
+ */
+export async function increaseAnvilTimeForDate(
+  date: Date | undefined
+): Promise<void> {
+  if (!date) {
+    throw new Error("Date is undefined");
+  }
+  const currentTime = await getAnvilTimeMilliseconds();
+  const differenceMs = isAfter(date, currentTime)
+    ? differenceInMilliseconds(date, currentTime)
+    : 0;
+  if (differenceMs <= 0) {
+    return;
+  }
+  const differenceSeconds = Math.ceil(differenceMs / 1000) + 5; // Add 5 seconds to be safe
+  await increaseAnvilTime(differenceSeconds);
+  // Wait for the block to be indexed by the graph
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 }
 
 // Helper function to get a future date based on current anvil blockchain time

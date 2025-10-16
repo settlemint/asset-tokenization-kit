@@ -7,6 +7,7 @@ import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
+import { ClaimYieldSheet } from "@/components/manage-dropdown/sheets/claim-yield-sheet";
 import { RedeemSheet } from "@/components/manage-dropdown/sheets/redeem-sheet";
 import { TransferAssetSheet } from "@/components/manage-dropdown/sheets/transfer-asset-sheet";
 import { useSession } from "@/hooks/use-auth";
@@ -21,6 +22,7 @@ import {
   Coins,
   Copy,
   Flame,
+  HandCoins,
   Hash,
   Lock,
   Package,
@@ -39,6 +41,7 @@ const columnHelper = createStrictColumnHelper<TokenBalance>();
 enum AssetAction {
   Transfer,
   Redeem,
+  ClaimYield,
 }
 
 /**
@@ -84,6 +87,13 @@ export const UserAssetsTable = withErrorBoundary(function UserAssetsTable() {
   }, [rawWallet]);
 
   const { data: assets } = useSuspenseQuery(orpc.user.assets.queryOptions());
+  const { data: claimYieldActions } = useSuspenseQuery(
+    orpc.actions.list.queryOptions({
+      input: {
+        name: "ClaimYield",
+      },
+    })
+  );
   const [selectedAsset, setSelectedAsset] = useState<TokenBalance | null>(null);
   const [selectedAction, setSelectedAction] = useState<AssetAction | null>(
     null
@@ -139,9 +149,25 @@ export const UserAssetsTable = withErrorBoundary(function UserAssetsTable() {
         });
       }
 
+      const canClaimYield = claimYieldActions.some(
+        (action) =>
+          action.target === row.original.token.yield?.schedule?.id &&
+          action.status !== "EXECUTED" &&
+          action.activeAt.getTime() <= Date.now()
+      );
+      if (canClaimYield) {
+        actions.push({
+          label: t("user-assets:actions.claimYield.label"),
+          icon: <HandCoins className="h-4 w-4" />,
+          onClick: () => {
+            openActionSheet(row.original, AssetAction.ClaimYield);
+          },
+        });
+      }
+
       return actions;
     },
-    [openActionSheet, t]
+    [openActionSheet, t, claimYieldActions]
   );
 
   /**
@@ -307,6 +333,13 @@ export const UserAssetsTable = withErrorBoundary(function UserAssetsTable() {
           onClose={handleActionSheetClose}
           assetBalance={selectedAsset}
           holderAddress={holderWallet}
+        />
+      ) : null}
+      {selectedAsset ? (
+        <ClaimYieldSheet
+          open={selectedAction === AssetAction.ClaimYield}
+          onClose={handleActionSheetClose}
+          assetBalance={selectedAsset}
         />
       ) : null}
     </>

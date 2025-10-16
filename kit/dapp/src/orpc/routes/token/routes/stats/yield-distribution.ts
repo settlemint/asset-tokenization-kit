@@ -1,92 +1,29 @@
+import { TokenFixedYieldScheduleFragment } from "@/lib/fragments/the-graph/fixed-yield-schedule-fragment";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { format, from } from "dnum";
+import { FixedYieldScheduleSchema } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.read.schema";
+import { from } from "dnum";
 import * as z from "zod";
 
 /**
  * GraphQL query to fetch yield schedule and period data for a bond token
  * Retrieves all periods with their yield generation and claim statistics
  */
-const TOKEN_YIELD_DISTRIBUTION_QUERY = theGraphGraphql(`
+const TOKEN_YIELD_DISTRIBUTION_QUERY = theGraphGraphql(
+  `
   query TokenYieldDistribution($tokenId: ID!) {
     token(id: $tokenId) {
       id
       yield_ {
         schedule {
-          id
-          startDate
-          endDate
-          rate
-          interval
-          totalClaimed
-          totalClaimedExact
-          totalUnclaimedYield
-          totalUnclaimedYieldExact
-          totalYield
-          totalYieldExact
-          denominationAsset {
-            id
-            decimals
-          }
-          periods(orderBy: startDate, orderDirection: asc) {
-            id
-            startDate
-            endDate
-            totalClaimed
-            totalClaimedExact
-            totalUnclaimedYield
-            totalUnclaimedYieldExact
-            totalYield
-            totalYieldExact
-          }
+          ...TokenFixedYieldScheduleFragment
         }
       }
     }
   }
-`);
-
-// Schema for the GraphQL response
-const TokenYieldDistributionResponseSchema = z.object({
-  token: z.object({
-    id: z.string(),
-    yield_: z
-      .object({
-        schedule: z
-          .object({
-            id: z.string(),
-            startDate: z.string(),
-            endDate: z.string(),
-            rate: z.string(),
-            interval: z.string(),
-            totalClaimed: z.string(),
-            totalClaimedExact: z.string(),
-            totalUnclaimedYield: z.string(),
-            totalUnclaimedYieldExact: z.string(),
-            totalYield: z.string(),
-            totalYieldExact: z.string(),
-            denominationAsset: z.object({
-              id: z.string(),
-              decimals: z.number(),
-            }),
-            periods: z.array(
-              z.object({
-                id: z.string(),
-                startDate: z.string(),
-                endDate: z.string(),
-                totalClaimed: z.string(),
-                totalClaimedExact: z.string(),
-                totalUnclaimedYield: z.string(),
-                totalUnclaimedYieldExact: z.string(),
-                totalYield: z.string(),
-                totalYieldExact: z.string(),
-              })
-            ),
-          })
-          .nullable(),
-      })
-      .nullable(),
-  }),
-});
+`,
+  [TokenFixedYieldScheduleFragment]
+);
 
 /**
  * Yield distribution statistics route handler.
@@ -134,7 +71,15 @@ export const statsYieldDistribution =
           input: {
             tokenId: tokenAddress.toLowerCase(),
           },
-          output: TokenYieldDistributionResponseSchema,
+          output: z.object({
+            token: z.object({
+              yield_: z
+                .object({
+                  schedule: FixedYieldScheduleSchema.nullable(),
+                })
+                .nullable(),
+            }),
+          }),
         }
       );
 
@@ -150,41 +95,24 @@ export const statsYieldDistribution =
         };
       }
 
-      const decimals = schedule.denominationAsset.decimals;
-
       // Transform periods into distribution format
       const periods = schedule.periods.map((period) => {
-        // Coerce null/undefined to "0" to avoid NaN during formatting
-        const totalYieldD = from(period.totalYieldExact ?? "0", decimals);
-        const claimedD = from(period.totalClaimedExact ?? "0", decimals);
-        const unclaimedD = from(
-          period.totalUnclaimedYieldExact ?? "0",
-          decimals
-        );
-
-        const toSafeNumber = (value: ReturnType<typeof from>): number => {
-          const n = Number(format(value));
-          return Number.isFinite(n) ? n : 0;
-        };
-
-        const timestampMs = Number(period.startDate) * 1000;
-
         return {
           id: period.id,
           // Convert to milliseconds for JavaScript Date compatibility
-          timestamp: Number.isFinite(timestampMs) ? timestampMs : 0,
-          totalYield: toSafeNumber(totalYieldD),
-          claimed: toSafeNumber(claimedD),
-          unclaimed: toSafeNumber(unclaimedD),
+          timestamp: period.startDate,
+          totalYield: period.totalYield,
+          claimed: period.totalClaimed,
+          unclaimed: period.totalUnclaimedYield,
         };
       });
 
       // Return distribution data with totals as bigDecimal (Dnum)
       return {
         periods,
-        totalYield: from(schedule.totalYieldExact, decimals),
-        totalClaimed: from(schedule.totalClaimedExact, decimals),
-        totalUnclaimed: from(schedule.totalUnclaimedYieldExact, decimals),
+        totalYield: schedule.totalYield,
+        totalClaimed: schedule.totalClaimed,
+        totalUnclaimed: schedule.totalUnclaimedYield,
       };
     }
   );

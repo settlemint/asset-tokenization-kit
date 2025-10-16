@@ -1,5 +1,4 @@
-import { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { getAnvilTimeMilliseconds, increaseAnvilTime } from "@/test/anvil";
+import { increaseAnvilTimeForDate } from "@/test/anvil";
 import { getOrpcClient } from "@test/fixtures/orpc-client";
 import { DEFAULT_PINCODE, signInWithUser } from "@test/fixtures/user";
 import { BONDS } from "@test/scripts/demo/data/demo-assets";
@@ -9,7 +8,6 @@ import {
   GERMAN_INVESTOR_2,
   ISSUER,
 } from "@test/scripts/demo/data/demo-users";
-import { differenceInMilliseconds, isAfter } from "date-fns";
 
 const adminClient = getOrpcClient(await signInWithUser(ADMIN));
 const issuerClient = getOrpcClient(await signInWithUser(ISSUER));
@@ -41,7 +39,7 @@ for (const bond of createdBonds) {
     });
     continue;
   }
-  await increaseAnvilTimeToPassMaturityDate(bondData);
+  await increaseAnvilTimeForDate(bondData.bond?.maturityDate);
   await issuerClient.token.mature({
     contract: bond.id,
     walletVerification: {
@@ -64,24 +62,5 @@ for (const bond of createdBonds) {
         verificationType: "PINCODE",
       },
     });
-  }
-}
-
-async function increaseAnvilTimeToPassMaturityDate(bond: Token) {
-  const currentTime = await getAnvilTimeMilliseconds();
-  const maturityDate = bond.bond?.maturityDate;
-
-  if (!maturityDate) {
-    throw new Error("Maturity date is undefined");
-  }
-
-  const differenceMs = isAfter(maturityDate, currentTime)
-    ? differenceInMilliseconds(maturityDate, currentTime)
-    : 0;
-  const differenceSeconds = Math.ceil(differenceMs / 1000) + 5; // Add 5 seconds to be safe
-
-  if (differenceSeconds > 0) {
-    await increaseAnvilTime(differenceSeconds);
-    await new Promise((resolve) => setTimeout(resolve, 1_000));
   }
 }

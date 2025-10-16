@@ -229,7 +229,6 @@ test.describe.serial("Equity Creation Validation", () => {
       });
       await adminPages.adminPage.unpauseAsset({
         pincode: setupUser.pincode,
-        user: setupUser.name,
       });
     });
   });
