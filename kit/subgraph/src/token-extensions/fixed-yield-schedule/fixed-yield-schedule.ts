@@ -198,6 +198,13 @@ export function handleYieldClaimed(event: YieldClaimed): void {
     fixedYieldSchedule.save();
     return;
   }
+  setBigNumber(
+    currentPeriod,
+    "totalYield",
+    event.params.yieldForNextPeriod, // Is the yield of any not completed period
+    denominationAssetDecimals
+  );
+  currentPeriod.save();
   fixedYieldSchedule.currentPeriod = currentPeriod.id;
 
   const nextPeriodId = getPeriodId(
@@ -209,11 +216,12 @@ export function handleYieldClaimed(event: YieldClaimed): void {
     setBigNumber(
       nextPeriod,
       "totalYield",
-      event.params.yieldForNextPeriod,
+      event.params.yieldForNextPeriod, // Is the yield of any not completed period
       denominationAssetDecimals
     );
     nextPeriod.save();
     fixedYieldSchedule.nextPeriod = nextPeriod.id;
+    fixedYieldSchedule.save();
   } else {
     // There is no next period, current period is the last period
     fixedYieldSchedule.nextPeriod = null;
