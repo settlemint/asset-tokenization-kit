@@ -1,4 +1,4 @@
-import type { ThemeConfig } from "@/components/theme/schema";
+import { DEFAULT_THEME, type ThemeConfig } from "@/components/theme/schema";
 import {
   Card,
   CardContent,
@@ -125,9 +125,34 @@ export function FontSettingsCard({
                           <Select
                             value={sourceValue}
                             onValueChange={(value) => {
-                              field.handleChange(
-                                value as ThemeConfig["fonts"]["sans"]["source"]
-                              );
+                              const typedValue =
+                                value as ThemeConfig["fonts"]["sans"]["source"];
+                              field.handleChange(typedValue);
+
+                              if (typedValue === "fontsource") {
+                                const defaults = DEFAULT_THEME.fonts[key];
+                                form.setFieldValue(
+                                  `fonts.${key}.family`,
+                                  defaults.family
+                                );
+                                form.setFieldValue(
+                                  `fonts.${key}.weights`,
+                                  defaults.weights ?? undefined
+                                );
+                                form.setFieldValue(
+                                  `fonts.${key}.url`,
+                                  undefined
+                                );
+                                form.setFieldValue(
+                                  `fonts.${key}.preload`,
+                                  defaults.preload
+                                );
+                              } else if (typedValue !== "custom") {
+                                form.setFieldValue(
+                                  `fonts.${key}.url`,
+                                  undefined
+                                );
+                              }
                             }}
                           >
                             <SelectTrigger className="justify-start text-left px-3 py-2">

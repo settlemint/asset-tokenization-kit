@@ -26,9 +26,9 @@ These documents detail the smart contract layer, including asset implementations
 
 ### 📱 Frontend Application (11-15)
 
-These documents cover the Next.js frontend application, including architecture, components, and user experience design.
+These documents cover the TanStack Start frontend application, including architecture, components, and user experience design.
 
-- **[11 - Next.js dApp Architecture](./11-nextjs-dapp-architecture.md)** - Next.js App Router, TanStack Router, authentication, and onboarding flows
+- **[11 - TanStack Start dApp Architecture](./11-tanstack-start-dapp-architecture.md)** - TanStack Start App Router, TanStack Router, authentication, and onboarding flows
 - **[12 - UI Component System](./12-ui-component-system.md)** - Radix UI components, Tailwind CSS, theming, and responsive design patterns
 - **[13 - Asset Management Interface](./13-asset-management-interface.md)** - Asset Designer wizard, token management, compliance configuration, and admin panels
 - **[14 - Form & State Management](./14-form-state-management.md)** - TanStack Form validation, TanStack Query data fetching, and state synchronization
@@ -69,14 +69,14 @@ These documents explain real-world banking and financial system integration patt
 1. **[Development Setup](./04-development-environment.md)** - Get your local environment running with Docker and Turborepo
 2. **[System Overview](./01-system-overview.md)** - Understand the overall architecture and component relationships
 3. **[Smart Contracts](./06-asset-token-contracts.md)** - Explore the token implementations and SMART Protocol extensions
-4. **[Frontend Application](./11-nextjs-dapp-architecture.md)** - Navigate the user interface and component architecture
+4. **[Frontend Application](./11-tanstack-start-dapp-architecture.md)** - Navigate the user interface and component architecture
 5. **[API Documentation](./16-orpc-api-architecture.md)** - Integrate with the backend APIs and understand the type-safe procedures
 
 ## 🔍 Key Features
 
 - **🏦 Asset Tokenization**: Bond, Equity, Fund, StableCoin, and Deposit token implementations with complete user workflows and regulatory compliance
 - **⚖️ Regulatory Compliance**: Built-in KYC/AML, identity verification, and compliance modules with automated reporting and multi-jurisdictional support
-- **🎨 Modern Frontend**: Next.js with TanStack ecosystem, Radix UI components, and comprehensive accessibility features
+- **🎨 Modern Frontend**: TanStack Start with TanStack ecosystem, Radix UI components, and comprehensive accessibility features
 - **🔐 Enterprise Security**: Multi-signature wallets, role-based access control, and comprehensive audit trails with institutional-grade security
 - **🚀 Scalable Architecture**: Microservices, event sourcing, and cloud-native deployment with banking integration and high availability
 - **💰 Banking Integration**: Core banking system integration, payment rails, fiat-token bridge architecture, and comprehensive financial services
@@ -119,7 +119,7 @@ This documentation serves multiple stakeholder groups with varying technical bac
 | Layer | Primary Technologies | Purpose | Documentation |
 |-------|---------------------|---------|---------------|
 | **Blockchain** | Solidity, Foundry, Hardhat | Smart contract development | [06-10] |
-| **Frontend** | Next.js, React, TanStack | User interface | [11-15] |
+| **Frontend** | TanStack Start, React, TanStack | User interface | [11-15] |
 | **Backend** | ORPC, Drizzle ORM, PostgreSQL | API and data layer | [16-20] |
 | **Infrastructure** | Docker, Kubernetes, Helm | Deployment and operations | [04-05] |
 | **Integration** | Banking APIs, Payment Rails | Financial system integration | [26-30] |

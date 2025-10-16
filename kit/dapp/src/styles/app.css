@@ -350,10 +350,17 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Ensure runtime-selected sans-serif font propagates globally */
+    font-family: var(--font-sans);
     overflow: hidden;
     transition:
       background-color 0.15s ease,
       color 0.15s ease;
+  }
+
+  :is(code, kbd, pre, samp) {
+    /* Keep code surfaces aligned with theme monospace selection */
+    font-family: var(--font-mono);
   }
 }
 

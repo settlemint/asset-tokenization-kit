@@ -746,7 +746,7 @@ The Web3 system supports various integration patterns for different use cases:
 
 - **Previous**: [14 - Form State Management](./14-form-state-management.md) - Form and state management
 - **Next**: [16 - ORPC API Architecture](./16-orpc-api-architecture.md) - API architecture
-- **Related**: [11 - Next.js dApp Architecture](./11-nextjs-dapp-architecture.md) - Frontend architecture
+- **Related**: [11 - TanStack Start dApp Architecture](./11-tanstack-start-dapp-architecture.md) - Frontend architecture
 - **Related**: [06 - Asset Token Contracts](./06-asset-token-contracts.md) - Smart contract integration
 
 ### External Web3 Resources
