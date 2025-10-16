@@ -1,10 +1,9 @@
-import { type BrowserContext, test, type Page } from "@playwright/test";
+import { test, type BrowserContext, type Page } from "@playwright/test";
 import { CreateAssetForm } from "../pages/create-asset-form";
 import { Pages } from "../pages/pages";
-import { stablecoinData } from "../test-data/asset-data";
+import { assetPermissions, stablecoinData } from "../test-data/asset-data";
 import { errorMessageData } from "../test-data/message-data";
 import { getSetupUser } from "../utils/setup-user";
-import { assetPermissions } from "../test-data/asset-data";
 
 test.describe.serial("Stablecoin Creation Validation", () => {
   let adminContext: BrowserContext;
@@ -226,7 +225,6 @@ test.describe.serial("Stablecoin Creation Validation", () => {
       });
       await adminPages.adminPage.unpauseAsset({
         pincode: setupUser.pincode,
-        user: setupUser.name,
       });
     });
   });
