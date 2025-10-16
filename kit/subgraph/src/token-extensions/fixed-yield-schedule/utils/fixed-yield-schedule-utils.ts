@@ -49,13 +49,11 @@ export function updateYield(token: Token): TokenFixedYieldSchedule | null {
   let fixedYieldCurrentPeriod: TokenFixedYieldSchedulePeriod | null = null;
   if (currentPeriodValue === 0) {
     fixedYieldSchedule.currentPeriod = null;
-    fixedYieldSchedule.save();
   } else {
     fixedYieldCurrentPeriod = fetchFixedYieldSchedulePeriod(
       getPeriodId(fixedYieldScheduleAddress, currentPeriodValue)
     );
     fixedYieldSchedule.currentPeriod = fixedYieldCurrentPeriod.id;
-    fixedYieldSchedule.save();
   }
 
   const nextPeriodId = getPeriodId(
@@ -74,6 +72,7 @@ export function updateYield(token: Token): TokenFixedYieldSchedule | null {
     fixedYieldScheduleContract.try_totalYieldForNextPeriod();
   if (currentAndNextPeriodYield.reverted) {
     log.error("FixedYieldSchedule: totalYieldForNextPeriod reverted", []);
+    fixedYieldSchedule.save();
     return fixedYieldSchedule;
   }
 
