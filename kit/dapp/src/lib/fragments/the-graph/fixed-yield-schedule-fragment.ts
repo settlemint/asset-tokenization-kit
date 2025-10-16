@@ -70,7 +70,7 @@ export const TokenFixedYieldScheduleFragment = theGraphGraphql(
     nextPeriod {
       ...TokenFixedYieldSchedulePeriodFragment
     }
-    periods {
+    periods(orderBy: startDate, orderDirection: asc) {
       ...TokenFixedYieldSchedulePeriodFragment
     }
   }
