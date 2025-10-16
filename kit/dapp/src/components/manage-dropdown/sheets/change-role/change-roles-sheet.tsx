@@ -403,9 +403,11 @@ export function ChangeRolesSheet({
                   }
                 } catch (error) {
                   // Network or unexpected errors
-                  if (error instanceof Error && (error.message.includes('fetch') || error.message.includes('network'))) {
-                      throw new Error(t("components:changeRolesSheet.networkError"));
-                    }
+                  if (error instanceof TypeError) {
+                    throw new Error(t("components:changeRolesSheet.networkError"), {
+                      cause: error,
+                    });
+                  }
                   throw error;
                 }
               })();
