@@ -7,6 +7,19 @@ import { ChangeRolesSheet, type RoleInfo } from "./change-roles-sheet";
 
 // Import the mocked modules
 import { useAppForm } from "@/hooks/use-app-form";
+import { getAccessControlEntries } from "@/orpc/helpers/access-control-helpers";
+import type { AccessControl } from "@atk/zod/access-control-roles";
+
+const defaultSessionWallet =
+  "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" as `0x${string}`;
+
+const sessionState: { wallet: `0x${string}` } = {
+  wallet: defaultSessionWallet,
+};
+
+const setSessionWallet = (wallet: `0x${string}`) => {
+  sessionState.wallet = wallet;
+};
 
 // Mock dependencies
 vi.mock("react-i18next", () => ({
@@ -117,13 +130,23 @@ vi.mock("@/components/address/address-select-or-input-toggle", () => ({
   }) => children({ mode: "select" }),
 }));
 
+vi.mock("@/hooks/use-auth", () => ({
+  useSession: vi.fn(() => ({
+    data: { user: { wallet: sessionState.wallet } },
+    isLoading: false,
+  })),
+}));
+
 vi.mock("@/orpc/helpers/access-control-helpers", () => ({
-  getAccessControlEntries: () => [
-    [
-      "supplyManagement",
-      [{ id: "0x1111111111111111111111111111111111111111" }],
-    ],
-  ],
+  getAccessControlEntries: vi.fn(
+    () =>
+      [
+        [
+          "supplyManagement",
+          [{ id: "0x1111111111111111111111111111111111111111" }],
+        ],
+      ] as Array<[string, Array<{ id: string; isContract?: boolean }>]>
+  ),
 }));
 
 vi.mock("@/orpc/routes/token/token.permissions", () => ({
@@ -226,12 +249,24 @@ describe("ChangeRolesSheet", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    setSessionWallet(defaultSessionWallet);
     queryClient = new QueryClient({
       defaultOptions: {
         queries: { retry: false },
         mutations: { retry: false },
       },
     });
+    vi.mocked(getAccessControlEntries).mockReturnValue([
+      [
+        "supplyManagement",
+        [
+          {
+            id: "0x1111111111111111111111111111111111111111",
+            isContract: false,
+          },
+        ],
+      ],
+    ]);
   });
 
   const renderWithProviders = (component: React.ReactElement) => {
@@ -395,6 +430,78 @@ describe("ChangeRolesSheet", () => {
 
       // Should show roles section
       expect(screen.getByText("Roles")).toBeInTheDocument();
+    });
+
+    it("disables role button when user lacks the admin manager role", () => {
+      const wallet =
+        "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" as `0x${string}`;
+      setSessionWallet(wallet);
+      vi.mocked(getAccessControlEntries).mockReturnValue([
+        ["admin", [{ id: wallet, isContract: false }]],
+      ]);
+
+      const accessControlWithAdmins = {
+        roleAdmins: [
+          {
+            roleFieldName: "custodian",
+            adminFieldName: "tokenAdmin",
+          },
+        ],
+      } as unknown as AccessControl;
+
+      renderWithProviders(
+        <ChangeRolesSheet
+          open
+          onOpenChange={mockOnOpenChange}
+          asset={mockToken}
+          presetAccount={
+            "0x3333333333333333333333333333333333333333" as `0x${string}`
+          }
+          accessControl={accessControlWithAdmins}
+          revokeRole={mockRevokeRole}
+          grantRole={mockGrantRole}
+          groupedRoles={groupedRoles}
+        />
+      );
+
+      expect(screen.getByRole("button", { name: "Custodian" })).toBeDisabled();
+    });
+
+    it("enables role button when user has the admin manager role", () => {
+      const wallet =
+        "0xcccccccccccccccccccccccccccccccccccccccc" as `0x${string}`;
+      setSessionWallet(wallet);
+      vi.mocked(getAccessControlEntries).mockReturnValue([
+        ["tokenAdmin", [{ id: wallet, isContract: false }]],
+      ]);
+
+      const accessControlWithAdmins = {
+        roleAdmins: [
+          {
+            roleFieldName: "custodian",
+            adminFieldName: "tokenAdmin",
+          },
+        ],
+      } as unknown as AccessControl;
+
+      renderWithProviders(
+        <ChangeRolesSheet
+          open
+          onOpenChange={mockOnOpenChange}
+          asset={mockToken}
+          presetAccount={
+            "0x4444444444444444444444444444444444444444" as `0x${string}`
+          }
+          accessControl={accessControlWithAdmins}
+          revokeRole={mockRevokeRole}
+          grantRole={mockGrantRole}
+          groupedRoles={groupedRoles}
+        />
+      );
+
+      expect(
+        screen.getByRole("button", { name: "Custodian" })
+      ).not.toBeDisabled();
     });
   });
 

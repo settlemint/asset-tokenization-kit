@@ -90,7 +90,7 @@ describe("AccessControlFragment", () => {
             return "";
           });
 
-        expect(fieldNames).toHaveLength(expectedRoles.length + 1);
+        expect(fieldNames).toHaveLength(expectedRoles.length + 2); // +1 for id, +1 for roleAdmins
         expectedRoles.forEach((role) => {
           expect(fieldNames).toContain(role);
         });
@@ -109,6 +109,13 @@ describe("AccessControlFragment", () => {
             // The top-level 'id' field is a scalar and doesn't have nested selections
             if (selection.name.value === "id") {
               expect(selection.selectionSet).toBeUndefined();
+              return;
+            }
+
+            // The roleAdmins field has different nested structure
+            if (selection.name.value === "roleAdmins") {
+              expect(selection.selectionSet).toBeDefined();
+              expect(selection.selectionSet?.selections).toHaveLength(5); // id, role, roleFieldName, adminRole, adminFieldName
               return;
             }
 
@@ -147,7 +154,7 @@ describe("AccessControlFragment", () => {
       // Derive union of role keys from the fragment's inferred result type (excluding top-level id)
       type FragmentAccessControlRoles = Exclude<
         keyof NonNullable<NonNullable<ResultOf<typeof AccessControlFragment>>>,
-        "id"
+        "id" | "roleAdmins"
       >;
 
       // Ensure the fragment-derived role keys equal the zod roles union type
