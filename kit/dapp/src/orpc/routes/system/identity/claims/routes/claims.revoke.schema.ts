@@ -4,10 +4,20 @@ import { ethereumAddress } from "@atk/zod/ethereum-address";
 import * as z from "zod";
 
 /**
- * Alias for claim topics that can be revoked via API.
- * Uses the shared ClaimTopicSchema for consistency.
+ * Schema for custom claim topics registered at runtime.
  */
-export const RevokableClaimTopicSchema = ClaimTopicSchema;
+const CustomClaimTopicSchema = z
+  .string()
+  .min(1, "Custom claim topic is required")
+  .max(100, "Custom claim topic must be less than 100 characters")
+  .describe("Custom claim topic registered in the identity registry");
+
+/**
+ * Claim topics that can be revoked via API. Supports both predefined and custom topics.
+ */
+export const RevokableClaimTopicSchema = ClaimTopicSchema.or(
+  CustomClaimTopicSchema
+);
 
 /**
  * Input schema for claims revoke endpoint.
