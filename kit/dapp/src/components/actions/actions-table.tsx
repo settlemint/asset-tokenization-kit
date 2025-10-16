@@ -32,6 +32,8 @@ import { formatDistanceToNow } from "date-fns";
 import { from } from "dnum";
 import { ClipboardList } from "lucide-react";
 import { useMemo, useState } from "react";
+import { getAddress } from "viem";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { useTranslation } from "react-i18next";
 
 const columnHelper = createStrictColumnHelper<Action>();
@@ -102,6 +104,15 @@ export function ActionsTable({
   const router = useRouter();
   const { data: session } = useSession();
   const userWallet = session?.user?.wallet ?? null;
+  const normalizedWallet = useMemo<EthereumAddress | null>(() => {
+    if (!userWallet) return null;
+
+    try {
+      return getAddress(userWallet);
+    } catch {
+      return null;
+    }
+  }, [userWallet]);
 
   const [matureAction, setMatureAction] = useState<Action | null>(null);
   const [redeemAction, setRedeemAction] = useState<Action | null>(null);
@@ -125,9 +136,9 @@ export function ActionsTable({
     orpc.token.holder.queryOptions({
       input: {
         tokenAddress: redeemAction?.target ?? "",
-        holderAddress: userWallet ?? "",
+        holderAddress: normalizedWallet ?? "",
       },
-      enabled: !!redeemAction && !!userWallet,
+      enabled: !!redeemAction && !!normalizedWallet,
     })
   );
 
@@ -436,6 +447,7 @@ export function ActionsTable({
                   setRedeemAction(null);
                 }}
                 assetBalance={assetBalance}
+                holderAddress={normalizedWallet}
               />
             );
           })()
