@@ -1191,12 +1191,27 @@ type XvPSettlement @entity(immutable: false) {
   executed: Boolean!
   # Whether this settlement was cancelled
   cancelled: Boolean!
+  # Hashlock gating the settlement (bytes32)
+  hashlock: Bytes!
+  # True if any flow references an external chain
+  hasExternalFlows: Boolean!
+  # True if the HTLC secret has been revealed on-chain
+  secretRevealed: Boolean!
+  # Raw secret that satisfied the hashlock (optional)
+  secret: Bytes
+  # Unix timestamp when the secret was relayed
+  secretRevealedAt: BigInt
+  # Account that relayed the secret on-chain
+  secretRevealedBy: Account
+  # Transaction hash that revealed the secret
+  secretRevealTx: Bytes
   # Unix timestamp when created
   createdAt: BigInt!
   # List of payment flows in this settlement
   flows: [XvPSettlementFlow!]! @derivedFrom(field: "xvpSettlement")
   # List of approvals for this settlement
   approvals: [XvPSettlementApproval!]! @derivedFrom(field: "xvpSettlement")
+  cancelVotes: [XvPSettlementCancelVote!]! @derivedFrom(field: "xvpSettlement")
   # Transaction hash where this was created
   deployedInTransaction: Bytes!
 }
@@ -1206,8 +1221,10 @@ type XvPSettlementFlow @entity(immutable: false) {
   id: Bytes!
   # Settlement this flow belongs to
   xvpSettlement: XvPSettlement!
-  # Token to be transferred
-  asset: Token!
+  # Token metadata when the flow is on this chain
+  asset: Token
+  # Abstracted asset reference spanning chain contexts
+  assetReference: AssetReference!
   # Source account
   from: Account!
   # Destination account
@@ -1216,6 +1233,21 @@ type XvPSettlementFlow @entity(immutable: false) {
   amount: BigDecimal!
   # Transfer amount (exact, raw units)
   amountExact: BigInt!
+  # External chain identifier (0 for local flows)
+  externalChainId: BigInt!
+  # Convenience flag indicating whether this flow is external
+  isExternal: Boolean!
+}
+
+type AssetReference @entity(immutable: false) {
+  # Deterministic identifier derived from chain + address
+  id: Bytes!
+  # Chain identifier (0 for current chain)
+  chainId: BigInt!
+  # Address of the asset on that chain
+  address: Bytes!
+  # Linked Token when indexed on this chain
+  token: Token
 }
 
 type XvPSettlementApproval @entity(immutable: false) {
@@ -2205,4 +2237,12 @@ type IdentityStats
   # Last count of pending contract identities for the period
   pendingContractIdentitiesCount: Int!
     @aggregate(fn: "last", arg: "pendingContractIdentitiesCount")
+}
+
+type XvPSettlementCancelVote @entity(immutable: false) {
+  id: Bytes!
+  xvpSettlement: XvPSettlement!
+  account: Account!
+  active: Boolean!
+  votedAt: BigInt
 }

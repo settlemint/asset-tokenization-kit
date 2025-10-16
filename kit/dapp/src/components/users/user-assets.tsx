@@ -10,6 +10,7 @@ import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { ClaimYieldSheet } from "@/components/manage-dropdown/sheets/claim-yield-sheet";
 import { RedeemSheet } from "@/components/manage-dropdown/sheets/redeem-sheet";
 import { TransferAssetSheet } from "@/components/manage-dropdown/sheets/transfer-asset-sheet";
+import { useSession } from "@/hooks/use-auth";
 import { formatValue } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenBalance } from "@/orpc/routes/user/routes/user.assets.schema";
@@ -32,6 +33,8 @@ import {
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getAddress } from "viem";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 
 const columnHelper = createStrictColumnHelper<TokenBalance>();
 
@@ -71,6 +74,17 @@ export const UserAssetsTable = withErrorBoundary(function UserAssetsTable() {
   const { t } = useTranslation(["user-assets", "common"]);
   // Get the current route's path pattern from the matched route
   const routePath = router.state.matches.at(-1)?.pathname;
+  const { data: session } = useSession();
+  const rawWallet = session?.user?.wallet ?? null;
+  const holderWallet = useMemo<EthereumAddress | null>(() => {
+    if (!rawWallet) return null;
+
+    try {
+      return getAddress(rawWallet);
+    } catch {
+      return null;
+    }
+  }, [rawWallet]);
 
   const { data: assets } = useSuspenseQuery(orpc.user.assets.queryOptions());
   const { data: claimYieldActions } = useSuspenseQuery(
@@ -318,6 +332,7 @@ export const UserAssetsTable = withErrorBoundary(function UserAssetsTable() {
           open={selectedAction === AssetAction.Redeem}
           onClose={handleActionSheetClose}
           assetBalance={selectedAsset}
+          holderAddress={holderWallet}
         />
       ) : null}
       {selectedAsset ? (

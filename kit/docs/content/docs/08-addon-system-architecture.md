@@ -422,6 +422,13 @@ graph TB
 | **Token-to-Token Swap** | Multiple tokens | Immediate | Blockchain finality | Cross-asset arbitrage |
 | **Complex Settlement** | Multiple assets, multiple parties | Variable | Conditional finality | Corporate actions, M&A |
 
+#### HTLC Hashlock Coordination
+
+- Each settlement flow now carries an `externalChainId`, enabling the contract to distinguish between local transfers (`0`) and external ledger entries (non-zero).
+- When any external flow is present, the creator must supply a shared `hashlock` that matches the off-chain HTLC deployments. Local-only settlements may keep the hashlock at `0x0`.
+- Execution is gated until `revealSecret(bytes secret)` is called with a valid preimage. The call is permissionless so counterparties or automation bots can unblock execution once the secret is public.
+- Auto-execution waits for *both* the usual local approvals and the hashlock reveal, eliminating withholding risk while keeping the single-chain experience unchanged.
+
 ### Settlement Risk Management
 
 | Risk Type | Mitigation Strategy | Monitoring | Limits | Recovery Procedures |
