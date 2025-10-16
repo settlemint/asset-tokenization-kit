@@ -23,6 +23,11 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar")({
           input: {},
         })
       ),
+      queryClient.ensureQueryData(
+        orpc.actions.list.queryOptions({
+          input: {},
+        })
+      ),
     ]);
   },
 });

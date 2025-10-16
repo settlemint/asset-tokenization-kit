@@ -9,28 +9,42 @@ import {
   SidebarGroup,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { orpc } from "@/orpc/orpc-client";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { ClipboardList, HomeIcon } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 
 /**
- * The main application sidebar component.
+ * The main application sidebar component with navigation and pending action badge.
  * @param {React.ComponentProps<typeof Sidebar>} props - The props for the Sidebar component.
  * @returns {JSX.Element} A sidebar component with header, navigation, and rail.
  */
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { t } = useTranslation("navigation");
+  const { t: tActions } = useTranslation("actions");
   const isHomeActive = useRouterState({
     select: (state) => state.location.pathname === "/",
   });
   const isActionsActive = useRouterState({
     select: (state) => state.location.pathname.startsWith("/actions"),
   });
+  const { data: actions } = useSuspenseQuery(
+    orpc.actions.list.queryOptions({
+      input: {},
+    })
+  );
+  const pendingCount = React.useMemo(() => {
+    return actions.reduce((total, action) => {
+      return total + (action.status === "ACTIVE" ? 1 : 0);
+    }, 0);
+  }, [actions]);
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -63,6 +77,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <span>{t("actions")}</span>
                 </Link>
               </SidebarMenuButton>
+              {pendingCount >= 0 ? (
+                <SidebarMenuBadge
+                  aria-label={`${pendingCount} ${tActions("tabs.pending")} ${t(
+                    "actions"
+                  )}`}
+                  className="bg-secondary text-secondary-foreground border border-transparent"
+                >
+                  {pendingCount}
+                </SidebarMenuBadge>
+              ) : null}
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
