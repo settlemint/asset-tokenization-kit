@@ -61,27 +61,30 @@ export function ClaimYieldSheet({
     })
   );
 
-  const handleSubmit = useCallback((verification: UserVerification) => {
-    const promise = claimYield({
-      contract: yieldSchedule?.id ?? "",
-      walletVerification: verification,
-    });
+  const handleSubmit = useCallback(
+    (verification: UserVerification) => {
+      const promise = claimYield({
+        contract: yieldSchedule?.id ?? "",
+        walletVerification: verification,
+      });
 
-    toast
-      .promise(promise, {
-        loading: t("tokens:actions.claimYield.toasts.loading"),
-        success: t("tokens:actions.claimYield.toasts.success"),
-        error: (error) =>
-          t("tokens:actions.claimYield.toasts.error", {
-            error: error.message,
-          }),
-      })
-      .unwrap()
-      .then(() => {
-        onClose();
-      })
-      .catch(() => undefined);
-  }, []);
+      toast
+        .promise(promise, {
+          loading: t("tokens:actions.claimYield.toasts.loading"),
+          success: t("tokens:actions.claimYield.toasts.success"),
+          error: (error) =>
+            t("tokens:actions.claimYield.toasts.error", {
+              error: error.message,
+            }),
+        })
+        .unwrap()
+        .then(() => {
+          onClose();
+        })
+        .catch(() => undefined);
+    },
+    [claimYield, t, yieldSchedule?.id, onClose]
+  );
 
   return (
     <BaseActionSheet

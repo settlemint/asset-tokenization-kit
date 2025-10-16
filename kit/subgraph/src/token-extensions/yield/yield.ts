@@ -28,6 +28,7 @@ export function handleYieldScheduleSet(event: YieldScheduleSet): void {
   fixedYieldSchedule.save();
 
   // Create ClaimYield actions for all holders for each period
+  // Looping balances as part of this event, should be ok as it is not expected that there are many balances yet when this event is emitted
   const token = fetchToken(event.address);
   const balances = token.balances.load();
   const periods = fixedYieldSchedule.periods.load();

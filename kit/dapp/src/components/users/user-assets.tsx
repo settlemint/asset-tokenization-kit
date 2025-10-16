@@ -139,7 +139,7 @@ export const UserAssetsTable = withErrorBoundary(function UserAssetsTable() {
         (action) =>
           action.target === row.original.token.yield?.schedule?.id &&
           action.status !== "EXECUTED" &&
-          action.activeAt.getTime() <= Date.now()
+          action.activeAt.getTime() >= Date.now()
       );
       if (canClaimYield) {
         actions.push({
@@ -153,7 +153,7 @@ export const UserAssetsTable = withErrorBoundary(function UserAssetsTable() {
 
       return actions;
     },
-    [openActionSheet, t]
+    [openActionSheet, t, claimYieldActions]
   );
 
   /**
