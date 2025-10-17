@@ -22,7 +22,7 @@
       "columns": {
         "name": "Name",
         "email": "Email",
-        "wallet": "EOA (Wallet Address)",
+        "wallet": "EOA",
         "identity": "Identity Address",
         "type": "Type",
         "verifications": "Verifications",

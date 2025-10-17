@@ -22,7 +22,7 @@ export const Route = createFileRoute(
       });
     }
   },
-  component: IdentityManagementPage,
+  component: EntityManagementPage,
   loader: () => {
     return {
       breadcrumb: [
@@ -35,7 +35,7 @@ export const Route = createFileRoute(
   },
 });
 
-function IdentityManagementPage() {
+function EntityManagementPage() {
   const { t } = useTranslation(["identities", "navigation"]);
 
   return (
