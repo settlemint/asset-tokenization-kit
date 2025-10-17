@@ -19,8 +19,8 @@ import type {
   Action,
   ActionStatus,
 } from "@/orpc/routes/actions/routes/actions.list.schema";
-import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import type { TokenBalance } from "@/orpc/routes/user/routes/user.assets.schema";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import type {
@@ -32,9 +32,8 @@ import { formatDistanceToNow } from "date-fns";
 import { from } from "dnum";
 import { ClipboardList } from "lucide-react";
 import { useMemo, useState } from "react";
-import { getAddress } from "viem";
-import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { useTranslation } from "react-i18next";
+import { getAddress } from "viem";
 
 const columnHelper = createStrictColumnHelper<Action>();
 
@@ -59,13 +58,6 @@ const UNKNOWN_ACTION_TYPE = "generic" as const;
 type ActionTypeMetaValue =
   | (typeof ACTION_TYPE_MAP)[keyof typeof ACTION_TYPE_MAP]
   | typeof UNKNOWN_ACTION_TYPE;
-
-const ACTION_STATUSES: readonly ActionStatus[] = [
-  "PENDING",
-  "ACTIVE",
-  "EXECUTED",
-  "EXPIRED",
-] as const;
 
 function isKnownLabelAction(
   name: string
@@ -226,8 +218,7 @@ export function ActionsTable({
                   address={row.original.target}
                   copyToClipboard
                   size="small"
-                  showPrettyName={false}
-                  skipDataQueries
+                  showSymbol={false}
                 />
                 <Badge variant="outline" className="w-fit text-xs">
                   {t("table.authorizedBadge", { count: authorizedCount })}
@@ -267,19 +258,18 @@ export function ActionsTable({
                 </span>
               );
             },
-          } satisfies ColumnMeta<Action, ActionTypeMetaValue>,
+          },
         }
       ),
 
-      columnHelper.accessor("status", {
+      // We use dispaly here because we dont allow filtering or sorting by status
+      // The actions are already filtered by status (by using tabs), makes no sense if there is only one possible value
+      columnHelper.display({
+        id: "status",
         header: t("table.columns.status"),
         meta: {
           displayName: t("table.columns.status"),
           type: "status",
-          options: ACTION_STATUSES.map((status) => ({
-            value: status,
-            label: t(`status.${status}`),
-          })),
           renderCell: ({ row }) => {
             const executedDate = row.original.executedAt ?? null;
             const activeAt = row.original.activeAt;
@@ -317,7 +307,7 @@ export function ActionsTable({
               </div>
             );
           },
-        } satisfies ColumnMeta<Action, ActionStatus>,
+        },
       }),
 
       columnHelper.accessor("activeAt", {
@@ -326,57 +316,64 @@ export function ActionsTable({
         meta: {
           displayName: t("table.columns.activeAt"),
           type: "date",
-          dateOptions: { relative: true },
+          dateOptions: { relative: true, includeTime: true },
           className: "text-muted-foreground",
-        } satisfies ColumnMeta<Action, unknown>,
+        },
       }),
+    ] as ColumnDef<Action>[];
 
-      columnHelper.accessor("executedAt", {
-        id: "executedAt",
-        header: t("table.columns.executedAt"),
-        meta: {
-          displayName: t("table.columns.executedAt"),
-          type: "date",
-          dateOptions: { includeTime: true },
-          className: "text-muted-foreground",
-          emptyValue: "—",
-        } satisfies ColumnMeta<Action, unknown>,
-      }),
+    if (statuses.includes("EXECUTED")) {
+      baseColumns.push(
+        columnHelper.accessor("executedAt", {
+          id: "executedAt",
+          header: t("table.columns.executedAt"),
+          meta: {
+            displayName: t("table.columns.executedAt"),
+            type: "date",
+            dateOptions: { includeTime: true },
+            className: "text-muted-foreground",
+            emptyValue: "—",
+          },
+        }) as ColumnDef<Action>,
+        columnHelper.accessor("executedBy", {
+          header: t("table.columns.executedBy"),
+          meta: {
+            displayName: t("table.columns.executedBy"),
+            type: "address",
+            showPrettyName: false,
+            emptyValue: "—",
+          },
+        }) as ColumnDef<Action>
+      );
+    }
 
-      columnHelper.accessor("executedBy", {
-        header: t("table.columns.executedBy"),
-        meta: {
-          displayName: t("table.columns.executedBy"),
-          type: "address",
-          showPrettyName: false,
-          emptyValue: "—",
-        } satisfies ColumnMeta<Action, unknown>,
-      }),
+    if (statuses.includes("ACTIVE")) {
+      baseColumns.push(
+        columnHelper.display({
+          id: "execute",
+          header: t("table.columns.execute"),
+          meta: {
+            displayName: t("table.columns.execute"),
+            type: "none",
+            enableCsvExport: false,
+          },
+          cell: ({ row }) => (
+            <ExecuteActionButton
+              action={row.original}
+              actionLabel={resolveActionLabel(row.original.name)}
+              onOpenMature={(a) => {
+                setMatureAction(a);
+              }}
+              onOpenRedeem={(a) => {
+                setRedeemAction(a);
+              }}
+            />
+          ),
+        })
+      );
+    }
 
-      columnHelper.display({
-        id: "execute",
-        header: t("table.columns.execute"),
-        meta: {
-          displayName: t("table.columns.execute"),
-          type: "none",
-          enableCsvExport: false,
-        } satisfies ColumnMeta<Action, unknown>,
-        cell: ({ row }) => (
-          <ExecuteActionButton
-            action={row.original}
-            actionLabel={resolveActionLabel(row.original.name)}
-            onOpenMature={(a) => {
-              setMatureAction(a);
-            }}
-            onOpenRedeem={(a) => {
-              setRedeemAction(a);
-            }}
-          />
-        ),
-      }),
-    ];
-
-    return withAutoFeatures(baseColumns) as ColumnDef<Action>[];
+    return withAutoFeatures(baseColumns);
   }, [t, i18n.language]);
 
   return (
@@ -410,17 +407,17 @@ export function ActionsTable({
         }}
       />
 
-      {matureAction ? (
+      {matureAction && matureTokenQuery.data ? (
         <MatureConfirmationSheet
           open={!!matureAction}
           onOpenChange={(open) => {
             setMatureAction(open ? matureAction : null);
           }}
-          asset={matureTokenQuery.data as Token}
+          asset={matureTokenQuery.data}
         />
       ) : null}
 
-      {redeemAction
+      {redeemAction && redeemTokenQuery.data
         ? (() => {
             const token = redeemTokenQuery.data;
             if (!token) return null;

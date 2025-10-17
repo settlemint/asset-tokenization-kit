@@ -53,6 +53,9 @@ export const ActionSchema = z.object({
   executor: ActionExecutorSchema.describe(
     "Executor information for the action"
   ),
+  expiresAt: timestamp()
+    .nullable()
+    .describe("Timestamp when the action expires"),
 });
 
 /**
