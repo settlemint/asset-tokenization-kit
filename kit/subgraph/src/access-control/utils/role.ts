@@ -111,7 +111,9 @@ export function getRoleConfigFromBytes(bytes: Bytes): RoleConfig {
   return role;
 }
 
-export function getRoleConfigFromFieldName(fieldName: string): RoleConfig | null {
+export function getRoleConfigFromFieldName(
+  fieldName: string
+): RoleConfig | null {
   for (let i = 0; i < Roles.length; i++) {
     if (Roles[i].fieldName == fieldName) {
       return Roles[i];

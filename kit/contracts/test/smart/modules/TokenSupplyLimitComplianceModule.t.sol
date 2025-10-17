@@ -2,13 +2,16 @@
 pragma solidity ^0.8.28;
 
 import { AbstractComplianceModuleTest } from "./AbstractComplianceModuleTest.t.sol";
-import { TokenSupplyLimitComplianceModule } from "../../../contracts/smart/modules/TokenSupplyLimitComplianceModule.sol";
+import {
+    TokenSupplyLimitComplianceModule
+} from "../../../contracts/smart/modules/TokenSupplyLimitComplianceModule.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
 import { SMARTToken } from "../examples/SMARTToken.sol";
 import { ISMARTBurnable } from "../../../contracts/smart/extensions/burnable/ISMARTBurnable.sol";
-import { SMARTComplianceModuleParamPair } from
-    "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import {
+    SMARTComplianceModuleParamPair
+} from "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     TokenSupplyLimitComplianceModule internal module;
@@ -41,70 +44,66 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     // --- Parameter Validation Tests ---
 
     function test_TokenSupplyLimit_ValidateParameters_LifetimeConfig() public view {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: LIFETIME_MAX_SUPPLY,
-            periodLength: 0, // Lifetime
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: LIFETIME_MAX_SUPPLY,
+                periodLength: 0, // Lifetime
+                rolling: false,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
         module.validateParameters(params);
     }
 
     function test_TokenSupplyLimit_ValidateParameters_FixedPeriodConfig() public view {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: PERIOD_MAX_SUPPLY,
-            periodLength: PERIOD_LENGTH,
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: PERIOD_MAX_SUPPLY,
+                periodLength: PERIOD_LENGTH,
+                rolling: false,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
         module.validateParameters(params);
     }
 
     function test_TokenSupplyLimit_ValidateParameters_RollingWindowConfig() public view {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: PERIOD_MAX_SUPPLY,
-            periodLength: PERIOD_LENGTH,
-            rolling: true,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: PERIOD_MAX_SUPPLY,
+                periodLength: PERIOD_LENGTH,
+                rolling: true,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
         module.validateParameters(params);
     }
 
     function test_TokenSupplyLimit_ValidateParameters_BasePriceConfig() public view {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: LIFETIME_MAX_SUPPLY,
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: true,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: LIFETIME_MAX_SUPPLY, periodLength: 0, rolling: false, useBasePrice: true, global: false
+            });
 
         bytes memory params = abi.encode(config);
         module.validateParameters(params);
     }
 
     function test_TokenSupplyLimit_RevertWhen_MaxSupplyZero() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 0, // Invalid
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 0, // Invalid
+                periodLength: 0,
+                rolling: false,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
         vm.expectRevert(
@@ -116,14 +115,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_RevertWhen_RollingWithoutPeriod() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: LIFETIME_MAX_SUPPLY,
-            periodLength: 0, // Invalid for rolling
-            rolling: true,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: LIFETIME_MAX_SUPPLY,
+                periodLength: 0, // Invalid for rolling
+                rolling: true,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
         vm.expectRevert(
@@ -136,14 +135,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
     function test_TokenSupplyLimit_ValidateParameters_LongPeriod() public view {
         // Long periods should be allowed for fixed periods (no gas limit issues)
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: PERIOD_MAX_SUPPLY,
-            periodLength: 1000, // Long period allowed for fixed periods
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: PERIOD_MAX_SUPPLY,
+                periodLength: 1000, // Long period allowed for fixed periods
+                rolling: false,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
         module.validateParameters(params); // Should not revert
@@ -151,14 +150,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
     function test_TokenSupplyLimit_RevertWhen_RollingPeriodTooLong() public {
         // Rolling windows are limited to 730 days (2 years) for gas efficiency
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: PERIOD_MAX_SUPPLY,
-            periodLength: 731, // Too long for rolling windows
-            rolling: true,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: PERIOD_MAX_SUPPLY,
+                periodLength: 731, // Too long for rolling windows
+                rolling: true,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
         vm.expectRevert(
@@ -172,14 +171,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
     function test_TokenSupplyLimit_ValidateParameters_MaxRollingPeriod() public view {
         // 730 days should be allowed for rolling windows
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: PERIOD_MAX_SUPPLY,
-            periodLength: 730, // Exactly at limit
-            rolling: true,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: PERIOD_MAX_SUPPLY,
+                periodLength: 730, // Exactly at limit
+                rolling: true,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
         module.validateParameters(params); // Should not revert
@@ -194,14 +193,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     // --- Lifetime Cap Tests ---
 
     function test_TokenSupplyLimit_LifetimeCap_AllowMintUnderLimit() public view {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: LIFETIME_MAX_SUPPLY,
-            periodLength: 0, // Lifetime
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: LIFETIME_MAX_SUPPLY,
+                periodLength: 0, // Lifetime
+                rolling: false,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
         // Should not revert for mint under limit
@@ -209,14 +208,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_LifetimeCap_RevertWhen_ExceedsLimit() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: LIFETIME_MAX_SUPPLY,
-            periodLength: 0, // Lifetime
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: LIFETIME_MAX_SUPPLY,
+                periodLength: 0, // Lifetime
+                rolling: false,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
         vm.expectRevert(
@@ -229,14 +228,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_LifetimeCap_TracksMintedTokens() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: LIFETIME_MAX_SUPPLY,
-            periodLength: 0, // Lifetime
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: LIFETIME_MAX_SUPPLY,
+                periodLength: 0, // Lifetime
+                rolling: false,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -258,14 +257,10 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_AllowsRegularTransfers() public view {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: LIFETIME_MAX_SUPPLY,
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: LIFETIME_MAX_SUPPLY, periodLength: 0, rolling: false, useBasePrice: false, global: false
+            });
 
         bytes memory params = abi.encode(config);
         // Regular transfer (not mint) should not be restricted
@@ -275,14 +270,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     // --- Fixed Period Tests ---
 
     function test_TokenSupplyLimit_FixedPeriod_AllowMintInNewPeriod() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: PERIOD_MAX_SUPPLY,
-            periodLength: PERIOD_LENGTH,
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: PERIOD_MAX_SUPPLY,
+                periodLength: PERIOD_LENGTH,
+                rolling: false,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -299,14 +294,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_FixedPeriod_RevertWhen_ExceedsLimitInPeriod() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: PERIOD_MAX_SUPPLY,
-            periodLength: PERIOD_LENGTH,
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: PERIOD_MAX_SUPPLY,
+                periodLength: PERIOD_LENGTH,
+                rolling: false,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -327,14 +322,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     // --- Rolling Window Tests ---
 
     function test_TokenSupplyLimit_RollingWindow_BasicTracking() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 200, // 200 whole tokens limit for rolling window
-            periodLength: 3, // 3-day rolling window
-            rolling: true,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 200, // 200 whole tokens limit for rolling window
+                periodLength: 3, // 3-day rolling window
+                rolling: true,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
         // Use clean day boundaries to avoid timestamp calculation issues
@@ -363,14 +358,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_RollingWindow_SameDayAccumulation() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 200, // 200 whole tokens limit
-            periodLength: 3, // 3-day rolling window
-            rolling: true,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 200, // 200 whole tokens limit
+                periodLength: 3, // 3-day rolling window
+                rolling: true,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
         uint256 sameDay = 1000 * 86_400; // Day 1000 at midnight
@@ -397,14 +392,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_RollingWindow_ExceedsLimitAcrossDays() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 250, // 250 whole tokens limit
-            periodLength: 3, // 3-day rolling window
-            rolling: true,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 250, // 250 whole tokens limit
+                periodLength: 3, // 3-day rolling window
+                rolling: true,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
         uint256 day1 = 1000 * 86_400;
@@ -439,14 +434,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_RollingWindow_AllowsMintAfterWindowSlides() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 150, // 150 whole tokens
-            periodLength: 2, // 2-day rolling window
-            rolling: true,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 150, // 150 whole tokens
+                periodLength: 2, // 2-day rolling window
+                rolling: true,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
         uint256 dailyAmount = 100e18;
@@ -472,14 +467,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
 
     function test_TokenSupplyLimit_MaxRollingWindow_730Days() public {
         // Test that maximum rolling window (730 days) works efficiently
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 1000, // 1000 whole tokens
-            periodLength: 730, // 2 years - maximum allowed for rolling windows
-            rolling: true,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 1000, // 1000 whole tokens
+                periodLength: 730, // 2 years - maximum allowed for rolling windows
+                rolling: true,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
         uint256 startTime = block.timestamp + 365 days; // Avoid underflow
@@ -511,14 +506,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     // --- Global Tracking Tests ---
 
     function test_TokenSupplyLimit_Global_LifetimeCap() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 500, // 500 whole tokens global limit
-            periodLength: 0, // Lifetime
-            rolling: false,
-            useBasePrice: false,
-            global: true
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 500, // 500 whole tokens global limit
+                periodLength: 0, // Lifetime
+                rolling: false,
+                useBasePrice: false,
+                global: true
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -563,14 +558,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Global_RollingWindow_SameDayAccumulation() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 300, // 300 whole tokens global limit
-            periodLength: 3, // 3-day rolling window
-            rolling: true,
-            useBasePrice: false,
-            global: true
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 300, // 300 whole tokens global limit
+                periodLength: 3, // 3-day rolling window
+                rolling: true,
+                useBasePrice: false,
+                global: true
+            });
 
         bytes memory params = abi.encode(config);
         uint256 sameDay = 1000 * 86_400;
@@ -619,14 +614,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Global_RollingWindow_AcrossDays() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 400, // 400 whole tokens global limit
-            periodLength: 3, // 3-day rolling window
-            rolling: true,
-            useBasePrice: false,
-            global: true
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 400, // 400 whole tokens global limit
+                periodLength: 3, // 3-day rolling window
+                rolling: true,
+                useBasePrice: false,
+                global: true
+            });
 
         bytes memory params = abi.encode(config);
         uint256 day1 = 1000 * 86_400;
@@ -677,14 +672,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Global_RollingWindow_WindowSlides() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 200, // 200 whole tokens global limit
-            periodLength: 2, // 2-day rolling window
-            rolling: true,
-            useBasePrice: false,
-            global: true
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 200, // 200 whole tokens global limit
+                periodLength: 2, // 2-day rolling window
+                rolling: true,
+                useBasePrice: false,
+                global: true
+            });
 
         bytes memory params = abi.encode(config);
         uint256 day1 = 1000 * 86_400;
@@ -736,14 +731,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Global_FixedPeriod() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 300, // 300 whole tokens global limit per period
-            periodLength: 30, // 30-day fixed periods
-            rolling: false,
-            useBasePrice: false,
-            global: true
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 300, // 300 whole tokens global limit per period
+                periodLength: 30, // 30-day fixed periods
+                rolling: false,
+                useBasePrice: false,
+                global: true
+            });
 
         bytes memory params = abi.encode(config);
         uint256 startTime = 1000 * 86_400;
@@ -793,14 +788,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     // --- Burn Tracking Tests ---
 
     function test_TokenSupplyLimit_Burn_LifetimeCap() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 500, // 500 whole tokens lifetime limit
-            periodLength: 0, // Lifetime
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 500, // 500 whole tokens lifetime limit
+                periodLength: 0, // Lifetime
+                rolling: false,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -834,14 +829,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Burn_RollingWindow_SameDay() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 200, // 200 whole tokens limit
-            periodLength: 3, // 3-day rolling window
-            rolling: true,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 200, // 200 whole tokens limit
+                periodLength: 3, // 3-day rolling window
+                rolling: true,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
         uint256 sameDay = 1000 * 86_400;
@@ -870,14 +865,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Burn_RollingWindow_AcrossDays() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 300, // 300 whole tokens limit
-            periodLength: 3, // 3-day rolling window
-            rolling: true,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 300, // 300 whole tokens limit
+                periodLength: 3, // 3-day rolling window
+                rolling: true,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
         uint256 day1 = 1000 * 86_400;
@@ -912,14 +907,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Burn_FixedPeriod() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 400, // 400 whole tokens per period
-            periodLength: 30, // 30-day periods
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 400, // 400 whole tokens per period
+                periodLength: 30, // 30-day periods
+                rolling: false,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
         uint256 startTime = 1000 * 86_400;
@@ -947,14 +942,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Burn_Global_CrossToken() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 300, // 300 whole tokens global limit
-            periodLength: 0, // Lifetime
-            rolling: false,
-            useBasePrice: false,
-            global: true
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 300, // 300 whole tokens global limit
+                periodLength: 0, // Lifetime
+                rolling: false,
+                useBasePrice: false,
+                global: true
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -1002,14 +997,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Burn_EdgeCase_BurnMoreThanSupply() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 500, // 500 whole tokens
-            periodLength: 0, // Lifetime
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 500, // 500 whole tokens
+                periodLength: 0, // Lifetime
+                rolling: false,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -1027,14 +1022,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Burn_EdgeCase_BurnWithoutMint() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 500, // 500 whole tokens
-            periodLength: 3, // Rolling window
-            rolling: true,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 500, // 500 whole tokens
+                periodLength: 3, // Rolling window
+                rolling: true,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
         uint256 today = 1000 * 86_400;
@@ -1049,14 +1044,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Burn_MintBurnMintCycle() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 200, // 200 whole tokens
-            periodLength: 2, // 2-day rolling window
-            rolling: true,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 200, // 200 whole tokens
+                periodLength: 2, // 2-day rolling window
+                rolling: true,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
         uint256 day1 = 1000 * 86_400;
@@ -1091,14 +1086,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Integration_BurnAndMintWithRealToken() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 600, // 600 whole tokens - under the token cap of 1000e18
-            periodLength: 0, // Lifetime
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 600, // 600 whole tokens - under the token cap of 1000e18
+                periodLength: 0, // Lifetime
+                rolling: false,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -1139,14 +1134,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     // --- Integration Tests ---
 
     function test_TokenSupplyLimit_Integration_TokenMintingWithModule() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 800, // 800 whole tokens - under the token cap of 1000e18
-            periodLength: 0, // Lifetime
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 800, // 800 whole tokens - under the token cap of 1000e18
+                periodLength: 0, // Lifetime
+                rolling: false,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -1173,14 +1168,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     }
 
     function test_TokenSupplyLimit_Integration_RegularTransfersUnaffected() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 900, // 900 whole tokens - under the token cap of 1000e18
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 900, // 900 whole tokens - under the token cap of 1000e18
+                periodLength: 0,
+                rolling: false,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -1204,14 +1199,10 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
     // --- Lifecycle Function Tests ---
 
     function test_TokenSupplyLimit_Lifecycle_Functions() public {
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: LIFETIME_MAX_SUPPLY,
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: LIFETIME_MAX_SUPPLY, periodLength: 0, rolling: false, useBasePrice: false, global: false
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -1229,14 +1220,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         // First, add a base price claim to the token's identity
         claimUtils.issueBasePriceClaim(address(smartToken), tokenIssuer, 2e18, "EUR", 18);
 
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 8_000_000, // 8M EUR limit (whole currency amount)
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: true,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 8_000_000, // 8M EUR limit (whole currency amount)
+                periodLength: 0,
+                rolling: false,
+                useBasePrice: true,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -1271,14 +1262,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         );
         vm.stopPrank();
 
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 8_000_000, // 8M whole currency
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: true,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 8_000_000, // 8M whole currency
+                periodLength: 0,
+                rolling: false,
+                useBasePrice: true,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -1324,14 +1315,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         );
         vm.stopPrank();
 
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 1000, // 1000 whole tokens
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 1000, // 1000 whole tokens
+                periodLength: 0,
+                rolling: false,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -1400,14 +1391,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         claimUtils.issueBasePriceClaim(token6Decimals, tokenIssuer, 1e18, "USD", 18);
         claimUtils.issueBasePriceClaim(token18Decimals, tokenIssuer, 1e18, "USD", 18);
 
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 1000, // $1000 USD limit (whole currency amount)
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: true,
-            global: true // Enable global tracking to test cross-token limits
-         });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 1000, // $1000 USD limit (whole currency amount)
+                periodLength: 0,
+                rolling: false,
+                useBasePrice: true,
+                global: true // Enable global tracking to test cross-token limits
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -1449,14 +1440,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         );
         vm.stopPrank();
 
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 500, // 500 units
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 500, // 500 units
+                periodLength: 0,
+                rolling: false,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -1497,14 +1488,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         // Price claim with 6 decimals: $1.50 = 1500000 (6 decimals)
         claimUtils.issueBasePriceClaim(tokenWithClaim, tokenIssuer, 1_500_000, "USD", 6);
 
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 1500, // $1500 whole currency limit
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: true,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 1500, // $1500 whole currency limit
+                periodLength: 0,
+                rolling: false,
+                useBasePrice: true,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -1563,14 +1554,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         claimUtils.issueBasePriceClaim(token6, tokenIssuer, 2e18, "USD", 18);
         claimUtils.issueBasePriceClaim(token18, tokenIssuer, 2e18, "USD", 18);
 
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 2000, // $2000 whole currency global limit
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: true,
-            global: true
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 2000, // $2000 whole currency global limit
+                periodLength: 0,
+                rolling: false,
+                useBasePrice: true,
+                global: true
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -1619,14 +1610,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         );
         vm.stopPrank();
 
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 5, // 5 whole tokens
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 5, // 5 whole tokens
+                periodLength: 0,
+                rolling: false,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -1690,14 +1681,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         claimUtils.issueBasePriceClaim(token6, tokenIssuer, 1e18, "USD", 18); // $1.00 with 18 decimals
         claimUtils.issueBasePriceClaim(token18, tokenIssuer, 1e18, "USD", 18); // $1.00 with 18 decimals
 
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 1000, // $1000 whole currency limit
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: true,
-            global: true // Use global to see the bug clearly
-         });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 1000, // $1000 whole currency limit
+                periodLength: 0,
+                rolling: false,
+                useBasePrice: true,
+                global: true // Use global to see the bug clearly
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -1769,14 +1760,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         claimUtils.issueBasePriceClaim(token6, tokenIssuer, 1e18, "USD", 18);
         claimUtils.issueBasePriceClaim(token18, tokenIssuer, 1e18, "USD", 18);
 
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 2000, // $2000 whole currency limit
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: true,
-            global: true
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 2000, // $2000 whole currency limit
+                periodLength: 0,
+                rolling: false,
+                useBasePrice: true,
+                global: true
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -1830,14 +1821,14 @@ contract TokenSupplyLimitComplianceModuleTest is AbstractComplianceModuleTest {
         );
         vm.stopPrank();
 
-        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config = TokenSupplyLimitComplianceModule
-            .SupplyLimitConfig({
-            maxSupply: 1, // 1 whole token limit
-            periodLength: 0,
-            rolling: false,
-            useBasePrice: false,
-            global: false
-        });
+        TokenSupplyLimitComplianceModule.SupplyLimitConfig memory config =
+            TokenSupplyLimitComplianceModule.SupplyLimitConfig({
+                maxSupply: 1, // 1 whole token limit
+                periodLength: 0,
+                rolling: false,
+                useBasePrice: false,
+                global: false
+            });
 
         bytes memory params = abi.encode(config);
 

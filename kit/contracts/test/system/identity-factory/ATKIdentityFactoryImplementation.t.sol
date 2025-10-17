@@ -6,8 +6,9 @@ import { IATKIdentityFactory } from "../../../contracts/system/identity-factory/
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { SMARTToken } from "../../smart/examples/SMARTToken.sol";
-import { SMARTComplianceModuleParamPair } from
-    "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import {
+    SMARTComplianceModuleParamPair
+} from "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IERC735 } from "@onchainid/contracts/interface/IERC735.sol";

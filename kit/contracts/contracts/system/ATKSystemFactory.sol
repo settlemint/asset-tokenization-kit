@@ -148,17 +148,17 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// essential for the proper functioning of the `ATKSystem` instances that will be created.
     /// @param implementations The struct containing all implementation addresses required by the system.
     /// @param forwarder_ The address of the trusted forwarder contract to be used for meta-transactions (ERC2771).
-    constructor(
-        SystemImplementations memory implementations,
-        address forwarder_
-    )
+    constructor(SystemImplementations memory implementations, address forwarder_)
         ERC2771Context(forwarder_) // Initializes ERC2771 support with the provided forwarder address.
+
     {
         // Perform critical checks: ensure no implementation address is the zero address.
         // Reverting here prevents deploying a factory that would create non-functional ATKSystem instances.
         if (implementations.atkSystemImplementation == address(0)) revert InvalidSystemImplementation();
         if (implementations.complianceImplementation == address(0)) revert ComplianceImplementationNotSet();
-        if (implementations.identityRegistryImplementation == address(0)) revert IdentityRegistryImplementationNotSet();
+        if (implementations.identityRegistryImplementation == address(0)) {
+            revert IdentityRegistryImplementationNotSet();
+        }
         if (implementations.identityRegistryStorageImplementation == address(0)) {
             revert IdentityRegistryStorageImplementationNotSet();
         }
@@ -170,7 +170,9 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         }
         if (implementations.identityFactoryImplementation == address(0)) revert IdentityFactoryImplementationNotSet();
         if (implementations.identityImplementation == address(0)) revert IdentityImplementationNotSet();
-        if (implementations.contractIdentityImplementation == address(0)) revert ContractIdentityImplementationNotSet();
+        if (implementations.contractIdentityImplementation == address(0)) {
+            revert ContractIdentityImplementationNotSet();
+        }
         if (implementations.tokenAccessManagerImplementation == address(0)) {
             revert TokenAccessManagerImplementationNotSet();
         }

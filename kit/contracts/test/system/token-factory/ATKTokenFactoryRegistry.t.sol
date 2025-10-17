@@ -4,8 +4,9 @@ pragma solidity ^0.8.28;
 import { Test } from "forge-std/Test.sol";
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IATKTokenFactoryRegistry } from "../../../contracts/system/tokens/factory/IATKTokenFactoryRegistry.sol";
-import { ATKTokenFactoryRegistryImplementation } from
-    "../../../contracts/system/tokens/factory/ATKTokenFactoryRegistryImplementation.sol";
+import {
+    ATKTokenFactoryRegistryImplementation
+} from "../../../contracts/system/tokens/factory/ATKTokenFactoryRegistryImplementation.sol";
 import { IATKTokenFactory } from "../../../contracts/system/tokens/factory/IATKTokenFactory.sol";
 import { IWithTypeIdentifier } from "../../../contracts/smart/interface/IWithTypeIdentifier.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -44,12 +45,7 @@ contract MockTokenFactory is IATKTokenFactory, IWithTypeIdentifier {
         return true;
     }
 
-    function predictAccessManagerAddress(
-        string memory,
-        string memory,
-        uint8,
-        address
-    )
+    function predictAccessManagerAddress(string memory, string memory, uint8, address)
         external
         pure
         override
@@ -69,8 +65,9 @@ contract MockTokenFactory is IATKTokenFactory, IWithTypeIdentifier {
 
 // A mock for a token implementation to be used in tests.
 contract MockTokenImplementation {
-// Just a dummy contract
-}
+    // Just a dummy contract
+
+    }
 
 // Mock for a token factory that returns false for isValidTokenImplementation
 contract MockInvalidTokenFactory is IATKTokenFactory {
@@ -92,12 +89,7 @@ contract MockInvalidTokenFactory is IATKTokenFactory {
         return true;
     }
 
-    function predictAccessManagerAddress(
-        string memory,
-        string memory,
-        uint8,
-        address
-    )
+    function predictAccessManagerAddress(string memory, string memory, uint8, address)
         external
         pure
         override

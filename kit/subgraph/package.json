@@ -5,7 +5,7 @@
   "scripts": {
     "codegen": "settlemint scs subgraph codegen",
     "codegen:interfaceid": "bun run tools/interfaceid.ts",
-    "format": "prettier --experimental-cli --write .",
+    "format": "prettier --write .",
     "compile": "bash tools/compile.sh",
     "publish": "bun run tools/graph-deploy.ts --local",
     "publish:remote": "bun run tools/graph-deploy.ts --remote",
