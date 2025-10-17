@@ -4,13 +4,16 @@ pragma solidity ^0.8.28;
 import { Test, console } from "forge-std/Test.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { MockedERC20Token } from "../../utils/mocks/MockedERC20Token.sol";
-import { ISMARTFixedYieldSchedule } from
-    "../../../contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
+import {
+    ISMARTFixedYieldSchedule
+} from "../../../contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 import { ATKFixedYieldScheduleUpgradeable } from "../../../contracts/addons/yield/ATKFixedYieldScheduleUpgradeable.sol";
-import { ISMARTTokenAccessManaged } from
-    "../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManaged.sol";
-import { ISMARTTokenAccessManager } from
-    "../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import {
+    ISMARTTokenAccessManaged
+} from "../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManaged.sol";
+import {
+    ISMARTTokenAccessManager
+} from "../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ATKAssetRoles } from "../../../contracts/assets/ATKAssetRoles.sol";
 import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";

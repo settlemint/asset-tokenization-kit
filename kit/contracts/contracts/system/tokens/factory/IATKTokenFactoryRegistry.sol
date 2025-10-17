@@ -46,11 +46,7 @@ interface IATKTokenFactoryRegistry is IERC165, IATKSystemAccessManaged {
     /// @param factoryImplementation The address of the factory implementation contract
     /// @param tokenImplementation The address of the token implementation contract
     /// @return The address of the deployed factory proxy
-    function registerTokenFactory(
-        string calldata name,
-        address factoryImplementation,
-        address tokenImplementation
-    )
+    function registerTokenFactory(string calldata name, address factoryImplementation, address tokenImplementation)
         external
         returns (address);
 

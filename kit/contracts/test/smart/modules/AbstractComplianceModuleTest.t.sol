@@ -9,10 +9,12 @@ import { ClaimUtils } from "../../utils/ClaimUtils.sol";
 import { ISMART } from "../../../contracts/smart/interface/ISMART.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { SMARTToken } from "../examples/SMARTToken.sol";
-import { SMARTComplianceModuleParamPair } from
-    "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ISMARTTokenAccessManager } from
-    "../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import {
+    SMARTComplianceModuleParamPair
+} from "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import {
+    ISMARTTokenAccessManager
+} from "../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
 import { TestConstants } from "../../Constants.sol";
 import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
@@ -94,7 +96,7 @@ abstract contract AbstractComplianceModuleTest is Test {
 
         identity1 = IIdentity(identityUtils.createClientIdentity(user1, TestConstants.COUNTRY_CODE_US)); // USA
         identity2 = IIdentity(identityUtils.createClientIdentity(user2, TestConstants.COUNTRY_CODE_BE)); // Belgium
-        // user3 has no identity
+            // user3 has no identity
 
         // Add token issuer to the bypass list so that he is allowed to do things for testing
         vm.startPrank(platformAdmin);

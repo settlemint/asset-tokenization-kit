@@ -17,12 +17,7 @@ interface IContractIdentity is IClaimIssuer {
     /// @param data The claim data
     /// @param uri The claim URI
     /// @return claimId The ID of the created claim
-    function issueClaimTo(
-        IIdentity subject,
-        uint256 topic,
-        bytes memory data,
-        string memory uri
-    )
+    function issueClaimTo(IIdentity subject, uint256 topic, bytes memory data, string memory uri)
         external
         returns (bytes32 claimId);
 }

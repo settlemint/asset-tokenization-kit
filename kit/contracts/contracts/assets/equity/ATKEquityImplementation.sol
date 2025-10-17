@@ -8,8 +8,9 @@ import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/m
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { ERC20VotesUpgradeable } from
-    "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20VotesUpgradeable.sol";
+import {
+    ERC20VotesUpgradeable
+} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20VotesUpgradeable.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 
 // Constants
@@ -30,8 +31,9 @@ import { SMARTHooks } from "../../smart/extensions/common/SMARTHooks.sol";
 import { SMARTPausableUpgradeable } from "../../smart/extensions/pausable/SMARTPausableUpgradeable.sol";
 import { SMARTBurnableUpgradeable } from "../../smart/extensions/burnable/SMARTBurnableUpgradeable.sol";
 import { SMARTCustodianUpgradeable } from "../../smart/extensions/custodian/SMARTCustodianUpgradeable.sol";
-import { SMARTTokenAccessManagedUpgradeable } from
-    "../../smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
+import {
+    SMARTTokenAccessManagedUpgradeable
+} from "../../smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
 
 /// @title ATKEquityImplementation - A security token representing equity shares
 /// @author SettleMint
@@ -50,7 +52,9 @@ contract ATKEquityImplementation is
     SMARTCustodianUpgradeable,
     SMARTPausableUpgradeable,
     SMARTBurnableUpgradeable,
-    ERC20VotesUpgradeable, // TODO?
+    ERC20VotesUpgradeable,
+
+    // TODO?
     ERC2771ContextUpgradeable
 {
     /// @notice Constructor that disables initialization for the implementation contract
@@ -137,11 +141,7 @@ contract ATKEquityImplementation is
     /// @notice Sets the Compliance contract address
     /// @dev Only callable by addresses with GOVERNANCE_ROLE
     /// @param _compliance The address of the main compliance contract
-    function setCompliance(address _compliance)
-        external
-        override
-        onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
-    {
+    function setCompliance(address _compliance) external override onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE) {
         _smart_setCompliance(_compliance);
     }
 
@@ -149,10 +149,7 @@ contract ATKEquityImplementation is
     /// @dev Only callable by addresses with GOVERNANCE_ROLE
     /// @param _module The address of the compliance module
     /// @param _params The encoded parameters to set for the module
-    function setParametersForComplianceModule(
-        address _module,
-        bytes calldata _params
-    )
+    function setParametersForComplianceModule(address _module, bytes calldata _params)
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
@@ -164,10 +161,7 @@ contract ATKEquityImplementation is
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
     /// @param _to The address to receive the minted tokens
     /// @param _amount The amount of tokens to mint
-    function mint(
-        address _to,
-        uint256 _amount
-    )
+    function mint(address _to, uint256 _amount)
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
@@ -179,10 +173,7 @@ contract ATKEquityImplementation is
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE. Arrays must have the same length.
     /// @param _toList Array of addresses to receive the minted tokens
     /// @param _amounts Array of amounts to mint to each corresponding address
-    function batchMint(
-        address[] calldata _toList,
-        uint256[] calldata _amounts
-    )
+    function batchMint(address[] calldata _toList, uint256[] calldata _amounts)
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
@@ -195,10 +186,7 @@ contract ATKEquityImplementation is
     /// @param _to The address to receive the tokens
     /// @param _amount The amount of tokens to transfer
     /// @return bool indicating whether the transfer was successful
-    function transfer(
-        address _to,
-        uint256 _amount
-    )
+    function transfer(address _to, uint256 _amount)
         public
         override(SMARTUpgradeable, ERC20Upgradeable, IERC20)
         returns (bool)
@@ -211,11 +199,7 @@ contract ATKEquityImplementation is
     /// @param token The address of the ERC20 token to recover
     /// @param to The address to send the recovered tokens to
     /// @param amount The amount of tokens to recover
-    function recoverERC20(
-        address token,
-        address to,
-        uint256 amount
-    )
+    function recoverERC20(address token, address to, uint256 amount)
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.EMERGENCY_ROLE)
@@ -227,10 +211,7 @@ contract ATKEquityImplementation is
     /// @dev Only callable by addresses with GOVERNANCE_ROLE
     /// @param _module The address of the compliance module to add
     /// @param _params The encoded parameters for the module
-    function addComplianceModule(
-        address _module,
-        bytes calldata _params
-    )
+    function addComplianceModule(address _module, bytes calldata _params)
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
@@ -255,10 +236,7 @@ contract ATKEquityImplementation is
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
     /// @param userAddress The address from which to burn tokens
     /// @param amount The amount of tokens to burn
-    function burn(
-        address userAddress,
-        uint256 amount
-    )
+    function burn(address userAddress, uint256 amount)
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
@@ -270,10 +248,7 @@ contract ATKEquityImplementation is
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE. Arrays must have the same length.
     /// @param userAddresses Array of addresses from which to burn tokens
     /// @param amounts Array of amounts to burn from each corresponding address
-    function batchBurn(
-        address[] calldata userAddresses,
-        uint256[] calldata amounts
-    )
+    function batchBurn(address[] calldata userAddresses, uint256[] calldata amounts)
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
@@ -287,10 +262,7 @@ contract ATKEquityImplementation is
     /// @dev Only callable by addresses with CUSTODIAN_ROLE
     /// @param userAddress The address to freeze or unfreeze
     /// @param freeze True to freeze the address, false to unfreeze
-    function setAddressFrozen(
-        address userAddress,
-        bool freeze
-    )
+    function setAddressFrozen(address userAddress, bool freeze)
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -302,10 +274,7 @@ contract ATKEquityImplementation is
     /// @dev Only callable by addresses with CUSTODIAN_ROLE
     /// @param userAddress The address for which to freeze tokens
     /// @param amount The amount of tokens to freeze
-    function freezePartialTokens(
-        address userAddress,
-        uint256 amount
-    )
+    function freezePartialTokens(address userAddress, uint256 amount)
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -317,10 +286,7 @@ contract ATKEquityImplementation is
     /// @dev Only callable by addresses with CUSTODIAN_ROLE
     /// @param userAddress The address for which to unfreeze tokens
     /// @param amount The amount of tokens to unfreeze
-    function unfreezePartialTokens(
-        address userAddress,
-        uint256 amount
-    )
+    function unfreezePartialTokens(address userAddress, uint256 amount)
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -332,10 +298,7 @@ contract ATKEquityImplementation is
     /// @dev Only callable by addresses with CUSTODIAN_ROLE. Arrays must have the same length.
     /// @param userAddresses Array of addresses to freeze or unfreeze
     /// @param freeze Array of boolean values indicating whether to freeze (true) or unfreeze (false)
-    function batchSetAddressFrozen(
-        address[] calldata userAddresses,
-        bool[] calldata freeze
-    )
+    function batchSetAddressFrozen(address[] calldata userAddresses, bool[] calldata freeze)
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -347,10 +310,7 @@ contract ATKEquityImplementation is
     /// @dev Only callable by addresses with CUSTODIAN_ROLE. Arrays must have the same length.
     /// @param userAddresses Array of addresses for which to freeze tokens
     /// @param amounts Array of amounts to freeze for each corresponding address
-    function batchFreezePartialTokens(
-        address[] calldata userAddresses,
-        uint256[] calldata amounts
-    )
+    function batchFreezePartialTokens(address[] calldata userAddresses, uint256[] calldata amounts)
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -362,10 +322,7 @@ contract ATKEquityImplementation is
     /// @dev Only callable by addresses with CUSTODIAN_ROLE. Arrays must have the same length.
     /// @param userAddresses Array of addresses for which to unfreeze tokens
     /// @param amounts Array of amounts to unfreeze for each corresponding address
-    function batchUnfreezePartialTokens(
-        address[] calldata userAddresses,
-        uint256[] calldata amounts
-    )
+    function batchUnfreezePartialTokens(address[] calldata userAddresses, uint256[] calldata amounts)
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -379,11 +336,7 @@ contract ATKEquityImplementation is
     /// @param to The address to transfer tokens to
     /// @param amount The amount of tokens to transfer
     /// @return bool indicating whether the transfer was successful
-    function forcedTransfer(
-        address from,
-        address to,
-        uint256 amount
-    )
+    function forcedTransfer(address from, address to, uint256 amount)
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -398,11 +351,7 @@ contract ATKEquityImplementation is
     /// @param fromList Array of addresses to transfer tokens from
     /// @param toList Array of addresses to transfer tokens to
     /// @param amounts Array of amounts to transfer for each corresponding address pair
-    function batchForcedTransfer(
-        address[] calldata fromList,
-        address[] calldata toList,
-        uint256[] calldata amounts
-    )
+    function batchForcedTransfer(address[] calldata fromList, address[] calldata toList, uint256[] calldata amounts)
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -414,10 +363,7 @@ contract ATKEquityImplementation is
     /// @dev Only callable by addresses with CUSTODIAN_ROLE. Used for account recovery scenarios.
     /// @param lostWallet The address of the wallet that lost access
     /// @param newWallet The address of the new wallet to receive the tokens
-    function forcedRecoverTokens(
-        address lostWallet,
-        address newWallet
-    )
+    function forcedRecoverTokens(address lostWallet, address newWallet)
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -487,10 +433,7 @@ contract ATKEquityImplementation is
     /// @param to The address that will receive the minted tokens
     /// @param amount The amount of tokens to mint
     /// @inheritdoc SMARTHooks
-    function _beforeMint(
-        address to,
-        uint256 amount
-    )
+    function _beforeMint(address to, uint256 amount)
         internal
         virtual
         override(SMARTUpgradeable, SMARTCustodianUpgradeable, SMARTHooks)
@@ -506,11 +449,7 @@ contract ATKEquityImplementation is
     /// @param to The address receiving the tokens
     /// @param amount The amount of tokens to transfer
     /// @inheritdoc SMARTHooks
-    function _beforeTransfer(
-        address from,
-        address to,
-        uint256 amount
-    )
+    function _beforeTransfer(address from, address to, uint256 amount)
         internal
         virtual
         override(SMARTUpgradeable, SMARTCustodianUpgradeable, SMARTHooks)
@@ -524,10 +463,7 @@ contract ATKEquityImplementation is
     /// @param from The address from which tokens will be burned
     /// @param amount The amount of tokens to burn
     /// @inheritdoc SMARTHooks
-    function _beforeBurn(
-        address from,
-        uint256 amount
-    )
+    function _beforeBurn(address from, uint256 amount)
         internal
         virtual
         override(SMARTCustodianUpgradeable, SMARTHooks)
@@ -541,10 +477,7 @@ contract ATKEquityImplementation is
     /// @param owner The address that owns the tokens to be redeemed
     /// @param amount The amount of tokens to redeem
     /// @inheritdoc SMARTHooks
-    function _beforeRedeem(
-        address owner,
-        uint256 amount
-    )
+    function _beforeRedeem(address owner, uint256 amount)
         internal
         virtual
         override(SMARTCustodianUpgradeable, SMARTHooks)
@@ -569,11 +502,7 @@ contract ATKEquityImplementation is
     /// @param to The address that received the tokens
     /// @param amount The amount of tokens transferred
     /// @inheritdoc SMARTHooks
-    function _afterTransfer(
-        address from,
-        address to,
-        uint256 amount
-    )
+    function _afterTransfer(address from, address to, uint256 amount)
         internal
         virtual
         override(SMARTUpgradeable, SMARTHooks)
@@ -597,10 +526,7 @@ contract ATKEquityImplementation is
     /// @param lostWallet The address of the wallet that lost access
     /// @param newWallet The address of the new wallet that received the tokens
     /// @inheritdoc SMARTHooks
-    function _afterRecoverTokens(
-        address lostWallet,
-        address newWallet
-    )
+    function _afterRecoverTokens(address lostWallet, address newWallet)
         internal
         virtual
         override(SMARTCustodianUpgradeable, SMARTHooks)
@@ -615,11 +541,7 @@ contract ATKEquityImplementation is
     /// @param from The address sending tokens (address(0) for minting)
     /// @param to The address receiving tokens (address(0) for burning)
     /// @param value The amount of tokens being transferred
-    function _update(
-        address from,
-        address to,
-        uint256 value
-    )
+    function _update(address from, address to, uint256 value)
         internal
         virtual
         override(SMARTPausableUpgradeable, SMARTUpgradeable, ERC20VotesUpgradeable, ERC20Upgradeable)

@@ -134,13 +134,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     /// @param _to The recipient address
     /// @param _value The transfer amount
     /// @param _params ABI-encoded TimeLockParams struct
-    function transferred(
-        address _token,
-        address _from,
-        address _to,
-        uint256 _value,
-        bytes calldata _params
-    )
+    function transferred(address _token, address _from, address _to, uint256 _value, bytes calldata _params)
         external
         override
         onlyTokenOrCompliance(_token)
@@ -194,11 +188,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     /// @param _user The user address to check
     /// @param _expression The expression to evaluate for exemption
     /// @return True if user satisfies the exemption expression, false otherwise
-    function _hasExemption(
-        address _token,
-        address _user,
-        ExpressionNode[] memory _expression
-    )
+    function _hasExemption(address _token, address _user, ExpressionNode[] memory _expression)
         internal
         view
         returns (bool)
@@ -230,12 +220,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     /// @param _amount The amount we want to remove
     /// @param _holdPeriod The hold period in seconds
     /// @return canRemove True if we have enough unlocked tokens
-    function _canRemoveTokensFIFO(
-        address _token,
-        address _user,
-        uint256 _amount,
-        uint256 _holdPeriod
-    )
+    function _canRemoveTokensFIFO(address _token, address _user, uint256 _amount, uint256 _holdPeriod)
         internal
         view
         returns (bool)
@@ -269,13 +254,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     /// @param _amount The amount to remove
     /// @param _holdPeriod The hold period for validation
     /// @param _isExempt Whether the user is exempt from time locks
-    function _removeTokensFIFO(
-        address _token,
-        address _user,
-        uint256 _amount,
-        uint256 _holdPeriod,
-        bool _isExempt
-    )
+    function _removeTokensFIFO(address _token, address _user, uint256 _amount, uint256 _holdPeriod, bool _isExempt)
         internal
     {
         TokenBatch[] storage batches = tokenBatches[_token][_user];
@@ -364,11 +343,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     /// @param _user The user address
     /// @param _params ABI-encoded TimeLockParams struct
     /// @return The amount of unlocked tokens
-    function getAvailableBalance(
-        address _token,
-        address _user,
-        bytes calldata _params
-    )
+    function getAvailableBalance(address _token, address _user, bytes calldata _params)
         external
         view
         returns (uint256)
@@ -410,11 +385,7 @@ contract TimeLockComplianceModule is AbstractComplianceModule {
     /// @param _user The user address
     /// @param _params ABI-encoded TimeLockParams struct
     /// @return The remaining lock time in seconds for the next unlock (0 if tokens are available)
-    function getRemainingLockTime(
-        address _token,
-        address _user,
-        bytes calldata _params
-    )
+    function getRemainingLockTime(address _token, address _user, bytes calldata _params)
         external
         view
         returns (uint256)

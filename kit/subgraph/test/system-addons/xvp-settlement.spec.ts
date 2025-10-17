@@ -122,7 +122,10 @@ describe("XVP Settlements", () => {
     expect(settlement?.hashlock).toBeDefined();
     expect(typeof settlement?.hasExternalFlows).toBe("boolean");
     expect(typeof settlement?.secretRevealed).toBe("boolean");
-    expect(settlement?.secretRevealedBy === null || typeof settlement?.secretRevealedBy.id === "string").toBe(true);
+    expect(
+      settlement?.secretRevealedBy === null ||
+        typeof settlement?.secretRevealedBy.id === "string"
+    ).toBe(true);
     settlement?.cancelVotes.forEach((vote) => {
       expect(vote.account.id).toBeDefined();
       expect(typeof vote.active).toBe("boolean");
@@ -252,7 +255,9 @@ describe("XVP Settlements", () => {
     });
 
     // The flows should represent our expected asset types from the script
-    const assetTypes = flows.filter((flow) => !flow.isExternal).map((flow) => flow.asset?.type);
+    const assetTypes = flows
+      .filter((flow) => !flow.isExternal)
+      .map((flow) => flow.asset?.type);
     expect(assetTypes).toContain("stablecoin");
     expect(assetTypes).toContain("equity");
   });

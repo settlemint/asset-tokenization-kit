@@ -239,12 +239,7 @@ contract TokenUtils is Test {
      * @param userAddress The target user address.
      * @param freeze True to freeze, false to unfreeze.
      */
-    function setAddressFrozenAsExecutor(
-        address tokenAddress,
-        address executor,
-        address userAddress,
-        bool freeze
-    )
+    function setAddressFrozenAsExecutor(address tokenAddress, address executor, address userAddress, bool freeze)
         public
     {
         vm.startPrank(executor);
@@ -271,12 +266,7 @@ contract TokenUtils is Test {
      * @param userAddress The target user address.
      * @param amount The amount to freeze.
      */
-    function freezePartialTokensAsExecutor(
-        address tokenAddress,
-        address executor,
-        address userAddress,
-        uint256 amount
-    )
+    function freezePartialTokensAsExecutor(address tokenAddress, address executor, address userAddress, uint256 amount)
         public
     {
         vm.startPrank(executor);
@@ -337,13 +327,7 @@ contract TokenUtils is Test {
      * @param to The recipient address.
      * @param amount The amount to transfer.
      */
-    function forcedTransferAsExecutor(
-        address tokenAddress,
-        address executor,
-        address from,
-        address to,
-        uint256 amount
-    )
+    function forcedTransferAsExecutor(address tokenAddress, address executor, address from, address to, uint256 amount)
         public
     {
         vm.startPrank(executor);
@@ -407,7 +391,7 @@ contract TokenUtils is Test {
     function createAndSetTokenOnchainID(address tokenAddress, address tokenIssuer_) public returns (address) {
         // Ensure tokenAddress is the proxy address when dealing with upgradeable tokens
         vm.startPrank(_platformAdmin); // Platform admin creates the token identity
-        // Use the specific token issuer's wallet address for identity creation
+            // Use the specific token issuer's wallet address for identity creation
         address tokenIdentityAddress = _identityFactory.createContractIdentity(tokenAddress);
         vm.stopPrank();
 

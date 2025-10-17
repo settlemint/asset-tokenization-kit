@@ -26,8 +26,9 @@ import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
 import { IContractWithIdentity } from "../../contracts/system/identity-factory/IContractWithIdentity.sol";
 import { MockedIdentity } from "../utils/mocks/MockedIdentity.sol";
-import { SMARTComplianceModuleParamPair } from
-    "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import {
+    SMARTComplianceModuleParamPair
+} from "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IATKSystemFactory } from "../../contracts/system/IATKSystemFactory.sol";
 
 // Import system errors
@@ -41,41 +42,56 @@ import {
 
 // Import actual implementations
 import { ATKComplianceImplementation } from "../../contracts/system/compliance/ATKComplianceImplementation.sol";
-import { ATKIdentityRegistryImplementation } from
-    "../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
-import { ATKIdentityRegistryStorageImplementation } from
-    "../../contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol";
-import { ATKSystemTrustedIssuersRegistryImplementation } from
-    "../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
-import { ATKIdentityFactoryImplementation } from
-    "../../contracts/system/identity-factory/ATKIdentityFactoryImplementation.sol";
-import { ATKIdentityImplementation } from
-    "../../contracts/system/identity-factory/identities/ATKIdentityImplementation.sol";
-import { ATKContractIdentityImplementation } from
-    "../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
-import { ATKTokenAccessManagerImplementation } from
-    "../../contracts/system/tokens/access/ATKTokenAccessManagerImplementation.sol";
-import { ATKSystemAccessManagerImplementation } from
-    "../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
-import { ATKTopicSchemeRegistryImplementation } from
-    "../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
-import { ATKTokenFactoryRegistryImplementation } from
-    "../../contracts/system/tokens/factory/ATKTokenFactoryRegistryImplementation.sol";
-import { ATKSystemAddonRegistryImplementation } from
-    "../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
-import { ATKComplianceModuleRegistryImplementation } from
-    "../../contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol";
-import { ATKTrustedIssuersMetaRegistryImplementation } from
-    "../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersMetaRegistryImplementation.sol";
+import {
+    ATKIdentityRegistryImplementation
+} from "../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
+import {
+    ATKIdentityRegistryStorageImplementation
+} from "../../contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol";
+import {
+    ATKSystemTrustedIssuersRegistryImplementation
+} from "../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
+import {
+    ATKIdentityFactoryImplementation
+} from "../../contracts/system/identity-factory/ATKIdentityFactoryImplementation.sol";
+import {
+    ATKIdentityImplementation
+} from "../../contracts/system/identity-factory/identities/ATKIdentityImplementation.sol";
+import {
+    ATKContractIdentityImplementation
+} from "../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
+import {
+    ATKTokenAccessManagerImplementation
+} from "../../contracts/system/tokens/access/ATKTokenAccessManagerImplementation.sol";
+import {
+    ATKSystemAccessManagerImplementation
+} from "../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
+import {
+    ATKTopicSchemeRegistryImplementation
+} from "../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
+import {
+    ATKTokenFactoryRegistryImplementation
+} from "../../contracts/system/tokens/factory/ATKTokenFactoryRegistryImplementation.sol";
+import {
+    ATKSystemAddonRegistryImplementation
+} from "../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
+import {
+    ATKComplianceModuleRegistryImplementation
+} from "../../contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol";
+import {
+    ATKTrustedIssuersMetaRegistryImplementation
+} from "../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersMetaRegistryImplementation.sol";
 
 // Import compliance module
-import { SMARTIdentityVerificationComplianceModule } from
-    "../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
+import {
+    SMARTIdentityVerificationComplianceModule
+} from "../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
 
 // Mock contracts for testing edge cases that require invalid contracts
 contract MockInvalidContract {
-// This contract doesn't implement IERC165
-}
+    // This contract doesn't implement IERC165
+
+    }
 
 // Struct to group implementation addresses to avoid stack too deep errors
 struct SystemImplementations {
@@ -251,7 +267,9 @@ contract ATKSystemTest is Test {
             identityRegistryImplementation: impls.identityRegistry,
             identityRegistryStorageImplementation: impls.identityRegistryStorage,
             trustedIssuersRegistryImplementation: impls.trustedIssuersRegistry,
-            trustedIssuersMetaRegistryImplementation: address(new ATKTrustedIssuersMetaRegistryImplementation(forwarder)),
+            trustedIssuersMetaRegistryImplementation: address(
+                new ATKTrustedIssuersMetaRegistryImplementation(forwarder)
+            ),
             topicSchemeRegistryImplementation: impls.topicSchemeRegistry,
             identityFactoryImplementation: impls.identityFactory,
             identityImplementation: impls.identity,
@@ -629,12 +647,10 @@ contract ATKSystemTest is Test {
         ATKSystemImplementation(address(atkSystem)).setComplianceImplementation(address(compImpl));
         ATKSystemImplementation(address(atkSystem)).setIdentityRegistryImplementation(address(idRegImpl));
         ATKSystemImplementation(address(atkSystem)).setIdentityRegistryStorageImplementation(address(idRegStorageImpl));
-        ATKSystemImplementation(address(atkSystem)).setSystemTrustedIssuersRegistryImplementation(
-            address(trustedIssuersImpl)
-        );
-        ATKSystemImplementation(address(atkSystem)).setTrustedIssuersMetaRegistryImplementation(
-            address(trustedIssuersMetaImpl)
-        );
+        ATKSystemImplementation(address(atkSystem))
+            .setSystemTrustedIssuersRegistryImplementation(address(trustedIssuersImpl));
+        ATKSystemImplementation(address(atkSystem))
+            .setTrustedIssuersMetaRegistryImplementation(address(trustedIssuersMetaImpl));
         ATKSystemImplementation(address(atkSystem)).setTopicSchemeRegistryImplementation(address(topicSchemeImpl));
         ATKSystemImplementation(address(atkSystem)).setIdentityFactoryImplementation(address(idFactoryImpl));
         ATKSystemImplementation(address(atkSystem)).setIdentityImplementation(address(idImpl));
@@ -865,15 +881,13 @@ contract ATKSystemTest is Test {
             ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry()).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
 
         // Check if issuer identity is trusted for the TOPIC_ISSUER
-        bool isTrusted = ISMARTTrustedIssuersRegistry(atkSystem.trustedIssuersRegistry()).isTrustedIssuer(
-            organisationIdentity, address(0)
-        );
+        bool isTrusted = ISMARTTrustedIssuersRegistry(atkSystem.trustedIssuersRegistry())
+            .isTrustedIssuer(organisationIdentity, address(0));
         assertTrue(isTrusted, "Issuer identity should be registered as trusted issuer");
 
         // Check if it's trusted specifically for TOPIC_ISSUER topic
-        bool isTrustedForTopic = ISMARTTrustedIssuersRegistry(atkSystem.trustedIssuersRegistry()).hasClaimTopic(
-            organisationIdentity, topicId, address(0)
-        );
+        bool isTrustedForTopic = ISMARTTrustedIssuersRegistry(atkSystem.trustedIssuersRegistry())
+            .hasClaimTopic(organisationIdentity, topicId, address(0));
         assertTrue(isTrustedForTopic, "Issuer identity should be trusted for TOPIC_ISSUER topic");
     }
 }

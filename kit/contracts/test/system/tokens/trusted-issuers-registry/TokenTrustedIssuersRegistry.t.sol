@@ -2,15 +2,18 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { TokenTrustedIssuersRegistry } from
-    "../../../../contracts/system/tokens/trusted-issuers-registry/TokenTrustedIssuersRegistry.sol";
+import {
+    TokenTrustedIssuersRegistry
+} from "../../../../contracts/system/tokens/trusted-issuers-registry/TokenTrustedIssuersRegistry.sol";
 import { ISMARTTrustedIssuersRegistry } from "../../../../contracts/smart/interface/ISMARTTrustedIssuersRegistry.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { IATKTokenTrustedIssuersRegistry } from
-    "../../../../contracts/system/tokens/trusted-issuers-registry/IATKTokenTrustedIssuersRegistry.sol";
-import { IATKTrustedIssuersRegistry } from
-    "../../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
+import {
+    IATKTokenTrustedIssuersRegistry
+} from "../../../../contracts/system/tokens/trusted-issuers-registry/IATKTokenTrustedIssuersRegistry.sol";
+import {
+    IATKTrustedIssuersRegistry
+} from "../../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 import { ATKAssetRoles } from "../../../../contracts/assets/ATKAssetRoles.sol";
 import { IClaimAuthorizer } from "../../../../contracts/onchainid/extensions/IClaimAuthorizer.sol";
 

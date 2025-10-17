@@ -27,12 +27,7 @@ abstract contract OnChainIdentity is IIdentity {
     /// @param sig the signature of the claim
     /// @param data the data field of the claim
     /// @return claimValid true if the claim is valid, false otherwise
-    function isClaimValid(
-        IIdentity _identity,
-        uint256 claimTopic,
-        bytes memory sig,
-        bytes memory data
-    )
+    function isClaimValid(IIdentity _identity, uint256 claimTopic, bytes memory sig, bytes memory data)
         public
         view
         virtual
