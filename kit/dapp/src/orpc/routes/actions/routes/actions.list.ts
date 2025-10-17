@@ -117,7 +117,7 @@ export const list = authRouter.actions.list.handler(
         where.executed = true;
         break;
       case "EXPIRED":
-        where.expiresAt_gte = nowMicroseconds;
+        where.expiresAt_lte = nowMicroseconds;
         where.executed = false;
         break;
     }

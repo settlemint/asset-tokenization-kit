@@ -269,7 +269,7 @@ export function ActionsTable({
         }
       ),
 
-      // We use dispaly here because we dont allow filtering or sorting by status
+      // We use display here because we dont allow filtering or sorting by status
       // The actions are already filtered by status (by using tabs), makes no sense if there is only one possible value
       columnHelper.display({
         id: "status",

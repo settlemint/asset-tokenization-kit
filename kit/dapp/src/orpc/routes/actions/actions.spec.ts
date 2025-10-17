@@ -94,15 +94,15 @@ describe("Actions API", () => {
     });
 
     test("should filter by status", async () => {
-      const activeActions = await client.actions.list({
-        status: "ACTIVE",
+      const pendingActions = await client.actions.list({
+        status: "PENDING",
       });
 
-      expect(activeActions).toBeInstanceOf(Array);
+      expect(pendingActions).toBeInstanceOf(Array);
 
       // All returned actions should be ACTIVE
-      activeActions.forEach((action) => {
-        expect(action.status).toBe("ACTIVE");
+      pendingActions.forEach((action) => {
+        expect(action.status).toBe("PENDING");
       });
     });
 
@@ -142,12 +142,6 @@ describe("Actions API", () => {
   });
 
   describe("Error Handling", () => {
-    test("should handle filter parameters", async () => {
-      // Test filters
-      const filteredActions = await client.actions.list({ status: "ACTIVE" });
-      expect(filteredActions).toBeInstanceOf(Array);
-    });
-
     test("should handle empty filter results", async () => {
       const emptyResults = await client.actions.list({
         status: "EXECUTED",
