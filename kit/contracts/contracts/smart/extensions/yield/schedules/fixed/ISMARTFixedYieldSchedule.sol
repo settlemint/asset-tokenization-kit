@@ -104,7 +104,7 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     /// @param periodYields An array containing the total yield for each specific period within the
     /// `fromPeriod` to `toPeriod` range.
     /// The length of this array is `toPeriod - fromPeriod + 1`.
-    /// @param totalYieldForCurrentPeriod The estimated total yield required for the current period.
+    /// @param totalYieldPerPeriod The estimated total yield required for a period.
     event YieldClaimed( // Amounts per period, matches the range fromPeriod to toPeriod
         address indexed holder,
         uint256 claimedAmount,
@@ -112,7 +112,7 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
         uint256 toPeriod,
         uint256[] periodAmounts,
         uint256[] periodYields,
-        uint256 totalYieldForCurrentPeriod
+        uint256 totalYieldPerPeriod
     );
 
     /// @notice Returns an array of all period end timestamps for this yield schedule.
@@ -164,14 +164,14 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     /// @return totalAmount The total sum of unclaimed yield tokens.
     function totalUnclaimedYield() external view returns (uint256 totalAmount);
 
-    /// @notice Calculates the total amount of yield that will be required to cover all token holders for the
-    /// current distribution period.
+    /// @notice Calculates the total amount of yield that will be required to cover all token holders for
+    /// a distribution period.
     /// @dev This is a projection based on current total supply (or relevant historical supply measure) and the yield
     /// rate.
     /// Useful for administrators to ensure sufficient denomination assets are available in the contract for future
     /// payouts.
     /// @return totalAmount The estimated total yield tokens needed for the current period's distribution.
-    function estimateTotalYieldForCurrentPeriod() external view returns (uint256 totalAmount);
+    function estimateTotalYieldPerPeriod() external view returns (uint256 totalAmount);
 
     /// @notice Calculates the total accrued yield for a specific token holder up to the current moment, including any
     /// pro-rata share for the ongoing period.

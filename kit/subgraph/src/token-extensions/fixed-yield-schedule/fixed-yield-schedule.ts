@@ -210,7 +210,7 @@ export function handleYieldClaimed(event: YieldClaimed): void {
       setBigNumber(
         currentPeriod,
         "totalYield",
-        event.params.totalYieldForCurrentPeriod,
+        event.params.totalYieldPerPeriod,
         denominationAssetDecimals
       );
       period.save();

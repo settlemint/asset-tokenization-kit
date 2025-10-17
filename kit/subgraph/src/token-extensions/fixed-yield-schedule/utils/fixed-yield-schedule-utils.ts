@@ -103,18 +103,15 @@ export function updateYield(token: Token): TokenFixedYieldSchedule | null {
     return fixedYieldSchedule;
   }
 
-  const totalYieldForCurrentPeriod =
-    fixedYieldScheduleContract.try_estimateTotalYieldForCurrentPeriod();
-  if (totalYieldForCurrentPeriod.reverted) {
-    log.error(
-      "FixedYieldSchedule: estimateTotalYieldForCurrentPeriod reverted",
-      []
-    );
+  const totalYieldPerPeriod =
+    fixedYieldScheduleContract.try_estimateTotalYieldPerPeriod();
+  if (totalYieldPerPeriod.reverted) {
+    log.error("FixedYieldSchedule: estimateTotalYieldPerPeriod reverted", []);
     fixedYieldSchedule.save();
     return fixedYieldSchedule;
   }
 
-  if (totalYieldForCurrentPeriod.value.equals(BigInt.zero())) {
+  if (totalYieldPerPeriod.value.equals(BigInt.zero())) {
     // There is no current period, the schedule has ended
     fixedYieldSchedule.currentPeriod = null;
     fixedYieldSchedule.nextPeriod = null;
@@ -129,13 +126,13 @@ export function updateYield(token: Token): TokenFixedYieldSchedule | null {
       setBigNumber(
         period,
         "totalYield",
-        totalYieldForCurrentPeriod.value,
+        totalYieldPerPeriod.value,
         denominationAssetDecimals
       );
       setBigNumber(
         period,
         "totalUnclaimedYield",
-        totalYieldForCurrentPeriod.value.minus(
+        totalYieldPerPeriod.value.minus(
           fixedYieldCurrentPeriod.totalClaimedExact
         ),
         denominationAssetDecimals

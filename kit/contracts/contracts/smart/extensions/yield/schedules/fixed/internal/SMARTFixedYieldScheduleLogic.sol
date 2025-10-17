@@ -150,9 +150,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
             _periodEndTimestamps[i] = timestamp;
         }
 
-        emit FixedYieldScheduleSet(
-            startDate_, endDate_, rate_, interval_, _periodEndTimestamps, _denominationAsset
-        );
+        emit FixedYieldScheduleSet(startDate_, endDate_, rate_, interval_, _periodEndTimestamps, _denominationAsset);
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -268,7 +266,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
     /// @inheritdoc ISMARTFixedYieldSchedule
     /// @dev This calculation uses the current total supply. For a more precise estimate if supply changes rapidly,
     /// one might need a more complex projection. Assumes a generic basis from `_token.yieldBasisPerUnit(address(0))`.
-    function estimateTotalYieldForCurrentPeriod() public view override returns (uint256) {
+    function estimateTotalYieldPerPeriod() public view override returns (uint256) {
         if (block.timestamp > _endDate || block.timestamp == _endDate) return 0; // Schedule ended, no current period.
 
         // Get the current total supply of the associated token.
@@ -393,17 +391,11 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         // Perform the transfer of the denomination asset to the claimant.
         _denominationAsset.safeTransfer(sender, totalAmountToClaim);
 
-        // Calculate the required yield for the current period for the event.
-        uint256 totalYieldForCurrentPeriod = estimateTotalYieldForCurrentPeriod();
+        // Calculate the required yield for a period for the event.
+        uint256 totalYieldPerPeriod = estimateTotalYieldPerPeriod();
 
         emit YieldClaimed(
-            sender,
-            totalAmountToClaim,
-            fromPeriod,
-            lastPeriod,
-            periodAmounts,
-            periodYields,
-            totalYieldForCurrentPeriod
+            sender, totalAmountToClaim, fromPeriod, lastPeriod, periodAmounts, periodYields, totalYieldPerPeriod
         );
     }
 
