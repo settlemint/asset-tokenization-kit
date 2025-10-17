@@ -744,6 +744,9 @@ support:
   minio:
     # -- (bool) Enable MinIO object storage deployment
     enabled: true
+    buckets:
+      - name: "atk"
+        policy: download
     # -- (object) MinIO server container image
     image:
       # -- (string) MinIO server image repository

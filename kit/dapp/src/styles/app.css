@@ -4,8 +4,9 @@
 
 /* Scope dark utilities to the nearest theme container so light previews stay isolated */
 @custom-variant dark (
-  &:is([data-theme="dark"], [data-theme="dark"] *),
-  &:is(.dark *):not(:is([data-theme="light"] *))
+  &:where(:is(.dark *, [data-theme="dark"] *)):where(
+    :not(:is([data-theme="light"] *))
+  )
 );
 
 @theme inline {

@@ -61,21 +61,29 @@ export const uploadLogo = authRouter.settings.theme.uploadLogo
     );
 
     const normalizedUploadUrl = (() => {
-      if (env.SETTLEMINT_INSTANCE === "local") {
-        try {
-          const url = new URL(uploadUrl);
-          if (
-            (url.hostname === "localhost" || url.hostname === "127.0.0.1") &&
-            url.protocol === "https:"
-          ) {
-            url.protocol = "http:";
-            return url.toString();
-          }
-        } catch {
-          return uploadUrl;
+      try {
+        const url = new URL(uploadUrl);
+        if (
+          env.SETTLEMINT_INSTANCE === "local" &&
+          (url.hostname === "localhost" || url.hostname === "127.0.0.1")
+        ) {
+          url.protocol = "http:";
         }
+        return url.toString();
+      } catch {
+        return uploadUrl;
       }
-      return uploadUrl;
+    })();
+
+    const publicUrl = (() => {
+      try {
+        const url = new URL(normalizedUploadUrl);
+        url.search = "";
+        url.hash = "";
+        return url.toString();
+      } catch {
+        return `/${bucket}/${objectKey}`;
+      }
     })();
 
     const expiresAt = new Date(Date.now() + expirySeconds * 1000).toISOString();
@@ -84,7 +92,7 @@ export const uploadLogo = authRouter.settings.theme.uploadLogo
       mode,
       bucket,
       objectKey,
-      publicUrl: `/${bucket}/${objectKey}`,
+      publicUrl,
       uploadUrl: normalizedUploadUrl,
       method: "PUT" as const,
       headers: {

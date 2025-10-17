@@ -35,8 +35,8 @@ describe("theme logo upload schema", () => {
       mode: "light" as const,
       bucket,
       objectKey: "logos/light/logo.svg",
-      publicUrl: `/${bucket}/logos/light/logo.svg`,
-      uploadUrl: "https://minio.example.com/presigned",
+      publicUrl: `http://localhost:9000/${bucket}/logos/light/logo.svg`,
+      uploadUrl: "http://localhost:9000/atk/logos/light/logo.svg?signature=abc",
       method: "PUT" as const,
       headers: {
         "Content-Type": "image/svg+xml",

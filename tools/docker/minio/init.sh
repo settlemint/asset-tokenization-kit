@@ -2,6 +2,7 @@
 set -euo pipefail
 mc alias set provisioning http://minio:9000 "${MINIO_ROOT_USER}" "${MINIO_ROOT_PASSWORD}"
 mc mb --ignore-existing provisioning/atk
+mc anonymous set download provisioning/atk
 
 # Create service account if it doesn't exist
 if ! mc admin user svcacct info provisioning atk-service >/dev/null 2>&1; then
