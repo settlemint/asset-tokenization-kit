@@ -77,7 +77,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <span>{t("actions")}</span>
                 </Link>
               </SidebarMenuButton>
-              {pendingCount >= 0 ? (
+              {pendingCount > 0 ? (
                 <SidebarMenuBadge
                   aria-label={`${pendingCount} ${tActions("tabs.pending")} ${t(
                     "actions"
