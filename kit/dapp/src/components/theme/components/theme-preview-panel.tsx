@@ -10,12 +10,55 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import type { ThemeConfig } from "../lib/schema";
+import type { ThemeConfig, ThemeToken } from "../lib/schema";
 import { cn } from "@/lib/utils";
 import { Paintbrush } from "lucide-react";
 import type { CSSProperties } from "react";
 import { FONT_PREVIEW_TEXT } from "../lib/constants";
 import type { ThemeTranslateFn } from "../lib/types";
+
+// Map derived shadcn variables so previews ignore the page-level theme class.
+const PREVIEW_DERIVED_VARIABLES = {
+  background: "sm-background-lightest",
+  foreground: "sm-text",
+  card: "sm-colored-shadow",
+  "card-foreground": "sm-text",
+  popover: "sm-background-lightest",
+  "popover-foreground": "sm-text",
+  primary: "sm-accent",
+  "primary-foreground": "sm-text-contrast",
+  secondary: "sm-graphics-primary",
+  "secondary-foreground": "sm-text",
+  muted: "sm-colored-shadow",
+  "muted-foreground": "sm-muted",
+  accent: "sm-accent",
+  "accent-foreground": "sm-text-contrast",
+  "accent-hover": "sm-accent-hover",
+  destructive: "sm-state-error-background",
+  "destructive-foreground": "sm-state-error",
+  success: "sm-state-success-background",
+  "success-foreground": "sm-state-success",
+  "success-fg-deep": "sm-state-success-fg-deep",
+  warning: "sm-state-warning-background",
+  "warning-foreground": "sm-state-warning",
+  border: "sm-border",
+  input: "sm-border",
+  ring: "sm-accent",
+  "chart-1": "sm-graphics-primary",
+  "chart-2": "sm-graphics-quaternary",
+  "chart-3": "sm-graphics-tertiary",
+  "chart-4": "sm-graphics-secondary",
+  "chart-5": "sm-accent",
+  "chart-6": "sm-state-warning-background",
+  sidebar: "sm-background-darkest",
+  "sidebar-foreground": "sm-text",
+  "sidebar-primary": "sm-accent",
+  "sidebar-primary-foreground": "sm-text",
+  "sidebar-accent": "sm-background-gradient-start",
+  "sidebar-accent-foreground": "sm-text",
+  "sidebar-border": "sm-border",
+  "sidebar-ring": "sm-accent",
+} as const satisfies Record<string, ThemeToken>;
 
 type ThemeMode = keyof ThemeConfig["cssVars"];
 
@@ -175,8 +218,16 @@ function createPreviewStyle(theme: ThemeConfig, mode: ThemeMode): CSSVarStyle {
     fontFamily: theme.fonts.sans.family,
   };
 
-  for (const [token, value] of Object.entries(theme.cssVars[mode])) {
+  const modeVars = theme.cssVars[mode];
+
+  for (const [token, value] of Object.entries(modeVars)) {
     style[`--${token}`] = value;
+  }
+
+  for (const [cssVar, sourceToken] of Object.entries(
+    PREVIEW_DERIVED_VARIABLES
+  )) {
+    style[`--${cssVar}`] = modeVars[sourceToken];
   }
 
   return style;

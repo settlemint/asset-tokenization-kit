@@ -547,19 +547,23 @@ function oklchToRgba(color: OklchColor): RgbaColor {
   const l = clamp(color.l, 0, 1);
   const c = Math.max(color.c, 0);
   const hRadians = (normalizeHue(color.h) * Math.PI) / 180;
-  const a = c * Math.cos(hRadians);
-  const b = c * Math.sin(hRadians);
+  const a = Math.cos(hRadians) * c;
+  const b = Math.sin(hRadians) * c;
 
-  const y = l + 0.396_337_777_4 * a + 0.215_803_757_3 * b;
-  const x = l + 0.312_869_995_1 * a - 0.639_524_943_6 * b;
-  const z = l - 0.162_377_888_7 * a + 0.409_517_361_3 * b;
+  const lPrime = l + 0.396_337_777_4 * a + 0.215_803_757_3 * b;
+  const mPrime = l - 0.105_561_345_8 * a - 0.063_854_172_8 * b;
+  const sPrime = l - 0.089_484_177_5 * a - 1.291_485_548 * b;
+
+  const l3 = lPrime ** 3;
+  const m3 = mPrime ** 3;
+  const s3 = sPrime ** 3;
 
   const rLinear =
-    4.076_741_662_1 * x - 3.307_711_591_3 * y + 0.230_969_929_2 * z;
+    4.076_741_662_1 * l3 - 3.307_711_591_3 * m3 + 0.230_969_929_2 * s3;
   const gLinear =
-    -1.268_438_004_6 * x + 2.609_757_401_1 * y - 0.341_319_396_5 * z;
+    -1.268_438_004_6 * l3 + 2.609_757_401_1 * m3 - 0.341_319_396_5 * s3;
   const bLinear =
-    -0.004_196_086_3 * x - 0.703_418_614_7 * y + 1.707_614_701 * z;
+    -0.004_196_086_3 * l3 - 0.703_418_614_7 * m3 + 1.707_614_701 * s3;
 
   return {
     r: clamp(linearToSrgb(rLinear), 0, 1),
@@ -574,26 +578,22 @@ function rgbToOklch(color: RgbaColor): OklchColor {
   const gLinear = srgbToLinear(color.g);
   const bLinear = srgbToLinear(color.b);
 
-  const x =
+  const lComponent =
     0.412_221_470_8 * rLinear +
     0.536_332_536_3 * gLinear +
     0.051_445_992_9 * bLinear;
-  const y =
+  const mComponent =
     0.211_903_498_2 * rLinear +
     0.680_699_545_1 * gLinear +
     0.107_396_956_6 * bLinear;
-  const z =
+  const sComponent =
     0.088_302_461_9 * rLinear +
     0.281_718_837_6 * gLinear +
     0.629_978_700_5 * bLinear;
 
-  const l = 0.210_454_255_3 * x + 0.793_617_785 * y - 0.004_072_046_8 * z;
-  const m = 1.977_998_495_1 * x - 2.428_592_205 * y + 0.450_593_709_9 * z;
-  const s = 0.025_904_037_1 * x + 0.782_771_766_2 * y - 0.808_675_766 * z;
-
-  const lPrime = Math.cbrt(l);
-  const mPrime = Math.cbrt(m);
-  const sPrime = Math.cbrt(s);
+  const lPrime = Math.cbrt(lComponent);
+  const mPrime = Math.cbrt(mComponent);
+  const sPrime = Math.cbrt(sComponent);
 
   const lTilde =
     0.210_454_255_3 * lPrime +
@@ -608,13 +608,13 @@ function rgbToOklch(color: RgbaColor): OklchColor {
     0.782_771_766_2 * mPrime -
     0.808_675_766 * sPrime;
 
-  const c = Math.hypot(a, b);
-  const hRadians = Math.atan2(b, a);
+  const chroma = Math.hypot(a, b);
+  const hueRadians = Math.atan2(b, a);
 
   return {
     l: clamp(lTilde, 0, 1),
-    c,
-    h: normalizeHue((hRadians * 180) / Math.PI),
+    c: chroma,
+    h: normalizeHue((hueRadians * 180) / Math.PI),
     alpha: clamp(color.alpha, 0, 1),
   };
 }

@@ -1,14 +1,7 @@
 {
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ],
+  "include": ["**/*.ts", "**/*.tsx"],
   "compilerOptions": {
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ES2023"
-    ],
+    "lib": ["DOM", "DOM.Iterable", "ES2023"],
     "target": "es2023",
     "module": "preserve",
     "jsx": "react-jsx",
@@ -33,21 +26,11 @@
     "forceConsistentCasingInFileNames": true,
     "allowArbitraryExtensions": true,
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@schemas/*": [
-        "./*.d.ts"
-      ],
-      "@/locales/*": [
-        "./locales/*"
-      ],
-      "@atk/*": [
-        "../../packages/*"
-      ],
-      "@test/*": [
-        "./test/*"
-      ]
+      "@/*": ["./src/*"],
+      "@schemas/*": ["./*.d.ts"],
+      "@/locales/*": ["./locales/*"],
+      "@atk/*": ["../../packages/*"],
+      "@test/*": ["./test/*"]
     },
     "noImplicitAny": true,
     "noImplicitThis": true,
