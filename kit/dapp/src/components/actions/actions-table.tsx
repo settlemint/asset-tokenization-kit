@@ -96,12 +96,12 @@ function toTitleCase(input: string): string {
 }
 
 export function ActionsTable({
-                               tableId,
-                               statuses,
-                               defaultSorting,
-                               actions,
-                               filterPredicate,
-                             }: ActionsTableProps) {
+  tableId,
+  statuses,
+  defaultSorting,
+  actions,
+  filterPredicate,
+}: ActionsTableProps) {
   const { t, i18n } = useTranslation("actions");
   const router = useRouter();
   const { data: session } = useSession();
@@ -422,37 +422,37 @@ export function ActionsTable({
 
       {redeemAction
         ? (() => {
-          const token = redeemTokenQuery.data;
-          if (!token) return null;
+            const token = redeemTokenQuery.data;
+            if (!token) return null;
 
-          const zero = from(0n, token.decimals);
-          const holderResult = redeemHolderQuery.data;
+            const zero = from(0n, token.decimals);
+            const holderResult = redeemHolderQuery.data;
 
-          const assetBalance: TokenBalance = {
-            id: token.id,
-            value: holderResult?.holder?.value ?? zero,
-            frozen: holderResult?.holder?.frozen ?? zero,
-            available: holderResult?.holder?.available ?? zero,
-            token: {
+            const assetBalance: TokenBalance = {
               id: token.id,
-              name: token.name,
-              symbol: token.symbol,
-              decimals: token.decimals,
-              totalSupply: token.totalSupply,
-            },
-          };
+              value: holderResult?.holder?.value ?? zero,
+              frozen: holderResult?.holder?.frozen ?? zero,
+              available: holderResult?.holder?.available ?? zero,
+              token: {
+                id: token.id,
+                name: token.name,
+                symbol: token.symbol,
+                decimals: token.decimals,
+                totalSupply: token.totalSupply,
+              },
+            };
 
-          return (
-            <RedeemSheet
-              open={!!redeemAction}
-              onClose={() => {
-                setRedeemAction(null);
-              }}
-              assetBalance={assetBalance}
-              holderAddress={normalizedWallet}
-            />
-          );
-        })()
+            return (
+              <RedeemSheet
+                open={!!redeemAction}
+                onClose={() => {
+                  setRedeemAction(null);
+                }}
+                assetBalance={assetBalance}
+                holderAddress={normalizedWallet}
+              />
+            );
+          })()
         : null}
     </>
   );
@@ -466,11 +466,11 @@ interface ExecuteActionButtonProps {
 }
 
 function ExecuteActionButton({
-                               action,
-                               actionLabel,
-                               onOpenMature,
-                               onOpenRedeem,
-                             }: ExecuteActionButtonProps) {
+  action,
+  actionLabel,
+  onOpenMature,
+  onOpenRedeem,
+}: ExecuteActionButtonProps) {
   const { t } = useTranslation(["actions", "tokens", "common"]);
 
   const isMatureAction = action.name === "MatureBond";

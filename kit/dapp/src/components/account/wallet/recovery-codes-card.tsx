@@ -108,8 +108,7 @@ export function RecoveryCodesCard() {
       }
     } catch (error: unknown) {
       const fallbackMessage = t("common:errors.somethingWentWrong");
-      const message =
-        error instanceof Error ? error.message : fallbackMessage;
+      const message = error instanceof Error ? error.message : fallbackMessage;
       setPasswordError(message);
       toast.error(message);
     } finally {
