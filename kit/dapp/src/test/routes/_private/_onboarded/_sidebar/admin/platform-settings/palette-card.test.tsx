@@ -60,12 +60,29 @@ function getValueByPath(source: unknown, path: string) {
   }, source);
 }
 
+const TRANSLATIONS: Record<string, string> = {
+  editColor: "Edit {{token}} color",
+  revertButton: "Revert",
+};
+
 const translate = (
-  _key: string,
-  fallback?: string,
-  options?: Record<string, unknown>
+  key: string,
+  fallbackOrOptions?: string | Record<string, unknown>,
+  maybeOptions?: Record<string, unknown>
 ) => {
-  const template = fallback ?? _key;
+  const fallback =
+    typeof fallbackOrOptions === "string" ? fallbackOrOptions : undefined;
+  const options =
+    typeof fallbackOrOptions === "object" && fallbackOrOptions !== null
+      ? fallbackOrOptions
+      : maybeOptions;
+
+  const templateCandidate = TRANSLATIONS[key] ?? fallback ?? key;
+  const template =
+    typeof templateCandidate === "string"
+      ? templateCandidate
+      : String(templateCandidate ?? "");
+
   return template.replaceAll(/\{\{(\w+)\}\}/g, (_match, token) => {
     const replacement = options?.[token];
     return typeof replacement === "string" ? replacement : "";
