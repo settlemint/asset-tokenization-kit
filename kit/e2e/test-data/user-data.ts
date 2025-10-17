@@ -1,4 +1,5 @@
 import { randomInt } from "crypto";
+import type { ResidencyStatus } from "@atk/zod/residency-status";
 
 const date = new Date()
   .toISOString()
@@ -36,6 +37,7 @@ const generateSecurePassword = (): string => {
 };
 
 const password = generateSecurePassword();
+const onboardingResidencyStatus: ResidencyStatus = "resident";
 interface SignUpData {
   name: string;
   email: string;
@@ -130,7 +132,7 @@ export const onboardingTestData = {
       formatted: "January 15th, 1990",
     },
     countryOfResidence: "United States of America",
-    residencyStatus: "resident",
+    residencyStatus: onboardingResidencyStatus,
     nationalId: "123-45-6789",
   },
 

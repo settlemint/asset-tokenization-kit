@@ -180,7 +180,8 @@ function ColorEditorPopover({
   const rgba = parsed?.rgba ?? null;
   const oklchValue = parsed?.oklch ?? (rgba ? rgbToOklch(rgba) : null);
   const hslValue = parsed?.hsl ?? (rgba ? rgbToHsl(rgba) : null);
-  const hexValue = rgba === null ? "#000000" : rgbaToHex(rgba);
+  const hexValue =
+    rgba === null ? "#000000" : rgbaToHex(rgba, { includeAlpha: false });
 
   const handleColorInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const hex = event.target.value;
