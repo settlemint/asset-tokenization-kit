@@ -2,7 +2,7 @@ import { z } from "zod";
 import {
   themeConfigPartialSchema,
   themeConfigSchema,
-} from "@/components/theme/schema";
+} from "@/components/theme/lib/schema";
 
 export const ThemePreviewSchema = z.object({
   diff: themeConfigPartialSchema.optional(),

@@ -11,7 +11,7 @@
   },
   "balances": {
     "error": "残高の読み込みに失敗しました",
-    "loading": "残高を読み込んでいます...",
+    "loading": "残高を読み込み中...",
     "native": "ネイティブ残高",
     "noTokens": "トークンが見つかりません",
     "refresh": "更新",
@@ -33,10 +33,10 @@
     "networkMismatch": "{{network}}ネットワークに切り替えてください",
     "notConnected": "ウォレットが接続されていません",
     "notInstalled": "{{wallet}}がインストールされていません",
-    "rejected": "ユーザーによって接続が拒否されました",
+    "rejected": "ユーザーが接続を拒否しました",
     "timeout": "接続タイムアウト",
     "unknown": "不明なウォレットエラー",
-    "userRejected": "ユーザーによって取引が拒否されました"
+    "userRejected": "ユーザーが取引を拒否しました"
   },
   "mobile": {
     "deepLink": "ウォレットアプリを開く",
@@ -47,18 +47,18 @@
     "addNetwork": "{{network}}を追加",
     "arbitrum": "アービトラム",
     "localhost": "ローカルネットワーク",
-    "mainnet": "イーサリアムメインネット",
+    "mainnet": "Ethereumメインネット",
     "optimism": "オプティミズム",
     "polygon": "ポリゴン",
-    "sepolia": "セポリアテストネット",
+    "sepolia": "Sepoliaテストネット",
     "switchNetwork": "{{network}}に切り替え",
-    "switching": "ネットワークを切り替えています...",
+    "switching": "ネットワークを切り替え中...",
     "unsupported": "サポートされていないネットワーク"
   },
   "onboarding": {
     "description": "このdAppを使用するには、Web3ウォレットが必要です",
     "getWallet": "{{wallet}}を取得",
-    "learnMore": "詳細を学ぶ",
+    "learnMore": "詳細を見る",
     "steps": {
       "connect": "このdAppに接続",
       "create": "ウォレットを作成またはインポート",
@@ -67,58 +67,58 @@
     "title": "ウォレットを取得"
   },
   "permissions": {
-    "access": "これにより{{dapp}}が可能になります:",
-    "request": "{{dapp}}はあなたのウォレットに接続したいと考えています",
+    "access": "これにより{{dapp}}が以下を実行できるようになります:",
+    "request": "{{dapp}}があなたのウォレットに接続したいです",
     "requestTransactions": "取引承認をリクエスト",
     "switchNetworks": "ネットワーク切り替えをリクエスト",
     "viewAddress": "あなたのウォレットアドレスを表示",
-    "viewBalance": "残高を表示"
+    "viewBalance": "あなたの残高を表示"
   },
   "providers": {
-    "argent": "アルジャン",
-    "coinbase": "コインベースウォレット",
+    "argent": "Argent ウォレット",
+    "coinbase": "Coinbase ウォレット",
     "injected": "ブラウザウォレット",
-    "ledger": "レジャー",
-    "metamask": "メタマスク",
-    "rainbow": "レインボー",
-    "trezor": "トレザー",
-    "trust": "トラストウォレット",
-    "walletConnect": "ウォレットコネクト"
+    "ledger": "Ledger",
+    "metamask": "MetaMask",
+    "rainbow": "Rainbow",
+    "trezor": "Trezor",
+    "trust": "Trust Wallet",
+    "walletConnect": "WalletConnect"
   },
   "settings": {
     "autoConnect": "ページ読み込み時に自動接続",
     "defaultNetwork": "デフォルトネットワーク",
     "gasPrice": "ガス価格",
-    "hideSmallBalances": "小さな残高を非表示",
+    "hideSmallBalances": "少額残高を非表示",
     "priority": {
       "high": "高",
       "low": "低",
       "medium": "中"
     },
-    "slippage": "スリッページ許容範囲"
+    "slippage": "スリッページ許容値"
   },
   "signing": {
     "approve": "承認",
     "message": "署名するメッセージ",
     "reject": "拒否",
     "request": "署名リクエスト",
-    "typedData": "タイプデータ",
-    "warning": "信頼できるソースからのメッセージのみ署名する"
+    "typedData": "型付きデータ",
+    "warning": "信頼できるソースからのメッセージのみ署名してください"
   },
   "transactions": {
     "block": "ブロック番号",
     "cancelled": "キャンセル済み",
     "confirmed": "確認済み",
-    "details": "取引の詳細",
+    "details": "取引詳細",
     "failed": "失敗",
     "from": "送信元",
-    "gas": "使用したガス",
+    "gas": "使用ガス",
     "hash": "取引ハッシュ",
     "pending": "保留中",
     "recent": "最近の取引",
     "status": "ステータス",
-    "to": "宛先",
-    "value": "値",
+    "to": "送信先",
+    "value": "価値",
     "viewAll": "すべての取引を表示"
   }
 }

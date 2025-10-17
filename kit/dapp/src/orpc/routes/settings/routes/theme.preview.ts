@@ -1,6 +1,6 @@
-import { setThemePreview } from "@/components/theme/preview-store";
-import { getTheme, mergeTheme } from "@/components/theme/repository";
-import type { ThemeConfigPartial } from "@/components/theme/schema";
+import { setThemePreview } from "@/components/theme/lib/preview-store";
+import { getTheme, mergeTheme } from "@/components/theme/lib/repository";
+import type { ThemeConfigPartial } from "@/components/theme/lib/schema";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 

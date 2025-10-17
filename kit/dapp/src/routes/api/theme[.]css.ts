@@ -14,12 +14,12 @@
  * Method: GET /api/theme.css
  */
 
-import { compileThemeCSS, hashTheme } from "@/components/theme/compile-css";
-import { getTheme } from "@/components/theme/repository";
+import { compileThemeCSS, hashTheme } from "@/components/theme/lib/compile-css";
+import { getTheme } from "@/components/theme/lib/repository";
 import {
   getThemeCssFromCache,
   setThemeCssCache,
-} from "@/components/theme/theme-css-cache";
+} from "@/components/theme/lib/theme-css-cache";
 import { createServerFileRoute } from "@tanstack/react-start/server";
 
 /**

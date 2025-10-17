@@ -3,19 +3,19 @@
   "actions": "アクション",
   "assetClasses": "資産クラス",
   "assetManagement": "資産管理",
-  "cashEquivalent": "現金等価物",
+  "cashEquivalent": "現金同等物",
   "fixedIncome": "固定収入",
-  "flexibleIncome": "柔軟収入",
+  "flexibleIncome": "柔軟な収入",
   "home": "ダッシュボード",
-  "myAssets": "私の資産",
+  "myAssets": "マイ資産",
   "statistics": "統計",
   "addons": "アドオン",
   "assetDesigner": "資産デザイナー",
   "addonDesigner": "アドオンデザイナー",
   "addonCategories": {
-    "distribution": "配布",
+    "distribution": "配分",
     "exchange": "交換",
-    "custody": "保管",
+    "custody": "カストディ",
     "income": "収入"
   },
   "administration": "管理",
@@ -25,35 +25,35 @@
   "settings": {
     "assetTypes": {
       "title": "資産タイプ",
-      "description": "プラットフォームで利用可能な異なる資産タイプを設定し有効化します。一度有効化された資産タイプは無効化できません。",
-      "allEnabled": "利用可能なすべての資産タイプが有効化されました。",
+      "description": "プラットフォームで利用可能な異なるタイプの資産を設定して有効にします。有効にすると、資産タイプは無効にできません。",
+      "allEnabled": "すべての利用可能な資産タイプが有効になりました。",
       "enabledTitle": "有効な資産タイプ",
-      "enabledDescription": "これらの資産タイプは現在アクティブでプラットフォームで利用可能です。",
-      "enable": "有効化",
+      "enabledDescription": "これらの資産タイプは現在アクティブで、プラットフォームで使用可能です。",
+      "enable": "有効にする",
       "enabled": "有効",
-      "confirmEnableTitle": "{{assetType}}を有効化しますか？",
-      "confirmEnableDescription": "この操作は取り消すことができません。一度有効化されると、この資産タイプはプラットフォームで永続的に利用可能になります。"
+      "confirmEnableTitle": "{{assetType}}を有効にしますか？",
+      "confirmEnableDescription": "このアクションは元に戻せません。有効にすると、この資産タイプはプラットフォームで永久に利用可能になります。"
     },
     "compliance": "コンプライアンス",
     "addons": "アドオン",
+    "claimTopicsIssuers": "クレームトピックと発行者",
     "theme": {
       "title": "テーマ",
-      "description": "テナント体験のためにブランド資産・タイポグラフィ・カラートークンを調整します。",
-      "placeholder": "テーマエディターは現在開発中です。近日中にライブカスタマイズツールが利用可能になります。",
+      "description": "テナント体験のためにブランディング資産、タイポグラフィ、カラートークンをカスタマイズします。",
+      "placeholder": "テーマエディターが近日中に登場します。ライブカスタマイズツールをすぐにチェックしてください。",
       "dirtyBadge": "未保存の変更",
       "pristineBadge": "最新の状態",
       "versionBadgeTitle": "現在のテーマバージョン",
-      "updatedLabel": "更新",
-      "updatedUnknown": "更新時刻は利用できません",
-      "updatedBadgeTitle": "最終保存: {{timestamp}}"
+      "updatedLabel": "更新済み",
+      "updatedUnknown": "更新タイムスタンプは利用できません",
+      "updatedBadgeTitle": "最後に保存された{{timestamp}}"
     },
-    "claimTopicsIssuers": "クレームトピック＆発行者",
     "permissions": {
-      "title": "権限管理",
-      "description": "プラットフォーム管理者のロールとアクセス権限を管理します。",
+      "title": "プラットフォーム管理者",
+      "description": "資産トークン化キットのプラットフォーム管理者の役割を管理します。",
       "adminRequired": {
-        "title": "管理者権限が必要です",
-        "description": "このページにアクセスするには管理者権限が必要です。システム管理者にお問い合わせください。"
+        "title": "管理者アクセスが必要",
+        "description": "役割を管理するには管理者権限が必要です。アクセスについてはシステム管理者にお問い合わせください。"
       }
     }
   }

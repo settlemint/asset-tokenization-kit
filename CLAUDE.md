@@ -11,9 +11,9 @@ identity management, and yield mechanisms.
 
 ## Stack (names only)
 
-Node, Bun, TypeScript, Turborepo, Next.js, React, TanStack Query, TanStack
-Router, TanStack Form, Tailwind CSS, Radix UI, Drizzle ORM, PostgreSQL, Hasura,
-TheGraph, ORPC, Better Auth, Viem, Hardhat, Foundry, Solidity, Docker,
+Node, Bun, TypeScript, Turborepo, Tanstack Start, React, TanStack Query,
+TanStack Router, TanStack Form, Tailwind CSS, Radix UI, Drizzle ORM, PostgreSQL,
+Hasura, TheGraph, ORPC, Better Auth, Viem, Hardhat, Foundry, Solidity, Docker,
 Kubernetes, Helm, Vitest, Playwright
 
 ## How to Run (Root Only)
@@ -38,7 +38,7 @@ Kubernetes, Helm, Vitest, Playwright
 ```
 kit/
 ├── contracts/       # Smart contracts (Solidity, Foundry, Hardhat)
-├── dapp/           # Next.js 15 App Router application
+├── dapp/           # Tanstack Start application
 ├── subgraph/       # TheGraph indexing protocol
 ├── e2e/            # Playwright E2E test suite
 └── charts/         # Helm charts for Kubernetes deployment
@@ -88,7 +88,7 @@ leverage build cache; minimize final image size with distroless/alpine bases
 - **TypeScript**: Strict mode enabled with `noImplicitAny`, `strictNullChecks`,
   `noUncheckedIndexedAccess`
 - **Module resolution**: `bundler` mode with ESM-first approach, path aliases
-  configured (@/*, @schemas/_, @test/*)
+  configured (@/_, @schemas/\_, @test/_)
 - **Formatting**: Prettier with 2-space indentation, trailing commas, single
   quotes for strings
 - **Linting**: ESLint with React/TypeScript rules, max warnings = 0, boundaries

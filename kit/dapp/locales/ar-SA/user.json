@@ -4,32 +4,6 @@
       "success": "تم إنشاء المحفظة بنجاح"
     }
   },
-  "details": {
-    "kycInformation": "Information"
-  },
-  "fields": {
-    "accountCreated": "Account Created",
-    "accountCreatedInfo": "When the user account was created",
-    "email": "Email",
-    "emailInfo": "User's email address",
-    "firstName": "First Name",
-    "firstNameInfo": "Legal first name",
-    "fullName": "Full Name",
-    "fullNameInfo": "User's display name",
-    "lastLogin": "Last Login",
-    "lastLoginInfo": "Most recent login time",
-    "lastName": "Last Name",
-    "lastNameInfo": "Legal last name",
-    "neverLoggedIn": "Never logged in",
-    "noIdentityRegistered": "No identity registered",
-    "noWalletConnected": "No wallet connected",
-    "onChainIdentity": "On-chain Identity",
-    "onChainIdentityInfo": "User's on-chain identity contract",
-    "role": "Role",
-    "roleInfo": "User's system role",
-    "walletAddress": "Wallet Address",
-    "walletAddressInfo": "User's connected wallet address"
-  },
   "kyc": {
     "actions": {
       "delete": {
@@ -42,140 +16,203 @@
   },
   "management": {
     "page": {
-      "description": "Manage users, roles, and permissions for your platform."
+      "description": "إدارة المستخدمين والأدوار والأذونات لمنصتك."
     },
     "table": {
-      "actions": {
-        "menu": "Actions menu",
-        "openMenu": "Open actions menu",
-        "viewDetails": "View Details"
-      },
       "columns": {
-        "actions": "Actions",
-        "created": "Created",
-        "email": "Email",
-        "identity": "Identity",
-        "lastActive": "Last Active",
-        "name": "Name",
-        "role": "Role",
-        "status": "Status",
-        "wallet": "Wallet"
-      },
-      "emptyState": {
-        "description": "No users have been registered yet.",
-        "loading": "Loading users...",
-        "title": "No users found"
-      },
-      "errors": {
-        "loadFailed": "Failed to load users. Please try again.",
-        "navigationFailed": "Failed to navigate to user details"
-      },
-      "fallback": {
-        "never": "Never"
-      },
-      "identity": {
-        "none": "لا توجد هوية"
-      },
-      "noWallet": "No wallet",
-      "search": {
-        "placeholder": "Search by name, email, or wallet..."
+        "name": "الاسم",
+        "email": "البريد الإلكتروني",
+        "wallet": "المحفظة",
+        "role": "الدور",
+        "identity": "الهوية",
+        "status": "الحالة",
+        "created": "تم الإنشاء",
+        "lastActive": "آخر نشاط",
+        "actions": "الإجراءات"
       },
       "status": {
-        "admin": "Admin",
-        "adminAriaLabel": "User has any admin role in the system",
-        "identityNeeded": "Identity needed",
-        "identityNeededAriaLabel": "User has wallet but no identity registered",
-        "notConnected": "غير متصل",
-        "notConnectedAriaLabel": "المستخدم لم يربط محفظة",
-        "notRegistered": "Not Registered",
-        "notRegisteredAriaLabel": "User is not registered on-chain",
-        "pending": "في الانتظار",
-        "pendingAriaLabel": "المستخدم ربط المحفظة ولكنه غير مسجل بعد على البلوك تشين",
-        "pendingRegistration": "Pending registration",
-        "pendingRegistrationAriaLabel": "User identity registration is pending",
         "registered": "مسجل",
-        "registeredAriaLabel": "المستخدم مسجل ومتحقق منه على البلوك تشين"
+        "pending": "في الانتظار",
+        "notConnected": "غير متصل",
+        "identityNeeded": "هوية مطلوبة",
+        "notRegistered": "غير مسجل",
+        "pendingRegistration": "تسجيل معلق",
+        "admin": "مدير",
+        "adminAriaLabel": "المستخدم لديه أي دور إداري في النظام",
+        "registeredAriaLabel": "المستخدم مسجل وموثق على السلسلة",
+        "notRegisteredAriaLabel": "المستخدم غير مسجل على السلسلة",
+        "pendingAriaLabel": "المستخدم ربط محفظة لكنه غير مسجل بعد على السلسلة",
+        "notConnectedAriaLabel": "المستخدم لم يربط محفظة",
+        "identityNeededAriaLabel": "المستخدم لديه محفظة لكن لا هوية مسجلة",
+        "pendingRegistrationAriaLabel": "تسجيل هوية المستخدم معلق"
+      },
+      "identity": {
+        "none": "لا هوية"
+      },
+      "actions": {
+        "viewDetails": "عرض التفاصيل",
+        "menu": "قائمة الإجراءات",
+        "openMenu": "فتح قائمة الإجراءات"
+      },
+      "search": {
+        "placeholder": "البحث بالاسم أو البريد الإلكتروني أو المحفظة..."
+      },
+      "noWallet": "لا محفظة",
+      "emptyState": {
+        "title": "لم يتم العثور على مستخدمين",
+        "description": "لم يتم تسجيل أي مستخدمين بعد.",
+        "loading": "جارٍ تحميل المستخدمين..."
+      },
+      "errors": {
+        "loadFailed": "فشل في تحميل المستخدمين. يرجى المحاولة مرة أخرى.",
+        "navigationFailed": "فشل في التنقل إلى تفاصيل المستخدم"
+      },
+      "fallback": {
+        "never": "أبدًا"
       }
     }
   },
   "permissions": {
     "groups": {
-      "assets-management": "Assets Management",
-      "compliance": "Compliance",
-      "identity-management": "Identity Management",
-      "other": "Other",
-      "system-administration": "System Administration"
+      "compliance": "الامتثال",
+      "identity-management": "إدارة الهوية",
+      "assets-management": "إدارة الأصول",
+      "system-administration": "إدارة النظام",
+      "other": "أخرى"
     },
     "table": {
-      "actions": {
-        "changeRoles": "Change roles"
-      },
       "columns": {
-        "name": "Name",
-        "role": "Roles"
-      },
-      "emptyState": {
-        "description": "No users have been registered yet.",
-        "loading": "Loading users...",
-        "title": "No users found"
+        "name": "الاسم",
+        "role": "الأدوار"
       },
       "errors": {
-        "loadFailed": "Failed to load users. Please try again.",
-        "navigationFailed": "Failed to navigate to user details"
+        "navigationFailed": "فشل في التنقل إلى تفاصيل المستخدم",
+        "loadFailed": "فشل في تحميل المستخدمين. يرجى المحاولة مرة أخرى."
       },
       "search": {
-        "placeholder": "Search by wallet address..."
+        "placeholder": "البحث بعنوان المحفظة..."
+      },
+      "emptyState": {
+        "title": "لم يتم العثور على مستخدمين",
+        "description": "لم يتم تسجيل أي مستخدمين بعد.",
+        "loading": "جارٍ تحميل المستخدمين..."
+      },
+      "actions": {
+        "changeRoles": "تغيير الأدوار"
       }
     }
   },
+  "tabs": {
+    "details": "التفاصيل",
+    "claims": "المطالبات"
+  },
+  "fields": {
+    "fullName": "الاسم الكامل",
+    "fullNameInfo": "اسم عرض المستخدم",
+    "email": "البريد الإلكتروني",
+    "emailInfo": "عنوان بريد المستخدم الإلكتروني",
+    "role": "الدور",
+    "roleInfo": "دور المستخدم في النظام",
+    "accountCreated": "تم إنشاء الحساب",
+    "accountCreatedInfo": "متى تم إنشاء حساب المستخدم",
+    "lastLogin": "آخر تسجيل دخول",
+    "lastLoginInfo": "وقت تسجيل الدخول الأخير",
+    "neverLoggedIn": "لم يسجل دخول أبدًا",
+    "walletAddress": "عنوان المحفظة",
+    "walletAddressInfo": "عنوان محفظة المستخدم المربوطة",
+    "noWalletConnected": "لا محفظة مرتبطة",
+    "onChainIdentity": "الهوية على السلسلة",
+    "onChainIdentityInfo": "عقد هوية المستخدم على السلسلة",
+    "noIdentityRegistered": "لا هوية مسجلة",
+    "firstName": "الاسم الأول",
+    "firstNameInfo": "الاسم الأول القانوني",
+    "lastName": "اسم العائلة",
+    "lastNameInfo": "اسم العائلة القانوني"
+  },
+  "details": {
+    "kycInformation": "المعلومات"
+  },
   "profile": {
-    "changePassword": {
-      "confirmPassword": "تأكيد كلمة المرور",
-      "currentPassword": "كلمة المرور الحالية",
-      "description": "تحديث كلمة مرور حسابك للأمان.",
-      "newPassword": "كلمة المرور الجديدة",
-      "revokeOtherSessions": "تسجيل الخروج من الأجهزة الأخرى",
-      "revokeOtherSessionsDescription": "سيؤدي هذا إلى تسجيل خروجك من جميع الأجهزة والمتصفحات الأخرى.",
-      "success": "تم تغيير كلمة المرور بنجاح.",
-      "title": "تغيير كلمة المرور"
-    },
+    "title": "الملف الشخصي",
     "description": "عرض وإدارة معلومات ملفك الشخصي.",
-    "editKyc": {
-      "description": "تحرير معلومات KYC الخاصة بك.",
-      "title": "تحرير KYC"
-    },
+    "manage": "إدارة الملف الشخصي",
     "email": {
-      "change-disabled": "تغيير البريد الإلكتروني معطل في هذه البيئة.",
+      "change-disabled": "تغييرات البريد الإلكتروني معطلة في هذه البيئة.",
       "current": "البريد الإلكتروني الحالي"
     },
-    "kyc": {
-      "actions": {
-        "success": "تم تحديث ملف KYC بنجاح."
-      },
-      "cardDescription": "يرجى التحقق من هويتك لإنشاء هويتك على السلسلة.",
-      "fields": {
-        "country": "بلد الإقامة",
-        "dob": "تاريخ الميلاد",
-        "firstName": "الاسم الأول",
-        "lastName": "اسم العائلة",
-        "nationalId": "رقم الهوية الوطنية",
-        "residencyStatus": "حالة الإقامة"
-      },
-      "residencyStatusOptions": {
-        "dual_resident": "مقيم مزدوج - أنا مقيم قانونيًا/ضريبيًا في أكثر من دولة واحدة",
-        "non_resident": "غير مقيم - لا أعيش في أو لا أعتبر مقيمًا في الدولة المذكورة أعلاه",
-        "resident": "مقيم وحيد - أعيش وأعتبر مقيمًا قانونيًا/ضريبيًا فقط في الدولة المذكورة أعلاه",
-        "unknown": "أفضل عدم القول"
-      }
-    },
-    "manage": "إدارة الملف الشخصي",
     "messages": {
       "genericError": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
     },
-    "title": "الملف الشخصي"
+    "kyc": {
+      "cardDescription": "إدارة معلوماتك الشخصية.",
+      "actions": {
+        "success": "تم تحديث معلوماتك بنجاح."
+      },
+      "fields": {
+        "firstName": "الاسم الأول",
+        "lastName": "اسم العائلة",
+        "dob": "تاريخ الميلاد",
+        "country": "بلد الإقامة",
+        "residencyStatus": "حالة الإقامة",
+        "nationalId": "الهوية الوطنية"
+      },
+      "residencyStatusOptions": {
+        "resident": "مقيم وحيد - أعيش في وأنا مقيم قانونيًا/ضريبيًا فقط في البلد أعلاه",
+        "non_resident": "غير مقيم - لا أعيش في أو أُعتبر مقيمًا في البلد أعلاه",
+        "dual_resident": "مقيم مزدوج - أنا مقيم قانونيًا/ضريبيًا في أكثر من بلد واحد",
+        "unknown": "أفضل عدم القول"
+      }
+    },
+    "editKyc": {
+      "title": "تحرير المعلومات",
+      "description": "تحرير معلوماتك."
+    },
+    "changePassword": {
+      "title": "تغيير كلمة المرور",
+      "description": "تحديث كلمة مرور حسابك للأمان.",
+      "success": "تم تغيير كلمة مرورك بنجاح.",
+      "currentPassword": "كلمة المرور الحالية",
+      "newPassword": "كلمة المرور الجديدة",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "revokeOtherSessions": "تسجيل الخروج من الأجهزة الأخرى",
+      "revokeOtherSessionsDescription": "سيؤدي هذا إلى تسجيل خروجك من جميع الأجهزة والمتصفحات الأخرى."
+    }
   },
-  "tabs": {
-    "claims": "Claims",
-    "details": "Details"
+  "wallet": {
+    "title": "المحفظة",
+    "description": "إدارة عنوان محفظتك وإعدادات الأمان.",
+    "userWallet": "محفظة المستخدم",
+    "userWalletDescription": "عنوان محفظتك ورمز QR لتلقي المدفوعات.",
+    "qrCode": "رمز QR",
+    "verificationFactors": "عوامل التحقق",
+    "verificationFactorsDescription": "طرق الأمان الممكّنة لمحفظتك.",
+    "recoveryCodesCard": "رموز الاسترداد",
+    "recoveryCodesDescription": "رموز النسخ الاحتياطي لاسترداد الحساب عندما تكون طرق التحقق الأخرى غير متوفرة.",
+    "passwordPromptTitle": "تأكيد كلمة المرور",
+    "passwordPromptDescription": "أدخل كلمة مرورك لإنشاء رموز استرداد جديدة.",
+    "passwordLabel": "كلمة المرور",
+    "passwordRequired": "كلمة المرور مطلوبة",
+    "pinCodeEnabled": "رمز PIN",
+    "otpEnabled": "التحقق عبر OTP",
+    "recoveryCodesEnabled": "رموز الاسترداد",
+    "regenerateRecoveryCodes": "إعادة إنشاء رموز الاسترداد",
+    "downloadRecoveryCodes": "تحميل رموز الاسترداد",
+    "copyAllRecoveryCodes": "نسخ الكل",
+    "confirmRecoveryCodesStored": "لقد قمت بتخزين رموز الاسترداد هذه في مكان آمن",
+    "noVerificationMethods": "لا توجد طرق تحقق ممكّنة",
+    "enabled": "ممكّن",
+    "disabled": "معطل",
+    "changePincode": {
+      "button": "تغيير رمز PIN",
+      "title": "تغيير رمز PIN",
+      "description": "تعيين رمز PIN جديد مكون من 6 أرقام لتأمين إجراءات المحفظة الحساسة.",
+      "submit": "متابعة",
+      "submitting": "جارٍ التحضير...",
+      "success": "تم تحديث رمز PIN الخاص بك.",
+      "passwordTitle": "تأكيد كلمة المرور",
+      "passwordDescription": "أدخل كلمة مرور حسابك لإنهاء تحديث رمز PIN الخاص بك.",
+      "passwordSubmit": "تحديث رمز PIN",
+      "passwordSubmitting": "جارٍ تحديث رمز PIN..."
+    }
   }
 }

@@ -2,7 +2,7 @@
   "capabilities": {
     "ACCESS_MANAGED": {
       "label": "Zugangskontrolle",
-      "description": "Steuern Sie, wer auf Ihre Vermögenswerte zugreifen und diese verwalten kann"
+      "description": "Steuern Sie, wer auf Ihre Vermögenswerte zugreifen und sie verwalten kann"
     },
     "BOND": {
       "label": "Feste Renditen",
@@ -18,7 +18,7 @@
     },
     "COLLATERAL": {
       "label": "Darlehenssicherheit",
-      "description": "Verwenden Sie Vermögenswerte als Sicherheiten für Kredite und Finanzierungen"
+      "description": "Verwenden Sie Vermögenswerte als Sicherheiten für Darlehen und Finanzierungen"
     },
     "CUSTODIAN": {
       "label": "Sichere Verwahrung",

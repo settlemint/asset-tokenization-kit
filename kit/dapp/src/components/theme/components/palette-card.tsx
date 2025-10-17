@@ -20,10 +20,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { ThemeConfig, ThemeToken } from "@/components/theme/schema";
+import type { ThemeConfig, ThemeToken } from "../lib/schema";
 import type { ChangeEvent } from "react";
 import { useMemo, useState } from "react";
-import type { ThemeFormApi, ThemeTranslateFn } from "./types";
+import type { ThemeFormApi, ThemeTranslateFn } from "../lib/types";
 
 type ThemeMode = keyof ThemeConfig["cssVars"];
 
@@ -48,20 +48,12 @@ export function PaletteCard({
     <Card id={sectionId} className="scroll-mt-28">
       <CardHeader>
         <CardTitle>
-          {mode === "light"
-            ? t("settings.theme.lightPaletteTitle", "Light palette")
-            : t("settings.theme.darkPaletteTitle", "Dark palette")}
+          {mode === "light" ? t("lightPaletteTitle") : t("darkPaletteTitle")}
         </CardTitle>
         <CardDescription>
           {mode === "light"
-            ? t(
-                "settings.theme.lightPaletteDescription",
-                "Define token values applied when the interface is in light mode."
-              )
-            : t(
-                "settings.theme.darkPaletteDescription",
-                "Define token values applied when the interface is in dark mode."
-              )}
+            ? t("lightPaletteDescription")
+            : t("darkPaletteDescription")}
         </CardDescription>
       </CardHeader>
       <CardContent className="p-0">
@@ -70,17 +62,11 @@ export function PaletteCard({
             <Table className="min-w-[720px]">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-48">
-                    {t("settings.theme.tokenColumn", "Token")}
-                  </TableHead>
-                  <TableHead>
-                    {t("settings.theme.valueColumn", "Value")}
-                  </TableHead>
-                  <TableHead className="w-24">
-                    {t("settings.theme.previewColumn", "Preview")}
-                  </TableHead>
+                  <TableHead className="w-48">{t("tokenColumn")}</TableHead>
+                  <TableHead>{t("valueColumn")}</TableHead>
+                  <TableHead className="w-24">{t("previewColumn")}</TableHead>
                   <TableHead className="w-24 text-right">
-                    {t("settings.theme.actionsColumn", "Actions")}
+                    {t("actionsColumn")}
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -163,7 +149,7 @@ function PaletteTokenRow({
                   field.handleChange(defaultValue);
                 }}
               >
-                {t("settings.theme.revertButton", "Revert")}
+                {t("revertButton")}
               </Button>
             </TableCell>
           </TableRow>
@@ -252,9 +238,7 @@ function ColorEditorPopover({
       <PopoverTrigger asChild>
         <button
           type="button"
-          aria-label={t("settings.theme.editColor", "Edit {{token}} color", {
-            token,
-          })}
+          aria-label={t("editColor", { token })}
           className="flex size-8 items-center justify-center rounded border shadow-sm transition hover:ring-2 hover:ring-ring hover:ring-offset-1"
           style={{
             background: colorString || defaultValue,
@@ -265,14 +249,14 @@ function ColorEditorPopover({
       <PopoverContent align="end" className="w-72 space-y-4">
         <div className="space-y-1">
           <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {t("settings.theme.colorEditorTitle", "Color editor")}
+            {t("colorEditorTitle")}
           </p>
           <input
             type="color"
             value={hexValue}
             onChange={handleColorInputChange}
             className="h-10 w-full cursor-pointer rounded border bg-transparent"
-            aria-label={t("settings.theme.colorInputLabel", "Select color")}
+            aria-label={t("colorInputLabel")}
           />
           <p className="text-[11px] text-muted-foreground truncate font-mono">
             {colorString}
@@ -293,10 +277,7 @@ function ColorEditorPopover({
                 onChange={(event) => {
                   handleOklchChange("l", Number.parseFloat(event.target.value));
                 }}
-                aria-label={t(
-                  "settings.theme.oklchLightness",
-                  "OKLCH lightness"
-                )}
+                aria-label={t("oklchLightness")}
               />
               <Input
                 type="number"
@@ -306,7 +287,7 @@ function ColorEditorPopover({
                 onChange={(event) => {
                   handleOklchChange("c", Number.parseFloat(event.target.value));
                 }}
-                aria-label={t("settings.theme.oklchChroma", "OKLCH chroma")}
+                aria-label={t("oklchChroma")}
               />
               <Input
                 type="number"
@@ -315,7 +296,7 @@ function ColorEditorPopover({
                 onChange={(event) => {
                   handleOklchChange("h", Number.parseFloat(event.target.value));
                 }}
-                aria-label={t("settings.theme.oklchHue", "OKLCH hue")}
+                aria-label={t("oklchHue")}
               />
               <Input
                 type="number"
@@ -329,7 +310,7 @@ function ColorEditorPopover({
                     Number.parseFloat(event.target.value)
                   );
                 }}
-                aria-label={t("settings.theme.oklchAlpha", "OKLCH alpha")}
+                aria-label={t("oklchAlpha")}
               />
             </div>
           </div>
@@ -347,7 +328,7 @@ function ColorEditorPopover({
                 onChange={(event) => {
                   handleHslChange("h", Number.parseFloat(event.target.value));
                 }}
-                aria-label={t("settings.theme.hslHue", "HSL hue")}
+                aria-label={t("hslHue")}
               />
               <Input
                 type="number"
@@ -358,7 +339,7 @@ function ColorEditorPopover({
                 onChange={(event) => {
                   handleHslChange("s", Number.parseFloat(event.target.value));
                 }}
-                aria-label={t("settings.theme.hslSaturation", "HSL saturation")}
+                aria-label={t("hslSaturation")}
               />
               <Input
                 type="number"
@@ -369,7 +350,7 @@ function ColorEditorPopover({
                 onChange={(event) => {
                   handleHslChange("l", Number.parseFloat(event.target.value));
                 }}
-                aria-label={t("settings.theme.hslLightness", "HSL lightness")}
+                aria-label={t("hslLightness")}
               />
               <Input
                 type="number"
@@ -383,7 +364,7 @@ function ColorEditorPopover({
                     Number.parseFloat(event.target.value)
                   );
                 }}
-                aria-label={t("settings.theme.hslAlpha", "HSL alpha")}
+                aria-label={t("hslAlpha")}
               />
             </div>
           </div>

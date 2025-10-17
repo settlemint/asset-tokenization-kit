@@ -3,6 +3,17 @@ import { httpURL } from "@atk/zod/http-url";
 import { isoDateTime } from "@atk/zod/iso-datetime";
 import { z } from "zod";
 
+// Allows theme assets to reference remote URLs or app-hosted paths
+const themeAssetURL = z
+  .string()
+  .max(2048, "URL must be at most 2048 characters")
+  .refine(
+    (value) => value.startsWith("/") || httpURL.safeParse(value).success,
+    {
+      message: "Must be an HTTP(S) URL or absolute path",
+    }
+  );
+
 /**
  * All theme tokens that can be customized
  * Maps directly to CSS variables in app.css
@@ -77,8 +88,8 @@ const fontSchema = z.object({
  * Logo configuration
  */
 const logoSchema = z.object({
-  lightUrl: httpURL.optional(),
-  darkUrl: httpURL.optional(),
+  lightUrl: themeAssetURL.optional(),
+  darkUrl: themeAssetURL.optional(),
   alt: z.string().max(200).optional().default("Logo"),
   width: z.number().int().positive().optional(),
   height: z.number().int().positive().optional(),

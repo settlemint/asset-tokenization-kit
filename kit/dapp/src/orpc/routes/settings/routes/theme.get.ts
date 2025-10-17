@@ -1,4 +1,4 @@
-import { getTheme } from "@/components/theme/repository";
+import { getTheme } from "@/components/theme/lib/repository";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 

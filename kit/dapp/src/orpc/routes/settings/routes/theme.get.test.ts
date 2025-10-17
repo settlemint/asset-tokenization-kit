@@ -4,7 +4,7 @@
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { DEFAULT_THEME, type ThemeConfig } from "@/components/theme/schema";
+import { DEFAULT_THEME, type ThemeConfig } from "@/components/theme/lib/schema";
 import {
   createBaseContext,
   createMockErrors,
@@ -15,7 +15,7 @@ import {
 
 const updateThemeMock = vi.hoisted(() => vi.fn());
 
-vi.mock("@/components/theme/repository", () => ({
+vi.mock("@/components/theme/lib/repository", () => ({
   updateTheme: updateThemeMock,
 }));
 

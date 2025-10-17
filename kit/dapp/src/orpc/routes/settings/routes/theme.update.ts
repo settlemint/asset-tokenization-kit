@@ -1,8 +1,8 @@
-import { getTheme, updateTheme } from "@/components/theme/repository";
+import { getTheme, updateTheme } from "@/components/theme/lib/repository";
 import {
   sanitizeThemeForValidation,
   validateThemeLimits,
-} from "@/components/theme/validation";
+} from "@/components/theme/lib/validation";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import {

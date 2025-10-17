@@ -5,7 +5,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/form/tanstack-form";
-import type { ThemeConfig } from "@/components/theme/schema";
+import type { ThemeConfig } from "../lib/schema";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { ImageIcon, UploadCloud } from "lucide-react";
 import type { RefObject } from "react";
-import type { ThemeFormApi, ThemeTranslateFn } from "./types";
+import type { ThemeFormApi, ThemeTranslateFn } from "../lib/types";
 
 type LogoSettingsCardProps = {
   sectionId: string;
@@ -51,26 +51,14 @@ export function LogoSettingsCard({
   }> = [
     {
       mode: "light",
-      title: t(
-        "settings.theme.logoLightLabel",
-        "Light mode logo (transparent background)"
-      ),
-      description: t(
-        "settings.theme.logoLightDescription",
-        "Shown when users view the app in light mode."
-      ),
+      title: t("logoLightLabel"),
+      description: t("logoLightDescription"),
       backgroundClass: "bg-white border border-border",
     },
     {
       mode: "dark",
-      title: t(
-        "settings.theme.logoDarkLabel",
-        "Dark mode logo (transparent background)"
-      ),
-      description: t(
-        "settings.theme.logoDarkDescription",
-        "Shown when users view the app in dark mode."
-      ),
+      title: t("logoDarkLabel"),
+      description: t("logoDarkDescription"),
       backgroundClass: "bg-zinc-900 border border-zinc-700",
     },
   ];
@@ -78,15 +66,8 @@ export function LogoSettingsCard({
   return (
     <Card id={sectionId} className="scroll-mt-28">
       <CardHeader>
-        <CardTitle>
-          {t("settings.theme.logoSectionTitle", "Logo configuration")}
-        </CardTitle>
-        <CardDescription>
-          {t(
-            "settings.theme.logoSectionDescription",
-            "Manage light and dark logos plus accessible alt text."
-          )}
-        </CardDescription>
+        <CardTitle>{t("logoSectionTitle")}</CardTitle>
+        <CardDescription>{t("logoSectionDescription")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <form.AppField
@@ -94,10 +75,7 @@ export function LogoSettingsCard({
           validators={{
             onChange: ({ value }) => {
               if (typeof value === "string" && value.length > 200) {
-                return t(
-                  "settings.theme.logoAltError",
-                  "Logo alt text must be 200 characters or fewer."
-                );
+                return t("logoAltError");
               }
               return undefined;
             },
@@ -108,27 +86,17 @@ export function LogoSettingsCard({
               typeof field.state.value === "string" ? field.state.value : "";
             return (
               <FormItem>
-                <FormLabel>
-                  {t("settings.theme.logoAltLabel", "Accessible alt text")}
-                </FormLabel>
+                <FormLabel>{t("logoAltLabel")}</FormLabel>
                 <FormControl>
                   <Input
                     value={value}
                     onChange={(event) => {
                       field.handleChange(event.target.value);
                     }}
-                    placeholder={t(
-                      "settings.theme.logoAltPlaceholder",
-                      "SettleMint"
-                    )}
+                    placeholder={t("logoAltPlaceholder")}
                   />
                 </FormControl>
-                <FormDescription>
-                  {t(
-                    "settings.theme.logoAltHelper",
-                    "Used by screen readers and displayed when the image cannot load."
-                  )}
-                </FormDescription>
+                <FormDescription>{t("logoAltHelper")}</FormDescription>
                 <FormMessage />
               </FormItem>
             );
@@ -169,10 +137,7 @@ export function LogoSettingsCard({
                             onChange={(event) => {
                               field.handleChange(event.target.value);
                             }}
-                            placeholder={t(
-                              "settings.theme.logoUrlPlaceholder",
-                              "https://cdn.example.com/logo.svg"
-                            )}
+                            placeholder={t("logoUrlPlaceholder")}
                           />
                           <div className="flex flex-wrap items-center gap-2">
                             <Button
@@ -183,10 +148,7 @@ export function LogoSettingsCard({
                               }}
                             >
                               <UploadCloud className="mr-2 size-4" />
-                              {t(
-                                "settings.theme.logoUploadButton",
-                                "Upload file"
-                              )}
+                              {t("logoUploadButton")}
                             </Button>
                             <Button
                               type="button"
@@ -196,7 +158,7 @@ export function LogoSettingsCard({
                                 field.handleChange(defaultUrl);
                               }}
                             >
-                              {t("settings.theme.logoResetButton", "Reset URL")}
+                              {t("logoResetButton")}
                             </Button>
                             <input
                               ref={fileInputRef}
@@ -235,10 +197,7 @@ export function LogoSettingsCard({
                             />
                           </div>
                           <p className="text-[11px] text-muted-foreground">
-                            {t(
-                              "settings.theme.logoPreviewHint",
-                              "Preview respects the selected logo URL. Uploading files generates a temporary preview URL."
-                            )}
+                            {t("logoPreviewHint")}
                           </p>
                         </div>
                       </div>

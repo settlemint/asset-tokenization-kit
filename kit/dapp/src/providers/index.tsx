@@ -23,9 +23,9 @@
 
 import { AuthProvider } from "@/providers/auth";
 import { ThemeProvider } from "@/providers/theme-context";
-import { ThemeSync } from "@/components/theme/theme-sync";
-import type { FontVariables } from "@/components/theme/compile-css";
-import type { ThemeConfig } from "@/components/theme/schema";
+import { ThemeSync } from "@/components/theme/components/theme-sync";
+import type { FontVariables } from "@/components/theme/lib/compile-css";
+import type { ThemeConfig } from "@/components/theme/lib/schema";
 import { MotionConfig } from "motion/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { I18nProvider } from "./i18n-provider";

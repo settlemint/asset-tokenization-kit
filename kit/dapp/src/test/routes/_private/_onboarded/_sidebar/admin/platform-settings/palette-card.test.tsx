@@ -3,8 +3,8 @@ import {
   DEFAULT_THEME,
   type ThemeConfig,
   type ThemeToken,
-} from "@/components/theme/schema";
-import { PaletteCard } from "@/components/theme/palette-card";
+} from "@/components/theme/lib/schema";
+import { PaletteCard } from "@/components/theme/components/palette-card";
 import { type ReactNode, useMemo, useState } from "react";
 import { describe, expect, it } from "vitest";
 

@@ -1,14 +1,12 @@
 {
   "addons": {
     "messages": {
-      "accessDenied": "تم رفض الوصول لـ {{name}}",
       "allFailed": "فشل في تسجيل أي إضافات",
-      "allSuccess": "تم تسجيل جميع {{count}} الإضافات بنجاح",
+      "allSuccess": "تم تسجيل جميع الإضافات {{count}} بنجاح",
       "alreadyExists": "الإضافة {{name}} موجودة بالفعل",
       "defaultError": "حدث خطأ أثناء تسجيل الإضافة",
       "failed": "فشل في تسجيل {{name}}",
-      "invalidConfiguration": "لم يتم العثور على سجل إضافات للنظام {{systemAddress}}",
-      "invalidImplementation": "تنفيذ غير صالح مقدم",
+      "invalidConfiguration": "لم يتم العثور على سجل الإضافات للنظام {{systemAddress}}",
       "partialSuccess": "{{successful}} من {{total}} الإضافات تم تسجيلها بنجاح",
       "preparing": "يتم التحضير لتسجيل الإضافات",
       "progress": "يتم تسجيل {{current}} من {{total}} الإضافات",
@@ -22,7 +20,7 @@
       "bootstrapFailed": "فشل في بدء النظام",
       "bootstrapSuccess": "تم بدء النظام بنجاح",
       "bootstrapping": "يتم بدء النظام",
-      "createdBootstrapFailed": "تم إنشاء النظام في {{systemAddress}} ولكن بدء التشغيل فشل. قد تكون هناك حاجة لتدخل يدوي.",
+      "createdBootstrapFailed": "تم إنشاء النظام في {{systemAddress}} لكن بدء التشغيل فشل. قد تكون التدخل اليدوي مطلوبًا.",
       "creating": "يتم إنشاء النظام",
       "creationFailed": "فشل في إنشاء النظام",
       "queryingSystem": "يتم استعلام معلومات النظام",
@@ -46,12 +44,12 @@
   },
   "complianceModule": {
     "messages": {
-      "preparing": "جاري التحضير لتسجيل وحدة الامتثال",
+      "preparing": "يتم التحضير لتسجيل وحدة الامتثال",
       "success": "تم تسجيل وحدة الامتثال بنجاح",
-      "failed": "فشل تسجيل وحدة الامتثال",
-      "progress": "جاري تسجيل {{current}} من {{total}} وحدات الامتثال",
-      "registering": "جاري تسجيل {{name}}",
-      "registered": "تم تسجيل {{name}} بنجاح"
+      "failed": "فشل في تسجيل وحدة الامتثال",
+      "progress": "يتم تسجيل {{current}} من {{total}} وحدات الامتثال",
+      "registering": "يتم تسجيل {{name}}",
+      "registered": "{{name}} تم تسجيلها بنجاح"
     }
   }
 }

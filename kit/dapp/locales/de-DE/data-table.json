@@ -4,7 +4,7 @@
   "apply": "Anwenden",
   "aria": {
     "selectAll": "Alle Zeilen auf dieser Seite auswählen",
-    "selectAllWithCount": "Alle {{count}} Zeilen{{status}} auswählen",
+    "selectAllWithCount": "Alle {{count}} Zeilen auswählen{{status}}",
     "selectRow": "Zeile {{index}} von {{total}} auswählen",
     "someSelected": " (einige ausgewählt)"
   },
@@ -12,7 +12,7 @@
     "actions": "Aktionen",
     "addTags": "Tags hinzufügen",
     "archiveSelected": "Ausgewählte archivieren",
-    "assignTo": "Zuweisen an {{name}}",
+    "assignTo": "{{name}} zuweisen",
     "clearSelection": "Auswahl löschen",
     "confirmation": {
       "archive": {
@@ -32,20 +32,20 @@
     "exportCsv": "CSV exportieren",
     "exportJson": "JSON exportieren",
     "exportXlsx": "Excel exportieren",
-    "processing": "Verarbeite...",
+    "processing": "Verarbeitung...",
     "removeTags": "Tags entfernen",
     "selectAll": "Alle auswählen",
     "selectRow": "Zeile {{row}} auswählen",
     "selectedCount": "{{count}} ausgewählt",
     "selectedCount_one": "{{count}} Element ausgewählt",
     "selectedCount_other": "{{count}} Elemente ausgewählt",
-    "setTags": "Tags festlegen",
+    "setTags": "Tags setzen",
     "unarchiveSelected": "Ausgewählte wiederherstellen"
   },
   "cancel": "Abbrechen",
   "clear": "Löschen",
-  "clearAll": "Alle löschen",
-  "clearFilters": "Filter zurücksetzen",
+  "clearAll": "Alles löschen",
+  "clearFilters": "Filter löschen",
   "clearSelection": "Auswahl löschen",
   "close": "Schließen",
   "comfortable": "Bequem",
@@ -57,19 +57,19 @@
   "copyToClipboard": "In die Zwischenablage kopieren",
   "delete": "Löschen",
   "density": "Dichte",
-  "details": "Details",
+  "details": "Einzelheiten",
   "edit": "Bearbeiten",
   "entries": "Einträge",
   "export": "Exportieren",
   "failedExport": "Fehler beim Exportieren der Daten",
-  "filter": "Filter",
+  "filter": "Filtern",
   "filters": {
     "number": {
-      "max": "Max",
-      "min": "Min",
+      "max": "Maximal",
+      "min": "Minimal",
       "placeholder": "Wert eingeben",
       "range": "Bereich",
-      "single": "Einzel"
+      "single": "Einzeln"
     },
     "text": {
       "contains": "Enthält",
@@ -78,15 +78,15 @@
     }
   },
   "first": "Erste",
-  "goToFirstPage": "Gehe zur ersten Seite",
-  "goToLastPage": "Gehe zur letzten Seite",
-  "goToNextPage": "Gehe zur nächsten Seite",
-  "goToPreviousPage": "Gehe zur vorherigen Seite",
+  "goToFirstPage": "Zur ersten Seite gehen",
+  "goToLastPage": "Zur letzten Seite gehen",
+  "goToNextPage": "Zur nächsten Seite gehen",
+  "goToPreviousPage": "Zur vorherigen Seite gehen",
   "hide": "Spalte ausblenden",
   "is": "ist",
   "last": "Letzte",
-  "loading": "Lade...",
-  "next": "Nächste",
+  "loading": "Laden...",
+  "next": "Weiter",
   "noDataAvailable": "Noch keine Daten verfügbar",
   "noResults": "Keine Ergebnisse gefunden",
   "of": "von",
@@ -94,10 +94,10 @@
   "openMenu": "Menü öffnen",
   "page": "Seite",
   "pageInfo": "Seite {{current}} von {{total}}",
-  "previous": "Vorherige",
+  "previous": "Zurück",
   "reset": "Zurücksetzen",
   "rowsPerPage": "Zeilen pro Seite",
-  "search": "Suche...",
+  "search": "Suchen...",
   "selectAll": "Alle auswählen",
   "selected": "ausgewählt",
   "selectedRowsInfo": "{{selected}} von {{total}} Zeile(n) ausgewählt",
@@ -106,15 +106,16 @@
   "showing": "Anzeigen",
   "sortAscending": "Aufsteigend sortieren",
   "sortDescending": "Absteigend sortieren",
-  "standard": "Standard",
+  "standard": "Standardeinstellung",
   "table": {
     "emptyState": {
       "title": "Keine Daten verfügbar",
-      "description": "Es sind momentan keine Elemente anzuzeigen"
+      "description": "Es gibt derzeit keine Elemente zum Anzeigen"
     }
   },
   "toggleColumns": "Spalten umschalten",
-  "tryAdjustingFilters": "Versuchen Sie, Ihre Filter anzupassen, um das zu finden, wonach Sie suchen",
-  "view": "Ansicht",
-  "viewDetails": "Details anzeigen"
+  "totalItems": "Gesamt:",
+  "tryAdjustingFilters": "Versuchen Sie, Ihre Filter anzupassen, um zu finden, wonach Sie suchen",
+  "view": "Ansehen",
+  "viewDetails": "Details ansehen"
 }

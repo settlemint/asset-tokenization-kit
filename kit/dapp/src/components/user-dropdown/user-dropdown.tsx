@@ -1,5 +1,5 @@
 import { LanguageSwitcher } from "@/components/language/language-switcher";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { ThemeToggle } from "@/components/theme/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,

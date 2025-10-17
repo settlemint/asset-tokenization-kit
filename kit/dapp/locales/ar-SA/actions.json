@@ -1,58 +1,60 @@
 {
   "title": "الإجراءات",
-  "description": "تابع الإجراءات القادمة والمعلقة والمكتملة المصرح لك بتنفيذها.",
+  "description": "تتبع الإجراءات القادمة والمعلقة والمكتملة التي لديك إذن بتنفيذها.",
   "tabs": {
-    "pending": "معلقة",
-    "upcoming": "قادمة",
-    "completed": "مكتملة"
+    "pending": "معلق",
+    "upcoming": "قادم",
+    "completed": "مكتمل"
   },
   "table": {
     "columns": {
-      "name": "الإجراء",
+      "name": "إجراء",
       "status": "الحالة",
       "type": "النوع",
-      "activeAt": "موعد التنفيذ",
-      "executedAt": "اكتمل في",
-      "executedBy": "منفذ الإجراء",
+      "activeAt": "المجدول",
+      "executedAt": "مكتمل",
+      "executedBy": "تم التنفيذ بواسطة",
       "execute": "تنفيذ"
     },
     "empty": {
-      "title": "لا توجد إجراءات حاليًا",
-      "description": "أنت على اطلاع كامل. ستظهر الإجراءات الجديدة هنا بمجرد توفرها."
+      "title": "لا توجد إجراءات لعرضها",
+      "description": "لقد انتهيت من جميع الإجراءات. سنقوم بإدراج إجراءات جديدة هنا عند توفرها."
     },
-    "authorizedBadge": "{{count}} مفوض",
+    "authorizedBadge": "{{count}} مخول",
     "execute": {
       "label": "تنفيذ",
-      "loading": "جارٍ التنفيذ…",
+      "loading": "يتم التنفيذ…",
       "unavailable": "غير متاح"
     }
   },
   "filters": {
-    "searchPlaceholder": "ابحث في الإجراءات"
+    "searchPlaceholder": "بحث عن الإجراءات"
   },
   "status": {
-    "PENDING": "قادمة",
-    "ACTIVE": "معلقة",
-    "EXECUTED": "مكتملة",
-    "EXPIRED": "منتهية"
+    "PENDING": "قادم",
+    "ACTIVE": "معلق",
+    "EXECUTED": "مكتمل",
+    "EXPIRED": "منتهي"
   },
   "labels": {
-    "MatureBond": "استحقاق السند",
+    "MatureBond": "سند ناضج",
     "ApproveXvPSettlement": "الموافقة على التسوية",
-    "ExecuteXvPSettlement": "تنفيذ التسوية"
+    "ExecuteXvPSettlement": "تنفيذ التسوية",
+    "RedeemBond": "استرداد السند",
+    "ClaimYield": "المطالبة بالعائد"
   },
   "types": {
-    "bond": "سند",
-    "settlement": "تسوية",
+    "bond": "السند",
+    "settlement": "التسوية",
     "generic": "إجراء"
   },
   "execute": {
     "messages": {
-      "loading": "جاري تنفيذ {{action}}…",
-      "success": "تم تنفيذ {{action}} بنجاح."
+      "loading": "يتم تنفيذ {{action}}…",
+      "success": "{{action}} تم تنفيذه بنجاح."
     },
     "errors": {
-      "notAuthorized": "لا تملك الصلاحية لتنفيذ هذا الإجراء.",
+      "notAuthorized": "ليس لديك إذن لتنفيذ هذا الإجراء.",
       "unsupported": "لا يمكن تنفيذ هذا الإجراء من البوابة بعد."
     }
   }

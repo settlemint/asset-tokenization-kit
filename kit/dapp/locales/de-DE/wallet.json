@@ -1,18 +1,18 @@
 {
   "account": {
     "address": "Wallet-Adresse",
-    "addressCopied": "Adresse in die Zwischenablage kopiert",
-    "avatar": "Avatar",
+    "addressCopied": "Adresse wurde in die Zwischenablage kopiert",
+    "avatar": "Profilbild",
     "balance": "Guthaben",
     "copyAddress": "Adresse kopieren",
     "ens": "ENS-Name",
     "network": "Netzwerk",
-    "viewOnExplorer": "Im Explorer anzeigen"
+    "viewOnExplorer": "Im Explorer ansehen"
   },
   "balances": {
-    "error": "Fehler beim Laden der Guthaben",
-    "loading": "Lade Guthaben...",
-    "native": "Natives Guthaben",
+    "error": "Guthaben konnten nicht geladen werden",
+    "loading": "Guthaben werden geladen...",
+    "native": "Native Guthaben",
     "noTokens": "Keine Token gefunden",
     "refresh": "Aktualisieren",
     "tokens": "Token-Guthaben"
@@ -22,19 +22,19 @@
     "connected": "Verbunden",
     "connecting": "Verbindung wird hergestellt...",
     "disconnect": "Trennen",
-    "disconnecting": "Trennen...",
-    "reconnect": "Wieder verbinden",
+    "disconnecting": "Trennung wird durchgeführt...",
+    "reconnect": "Erneut verbinden",
     "switchAccount": "Konto wechseln",
     "switchWallet": "Wallet wechseln"
   },
   "errors": {
-    "chainNotAdded": "Bitte fügen Sie {{network}} zu Ihrer Wallet hinzu",
+    "chainNotAdded": "Bitte {{network}} in Ihrem Wallet hinzufügen",
     "insufficientFunds": "Unzureichende Mittel für die Transaktion",
-    "networkMismatch": "Bitte wechseln Sie zum {{network}}-Netzwerk",
+    "networkMismatch": "Bitte zum {{network}}-Netzwerk wechseln",
     "notConnected": "Wallet nicht verbunden",
     "notInstalled": "{{wallet}} ist nicht installiert",
     "rejected": "Verbindung vom Benutzer abgelehnt",
-    "timeout": "Verbindungszeitüberschreitung",
+    "timeout": "Verbindungstimeout",
     "unknown": "Unbekannter Wallet-Fehler",
     "userRejected": "Transaktion vom Benutzer abgelehnt"
   },
@@ -44,49 +44,49 @@
     "scanQR": "QR-Code scannen"
   },
   "networks": {
-    "addNetwork": "Fügen Sie {{network}} hinzu",
-    "arbitrum": "Arbitrum",
+    "addNetwork": "{{network}} hinzufügen",
+    "arbitrum": "Arbitrum-Netzwerk",
     "localhost": "Lokales Netzwerk",
-    "mainnet": "Ethereum Mainnet",
-    "optimism": "Optimismus",
-    "polygon": "Polygon",
-    "sepolia": "Sepolia Testnet",
-    "switchNetwork": "Wechseln zu {{network}}",
-    "switching": "Wechsel des Netzwerks...",
+    "mainnet": "Ethereum-Hauptnetz",
+    "optimism": "Optimism-Netzwerk",
+    "polygon": "Polygon-Netzwerk",
+    "sepolia": "Sepolia-Testnetz",
+    "switchNetwork": "Zu {{network}} wechseln",
+    "switching": "Netzwerkwechsel...",
     "unsupported": "Nicht unterstütztes Netzwerk"
   },
   "onboarding": {
-    "description": "Um diese dApp zu verwenden, benötigen Sie eine Web3-Wallet",
-    "getWallet": "Holen Sie sich {{wallet}}",
-    "learnMore": "Erfahren Sie mehr",
+    "description": "Zum Nutzen dieser dApp wird ein Web3-Wallet benötigt",
+    "getWallet": "{{wallet}} installieren",
+    "learnMore": "Mehr erfahren",
     "steps": {
       "connect": "Mit dieser dApp verbinden",
-      "create": "Eine Wallet erstellen oder importieren",
-      "install": "Installieren Sie {{wallet}}"
+      "create": "Wallet erstellen oder importieren",
+      "install": "{{wallet}} installieren"
     },
-    "title": "Eine Wallet erhalten"
+    "title": "Wallet erhalten"
   },
   "permissions": {
-    "access": "Dies ermöglicht {{dapp}}:",
-    "request": "{{dapp}} möchte sich mit Ihrer Wallet verbinden",
-    "requestTransactions": "Transaktionsgenehmigungen anfordern",
+    "access": "Dadurch kann {{dapp}} folgendes tun:",
+    "request": "{{dapp}} möchte eine Verbindung zu Ihrem Wallet herstellen",
+    "requestTransactions": "Transaktionsbestätigungen anfordern",
     "switchNetworks": "Netzwerkwechsel anfordern",
-    "viewAddress": "Ihre Wallet-Adresse anzeigen",
+    "viewAddress": "Ihre Wallet-Adresse ansehen",
     "viewBalance": "Ihr Guthaben anzeigen"
   },
   "providers": {
-    "argent": "Argent",
-    "coinbase": "Coinbase Wallet",
+    "argent": "Argent-Wallet",
+    "coinbase": "Coinbase-Wallet",
     "injected": "Browser-Wallet",
-    "ledger": "Ledger",
-    "metamask": "MetaMask",
-    "rainbow": "Regenbogen",
-    "trezor": "Trezor",
-    "trust": "Trust Wallet",
-    "walletConnect": "WalletConnect"
+    "ledger": "Ledger-Hardwarewallet",
+    "metamask": "MetaMask-Wallet",
+    "rainbow": "Rainbow-Wallet",
+    "trezor": "Trezor-Hardwarewallet",
+    "trust": "Trust-Wallet",
+    "walletConnect": "WalletConnect-Bridge"
   },
   "settings": {
-    "autoConnect": "Automatisch verbinden beim Laden der Seite",
+    "autoConnect": "Beim Laden der Seite automatisch verbinden",
     "defaultNetwork": "Standardnetzwerk",
     "gasPrice": "Gaspreis",
     "hideSmallBalances": "Kleine Guthaben ausblenden",
@@ -99,11 +99,11 @@
   },
   "signing": {
     "approve": "Genehmigen",
-    "message": "Nachricht zum Signieren",
+    "message": "Zu signierende Nachricht",
     "reject": "Ablehnen",
     "request": "Signaturanfrage",
-    "typedData": "Getippte Daten",
-    "warning": "Signieren Sie nur Nachrichten von vertrauenswürdigen Quellen"
+    "typedData": "Typisierte Daten",
+    "warning": "Nur Nachrichten vertrauenswürdiger Quellen signieren"
   },
   "transactions": {
     "block": "Blocknummer",
@@ -112,11 +112,11 @@
     "details": "Transaktionsdetails",
     "failed": "Fehlgeschlagen",
     "from": "Von",
-    "gas": "Verwendetes Gas",
-    "hash": "Transaktions-Hash",
+    "gas": "Verbrauchtes Gas",
+    "hash": "Transaktionshash",
     "pending": "Ausstehend",
     "recent": "Letzte Transaktionen",
-    "status": "Status",
+    "status": "Statusübersicht",
     "to": "An",
     "value": "Wert",
     "viewAll": "Alle Transaktionen anzeigen"

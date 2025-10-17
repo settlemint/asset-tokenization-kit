@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Copy, MoreHorizontal, RotateCcw, Save } from "lucide-react";
-import type { ThemeTranslateFn } from "./types";
+import type { ThemeTranslateFn } from "../lib/types";
 
 export type ThemeActionsMenuProps = {
   hasUnsavedChanges: boolean;
@@ -34,16 +34,14 @@ export function ThemeActionsMenu({
           variant="secondary"
           size="sm"
           className="gap-2"
-          aria-label={t("settings.theme.actionsMenuLabel", "Theme actions")}
+          aria-label={t("actionsMenuLabel")}
         >
-          <span>{t("settings.theme.actionsMenuTrigger", "Actions")}</span>
+          <span>{t("actionsMenuTrigger")}</span>
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-52">
-        <DropdownMenuLabel>
-          {t("settings.theme.actionsMenuTitle", "Theme actions")}
-        </DropdownMenuLabel>
+        <DropdownMenuLabel>{t("actionsMenuTitle")}</DropdownMenuLabel>
         <DropdownMenuItem
           disabled={isSaving || !hasUnsavedChanges}
           onSelect={() => {
@@ -54,9 +52,7 @@ export function ThemeActionsMenu({
           }}
         >
           <Save className="mr-2 h-4 w-4" />
-          {isSaving
-            ? t("settings.theme.savingButton", "Saving…")
-            : t("settings.theme.saveButton", "Save")}
+          {isSaving ? t("savingButton") : t("saveButton")}
         </DropdownMenuItem>
         <DropdownMenuItem
           disabled={isSaving}
@@ -68,7 +64,7 @@ export function ThemeActionsMenu({
           }}
         >
           <RotateCcw className="mr-2 h-4 w-4" />
-          {t("settings.theme.resetDefaultsButton", "Reset defaults")}
+          {t("resetDefaultsButton")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
@@ -79,17 +75,10 @@ export function ThemeActionsMenu({
             }
             void onCloneTheme();
           }}
-          title={
-            hasUnsavedChanges
-              ? t(
-                  "settings.theme.cloneDisabledTooltip",
-                  "Save changes before cloning."
-                )
-              : undefined
-          }
+          title={hasUnsavedChanges ? t("cloneDisabledTooltip") : undefined}
         >
           <Copy className="mr-2 h-4 w-4" />
-          {t("settings.theme.cloneButton", "Clone theme")}
+          {t("cloneButton")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

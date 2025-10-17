@@ -1,8 +1,8 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
-import { compileThemeCSS } from "@/components/theme/compile-css";
-import { DEFAULT_THEME } from "@/components/theme/schema";
-import { extractObjectKey, resetThemeToDefaults } from "@/components/theme/reset";
+import { compileThemeCSS } from "./compile-css";
+import { DEFAULT_THEME } from "./schema";
+import { extractObjectKey, resetThemeToDefaults } from "./reset";
 
 const deleteFileMock = vi.fn();
 const getThemeMock = vi.fn();
@@ -16,10 +16,10 @@ vi.mock("@settlemint/sdk-minio", () => ({
   deleteFile: (...args: unknown[]) => deleteFileMock(...args),
 }));
 
-vi.mock("@/components/theme/repository", async () => {
-  const actual = await vi.importActual<typeof import("@/components/theme/repository")>(
-    "@/components/theme/repository"
-  );
+vi.mock("@/components/theme/lib/repository", async () => {
+  const actual = await vi.importActual<
+    typeof import("@/components/theme/lib/repository")
+  >("@/components/theme/lib/repository");
   return {
     ...actual,
     getTheme: (...args: unknown[]) => getThemeMock(...args),

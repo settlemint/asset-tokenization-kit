@@ -1,51 +1,57 @@
 {
   "title": "Meine Assets",
   "actions": {
-    "addressCopied": "Token-Adresse in die Zwischenablage kopiert",
+    "addressCopied": "Token-Adresse wurde in die Zwischenablage kopiert",
     "copyAddress": "Adresse kopieren",
-    "tokenDetailsNotImplemented": "Token-Detailansicht noch nicht implementiert",
-    "viewOnBlockExplorer": "Im Block Explorer anzeigen",
-    "viewTokenDetails": "Token-Details anzeigen",
+    "tokenDetailsNotImplemented": "Token-Details sind noch nicht verfügbar",
+    "viewOnBlockExplorer": "Im Block-Explorer anzeigen",
+    "viewTokenDetails": "Token-Details ansehen",
     "transfer": {
-      "label": "Transfer",
-      "title": "Transfer Tokens",
-      "description": "Send tokens to one or more recipient addresses. This action requires verification.",
-      "submit": "Confirm Transfer",
-      "reviewTitle": "Review Transfer",
-      "fromLabel": "From",
-      "recipientLabel": "Recipient",
-      "recipientDescription": "Select or enter the address that will receive these tokens.",
-      "amountLabel": "Amount",
-      "amountDescription": "Enter the number of tokens to transfer.",
-      "availableLabel": "Current Available",
-      "remainingLabel": "Available After Transfer",
-      "availableMessage": "You can transfer up to {{amount}} {{symbol}}.",
-      "amountRequired": "Add an amount greater than zero to keep going.",
-      "exceedsAvailable": "Amount exceeds your available balance.",
-      "recipientsTitle": "Recipients",
-      "addRecipient": "Add recipient",
-      "totalLabel": "Total",
-      "overAvailable": "Lower the total so it stays within your available balance."
+      "label": "Übertragen",
+      "title": "Token übertragen",
+      "description": "Token an eine oder mehrere Empfängeradressen senden. Diese Aktion erfordert eine Verifizierung.",
+      "submit": "Übertragung bestätigen",
+      "reviewTitle": "Übertragung prüfen",
+      "fromLabel": "Von",
+      "recipientLabel": "Empfänger",
+      "recipientDescription": "Adresse auswählen oder eingeben, die diese Token erhalten soll.",
+      "amountLabel": "Betrag",
+      "amountDescription": "Anzahl der zu übertragenden Token eingeben.",
+      "availableLabel": "Aktuell verfügbar",
+      "remainingLabel": "Verfügbar nach der Übertragung",
+      "availableMessage": "Sie können bis zu {{amount}} {{symbol}} übertragen.",
+      "amountRequired": "Bitte einen Betrag größer als Null hinzufügen, um fortzufahren.",
+      "exceedsAvailable": "Der Betrag übersteigt das verfügbare Guthaben.",
+      "recipientsTitle": "Empfänger",
+      "addRecipient": "Empfänger hinzufügen",
+      "totalLabel": "Gesamt",
+      "overAvailable": "Bitte die Gesamtsumme auf das verfügbare Guthaben begrenzen."
+    },
+    "redeem": {
+      "label": "Einlösen"
+    },
+    "claimYield": {
+      "label": "Ertrag beanspruchen"
     }
   },
   "bulkActions": {
-    "addressesCopied": "{{count}} Token-Adressen in die Zwischenablage kopiert",
-    "exportMessage": "{{count}} ausgewählte Vermögenswerte werden exportiert"
+    "addressesCopied": "{{count}} Token-Adressen wurden in die Zwischenablage kopiert",
+    "exportMessage": "{{count}} ausgewählte Assets werden exportiert"
   },
   "columns": {
     "actions": "Aktionen",
     "available": "Verfügbar",
-    "balance": "Guthaben",
-    "contractAddress": "Vertrag-Adresse",
+    "balance": "Bestand",
+    "contractAddress": "Vertragsadresse",
     "frozen": "Eingefroren",
-    "ownership": "Besitz %",
-    "symbol": "Symbol",
+    "ownership": "Eigentumsanteil %",
+    "symbol": "Ticker",
     "tokenName": "Token-Name",
-    "totalSupply": "Gesamtangebot"
+    "totalSupply": "Gesamtmenge"
   },
   "emptyState": {
-    "description": "Sie besitzen noch keine Token. Wenn Sie Token erwerben, werden sie hier angezeigt.",
-    "title": "Keine Vermögenswerte gefunden"
+    "description": "Sie halten noch keine Token. Sobald Sie Token erwerben, erscheinen sie hier.",
+    "title": "Keine Assets gefunden"
   },
   "searchPlaceholder": "Nach Token-Name, Symbol oder Adresse suchen..."
 }

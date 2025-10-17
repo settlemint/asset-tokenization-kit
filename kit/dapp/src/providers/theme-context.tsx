@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { ThemeConfig } from "@/components/theme/schema";
+import type { ThemeConfig } from "@/components/theme/lib/schema";
 
 type ThemeContextValue = {
   theme: ThemeConfig;

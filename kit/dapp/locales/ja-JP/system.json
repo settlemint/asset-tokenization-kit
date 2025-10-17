@@ -1,19 +1,17 @@
 {
   "addons": {
     "messages": {
-      "accessDenied": "アクセスが拒否されました: {{name}}",
       "allFailed": "アドオンの登録に失敗しました",
       "allSuccess": "すべての {{count}} アドオンが正常に登録されました",
       "alreadyExists": "アドオン {{name}} はすでに存在します",
       "defaultError": "アドオンの登録中にエラーが発生しました",
       "failed": "アドオン {{name}} の登録に失敗しました",
       "invalidConfiguration": "システム {{systemAddress}} のアドオンレジストリが見つかりません",
-      "invalidImplementation": "提供された実装が無効です",
       "partialSuccess": "{{successful}} の {{total}} アドオンが正常に登録されました",
-      "preparing": "アドオンの登録を準備しています",
-      "progress": "{{total}} アドオンのうち {{current}} を登録しています",
+      "preparing": "アドオンの登録準備中",
+      "progress": "{{total}} のアドオンのうち {{current}} を登録中",
       "registered": "{{name}} が正常に登録されました",
-      "registering": "{{name}} を登録しています"
+      "registering": "{{name}} を登録中"
     }
   },
   "create": {
@@ -21,11 +19,11 @@
       "alreadyExists": "システムはすでに存在します",
       "bootstrapFailed": "システムのブートストラップに失敗しました",
       "bootstrapSuccess": "システムが正常にブートストラップされました",
-      "bootstrapping": "システムをブートストラップしています",
+      "bootstrapping": "システムのブートストラップ中",
       "createdBootstrapFailed": "システムは {{systemAddress}} に作成されましたが、ブートストラップに失敗しました。手動での介入が必要な場合があります。",
-      "creating": "システムを作成しています",
+      "creating": "システムを作成中",
       "creationFailed": "システムの作成に失敗しました",
-      "queryingSystem": "システム情報を照会しています",
+      "queryingSystem": "システム情報を照会中",
       "success": "システムが正常に作成されました",
       "systemNotFound": "作成後にシステムが見つかりません"
     }
@@ -33,23 +31,23 @@
   "identityCreate": {
     "messages": {
       "failed": "アイデンティティの作成に失敗しました",
-      "preparing": "アイデンティティの作成を準備しています",
+      "preparing": "アイデンティティの作成準備中",
       "success": "アイデンティティが正常に作成されました"
     }
   },
   "identityRegister": {
     "messages": {
       "failed": "アイデンティティの登録に失敗しました",
-      "preparing": "アイデンティティの登録を準備しています",
+      "preparing": "アイデンティティの登録準備中",
       "success": "アイデンティティが正常に登録されました"
     }
   },
   "complianceModule": {
     "messages": {
-      "preparing": "コンプライアンスモジュールの登録を準備中",
+      "preparing": "コンプライアンスモジュールの登録準備中",
       "success": "コンプライアンスモジュールが正常に登録されました",
       "failed": "コンプライアンスモジュールの登録に失敗しました",
-      "progress": "{{total}} 個のコンプライアンスモジュールのうち {{current}} を登録中",
+      "progress": "{{total}} のコンプライアンスモジュールのうち {{current}} を登録中",
       "registering": "{{name}} を登録中",
       "registered": "{{name}} が正常に登録されました"
     }

@@ -1,7 +1,4 @@
-import {
-  GOOGLE_MONO_FONTS,
-  GOOGLE_SANS_FONTS,
-} from "@/components/theme/constants";
+import { GOOGLE_MONO_FONTS, GOOGLE_SANS_FONTS } from "../lib/constants";
 
 export function useGoogleFontsCatalog(): {
   sans: string[];

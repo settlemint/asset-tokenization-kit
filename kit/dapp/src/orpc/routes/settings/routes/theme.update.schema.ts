@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { themeConfigSchema, type ThemeConfig } from "@/components/theme/schema";
+import {
+  themeConfigSchema,
+  type ThemeConfig,
+} from "@/components/theme/lib/schema";
 
 /**
  * Schema for theme update request - accepts full theme configuration

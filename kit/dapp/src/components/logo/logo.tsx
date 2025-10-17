@@ -1,9 +1,9 @@
-import { useThemeAssets } from "@/components/theme/use-theme-assets";
+import { useThemeAssets } from "@/components/theme/hooks/use-theme-assets";
 import { cn } from "@/lib/utils";
 import { useMounted } from "@/hooks/use-mounted";
 import { useTheme } from "next-themes";
 import type { PropsWithChildren } from "react";
-import { DEFAULT_THEME } from "@/components/theme/schema";
+import { DEFAULT_THEME } from "@/components/theme/lib/schema";
 
 type LogoVariant = "horizontal" | "vertical" | "icon";
 

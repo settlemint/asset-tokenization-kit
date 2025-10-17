@@ -1,5 +1,5 @@
 {
-  "letters-only": "يسمح فقط بالحروف",
+  "letters-only": "يُسمح فقط بالحروف",
   "noCountryFound": "لم يتم العثور على دولة.",
   "valid-email": "يرجى إدخال عنوان بريد إلكتروني صالح",
   "address": {
@@ -7,20 +7,19 @@
     "searchPlaceholder": "ابحث عن العناوين",
     "loading": "جارٍ التحميل",
     "noResults": "لم يتم العثور على عناوين مطابقة",
+    "noAddressesCreated": "لم يتم إنشاء أي عناوين بعد",
     "recent": "الأخيرة",
     "searchResults": "النتائج",
-    "recentAddresses": "حديث",
+    "allAddresses": "الكل",
     "searchInstead": "ابحث بدلاً من ذلك",
     "enterManually": "أدخل يدويًا",
-    "noAddressesCreated": "لم يتم إنشاء أي عناوين بعد",
-    "allAddresses": "الكل",
     "addAddress": "أضف عنوانًا"
   },
   "buttons": {
     "back": "عودة",
     "cancel": "إلغاء",
     "disable": "تعطيل",
-    "enable": "تفعيل",
+    "enable": "تمكين",
     "next": "التالي",
     "submit": "إرسال",
     "leave": "اترك",

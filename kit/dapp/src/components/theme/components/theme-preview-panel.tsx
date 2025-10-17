@@ -10,12 +10,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import type { ThemeConfig } from "@/components/theme/schema";
+import type { ThemeConfig } from "../lib/schema";
 import { cn } from "@/lib/utils";
 import { Paintbrush } from "lucide-react";
 import type { CSSProperties } from "react";
-import { FONT_PREVIEW_TEXT } from "./constants";
-import type { ThemeTranslateFn } from "./types";
+import { FONT_PREVIEW_TEXT } from "../lib/constants";
+import type { ThemeTranslateFn } from "../lib/types";
 
 type ThemeMode = keyof ThemeConfig["cssVars"];
 
@@ -30,11 +30,11 @@ export function ThemePreviewPanel({ draft, t }: ThemePreviewPanelProps) {
   const tabs: Array<{ mode: ThemeMode; title: string }> = [
     {
       mode: "light",
-      title: t("settings.theme.lightPreviewTab", "Light preview"),
+      title: t("lightPreviewTab"),
     },
     {
       mode: "dark",
-      title: t("settings.theme.darkPreviewTab", "Dark preview"),
+      title: t("darkPreviewTab"),
     },
   ];
 
@@ -42,15 +42,8 @@ export function ThemePreviewPanel({ draft, t }: ThemePreviewPanelProps) {
     <aside className="mt-6 space-y-4 lg:mt-0 lg:space-y-6">
       <Card className="lg:sticky lg:top-6">
         <CardHeader>
-          <CardTitle>
-            {t("settings.theme.previewTitle", "Live preview")}
-          </CardTitle>
-          <CardDescription>
-            {t(
-              "settings.theme.previewDescription",
-              "Inspect core UI elements using the configured theme tokens."
-            )}
-          </CardDescription>
+          <CardTitle>{t("previewTitle")}</CardTitle>
+          <CardDescription>{t("previewDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="light" className="space-y-4">
@@ -107,16 +100,10 @@ export function ThemePreviewPanel({ draft, t }: ThemePreviewPanelProps) {
                         </div>
                         <div>
                           <p className="text-sm font-semibold">
-                            {t(
-                              "settings.theme.previewHeading",
-                              "SettleMint Portal"
-                            )}
+                            {t("previewHeading")}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {t(
-                              "settings.theme.previewSubheading",
-                              "Sample components rendered with live tokens."
-                            )}
+                            {t("previewSubheading")}
                           </p>
                         </div>
                       </div>
@@ -124,36 +111,22 @@ export function ThemePreviewPanel({ draft, t }: ThemePreviewPanelProps) {
                     <div className="space-y-4 px-4 py-4">
                       <div className="flex flex-wrap gap-2">
                         <Button style={primaryButtonStyle}>
-                          {t("settings.theme.previewButton", "Primary action")}
+                          {t("previewButton")}
                         </Button>
                         <Button variant="outline" style={secondaryButtonStyle}>
-                          {t(
-                            "settings.theme.previewSecondary",
-                            "Secondary action"
-                          )}
+                          {t("previewSecondary")}
                         </Button>
                       </div>
                       <div className="space-y-2">
                         <Label className="text-xs uppercase tracking-wide">
-                          {t(
-                            "settings.theme.previewInputLabel",
-                            "Example input"
-                          )}
+                          {t("previewInputLabel")}
                         </Label>
-                        <Input
-                          placeholder="0x1234…abcd"
-                          style={controlStyle}
-                        />
+                        <Input placeholder="0x1234…abcd" style={controlStyle} />
                       </div>
                       <div className="rounded-lg border bg-card/80 p-3">
                         <div className="flex items-center gap-2 text-sm font-medium">
                           <Paintbrush className="size-4" />
-                          <span>
-                            {t(
-                              "settings.theme.previewSwatchHeading",
-                              "Palette snapshot"
-                            )}
-                          </span>
+                          <span>{t("previewSwatchHeading")}</span>
                         </div>
                         <div className="mt-3 grid grid-cols-3 gap-2">
                           {[
@@ -196,10 +169,7 @@ export function ThemePreviewPanel({ draft, t }: ThemePreviewPanelProps) {
   );
 }
 
-function createPreviewStyle(
-  theme: ThemeConfig,
-  mode: ThemeMode
-): CSSVarStyle {
+function createPreviewStyle(theme: ThemeConfig, mode: ThemeMode): CSSVarStyle {
   const style: CSSVarStyle = {
     fontFamily: theme.fonts.sans.family,
   };
@@ -218,8 +188,7 @@ function resolvePreviewLogoSrc(theme: ThemeConfig, mode: ThemeMode): string {
       ? "/logos/settlemint-logo-h-lm.svg"
       : "/logos/settlemint-logo-h-dm.svg";
   const rawValue = theme.logo[key];
-  const trimmedValue =
-    typeof rawValue === "string" ? rawValue.trim() : "";
+  const trimmedValue = typeof rawValue === "string" ? rawValue.trim() : "";
 
   if (trimmedValue.length > 0) {
     return trimmedValue;
@@ -227,8 +196,7 @@ function resolvePreviewLogoSrc(theme: ThemeConfig, mode: ThemeMode): string {
 
   if (mode === "dark") {
     const lightRaw = theme.logo.lightUrl;
-    const lightTrimmed =
-      typeof lightRaw === "string" ? lightRaw.trim() : "";
+    const lightTrimmed = typeof lightRaw === "string" ? lightRaw.trim() : "";
     if (lightTrimmed.length > 0) {
       return lightTrimmed;
     }

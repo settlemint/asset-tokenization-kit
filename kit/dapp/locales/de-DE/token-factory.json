@@ -1,30 +1,30 @@
 {
   "title": "Token-Fabrik",
-  "description": "Erstellen und Bereitstellen von tokenisierten Vermögenswerten auf der Blockchain – es ist, als hätte man seine eigene digitale Münzstätte",
+  "description": "Erstelle und stelle tokenisierte Vermögenswerte auf der Blockchain bereit—es ist wie deine eigene digitale Münze",
   "factories": {
     "bond": {
-      "name": "Anleihefabrik",
-      "description": "Digitale Anleihen mit programmierbaren Zinszahlungen und Fälligkeitsterminen ausgeben",
+      "name": "Anleihen-Fabrik",
+      "description": "Gib digitale Anleihen mit programmierbaren Zinszahlungen und Fälligkeitsdaten aus",
       "deploymentCost": "Geschätzte Bereitstellungskosten"
     },
     "deposit": {
-      "name": "Einzahlungsfabrik",
-      "description": "Sichere, zeitlich gesperrte Einzahlungszertifikate auf der Blockchain starten",
+      "name": "Einlagen-Fabrik",
+      "description": "Starte sichere, zeitlich begrenzte Einlagenzertifikate auf der Blockchain",
       "deploymentCost": "Geschätzte Bereitstellungskosten"
     },
     "equity": {
-      "name": "Eigenkapitalfabrik",
-      "description": "Unternehmensanteile in konforme digitale Eigentumstoken umwandeln",
+      "name": "Eigenkapital-Fabrik",
+      "description": "Transformiere Unternehmensanteile in compliant digitale Eigentumstoken",
       "deploymentCost": "Geschätzte Bereitstellungskosten"
     },
     "fund": {
-      "name": "Fondsfabrik",
-      "description": "Tokenisierte Investmentfonds erstellen, denen Investoren leicht beitreten und aussteigen können",
+      "name": "Fonds-Fabrik",
+      "description": "Baue tokenisierte Investmentfonds, die Investoren einfach beitreten und verlassen können",
       "deploymentCost": "Geschätzte Bereitstellungskosten"
     },
     "stablecoin": {
       "name": "Stablecoin-Fabrik",
-      "description": "Ihre eigene preisstabile digitale Währung bereitstellen, die durch reale Vermögenswerte gedeckt ist",
+      "description": "Stelle deine eigene preisstabile digitale Währung bereit, die durch reale Vermögenswerte gesichert ist",
       "deploymentCost": "Geschätzte Bereitstellungskosten"
     }
   },
@@ -39,52 +39,52 @@
       "name": {
         "label": "Token-Name",
         "placeholder": "z.B. Unternehmensanleihe 2024",
-        "helper": "Wählen Sie etwas Klartext und Einprägsames – das ist, was die Benutzer sehen werden"
+        "helper": "Wähle etwas Klares und Einprägsames—das ist, was Benutzer sehen werden"
       },
       "symbol": {
         "label": "Token-Symbol",
-        "placeholder": "z.B. BOND24",
-        "helper": "Das Ticker-Symbol Ihres Tokens – halten Sie es kurz und prägnant (3-5 Buchstaben)"
+        "placeholder": "z.B. ANLEIHE24",
+        "helper": "Das Handelssymbol deines Tokens—halte es kurz und einzigartig (3-5 Buchstaben)"
       },
       "decimals": {
         "label": "Dezimalstellen",
-        "helper": "Wie klein können die Teile sein? 18 ermöglicht es Ihnen, Tokens in winzige Bruchteile zu teilen"
+        "helper": "Wie klein können Stücke sein? 18 lässt dich Token in winzige Bruchteile teilen"
       },
       "initialSupply": {
-        "label": "Anfängliches Angebot",
+        "label": "Anfängliche Versorgung",
         "placeholder": "z.B. 1.000.000",
-        "helper": "Der Startbetrag – Sie können später immer mehr prägen, wenn dies aktiviert ist"
+        "helper": "Der Startbetrag—du kannst später mehr prägen, wenn aktiviert"
       },
       "maxSupply": {
-        "label": "Maximales Angebot",
+        "label": "Maximale Versorgung",
         "placeholder": "z.B. 10.000.000",
-        "helper": "Setzen Sie eine Obergrenze, um die Knappheit zu steuern (leer lassen für unbegrenzt)"
+        "helper": "Setze eine harte Obergrenze für Seltenheit (leer lassen für unbegrenzt)"
       },
       "mintable": {
-        "label": "Minting erlauben",
-        "helper": "Brauchen Sie Flexibilität? Aktivieren Sie dies, um nach dem Start neue Tokens zu erstellen"
+        "label": "Prägen erlauben",
+        "helper": "Brauchst du Flexibilität? Aktiviere dies, um neue Token nach dem Start zu erstellen"
       },
       "burnable": {
-        "label": "Burning erlauben",
-        "helper": "Lassen Sie Tokeninhaber ihre Tokens zerstören – nützlich für Rückkäufe oder Einlösungen"
+        "label": "Verbrennen erlauben",
+        "helper": "Lass Token-Inhaber ihre Token zerstören—nützlich für Rückkäufe oder Einlösungen"
       },
       "pausable": {
-        "label": "Notfall-Pause",
-        "helper": "Fügen Sie einen Sicherheitsschalter hinzu, um alle Übertragungen einzufrieren, wenn etwas schiefgeht"
+        "label": "Notfallpause",
+        "helper": "Füge einen Sicherheitsschalter hinzu, um alle Übertragungen zu stoppen, wenn etwas schiefgeht"
       },
       "transferRestrictions": {
-        "label": "Übertragungssteuerungen",
-        "helper": "Setzen Sie Regeln, wer handeln kann – entscheidend für regulierte Wertpapiere"
+        "label": "Übertragungskontrollen",
+        "helper": "Setze Regeln, wer handeln kann—essenziell für regulierte Wertpapiere"
       }
     }
   },
   "status": {
-    "deploying": "Ihre Fabrik wird bereitgestellt...",
+    "deploying": "Deine Fabrik bereitstellen...",
     "deployed": "Fabrik ist bereit zum Prägen!",
-    "creating": "Prägen Ihrer ersten Tokens...",
-    "created": "Erfolg! Ihre Tokens sind aktiv",
+    "creating": "Deine ersten Token prägen...",
+    "created": "Erfolg! Deine Token sind live",
     "failed": "Hmm, etwas hat nicht funktioniert",
-    "processing": "Fast geschafft..."
+    "processing": "Fast da..."
   },
   "actions": {
     "deploy": "Fabrik bereitstellen",
@@ -95,22 +95,22 @@
     "deployAnother": "Eine weitere bereitstellen"
   },
   "stats": {
-    "totalDeployed": "Insgesamt erstellte Tokens",
+    "totalDeployed": "Insgesamt erstellte Token",
     "activeFactories": "Aktive Fabriken",
-    "totalValue": "Gesperrter Gesamtwert",
-    "recentActivity": "Aktuelle Aktivitäten"
+    "totalValue": "Gesamtwert gesperrt",
+    "recentActivity": "Kürzliche Aktivität"
   },
   "list": {
     "columns": {
       "name": "Fabrikname",
-      "type": "Vermögenswerttyp",
-      "deployed": "Erstellte Tokens",
+      "type": "Vermögensart",
+      "deployed": "Erstellte Token",
       "lastActivity": "Letzte Aktivität",
-      "status": "Status"
+      "status": "Statusanzeige"
     },
     "empty": {
       "title": "Noch keine Fabriken",
-      "description": "Bereit, Ihr erstes Asset zu tokenisieren? Lassen Sie uns eine Fabrik einrichten und loslegen!"
+      "description": "Bereit, dein erstes Vermögenswert zu tokenisieren? Lass uns eine Fabrik einrichten und loslegen!"
     },
     "filters": {
       "all": "Alle Fabriken",
@@ -120,40 +120,39 @@
   },
   "details": {
     "overview": "Fabrikübersicht",
-    "deployedTokens": "Erstellte Tokens",
-    "settings": "Fabrik-Einstellungen",
+    "deployedTokens": "Erstellte Token",
+    "settings": "Fabrikeinstellungen",
     "permissions": "Zugriffskontrolle",
-    "activity": "Aktivitäts-Feed"
+    "activity": "Aktivitätsfeed"
   },
   "messages": {
     "confirmDeploy": "Bereit, diese Fabrik zu starten?",
-    "deploySuccess": "Perfekt! Ihre Fabrik ist betriebsbereit",
-    "deployError": "Wir hatten ein Problem bei der Bereitstellung Ihrer Fabrik",
-    "createSuccess": "Ausgezeichnet! Ihre Tokens sind jetzt auf der Blockchain aktiv",
-    "createError": "Etwas ist schiefgelaufen bei der Erstellung Ihrer Tokens",
-    "insufficientFunds": "Sie benötigen mehr Guthaben in Ihrer Brieftasche für Transaktionsgebühren",
-    "factoryCreated": "Schön! {{name}} ist bereit, Tokens zu prägen",
-    "creatingFactory": "Einrichten Ihrer Token-Fabrik...",
-    "factoryCreationFailed": "Das hat nicht wie erwartet funktioniert. Lassen Sie es uns noch einmal versuchen",
-    "batchProgress": "Verarbeite Fabrik {{current}} von {{total}}...",
+    "deploySuccess": "Perfekt! Deine Fabrik ist betriebsbereit",
+    "deployError": "Wir sind auf ein Problem bei der Bereitstellung deiner Fabrik gestoßen",
+    "createSuccess": "Ausgezeichnet! Deine Token sind jetzt live auf der Blockchain",
+    "createError": "Etwas ist beim Erstellen deiner Token schiefgegangen",
+    "insufficientFunds": "Du brauchst mehr Guthaben in deiner Wallet für Gasgebühren",
+    "factoryCreated": "Toll! {{name}} ist bereit zum Prägen von Token",
+    "creatingFactory": "Deine Token-Fabrik einrichten...",
+    "factoryCreationFailed": "Das hat nicht wie erwartet funktioniert. Lass uns es nochmal versuchen",
+    "batchProgress": "Fabrik {{current}} von {{total}} verarbeiten...",
     "batchCompleted": "Alles erledigt! {{count}} Fabriken sind bereit zum Prägen",
-    "initialLoading": "Bereite Ihren Fabrikarbeitsbereich vor...",
-    "noResultError": "Die Blockchain hat keine Fabrikadresse zurückgegeben – lassen Sie es uns erneut versuchen",
-    "defaultError": "Etwas Unerwartetes ist passiert. Lassen Sie uns Ihre Fabrik erneut erstellen",
-    "systemNotBootstrapped": "Die Plattform wird noch initialisiert. Geben Sie ihr einen Moment und versuchen Sie es erneut",
-    "transactionSubmitted": "Transaktion gesendet! Die Blockchain verarbeitet Ihre Anfrage...",
-    "factoryCreationCompleted": "Erfolg! Ihre Fabrikbereitstellung ist abgeschlossen",
-    "allFactoriesSucceeded": "Fantastisch! Alle {{count}} Fabriken sind bereitgestellt und betriebsbereit",
-    "someFactoriesFailed": "Erfolgreich {{success}} Fabriken bereitgestellt, aber {{failed}} benötigen einen weiteren Versuch",
-    "allFactoriesFailed": "Keine der {{count}} Fabriken wurde bereitgestellt – lassen Sie uns das gemeinsam beheben",
+    "initialLoading": "Deinen Fabrik-Arbeitsbereich vorbereiten...",
+    "noResultError": "Die Blockchain hat keine Fabrik-Adresse zurückgegeben—lass uns nochmal versuchen",
+    "defaultError": "Etwas Unerwartetes ist passiert. Lass uns deine Fabrik nochmal erstellen",
+    "transactionSubmitted": "Transaktion gesendet! Die Blockchain verarbeitet deine Anfrage...",
+    "factoryCreationCompleted": "Erfolg! Deine Fabrik-Bereitstellung ist abgeschlossen",
+    "allFactoriesSucceeded": "Fantastisch! Alle {{count}} Fabriken sind bereitgestellt und bereit",
+    "someFactoriesFailed": "Erfolgreich {{success}} Fabriken bereitgestellt, aber {{failed}} brauchen einen weiteren Versuch",
+    "allFactoriesFailed": "Keine der {{count}} Fabriken bereitgestellt—lass uns das beheben",
     "factoryAlreadyExists": "{{name}} Fabrik existiert bereits, überspringe zur nächsten...",
-    "allFactoriesSkipped": "Alle {{count}} Fabriken sind bereits bereitgestellt – Sie sind bereit!",
-    "someFactoriesSkipped": "Erstellt {{success}} neue Fabriken, gefunden {{skipped}} vorhandene und {{failed}} hatten Probleme"
+    "allFactoriesSkipped": "Alle {{count}} Fabriken sind bereits bereitgestellt—du bist startklar!",
+    "someFactoriesSkipped": "Neue {{successCount}} Fabriken erstellt, {{skippedCount}} vorhandene übersprungen, {{failedCount}} hatten Probleme"
   },
   "help": {
-    "whatIsFactory": "Token-Fabriken sind Smart-Contract-Vorlagen, die die Erstellung von Vermögenswerten rationalisieren – einmal bereitstellen, viele Male prägen mit konsistenten Standards und Sicherheit",
-    "deploymentCosts": "Jede Bereitstellung erfordert Transaktionsgebühren, die in der nativen Währung der Blockchain bezahlt werden – stellen Sie sicher, dass Ihre Brieftasche über ausreichende Mittel verfügt",
-    "compliance": "Aktivieren Sie Compliance-Funktionen für regulierte Vermögenswerte wie Wertpapiere – dies stellt sicher, dass nur verifizierte Benutzer handeln können",
-    "security": "Jede Fabrik unterzieht sich strengen Sicherheitsprüfungen und folgt den besten Praktiken der Branche, um Ihre Vermögenswerte zu schützen"
+    "whatIsFactory": "Token-Fabriken sind Smart-Contract-Vorlagen, die die Vermögenserstellung rationalisieren—einmal bereitstellen, viele Male mit konsistenten Standards und Sicherheit prägen",
+    "deploymentCosts": "Jede Bereitstellung erfordert Gasgebühren, die in der nativen Währung der Blockchain bezahlt werden—stelle sicher, dass deine Wallet genug Guthaben hat",
+    "compliance": "Aktiviere Compliance-Funktionen für regulierte Vermögenswerte wie Wertpapiere—dies stellt sicher, dass nur verifizierte Benutzer handeln",
+    "security": "Jede Fabrik durchläuft strenge Sicherheitsaudits und folgt Industriestandards, um deine Vermögenswerte zu schützen"
   }
 }

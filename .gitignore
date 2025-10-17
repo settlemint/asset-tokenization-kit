@@ -22,7 +22,6 @@ coverage
 .vercel
 
 # Build Outputs
-.next/
 out/
 build
 dist
@@ -70,7 +69,6 @@ kit/dapp/portal-schema.graphql
 kit/dapp/the-graph-cache-kit.d.ts
 kit/dapp/the-graph-env-kit.d.ts
 kit/dapp/the-graph-schema-kit.graphql
-kit/dapp/next-env.d.ts
 kit/dapp/.dev-reset
 
 # Personal claude commands

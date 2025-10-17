@@ -1,6 +1,6 @@
 import { Logo } from "@/components/logo/logo";
-import { DEFAULT_THEME } from "@/components/theme/schema";
-import { useThemeAssets } from "@/components/theme/use-theme-assets";
+import { DEFAULT_THEME } from "@/components/theme/lib/schema";
+import { useThemeAssets } from "@/components/theme/hooks/use-theme-assets";
 import {
   SidebarMenu,
   SidebarMenuButton,

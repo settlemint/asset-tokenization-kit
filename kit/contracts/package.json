@@ -14,7 +14,7 @@
     "lint": "solhint --config .solhint.json --max-warnings 0 --noPoster './contracts/**/!(temp_)*.sol'",
     "postlint": "forge lint",
     "format:forge": "settlemint scs foundry format",
-    "format:prettier": "prettier --experimental-cli --write .",
+    "format:prettier": "prettier --write .",
     "clean:deployments": "rm -Rf ignition/deployments/atk-local",
     "publish": "bun run clean:deployments && settlemint scs hardhat script local --script scripts/hardhat/main.ts",
     "publish:docker": "bash tools/publish-docker.sh",

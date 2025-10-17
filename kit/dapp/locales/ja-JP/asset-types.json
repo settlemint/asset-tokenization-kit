@@ -1,30 +1,13 @@
 {
-  "whichAssetType": "どの資産タイプを設計したいですか？",
-  "whichAssetTypeForClass": "どの{{assetClass}}資産を設計したいですか？",
-  "assetTypeDifferences": "各資産タイプには異なる支払い構造、流動性条件、および投資家の権利があります。",
   "bond": {
     "description": "特定の期間にわたって固定金利を支払う債務証券",
     "name": "債券トークン"
   },
-  "categories": {
-    "cashEquivalent": {
-      "description": "既知の現金の額に容易に変換できる高い流動性の投資。",
-      "icon": "ウォレット",
-      "name": "現金同等物"
-    },
-    "fixedIncome": {
-      "description": "満期時に元本の返還と定期的な固定金利の形でリターンを提供する資産。",
-      "icon": "上昇トレンド",
-      "name": "固定収入"
-    },
-    "flexibleIncome": {
-      "description": "市場の状況と基礎となるパフォーマンスに基づいて変動するリターンを生み出す資産。",
-      "icon": "アクティビティ",
-      "name": "柔軟な収入"
-    }
-  },
+  "whichAssetType": "どの資産タイプを設計したいですか？",
+  "whichAssetTypeForClass": "どの{{assetClass}}資産を設計したいですか？",
+  "assetTypeDifferences": "各資産タイプには異なる支払い構造、流動性条件、および投資家の権利があります。",
   "deposit": {
-    "description": "固定期間中に利息を得る時間制限付き預金",
+    "description": "固定期間にわたって利息を得るタイムロック預金",
     "name": "預金トークン"
   },
   "equity": {
@@ -58,8 +41,8 @@
     "liquidity": {
       "high": "高流動性",
       "illiquid": "流動性が低い",
-      "low": "流動性が低い",
-      "medium": "流動性が中程度"
+      "low": "低流動性",
+      "medium": "中程度の流動性"
     },
     "riskLevel": {
       "high": "高リスク",
@@ -83,12 +66,12 @@
   "types": {
     "bond": {
       "actions": {
-        "issue": "債券を発行",
+        "issue": "債券を発行する",
         "payInterest": "利息を支払う",
-        "redeem": "債券を償還",
-        "trade": "債券を取引"
+        "redeem": "債券を償還する",
+        "trade": "債券を取引する"
       },
-      "category": "fixedIncome",
+      "category": "固定収入",
       "description": "特定の期間にわたって固定金利を支払う債務証券。",
       "features": {
         "coupon": "クーポン金利",
@@ -98,17 +81,19 @@
         "yield": "満期利回り"
       },
       "name": "債券",
-      "namePlural": "債券"
+      "namePlural": "債券",
+      "nameLowercaseSingular": "債券",
+      "nameLowercasePlural": "債券"
     },
     "deposit": {
       "actions": {
-        "calculateInterest": "利息を計算",
-        "create": "預金を作成",
-        "renew": "預金を更新",
+        "calculateInterest": "利息を計算する",
+        "create": "預金を作成する",
+        "renew": "預金を更新する",
         "withdraw": "引き出す"
       },
-      "category": "cashEquivalent",
-      "description": "固定期間中に利息を得る時間制限付き預金。",
+      "category": "現金等価物",
+      "description": "固定期間にわたって利息を得るタイムロック預金。",
       "features": {
         "earlyWithdrawal": "早期引き出しペナルティ",
         "minAmount": "最低金額",
@@ -116,16 +101,18 @@
         "term": "預金期間"
       },
       "name": "預金",
-      "namePlural": "預金"
+      "namePlural": "預金",
+      "nameLowercaseSingular": "預金",
+      "nameLowercasePlural": "預金"
     },
     "equity": {
       "actions": {
-        "issue": "株式を発行",
+        "issue": "株式を発行する",
         "payDividend": "配当を支払う",
-        "transfer": "所有権を譲渡",
-        "vote": "投票を行う"
+        "transfer": "所有権を譲渡する",
+        "vote": "投票する"
       },
-      "category": "flexibleIncome",
+      "category": "柔軟な収入",
       "description": "資産と収益に対する権利を表す所有権の株式。",
       "features": {
         "class": "株式クラス",
@@ -134,35 +121,39 @@
         "votingRights": "投票権"
       },
       "name": "株式",
-      "namePlural": "株式"
+      "namePlural": "株式",
+      "nameLowercaseSingular": "株式",
+      "nameLowercasePlural": "株式"
     },
     "fund": {
       "actions": {
-        "calculateNAV": "NAVを計算",
-        "distribute": "リターンを分配",
-        "redeem": "株式を償還",
-        "subscribe": "サブスクライブ"
+        "calculateNAV": "NAVを計算する",
+        "distribute": "リターンを分配する",
+        "redeem": "株式を償還する",
+        "subscribe": "サブスクライブする"
       },
-      "category": "flexibleIncome",
+      "category": "柔軟な収入",
       "description": "複数の投資家から資本を集約するプール投資ビークル。",
       "features": {
         "managementFee": "管理手数料",
         "nav": "純資産価値",
-        "performanceFee": "パフォーマンス手数料",
+        "performanceFee": "パフォーマンスフィー",
         "strategy": "投資戦略"
       },
       "name": "ファンド",
-      "namePlural": "ファンド"
+      "namePlural": "ファンド",
+      "nameLowercaseSingular": "ファンド",
+      "nameLowercasePlural": "ファンド"
     },
     "stablecoin": {
       "actions": {
         "audit": "監査準備金",
-        "burn": "トークンを焼却",
-        "mint": "トークンを鋳造",
-        "rebalance": "準備金をリバランス"
+        "burn": "トークンを焼却する",
+        "mint": "トークンを鋳造する",
+        "rebalance": "リバランス準備金"
       },
-      "category": "cashEquivalent",
-      "description": "参照資産に対して安定した価値を維持するように設計されたデジタル通貨。",
+      "category": "キャッシュ等価物",
+      "description": "基準資産に対して安定した価値を維持するように設計されたデジタル通貨。",
       "features": {
         "collateral": "担保比率",
         "mechanism": "安定性メカニズム",
@@ -170,7 +161,9 @@
         "reserves": "準備金保有"
       },
       "name": "ステーブルコイン",
-      "namePlural": "ステーブルコイン"
+      "namePlural": "ステーブルコイン",
+      "nameLowercaseSingular": "ステーブルコイン",
+      "nameLowercasePlural": "ステーブルコイン"
     }
   }
 }

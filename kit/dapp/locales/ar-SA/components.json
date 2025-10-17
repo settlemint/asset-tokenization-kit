@@ -2,12 +2,24 @@
   "expressionBuilder": {
     "title": "منشئ التعبيرات",
     "topics": {
-      "kyc": "اعرف عميلك",
-      "aml": "مكافحة غسل الأموال",
+      "knowYourCustomer": "اعرف عميلك",
+      "antiMoneyLaundering": "مكافحة غسل الأموال",
+      "qualifiedInstitutionalInvestor": "مستثمر مؤسسي مؤهل",
+      "professionalInvestor": "مستثمر محترف",
+      "accreditedInvestor": "مستثمر معتمد",
+      "accreditedInvestorVerified": "مستثمر معتمد تم التحقق منه",
+      "regulationS": "التنظيم S",
+      "issuerProspectusFiled": "النشرة المقدمة",
+      "issuerProspectusExempt": "النشرة المعفاة",
+      "issuerLicensed": "الجهة المصدرة مرخصة",
+      "issuerReportingCompliant": "الجهة المصدرة متوافقة مع التقارير",
+      "issuerJurisdiction": "اختصاص الجهة المصدرة",
       "collateral": "ضمانات",
-      "isin": "رقم التعريف الدولي للأوراق المالية",
+      "isin": "رمز ISIN",
       "assetClassification": "تصنيف الأصول",
-      "basePrice": "سعر الأساس"
+      "basePrice": "سعر الأساس",
+      "assetIssuer": "جهة إصدار الأصول",
+      "contractIdentity": "هوية العقد"
     },
     "topicInput": {
       "selectPlaceholder": "اختر موضوعًا",
@@ -36,12 +48,12 @@
     "dob": "تاريخ الميلاد",
     "firstName": "الاسم الأول",
     "lastName": "اسم العائلة",
-    "nationalId": "رقم الهوية الوطنية",
+    "nationalId": "الهوية الوطنية",
     "residencyStatus": "حالة الإقامة",
     "residencyStatusOptions": {
       "dual_resident": "مقيم مزدوج - أنا مقيم قانونيًا/ضريبيًا في أكثر من دولة واحدة",
-      "non_resident": "غير مقيم - لا أعيش في أو لا أعتبر مقيمًا في الدولة المذكورة أعلاه",
-      "resident": "مقيم وحيد - أعيش وأعتبر مقيمًا قانونيًا/ضريبيًا فقط في الدولة المذكورة أعلاه",
+      "non_resident": "غير مقيم - لا أعيش في أو لا أعتبر مقيمًا في الدولة أعلاه",
+      "resident": "مقيم وحيد - أعيش في وأكون مقيمًا قانونيًا/ضريبيًا فقط في الدولة أعلاه",
       "unknown": "أفضل عدم القول"
     },
     "submit": "احفظ واستمر",
@@ -58,8 +70,15 @@
     "cancel": "إلغاء",
     "codeLengthError": "يجب أن يكون الرمز مكونًا من 6 أرقام",
     "confirm": "تأكيد",
-    "pinCode": "رمز التعريف الشخصي",
+    "pinCode": "رمز PIN",
     "useAuthenticatorInstead": "استخدم تطبيق المصادقة بدلاً من ذلك",
-    "usePinInstead": "استخدم رمز التعريف الشخصي بدلاً من ذلك"
+    "usePinInstead": "استخدم رمز PIN بدلاً من ذلك"
+  },
+  "changeRolesSheet": {
+    "title": "تغيير الأدوار",
+    "description": "تعيين أو إزالة الأدوار لهذه العنوان",
+    "cta": "تغيير الأدوار",
+    "accountLabel": "الحساب",
+    "rolesLabel": "الأدوار"
   }
 }

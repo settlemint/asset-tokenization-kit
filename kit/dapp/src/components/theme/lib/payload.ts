@@ -1,4 +1,4 @@
-import type { ThemeConfig } from "@/components/theme/schema";
+import type { ThemeConfig } from "./schema";
 
 const resolveLogoBaseUrl = (): string => {
   if (globalThis.window !== undefined && globalThis.location?.origin) {
@@ -9,7 +9,7 @@ const resolveLogoBaseUrl = (): string => {
     import.meta.env?.NEXT_PUBLIC_APP_URL ??
     (typeof process === "undefined"
       ? undefined
-      : process.env?.VITE_APP_URL ?? process.env?.NEXT_PUBLIC_APP_URL);
+      : (process.env?.VITE_APP_URL ?? process.env?.NEXT_PUBLIC_APP_URL));
   return typeof envOrigin === "string" && envOrigin.length > 0
     ? envOrigin
     : "http://localhost:3000";

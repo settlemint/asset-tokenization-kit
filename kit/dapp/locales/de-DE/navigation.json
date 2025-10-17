@@ -3,47 +3,57 @@
   "actions": "Aktionen",
   "assetClasses": "Vermögensklassen",
   "assetManagement": "Vermögensverwaltung",
-  "cashEquivalent": "Bargleichwert",
-  "fixedIncome": "Festverzinslich",
-  "flexibleIncome": "Flexibles Einkommen",
-  "home": "Dashboard",
+  "cashEquivalent": "Bargeldäquivalent",
+  "fixedIncome": "Festverzinsliche Wertpapiere",
+  "flexibleIncome": "Flexible Einkommen",
+  "home": "Übersicht",
   "myAssets": "Meine Vermögenswerte",
   "statistics": "Statistiken",
-  "addons": "Zusatzmodule",
-  "assetDesigner": "Vermögensdesigner",
-  "addonDesigner": "Zusatzmodul-Designer",
+  "addons": "Add-ons",
+  "assetDesigner": "Asset-Designer",
+  "addonDesigner": "Addon-Designer",
   "addonCategories": {
     "distribution": "Verteilung",
     "exchange": "Austausch",
-    "custody": "Treuhand",
+    "custody": "Verwahrung",
     "income": "Einkommen"
   },
   "administration": "Verwaltung",
-  "platformSettings": "Plattform-Einstellungen",
+  "platformSettings": "Plattformeinstellungen",
   "userManagement": "Benutzerverwaltung",
   "identityManagement": "Identitätsverwaltung",
   "settings": {
-    "assetTypes": "Asset-Typen",
-    "compliance": "Compliance",
-    "addons": "Zusatzmodule",
+    "assetTypes": {
+      "title": "Vermögensarten",
+      "description": "Konfigurieren und aktivieren Sie verschiedene Arten von Vermögenswerten, die auf der Plattform verfügbar sind. Sobald aktiviert, können Vermögensarten nicht deaktiviert werden.",
+      "allEnabled": "Alle verfügbaren Vermögensarten wurden aktiviert.",
+      "enabledTitle": "Aktivierte Vermögensarten",
+      "enabledDescription": "Diese Vermögensarten sind derzeit aktiv und auf der Plattform verfügbar.",
+      "enable": "Aktivieren",
+      "enabled": "Aktiviert",
+      "confirmEnableTitle": "{{assetType}} aktivieren?",
+      "confirmEnableDescription": "Diese Aktion kann nicht rückgängig gemacht werden. Sobald aktiviert, ist dieser Vermögensart dauerhaft auf der Plattform verfügbar."
+    },
+    "compliance": "Compliance-Einstellungen",
+    "addons": "Add-ons",
+    "claimTopicsIssuers": "Anspruchsthemen & Emittenten",
     "theme": {
-      "title": "Theme",
-      "description": "Configure branding assets, typography und Farbvarianten für Ihre Mandantenoberfläche.",
-      "placeholder": "Der Theme-Editor befindet sich in Vorbereitung. Bitte schauen Sie bald wieder vorbei.",
+      "title": "Thema",
+      "description": "Passen Sie Branding-Assets, Typografie und Farb-Tokens für Ihre Mandantenoberfläche an.",
+      "placeholder": "Der Theme-Editor kommt bald. Überprüfen Sie kurz für Live-Anpassungstools.",
       "dirtyBadge": "Nicht gespeicherte Änderungen",
       "pristineBadge": "Auf dem neuesten Stand",
       "versionBadgeTitle": "Aktuelle Theme-Version",
       "updatedLabel": "Aktualisiert",
-      "updatedUnknown": "Aktualisierungszeit nicht verfügbar",
+      "updatedUnknown": "Aktualisierungszeitstempel nicht verfügbar",
       "updatedBadgeTitle": "Zuletzt gespeichert {{timestamp}}"
     },
-    "claimTopicsIssuers": "Claim-Themen & Aussteller",
     "permissions": {
-      "title": "Administratorberechtigungen",
-      "description": "Verwalten Sie Administratorrollen und Zugriffsrechte für die Plattform.",
+      "title": "Plattformadministratoren",
+      "description": "Verwalten Sie Plattformadministratorrollen für das Asset Tokenization Kit",
       "adminRequired": {
         "title": "Administratorzugriff erforderlich",
-        "description": "Für diesen Bereich benötigen Sie Administratorrechte. Wenden Sie sich an Ihren Systemadministrator, um Zugriff zu erhalten."
+        "description": "Sie benötigen Administratorrechte, um Rollen zu verwalten. Bitte wenden Sie sich an Ihren Systemadministrator für Zugriff."
       }
     }
   }

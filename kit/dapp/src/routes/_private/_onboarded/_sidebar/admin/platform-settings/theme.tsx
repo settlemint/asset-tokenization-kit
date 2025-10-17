@@ -3,15 +3,15 @@ import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import {
   compileThemeCSS,
   resolveFontVariables,
-} from "@/components/theme/compile-css";
-import { PALETTE_TOKENS } from "@/components/theme/constants";
-import { FontSettingsCard } from "@/components/theme/font-settings-card";
-import { LogoSettingsCard } from "@/components/theme/logo-settings-card";
-import { PaletteCard } from "@/components/theme/palette-card";
-import { DEFAULT_THEME, type ThemeConfig } from "@/components/theme/schema";
-import { StatusBanner } from "@/components/theme/status-banner";
-import { queueThemeDomUpdates } from "@/components/theme/theme-dom-updater";
-import type { IdleHandle } from "@/components/theme/theme-editor-helpers";
+} from "@/components/theme/lib/compile-css";
+import { PALETTE_TOKENS } from "@/components/theme/lib/constants";
+import { FontSettingsCard } from "@/components/theme/components/font-settings-card";
+import { LogoSettingsCard } from "@/components/theme/components/logo-settings-card";
+import { PaletteCard } from "@/components/theme/components/palette-card";
+import { DEFAULT_THEME, type ThemeConfig } from "@/components/theme/lib/schema";
+import { StatusBanner } from "@/components/theme/components/status-banner";
+import { queueThemeDomUpdates } from "@/components/theme/lib/theme-dom-updater";
+import type { IdleHandle } from "@/components/theme/lib/theme-editor-helpers";
 import {
   applyPreviewFontLinks,
   cancelIdleCallbackCompat,
@@ -24,13 +24,13 @@ import {
   scheduleIdleCallbackCompat,
   setThemeOverridesCss,
   THEME_COMPILE_THRESHOLD,
-} from "@/components/theme/theme-editor-helpers";
-import { ThemePreviewPanel } from "@/components/theme/theme-preview-panel";
-import type { ThemeFormApi } from "@/components/theme/types";
+} from "@/components/theme/lib/theme-editor-helpers";
+import { ThemePreviewPanel } from "@/components/theme/components/theme-preview-panel";
+import type { ThemeFormApi } from "@/components/theme/lib/types";
 import {
   prepareThemePayload,
   sanitizeLogoUrlForPayload,
-} from "@/components/theme/use-theme-payload";
+} from "@/components/theme/lib/payload";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -97,6 +97,7 @@ export const Route = createFileRoute(
 
 function ThemeSettingsPage() {
   const { t } = useTranslation(["navigation", "settings"]);
+  const { t: tTheme } = useTranslation("settings", { keyPrefix: "theme" });
   const { isAdmin, userId } = Route.useLoaderData();
 
   const normalizeFieldPath = (path: string): string =>
@@ -340,17 +341,10 @@ function ThemeSettingsPage() {
     };
     applyDraftTheme(defaultDraft);
     await handleApplyTheme(prepareThemePayload(defaultDraft), {
-      loading: t(
-        "settings.theme.resetDefaultsLoading",
-        "Restoring default theme…"
-      ),
-      success: t(
-        "settings.theme.resetDefaultsSuccess",
-        "Default theme restored."
-      ),
+      loading: tTheme("resetDefaultsLoading"),
+      success: tTheme("resetDefaultsSuccess"),
       error: (error: Error) =>
-        t("settings.theme.resetDefaultsError", {
-          defaultValue: "Failed to restore defaults: {{message}}",
+        tTheme("resetDefaultsError", {
           message: error.message,
         }),
     });
@@ -358,10 +352,10 @@ function ThemeSettingsPage() {
 
   const handleSaveTheme = async () => {
     await runThemeMutation(prepareThemePayload(createPayloadFromTheme(draft)), {
-      loading: t("settings.theme.saveLoading", "Saving changes…"),
-      success: t("settings.theme.saveSuccess", "Theme saved successfully."),
+      loading: tTheme("saveLoading"),
+      success: tTheme("saveSuccess"),
       error: (error) =>
-        t("settings.theme.saveError", "Failed to save theme: {{message}}", {
+        tTheme("saveError", {
           message: error.message,
         }),
     });
@@ -460,9 +454,7 @@ function ThemeSettingsPage() {
       mode === "light" ? "logo.lightUrl" : "logo.darkUrl",
       objectUrl
     );
-    toast.success(
-      t("settings.theme.logoUploadSuccess", "Logo preview updated.")
-    );
+    toast.success(tTheme("logoUploadSuccess"));
 
     const currentDraft = cloneThemeConfig(draft);
     if (mode === "light") {
@@ -581,7 +573,10 @@ function ThemeSettingsPage() {
       ) {
         if (workerRef.current === null) {
           const worker = new globalThis.Worker(
-            new URL("@/components/theme/theme-css.worker.ts", import.meta.url),
+            new URL(
+              "@/components/theme/lib/theme-css.worker.ts",
+              import.meta.url
+            ),
             { type: "module" }
           );
           worker.addEventListener(
@@ -684,41 +679,29 @@ function ThemeSettingsPage() {
     const tabs: Array<{ value: string; label: string; description: string }> = [
       {
         value: "logos",
-        label: t("settings.theme.logoSectionTitle", "Logos"),
-        description: t(
-          "settings.theme.logoSectionDescription",
-          "Configure light and dark branding assets plus accessible alt text."
-        ),
+        label: tTheme("logoSectionTitle"),
+        description: tTheme("logoSectionDescription"),
       },
       {
         value: "fonts",
-        label: t("settings.theme.fontsTitle", "Typography"),
-        description: t(
-          "settings.theme.fontsDescription",
-          "Select families, sources, and weights for sans-serif and monospace styles."
-        ),
+        label: tTheme("fontsTitle"),
+        description: tTheme("fontsDescription"),
       },
     ];
 
     if (lightTokens.length > 0) {
       tabs.push({
         value: "palette-light",
-        label: t("settings.theme.lightPaletteTitle", "Light palette"),
-        description: t(
-          "settings.theme.lightPaletteDescription",
-          "Manage color tokens used when the interface is in light mode."
-        ),
+        label: tTheme("lightPaletteTitle"),
+        description: tTheme("lightPaletteDescription"),
       });
     }
 
     if (darkTokens.length > 0) {
       tabs.push({
         value: "palette-dark",
-        label: t("settings.theme.darkPaletteTitle", "Dark palette"),
-        description: t(
-          "settings.theme.darkPaletteDescription",
-          "Manage color tokens used when the interface is in dark mode."
-        ),
+        label: tTheme("darkPaletteTitle"),
+        description: tTheme("darkPaletteDescription"),
       });
     }
 
@@ -733,15 +716,10 @@ function ThemeSettingsPage() {
         <div>
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-3xl font-bold">
-              {t("settings.theme.title", { ns: "navigation" })}
+              {t("navigation:settings.theme.title")}
             </h1>
           </div>
-          <p className="text-muted-foreground mt-2">
-            {t(
-              "settings.theme.description",
-              "Customize branding assets, typography, and palette tokens."
-            )}
-          </p>
+          <p className="text-muted-foreground mt-2">{tTheme("description")}</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -752,7 +730,7 @@ function ThemeSettingsPage() {
             }}
             disabled={isThemeMutationPending}
           >
-            {t("settings.theme.resetDefaultsButton", "Reset defaults")}
+            {tTheme("resetDefaultsButton")}
           </Button>
           <Button
             variant="secondary"
@@ -764,15 +742,15 @@ function ThemeSettingsPage() {
             disabled={isThemeMutationPending || !hasUnsavedChanges}
           >
             {isThemeMutationPending
-              ? t("settings.theme.savingButton", "Saving…")
-              : t("settings.theme.saveButton", "Save")}
+              ? tTheme("savingButton")
+              : tTheme("saveButton")}
           </Button>
         </div>
       </div>
       <StatusBanner
         hasUnsavedChanges={hasUnsavedChanges}
         validationSummary={validationSummary}
-        t={t}
+        t={tTheme}
       />
       <form.AppForm>
         <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(320px,380px)] lg:gap-6">
@@ -806,7 +784,7 @@ function ThemeSettingsPage() {
                   onFileSelected={handleLogoFile}
                   lightInputRef={lightLogoInputRef}
                   darkInputRef={darkLogoInputRef}
-                  t={t}
+                  t={tTheme}
                 />
               </TabsContent>
 
@@ -815,7 +793,7 @@ function ThemeSettingsPage() {
                   sectionId="theme-fonts"
                   form={form}
                   draft={draft}
-                  t={t}
+                  t={tTheme}
                 />
               </TabsContent>
 
@@ -827,7 +805,7 @@ function ThemeSettingsPage() {
                     baseTheme={baseTheme}
                     mode="light"
                     tokens={lightTokens}
-                    t={t}
+                    t={tTheme}
                   />
                 </TabsContent>
               ) : null}
@@ -840,13 +818,13 @@ function ThemeSettingsPage() {
                     baseTheme={baseTheme}
                     mode="dark"
                     tokens={darkTokens}
-                    t={t}
+                    t={tTheme}
                   />
                 </TabsContent>
               ) : null}
             </Tabs>
           </div>
-          <ThemePreviewPanel draft={previewDraft} t={t} />
+          <ThemePreviewPanel draft={previewDraft} t={tTheme} />
         </div>
       </form.AppForm>
     </div>

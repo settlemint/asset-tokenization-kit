@@ -26,7 +26,7 @@
     },
     "FUND": {
       "label": "ファンド管理",
-      "description": "組み込みの手数料構造を持つ投資ファンドを管理します"
+      "description": "組み込みの手数料構造で投資ファンドを管理します"
     },
     "HISTORICAL_BALANCES": {
       "label": "完全な履歴",
@@ -34,11 +34,11 @@
     },
     "PAUSABLE": {
       "label": "緊急停止",
-      "description": "緊急時のために資産の移転を一時的に停止します"
+      "description": "緊急時に資産の移転を一時的に停止します"
     },
     "REDEEMABLE": {
       "label": "現金化",
-      "description": "資産を基礎的な価値に交換できるようにします"
+      "description": "資産を基礎となる価値と交換できるようにします"
     },
     "YIELD": {
       "label": "リターンを得る",

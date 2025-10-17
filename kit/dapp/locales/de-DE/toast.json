@@ -1,88 +1,88 @@
 {
   "success": {
     "default": "Erfolg! Das ist erledigt",
-    "saved": "Perfekt—Ihre Änderungen sind sicher gespeichert",
-    "created": "Schön! Das ist erstellt und bereit zur Nutzung",
+    "saved": "Perfekt—deine Änderungen sind sicher gespeichert",
+    "created": "Toll! Das ist erstellt und bereit zur Verwendung",
     "updated": "Großartig—alles ist frisch und auf dem neuesten Stand",
-    "deleted": "Alles weg—erfolgreich entfernt",
-    "copied": "Verstanden! In Ihre Zwischenablage kopiert",
-    "addressCopied": "Adresse kopiert—fügen Sie sie überall dort ein, wo Sie sie benötigen",
-    "transactionSent": "Ihre Transaktion ist auf dem Weg durch die Blockchain",
-    "connected": "Großartig! Sie sind verbunden und bereit zu starten",
-    "disconnected": "Sie wurden sicher getrennt",
-    "exported": "Ihr Export ist bereit—speichern Sie ihn an einem sicheren Ort",
-    "imported": "Ausgezeichnet! Ihre Daten wurden erfolgreich importiert"
+    "deleted": "Alles weg—erfolgreich gelöscht",
+    "copied": "Hab's! In deine Zwischenablage kopiert",
+    "addressCopied": "Adresse kopiert—füge sie ein, wo du sie brauchst",
+    "transactionSent": "Deine Transaktion ist auf dem Weg durch die Blockchain",
+    "connected": "Großartig! Du bist verbunden und bereit",
+    "disconnected": "Du wurdest sicher getrennt",
+    "exported": "Dein Export ist bereit—speichere ihn an einem sicheren Ort",
+    "imported": "Ausgezeichnet! Deine Daten wurden erfolgreich importiert"
   },
   "error": {
-    "default": "Ups—etwas Unerwartetes ist passiert",
-    "network": "Probleme beim Erreichen des Netzwerks—lassen Sie uns Ihre Verbindung überprüfen",
-    "blockchain": "Die Blockchain hat ein Problem festgestellt—sollen wir es noch einmal versuchen?",
-    "validation": "Hmm, lassen Sie uns diese Informationen noch einmal ansehen",
-    "unauthorized": "Entschuldigung, Sie benötigen die Erlaubnis, um das zu tun",
-    "notFound": "Wir haben überall gesucht, konnten das aber nicht finden",
-    "timeout": "Das hat länger gedauert als erwartet—möchten Sie es noch einmal versuchen?",
-    "copyFailed": "Entschuldigung, wir konnten das nicht in Ihre Zwischenablage kopieren",
-    "exportFailed": "Der Export hatte Probleme—lassen Sie es uns erneut versuchen",
-    "importFailed": "Probleme mit diesem Import—überprüfen Sie die Datei und versuchen Sie es erneut",
-    "transactionFailed": "Ihre Transaktion konnte nicht abgeschlossen werden—hier ist, was passiert ist",
-    "connectionFailed": "Wir haben Probleme beim Verbinden—lassen Sie uns Ihre Einrichtung überprüfen"
+    "default": "Hoppla—etwas Unerwartetes ist passiert",
+    "network": "Wir haben Schwierigkeiten, das Netzwerk zu erreichen—lass uns deine Verbindung überprüfen",
+    "blockchain": "Die Blockchain hat ein Problem—lass uns das nochmal versuchen",
+    "validation": "Hmm, lass uns das nochmal ansehen",
+    "unauthorized": "Entschuldigung, du brauchst dafür Berechtigung",
+    "notFound": "Wir haben überall gesucht, aber das konnten wir nicht finden",
+    "timeout": "Das hat länger gedauert als erwartet—willst du es nochmal versuchen?",
+    "copyFailed": "Entschuldigung, wir konnten das nicht in deine Zwischenablage kopieren",
+    "exportFailed": "Der Export ist ins Stocken geraten—lass uns nochmal versuchen",
+    "importFailed": "Wir haben Schwierigkeiten mit diesem Import—überprüfe die Datei und versuche es erneut",
+    "transactionFailed": "Deine Transaktion konnte nicht abgeschlossen werden—hier ist, was passiert ist",
+    "connectionFailed": "Wir haben Schwierigkeiten, uns zu verbinden—lass uns deine Einrichtung überprüfen"
   },
   "info": {
-    "loading": "Bereite alles vor...",
-    "processing": "Ich arbeite daran für Sie...",
+    "loading": "Dinge werden bereit gemacht...",
+    "processing": "Das wird für dich bearbeitet...",
     "pleaseWait": "Das wird nur einen Moment dauern...",
-    "confirming": "Warten auf die Bestätigung der Blockchain...",
-    "syncing": "Aktualisiere die neuesten Blockchain-Daten...",
-    "connecting": "Stelle Ihre Verbindung her...",
-    "disconnecting": "Schließe Ihre Verbindung sicher..."
+    "confirming": "Warten auf Blockchain-Bestätigung...",
+    "syncing": "Mit den neuesten Blockchain-Daten aufholen...",
+    "connecting": "Deine Verbindung herstellen...",
+    "disconnecting": "Sicher deine Verbindung schließen..."
   },
   "warning": {
-    "unsavedChanges": "Achtung—Sie haben nicht gespeicherte Änderungen",
-    "confirmDelete": "Sind Sie sich absolut sicher? Dies wird es dauerhaft löschen",
-    "irreversible": "Wichtig: Diese Aktion kann nicht rückgängig gemacht werden",
-    "highGas": "Die Gaspreise sind derzeit höher als gewöhnlich",
-    "slowNetwork": "Das Netzwerk ist ziemlich beschäftigt—das könnte etwas länger dauern",
-    "limitReached": "Sie haben das maximale Limit erreicht"
+    "unsavedChanges": "Achtung—du hast nicht gespeicherte Änderungen",
+    "confirmDelete": "Bist du absolut sicher? Das wird dauerhaft gelöscht",
+    "irreversible": "Wichtig: diese Aktion kann nicht rückgängig gemacht werden",
+    "highGas": "Gaspreise sind im Moment höher als üblich",
+    "slowNetwork": "Das Netzwerk ist ziemlich beschäftigt—das könnte ein bisschen länger dauern",
+    "limitReached": "Du hast das maximale Limit erreicht"
   },
   "streaming": {
-    "starting": "Lassen Sie uns damit beginnen...",
-    "inProgress": "Fortschritt: {{message}}",
+    "starting": "Lass uns das starten...",
+    "inProgress": "Fortschritt machen: {{message}}",
     "completed": "Alles erledigt! Alles hat perfekt funktioniert",
-    "failed": "Wir sind auf ein Problem gestoßen: {{error}}"
+    "failed": "Wir sind auf ein Hindernis gestoßen: {{error}}"
   },
   "transaction": {
-    "pending": "Ihre Transaktion wird bearbeitet...",
-    "submitted": "Transaktion eingereicht! Hier ist Ihr Hash: {{hash}}",
-    "confirmed": "Perfekt! Ihre Transaktion ist bestätigt",
+    "pending": "Deine Transaktion wird bearbeitet...",
+    "submitted": "Transaktion eingereicht! Hier ist dein Hash: {{hash}}",
+    "confirmed": "Perfekt! Deine Transaktion ist bestätigt",
     "failed": "Transaktion konnte nicht abgeschlossen werden: {{reason}}",
-    "rejected": "Sie haben die Transaktion abgebrochen",
-    "insufficientFunds": "Sie benötigen mehr Mittel, um diese Transaktion abzuschließen"
+    "rejected": "Du hast die Transaktion abgebrochen",
+    "insufficientFunds": "Du brauchst mehr Guthaben für Gasgebühren, um das abzuschließen"
   },
   "wallet": {
     "connected": "Wallet erfolgreich verbunden: {{address}}",
-    "disconnected": "Ihre Wallet wurde getrennt",
-    "switchNetwork": "Bitte wechseln Sie Ihre Wallet zu {{network}}",
-    "accountChanged": "Jetzt wird das Konto {{address}} verwendet",
-    "notInstalled": "Sie müssen zuerst eine Web3-Wallet installieren"
+    "disconnected": "Deine Wallet wurde getrennt",
+    "switchNetwork": "Bitte wechsle deine Wallet zu {{network}}",
+    "accountChanged": "Jetzt mit Konto {{address}} verwenden",
+    "notInstalled": "Du musst zuerst eine Web3-Wallet installieren"
   },
   "validation": {
-    "error": "Bitte überprüfen Sie: {{message}}",
-    "fixErrors": "Lassen Sie uns diese Probleme beheben, bevor wir fortfahren"
+    "error": "Bitte überprüfe: {{message}}",
+    "fixErrors": "Lass uns diese Probleme beheben, bevor wir fortfahren"
   },
   "auth": {
-    "signedIn": "Willkommen zurück! Schön, Sie zu sehen",
-    "signedOut": "Sie wurden erfolgreich abgemeldet",
-    "sessionExpired": "Ihre Sitzung ist abgelaufen—lassen Sie uns Sie erneut anmelden",
-    "emailVerified": "Perfekt! Ihre E-Mail ist jetzt verifiziert",
-    "passwordChanged": "Ihr Passwort wurde erfolgreich aktualisiert"
+    "signedIn": "Willkommen zurück! Schön, dich zu sehen",
+    "signedOut": "Du wurdest erfolgreich abgemeldet",
+    "sessionExpired": "Deine Sitzung ist abgelaufen—lass uns dich wieder anmelden",
+    "emailVerified": "Perfekt! Deine E-Mail ist jetzt verifiziert",
+    "passwordChanged": "Dein Passwort wurde erfolgreich aktualisiert"
   },
   "settings": {
-    "saved": "Ihre Einstellungen wurden gespeichert",
-    "reset": "Einstellungen wurden auf die Standardwerte zurückgesetzt"
+    "saved": "Deine Einstellungen wurden gespeichert",
+    "reset": "Einstellungen wurden auf Standards zurückgesetzt"
   },
   "data": {
-    "refreshed": "Frische Daten geladen—Sie sehen die neuesten",
-    "cached": "Verwende zwischengespeicherte Daten für schnellere Ladezeiten",
+    "refreshed": "Frische Daten geladen—du siehst das Neueste",
+    "cached": "Verwendet gecachte Daten für schnelleres Laden",
     "synced": "Alles ist perfekt synchronisiert"
   }
 }

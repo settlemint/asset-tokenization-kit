@@ -1,5 +1,5 @@
-import type { ThemeConfig, ThemeToken } from "@/components/theme/schema";
-import { compileThemeCSS, resolveFontLinks } from "@/components/theme/compile-css";
+import type { ThemeConfig, ThemeToken } from "./schema";
+import { compileThemeCSS, resolveFontLinks } from "./compile-css";
 
 const THEME_FONT_ATTRIBUTE = "data-theme-font";
 
@@ -47,7 +47,7 @@ export function setThemeOverridesCss(
     existed: existing instanceof HTMLStyleElement,
     css:
       existing instanceof HTMLStyleElement
-        ? existing.textContent ?? ""
+        ? (existing.textContent ?? "")
         : null,
     state:
       existing instanceof HTMLStyleElement ? existing.dataset.state : undefined,

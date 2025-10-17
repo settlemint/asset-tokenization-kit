@@ -1,44 +1,50 @@
 {
-  "title": "マイアセット",
+  "title": "私の資産",
   "actions": {
-    "addressCopied": "トークンアドレスをクリップボードにコピーしました",
+    "addressCopied": "トークンアドレスがクリップボードにコピーされました",
     "copyAddress": "アドレスをコピー",
-    "tokenDetailsNotImplemented": "トークン詳細表示はまだ実装されていません",
+    "tokenDetailsNotImplemented": "トークン詳細ビューはまだ実装されていません",
     "viewOnBlockExplorer": "ブロックエクスプローラーで表示",
     "viewTokenDetails": "トークン詳細を表示",
     "transfer": {
-      "label": "Transfer",
-      "title": "Transfer Tokens",
-      "description": "Send tokens to one or more recipient addresses. This action requires verification.",
-      "submit": "Confirm Transfer",
-      "reviewTitle": "Review Transfer",
-      "fromLabel": "From",
-      "recipientLabel": "Recipient",
-      "recipientDescription": "Select or enter the address that will receive these tokens.",
-      "amountLabel": "Amount",
-      "amountDescription": "Enter the number of tokens to transfer.",
-      "availableLabel": "Current Available",
-      "remainingLabel": "Available After Transfer",
-      "availableMessage": "You can transfer up to {{amount}} {{symbol}}.",
-      "amountRequired": "Add an amount greater than zero to keep going.",
-      "exceedsAvailable": "Amount exceeds your available balance.",
-      "recipientsTitle": "Recipients",
-      "addRecipient": "Add recipient",
-      "totalLabel": "Total",
-      "overAvailable": "Lower the total so it stays within your available balance."
+      "label": "転送",
+      "title": "トークンを転送",
+      "description": "1つ以上の受信者アドレスにトークンを送信します。このアクションには検証が必要です。",
+      "submit": "転送を確認",
+      "reviewTitle": "転送を確認",
+      "fromLabel": "送信元",
+      "recipientLabel": "受信者",
+      "recipientDescription": "これらのトークンを受け取るアドレスを選択または入力してください。",
+      "amountLabel": "金額",
+      "amountDescription": "転送するトークンの数を入力してください。",
+      "availableLabel": "現在の利用可能額",
+      "remainingLabel": "転送後の利用可能額",
+      "availableMessage": "最大 {{amount}} {{symbol}} まで転送できます。",
+      "amountRequired": "続行するには0より大きい金額を追加してください。",
+      "exceedsAvailable": "金額が利用可能な残高を超えています。",
+      "recipientsTitle": "受信者",
+      "addRecipient": "受信者を追加",
+      "totalLabel": "合計",
+      "overAvailable": "合計を下げて利用可能な残高以内に収めてください。"
+    },
+    "redeem": {
+      "label": "償還"
+    },
+    "claimYield": {
+      "label": "利回りを請求"
     }
   },
   "bulkActions": {
-    "addressesCopied": "{{count}}個のトークンアドレスをクリップボードにコピーしました",
-    "exportMessage": "選択された{{count}}個の資産をエクスポートしています"
+    "addressesCopied": "{{count}} 個のトークンアドレスがクリップボードにコピーされました",
+    "exportMessage": "{{count}} 個の選択された資産をエクスポート中"
   },
   "columns": {
     "actions": "アクション",
     "available": "利用可能",
     "balance": "残高",
     "contractAddress": "コントラクトアドレス",
-    "frozen": "凍結済み",
-    "ownership": "所有率 %",
+    "frozen": "凍結",
+    "ownership": "所有権 %",
     "symbol": "シンボル",
     "tokenName": "トークン名",
     "totalSupply": "総供給量"

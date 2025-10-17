@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ThemePreviewSchema } from "./theme.preview.schema";
-import { DEFAULT_THEME } from "@/components/theme/schema";
+import { DEFAULT_THEME } from "@/components/theme/lib/schema";
 
 describe("ThemePreviewSchema", () => {
   it("accepts a partial diff with base version", () => {

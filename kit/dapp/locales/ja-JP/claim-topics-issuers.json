@@ -1,16 +1,16 @@
 {
   "page": {
-    "title": "クレームトピックと発行者",
-    "description": "身元確認のためのクレームトピックと信頼できる発行者を管理します。"
+    "title": "請求トピックと発行者",
+    "description": "アイデンティティ検証のための請求トピックと信頼できる発行者を管理します。"
   },
   "claimTopics": {
-    "title": "クレームトピック",
-    "description": "身元確認に使用できる利用可能なクレームトピックを設定します。システムトピックは事前定義されており、変更できません。",
-    "addButton": "トピックを追加",
+    "title": "請求トピック",
+    "description": "アイデンティティ検証に使用できる利用可能な請求トピックを設定します。システムトピックは事前定義されており、変更することはできません。",
+    "addButton": "請求トピックを追加",
     "table": {
-      "title": "クレームトピック",
+      "title": "請求トピック",
       "columns": {
-        "id": "ID",
+        "id": "ID番号",
         "name": "名前",
         "source": "ソース",
         "actions": "アクション"
@@ -28,30 +28,30 @@
         "deleteTopic": "トピックを削除"
       },
       "delete": {
-        "title": "クレームトピックを削除",
-        "description": "トピック「{topicName}」を削除してもよろしいですか？",
-        "warning": "この操作は元に戻すことができません。このトピックを使用している既存のクレームが無効になる可能性があります。",
+        "title": "請求トピックを削除",
+        "description": "トピック「{{topicName}}」を削除してもよろしいですか？",
+        "warning": "この操作は元に戻せません。このトピックを使用している既存の請求が無効になる可能性があります。",
         "cancel": "キャンセル",
         "confirm": "トピックを削除",
         "deleting": "削除中..."
       }
     },
     "add": {
-      "title": "クレームトピックを追加",
-      "description": "身元確認用の新しいカスタムクレームトピックを作成します。",
+      "title": "請求トピックを追加",
+      "description": "アイデンティティ検証のための新しいカスタム請求トピックを作成します。",
       "fields": {
         "name": {
           "label": "トピック名",
-          "description": "このクレームトピックの一意で人間が読みやすい名前。例：職業ライセンス"
+          "description": "この請求トピックのための一意で人間が読める名前。例：専門ライセンス"
         },
         "signature": {
           "label": "関数署名",
-          "description": "クレーム検証の関数署名。format: functionName(parameterTypes)に従う必要があります。例：hasLicense(address,bytes32)"
+          "description": "請求検証のための関数署名。形式は次のようにする必要があります：functionName(parameterTypes)。例：hasLicense(address,bytes32)"
         }
       },
       "verification": {
         "title": "トピック作成の確認",
-        "description": "このクレームトピックを作成するには身元確認を行ってください"
+        "description": "この請求トピックを作成するためにアイデンティティを確認してください"
       },
       "actions": {
         "cancel": "キャンセル",
@@ -60,17 +60,17 @@
       }
     },
     "edit": {
-      "title": "トピック署名を編集",
-      "description": "このクレームトピックの検証署名を更新します。作成後、トピック名は変更できません。",
+      "title": "トピックの署名を編集",
+      "description": "この請求トピックの検証署名を更新します。トピック名は作成後に変更できません。",
       "fields": {
         "name": {
           "label": "トピック名",
-          "description": "トピックID：{topicId} • トピック名は変更できません"
+          "description": "トピックID：{{topicId}} • トピック名は変更できません"
         },
         "signature": {
           "label": "関数署名",
-          "description": "クレーム検証の関数署名。format: functionName(parameterTypes)に従う必要があります。例：hasLicense(address,bytes32)",
-          "current": "現在：{signature}"
+          "description": "請求検証のための関数署名。形式は次のようにする必要があります：functionName(parameterTypes)。例：hasLicense(address,bytes32)",
+          "current": "現在の署名：{{signature}}"
         }
       },
       "actions": {
@@ -83,12 +83,120 @@
       }
     },
     "toast": {
-      "created": "トピック「{name}」が正常に作成されました",
-      "updated": "トピック「{name}」が正常に更新されました",
+      "created": "トピック「{{name}}」が正常に作成されました",
+      "updated": "トピック「{{name}}」が正常に更新されました",
       "deleted": "トピックが正常に削除されました",
-      "createError": "トピックの作成に失敗しました：{error}",
-      "updateError": "トピックの更新に失敗しました：{error}",
-      "deleteError": "トピックの削除に失敗しました：{error}"
+      "createError": "トピックの作成に失敗しました：{{error}}",
+      "updateError": "トピックの更新に失敗しました：{{error}}",
+      "deleteError": "トピックの削除に失敗しました：{{error}}"
+    }
+  },
+  "trustedIssuers": {
+    "title": "信頼できる発行者",
+    "description": "アイデンティティ請求を検証できる信頼できる発行者を管理します。請求ポリシーマネージャーの役割を持つ発行者のみが追加できます。",
+    "addButton": "信頼できる発行者を追加",
+    "table": {
+      "title": "信頼できる発行者",
+      "columns": {
+        "issuerIdentity": "発行者のアイデンティティ",
+        "assignedTopics": "割り当てられたトピック",
+        "actions": "アクション"
+      },
+      "noTopics": "割り当てられたトピックはありません",
+      "placeholder": "発行者を検索..."
+    },
+    "actions": {
+      "menu": {
+        "openMenu": "メニューを開く",
+        "editTopics": "トピックを編集",
+        "removeIssuer": "発行者を削除"
+      },
+      "remove": {
+        "title": "信頼できる発行者を削除",
+        "description": "発行者「{{issuerAddress}}」を削除してもよろしいですか？",
+        "warning": "この操作により、この発行者のアイデンティティ請求を検証するためのすべての権限が取り消されます。",
+        "verification": {
+          "title": "発行者削除の確認",
+          "description": "この信頼できる発行者を削除するためにアイデンティティを確認してください"
+        },
+        "cancel": "キャンセル",
+        "confirm": "発行者を削除",
+        "removing": "削除中..."
+      }
+    },
+    "add": {
+      "title": "信頼できる発行者を追加",
+      "description": "アイデンティティ請求を検証できる新しい信頼できる発行者を追加します。",
+      "selectUserDescription": "信頼できる発行者として割り当てるために、システムから既存のユーザーを選択します。必要な役割が付与され、信頼できる発行者のレジストリに追加されます。",
+      "fields": {
+        "selectUser": {
+          "label": "ユーザーを選択",
+          "description": "システム内の既存のユーザーからユーザーを選択"
+        },
+        "issuerAddress": {
+          "label": "発行者のアイデンティティアドレス",
+          "description": "信頼できる発行者のアイデンティティ契約のEthereumアドレス"
+        },
+        "claimTopics": {
+          "label": "請求トピック",
+          "description": "この発行者が検証できるトピックを選択します。少なくとも1つのトピックを選択する必要があります。",
+          "helperIssuerMissing": "請求トピックを選択する前に発行者を選択してください。",
+          "placeholder": "トピックを選択...",
+          "empty": "利用可能なトピックはありません",
+          "validation": {
+            "required": "少なくとも1つの請求トピックを選択してください。"
+          }
+        }
+      },
+      "selectedUser": {
+        "name": "名前",
+        "email": "メール",
+        "wallet": "ウォレット"
+      },
+      "verification": {
+        "title": "発行者追加の確認",
+        "description": "この信頼できる発行者を追加するためにアイデンティティを確認してください"
+      },
+      "actions": {
+        "cancel": "キャンセル",
+        "add": "発行者を追加",
+        "adding": "追加中..."
+      }
+    },
+    "edit": {
+      "title": "発行者トピックを編集",
+      "description": "この発行者が検証できるトピックを更新します。発行者のアドレスは変更できません。",
+      "fields": {
+        "issuerAddress": {
+          "label": "発行者のアイデンティティアドレス",
+          "description": "発行者のアドレスは作成後に変更できません"
+        },
+        "claimTopics": {
+          "label": "請求トピック",
+          "description": "この発行者が検証できるトピックを選択します。少なくとも1つのトピックを選択する必要があります。",
+          "current": "現在のトピック：{{topics}}"
+        }
+      },
+      "verification": {
+        "title": "トピック変更の確認",
+        "description": "発行者のトピックを更新するためにアイデンティティを確認してください"
+      },
+      "actions": {
+        "cancel": "キャンセル",
+        "update": "トピックを更新",
+        "updating": "更新中..."
+      },
+      "validation": {
+        "topicsChanged": "トピックの選択は現在のトピックと異なる必要があります"
+      }
+    },
+    "toast": {
+      "added": "信頼できる発行者が正常に追加されました",
+      "updated": "発行者のトピックが正常に更新されました",
+      "removed": "信頼できる発行者が正常に削除されました",
+      "addError": "信頼できる発行者の追加に失敗しました: {{error}}",
+      "updateError": "発行者のトピックの更新に失敗しました: {{error}}",
+      "removeError": "信頼できる発行者の削除に失敗しました: {{error}}"
     }
   }
 }

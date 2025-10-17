@@ -16,7 +16,7 @@ import {
   ThemePreviewOutputSchema,
   ThemePreviewSchema,
 } from "./routes/theme.preview.schema";
-import { themeConfigSchema } from "@/components/theme/schema";
+import { themeConfigSchema } from "@/components/theme/lib/schema";
 
 /**
  * Contract definition for the settings read endpoint.

@@ -5,7 +5,7 @@ import {
   type LogoConfig,
   type ThemeConfig,
   type ThemeMetadata,
-} from "./schema";
+} from "../lib/schema";
 
 type ThemeAssets = {
   logo: LogoConfig;

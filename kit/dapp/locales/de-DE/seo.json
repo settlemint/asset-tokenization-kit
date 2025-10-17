@@ -1,72 +1,72 @@
 {
   "meta": {
-    "defaultTitle": "Asset-Tokenisierungskit | SettleMint",
-    "titleTemplate": "%s | Asset-Tokenisierungskit",
-    "defaultDescription": "Transformieren Sie reale Vermögenswerte in sichere digitale Token in wenigen Minuten. Ihre unternehmensbereite Plattform zur Tokenisierung von Anleihen, Eigenkapital, Fonds und mehr – alles konform und unter Ihrer Kontrolle.",
+    "defaultTitle": "Asset-Tokenisierungs-Kit | SettleMint",
+    "titleTemplate": "%s | Asset-Tokenisierungs-Kit",
+    "defaultDescription": "Transformieren Sie reale Vermögenswerte in sichere digitale Token in Minuten. Ihre unternehmensbereite Plattform für die Tokenisierung von Anleihen, Eigenkapital, Fonds und mehr — alles compliant und unter Ihrer Kontrolle.",
     "keywords": [
-      "Asset-Tokenisierung",
+      "Vermögens-Tokenisierung",
       "Blockchain",
-      "reale Vermögenswerte",
-      "RWA",
+      "reale Welt Vermögenswerte",
+      "Real-World-Assets (RWA)",
       "Tokenisierungsplattform",
       "digitale Vermögenswerte",
-      "DeFi",
+      "Dezentralisierte Finanzen (DeFi)",
       "Anleihen",
       "Eigenkapital",
       "Stablecoins",
-      "SettleMint"
+      "SettleMint Plattform"
     ]
   },
   "pages": {
     "home": {
       "title": "Startseite",
-      "description": "Willkommen auf Ihrer digitalen Vermögensplattform. Alles, was Sie benötigen, um reale Vermögenswerte mit Unternehmenssicherheit zu tokenisieren, zu verwalten und zu handeln."
+      "description": "Willkommen bei Ihrer digitalen Vermögensplattform. Alles, was Sie brauchen, um reale Vermögenswerte zu tokenisieren, zu verwalten und zu handeln mit unternehmensgradiger Sicherheit."
     },
     "dashboard": {
-      "title": "Dashboard",
-      "description": "Ihr Kommandocenter für digitale Vermögenswerte. Verfolgen Sie die Leistung, überwachen Sie Portfolios und verwalten Sie alles in einer leistungsstarken Benutzeroberfläche."
+      "title": "Übersichts-Dashboard",
+      "description": "Ihr Kommandozentrum für digitale Vermögenswerte. Verfolgen Sie Leistung, überwachen Sie Portfolios und verwalten Sie alles in einer leistungsstarken Oberfläche."
     },
     "assets": {
       "title": "Vermögenswerte",
-      "description": "Entdecken Sie Ihr tokenisiertes Universum. Durchsuchen, verwalten und interagieren Sie mit Anleihen, Eigenkapital, Fonds und all Ihren digitalen Vermögenswerten an einem Ort."
+      "description": "Erkunden Sie Ihr tokenisiertes Universum. Durchsuchen, verwalten und interagieren Sie mit Anleihen, Eigenkapital, Fonds und all Ihren digitalen Vermögenswerten an einem Ort."
     },
     "tokenFactory": {
-      "title": "Tokenfabrik",
-      "description": "Wo digitale Vermögenswerte zum Leben erweckt werden. Erstellen Sie neue Token mit unserem sicheren Smart-Contract-System – es ist einfacher, als Sie denken."
+      "title": "Token-Fabrik",
+      "description": "Wo digitale Vermögenswerte zum Leben erwachen. Erstellen Sie neue Token mit unserem sicheren Smart-Contract-System — es ist einfacher als Sie denken."
     },
     "onboarding": {
       "title": "Loslegen",
-      "description": "Ihre Reise zur Meisterschaft im Bereich digitale Vermögenswerte beginnt hier. Richten Sie Ihre Plattform in wenigen Minuten ein und beginnen Sie noch heute mit der Tokenisierung realer Vermögenswerte."
+      "description": "Ihre Reise zur digitalen Vermögensbeherrschung beginnt hier. Richten Sie Ihre Plattform in Minuten ein und starten Sie heute mit der Tokenisierung realer Vermögenswerte."
     },
     "auth": {
       "signIn": {
         "title": "Anmelden",
-        "description": "Willkommen zurück! Greifen Sie sicher auf Ihre digitale Vermögensplattform zu und gestalten Sie die Zukunft der Finanzen weiter."
+        "description": "Willkommen zurück! Greifen Sie sicher auf Ihre digitale Vermögensplattform zu und setzen Sie den Bau der Zukunft der Finanzen fort."
       },
       "signUp": {
         "title": "Konto erstellen",
-        "description": "Bereit, die Art und Weise zu revolutionieren, wie Wert geschaffen und ausgetauscht wird? Beginnen Sie Ihre Tokenisierungsreise mit nur wenigen Klicks."
+        "description": "Bereit, die Art und Weise zu revolutionieren, wie Wert geschaffen und ausgetauscht wird? Starten Sie Ihre Tokenisierungsreise mit nur wenigen Klicks."
       }
     },
     "settings": {
       "title": "Einstellungen",
-      "description": "Optimieren Sie Ihr Plattform-Erlebnis. Verwalten Sie Sicherheit, Präferenzen und Systemeinstellungen an einem praktischen Ort."
+      "description": "Optimieren Sie Ihre Plattformerfahrung. Verwalten Sie Sicherheit, Präferenzen und Systemeinstellungen alles an einem praktischen Ort."
     }
   },
   "socialMedia": {
     "defaultImage": "/og-image.png",
-    "defaultImageAlt": "Asset-Tokenisierungskit - Transformieren Sie reale Vermögenswerte in digitale Token",
+    "defaultImageAlt": "Asset Tokenization Kit - Transformieren Sie reale Vermögenswerte in digitale Token",
     "twitterCard": "summary_large_image",
     "twitterSite": "@settlemint"
   },
   "structured": {
     "organization": {
-      "name": "SettleMint",
+      "name": "SettleMint (Global)",
       "url": "https://settlemint.com",
       "logo": "/logo.png"
     },
     "software": {
-      "name": "Asset-Tokenisierungskit",
+      "name": "Asset-Tokenisierungs-Kit",
       "applicationCategory": "Finanzanwendung",
       "operatingSystem": "Plattformübergreifend"
     }

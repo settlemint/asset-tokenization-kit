@@ -1,4 +1,4 @@
-import { THEME_TOKENS, type ThemeToken } from "@/components/theme/schema";
+import { THEME_TOKENS, type ThemeToken } from "./schema";
 
 export const PALETTE_TOKENS: readonly ThemeToken[] = [...THEME_TOKENS];
 

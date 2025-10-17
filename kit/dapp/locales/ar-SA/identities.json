@@ -4,16 +4,60 @@
     "registerIdentity": {
       "label": "تسجيل الهوية",
       "title": "تسجيل الهوية",
-      "description": "سجّل هذه الهوية في سجل الهوية مع معلومات الدولة"
+      "description": "قم بتسجيل هذه الهوية في سجل الهوية مع معلومات الدولة"
     },
-    "viewEvents": "عرض الأحداث"
+    "viewEvents": "عرض الأحداث",
+    "issueClaim": {
+      "title": "إصدار مطالبة",
+      "description": "إصدار مطالبة لـ {{identity}}",
+      "submit": "إصدار مطالبة",
+      "success": "تم إصدار المطالبة بنجاح",
+      "submitting": "جارٍ إصدار المطالبة...",
+      "error": "فشل في إصدار المطالبة: {{error}}",
+      "confirmTitle": "تأكيد إصدار المطالبة",
+      "confirmTargetIdentity": "الهوية المستهدفة",
+      "confirmClaimType": "نوع المطالبة",
+      "confirmClaimData": "بيانات المطالبة",
+      "confirmWarning": "تأكد من صحة جميع التفاصيل قبل التوقيع والإصدار. قد تكون هذه العملية غير قابلة للتراجع.",
+      "notTrustedIssuer": "ليس لديك إذن لإصدار موضوع المطالبة هذا.",
+      "customClaimNotSupported": "هذا النوع المخصص من المطالبات غير مدعوم في واجهة المستخدم.",
+      "fields": {
+        "claimTopic": "موضوع المطالبة",
+        "selectTopic": "اختر موضوع المطالبة",
+        "topicDescription": "اختر نوع المطالبة للإصدار",
+        "claimValue": "قيمة المطالبة",
+        "claimValuePlaceholder": "أدخل قيمة المطالبة",
+        "claimValueDescription": "قدم القيمة لهذه المطالبة.",
+        "collateralAmount": "مبلغ الضمان (وي)",
+        "collateralAmountDescription": "أدخل مبلغ الضمان بالوي.",
+        "expiryTimestamp": "تاريخ انتهاء الصلاحية",
+        "expiryTimestampDescription": "اختر متى يجب أن تنتهي هذه المطالبة.",
+        "assetClass": "فئة الأصول",
+        "assetCategory": "فئة الأصول",
+        "priceAmount": "مبلغ السعر",
+        "currencyCode": "رمز العملة",
+        "decimals": "الأرقام العشرية",
+        "licenseType": "نوع الترخيص",
+        "licenseNumber": "رقم الترخيص",
+        "licenseJurisdiction": "سلطة الترخيص",
+        "validUntil": "صالح حتى",
+        "reportingCompliant": "التقارير متوافقة",
+        "reportingCompliantDescription": "حدد ما إذا كان المصدر يتوافق مع التقارير.",
+        "issuerAddress": "عنوان المصدر",
+        "contractAddress": "عنوان العقد",
+        "isin": "رمز ISIN",
+        "jurisdiction": "السلطة القضائية",
+        "exemptionReference": "مرجع الإعفاء",
+        "prospectusReference": "مرجع نشرة الاكتتاب"
+      }
+    }
   },
   "register": {
     "form": {
-      "country": "البلد",
-      "countryInfo": "اختر البلد لعملية تسجيل الهوية هذه",
+      "country": "الدولة",
+      "countryInfo": "اختر الدولة لتسجيل هذه الهوية",
       "walletAddress": "عنوان المحفظة",
-      "walletAddressInfo": "عنوان المحفظة للتسجيل (افتراضيًا مالك الهوية)"
+      "walletAddressInfo": "عنوان المحفظة للتسجيل (يتم تعيينه افتراضيًا لمالك الهوية)"
     },
     "success": "تم تسجيل الهوية بنجاح",
     "confirm": {
@@ -22,14 +66,14 @@
     }
   },
   "status": {
-    "pending": "معلق",
+    "pending": "قيد الانتظار",
     "verified": "تم التحقق",
     "rejected": "مرفوض",
-    "expired": "منتهي الصلاحية",
+    "expired": "منتهي",
     "registered": "مسجل",
     "notRegistered": "غير مسجل",
-    "verifiedAriaLabel": "هوية متحقق منها مع مطالبات",
-    "registeredAriaLabel": "هوية مسجلة بدون مطالبات",
+    "verifiedAriaLabel": "تم التحقق من الهوية مع المطالبات",
+    "registeredAriaLabel": "تم تسجيل الهوية بدون مطالبات",
     "notRegisteredAriaLabel": "لا توجد هوية مسجلة"
   },
   "table": {
@@ -38,17 +82,17 @@
       "claimType": "نوع المطالبة",
       "topic": "الموضوع",
       "status": "الحالة",
-      "issuer": "المُصدر",
+      "issuer": "المصدر",
       "issuedAt": "تاريخ الإصدار",
-      "expiresAt": "تاريخ انتهاء الصلاحية",
+      "expiresAt": "تاريخ الانتهاء",
       "verifiedAt": "تاريخ التحقق"
     },
     "search": {
-      "placeholder": "البحث في المطالبات..."
+      "placeholder": "بحث عن المطالبات..."
     },
     "emptyState": {
-      "title": "لم يتم العثور على مطالبات",
-      "description": "لم يتم إصدار أي مطالبات هوية بعد.",
+      "title": "لا توجد مطالبات",
+      "description": "لم يتم إصدار أي مطالبات هوية حتى الآن.",
       "loading": "جارٍ تحميل المطالبات..."
     },
     "errors": {
@@ -56,36 +100,36 @@
       "navigationFailed": "فشل في الانتقال إلى تفاصيل المطالبة"
     },
     "fallback": {
-      "noExpiry": "لا يوجد تاريخ انتهاء",
-      "notVerified": "غير محقق"
+      "noExpiry": "لا يوجد انتهاء",
+      "notVerified": "غير موثق"
     }
   },
   "identityTable": {
     "columns": {
-      "id": "المعرف",
+      "id": "معرف",
       "type": "النوع",
       "entity": "الكيان",
-      "linkedEntity": "الحساب / العقد",
+      "linkedEntity": "الكيان المرتبط",
       "activeClaims": "المطالبات النشطة",
       "revokedClaims": "المطالبات الملغاة",
       "deployment": "معاملة النشر"
     },
     "types": {
-      "account": "حساب",
-      "contract": "عقد"
+      "account": "الحساب",
+      "contract": "العقد"
     },
     "fallback": {
       "noAccount": "لا يوجد حساب",
       "noContract": "لا يوجد عقد",
       "noDeployment": "لا يوجد نشر",
-      "noEntity": "لا توجد كيانات مرتبطة"
+      "noEntity": "لا يوجد كيان مرتبط"
     },
     "search": {
-      "placeholder": "البحث في الهويات..."
+      "placeholder": "بحث عن الهويات..."
     },
     "emptyState": {
-      "title": "لم يتم العثور على هويات",
-      "description": "لا توجد هويات تطابق عوامل التصفية الخاصة بك حتى الآن.",
+      "title": "لا توجد هويات",
+      "description": "لا توجد هويات تتطابق مع الفلاتر الخاصة بك حتى الآن.",
       "loading": "جارٍ تحميل الهويات..."
     },
     "errors": {
@@ -94,15 +138,15 @@
     }
   },
   "page": {
-    "description": "إدارة مطالبات الهوية وحالة التحقق والامتثال للمستخدمين.",
-    "loading": "جارِ تحميل المطالبات..."
+    "description": "إدارة مطالبات الهوية، حالة التحقق، والامتثال للمستخدمين.",
+    "loading": "جارٍ تحميل المطالبات..."
   },
   "details": {
     "title": "مطالبات الحساب",
     "summary": {
       "total": "إجمالي المطالبات",
       "verified": "تم التحقق",
-      "pending": "معلق",
+      "pending": "قيد الانتظار",
       "rejectedExpired": "مرفوض/منتهي الصلاحية"
     },
     "claimId": "معرف المطالبة",
@@ -110,6 +154,59 @@
     "noClaimsDescription": "لم يتم تعيين أي مطالبات هوية لهذا الحساب بعد."
   },
   "tabs": {
-    "details": "التفاصيل"
+    "details": "التفاصيل",
+    "claims": "المطالبات"
+  },
+  "fields": {
+    "identityAddress": "عنوان الهوية",
+    "identityAddressInfo": "عنوان البلوكشين لهذه الهوية",
+    "registrationStatus": "حالة التسجيل",
+    "registrationStatusInfo": "ما إذا كانت هذه الهوية مسجلة على السلسلة",
+    "linkedEntity": "الكيان المرتبط",
+    "linkedEntityInfo": "الكيان المرتبط بهذه الهوية"
+  },
+  "claimsTable": {
+    "columns": {
+      "claimName": "اسم المطالبة",
+      "status": "الحالة",
+      "issuer": "الجهة المصدرة",
+      "claimData": "بيانات المطالبة",
+      "issuedDate": "تاريخ الإصدار",
+      "actions": "الإجراءات"
+    },
+    "noClaimData": "لا توجد بيانات",
+    "status": {
+      "active": "نشط",
+      "revoked": "ملغى"
+    },
+    "actions": {
+      "revoke": "إلغاء المطالبة",
+      "remove": "إزالة المطالبة",
+      "revokeTitle": "إلغاء المطالبة",
+      "revokeDescription": "إلغاء المطالبة يعتبر هذا الطلب غير صالح مع الحفاظ عليه لسجل التدقيق.",
+      "revokeConfirm": "إلغاء المطالبة",
+      "revokeSubmitting": "يتم الإلغاء...",
+      "revokeSuccess": "تم إلغاء المطالبة بنجاح",
+      "revokeLoading": "يتم إلغاء المطالبة...",
+      "revokeError": "فشل في إلغاء المطالبة",
+      "removeTitle": "إزالة المطالبة",
+      "removeDescription": "إزالة المطالبة تحذف المطالبة من هذه الهوية. لا يمكن التراجع عن هذا الإجراء.",
+      "removeConfirm": "إزالة المطالبة",
+      "removeSubmitting": "يتم الإزالة...",
+      "verification": {
+        "revokeTitle": "تحقق لإلغاء",
+        "revokeDescription": "أدخل رمز التحقق الخاص بك لإلغاء هذه المطالبة.",
+        "removeTitle": "تحقق للإزالة",
+        "removeDescription": "أدخل رمز التحقق الخاص بك لإزالة هذه المطالبة."
+      },
+      "success": {
+        "revoke": "تم إلغاء المطالبة بنجاح",
+        "remove": "تمت إزالة المطالبة بنجاح"
+      }
+    },
+    "emptyState": {
+      "title": "لم يتم العثور على مطالبات",
+      "description": "لا توجد مطالبات مرتبطة بهذه الهوية."
+    }
   }
 }

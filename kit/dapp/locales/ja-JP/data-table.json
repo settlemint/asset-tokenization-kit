@@ -4,8 +4,8 @@
   "apply": "適用",
   "aria": {
     "selectAll": "このページのすべての行を選択",
-    "selectAllWithCount": "すべての{{count}}行{{status}}を選択",
-    "selectRow": "全体の{{total}}の{{index}}行を選択",
+    "selectAllWithCount": "すべての{{count}}行を選択{{status}}",
+    "selectRow": "全{{total}}行の{{index}}行を選択",
     "someSelected": "（いくつか選択されています）"
   },
   "bulkActions": {
@@ -36,9 +36,9 @@
     "removeTags": "タグを削除",
     "selectAll": "すべて選択",
     "selectRow": "行{{row}}を選択",
-    "selectedCount": "{{count}}が選択されました",
-    "selectedCount_one": "{{count}}項目が選択されました",
-    "selectedCount_other": "{{count}}項目が選択されています",
+    "selectedCount": "{{count}}件選択",
+    "selectedCount_one": "{{count}}アイテム選択",
+    "selectedCount_other": "{{count}}アイテム選択",
     "setTags": "タグを設定",
     "unarchiveSelected": "選択した項目のアーカイブを解除"
   },
@@ -51,7 +51,7 @@
   "comfortable": "快適",
   "compact": "コンパクト",
   "confirm": "確認",
-  "confirmDelete": "この項目を削除してもよろしいですか？",
+  "confirmDelete": "このアイテムを削除してもよろしいですか？",
   "copiedToClipboard": "クリップボードにコピーしました",
   "copy": "コピー",
   "copyToClipboard": "クリップボードにコピー",
@@ -59,7 +59,7 @@
   "density": "密度",
   "details": "詳細",
   "edit": "編集",
-  "entries": "エントリー",
+  "entries": "エントリ",
   "export": "エクスポート",
   "failedExport": "データのエクスポートに失敗しました",
   "filter": "フィルター",
@@ -99,22 +99,23 @@
   "rowsPerPage": "ページあたりの行数",
   "search": "検索...",
   "selectAll": "すべて選択",
-  "selected": "選択された",
+  "selected": "選択済み",
   "selectedRowsInfo": "{{selected}} / {{total}}行が選択されています",
   "showAll": "すべて表示",
   "showSelected": "選択した項目を表示",
   "showing": "表示中",
-  "sortAscending": "昇順にソート",
-  "sortDescending": "降順にソート",
+  "sortAscending": "昇順に並べ替え",
+  "sortDescending": "降順に並べ替え",
   "standard": "標準",
   "table": {
     "emptyState": {
-      "title": "データがありません",
-      "description": "現在表示する項目がありません"
+      "title": "データは利用できません",
+      "description": "現在表示する項目はありません"
     }
   },
   "toggleColumns": "列を切り替え",
-  "tryAdjustingFilters": "探しているものを見つけるためにフィルターを調整してみてください",
+  "totalItems": "合計:",
+  "tryAdjustingFilters": "フィルターを調整して、探しているものを見つけてみてください",
   "view": "表示",
   "viewDetails": "詳細を表示"
 }

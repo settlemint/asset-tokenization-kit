@@ -52,14 +52,14 @@
   "compact": "مضغوط",
   "confirm": "تأكيد",
   "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا العنصر؟",
-  "copiedToClipboard": "تم نسخه إلى الحافظة",
+  "copiedToClipboard": "تم النسخ إلى الحافظة",
   "copy": "نسخ",
   "copyToClipboard": "نسخ إلى الحافظة",
   "delete": "حذف",
   "density": "الكثافة",
   "details": "التفاصيل",
   "edit": "تعديل",
-  "entries": "المدخلات",
+  "entries": "مدخلات",
   "export": "تصدير",
   "failedExport": "فشل في تصدير البيانات",
   "filter": "تصفية",
@@ -96,7 +96,7 @@
   "pageInfo": "الصفحة {{current}} من {{total}}",
   "previous": "السابق",
   "reset": "إعادة تعيين",
-  "rowsPerPage": "الصفوف في الصفحة",
+  "rowsPerPage": "الصفوف لكل صفحة",
   "search": "بحث...",
   "selectAll": "حدد الكل",
   "selected": "المحدد",
@@ -104,16 +104,17 @@
   "showAll": "عرض الكل",
   "showSelected": "عرض المحدد",
   "showing": "عرض",
-  "sortAscending": "فرز تصاعدي",
-  "sortDescending": "فرز تنازلي",
+  "sortAscending": "ترتيب تصاعدي",
+  "sortDescending": "ترتيب تنازلي",
   "standard": "قياسي",
   "table": {
     "emptyState": {
       "title": "لا توجد بيانات متاحة",
-      "description": "لا توجد عناصر للعرض في الوقت الحالي"
+      "description": "لا توجد عناصر لعرضها في الوقت الحالي"
     }
   },
   "toggleColumns": "تبديل الأعمدة",
+  "totalItems": "الإجمالي:",
   "tryAdjustingFilters": "حاول ضبط الفلاتر الخاصة بك للعثور على ما تبحث عنه",
   "view": "عرض",
   "viewDetails": "عرض التفاصيل"

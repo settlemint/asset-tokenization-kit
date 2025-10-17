@@ -18,72 +18,72 @@
     "tokens": "أرصدة الرموز"
   },
   "connection": {
-    "connect": "اتصل بالمحفظة",
-    "connected": "متصل",
-    "connecting": "جارٍ الاتصال...",
-    "disconnect": "فصل الاتصال",
-    "disconnecting": "جارٍ فصل الاتصال...",
-    "reconnect": "إعادة الاتصال",
+    "connect": "ربط المحفظة",
+    "connected": "مربوط",
+    "connecting": "جارٍ الربط...",
+    "disconnect": "فصل",
+    "disconnecting": "جارٍ الفصل...",
+    "reconnect": "إعادة الربط",
     "switchAccount": "تبديل الحساب",
     "switchWallet": "تبديل المحفظة"
   },
   "errors": {
     "chainNotAdded": "يرجى إضافة {{network}} إلى محفظتك",
-    "insufficientFunds": "الأموال غير كافية لإجراء المعاملة",
+    "insufficientFunds": "أموال غير كافية للمعاملة",
     "networkMismatch": "يرجى التبديل إلى شبكة {{network}}",
-    "notConnected": "المحفظة غير متصلة",
-    "notInstalled": "{{wallet}} غير مثبتة",
+    "notConnected": "المحفظة غير مرتبطة",
+    "notInstalled": "{{wallet}} غير مثبت",
     "rejected": "تم رفض الاتصال من قبل المستخدم",
     "timeout": "انتهت مهلة الاتصال",
-    "unknown": "خطأ غير معروف في المحفظة",
+    "unknown": "خطأ محفظة غير معروف",
     "userRejected": "تم رفض المعاملة من قبل المستخدم"
   },
   "mobile": {
     "deepLink": "فتح تطبيق المحفظة",
     "openInWallet": "فتح في {{wallet}}",
-    "scanQR": "مسح رمز الاستجابة السريعة"
+    "scanQR": "مسح رمز QR"
   },
   "networks": {
     "addNetwork": "إضافة {{network}}",
-    "arbitrum": "Arbitrum",
+    "arbitrum": "أربيتروم",
     "localhost": "الشبكة المحلية",
-    "mainnet": "Ethereum Mainnet",
-    "optimism": "Optimism",
-    "polygon": "Polygon",
-    "sepolia": "Sepolia Testnet",
+    "mainnet": "شبكة إيثريوم الرئيسية",
+    "optimism": "أوبتيميزم",
+    "polygon": "بوليجون",
+    "sepolia": "شبكة Sepolia التجريبية",
     "switchNetwork": "التبديل إلى {{network}}",
     "switching": "جارٍ تبديل الشبكة...",
     "unsupported": "شبكة غير مدعومة"
   },
   "onboarding": {
-    "description": "لاستخدام هذا التطبيق اللامركزي، تحتاج إلى محفظة Web3",
-    "getWallet": "احصل على {{wallet}}",
-    "learnMore": "تعلم المزيد",
+    "description": "لاستخدام هذا التطبيق، تحتاج إلى محفظة Web3",
+    "getWallet": "الحصول على {{wallet}}",
+    "learnMore": "معرفة المزيد",
     "steps": {
-      "connect": "الاتصال بهذا التطبيق اللامركزي",
+      "connect": "الاتصال بهذا التطبيق",
       "create": "إنشاء أو استيراد محفظة",
       "install": "تثبيت {{wallet}}"
     },
-    "title": "احصل على محفظة"
+    "title": "الحصول على محفظة"
   },
   "permissions": {
     "access": "سيسمح هذا لـ {{dapp}} بـ:",
-    "request": "{{dapp}} ترغب في الاتصال بمحفظتك",
+    "request": "{{dapp}} يريد الاتصال بمحفظتك",
     "requestTransactions": "طلب موافقات المعاملات",
-    "switchNetworks": "طلب تبديلات الشبكة",
+    "switchNetworks": "طلب تبديل الشبكات",
     "viewAddress": "عرض عنوان محفظتك",
     "viewBalance": "عرض رصيدك"
   },
   "providers": {
-    "argent": "Argent",
-    "coinbase": "محفظة Coinbase",
+    "argent": "محفظة أرجنت",
+    "coinbase": "محفظة كوينبيس",
     "injected": "محفظة المتصفح",
-    "ledger": "Ledger",
-    "metamask": "MetaMask",
-    "rainbow": "Rainbow",
-    "trezor": "Trezor",
-    "trust": "Trust Wallet",
-    "walletConnect": "WalletConnect"
+    "ledger": "ليدجر",
+    "metamask": "ميتاماسك",
+    "rainbow": "رينبو",
+    "trezor": "تريزور",
+    "trust": "محفظة ترست",
+    "walletConnect": "والت كونيكت"
   },
   "settings": {
     "autoConnect": "الاتصال التلقائي عند تحميل الصفحة",
@@ -91,19 +91,19 @@
     "gasPrice": "سعر الغاز",
     "hideSmallBalances": "إخفاء الأرصدة الصغيرة",
     "priority": {
-      "high": "مرتفع",
+      "high": "عالي",
       "low": "منخفض",
       "medium": "متوسط"
     },
-    "slippage": "تحمل الانزلاق"
+    "slippage": "تسامح الانزلاق"
   },
   "signing": {
-    "approve": "الموافقة",
-    "message": "رسالة للتوقيع",
+    "approve": "موافقة",
+    "message": "الرسالة المراد توقيعها",
     "reject": "رفض",
-    "request": "طلب التوقيع",
+    "request": "طلب توقيع",
     "typedData": "بيانات مكتوبة",
-    "warning": "توقيع الرسائل فقط من مصادر موثوقة"
+    "warning": "وقع الرسائل من مصادر موثوقة فقط"
   },
   "transactions": {
     "block": "رقم الكتلة",
@@ -113,7 +113,7 @@
     "failed": "فشل",
     "from": "من",
     "gas": "الغاز المستخدم",
-    "hash": "هاش المعاملة",
+    "hash": "تجزئة المعاملة",
     "pending": "معلق",
     "recent": "المعاملات الأخيرة",
     "status": "الحالة",

@@ -1,4 +1,4 @@
-import { DEFAULT_THEME, type ThemeConfig } from "@/components/theme/schema";
+import { DEFAULT_THEME, type ThemeConfig } from "../lib/schema";
 import {
   Card,
   CardContent,
@@ -18,25 +18,28 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { useStore } from "@tanstack/react-form";
 import { Type } from "lucide-react";
-import { FONT_PREVIEW_TEXT } from "./constants";
-import type { ThemeFormApi, ThemeTranslateFn } from "./types";
-import { useGoogleFontsCatalog } from "./use-google-fonts";
+import { FONT_PREVIEW_TEXT } from "../lib/constants";
+import type { ThemeFormApi, ThemeTranslateFn } from "../lib/types";
+import { useGoogleFontsCatalog } from "../hooks/use-google-fonts";
 
 const FONT_SOURCE_OPTIONS: Array<{
   value: ThemeConfig["fonts"]["sans"]["source"];
-  label: string;
+  labelKey:
+    | "fontSourceOptionFontsource"
+    | "fontSourceOptionGoogle"
+    | "fontSourceOptionCustom";
 }> = [
   {
     value: "fontsource",
-    label: "Default",
+    labelKey: "fontSourceOptionFontsource",
   },
   {
     value: "google",
-    label: "Google Fonts",
+    labelKey: "fontSourceOptionGoogle",
   },
   {
     value: "custom",
-    label: "Custom CSS URL",
+    labelKey: "fontSourceOptionCustom",
   },
 ];
 
@@ -66,32 +69,21 @@ export function FontSettingsCard({
   }> = [
     {
       key: "sans",
-      title: t("settings.theme.fontSansTitle", "Sans-serif Typeface"),
-      description: t(
-        "settings.theme.fontSansDescription",
-        "Primary font used for most UI content."
-      ),
+      title: t("fontSansTitle"),
+      description: t("fontSansDescription"),
     },
     {
       key: "mono",
-      title: t("settings.theme.fontMonoTitle", "Monospace Typeface"),
-      description: t(
-        "settings.theme.fontMonoDescription",
-        "Used for code blocks, addresses, and numeric readouts."
-      ),
+      title: t("fontMonoTitle"),
+      description: t("fontMonoDescription"),
     },
   ];
 
   return (
     <Card id={sectionId} className="scroll-mt-28">
       <CardHeader>
-        <CardTitle>{t("settings.theme.fontsTitle", "Typography")}</CardTitle>
-        <CardDescription>
-          {t(
-            "settings.theme.fontsDescription",
-            "Select font sources, families, and weights for sans-serif and monospace styles."
-          )}
-        </CardDescription>
+        <CardTitle>{t("fontsTitle")}</CardTitle>
+        <CardDescription>{t("fontsDescription")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {fontEntries.map(({ key, title, description }) => {
@@ -119,9 +111,7 @@ export function FontSettingsCard({
                         currentSource) as ThemeConfig["fonts"]["sans"]["source"];
                       return (
                         <div className="space-y-2">
-                          <Label>
-                            {t("settings.theme.fontSourceLabel", "Font source")}
-                          </Label>
+                          <Label>{t("fontSourceLabel")}</Label>
                           <Select
                             value={sourceValue}
                             onValueChange={(value) => {
@@ -157,10 +147,7 @@ export function FontSettingsCard({
                           >
                             <SelectTrigger className="justify-start text-left px-3 py-2">
                               <SelectValue
-                                placeholder={t(
-                                  "settings.theme.fontSourcePlaceholder",
-                                  "Select font source"
-                                )}
+                                placeholder={t("fontSourcePlaceholder")}
                               />
                             </SelectTrigger>
                             <SelectContent>
@@ -170,7 +157,7 @@ export function FontSettingsCard({
                                   value={option.value}
                                 >
                                   <div className="flex flex-col gap-0.5">
-                                    <span>{option.label}</span>
+                                    <span>{t(option.labelKey)}</span>
                                   </div>
                                 </SelectItem>
                               ))}
@@ -183,10 +170,7 @@ export function FontSettingsCard({
 
                   {isDefaultSource ? (
                     <p className="text-xs text-muted-foreground">
-                      {t(
-                        "settings.theme.fontDefaultInfo",
-                        "Using the bundled font. No additional configuration available."
-                      )}
+                      {t("fontDefaultInfo")}
                     </p>
                   ) : (
                     <>
@@ -205,12 +189,7 @@ export function FontSettingsCard({
 
                           return (
                             <div className="space-y-2">
-                              <Label>
-                                {t(
-                                  "settings.theme.fontFamilyLabel",
-                                  "Font family"
-                                )}
-                              </Label>
+                              <Label>{t("fontFamilyLabel")}</Label>
                               {isGoogleSource ? (
                                 <Select
                                   value={
@@ -224,10 +203,7 @@ export function FontSettingsCard({
                                 >
                                   <SelectTrigger className="justify-start text-left">
                                     <SelectValue
-                                      placeholder={t(
-                                        "settings.theme.fontGooglePlaceholder",
-                                        "Select a Google font"
-                                      )}
+                                      placeholder={t("fontGooglePlaceholder")}
                                     />
                                   </SelectTrigger>
                                   <SelectContent>
@@ -269,12 +245,7 @@ export function FontSettingsCard({
                                 : "";
                             return (
                               <div className="space-y-2">
-                                <Label>
-                                  {t(
-                                    "settings.theme.fontUrlLabel",
-                                    "Custom stylesheet URL"
-                                  )}
-                                </Label>
+                                <Label>{t("fontUrlLabel")}</Label>
                                 <Input
                                   value={urlValue}
                                   onChange={(event) => {
@@ -300,12 +271,7 @@ export function FontSettingsCard({
                             .join(", ");
                           return (
                             <div className="space-y-2">
-                              <Label>
-                                {t(
-                                  "settings.theme.fontWeightsLabel",
-                                  "Font weights"
-                                )}
-                              </Label>
+                              <Label>{t("fontWeightsLabel")}</Label>
                               <Input
                                 value={displayValue}
                                 onChange={(event) => {
@@ -322,10 +288,7 @@ export function FontSettingsCard({
                                 placeholder="400, 500, 700"
                               />
                               <p className="text-xs text-muted-foreground">
-                                {t(
-                                  "settings.theme.fontWeightsHelper",
-                                  "Enter numeric weights separated by commas. Leave blank for defaults."
-                                )}
+                                {t("fontWeightsHelper")}
                               </p>
                             </div>
                           );
@@ -339,16 +302,10 @@ export function FontSettingsCard({
                             <div className="flex items-center justify-between rounded-md border px-3 py-2">
                               <div className="space-y-0.5">
                                 <span className="text-sm font-medium">
-                                  {t(
-                                    "settings.theme.fontPreloadLabel",
-                                    "Preload font"
-                                  )}
+                                  {t("fontPreloadLabel")}
                                 </span>
                                 <p className="text-xs text-muted-foreground">
-                                  {t(
-                                    "settings.theme.fontPreloadDescription",
-                                    'Injects <link rel="preload"> to prioritize loading.'
-                                  )}
+                                  {t("fontPreloadDescription")}
                                 </p>
                               </div>
                               <Switch
@@ -356,10 +313,7 @@ export function FontSettingsCard({
                                 onCheckedChange={(checkedValue) => {
                                   field.handleChange(checkedValue);
                                 }}
-                                aria-label={t(
-                                  "settings.theme.fontPreloadLabel",
-                                  "Preload font"
-                                )}
+                                aria-label={t("fontPreloadLabel")}
                               />
                             </div>
                           );
@@ -371,7 +325,7 @@ export function FontSettingsCard({
 
                 <div className="rounded-lg border bg-muted/30 p-4">
                   <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    {t("settings.theme.fontPreviewLabel", "Preview")}
+                    {t("fontPreviewLabel")}
                   </p>
                   <p
                     className="text-base leading-relaxed"
@@ -387,10 +341,7 @@ export function FontSettingsCard({
                   </code>
                   {isGoogleSource ? (
                     <p className="text-[11px] text-muted-foreground mt-2">
-                      {t(
-                        "settings.theme.fontGoogleHint",
-                        "Select a font family from the dropdown to load it from Google Fonts."
-                      )}
+                      {t("fontGoogleHint")}
                     </p>
                   ) : null}
                 </div>

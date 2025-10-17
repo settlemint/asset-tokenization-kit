@@ -26,12 +26,12 @@ import {
   hashTheme,
   type ResolvedFontLink,
   type FontVariables,
-} from "@/components/theme/compile-css";
-import { DEFAULT_THEME, type ThemeConfig } from "@/components/theme/schema";
+} from "@/components/theme/lib/compile-css";
+import { DEFAULT_THEME, type ThemeConfig } from "@/components/theme/lib/schema";
 import {
   getThemeCssFromCache,
   setThemeCssCache,
-} from "@/components/theme/theme-css-cache";
+} from "@/components/theme/lib/theme-css-cache";
 import { patchBigIntToJSON } from "@/lib/utils/json";
 import type { orpc } from "@/orpc/orpc-client";
 import { Providers } from "@/providers";

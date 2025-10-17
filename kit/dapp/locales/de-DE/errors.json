@@ -1,35 +1,35 @@
 {
   "badGateway": {
-    "description": "Etwas ist schiefgelaufen. Der Server wurde durch die Antwort eines anderen Servers verwirrt – versuchen Sie es in einem Moment noch einmal.",
-    "title": "Verbindungsproblem"
+    "description": "Etwas ist auf unserer Seite schiefgelaufen. Der Server wurde von der Antwort eines anderen Servers verwirrt — versuchen Sie es in einem Moment erneut.",
+    "title": "Verbindungsstörung"
   },
   "badRequest": {
     "description": "Wir konnten diese Anfrage nicht verstehen. Überprüfen Sie Ihre Informationen und versuchen Sie es erneut.",
-    "title": "Etwas stimmt nicht"
+    "title": "Etwas stimmt nicht ganz"
   },
   "buttons": {
-    "goBack": "Zurückgehen",
-    "goHome": "Nach Hause gehen",
+    "goBack": "Zurück",
+    "goHome": "Nach Hause",
     "tryAgain": "Erneut versuchen"
   },
   "conflict": {
-    "description": "Diese Aktion steht im Konflikt mit etwas, das bereits vorhanden ist. Das System benötigt hier einen anderen Ansatz.",
+    "description": "Diese Aktion steht im Konflikt mit etwas, das bereits vorhanden ist. Das System braucht einen anderen Ansatz hier.",
     "title": "Das funktioniert gerade nicht"
   },
   "forbidden": {
-    "description": "Sie haben nicht die richtigen Berechtigungen für diesen Bereich. Kontaktieren Sie Ihren Administrator, wenn Sie denken, dass Sie Zugriff haben sollten.",
+    "description": "Sie haben nicht die richtigen Berechtigungen für diesen Bereich. Kontaktieren Sie Ihren Administrator, wenn Sie glauben, dass Sie Zugriff haben sollten.",
     "title": "Zugriff eingeschränkt"
   },
   "gatewayTimeout": {
-    "description": "Der Server benötigt länger als erwartet, um zu antworten. Er könnte beschäftigt sein – versuchen wir es in einem Moment erneut.",
+    "description": "Der Server braucht länger als erwartet, um zu antworten. Er könnte beschäftigt sein — versuchen wir es in einem Moment erneut.",
     "title": "Dauert zu lange"
   },
   "generic": {
-    "description": "Es ist etwas Unerwartetes passiert, aber keine Sorge – solche Dinge passieren. Lassen Sie es uns noch einmal versuchen.",
-    "title": "Ups, etwas ist schiefgelaufen"
+    "description": "Etwas Unerwartetes ist passiert, aber keine Sorge — so etwas passiert. Lassen Sie uns es noch einmal versuchen.",
+    "title": "Hoppla, etwas ist schiefgelaufen"
   },
   "internal": {
-    "description": "Wir haben einige technische Schwierigkeiten auf unserer Seite. Unser Team wurde benachrichtigt – bitte versuchen Sie es in ein paar Minuten erneut.",
+    "description": "Wir haben einige technische Schwierigkeiten auf unserer Seite. Unser Team wurde benachrichtigt — bitte versuchen Sie es in ein paar Minuten erneut.",
     "title": "Technische Schwierigkeiten"
   },
   "notFound": {
@@ -37,35 +37,35 @@
     "title": "Seite nicht gefunden"
   },
   "notOnboarded": {
-    "description": "Sie müssen zuerst Ihre Plattformkonfiguration abschließen. Es dauert nur ein paar Minuten, um alles einzurichten.",
-    "title": "Einrichtung erforderlich"
+    "description": "Sie müssen zuerst Ihr Plattform-Setup abschließen. Es dauert nur ein paar Minuten, um alles zu konfigurieren.",
+    "title": "Setup erforderlich"
   },
   "portal": {
-    "description": "Wir haben Probleme, eine Verbindung zu unserem Datenservice herzustellen. Das ist normalerweise vorübergehend – versuchen Sie es in einem Moment erneut.",
+    "description": "Wir haben Schwierigkeiten, uns mit unserem Datendienst zu verbinden. Dies ist normalerweise vorübergehend — versuchen Sie es in einem Moment zu aktualisieren.",
     "title": "Verbindungsproblem"
   },
   "rateLimit": {
-    "description": "Whoa, mach langsam! Sie waren ganz schön beschäftigt. Nehmen Sie sich einen Moment Zeit zum Durchatmen und versuchen Sie es dann erneut.",
-    "title": "Langsam angehen"
+    "description": "Whoa, langsamer da! Sie waren ziemlich beschäftigt. Machen Sie eine Pause für einen Moment, dann versuchen Sie es erneut.",
+    "title": "Gemächlich"
   },
   "resourceAlreadyExists": {
-    "description": "Das existiert bereits im System. Versuchen Sie, einen anderen Namen oder Identifikator zu verwenden.",
+    "description": "Dieses Element existiert bereits. Bitte wählen Sie einen eindeutigen Namen oder Bezeichner.",
     "title": "Bereits vergeben"
   },
   "serviceUnavailable": {
-    "description": "Dieser Dienst macht eine kurze Pause für Wartungsarbeiten. Er sollte bald wieder verfügbar sein.",
-    "title": "Dienst vorübergehend nicht verfügbar"
+    "description": "Dieser Dienst macht eine kurze Pause für Wartung. Er sollte bald wieder verfügbar sein.",
+    "title": "Dienst vorübergehend ausgefallen"
   },
   "systemNotCreated": {
-    "description": "Die Plattform wurde noch nicht eingerichtet. Bitte bitten Sie einen Administrator, die erste Bereitstellung abzuschließen.",
+    "description": "Die Plattform wurde noch nicht eingerichtet. Bitte bitten Sie einen Administrator, die anfängliche Bereitstellung abzuschließen.",
     "title": "Plattform nicht initialisiert"
   },
   "timeout": {
-    "description": "Das dauert länger als erwartet. Der Server könnte beschäftigt sein – versuchen wir es noch einmal.",
-    "title": "Anfrage zeitüberschreitung"
+    "description": "Das dauert länger als erwartet. Der Server könnte beschäftigt sein — versuchen wir es noch einmal.",
+    "title": "Anfrage-Zeitüberschreitung"
   },
   "tokenInterfaceNotSupported": {
-    "description": "Dieser Token-Vertrag unterstützt nicht die Funktionen, die wir benötigen. Stellen Sie sicher, dass er implementiert: {{requiredInterfaces}}",
+    "description": "Dieser Token-Vertrag unterstützt nicht die Funktionen, die wir brauchen. Stellen Sie sicher, dass er implementiert: {{requiredInterfaces}}",
     "title": "Inkompatibler Token-Typ"
   },
   "unauthorized": {
@@ -73,12 +73,12 @@
     "title": "Anmeldung erforderlich"
   },
   "userNotAllowed": {
-    "description": "Sie können gerade nicht mit diesem Token interagieren. {{reason}}",
+    "description": "Sie können derzeit nicht mit diesem Token interagieren. {{reason}}",
     "title": "Aktion nicht erlaubt"
   },
   "userNotAuthorized": {
-    "description": "Sie benötigen zusätzliche Berechtigungen für diese Aktion. Erforderliche Rollen: {{requiredRoles}}",
-    "title": "Zusätzliche Berechtigungen erforderlich"
+    "description": "Sie brauchen zusätzliche Berechtigungen für diese Aktion. Erforderliche Rollen: {{requiredRoles}}",
+    "title": "Zusätzliche Berechtigungen benötigt"
   },
   "validation": {
     "description": "Einige der Informationen sehen nicht richtig aus. Überprüfen Sie die hervorgehobenen Felder und versuchen Sie es erneut.",

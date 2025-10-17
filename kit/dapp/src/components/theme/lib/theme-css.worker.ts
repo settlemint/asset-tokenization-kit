@@ -1,7 +1,7 @@
 /// <reference lib="webworker" />
 
-import { compileThemeCSS } from "@/components/theme/compile-css";
-import type { ThemeConfig } from "@/components/theme/schema";
+import { compileThemeCSS } from "./compile-css";
+import type { ThemeConfig } from "./schema";
 
 type ThemeCompileWorkerRequest = {
   id: number;

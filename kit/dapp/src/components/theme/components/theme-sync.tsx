@@ -1,5 +1,5 @@
-import type { FontVariables } from "@/components/theme/compile-css";
-import { queueThemeDomUpdates } from "@/components/theme/theme-dom-updater";
+import type { FontVariables } from "../lib/compile-css";
+import { queueThemeDomUpdates } from "../lib/theme-dom-updater";
 import { useThemeContext } from "@/providers/theme-context";
 import { useTheme } from "next-themes";
 import { useEffect } from "react";

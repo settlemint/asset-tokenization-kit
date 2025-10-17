@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import type { ThemeTranslateFn } from "./types";
+import type { ThemeTranslateFn } from "../lib/types";
 
 type StatusBannerProps = {
   hasUnsavedChanges: boolean;
@@ -43,15 +43,7 @@ export function StatusBanner({
           : "border-muted text-muted-foreground"
       )}
     >
-      {hasUnsavedChanges
-        ? t(
-            "settings.theme.dirtyMessage",
-            "You have unsaved edits. Save or reset to discard changes."
-          )
-        : t(
-            "settings.theme.pristineMessage",
-            "Theme reflects the latest saved configuration."
-          )}
+      {hasUnsavedChanges ? t("dirtyMessage") : t("pristineMessage")}
     </div>
   );
 }

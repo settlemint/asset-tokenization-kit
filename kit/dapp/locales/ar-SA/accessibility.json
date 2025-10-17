@@ -42,10 +42,10 @@
   },
   "loading": {
     "loading": "جارٍ التحميل...",
-    "loadingContent": "جارٍ تجهيز المحتوى الخاص بك...",
+    "loadingContent": "جارٍ إعداد المحتوى الخاص بك...",
     "loadingPage": "جارٍ إعداد الأمور...",
     "processingRequest": "جارٍ العمل على ذلك...",
-    "pleaseWait": "لحظة واحدة..."
+    "pleaseWait": "لحظة من فضلك..."
   },
   "navigation": {
     "breadcrumb": "أنت هنا",
@@ -89,15 +89,15 @@
     "markAsRead": "تحديد كمقروء"
   },
   "wallet": {
-    "connectWallet": "قم بتوصيل محفظتك",
+    "connectWallet": "اتصل بمحفظتك",
     "disconnectWallet": "فصل المحفظة",
     "switchAccount": "التبديل إلى حساب آخر",
     "copyAddress": "نسخ عنوان محفظتك"
   },
   "images": {
-    "logo": "شعار مجموعة توكين الأصول",
+    "logo": "شعار مجموعة توكينيزات الأصول",
     "tokenIcon": "{{name}} رمز التوكن",
-    "userAvatar": "صورتك الشخصية",
+    "userAvatar": "صورة ملفك الشخصي",
     "assetImage": "{{name}} صورة الأصل"
   }
 }

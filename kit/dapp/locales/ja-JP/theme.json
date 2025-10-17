@@ -1,7 +1,7 @@
 {
   "dark": "ダークモード",
   "light": "ライトモード",
-  "switch-to-mode": "モードを切り替える {mode}",
+  "switch-to-mode": "モードを{mode}に切り替え",
   "system": "システムに合わせる",
   "toggle-label": "テーマを変更"
 }

@@ -1,19 +1,17 @@
 {
   "addons": {
     "messages": {
-      "accessDenied": "Zugriff verweigert für {{name}}",
-      "allFailed": "Registrierung von Addons fehlgeschlagen",
-      "allSuccess": "Alle {{count}} Addons erfolgreich registriert",
-      "alreadyExists": "Addon {{name}} existiert bereits",
-      "defaultError": "Ein Fehler ist bei der Registrierung des Addons aufgetreten",
-      "failed": "Registrierung von {{name}} fehlgeschlagen",
-      "invalidConfiguration": "Kein Addon-Register für das System {{systemAddress}} gefunden",
-      "invalidImplementation": "Ungültige Implementierung bereitgestellt",
-      "partialSuccess": "{{successful}} von {{total}} Addons erfolgreich registriert",
-      "preparing": "Vorbereitung zur Registrierung von Addons",
-      "progress": "Registriere {{current}} von {{total}} Addons",
+      "allFailed": "Alle Add-ons konnten nicht registriert werden",
+      "allSuccess": "Alle {{count}} Add-ons erfolgreich registriert",
+      "alreadyExists": "Add-on {{name}} existiert bereits",
+      "defaultError": "Beim Registrieren des Add-ons ist ein Fehler aufgetreten",
+      "failed": "Fehler beim Registrieren von {{name}}",
+      "invalidConfiguration": "Keine Add-on-Registrierung für System {{systemAddress}} gefunden",
+      "partialSuccess": "{{successful}} von {{total}} Add-ons erfolgreich registriert",
+      "preparing": "Vorbereitung zur Registrierung von Add-ons",
+      "progress": "Registrierung von {{current}} von {{total}} Add-ons",
       "registered": "{{name}} erfolgreich registriert",
-      "registering": "Registriere {{name}}"
+      "registering": "{{name}} registrieren"
     }
   },
   "create": {
@@ -21,13 +19,13 @@
       "alreadyExists": "System existiert bereits",
       "bootstrapFailed": "Bootstrap des Systems fehlgeschlagen",
       "bootstrapSuccess": "System erfolgreich gebootstrapped",
-      "bootstrapping": "System wird gebootstrapped",
-      "createdBootstrapFailed": "System wurde unter {{systemAddress}} erstellt, aber der Bootstrap ist fehlgeschlagen. Manuelle Intervention könnte erforderlich sein.",
-      "creating": "System wird erstellt",
+      "bootstrapping": "System bootstrappen",
+      "createdBootstrapFailed": "System bei {{systemAddress}} erstellt, aber Bootstrap fehlgeschlagen. Manuelles Eingreifen kann erforderlich sein.",
+      "creating": "System erstellen",
       "creationFailed": "Erstellung des Systems fehlgeschlagen",
-      "queryingSystem": "Abfrage von Systeminformationen",
+      "queryingSystem": "Systeminformationen abfragen",
       "success": "System erfolgreich erstellt",
-      "systemNotFound": "System nach der Erstellung nicht gefunden"
+      "systemNotFound": "System nach Erstellung nicht gefunden"
     }
   },
   "identityCreate": {
@@ -46,11 +44,11 @@
   },
   "complianceModule": {
     "messages": {
-      "preparing": "Bereite die Registrierung des Compliance-Moduls vor",
+      "preparing": "Vorbereitung zur Registrierung des Compliance-Moduls",
       "success": "Compliance-Modul erfolgreich registriert",
       "failed": "Registrierung des Compliance-Moduls fehlgeschlagen",
-      "progress": "Registriere {{current}} von {{total}} Compliance-Modulen",
-      "registering": "Registriere {{name}}",
+      "progress": "Registrierung von {{current}} von {{total}} Compliance-Modulen",
+      "registering": "{{name}} registrieren",
       "registered": "{{name}} erfolgreich registriert"
     }
   }

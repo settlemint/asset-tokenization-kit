@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { ThemeUpdateSchema } from "./theme.update.schema";
-import { DEFAULT_THEME } from "@/components/theme/schema";
+import { DEFAULT_THEME } from "@/components/theme/lib/schema";
 
 describe("theme update schema validation", () => {
   it("should accept valid theme configuration", () => {
@@ -15,7 +15,7 @@ describe("theme update schema validation", () => {
         ...DEFAULT_THEME.cssVars,
         light: {
           ...DEFAULT_THEME.cssVars.light,
-          primary: "not-a-color",
+          "sm-text": "not-a-color",
         },
       },
     };
@@ -60,6 +60,33 @@ describe("theme update schema validation", () => {
           source: "custom" as const,
           url: "ftp://fonts.example.com/font.woff2",
         },
+      },
+    };
+
+    const result = ThemeUpdateSchema.safeParse(invalidTheme);
+    expect(result.success).toBe(false);
+  });
+
+  it("should accept absolute paths for logo URLs", () => {
+    const theme = {
+      ...DEFAULT_THEME,
+      logo: {
+        ...DEFAULT_THEME.logo,
+        lightUrl: "/assets/logo.svg",
+        darkUrl: "/assets/logo-dark.svg",
+      },
+    };
+
+    const result = ThemeUpdateSchema.safeParse(theme);
+    expect(result.success).toBe(true);
+  });
+
+  it("should reject relative paths without leading slash", () => {
+    const invalidTheme = {
+      ...DEFAULT_THEME,
+      logo: {
+        ...DEFAULT_THEME.logo,
+        lightUrl: "assets/logo.svg",
       },
     };
 
