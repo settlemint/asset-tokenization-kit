@@ -154,7 +154,7 @@ describe(
           expiresAt: null,
           id: expect.any(String),
           name: "RedeemBond",
-          status: "UPCOMING",
+          status: "PENDING",
           target: bond.id,
         },
       ]);
@@ -187,6 +187,7 @@ describe(
             executors: [adminUserData.wallet],
             id: expect.any(String),
           },
+          expiresAt: null,
           id: expect.any(String),
           name: "RedeemBond",
           status: "EXECUTED",

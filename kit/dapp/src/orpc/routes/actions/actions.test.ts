@@ -24,7 +24,7 @@ describe("Actions Schemas", () => {
     it("should validate all status enum values", () => {
       const validStatuses = [
         "PENDING",
-        "ACTIVE",
+        "UPCOMING",
         "EXECUTED",
         "EXPIRED",
       ] as const;
@@ -97,6 +97,7 @@ describe("Actions Schemas", () => {
       target: "0x1234567890123456789012345678901234567890",
       activeAt: "1700000100",
       status: "PENDING" as const,
+      expiresAt: null,
       executedAt: null,
       executedBy: null,
       executor: {
@@ -244,6 +245,7 @@ describe("Actions Schemas", () => {
       target: "0x1234567890123456789012345678901234567890",
       activeAt: "1700000100",
       status: "PENDING" as const,
+      expiresAt: null,
       executedAt: null,
       executedBy: null,
       executor: {
@@ -295,6 +297,7 @@ describe("Actions Schemas", () => {
         target: "0x1234567890123456789012345678901234567890",
         activeAt: "1700000100",
         status: "PENDING" as const,
+        expiresAt: null,
         executedAt: null,
         executedBy: null,
         executor: {

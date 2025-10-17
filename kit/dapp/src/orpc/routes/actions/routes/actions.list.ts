@@ -104,12 +104,12 @@ export const list = authRouter.actions.list.handler(
     const nowMicroseconds = getUnixTimeMicroseconds(now);
     switch (input.status) {
       case "PENDING":
-        where.activeAt_lt = nowMicroseconds;
+        where.activeAt_lte = nowMicroseconds;
         where.expiresAt_gt = nowMicroseconds;
         where.executed = false;
         break;
       case "UPCOMING":
-        where.activeAt_gte = nowMicroseconds;
+        where.activeAt_gt = nowMicroseconds;
         where.expiresAt_gt = nowMicroseconds;
         where.executed = false;
         break;
@@ -157,7 +157,7 @@ function getActionStatus(
   if (action.expiresAt && action.expiresAt.getTime() <= now.getTime()) {
     return "EXPIRED";
   }
-  if (action.activeAt.getTime() >= now.getTime()) {
+  if (action.activeAt.getTime() > now.getTime()) {
     return "UPCOMING";
   }
   return "PENDING";
