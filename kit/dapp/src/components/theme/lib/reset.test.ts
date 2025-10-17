@@ -8,28 +8,24 @@ import {
   resetThemeToDefaults,
 } from "./reset";
 
-const deleteFileMock = vi.fn();
-const getThemeMock = vi.fn();
-const resetThemeMock = vi.fn();
+const { deleteFileMock, getThemeMock, resetThemeMock } = vi.hoisted(() => ({
+  deleteFileMock: vi.fn(),
+  getThemeMock: vi.fn(),
+  resetThemeMock: vi.fn(),
+}));
 
 vi.mock("@/lib/settlemint/minio", () => ({
   client: Symbol("minio-client"),
 }));
 
 vi.mock("@settlemint/sdk-minio", () => ({
-  deleteFile: (...args: unknown[]) => deleteFileMock(...args),
+  deleteFile: deleteFileMock,
 }));
 
-vi.mock("@/components/theme/lib/repository", async () => {
-  const actual = await vi.importActual<
-    typeof import("@/components/theme/lib/repository")
-  >("@/components/theme/lib/repository");
-  return {
-    ...actual,
-    getTheme: (...args: unknown[]) => getThemeMock(...args),
-    resetTheme: (...args: unknown[]) => resetThemeMock(...args),
-  };
-});
+vi.mock("@/components/theme/lib/repository", () => ({
+  getTheme: getThemeMock,
+  resetTheme: resetThemeMock,
+}));
 
 describe("theme reset utilities", () => {
   beforeEach(() => {

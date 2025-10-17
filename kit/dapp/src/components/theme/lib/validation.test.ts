@@ -21,7 +21,8 @@ describe("theme validation", () => {
   it("reports token count mismatches", () => {
     const faulty = sanitizeThemeForValidation(DEFAULT_THEME);
     // @ts-expect-error - deliberately violate schema at runtime
-    delete faulty.cssVars.light.background;
+    // Add an extra token so the validator catches the mismatch.
+    faulty.cssVars.light["unsupported-token"] = "oklch(0 0 0)";
     const issues = validateThemeLimits(faulty);
     expect(issues.some((issue) => issue.code === "TOKEN_LIMIT_EXCEEDED")).toBe(
       true

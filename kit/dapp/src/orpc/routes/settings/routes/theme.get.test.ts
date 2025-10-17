@@ -13,9 +13,13 @@ import {
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
 
-const updateThemeMock = vi.hoisted(() => vi.fn());
+const { getThemeMock, updateThemeMock } = vi.hoisted(() => ({
+  getThemeMock: vi.fn(),
+  updateThemeMock: vi.fn(),
+}));
 
 vi.mock("@/components/theme/lib/repository", () => ({
+  getTheme: getThemeMock,
   updateTheme: updateThemeMock,
 }));
 
@@ -46,6 +50,9 @@ function captureError(factory: () => never): Error {
 describe("settings.theme routes", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    getThemeMock.mockReset();
+    updateThemeMock.mockReset();
+    getThemeMock.mockResolvedValue(DEFAULT_THEME);
   });
 
   it("updates theme when authorized context provided", async () => {
@@ -62,6 +69,7 @@ describe("settings.theme routes", () => {
       },
     };
 
+    getThemeMock.mockResolvedValueOnce(DEFAULT_THEME);
     updateThemeMock.mockResolvedValueOnce(updatedTheme);
 
     const result = await handler({
@@ -85,6 +93,7 @@ describe("settings.theme routes", () => {
       errors.INPUT_VALIDATION_FAILED({ message: "Invalid theme payload" })
     );
 
+    getThemeMock.mockResolvedValueOnce(DEFAULT_THEME);
     updateThemeMock.mockRejectedValueOnce(validationError);
 
     await expect(
@@ -102,6 +111,7 @@ describe("settings.theme routes", () => {
     const errors = createMockErrors();
     const versionError = new Error("VERSION_MISMATCH");
 
+    getThemeMock.mockResolvedValueOnce(DEFAULT_THEME);
     updateThemeMock.mockRejectedValueOnce(versionError);
 
     await expect(
@@ -130,5 +140,6 @@ describe("settings.theme routes", () => {
     });
 
     expect(updateThemeMock).not.toHaveBeenCalled();
+    expect(getThemeMock).not.toHaveBeenCalled();
   });
 });
