@@ -29,6 +29,10 @@ type LogoSettingsCardProps = {
   onFileSelected: (mode: "light" | "dark", file: File | null) => void;
   lightInputRef: RefObject<HTMLInputElement | null>;
   darkInputRef: RefObject<HTMLInputElement | null>;
+  uploadStatus: {
+    light: boolean;
+    dark: boolean;
+  };
   t: ThemeTranslateFn;
 };
 
@@ -41,6 +45,7 @@ export function LogoSettingsCard({
   onFileSelected,
   lightInputRef,
   darkInputRef,
+  uploadStatus,
   t,
 }: LogoSettingsCardProps) {
   const logoModes: Array<{
@@ -109,6 +114,7 @@ export function LogoSettingsCard({
               mode === "light" ? "logo.lightUrl" : "logo.darkUrl";
             const fileInputRef =
               mode === "light" ? lightInputRef : darkInputRef;
+            const isUploading = uploadStatus[mode];
             return (
               <form.Field key={mode} name={fieldName}>
                 {(field) => {
@@ -146,6 +152,7 @@ export function LogoSettingsCard({
                               onClick={() => {
                                 onPickFile(mode);
                               }}
+                              disabled={isUploading}
                             >
                               <UploadCloud className="mr-2 size-4" />
                               {t("logoUploadButton")}
@@ -165,6 +172,7 @@ export function LogoSettingsCard({
                               className="hidden"
                               type="file"
                               accept="image/svg+xml,image/png,image/webp"
+                              disabled={isUploading}
                               onChange={(event) => {
                                 const file = event.target.files?.[0] ?? null;
                                 onFileSelected(mode, file);

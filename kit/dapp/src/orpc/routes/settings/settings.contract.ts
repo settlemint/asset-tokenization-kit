@@ -17,6 +17,10 @@ import {
   ThemePreviewSchema,
 } from "./routes/theme.preview.schema";
 import { themeConfigSchema } from "@/components/theme/lib/schema";
+import {
+  ThemeLogoUploadOutputSchema,
+  ThemeLogoUploadSchema,
+} from "./routes/theme.upload-logo.schema";
 
 /**
  * Contract definition for the settings read endpoint.
@@ -131,6 +135,22 @@ const themePreview = baseContract
   .output(ThemePreviewOutputSchema);
 
 /**
+ * Contract definition for the theme logo upload endpoint.
+ *
+ * Uploads a new logo asset to branding storage.
+ */
+const themeUploadLogo = baseContract
+  .route({
+    method: "POST",
+    path: "/settings/theme/logo",
+    description: "Upload theme logo asset",
+    successDescription: "Theme logo uploaded successfully",
+    tags: ["settings", "theme"],
+  })
+  .input(ThemeLogoUploadSchema)
+  .output(ThemeLogoUploadOutputSchema);
+
+/**
  * Settings API contract collection.
  *
  * Exports all settings-related API contracts for use in the main contract registry.
@@ -144,6 +164,8 @@ const themePreview = baseContract
  * - delete: Delete a setting
  * - theme.get: Retrieve theme configuration
  * - theme.update: Update theme configuration
+ * - theme.uploadLogo: Upload a new theme logo asset
+ * - theme.preview: Cache a theme preview payload
  */
 export const settingsContract = {
   read,
@@ -153,6 +175,7 @@ export const settingsContract = {
   theme: {
     get: themeGet,
     update: themeUpdate,
+    uploadLogo: themeUploadLogo,
     preview: themePreview,
   },
 };

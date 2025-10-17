@@ -4,7 +4,7 @@ import { compileThemeCSS } from "./compile-css";
 import { DEFAULT_THEME, type ThemeConfig } from "./schema";
 import { getTheme, resetTheme as deleteThemeRow } from "./repository";
 
-const DEFAULT_BRANDING_BUCKET =
+export const DEFAULT_BRANDING_BUCKET =
   process.env.SETTLEMINT_MINIO_BRANDING_BUCKET ?? "branding";
 
 interface ResetThemeOptions {

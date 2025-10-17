@@ -31,6 +31,10 @@ import {
   prepareThemePayload,
   sanitizeLogoUrlForPayload,
 } from "@/components/theme/lib/payload";
+import type {
+  ThemeLogoUploadInput,
+  ThemeLogoUploadOutput,
+} from "@/orpc/routes/settings/routes/theme.upload-logo.schema";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -149,6 +153,9 @@ function ThemeSettingsPage() {
         restoreThemeOverridesCss(context?.previousStyle);
       },
     });
+  const { mutateAsync: uploadLogoMutation } = useMutation({
+    ...orpc.settings.theme.uploadLogo.mutationOptions(),
+  });
   const storageKey = `theme-editor:${userId}`;
 
   const form = useAppForm({
@@ -157,6 +164,13 @@ function ThemeSettingsPage() {
   const [validationSummary, setValidationSummary] = useState<string | null>(
     null
   );
+  const [logoUploadStatus, setLogoUploadStatus] = useState<{
+    light: boolean;
+    dark: boolean;
+  }>({
+    light: false,
+    dark: false,
+  });
 
   const logoObjectUrls = useRef<{ light?: string; dark?: string }>({});
   const lightLogoInputRef = useRef<HTMLInputElement | null>(null);
@@ -247,12 +261,37 @@ function ThemeSettingsPage() {
     logoObjectUrls.current = {};
   };
 
+  const getDraftSnapshot = () =>
+    cloneThemeConfig(form.state.values as ThemeConfig);
+
+  const readFileAsBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.addEventListener("load", () => {
+        if (typeof reader.result === "string") {
+          const commaIndex = reader.result.indexOf(",");
+          if (commaIndex !== -1) {
+            resolve(reader.result.slice(commaIndex + 1));
+            return;
+          }
+          resolve(reader.result);
+          return;
+        }
+        reject(new Error("Unable to read file data"));
+      });
+      reader.addEventListener("error", () => {
+        reject(new Error("Failed to read file"));
+      });
+      reader.readAsDataURL(file);
+    });
+
   const applyDraftTheme = (theme: ThemeConfig, precompiledCss?: string) => {
     const cloned = cloneThemeConfig(theme);
     form.reset(cloned);
     setPreviewDraft(cloned);
     setCompiledCss(precompiledCss ?? compileThemeCSS(cloned));
     setIsCompiling(false);
+    setLogoUploadStatus({ light: false, dark: false });
     clearLogoObjectUrls();
   };
 
@@ -437,32 +476,95 @@ function ThemeSettingsPage() {
   const draftSerialized = useMemo(() => JSON.stringify(draft), [draft]);
   const baseSerialized = useMemo(() => JSON.stringify(baseTheme), [baseTheme]);
   const hasUnsavedChanges = draftSerialized !== baseSerialized;
+  const hasPendingLogoUpload = logoUploadStatus.light || logoUploadStatus.dark;
 
   const handleLogoFile = (mode: "light" | "dark", file: File | null) => {
     if (!file) {
       return;
     }
 
-    const previousUrl = logoObjectUrls.current[mode];
-    if (previousUrl) {
-      URL.revokeObjectURL(previousUrl);
+    const fieldPath = mode === "light" ? "logo.lightUrl" : "logo.darkUrl";
+    const currentValues = form.state.values as ThemeConfig;
+    const previousValue =
+      mode === "light"
+        ? currentValues.logo.lightUrl
+        : currentValues.logo.darkUrl;
+
+    const previousObjectUrl = logoObjectUrls.current[mode];
+    if (previousObjectUrl) {
+      URL.revokeObjectURL(previousObjectUrl);
     }
 
     const objectUrl = URL.createObjectURL(file);
     logoObjectUrls.current[mode] = objectUrl;
-    form.setFieldValue(
-      mode === "light" ? "logo.lightUrl" : "logo.darkUrl",
-      objectUrl
-    );
-    toast.success(tTheme("logoUploadSuccess"));
+    form.setFieldValue(fieldPath, objectUrl);
 
-    const currentDraft = cloneThemeConfig(draft);
+    const optimisticDraft = cloneThemeConfig(draft);
     if (mode === "light") {
-      currentDraft.logo.lightUrl = objectUrl;
+      optimisticDraft.logo.lightUrl = objectUrl;
     } else {
-      currentDraft.logo.darkUrl = objectUrl;
+      optimisticDraft.logo.darkUrl = objectUrl;
     }
-    updatePreviewDraft(currentDraft);
+    updatePreviewDraft(optimisticDraft);
+
+    setLogoUploadStatus((state) => ({ ...state, [mode]: true }));
+
+    const previousSanitized = sanitizeLogoUrlForPayload(
+      typeof previousValue === "string" ? previousValue : undefined
+    );
+
+    const fallbackUrl =
+      typeof previousValue === "string" && previousValue.length > 0
+        ? previousValue
+        : mode === "light"
+          ? (baseTheme.logo.lightUrl ?? "")
+          : (baseTheme.logo.darkUrl ?? "");
+
+    const contentType = file.type as ThemeLogoUploadInput["contentType"];
+
+    const uploadPromise = readFileAsBase64(file).then((base64Data) =>
+      uploadLogoMutation({
+        mode,
+        fileName: file.name,
+        contentType,
+        fileSize: file.size,
+        base64Data,
+        previousUrl: previousSanitized,
+      })
+    );
+
+    uploadPromise
+      .then((result: ThemeLogoUploadOutput) => {
+        const nextDraft = getDraftSnapshot();
+        if (mode === "light") {
+          nextDraft.logo.lightUrl = result.publicUrl;
+        } else {
+          nextDraft.logo.darkUrl = result.publicUrl;
+        }
+        nextDraft.logo.etag = result.etag;
+        nextDraft.logo.updatedAt = result.updatedAt;
+        updatePreviewDraft(nextDraft);
+        form.setFieldValue(fieldPath, result.publicUrl);
+        form.setFieldValue("logo.etag", result.etag);
+        form.setFieldValue("logo.updatedAt", result.updatedAt);
+        toast.success(tTheme("logoUploadSuccess"));
+      })
+      .catch((error: unknown) => {
+        const fallbackDraft = getDraftSnapshot();
+        if (mode === "light") {
+          fallbackDraft.logo.lightUrl = fallbackUrl;
+        } else {
+          fallbackDraft.logo.darkUrl = fallbackUrl;
+        }
+        updatePreviewDraft(fallbackDraft);
+        form.setFieldValue(fieldPath, fallbackUrl);
+        toast.error(error instanceof Error ? error.message : String(error));
+      })
+      .finally(() => {
+        setLogoUploadStatus((state) => ({ ...state, [mode]: false }));
+        URL.revokeObjectURL(objectUrl);
+        logoObjectUrls.current[mode] = undefined;
+      });
   };
 
   const openLogoFileDialog = (mode: "light" | "dark") => {
@@ -739,7 +841,11 @@ function ThemeSettingsPage() {
             onClick={() => {
               void handleSaveTheme();
             }}
-            disabled={isThemeMutationPending || !hasUnsavedChanges}
+            disabled={
+              isThemeMutationPending ||
+              !hasUnsavedChanges ||
+              hasPendingLogoUpload
+            }
           >
             {isThemeMutationPending
               ? tTheme("savingButton")
@@ -784,6 +890,7 @@ function ThemeSettingsPage() {
                   onFileSelected={handleLogoFile}
                   lightInputRef={lightLogoInputRef}
                   darkInputRef={darkLogoInputRef}
+                  uploadStatus={logoUploadStatus}
                   t={tTheme}
                 />
               </TabsContent>

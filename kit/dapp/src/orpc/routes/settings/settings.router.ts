@@ -4,6 +4,7 @@ import { read } from "./routes/settings.read";
 import { upsert } from "./routes/settings.upsert";
 import { get as themeGet } from "./routes/theme.get";
 import { update as themeUpdate } from "./routes/theme.update";
+import { uploadLogo as themeUploadLogo } from "./routes/theme.upload-logo";
 import { preview as themePreview } from "./routes/theme.preview";
 
 /**
@@ -34,6 +35,7 @@ const routes = {
     get: themeGet,
     update: themeUpdate,
     preview: themePreview,
+    uploadLogo: themeUploadLogo,
   },
 };
 
