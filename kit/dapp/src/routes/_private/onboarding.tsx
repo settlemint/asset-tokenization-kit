@@ -17,8 +17,8 @@ function OnboardingLayout() {
           <div className="h-24">
             <div className="absolute top-8 left-8 flex flex-col items-end gap-0">
               <div className={cn("flex w-full items-center gap-3")}>
-                <div className="flex h-14 w-48 items-center justify-center rounded-lg text-sidebar-primary-foreground">
-                  <Logo forcedColorMode="dark" className="w-48 h-14" />
+                <div className="flex h-12 w-48 items-center justify-center overflow-hidden rounded-lg text-sidebar-primary-foreground">
+                  <Logo forcedColorMode="dark" className="h-12 w-48" />
                 </div>
               </div>
             </div>

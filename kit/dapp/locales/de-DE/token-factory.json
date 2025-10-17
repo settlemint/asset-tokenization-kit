@@ -147,7 +147,7 @@
     "allFactoriesFailed": "Keine der {{count}} Fabriken bereitgestellt—lass uns das beheben",
     "factoryAlreadyExists": "{{name}} Fabrik existiert bereits, überspringe zur nächsten...",
     "allFactoriesSkipped": "Alle {{count}} Fabriken sind bereits bereitgestellt—du bist startklar!",
-    "someFactoriesSkipped": "Neue {{successCount}} Fabriken erstellt, {{skippedCount}} vorhandene übersprungen, {{failedCount}} hatten Probleme"
+    "someFactoriesSkipped": "Neue {{success}} Fabriken erstellt, {{skipped}} vorhandene übersprungen, {{failed}} hatten Probleme"
   },
   "help": {
     "whatIsFactory": "Token-Fabriken sind Smart-Contract-Vorlagen, die die Vermögenserstellung rationalisieren—einmal bereitstellen, viele Male mit konsistenten Standards und Sicherheit prägen",

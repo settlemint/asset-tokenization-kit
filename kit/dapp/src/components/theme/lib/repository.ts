@@ -7,7 +7,7 @@ import {
   type ThemeConfig,
   type ThemeConfigPartial,
 } from "./schema";
-import { eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import {
   recordThemeReadMetric,
   recordThemeUpdateMetric,
@@ -15,6 +15,13 @@ import {
 } from "@/lib/observability/theme.metrics";
 
 const THEME_KEY = "THEME";
+
+export class ThemeVersionConflictError extends Error {
+  constructor() {
+    super("Theme version conflict");
+    this.name = "ThemeVersionConflictError";
+  }
+}
 
 /**
  * Fetches the theme configuration from the database
@@ -66,6 +73,7 @@ export async function updateTheme(
 ): Promise<ThemeConfig> {
   const stopTimer = startThemeMetricTimer();
   const updatedAt = new Date().toISOString();
+  const previousVersion = theme.metadata.version;
   const newTheme: ThemeConfig = {
     ...theme,
     metadata: {
@@ -75,22 +83,39 @@ export async function updateTheme(
       updatedAt,
     },
   };
+  const serializedTheme = JSON.stringify(newTheme);
+  const timestamp = new Date();
 
   try {
-    await db
-      .insert(settings)
-      .values({
-        key: THEME_KEY,
-        value: JSON.stringify(newTheme),
-        lastUpdated: new Date(),
+    const updated = await db
+      .update(settings)
+      .set({
+        value: serializedTheme,
+        lastUpdated: timestamp,
       })
-      .onConflictDoUpdate({
-        target: settings.key,
-        set: {
-          value: JSON.stringify(newTheme),
-          lastUpdated: new Date(),
-        },
-      });
+      .where(
+        and(
+          eq(settings.key, THEME_KEY),
+          sql`((${settings.value})::jsonb -> 'metadata' ->> 'version')::int = ${previousVersion}`
+        )
+      )
+      .returning({ key: settings.key });
+
+    if (updated.length === 0) {
+      const inserted = await db
+        .insert(settings)
+        .values({
+          key: THEME_KEY,
+          value: serializedTheme,
+          lastUpdated: timestamp,
+        })
+        .onConflictDoNothing()
+        .returning({ key: settings.key });
+
+      if (inserted.length === 0) {
+        throw new ThemeVersionConflictError();
+      }
+    }
 
     recordThemeUpdateMetric({
       durationMs: stopTimer(),

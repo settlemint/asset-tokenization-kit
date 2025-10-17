@@ -685,12 +685,19 @@ function hueToRgb(p: number, q: number, t: number): number {
   return p;
 }
 
-function rgbaToHex(color: RgbaColor): string {
+function rgbaToHex(
+  color: RgbaColor,
+  options: { includeAlpha?: boolean } = {}
+): string {
   const r = Math.round(clamp(color.r, 0, 1) * 255);
   const g = Math.round(clamp(color.g, 0, 1) * 255);
   const b = Math.round(clamp(color.b, 0, 1) * 255);
-  const a = Math.round(clamp(color.alpha, 0, 1) * 255);
-  return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}${componentToHex(a)}`;
+  const components = [r, g, b];
+  if (options.includeAlpha) {
+    const a = Math.round(clamp(color.alpha, 0, 1) * 255);
+    components.push(a);
+  }
+  return `#${components.map((component) => componentToHex(component)).join("")}`;
 }
 
 function componentToHex(value: number): string {

@@ -33,11 +33,11 @@
     }
   },
   "time": {
-    "short": "h時mm分",
-    "medium": "h時mm分ss秒",
-    "long": "h時mm分ss秒 z",
-    "24hour": "24時間制 HH:mm",
-    "24hourWithSeconds": "24時間制 HH:mm:ss"
+    "short": "HH時mm分",
+    "medium": "HH時mm分ss秒",
+    "long": "HH時mm分ss秒 z",
+    "24hour": "HH：mm",
+    "24hourWithSeconds": "HH：mm：ss"
   },
   "dateTime": {
     "short": "YYYY/MM/DD h:mm A",

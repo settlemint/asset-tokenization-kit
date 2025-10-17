@@ -41,7 +41,7 @@ describe("compile-css", () => {
         },
       };
       const css = compileThemeCSS(themeWithGoogleFont);
-      expect(css).toContain("@import url('https://fonts.googleapis.com");
+      expect(css).toContain('@import url("https://fonts.googleapis.com');
       expect(css).toContain("Inter");
     });
 
@@ -59,7 +59,7 @@ describe("compile-css", () => {
         },
       };
       const css = compileThemeCSS(themeWithCustomFont);
-      expect(css).toContain("@import url('https://example.com/font.css')");
+      expect(css).toContain('@import url("https://example.com/font.css")');
     });
 
     it("does not include fontsource imports", () => {

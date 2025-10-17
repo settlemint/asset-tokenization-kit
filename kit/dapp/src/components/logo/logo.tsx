@@ -58,7 +58,7 @@ export function Logo({
     if (!trimmed) {
       return fallbackSrc;
     }
-    if (/^(https?:|data:|blob:)/i.test(trimmed)) {
+    if (/^(https:|data:|blob:)/i.test(trimmed)) {
       return trimmed;
     }
     if (trimmed.startsWith("/")) {
@@ -80,7 +80,7 @@ export function Logo({
   const height = logo.height && logo.height > 0 ? logo.height : undefined;
 
   const wrapperClass = cn("inline-flex items-center", className);
-  const imageClass = cn("h-full w-auto", imgClassName);
+  const imageClass = cn("h-full w-auto max-h-full max-w-full", imgClassName);
   const imageProps = {
     alt,
     width,

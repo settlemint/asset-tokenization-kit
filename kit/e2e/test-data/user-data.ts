@@ -130,8 +130,7 @@ export const onboardingTestData = {
       formatted: "January 15th, 1990",
     },
     countryOfResidence: "United States of America",
-    residencyStatus:
-      "Sole resident - I live in and am legally/tax resident only in the country above",
+    residencyStatus: "resident",
     nationalId: "123-45-6789",
   },
 

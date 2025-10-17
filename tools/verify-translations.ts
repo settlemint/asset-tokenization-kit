@@ -1,11 +1,16 @@
 import { readdirSync, readFileSync } from "fs";
-import { dirname, join } from "path";
+import { dirname, join, resolve } from "path";
 import { fileURLToPath } from "url";
 
-const localesDir = join(
-  dirname(fileURLToPath(import.meta.url)),
-  "../kit/dapp/locales"
-);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const ARG_LOCALES_FLAG = "--locales-dir=";
+const localesDirArg = process.argv
+  .slice(2)
+  .find((arg) => arg.startsWith(ARG_LOCALES_FLAG));
+const localesDir = localesDirArg
+  ? resolve(process.cwd(), localesDirArg.slice(ARG_LOCALES_FLAG.length))
+  : join(__dirname, "../kit/dapp/locales");
 const baseLang = "en-US";
 
 interface TranslationIssue {
@@ -296,6 +301,6 @@ function main(): VerificationResult {
   return result;
 }
 
-if (require.main === module) {
-  main();
+if (process.argv[1] === __filename) {
+  void main();
 }

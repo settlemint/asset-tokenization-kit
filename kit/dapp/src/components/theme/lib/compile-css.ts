@@ -60,9 +60,9 @@ function generateFontImports(fonts: ThemeConfig["fonts"]): string {
       const family = font.family.replaceAll(/\s+/g, "+");
       const weights = font.weights?.join(";") ?? "400;700";
       const url = `https://fonts.googleapis.com/css2?family=${family}:wght@${weights}&display=swap`;
-      imports.push(`@import url('${url}');`);
+      imports.push(`@import url(${JSON.stringify(url)});`);
     } else if (font.source === "custom" && font.url) {
-      imports.push(`@import url('${font.url}');`);
+      imports.push(`@import url(${JSON.stringify(font.url)});`);
     }
     // fontsource is handled by the existing imports in the app
   }

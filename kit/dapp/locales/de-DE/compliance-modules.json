@@ -40,7 +40,7 @@
         ],
         "examplesTitle": "Beispiele",
         "examples": [
-          "MiCA / EU: (KYC UND AML) UND (PROFESSIONAL_INVESTOR ODER ACCREDITED_INVESTOR)",
+          "MiCA / EU: Ausdruck (KYC AND AML) AND (PROFESSIONAL_INVESTOR OR ACCREDITED_INVESTOR)",
           "MiCA / EU (alle Verträge wie Tokens, Vaults, ... erlauben): CONTRACT OR ((KYC AND AML) AND (PROFESSIONAL_INVESTOR OR ACCREDITED_INVESTOR))"
         ]
       }

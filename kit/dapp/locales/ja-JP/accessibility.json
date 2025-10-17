@@ -90,7 +90,7 @@
   },
   "wallet": {
     "connectWallet": "ウォレットを接続",
-    "disconnectWallet": "ウォレットを切断",
+    "disconnectWallet": "ウォレットの接続を解除",
     "switchAccount": "別のアカウントに切り替え",
     "copyAddress": "ウォレットアドレスをコピー"
   },

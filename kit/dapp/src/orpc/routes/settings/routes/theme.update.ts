@@ -1,4 +1,8 @@
-import { getTheme, updateTheme } from "@/components/theme/lib/repository";
+import {
+  getTheme,
+  updateTheme,
+  ThemeVersionConflictError,
+} from "@/components/theme/lib/repository";
 import {
   sanitizeThemeForValidation,
   validateThemeLimits,
@@ -35,7 +39,7 @@ export const update = authRouter.settings.theme.update
         durationMs: stopTimer(),
         success: false,
       });
-      errors.USER_NOT_AUTHORIZED({
+      throw errors.USER_NOT_AUTHORIZED({
         message: "Authentication required to update theme configuration",
         data: {
           requiredRoles: { any: ["setting:upsert"] },
@@ -50,7 +54,7 @@ export const update = authRouter.settings.theme.update
         durationMs: stopTimer(),
         success: false,
       });
-      errors.CONFLICT({
+      throw errors.CONFLICT({
         message:
           "Theme has been updated since you last fetched it. Refresh and try again.",
         data: {
@@ -67,20 +71,38 @@ export const update = authRouter.settings.theme.update
         durationMs: stopTimer(),
         success: false,
       });
-      errors.BAD_REQUEST({
+      throw errors.BAD_REQUEST({
         message: "Theme payload exceeds supported limits",
         data: { violations },
       });
     }
 
     const updatedBy = userId;
-    const theme = await updateTheme(payload, updatedBy);
-    recordThemeUpdateMetric({
-      durationMs: stopTimer(),
-      success: true,
-    });
-    return {
-      theme,
-      success: true,
-    };
+    try {
+      const theme = await updateTheme(payload, updatedBy);
+      recordThemeUpdateMetric({
+        durationMs: stopTimer(),
+        success: true,
+      });
+      return {
+        theme,
+        success: true,
+      };
+    } catch (error) {
+      recordThemeUpdateMetric({
+        durationMs: stopTimer(),
+        success: false,
+      });
+      if (error instanceof ThemeVersionConflictError) {
+        throw errors.CONFLICT({
+          message:
+            "Theme has been updated since you last fetched it. Refresh and try again.",
+          data: {
+            expectedVersion: currentTheme.metadata.version,
+            receivedVersion: input.metadata.version,
+          },
+        });
+      }
+      throw error;
+    }
   });

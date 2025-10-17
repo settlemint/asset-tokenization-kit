@@ -33,7 +33,7 @@
         "expiryTimestamp": "تاريخ انتهاء الصلاحية",
         "expiryTimestampDescription": "اختر متى يجب أن تنتهي هذه المطالبة.",
         "assetClass": "فئة الأصول",
-        "assetCategory": "فئة الأصول",
+        "assetCategory": "تصنيف الأصول",
         "priceAmount": "مبلغ السعر",
         "currencyCode": "رمز العملة",
         "decimals": "الأرقام العشرية",
