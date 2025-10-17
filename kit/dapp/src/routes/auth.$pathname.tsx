@@ -42,7 +42,10 @@ function RouteComponent() {
   return (
     <main className="my-auto flex flex-col items-center w-full max-w-md px-4">
       <Suspense>
-        <AuthView pathname={pathname} className="w-full" />
+        <AuthView
+          pathname={pathname}
+          className="w-full !shadow-[0_10px_40px_rgba(0,0,0,0.25)] dark:!shadow-[0_35px_80px_-20px_rgba(0,0,0,0.9),0_0_140px_36px_rgba(255,255,255,0.06)]"
+        />
       </Suspense>
     </main>
   );
