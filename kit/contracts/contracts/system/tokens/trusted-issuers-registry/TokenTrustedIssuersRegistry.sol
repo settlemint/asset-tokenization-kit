@@ -124,10 +124,7 @@ contract TokenTrustedIssuersRegistry is ERC165, ERC2771Context, IATKTokenTrusted
     // --- Token-Specific Modification Functions ---
 
     /// @inheritdoc IATKTrustedIssuersRegistry
-    function addTrustedIssuer(
-        IClaimIssuer _trustedIssuer,
-        uint256[] calldata _claimTopics
-    )
+    function addTrustedIssuer(IClaimIssuer _trustedIssuer, uint256[] calldata _claimTopics)
         external
         override
         onlyTokenGovernance
@@ -179,10 +176,7 @@ contract TokenTrustedIssuersRegistry is ERC165, ERC2771Context, IATKTokenTrusted
     }
 
     /// @inheritdoc IATKTrustedIssuersRegistry
-    function updateIssuerClaimTopics(
-        IClaimIssuer _trustedIssuer,
-        uint256[] calldata _newClaimTopics
-    )
+    function updateIssuerClaimTopics(IClaimIssuer _trustedIssuer, uint256[] calldata _newClaimTopics)
         external
         override
         onlyTokenGovernance
@@ -237,10 +231,7 @@ contract TokenTrustedIssuersRegistry is ERC165, ERC2771Context, IATKTokenTrusted
     /// @param claimTopic The claim topic to filter trusted issuers
     /// @param _subject The subject identifier (address(0) for global only, or specific subject address)
     /// @return Array of IClaimIssuer contracts trusted for this subject + claim topic (deduplicated)
-    function getTrustedIssuersForClaimTopic(
-        uint256 claimTopic,
-        address _subject
-    )
+    function getTrustedIssuersForClaimTopic(uint256 claimTopic, address _subject)
         external
         view
         override
@@ -256,11 +247,7 @@ contract TokenTrustedIssuersRegistry is ERC165, ERC2771Context, IATKTokenTrusted
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function hasClaimTopic(
-        address _issuer,
-        uint256 _claimTopic,
-        address _subject
-    )
+    function hasClaimTopic(address _issuer, uint256 _claimTopic, address _subject)
         external
         view
         override
@@ -271,10 +258,7 @@ contract TokenTrustedIssuersRegistry is ERC165, ERC2771Context, IATKTokenTrusted
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function getTrustedIssuerClaimTopics(
-        IClaimIssuer _trustedIssuer,
-        address _subject
-    )
+    function getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer, address _subject)
         external
         view
         override
@@ -287,11 +271,7 @@ contract TokenTrustedIssuersRegistry is ERC165, ERC2771Context, IATKTokenTrusted
     // --- IClaimAuthorizer Implementation ---
 
     /// @inheritdoc IClaimAuthorizer
-    function isAuthorizedToAddClaim(
-        address issuer,
-        uint256 topic,
-        address subject
-    )
+    function isAuthorizedToAddClaim(address issuer, uint256 topic, address subject)
         external
         view
         override
@@ -306,10 +286,7 @@ contract TokenTrustedIssuersRegistry is ERC165, ERC2771Context, IATKTokenTrusted
     /// @param claimTopic The claim topic to filter trusted issuers
     /// @param subject The subject identifier (must be this token's onchainID)
     /// @return Array of IClaimIssuer contracts trusted for the given claim topic
-    function _getTrustedIssuersForClaimTopic(
-        uint256 claimTopic,
-        address subject
-    )
+    function _getTrustedIssuersForClaimTopic(uint256 claimTopic, address subject)
         internal
         view
         returns (IClaimIssuer[] memory)

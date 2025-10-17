@@ -143,11 +143,7 @@ interface ISMARTCustodian {
     /// @param fromList A list of sender addresses.
     /// @param toList A list of recipient addresses.
     /// @param amounts A list of corresponding token amounts to transfer.
-    function batchForcedTransfer(
-        address[] calldata fromList,
-        address[] calldata toList,
-        uint256[] calldata amounts
-    )
+    function batchForcedTransfer(address[] calldata fromList, address[] calldata toList, uint256[] calldata amounts)
         external;
 
     /// @notice Forcefully recovers tokens from a lost or compromised wallet to a new wallet belonging to the same

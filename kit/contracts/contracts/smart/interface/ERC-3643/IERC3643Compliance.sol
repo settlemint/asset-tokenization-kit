@@ -23,9 +23,7 @@ event TokenUnbound(address indexed _token);
  */
 interface IERC3643Compliance {
     /// Functions
-
     /// initialization of the compliance contract
-
     /**
      *  @notice Binds a token to the compliance contract
      *  @dev binds a token to the compliance contract

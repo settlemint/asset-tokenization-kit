@@ -79,10 +79,7 @@ contract ATKSystemAccessManagerImplementation is
     /// @param account The address to check for the role
     /// @return bool True if the account has the role, false otherwise
 
-    function hasRole(
-        bytes32 role,
-        address account
-    )
+    function hasRole(bytes32 role, address account)
         public
         view
         override(IATKSystemAccessManager, AccessControlUpgradeable)
@@ -105,10 +102,7 @@ contract ATKSystemAccessManagerImplementation is
     /// @param role The role identifier to grant
     /// @param account The address to grant the role to
     /// @dev Caller must have the role's admin role
-    function grantRole(
-        bytes32 role,
-        address account
-    )
+    function grantRole(bytes32 role, address account)
         public
         override(IATKSystemAccessManager, AccessControlUpgradeable)
         onlyRoles(_getRoleAdmins(role))
@@ -120,10 +114,7 @@ contract ATKSystemAccessManagerImplementation is
     /// @param role The role identifier to revoke
     /// @param account The address to revoke the role from
     /// @dev Caller must have the role's admin role
-    function revokeRole(
-        bytes32 role,
-        address account
-    )
+    function revokeRole(bytes32 role, address account)
         public
         override(IATKSystemAccessManager, AccessControlUpgradeable)
         onlyRoles(_getRoleAdmins(role))
@@ -135,10 +126,7 @@ contract ATKSystemAccessManagerImplementation is
     /// @param role The role identifier to renounce
     /// @param account The address renouncing the role (must be msg.sender)
     /// @dev Can only renounce roles for yourself
-    function renounceRole(
-        bytes32 role,
-        address account
-    )
+    function renounceRole(bytes32 role, address account)
         public
         override(IATKSystemAccessManager, AccessControlUpgradeable)
     {
@@ -149,10 +137,7 @@ contract ATKSystemAccessManagerImplementation is
     /// @param role The role identifier to grant
     /// @param accounts Array of addresses to grant the role to
     /// @dev Caller must have the role's admin role for each grant
-    function batchGrantRole(
-        bytes32 role,
-        address[] calldata accounts
-    )
+    function batchGrantRole(bytes32 role, address[] calldata accounts)
         external
         override
         onlyRoles(_getRoleAdmins(role))
@@ -169,10 +154,7 @@ contract ATKSystemAccessManagerImplementation is
     /// @param role The role identifier to revoke
     /// @param accounts Array of addresses to revoke the role from
     /// @dev Caller must have the role's admin role for each revocation
-    function batchRevokeRole(
-        bytes32 role,
-        address[] calldata accounts
-    )
+    function batchRevokeRole(bytes32 role, address[] calldata accounts)
         external
         override
         onlyRoles(_getRoleAdmins(role))

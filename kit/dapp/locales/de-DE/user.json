@@ -74,7 +74,7 @@
   },
   "permissions": {
     "groups": {
-      "compliance": "Compliance",
+      "compliance": "Compliance & Aufsicht",
       "identity-management": "Identitätsmanagement",
       "assets-management": "Asset-Verwaltung",
       "system-administration": "Systemadministration",

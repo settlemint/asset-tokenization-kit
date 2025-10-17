@@ -9,8 +9,9 @@ import { IATKVestingAirdropFactory } from "./IATKVestingAirdropFactory.sol";
 import { IATKVestingAirdrop } from "./IATKVestingAirdrop.sol";
 
 // Implementations
-import { AbstractATKSystemAddonFactoryImplementation } from
-    "../../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
+import {
+    AbstractATKSystemAddonFactoryImplementation
+} from "../../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
 import { ATKVestingAirdropImplementation } from "./ATKVestingAirdropImplementation.sol";
 import { ATKVestingAirdropProxy } from "./ATKVestingAirdropProxy.sol";
 

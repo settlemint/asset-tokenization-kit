@@ -10,36 +10,50 @@ import { ATKSystemImplementation } from "../../contracts/system/ATKSystemImpleme
 import { ATKPeopleRoles } from "../../contracts/system/ATKPeopleRoles.sol";
 
 // Implementations
-import { ATKIdentityRegistryStorageImplementation } from
-    "../../contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol";
-import { ATKSystemTrustedIssuersRegistryImplementation } from
-    "../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
-import { ATKIdentityRegistryImplementation } from
-    "../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
+import {
+    ATKIdentityRegistryStorageImplementation
+} from "../../contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol";
+import {
+    ATKSystemTrustedIssuersRegistryImplementation
+} from "../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
+import {
+    ATKIdentityRegistryImplementation
+} from "../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
 import { ATKComplianceImplementation } from "../../contracts/system/compliance/ATKComplianceImplementation.sol";
-import { ATKIdentityFactoryImplementation } from
-    "../../contracts/system/identity-factory/ATKIdentityFactoryImplementation.sol";
+import {
+    ATKIdentityFactoryImplementation
+} from "../../contracts/system/identity-factory/ATKIdentityFactoryImplementation.sol";
 
-import { ATKIdentityImplementation } from
-    "../../contracts/system/identity-factory/identities/ATKIdentityImplementation.sol";
-import { ATKContractIdentityImplementation } from
-    "../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
-import { ATKTokenAccessManagerImplementation } from
-    "../../contracts/system/tokens/access/ATKTokenAccessManagerImplementation.sol";
-import { ATKSystemAccessManagerImplementation } from
-    "../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
-import { ATKTopicSchemeRegistryImplementation } from
-    "../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
-import { ATKTokenFactoryRegistryImplementation } from
-    "../../contracts/system/tokens/factory/ATKTokenFactoryRegistryImplementation.sol";
-import { ATKComplianceModuleRegistryImplementation } from
-    "../../contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol";
-import { ATKSystemAddonRegistryImplementation } from
-    "../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
-import { ATKTrustedIssuersMetaRegistryImplementation } from
-    "../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersMetaRegistryImplementation.sol";
-import { IATKTrustedIssuersRegistry } from
-    "../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
+import {
+    ATKIdentityImplementation
+} from "../../contracts/system/identity-factory/identities/ATKIdentityImplementation.sol";
+import {
+    ATKContractIdentityImplementation
+} from "../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
+import {
+    ATKTokenAccessManagerImplementation
+} from "../../contracts/system/tokens/access/ATKTokenAccessManagerImplementation.sol";
+import {
+    ATKSystemAccessManagerImplementation
+} from "../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
+import {
+    ATKTopicSchemeRegistryImplementation
+} from "../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
+import {
+    ATKTokenFactoryRegistryImplementation
+} from "../../contracts/system/tokens/factory/ATKTokenFactoryRegistryImplementation.sol";
+import {
+    ATKComplianceModuleRegistryImplementation
+} from "../../contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol";
+import {
+    ATKSystemAddonRegistryImplementation
+} from "../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
+import {
+    ATKTrustedIssuersMetaRegistryImplementation
+} from "../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersMetaRegistryImplementation.sol";
+import {
+    IATKTrustedIssuersRegistry
+} from "../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 
 // Proxies
 import { ATKTokenAccessManagerProxy } from "../../contracts/system/tokens/access/ATKTokenAccessManagerProxy.sol";
@@ -55,14 +69,16 @@ import { IATKComplianceModuleRegistry } from "../../contracts/system/compliance/
 import { IATKSystemAddonRegistry } from "../../contracts/system/addons/IATKSystemAddonRegistry.sol";
 import { IATKTokenFactoryRegistry } from "../../contracts/system/tokens/factory/IATKTokenFactoryRegistry.sol";
 import { IATKSystemAccessManager } from "../../contracts/system/access-manager/IATKSystemAccessManager.sol";
-import { IATKTrustedIssuersMetaRegistry } from
-    "../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersMetaRegistry.sol";
+import {
+    IATKTrustedIssuersMetaRegistry
+} from "../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersMetaRegistry.sol";
 
 // Compliance Modules
 import { CountryAllowListComplianceModule } from "../../contracts/smart/modules/CountryAllowListComplianceModule.sol";
 import { CountryBlockListComplianceModule } from "../../contracts/smart/modules/CountryBlockListComplianceModule.sol";
-import { SMARTIdentityVerificationComplianceModule } from
-    "../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
+import {
+    SMARTIdentityVerificationComplianceModule
+} from "../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
 
 contract SystemUtils is Test {
     address internal constant TRUSTED_FORWARDER_ADDRESS = address(0);

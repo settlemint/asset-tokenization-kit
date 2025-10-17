@@ -23,7 +23,6 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     /// @notice Defines custom error types for more gas-efficient and descriptive error handling.
     /// @dev Using custom errors (Solidity 0.8.4+) saves gas compared to `require` with string messages.
-
     /// @dev Reverted if the `tokenAddress` provided in the constructor is the zero address.
     error InvalidToken();
     /// @dev Reverted if the `startDate_` provided in the constructor is not in the future (i.e., less than or equal to
@@ -48,8 +47,9 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     error InsufficientDenominationAssetBalance(uint256 currentBalance, uint256 requiredBalance); // Could also be used
         // if a
         // transferFrom fails.
-    /// @dev Reverted if the `_denominationAsset` (derived from `_token.yieldToken()`) is the zero address, or if `to`
-    /// address in withdrawal is zero.
+        /// @dev Reverted if the `_denominationAsset` (derived from `_token.yieldToken()`) is the zero address, or if
+        // `to`
+        /// address in withdrawal is zero.
     error InvalidDenominationAsset();
     /// @dev Reverted by `withdrawDenominationAsset` if the withdrawal `amount` is zero.
     error InvalidAmount();

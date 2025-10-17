@@ -177,7 +177,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         if (block.timestamp > _endDate || block.timestamp == _endDate) return _periodEndTimestamps.length; // Schedule
             // has ended, return total number
             // of periods.
-        // Calculate current period number (1-indexed).
+            // Calculate current period number (1-indexed).
         return ((block.timestamp - _startDate) / _interval) + 1;
     }
 
@@ -251,8 +251,8 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         for (uint256 period = 1; period < lastPeriod || period == lastPeriod; ++period) {
             uint256 periodEndTimestamp = _periodEndTimestamps[period - 1]; // Get end time of the current iterated
                 // period.
-            // Fetch the total supply of the token as it was at the end of this specific period.
-            // This is crucial for accuracy if the total supply changes over time.
+                // Fetch the total supply of the token as it was at the end of this specific period.
+                // This is crucial for accuracy if the total supply changes over time.
             uint256 historicalTotalSupply = _token.totalSupplyAt(periodEndTimestamp);
             if (historicalTotalSupply > 0) {
                 totalYieldAccrued += _calculateYieldFromAmount(historicalTotalSupply, globalBasis);
@@ -389,7 +389,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
 
         if (totalAmountToClaim == 0) revert NoYieldAvailable(); // No yield accrued in the
             // claimable periods.
-        // State updates *before* external call (transfer).
+            // State updates *before* external call (transfer).
         _lastClaimedPeriod[sender] = lastPeriod; // Update the last period claimed by the user.
         _totalClaimed += totalAmountToClaim; // Increment total yield claimed in the contract.
 

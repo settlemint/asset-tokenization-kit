@@ -8,8 +8,9 @@ import { IATKDepositFactory } from "../../contracts/assets/deposit/IATKDepositFa
 import { ATKDepositFactoryImplementation } from "../../contracts/assets/deposit/ATKDepositFactoryImplementation.sol";
 import { ATKDepositImplementation } from "../../contracts/assets/deposit/ATKDepositImplementation.sol";
 import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
-import { SMARTComplianceModuleParamPair } from
-    "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import {
+    SMARTComplianceModuleParamPair
+} from "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
@@ -46,9 +47,8 @@ contract ATKDepositTest is AbstractATKAssetTest {
 
         vm.startPrank(platformAdmin);
         depositFactory = IATKDepositFactory(
-            systemUtils.tokenFactoryRegistry().registerTokenFactory(
-                "Deposit", address(depositFactoryImpl), address(depositImpl)
-            )
+            systemUtils.tokenFactoryRegistry()
+                .registerTokenFactory("Deposit", address(depositFactoryImpl), address(depositImpl))
         );
         vm.stopPrank();
 

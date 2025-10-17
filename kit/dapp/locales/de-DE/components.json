@@ -15,7 +15,7 @@
       "issuerReportingCompliant": "Emittent meldet konform",
       "issuerJurisdiction": "Jurisdiktion des Emittenten",
       "collateral": "Sicherheiten",
-      "isin": "ISIN",
+      "isin": "ISIN-Code",
       "assetClassification": "Asset-Klassifizierung",
       "basePrice": "Basispreis",
       "assetIssuer": "Asset-Emittent",

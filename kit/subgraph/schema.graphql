@@ -343,7 +343,8 @@ type Compliance @entity(immutable: false) {
   # List of accounts exempt from compliance checks
   bypassList: [Account!]!
   # Global compliance module configurations
-  complianceModuleConfigs: [GlobalComplianceModuleConfig!]! @derivedFrom(field: "compliance")
+  complianceModuleConfigs: [GlobalComplianceModuleConfig!]!
+    @derivedFrom(field: "compliance")
 }
 
 # Identity Management Entities
@@ -358,9 +359,11 @@ type IdentityRegistryStorage @entity(immutable: false) {
   # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
   # List of identity registries using this storage
-  registries: [IdentityRegistry!]! @derivedFrom(field: "identityRegistryStorage")
+  registries: [IdentityRegistry!]!
+    @derivedFrom(field: "identityRegistryStorage")
   # List of registered identities stored in this storage
-  registeredIdentities: [RegisteredIdentity!]! @derivedFrom(field: "registryStorage")
+  registeredIdentities: [RegisteredIdentity!]!
+    @derivedFrom(field: "registryStorage")
 }
 
 type IdentityFactory @entity(immutable: false) {
@@ -409,7 +412,6 @@ type Identity @entity(immutable: false) {
   # Registered entries associated with this identity
   registered: [RegisteredIdentity!]! @derivedFrom(field: "identity")
 }
-
 
 type RegisteredIdentity @entity(immutable: false) {
   # Unique identifier - identity registry storage + account address
@@ -679,7 +681,8 @@ type TrustedIssuersRegistry @entity(immutable: false) {
   # System-wide registry reference
   systemRegistry: TrustedIssuersRegistry
   # Subject-specific registry mappings
-  subjectRegistries: [SubjectRegistryMapping!]! @derivedFrom(field: "metaRegistry")
+  subjectRegistries: [SubjectRegistryMapping!]!
+    @derivedFrom(field: "metaRegistry")
   # Statistical data for this registry
   stats: TrustedIssuerStatsState @derivedFrom(field: "trustedIssuersRegistry")
 }
@@ -790,9 +793,11 @@ type ComplianceModule @entity(immutable: false) {
   # Registry this module belongs to
   complianceModuleRegistry: ComplianceModuleRegistry!
   # Token-specific configurations
-  tokenConfigs: [TokenComplianceModuleConfig!]! @derivedFrom(field: "complianceModule")
+  tokenConfigs: [TokenComplianceModuleConfig!]!
+    @derivedFrom(field: "complianceModule")
   # Global configurations
-  globalConfigs: [GlobalComplianceModuleConfig!]! @derivedFrom(field: "complianceModule")
+  globalConfigs: [GlobalComplianceModuleConfig!]!
+    @derivedFrom(field: "complianceModule")
 }
 
 type GlobalComplianceModuleConfig @entity(immutable: false) {
@@ -882,7 +887,6 @@ enum TokenExtension {
   YIELD
 }
 
-
 type TokenSupplyLimitParams @entity(immutable: false) {
   # Unique identifier - same as ComplianceModuleParameters.id
   id: Bytes!
@@ -944,7 +948,8 @@ type TransferApprovalParams @entity(immutable: false) {
   # Whether approvals are single-use (one-time execution)
   oneTimeUse: Boolean!
   # Exemption expression nodes for complex exemption rules
-  exemptionExpression: [ExpressionNode!] @derivedFrom(field: "transferApprovalParams")
+  exemptionExpression: [ExpressionNode!]
+    @derivedFrom(field: "transferApprovalParams")
 }
 
 type TokenFactoryRegistry @entity(immutable: false) {
@@ -1035,13 +1040,15 @@ type Token @entity(immutable: false) {
   # Base price claim for valuation
   basePriceClaim: IdentityClaim
   # Compliance module configurations
-  complianceModuleConfigs: [TokenComplianceModuleConfig!]! @derivedFrom(field: "token")
+  complianceModuleConfigs: [TokenComplianceModuleConfig!]!
+    @derivedFrom(field: "token")
   # Statistical data
   stats: TokenStatsState @derivedFrom(field: "token")
   # Distribution statistics
   distributionStats: TokenDistributionStatsState @derivedFrom(field: "token")
   # Denomination asset for bond
-  denominationAssetForBond: [TokenBond!]! @derivedFrom(field: "denominationAsset")
+  denominationAssetForBond: [TokenBond!]!
+    @derivedFrom(field: "denominationAsset")
   # Whether the token has been launched (unpaused for the first time)
   isLaunched: Boolean!
 }
@@ -1081,7 +1088,6 @@ type TokenComplianceModuleConfig @entity(immutable: false) {
   # Configuration parameters
   parameters: ComplianceModuleParameters!
 }
-
 
 type TokenPausable @entity(immutable: false) {
   # Unique identifier - token address
@@ -1548,23 +1554,18 @@ type SystemStats
   totalValueInBaseCurrency: BigDecimal!
     @aggregate(fn: "last", arg: "totalValueInBaseCurrency")
   # Last count of tokens created for the period
-  tokensCreatedCount: Int!
-    @aggregate(fn: "last", arg: "tokensCreatedCount")
+  tokensCreatedCount: Int! @aggregate(fn: "last", arg: "tokensCreatedCount")
   # Last count of tokens launched for the period
-  tokensLaunchedCount: Int!
-    @aggregate(fn: "last", arg: "tokensLaunchedCount")
+  tokensLaunchedCount: Int! @aggregate(fn: "last", arg: "tokensLaunchedCount")
   # Last count of transfers for the period
-  transferEventsCount: Int!
-    @aggregate(fn: "last", arg: "transferEventsCount")
+  transferEventsCount: Int! @aggregate(fn: "last", arg: "transferEventsCount")
   # Last count of forced transfers for the period
   forcedTransferEventsCount: Int!
     @aggregate(fn: "last", arg: "forcedTransferEventsCount")
   # Last count of mint events for the period
-  mintEventsCount: Int!
-    @aggregate(fn: "last", arg: "mintEventsCount")
+  mintEventsCount: Int! @aggregate(fn: "last", arg: "mintEventsCount")
   # Last count of burn events for the period
-  burnEventsCount: Int!
-    @aggregate(fn: "last", arg: "burnEventsCount")
+  burnEventsCount: Int! @aggregate(fn: "last", arg: "burnEventsCount")
 }
 
 type AccountStatsState @entity(immutable: false) {
@@ -1637,10 +1638,7 @@ type AccountSystemStatsData @entity(timeseries: true) {
 }
 
 type AccountSystemStats
-  @aggregation(
-    intervals: ["hour", "day"],
-    source: "AccountSystemStatsData"
-  ) {
+  @aggregation(intervals: ["hour", "day"], source: "AccountSystemStatsData") {
   # Unique identifier for aggregated entry
   id: Int8!
   # Timestamp of aggregation period
@@ -1690,7 +1688,7 @@ type AccountTokenFactoryStatsData @entity(timeseries: true) {
 
 type AccountTokenFactoryStats
   @aggregation(
-    intervals: ["hour", "day"],
+    intervals: ["hour", "day"]
     source: "AccountTokenFactoryStatsData"
   ) {
   # Unique identifier for aggregated entry
@@ -1702,14 +1700,11 @@ type AccountTokenFactoryStats
   # System this statistic is associated with
   system: System!
   # Last number of token balances for the period
-  tokenBalancesCount: Int!
-    @aggregate(fn: "last", arg: "tokenBalancesCount")
+  tokenBalancesCount: Int! @aggregate(fn: "last", arg: "tokenBalancesCount")
   # Last base currency value for the period
   totalValueInBaseCurrency: BigDecimal!
     @aggregate(fn: "last", arg: "totalValueInBaseCurrency")
 }
-
-
 
 type EventStatsData @entity(timeseries: true) {
   # Unique identifier for timeseries entry
@@ -1798,17 +1793,14 @@ type TokenTypeStats
   percentageOfTotalSupply: BigDecimal!
     @aggregate(fn: "last", arg: "percentageOfTotalSupply")
   # Last count of transfers for the period
-  transferEventsCount: Int!
-    @aggregate(fn: "last", arg: "transferEventsCount")
+  transferEventsCount: Int! @aggregate(fn: "last", arg: "transferEventsCount")
   # Last count of forced transfers for the period
   forcedTransferEventsCount: Int!
     @aggregate(fn: "last", arg: "forcedTransferEventsCount")
   # Last count of mint events for the period
-  mintEventsCount: Int!
-    @aggregate(fn: "last", arg: "mintEventsCount")
+  mintEventsCount: Int! @aggregate(fn: "last", arg: "mintEventsCount")
   # Last count of burn events for the period
-  burnEventsCount: Int!
-    @aggregate(fn: "last", arg: "burnEventsCount")
+  burnEventsCount: Int! @aggregate(fn: "last", arg: "burnEventsCount")
 }
 
 type TokenStatsState @entity(immutable: false) {

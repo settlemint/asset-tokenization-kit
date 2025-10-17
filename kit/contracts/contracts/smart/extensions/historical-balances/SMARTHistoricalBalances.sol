@@ -44,7 +44,7 @@ abstract contract SMARTHistoricalBalances is SMARTExtension, _SMARTHistoricalBal
     /// @param amount The amount of tokens minted.
     function _afterMint(address to, uint256 amount) internal virtual override(SMARTHooks) {
         super._afterMint(to, amount); // Preserve hook chain: call parent/other extension's _afterMint logic first.
-        // Call the specific logic from _SMARTHistoricalBalancesLogic to update checkpoints.
+            // Call the specific logic from _SMARTHistoricalBalancesLogic to update checkpoints.
         __historical_balances_afterMintLogic(to, amount);
     }
 
@@ -55,7 +55,7 @@ abstract contract SMARTHistoricalBalances is SMARTExtension, _SMARTHistoricalBal
     /// @param amount The amount of tokens burned.
     function _afterBurn(address from, uint256 amount) internal virtual override(SMARTHooks) {
         super._afterBurn(from, amount); // Preserve hook chain.
-        // Update historical checkpoints for the burn operation.
+            // Update historical checkpoints for the burn operation.
         __historical_balances_afterBurnLogic(from, amount);
     }
 
@@ -68,7 +68,7 @@ abstract contract SMARTHistoricalBalances is SMARTExtension, _SMARTHistoricalBal
     /// @param amount The amount of tokens transferred.
     function _afterTransfer(address from, address to, uint256 amount) internal virtual override(SMARTHooks) {
         super._afterTransfer(from, to, amount); // Preserve hook chain.
-        // Update historical checkpoints for the transfer operation.
+            // Update historical checkpoints for the transfer operation.
         __historical_balances_afterTransferLogic(from, to, amount);
     }
 }

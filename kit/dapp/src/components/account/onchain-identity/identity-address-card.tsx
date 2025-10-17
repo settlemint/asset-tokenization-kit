@@ -15,7 +15,7 @@ export function OnchainIdentityAddressCard() {
   const identityError = identityQuery.error;
   const identity = isOrpcNotFoundError(identityError)
     ? null
-    : identityQuery.data ?? null;
+    : (identityQuery.data ?? null);
   const identityId = identity?.id ?? null;
 
   return (

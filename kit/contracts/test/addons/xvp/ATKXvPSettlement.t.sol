@@ -2,14 +2,15 @@
 pragma solidity ^0.8.28;
 
 import { AbstractATKAssetTest } from "../../assets/AbstractATKAssetTest.sol";
-import { ATKXvPSettlementFactoryImplementation } from
-    "../../../contracts/addons/xvp/ATKXvPSettlementFactoryImplementation.sol";
+import {
+    ATKXvPSettlementFactoryImplementation
+} from "../../../contracts/addons/xvp/ATKXvPSettlementFactoryImplementation.sol";
 import { IATKXvPSettlementFactory } from "../../../contracts/addons/xvp/IATKXvPSettlementFactory.sol";
 import { IATKXvPSettlement } from "../../../contracts/addons/xvp/IATKXvPSettlement.sol";
 import { ERC20Mock } from "../../mocks/ERC20Mock.sol";
 import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
 
-contract NonCompliantERC20 {}
+contract NonCompliantERC20 { }
 
 /// @title XvP Settlement Test
 /// @notice Comprehensive test suite for XvPSettlement contract
@@ -73,9 +74,8 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Create system addon for XvP settlement factory
         factory = IATKXvPSettlementFactory(
-            systemUtils.systemAddonRegistry().registerSystemAddon(
-                "xvp-settlement-factory", address(factoryImpl), encodedInitializationData
-            )
+            systemUtils.systemAddonRegistry()
+                .registerSystemAddon("xvp-settlement-factory", address(factoryImpl), encodedInitializationData)
         );
 
         // Grant DEPLOYER_ROLE to users who need to create settlements
@@ -286,7 +286,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         grantDeployerRole(alice);
 
         ERC20Mock token = new ERC20Mock("Token", "TOK", 18);
-        token.mint(alice, 1_000 * 10 ** 18);
+        token.mint(alice, 1000 * 10 ** 18);
 
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](2);
         flows[0] = _localFlow(address(token), alice, bob, 60 * 10 ** 18);
@@ -311,7 +311,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         grantDeployerRole(alice);
 
         ERC20Mock token = new ERC20Mock("Token", "TOK", 18);
-        token.mint(alice, 1_000 * 10 ** 18);
+        token.mint(alice, 1000 * 10 ** 18);
 
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
         flows[0] = _localFlow(address(token), alice, bob, 50 * 10 ** 18);
@@ -331,7 +331,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         grantDeployerRole(alice);
 
         ERC20Mock externalToken = new ERC20Mock("External", "EXT", 6);
-        externalToken.mint(bob, 1_000 * 10 ** 6);
+        externalToken.mint(bob, 1000 * 10 ** 6);
 
         bytes32 hashlock = keccak256(bytes("external-flow"));
 
@@ -412,7 +412,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         grantDeployerRole(alice);
 
         ERC20Mock token = new ERC20Mock("Token", "TOK", 18);
-        token.mint(alice, 1_000 * 10 ** 18);
+        token.mint(alice, 1000 * 10 ** 18);
 
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
         flows[0] = _localFlow(address(token), alice, bob, 100 * 10 ** 18);
@@ -432,7 +432,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         ERC20Mock localToken = new ERC20Mock("Local Token", "LOC", 18);
         ERC20Mock externalToken = new ERC20Mock("External Token", "EXT", 6);
-        localToken.mint(alice, 1_000 * 10 ** 18);
+        localToken.mint(alice, 1000 * 10 ** 18);
 
         bytes memory secret = bytes("correct-secret");
         bytes32 hashlock = keccak256(secret);
@@ -456,7 +456,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         ERC20Mock localToken = new ERC20Mock("Local Token", "LOC", 18);
         ERC20Mock externalToken = new ERC20Mock("External Token", "EXT", 6);
-        localToken.mint(alice, 1_000 * 10 ** 18);
+        localToken.mint(alice, 1000 * 10 ** 18);
 
         bytes memory secret = bytes("reveal-twice");
         bytes32 hashlock = keccak256(secret);
@@ -539,7 +539,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         grantDeployerRole(alice);
 
         ERC20Mock externalToken = new ERC20Mock("External", "EXT", 6);
-        externalToken.mint(bob, 1_000 * 10 ** 6);
+        externalToken.mint(bob, 1000 * 10 ** 6);
 
         bytes memory secret = bytes("external-only");
         bytes32 hashlock = keccak256(secret);
@@ -556,7 +556,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         bool executed = settlement.execute();
         assertTrue(executed, "Execution should succeed");
         assertTrue(settlement.executed(), "Settlement should be marked executed");
-        assertEq(externalToken.balanceOf(bob), 1_000 * 10 ** 6, "External balances unchanged on this chain");
+        assertEq(externalToken.balanceOf(bob), 1000 * 10 ** 6, "External balances unchanged on this chain");
     }
 
     function test_AutoExecution() public {
@@ -729,7 +729,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         ERC20Mock localToken = new ERC20Mock("Local Token", "LOC", 18);
         ERC20Mock externalToken = new ERC20Mock("External Token", "EXT", 6);
-        localToken.mint(alice, 1_000 * 10 ** 18);
+        localToken.mint(alice, 1000 * 10 ** 18);
 
         bytes memory secret = bytes("arm-revoke");
         bytes32 hashlock = keccak256(secret);
@@ -897,7 +897,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         ERC20Mock localToken = new ERC20Mock("Local Token", "LOC", 18);
         ERC20Mock externalToken = new ERC20Mock("External", "EXT", 6);
-        localToken.mint(alice, 1_000 * 10 ** 18);
+        localToken.mint(alice, 1000 * 10 ** 18);
 
         bytes32 hashlock = keccak256(bytes("ext-only"));
 
@@ -991,7 +991,8 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         NonCompliantERC20 bogus = new NonCompliantERC20();
 
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
-        flows[0] = IATKXvPSettlement.Flow({ asset: address(bogus), from: alice, to: bob, amount: 100, externalChainId: 0 });
+        flows[0] =
+            IATKXvPSettlement.Flow({ asset: address(bogus), from: alice, to: bob, amount: 100, externalChainId: 0 });
 
         vm.prank(alice);
         vm.expectRevert(IATKXvPSettlement.InvalidToken.selector);
@@ -1008,15 +1009,13 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
         flows[0] = IATKXvPSettlement.Flow({
-            asset: address(token),
-            from: alice,
-            to: bob,
-            amount: 100 * 10 ** 18,
-            externalChainId: uint64(block.chainid)
+            asset: address(token), from: alice, to: bob, amount: 100 * 10 ** 18, externalChainId: uint64(block.chainid)
         });
 
         vm.prank(alice);
-        vm.expectRevert(abi.encodeWithSelector(IATKXvPSettlement.InvalidExternalChainId.selector, uint64(block.chainid)));
+        vm.expectRevert(
+            abi.encodeWithSelector(IATKXvPSettlement.InvalidExternalChainId.selector, uint64(block.chainid))
+        );
         factory.create("Invalid Chain", flows, block.timestamp + 1 days, false, bytes32(uint256(1)));
     }
 
@@ -1032,7 +1031,8 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         flows[0] = _localFlow(address(token), alice, bob, 100 * 10 ** 18);
 
         vm.prank(alice);
-        address settlementAddr = factory.create("Local Hashlock", flows, block.timestamp + 1 days, false, bytes32(uint256(123)));
+        address settlementAddr =
+            factory.create("Local Hashlock", flows, block.timestamp + 1 days, false, bytes32(uint256(123)));
         assertTrue(settlementAddr != address(0), "Settlement should deploy successfully");
     }
 
@@ -1043,7 +1043,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         grantDeployerRole(alice);
 
         ERC20Mock token = new ERC20Mock("Token", "TOK", 18);
-        token.mint(alice, 1_000 * 10 ** 18);
+        token.mint(alice, 1000 * 10 ** 18);
 
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
         flows[0] = _localFlow(address(token), alice, bob, 40 * 10 ** 18);
@@ -1068,7 +1068,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         ERC20Mock localToken = new ERC20Mock("Local Token", "LOC", 18);
         ERC20Mock externalToken = new ERC20Mock("External Token", "EXT", 6);
-        localToken.mint(alice, 1_000 * 10 ** 18);
+        localToken.mint(alice, 1000 * 10 ** 18);
 
         bytes memory secret = bytes("cancel-pre-armed");
         bytes32 hashlock = keccak256(secret);
@@ -1101,8 +1101,8 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         ERC20Mock tokenLocalB = new ERC20Mock("Local B", "LOCB", 18);
         ERC20Mock externalToken = new ERC20Mock("External", "EXT", 6);
 
-        tokenLocalA.mint(alice, 1_000 * 10 ** 18);
-        tokenLocalB.mint(carol, 1_000 * 10 ** 18);
+        tokenLocalA.mint(alice, 1000 * 10 ** 18);
+        tokenLocalB.mint(carol, 1000 * 10 ** 18);
 
         bytes memory secret = bytes("armed-votes");
         bytes32 hashlock = keccak256(secret);
@@ -1169,7 +1169,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         ERC20Mock localToken = new ERC20Mock("Local Token", "LOC", 18);
         ERC20Mock externalToken = new ERC20Mock("External", "EXT", 6);
-        localToken.mint(alice, 1_000 * 10 ** 18);
+        localToken.mint(alice, 1000 * 10 ** 18);
 
         bytes memory secret = bytes("duplicate vote");
         bytes32 hashlock = keccak256(secret);
@@ -1205,8 +1205,8 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         ERC20Mock tokenLocalA = new ERC20Mock("Local A", "LOCA", 18);
         ERC20Mock tokenLocalB = new ERC20Mock("Local B", "LOCB", 18);
         ERC20Mock externalToken = new ERC20Mock("External", "EXT", 6);
-        tokenLocalA.mint(alice, 1_000 * 10 ** 18);
-        tokenLocalB.mint(carol, 1_000 * 10 ** 18);
+        tokenLocalA.mint(alice, 1000 * 10 ** 18);
+        tokenLocalB.mint(carol, 1000 * 10 ** 18);
 
         bytes memory secret = bytes("withdraw-cancel");
         bytes32 hashlock = keccak256(secret);
@@ -1243,9 +1243,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         assertFalse(settlement.cancelled(), "Settlement should remain active after vote withdrawal");
 
         vm.startPrank(alice);
-        vm.expectRevert(
-            abi.encodeWithSelector(IATKXvPSettlement.CancelVoteNotCast.selector, alice)
-        );
+        vm.expectRevert(abi.encodeWithSelector(IATKXvPSettlement.CancelVoteNotCast.selector, alice));
         settlement.withdrawCancelProposal();
         vm.stopPrank();
     }
@@ -1258,7 +1256,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         ERC20Mock localToken = new ERC20Mock("Local Token", "LOC", 18);
         ERC20Mock externalToken = new ERC20Mock("External", "EXT", 6);
-        localToken.mint(alice, 1_000 * 10 ** 18);
+        localToken.mint(alice, 1000 * 10 ** 18);
 
         bytes memory secret = bytes("after-reveal");
         bytes32 hashlock = keccak256(secret);
@@ -1300,7 +1298,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         ERC20Mock localToken = new ERC20Mock("Local", "LOC", 18);
         ERC20Mock externalToken = new ERC20Mock("External", "EXT", 6);
-        localToken.mint(alice, 1_000 * 10 ** 18);
+        localToken.mint(alice, 1000 * 10 ** 18);
 
         bytes memory secret = bytes("cancel-before-reveal");
         bytes32 hashlock = keccak256(secret);

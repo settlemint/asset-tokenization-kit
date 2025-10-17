@@ -53,7 +53,6 @@ event IdentityRegistryUnbound(address indexed _identityRegistry);
 ///      for storing and managing investor identity data across multiple identity registries.
 interface IERC3643IdentityRegistryStorage is IERC165 {
     /// functions
-
     /**
      *  @notice Adds an identity contract corresponding to a user address in the storage
      *  @dev adds an identity contract corresponding to a user address in the storage.
