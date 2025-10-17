@@ -22,8 +22,8 @@
   "participantsUsers": "Users",
   "participantsEntities": "Entities",
   "platformSettings": "Platform settings",
-  "userManagement": "User Management",
-  "identityManagement": "Identity Management",
+  "userManagement": "Users",
+  "entityManagement": "Entities",
   "settings": {
     "assetTypes": {
       "title": "Asset Types",

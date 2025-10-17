@@ -17,7 +17,7 @@ export function getClaimTabConfiguration({
 }: GetClaimTabConfigurationProps): ClaimTabConfig[] {
   return [
     {
-      href: `/admin/identity-management/${accountId}`,
+      href: `/participants/entities/${accountId}`,
       tabKey: "details",
     },
   ];

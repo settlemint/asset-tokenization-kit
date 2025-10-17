@@ -20,14 +20,14 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
-  "/_private/_onboarded/_sidebar/admin/platform-settings/claim-topics-issuers"
+  "/_private/_onboarded/_sidebar/platform-settings/claim-topics-issuers"
 )({
   component: ClaimTopicsIssuersPage,
   loader: () => {
     return {
       breadcrumb: [
         createI18nBreadcrumbMetadata("platformSettings", {
-          href: "/admin/platform-settings/claim-topics-issuers",
+          href: "/platform-settings/claim-topics-issuers",
         }),
         createI18nBreadcrumbMetadata("settings.claimTopicsIssuers"),
       ],

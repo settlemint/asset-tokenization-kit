@@ -23,11 +23,11 @@ export function NavParticipants() {
   const { t } = useTranslation("navigation");
   const isUsersActive = useRouterState({
     select: (state) =>
-      state.location.pathname.startsWith("/admin/user-management"),
+      state.location.pathname.startsWith("/participants/users"),
   });
   const isEntitiesActive = useRouterState({
     select: (state) =>
-      state.location.pathname.startsWith("/admin/identity-management"),
+      state.location.pathname.startsWith("/participants/entities"),
   });
   const { data: system } = useSuspenseQuery(
     orpc.system.read.queryOptions({
@@ -52,7 +52,7 @@ export function NavParticipants() {
         <SidebarMenuItem>
           <SidebarMenuButton asChild isActive={isUsersActive}>
             <Link
-              to="/admin/user-management"
+              to="/participants/users"
               aria-current={isUsersActive ? "page" : undefined}
               className={isUsersActive ? "font-semibold" : undefined}
             >
@@ -64,7 +64,7 @@ export function NavParticipants() {
         <SidebarMenuItem>
           <SidebarMenuButton asChild isActive={isEntitiesActive}>
             <Link
-              to="/admin/identity-management"
+              to="/participants/entities"
               aria-current={isEntitiesActive ? "page" : undefined}
               className={isEntitiesActive ? "font-semibold" : undefined}
             >

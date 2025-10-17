@@ -37,25 +37,25 @@ export function NavSettings() {
     {
       name: t("settings.assetTypes.title"),
       icon: FileText,
-      path: "/admin/platform-settings/asset-types",
+      path: "/platform-settings/asset-types",
       enabled: system.userPermissions?.actions.tokenFactoryCreate,
     },
     {
       name: t("settings.compliance"),
       icon: Shield,
-      path: "/admin/platform-settings/compliance",
+      path: "/platform-settings/compliance",
       enabled: system.userPermissions?.actions.complianceModuleCreate,
     },
     {
       name: t("settings.addons"),
       icon: Puzzle,
-      path: "/admin/platform-settings/addons",
+      path: "/platform-settings/addons",
       enabled: system.userPermissions?.actions.addonFactoryCreate,
     },
     {
       name: t("settings.claimTopicsIssuers"),
       icon: ClipboardCheck,
-      path: "/admin/platform-settings/claim-topics-issuers",
+      path: "/platform-settings/claim-topics-issuers",
       enabled:
         system.userPermissions?.actions.topicCreate ||
         system.userPermissions?.actions.trustedIssuerCreate,
@@ -63,7 +63,7 @@ export function NavSettings() {
     {
       name: t("settings.permissions.title"),
       icon: Key,
-      path: "/admin/platform-settings/permissions",
+      path: "/platform-settings/permissions",
       enabled:
         system.userPermissions?.actions.grantRole ||
         system.userPermissions?.actions.revokeRole,

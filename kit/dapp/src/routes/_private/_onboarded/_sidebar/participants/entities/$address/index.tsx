@@ -12,10 +12,10 @@ import { useTranslation } from "react-i18next";
  * It displays all identity data, claims information, and verification status
  * for the specified address.
  *
- * Route path: `/admin/identity-management/{address}`
+ * Route path: `/participants/entities/{address}`
  */
 export const Route = createFileRoute(
-  "/_private/_onboarded/_sidebar/admin/identity-management/$address/"
+  "/_private/_onboarded/_sidebar/participants/entities/$address/"
 )({
   errorComponent: DefaultCatchBoundary,
   component: IdentityDetailPage,
@@ -23,7 +23,7 @@ export const Route = createFileRoute(
 
 function IdentityDetailPage() {
   const { claimsData } = useLoaderData({
-    from: "/_private/_onboarded/_sidebar/admin/identity-management/$address",
+    from: "/_private/_onboarded/_sidebar/participants/entities/$address",
   });
   const { t } = useTranslation(["identities", "common"]);
 

@@ -7,7 +7,7 @@ import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
-  "/_private/_onboarded/_sidebar/admin/identity-management/"
+  "/_private/_onboarded/_sidebar/participants/entities/"
 )({
   beforeLoad: async ({ context: { queryClient, orpc } }) => {
     const system = await queryClient.ensureQueryData(
@@ -25,7 +25,12 @@ export const Route = createFileRoute(
   component: IdentityManagementPage,
   loader: () => {
     return {
-      breadcrumb: [createI18nBreadcrumbMetadata("identityManagement")],
+      breadcrumb: [
+        createI18nBreadcrumbMetadata("participants", {
+          href: "/participants/users",
+        }),
+        createI18nBreadcrumbMetadata("participantsEntities"),
+      ],
     };
   },
 });
@@ -38,7 +43,7 @@ function IdentityManagementPage() {
       <RouterBreadcrumb />
       <div className="mb-8 mt-4">
         <h1 className="text-3xl font-bold">
-          {t("navigation:identityManagement")}
+          {t("navigation:entityManagement")}
         </h1>
         <p className="text-muted-foreground mt-2">
           {t("identities:page.description")}
