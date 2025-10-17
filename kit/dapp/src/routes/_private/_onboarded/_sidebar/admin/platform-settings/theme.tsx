@@ -264,27 +264,6 @@ function ThemeSettingsPage() {
   const getDraftSnapshot = () =>
     cloneThemeConfig(form.state.values as ThemeConfig);
 
-  const readFileAsBase64 = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.addEventListener("load", () => {
-        if (typeof reader.result === "string") {
-          const commaIndex = reader.result.indexOf(",");
-          if (commaIndex !== -1) {
-            resolve(reader.result.slice(commaIndex + 1));
-            return;
-          }
-          resolve(reader.result);
-          return;
-        }
-        reject(new Error("Unable to read file data"));
-      });
-      reader.addEventListener("error", () => {
-        reject(new Error("Failed to read file"));
-      });
-      reader.readAsDataURL(file);
-    });
-
   const applyDraftTheme = (theme: ThemeConfig, precompiledCss?: string) => {
     const cloned = cloneThemeConfig(theme);
     form.reset(cloned);
@@ -359,12 +338,6 @@ function ThemeSettingsPage() {
   const handleResetToDefaults = async () => {
     clearValidationErrors();
     const defaultDraft = createPayloadFromTheme(DEFAULT_THEME);
-    defaultDraft.logo.lightUrl = sanitizeLogoUrlForPayload(
-      baseTheme.logo.lightUrl
-    );
-    defaultDraft.logo.darkUrl = sanitizeLogoUrlForPayload(
-      baseTheme.logo.darkUrl
-    );
     const sanitizedUpdatedBy =
       typeof baseTheme.metadata.updatedBy === "string" &&
       baseTheme.metadata.updatedBy.trim().length > 0
@@ -522,31 +495,54 @@ function ThemeSettingsPage() {
 
     const contentType = file.type as ThemeLogoUploadInput["contentType"];
 
-    const uploadPromise = readFileAsBase64(file).then((base64Data) =>
-      uploadLogoMutation({
-        mode,
-        fileName: file.name,
-        contentType,
-        fileSize: file.size,
-        base64Data,
-        previousUrl: previousSanitized,
-      })
-    );
+    const uploadPromise = uploadLogoMutation({
+      mode,
+      fileName: file.name,
+      contentType,
+      fileSize: file.size,
+      previousUrl: previousSanitized,
+    }).then(async (result: ThemeLogoUploadOutput) => {
+      const proxyFormData = new FormData();
+      proxyFormData.append("mode", mode);
+      proxyFormData.append("file", file);
+      proxyFormData.append("uploadUrl", result.uploadUrl);
+      proxyFormData.append("method", result.method);
+      proxyFormData.append(
+        "headers",
+        JSON.stringify(result.headers ?? { "Content-Type": contentType })
+      );
+      const proxyResponse = await fetch("/internal/theme-logo-upload", {
+        method: "POST",
+        body: proxyFormData,
+      });
+      if (!proxyResponse.ok) {
+        throw new Error(
+          `Upload proxy failed with status ${proxyResponse.status} ${proxyResponse.statusText}`
+        );
+      }
+      const { etag, uploadedAt } = (await proxyResponse.json()) as {
+        etag?: string;
+        uploadedAt: string;
+      };
+      return { result, etag: etag ?? "", uploadedAt };
+    });
 
     uploadPromise
-      .then((result: ThemeLogoUploadOutput) => {
+      .then(({ result, etag, uploadedAt }) => {
         const nextDraft = getDraftSnapshot();
         if (mode === "light") {
           nextDraft.logo.lightUrl = result.publicUrl;
         } else {
           nextDraft.logo.darkUrl = result.publicUrl;
         }
-        nextDraft.logo.etag = result.etag;
-        nextDraft.logo.updatedAt = result.updatedAt;
+        nextDraft.logo.etag = etag.length > 0 ? etag : nextDraft.logo.etag;
+        nextDraft.logo.updatedAt = uploadedAt;
         updatePreviewDraft(nextDraft);
         form.setFieldValue(fieldPath, result.publicUrl);
-        form.setFieldValue("logo.etag", result.etag);
-        form.setFieldValue("logo.updatedAt", result.updatedAt);
+        if (etag.length > 0) {
+          form.setFieldValue("logo.etag", etag);
+        }
+        form.setFieldValue("logo.updatedAt", uploadedAt);
         toast.success(tTheme("logoUploadSuccess"));
       })
       .catch((error: unknown) => {

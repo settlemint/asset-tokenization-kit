@@ -6,8 +6,6 @@ const ALLOWED_CONTENT_TYPES = [
   "image/webp",
 ] as const;
 
-const BASE64_PATTERN = /^[A-Za-z0-9+/=]+$/;
-
 export const ThemeLogoUploadSchema = z.object({
   mode: z.enum(["light", "dark"]),
   fileName: z
@@ -20,10 +18,6 @@ export const ThemeLogoUploadSchema = z.object({
     .int()
     .positive()
     .max(5 * 1024 * 1024, "File size must be 5MB or smaller"),
-  base64Data: z
-    .string()
-    .min(1, "File data is required")
-    .regex(BASE64_PATTERN, "File data must be base64 encoded"),
   previousUrl: z.string().optional(),
 });
 
@@ -32,8 +26,10 @@ export const ThemeLogoUploadOutputSchema = z.object({
   bucket: z.string(),
   objectKey: z.string(),
   publicUrl: z.string(),
-  etag: z.string(),
-  updatedAt: z.string(),
+  uploadUrl: z.url(),
+  method: z.literal("PUT"),
+  headers: z.record(z.string(), z.string()).optional(),
+  expiresAt: z.string().optional(),
 });
 
 export type ThemeLogoUploadInput = z.infer<typeof ThemeLogoUploadSchema>;

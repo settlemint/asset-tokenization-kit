@@ -1,13 +1,10 @@
-import {
-  DEFAULT_BRANDING_BUCKET,
-  extractObjectKey,
-} from "@/components/theme/lib/reset";
-import { authRouter } from "@/orpc/procedures/auth.router";
+import { DEFAULT_BRANDING_BUCKET } from "@/components/theme/lib/reset";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { minioMiddleware } from "@/orpc/middlewares/services/minio.middleware";
-import { deleteFile, uploadFile } from "@settlemint/sdk-minio";
-import { Buffer } from "node:buffer";
+import { authRouter } from "@/orpc/procedures/auth.router";
+import { createPresignedUploadUrl } from "@settlemint/sdk-minio";
 import { randomUUID } from "node:crypto";
+import { ThemeLogoUploadSchema } from "./theme.upload-logo.schema";
 
 const LOGO_BASE_PATH = "logos";
 
@@ -16,11 +13,24 @@ const sanitizeFileName = (fileName: string): string => {
   return normalized.replaceAll(/[^a-z0-9._-]/g, "_");
 };
 
-const resolveObjectKey = (mode: "light" | "dark", fileName: string): string => {
+const resolveObjectKey = (
+  mode: "light" | "dark",
+  fileName: string
+): {
+  objectKey: string;
+  pathPrefix: string;
+  sanitizedFileName: string;
+} => {
   const timestamp = new Date().toISOString().replaceAll(/[:.]/g, "-");
   const unique = randomUUID().slice(0, 8);
   const sanitized = sanitizeFileName(fileName);
-  return `${LOGO_BASE_PATH}/${mode}/${timestamp}-${unique}-${sanitized}`;
+  const pathPrefix = `${LOGO_BASE_PATH}/${mode}`;
+  const finalizedName = `${timestamp}-${unique}-${sanitized}`;
+  return {
+    objectKey: `${pathPrefix}/${finalizedName}`,
+    pathPrefix,
+    sanitizedFileName: finalizedName,
+  };
 };
 
 export const uploadLogo = authRouter.settings.theme.uploadLogo
@@ -31,40 +41,36 @@ export const uploadLogo = authRouter.settings.theme.uploadLogo
   )
   .use(minioMiddleware)
   .handler(async ({ input, context }) => {
-    const { mode, fileName, contentType, base64Data, fileSize, previousUrl } =
-      input;
-    const buffer = Buffer.from(base64Data, "base64");
-
-    if (buffer.length !== fileSize) {
-      throw new Error("Uploaded file size mismatch");
-    }
-
+    const payload = ThemeLogoUploadSchema.parse(input);
+    const { mode, fileName, contentType } = payload;
     const bucket = DEFAULT_BRANDING_BUCKET;
-    const objectKey = resolveObjectKey(mode, fileName);
-
-    const metadata = await uploadFile(
-      context.minioClient,
-      buffer,
-      objectKey,
-      contentType,
-      bucket
+    const { objectKey, pathPrefix, sanitizedFileName } = resolveObjectKey(
+      mode,
+      fileName
     );
 
-    if (previousUrl) {
-      const previousKey = extractObjectKey(previousUrl, bucket);
-      if (previousKey && previousKey !== objectKey) {
-        await deleteFile(context.minioClient, previousKey, bucket).catch(() => {
-          // Ignore cleanup failures to avoid blocking upload success
-        });
-      }
-    }
+    const expirySeconds = 15 * 60;
+
+    const uploadUrl = await createPresignedUploadUrl(
+      context.minioClient,
+      sanitizedFileName,
+      pathPrefix,
+      bucket,
+      expirySeconds
+    );
+
+    const expiresAt = new Date(Date.now() + expirySeconds * 1000).toISOString();
 
     return {
       mode,
       bucket,
       objectKey,
       publicUrl: `/${bucket}/${objectKey}`,
-      etag: metadata.etag,
-      updatedAt: metadata.uploadedAt,
+      uploadUrl,
+      method: "PUT" as const,
+      headers: {
+        "Content-Type": contentType,
+      },
+      expiresAt,
     };
   });

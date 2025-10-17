@@ -11,7 +11,6 @@ describe("theme logo upload schema", () => {
       fileName: "logo.svg",
       contentType: "image/svg+xml" as const,
       fileSize: 1024,
-      base64Data: "SGVsbG8=",
       previousUrl: "/branding/logos/light/old.svg",
     };
     const parsed = ThemeLogoUploadSchema.safeParse(input);
@@ -24,7 +23,6 @@ describe("theme logo upload schema", () => {
       fileName: "logo.gif",
       contentType: "image/gif",
       fileSize: 512,
-      base64Data: "RkFLRQ==",
     };
     const parsed = ThemeLogoUploadSchema.safeParse(input);
     expect(parsed.success).toBe(false);
@@ -36,8 +34,12 @@ describe("theme logo upload schema", () => {
       bucket: "branding",
       objectKey: "logos/light/logo.svg",
       publicUrl: "/branding/logos/light/logo.svg",
-      etag: "abc123",
-      updatedAt: new Date().toISOString(),
+      uploadUrl: "https://minio.example.com/presigned",
+      method: "PUT" as const,
+      headers: {
+        "Content-Type": "image/svg+xml",
+      },
+      expiresAt: new Date().toISOString(),
     };
     const parsed = ThemeLogoUploadOutputSchema.safeParse(output);
     expect(parsed.success).toBe(true);
