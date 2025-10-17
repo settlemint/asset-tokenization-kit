@@ -170,11 +170,10 @@ describe("theme schema", () => {
   });
 
   describe("THEME_TOKENS", () => {
-    it("contains all expected token categories", () => {
-      const tokens = [...THEME_TOKENS];
-      expect(tokens.some((t) => t.startsWith("sm-"))).toBe(true);
-      expect(tokens.some((t) => t.startsWith("sidebar-"))).toBe(true);
-      expect(tokens.some((t) => t.startsWith("chart-"))).toBe(true);
+    it("matches default theme token keys", () => {
+      const tokens = [...THEME_TOKENS].toSorted();
+      const defaultTokens = Object.keys(DEFAULT_THEME.cssVars.light).toSorted();
+      expect(tokens).toEqual(defaultTokens);
     });
 
     it("has no duplicate tokens", () => {

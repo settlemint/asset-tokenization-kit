@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { compileThemeCSS, generateFontLinks, hashTheme } from "./compile-css";
-import { DEFAULT_THEME } from "./schema";
+import { DEFAULT_THEME, THEME_TOKENS } from "./schema";
 
 describe("compile-css", () => {
   describe("compileThemeCSS", () => {
@@ -14,12 +14,11 @@ describe("compile-css", () => {
       expect(css).toContain(".dark {");
     });
 
-    it("includes all CSS variables", () => {
+    it("includes all CSS variables from THEME_TOKENS", () => {
       const css = compileThemeCSS(DEFAULT_THEME);
-      expect(css).toContain("--sm-text:");
-      expect(css).toContain("--sm-accent:");
-      expect(css).toContain("--background:");
-      expect(css).toContain("--foreground:");
+      for (const token of THEME_TOKENS) {
+        expect(css).toContain(`--${token}:`);
+      }
     });
 
     it("outputs deterministic CSS", () => {

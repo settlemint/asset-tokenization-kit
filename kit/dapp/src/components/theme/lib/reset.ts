@@ -1,11 +1,10 @@
-import { env } from "@atk/config/env";
 import { client as defaultMinioClient } from "@/lib/settlemint/minio";
 import { deleteFile } from "@settlemint/sdk-minio";
 import { compileThemeCSS } from "./compile-css";
 import { DEFAULT_THEME, type ThemeConfig } from "./schema";
 import { getTheme, resetTheme as deleteThemeRow } from "./repository";
 
-export const DEFAULT_BUCKET = env.SETTLEMINT_MINIO_BUCKET;
+export const DEFAULT_BUCKET = process.env.SETTLEMINT_MINIO_BUCKET ?? "atk";
 
 interface ResetThemeOptions {
   minioClient?: Parameters<typeof deleteFile>[0];
