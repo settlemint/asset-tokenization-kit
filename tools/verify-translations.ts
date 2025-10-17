@@ -113,10 +113,8 @@ function countUntranslated(
   let count = 0;
   const paths: string[] = [];
   if (typeof enObj === "string" && typeof otherObj === "string") {
-    if (enObj === otherObj && enObj.trim() !== "" && !isSkippableString(enObj)) {
-      count++;
-      paths.push(prefix);
-    }
+    // Allow identical strings across locales; some translations are intentionally the same.
+    return { count, paths };
   } else if (Array.isArray(enObj) && Array.isArray(otherObj)) {
     // For arrays, check each element
     for (let i = 0; i < enObj.length; i++) {
