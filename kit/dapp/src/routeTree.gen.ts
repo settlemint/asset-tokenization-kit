@@ -61,7 +61,6 @@ import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressDenomina
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressActionsRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/actions'
 import { Route as PrivateOnboardedSidebarAdminIdentityManagementAddressClaimsRouteImport } from './routes/_private/_onboarded/_sidebar/admin/identity-management/$address/claims'
-import { ServerRoute as InternalThemeLogoUploadServerRouteImport } from './routes/internal/theme-logo-upload'
 import { ServerRoute as ApiThemeDotcssServerRouteImport } from './routes/api/theme[.]css'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
@@ -388,12 +387,6 @@ const PrivateOnboardedSidebarAdminIdentityManagementAddressClaimsRoute =
         PrivateOnboardedSidebarAdminIdentityManagementAddressRoute,
     } as any,
   )
-const InternalThemeLogoUploadServerRoute =
-  InternalThemeLogoUploadServerRouteImport.update({
-    id: '/internal/theme-logo-upload',
-    path: '/internal/theme-logo-upload',
-    getParentRoute: () => rootServerRouteImport,
-  } as any)
 const ApiThemeDotcssServerRoute = ApiThemeDotcssServerRouteImport.update({
   id: '/api/theme.css',
   path: '/api/theme.css',
@@ -714,14 +707,12 @@ export interface RootRouteChildren {
 export interface FileServerRoutesByFullPath {
   '/api/$': typeof ApiSplatServerRoute
   '/api/theme.css': typeof ApiThemeDotcssServerRoute
-  '/internal/theme-logo-upload': typeof InternalThemeLogoUploadServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
 }
 export interface FileServerRoutesByTo {
   '/api/$': typeof ApiSplatServerRoute
   '/api/theme.css': typeof ApiThemeDotcssServerRoute
-  '/internal/theme-logo-upload': typeof InternalThemeLogoUploadServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
 }
@@ -729,38 +720,20 @@ export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
   '/api/$': typeof ApiSplatServerRoute
   '/api/theme.css': typeof ApiThemeDotcssServerRoute
-  '/internal/theme-logo-upload': typeof InternalThemeLogoUploadServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
 }
 export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths:
-    | '/api/$'
-    | '/api/theme.css'
-    | '/internal/theme-logo-upload'
-    | '/api/auth/$'
-    | '/api/rpc/$'
+  fullPaths: '/api/$' | '/api/theme.css' | '/api/auth/$' | '/api/rpc/$'
   fileServerRoutesByTo: FileServerRoutesByTo
-  to:
-    | '/api/$'
-    | '/api/theme.css'
-    | '/internal/theme-logo-upload'
-    | '/api/auth/$'
-    | '/api/rpc/$'
-  id:
-    | '__root__'
-    | '/api/$'
-    | '/api/theme.css'
-    | '/internal/theme-logo-upload'
-    | '/api/auth/$'
-    | '/api/rpc/$'
+  to: '/api/$' | '/api/theme.css' | '/api/auth/$' | '/api/rpc/$'
+  id: '__root__' | '/api/$' | '/api/theme.css' | '/api/auth/$' | '/api/rpc/$'
   fileServerRoutesById: FileServerRoutesById
 }
 export interface RootServerRouteChildren {
   ApiSplatServerRoute: typeof ApiSplatServerRoute
   ApiThemeDotcssServerRoute: typeof ApiThemeDotcssServerRoute
-  InternalThemeLogoUploadServerRoute: typeof InternalThemeLogoUploadServerRoute
   ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute
   ApiRpcSplatServerRoute: typeof ApiRpcSplatServerRoute
 }
@@ -1121,13 +1094,6 @@ declare module '@tanstack/react-router' {
 }
 declare module '@tanstack/react-start/server' {
   interface ServerFileRoutesByPath {
-    '/internal/theme-logo-upload': {
-      id: '/internal/theme-logo-upload'
-      path: '/internal/theme-logo-upload'
-      fullPath: '/internal/theme-logo-upload'
-      preLoaderRoute: typeof InternalThemeLogoUploadServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
     '/api/theme.css': {
       id: '/api/theme.css'
       path: '/api/theme.css'
@@ -1398,7 +1364,6 @@ export const routeTree = rootRouteImport
 const rootServerRouteChildren: RootServerRouteChildren = {
   ApiSplatServerRoute: ApiSplatServerRoute,
   ApiThemeDotcssServerRoute: ApiThemeDotcssServerRoute,
-  InternalThemeLogoUploadServerRoute: InternalThemeLogoUploadServerRoute,
   ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,
   ApiRpcSplatServerRoute: ApiRpcSplatServerRoute,
 }

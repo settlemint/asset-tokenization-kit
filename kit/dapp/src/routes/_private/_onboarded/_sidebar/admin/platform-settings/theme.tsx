@@ -502,29 +502,28 @@ function ThemeSettingsPage() {
       fileSize: file.size,
       previousUrl: previousSanitized,
     }).then(async (result: ThemeLogoUploadOutput) => {
-      const proxyFormData = new FormData();
-      proxyFormData.append("mode", mode);
-      proxyFormData.append("file", file);
-      proxyFormData.append("uploadUrl", result.uploadUrl);
-      proxyFormData.append("method", result.method);
-      proxyFormData.append(
-        "headers",
-        JSON.stringify(result.headers ?? { "Content-Type": contentType })
-      );
-      const proxyResponse = await fetch("/internal/theme-logo-upload", {
-        method: "POST",
-        body: proxyFormData,
+      const headers = new Headers(result.headers ?? {});
+      if (!headers.has("Content-Type")) {
+        headers.set("Content-Type", contentType);
+      }
+
+      const response = await fetch(result.uploadUrl, {
+        method: result.method,
+        headers,
+        body: file,
       });
-      if (!proxyResponse.ok) {
+
+      if (!response.ok) {
         throw new Error(
-          `Upload proxy failed with status ${proxyResponse.status} ${proxyResponse.statusText}`
+          `Upload failed with status ${response.status} ${response.statusText}`
         );
       }
-      const { etag, uploadedAt } = (await proxyResponse.json()) as {
-        etag?: string;
-        uploadedAt: string;
-      };
-      return { result, etag: etag ?? "", uploadedAt };
+
+      const etag =
+        response.headers.get("etag") ?? response.headers.get("ETag") ?? "";
+      const uploadedAt = new Date().toISOString();
+
+      return { result, etag, uploadedAt };
     });
 
     uploadPromise

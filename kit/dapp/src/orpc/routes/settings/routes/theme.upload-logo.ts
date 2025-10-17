@@ -2,6 +2,7 @@ import { DEFAULT_BRANDING_BUCKET } from "@/components/theme/lib/reset";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { minioMiddleware } from "@/orpc/middlewares/services/minio.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { env } from "@atk/config/env";
 import { createPresignedUploadUrl } from "@settlemint/sdk-minio";
 import { randomUUID } from "node:crypto";
 import { ThemeLogoUploadSchema } from "./theme.upload-logo.schema";
@@ -59,6 +60,24 @@ export const uploadLogo = authRouter.settings.theme.uploadLogo
       expirySeconds
     );
 
+    const normalizedUploadUrl = (() => {
+      if (env.SETTLEMINT_INSTANCE === "local") {
+        try {
+          const url = new URL(uploadUrl);
+          if (
+            (url.hostname === "localhost" || url.hostname === "127.0.0.1") &&
+            url.protocol === "https:"
+          ) {
+            url.protocol = "http:";
+            return url.toString();
+          }
+        } catch {
+          return uploadUrl;
+        }
+      }
+      return uploadUrl;
+    })();
+
     const expiresAt = new Date(Date.now() + expirySeconds * 1000).toISOString();
 
     return {
@@ -66,7 +85,7 @@ export const uploadLogo = authRouter.settings.theme.uploadLogo
       bucket,
       objectKey,
       publicUrl: `/${bucket}/${objectKey}`,
-      uploadUrl,
+      uploadUrl: normalizedUploadUrl,
       method: "PUT" as const,
       headers: {
         "Content-Type": contentType,
