@@ -45,5 +45,12 @@ export const AccessControlFragment = theGraphGraphql(`
     tokenManager { id isContract }
     trustedIssuersMetaRegistryModule { id isContract }
     verificationAdmin { id isContract }
+    roleAdmins {
+      id
+      role
+      roleFieldName
+      adminRole
+      adminFieldName
+    }
   }
 `);

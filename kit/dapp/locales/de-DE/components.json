@@ -61,5 +61,14 @@
     "pinCode": "PIN-Code",
     "useAuthenticatorInstead": "Stattdessen Authenticator-App verwenden",
     "usePinInstead": "Stattdessen PIN-Code verwenden"
+  },
+  "changeRolesSheet": {
+    "title": "Rollen ändern",
+    "description": "Rollen für diese Adresse zuweisen oder entfernen",
+    "cta": "Rollen ändern",
+    "accountLabel": "Konto",
+    "rolesLabel": "Rollen",
+    "networkError": "Netzwerkverbindung fehlgeschlagen. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+    "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
   }
 }

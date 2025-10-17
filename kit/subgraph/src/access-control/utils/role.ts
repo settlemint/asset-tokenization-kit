@@ -1,6 +1,6 @@
 import { ByteArray, Bytes, crypto } from "@graphprotocol/graph-ts";
 
-class RoleConfig {
+export class RoleConfig {
   _name: string;
   _bytes: Bytes;
   _hexString: string;
@@ -110,3 +110,14 @@ export function getRoleConfigFromBytes(bytes: Bytes): RoleConfig {
 
   return role;
 }
+
+export function getRoleConfigFromFieldName(fieldName: string): RoleConfig | null {
+  for (let i = 0; i < Roles.length; i++) {
+    if (Roles[i].fieldName == fieldName) {
+      return Roles[i];
+    }
+  }
+  return null;
+}
+
+export const DEFAULT_ADMIN_ROLE = Roles[0];

@@ -1,6 +1,7 @@
 import * as z from "zod";
 import { accountArray } from "./account";
 import { ethereumAddress } from "./ethereum-address";
+import { ethereumHex } from "./ethereum-hex";
 
 export const roles = [
   "addonManager",
@@ -69,6 +70,17 @@ export const assetAccessControlRoles: AccessControlRoles[] = [
   "tokenManager",
 ];
 export const assetAccessControlRole = z.enum(assetAccessControlRoles);
+
+/**
+ * Schema describing the AccessControl role admin linkage produced by the system access manager.
+ */
+const roleAdminSchema = z.object({
+  id: ethereumHex.describe("Role admin mapping identifier"),
+  role: ethereumHex.describe("Role identifier (bytes32)"),
+  roleFieldName: accessControlRole.describe("Role field name"),
+  adminRole: ethereumHex.describe("Admin role identifier (bytes32)"),
+  adminFieldName: accessControlRole.describe("Admin role field name"),
+});
 
 /**
  * Creates a Zod schema that validates the AccessControl fragment structure from TheGraph.
@@ -151,6 +163,10 @@ export const accessControlSchema = () =>
     verificationAdmin: accountArray().describe(
       "Accounts with verification admin role"
     ),
+    roleAdmins: z
+      .array(roleAdminSchema)
+      .describe("Admin role mapping per access control role")
+      .default([]),
   });
 
 /**

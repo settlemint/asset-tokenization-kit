@@ -17,7 +17,11 @@
 
 import { describe, expect, it } from "bun:test";
 import type { z } from "zod";
-import { accessControlRole, accessControlRoles } from "./access-control-roles";
+import {
+  accessControlRole,
+  accessControlRoles,
+  accessControlSchema,
+} from "./access-control-roles";
 
 describe("accessControlRoles", () => {
   describe("schema validation for access control roles", () => {
@@ -298,6 +302,75 @@ describe("accessControlRoles", () => {
       expect(Object.keys(accessControlRole.enum)).toHaveLength(
         expectedRoles.length
       );
+    });
+  });
+
+  describe("accessControlSchema", () => {
+    it("should parse access control data including role admin mappings", () => {
+      const schema = accessControlSchema();
+      const zeroAddress = "0x0000000000000000000000000000000000000000";
+      const bytes32 = "0x".padEnd(66, "0");
+      const payload = {
+        id: zeroAddress,
+        addonManager: [{ id: zeroAddress, isContract: false }],
+        addonModule: [{ id: zeroAddress, isContract: false }],
+        addonRegistryModule: [{ id: zeroAddress, isContract: false }],
+        admin: [{ id: zeroAddress, isContract: false }],
+        auditor: [{ id: zeroAddress, isContract: false }],
+        burner: [{ id: zeroAddress, isContract: false }],
+        capManagement: [{ id: zeroAddress, isContract: false }],
+        claimPolicyManager: [{ id: zeroAddress, isContract: false }],
+        claimIssuer: [{ id: zeroAddress, isContract: false }],
+        complianceAdmin: [{ id: zeroAddress, isContract: false }],
+        complianceManager: [{ id: zeroAddress, isContract: false }],
+        custodian: [{ id: zeroAddress, isContract: false }],
+        emergency: [{ id: zeroAddress, isContract: false }],
+        forcedTransfer: [{ id: zeroAddress, isContract: false }],
+        freezer: [{ id: zeroAddress, isContract: false }],
+        fundsManager: [{ id: zeroAddress, isContract: false }],
+        governance: [{ id: zeroAddress, isContract: false }],
+        identityManager: [{ id: zeroAddress, isContract: false }],
+        identityRegistryModule: [{ id: zeroAddress, isContract: false }],
+        minter: [{ id: zeroAddress, isContract: false }],
+        organisationIdentityManager: [{ id: zeroAddress, isContract: false }],
+        pauser: [{ id: zeroAddress, isContract: false }],
+        recovery: [{ id: zeroAddress, isContract: false }],
+        saleAdmin: [{ id: zeroAddress, isContract: false }],
+        signer: [{ id: zeroAddress, isContract: false }],
+        supplyManagement: [{ id: zeroAddress, isContract: false }],
+        systemManager: [{ id: zeroAddress, isContract: false }],
+        systemModule: [{ id: zeroAddress, isContract: false }],
+        tokenAdmin: [{ id: zeroAddress, isContract: false }],
+        tokenFactoryModule: [{ id: zeroAddress, isContract: false }],
+        tokenFactoryRegistryModule: [{ id: zeroAddress, isContract: false }],
+        tokenManager: [{ id: zeroAddress, isContract: false }],
+        trustedIssuersMetaRegistryModule: [
+          {
+            id: zeroAddress,
+            isContract: false,
+          },
+        ],
+        verificationAdmin: [{ id: zeroAddress, isContract: false }],
+        roleAdmins: [
+          {
+            id: bytes32,
+            role: bytes32,
+            roleFieldName: "admin",
+            adminRole: bytes32,
+            adminFieldName: "systemManager",
+          },
+        ],
+      } as const;
+
+      const result = schema.parse(payload);
+
+      expect(result.roleAdmins).toHaveLength(1);
+      const [roleAdmin] = result.roleAdmins;
+      if (!roleAdmin) {
+        throw new Error("Expected roleAdmins to include an entry");
+      }
+      expect(roleAdmin.roleFieldName).toBe("admin");
+      expect(roleAdmin.adminFieldName).toBe("systemManager");
     });
   });
 });
