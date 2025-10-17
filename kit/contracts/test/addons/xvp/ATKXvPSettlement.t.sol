@@ -884,7 +884,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         bool autoExecute = false;
 
         // Step 1: Create settlement (as Alice)
-        (IATKXvPSettlement settlement, address settlementAddr) =
+        (IATKXvPSettlement settlement) =
             _deploySettlement(alice, "Settlement Name", flows, cutoffDate, autoExecute, NO_HASHLOCK);
 
         // Step 2: Try to cancel as Charlie (not involved)
@@ -1399,7 +1399,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
         flows[0] = _localFlow(address(token), alice, bob, 100 * 10 ** 18);
 
-        (IATKXvPSettlement settlement, address settlementAddr) =
+        (IATKXvPSettlement settlement) =
             _deploySettlement(alice, "Settlement Name", flows, block.timestamp + 1 days, false, NO_HASHLOCK);
 
         vm.prank(relayer);
@@ -1424,7 +1424,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         bytes memory secret = bytes("double-reveal");
         bytes32 hashlock = keccak256(secret);
 
-        (IATKXvPSettlement settlement, address settlementAddr) =
+        (IATKXvPSettlement settlement) =
             _deploySettlement(alice, "Settlement Name", flows, block.timestamp + 1 days, false, hashlock);
 
         vm.prank(bob);
