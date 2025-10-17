@@ -98,10 +98,7 @@ abstract contract AbstractATKAssetTest is Test {
         return identityUtils.createIdentity(_wallet);
     }
 
-    function _createClaimUtilsForIssuer(
-        address claimIssuer_,
-        uint256 claimIssuerPrivateKey_
-    )
+    function _createClaimUtilsForIssuer(address claimIssuer_, uint256 claimIssuerPrivateKey_)
         internal
         returns (ClaimUtils)
     {

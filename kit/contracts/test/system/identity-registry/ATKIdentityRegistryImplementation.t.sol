@@ -3,8 +3,9 @@ pragma solidity ^0.8.19;
 
 import { Test } from "forge-std/Test.sol";
 import { ISMARTIdentityRegistry } from "../../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
-import { ATKIdentityRegistryImplementation } from
-    "../../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
+import {
+    ATKIdentityRegistryImplementation
+} from "../../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IdentityUtils } from "../../utils/IdentityUtils.sol";
 import { ClaimUtils } from "../../utils/ClaimUtils.sol";
@@ -721,11 +722,7 @@ contract ATKIdentityRegistryImplementationTest is Test {
     }
 
     /// @dev Helper function to create (A AND B) OR C expression: [TOPIC_A, TOPIC_B, AND, TOPIC_C, OR]
-    function _createComplexExpression1(
-        uint256 topicA,
-        uint256 topicB,
-        uint256 topicC
-    )
+    function _createComplexExpression1(uint256 topicA, uint256 topicB, uint256 topicC)
         internal
         pure
         returns (ExpressionNode[] memory)
@@ -876,10 +873,11 @@ contract ATKIdentityRegistryImplementationTest is Test {
         // Create expression: KYC AND (KYC OR AML) - KYC appears twice
         ExpressionNode[] memory expression = new ExpressionNode[](5);
         expression[0] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: kycTopicId });
-        expression[1] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: kycTopicId // Repeated topic for caching test
-         });
+        expression[1] =
+            ExpressionNode({
+                nodeType: ExpressionType.TOPIC,
+                value: kycTopicId // Repeated topic for caching test
+            });
         expression[2] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: amlTopicId });
         expression[3] = ExpressionNode({ nodeType: ExpressionType.OR, value: 0 });
         expression[4] = ExpressionNode({ nodeType: ExpressionType.AND, value: 0 });

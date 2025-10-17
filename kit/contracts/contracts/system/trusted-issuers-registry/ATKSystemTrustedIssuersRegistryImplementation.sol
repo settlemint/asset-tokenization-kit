@@ -118,10 +118,7 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
     // --- System Registry Functions (no subject parameters) ---
 
     /// @inheritdoc IATKTrustedIssuersRegistry
-    function addTrustedIssuer(
-        IClaimIssuer _trustedIssuer,
-        uint256[] calldata _claimTopics
-    )
+    function addTrustedIssuer(IClaimIssuer _trustedIssuer, uint256[] calldata _claimTopics)
         external
         override
         onlySystemRoles3(
@@ -187,10 +184,7 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
     }
 
     /// @inheritdoc IATKTrustedIssuersRegistry
-    function updateIssuerClaimTopics(
-        IClaimIssuer _trustedIssuer,
-        uint256[] calldata _newClaimTopics
-    )
+    function updateIssuerClaimTopics(IClaimIssuer _trustedIssuer, uint256[] calldata _newClaimTopics)
         external
         override
         onlySystemRoles3(
@@ -246,10 +240,7 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function getTrustedIssuersForClaimTopic(
-        uint256 claimTopic,
-        address
-    )
+    function getTrustedIssuersForClaimTopic(uint256 claimTopic, address)
         external
         view
         override
@@ -278,10 +269,7 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function getTrustedIssuerClaimTopics(
-        IClaimIssuer _trustedIssuer,
-        address
-    )
+    function getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer, address)
         external
         view
         override
@@ -296,11 +284,7 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
     // --- IClaimAuthorizer Implementation ---
 
     /// @inheritdoc IClaimAuthorizer
-    function isAuthorizedToAddClaim(
-        address issuer,
-        uint256 topic,
-        address subject
-    )
+    function isAuthorizedToAddClaim(address issuer, uint256 topic, address subject)
         external
         view
         override
@@ -383,7 +367,7 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
         return interfaceId == type(IATKSystemTrustedIssuersRegistry).interfaceId
             || interfaceId == type(IATKTrustedIssuersRegistry).interfaceId
             || interfaceId == type(ISMARTTrustedIssuersRegistry).interfaceId
-            || interfaceId == type(IClaimAuthorizer).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId
-            || super.supportsInterface(interfaceId);
+            || interfaceId == type(IClaimAuthorizer).interfaceId
+            || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
     }
 }

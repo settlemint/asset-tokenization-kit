@@ -2,8 +2,9 @@
 pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
-import { AbstractATKTokenFactoryImplementation } from
-    "../../system/tokens/factory/AbstractATKTokenFactoryImplementation.sol";
+import {
+    AbstractATKTokenFactoryImplementation
+} from "../../system/tokens/factory/AbstractATKTokenFactoryImplementation.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // Interface imports
@@ -45,11 +46,7 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
     /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param tokenImplementation_ The initial address of the token implementation contract.
     /// @param initialAdmin The address to be granted the DEFAULT_ADMIN_ROLE and DEPLOYER_ROLE.
-    function initialize(
-        address systemAddress,
-        address tokenImplementation_,
-        address initialAdmin
-    )
+    function initialize(address systemAddress, address tokenImplementation_, address initialAdmin)
         public
         override(AbstractATKTokenFactoryImplementation, IATKTokenFactory)
         initializer

@@ -60,9 +60,7 @@ event CountryUpdated(address indexed _investorAddress, uint16 indexed _country);
  */
 interface IERC3643IdentityRegistry {
     /// Functions
-
     /// Identity Registry Setters
-
     /**
      *  @notice Sets the identity registry storage contract address
      *  @dev Replace the actual identityRegistryStorage contract with a new one.

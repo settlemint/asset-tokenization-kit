@@ -14,7 +14,7 @@ abstract contract SMARTCappedTest is AbstractSMARTTest {
 
     // This will be overridden in the concrete test implementation
 
-    function _setUpCappedTest() internal /* override */ {
+    function _setUpCappedTest() internal /* override */  {
         super.setUp();
         _setupDefaultCollateralClaim();
         // Note: Don't mint initial balances as we need to test cap functionality from zero supply

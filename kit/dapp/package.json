@@ -18,7 +18,7 @@
     "settlemint:connect:local": "settlemint connect --instance local",
     "codegen:settlemint": "settlemint codegen",
     "codegen:interface-ids": "bun run ./tools/generate-interface-ids.ts",
-    "format": "prettier --experimental-cli --write .",
+    "format": "prettier --write .",
     "lint": "eslint ./src --fix --max-warnings 0 --cache --cache-location .eslintcache",
     "publish": "bash tools/publish-docker.sh",
     "db:check": "drizzle-kit check",

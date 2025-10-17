@@ -2,14 +2,17 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { ISMARTHistoricalBalances } from
-    "../../contracts/smart/extensions/historical-balances/ISMARTHistoricalBalances.sol";
-import { _SMARTHistoricalBalancesLogic } from
-    "../../contracts/smart/extensions/historical-balances/internal/_SMARTHistoricalBalancesLogic.sol";
+import {
+    ISMARTHistoricalBalances
+} from "../../contracts/smart/extensions/historical-balances/ISMARTHistoricalBalances.sol";
+import {
+    _SMARTHistoricalBalancesLogic
+} from "../../contracts/smart/extensions/historical-balances/internal/_SMARTHistoricalBalancesLogic.sol";
 import { console } from "forge-std/Test.sol";
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import { SMARTComplianceModuleParamPair } from
-    "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import {
+    SMARTComplianceModuleParamPair
+} from "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { ISMARTCompliance } from "../../contracts/smart/interface/ISMARTCompliance.sol";
 import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 

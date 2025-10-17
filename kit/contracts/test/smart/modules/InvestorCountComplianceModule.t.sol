@@ -30,8 +30,9 @@ import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMAR
 import { TestConstants } from "../../Constants.sol";
 import { ExpressionNode, ExpressionType } from "../../../contracts/smart/interface/structs/ExpressionNode.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
-import { SMARTComplianceModuleParamPair } from
-    "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import {
+    SMARTComplianceModuleParamPair
+} from "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { MockSMARTToken } from "../../utils/mocks/MockSMARTToken.sol";
 
 contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
@@ -114,14 +115,14 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
     /// @dev Test: "Max 100 total, no country limits" - maxInvestors=100, countryCodes=[], countryLimits=[]
     /// Global limit only configuration should be accepted
     function test_InvestorCount_ValidateParameters_GlobalLimitOnly() public view {
-        InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
-            .InvestorCountConfig({
-            maxInvestors: MAX_INVESTORS_GLOBAL,
-            global: false,
-            countryCodes: new uint16[](0),
-            countryLimits: new uint256[](0),
-            topicFilter: new ExpressionNode[](0)
-        });
+        InvestorCountComplianceModule.InvestorCountConfig memory config =
+            InvestorCountComplianceModule.InvestorCountConfig({
+                maxInvestors: MAX_INVESTORS_GLOBAL,
+                global: false,
+                countryCodes: new uint16[](0),
+                countryLimits: new uint256[](0),
+                topicFilter: new ExpressionNode[](0)
+            });
 
         bytes memory params = abi.encode(config);
         module.validateParameters(params);
@@ -138,14 +139,14 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
         countryLimits[0] = MAX_INVESTORS_US;
         countryLimits[1] = MAX_INVESTORS_BE;
 
-        InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
-            .InvestorCountConfig({
-            maxInvestors: 0, // No global limit
-            global: false,
-            countryCodes: countryCodes,
-            countryLimits: countryLimits,
-            topicFilter: new ExpressionNode[](0)
-        });
+        InvestorCountComplianceModule.InvestorCountConfig memory config =
+            InvestorCountComplianceModule.InvestorCountConfig({
+                maxInvestors: 0, // No global limit
+                global: false,
+                countryCodes: countryCodes,
+                countryLimits: countryLimits,
+                topicFilter: new ExpressionNode[](0)
+            });
 
         bytes memory params = abi.encode(config);
         module.validateParameters(params);
@@ -160,14 +161,14 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
         uint256[] memory countryLimits = new uint256[](1);
         countryLimits[0] = MAX_INVESTORS_US;
 
-        InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
-            .InvestorCountConfig({
-            maxInvestors: MAX_INVESTORS_GLOBAL,
-            global: false,
-            countryCodes: countryCodes,
-            countryLimits: countryLimits,
-            topicFilter: new ExpressionNode[](0)
-        });
+        InvestorCountComplianceModule.InvestorCountConfig memory config =
+            InvestorCountComplianceModule.InvestorCountConfig({
+                maxInvestors: MAX_INVESTORS_GLOBAL,
+                global: false,
+                countryCodes: countryCodes,
+                countryLimits: countryLimits,
+                topicFilter: new ExpressionNode[](0)
+            });
 
         bytes memory params = abi.encode(config);
         module.validateParameters(params);
@@ -176,14 +177,14 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
     /// @dev Test: Configuration with no limits should be rejected
     /// Must specify either global limit (maxInvestors > 0) or country limits
     function test_InvestorCount_RevertWhen_NoLimitsSpecified() public {
-        InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
-            .InvestorCountConfig({
-            maxInvestors: 0,
-            global: false,
-            countryCodes: new uint16[](0),
-            countryLimits: new uint256[](0),
-            topicFilter: new ExpressionNode[](0)
-        });
+        InvestorCountComplianceModule.InvestorCountConfig memory config =
+            InvestorCountComplianceModule.InvestorCountConfig({
+                maxInvestors: 0,
+                global: false,
+                countryCodes: new uint16[](0),
+                countryLimits: new uint256[](0),
+                topicFilter: new ExpressionNode[](0)
+            });
 
         bytes memory params = abi.encode(config);
         vm.expectRevert(
@@ -204,14 +205,14 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
         uint256[] memory countryLimits = new uint256[](1); // Mismatch!
         countryLimits[0] = MAX_INVESTORS_US;
 
-        InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
-            .InvestorCountConfig({
-            maxInvestors: 0,
-            global: false,
-            countryCodes: countryCodes,
-            countryLimits: countryLimits,
-            topicFilter: new ExpressionNode[](0)
-        });
+        InvestorCountComplianceModule.InvestorCountConfig memory config =
+            InvestorCountComplianceModule.InvestorCountConfig({
+                maxInvestors: 0,
+                global: false,
+                countryCodes: countryCodes,
+                countryLimits: countryLimits,
+                topicFilter: new ExpressionNode[](0)
+            });
 
         bytes memory params = abi.encode(config);
         vm.expectRevert(
@@ -231,14 +232,14 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
         uint256[] memory countryLimits = new uint256[](1);
         countryLimits[0] = 0; // Invalid!
 
-        InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
-            .InvestorCountConfig({
-            maxInvestors: 0,
-            global: false,
-            countryCodes: countryCodes,
-            countryLimits: countryLimits,
-            topicFilter: new ExpressionNode[](0)
-        });
+        InvestorCountComplianceModule.InvestorCountConfig memory config =
+            InvestorCountComplianceModule.InvestorCountConfig({
+                maxInvestors: 0,
+                global: false,
+                countryCodes: countryCodes,
+                countryLimits: countryLimits,
+                topicFilter: new ExpressionNode[](0)
+            });
 
         bytes memory params = abi.encode(config);
         vm.expectRevert(
@@ -261,14 +262,14 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
         countryLimits[1] = 30;
         countryLimits[2] = 25; // Would be ambiguous with first US entry
 
-        InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
-            .InvestorCountConfig({
-            maxInvestors: 0,
-            global: false,
-            countryCodes: countryCodes,
-            countryLimits: countryLimits,
-            topicFilter: new ExpressionNode[](0)
-        });
+        InvestorCountComplianceModule.InvestorCountConfig memory config =
+            InvestorCountComplianceModule.InvestorCountConfig({
+                maxInvestors: 0,
+                global: false,
+                countryCodes: countryCodes,
+                countryLimits: countryLimits,
+                topicFilter: new ExpressionNode[](0)
+            });
 
         bytes memory params = abi.encode(config);
         vm.expectRevert(
@@ -286,14 +287,14 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
 
     /// @dev Test: First investor should always be allowed (no limits exceeded)
     function test_InvestorCount_CanTransfer_FirstInvestor() public {
-        InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
-            .InvestorCountConfig({
-            maxInvestors: MAX_INVESTORS_GLOBAL,
-            global: false,
-            countryCodes: new uint16[](0),
-            countryLimits: new uint256[](0),
-            topicFilter: new ExpressionNode[](0)
-        });
+        InvestorCountComplianceModule.InvestorCountConfig memory config =
+            InvestorCountComplianceModule.InvestorCountConfig({
+                maxInvestors: MAX_INVESTORS_GLOBAL,
+                global: false,
+                countryCodes: new uint16[](0),
+                countryLimits: new uint256[](0),
+                topicFilter: new ExpressionNode[](0)
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -304,14 +305,14 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
 
     /// @dev Test: Existing investors can receive more tokens without increasing count
     function test_InvestorCount_CanTransfer_ExistingInvestor() public {
-        InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
-            .InvestorCountConfig({
-            maxInvestors: 1, // Only 1 investor allowed
-            global: false,
-            countryCodes: new uint16[](0),
-            countryLimits: new uint256[](0),
-            topicFilter: new ExpressionNode[](0)
-        });
+        InvestorCountComplianceModule.InvestorCountConfig memory config =
+            InvestorCountComplianceModule.InvestorCountConfig({
+                maxInvestors: 1, // Only 1 investor allowed
+                global: false,
+                countryCodes: new uint16[](0),
+                countryLimits: new uint256[](0),
+                topicFilter: new ExpressionNode[](0)
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -331,14 +332,14 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
 
     /// @dev Test: Global limit enforcement - reject when adding investor would exceed maxInvestors
     function test_InvestorCount_RevertWhen_ExceedsGlobalLimit() public {
-        InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
-            .InvestorCountConfig({
-            maxInvestors: 1, // Only 1 investor allowed
-            global: false,
-            countryCodes: new uint16[](0),
-            countryLimits: new uint256[](0),
-            topicFilter: new ExpressionNode[](0)
-        });
+        InvestorCountComplianceModule.InvestorCountConfig memory config =
+            InvestorCountComplianceModule.InvestorCountConfig({
+                maxInvestors: 1, // Only 1 investor allowed
+                global: false,
+                countryCodes: new uint16[](0),
+                countryLimits: new uint256[](0),
+                topicFilter: new ExpressionNode[](0)
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -378,14 +379,14 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
         countryLimits[0] = 1; // Only 1 US investor
         countryLimits[1] = 2; // Up to 2 BE investors
 
-        InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
-            .InvestorCountConfig({
-            maxInvestors: 0, // No global limit
-            global: false,
-            countryCodes: countryCodes,
-            countryLimits: countryLimits,
-            topicFilter: new ExpressionNode[](0)
-        });
+        InvestorCountComplianceModule.InvestorCountConfig memory config =
+            InvestorCountComplianceModule.InvestorCountConfig({
+                maxInvestors: 0, // No global limit
+                global: false,
+                countryCodes: countryCodes,
+                countryLimits: countryLimits,
+                topicFilter: new ExpressionNode[](0)
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -426,14 +427,14 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
         countryLimits[0] = 10; // US can have up to 10
         countryLimits[1] = 10; // BE can have up to 10
 
-        InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
-            .InvestorCountConfig({
-            maxInvestors: 2, // But global limit is only 2!
-            global: false,
-            countryCodes: countryCodes,
-            countryLimits: countryLimits,
-            topicFilter: new ExpressionNode[](0)
-        });
+        InvestorCountComplianceModule.InvestorCountConfig memory config =
+            InvestorCountComplianceModule.InvestorCountConfig({
+                maxInvestors: 2, // But global limit is only 2!
+                global: false,
+                countryCodes: countryCodes,
+                countryLimits: countryLimits,
+                topicFilter: new ExpressionNode[](0)
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -470,18 +471,17 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
         // Create topic filter requiring KYC
         ExpressionNode[] memory topicFilter = new ExpressionNode[](1);
         topicFilter[0] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC)
+            nodeType: ExpressionType.TOPIC, value: systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC)
         });
 
-        InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
-            .InvestorCountConfig({
-            maxInvestors: MAX_INVESTORS_GLOBAL,
-            global: false,
-            countryCodes: new uint16[](0),
-            countryLimits: new uint256[](0),
-            topicFilter: topicFilter
-        });
+        InvestorCountComplianceModule.InvestorCountConfig memory config =
+            InvestorCountComplianceModule.InvestorCountConfig({
+                maxInvestors: MAX_INVESTORS_GLOBAL,
+                global: false,
+                countryCodes: new uint16[](0),
+                countryLimits: new uint256[](0),
+                topicFilter: topicFilter
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -500,28 +500,25 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
         // Create expression: (KYC AND AML) OR COLLATERAL
         ExpressionNode[] memory topicFilter = new ExpressionNode[](5);
         topicFilter[0] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC)
+            nodeType: ExpressionType.TOPIC, value: systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_KYC)
         });
         topicFilter[1] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_AML)
+            nodeType: ExpressionType.TOPIC, value: systemUtils.getTopicId(ATKTopics.TOPIC_INVESTOR_AML)
         });
         topicFilter[2] = ExpressionNode({ nodeType: ExpressionType.AND, value: 0 });
         topicFilter[3] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: systemUtils.getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL)
+            nodeType: ExpressionType.TOPIC, value: systemUtils.getTopicId(ATKTopics.TOPIC_ASSET_COLLATERAL)
         });
         topicFilter[4] = ExpressionNode({ nodeType: ExpressionType.OR, value: 0 });
 
-        InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
-            .InvestorCountConfig({
-            maxInvestors: MAX_INVESTORS_GLOBAL,
-            global: false,
-            countryCodes: new uint16[](0),
-            countryLimits: new uint256[](0),
-            topicFilter: topicFilter
-        });
+        InvestorCountComplianceModule.InvestorCountConfig memory config =
+            InvestorCountComplianceModule.InvestorCountConfig({
+                maxInvestors: MAX_INVESTORS_GLOBAL,
+                global: false,
+                countryCodes: new uint16[](0),
+                countryLimits: new uint256[](0),
+                topicFilter: topicFilter
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -540,14 +537,14 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
     /// @dev Test: Investor count tracking through balance changes
     /// When balance goes to 0, investor should be removed and slot becomes available
     function test_InvestorCount_Lifecycle_AddRemoveInvestors() public {
-        InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
-            .InvestorCountConfig({
-            maxInvestors: 2,
-            global: false,
-            countryCodes: new uint16[](0),
-            countryLimits: new uint256[](0),
-            topicFilter: new ExpressionNode[](0)
-        });
+        InvestorCountComplianceModule.InvestorCountConfig memory config =
+            InvestorCountComplianceModule.InvestorCountConfig({
+                maxInvestors: 2,
+                global: false,
+                countryCodes: new uint16[](0),
+                countryLimits: new uint256[](0),
+                topicFilter: new ExpressionNode[](0)
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -585,14 +582,14 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
 
     /// @dev Test: Token burning should remove investors when balance reaches zero
     function test_InvestorCount_Lifecycle_Burn() public {
-        InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
-            .InvestorCountConfig({
-            maxInvestors: 1,
-            global: false,
-            countryCodes: new uint16[](0),
-            countryLimits: new uint256[](0),
-            topicFilter: new ExpressionNode[](0)
-        });
+        InvestorCountComplianceModule.InvestorCountConfig memory config =
+            InvestorCountComplianceModule.InvestorCountConfig({
+                maxInvestors: 1,
+                global: false,
+                countryCodes: new uint16[](0),
+                countryLimits: new uint256[](0),
+                topicFilter: new ExpressionNode[](0)
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -623,14 +620,14 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
     /// @dev Test: "Max 2 investors globally across all tokens" - global=true
     /// Should track unique investors across all tokens using this module instance
     function test_InvestorCount_GlobalTracking() public {
-        InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
-            .InvestorCountConfig({
-            maxInvestors: 2, // Global limit across all tokens
-            global: true,
-            countryCodes: new uint16[](0),
-            countryLimits: new uint256[](0),
-            topicFilter: new ExpressionNode[](0)
-        });
+        InvestorCountComplianceModule.InvestorCountConfig memory config =
+            InvestorCountComplianceModule.InvestorCountConfig({
+                maxInvestors: 2, // Global limit across all tokens
+                global: true,
+                countryCodes: new uint16[](0),
+                countryLimits: new uint256[](0),
+                topicFilter: new ExpressionNode[](0)
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -696,14 +693,14 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
         countryLimits[0] = 10;
         countryLimits[1] = 10;
 
-        InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
-            .InvestorCountConfig({
-            maxInvestors: 0,
-            global: false,
-            countryCodes: countryCodes,
-            countryLimits: countryLimits,
-            topicFilter: new ExpressionNode[](0)
-        });
+        InvestorCountComplianceModule.InvestorCountConfig memory config =
+            InvestorCountComplianceModule.InvestorCountConfig({
+                maxInvestors: 0,
+                global: false,
+                countryCodes: countryCodes,
+                countryLimits: countryLimits,
+                topicFilter: new ExpressionNode[](0)
+            });
 
         bytes memory params = abi.encode(config);
 
@@ -727,14 +724,14 @@ contract InvestorCountComplianceModuleTest is AbstractComplianceModuleTest {
     /// @dev Test: Investors without identity registry entries are not counted
     /// Addresses without KYC/identity should be ignored for compliance purposes
     function test_InvestorCount_NoIdentity_NotCounted() public {
-        InvestorCountComplianceModule.InvestorCountConfig memory config = InvestorCountComplianceModule
-            .InvestorCountConfig({
-            maxInvestors: 1,
-            global: false,
-            countryCodes: new uint16[](0),
-            countryLimits: new uint256[](0),
-            topicFilter: new ExpressionNode[](0)
-        });
+        InvestorCountComplianceModule.InvestorCountConfig memory config =
+            InvestorCountComplianceModule.InvestorCountConfig({
+                maxInvestors: 1,
+                global: false,
+                countryCodes: new uint16[](0),
+                countryLimits: new uint256[](0),
+                topicFilter: new ExpressionNode[](0)
+            });
 
         bytes memory params = abi.encode(config);
 

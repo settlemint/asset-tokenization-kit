@@ -17,9 +17,8 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
 ///      interface, which can be useful for broader compatibility, though `IAccessControl`
 ///      itself also primarily defines `hasRole` along with events and other role management functions
 ///      that are typically implemented by a full AccessControl contract, not just its interface.
-interface ISMARTTokenAccessManager is
-    IAccessControl // Note: IAccessControl itself also has hasRole. Redundancy for clarity or specific needs.
-{
+interface ISMARTTokenAccessManager is IAccessControl {
+    // Note: IAccessControl itself also has hasRole. Redundancy for clarity or specific needs.
     /// @notice Checks if a given account possesses a specific role.
     /// @dev This is the primary function that token contracts will call to determine if an
     ///      action requested by an `account` is permitted based on its assigned `role`.
