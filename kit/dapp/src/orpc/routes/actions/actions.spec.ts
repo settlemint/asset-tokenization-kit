@@ -67,7 +67,10 @@ describe("Actions API", () => {
           name: expect.any(String),
           activeAt: expect.any(Date),
           target: expect.stringMatching(/^0x[a-fA-F0-9]{40}$/),
-          status: expect.stringMatching(/^(PENDING|ACTIVE|EXECUTED|EXPIRED)$/),
+          status: expect.stringMatching(
+            /^(PENDING|UPCOMING|EXECUTED|EXPIRED)$/
+          ),
+          expiresAt: null,
           executor: expect.objectContaining({
             id: expect.stringMatching(/^0x[a-fA-F0-9]+$/),
             executors: expect.arrayContaining([
@@ -100,7 +103,7 @@ describe("Actions API", () => {
 
       expect(pendingActions).toBeInstanceOf(Array);
 
-      // All returned actions should be ACTIVE
+      // All returned actions should be PENDING
       pendingActions.forEach((action) => {
         expect(action.status).toBe("PENDING");
       });

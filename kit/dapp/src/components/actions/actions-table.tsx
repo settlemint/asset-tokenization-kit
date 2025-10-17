@@ -423,8 +423,10 @@ export function ActionsTable({
         <MatureConfirmationSheet
           open={selectedActionType === ActionType.MatureBond}
           onOpenChange={(open) => {
-            setSelectedActionType(open ? ActionType.MatureBond : null);
-            setSelectedTarget(null);
+            if (!open) {
+              setSelectedActionType(null);
+              setSelectedTarget(null);
+            }
           }}
           asset={tokenQuery.data}
         />
