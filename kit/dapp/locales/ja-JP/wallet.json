@@ -78,12 +78,12 @@
     "argent": "Argent ウォレット",
     "coinbase": "Coinbase ウォレット",
     "injected": "ブラウザウォレット",
-    "ledger": "Ledger",
-    "metamask": "MetaMask",
-    "rainbow": "Rainbow",
-    "trezor": "Trezor",
-    "trust": "Trust Wallet",
-    "walletConnect": "WalletConnect"
+    "ledger": "Ledger ハードウェアウォレット",
+    "metamask": "MetaMask ウォレット",
+    "rainbow": "Rainbow ウォレット",
+    "trezor": "Trezor ハードウェアウォレット",
+    "trust": "Trust Wallet（トラスト）",
+    "walletConnect": "WalletConnect ブリッジ"
   },
   "settings": {
     "autoConnect": "ページ読み込み時に自動接続",

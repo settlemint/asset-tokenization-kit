@@ -321,7 +321,7 @@
       "otp": {
         "description": "Verwendet eine App wie Google Authenticator, um alle 30 Sekunden einen neuen Code zu generieren. Maximale Sicherheit für Ihre Vermögenswerte.",
         "summary": "Maximale Sicherheit",
-        "title": "OTP"
+        "title": "Einmalpasswort (OTP)"
       },
       "pin": {
         "description": "Ein 6-stelliger Code, den Sie zur Autorisierung von Transaktionen eingeben. Schnell und bequem für den täglichen Gebrauch.",

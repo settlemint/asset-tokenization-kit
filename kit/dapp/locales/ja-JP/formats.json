@@ -33,9 +33,9 @@
     }
   },
   "time": {
-    "short": "h:mm A",
-    "medium": "h:mm:ss A",
-    "long": "h:mm:ss A z",
+    "short": "h時mm分",
+    "medium": "h時mm分ss秒",
+    "long": "h時mm分ss秒 z",
     "24hour": "24時間制 HH:mm",
     "24hourWithSeconds": "24時間制 HH:mm:ss"
   },
@@ -116,12 +116,12 @@
       "tokenWithDecimals": "{{amount}} {{symbol}}",
       "wei": "{{amount}} ウェイ",
       "gwei": "{{amount}} ギガウェイ",
-      "ether": "{{amount}} ETH"
+      "ether": "{{amount}} イーサ"
     },
     "gas": {
       "limit": "ガス上限 {{limit}}",
       "price": "{{price}} Gwei",
-      "fee": "{{fee}} ETH"
+      "fee": "{{fee}} イーサ"
     }
   },
   "lists": {

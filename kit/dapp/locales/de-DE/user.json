@@ -25,7 +25,7 @@
         "wallet": "Wallet-Adresse",
         "role": "Rolle",
         "identity": "Identität",
-        "status": "Status",
+        "status": "Statusanzeige",
         "created": "Erstellt",
         "lastActive": "Zuletzt aktiv",
         "actions": "Aktionen"
