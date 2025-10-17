@@ -251,15 +251,12 @@ contract ATKIdentityRegistryStorageImplementation is
     ///      - `InvalidIdentityWalletAddress()` if `_userAddress` is `address(0)`.
     ///      - `InvalidIdentityAddress()` if `_identity` is `address(0)`.
     ///      - `IdentityAlreadyExists(_userAddress)` if an identity is already registered for `_userAddress`.
-    function addIdentityToStorage(
-        address _userAddress,
-        IIdentity _identity,
-        uint16 _country
-    )
+    function addIdentityToStorage(address _userAddress, IIdentity _identity, uint16 _country)
         external
         override
         onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKPeopleRoles.SYSTEM_MANAGER_ROLE) // Ensures
             // only authorized contracts can modify storage.
+
     {
         if (_userAddress == address(0)) revert InvalidIdentityWalletAddress();
         if (address(_identity) == address(0)) revert InvalidIdentityAddress();
@@ -347,10 +344,7 @@ contract ATKIdentityRegistryStorageImplementation is
     /// @dev Reverts with:
     ///      - `IdentityDoesNotExist(_userAddress)` if no identity record is found for `_userAddress`.
     ///      - `InvalidIdentityAddress()` if the new `_identity` address is `address(0)`.
-    function modifyStoredIdentity(
-        address _userAddress,
-        IIdentity _identity
-    )
+    function modifyStoredIdentity(address _userAddress, IIdentity _identity)
         external
         override
         onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
@@ -377,10 +371,7 @@ contract ATKIdentityRegistryStorageImplementation is
     /// @param _userAddress The user's external wallet address whose associated country code is to be updated.
     /// @param _country The new numerical country code (uint16) to associate with the `_userAddress`.
     /// @dev Reverts with `IdentityDoesNotExist(_userAddress)` if no identity record is found for `_userAddress`.
-    function modifyStoredInvestorCountry(
-        address _userAddress,
-        uint16 _country
-    )
+    function modifyStoredInvestorCountry(address _userAddress, uint16 _country)
         external
         override
         onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
@@ -535,10 +526,7 @@ contract ATKIdentityRegistryStorageImplementation is
     // --- Lost Wallet Management Functions ---
 
     /// @inheritdoc ISMARTIdentityRegistryStorage
-    function markWalletAsLost(
-        address identityContract,
-        address userWallet
-    )
+    function markWalletAsLost(address identityContract, address userWallet)
         external
         override
         onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKPeopleRoles.SYSTEM_MANAGER_ROLE)
@@ -561,10 +549,7 @@ contract ATKIdentityRegistryStorageImplementation is
     }
 
     /// @inheritdoc ISMARTIdentityRegistryStorage
-    function linkWalletRecovery(
-        address lostWallet,
-        address newWallet
-    )
+    function linkWalletRecovery(address lostWallet, address newWallet)
         external
         override
         onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKPeopleRoles.SYSTEM_MANAGER_ROLE)

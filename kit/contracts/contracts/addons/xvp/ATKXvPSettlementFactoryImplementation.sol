@@ -6,8 +6,9 @@ import { IATKXvPSettlement } from "./IATKXvPSettlement.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IATKXvPSettlementFactory } from "./IATKXvPSettlementFactory.sol";
 import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
-import { AbstractATKSystemAddonFactoryImplementation } from
-    "../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
+import {
+    AbstractATKSystemAddonFactoryImplementation
+} from "../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
 import { ATKXvPSettlementProxy } from "./ATKXvPSettlementProxy.sol";
 import { ATKPeopleRoles } from "../../system/ATKPeopleRoles.sol";
 

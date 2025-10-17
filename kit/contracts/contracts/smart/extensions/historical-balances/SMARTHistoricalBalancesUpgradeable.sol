@@ -30,8 +30,10 @@ import { ISMARTHistoricalBalances } from "./ISMARTHistoricalBalances.sol";
 ///      initializer from the logic contract to register the interface for ERC165.
 abstract contract SMARTHistoricalBalancesUpgradeable is
     Initializable,
+
     // Required for upgradeable contracts
     SMARTExtensionUpgradeable,
+
     // Base for upgradeable SMART extensions
     _SMARTHistoricalBalancesLogic
 {

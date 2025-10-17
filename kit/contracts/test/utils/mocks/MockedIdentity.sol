@@ -51,11 +51,22 @@ contract MockedIdentity is IIdentity {
         return claimId;
     }
 
-    function removeClaim(bytes32 /* _claimId */ ) external pure override returns (bool /* success */ ) {
+    function removeClaim(
+        bytes32 /* _claimId */
+    )
+        external
+        pure
+        override
+        returns (
+            bool /* success */
+        )
+    {
         revert Unimplemented();
     }
 
-    function getClaim(bytes32 /* _claimId */ )
+    function getClaim(
+        bytes32 /* _claimId */
+    )
         external
         pure
         override
@@ -71,11 +82,15 @@ contract MockedIdentity is IIdentity {
         revert Unimplemented();
     }
 
-    function getClaimIdsByTopic(uint256 /* _topic */ )
+    function getClaimIdsByTopic(
+        uint256 /* _topic */
+    )
         external
         pure
         override
-        returns (bytes32[] memory /* claimIds */ )
+        returns (
+            bytes32[] memory /* claimIds */
+        )
     {
         revert Unimplemented();
     }
@@ -114,7 +129,9 @@ contract MockedIdentity is IIdentity {
         external
         pure
         override
-        returns (bool /* success */ )
+        returns (
+            bool /* success */
+        )
     {
         revert Unimplemented();
     }
@@ -127,7 +144,9 @@ contract MockedIdentity is IIdentity {
         external
         pure
         override
-        returns (bool /* success */ )
+        returns (
+            bool /* success */
+        )
     {
         revert Unimplemented();
     }
@@ -139,7 +158,9 @@ contract MockedIdentity is IIdentity {
         external
         pure
         override
-        returns (bool /* success */ )
+        returns (
+            bool /* success */
+        )
     {
         revert Unimplemented();
     }
@@ -152,25 +173,51 @@ contract MockedIdentity is IIdentity {
         external
         payable
         override
-        returns (uint256 /* executionId */ )
+        returns (
+            uint256 /* executionId */
+        )
     {
         revert Unimplemented();
     }
 
-    function getKey(bytes32 /* _key */ )
+    function getKey(
+        bytes32 /* _key */
+    )
         external
         pure
         override
-        returns (uint256[] memory, /* purposes */ uint256, /* keyType */ bytes32 /* key */ )
+        returns (
+            uint256[] memory, /* purposes */
+            uint256, /* keyType */
+            bytes32 /* key */
+        )
     {
         revert Unimplemented();
     }
 
-    function getKeyPurposes(bytes32 /* _key */ ) external pure override returns (uint256[] memory /* _purposes */ ) {
+    function getKeyPurposes(
+        bytes32 /* _key */
+    )
+        external
+        pure
+        override
+        returns (
+            uint256[] memory /* _purposes */
+        )
+    {
         revert Unimplemented();
     }
 
-    function getKeysByPurpose(uint256 /* _purpose */ ) external pure override returns (bytes32[] memory /* keys */ ) {
+    function getKeysByPurpose(
+        uint256 /* _purpose */
+    )
+        external
+        pure
+        override
+        returns (
+            bytes32[] memory /* keys */
+        )
+    {
         revert Unimplemented();
     }
 
@@ -181,7 +228,9 @@ contract MockedIdentity is IIdentity {
         external
         pure
         override
-        returns (bool /* exists */ )
+        returns (
+            bool /* exists */
+        )
     {
         revert Unimplemented();
     }

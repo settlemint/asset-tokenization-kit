@@ -358,11 +358,7 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
     /// @param txIndex Index of the transaction
     /// @param signerAddresses Array of signer addresses
     /// @param signatures Array of signatures
-    function addSignatures(
-        uint256 txIndex,
-        address[] calldata signerAddresses,
-        bytes[] calldata signatures
-    )
+    function addSignatures(uint256 txIndex, address[] calldata signerAddresses, bytes[] calldata signatures)
         external
         onlyRole(SIGNER_ROLE)
         whenNotPaused
@@ -465,13 +461,7 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
     /// @param nonce Transaction nonce (index)
     /// @param comment Transaction comment
     /// @return Transaction hash for signature verification
-    function _getTransactionHash(
-        address to,
-        uint256 value,
-        bytes memory data,
-        uint256 nonce,
-        string memory comment
-    )
+    function _getTransactionHash(address to, uint256 value, bytes memory data, uint256 nonce, string memory comment)
         internal
         view
         returns (bytes32)

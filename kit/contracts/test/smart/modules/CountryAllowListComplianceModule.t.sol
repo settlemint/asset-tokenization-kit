@@ -2,7 +2,9 @@
 pragma solidity ^0.8.28;
 
 import { AbstractComplianceModuleTest } from "./AbstractComplianceModuleTest.t.sol";
-import { CountryAllowListComplianceModule } from "../../../contracts/smart/modules/CountryAllowListComplianceModule.sol";
+import {
+    CountryAllowListComplianceModule
+} from "../../../contracts/smart/modules/CountryAllowListComplianceModule.sol";
 import { TestConstants } from "../../Constants.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
 

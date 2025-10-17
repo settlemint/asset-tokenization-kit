@@ -296,11 +296,7 @@ interface IERC3643 is IERC20, IERC20Metadata {
      * - The `_lostWallet` has no tokens to recover (`NoTokenToRecover`).
      * - Neither `_lostWallet` nor `_newWallet` is present in the identity registry (`RecoveryNotPossible`).
      */
-    function recoveryAddress(
-        address _lostWallet,
-        address _newWallet,
-        address _investorOnchainID
-    )
+    function recoveryAddress(address _lostWallet, address _newWallet, address _investorOnchainID)
         external
         returns (bool);
 
@@ -337,11 +333,7 @@ interface IERC3643 is IERC20, IERC20Metadata {
      *  To execute this function, the calling agent must not be restricted from initiating forced transfer.
      *  If the agent is restricted from this capability, the function call will fail.
      */
-    function batchForcedTransfer(
-        address[] calldata _fromList,
-        address[] calldata _toList,
-        uint256[] calldata _amounts
-    )
+    function batchForcedTransfer(address[] calldata _fromList, address[] calldata _toList, uint256[] calldata _amounts)
         external;
 
     /**

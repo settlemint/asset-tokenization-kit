@@ -43,11 +43,7 @@ interface IATKSystemAddonRegistry is IATKSystemAccessManaged {
     /// @param implementation The implementation contract address for the addon
     /// @param initializationData The initialization data to pass to the addon proxy
     /// @return proxyAddress The address of the newly created addon proxy
-    function registerSystemAddon(
-        string calldata name,
-        address implementation,
-        bytes calldata initializationData
-    )
+    function registerSystemAddon(string calldata name, address implementation, bytes calldata initializationData)
         external
         returns (address proxyAddress);
 

@@ -60,13 +60,7 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
     /// @param root_ The Merkle root for verifying distributions.
     /// @param owner_ The initial owner of the contract (admin who can distribute tokens).
     /// @param distributionCap_ The maximum tokens that can be distributed (0 for no cap).
-    function initialize(
-        string calldata name_,
-        address token_,
-        bytes32 root_,
-        address owner_,
-        uint256 distributionCap_
-    )
+    function initialize(string calldata name_, address token_, bytes32 root_, address owner_, uint256 distributionCap_)
         external
         initializer
     {
@@ -119,12 +113,7 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
     /// @param recipient The address to receive tokens.
     /// @param amount The amount of tokens to distribute.
     /// @param merkleProof The Merkle proof array for verification.
-    function distribute(
-        uint256 index,
-        address recipient,
-        uint256 amount,
-        bytes32[] calldata merkleProof
-    )
+    function distribute(uint256 index, address recipient, uint256 amount, bytes32[] calldata merkleProof)
         external
         onlyOwner
         nonReentrant

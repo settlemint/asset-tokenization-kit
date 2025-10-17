@@ -40,14 +40,7 @@ interface IATKTimeBoundAirdropFactory {
     /// @param startTime The timestamp when claims can begin
     /// @param endTime The timestamp when claims end
     /// @return airdropProxyAddress The address of the newly created time-bound airdrop proxy
-    function create(
-        string memory name,
-        address token,
-        bytes32 root,
-        address owner,
-        uint256 startTime,
-        uint256 endTime
-    )
+    function create(string memory name, address token, bytes32 root, address owner, uint256 startTime, uint256 endTime)
         external
         returns (address airdropProxyAddress);
 

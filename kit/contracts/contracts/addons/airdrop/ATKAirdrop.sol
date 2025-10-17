@@ -115,16 +115,18 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
 
         // Verify the token contract exists and implements IERC20 by attempting to call a view function
         try IERC20(token_).totalSupply() returns (uint256) {
-            // Contract exists and implements IERC20
-        } catch {
+        // Contract exists and implements IERC20
+        }
+        catch {
             revert InvalidTokenAddress();
         }
 
         // Verify the claim tracker contract exists and implements IATKClaimTracker by attempting to call a view
         // function
         try IATKClaimTracker(claimTracker_).isClaimed(0, 0) returns (bool) {
-            // Contract exists and implements IATKClaimTracker
-        } catch {
+        // Contract exists and implements IATKClaimTracker
+        }
+        catch {
             revert InvalidClaimTrackerAddress();
         }
 
@@ -193,11 +195,7 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
     /// @param indices The indices of the claims in the Merkle tree.
     /// @param totalAmounts The total amounts allocated for each index.
     /// @param merkleProofs The Merkle proofs for each index.
-    function batchClaim(
-        uint256[] calldata indices,
-        uint256[] calldata totalAmounts,
-        bytes32[][] calldata merkleProofs
-    )
+    function batchClaim(uint256[] calldata indices, uint256[] calldata totalAmounts, bytes32[][] calldata merkleProofs)
         external
         virtual;
 
@@ -219,12 +217,7 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
     /// @param totalAmount The total amount allocated for this index.
     /// @param merkleProof The Merkle proof array.
     /// @return verified True if the proof is valid, false otherwise.
-    function _verifyMerkleProof(
-        uint256 index,
-        address account,
-        uint256 totalAmount,
-        bytes32[] calldata merkleProof
-    )
+    function _verifyMerkleProof(uint256 index, address account, uint256 totalAmount, bytes32[] calldata merkleProof)
         internal
         view
         returns (bool verified)
