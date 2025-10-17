@@ -2,9 +2,8 @@
 pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
-import {
-    AbstractATKTokenFactoryImplementation
-} from "../../system/tokens/factory/AbstractATKTokenFactoryImplementation.sol";
+import { AbstractATKTokenFactoryImplementation } from
+    "../../system/tokens/factory/AbstractATKTokenFactoryImplementation.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // Interface imports

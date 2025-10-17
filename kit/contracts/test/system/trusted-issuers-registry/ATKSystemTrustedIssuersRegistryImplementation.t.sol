@@ -2,25 +2,21 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import {
-    ATKSystemTrustedIssuersRegistryImplementation
-} from "../../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
+import { ATKSystemTrustedIssuersRegistryImplementation } from
+    "../../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
 import { ISMARTTrustedIssuersRegistry } from "../../../contracts/smart/interface/ISMARTTrustedIssuersRegistry.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
 import { ATKRoles } from "../../../contracts/system/ATKRoles.sol";
-import {
-    ATKSystemAccessManagerImplementation
-} from "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
-import {
-    IATKSystemTrustedIssuersRegistry
-} from "../../../contracts/system/trusted-issuers-registry/IATKSystemTrustedIssuersRegistry.sol";
+import { ATKSystemAccessManagerImplementation } from
+    "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
+import { IATKSystemTrustedIssuersRegistry } from
+    "../../../contracts/system/trusted-issuers-registry/IATKSystemTrustedIssuersRegistry.sol";
 import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
-import {
-    IATKTrustedIssuersRegistry
-} from "../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
+import { IATKTrustedIssuersRegistry } from
+    "../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 
 // Mock claim issuer for testing
 contract MockClaimIssuer {

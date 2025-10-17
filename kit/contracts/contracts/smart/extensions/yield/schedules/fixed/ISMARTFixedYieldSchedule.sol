@@ -47,9 +47,9 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     error InsufficientDenominationAssetBalance(uint256 currentBalance, uint256 requiredBalance); // Could also be used
         // if a
         // transferFrom fails.
-        /// @dev Reverted if the `_denominationAsset` (derived from `_token.yieldToken()`) is the zero address, or if
-        // `to`
-        /// address in withdrawal is zero.
+    /// @dev Reverted if the `_denominationAsset` (derived from `_token.yieldToken()`) is the zero address, or if
+    // `to`
+    /// address in withdrawal is zero.
     error InvalidDenominationAsset();
     /// @dev Reverted by `withdrawDenominationAsset` if the withdrawal `amount` is zero.
     error InvalidAmount();

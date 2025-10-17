@@ -484,43 +484,50 @@ contract ATKSystemImplementation is
         );
 
         // --- Effects (Part 2: Grant roles) ---
-        IATKSystemAccessManager(_accessManager)
-            .grantRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, localIdentityRegistryProxy);
+        IATKSystemAccessManager(_accessManager).grantRole(
+            ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, localIdentityRegistryProxy
+        );
 
-        IATKSystemAccessManager(_accessManager)
-            .setRoleAdmin(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKSystemRoles.TOKEN_FACTORY_REGISTRY_MODULE_ROLE);
+        IATKSystemAccessManager(_accessManager).setRoleAdmin(
+            ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKSystemRoles.TOKEN_FACTORY_REGISTRY_MODULE_ROLE
+        );
 
-        IATKSystemAccessManager(_accessManager)
-            .grantRole(ATKSystemRoles.TOKEN_FACTORY_REGISTRY_MODULE_ROLE, localTokenFactoryRegistryProxy);
+        IATKSystemAccessManager(_accessManager).grantRole(
+            ATKSystemRoles.TOKEN_FACTORY_REGISTRY_MODULE_ROLE, localTokenFactoryRegistryProxy
+        );
 
-        IATKSystemAccessManager(_accessManager)
-            .setRoleAdmin(ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE, ATKSystemRoles.ADDON_FACTORY_REGISTRY_MODULE_ROLE);
+        IATKSystemAccessManager(_accessManager).setRoleAdmin(
+            ATKSystemRoles.ADDON_FACTORY_MODULE_ROLE, ATKSystemRoles.ADDON_FACTORY_REGISTRY_MODULE_ROLE
+        );
 
-        IATKSystemAccessManager(_accessManager)
-            .grantRole(ATKSystemRoles.ADDON_FACTORY_REGISTRY_MODULE_ROLE, localAddonRegistryProxy);
+        IATKSystemAccessManager(_accessManager).grantRole(
+            ATKSystemRoles.ADDON_FACTORY_REGISTRY_MODULE_ROLE, localAddonRegistryProxy
+        );
 
-        IATKSystemAccessManager(_accessManager)
-            .grantRole(ATKSystemRoles.TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE, localTrustedIssuersMetaRegistryProxy);
+        IATKSystemAccessManager(_accessManager).grantRole(
+            ATKSystemRoles.TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE, localTrustedIssuersMetaRegistryProxy
+        );
 
         // --- Interactions (Part 3: Call methods on newly created proxies to link them) ---
         // After all proxy state variables are set, perform any necessary interactions between the new proxies.
 
         // Here, we bind the IdentityRegistryProxy to its dedicated IdentityRegistryStorageProxy.
         // This tells the storage proxy which identity registry is allowed to manage it.
-        IATKIdentityRegistryStorage(localIdentityRegistryStorageProxy)
-            .bindIdentityRegistry(
-                localIdentityRegistryProxy // Using the local variable, or _identityRegistryProxy which is now correctly
-                    // set.
-            );
+        IATKIdentityRegistryStorage(localIdentityRegistryStorageProxy).bindIdentityRegistry(
+            localIdentityRegistryProxy // Using the local variable, or _identityRegistryProxy which is now correctly
+                // set.
+        );
 
         // Register default identity verification compliance module globally with empty params
-        IATKComplianceModuleRegistry(localComplianceModuleRegistryProxy)
-            .registerComplianceModule(_defaultIdentityVerificationComplianceModule);
+        IATKComplianceModuleRegistry(localComplianceModuleRegistryProxy).registerComplianceModule(
+            _defaultIdentityVerificationComplianceModule
+        );
         IATKCompliance(localComplianceProxy).addGlobalComplianceModule(_defaultIdentityVerificationComplianceModule, "");
 
         // Register the topic schemes.
-        IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy)
-            .batchRegisterTopicSchemes(ATKTopics.names(), ATKTopics.signatures());
+        IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).batchRegisterTopicSchemes(
+            ATKTopics.names(), ATKTopics.signatures()
+        );
 
         // Create identity for the identity factory itself so it can be a trusted issuer
         // This solves the chicken-and-egg problem of the factory needing an identity to issue claims
@@ -532,8 +539,9 @@ contract ATKSystemImplementation is
         uint256[] memory identityFactoryClaimTopics = new uint256[](1);
         identityFactoryClaimTopics[0] =
             IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).getTopicId(ATKTopics.TOPIC_CONTRACT_IDENTITY);
-        IATKSystemTrustedIssuersRegistry(localSystemTrustedIssuersRegistryProxy)
-            .addTrustedIssuer(IClaimIssuer(identityFactoryIdentity), identityFactoryClaimTopics);
+        IATKSystemTrustedIssuersRegistry(localSystemTrustedIssuersRegistryProxy).addTrustedIssuer(
+            IClaimIssuer(identityFactoryIdentity), identityFactoryClaimTopics
+        );
 
         // Set the identity factory's own OnChainID (this will now successfully issue claims)
         IATKIdentityFactory(localIdentityFactoryProxy).setOnchainID(identityFactoryIdentity);
@@ -542,8 +550,9 @@ contract ATKSystemImplementation is
         uint256[] memory issuerClaimTopics = new uint256[](1);
         issuerClaimTopics[0] =
             IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).getTopicId(ATKTopics.TOPIC_ASSET_ISSUER);
-        IATKSystemTrustedIssuersRegistry(localSystemTrustedIssuersRegistryProxy)
-            .addTrustedIssuer(IClaimIssuer(localOrganisationIdentity), issuerClaimTopics);
+        IATKSystemTrustedIssuersRegistry(localSystemTrustedIssuersRegistryProxy).addTrustedIssuer(
+            IClaimIssuer(localOrganisationIdentity), issuerClaimTopics
+        );
 
         // Mark the system as bootstrapped
         _bootstrapped = true;
@@ -888,7 +897,11 @@ contract ATKSystemImplementation is
     /// @param targetIdentity The identity contract to receive the claim
     /// @param topicId The topic ID of the claim
     /// @param claimData The claim data
-    function issueClaimByOrganisation(address targetIdentity, uint256 topicId, bytes calldata claimData)
+    function issueClaimByOrganisation(
+        address targetIdentity,
+        uint256 topicId,
+        bytes calldata claimData
+    )
         external
         onlySystemRoles2(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKPeopleRoles.ORGANISATION_IDENTITY_MANAGER_ROLE)
     {

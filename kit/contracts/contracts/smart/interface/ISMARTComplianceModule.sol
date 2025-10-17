@@ -54,7 +54,13 @@ interface ISMARTComplianceModule is IERC165, IWithTypeIdentifier {
      * to the token.
      *                These parameters allow the module's behavior to be tailored for different tokens or scenarios.
      */
-    function canTransfer(address _token, address _from, address _to, uint256 _value, bytes calldata _params)
+    function canTransfer(
+        address _token,
+        address _from,
+        address _to,
+        uint256 _value,
+        bytes calldata _params
+    )
         external
         view;
 

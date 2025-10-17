@@ -147,7 +147,12 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @param initialAdmin_ The address of the initial administrator.
     /// @param accessManager_ The address of the access manager implementation.
     /// @param impls The struct containing all initial implementation addresses.
-    function initialize(address initialAdmin_, address accessManager_, SystemInitImplementations memory impls) external;
+    function initialize(
+        address initialAdmin_,
+        address accessManager_,
+        SystemInitImplementations memory impls
+    )
+        external;
 
     /// @notice Initializes and sets up the entire ATK Protocol system.
     /// @dev This function is responsible for the initial deployment and configuration of the ATK Protocol.

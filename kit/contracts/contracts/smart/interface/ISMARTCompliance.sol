@@ -49,7 +49,12 @@ interface ISMARTCompliance is IERC165 {
     /// @param _to The address of the token recipient. For burn operations, this will be `address(0)`.
     /// @param _amount The quantity of tokens involved in the potential operation.
     /// @return isCompliant `true` if the operation is compliant with all rules, otherwise the function should revert.
-    function canTransfer(address _token, address _from, address _to, uint256 _amount)
+    function canTransfer(
+        address _token,
+        address _from,
+        address _to,
+        uint256 _amount
+    )
         external
         view
         returns (bool isCompliant);

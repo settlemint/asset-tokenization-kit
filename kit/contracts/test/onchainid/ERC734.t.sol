@@ -23,7 +23,11 @@ contract MockERC734 is ERC734 {
         return super.approve(_id, _approve);
     }
 
-    function execute(address _to, uint256 _value, bytes calldata _data)
+    function execute(
+        address _to,
+        uint256 _value,
+        bytes calldata _data
+    )
         public
         payable
         override
@@ -208,15 +212,18 @@ contract ERC734Test is Test {
 
         // Order might vary, so check both keys are present
         assertTrue(
-            (managementKeys[0] == TEST_KEY_1
-                    && managementKeys[1] == TEST_KEY_2
-                    && managementKeys[2] == keccak256(abi.encode(initialManagementKey)))
-                || (managementKeys[0] == TEST_KEY_2
-                    && managementKeys[1] == TEST_KEY_1
-                    && managementKeys[2] == keccak256(abi.encode(initialManagementKey)))
-                || (managementKeys[0] == keccak256(abi.encode(initialManagementKey))
-                    && managementKeys[1] == TEST_KEY_1
-                    && managementKeys[2] == TEST_KEY_2)
+            (
+                managementKeys[0] == TEST_KEY_1 && managementKeys[1] == TEST_KEY_2
+                    && managementKeys[2] == keccak256(abi.encode(initialManagementKey))
+            )
+                || (
+                    managementKeys[0] == TEST_KEY_2 && managementKeys[1] == TEST_KEY_1
+                        && managementKeys[2] == keccak256(abi.encode(initialManagementKey))
+                )
+                || (
+                    managementKeys[0] == keccak256(abi.encode(initialManagementKey)) && managementKeys[1] == TEST_KEY_1
+                        && managementKeys[2] == TEST_KEY_2
+                )
         );
 
         bytes32[] memory actionKeys = erc734.getKeysByPurpose(ERC734KeyPurposes.ACTION_KEY);

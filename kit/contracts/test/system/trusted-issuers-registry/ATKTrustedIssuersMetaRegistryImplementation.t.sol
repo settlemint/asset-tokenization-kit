@@ -2,27 +2,22 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import {
-    ATKTrustedIssuersMetaRegistryImplementation
-} from "../../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersMetaRegistryImplementation.sol";
-import {
-    ATKSystemTrustedIssuersRegistryImplementation
-} from "../../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
+import { ATKTrustedIssuersMetaRegistryImplementation } from
+    "../../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersMetaRegistryImplementation.sol";
+import { ATKSystemTrustedIssuersRegistryImplementation } from
+    "../../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
 import { ISMARTTrustedIssuersRegistry } from "../../../contracts/smart/interface/ISMARTTrustedIssuersRegistry.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
-import {
-    ATKSystemAccessManagerImplementation
-} from "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
-import {
-    IATKTrustedIssuersMetaRegistry
-} from "../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersMetaRegistry.sol";
+import { ATKSystemAccessManagerImplementation } from
+    "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
+import { IATKTrustedIssuersMetaRegistry } from
+    "../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersMetaRegistry.sol";
 import { IATKSystemAccessManaged } from "../../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
-import {
-    IATKTrustedIssuersRegistry
-} from "../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
+import { IATKTrustedIssuersRegistry } from
+    "../../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { IClaimAuthorizer } from "../../../contracts/onchainid/extensions/IClaimAuthorizer.sol";
 
@@ -124,8 +119,9 @@ contract ATKTrustedIssuersMetaRegistryImplementationTest is Test {
 
     function test_CannotInitializeTwice() public {
         vm.expectRevert();
-        ATKTrustedIssuersMetaRegistryImplementation(address(metaRegistry))
-            .initialize(address(systemAccessManager), address(systemRegistry));
+        ATKTrustedIssuersMetaRegistryImplementation(address(metaRegistry)).initialize(
+            address(systemAccessManager), address(systemRegistry)
+        );
     }
 
     function test_SetSystemRegistrySuccess() public {

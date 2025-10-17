@@ -67,7 +67,11 @@ contract ATKSystemAddonRegistryImplementation is
     /// @param initializationData The initialization data to pass to the addon proxy
     /// @return proxyAddress The address of the newly created addon proxy
     /// @dev Creates a new proxy for the addon and grants necessary roles
-    function registerSystemAddon(string calldata name, address implementation_, bytes calldata initializationData)
+    function registerSystemAddon(
+        string calldata name,
+        address implementation_,
+        bytes calldata initializationData
+    )
         external
         override
         nonReentrant
@@ -109,7 +113,10 @@ contract ATKSystemAddonRegistryImplementation is
     /// @param addonTypeHash The type hash of the addon to update
     /// @param implementation_ The new implementation contract address
     /// @dev Can only be called by accounts with IMPLEMENTATION_MANAGER_ROLE
-    function setAddonImplementation(bytes32 addonTypeHash, address implementation_)
+    function setAddonImplementation(
+        bytes32 addonTypeHash,
+        address implementation_
+    )
         public
         override
         onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)

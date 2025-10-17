@@ -12,7 +12,7 @@ import { SMARTToken } from "../examples/SMARTToken.sol";
 
 abstract contract SMARTCustodianTest is AbstractSMARTTest {
     // Renamed from setUp, removed override
-    function _setUpCustodianTest() internal /* override */  {
+    function _setUpCustodianTest() internal /* override */ {
         super.setUp();
         // Ensure token has default collateral set up for custodian tests
         _setupDefaultCollateralClaim();

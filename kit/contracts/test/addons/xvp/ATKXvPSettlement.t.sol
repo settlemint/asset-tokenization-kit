@@ -2,9 +2,8 @@
 pragma solidity ^0.8.28;
 
 import { AbstractATKAssetTest } from "../../assets/AbstractATKAssetTest.sol";
-import {
-    ATKXvPSettlementFactoryImplementation
-} from "../../../contracts/addons/xvp/ATKXvPSettlementFactoryImplementation.sol";
+import { ATKXvPSettlementFactoryImplementation } from
+    "../../../contracts/addons/xvp/ATKXvPSettlementFactoryImplementation.sol";
 import { IATKXvPSettlementFactory } from "../../../contracts/addons/xvp/IATKXvPSettlementFactory.sol";
 import { IATKXvPSettlement } from "../../../contracts/addons/xvp/IATKXvPSettlement.sol";
 import { ERC20Mock } from "../../mocks/ERC20Mock.sol";
@@ -74,8 +73,9 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Create system addon for XvP settlement factory
         factory = IATKXvPSettlementFactory(
-            systemUtils.systemAddonRegistry()
-                .registerSystemAddon("xvp-settlement-factory", address(factoryImpl), encodedInitializationData)
+            systemUtils.systemAddonRegistry().registerSystemAddon(
+                "xvp-settlement-factory", address(factoryImpl), encodedInitializationData
+            )
         );
 
         // Grant DEPLOYER_ROLE to users who need to create settlements
@@ -103,7 +103,12 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
     bytes32 internal constant NO_HASHLOCK = bytes32(0);
 
-    function _localFlow(address asset, address from, address to, uint256 amount)
+    function _localFlow(
+        address asset,
+        address from,
+        address to,
+        uint256 amount
+    )
         internal
         pure
         returns (IATKXvPSettlement.Flow memory)
@@ -111,7 +116,13 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         return IATKXvPSettlement.Flow({ asset: asset, from: from, to: to, amount: amount, externalChainId: 0 });
     }
 
-    function _externalFlow(address asset, address from, address to, uint256 amount, uint64 chainId)
+    function _externalFlow(
+        address asset,
+        address from,
+        address to,
+        uint256 amount,
+        uint64 chainId
+    )
         internal
         pure
         returns (IATKXvPSettlement.Flow memory)
@@ -1010,7 +1021,11 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
         flows[0] = IATKXvPSettlement.Flow({
-            asset: address(token), from: alice, to: bob, amount: 100 * 10 ** 18, externalChainId: uint64(block.chainid)
+            asset: address(token),
+            from: alice,
+            to: bob,
+            amount: 100 * 10 ** 18,
+            externalChainId: uint64(block.chainid)
         });
 
         vm.prank(alice);

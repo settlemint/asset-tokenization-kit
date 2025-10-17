@@ -2,12 +2,10 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import {
-    ATKIdentityRegistryStorageImplementation
-} from "../../../contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol";
-import {
-    ATKSystemAccessManagerImplementation
-} from "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
+import { ATKIdentityRegistryStorageImplementation } from
+    "../../../contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol";
+import { ATKSystemAccessManagerImplementation } from
+    "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
 import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";

@@ -25,6 +25,7 @@ interface IATKXvPSettlement is IERC165 {
         EXECUTED, // Settlement has been successfully executed
         CANCELLED, // Settlement was cancelled by a party
         EXPIRED // Settlement expired before execution
+
     }
 
     // Events

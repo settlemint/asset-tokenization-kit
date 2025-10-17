@@ -10,9 +10,8 @@ import { IATKFundFactory } from "../../contracts/assets/fund/IATKFundFactory.sol
 import { ATKFundFactoryImplementation } from "../../contracts/assets/fund/ATKFundFactoryImplementation.sol";
 import { ATKFundImplementation } from "../../contracts/assets/fund/ATKFundImplementation.sol";
 
-import {
-    SMARTComplianceModuleParamPair
-} from "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { SMARTComplianceModuleParamPair } from
+    "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";

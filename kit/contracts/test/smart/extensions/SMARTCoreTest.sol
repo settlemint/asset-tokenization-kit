@@ -12,9 +12,8 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { MockedERC20Token } from "../../utils/mocks/MockedERC20Token.sol";
 import { SMARTToken } from "../examples/SMARTToken.sol";
 import { TestConstants } from "../../Constants.sol";
-import {
-    SMARTIdentityVerificationComplianceModule
-} from "../../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
+import { SMARTIdentityVerificationComplianceModule } from
+    "../../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
 
 abstract contract SMARTCoreTest is AbstractSMARTTest {
     using SafeERC20 for IERC20;
@@ -22,7 +21,7 @@ abstract contract SMARTCoreTest is AbstractSMARTTest {
     MockedERC20Token internal mockForeignToken;
     uint256 internal constant FOREIGN_TOKEN_SENT_AMOUNT = 500 ether;
 
-    function _setUpCoreTest() internal virtual /* override */  {
+    function _setUpCoreTest() internal virtual /* override */ {
         super.setUp();
         // Ensure token has default collateral set up for core tests
         _setupDefaultCollateralClaim();

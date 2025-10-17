@@ -148,7 +148,12 @@ library AirdropUtils {
     /// @param user2 Address of second test user
     /// @param user3 Address of third test user
     /// @return merkleRoot The generated Merkle root
-    function setupCompleteTestEnvironment(TestUserData storage userData, address user1, address user2, address user3)
+    function setupCompleteTestEnvironment(
+        TestUserData storage userData,
+        address user1,
+        address user2,
+        address user3
+    )
         internal
         returns (bytes32 merkleRoot)
     {

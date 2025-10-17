@@ -10,17 +10,15 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
 
 // Real SMART token imports (using correct paths)
 import { SMARTToken } from "../../smart/examples/SMARTToken.sol";
-import {
-    SMARTComplianceModuleParamPair
-} from "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { SMARTComplianceModuleParamPair } from
+    "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IdentityUtils } from "../../utils/IdentityUtils.sol";
 import { TokenUtils } from "../../utils/TokenUtils.sol";
 import { ClaimUtils } from "../../utils/ClaimUtils.sol";
-import {
-    ISMARTTokenAccessManager
-} from "../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { ISMARTTokenAccessManager } from
+    "../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
 
 // Standard ERC20 token for USDC

@@ -8,13 +8,11 @@ import { ATKComplianceImplementation } from "../../../contracts/system/complianc
 import { ISMARTCompliance } from "../../../contracts/smart/interface/ISMARTCompliance.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
 import { IATKCompliance } from "../../../contracts/system/compliance/IATKCompliance.sol";
-import {
-    SMARTComplianceModuleParamPair
-} from "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { SMARTComplianceModuleParamPair } from
+    "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
-import {
-    ATKSystemAccessManagerImplementation
-} from "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
+import { ATKSystemAccessManagerImplementation } from
+    "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
 
 import { MockedComplianceModule } from "../../utils/mocks/MockedComplianceModule.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
@@ -843,8 +841,9 @@ contract ATKComplianceImplementationTest is Test {
 
         vm.prank(complianceManager);
         vm.expectRevert(abi.encodeWithSelector(ISMARTComplianceModule.InvalidParameters.selector, "Invalid params"));
-        IATKCompliance(address(compliance))
-            .setParametersForGlobalComplianceModule(address(invalidParamsModule), invalidParams);
+        IATKCompliance(address(compliance)).setParametersForGlobalComplianceModule(
+            address(invalidParamsModule), invalidParams
+        );
     }
 
     function testGetGlobalComplianceModulesEmpty() public view {
@@ -1083,8 +1082,9 @@ contract ATKComplianceImplementationTest is Test {
         for (uint256 i = 0; i < 5; i++) {
             globalModules[i] = new MockedComplianceModule();
             vm.prank(complianceManager);
-            IATKCompliance(address(compliance))
-                .addGlobalComplianceModule(address(globalModules[i]), abi.encode(i * 100));
+            IATKCompliance(address(compliance)).addGlobalComplianceModule(
+                address(globalModules[i]), abi.encode(i * 100)
+            );
         }
 
         // Measure gas for canTransfer with global modules

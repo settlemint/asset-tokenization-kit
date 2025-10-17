@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import {
-    SMARTFixedYieldScheduleUpgradeable
-} from "../../smart/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleUpgradeable.sol";
-import {
-    SMARTFixedYieldScheduleLogic
-} from "../../smart/extensions/yield/schedules/fixed/internal/SMARTFixedYieldScheduleLogic.sol";
+import { SMARTFixedYieldScheduleUpgradeable } from
+    "../../smart/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleUpgradeable.sol";
+import { SMARTFixedYieldScheduleLogic } from
+    "../../smart/extensions/yield/schedules/fixed/internal/SMARTFixedYieldScheduleLogic.sol";
 import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
@@ -138,7 +136,10 @@ contract ATKFixedYieldScheduleUpgradeable is
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
-    function withdrawDenominationAsset(address to, uint256 amount)
+    function withdrawDenominationAsset(
+        address to,
+        uint256 amount
+    )
         external
         override
         nonReentrant
@@ -209,7 +210,12 @@ contract ATKFixedYieldScheduleUpgradeable is
     /// @notice Override from Context and ERC2771Context to correctly retrieve the transaction data
     /// @dev Handles meta-transactions by extracting the actual data from the transaction
     /// @return The calldata of the message
-    function _msgData() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (bytes calldata) {
+    function _msgData()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (bytes calldata)
+    {
         return super._msgData();
     }
 

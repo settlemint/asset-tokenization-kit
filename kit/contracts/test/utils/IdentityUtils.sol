@@ -6,9 +6,8 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import { IATKIdentityFactory } from "../../contracts/system/identity-factory/IATKIdentityFactory.sol";
-import {
-    IATKTrustedIssuersRegistry
-} from "../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
+import { IATKTrustedIssuersRegistry } from
+    "../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 
 contract IdentityUtils is Test {
     address internal _platformAdmin;
@@ -65,7 +64,13 @@ contract IdentityUtils is Test {
      * @param claimTopics The claim topics the issuer is trusted for.
      * @return The address of the newly created and registered issuer identity contract.
      */
-    function createIssuerIdentity(address issuerWalletAddress_, uint256[] memory claimTopics) public returns (address) {
+    function createIssuerIdentity(
+        address issuerWalletAddress_,
+        uint256[] memory claimTopics
+    )
+        public
+        returns (address)
+    {
         // Create the identity using the factory
         address issuerIdentityAddr = createIdentity(issuerWalletAddress_);
 

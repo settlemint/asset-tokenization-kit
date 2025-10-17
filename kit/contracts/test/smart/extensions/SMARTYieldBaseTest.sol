@@ -4,9 +4,8 @@ pragma solidity ^0.8.28;
 import { AbstractSMARTTest } from "./AbstractSMARTTest.sol";
 import { SMARTYieldHelpers, MockERC20 } from "./../../utils/SMARTYieldHelpers.sol";
 import { IATKFixedYieldScheduleFactory } from "../../../contracts/addons/yield/IATKFixedYieldScheduleFactory.sol";
-import {
-    ATKFixedYieldScheduleFactoryImplementation
-} from "../../../contracts/addons/yield/ATKFixedYieldScheduleFactoryImplementation.sol";
+import { ATKFixedYieldScheduleFactoryImplementation } from
+    "../../../contracts/addons/yield/ATKFixedYieldScheduleFactoryImplementation.sol";
 import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
 
 /// @title Base test contract for SMART Yield functionality
@@ -30,16 +29,15 @@ abstract contract SMARTYieldBaseTest is AbstractSMARTTest, SMARTYieldHelpers {
             new ATKFixedYieldScheduleFactoryImplementation(address(address(0)));
 
         yieldScheduleFactory = IATKFixedYieldScheduleFactory(
-            systemUtils.systemAddonRegistry()
-                .registerSystemAddon(
-                    "fixed-yield-schedule-factory",
-                    address(fixedYieldScheduleFactoryImpl),
-                    abi.encodeWithSelector(
-                        ATKFixedYieldScheduleFactoryImplementation.initialize.selector,
-                        address(systemUtils.systemAccessManager()),
-                        address(systemUtils.system())
-                    )
+            systemUtils.systemAddonRegistry().registerSystemAddon(
+                "fixed-yield-schedule-factory",
+                address(fixedYieldScheduleFactoryImpl),
+                abi.encodeWithSelector(
+                    ATKFixedYieldScheduleFactoryImplementation.initialize.selector,
+                    address(systemUtils.systemAccessManager()),
+                    address(systemUtils.system())
                 )
+            )
         );
         vm.label(address(yieldScheduleFactory), "Yield Schedule Factory");
 

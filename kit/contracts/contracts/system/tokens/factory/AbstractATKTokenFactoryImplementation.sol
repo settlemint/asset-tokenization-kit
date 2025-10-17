@@ -69,7 +69,11 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @param accessManager The address of the access manager
     /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param tokenImplementation_ The initial address of the token implementation contract.
-    function initialize(address accessManager, address systemAddress, address tokenImplementation_)
+    function initialize(
+        address accessManager,
+        address systemAddress,
+        address tokenImplementation_
+    )
         public
         virtual
         override
@@ -150,7 +154,10 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @param systemAddress The system address to prevent cross-system collisions.
     /// @param saltInputData The ABI encoded data to be used for salt calculation.
     /// @return The calculated salt for access manager CREATE2 deployment.
-    function _calculateAccessManagerSalt(address systemAddress, bytes memory saltInputData)
+    function _calculateAccessManagerSalt(
+        address systemAddress,
+        bytes memory saltInputData
+    )
         internal
         pure
         returns (bytes32)
@@ -165,7 +172,11 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @param symbol_ The symbol of the token.
     /// @param decimals_ The number of decimals for the token.
     /// @return The ABI encoded salt input data.
-    function _buildSaltInput(string memory name_, string memory symbol_, uint8 decimals_)
+    function _buildSaltInput(
+        string memory name_,
+        string memory symbol_,
+        uint8 decimals_
+    )
         internal
         pure
         returns (bytes memory)
@@ -179,7 +190,10 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @param initialAdmin The address to be set as the initial admin of the access manager.
     /// @return salt The calculated salt for CREATE2 deployment.
     /// @return fullCreationCode The complete bytecode for deploying the access manager.
-    function _prepareAccessManagerCreationData(bytes memory accessManagerSaltInputData, address initialAdmin)
+    function _prepareAccessManagerCreationData(
+        bytes memory accessManagerSaltInputData,
+        address initialAdmin
+    )
         internal
         view
         returns (bytes32 salt, bytes memory fullCreationCode)
@@ -210,7 +224,10 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @param accessManagerSaltInputData The ABI encoded data to be used for salt calculation for the access manager.
     /// @param initialAdmin The address that will act as the initial admin when deploying the access manager.
     /// @return predictedAddress The predicted address where the access manager would be deployed.
-    function _predictAccessManagerAddress(bytes memory accessManagerSaltInputData, address initialAdmin)
+    function _predictAccessManagerAddress(
+        bytes memory accessManagerSaltInputData,
+        address initialAdmin
+    )
         internal
         view
         returns (address predictedAddress)
@@ -368,7 +385,11 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @param description Human-readable description of the contract.
     /// @param country The numeric country code (ISO 3166-1 alpha-2 standard) representing the contract's jurisdiction.
     /// @return The address of the deployed contract identity.
-    function _deployContractIdentity(address contractAddress, string memory description, uint16 country)
+    function _deployContractIdentity(
+        address contractAddress,
+        string memory description,
+        uint16 country
+    )
         internal
         returns (address)
     {
@@ -378,8 +399,9 @@ abstract contract AbstractATKTokenFactoryImplementation is
         address contractIdentity = IATKIdentityFactory(system.identityFactory()).createContractIdentity(contractAddress);
 
         // Register the contract identity with the identity registry (same as any other identity)
-        ISMARTIdentityRegistry(system.identityRegistry())
-            .registerIdentity(contractAddress, IIdentity(contractIdentity), country);
+        ISMARTIdentityRegistry(system.identityRegistry()).registerIdentity(
+            contractAddress, IIdentity(contractIdentity), country
+        );
 
         // Issue TOPIC_ASSET_ISSUER claim to link the asset to its issuer
         address organisationIdentity = system.organisationIdentity();
@@ -405,7 +427,10 @@ abstract contract AbstractATKTokenFactoryImplementation is
     ///      with the system's meta registry, enabling token-specific trusted issuer management
     /// @param tokenAddress The address of the token contract
     /// @param tokenIdentityAddress The address of the token identity contract
-    function _deployAndRegisterTokenTrustedIssuersRegistry(address tokenAddress, address tokenIdentityAddress)
+    function _deployAndRegisterTokenTrustedIssuersRegistry(
+        address tokenAddress,
+        address tokenIdentityAddress
+    )
         internal
     {
         // Register the token-specific registry with the meta registry

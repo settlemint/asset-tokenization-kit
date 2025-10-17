@@ -200,7 +200,10 @@ contract ATKIdentityFactoryImplementation is
     /// public keys or addresses) to be added to the identity.
     ///                        These keys are granted `MANAGEMENT_KEY` purpose (purpose 1) according to ERC734.
     /// @return address The address of the newly created and registered `ATKIdentityProxy` contract.
-    function createIdentity(address _wallet, bytes32[] calldata _managementKeys)
+    function createIdentity(
+        address _wallet,
+        bytes32[] calldata _managementKeys
+    )
         external
         virtual
         override
@@ -304,7 +307,10 @@ contract ATKIdentityFactoryImplementation is
     /// @param _initialManager The address that would be (or was) set as the initial management key for the identity's
     /// proxy constructor.
     /// @return address The pre-computed CREATE2 deployment address for the wallet's identity contract.
-    function calculateWalletIdentityAddress(address _walletAddress, address _initialManager)
+    function calculateWalletIdentityAddress(
+        address _walletAddress,
+        address _initialManager
+    )
         public
         view
         virtual
@@ -322,7 +328,13 @@ contract ATKIdentityFactoryImplementation is
     ///      This provides predictable addresses based on the contract address.
     /// @param _contractAddress The address of the contract for which the identity will be created.
     /// @return address The pre-computed CREATE2 deployment address for the contract's identity contract.
-    function calculateContractIdentityAddress(address _contractAddress) public view virtual override returns (address) {
+    function calculateContractIdentityAddress(address _contractAddress)
+        public
+        view
+        virtual
+        override
+        returns (address)
+    {
         (bytes32 saltBytes,) = _calculateSalt(CONTRACT_SALT_PREFIX, _contractAddress);
         return _computeContractProxyAddress(saltBytes, _contractAddress);
     }
@@ -383,7 +395,10 @@ contract ATKIdentityFactoryImplementation is
     /// @return saltBytes The calculated `bytes32` salt value.
     /// @return saltString The string representation of the salt before hashing (prefix + hexAddress), useful for error
     /// messages.
-    function _calculateSalt(string memory _saltPrefix, address _address)
+    function _calculateSalt(
+        string memory _saltPrefix,
+        address _address
+    )
         internal
         view
         returns (bytes32 saltBytes, string memory saltString)
@@ -398,7 +413,14 @@ contract ATKIdentityFactoryImplementation is
     /// @param systemAddress The system address to prevent cross-system collisions.
     /// @param saltString The string to be used for salt calculation.
     /// @return The calculated salt for CREATE2 deployment.
-    function _calculateSaltFromString(address systemAddress, string memory saltString) internal pure returns (bytes32) {
+    function _calculateSaltFromString(
+        address systemAddress,
+        string memory saltString
+    )
+        internal
+        pure
+        returns (bytes32)
+    {
         return keccak256(abi.encode(systemAddress, saltString));
     }
 
@@ -421,7 +443,10 @@ contract ATKIdentityFactoryImplementation is
     /// @param _saltBytes The pre-calculated `bytes32` salt for the deployment.
     /// @param _contractAddress The address of the contract that will own this identity.
     /// @return address The deterministically computed address where the proxy will be deployed.
-    function _computeContractProxyAddress(bytes32 _saltBytes, address _contractAddress)
+    function _computeContractProxyAddress(
+        bytes32 _saltBytes,
+        address _contractAddress
+    )
         internal
         view
         returns (address)

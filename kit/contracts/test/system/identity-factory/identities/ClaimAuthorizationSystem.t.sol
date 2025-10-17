@@ -2,15 +2,12 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import {
-    ATKIdentityImplementation
-} from "../../../../contracts/system/identity-factory/identities/ATKIdentityImplementation.sol";
-import {
-    ATKSystemTrustedIssuersRegistryImplementation
-} from "../../../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
-import {
-    ATKSystemAccessManagerImplementation
-} from "../../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
+import { ATKIdentityImplementation } from
+    "../../../../contracts/system/identity-factory/identities/ATKIdentityImplementation.sol";
+import { ATKSystemTrustedIssuersRegistryImplementation } from
+    "../../../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
+import { ATKSystemAccessManagerImplementation } from
+    "../../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
 import { IClaimAuthorizer } from "../../../../contracts/onchainid/extensions/IClaimAuthorizer.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";

@@ -59,5 +59,8 @@ interface ISMARTCollateral {
     ///                Returns `address(0)` if no valid claim is found.
     /// @return expiryTimestamp The expiry timestamp (Unix time) decoded from the valid claim data.
     ///                         Returns 0 if no valid claim is found or if the found claim has already expired.
-    function findValidCollateralClaim() external view returns (uint256 amount, address issuer, uint256 expiryTimestamp);
+    function findValidCollateralClaim()
+        external
+        view
+        returns (uint256 amount, address issuer, uint256 expiryTimestamp);
 }

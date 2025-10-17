@@ -148,9 +148,11 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// essential for the proper functioning of the `ATKSystem` instances that will be created.
     /// @param implementations The struct containing all implementation addresses required by the system.
     /// @param forwarder_ The address of the trusted forwarder contract to be used for meta-transactions (ERC2771).
-    constructor(SystemImplementations memory implementations, address forwarder_)
+    constructor(
+        SystemImplementations memory implementations,
+        address forwarder_
+    )
         ERC2771Context(forwarder_) // Initializes ERC2771 support with the provided forwarder address.
-
     {
         // Perform critical checks: ensure no implementation address is the zero address.
         // Reverting here prevents deploying a factory that would create non-functional ATKSystem instances.

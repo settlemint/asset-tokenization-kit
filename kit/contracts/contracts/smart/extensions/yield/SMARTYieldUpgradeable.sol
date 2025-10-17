@@ -38,7 +38,6 @@ import { ISMARTYield } from "./ISMARTYield.sol";
 /// It must also implement other `ISMARTYield` functions.
 abstract contract SMARTYieldUpgradeable is
     Initializable,
-
     // Added to explicitly acknowledge its use for __SMARTYield_init
     ContextUpgradeable,
     SMARTExtensionUpgradeable,

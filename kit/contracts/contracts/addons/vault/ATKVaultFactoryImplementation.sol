@@ -6,9 +6,8 @@ import { IATKVaultFactory } from "./IATKVaultFactory.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 // Implementations
-import {
-    AbstractATKSystemAddonFactoryImplementation
-} from "../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
+import { AbstractATKSystemAddonFactoryImplementation } from
+    "../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
 import { ATKVault } from "./ATKVault.sol";
 
 // Constants
@@ -63,7 +62,12 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
     /// @return saltInputData The salt input data for CREATE2
     /// @return constructorArgs The constructor arguments for the vault
     /// @return vaultBytecode The bytecode for the vault contract
-    function _getVaultDeploymentData(address[] memory signers, uint256 required, address initialOwner, bytes32 salt)
+    function _getVaultDeploymentData(
+        address[] memory signers,
+        uint256 required,
+        address initialOwner,
+        bytes32 salt
+    )
         private
         view
         returns (bytes memory saltInputData, bytes memory constructorArgs, bytes memory vaultBytecode)
@@ -123,10 +127,12 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
         // Set the onchainId on the vault
         ATKVault(payable(contractAddress)).setOnchainId(contractIdentity);
 
-        IAccessControl(contractAddress)
-            .renounceRole(ATKVault(payable(contractAddress)).GOVERNANCE_ROLE(), address(this));
-        IAccessControl(contractAddress)
-            .renounceRole(ATKVault(payable(contractAddress)).DEFAULT_ADMIN_ROLE(), address(this));
+        IAccessControl(contractAddress).renounceRole(
+            ATKVault(payable(contractAddress)).GOVERNANCE_ROLE(), address(this)
+        );
+        IAccessControl(contractAddress).renounceRole(
+            ATKVault(payable(contractAddress)).DEFAULT_ADMIN_ROLE(), address(this)
+        );
 
         // Emit an event to log the creation of the new vault.
         emit ATKVaultCreated(_msgSender(), contractAddress, contractIdentity);
@@ -143,7 +149,12 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
     /// @param initialOwner Address that will have admin role
     /// @param salt Salt value for deterministic address generation
     /// @return predictedAddress The predicted address of the vault
-    function predictVaultAddress(address[] calldata signers, uint256 required, address initialOwner, bytes32 salt)
+    function predictVaultAddress(
+        address[] calldata signers,
+        uint256 required,
+        address initialOwner,
+        bytes32 salt
+    )
         external
         view
         override(IATKVaultFactory)

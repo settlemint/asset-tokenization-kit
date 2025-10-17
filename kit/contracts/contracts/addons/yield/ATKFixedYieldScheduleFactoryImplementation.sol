@@ -10,9 +10,8 @@ import { ISMARTFixedYieldSchedule } from "../../smart/extensions/yield/schedules
 import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
 
 // Implementations
-import {
-    AbstractATKSystemAddonFactoryImplementation
-} from "../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
+import { AbstractATKSystemAddonFactoryImplementation } from
+    "../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
 import { ATKFixedYieldProxy } from "./ATKFixedYieldProxy.sol";
 import { ATKFixedYieldScheduleUpgradeable } from "./ATKFixedYieldScheduleUpgradeable.sol";
 

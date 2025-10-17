@@ -63,13 +63,18 @@ abstract contract AbstractComplianceModule is ERC2771Context, ISMARTComplianceMo
     /// @param _to The address to which tokens were transferred.
     /// @param _value The amount of tokens transferred.
     /// @param _params The parameters that were configured for this module when it was added to the `_token`.
-    function transferred(address _token, address _from, address _to, uint256 _value, bytes calldata _params)
+    function transferred(
+        address _token,
+        address _from,
+        address _to,
+        uint256 _value,
+        bytes calldata _params
+    )
         external
         virtual
         override
         onlyTokenOrCompliance(_token)
-    {  /* Default: Do nothing. Override in child contracts if needed. */
-    }
+    { /* Default: Do nothing. Override in child contracts if needed. */ }
 
     /// @inheritdoc ISMARTComplianceModule
     /// @notice This function is a hook called by the main `SMARTComplianceImplementation` contract *after* tokens have
@@ -81,13 +86,17 @@ abstract contract AbstractComplianceModule is ERC2771Context, ISMARTComplianceMo
     /// @param _from The address whose tokens were destroyed.
     /// @param _value The amount of tokens destroyed.
     /// @param _params The parameters that were configured for this module when it was added to the `_token`.
-    function destroyed(address _token, address _from, uint256 _value, bytes calldata _params)
+    function destroyed(
+        address _token,
+        address _from,
+        uint256 _value,
+        bytes calldata _params
+    )
         external
         virtual
         override
         onlyTokenOrCompliance(_token)
-    {  /* Default: Do nothing. Override in child contracts if needed. */
-    }
+    { /* Default: Do nothing. Override in child contracts if needed. */ }
 
     /// @inheritdoc ISMARTComplianceModule
     /// @notice This function is a hook called by the main `SMARTComplianceImplementation` contract *after* new tokens
@@ -99,13 +108,17 @@ abstract contract AbstractComplianceModule is ERC2771Context, ISMARTComplianceMo
     /// @param _to The address that received the newly created tokens.
     /// @param _value The amount of tokens created.
     /// @param _params The parameters that were configured for this module when it was added to the `_token`.
-    function created(address _token, address _to, uint256 _value, bytes calldata _params)
+    function created(
+        address _token,
+        address _to,
+        uint256 _value,
+        bytes calldata _params
+    )
         external
         virtual
         override
         onlyTokenOrCompliance(_token)
-    {  /* Default: Do nothing. Override in child contracts if needed. */
-    }
+    { /* Default: Do nothing. Override in child contracts if needed. */ }
 
     // --- ERC165 Support ---
 
@@ -138,7 +151,13 @@ abstract contract AbstractComplianceModule is ERC2771Context, ISMARTComplianceMo
     /// @param _params The ABI-encoded parameters that were configured for this specific module when it was added to the
     /// `_token`.
     ///                The module should decode and use these parameters as part of its compliance logic.
-    function canTransfer(address _token, address _from, address _to, uint256 _value, bytes calldata _params)
+    function canTransfer(
+        address _token,
+        address _from,
+        address _to,
+        uint256 _value,
+        bytes calldata _params
+    )
         external
         view
         virtual

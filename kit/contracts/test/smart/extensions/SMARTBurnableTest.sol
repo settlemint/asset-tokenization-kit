@@ -9,7 +9,7 @@ import { ISMARTBurnable } from "../../../contracts/smart/extensions/burnable/ISM
 import { SMARTToken } from "../examples/SMARTToken.sol";
 
 abstract contract SMARTBurnableTest is AbstractSMARTTest {
-    function _setUpBurnableTest() internal /* override */  {
+    function _setUpBurnableTest() internal /* override */ {
         super.setUp();
         // Ensure token has default collateral set up for burn tests
         _setupDefaultCollateralClaim();
