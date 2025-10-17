@@ -39,19 +39,16 @@
   extra_output = [ "devdoc", "userdoc" ]
   viaIR = true
   evm_version = "cancun"
-  coverage = true
-  coverage_report_lines = true
-  coverage_report_statements = true
   bytecode_hash = "none"
   cbor_metadata = true
   cache = true
   force = false
   dynamic_test_linking = true
-  lint_on_build = false
   threads = 0
 
 [soldeer]
   remappings_version = false
 
 [lint]
+  lint_on_build = false
   exclude_lints = ["mixed-case-function", "mixed-case-variable", "screaming-snake-case-const", "screaming-snake-case-immutable", "pascal-case-struct", "asm-keccak256"]
