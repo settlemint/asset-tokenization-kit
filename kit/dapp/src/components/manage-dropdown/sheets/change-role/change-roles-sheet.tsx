@@ -54,25 +54,6 @@ export interface ChangeRolesSheetProps {
   grantRole: OnRevokeOrGrantRole;
 }
 
-/**
- * Extended AccessControl type with role admin hierarchy information.
- * The roleAdmins field defines which roles can manage other roles.
- * When a user has an adminRole, they can grant/revoke the corresponding role.
- */
-type AccessControlRoleAdmins = AccessControl & {
-  /**
-   * Mapping of role administration permissions.
-   * Each entry specifies that holders of adminFieldName can manage roleFieldName.
-   * Empty array or undefined means no role-based restrictions (legacy behavior).
-   */
-  roleAdmins?: Array<{
-    /** The role being managed (e.g., "MINTER", "BURNER") */
-    roleFieldName?: string | null;
-    /** The role that can grant/revoke roleFieldName (e.g., "ROLE_ADMIN") */
-    adminFieldName?: string | null;
-  }>;
-};
-
 const isAccessControlRoleValue = (
   value: unknown
 ): value is AccessControlRoles =>
@@ -126,24 +107,16 @@ export function ChangeRolesSheet({
 
   const roleAdminMap = useMemo(() => {
     const map = new Map<AccessControlRoles, AccessControlRoles[]>();
-    const roleAdmins = (accessControl as AccessControlRoleAdmins | undefined)
-      ?.roleAdmins;
-    if (!Array.isArray(roleAdmins)) {
+    const roleAdmins = accessControl?.roleAdmins ?? [];
+    if (roleAdmins.length === 0) {
       return map;
     }
     for (const entry of roleAdmins) {
-      if (!entry) continue;
-      const { roleFieldName, adminFieldName } = entry;
-      if (
-        isAccessControlRoleValue(roleFieldName) &&
-        isAccessControlRoleValue(adminFieldName)
-      ) {
-        const existing = map.get(roleFieldName) ?? [];
-        if (!existing.includes(adminFieldName)) {
-          existing.push(adminFieldName);
-        }
-        map.set(roleFieldName, existing);
+      const existing = map.get(entry.roleFieldName) ?? [];
+      if (!existing.includes(entry.adminFieldName)) {
+        existing.push(entry.adminFieldName);
       }
+      map.set(entry.roleFieldName, existing);
     }
     return map;
   }, [accessControl]);
@@ -239,10 +212,7 @@ export function ChangeRolesSheet({
           </span>
 
           {checked ? (
-            <CheckSquare
-              className="h-4 w-4 opacity-90"
-              aria-label="selected"
-            />
+            <CheckSquare className="h-4 w-4 opacity-90" aria-label="selected" />
           ) : (
             <span aria-hidden className="h-4 w-4" />
           )}
@@ -404,9 +374,12 @@ export function ChangeRolesSheet({
                 } catch (error) {
                   // Network or unexpected errors
                   if (error instanceof TypeError) {
-                    throw new Error(t("components:changeRolesSheet.networkError"), {
-                      cause: error,
-                    });
+                    throw new Error(
+                      t("components:changeRolesSheet.networkError"),
+                      {
+                        cause: error,
+                      }
+                    );
                   }
                   throw error;
                 }
@@ -416,7 +389,9 @@ export function ChangeRolesSheet({
                 loading: t("common:saving"),
                 success: t("common:saved"),
                 error: (data) => {
-                  const message = data?.message || t("components:changeRolesSheet.unexpectedError");
+                  const message =
+                    data?.message ||
+                    t("components:changeRolesSheet.unexpectedError");
                   return t("common:error", { message });
                 },
               });

@@ -1,6 +1,5 @@
 import type { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import {
-  accessControlRole,
   accessControlRoles,
   accessControlSchema,
 } from "@atk/zod/access-control-roles";
@@ -85,27 +84,9 @@ export const SystemSchema = z.object({
    */
   systemAccessManager: z.object({
     id: ethereumAddress.describe("System access manager address"),
-    accessControl: accessControlSchema()
-      .extend({
-        roleAdmins: z
-          .array(
-            z.object({
-              id: ethereumHex.describe("Role admin mapping identifier"),
-              role: ethereumHex.describe("Role identifier (bytes32)"),
-              roleFieldName: accessControlRole.describe(
-                "Role field name"
-              ),
-              adminRole: ethereumHex.describe(
-                "Admin role identifier (bytes32)"
-              ),
-              adminFieldName: accessControlRole.describe(
-                "Admin role field name"
-              ),
-            })
-          )
-          .describe("Admin role mapping per access control role"),
-      })
-      .describe("Access control configuration"),
+    accessControl: accessControlSchema().describe(
+      "Access control configuration"
+    ),
   }),
   /**
    * The identity factory

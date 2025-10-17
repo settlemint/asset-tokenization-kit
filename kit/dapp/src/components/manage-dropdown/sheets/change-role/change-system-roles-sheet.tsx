@@ -7,21 +7,17 @@ import {
 } from "@/components/manage-dropdown/sheets/change-role/change-roles-sheet";
 import { orpc } from "@/orpc/orpc-client";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
-import {
-  AccessControl,
-  AccessControlRoles,
-} from "@atk/zod/access-control-roles";
-import type { EthereumAddress } from "@atk/zod/ethereum-address";
+import { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-interface ChangeSystemRolesSheetProps {
-  open: boolean;
-  accessControl: AccessControl | undefined;
-  onOpenChange: (open: boolean) => void;
-  presetAccount?: EthereumAddress;
-}
+type ChangeSystemRolesSheetProps = Pick<
+  ChangeRolesSheetProps,
+  "open" | "onOpenChange" | "presetAccount"
+> & {
+  accessControl: ChangeRolesSheetProps["accessControl"];
+};
 
 export function ChangeSystemRolesSheet({
   open,
