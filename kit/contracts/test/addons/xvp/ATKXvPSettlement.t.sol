@@ -884,7 +884,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         bool autoExecute = false;
 
         // Step 1: Create settlement (as Alice)
-        (IATKXvPSettlement settlement) =
+        (IATKXvPSettlement settlement, address settlementAddr) =
             _deploySettlement(alice, "Settlement Name", flows, cutoffDate, autoExecute, NO_HASHLOCK);
 
         // Step 2: Try to cancel as Charlie (not involved)
@@ -897,6 +897,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         vm.prank(alice);
         bool cancelled = settlement.cancel();
         assertTrue(cancelled, "Cancel by involved party should succeed");
+        assertTrue(settlementAddr != address(0), "Settlement address should be set");
     }
 
     function test_ExternalOnlyParticipantCannotCancel() public {
@@ -1399,12 +1400,13 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
         flows[0] = _localFlow(address(token), alice, bob, 100 * 10 ** 18);
 
-        (IATKXvPSettlement settlement) =
+        (IATKXvPSettlement settlement, address settlementAddr) =
             _deploySettlement(alice, "Settlement Name", flows, block.timestamp + 1 days, false, NO_HASHLOCK);
 
         vm.prank(relayer);
         vm.expectRevert(IATKXvPSettlement.HashlockRevealNotRequired.selector);
         settlement.revealSecret(bytes("unused"));
+        assertTrue(settlementAddr != address(0), "Settlement address should be set");
     }
 
     function test_RevealSecretCannotBeCalledTwice() public {
@@ -1424,7 +1426,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         bytes memory secret = bytes("double-reveal");
         bytes32 hashlock = keccak256(secret);
 
-        (IATKXvPSettlement settlement) =
+        (IATKXvPSettlement settlement, address settlementAddr) =
             _deploySettlement(alice, "Settlement Name", flows, block.timestamp + 1 days, false, hashlock);
 
         vm.prank(bob);
@@ -1433,6 +1435,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         vm.prank(bob);
         vm.expectRevert(IATKXvPSettlement.SecretAlreadyRevealed.selector);
         settlement.revealSecret(secret);
+        assertTrue(settlementAddr != address(0), "Settlement address should be set");
     }
 
     function test_ExternalFlowSenderDoesNotNeedAllowance() public {
