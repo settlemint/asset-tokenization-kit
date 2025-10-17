@@ -16,6 +16,7 @@ describe("fixedYieldSchedulePeriod", () => {
       totalClaimed: "1000.5",
       totalUnclaimedYield: "500.25",
       totalYield: "1500.75",
+      completed: false,
     };
 
     const result = validator.parse(validPeriod);
@@ -32,6 +33,7 @@ describe("fixedYieldSchedulePeriod", () => {
       totalClaimed: from("999999999999999999999999999999.99"),
       totalUnclaimedYield: from("0"),
       totalYield: from("999999999999999999999999999999.99"),
+      completed: false,
     };
 
     const result = validator.parse(validPeriod);
@@ -81,6 +83,7 @@ describe("fixedYieldSchedule", () => {
         totalClaimed: "1000",
         totalUnclaimedYield: "500",
         totalYield: "1500",
+        completed: false,
       },
       nextPeriod: null,
       periods: [],
@@ -116,6 +119,7 @@ describe("fixedYieldSchedule", () => {
       totalClaimed: "1000",
       totalUnclaimedYield: "500",
       totalYield: "1500",
+      completed: false,
     };
 
     const schedule = {

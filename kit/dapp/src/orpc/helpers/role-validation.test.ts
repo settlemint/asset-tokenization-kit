@@ -67,6 +67,7 @@ describe("role-validation", () => {
         admin: [{ id: mockWallet, isContract: false }],
         minter: [{ id: anotherWallet, isContract: false }],
         burner: [],
+        roleAdmins: [],
       } as unknown as AccessControl;
 
       const result = mapUserRoles(mockWallet, accessControl);
@@ -91,6 +92,7 @@ describe("role-validation", () => {
           { id: mockWallet, isContract: false },
         ],
         pauser: [{ id: anotherWallet, isContract: false }],
+        roleAdmins: [],
       } as unknown as AccessControl;
 
       const result = mapUserRoles(mockWallet, accessControl);
@@ -108,6 +110,7 @@ describe("role-validation", () => {
         admin: [{ id: walletAddress.toLowerCase(), isContract: false }],
         minter: [{ id: walletAddress.toUpperCase(), isContract: false }],
         burner: [{ id: walletAddress, isContract: false }], // mixed case
+        roleAdmins: [],
       } as unknown as AccessControl;
 
       // Test with lowercase wallet
@@ -141,6 +144,7 @@ describe("role-validation", () => {
     test("should handle empty accessControl object", () => {
       const accessControl = {
         id: "access-manager-address",
+        roleAdmins: [],
       } as unknown as AccessControl;
       const result = mapUserRoles(mockWallet, accessControl);
 
@@ -157,6 +161,7 @@ describe("role-validation", () => {
         id: "access-manager-address",
         admin: [{ id: mockWallet, isContract: false }],
         minter: [{ id: anotherWallet, isContract: false }],
+        roleAdmins: [],
       } as unknown as AccessControl;
 
       const result = mapUserRoles(mockWallet, accessControl);
@@ -173,6 +178,7 @@ describe("role-validation", () => {
         burner: "invalid", // Invalid value
         pauser: undefined, // Invalid value
         tokenManager: {}, // Invalid value
+        roleAdmins: [],
       } as unknown as AccessControl;
 
       const result = mapUserRoles(mockWallet, accessControl);
@@ -196,6 +202,7 @@ describe("role-validation", () => {
         burner: undefined, // Will be filtered out
         pauser: "not-an-array", // Will be filtered out
         tokenManager: {}, // Will be filtered out
+        roleAdmins: [],
       } as unknown as AccessControl;
 
       const result = mapUserRoles(mockWallet, accessControl);
@@ -218,6 +225,7 @@ describe("role-validation", () => {
             isContract: false,
           },
         ],
+        roleAdmins: [],
       } as unknown as AccessControl;
 
       const result = mapUserRoles(mockWallet, accessControl);
@@ -247,6 +255,7 @@ describe("role-validation", () => {
           { id: wallet1, isContract: false },
           { id: wallet3, isContract: false },
         ],
+        roleAdmins: [],
       } as unknown as AccessControl;
 
       const result1 = mapUserRoles(wallet1, accessControl);
@@ -281,6 +290,7 @@ describe("role-validation", () => {
       const accessControl: AccessControl = {
         id: zeroAddress,
         ...rolesData,
+        roleAdmins: [],
       };
 
       const result = mapUserRoles(mockWallet, accessControl);

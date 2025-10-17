@@ -33,6 +33,7 @@ export const TokenFixedYieldSchedulePeriodFragment = theGraphGraphql(`
     totalClaimed
     totalUnclaimedYield
     totalYield
+    completed
   }
 `);
 

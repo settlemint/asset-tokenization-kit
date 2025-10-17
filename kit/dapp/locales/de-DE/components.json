@@ -79,6 +79,8 @@
     "description": "Rollen für diese Adresse zuweisen oder entfernen",
     "cta": "Rollen ändern",
     "accountLabel": "Konto",
-    "rolesLabel": "Rollen"
+    "rolesLabel": "Rollen",
+    "networkError": "Netzwerkverbindung fehlgeschlagen. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+    "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
   }
 }

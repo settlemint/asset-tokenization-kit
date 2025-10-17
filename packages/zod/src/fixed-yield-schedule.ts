@@ -49,6 +49,7 @@ export const fixedYieldSchedulePeriod = () =>
       "Total unclaimed yield in this period"
     ),
     totalYield: bigDecimal().describe("Total yield generated in this period"),
+    completed: z.boolean().describe("Whether this period has been completed"),
   });
 
 /**

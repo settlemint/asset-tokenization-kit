@@ -36,7 +36,7 @@ export function updateClaimYieldActionsOnBalanceIncrease(
   }
   const periods = fixedYieldSchedule.periods.load();
   for (let periodIndex = 0; periodIndex < periods.length; periodIndex++) {
-    const period = fetchFixedYieldSchedulePeriod(periods[periodIndex].id);
+    const period = periods[periodIndex];
     if (currentPeriod != null && period.endDate.le(currentPeriod.endDate)) {
       // Skip periods that are finished
       continue;
@@ -77,18 +77,12 @@ export function updateClaimYieldActionsOnBalanceRemove(
     return;
   }
 
-  let currentPeriod: TokenFixedYieldSchedulePeriod | null = null;
-  if (fixedYieldSchedule.currentPeriod) {
-    currentPeriod = fetchFixedYieldSchedulePeriod(
-      fixedYieldSchedule.currentPeriod!
-    );
-  }
   const periods = fixedYieldSchedule.periods.load();
   // Delete all actions to claim yield for this balance
   for (let periodIndex = 0; periodIndex < periods.length; periodIndex++) {
-    const period = fetchFixedYieldSchedulePeriod(periods[periodIndex].id);
-    if (currentPeriod != null && period.endDate.le(currentPeriod.endDate)) {
-      // Skip periods that are finished
+    const period = periods[periodIndex];
+    if (period.completed) {
+      // Skip periods that are completed
       continue;
     }
     const identifier = createActionIdentifier(ActionName.ClaimYield, [

@@ -79,6 +79,8 @@
     "description": "このアドレスの役割を割り当てるか削除する",
     "cta": "役割を変更",
     "accountLabel": "アカウント",
-    "rolesLabel": "役割"
+    "rolesLabel": "役割",
+    "networkError": "ネットワーク接続に失敗しました。接続を確認してもう一度お試しください。",
+    "unexpectedError": "予期しないエラーが発生しました。もう一度お試しください。"
   }
 }

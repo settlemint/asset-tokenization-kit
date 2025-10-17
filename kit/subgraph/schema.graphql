@@ -76,6 +76,11 @@ type AccessControl @entity(immutable: false) {
   id: Bytes!
   # Reference to the system this access control belongs to
   system: System!
+  # Role administration hierarchy mapping
+  # Defines which roles can grant/revoke other roles
+  # Each entry specifies that adminRole can manage role assignments
+  # All roles default to DEFAULT_ADMIN_ROLE as admin until RoleAdminChanged events update the mappings
+  roleAdmins: [AccessControlRoleAdmin!]! @derivedFrom(field: "accessControl")
 
   # Core Admin Role - highest level administrative access
   admin: [Account!]!
@@ -155,6 +160,23 @@ type AccessControl @entity(immutable: false) {
   saleAdmin: [Account!]!
   # Authorized signers for multi-sig operations
   signer: [Account!]!
+}
+
+# Represents the admin hierarchy for role management
+# Each instance defines that holders of adminRole can grant/revoke the specified role
+type AccessControlRoleAdmin @entity(immutable: false) {
+  # Composite identifier: access control address + role hash
+  id: Bytes!
+  # Access control contract that owns this role admin mapping
+  accessControl: AccessControl!
+  # The role being managed (bytes32 hash)
+  role: Bytes!
+  # Human-readable name of the managed role (e.g., "ADMIN", "MINTER")
+  roleFieldName: String!
+  # The role that has admin privileges over the managed role (bytes32 hash)
+  adminRole: Bytes!
+  # Human-readable name of the admin role (e.g., "ROLE_ADMIN", "SUPER_ADMIN")
+  adminFieldName: String!
 }
 
 type System @entity(immutable: false) {
@@ -1482,6 +1504,8 @@ type TokenFixedYieldSchedulePeriod @entity(immutable: false) {
   startDate: BigInt!
   # Unix timestamp when period ends
   endDate: BigInt!
+  # Whether this period has been completed (end date has been reached)
+  completed: Boolean!
   # Yield claimed in this period (human-readable)
   totalClaimed: BigDecimal!
   # Yield claimed in this period (exact, raw units)

@@ -11,11 +11,15 @@ import {
   updateIsAdmin,
 } from "../stats/account-stats";
 import { trackRoleGranted } from "../stats/identity-stats";
-import { fetchAccessControl } from "./fetch/accesscontrol";
+import { fetchAccessControl, setRoleAdminMapping } from "./fetch/accesscontrol";
 import { getRoleConfigFromBytes } from "./utils/role";
 
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
   fetchEvent(event, "RoleAdminChanged");
+  const accessControl = fetchAccessControl(event.address);
+  const roleConfig = getRoleConfigFromBytes(event.params.role);
+  const adminRoleConfig = getRoleConfigFromBytes(event.params.newAdminRole);
+  setRoleAdminMapping(accessControl, roleConfig, adminRoleConfig);
 }
 
 export function handleRoleGranted(event: RoleGranted): void {

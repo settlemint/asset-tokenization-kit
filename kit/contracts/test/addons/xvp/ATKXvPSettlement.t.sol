@@ -886,6 +886,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         vm.prank(alice);
         bool cancelled = settlement.cancel();
         assertTrue(cancelled, "Cancel by involved party should succeed");
+        assertTrue(settlementAddr != address(0), "Settlement address should be set");
     }
 
     function test_ExternalOnlyParticipantCannotCancel() public {
@@ -1390,6 +1391,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         vm.prank(relayer);
         vm.expectRevert(IATKXvPSettlement.HashlockRevealNotRequired.selector);
         settlement.revealSecret(bytes("unused"));
+        assertTrue(settlementAddr != address(0), "Settlement address should be set");
     }
 
     function test_RevealSecretCannotBeCalledTwice() public {
@@ -1418,6 +1420,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         vm.prank(bob);
         vm.expectRevert(IATKXvPSettlement.SecretAlreadyRevealed.selector);
         settlement.revealSecret(secret);
+        assertTrue(settlementAddr != address(0), "Settlement address should be set");
     }
 
     function test_ExternalFlowSenderDoesNotNeedAllowance() public {

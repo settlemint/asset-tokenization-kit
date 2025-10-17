@@ -79,6 +79,8 @@
     "description": "Assign or remove roles for this address",
     "cta": "Change roles",
     "accountLabel": "Account",
-    "rolesLabel": "Roles"
+    "rolesLabel": "Roles",
+    "networkError": "Network connection failed. Please check your connection and try again.",
+    "unexpectedError": "An unexpected error occurred. Please try again."
   }
 }

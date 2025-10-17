@@ -8,12 +8,14 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAppForm } from "@/hooks/use-app-form";
+import { useSession } from "@/hooks/use-auth";
 import { getAccessControlEntries } from "@/orpc/helpers/access-control-helpers";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import type {
-  AccessControl,
-  AccessControlRoles,
+import {
+  roles as ACCESS_CONTROL_ROLES,
+  type AccessControl,
+  type AccessControlRoles,
 } from "@atk/zod/access-control-roles";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import type { RoleRequirement } from "@atk/zod/role-requirement";
@@ -52,6 +54,12 @@ export interface ChangeRolesSheetProps {
   grantRole: OnRevokeOrGrantRole;
 }
 
+const isAccessControlRoleValue = (
+  value: unknown
+): value is AccessControlRoles =>
+  typeof value === "string" &&
+  (ACCESS_CONTROL_ROLES as readonly string[]).includes(value);
+
 export function ChangeRolesSheet({
   open,
   accessControl,
@@ -63,6 +71,9 @@ export function ChangeRolesSheet({
   grantRole,
 }: ChangeRolesSheetProps) {
   const { t } = useTranslation(["common", "components"]);
+  const { data: session } = useSession();
+  const sessionWallet = session?.user?.wallet;
+  const normalizedSessionWallet = sessionWallet?.toLowerCase() ?? null;
 
   const form = useAppForm({
     defaultValues: {
@@ -85,10 +96,41 @@ export function ChangeRolesSheet({
         const arr = index.get(acc.id) ?? [];
         arr.push(role);
         index.set(acc.id, arr);
+        const normalizedId = acc.id.toLowerCase();
+        if (normalizedId !== acc.id) {
+          index.set(normalizedId, arr);
+        }
       }
     }
     return index;
   }, [accessControl]);
+
+  const roleAdminMap = useMemo(() => {
+    const map = new Map<AccessControlRoles, AccessControlRoles[]>();
+    const roleAdmins = accessControl?.roleAdmins ?? [];
+    if (roleAdmins.length === 0) {
+      return map;
+    }
+    for (const entry of roleAdmins) {
+      const existing = map.get(entry.roleFieldName) ?? [];
+      if (!existing.includes(entry.adminFieldName)) {
+        existing.push(entry.adminFieldName);
+      }
+      map.set(entry.roleFieldName, existing);
+    }
+    return map;
+  }, [accessControl]);
+
+  const walletRoles = useMemo(() => {
+    if (!normalizedSessionWallet) {
+      return new Set<AccessControlRoles>();
+    }
+    const rolesForWallet =
+      rolesIndex.get(normalizedSessionWallet) ??
+      (sessionWallet ? rolesIndex.get(sessionWallet) : undefined) ??
+      [];
+    return new Set(rolesForWallet);
+  }, [normalizedSessionWallet, rolesIndex, sessionWallet]);
 
   const currentRolesForAddress = (addr: string): AccessControlRoles[] => {
     const roles =
@@ -125,38 +167,68 @@ export function ChangeRolesSheet({
 
   // No effects needed: we derive current selection from overrides or current roles
 
+  // Memoize role permission checks for performance
+  const rolePermissions = useMemo(() => {
+    const permissions = new Map<AccessControlRoles, boolean>();
+    const allRoles = [...ACCESS_CONTROL_ROLES] as AccessControlRoles[];
+
+    for (const role of allRoles) {
+      const adminRoles = roleAdminMap.get(role);
+      // Treat roles lacking admin mappings as unrestricted.
+      const hasPermission =
+        adminRoles && adminRoles.length > 0
+          ? adminRoles.some((adminRole) => walletRoles.has(adminRole))
+          : true;
+      permissions.set(role, hasPermission);
+    }
+
+    return permissions;
+  }, [roleAdminMap, walletRoles]);
+
   const renderRoleButton = (role: RoleInfo, addr: string) => {
     const currentSelected = addr
       ? (selectionOverrides.get(addr) ?? currentRolesForAddress(addr))
       : [];
     const checked = currentSelected.includes(role.role);
+    const hasManagementPermission = rolePermissions.get(role.role) ?? false;
+    const disabled = !hasManagementPermission;
+    const button = (
+      <Button
+        type="button"
+        variant={checked ? "default" : "outline"}
+        className="w-full"
+        onClick={() => {
+          if (disabled) return;
+          toggleRole(addr, role.role);
+        }}
+        disabled={disabled}
+        aria-disabled={disabled}
+        data-disabled={disabled ? true : undefined}
+      >
+        <div className="flex w-full items-center justify-between">
+          <span className="inline-flex items-center gap-2 overflow-hidden">
+            <Shield className="h-4 w-4" />
+            <span className="truncate">{role.label}</span>
+          </span>
+
+          {checked ? (
+            <CheckSquare className="h-4 w-4 opacity-90" aria-label="selected" />
+          ) : (
+            <span aria-hidden className="h-4 w-4" />
+          )}
+        </div>
+      </Button>
+    );
     return (
       <Tooltip key={role.role}>
         <TooltipTrigger asChild>
-          <Button
-            type="button"
-            variant={checked ? "default" : "outline"}
-            className="w-full"
-            onClick={() => {
-              toggleRole(addr, role.role);
-            }}
-          >
-            <div className="flex w-full items-center justify-between">
-              <span className="inline-flex items-center gap-2 overflow-hidden">
-                <Shield className="h-4 w-4" />
-                <span className="truncate">{role.label}</span>
-              </span>
-
-              {checked ? (
-                <CheckSquare
-                  className="h-4 w-4 opacity-90"
-                  aria-label="selected"
-                />
-              ) : (
-                <span aria-hidden className="h-4 w-4" />
-              )}
-            </div>
-          </Button>
+          {disabled ? (
+            <span className="w-full" aria-disabled={true}>
+              {button}
+            </span>
+          ) : (
+            button
+          )}
         </TooltipTrigger>
         <TooltipContent>{role.description}</TooltipContent>
       </Tooltip>
@@ -284,30 +356,52 @@ export function ChangeRolesSheet({
               );
 
               const promise = (async () => {
-                if (rolesToRevoke.length > 0) {
-                  await revokeRole({
-                    walletVerification: verification,
-                    accountAddress: address,
-                    roles: rolesToRevoke,
-                  });
-                }
-                if (rolesToGrant.length > 0) {
-                  await grantRole({
-                    walletVerification: verification,
-                    accountAddress: address,
-                    roles: rolesToGrant,
-                  });
+                try {
+                  if (rolesToRevoke.length > 0) {
+                    await revokeRole({
+                      walletVerification: verification,
+                      accountAddress: address,
+                      roles: rolesToRevoke,
+                    });
+                  }
+                  if (rolesToGrant.length > 0) {
+                    await grantRole({
+                      walletVerification: verification,
+                      accountAddress: address,
+                      roles: rolesToGrant,
+                    });
+                  }
+                } catch (error) {
+                  // Network or unexpected errors
+                  if (error instanceof TypeError) {
+                    throw new Error(
+                      t("components:changeRolesSheet.networkError"),
+                      {
+                        cause: error,
+                      }
+                    );
+                  }
+                  throw error;
                 }
               })();
 
               toast.promise(promise, {
                 loading: t("common:saving"),
                 success: t("common:saved"),
-                error: (data) => t("common:error", { message: data.message }),
+                error: (data) => {
+                  const message =
+                    data?.message ||
+                    t("components:changeRolesSheet.unexpectedError");
+                  return t("common:error", { message });
+                },
               });
 
-              await promise;
-              handleClose();
+              try {
+                await promise;
+                handleClose();
+              } catch {
+                // Error already shown in toast, just prevent closing on failure
+              }
             }}
           >
             <div className="space-y-4">
@@ -417,13 +511,14 @@ export function deriveAssignableRoles(
 
 export function mergeRoles(
   assignable: AccessControlRoles[],
-  existing?: Record<AccessControlRoles, unknown>
+  existing?: Record<string, unknown>
 ): AccessControlRoles[] {
   const fromExisting = existing
-    ? (Object.keys(existing).filter((k) => {
-        const value = existing[k as AccessControlRoles];
+    ? Object.keys(existing).filter((key): key is AccessControlRoles => {
+        if (!isAccessControlRoleValue(key)) return false;
+        const value = existing[key];
         return Array.isArray(value) && value.length > 0;
-      }) as AccessControlRoles[])
+      })
     : [];
   return [...new Set([...assignable, ...fromExisting])];
 }

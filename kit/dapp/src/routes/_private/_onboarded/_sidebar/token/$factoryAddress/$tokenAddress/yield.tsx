@@ -273,6 +273,7 @@ function RouteComponent() {
 
       {yieldSchedule.periods && yieldSchedule.periods.length > 0 && (
         <FixedYieldSchedulePeriodsTable
+          currentPeriodId={yieldSchedule.currentPeriod?.id}
           periods={yieldSchedule.periods}
           assetSymbol={yieldSchedule.denominationAsset.symbol}
         />
