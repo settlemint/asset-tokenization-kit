@@ -295,17 +295,27 @@ export const generateDepositName = (): string => {
 
 const generateSymbol = (name: string): string => {
   const words = name.split(/[\s-]+/);
-  let symbol = "";
+  let letters = "";
 
-  for (let i = 0; i < Math.min(5, words.length); i++) {
-    if (words[i].length > 0) {
-      symbol += words[i][0].toUpperCase();
+  for (const word of words) {
+    if (letters.length >= 3) break;
+    if (word.length === 0) continue;
+    const alpha = word.replace(/[^A-Za-z]/g, "");
+    if (alpha.length > 0) {
+      letters += alpha[0].toUpperCase();
     }
   }
 
-  symbol += getRandomInt(10, 99).toString();
+  if (letters.length < 3) {
+    const randomLettersNeeded = 3 - letters.length;
+    for (let i = 0; i < randomLettersNeeded; i++) {
+      letters += getRandomString(1);
+    }
+  }
 
-  return symbol;
+  const digits = getRandomInt(100, 999).toString();
+
+  return `${letters}${digits}`;
 };
 
 export function generateFutureDateTimeString(hoursToAdd: number = 24): string {
@@ -321,14 +331,21 @@ export function generateFutureDateTimeString(hoursToAdd: number = 24): string {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
+const bondName = generateBondName();
+const cryptocurrencyName = generateCryptoName();
+const equityName = generateEquityName();
+const fundName = generateFundName();
+const stablecoinName = generateStablecoinName();
+const depositName = generateDepositName();
+
 export const bondData = {
   assetType: "Bond",
-  name: generateBondName(),
-  symbol: generateSymbol(generateBondName()),
+  name: bondName,
+  symbol: generateSymbol(bondName),
   isin: generateValidISIN("US"),
   internalId: getUniqueId().substring(0, 12),
   decimals: "18",
-  maximumSupply: "1000",
+  maximumLimit: "1000",
   faceValue: "100",
   pincode: pincode,
   sidebarAssetTypes: "Bonds",
@@ -338,8 +355,8 @@ export const bondData = {
 
 export const cryptocurrencyData = {
   assetType: "Cryptocurrency",
-  name: generateCryptoName(),
-  symbol: generateSymbol(generateCryptoName()),
+  name: cryptocurrencyName,
+  symbol: generateSymbol(cryptocurrencyName),
   isin: `US${getRandomInt(1000000000, 9999999999)}`,
   internalId: getUniqueId().substring(0, 12),
   decimals: "6",
@@ -400,8 +417,8 @@ export const fundBurnData = {
 
 export const stablecoinData = {
   assetType: "Stablecoin",
-  name: generateStablecoinName(),
-  symbol: generateSymbol(generateStablecoinName()),
+  name: stablecoinName,
+  symbol: generateSymbol(stablecoinName),
   isin: generateValidISIN("US"),
   decimals: "16",
   country: "United States of America",
@@ -412,8 +429,8 @@ export const stablecoinData = {
 
 export const fundData = {
   assetType: "Fund",
-  name: generateFundName(),
-  symbol: generateSymbol(generateFundName()),
+  name: fundName,
+  symbol: generateSymbol(fundName),
   decimals: "3",
   isin: generateValidISIN("EG"),
   country: "Egypt",
@@ -428,8 +445,8 @@ export const fundData = {
 
 export const equityData = {
   assetType: "Equity",
-  name: generateEquityName(),
-  symbol: generateSymbol(generateEquityName()),
+  name: equityName,
+  symbol: generateSymbol(equityName),
   decimals: "3",
   isin: generateValidISIN("RS"),
   country: "Serbia",
@@ -442,8 +459,8 @@ export const equityData = {
 
 export const depositData = {
   assetType: "Deposit",
-  name: generateDepositName(),
-  symbol: generateSymbol(generateDepositName()),
+  name: depositName,
+  symbol: generateSymbol(depositName),
   isin: generateValidISIN("AW"),
   decimals: "14",
   country: "Aruba",
