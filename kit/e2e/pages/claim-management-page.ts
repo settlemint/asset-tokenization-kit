@@ -32,28 +32,25 @@ export class ClaimManagementPage extends BasePage {
 
     const searchTerm = userName.split(/\s+/)[0] ?? userName;
     const userTrigger = dialog.getByRole("combobox").first();
-    await expect(userTrigger).toBeVisible({ timeout: 10000 });
-    await userTrigger.click();
 
-    const commandDialog = this.page
-      .getByRole("dialog")
-      .filter({ has: this.page.getByPlaceholder("Search addresses") })
-      .first();
-    await expect(commandDialog).toBeVisible({ timeout: 10000 });
+    await this.selectFromRadixCommandPalette({
+      trigger: userTrigger,
+      dialog: this.page
+        .getByRole("dialog")
+        .filter({ has: this.page.getByPlaceholder("Search addresses") })
+        .first(),
+      searchInput: this.page.getByPlaceholder("Search addresses"),
+      searchTerm,
+      optionLocator: this.page
+        .getByRole("option", {
+          name: new RegExp(`^${this.escapeRegex(userName)}$`, "i"),
+        })
+        .first(),
+      expectedSelection: userName,
+      context: `trusted issuer '${userName}'`,
+      typingDelay: 60,
+    });
 
-    const userSearchInput = commandDialog.getByPlaceholder("Search addresses");
-    await userSearchInput.fill("");
-    await userSearchInput.type(searchTerm, { delay: 60 });
-
-    const escapedUser = this.escapeRegex(userName);
-    const userOption = commandDialog
-      .getByRole("option", { name: new RegExp(`^${escapedUser}$`, "i") })
-      .first();
-    await expect(userOption).toBeVisible({ timeout: 15000 });
-    await userOption.click();
-
-    await expect(commandDialog).toBeHidden({ timeout: 10000 });
-    await this.waitForReactStateSettle();
     await expect(userTrigger).toContainText(userName, { timeout: 10000 });
 
     const topicsInput = dialog.getByPlaceholder("Select topics...");
@@ -67,38 +64,19 @@ export class ClaimManagementPage extends BasePage {
 
     for (const topic of topicNames) {
       const escaping = this.escapeRegex(topic);
-      const chip = dialog.getByText(new RegExp(`^${escaping}$`, "i"));
-      if ((await chip.count()) > 0) {
-        continue;
-      }
-
-      const previousCount = await removeButtons.count();
-
-      await topicsInput.click();
-      await expect(listbox).toBeVisible({ timeout: 5000 });
-
-      await topicsInput.evaluate((el: HTMLInputElement) => {
-        el.value = "";
-        el.dispatchEvent(new Event("input", { bubbles: true }));
+      await this.ensureRadixMultiSelectOption({
+        value: topic,
+        input: topicsInput,
+        listbox,
+        sheetTitle,
+        removeButtons,
+        typingDelay: 40,
+        context: `topic '${topic}'`,
+        chipLocator: dialog.getByText(new RegExp(`^${escaping}$`, "i")),
+        optionLocator: dialog
+          .getByRole("option", { name: new RegExp(`^${escaping}$`, "i") })
+          .first(),
       });
-      await topicsInput.type(topic, { delay: 40 });
-
-      const topicOption = dialog
-        .getByRole("option", { name: new RegExp(`^${escaping}$`, "i") })
-        .first();
-      await expect(topicOption).toBeVisible({ timeout: 10000 });
-      await topicOption.click();
-
-      await expect
-        .poll(async () => removeButtons.count(), {
-          timeout: 10000,
-          message: `Waiting for chip count to increase after selecting ${topic}`,
-        })
-        .toBe(previousCount + 1);
-
-      await sheetTitle.click();
-      await expect(listbox).toBeHidden({ timeout: 3000 });
-      await this.waitForReactStateSettle();
     }
 
     await sheetTitle.click();

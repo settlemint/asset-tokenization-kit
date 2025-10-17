@@ -1,5 +1,9 @@
 import { expect } from "@playwright/test";
-import { confirmPinCode, selectDropdownOption } from "../utils/form-utils";
+import {
+  confirmPinCode,
+  escapeForRegex,
+  selectDropdownOption,
+} from "../utils/form-utils";
 import { BasePage } from "./base-page";
 
 export class CreateAssetForm extends BasePage {
@@ -54,28 +58,6 @@ export class CreateAssetForm extends BasePage {
     await this.clickNextButton();
   }
 
-  async fillBondDetails(options: {
-    decimals: string;
-    maximumSupply: string;
-    faceValue: string;
-    maturityDate: string;
-    denominationAsset?: string;
-  }) {
-    await this.page.getByLabel("Decimals").fill(options.decimals);
-    await this.page.getByLabel("Maximum supply").fill(options.maximumSupply);
-    await this.page.getByLabel("Face value").fill(options.faceValue);
-    await this.page.getByLabel("Maturity date").fill(options.maturityDate);
-    if (options.denominationAsset !== undefined) {
-      await this.page.getByLabel("Denomination asset").click();
-      await this.page
-        .getByPlaceholder("Search for an asset...")
-        .fill(options.denominationAsset);
-      await this.page
-        .getByRole("option", { name: options.denominationAsset })
-        .click();
-    }
-  }
-
   getMaturityDate(options: { isPast?: boolean; daysOffset?: number } = {}) {
     const { isPast = false, daysOffset = 1 } = options;
     const date = new Date();
@@ -87,6 +69,30 @@ export class CreateAssetForm extends BasePage {
     }
 
     return date.toISOString().slice(0, 16);
+  }
+
+  async selectBondMaturityDate(isoDate: string) {
+    const date = new Date(isoDate);
+    if (Number.isNaN(date.getTime())) {
+      throw new Error(`Invalid ISO date received: ${isoDate}`);
+    }
+
+    const year = date.getUTCFullYear().toString();
+    const month = date.toLocaleDateString("en-US", {
+      month: "short",
+      timeZone: "UTC",
+    });
+    const day = date.getUTCDate().toString();
+
+    await this.selectDateFromRadixCalendar(
+      "button#maturityDate",
+      year,
+      month,
+      day,
+      "bond maturity"
+    );
+
+    await this.page.waitForTimeout(200);
   }
 
   async expectErrorMessage(message: string) {
@@ -277,6 +283,65 @@ export class CreateAssetForm extends BasePage {
     await expect(
       this.page.locator('button[id="price.currency"]')
     ).toContainText(currencyValue);
+  }
+
+  async fillBondConfigurationFields(
+    options: {
+      maximumLimit?: string;
+      maturityDate?: string;
+      denominationAsset?: string;
+      faceValue?: string;
+    } = {}
+  ) {
+    if (options.maximumLimit !== undefined) {
+      await this.page
+        .getByLabel("Maximum limit", { exact: false })
+        .fill(options.maximumLimit);
+    }
+    if (options.maturityDate !== undefined) {
+      await this.selectBondMaturityDate(options.maturityDate);
+    }
+    if (options.denominationAsset !== undefined) {
+      await this.selectDenominationAsset(options.denominationAsset);
+    }
+    if (options.faceValue !== undefined) {
+      await this.page.getByLabel("Face value").fill(options.faceValue);
+    }
+  }
+
+  private async selectDenominationAsset(assetName: string) {
+    const normalizedName = assetName.trim();
+    await this.selectFromRadixCommandPalette({
+      trigger: this.page
+        .getByRole("combobox", { name: /Denomination asset|Choose address/i })
+        .first(),
+      triggerLabelFor: "denominationAsset",
+      dialog: this.page
+        .locator('[data-slot="popover-content"]')
+        .filter({
+          has: this.page.locator(
+            'input[placeholder="Search for an asset..."], input[placeholder="Search addresses"]'
+          ),
+        })
+        .first(),
+      searchInput: this.page
+        .locator(
+          'input[placeholder="Search for an asset..."], input[placeholder="Search addresses"]'
+        )
+        .first(),
+      searchTerm: normalizedName,
+      optionLocator: this.page
+        .getByRole("option", {
+          name: new RegExp(
+            `^${escapeForRegex(normalizedName)}(?:\\s|\\(|$)`,
+            "i"
+          ),
+        })
+        .first(),
+      expectedSelection: normalizedName,
+      typingDelay: 60,
+      context: `denomination asset '${normalizedName}'`,
+    });
   }
 
   async fillFundConfigurationFields(

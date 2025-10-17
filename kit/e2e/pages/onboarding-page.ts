@@ -479,102 +479,13 @@ export class OnboardingPage extends BasePage {
     month: string,
     day: string
   ): Promise<void> {
-    const monthIndex = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ].findIndex((m) => m.toLowerCase() === month.toLowerCase().slice(0, 3));
-    try {
-      const dateBtn = this.page.locator("button#dob");
-      await expect(dateBtn).toBeVisible({ timeout: 20000 });
-      await dateBtn.click();
-      await this.waitForReactStateSettle();
-      const monthSelect = this.page.locator("select.rdp-months_dropdown");
-      await expect(monthSelect).toBeVisible({ timeout: 20000 });
-
-      const monthOptions = await monthSelect
-        .locator("option")
-        .allTextContents();
-      if (monthIndex >= 0 && monthIndex < monthOptions.length) {
-        await monthSelect.selectOption(monthIndex.toString());
-      } else {
-        console.warn(
-          `[WARN] Target month '${month}' not found in options:`,
-          monthOptions
-        );
-      }
-      await this.page.waitForTimeout(300);
-
-      const yearSelect = this.page.locator("select.rdp-years_dropdown");
-      await expect(yearSelect).toBeVisible({ timeout: 20000 });
-      const yearOptions = await yearSelect.locator("option").allTextContents();
-      if (yearOptions.includes(year)) {
-        await yearSelect.selectOption(year);
-      } else {
-        console.warn(
-          `[WARN] Target year '${year}' not found in options:`,
-          yearOptions
-        );
-      }
-      await this.page.waitForTimeout(300);
-
-      const dayBtns = this.page.locator(
-        'button[data-slot="button"][aria-label]'
-      );
-      const dayLabels = await dayBtns.evaluateAll((btns) =>
-        btns.map((b) => b.getAttribute("aria-label"))
-      );
-      const targetDate = new Date(
-        year + "-" + (monthIndex + 1).toString().padStart(2, "0") + "-" + day
-      );
-      const weekday = targetDate.toLocaleDateString("en-US", {
-        weekday: "long",
-      });
-      const fullMonth = targetDate.toLocaleDateString("en-US", {
-        month: "long",
-      });
-      const dayNum = parseInt(day);
-      const daySuffix = (d: number) =>
-        (d > 3 && d < 21) || d % 10 > 3
-          ? "th"
-          : ["st", "nd", "rd"][(d % 10) - 1] || "th";
-      const ariaLabelVariants = [
-        `${weekday}, ${fullMonth} ${dayNum}${daySuffix(dayNum)}, ${year}`,
-        `${weekday}, ${month} ${dayNum}${daySuffix(dayNum)}, ${year}`,
-        `${weekday}, ${fullMonth} ${dayNum}, ${year}`,
-        `${weekday}, ${month} ${dayNum}, ${year}`,
-      ];
-      let clicked = false;
-      for (const label of ariaLabelVariants) {
-        const btn = this.page.locator(`button[aria-label="${label}"]`);
-        if ((await btn.count()) > 0 && (await btn.isVisible())) {
-          await btn.scrollIntoViewIfNeeded();
-          await btn.click();
-          clicked = true;
-          break;
-        }
-      }
-      if (!clicked) {
-        console.warn(
-          "[WARN] Target day button not found. Available aria-labels:",
-          dayLabels
-        );
-      }
-      await this.page.waitForTimeout(300);
-      await expect(monthSelect).toBeHidden({ timeout: 20000 });
-      await this.waitForReactStateSettle();
-    } catch (e) {
-      throw e;
-    }
+    await this.selectDateFromRadixCalendar(
+      "button#dob",
+      year,
+      month,
+      day,
+      "date of birth"
+    );
   }
 
   async enterPinVerificationWithRetry(pin: string): Promise<void> {
