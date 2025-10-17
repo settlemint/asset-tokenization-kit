@@ -8,7 +8,10 @@ import {
 } from "../../../actions/actions";
 import { fetchEvent } from "../../../event/fetch/event";
 import { fetchXvPSettlement } from "./fetch/xvp-settlement";
-import { fetchXvPSettlementApproval, fetchXvPSettlementCancelVote } from "./xvp-settlement";
+import {
+  fetchXvPSettlementApproval,
+  fetchXvPSettlementCancelVote,
+} from "./xvp-settlement";
 
 export function handleATKXvPSettlementCreated(
   event: ATKXvPSettlementCreated
@@ -95,7 +98,10 @@ export function handleATKXvPSettlementCreated(
     }
 
     for (let i = 0; i < localParticipants.length; i++) {
-      fetchXvPSettlementCancelVote(event.params.settlement, localParticipants[i]);
+      fetchXvPSettlementCancelVote(
+        event.params.settlement,
+        localParticipants[i]
+      );
     }
   }
 }

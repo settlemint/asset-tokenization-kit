@@ -11,7 +11,6 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 ///      and recovery links, enabling secure token recovery mechanisms
 interface ISMARTIdentityRegistryStorage is IERC3643IdentityRegistryStorage {
     /// events
-
     /// @notice Emitted when an Identity is registered into the storage contract
     /// @dev This event is emitted when an Identity is registered into the storage contract.
     /// @param _investorAddress is the address of the investor's wallet.

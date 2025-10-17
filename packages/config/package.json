@@ -4,7 +4,7 @@
   "scripts": {
     "typecheck": "tsgo --noEmit",
     "lint": "eslint . --fix --max-warnings 0 --cache --cache-location .eslintcache",
-    "format": "prettier --experimental-cli --write .",
+    "format": "prettier --write .",
     "test": "bun test",
     "test:coverage": "bun test --coverage",
     "test:ci": "bun test:coverage"

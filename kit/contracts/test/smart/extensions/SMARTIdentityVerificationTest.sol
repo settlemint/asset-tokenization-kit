@@ -3,8 +3,9 @@ pragma solidity ^0.8.28;
 
 // ISMARTIdentityRegistry is not directly used for adding claims here, but good for context.
 // import { ISMARTIdentityRegistry } from "../../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
-import { SMARTIdentityVerificationComplianceModule } from
-    "../../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
+import {
+    SMARTIdentityVerificationComplianceModule
+} from "../../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
 import { AbstractSMARTTest } from "./AbstractSMARTTest.sol";
 import { ClaimExpressionUtils } from "../../utils/ClaimExpressionUtils.sol";
 

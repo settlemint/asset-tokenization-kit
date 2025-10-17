@@ -4,8 +4,9 @@ pragma solidity ^0.8.28;
 import { Test } from "forge-std/Test.sol";
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IATKComplianceModuleRegistry } from "../../../contracts/system/compliance/IATKComplianceModuleRegistry.sol";
-import { ATKComplianceModuleRegistryImplementation } from
-    "../../../contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol";
+import {
+    ATKComplianceModuleRegistryImplementation
+} from "../../../contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
 import { IWithTypeIdentifier } from "../../../contracts/smart/interface/IWithTypeIdentifier.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -120,14 +121,12 @@ contract ATKComplianceModuleRegistryTest is Test {
 
     function test_SupportsInterface() public view {
         assertTrue(
-            ATKComplianceModuleRegistryImplementation(address(registry)).supportsInterface(
-                type(IATKComplianceModuleRegistry).interfaceId
-            )
+            ATKComplianceModuleRegistryImplementation(address(registry))
+                .supportsInterface(type(IATKComplianceModuleRegistry).interfaceId)
         );
         assertTrue(
-            ATKComplianceModuleRegistryImplementation(address(registry)).supportsInterface(
-                type(IATKSystemAccessManaged).interfaceId
-            )
+            ATKComplianceModuleRegistryImplementation(address(registry))
+                .supportsInterface(type(IATKSystemAccessManaged).interfaceId)
         );
         assertTrue(
             ATKComplianceModuleRegistryImplementation(address(registry)).supportsInterface(type(IERC165).interfaceId)

@@ -7,8 +7,9 @@ import { ATKEquityFactoryImplementation } from "../../contracts/assets/equity/AT
 import { IATKEquity } from "../../contracts/assets/equity/IATKEquity.sol";
 import { ATKEquityImplementation } from "../../contracts/assets/equity/ATKEquityImplementation.sol";
 import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
-import { SMARTComplianceModuleParamPair } from
-    "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import {
+    SMARTComplianceModuleParamPair
+} from "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
@@ -52,9 +53,8 @@ contract ATKEquityTest is AbstractATKAssetTest {
 
         vm.startPrank(platformAdmin);
         equityFactory = IATKEquityFactory(
-            systemUtils.tokenFactoryRegistry().registerTokenFactory(
-                "Equity", address(equityFactoryImpl), address(equityImpl)
-            )
+            systemUtils.tokenFactoryRegistry()
+                .registerTokenFactory("Equity", address(equityFactoryImpl), address(equityImpl))
         );
 
         vm.stopPrank();

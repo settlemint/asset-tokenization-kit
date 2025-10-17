@@ -3,10 +3,12 @@ pragma solidity ^0.8.28;
 
 import { AbstractATKAssetTest } from "../../assets/AbstractATKAssetTest.sol";
 import { AirdropUtils } from "../../utils/AirdropUtils.sol";
-import { ATKTimeBoundAirdropFactoryImplementation } from
-    "../../../contracts/addons/airdrop/time-bound-airdrop/ATKTimeBoundAirdropFactoryImplementation.sol";
-import { IATKTimeBoundAirdropFactory } from
-    "../../../contracts/addons/airdrop/time-bound-airdrop/IATKTimeBoundAirdropFactory.sol";
+import {
+    ATKTimeBoundAirdropFactoryImplementation
+} from "../../../contracts/addons/airdrop/time-bound-airdrop/ATKTimeBoundAirdropFactoryImplementation.sol";
+import {
+    IATKTimeBoundAirdropFactory
+} from "../../../contracts/addons/airdrop/time-bound-airdrop/IATKTimeBoundAirdropFactory.sol";
 import { IATKTimeBoundAirdrop } from "../../../contracts/addons/airdrop/time-bound-airdrop/IATKTimeBoundAirdrop.sol";
 import { IATKAirdrop } from "../../../contracts/addons/airdrop/IATKAirdrop.sol";
 import { MockedERC20Token } from "../../utils/mocks/MockedERC20Token.sol";
@@ -80,9 +82,10 @@ contract ATKTimeBoundAirdropTest is AbstractATKAssetTest {
 
         // Create system addon for time-bound airdrop factory
         timeBoundAirdropFactory = IATKTimeBoundAirdropFactory(
-            systemUtils.systemAddonRegistry().registerSystemAddon(
-                "time-bound-airdrop-factory", address(timeBoundAirdropFactoryImpl), encodedInitializationData
-            )
+            systemUtils.systemAddonRegistry()
+                .registerSystemAddon(
+                    "time-bound-airdrop-factory", address(timeBoundAirdropFactoryImpl), encodedInitializationData
+                )
         );
 
         // Grant DEPLOYER_ROLE to owner so they can create time-bound airdrops

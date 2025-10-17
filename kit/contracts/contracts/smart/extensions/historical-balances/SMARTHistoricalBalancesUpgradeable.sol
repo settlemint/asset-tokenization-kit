@@ -29,10 +29,15 @@ import { ISMARTHistoricalBalances } from "./ISMARTHistoricalBalances.sol";
 ///      It includes an `__SMARTHistoricalBalances_init` initializer function, which calls the unchained
 ///      initializer from the logic contract to register the interface for ERC165.
 abstract contract SMARTHistoricalBalancesUpgradeable is
-    Initializable, // Required for upgradeable contracts
-    SMARTExtensionUpgradeable, // Base for upgradeable SMART extensions
-    _SMARTHistoricalBalancesLogic // Core historical balances logic
+    Initializable,
+
+    // Required for upgradeable contracts
+    SMARTExtensionUpgradeable,
+
+    // Base for upgradeable SMART extensions
+    _SMARTHistoricalBalancesLogic
 {
+    // Core historical balances logic
     /// @notice Register the interface ID for ERC165.
     /// @dev This allows factories to check if the
     /// contract
@@ -60,7 +65,7 @@ abstract contract SMARTHistoricalBalancesUpgradeable is
     /// @param amount The amount of tokens minted.
     function _afterMint(address to, uint256 amount) internal virtual override(SMARTHooks) {
         super._afterMint(to, amount); // Preserve hook chain.
-        // Update historical checkpoints for the mint operation.
+            // Update historical checkpoints for the mint operation.
         __historical_balances_afterMintLogic(to, amount);
     }
 
@@ -71,7 +76,7 @@ abstract contract SMARTHistoricalBalancesUpgradeable is
     /// @param amount The amount of tokens burned.
     function _afterBurn(address from, uint256 amount) internal virtual override(SMARTHooks) {
         super._afterBurn(from, amount); // Preserve hook chain.
-        // Update historical checkpoints for the burn operation.
+            // Update historical checkpoints for the burn operation.
         __historical_balances_afterBurnLogic(from, amount);
     }
 
@@ -83,7 +88,7 @@ abstract contract SMARTHistoricalBalancesUpgradeable is
     /// @param amount The amount of tokens transferred.
     function _afterTransfer(address from, address to, uint256 amount) internal virtual override(SMARTHooks) {
         super._afterTransfer(from, to, amount); // Preserve hook chain.
-        // Update historical checkpoints for the transfer operation.
+            // Update historical checkpoints for the transfer operation.
         __historical_balances_afterTransferLogic(from, to, amount);
     }
 

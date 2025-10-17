@@ -124,10 +124,7 @@ abstract contract _SMARTCustodianLogic is _SMARTExtension, ISMARTCustodian {
     ///      Reverts with `LengthMismatch` if array lengths differ.
     /// @param userAddresses An array of addresses.
     /// @param amounts An array of corresponding token amounts to freeze.
-    function _smart_batchFreezePartialTokens(
-        address[] calldata userAddresses,
-        uint256[] calldata amounts
-    )
+    function _smart_batchFreezePartialTokens(address[] calldata userAddresses, uint256[] calldata amounts)
         internal
         virtual
     {
@@ -161,10 +158,7 @@ abstract contract _SMARTCustodianLogic is _SMARTExtension, ISMARTCustodian {
     ///      Reverts with `LengthMismatch` if array lengths differ.
     /// @param userAddresses An array of addresses.
     /// @param amounts An array of corresponding token amounts to unfreeze.
-    function _smart_batchUnfreezePartialTokens(
-        address[] calldata userAddresses,
-        uint256[] calldata amounts
-    )
+    function _smart_batchUnfreezePartialTokens(address[] calldata userAddresses, uint256[] calldata amounts)
         internal
         virtual
     {

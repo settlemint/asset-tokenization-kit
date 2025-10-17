@@ -9,8 +9,9 @@ import { IATKPushAirdropFactory } from "./IATKPushAirdropFactory.sol";
 import { IATKPushAirdrop } from "./IATKPushAirdrop.sol";
 
 // Implementations
-import { AbstractATKSystemAddonFactoryImplementation } from
-    "../../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
+import {
+    AbstractATKSystemAddonFactoryImplementation
+} from "../../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
 import { ATKPushAirdropImplementation } from "./ATKPushAirdropImplementation.sol";
 import { ATKPushAirdropProxy } from "./ATKPushAirdropProxy.sol";
 
@@ -100,13 +101,7 @@ contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImp
     /// @param owner The initial owner of the contract (admin who can distribute tokens).
     /// @param distributionCap The maximum tokens that can be distributed (0 for no cap).
     /// @return airdropProxyAddress The address of the newly created `ATKPushAirdropProxy` contract.
-    function create(
-        string calldata name,
-        address token,
-        bytes32 root,
-        address owner,
-        uint256 distributionCap
-    )
+    function create(string calldata name, address token, bytes32 root, address owner, uint256 distributionCap)
         external
         override(IATKPushAirdropFactory)
         onlySystemRole(ATKPeopleRoles.ADDON_MANAGER_ROLE)

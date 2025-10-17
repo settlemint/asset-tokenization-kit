@@ -136,7 +136,7 @@ abstract contract _SMARTLogic is _SMARTExtension {
     function _smart_transfer(address to, uint256 amount) internal virtual returns (bool) {
         address sender = _smartSender();
         __smart_executeTransfer(sender, to, amount); // Delegate to child contract's transfer logic
-        // The actual success/failure is handled by the underlying ERC20 _transfer, which reverts on failure.
+            // The actual success/failure is handled by the underlying ERC20 _transfer, which reverts on failure.
         return true;
     }
 

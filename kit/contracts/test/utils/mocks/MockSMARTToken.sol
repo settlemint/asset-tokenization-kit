@@ -2,8 +2,9 @@
 pragma solidity ^0.8.28;
 
 import { SMARTToken } from "../../smart/examples/SMARTToken.sol";
-import { SMARTComplianceModuleParamPair } from
-    "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import {
+    SMARTComplianceModuleParamPair
+} from "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 

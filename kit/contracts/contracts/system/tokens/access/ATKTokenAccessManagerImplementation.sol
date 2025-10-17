@@ -71,10 +71,7 @@ contract ATKTokenAccessManagerImplementation is
     /// @param role The `bytes32` identifier of the role to check.
     /// @param account The address of the account whose roles are being checked.
     /// @return hasIt true if the account has the specified role, false otherwise.
-    function hasRole(
-        bytes32 role,
-        address account
-    )
+    function hasRole(bytes32 role, address account)
         public
         view
         virtual

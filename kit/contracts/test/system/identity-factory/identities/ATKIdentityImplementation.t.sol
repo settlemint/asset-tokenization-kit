@@ -2,8 +2,9 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { ATKIdentityImplementation } from
-    "../../../../contracts/system/identity-factory/identities/ATKIdentityImplementation.sol";
+import {
+    ATKIdentityImplementation
+} from "../../../../contracts/system/identity-factory/identities/ATKIdentityImplementation.sol";
 import { IATKIdentity } from "../../../../contracts/system/identity-factory/identities/IATKIdentity.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
