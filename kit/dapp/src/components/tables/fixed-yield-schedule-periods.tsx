@@ -2,6 +2,7 @@ import { DataTable } from "@/components/data-table/data-table";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { Progress } from "@/components/ui/progress";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import type { FixedYieldSchedulePeriod } from "@atk/zod/fixed-yield-schedule";
 import type { ColumnDef } from "@tanstack/react-table";
 import { format, type Dnum } from "dnum";
@@ -21,24 +22,6 @@ function calculateProgress(claimed: Dnum, total: Dnum): number {
 }
 
 /**
- * Determine period status based on current date and period dates
- */
-function determineStatus(
-  startDate: Date,
-  endDate: Date
-): "scheduled" | "active" | "completed" | "expired" {
-  const now = new Date();
-
-  if (now < startDate) {
-    return "scheduled";
-  } else if (now >= startDate && now <= endDate) {
-    return "active";
-  } else {
-    return "completed";
-  }
-}
-
-/**
  * Format claimed/total amounts for display
  */
 function formatClaimedTotal(
@@ -55,6 +38,8 @@ function formatClaimedTotal(
  * Props for the FixedYieldSchedulePeriodsTable component
  */
 interface FixedYieldSchedulePeriodsTableProps {
+  /** Current period ID */
+  currentPeriodId: EthereumAddress | undefined;
   /** Array of yield schedule periods to display */
   periods: FixedYieldSchedulePeriod[];
   /** Asset symbol for currency formatting */
@@ -91,6 +76,7 @@ interface FixedYieldSchedulePeriodsTableProps {
  * ```
  */
 export function FixedYieldSchedulePeriodsTable({
+  currentPeriodId,
   periods,
   assetSymbol,
   title,
@@ -166,11 +152,13 @@ export function FixedYieldSchedulePeriodsTable({
           id: "status",
           header: t("tokens:yield.periodsTable.columns.status"),
           cell: ({ row }) => {
-            const status = determineStatus(
-              row.original.startDate,
-              row.original.endDate
-            );
-            return t(`tokens:yield.periodsTable.status.${status}`);
+            if (row.original.completed) {
+              return t("tokens:yield.periodsTable.status.completed");
+            }
+            if (row.original.id === currentPeriodId) {
+              return t("tokens:yield.periodsTable.status.active");
+            }
+            return t(`tokens:yield.periodsTable.status.scheduled`);
           },
           meta: {
             displayName: t("tokens:yield.periodsTable.columns.status"),
@@ -178,7 +166,7 @@ export function FixedYieldSchedulePeriodsTable({
           },
         }),
       ] as ColumnDef<FixedYieldSchedulePeriod>[]),
-    [t, assetSymbol]
+    [t, assetSymbol, currentPeriodId]
   );
 
   if (periods.length === 0) {

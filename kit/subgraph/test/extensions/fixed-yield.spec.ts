@@ -33,6 +33,7 @@ describe("Fixed yield", () => {
                 totalYield
                 totalClaimed
                 totalUnclaimedYield
+                completed
               }
               denominationAsset {
                 name
@@ -49,6 +50,7 @@ describe("Fixed yield", () => {
       },
     });
     expect(response.tokens.length).toBe(1);
+    // The first 3 periods have yield claimed
     expect(response.tokens).toEqual([
       {
         createdAt: expect.any(String),
@@ -61,14 +63,11 @@ describe("Fixed yield", () => {
           schedule: {
             startDate: expect.any(String),
             endDate: expect.any(String),
-            currentPeriod: {
-              startDate: expect.any(String),
-              endDate: expect.any(String),
-            },
+            currentPeriod: null,
             nextPeriod: null,
-            totalYield: "0.000355",
+            totalYield: "0.000426",
             totalClaimed: "0.000183",
-            totalUnclaimedYield: "0.000172",
+            totalUnclaimedYield: "0.000243",
             periods: [
               {
                 startDate: expect.any(String),
@@ -76,6 +75,7 @@ describe("Fixed yield", () => {
                 totalYield: "0.000071",
                 totalClaimed: "0.000067",
                 totalUnclaimedYield: "0.000004",
+                completed: true,
               },
               {
                 startDate: expect.any(String),
@@ -83,6 +83,7 @@ describe("Fixed yield", () => {
                 totalYield: "0.000071",
                 totalClaimed: "0.000061",
                 totalUnclaimedYield: "0.00001",
+                completed: true,
               },
               {
                 startDate: expect.any(String),
@@ -90,6 +91,7 @@ describe("Fixed yield", () => {
                 totalYield: "0.000071",
                 totalClaimed: "0.000055",
                 totalUnclaimedYield: "0.000016",
+                completed: true,
               },
               {
                 startDate: expect.any(String),
@@ -97,6 +99,7 @@ describe("Fixed yield", () => {
                 totalYield: "0.000071",
                 totalClaimed: "0",
                 totalUnclaimedYield: "0.000071",
+                completed: true,
               },
               {
                 startDate: expect.any(String),
@@ -104,13 +107,15 @@ describe("Fixed yield", () => {
                 totalYield: "0.000071",
                 totalClaimed: "0",
                 totalUnclaimedYield: "0.000071",
+                completed: true,
               },
               {
                 startDate: expect.any(String),
                 endDate: expect.any(String),
-                totalYield: "0",
+                totalYield: "0.000071",
                 totalClaimed: "0",
-                totalUnclaimedYield: "0",
+                totalUnclaimedYield: "0.000071",
+                completed: true,
               },
             ],
             denominationAsset: {

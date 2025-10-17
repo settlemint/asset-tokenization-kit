@@ -560,13 +560,13 @@ contract ATKFixedYieldScheduleTest is Test {
         vm.stopPrank();
     }
 
-    function test_TotalYieldForNextPeriod() public {
-        uint256 totalYield = yieldSchedule.totalYieldForNextPeriod();
+    function test_EstimateTotalYieldPerPeriod() public {
+        uint256 totalYield = yieldSchedule.estimateTotalYieldPerPeriod();
         assertTrue(totalYield > 0);
 
         // After end date should be 0
         vm.warp(endDate + 1);
-        assertEq(yieldSchedule.totalYieldForNextPeriod(), 0);
+        assertEq(yieldSchedule.estimateTotalYieldPerPeriod(), 0);
     }
 
     function test_TotalUnclaimedYield() public {

@@ -10,7 +10,6 @@ import {
 import { fetchEvent } from "../../event/fetch/event";
 import { fetchToken } from "../../token/fetch/token";
 import { fetchFixedYieldSchedule } from "../fixed-yield-schedule/fetch/fixed-yield-schedule";
-import { fetchFixedYieldSchedulePeriod } from "../fixed-yield-schedule/fetch/fixed-yield-schedule-period";
 import { fetchYield } from "./fetch/yield";
 
 export function handleCheckpointUpdated(event: CheckpointUpdated): void {
@@ -35,7 +34,7 @@ export function handleYieldScheduleSet(event: YieldScheduleSet): void {
   for (let balanceIndex = 0; balanceIndex < balances.length; balanceIndex++) {
     const balance = balances[balanceIndex];
     for (let periodIndex = 0; periodIndex < periods.length; periodIndex++) {
-      const period = fetchFixedYieldSchedulePeriod(periods[periodIndex].id);
+      const period = periods[periodIndex];
       createAction(
         event.block.timestamp,
         ActionName.ClaimYield,

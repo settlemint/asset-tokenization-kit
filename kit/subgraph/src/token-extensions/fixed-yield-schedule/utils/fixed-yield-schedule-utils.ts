@@ -46,14 +46,38 @@ export function updateYield(token: Token): TokenFixedYieldSchedule | null {
   }
 
   const currentPeriodValue = currentPeriod.value.toI32();
-  let fixedYieldCurrentPeriod: TokenFixedYieldSchedulePeriod | null = null;
-  if (currentPeriodValue === 0) {
+  const periods = fixedYieldSchedule.periods.load();
+  const scheduleEnded = currentPeriodValue === periods.length;
+  const scheduleNotStarted = currentPeriodValue === 0;
+  if (scheduleEnded || scheduleNotStarted) {
     fixedYieldSchedule.currentPeriod = null;
-  } else {
-    fixedYieldCurrentPeriod = fetchFixedYieldSchedulePeriod(
-      getPeriodId(fixedYieldScheduleAddress, currentPeriodValue)
-    );
-    fixedYieldSchedule.currentPeriod = fixedYieldCurrentPeriod.id;
+    fixedYieldSchedule.nextPeriod = null;
+    fixedYieldSchedule.save();
+
+    if (scheduleEnded) {
+      // Mark all periods as completed
+      for (let i = 0; i < periods.length; i++) {
+        const period = periods[i];
+        period.completed = true;
+        period.save();
+      }
+    }
+
+    return fixedYieldSchedule;
+  }
+
+  const fixedYieldCurrentPeriod = fetchFixedYieldSchedulePeriod(
+    getPeriodId(fixedYieldScheduleAddress, currentPeriodValue)
+  );
+  fixedYieldSchedule.currentPeriod = fixedYieldCurrentPeriod.id;
+
+  // Mark all periods that are before the current period as completed
+  for (let i = 0; i < periods.length; i++) {
+    const period = periods[i];
+    if (period.endDate.le(fixedYieldCurrentPeriod.startDate)) {
+      period.completed = true;
+      period.save();
+    }
   }
 
   const nextPeriodId = getPeriodId(
@@ -62,68 +86,67 @@ export function updateYield(token: Token): TokenFixedYieldSchedule | null {
   );
   const fixedYieldNextPeriod = TokenFixedYieldSchedulePeriod.load(nextPeriodId);
   if (!fixedYieldNextPeriod) {
-    // There is no next period, the schedule has ended
+    // There is no next period, current period is the last period
+    fixedYieldSchedule.nextPeriod = null;
+  } else {
+    fixedYieldSchedule.nextPeriod = fixedYieldNextPeriod.id;
+    fixedYieldNextPeriod.save();
+  }
+
+  if (
+    !scheduleNotStarted &&
+    fixedYieldCurrentPeriod.totalYieldExact.gt(BigInt.zero())
+  ) {
+    // The current period has already a yield set and the schedule has started
+    // At this point, the yield will not change anymore
+    fixedYieldSchedule.save();
+    return fixedYieldSchedule;
+  }
+
+  const totalYieldPerPeriod =
+    fixedYieldScheduleContract.try_estimateTotalYieldPerPeriod();
+  if (totalYieldPerPeriod.reverted) {
+    log.error("FixedYieldSchedule: estimateTotalYieldPerPeriod reverted", []);
+    fixedYieldSchedule.save();
+    return fixedYieldSchedule;
+  }
+
+  if (totalYieldPerPeriod.value.equals(BigInt.zero())) {
+    // There is no current period, the schedule has ended
+    fixedYieldSchedule.currentPeriod = null;
     fixedYieldSchedule.nextPeriod = null;
     fixedYieldSchedule.save();
     return fixedYieldSchedule;
   }
 
-  const currentAndNextPeriodYield =
-    fixedYieldScheduleContract.try_totalYieldForNextPeriod();
-  if (currentAndNextPeriodYield.reverted) {
-    log.error("FixedYieldSchedule: totalYieldForNextPeriod reverted", []);
-    fixedYieldSchedule.save();
-    return fixedYieldSchedule;
+  // Set the same total yield for all periods that are not completed
+  for (let i = 0; i < periods.length; i++) {
+    const period = periods[i];
+    if (!period.completed) {
+      setBigNumber(
+        period,
+        "totalYield",
+        totalYieldPerPeriod.value,
+        denominationAssetDecimals
+      );
+      setBigNumber(
+        period,
+        "totalUnclaimedYield",
+        totalYieldPerPeriod.value.minus(period.totalClaimedExact),
+        denominationAssetDecimals
+      );
+      period.save();
+    }
   }
 
-  if (currentAndNextPeriodYield.value.equals(BigInt.zero())) {
-    // There is no next period, the schedule has ended
-    fixedYieldSchedule.nextPeriod = null;
-    fixedYieldSchedule.save();
-    return fixedYieldSchedule;
-  }
-
-  if (fixedYieldCurrentPeriod) {
-    setBigNumber(
-      fixedYieldCurrentPeriod,
-      "totalYield",
-      currentAndNextPeriodYield.value,
-      denominationAssetDecimals
-    );
-    setBigNumber(
-      fixedYieldCurrentPeriod,
-      "totalUnclaimedYield",
-      currentAndNextPeriodYield.value.minus(
-        fixedYieldCurrentPeriod.totalClaimedExact
-      ),
-      denominationAssetDecimals
-    );
-  }
-  setBigNumber(
-    fixedYieldNextPeriod,
-    "totalYield",
-    currentAndNextPeriodYield.value,
-    denominationAssetDecimals
-  );
-  setBigNumber(
-    fixedYieldNextPeriod,
-    "totalUnclaimedYield",
-    currentAndNextPeriodYield.value.minus(
-      fixedYieldNextPeriod.totalClaimedExact
-    ),
-    denominationAssetDecimals
-  );
-  fixedYieldSchedule.nextPeriod = fixedYieldNextPeriod.id;
-  fixedYieldNextPeriod.save();
-
-  const totalYield = calculateTotalYield(fixedYieldSchedule);
+  const totalYield = calculateTotalYield(periods);
   setBigNumber(
     fixedYieldSchedule,
     "totalYield",
     totalYield,
     denominationAssetDecimals
   );
-  const totalUnclaimedYield = calculateTotalUnclaimedYield(fixedYieldSchedule);
+  const totalUnclaimedYield = calculateTotalUnclaimedYield(periods);
   setBigNumber(
     fixedYieldSchedule,
     "totalUnclaimedYield",
@@ -136,9 +159,8 @@ export function updateYield(token: Token): TokenFixedYieldSchedule | null {
 }
 
 export function calculateTotalYield(
-  fixedYieldSchedule: TokenFixedYieldSchedule
+  periods: TokenFixedYieldSchedulePeriod[]
 ): BigInt {
-  const periods = fixedYieldSchedule.periods.load();
   let totalYield = BigInt.zero();
   for (let i = 0; i < periods.length; i++) {
     const period = periods[i];
@@ -148,9 +170,8 @@ export function calculateTotalYield(
 }
 
 export function calculateTotalUnclaimedYield(
-  fixedYieldSchedule: TokenFixedYieldSchedule
+  periods: TokenFixedYieldSchedulePeriod[]
 ): BigInt {
-  const periods = fixedYieldSchedule.periods.load();
   let totalUnclaimedYield = BigInt.zero();
   for (let i = 0; i < periods.length; i++) {
     const period = periods[i];
