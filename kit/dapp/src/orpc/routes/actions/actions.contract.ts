@@ -19,8 +19,8 @@
 
 import { baseContract } from "../../procedures/base.contract";
 import {
+  ActionsListInputSchema,
   ActionsListResponseSchema,
-  ActionsListSchema,
 } from "./routes/actions.list.schema";
 
 /**
@@ -59,7 +59,7 @@ const list = baseContract
     successDescription: "User actions retrieved successfully",
     tags: ["actions"],
   })
-  .input(ActionsListSchema)
+  .input(ActionsListInputSchema)
   .output(ActionsListResponseSchema);
 
 /**

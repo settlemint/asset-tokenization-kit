@@ -1,5 +1,4 @@
 import { isEthereumAddress } from "@atk/zod/ethereum-address";
-import { isEthereumCompositeId } from "@atk/zod/ethereum-composite-id";
 import { describe, expect, it } from "bun:test";
 import { theGraphClient, theGraphGraphql } from "./utils/thegraph-client";
 
@@ -164,6 +163,12 @@ describe("Actions", () => {
         expect(action.executor.executors.length).toBeGreaterThan(0);
       });
     }
+
+    // Has 1 bond maturity executed action
+    const executedActions = response.actions.filter(
+      (action) => action.executed
+    );
+    expect(executedActions.length).toBe(1);
   });
 
   it("should fetch bond redeem actions", async () => {
@@ -214,7 +219,7 @@ describe("Actions", () => {
         expect(action.activeAt).toBeDefined(); // Should be set to maturity date
         expect(typeof action.executed).toBe("boolean"); // Can be true or false depending on test scenario
         expect(action.identifier).toBeDefined(); // Bond actions use bond address as identifier
-        expect(isEthereumCompositeId(action.identifier)).toBe(true); // Should be a valid composite id (token address + account address)
+        expect(action.identifier?.startsWith("0x")).toBe(true); // Should be a valid composite id (token address + account address)
 
         // Verify execution state consistency
         if (action.executed) {
@@ -238,6 +243,86 @@ describe("Actions", () => {
       (action) => action.executed
     );
     expect(executedActions.length).toBe(1);
+  });
+
+  it("should fetch claim yield actions", async () => {
+    const query = theGraphGraphql(
+      `query {
+        actions(
+          where: {
+            name: "ClaimYield"
+          },
+          orderBy: createdAt,
+          orderDirection: desc
+        ) {
+          id
+          name
+          target
+          createdAt
+          activeAt
+          expiresAt
+          executed
+          executedAt
+          executedBy
+          identifier
+          executor {
+            id
+            executors
+            actions {
+              id
+              name
+            }
+          }
+        }
+      }`
+    );
+    const response = await theGraphClient.request(query);
+
+    expect(response.actions.length).toBeGreaterThanOrEqual(1);
+
+    // Should have at least 1 claim yield action
+    if (response.actions.length > 0) {
+      const bondActions = response.actions;
+
+      // Verify claim yield action structure
+      bondActions.forEach((action) => {
+        expect(action.id).toBeDefined();
+        expect(action.name).toBe("ClaimYield");
+        expect(action.target).toBeDefined();
+        expect(action.createdAt).toBeDefined();
+        expect(action.activeAt).toBeDefined(); // Should be set to maturity date
+        expect(typeof action.executed).toBe("boolean"); // Can be true or false depending on test scenario
+        expect(action.identifier).toBeDefined(); // Bond actions use bond address as identifier
+        expect(action.identifier?.startsWith("0x")).toBe(true); // Should be a valid composite id (token address + account address)
+
+        // Verify execution state consistency
+        if (action.executed) {
+          expect(action.executedAt).toBeDefined();
+          expect(action.executedBy).toBeDefined();
+        } else {
+          expect(action.executedAt).toBeNull();
+          expect(action.executedBy).toBeNull();
+        }
+
+        // Verify executor relationship
+        expect(action.executor).toBeDefined();
+        expect(action.executor.id).toBeDefined();
+        expect(Array.isArray(action.executor.executors)).toBe(true);
+        expect(action.executor.executors.length).toBeGreaterThan(0);
+      });
+    }
+
+    // Has 3 claim yield executed actions (for 3 periods)
+    const executedActions = response.actions.filter(
+      (action) => action.executed
+    );
+    expect(executedActions.length).toBe(3);
+    // Executed actions are on the same target
+    expect(
+      executedActions.every(
+        (action) => executedActions[0]?.target === action.target
+      )
+    ).toBe(true);
   });
 
   it("should have proper action-executor relationships", async () => {

@@ -3,9 +3,7 @@ import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permiss
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
-import { from } from "dnum";
 import { read } from "../../token.read";
-import type { TokenRedeemOutput } from "./token.redeem.schema";
 
 const TOKEN_REDEEM_MUTATION = portalGraphql(`
   mutation TokenRedeem(
@@ -54,7 +52,7 @@ export const redeem = tokenRouter.token.redeem
       requiredExtensions: ["REDEEMABLE"],
     })
   )
-  .handler(async ({ input, context, errors }): Promise<TokenRedeemOutput> => {
+  .handler(async ({ input, context, errors }) => {
     const { contract, walletVerification, amount, redeemAll } = input;
     const { auth } = context;
 
@@ -68,7 +66,7 @@ export const redeem = tokenRouter.token.redeem
 
     const sender = auth.user;
     // Choose mutation based on whether we're redeeming all or a specific amount
-    const result = await (redeemAll
+    await (redeemAll
       ? context.portalClient.mutate(
           TOKEN_REDEEM_ALL_MUTATION,
           {
@@ -95,26 +93,13 @@ export const redeem = tokenRouter.token.redeem
           }
         ));
 
-    // Get updated token data
-    const updatedToken = await call(
+    return await call(
       read,
-      { tokenAddress: contract },
-      { context }
-    );
-
-    // Calculate redeemed amount
-    const amountRedeemed = redeemAll
-      ? from(0, updatedToken.decimals) // We don't know the exact amount for redeemAll
-      : from(amount ?? 0, updatedToken.decimals);
-
-    return {
-      txHash: result,
-      data: {
-        amountRedeemed,
-        redeemedAll: redeemAll,
-        tokenName: updatedToken.name,
-        tokenSymbol: updatedToken.symbol,
-        totalRedeemedAmount: updatedToken.redeemable?.redeemedAmount,
+      {
+        tokenAddress: contract,
       },
-    };
+      {
+        context,
+      }
+    );
   });

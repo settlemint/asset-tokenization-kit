@@ -1,15 +1,15 @@
 import {
+  DefaultVerificationFactorItem,
+  VERIFICATION_FACTOR_COMPONENTS,
+  type VerificationFactorComponentProps,
+} from "@/components/account/wallet/verification-factor-item";
+import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  DefaultVerificationFactorItem,
-  VERIFICATION_FACTOR_COMPONENTS,
-  type VerificationFactorComponentProps,
-} from "@/components/account/wallet/verification-factor-item";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -26,10 +26,7 @@ export function VerificationFactorsCard() {
   const { data: user, refetch } = useSuspenseQuery(orpc.user.me.queryOptions());
 
   const fallbackError = useMemo(
-    () =>
-      t("common:errors.somethingWentWrong", {
-        defaultValue: "Something went wrong",
-      }),
+    () => t("common:errors.somethingWentWrong"),
     [t]
   );
 

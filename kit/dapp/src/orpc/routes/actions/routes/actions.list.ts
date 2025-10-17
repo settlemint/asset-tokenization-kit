@@ -88,8 +88,8 @@ export const list = authRouter.actions.list.handler(
     if (input.status !== undefined) {
       where.status = input.status;
     }
-    if (input.target !== undefined) {
-      where.target = input.target.toLowerCase();
+    if (Array.isArray(input.targets) && input.targets.length > 0) {
+      where.target_in = input.targets.map((target) => target.toLowerCase());
     }
     if (input.name !== undefined) {
       where.name_contains_nocase = input.name;

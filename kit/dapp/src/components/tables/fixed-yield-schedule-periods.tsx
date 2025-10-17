@@ -4,7 +4,7 @@ import { createStrictColumnHelper } from "@/components/data-table/utils/typed-co
 import { Progress } from "@/components/ui/progress";
 import type { FixedYieldSchedulePeriod } from "@atk/zod/fixed-yield-schedule";
 import type { ColumnDef } from "@tanstack/react-table";
-import type { Dnum } from "dnum";
+import { format, type Dnum } from "dnum";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -46,8 +46,8 @@ function formatClaimedTotal(
   total: Dnum,
   symbol: string
 ): string {
-  const claimedNum = Number.parseFloat(claimed.toString()).toFixed(2);
-  const totalNum = Number.parseFloat(total.toString()).toFixed(2);
+  const claimedNum = format(claimed);
+  const totalNum = format(total);
   return `${claimedNum} / ${totalNum} ${symbol}`;
 }
 

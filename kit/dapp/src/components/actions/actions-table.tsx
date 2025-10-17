@@ -6,14 +6,22 @@ import type { ColumnOption } from "@/components/data-table/filters/types/column-
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
+import { MatureConfirmationSheet } from "@/components/manage-dropdown/sheets/mature-confirmation-sheet";
+import { RedeemSheet } from "@/components/manage-dropdown/sheets/redeem-sheet";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Web3Address } from "@/components/web3/web3-address";
+import { useSession } from "@/hooks/use-auth";
 import { formatDate } from "@/lib/utils/date";
 import { getDateLocale } from "@/lib/utils/date-locale";
+import { orpc } from "@/orpc/orpc-client";
 import type {
   Action,
   ActionStatus,
 } from "@/orpc/routes/actions/routes/actions.list.schema";
+import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import type { TokenBalance } from "@/orpc/routes/user/routes/user.assets.schema";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import type {
   ColumnDef,
@@ -21,8 +29,11 @@ import type {
   SortingState,
 } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
+import { from } from "dnum";
 import { ClipboardList } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { getAddress } from "viem";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { useTranslation } from "react-i18next";
 
 const columnHelper = createStrictColumnHelper<Action>();
@@ -32,6 +43,7 @@ const ACTION_LABEL_MAP = {
   ApproveXvPSettlement: "labels.ApproveXvPSettlement",
   ExecuteXvPSettlement: "labels.ExecuteXvPSettlement",
   RedeemBond: "labels.RedeemBond",
+  ClaimYield: "labels.ClaimYield",
 } as const;
 
 const ACTION_TYPE_MAP = {
@@ -39,6 +51,7 @@ const ACTION_TYPE_MAP = {
   ApproveXvPSettlement: "settlement",
   ExecuteXvPSettlement: "settlement",
   RedeemBond: "bond",
+  ClaimYield: "bond",
 } as const;
 
 const UNKNOWN_ACTION_TYPE = "generic" as const;
@@ -83,14 +96,53 @@ function toTitleCase(input: string): string {
 }
 
 export function ActionsTable({
-  tableId,
-  statuses,
-  defaultSorting,
-  actions,
-  filterPredicate,
-}: ActionsTableProps) {
+                               tableId,
+                               statuses,
+                               defaultSorting,
+                               actions,
+                               filterPredicate,
+                             }: ActionsTableProps) {
   const { t, i18n } = useTranslation("actions");
   const router = useRouter();
+  const { data: session } = useSession();
+  const userWallet = session?.user?.wallet ?? null;
+  const normalizedWallet = useMemo<EthereumAddress | null>(() => {
+    if (!userWallet) return null;
+
+    try {
+      return getAddress(userWallet);
+    } catch {
+      return null;
+    }
+  }, [userWallet]);
+
+  const [matureAction, setMatureAction] = useState<Action | null>(null);
+  const [redeemAction, setRedeemAction] = useState<Action | null>(null);
+
+  // Preload token data for sheets (hooks must be top-level and unconditional)
+  const matureTokenQuery = useQuery(
+    orpc.token.read.queryOptions({
+      input: { tokenAddress: matureAction?.target ?? "" },
+      enabled: !!matureAction,
+    })
+  );
+
+  const redeemTokenQuery = useQuery(
+    orpc.token.read.queryOptions({
+      input: { tokenAddress: redeemAction?.target ?? "" },
+      enabled: !!redeemAction,
+    })
+  );
+
+  const redeemHolderQuery = useQuery(
+    orpc.token.holder.queryOptions({
+      input: {
+        tokenAddress: redeemAction?.target ?? "",
+        holderAddress: normalizedWallet ?? "",
+      },
+      enabled: !!redeemAction && !!normalizedWallet,
+    })
+  );
 
   const filteredActions = useMemo(() => {
     return actions.filter((action) => {
@@ -300,39 +352,157 @@ export function ActionsTable({
           emptyValue: "—",
         } satisfies ColumnMeta<Action, unknown>,
       }),
+
+      columnHelper.display({
+        id: "execute",
+        header: t("table.columns.execute"),
+        meta: {
+          displayName: t("table.columns.execute"),
+          type: "none",
+          enableCsvExport: false,
+        } satisfies ColumnMeta<Action, unknown>,
+        cell: ({ row }) => (
+          <ExecuteActionButton
+            action={row.original}
+            actionLabel={resolveActionLabel(row.original.name)}
+            onOpenMature={(a) => {
+              setMatureAction(a);
+            }}
+            onOpenRedeem={(a) => {
+              setRedeemAction(a);
+            }}
+          />
+        ),
+      }),
     ];
 
     return withAutoFeatures(baseColumns) as ColumnDef<Action>[];
   }, [t, i18n.language]);
 
   return (
-    <DataTable
-      name={`actions-${tableId}`}
-      data={filteredActions}
-      columns={columns}
-      urlState={{
-        enabled: true,
-        enableUrlPersistence: true,
-        routePath:
-          router.state.matches.at(-1)?.pathname ??
-          router.state.location.pathname,
-        defaultPageSize: 10,
-        enableGlobalFilter: true,
+    <>
+      <DataTable
+        name={`actions-${tableId}`}
+        data={filteredActions}
+        columns={columns}
+        urlState={{
+          enabled: true,
+          enableUrlPersistence: true,
+          routePath:
+            router.state.matches.at(-1)?.pathname ??
+            router.state.location.pathname,
+          defaultPageSize: 10,
+          enableGlobalFilter: true,
+        }}
+        initialSorting={defaultSorting}
+        advancedToolbar={{
+          enableGlobalSearch: true,
+          enableFilters: true,
+          enableExport: true,
+          enableViewOptions: true,
+          placeholder: t("filters.searchPlaceholder"),
+        }}
+        pagination={{ enablePagination: true }}
+        customEmptyState={{
+          icon: ClipboardList,
+          title: t("table.empty.title"),
+          description: t("table.empty.description"),
+        }}
+      />
+
+      {matureAction ? (
+        <MatureConfirmationSheet
+          open={!!matureAction}
+          onOpenChange={(open) => {
+            setMatureAction(open ? matureAction : null);
+          }}
+          asset={matureTokenQuery.data as Token}
+        />
+      ) : null}
+
+      {redeemAction
+        ? (() => {
+          const token = redeemTokenQuery.data;
+          if (!token) return null;
+
+          const zero = from(0n, token.decimals);
+          const holderResult = redeemHolderQuery.data;
+
+          const assetBalance: TokenBalance = {
+            id: token.id,
+            value: holderResult?.holder?.value ?? zero,
+            frozen: holderResult?.holder?.frozen ?? zero,
+            available: holderResult?.holder?.available ?? zero,
+            token: {
+              id: token.id,
+              name: token.name,
+              symbol: token.symbol,
+              decimals: token.decimals,
+              totalSupply: token.totalSupply,
+            },
+          };
+
+          return (
+            <RedeemSheet
+              open={!!redeemAction}
+              onClose={() => {
+                setRedeemAction(null);
+              }}
+              assetBalance={assetBalance}
+              holderAddress={normalizedWallet}
+            />
+          );
+        })()
+        : null}
+    </>
+  );
+}
+
+interface ExecuteActionButtonProps {
+  action: Action;
+  actionLabel: string;
+  onOpenMature: (action: Action) => void;
+  onOpenRedeem: (action: Action) => void;
+}
+
+function ExecuteActionButton({
+                               action,
+                               actionLabel,
+                               onOpenMature,
+                               onOpenRedeem,
+                             }: ExecuteActionButtonProps) {
+  const { t } = useTranslation(["actions", "tokens", "common"]);
+
+  const isMatureAction = action.name === "MatureBond";
+  const isRedeemAction = action.name === "RedeemBond";
+  const isSupportedAction = isMatureAction || isRedeemAction;
+  const isActive = action.status === "ACTIVE";
+  const activeAtTime =
+    action.activeAt == null ? null : new Date(action.activeAt).getTime();
+  const hasReachedSchedule =
+    activeAtTime !== null &&
+    Number.isFinite(activeAtTime) &&
+    activeAtTime <= Date.now();
+  // Allow execution once the scheduled time has passed, but only when a schedule exists,
+  // so execution stays blocked for actions without an activation timestamp.
+  const canExecute = isSupportedAction && (isActive || hasReachedSchedule);
+
+  return (
+    <Button
+      size="sm"
+      variant="secondary"
+      className="press-effect"
+      disabled={!canExecute}
+      onClick={() => {
+        if (!canExecute) return;
+        if (isMatureAction) onOpenMature(action);
+        else if (isRedeemAction) onOpenRedeem(action);
       }}
-      initialSorting={defaultSorting}
-      advancedToolbar={{
-        enableGlobalSearch: true,
-        enableFilters: true,
-        enableExport: true,
-        enableViewOptions: true,
-        placeholder: t("filters.searchPlaceholder"),
-      }}
-      pagination={{ enablePagination: true }}
-      customEmptyState={{
-        icon: ClipboardList,
-        title: t("table.empty.title"),
-        description: t("table.empty.description"),
-      }}
-    />
+      aria-label={actionLabel}
+    >
+      {isSupportedAction
+        ? t("actions:table.execute.label")
+        : t("actions:table.execute.unavailable")}
+    </Button>
   );
 }

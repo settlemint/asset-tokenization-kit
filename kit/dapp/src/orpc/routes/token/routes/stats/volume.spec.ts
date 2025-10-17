@@ -127,11 +127,13 @@ describe.concurrent("Token Stats: Volume", () => {
           },
           {
             context: {
-              skipLoggingFor: [CUSTOM_ERROR_CODES.THE_GRAPH_ERROR],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.NOT_FOUND],
             },
           }
         )
-      ).rejects.toThrow();
+      ).rejects.toThrow(
+        `Token with address '${TEST_CONSTANTS.ZERO_ADDRESS}' not found`
+      );
     });
   });
 });

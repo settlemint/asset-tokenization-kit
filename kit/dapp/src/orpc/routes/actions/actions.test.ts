@@ -13,8 +13,8 @@ import {
   ActionSchema,
   ActionStatusSchema,
   ActionsListDataSchema,
+  ActionsListInputSchema,
   ActionsListResponseSchema,
-  ActionsListSchema,
 } from "./routes/actions.list.schema";
 
 // Logger is mocked via vitest.config.ts alias
@@ -178,24 +178,26 @@ describe("Actions Schemas", () => {
     });
   });
 
-  describe("ActionsListSchema", () => {
-    it("should validate list parameters with all filters", () => {
+  describe("ActionsListInputSchema", () => {
+    it("should validate input parameters with all filters", () => {
       const validInput = {
         status: "PENDING" as const,
-        target: "0x1234567890123456789012345678901234567890",
+        targets: ["0x1234567890123456789012345678901234567890"],
         name: "settlement",
       };
-      const result = ActionsListSchema.parse(validInput);
+      const result = ActionsListInputSchema.parse(validInput);
       expect(result.status).toBe("PENDING");
-      expect(result.target).toBe("0x1234567890123456789012345678901234567890");
+      expect(result.targets).toEqual([
+        "0x1234567890123456789012345678901234567890",
+      ]);
       expect(result.name).toBe("settlement");
     });
 
     it("should work without optional filters", () => {
       const minimalInput = {};
-      const result = ActionsListSchema.parse(minimalInput);
+      const result = ActionsListInputSchema.parse(minimalInput);
       expect(result.status).toBeUndefined();
-      expect(result.target).toBeUndefined();
+      expect(result.targets).toBeUndefined();
       expect(result.name).toBeUndefined();
     });
 
@@ -203,34 +205,34 @@ describe("Actions Schemas", () => {
       const invalidStatus = {
         status: "INVALID_STATUS",
       };
-      expect(() => ActionsListSchema.parse(invalidStatus)).toThrow();
+      expect(() => ActionsListInputSchema.parse(invalidStatus)).toThrow();
     });
 
-    it("should reject invalid target address", () => {
-      const invalidTarget = {
-        target: "not-an-address",
+    it("should reject invalid targets address", () => {
+      const invalidTargets = {
+        targets: ["not-an-address"],
       };
-      expect(() => ActionsListSchema.parse(invalidTarget)).toThrow();
+      expect(() => ActionsListInputSchema.parse(invalidTargets)).toThrow();
     });
 
     it("should validate individual filter types", () => {
       // Test status filter
       const statusFilter = { status: "EXECUTED" as const };
-      const statusResult = ActionsListSchema.parse(statusFilter);
+      const statusResult = ActionsListInputSchema.parse(statusFilter);
       expect(statusResult.status).toBe("EXECUTED");
 
       // Test target filter
-      const targetFilter = {
-        target: "0x1234567890123456789012345678901234567890",
+      const targetsFilter = {
+        targets: ["0x1234567890123456789012345678901234567890"],
       };
-      const targetResult = ActionsListSchema.parse(targetFilter);
-      expect(targetResult.target).toBe(
-        "0x1234567890123456789012345678901234567890"
-      );
+      const targetsResult = ActionsListInputSchema.parse(targetsFilter);
+      expect(targetsResult.targets).toEqual([
+        "0x1234567890123456789012345678901234567890",
+      ]);
 
       // Test name filter
       const nameFilter = { name: "bond maturity" };
-      const nameResult = ActionsListSchema.parse(nameFilter);
+      const nameResult = ActionsListInputSchema.parse(nameFilter);
       expect(nameResult.name).toBe("bond maturity");
     });
   });
@@ -307,7 +309,7 @@ describe("Actions Schemas", () => {
 
     it("should handle empty filters", () => {
       const emptyFilters = {};
-      const result = ActionsListSchema.parse(emptyFilters);
+      const result = ActionsListInputSchema.parse(emptyFilters);
       expect(result).toEqual({});
     });
   });

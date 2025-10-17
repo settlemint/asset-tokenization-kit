@@ -4,14 +4,14 @@ import {
   BondRedeemed,
 } from "../../../generated/templates/Bond/Bond";
 import { fetchAccount } from "../../account/fetch/account";
-import { fetchEvent } from "../../event/fetch/event";
-import { fetchToken } from "../../token/fetch/token";
 import {
   ActionName,
   actionExecuted,
   createAction,
   createActionIdentifier,
-} from "../../utils/actions";
+} from "../../actions/actions";
+import { fetchEvent } from "../../event/fetch/event";
+import { fetchToken } from "../../token/fetch/token";
 import { fetchBond } from "./fetch/bond";
 
 export function handleBondMatured(event: BondMatured): void {
@@ -25,7 +25,7 @@ export function handleBondMatured(event: BondMatured): void {
     event,
     ActionName.MatureBond,
     event.address,
-    createActionIdentifier(ActionName.MatureBond, event.address)
+    createActionIdentifier(ActionName.MatureBond, [event.address])
   );
 
   // Create RedeemBond actions for all holders
@@ -34,18 +34,17 @@ export function handleBondMatured(event: BondMatured): void {
   for (let i = 0; i < balances.length; i++) {
     const balance = balances[i];
     createAction(
-      event,
+      event.block.timestamp,
       ActionName.RedeemBond,
       event.address,
       bond.maturityDate,
       null,
       [balance.account],
       null,
-      createActionIdentifier(
-        ActionName.RedeemBond,
+      createActionIdentifier(ActionName.RedeemBond, [
         event.address,
-        balance.account
-      )
+        balance.account,
+      ])
     );
   }
 }
@@ -65,11 +64,10 @@ export function handleBondRedeemed(event: BondRedeemed): void {
       event,
       ActionName.RedeemBond,
       event.address,
-      createActionIdentifier(
-        ActionName.RedeemBond,
+      createActionIdentifier(ActionName.RedeemBond, [
         event.address,
-        event.params.holder
-      )
+        event.params.holder,
+      ])
     );
   }
 }

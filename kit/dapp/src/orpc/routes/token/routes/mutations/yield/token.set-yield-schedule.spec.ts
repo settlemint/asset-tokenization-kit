@@ -102,7 +102,7 @@ describe("Token set yield schedule", async () => {
     });
 
     expect(yieldSchedule).toBeDefined();
-    expect(yieldSchedule.address).toBeDefined();
+    expect(yieldSchedule.id).toBeDefined();
   });
 
   test("can set yield schedule on bond", async () => {
@@ -114,7 +114,7 @@ describe("Token set yield schedule", async () => {
     // Now the admin should have permissions to set yield schedule
     const yieldScheduleResult = await adminClient.token.setYieldSchedule({
       contract: bondToken.id,
-      schedule: yieldSchedule.address,
+      schedule: yieldSchedule.id,
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
@@ -125,7 +125,7 @@ describe("Token set yield schedule", async () => {
     expect(yieldScheduleResult.id).toBe(bondToken.id);
     expect(yieldScheduleResult.yield).toBeDefined();
     expect(yieldScheduleResult.yield?.schedule).toBeDefined();
-    expect(yieldScheduleResult.yield?.schedule?.id).toBe(yieldSchedule.address);
+    expect(yieldScheduleResult.yield?.schedule?.id).toBe(yieldSchedule.id);
   }, 100_000);
 
   test("regular users cant set yield schedule", async () => {
@@ -136,7 +136,7 @@ describe("Token set yield schedule", async () => {
       client.token.setYieldSchedule(
         {
           contract: bondToken.id,
-          schedule: yieldSchedule.address,
+          schedule: yieldSchedule.id,
           walletVerification: {
             secretVerificationCode: DEFAULT_PINCODE,
             verificationType: "PINCODE",

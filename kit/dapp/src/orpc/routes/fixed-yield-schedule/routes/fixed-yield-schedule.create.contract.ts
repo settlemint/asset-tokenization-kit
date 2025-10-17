@@ -1,8 +1,6 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
-import {
-  FixedYieldScheduleCreateInputSchema,
-  FixedYieldScheduleCreateOutputSchema,
-} from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.create.schema";
+import { FixedYieldScheduleCreateInputSchema } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.create.schema";
+import { FixedYieldScheduleSchema } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.read.schema";
 
 /**
  * ORPC contract definition for the fixed yield schedule create endpoint.
@@ -27,4 +25,4 @@ export const fixedYieldScheduleCreateContract = baseContract
     tags: ["fixed-yield-schedule"],
   })
   .input(FixedYieldScheduleCreateInputSchema)
-  .output(FixedYieldScheduleCreateOutputSchema);
+  .output(FixedYieldScheduleSchema);

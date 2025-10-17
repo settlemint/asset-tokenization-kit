@@ -28,7 +28,6 @@ import {
   decreaseTokenBalanceValue,
   increaseTokenBalanceValue,
 } from "../token-balance/utils/token-balance-utils";
-import { updateYield } from "../token-extensions/fixed-yield-schedule/utils/fixed-yield-schedule-utils";
 import { fetchToken } from "./fetch/token";
 import { fetchTokenComplianceModuleConfig } from "./fetch/token-compliance-module-config";
 import { handleMint } from "./utils/token-mint-utils";
@@ -152,10 +151,6 @@ export function handleTransferCompleted(event: TransferCompleted): void {
 
   incrementSystemAssetActivity(token, SystemAssetActivity.TRANSFER);
   incrementTokenTypeAssetActivity(token, SystemAssetActivity.TRANSFER);
-
-  if (token.yield_) {
-    updateYield(token);
-  }
 }
 
 export function handleUpdatedTokenInformation(

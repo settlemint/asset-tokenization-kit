@@ -7,7 +7,7 @@
  * @module TokenActionsTests
  */
 
-import { ActionsListSchema } from "@/orpc/routes/actions/routes/actions.list.schema";
+import { ActionsListInputSchema } from "@/orpc/routes/actions/routes/actions.list.schema";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { describe, expect, it } from "vitest";
 import * as z from "zod";
@@ -21,7 +21,7 @@ const TokenActionsInputSchema = z
       "The token contract address to filter actions by"
     ),
   })
-  .extend(ActionsListSchema.shape);
+  .extend(ActionsListInputSchema.shape);
 
 describe("Token Actions Schema Extension", () => {
   it("should require tokenAddress and allow ActionsListSchema filters", () => {

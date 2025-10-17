@@ -330,6 +330,7 @@ export function TransferAssetSheet({
                                     >
                                       {(field) => (
                                         <field.AddressSelectField
+                                          // Restrict results to user wallets; assets stay manual-only for security.
                                           scope="user"
                                           label={t(
                                             "user-assets:actions.transfer.recipientLabel"

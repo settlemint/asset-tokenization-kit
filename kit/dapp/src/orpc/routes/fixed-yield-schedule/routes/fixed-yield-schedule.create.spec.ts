@@ -1,7 +1,7 @@
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
 import {
-  getAnvilTimeMilliseconds,
   getAnvilBasedFutureDate,
+  getAnvilTimeMilliseconds,
 } from "@/test/anvil";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { TimeIntervalEnum } from "@atk/zod/time-interval";
@@ -98,8 +98,8 @@ describe("Fixed yield schedule create", async () => {
       await adminClient.fixedYieldSchedule.create(yieldScheduleData);
 
     expect(result).toBeDefined();
-    expect(result.address).toBeDefined();
-    expect(result.address).toBe(getEthereumAddress(result.address));
+    expect(result.id).toBeDefined();
+    expect(result.id).toBe(getEthereumAddress(result.id));
   }, 100_000);
 
   test("regular users cannot create yield schedules without proper permissions", async () => {
