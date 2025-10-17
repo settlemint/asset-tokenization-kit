@@ -100,11 +100,18 @@ export function ThemeSync({
         target.dataset.state = READY_STATE;
         target.dataset.origin = RUNTIME_ORIGIN;
       })
-      .catch((error) => {
+      .catch((_error: unknown) => {
         if (cancelled) {
           return;
         }
-        console.error("Failed to load theme CSS", error);
+
+        const target = document.querySelector<HTMLStyleElement>(
+          `#${THEME_STYLE_ID}`
+        );
+        if (target) {
+          target.dataset.state = "error";
+          delete target.dataset.origin;
+        }
       });
 
     return () => {

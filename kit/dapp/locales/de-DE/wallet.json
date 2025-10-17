@@ -28,7 +28,7 @@
     "switchWallet": "Wallet wechseln"
   },
   "errors": {
-    "chainNotAdded": "Bitte {{network}} in Ihrem Wallet hinzufügen",
+    "chainNotAdded": "Bitte fügen Sie {{network}} zu Ihrer Wallet hinzu",
     "insufficientFunds": "Unzureichende Mittel für die Transaktion",
     "networkMismatch": "Bitte zum {{network}}-Netzwerk wechseln",
     "notConnected": "Wallet nicht verbunden",

@@ -40,7 +40,7 @@
   },
   "identityTable": {
     "columns": {
-      "id": "الهوية",
+      "id": "المعرّف",
       "type": "النوع",
       "entity": "الكيان",
       "linkedEntity": "الحساب / العقد",

@@ -53,7 +53,7 @@
     "residencyStatusOptions": {
       "dual_resident": "Doppelresident - Ich bin rechtlich/steuerlich in mehr als einem Land ansässig",
       "non_resident": "Nichtresident - Ich lebe nicht in oder bin nicht als Resident des oben genannten Landes betrachtet",
-      "resident": "Alleineresident - Ich lebe in und bin rechtlich/steuerlich nur im oben genannten Land ansässig",
+      "resident": "Alleinansässiger - Ich lebe im oben genannten Land und bin dort rechtlich/steuerlich ansässig",
       "unknown": "Bevorzuge es nicht zu sagen"
     },
     "submit": "Speichern und fortfahren",

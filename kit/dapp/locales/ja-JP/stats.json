@@ -167,8 +167,8 @@
       "title": "総資産"
     },
     "pendingLaunches": {
-      "description": "作成日 {{created}}、開始日 {{launched}}",
-      "title": "保留中の開始"
+      "description": "作成済み{{created}}件、ローンチ済み{{launched}}件",
+      "title": "ローンチ待ちトークン"
     },
     "common": {
       "error": "データの読み込みエラー",
