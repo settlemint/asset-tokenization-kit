@@ -3,14 +3,6 @@ import { BigInt, Bytes, ethereum, log, store } from "@graphprotocol/graph-ts";
 import { Action, ActionExecutor } from "../../generated/schema";
 import { fetchAccount } from "../account/fetch/account";
 
-// ActionStatus constants (enum-like values)
-export class ActionStatus {
-  static PENDING: string = "PENDING";
-  static ACTIVE: string = "ACTIVE";
-  static EXECUTED: string = "EXECUTED";
-  static EXPIRED: string = "EXPIRED";
-}
-
 export class ActionName {
   static ApproveXvPSettlement: string = "ApproveXvPSettlement";
   static ExecuteXvPSettlement: string = "ExecuteXvPSettlement";
@@ -72,27 +64,6 @@ export function createActionIdentifier(
     );
   }
   return identifiers.map<string>((entity) => entity.toHexString()).join("");
-}
-
-function getActionStatus(
-  currentTime: BigInt,
-  activeAt: BigInt,
-  expiresAt: BigInt | null,
-  executed: boolean
-): string {
-  if (executed) {
-    return ActionStatus.EXECUTED;
-  }
-
-  if (expiresAt !== null && currentTime.gt(expiresAt)) {
-    return ActionStatus.EXPIRED;
-  }
-
-  if (currentTime.ge(activeAt)) {
-    return ActionStatus.ACTIVE;
-  }
-
-  return ActionStatus.PENDING;
 }
 
 function actionId(
@@ -212,7 +183,6 @@ export function createAction(
   action.executedAt = null;
   action.executedBy = null;
   action.identifier = identifier;
-  action.status = getActionStatus(timestamp, activeAt, expiresAt, false);
 
   // Create/update the executor and establish relationship without saving action yet
   const actionExecutor = createActionExecutorInternal(
@@ -344,7 +314,6 @@ export function actionExecuted(
   action.executedAt = event.block.timestamp;
   const executedBy = fetchAccount(event.transaction.from);
   action.executedBy = executedBy.id;
-  action.status = ActionStatus.EXECUTED;
   action.save();
 
   log.info(

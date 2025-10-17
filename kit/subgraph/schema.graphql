@@ -1285,17 +1285,6 @@ type XvPSettlementApproval @entity(immutable: false) {
   timestamp: BigInt
 }
 
-enum ActionStatus {
-  # Waiting to become active
-  PENDING
-  # Currently executable
-  ACTIVE
-  # Successfully executed
-  EXECUTED
-  # Past expiration date
-  EXPIRED
-}
-
 type Action @entity(immutable: false) {
   # Unique identifier for the action
   id: Bytes!
@@ -1311,9 +1300,7 @@ type Action @entity(immutable: false) {
   expiresAt: BigInt
   # Required role to execute this action
   requiredRole: String
-  # Current status of the action
-  status: ActionStatus!
-  # DEPRECATED: Use status field instead
+  # Whether the action has been executed
   executed: Boolean!
   # Unix timestamp when executed (if executed)
   executedAt: BigInt

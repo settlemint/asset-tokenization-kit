@@ -30,7 +30,6 @@ const LIST_ACTIONS_QUERY = theGraphGraphql(`
         name
         target
         activeAt
-        status
         executedAt
         executedBy
         executor {
@@ -85,9 +84,22 @@ export const list = authRouter.actions.list.handler(
     };
 
     // Apply optional filters
-    if (input.status !== undefined) {
-      where.status = input.status;
+
+    switch (input.status) {
+      case "PENDING":
+        where.activeAt_gt = new Date().toISOString();
+        break;
+      case "ACTIVE":
+        where.activeAt_gte = new Date().toISOString();
+        break;
+      case "EXECUTED":
+        where.executed = true;
+        break;
+      case "EXPIRED":
+        where.activeAt_lt = new Date().toISOString();
+        break;
     }
+
     if (Array.isArray(input.targets) && input.targets.length > 0) {
       where.target_in = input.targets.map((target) => target.toLowerCase());
     }
