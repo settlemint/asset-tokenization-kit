@@ -88,7 +88,7 @@ leverage build cache; minimize final image size with distroless/alpine bases
 - **TypeScript**: Strict mode enabled with `noImplicitAny`, `strictNullChecks`,
   `noUncheckedIndexedAccess`
 - **Module resolution**: `bundler` mode with ESM-first approach, path aliases
-  configured (@/_, @schemas/\_, @test/_)
+  configured (@/*, @schemas/*, @test/*)
 - **Formatting**: Prettier with 2-space indentation, trailing commas, single
   quotes for strings
 - **Linting**: ESLint with React/TypeScript rules, max warnings = 0, boundaries

@@ -78,7 +78,7 @@
   },
   "token": {
     "nameRequired": "كل رمز يحتاج إلى اسم—ماذا سنسميه؟",
-    "symbolRequired": "رمزك يحتاج إلى رمز—like BTC or ETH",
+    "symbolRequired": "رمزك يحتاج إلى رمز—مثل BTC أو ETH",
     "decimalsInvalid": "يجب أن تكون المنازل العشرية بين 0 و 18",
     "supplyInvalid": "دعنا ندخل عرضًا أوليًا صالحًا لرمزك",
     "capExceeded": "هذا يتجاوز العرض الأقصى—دعنا نبقى ضمن الحد"

@@ -65,8 +65,8 @@ export function ThemeSync({
     const url = `/api/theme.css${searchParams}`;
     let cancelled = false;
 
-    void fetch(url, { headers: { Accept: "text/css" } }).then(
-      async (response) => {
+    void fetch(url, { headers: { Accept: "text/css" } })
+      .then(async (response) => {
         if (!response.ok || cancelled) {
           return;
         }
@@ -99,8 +99,13 @@ export function ThemeSync({
         }
         target.dataset.state = READY_STATE;
         target.dataset.origin = RUNTIME_ORIGIN;
-      }
-    );
+      })
+      .catch((error) => {
+        if (cancelled) {
+          return;
+        }
+        console.error("Failed to load theme CSS", error);
+      });
 
     return () => {
       cancelled = true;

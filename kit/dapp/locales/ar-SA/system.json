@@ -2,7 +2,7 @@
   "addons": {
     "messages": {
       "allFailed": "فشل في تسجيل أي إضافات",
-      "allSuccess": "تم تسجيل جميع الإضافات {{count}} بنجاح",
+      "allSuccess": "تم تسجيل جميع {{count}} الإضافات بنجاح",
       "alreadyExists": "الإضافة {{name}} موجودة بالفعل",
       "defaultError": "حدث خطأ أثناء تسجيل الإضافة",
       "failed": "فشل في تسجيل {{name}}",
@@ -20,7 +20,7 @@
       "bootstrapFailed": "فشل في بدء النظام",
       "bootstrapSuccess": "تم بدء النظام بنجاح",
       "bootstrapping": "يتم بدء النظام",
-      "createdBootstrapFailed": "تم إنشاء النظام في {{systemAddress}} لكن بدء التشغيل فشل. قد تكون التدخل اليدوي مطلوبًا.",
+      "createdBootstrapFailed": "تم إنشاء النظام في {{systemAddress}} لكن بدء التشغيل فشل. قد يكون التدخل اليدوي مطلوبًا.",
       "creating": "يتم إنشاء النظام",
       "creationFailed": "فشل في إنشاء النظام",
       "queryingSystem": "يتم استعلام معلومات النظام",
@@ -49,7 +49,7 @@
       "failed": "فشل في تسجيل وحدة الامتثال",
       "progress": "يتم تسجيل {{current}} من {{total}} وحدات الامتثال",
       "registering": "يتم تسجيل {{name}}",
-      "registered": "{{name}} تم تسجيلها بنجاح"
+      "registered": "تم تسجيل {{name}} بنجاح"
     }
   }
 }
