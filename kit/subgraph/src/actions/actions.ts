@@ -211,6 +211,15 @@ export function deleteAction(
   const id = actionId(actionName, target, identifier);
   const existingAction = Action.load(id);
   if (existingAction !== null) {
+    log.info(
+      "Action deleted: {} - actionName: {}, target: {}, identifier: {}",
+      [
+        id.toHexString(),
+        actionName,
+        target.toHexString(),
+        identifier ? identifier : "null",
+      ]
+    );
     store.remove("Action", id.toHexString());
   }
 }

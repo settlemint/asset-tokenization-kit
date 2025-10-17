@@ -37,14 +37,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   });
   const { data: actions } = useSuspenseQuery(
     orpc.actions.list.queryOptions({
-      input: {},
+      input: {
+        status: "PENDING",
+      },
     })
   );
-  const pendingCount = React.useMemo(() => {
-    return actions.reduce((total, action) => {
-      return total + (action.status === "ACTIVE" ? 1 : 0);
-    }, 0);
-  }, [actions]);
+  const pendingCount = actions.length;
 
   return (
     <Sidebar collapsible="icon" {...props}>

@@ -1,10 +1,11 @@
 import { BaseActionSheet } from "@/components/manage-dropdown/core/base-action-sheet";
+import { invalidateTokenActionQueries } from "@/components/manage-dropdown/core/invalidate-token-action-queries";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { VerificationButton } from "@/components/verification-dialog/verification-button";
 import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
-import type { TokenBalance } from "@/orpc/routes/user/routes/user.assets.schema";
+import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -13,7 +14,9 @@ import { toast } from "sonner";
 interface ClaimYieldSheetProps {
   open: boolean;
   onClose: () => void;
-  assetBalance: TokenBalance;
+  assetBalance: {
+    token: Pick<Token, "id" | "name" | "symbol" | "yield">;
+  };
 }
 
 export function ClaimYieldSheet({
@@ -31,6 +34,10 @@ export function ClaimYieldSheet({
     orpc.fixedYieldSchedule.claim.mutationOptions({
       onSuccess: async () => {
         await Promise.all([
+          invalidateTokenActionQueries(qc, {
+            tokenAddress: assetBalance.token.id,
+            includeUserAssets: true,
+          }),
           qc.invalidateQueries({
             queryKey: orpc.fixedYieldSchedule.read.queryOptions({
               input: { id: yieldSchedule?.id ?? "" },
@@ -39,21 +46,6 @@ export function ClaimYieldSheet({
           qc.invalidateQueries({
             queryKey: orpc.token.read.queryOptions({
               input: { tokenAddress: denominationAsset?.id ?? "" },
-            }).queryKey,
-          }),
-          qc.invalidateQueries({
-            queryKey: orpc.user.assets.queryKey(),
-          }),
-          qc.invalidateQueries({
-            queryKey: orpc.actions.list.queryOptions({
-              input: {},
-            }).queryKey,
-          }),
-          qc.invalidateQueries({
-            queryKey: orpc.actions.list.queryOptions({
-              input: {
-                name: "ClaimYield",
-              },
             }).queryKey,
           }),
         ]);
