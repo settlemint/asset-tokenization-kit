@@ -79,7 +79,7 @@ type AccessControl @entity(immutable: false) {
   # Role administration hierarchy mapping
   # Defines which roles can grant/revoke other roles
   # Each entry specifies that adminRole can manage role assignments
-  # Empty array means no role-based restrictions (legacy behavior)
+  # All roles default to DEFAULT_ADMIN_ROLE as admin until RoleAdminChanged events update the mappings
   roleAdmins: [AccessControlRoleAdmin!]! @derivedFrom(field: "accessControl")
 
   # Core Admin Role - highest level administrative access

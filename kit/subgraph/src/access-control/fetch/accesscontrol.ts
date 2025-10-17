@@ -1,5 +1,8 @@
 import { Address, Value, Bytes } from "@graphprotocol/graph-ts";
-import { AccessControl, AccessControlRoleAdmin } from "../../../generated/schema";
+import {
+  AccessControl,
+  AccessControlRoleAdmin,
+} from "../../../generated/schema";
 import { AccessControl as AccessControlTemplate } from "../../../generated/templates";
 import { setAccountContractName } from "../../account/utils/account-contract-name";
 import { DEFAULT_ADMIN_ROLE, RoleConfig, Roles } from "../utils/role";
@@ -17,14 +20,17 @@ export function fetchAccessControl(address: Address): AccessControl {
     accessControlEntity.save();
     AccessControlTemplate.create(address);
     setAccountContractName(address, "Access Control");
-  }
 
-  ensureRoleAdminMappings(accessControlEntity as AccessControl);
+    ensureRoleAdminMappings(accessControlEntity as AccessControl);
+  }
 
   return accessControlEntity;
 }
 
-function getRoleAdminEntityId(accessControl: AccessControl, role: RoleConfig): Bytes {
+function getRoleAdminEntityId(
+  accessControl: AccessControl,
+  role: RoleConfig
+): Bytes {
   return accessControl.id.concat(role.bytes);
 }
 
