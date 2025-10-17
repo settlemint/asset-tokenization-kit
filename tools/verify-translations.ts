@@ -1,8 +1,11 @@
 import { readdirSync, readFileSync } from "fs";
-import { join } from "path";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
 
-const localesDir =
-  "/Users/roderik/Development/asset-tokenization-kit/kit/dapp/locales";
+const localesDir = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "../kit/dapp/locales"
+);
 const baseLang = "en-US";
 
 interface TranslationIssue {
