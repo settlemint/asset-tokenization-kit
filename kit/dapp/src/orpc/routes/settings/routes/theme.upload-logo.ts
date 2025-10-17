@@ -1,4 +1,4 @@
-import { DEFAULT_BRANDING_BUCKET } from "@/components/theme/lib/reset";
+import { DEFAULT_BUCKET } from "@/components/theme/lib/reset";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { minioMiddleware } from "@/orpc/middlewares/services/minio.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
@@ -44,7 +44,7 @@ export const uploadLogo = authRouter.settings.theme.uploadLogo
   .handler(async ({ input, context }) => {
     const payload = ThemeLogoUploadSchema.parse(input);
     const { mode, fileName, contentType } = payload;
-    const bucket = DEFAULT_BRANDING_BUCKET;
+    const bucket = DEFAULT_BUCKET;
     const { objectKey, pathPrefix, sanitizedFileName } = resolveObjectKey(
       mode,
       fileName

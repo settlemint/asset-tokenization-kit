@@ -6,12 +6,13 @@ import {
 
 describe("theme logo upload schema", () => {
   it("accepts valid payload", () => {
+    const bucket = "atk";
     const input = {
       mode: "light" as const,
       fileName: "logo.svg",
       contentType: "image/svg+xml" as const,
       fileSize: 1024,
-      previousUrl: "/branding/logos/light/old.svg",
+      previousUrl: `/${bucket}/logos/light/old.svg`,
     };
     const parsed = ThemeLogoUploadSchema.safeParse(input);
     expect(parsed.success).toBe(true);
@@ -29,11 +30,12 @@ describe("theme logo upload schema", () => {
   });
 
   it("validates output payload", () => {
+    const bucket = "atk";
     const output = {
       mode: "light" as const,
-      bucket: "branding",
+      bucket,
       objectKey: "logos/light/logo.svg",
-      publicUrl: "/branding/logos/light/logo.svg",
+      publicUrl: `/${bucket}/logos/light/logo.svg`,
       uploadUrl: "https://minio.example.com/presigned",
       method: "PUT" as const,
       headers: {

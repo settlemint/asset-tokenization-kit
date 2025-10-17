@@ -2,7 +2,11 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 
 import { compileThemeCSS } from "./compile-css";
 import { DEFAULT_THEME } from "./schema";
-import { extractObjectKey, resetThemeToDefaults } from "./reset";
+import {
+  DEFAULT_BUCKET,
+  extractObjectKey,
+  resetThemeToDefaults,
+} from "./reset";
 
 const deleteFileMock = vi.fn();
 const getThemeMock = vi.fn();
@@ -35,16 +39,21 @@ describe("theme reset utilities", () => {
   it("extracts object key from URL containing bucket prefix", () => {
     expect(
       extractObjectKey(
-        "https://assets.example.com/branding/logos/light/custom.svg",
-        "branding"
+        `https://assets.example.com/${DEFAULT_BUCKET}/logos/light/custom.svg`,
+        DEFAULT_BUCKET
       )
     ).toBe("logos/light/custom.svg");
 
     expect(
-      extractObjectKey("/branding/logos/dark/custom.svg", "branding")
+      extractObjectKey(
+        `/${DEFAULT_BUCKET}/logos/dark/custom.svg`,
+        DEFAULT_BUCKET
+      )
     ).toBe("logos/dark/custom.svg");
 
-    expect(extractObjectKey("/logos/dark/custom.svg", "branding")).toBeNull();
+    expect(
+      extractObjectKey("/logos/dark/custom.svg", DEFAULT_BUCKET)
+    ).toBeNull();
   });
 
   it("deletes branding assets and resets theme to defaults", async () => {
@@ -53,8 +62,8 @@ describe("theme reset utilities", () => {
       ...DEFAULT_THEME,
       logo: {
         ...DEFAULT_THEME.logo,
-        lightUrl: "https://cdn.example.com/branding/logos/light/custom.svg",
-        darkUrl: "/branding/logos/dark/custom.svg",
+        lightUrl: `https://cdn.example.com/${DEFAULT_BUCKET}/logos/light/custom.svg`,
+        darkUrl: `/${DEFAULT_BUCKET}/logos/dark/custom.svg`,
       },
     });
     resetThemeMock.mockResolvedValue(undefined);
@@ -66,13 +75,13 @@ describe("theme reset utilities", () => {
       1,
       expect.anything(),
       "logos/light/custom.svg",
-      "branding"
+      DEFAULT_BUCKET
     );
     expect(deleteFileMock).toHaveBeenNthCalledWith(
       2,
       expect.anything(),
       "logos/dark/custom.svg",
-      "branding"
+      DEFAULT_BUCKET
     );
 
     expect(resetThemeMock).toHaveBeenCalled();

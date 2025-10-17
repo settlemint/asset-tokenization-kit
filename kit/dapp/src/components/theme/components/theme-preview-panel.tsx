@@ -87,6 +87,7 @@ export function ThemePreviewPanel({ draft, t }: ThemePreviewPanelProps) {
                       mode === "dark" && "dark"
                     )}
                     data-mode={mode}
+                    data-theme={mode}
                     style={containerStyle}
                   >
                     <div className="border-b px-4 py-3">
