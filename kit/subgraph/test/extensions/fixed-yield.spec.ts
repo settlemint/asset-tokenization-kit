@@ -50,6 +50,7 @@ describe("Fixed yield", () => {
       },
     });
     expect(response.tokens.length).toBe(1);
+    // The first 3 periods have yield claimed
     expect(response.tokens).toEqual([
       {
         createdAt: expect.any(String),
@@ -64,9 +65,9 @@ describe("Fixed yield", () => {
             endDate: expect.any(String),
             currentPeriod: null,
             nextPeriod: null,
-            totalYield: "0.000355",
+            totalYield: "0.000426",
             totalClaimed: "0.000183",
-            totalUnclaimedYield: "0.000172",
+            totalUnclaimedYield: "0.000243",
             periods: [
               {
                 startDate: expect.any(String),

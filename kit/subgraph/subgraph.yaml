@@ -424,7 +424,7 @@ templates:
         - event: DenominationAssetWithdrawn(indexed address,indexed uint256)
           handler: handleDenominationAssetWithdrawn
         - event: YieldClaimed(indexed
-            address,uint256,uint256,uint256,uint256[],uint256[],uint256,uint256)
+            address,uint256,uint256,uint256,uint256[],uint256[],uint256)
           handler: handleYieldClaimed
       file: ./src/token-extensions/fixed-yield-schedule/fixed-yield-schedule.ts
   - kind: ethereum

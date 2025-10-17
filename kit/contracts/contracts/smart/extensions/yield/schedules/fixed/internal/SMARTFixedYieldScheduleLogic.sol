@@ -393,9 +393,6 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         // Perform the transfer of the denomination asset to the claimant.
         _denominationAsset.safeTransfer(sender, totalAmountToClaim);
 
-        // Calculate the remaining total unclaimed yield in the contract for the event.
-        uint256 remainingUnclaimed = totalUnclaimedYield();
-
         // Calculate the required yield for the current period for the event.
         uint256 totalYieldForCurrentPeriod = estimateTotalYieldForCurrentPeriod();
 
@@ -406,7 +403,6 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
             lastPeriod,
             periodAmounts,
             periodYields,
-            remainingUnclaimed,
             totalYieldForCurrentPeriod
         );
     }

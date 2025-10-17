@@ -104,8 +104,6 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     /// @param periodYields An array containing the total yield for each specific period within the
     /// `fromPeriod` to `toPeriod` range.
     /// The length of this array is `toPeriod - fromPeriod + 1`.
-    /// @param totalUnclaimedYield The total amount of unclaimed yield remaining in the contract across all holders
-    /// after this claim.
     /// @param totalYieldForCurrentPeriod The estimated total yield required for the current period.
     event YieldClaimed( // Amounts per period, matches the range fromPeriod to toPeriod
         address indexed holder,
@@ -114,7 +112,6 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
         uint256 toPeriod,
         uint256[] periodAmounts,
         uint256[] periodYields,
-        uint256 totalUnclaimedYield,
         uint256 totalYieldForCurrentPeriod
     );
 

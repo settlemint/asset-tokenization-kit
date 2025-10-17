@@ -36,7 +36,7 @@ export function updateClaimYieldActionsOnBalanceIncrease(
   }
   const periods = fixedYieldSchedule.periods.load();
   for (let periodIndex = 0; periodIndex < periods.length; periodIndex++) {
-    const period = fetchFixedYieldSchedulePeriod(periods[periodIndex].id);
+    const period = periods[periodIndex];
     if (currentPeriod != null && period.endDate.le(currentPeriod.endDate)) {
       // Skip periods that are finished
       continue;
@@ -80,7 +80,7 @@ export function updateClaimYieldActionsOnBalanceRemove(
   const periods = fixedYieldSchedule.periods.load();
   // Delete all actions to claim yield for this balance
   for (let periodIndex = 0; periodIndex < periods.length; periodIndex++) {
-    const period = fetchFixedYieldSchedulePeriod(periods[periodIndex].id);
+    const period = periods[periodIndex];
     if (period.completed) {
       // Skip periods that are completed
       continue;

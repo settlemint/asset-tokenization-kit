@@ -57,7 +57,7 @@ export function updateYield(token: Token): TokenFixedYieldSchedule | null {
     if (scheduleEnded) {
       // Mark all periods as completed
       for (let i = 0; i < periods.length; i++) {
-        const period = fetchFixedYieldSchedulePeriod(periods[i].id);
+        const period = periods[i];
         period.completed = true;
         period.save();
       }
@@ -78,6 +78,29 @@ export function updateYield(token: Token): TokenFixedYieldSchedule | null {
       period.completed = true;
       period.save();
     }
+  }
+
+  const nextPeriodId = getPeriodId(
+    fixedYieldScheduleAddress,
+    currentPeriodValue + 1
+  );
+  const fixedYieldNextPeriod = TokenFixedYieldSchedulePeriod.load(nextPeriodId);
+  if (!fixedYieldNextPeriod) {
+    // There is no next period, current period is the last period
+    fixedYieldSchedule.nextPeriod = null;
+  } else {
+    fixedYieldSchedule.nextPeriod = fixedYieldNextPeriod.id;
+    fixedYieldNextPeriod.save();
+  }
+
+  if (
+    !scheduleNotStarted &&
+    fixedYieldCurrentPeriod.totalYieldExact.gt(BigInt.zero())
+  ) {
+    // The current period has already a yield set and the schedule has started
+    // At this point, the yield will not change anymore
+    fixedYieldSchedule.save();
+    return fixedYieldSchedule;
   }
 
   const totalYieldForCurrentPeriod =
@@ -101,16 +124,16 @@ export function updateYield(token: Token): TokenFixedYieldSchedule | null {
 
   // Set the same total yield for all periods that are not completed
   for (let i = 0; i < periods.length; i++) {
-    const period = fetchFixedYieldSchedulePeriod(periods[i].id);
+    const period = periods[i];
     if (!period.completed) {
       setBigNumber(
-        fixedYieldCurrentPeriod,
+        period,
         "totalYield",
         totalYieldForCurrentPeriod.value,
         denominationAssetDecimals
       );
       setBigNumber(
-        fixedYieldCurrentPeriod,
+        period,
         "totalUnclaimedYield",
         totalYieldForCurrentPeriod.value.minus(
           fixedYieldCurrentPeriod.totalClaimedExact
@@ -121,14 +144,14 @@ export function updateYield(token: Token): TokenFixedYieldSchedule | null {
     }
   }
 
-  const totalYield = calculateTotalYield(fixedYieldSchedule);
+  const totalYield = calculateTotalYield(periods);
   setBigNumber(
     fixedYieldSchedule,
     "totalYield",
     totalYield,
     denominationAssetDecimals
   );
-  const totalUnclaimedYield = calculateTotalUnclaimedYield(fixedYieldSchedule);
+  const totalUnclaimedYield = calculateTotalUnclaimedYield(periods);
   setBigNumber(
     fixedYieldSchedule,
     "totalUnclaimedYield",
@@ -137,26 +160,12 @@ export function updateYield(token: Token): TokenFixedYieldSchedule | null {
   );
   fixedYieldSchedule.save();
 
-  const nextPeriodId = getPeriodId(
-    fixedYieldScheduleAddress,
-    currentPeriodValue + 1
-  );
-  const fixedYieldNextPeriod = TokenFixedYieldSchedulePeriod.load(nextPeriodId);
-  if (!fixedYieldNextPeriod) {
-    // There is no next period, current period is the last period
-    fixedYieldSchedule.nextPeriod = null;
-  } else {
-    fixedYieldSchedule.nextPeriod = fixedYieldNextPeriod.id;
-    fixedYieldNextPeriod.save();
-  }
-
   return fixedYieldSchedule;
 }
 
 export function calculateTotalYield(
-  fixedYieldSchedule: TokenFixedYieldSchedule
+  periods: TokenFixedYieldSchedulePeriod[]
 ): BigInt {
-  const periods = fixedYieldSchedule.periods.load();
   let totalYield = BigInt.zero();
   for (let i = 0; i < periods.length; i++) {
     const period = periods[i];
@@ -166,9 +175,8 @@ export function calculateTotalYield(
 }
 
 export function calculateTotalUnclaimedYield(
-  fixedYieldSchedule: TokenFixedYieldSchedule
+  periods: TokenFixedYieldSchedulePeriod[]
 ): BigInt {
-  const periods = fixedYieldSchedule.periods.load();
   let totalUnclaimedYield = BigInt.zero();
   for (let i = 0; i < periods.length; i++) {
     const period = periods[i];
