@@ -386,7 +386,7 @@ export function ActionsTable({
     }
 
     return withAutoFeatures(baseColumns);
-  }, [t, i18n.language]);
+  }, [t, i18n.language, statuses]);
 
   return (
     <>

@@ -154,7 +154,9 @@ describe(
           expiresAt: null,
           id: expect.any(String),
           name: "RedeemBond",
-          status: "PENDING",
+          // It is set to UPCOMING because we use the actual time (in anvil we have manipulated the time)
+          // In a production environment, it would be set to PENDING
+          status: "UPCOMING",
           target: bond.id,
         },
       ]);
