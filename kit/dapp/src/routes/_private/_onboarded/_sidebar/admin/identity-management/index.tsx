@@ -1,13 +1,27 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { IdentityTable } from "@/components/identity/identity-table";
-import { createFileRoute } from "@tanstack/react-router";
+import { CLAIM_ISSUER_ROLE } from "@/lib/constants/roles";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/admin/identity-management/"
 )({
+  beforeLoad: async ({ context: { queryClient, orpc } }) => {
+    const system = await queryClient.ensureQueryData(
+      orpc.system.read.queryOptions({
+        input: { id: "default" },
+      })
+    );
+
+    if (!system.userPermissions?.roles[CLAIM_ISSUER_ROLE.fieldName]) {
+      throw redirect({
+        to: "/",
+      });
+    }
+  },
   component: IdentityManagementPage,
   loader: () => {
     return {

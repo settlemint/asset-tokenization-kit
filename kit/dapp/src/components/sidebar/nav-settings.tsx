@@ -1,37 +1,20 @@
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useMatches } from "@tanstack/react-router";
-import {
-  ChevronRight,
-  ClipboardCheck,
-  FileText,
-  Key,
-  Puzzle,
-  Settings,
-  Shield,
-  UserCheck,
-  Users,
-} from "lucide-react";
+import { ClipboardCheck, FileText, Key, Puzzle, Shield } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 /**
  * Navigation component for platform settings in the sidebar.
- * Displays a list of platform configuration options.
+ * Presents each configuration page as a top-level entry when the
+ * corresponding permission is granted.
  * @example
  * // Used within AppSidebar component
  * <NavSettings />
@@ -87,103 +70,32 @@ export function NavSettings() {
     },
   ].filter((item) => item.enabled);
 
-  // Check if any settings route is active to highlight the parent
-  const hasActiveChild = settingsItems.some((item) =>
-    isSettingsActive(item.path)
-  );
-
-  const isUserManagementActive = isSettingsActive("/admin/user-management");
-  const isIdentityManagementActive = isSettingsActive(
-    "/admin/identity-management"
-  );
-
-  // Determine if there are any items to render under the administration group
-  const hasAdministrationItems =
-    Boolean(system.userPermissions?.actions.identityRegister) ||
-    settingsItems.length > 0;
-
-  if (!hasAdministrationItems) return null;
+  if (settingsItems.length === 0) return null;
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>{t("administration")}</SidebarGroupLabel>
+      <SidebarGroupLabel>{t("platformSettings")}</SidebarGroupLabel>
       <SidebarMenu>
-        {system.userPermissions?.actions.identityRegister && (
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link
-                to="/admin/user-management"
-                activeProps={{
-                  "data-active": true,
-                }}
-                className={isUserManagementActive ? "font-semibold" : ""}
-              >
-                <Users />
-                <span>{t("userManagement")}</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        )}
-
-        {system.userPermissions?.actions.identityList && (
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link
-                to="/admin/identity-management"
-                activeProps={{
-                  "data-active": true,
-                }}
-                className={isIdentityManagementActive ? "font-semibold" : ""}
-              >
-                <UserCheck />
-                <span>{t("identityManagement")}</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        )}
-
-        {settingsItems.length > 0 && (
-          <Collapsible
-            asChild
-            defaultOpen={hasActiveChild}
-            className="group/collapsible"
-          >
-            <SidebarMenuItem>
-              <CollapsibleTrigger asChild>
-                <SidebarMenuButton
-                  tooltip={t("platformSettings")}
-                  className={hasActiveChild ? "font-semibold" : ""}
+        {settingsItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = isSettingsActive(item.path);
+          return (
+            <SidebarMenuItem key={item.path}>
+              <SidebarMenuButton asChild isActive={isActive}>
+                <Link
+                  to={item.path}
+                  activeProps={{
+                    "data-active": true,
+                  }}
+                  className={isActive ? "font-semibold" : undefined}
                 >
-                  <Settings />
-                  <span>{t("platformSettings")}</span>
-                  <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                </SidebarMenuButton>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {settingsItems.map((item) => {
-                    const isActive = isSettingsActive(item.path);
-                    return (
-                      <SidebarMenuSubItem key={item.path}>
-                        <SidebarMenuSubButton asChild>
-                          <Link
-                            to={item.path}
-                            activeProps={{
-                              "data-active": true,
-                            }}
-                            className={isActive ? "font-semibold" : ""}
-                          >
-                            <span>{item.name}</span>
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    );
-                  })}
-                </SidebarMenuSub>
-              </CollapsibleContent>
+                  <Icon />
+                  <span>{item.name}</span>
+                </Link>
+              </SidebarMenuButton>
             </SidebarMenuItem>
-          </Collapsible>
-        )}
+          );
+        })}
       </SidebarMenu>
     </SidebarGroup>
   );

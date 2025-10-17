@@ -1,13 +1,27 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { UsersTable } from "@/components/users/users-table";
-import { createFileRoute } from "@tanstack/react-router";
+import { IDENTITY_MANAGER_ROLE } from "@/lib/constants/roles";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/admin/user-management/"
 )({
+  beforeLoad: async ({ context: { queryClient, orpc } }) => {
+    const system = await queryClient.ensureQueryData(
+      orpc.system.read.queryOptions({
+        input: { id: "default" },
+      })
+    );
+
+    if (!system.userPermissions?.roles[IDENTITY_MANAGER_ROLE.fieldName]) {
+      throw redirect({
+        to: "/",
+      });
+    }
+  },
   component: UserManagementPage,
   loader: () => {
     return {

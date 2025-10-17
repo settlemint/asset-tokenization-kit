@@ -18,7 +18,9 @@
     "custody": "الحفظ",
     "income": "الدخل"
   },
-  "administration": "الإدارة",
+  "participants": "المشاركون",
+  "participantsUsers": "المستخدمون",
+  "participantsEntities": "الكيانات",
   "platformSettings": "إعدادات المنصة",
   "userManagement": "إدارة المستخدمين",
   "identityManagement": "إدارة الهوية",

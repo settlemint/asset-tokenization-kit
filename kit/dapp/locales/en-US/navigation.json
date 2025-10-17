@@ -18,8 +18,10 @@
     "custody": "Custody",
     "income": "Income"
   },
-  "administration": "Administration",
-  "platformSettings": "Platform Settings",
+  "participants": "Participants",
+  "participantsUsers": "Users",
+  "participantsEntities": "Entities",
+  "platformSettings": "Platform settings",
   "userManagement": "User Management",
   "identityManagement": "Identity Management",
   "settings": {

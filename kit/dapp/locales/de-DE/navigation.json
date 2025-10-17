@@ -18,7 +18,9 @@
     "custody": "Treuhand",
     "income": "Einkommen"
   },
-  "administration": "Verwaltung",
+  "participants": "Teilnehmer",
+  "participantsUsers": "Benutzer",
+  "participantsEntities": "Organisationen",
   "platformSettings": "Plattform-Einstellungen",
   "userManagement": "Benutzerverwaltung",
   "identityManagement": "Identitätsverwaltung",
