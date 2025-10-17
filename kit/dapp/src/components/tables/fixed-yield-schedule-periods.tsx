@@ -166,7 +166,7 @@ export function FixedYieldSchedulePeriodsTable({
           },
         }),
       ] as ColumnDef<FixedYieldSchedulePeriod>[]),
-    [t, assetSymbol]
+    [t, assetSymbol, currentPeriodId]
   );
 
   if (periods.length === 0) {

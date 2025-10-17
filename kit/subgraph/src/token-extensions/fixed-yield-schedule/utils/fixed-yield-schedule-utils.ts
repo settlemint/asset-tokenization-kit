@@ -73,7 +73,7 @@ export function updateYield(token: Token): TokenFixedYieldSchedule | null {
 
   // Mark all periods that are before the current period as completed
   for (let i = 0; i < periods.length; i++) {
-    const period = fetchFixedYieldSchedulePeriod(periods[i].id);
+    const period = periods[i];
     if (period.endDate.le(fixedYieldCurrentPeriod.startDate)) {
       period.completed = true;
       period.save();
@@ -132,9 +132,7 @@ export function updateYield(token: Token): TokenFixedYieldSchedule | null {
       setBigNumber(
         period,
         "totalUnclaimedYield",
-        totalYieldPerPeriod.value.minus(
-          fixedYieldCurrentPeriod.totalClaimedExact
-        ),
+        totalYieldPerPeriod.value.minus(period.totalClaimedExact),
         denominationAssetDecimals
       );
       period.save();

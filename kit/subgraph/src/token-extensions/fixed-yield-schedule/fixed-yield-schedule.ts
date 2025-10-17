@@ -166,6 +166,26 @@ export function handleYieldClaimed(event: YieldClaimed): void {
   }
 
   const periods = fixedYieldSchedule.periods.load();
+  // Set the same total yield for all periods that are not completed
+  for (let i = 0; i < periods.length; i++) {
+    const period = periods[i];
+    if (!period.completed) {
+      setBigNumber(
+        period,
+        "totalYield",
+        event.params.totalYieldPerPeriod,
+        denominationAssetDecimals
+      );
+      setBigNumber(
+        period,
+        "totalUnclaimedYield",
+        event.params.totalYieldPerPeriod.minus(period.totalClaimedExact),
+        denominationAssetDecimals
+      );
+      period.save();
+    }
+  }
+
   const totalClaimed = fixedYieldSchedule.totalClaimedExact.plus(
     event.params.claimedAmount
   );
@@ -189,7 +209,6 @@ export function handleYieldClaimed(event: YieldClaimed): void {
     totalYield,
     denominationAssetDecimals
   );
-  fixedYieldSchedule.save();
 
   const currentPeriodId = getPeriodId(
     event.address,
@@ -198,24 +217,12 @@ export function handleYieldClaimed(event: YieldClaimed): void {
   const currentPeriod = TokenFixedYieldSchedulePeriod.load(currentPeriodId);
   if (!currentPeriod) {
     // There is no current period, the schedule has ended
+    fixedYieldSchedule.currentPeriod = null;
     fixedYieldSchedule.nextPeriod = null;
     fixedYieldSchedule.save();
     return;
   }
 
-  // Set the same total yield for all periods that are not completed
-  for (let i = 0; i < periods.length; i++) {
-    const period = periods[i];
-    if (!period.completed) {
-      setBigNumber(
-        currentPeriod,
-        "totalYield",
-        event.params.totalYieldPerPeriod,
-        denominationAssetDecimals
-      );
-      period.save();
-    }
-  }
   fixedYieldSchedule.currentPeriod = currentPeriod.id;
 
   const nextPeriodId = getPeriodId(
