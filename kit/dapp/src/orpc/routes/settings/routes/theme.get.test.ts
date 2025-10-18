@@ -18,7 +18,16 @@ const { getThemeMock, updateThemeMock } = vi.hoisted(() => ({
   updateThemeMock: vi.fn(),
 }));
 
+// Mirror repository export so conflict handling keeps working in tests.
+class ThemeVersionConflictError extends Error {
+  constructor() {
+    super("Theme version conflict");
+    this.name = "ThemeVersionConflictError";
+  }
+}
+
 vi.mock("@/components/theme/lib/repository", () => ({
+  ThemeVersionConflictError,
   getTheme: getThemeMock,
   updateTheme: updateThemeMock,
 }));
