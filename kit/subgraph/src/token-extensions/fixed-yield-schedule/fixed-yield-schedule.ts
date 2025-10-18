@@ -156,7 +156,7 @@ export function handleYieldClaimed(event: YieldClaimed): void {
     actionExecuted(
       event,
       ActionName.ClaimYield,
-      event.address,
+      fixedYieldSchedule.token, // Use the address of the token as the target
       createActionIdentifier(ActionName.ClaimYield, [
         event.address,
         event.params.holder,

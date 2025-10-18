@@ -94,12 +94,20 @@ export const RawTokenSchema = z.object({
     .describe("The amount of tokens redeemed"),
   yield: z
     .object({
-      id: ethereumAddress.describe("The address of the token"),
       schedule: z
         .object({
           id: ethereumAddress.describe(
             "The address of the yield schedule of the token"
           ),
+          denominationAsset: z
+            .object({
+              id: ethereumAddress.describe(
+                "The denomination asset contract address"
+              ),
+              symbol: assetSymbol().describe("The denomination asset symbol"),
+              decimals: decimals().describe("The denomination asset decimals"),
+            })
+            .describe("The denomination asset details"),
         })
         .nullable(),
     })

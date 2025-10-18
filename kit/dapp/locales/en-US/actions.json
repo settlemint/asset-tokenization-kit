@@ -12,6 +12,7 @@
       "status": "Status",
       "type": "Type",
       "activeAt": "Scheduled",
+      "expiresAt": "Expires",
       "executedAt": "Completed",
       "executedBy": "Executed by",
       "execute": "Execute"
@@ -31,8 +32,8 @@
     "searchPlaceholder": "Search actions"
   },
   "status": {
-    "PENDING": "Upcoming",
-    "ACTIVE": "Pending",
+    "UPCOMING": "Upcoming",
+    "PENDING": "Pending",
     "EXECUTED": "Completed",
     "EXPIRED": "Expired"
   },

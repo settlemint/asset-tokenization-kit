@@ -140,6 +140,12 @@ function RouteComponent() {
     <>
       <DetailGrid title={t("tokens:yield.scheduleConfiguration")}>
         <DetailGridItem
+          label={t("tokens:fields.contractAddress")}
+          info={t("tokens:fields.contractAddressInfo")}
+          value={yieldSchedule.id}
+          type="address"
+        />
+        <DetailGridItem
           label={t("tokens:yield.fields.startDate")}
           info={t("tokens:yield.fields.startDateInfo")}
           value={yieldSchedule.startDate}

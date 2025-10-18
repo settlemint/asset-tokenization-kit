@@ -151,9 +151,12 @@ describe(
             executors: [adminUserData.wallet],
             id: expect.any(String),
           },
+          expiresAt: null,
           id: expect.any(String),
           name: "RedeemBond",
-          status: "ACTIVE",
+          // It is set to UPCOMING because we use the actual time (in anvil we have manipulated the time)
+          // In a production environment, it would be set to PENDING
+          status: "UPCOMING",
           target: bond.id,
         },
       ]);
@@ -186,6 +189,7 @@ describe(
             executors: [adminUserData.wallet],
             id: expect.any(String),
           },
+          expiresAt: null,
           id: expect.any(String),
           name: "RedeemBond",
           status: "EXECUTED",

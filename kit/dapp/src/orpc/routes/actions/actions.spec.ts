@@ -67,7 +67,10 @@ describe("Actions API", () => {
           name: expect.any(String),
           activeAt: expect.any(Date),
           target: expect.stringMatching(/^0x[a-fA-F0-9]{40}$/),
-          status: expect.stringMatching(/^(PENDING|ACTIVE|EXECUTED|EXPIRED)$/),
+          status: expect.stringMatching(
+            /^(PENDING|UPCOMING|EXECUTED|EXPIRED)$/
+          ),
+          expiresAt: null,
           executor: expect.objectContaining({
             id: expect.stringMatching(/^0x[a-fA-F0-9]+$/),
             executors: expect.arrayContaining([
@@ -94,15 +97,15 @@ describe("Actions API", () => {
     });
 
     test("should filter by status", async () => {
-      const activeActions = await client.actions.list({
-        status: "ACTIVE",
+      const pendingActions = await client.actions.list({
+        status: "PENDING",
       });
 
-      expect(activeActions).toBeInstanceOf(Array);
+      expect(pendingActions).toBeInstanceOf(Array);
 
-      // All returned actions should be ACTIVE
-      activeActions.forEach((action) => {
-        expect(action.status).toBe("ACTIVE");
+      // All returned actions should be PENDING
+      pendingActions.forEach((action) => {
+        expect(action.status).toBe("PENDING");
       });
     });
 
@@ -142,12 +145,6 @@ describe("Actions API", () => {
   });
 
   describe("Error Handling", () => {
-    test("should handle filter parameters", async () => {
-      // Test filters
-      const filteredActions = await client.actions.list({ status: "ACTIVE" });
-      expect(filteredActions).toBeInstanceOf(Array);
-    });
-
     test("should handle empty filter results", async () => {
       const emptyResults = await client.actions.list({
         status: "EXECUTED",

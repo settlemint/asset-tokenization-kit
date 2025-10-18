@@ -47,7 +47,6 @@ export const TokenAssetSchema = z.object({
         .nullable()
         .describe("The yield schedule details"),
     })
-    .optional()
     .nullable()
     .describe("The yield details"),
 });

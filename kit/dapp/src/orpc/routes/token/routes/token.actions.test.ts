@@ -52,7 +52,7 @@ describe("Token Actions Schema Extension", () => {
 
   it("should require tokenAddress field", () => {
     const missingTokenAddress = {
-      status: "ACTIVE" as const,
+      status: "PENDING" as const,
     };
     expect(() => TokenActionsInputSchema.parse(missingTokenAddress)).toThrow();
   });

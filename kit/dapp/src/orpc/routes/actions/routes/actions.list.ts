@@ -1,10 +1,12 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { getUnixTimeMicroseconds } from "@atk/zod/src/timestamp";
 import type { VariablesOf } from "@settlemint/sdk-thegraph";
 import * as z from "zod";
 import {
-  ActionsListDataSchema,
+  ActionSchema,
   type ActionsListResponse,
+  type ActionStatus,
 } from "./actions.list.schema";
 
 /**
@@ -30,7 +32,8 @@ const LIST_ACTIONS_QUERY = theGraphGraphql(`
         name
         target
         activeAt
-        status
+        executed
+        expiresAt
         executedAt
         executedBy
         executor {
@@ -40,6 +43,18 @@ const LIST_ACTIONS_QUERY = theGraphGraphql(`
       }
     }
   `);
+
+/**
+ * Schema for the response from the GraphQL query.
+ */
+const ActionsGraphResponseSchema = z.array(
+  ActionSchema.omit({ status: true }).extend({ executed: z.boolean() })
+);
+
+/**
+ * Type for the response from the GraphQL query.
+ */
+type ActionsGraphResponse = z.infer<typeof ActionsGraphResponseSchema>;
 
 /**
  * Actions listing route handler.
@@ -85,9 +100,28 @@ export const list = authRouter.actions.list.handler(
     };
 
     // Apply optional filters
-    if (input.status !== undefined) {
-      where.status = input.status;
+    const now = new Date();
+    const nowMicroseconds = getUnixTimeMicroseconds(now);
+    switch (input.status) {
+      case "PENDING":
+        where.activeAt_lte = nowMicroseconds;
+        where.expiresAt_gt = nowMicroseconds;
+        where.executed = false;
+        break;
+      case "UPCOMING":
+        where.activeAt_gt = nowMicroseconds;
+        where.expiresAt_gt = nowMicroseconds;
+        where.executed = false;
+        break;
+      case "EXECUTED":
+        where.executed = true;
+        break;
+      case "EXPIRED":
+        where.expiresAt_lte = nowMicroseconds;
+        where.executed = false;
+        break;
     }
+
     if (Array.isArray(input.targets) && input.targets.length > 0) {
       where.target_in = input.targets.map((target) => target.toLowerCase());
     }
@@ -99,10 +133,32 @@ export const list = authRouter.actions.list.handler(
     const response = await context.theGraphClient.query(LIST_ACTIONS_QUERY, {
       input: { where },
       output: z.object({
-        actions: ActionsListDataSchema,
+        actions: ActionsGraphResponseSchema,
       }),
     });
 
-    return response.actions;
+    return response.actions.map((action) => {
+      const { executed: _, ...rest } = action;
+      return {
+        ...rest,
+        status: getActionStatus(action, now),
+      };
+    });
   }
 );
+
+function getActionStatus(
+  action: ActionsGraphResponse[number],
+  now: Date
+): ActionStatus {
+  if (action.executed) {
+    return "EXECUTED";
+  }
+  if (action.expiresAt && action.expiresAt.getTime() <= now.getTime()) {
+    return "EXPIRED";
+  }
+  if (action.activeAt.getTime() > now.getTime()) {
+    return "UPCOMING";
+  }
+  return "PENDING";
+}

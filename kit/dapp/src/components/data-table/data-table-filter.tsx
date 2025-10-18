@@ -388,6 +388,7 @@ export function PropertyFilterList<TData>({ table }: { table: Table<TData> }) {
               />
             );
           case "option":
+          case "status":
             return (
               <RenderFilter<TData, "option">
                 key={`filter-${id}`}

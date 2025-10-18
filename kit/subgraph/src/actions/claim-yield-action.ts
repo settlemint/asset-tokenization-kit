@@ -47,14 +47,14 @@ export function updateClaimYieldActionsOnBalanceIncrease(
       period.id,
     ]);
     if (
-      actionExists(ActionName.ClaimYield, fixedYieldSchedule.id, identifier)
+      actionExists(ActionName.ClaimYield, token.id, identifier) // Use the address of the token as the target
     ) {
       continue;
     }
     createAction(
       timestamp,
       ActionName.ClaimYield,
-      fixedYieldSchedule.id,
+      token.id, // Use the address of the token as the target
       period.endDate,
       null,
       [balance.account],
@@ -90,6 +90,6 @@ export function updateClaimYieldActionsOnBalanceRemove(
       account,
       period.id,
     ]);
-    deleteAction(ActionName.ClaimYield, fixedYieldSchedule.id, identifier);
+    deleteAction(ActionName.ClaimYield, token.id, identifier); // Use the address of the token as the target
   }
 }

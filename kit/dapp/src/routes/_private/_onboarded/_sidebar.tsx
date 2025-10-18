@@ -25,7 +25,9 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar")({
       ),
       queryClient.ensureQueryData(
         orpc.actions.list.queryOptions({
-          input: {},
+          input: {
+            status: "PENDING",
+          },
         })
       ),
     ]);

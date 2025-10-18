@@ -152,6 +152,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         symbol: asset.symbol,
         decimals: asset.decimals,
         totalSupply: asset.totalSupply,
+        yield: null,
       },
     } satisfies TokenBalance;
   }, [

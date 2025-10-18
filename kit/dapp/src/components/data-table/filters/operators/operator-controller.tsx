@@ -172,6 +172,7 @@ export function PropertyFilterOperatorMenu<TData>({
 
   switch (type) {
     case "option":
+    case "status":
       return (
         <PropertyFilterOptionOperatorMenu
           column={column}

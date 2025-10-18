@@ -21,6 +21,17 @@ export async function invalidateTokenActionQueries(
       queryKey: orpc.actions.list.queryOptions({ input: {} }).queryKey,
     }),
     queryClient.invalidateQueries({
+      queryKey: orpc.actions.list.queryOptions({ input: { status: "PENDING" } })
+        .queryKey,
+    }),
+    queryClient.invalidateQueries({
+      queryKey: orpc.actions.list.queryOptions({
+        input: {
+          name: "ClaimYield",
+        },
+      }).queryKey,
+    }),
+    queryClient.invalidateQueries({
       queryKey: orpc.actions.list.queryOptions({
         input: { targets: [tokenAddress] },
       }).queryKey,

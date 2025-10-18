@@ -140,6 +140,7 @@ export function PropertyFilterValueDisplay<TData, TValue>({
 }: PropertyFilterValueDisplayProps<TData, TValue>) {
   switch (columnMeta.type) {
     case "option":
+    case "status":
       return (
         <PropertyFilterOptionValueDisplay
           id={id}
