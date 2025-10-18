@@ -77,20 +77,36 @@ contract ATKXvPSettlementImplementation is
 
     /// @notice Modifier to check if a settlement is open
     modifier onlyOpen() {
+        _onlyOpen();
+        _;
+    }
+
+    /// @notice Reverts when the settlement is closed, cancelled, or expired.
+    function _onlyOpen() internal view {
         if (_status.executed) revert XvPSettlementAlreadyExecuted();
         if (_status.cancelled) revert XvPSettlementAlreadyCancelled();
         if (block.timestamp > _cutoffDate || block.timestamp == _cutoffDate) revert XvPSettlementExpired();
-        _;
     }
 
     /// @notice Modifier to check if a settlement is not executed
     modifier onlyNotExecuted() {
-        if (_status.executed) revert XvPSettlementAlreadyExecuted();
+        _onlyNotExecuted();
         _;
+    }
+
+    /// @notice Blocks execution paths that require the settlement to remain pending.
+    function _onlyNotExecuted() internal view {
+        if (_status.executed) revert XvPSettlementAlreadyExecuted();
     }
 
     /// @notice Modifier to check if the sender is involved in a settlement
     modifier onlyInvolvedSender() {
+        _onlyInvolvedSender();
+        _;
+    }
+
+    /// @notice Confirms the caller is part of the configured flows.
+    function _onlyInvolvedSender() internal view {
         bool involved = false;
         for (uint256 i = 0; i < _flows.length; ++i) {
             if (_flows[i].from == _msgSender()) {
@@ -99,13 +115,17 @@ contract ATKXvPSettlementImplementation is
             }
         }
         if (!involved) revert SenderNotInvolvedInSettlement();
-        _;
     }
 
     /// @notice Modifier to ensure the caller is a local participant (involved in a local flow)
     modifier onlyLocalParticipant() {
-        if (!_isLocalParticipant(_msgSender())) revert SenderNotLocal();
+        _onlyLocalParticipant();
         _;
+    }
+
+    /// @notice Ensures the caller participates in local settlement activity.
+    function _onlyLocalParticipant() internal view {
+        if (!_isLocalParticipant(_msgSender())) revert SenderNotLocal();
     }
 
     /// @notice Constructor that disables initializers to prevent implementation contract initialization

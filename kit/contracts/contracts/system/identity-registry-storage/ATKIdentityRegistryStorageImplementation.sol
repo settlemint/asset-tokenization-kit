@@ -265,7 +265,8 @@ contract ATKIdentityRegistryStorageImplementation is
         if (_identities[_userAddress].identityContract != address(0)) revert IdentityAlreadyExists(_userAddress);
 
         // Store the new identity information.
-        _identities[_userAddress] = Identity(address(_identity), _country, address(0));
+        _identities[_userAddress] =
+            Identity({ identityContract: address(_identity), country: _country, recoveredWallet: address(0) });
         // Add the user's wallet address to the list of all identity wallets.
         _identityWallets.push(_userAddress);
         // Store the index (plus one, for 1-based indexing) in the `_identityWalletsIndex` map for O(1) removal later.

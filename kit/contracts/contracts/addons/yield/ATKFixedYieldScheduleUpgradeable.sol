@@ -49,16 +49,27 @@ contract ATKFixedYieldScheduleUpgradeable is
     /// @dev Modifier to check if the sender has a specific role on the connected asset (token)
     /// @param role The asset role to check for
     modifier onlyAssetRole(bytes32 role) {
-        _checkAssetRole(role, _msgSender());
+        _onlyAssetRole(role);
         _;
+    }
+
+    /// @notice Validates the caller holds the specified asset role.
+    /// @param role Role identifier enforced for the caller.
+    function _onlyAssetRole(bytes32 role) internal view {
+        _checkAssetRole(role, _msgSender());
     }
 
     /// @dev Modifier to check if sender has factory or governance privileges
     modifier onlyFactoryOrGovernance() {
+        _onlyFactoryOrGovernance();
+        _;
+    }
+
+    /// @notice Confirms caller is the factory or asset governance.
+    function _onlyFactoryOrGovernance() internal view {
         if (_msgSender() != _factory) {
             _checkAssetRole(ATKAssetRoles.GOVERNANCE_ROLE, _msgSender());
         }
-        _;
     }
 
     /// @notice Internal function to check if an account has a specific role on the connected asset (token)

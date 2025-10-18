@@ -135,6 +135,7 @@ library AirdropUtils {
 
         for (uint256 i = 0; i < size; i++) {
             dummyIndices[i] = i;
+            // forge-lint: disable-next-line(unsafe-typecast) -- i < size so i+1 fits within 160 bits
             dummyRecipients[i] = address(uint160(i + 1)); // Generate dummy addresses
             dummyAmounts[i] = 1 ether;
             dummyProofs[i] = new bytes32[](1);

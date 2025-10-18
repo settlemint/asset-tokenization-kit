@@ -108,10 +108,15 @@ contract TokenTrustedIssuersRegistry is ERC165, ERC2771Context, IATKTokenTrusted
     /// @notice Modifier to restrict access to accounts with GOVERNANCE_ROLE on the associated token
     /// @dev Checks if the caller has the GOVERNANCE_ROLE on the token contract
     modifier onlyTokenGovernance() {
+        _onlyTokenGovernance();
+        _;
+    }
+
+    /// @notice Requires the caller to hold the token governance role.
+    function _onlyTokenGovernance() internal view {
         if (!_token.hasRole(ATKAssetRoles.GOVERNANCE_ROLE, _msgSender())) {
             revert AccessControlUnauthorizedAccount(_msgSender(), ATKAssetRoles.GOVERNANCE_ROLE);
         }
-        _;
     }
 
     // --- Token-Specific Getters ---
@@ -135,7 +140,8 @@ contract TokenTrustedIssuersRegistry is ERC165, ERC2771Context, IATKTokenTrusted
         if (_trustedIssuers[issuerAddress].exists) revert IssuerAlreadyExists(issuerAddress);
 
         // Store issuer details
-        _trustedIssuers[issuerAddress] = TrustedIssuer(issuerAddress, true, _claimTopics);
+        _trustedIssuers[issuerAddress] =
+            TrustedIssuer({ issuer: issuerAddress, exists: true, claimTopics: _claimTopics });
         _issuerAddresses.push(issuerAddress);
 
         // Add issuer to claim topic mappings

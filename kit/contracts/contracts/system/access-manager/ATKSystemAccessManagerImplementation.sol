@@ -50,11 +50,17 @@ contract ATKSystemAccessManagerImplementation is
     /// @dev This implements the pattern mentioned in the ticket: onlyRoles(MANAGER_ROLE, [SYSTEM_ROLES])
     /// @param roles Array of roles, where the caller must have at least one
     modifier onlyRoles(bytes32[] memory roles) {
+        _onlyRoles(roles);
+        _;
+    }
+
+    /// @notice Confirms caller owns at least one role from the provided set.
+    /// @param roles Role identifiers authorized for the caller.
+    function _onlyRoles(bytes32[] memory roles) internal view {
         if (!_hasAnyRole(roles, _msgSender())) {
             // Use OpenZeppelin's standard AccessControl error
             revert AccessControlUnauthorizedAccount(_msgSender(), roles.length > 0 ? roles[0] : bytes32(0));
         }
-        _;
     }
 
     // --- Internal Role Checking Functions ---

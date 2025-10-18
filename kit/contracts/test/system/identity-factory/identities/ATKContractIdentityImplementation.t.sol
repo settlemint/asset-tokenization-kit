@@ -142,7 +142,9 @@ contract MockIdentityReceiver is IIdentity, ERC165 {
         returns (bytes32 claimId)
     {
         claimId = keccak256(abi.encode(_issuer, _topic));
-        claims[claimId] = ClaimData(_topic, _scheme, _issuer, _signature, _data, _uri);
+        claims[claimId] = ClaimData({
+            topic: _topic, scheme: _scheme, issuer: _issuer, signature: _signature, data: _data, uri: _uri
+        });
         claimExists[claimId] = true;
         return claimId;
     }
@@ -210,7 +212,9 @@ contract MockIdentityReceiver is IIdentity, ERC165 {
     )
         external
     {
-        validationClaims[_claimId] = ClaimData(_topic, _scheme, _issuer, _signature, _data, _uri);
+        validationClaims[_claimId] = ClaimData({
+            topic: _topic, scheme: _scheme, issuer: _issuer, signature: _signature, data: _data, uri: _uri
+        });
     }
 
     // Stub implementations for other IERC735/IIdentity methods

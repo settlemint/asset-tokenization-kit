@@ -92,10 +92,15 @@ abstract contract _SMARTPausableLogic is _SMARTExtension, ISMARTPausable {
     ///      operations during a pause.
     ///      The `_;` statement indicates where the modified function's body will be executed.
     modifier whenNotPaused() {
+        _whenNotPaused();
+        _;
+    }
+
+    /// @notice Guards logic that can only run while the token is active.
+    function _whenNotPaused() internal view {
         if (paused()) {
             revert TokenPaused();
         }
-        _;
     }
 
     /// @notice Modifier to restrict a function to be callable only when the contract *is* paused.
@@ -104,9 +109,14 @@ abstract contract _SMARTPausableLogic is _SMARTExtension, ISMARTPausable {
     ///      This might be used for specific administrative functions that should only run during a maintenance
     ///      (paused) period.
     modifier whenPaused() {
+        _whenPaused();
+        _;
+    }
+
+    /// @notice Guards logic that executes exclusively during maintenance pauses.
+    function _whenPaused() internal view {
         if (!paused()) {
             revert ExpectedPause();
         }
-        _;
     }
 }
