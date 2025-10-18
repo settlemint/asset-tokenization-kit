@@ -59,10 +59,16 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
     /// @notice Modifier to check if batch size is within allowed limits.
     /// @param batchSize The size of the batch to validate.
     modifier checkBatchSize(uint256 batchSize) {
+        _checkBatchSize(batchSize);
+        _;
+    }
+
+    /// @notice Enforces the maximum supported batch claim size.
+    /// @param batchSize Number of entries provided by the caller.
+    function _checkBatchSize(uint256 batchSize) internal pure {
         if (batchSize > MAX_BATCH_SIZE) {
             revert BatchSizeExceedsLimit();
         }
-        _;
     }
 
     // --- Storage Variables ---

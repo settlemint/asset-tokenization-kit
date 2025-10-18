@@ -402,6 +402,7 @@ contract SMARTCrossExtensionTest is Test {
         // Setup multiple users with various states
         uint256 userCount = 10;
         for (uint256 i = 0; i < userCount; i++) {
+            // forge-lint: disable-next-line(unsafe-typecast) -- 1000 + i < 2**160 for bounded loop
             address user = address(uint160(1000 + i));
             identityUtils.createClientIdentity(user, TestConstants.COUNTRY_CODE_BE);
             claimUtils.issueAllClaims(user);

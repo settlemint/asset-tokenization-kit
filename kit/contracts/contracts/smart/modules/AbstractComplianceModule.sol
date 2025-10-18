@@ -40,13 +40,19 @@ abstract contract AbstractComplianceModule is ERC2771Context, ISMARTComplianceMo
     /// obtained via `ISMART(_token).compliance()` (see `ISMART.sol`).
     /// This ensures only the SMART token or its Compliance contract can trigger module hooks.
     modifier onlyTokenOrCompliance(address _token) {
+        _onlyTokenOrCompliance(_token);
+        _;
+    }
+
+    /// @notice Restricts hooks to the token or its compliance contract.
+    /// @param _token SMART token invoking the hook.
+    function _onlyTokenOrCompliance(address _token) internal view {
         if (msg.sender != _token) {
             address complianceAddress = address(ISMART(_token).compliance());
             if (msg.sender != complianceAddress) {
                 revert UnauthorizedHookCaller(msg.sender);
             }
         }
-        _;
     }
 
     // --- ISMARTComplianceModule State-Changing Hooks (Empty Virtual Implementations) ---
