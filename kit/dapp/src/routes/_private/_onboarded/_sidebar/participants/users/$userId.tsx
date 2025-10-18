@@ -22,7 +22,7 @@ const routeParamsSchema = z.object({
  * for all user detail sub-routes. The route is authenticated and requires
  * the user to be onboarded.
  *
- * Route path: `/admin/user-management/{userId}`
+ * Route path: `/participants/users/{userId}`
  *
  * @remarks
  * - The userId parameter must be a non-empty string
@@ -34,13 +34,13 @@ const routeParamsSchema = z.object({
  * ```
  * // Navigating to this route
  * navigate({
- *   to: '/admin/user-management/$userId',
+ *   to: '/participants/users/$userId',
  *   params: { userId: 'user-123' }
  * });
  * ```
  */
 export const Route = createFileRoute(
-  "/_private/_onboarded/_sidebar/admin/user-management/$userId"
+  "/_private/_onboarded/_sidebar/participants/users/$userId"
 )({
   parseParams: (params) => routeParamsSchema.parse(params),
   /**
@@ -67,8 +67,13 @@ export const Route = createFileRoute(
       user,
       identity,
       breadcrumb: [
-        createI18nBreadcrumbMetadata("userManagement"),
-        { title: user.name, href: `/admin/user-management/${userId}` },
+        createI18nBreadcrumbMetadata("participants", {
+          href: "/participants/users",
+        }),
+        createI18nBreadcrumbMetadata("participantsUsers", {
+          href: `/participants/users`,
+        }),
+        { title: user.name, href: `/participants/users/${userId}` },
       ],
     };
   },

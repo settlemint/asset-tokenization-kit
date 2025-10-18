@@ -14,7 +14,7 @@ export interface UserTabConfig {
 export function getUserTabConfiguration({
   userId,
 }: UserTabConfigurationParams): UserTabConfig[] {
-  const baseUrl = `/admin/user-management/${userId}`;
+  const baseUrl = `/participants/users/${userId}`;
 
   const tabs: UserTabConfig[] = [
     {

@@ -34,7 +34,7 @@ export function UserActionsMenu({ user }: UserActionsMenuProps) {
     console.log("View details for user:", user.id);
     // Future implementation:
     // navigate({
-    //   to: "/admin/user-management/$userId",
+    //   to: "/participants/users/$userId",
     //   params: { userId: user.id },
     // });
   };

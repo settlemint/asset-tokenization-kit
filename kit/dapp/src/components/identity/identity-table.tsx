@@ -44,7 +44,7 @@ export const IdentityTable = withErrorBoundary(function IdentityTable() {
   const handleRowClick = async (identity: IdentityRow) => {
     try {
       await router.navigate({
-        to: "/admin/identity-management/$address",
+        to: "/participants/entities/$address",
         params: { address: identity.id },
       });
     } catch {

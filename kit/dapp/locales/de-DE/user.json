@@ -51,15 +51,17 @@
         "viewDetails": "View Details"
       },
       "columns": {
-        "actions": "Actions",
-        "created": "Created",
-        "email": "Email",
-        "identity": "Identity",
-        "lastActive": "Last Active",
         "name": "Name",
-        "role": "Role",
+        "email": "Email",
+        "wallet": "EOA (Wallet Address)",
+        "identity": "Identity Address",
+        "type": "Type",
+        "verifications": "Verifications",
         "status": "Status",
-        "wallet": "Wallet"
+        "lastActive": "Last Activity",
+        "created": "Created",
+        "role": "Role",
+        "actions": "Actions"
       },
       "emptyState": {
         "description": "No users have been registered yet.",
@@ -71,7 +73,8 @@
         "navigationFailed": "Failed to navigate to user details"
       },
       "fallback": {
-        "never": "Never"
+        "never": "Never",
+        "unknown": "Unknown"
       },
       "identity": {
         "none": "Keine Identität"
@@ -95,6 +98,14 @@
         "pendingRegistrationAriaLabel": "User identity registration is pending",
         "registered": "Registriert",
         "registeredAriaLabel": "Benutzer ist registriert und on-chain verifiziert"
+      },
+      "userType": {
+        "admin": "Admin",
+        "investor": "Investor",
+        "trustedIssuer": "Trusted Issuer"
+      },
+      "verifications": {
+        "none": "No verifications"
       }
     }
   },

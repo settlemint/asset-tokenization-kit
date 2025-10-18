@@ -22,7 +22,7 @@ const routeParamsSchema = z.object({
  * for all identity detail sub-routes. The route is authenticated and requires
  * the user to be onboarded.
  *
- * Route path: `/admin/identity-management/{address}`
+ * Route path: `/participants/entities/{address}`
  *
  * @remarks
  * - The address parameter must be a non-empty string (wallet/identity address)
@@ -34,13 +34,13 @@ const routeParamsSchema = z.object({
  * ```
  * // Navigating to this route
  * navigate({
- *   to: '/admin/identity-management/$address',
+ *   to: '/participants/entities/$address',
  *   params: { address: '0x1234567890123456789012345678901234567890' }
  * });
  * ```
  */
 export const Route = createFileRoute(
-  "/_private/_onboarded/_sidebar/admin/identity-management/$address"
+  "/_private/_onboarded/_sidebar/participants/entities/$address"
 )({
   parseParams: (params) => routeParamsSchema.parse(params),
   /**
@@ -64,10 +64,15 @@ export const Route = createFileRoute(
     return {
       claimsData,
       breadcrumb: [
-        createI18nBreadcrumbMetadata("identityManagement"),
+        createI18nBreadcrumbMetadata("participants", {
+          href: "/participants/users",
+        }),
+        createI18nBreadcrumbMetadata("participantsEntities", {
+          href: "/participants/entities",
+        }),
         {
           title: `${address.slice(0, 6)}...${address.slice(-4)}`,
-          href: `/admin/identity-management/${address}`,
+          href: `/participants/entities/${address}`,
         },
       ],
     };

@@ -18,10 +18,12 @@
     "custody": "Custody",
     "income": "Income"
   },
-  "administration": "Administration",
-  "platformSettings": "Platform Settings",
-  "userManagement": "User Management",
-  "identityManagement": "Identity Management",
+  "participants": "Participants",
+  "participantsUsers": "Users",
+  "participantsEntities": "Entities",
+  "platformSettings": "Platform settings",
+  "userManagement": "Users",
+  "entityManagement": "Entities",
   "settings": {
     "assetTypes": {
       "title": "Asset Types",

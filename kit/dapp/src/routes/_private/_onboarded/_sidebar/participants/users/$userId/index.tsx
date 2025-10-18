@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next";
  * It inherits the user data from its parent route and displays the main
  * user information in detail grids.
  *
- * Route path: `/admin/user-management/{userId}/`
+ * Route path: `/participants/users/{userId}/`
  *
  * @remarks
  * - This is a child route that inherits data from the parent $userId route
@@ -28,7 +28,7 @@ import { useTranslation } from "react-i18next";
  * - Parent route handles layout, breadcrumbs, and tab navigation
  */
 export const Route = createFileRoute(
-  "/_private/_onboarded/_sidebar/admin/user-management/$userId/"
+  "/_private/_onboarded/_sidebar/participants/users/$userId/"
 )({
   errorComponent: DefaultCatchBoundary,
   component: RouteComponent,
@@ -44,7 +44,7 @@ export const Route = createFileRoute(
 function RouteComponent() {
   // Get data from parent route loader
   const { user, identity } = useLoaderData({
-    from: "/_private/_onboarded/_sidebar/admin/user-management/$userId",
+    from: "/_private/_onboarded/_sidebar/participants/users/$userId",
   });
   const { t } = useTranslation(["user", "common"]);
 
@@ -120,7 +120,7 @@ function RouteComponent() {
           {identity ? (
             <CopyToClipboard value={identity.id} className="max-w-full">
               <Link
-                to="/admin/identity-management/$address"
+                to="/participants/entities/$address"
                 params={{ address: identity.id }}
                 className="inline-flex min-w-0 max-w-full items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm transition-colors hover:text-primary"
               >

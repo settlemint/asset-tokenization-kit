@@ -121,6 +121,7 @@ export interface DataTableProps<TData> {
   externalState?: {
     pagination?: PaginationState;
     sorting?: SortingState;
+    globalFilter?: string;
     onPaginationChange?: (
       updater: PaginationState | ((old: PaginationState) => PaginationState)
     ) => void;
@@ -249,7 +250,7 @@ function DataTableComponent<TData>({
             sorting: externalState.sorting ?? localSorting,
             columnFilters: localColumnFilters,
             columnVisibility: localColumnVisibility,
-            globalFilter: localGlobalFilter,
+            globalFilter: externalState.globalFilter ?? localGlobalFilter,
             pagination: externalState.pagination ?? {
               pageIndex: 0,
               pageSize: initialPageSize ?? 10,
@@ -281,7 +282,22 @@ function DataTableComponent<TData>({
             onColumnFiltersChange: setLocalColumnFilters,
             onColumnVisibilityChange: setLocalColumnVisibility,
             onGlobalFilterChange: externalState.onGlobalFilterChange
-              ? debounce(externalState.onGlobalFilterChange, 1000)
+              ? debounce((updater: string | ((old: string) => string)) => {
+                  setLocalGlobalFilter((previous) =>
+                    typeof updater === "function"
+                      ? updater(externalState.globalFilter ?? previous)
+                      : updater
+                  );
+
+                  const currentValue =
+                    externalState.globalFilter ?? localGlobalFilter;
+                  const nextValue =
+                    typeof updater === "function"
+                      ? updater(currentValue)
+                      : updater;
+
+                  externalState.onGlobalFilterChange?.(nextValue);
+                }, 1000)
               : setLocalGlobalFilter,
             onPaginationChange: externalState.onPaginationChange ?? (() => {}),
           }

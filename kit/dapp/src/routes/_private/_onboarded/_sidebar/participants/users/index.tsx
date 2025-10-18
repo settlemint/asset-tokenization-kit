@@ -1,17 +1,44 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { UsersTable } from "@/components/users/users-table";
-import { createFileRoute } from "@tanstack/react-router";
+import {
+  CLAIM_ISSUER_ROLE,
+  IDENTITY_MANAGER_ROLE,
+} from "@/lib/constants/roles";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
-  "/_private/_onboarded/_sidebar/admin/user-management/"
+  "/_private/_onboarded/_sidebar/participants/users/"
 )({
+  beforeLoad: async ({ context: { queryClient, orpc } }) => {
+    const system = await queryClient.ensureQueryData(
+      orpc.system.read.queryOptions({
+        input: { id: "default" },
+      })
+    );
+
+    const roles = system.userPermissions?.roles;
+
+    if (
+      !roles?.[IDENTITY_MANAGER_ROLE.fieldName] &&
+      !roles?.[CLAIM_ISSUER_ROLE.fieldName]
+    ) {
+      throw redirect({
+        to: "/",
+      });
+    }
+  },
   component: UserManagementPage,
   loader: () => {
     return {
-      breadcrumb: [createI18nBreadcrumbMetadata("userManagement")],
+      breadcrumb: [
+        createI18nBreadcrumbMetadata("participants", {
+          href: "/participants/users",
+        }),
+        createI18nBreadcrumbMetadata("participantsUsers"),
+      ],
     };
   },
 });

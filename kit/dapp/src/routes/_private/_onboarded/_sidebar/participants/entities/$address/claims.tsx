@@ -9,10 +9,10 @@ import type { Address } from "viem";
  * This route shows a table of claims with their status, name, and issuer information.
  * It uses the mock data loaded by the parent route.
  *
- * Route path: `/admin/identity-management/{address}/claims`
+ * Route path: `/participants/entities/{address}/claims`
  */
 export const Route = createFileRoute(
-  "/_private/_onboarded/_sidebar/admin/identity-management/$address/claims"
+  "/_private/_onboarded/_sidebar/participants/entities/$address/claims"
 )({
   errorComponent: DefaultCatchBoundary,
   component: ClaimsPage,

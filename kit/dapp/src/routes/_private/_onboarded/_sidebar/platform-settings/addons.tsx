@@ -1,18 +1,18 @@
-import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
+import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { AddonsManagement } from "@/components/system-addons/management/addons-management";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
-  "/_private/_onboarded/_sidebar/admin/platform-settings/addons"
+  "/_private/_onboarded/_sidebar/platform-settings/addons"
 )({
   component: AddonsSettingsPage,
   loader: () => {
     return {
       breadcrumb: [
         createI18nBreadcrumbMetadata("platformSettings", {
-          href: "/admin/platform-settings/addons",
+          href: "/platform-settings/addons",
         }),
         createI18nBreadcrumbMetadata("settings.addons"),
       ],

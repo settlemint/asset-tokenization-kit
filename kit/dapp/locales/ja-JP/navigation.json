@@ -18,7 +18,9 @@
     "custody": "保管",
     "income": "収入"
   },
-  "administration": "管理",
+  "participants": "参加者",
+  "participantsUsers": "ユーザー",
+  "participantsEntities": "エンティティ",
   "platformSettings": "プラットフォーム設定",
   "userManagement": "ユーザー管理",
   "identityManagement": "アイデンティティ管理",
