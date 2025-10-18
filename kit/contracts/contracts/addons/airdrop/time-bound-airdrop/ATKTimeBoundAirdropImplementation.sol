@@ -40,9 +40,14 @@ contract ATKTimeBoundAirdropImplementation is IATKTimeBoundAirdrop, ATKAirdrop, 
 
     /// @notice Modifier to ensure the airdrop is currently active (within the time window).
     modifier onlyActive() {
+        _onlyActive();
+        _;
+    }
+
+    /// @notice Validates the claim window is currently open.
+    function _onlyActive() internal view {
         if (block.timestamp < _startTime) revert AirdropNotStarted();
         if (block.timestamp > _endTime) revert AirdropEnded();
-        _;
     }
 
     // --- Events ---

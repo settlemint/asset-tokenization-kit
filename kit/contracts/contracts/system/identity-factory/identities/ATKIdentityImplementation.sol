@@ -47,27 +47,42 @@ contract ATKIdentityImplementation is
 
     // --- Modifiers for Access Control ---
     modifier onlyManager() {
+        _onlyManager();
+        _;
+    }
+
+    /// @notice Ensures caller holds the management key or is the contract itself.
+    function _onlyManager() internal view {
         if (!(_msgSender() == address(this)
                     || keyHasPurpose(keccak256(abi.encode(_msgSender())), ERC734KeyPurposes.MANAGEMENT_KEY))) {
             revert SenderLacksManagementKey();
         }
-        _;
     }
 
     modifier onlyClaimKey() {
+        _onlyClaimKey();
+        _;
+    }
+
+    /// @notice Allows only claim-signing keys or self-calls.
+    function _onlyClaimKey() internal view {
         if (!(_msgSender() == address(this)
                     || keyHasPurpose(keccak256(abi.encode(_msgSender())), ERC734KeyPurposes.CLAIM_SIGNER_KEY))) {
             revert SenderLacksClaimSignerKey();
         }
-        _;
     }
 
     modifier onlyActionKey() {
+        _onlyActionKey();
+        _;
+    }
+
+    /// @notice Requires the action key or self-call authority.
+    function _onlyActionKey() internal view {
         if (!(_msgSender() == address(this)
                     || keyHasPurpose(keccak256(abi.encode(_msgSender())), ERC734KeyPurposes.ACTION_KEY))) {
             revert SenderLacksActionKey();
         }
-        _;
     }
 
     /// @notice Constructor for the `ATKIdentityImplementation`.
@@ -270,7 +285,7 @@ contract ATKIdentityImplementation is
     }
 
     /// @inheritdoc IERC735
-    /// @dev Removes a claim. Requires CLAIM_SIGNER_KEY purpose from the sender.
+    /// @dev Removes a claim. Requires ACTION_KEY purpose from the sender.
     function removeClaim(bytes32 _claimId)
         public
         virtual
