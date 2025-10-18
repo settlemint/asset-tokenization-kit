@@ -18,19 +18,17 @@ const { getThemeMock, updateThemeMock } = vi.hoisted(() => ({
   updateThemeMock: vi.fn(),
 }));
 
-// Mirror repository export so conflict handling keeps working in tests.
-class ThemeVersionConflictError extends Error {
-  constructor() {
-    super("Theme version conflict");
-    this.name = "ThemeVersionConflictError";
-  }
-}
-
-vi.mock("@/components/theme/lib/repository", () => ({
-  ThemeVersionConflictError,
-  getTheme: getThemeMock,
-  updateTheme: updateThemeMock,
-}));
+vi.mock("@/components/theme/lib/repository", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@/components/theme/lib/repository")>();
+  return {
+    // Preserve original exports like ThemeVersionConflictError
+    // so route handler logic stays consistent in tests.
+    ...actual,
+    getTheme: getThemeMock,
+    updateTheme: updateThemeMock,
+  };
+});
 
 vi.mock("@/orpc/middlewares/auth/offchain-permissions.middleware", () => ({
   offChainPermissionsMiddleware: vi.fn(() => undefined),
