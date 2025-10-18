@@ -85,10 +85,11 @@ abstract contract ATKSystemAccessManaged is IATKSystemAccessManaged {
     /// @param role1 First permissible role.
     /// @param role2 Second permissible role.
     function _onlySystemRoles2(bytes32 role1, bytes32 role2) internal view {
-        bytes32[] memory roles = new bytes32[](2);
-        roles[0] = role1;
-        roles[1] = role2;
-        _checkAnySystemRole(roles, _msgSender());
+        address sender = _msgSender();
+        // Direct role checks avoid temporary array allocation.
+        if (!(_hasSystemRole(role1, sender) || _hasSystemRole(role2, sender))) {
+            revert AccessControlUnauthorizedAccount(sender, role1);
+        }
     }
 
     /// @dev Modifier: Three roles version - ANY (OR logic)
@@ -102,11 +103,11 @@ abstract contract ATKSystemAccessManaged is IATKSystemAccessManaged {
     /// @param role2 Second permissible role.
     /// @param role3 Third permissible role.
     function _onlySystemRoles3(bytes32 role1, bytes32 role2, bytes32 role3) internal view {
-        bytes32[] memory roles = new bytes32[](3);
-        roles[0] = role1;
-        roles[1] = role2;
-        roles[2] = role3;
-        _checkAnySystemRole(roles, _msgSender());
+        address sender = _msgSender();
+        // Direct role checks avoid temporary array allocation.
+        if (!(_hasSystemRole(role1, sender) || _hasSystemRole(role2, sender) || _hasSystemRole(role3, sender))) {
+            revert AccessControlUnauthorizedAccount(sender, role1);
+        }
     }
 
     /// @dev Modifier: Restricts access to accounts that have ALL of the specified roles (AND logic).

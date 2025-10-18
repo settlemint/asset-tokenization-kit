@@ -161,7 +161,8 @@ contract ATKTokenSale is
         if (block.timestamp < saleStartTime) {
             revert SaleNotStarted();
         }
-        if (block.timestamp > saleEndTime) {
+        // solhint-disable-next-line gas-strict-inequalities
+        if (block.timestamp >= saleEndTime) {
             revert SaleEnded();
         }
     }

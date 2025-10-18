@@ -85,7 +85,8 @@ contract ATKXvPSettlementImplementation is
     function _onlyOpen() internal view {
         if (_status.executed) revert XvPSettlementAlreadyExecuted();
         if (_status.cancelled) revert XvPSettlementAlreadyCancelled();
-        if (block.timestamp > _cutoffDate || block.timestamp == _cutoffDate) revert XvPSettlementExpired();
+        // solhint-disable-next-line gas-strict-inequalities
+        if (block.timestamp >= _cutoffDate) revert XvPSettlementExpired();
     }
 
     /// @notice Modifier to check if a settlement is not executed

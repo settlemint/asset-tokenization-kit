@@ -285,7 +285,7 @@ contract ATKIdentityImplementation is
     }
 
     /// @inheritdoc IERC735
-    /// @dev Removes a claim. Requires CLAIM_SIGNER_KEY purpose from the sender.
+    /// @dev Removes a claim. Requires ACTION_KEY purpose from the sender.
     function removeClaim(bytes32 _claimId)
         public
         virtual
