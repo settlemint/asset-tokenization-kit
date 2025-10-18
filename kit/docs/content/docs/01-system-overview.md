@@ -29,7 +29,7 @@ The Asset Tokenization Kit follows a layered, modular architecture that separate
 ```mermaid
 graph TB
     subgraph "Frontend Layer"
-        UI[Next.js dApp<br/>React, TanStack Router]
+        UI[TanStack Start dApp<br/>React, TanStack Router]
         Mobile[Mobile Interface<br/>Responsive Design]
         Admin[Admin Dashboard<br/>System Management]
     end
@@ -199,10 +199,10 @@ The Asset Tokenization Kit leverages a modern, enterprise-grade technology stack
 | **Monorepo** | Turborepo | Latest | Build system and task orchestration | Lerna, Nx, Rush |
 | **Smart Contracts** | Solidity | Latest | Smart contract development language | Vyper, Rust (Solana) |
 | **Contract Framework** | Foundry + Hardhat | Latest | Testing and deployment frameworks | Truffle, Brownie |
-| **Frontend Framework** | Next.js | Latest | React-based web application framework | Vite + React, Remix |
+| **Frontend Framework** | TanStack Start | Latest | React-based web application framework | Vite + React, Remix |
 | **React Version** | React | Latest | UI library with latest features | Vue.js, Angular |
 | **State Management** | TanStack Query | Latest | Server state management | Redux, Zustand, SWR |
-| **Routing** | TanStack Router | Latest | Type-safe client-side routing | Next.js App Router, React Router |
+| **Routing** | TanStack Router | Latest | Type-safe client-side routing | TanStack Start App Router, React Router |
 | **Forms** | TanStack Form | Latest | Type-safe form management | React Hook Form, Formik |
 | **UI Components** | Radix UI | Latest | Unstyled, accessible components | Material-UI, Chakra UI |
 | **Styling** | Tailwind CSS | Latest | Utility-first CSS framework | Styled Components, CSS Modules |
@@ -316,7 +316,7 @@ The Asset Tokenization Kit consists of six primary components, each serving spec
 graph TB
     subgraph "Component Interaction Flow"
         subgraph "User Interface Layer"
-            WebApp[Web Application<br/>Next.js dApp<br/>• Asset Designer<br/>• Portfolio Management<br/>• Admin Dashboard]
+            WebApp[Web Application<br/>TanStack Start dApp<br/>• Asset Designer<br/>• Portfolio Management<br/>• Admin Dashboard]
 
             Mobile[Mobile Interface<br/>Responsive Design<br/>• Wallet Integration<br/>• Asset Trading<br/>• Compliance Forms]
         end
@@ -378,7 +378,7 @@ graph TB
 | Component | Primary Technologies | Key Responsibilities | Performance Targets |
 |-----------|---------------------|---------------------|-------------------|
 | **Smart Contracts** | Solidity, Foundry, Hardhat | Token logic, compliance enforcement, system governance | <100ms transaction confirmation |
-| **Frontend dApp** | Next.js, React, TanStack | User interface, wallet integration, asset management | <2s page load time |
+| **Frontend dApp** | TanStack Start, React, TanStack | User interface, wallet integration, asset management | <2s page load time |
 | **API Server** | ORPC, Better Auth, Drizzle | Business logic, authentication, data processing | <200ms API response time |
 | **Blockchain Indexer** | TheGraph, GraphQL, AssemblyScript | Event processing, data aggregation, query optimization | <5s indexing latency |
 | **Database** | PostgreSQL, Redis, MinIO | Data persistence, caching, file storage | 99.9% uptime target |
@@ -796,7 +796,7 @@ graph TB
 
 ### Frontend Application
 
-- **Next.js dApp**: [`kit/dapp/src/`](../../dapp/src/) - Complete frontend implementation
+- **TanStack Start dApp**: [`kit/dapp/src/`](../../dapp/src/) - Complete frontend implementation
 - **Component Library**: [`kit/dapp/src/components/`](../../dapp/src/components/) - UI components
 - **API Layer**: [`kit/dapp/src/orpc/`](../../dapp/src/orpc/) - Backend API procedures
 

@@ -1,14 +1,32 @@
 {
   "charts": {
+    "common": {
+      "noData": "لا توجد بيانات متاحة",
+      "noDataDescription": "لا توجد بيانات حالياً لعرضها في هذا الرسم البياني",
+      "intervalLabel": {
+        "hour": "ساعي",
+        "day": "يومي"
+      },
+      "range": {
+        "duration": "على مدار {{duration}}",
+        "window": "من {{start}} إلى {{end}}"
+      },
+      "units": {
+        "hour_one": "{{count}} ساعة",
+        "hour_other": "{{count}} ساعات",
+        "day_one": "{{count}} يوم",
+        "day_other": "{{count}} أيام"
+      }
+    },
     "assetActivity": {
       "title": "نشاط الأصول",
-      "description": "تتبع أحداث التحويل والسك والحرق",
-      "transferEventsLabel": "التحويلات",
-      "mintEventsLabel": "السك",
+      "description": "تتبع أحداث النقل، والتعدين، والحرق",
+      "transferEventsLabel": "النقل",
+      "mintEventsLabel": "التعدين",
       "burnEventsLabel": "الحرق",
       "empty": {
-        "title": "لا يوجد نشاط بعد",
-        "description": "سيظهر نشاط الأصول هنا بمجرد حدوث تحويلات أو عمليات سك أو حرق"
+        "title": "لا توجد نشاطات بعد",
+        "description": "سيظهر نشاط الأصول هنا بمجرد حدوث النقلات، أو التعدين، أو الحرق"
       }
     },
     "assetSupply": {
@@ -16,32 +34,46 @@
       "title": "عرض الأصول"
     },
     "assetValue": {
-      "description": "توزيع القيمة الإجمالية حسب نوع الأصل",
+      "description": "تفصيل القيمة الإجمالية حسب نوع الأصل",
       "title": "توزيع قيمة الأصول"
     },
     "assetLifecycle": {
-      "title": "إطلاق الأصول مقابل تصميمها",
-      "description": "تتبع كيف تواكب عمليات إطلاق الأصول الإنشاءات الجديدة",
-      "createdLabel": "الأصول التي تم تصميمها",
+      "title": "الأصول التي تم إطلاقها",
+      "description": "تتبع كيف تتماشى إطلاقات الأصول مع الإبداعات الجديدة",
+      "createdLabel": "الأصول التي تم إنشاؤها",
       "launchedLabel": "الأصول التي تم إطلاقها",
       "empty": {
-        "title": "لا توجد بيانات دورة حياة بعد",
-        "description": "ستظهر اتجاهات تصميم وإطلاق الأصول هنا عند بدء تصميم أصول جديدة"
+        "title": "لا توجد اتجاهات للأصول بعد",
+        "description": "سترى هذه الاتجاهات بمجرد إنشاء الأصول"
+      }
+    },
+    "identityGrowth": {
+      "title": "نمو الهوية",
+      "description": "راقب نمو الهويات الموثقة {{overRange}}",
+      "label": "التسجيلات النشطة",
+      "empty": {
+        "title": "لا توجد تسجيلات بعد",
+        "description": "ستظهر تسجيلات الهوية هنا بمجرد تسجيل الهويات"
       }
     },
     "totalCollateral": {
       "label": "إجمالي الضمانات"
     },
     "totalSupply": {
-      "description": "إجمالي عرض الأصول خلال آخر {{days}} يومًا",
+      "description": "إجمالي عرض الأصول على مدار {{days}} يومًا",
       "label": "إجمالي العرض",
       "title": "تاريخ عرض الرموز"
     },
+    "totalVolume": {
+      "description": "إجمالي حجم المعاملات على مدار {{days}} يومًا",
+      "label": "إجمالي الحجم",
+      "title": "حجم المعاملات"
+    },
     "supplyChanges": {
-      "description": "الأصول التي تم سكها وحرقها خلال آخر {{days}} يومًا",
+      "description": "الأصول التي تم تعدينها وحرقها على مدار {{days}} يومًا",
       "title": "تغييرات العرض",
-      "minted": "تم السك",
-      "burned": "تم الحرق"
+      "minted": "تم تعدينها",
+      "burned": "تم حرقها"
     },
     "transactionHistory": {
       "description": "حجم المعاملات على مر الزمن",
@@ -51,24 +83,15 @@
       "description": "عدد المستخدمين على مر الزمن",
       "title": "نمو المستخدمين"
     },
-    "common": {
-      "noData": "لا توجد بيانات متاحة",
-      "noDataDescription": "لا توجد بيانات حالياً لعرضها في هذا الرسم البياني"
-    },
-    "totalVolume": {
-      "description": "إجمالي حجم المعاملات خلال آخر {{days}} يومًا",
-      "label": "إجمالي الحجم",
-      "title": "حجم المعاملات"
-    },
     "walletDistribution": {
       "title": "توزيع المحفظة",
       "description": "عدد الحائزين مقابل الكميات التي يمتلكونها",
       "holders": "عدد المحافظ"
     },
     "bondStatus": {
-      "title": "حالة السندات",
-      "notBond": "هذه الأصول ليست سندًا",
-      "notAvailable": "حالة السندات غير متاحة",
+      "title": "حالة السند",
+      "notBond": "هذا الأصل ليس سندًا",
+      "notAvailable": "حالة السند غير متاحة",
       "completed": "مكتمل",
       "remaining": "متبقي",
       "issuing": {
@@ -78,30 +101,63 @@
       },
       "active": {
         "title": "تغطية الاسترداد",
-        "description": "{{percentage}}% من الأصول ذات الفئة المتاحة",
+        "description": "{{percentage}}% من أصول الفئات المتاحة",
         "label": "نشط"
       },
       "matured": {
-        "title": "استرداد السندات",
+        "title": "استرداد السند",
         "description": "{{percentage}}% من السندات قد تم استردادها",
         "label": "استحق"
       }
     },
     "collateralRatio": {
-      "title": "نسبة الضمانات",
+      "title": "نسبة الضمان",
       "description": "تفصيل الضمانات المتاحة مقابل المستخدمة",
       "available": "الضمانات المتاحة",
       "used": "الضمانات المستخدمة",
       "ratio": "الضمان: {{ratio}}%"
     },
     "portfolioValue": {
-      "title": "قيمة محفظتك",
-      "description": "شاهد كيف تغيرت قيمة محفظتك مع مرور الوقت",
+      "title": "قيمة المحفظة",
+      "description": "انظر كيف تغيرت قيمة محفظتك على مر الزمن",
       "label": "القيمة",
       "empty": {
-        "title": "لا توجد بيانات للعرض بعد",
-        "description": "ابدأ الاستثمار لمشاهدة أداء محفظتك مع مرور الوقت"
+        "title": "لا توجد بيانات لعرضها بعد",
+        "description": "سترى قيمة محفظتك هنا بمجرد استلامك لأصولك الأولى"
       }
+    },
+    "portfolio": {
+      "summary": {
+        "title": "ملخص المحفظة",
+        "description": "عرض إجمالي قيمة محفظتك وممتلكاتك",
+        "totalValue": "إجمالي القيمة",
+        "assetFactories": "أنواع الأصول",
+        "totalAssets": "إجمالي الأصول"
+      },
+      "breakdown": {
+        "title": "تفصيل المحفظة",
+        "description": "تفصيل مفصل لأصولك حسب النوع",
+        "chartTitle": "تخصيص الأصول",
+        "chartDescription": "انظر كيف تتوزع ممتلكاتك حسب نوع الأصل",
+        "detailsTitle": "تفاصيل التخصيص",
+        "assetType": "نوع الأصل",
+        "factory": "المصنع",
+        "value": "القيمة",
+        "percentage": "النسبة المئوية",
+        "assets": "الأصول"
+      },
+      "empty": {
+        "summary": "سيظهر ملخص محفظتك هنا عندما تستلم الأصول",
+        "breakdown": "سيظهر تفصيل أصولك هنا عندما تستلم الأصول"
+      }
+    },
+    "yieldDistribution": {
+      "title": "توزيع العائدات",
+      "description": "إجمالي العائدات التي تم توليدها والمطالبة بها على مر الزمن",
+      "totalYield": "إجمالي العائد",
+      "claimed": "مطالب به",
+      "noData": "لا توجد بيانات لتوزيع العائدات متاحة",
+      "error": "خطأ في تحميل بيانات توزيع العائدات"
     }
   },
   "title": "الإحصائيات",
@@ -111,7 +167,7 @@
       "title": "إجمالي الأصول"
     },
     "pendingLaunches": {
-      "description": "تم إنشاء {{created}}، تم إطلاق {{launched}}",
+      "description": "تم الإنشاء في {{created}}، تم الإطلاق في {{launched}}",
       "title": "الإطلاقات المعلقة"
     },
     "common": {
@@ -120,11 +176,11 @@
       "retry": "إعادة المحاولة"
     },
     "transactions": {
-      "description": "{{count}} معاملات في آخر {{days}} يومًا",
+      "description": "{{count}} معاملة في آخر {{days}} يومًا",
       "title": "إجمالي المعاملات"
     },
     "users": {
-      "description": "{{count}} مستخدمين نشطين في آخر {{days}} يومًا",
+      "description": "{{count}} مستخدم نشط في آخر {{days}} يومًا",
       "title": "المستخدمون النشطون"
     },
     "value": {

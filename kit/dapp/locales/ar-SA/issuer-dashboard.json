@@ -8,7 +8,7 @@
     },
     "assetSupply": {
       "description": "توزيع الأصول حسب فئة الأصول",
-      "title": "عرض الأصول"
+      "title": "إمدادات الأصول"
     },
     "transactionHistory": {
       "currentPeriod": "الحالي",
@@ -22,17 +22,17 @@
     }
   },
   "description": "إدارة الأصول",
-  "latest-events-heading": "آخر الأحداث",
+  "latest-events-heading": "أحدث الأحداث",
   "stats": {
     "assets": "الأصول",
-    "assetsDescription": "{{bonds}} سندات | {{cryptocurrencies}} عملات مشفرة | {{equities}} أسهم | {{funds}} صناديق | {{stableCoins}} عملات مستقرة | {{deposits}} ودائع",
-    "loading": "جاري تحميل الإحصائيات...",
+    "assetsDescription": "{{bonds}} سندات | {{cryptocurrencies}} عملات رقمية | {{equities}} أسهم | {{funds}} صناديق | {{stableCoins}} عملات مستقرة | {{deposits}} ودائع",
+    "loading": "جارٍ تحميل الإحصائيات...",
     "noAssets": "لم يتم العثور على أصول",
     "title": "إحصائيات المنصة",
     "totalValue": "القيمة",
     "totalValueDescription": "إجمالي القيمة عبر جميع الأصول",
     "transactions": "المعاملات",
-    "transactionsDescription": "{{count}} معاملة تمت معالجتها في آخر {{days}} أيام",
+    "transactionsDescription": "{{count}} معاملات تمت معالجتها في آخر {{days}} أيام",
     "transactionsDescription_one": "{{count}} معاملة تمت معالجتها في آخر {{days}} أيام",
     "transactionsDescription_other": "{{count}} معاملات تمت معالجتها في آخر {{days}} أيام",
     "users": "المستخدمون",
@@ -43,7 +43,7 @@
   "stats-heading": "الإحصائيات",
   "tables": {
     "actions": "الإجراءات المعلقة",
-    "latestEvents": "آخر الأحداث"
+    "latestEvents": "أحدث الأحداث"
   },
   "title": "لوحة التحكم"
 }

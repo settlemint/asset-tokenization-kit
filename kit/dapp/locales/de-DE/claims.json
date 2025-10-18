@@ -15,8 +15,8 @@
       "user": "Benutzer",
       "claimType": "Anspruchstyp",
       "topic": "Thema",
-      "status": "Status",
-      "issuer": "Aussteller",
+      "status": "Prüfstatus",
+      "issuer": "Emittent",
       "issuedAt": "Ausgestellt am",
       "expiresAt": "Läuft ab am",
       "verifiedAt": "Verifiziert am"
@@ -27,20 +27,20 @@
     "emptyState": {
       "title": "Keine Ansprüche gefunden",
       "description": "Es wurden noch keine Identitätsansprüche ausgestellt.",
-      "loading": "Lade Ansprüche..."
+      "loading": "Ansprüche laden..."
     },
     "errors": {
       "loadFailed": "Fehler beim Laden der Ansprüche. Bitte versuchen Sie es erneut.",
       "navigationFailed": "Fehler beim Navigieren zu den Anspruchsdetails"
     },
     "fallback": {
-      "noExpiry": "Kein Ablaufdatum",
+      "noExpiry": "Kein Ablauf",
       "notVerified": "Nicht verifiziert"
     }
   },
   "identityTable": {
     "columns": {
-      "id": "ID",
+      "id": "ID-Nummer",
       "type": "Typ",
       "entity": "Entität",
       "linkedEntity": "Konto / Vertrag",
@@ -63,8 +63,8 @@
     },
     "emptyState": {
       "title": "Keine Identitäten gefunden",
-      "description": "Keine Identitäten entsprechen Ihren Filtern.",
-      "loading": "Identitäten werden geladen..."
+      "description": "Keine Identitäten entsprechen Ihren Filtern bisher.",
+      "loading": "Identitäten laden..."
     },
     "errors": {
       "loadFailed": "Fehler beim Laden der Identitäten. Bitte versuchen Sie es erneut.",
@@ -72,13 +72,13 @@
     }
   },
   "page": {
-    "description": "Identitätsansprüche, Verifizierungsstatus und Compliance für Benutzer verwalten.",
-    "loading": "Ansprüche werden geladen..."
+    "description": "Verwalten Sie Identitätsansprüche, Verifizierungsstatus und Compliance für Benutzer.",
+    "loading": "Ansprüche laden..."
   },
   "details": {
-    "title": "Konto-Ansprüche",
+    "title": "Kontoansprüche",
     "summary": {
-      "total": "Ansprüche gesamt",
+      "total": "Gesamtansprüche",
       "verified": "Verifiziert",
       "pending": "Ausstehend",
       "rejectedExpired": "Abgelehnt/Abgelaufen"
@@ -88,6 +88,6 @@
     "noClaimsDescription": "Diesem Konto wurden noch keine Identitätsansprüche zugewiesen."
   },
   "tabs": {
-    "details": "Details"
+    "details": "Detailansicht"
   }
 }

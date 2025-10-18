@@ -37,6 +37,17 @@
     "compliance": "Compliance",
     "addons": "Addons",
     "claimTopicsIssuers": "Claim Topics & Issuers",
+    "theme": {
+      "title": "Theme",
+      "description": "Customize branding assets, typography, and color tokens for your tenant experience.",
+      "placeholder": "Theme editor is coming soon. Check back shortly for live customization tools.",
+      "dirtyBadge": "Unsaved changes",
+      "pristineBadge": "Up to date",
+      "versionBadgeTitle": "Current theme version",
+      "updatedLabel": "Updated",
+      "updatedUnknown": "Update timestamp unavailable",
+      "updatedBadgeTitle": "Last saved {{timestamp}}"
+    },
     "permissions": {
       "title": "Platform admins",
       "description": "Manage platform admins roles for the Asset Tokenization Kit",

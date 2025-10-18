@@ -21,6 +21,7 @@ import {
   ClipboardCheck,
   FileText,
   Key,
+  Paintbrush,
   Puzzle,
   Settings,
   Shield,
@@ -68,6 +69,12 @@ export function NavSettings() {
       icon: Puzzle,
       path: "/admin/platform-settings/addons",
       enabled: system.userPermissions?.actions.addonFactoryCreate,
+    },
+    {
+      name: t("settings.theme.title"),
+      icon: Paintbrush,
+      path: "/admin/platform-settings/theme",
+      enabled: system.userPermissions?.roles.admin === true,
     },
     {
       name: t("settings.claimTopicsIssuers"),

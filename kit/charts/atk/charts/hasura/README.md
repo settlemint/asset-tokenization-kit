@@ -114,9 +114,9 @@ The following table lists the configurable parameters of this chart and their de
 |ingress.pathType|string|`"Prefix"`|Ingress path type|
 |ingress.tls|list|-|TLS configuration|
 |initContainers|list|-|Init containers|
-|initContainers[0]|string|`{"command":["/usr/bin/wait-for-it","postgresql:5432","-t","120"],"image":"ghcr.io/settlemint/btp-waitforit:v7.7.13","imagePullPolicy":"IfNotPresent","name":"wait-for-postgresql","resources":{"limits":{"cpu":"300m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}}`|Container name|
+|initContainers[0]|string|`{"command":["/usr/bin/wait-for-it","postgresql:5432","-t","120"],"image":"ghcr.io/settlemint/btp-waitforit:v7.7.14","imagePullPolicy":"IfNotPresent","name":"wait-for-postgresql","resources":{"limits":{"cpu":"300m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}}`|Container name|
 |initContainers[0].command|list|-|Container command|
-|initContainers[0].image|string|`"ghcr.io/settlemint/btp-waitforit:v7.7.13"`|Container image|
+|initContainers[0].image|string|`"ghcr.io/settlemint/btp-waitforit:v7.7.14"`|Container image|
 |initContainers[0].imagePullPolicy|string|`"IfNotPresent"`|Image pull policy|
 |initContainers[0].resources|object|-|Resource limits and requests|
 |initContainers[0].resources.limits|object|-|Resource limits|

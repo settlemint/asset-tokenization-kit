@@ -4,7 +4,7 @@
     "copyAddress": "نسخ العنوان",
     "createToken": "إنشاء رمز",
     "viewDetails": "عرض التفاصيل",
-    "viewOnEtherscan": "عرض على Etherscan"
+    "viewOnEtherscan": "عرض على إيثيرسكان"
   },
   "bulkActions": {
     "archiveMessage": "سيتم أرشفة {{count}} رمز(رموز). هذا إجراء تجريبي.",

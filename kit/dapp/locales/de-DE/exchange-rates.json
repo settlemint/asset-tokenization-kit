@@ -5,35 +5,35 @@
       "title": "Wechselkurs aktualisieren",
       "description": "Einen benutzerdefinierten Wechselkurs zwischen Währungen festlegen",
       "button": "Kurs aktualisieren",
-      "updating": "Kurs wird aktualisiert...",
-      "error": "Der Wechselkurs konnte nicht aktualisiert werden. Bitte versuchen Sie es erneut"
+      "updating": "Kurs aktualisieren...",
+      "error": "Konnte den Wechselkurs nicht aktualisieren. Bitte versuchen Sie es erneut"
     },
     "sync": {
       "success": "Ausgezeichnet! Wir haben {{ratesUpdated}} Wechselkurse mit den neuesten Marktdaten aktualisiert",
       "title": "Wechselkurse synchronisieren",
-      "description": "Die neuesten Kurse von unseren vertrauenswürdigen Marktdatenanbietern abrufen",
+      "description": "Die neuesten Kurse von unseren vertrauenswürdigen Marktdatenanbietern ziehen",
       "button": "Kurse synchronisieren",
-      "syncing": "Die neuesten Kurse werden abgerufen...",
-      "error": "Der Wechselkurs kann im Moment nicht synchronisiert werden. Wir versuchen es automatisch erneut",
+      "syncing": "Neueste Kurse abrufen...",
+      "error": "Kann Wechselkurse derzeit nicht synchronisieren. Wir versuchen es automatisch erneut",
       "no-updates": "Ihre Kurse sind bereits auf dem neuesten Stand!"
     },
     "delete": {
-      "success": "Alles erledigt! Der benutzerdefinierte {{baseCurrency}}/{{quoteCurrency}} Kurs wurde entfernt und wir verwenden stattdessen die Marktpreise",
+      "success": "Alles erledigt! Der benutzerdefinierte {{baseCurrency}}/{{quoteCurrency}} Kurs wurde entfernt und wir verwenden Marktkurse statt dessen",
       "title": "Benutzerdefinierten Kurs entfernen",
-      "description": "Löschen Sie Ihren benutzerdefinierten Kurs und kehren Sie zu den Marktpreisen zurück",
+      "description": "Ihren benutzerdefinierten Kurs löschen und zu Marktpreisen zurückkehren",
       "button": "Kurs entfernen",
-      "deleting": "Benutzerdefinierten Kurs wird entfernt...",
-      "error": "Der benutzerdefinierte Kurs konnte nicht entfernt werden. Bitte versuchen Sie es erneut",
+      "deleting": "Benutzerdefinierten Kurs entfernen...",
+      "error": "Konnte den benutzerdefinierten Kurs nicht entfernen. Bitte versuchen Sie es erneut",
       "confirm": "Sind Sie sicher, dass Sie diesen benutzerdefinierten Kurs entfernen möchten?"
     }
   },
   "rates": {
     "title": "Wechselkurse",
-    "subtitle": "Verwalten Sie Währungsumrechnungen für Ihre Plattform",
-    "description": "Halten Sie Ihre Wechselkurse aktuell für genaue Vermögensbewertungen. Sie können aktuelle Marktkurse verwenden oder benutzerdefinierte Kurse für bestimmte Währungspaare festlegen.",
-    "loading": "Wechselkurse werden geladen...",
-    "error": "Wechselkurse konnten nicht geladen werden",
-    "empty": "Es sind noch keine Wechselkurse konfiguriert",
+    "subtitle": "Währungsumrechnungen für Ihre Plattform verwalten",
+    "description": "Halten Sie Ihre Wechselkurse aktuell für genaue Asset-Bewertungen. Sie können Live-Marktkurse verwenden oder benutzerdefinierte Kurse für spezifische Währungspaare festlegen.",
+    "loading": "Wechselkurse laden...",
+    "error": "Kann Wechselkurse nicht laden",
+    "empty": "Noch keine Wechselkurse konfiguriert",
     "last-updated": "Zuletzt aktualisiert {{time}}",
     "source": {
       "market": "Marktkurs",
@@ -62,16 +62,16 @@
       "description": "Die Währung, von der Sie umrechnen",
       "placeholder": "Basiswährung auswählen",
       "validation": {
-        "required": "Bitte wählen Sie eine Basiswährung aus"
+        "required": "Bitte wählen Sie eine Basiswährung"
       }
     },
     "quote-currency": {
-      "label": "Nach Währung",
+      "label": "Zu Währung",
       "description": "Die Währung, in die Sie umrechnen",
-      "placeholder": "Gegenwährung auswählen",
+      "placeholder": "Zielwährung auswählen",
       "validation": {
-        "required": "Bitte wählen Sie eine Gegenwährung aus",
-        "same-as-base": "Die Gegenwährung muss sich von der Basiswährung unterscheiden"
+        "required": "Bitte wählen Sie eine Zielwährung",
+        "same-as-base": "Zielwährung muss sich von Basiswährung unterscheiden"
       }
     },
     "rate": {
@@ -80,7 +80,7 @@
       "placeholder": "Wechselkurs eingeben",
       "validation": {
         "required": "Bitte geben Sie einen Wechselkurs ein",
-        "positive": "Der Wechselkurs muss eine positive Zahl sein",
+        "positive": "Wechselkurs muss eine positive Zahl sein",
         "invalid": "Bitte geben Sie eine gültige Zahl ein"
       }
     }
@@ -88,21 +88,21 @@
   "help": {
     "what-are-exchange-rates": {
       "title": "Was sind Wechselkurse?",
-      "description": "Wechselkurse bestimmen, wie Währungen untereinander umgerechnet werden. Sie sind entscheidend für Multi-Währungsplattformen, um genaue Vermögenswerte anzuzeigen."
+      "description": "Wechselkurse bestimmen, wie Währungen untereinander umgerechnet werden. Sie sind unerlässlich für Multi-Währungsplattformen, um genaue Asset-Werte anzuzeigen."
     },
     "custom-vs-market": {
       "title": "Benutzerdefinierte vs. Marktkurse",
       "description": "Marktkurse werden automatisch von Finanzdatenanbietern aktualisiert. Benutzerdefinierte Kurse ermöglichen es Ihnen, spezifische Paare für spezielle Preise oder feste Umrechnungen zu überschreiben."
     },
     "sync-frequency": {
-      "title": "Wie oft werden Kurse aktualisiert?",
-      "description": "Marktkurse werden alle 15 Minuten während der Handelszeiten aktualisiert. Sie können jederzeit manuell synchronisieren, und benutzerdefinierte Kurse bleiben fest, bis Sie sie ändern."
+      "title": "Wie oft aktualisieren sich die Kurse?",
+      "description": "Marktkurse aktualisieren sich alle 15 Minuten während der Marktzeiten. Sie können jederzeit manuell synchronisieren, und benutzerdefinierte Kurse bleiben fest, bis Sie sie ändern."
     }
   },
   "tooltips": {
     "custom-rate": "Sie haben einen benutzerdefinierten Kurs für dieses Paar festgelegt",
-    "market-rate": "Dieser Kurs stammt aus aktuellen Marktdaten",
+    "market-rate": "Dieser Kurs kommt von Live-Marktdaten",
     "stale-rate": "Dieser Kurs wurde seit über 24 Stunden nicht aktualisiert",
-    "sync-needed": "Bitte synchronisieren Sie für die neuesten Kurse"
+    "sync-needed": "Erwägen Sie, für die neuesten Kurse zu synchronisieren"
   }
 }

@@ -113,10 +113,17 @@ const handler = new OpenAPIHandler(router, {
  * @returns HTTP response from the matched procedure or 404 if not found
  */
 export async function handle({ request }: { request: Request }) {
+  let headers: Headers | Record<string, string | string[]> = {};
+  try {
+    headers = normalizeHeaders(getHeaders());
+  } catch {
+    headers = {};
+  }
+
   const { response } = await handler.handle(request, {
     prefix: "/api",
     context: {
-      headers: normalizeHeaders(getHeaders()),
+      headers,
     },
   });
 

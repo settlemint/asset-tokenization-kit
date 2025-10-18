@@ -1,206 +1,218 @@
 {
   "actions": {
     "createWallet": {
-      "success": "Die Brieftasche wurde erfolgreich erstellt"
+      "success": "Wallet wurde erfolgreich erstellt"
     }
-  },
-  "details": {
-    "kycInformation": "Information"
-  },
-  "fields": {
-    "accountCreated": "Account Created",
-    "accountCreatedInfo": "When the user account was created",
-    "email": "Email",
-    "emailInfo": "User's email address",
-    "firstName": "First Name",
-    "firstNameInfo": "Legal first name",
-    "fullName": "Full Name",
-    "fullNameInfo": "User's display name",
-    "lastLogin": "Last Login",
-    "lastLoginInfo": "Most recent login time",
-    "lastName": "Last Name",
-    "lastNameInfo": "Legal last name",
-    "neverLoggedIn": "Never logged in",
-    "noIdentityRegistered": "No identity registered",
-    "noWalletConnected": "No wallet connected",
-    "onChainIdentity": "On-chain Identity",
-    "onChainIdentityInfo": "User's on-chain identity contract",
-    "role": "Role",
-    "roleInfo": "User's system role",
-    "walletAddress": "Wallet Address",
-    "walletAddressInfo": "User's connected wallet address"
   },
   "kyc": {
     "actions": {
       "delete": {
-        "success": "Das KYC-Profil wurde erfolgreich gelöscht"
+        "success": "KYC-Profil wurde erfolgreich gelöscht"
       },
       "upsert": {
-        "success": "Das KYC-Profil wurde erfolgreich aktualisiert"
+        "success": "KYC-Profil wurde erfolgreich aktualisiert"
       }
     }
   },
   "management": {
     "page": {
-      "description": "Manage users, roles, and permissions for your platform."
+      "description": "Verwalten Sie Benutzer, Rollen und Berechtigungen Ihrer Plattform."
     },
     "table": {
-      "actions": {
-        "menu": "Actions menu",
-        "openMenu": "Open actions menu",
-        "viewDetails": "View Details"
-      },
       "columns": {
-        "actions": "Actions",
-        "created": "Created",
-        "email": "Email",
-        "identity": "Identity",
-        "lastActive": "Last Active",
-        "name": "Name",
-        "role": "Role",
-        "status": "Status",
-        "wallet": "Wallet"
+        "name": "Benutzername",
+        "email": "E-Mail",
+        "wallet": "Wallet-Adresse",
+        "role": "Rolle",
+        "identity": "Identität",
+        "status": "Statusanzeige",
+        "created": "Erstellt",
+        "lastActive": "Zuletzt aktiv",
+        "actions": "Aktionen"
       },
-      "emptyState": {
-        "description": "No users have been registered yet.",
-        "loading": "Loading users...",
-        "title": "No users found"
-      },
-      "errors": {
-        "loadFailed": "Failed to load users. Please try again.",
-        "navigationFailed": "Failed to navigate to user details"
-      },
-      "fallback": {
-        "never": "Never"
+      "status": {
+        "registered": "Registriert",
+        "pending": "Ausstehend",
+        "notConnected": "Nicht verbunden",
+        "identityNeeded": "Identität erforderlich",
+        "notRegistered": "Nicht registriert",
+        "pendingRegistration": "Registrierung ausstehend",
+        "admin": "Administrator",
+        "adminAriaLabel": "Benutzer hat mindestens eine Admin-Rolle im System",
+        "registeredAriaLabel": "Benutzer ist registriert und on-chain verifiziert",
+        "notRegisteredAriaLabel": "Benutzer ist nicht on-chain registriert",
+        "pendingAriaLabel": "Benutzer hat Wallet verbunden, ist aber noch nicht on-chain registriert",
+        "notConnectedAriaLabel": "Benutzer hat kein Wallet verbunden",
+        "identityNeededAriaLabel": "Benutzer hat ein Wallet, aber keine registrierte Identität",
+        "pendingRegistrationAriaLabel": "Die Registrierung der Benutzeridentität ist in Bearbeitung"
       },
       "identity": {
         "none": "Keine Identität"
       },
-      "noWallet": "No wallet",
-      "search": {
-        "placeholder": "Search by name, email, or wallet..."
+      "actions": {
+        "viewDetails": "Details anzeigen",
+        "menu": "Aktionsmenü",
+        "openMenu": "Aktionsmenü öffnen"
       },
-      "status": {
-        "admin": "Admin",
-        "adminAriaLabel": "User has any admin role in the system",
-        "identityNeeded": "Identity needed",
-        "identityNeededAriaLabel": "User has wallet but no identity registered",
-        "notConnected": "Nicht verbunden",
-        "notConnectedAriaLabel": "Benutzer hat keine Brieftasche verbunden",
-        "notRegistered": "Not Registered",
-        "notRegisteredAriaLabel": "User is not registered on-chain",
-        "pending": "Ausstehend",
-        "pendingAriaLabel": "Benutzer hat eine Brieftasche verbunden, ist aber noch nicht on-chain registriert",
-        "pendingRegistration": "Pending registration",
-        "pendingRegistrationAriaLabel": "User identity registration is pending",
-        "registered": "Registriert",
-        "registeredAriaLabel": "Benutzer ist registriert und on-chain verifiziert"
+      "search": {
+        "placeholder": "Nach Name, E-Mail oder Wallet suchen..."
+      },
+      "noWallet": "Kein Wallet",
+      "emptyState": {
+        "title": "Keine Benutzer gefunden",
+        "description": "Es wurden noch keine Benutzer registriert.",
+        "loading": "Benutzer werden geladen..."
+      },
+      "errors": {
+        "loadFailed": "Benutzer konnten nicht geladen werden. Bitte erneut versuchen.",
+        "navigationFailed": "Navigation zu den Benutzerdetails fehlgeschlagen"
+      },
+      "fallback": {
+        "never": "Nie"
       }
     }
   },
   "permissions": {
     "groups": {
-      "assets-management": "Assets Management",
-      "compliance": "Compliance",
-      "identity-management": "Identity Management",
-      "other": "Other",
-      "system-administration": "System Administration"
+      "compliance": "Compliance & Aufsicht",
+      "identity-management": "Identitätsmanagement",
+      "assets-management": "Asset-Verwaltung",
+      "system-administration": "Systemadministration",
+      "other": "Sonstiges"
     },
     "table": {
-      "actions": {
-        "changeRoles": "Change roles"
-      },
       "columns": {
-        "name": "Name",
-        "role": "Roles"
-      },
-      "emptyState": {
-        "description": "No users have been registered yet.",
-        "loading": "Loading users...",
-        "title": "No users found"
+        "name": "Rollenname",
+        "role": "Rollen"
       },
       "errors": {
-        "loadFailed": "Failed to load users. Please try again.",
-        "navigationFailed": "Failed to navigate to user details"
+        "navigationFailed": "Navigation zu den Benutzerdetails fehlgeschlagen",
+        "loadFailed": "Benutzer konnten nicht geladen werden. Bitte erneut versuchen."
       },
       "search": {
-        "placeholder": "Search by wallet address..."
+        "placeholder": "Nach Wallet-Adresse suchen..."
+      },
+      "emptyState": {
+        "title": "Keine Benutzer gefunden",
+        "description": "Es wurden noch keine Benutzer registriert.",
+        "loading": "Benutzer werden geladen..."
+      },
+      "actions": {
+        "changeRoles": "Rollen ändern"
       }
     }
   },
+  "tabs": {
+    "details": "Einzelheiten",
+    "claims": "Ansprüche"
+  },
+  "fields": {
+    "fullName": "Vollständiger Name",
+    "fullNameInfo": "Anzeigename des Benutzers",
+    "email": "E-Mail",
+    "emailInfo": "E-Mail-Adresse des Benutzers",
+    "role": "Rolle",
+    "roleInfo": "Systemrolle des Benutzers",
+    "accountCreated": "Konto erstellt",
+    "accountCreatedInfo": "Zeitpunkt der Kontoerstellung",
+    "lastLogin": "Letzte Anmeldung",
+    "lastLoginInfo": "Jüngster Anmeldezeitpunkt",
+    "neverLoggedIn": "Noch nie angemeldet",
+    "walletAddress": "Wallet-Adresse",
+    "walletAddressInfo": "Verbundenes Wallet des Benutzers",
+    "noWalletConnected": "Kein Wallet verbunden",
+    "onChainIdentity": "On-Chain-Identität",
+    "onChainIdentityInfo": "On-Chain-Identitätsvertrag des Benutzers",
+    "noIdentityRegistered": "Keine Identität registriert",
+    "firstName": "Vorname",
+    "firstNameInfo": "Amtlicher Vorname",
+    "lastName": "Nachname",
+    "lastNameInfo": "Amtlicher Nachname"
+  },
+  "details": {
+    "kycInformation": "Informationen"
+  },
   "profile": {
-    "changePassword": {
-      "confirmPassword": "Passwort bestätigen",
-      "currentPassword": "Aktuelles Passwort",
-      "description": "Aktualisieren Sie Ihr Kontopasswort für mehr Sicherheit.",
-      "newPassword": "Neues Passwort",
-      "revokeOtherSessions": "Andere Geräte abmelden",
-      "revokeOtherSessionsDescription": "Dies meldet Sie von allen anderen Geräten und Browsern ab.",
-      "success": "Ihr Passwort wurde erfolgreich geändert.",
-      "title": "Passwort ändern"
-    },
-    "description": "Zeigen Sie Ihre Profilinformationen an und verwalten Sie sie.",
-    "editKyc": {
-      "description": "Bearbeiten Sie Ihre KYC-Informationen.",
-      "title": "KYC bearbeiten"
-    },
+    "title": "Profil",
+    "description": "Profilinformationen anzeigen und verwalten.",
+    "manage": "Profil verwalten",
     "email": {
-      "change-disabled": "Das Ändern der E-Mail-Adresse ist in dieser Umgebung deaktiviert.",
+      "change-disabled": "E-Mail-Änderungen sind in dieser Umgebung deaktiviert.",
       "current": "Aktuelle E-Mail"
     },
+    "messages": {
+      "genericError": "Etwas ist schiefgelaufen. Bitte erneut versuchen."
+    },
     "kyc": {
+      "cardDescription": "Persönliche Informationen verwalten.",
       "actions": {
-        "success": "Das KYC-Profil wurde erfolgreich aktualisiert."
+        "success": "Ihre Informationen wurden erfolgreich aktualisiert."
       },
-      "cardDescription": "Bitte verifizieren Sie Ihre Identität, um Ihre On-Chain-Identität zu erstellen.",
       "fields": {
-        "country": "Wohnsitzland",
-        "dob": "Geburtsdatum",
         "firstName": "Vorname",
         "lastName": "Nachname",
-        "nationalId": "Nationale ID",
-        "residencyStatus": "Aufenthaltsstatus"
+        "dob": "Geburtsdatum",
+        "country": "Wohnsitzland",
+        "residencyStatus": "Aufenthaltsstatus",
+        "nationalId": "Staatsbürgerschafts-ID"
       },
       "residencyStatusOptions": {
-        "dual_resident": "Doppelansässiger - Ich bin rechtlich/steuerlich in mehr als einem Land ansässig",
-        "non_resident": "Nichtansässiger - Ich lebe nicht im oben genannten Land oder werde dort nicht als ansässig betrachtet",
-        "resident": "Alleinansässiger - Ich lebe im oben genannten Land und bin dort rechtlich/steuerlich ansässig",
-        "unknown": "Bevorzuge es, nichts zu sagen"
+        "resident": "Alleiniger Einwohner – ich lebe ausschließlich im oben genannten Land",
+        "non_resident": "Nicht ansässig – ich lebe nicht im oben genannten Land",
+        "dual_resident": "Doppelter Wohnsitz – ich bin in mehr als einem Land steuerlich ansässig",
+        "unknown": "Möchte ich nicht angeben"
       }
     },
-    "manage": "Profil verwalten",
-    "messages": {
-      "genericError": "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+    "editKyc": {
+      "title": "Informationen bearbeiten",
+      "description": "Ihre Informationen bearbeiten."
     },
-    "title": "Profil"
-  },
-  "tabs": {
-    "claims": "Claims",
-    "details": "Details"
+    "changePassword": {
+      "title": "Passwort ändern",
+      "description": "Kontopasswort zur Sicherheit aktualisieren.",
+      "success": "Ihr Passwort wurde erfolgreich geändert.",
+      "currentPassword": "Aktuelles Passwort",
+      "newPassword": "Neues Passwort",
+      "confirmPassword": "Passwort bestätigen",
+      "revokeOtherSessions": "Andere Geräte abmelden",
+      "revokeOtherSessionsDescription": "Sie werden von allen anderen Geräten und Browsern abgemeldet."
+    }
   },
   "wallet": {
-    "title": "Wallet",
-    "description": "Verwalten Sie Ihre Wallet-Adresse und Sicherheitseinstellungen.",
-    "userWallet": "Benutzer-Wallet",
-    "userWalletDescription": "Ihre Wallet-Adresse und der QR-Code zum Empfang von Zahlungen.",
+    "title": "Wallet-Verwaltung",
+    "description": "Wallet-Adresse und Sicherheitseinstellungen verwalten.",
+    "userWallet": "Wallet des Benutzers",
+    "userWalletDescription": "Ihre Wallet-Adresse und der QR-Code zum Empfangen von Zahlungen.",
     "qrCode": "QR-Code",
-    "verificationFactors": "Verifizierungsfaktoren",
-    "verificationFactorsDescription": "Aktivierte Sicherheitsmethoden für Ihre Wallet.",
+    "verificationFactors": "Verifizierungsmethoden",
+    "verificationFactorsDescription": "Aktivierte Sicherheitsmethoden für Ihr Wallet.",
     "recoveryCodesCard": "Wiederherstellungscodes",
-    "recoveryCodesDescription": "Backup-Codes für die Kontowiederherstellung, wenn andere Verifizierungsmethoden nicht verfügbar sind.",
+    "recoveryCodesDescription": "Backup-Codes zur Kontowiederherstellung, falls andere Methoden nicht verfügbar sind.",
     "passwordPromptTitle": "Passwort bestätigen",
-    "passwordPromptDescription": "Geben Sie Ihr Passwort ein, um neue Wiederherstellungscodes zu generieren.",
+    "passwordPromptDescription": "Bitte Passwort eingeben, um neue Wiederherstellungscodes zu erzeugen.",
     "passwordLabel": "Passwort",
     "passwordRequired": "Passwort ist erforderlich",
     "pinCodeEnabled": "PIN-Code",
-    "otpEnabled": "OTP",
+    "otpEnabled": "OTP aktiviert",
     "recoveryCodesEnabled": "Wiederherstellungscodes",
     "regenerateRecoveryCodes": "Wiederherstellungscodes neu generieren",
     "downloadRecoveryCodes": "Wiederherstellungscodes herunterladen",
-    "copyAllRecoveryCodes": "Alles kopieren",
+    "copyAllRecoveryCodes": "Alle kopieren",
     "confirmRecoveryCodesStored": "Ich habe diese Wiederherstellungscodes sicher gespeichert",
     "noVerificationMethods": "Keine Verifizierungsmethoden aktiviert",
     "enabled": "Aktiviert",
-    "disabled": "Deaktiviert"
+    "disabled": "Deaktiviert",
+    "changePincode": {
+      "button": "PIN-Code ändern",
+      "title": "PIN-Code ändern",
+      "description": "Neuen 6-stelligen PIN festlegen, um sensible Wallet-Aktionen zu schützen.",
+      "submit": "Weiter",
+      "submitting": "Wird vorbereitet...",
+      "success": "Ihr PIN-Code wurde aktualisiert.",
+      "passwordTitle": "Passwort bestätigen",
+      "passwordDescription": "Geben Sie Ihr Konto-Passwort ein, um den PIN-Code zu aktualisieren.",
+      "passwordSubmit": "PIN-Code aktualisieren",
+      "passwordSubmitting": "PIN wird aktualisiert..."
+    }
   }
 }

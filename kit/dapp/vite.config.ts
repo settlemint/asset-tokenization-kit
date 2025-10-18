@@ -6,6 +6,11 @@ import { defineConfig } from "vite";
 import { analyzer } from "vite-bundle-analyzer";
 import tsConfigPaths from "vite-tsconfig-paths";
 
+type MinimalRollupWarning = {
+  code?: string;
+  message?: string;
+};
+
 export default defineConfig({
   logLevel: process.env.CLAUDECODE ? "warn" : "info",
   server: {
@@ -15,7 +20,10 @@ export default defineConfig({
     target: "es2023",
     sourcemap: true,
     rollupOptions: {
-      onwarn(warning, warn) {
+      onwarn(
+        warning: MinimalRollupWarning,
+        warn: (warning: MinimalRollupWarning) => void
+      ) {
         // Suppress unused import warnings from external modules
         if (warning.code === "UNUSED_EXTERNAL_IMPORT") {
           return;
@@ -33,6 +41,42 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
+    // Pre-bundle frequently accessed libs to skip startup re-optimization
+    include: [
+      "@tanstack/query-async-storage-persister",
+      "@tanstack/query-broadcast-client-experimental",
+      "superjson",
+      "@settlemint/sdk-utils/logging",
+      "@orpc/client",
+      "@orpc/client/fetch",
+      "@orpc/tanstack-query",
+      "lucide-react",
+      "dnum",
+      "zod",
+      "date-fns",
+      "class-variance-authority",
+      "clsx",
+      "tailwind-merge",
+      "@noble/hashes/sha2.js",
+      "@noble/hashes/utils.js",
+      "motion/react",
+      "better-auth/client/plugins",
+      "better-auth/react",
+      "viem",
+      "@daveyplate/better-auth-ui/tanstack",
+      "better-auth/plugins/access",
+      "better-auth/plugins/admin/access",
+      "i18next",
+      "crypto-js/md5",
+      "react-jazzicon",
+      "change-case",
+      "recharts",
+      "drizzle-orm/pg-core",
+      "lodash.capitalize",
+      "date-fns/locale",
+      "i18n-iso-countries",
+      "currency-codes",
+    ],
     esbuildOptions: {
       target: "es2023",
     },

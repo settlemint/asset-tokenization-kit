@@ -26,7 +26,7 @@
   "stats": {
     "assets": "資産",
     "assetsDescription": "{{bonds}} 債券 | {{cryptocurrencies}} 暗号通貨 | {{equities}} 株式 | {{funds}} ファンド | {{stableCoins}} ステーブルコイン | {{deposits}} 預金",
-    "loading": "統計を読み込み中...",
+    "loading": "統計を読み込んでいます...",
     "noAssets": "資産が見つかりません",
     "title": "プラットフォーム統計",
     "totalValue": "価値",

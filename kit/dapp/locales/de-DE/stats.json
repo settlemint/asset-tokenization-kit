@@ -1,118 +1,170 @@
 {
   "charts": {
+    "common": {
+      "noData": "Keine Daten verfügbar",
+      "noDataDescription": "Derzeit sind keine Daten für dieses Diagramm verfügbar",
+      "intervalLabel": {
+        "hour": "Stündlich",
+        "day": "Täglich"
+      },
+      "range": {
+        "duration": "über die letzten {{duration}}",
+        "window": "von {{start}} bis {{end}}"
+      },
+      "units": {
+        "hour_one": "{{count}} Stunde",
+        "hour_other": "{{count}} Stunden",
+        "day_one": "{{count}} Tag",
+        "day_other": "{{count}} Tage"
+      }
+    },
     "assetActivity": {
-      "title": "Vermögensaktivitäten",
-      "description": "Verfolgen Sie Transfer-, Präge- und Vernichtungsereignisse",
+      "title": "Vermögensaktivität",
+      "description": "Verfolgen Sie Transfer-, Mint- und Burn-Ereignisse",
       "transferEventsLabel": "Übertragungen",
       "mintEventsLabel": "Prägungen",
-      "burnEventsLabel": "Vernichtungen",
+      "burnEventsLabel": "Verbrennungen",
       "empty": {
-        "title": "Noch keine Aktivitäten",
-        "description": "Vermögensaktivitäten erscheinen hier, sobald Übertragungen, Prägungen oder Vernichtungen stattfinden"
+        "title": "Noch keine Aktivität",
+        "description": "Vermögensaktivität wird hier erscheinen, sobald Übertragungen, Mints oder Burns auftreten"
       }
     },
     "assetSupply": {
-      "description": "Gesamtangebot an Vermögenswerten über die Zeit",
-      "title": "Vermögensangebot"
+      "description": "Gesamtversorgung von Vermögenswerten im Laufe der Zeit",
+      "title": "Vermögensversorgung"
     },
     "assetValue": {
       "description": "Gesamtwertaufschlüsselung nach Vermögensart",
       "title": "Vermögenswertverteilung"
     },
     "assetLifecycle": {
-      "title": "Asset-Starts vs. Designs",
-      "description": "Verfolgen Sie, wie Asset-Starts mit neuen Erstellungen Schritt halten",
-      "createdLabel": "Designte Assets",
-      "launchedLabel": "Gestartete Assets",
+      "title": "Gestartete Vermögenswerte",
+      "description": "Verfolgen Sie, wie Vermögensstarts mit neuen Kreationen Schritt halten",
+      "createdLabel": "Vermögenswerte erstellt",
+      "launchedLabel": "Vermögenswerte gestartet",
       "empty": {
-        "title": "Noch keine Lifecycle-Daten",
-        "description": "Sobald neue Assets designt werden, erscheinen hier Trends zu Design und Start"
+        "title": "Noch keine Vermögenstrends",
+        "description": "Sie werden diese Trends sehen, sobald Vermögenswerte erstellt werden"
+      }
+    },
+    "identityGrowth": {
+      "title": "Identitätswachstum",
+      "description": "Beobachten Sie verifizierte Identitäten wachsen {{overRange}}",
+      "label": "Aktive Registrierungen",
+      "empty": {
+        "title": "Noch keine Registrierungen",
+        "description": "Identitätsregistrierungen werden hier erscheinen, sobald Identitäten registriert werden"
       }
     },
     "totalCollateral": {
-      "label": "Gesamtes Sicherheiten"
+      "label": "Gesamtsicherheiten"
     },
     "totalSupply": {
-      "description": "Gesamtes Vermögensangebot der letzten {{days}} Tage",
-      "label": "Gesamtangebot",
-      "title": "Historie des Tokenangebots",
-      "noData": "Keine Daten verfügbar",
-      "noDataDescription": "Keine Gesamtangebotsdaten für die letzten {{days}} Tage gefunden"
-    },
-    "supplyChanges": {
-      "description": "Prägung und Vernichtung von Vermögenswerten der letzten {{days}} Tage",
-      "title": "Änderungen im Angebot",
-      "minted": "Prägend",
-      "burned": "Vernichtet",
-      "noData": "Keine Angebotsänderungsdaten verfügbar",
-      "noDataDescription": "Keine Mint- oder Burn-Aktivitäten in den letzten {{days}} Tagen gefunden"
-    },
-    "transactionHistory": {
-      "description": "Transaktionsvolumen über die Zeit",
-      "title": "Transaktionshistorie"
-    },
-    "userGrowth": {
-      "description": "Anzahl der Nutzer über die Zeit",
-      "title": "Nutzerwachstum"
-    },
-    "common": {
-      "noData": "Keine Daten verfügbar",
-      "noDataDescription": "Derzeit sind keine Daten für dieses Diagramm verfügbar"
+      "description": "Gesamte Vermögensversorgung über die letzten {{days}} Tage",
+      "label": "Gesamtversorgung",
+      "title": "Token-Versorgungshistorie"
     },
     "totalVolume": {
-      "description": "Gesamttransaktionsvolumen der letzten {{days}} Tage",
+      "description": "Gesamtes Transaktionsvolumen über die letzten {{days}} Tage",
       "label": "Gesamtvolumen",
       "title": "Transaktionsvolumen"
     },
+    "supplyChanges": {
+      "description": "Geminte und gebrannte Vermögenswerte über die letzten {{days}} Tage",
+      "title": "Versorgungsänderungen",
+      "minted": "Gemintet",
+      "burned": "Gebrannt"
+    },
+    "transactionHistory": {
+      "description": "Transaktionsvolumen im Laufe der Zeit",
+      "title": "Transaktionshistorie"
+    },
+    "userGrowth": {
+      "description": "Anzahl der Benutzer im Laufe der Zeit",
+      "title": "Benutzerwachstum"
+    },
     "walletDistribution": {
-      "title": "Verteilung der Wallets",
-      "description": "Anzahl der Inhaber im Vergleich zu den gehaltenen Beträgen",
+      "title": "Wallet-Verteilung",
+      "description": "Menge der Inhaber vs die Beträge, die sie halten",
       "holders": "Anzahl der Wallets"
     },
     "bondStatus": {
-      "title": "Anleihestatus",
+      "title": "Anleihenstatus",
       "notBond": "Dieser Vermögenswert ist keine Anleihe",
-      "notAvailable": "Anleihestatus nicht verfügbar",
+      "notAvailable": "Anleihenstatus nicht verfügbar",
       "completed": "Abgeschlossen",
       "remaining": "Verbleibend",
       "issuing": {
-        "title": "Anleiheemission",
+        "title": "Anleihenausgabe",
         "description": "{{percentage}}% der Anleihen wurden ausgegeben",
         "label": "Ausgabe"
       },
       "active": {
-        "title": "Einlösungsdeckung",
+        "title": "Einlösungsabdeckung",
         "description": "{{percentage}}% der Nennwertvermögenswerte verfügbar",
         "label": "Aktiv"
       },
       "matured": {
-        "title": "Anleiheeinlösung",
+        "title": "Anleiheneinlösung",
         "description": "{{percentage}}% der Anleihen wurden eingelöst",
         "label": "Fällig"
       }
     },
     "collateralRatio": {
-      "title": "Sicherheitenquote",
-      "description": "Aufschlüsselung der verfügbaren vs. verwendeten Sicherheiten",
+      "title": "Sicherheitenverhältnis",
+      "description": "Aufschlüsselung von verfügbaren vs verwendeten Sicherheiten",
       "available": "Verfügbare Sicherheiten",
       "used": "Verwendete Sicherheiten",
-      "ratio": "Besicherung: {{ratio}}%"
+      "ratio": "Sicherheitenstellung: {{ratio}}%"
     },
     "portfolioValue": {
-      "title": "Ihr Portfoliowert",
+      "title": "Portfoliowert",
       "description": "Sehen Sie, wie sich Ihr Portfoliowert im Laufe der Zeit verändert hat",
       "label": "Wert",
       "empty": {
-        "title": "Noch keine Daten verfügbar",
-        "description": "Beginnen Sie mit dem Investieren, um Ihre Portfolio-Performance zu verfolgen"
+        "title": "Noch keine Daten zum Anzeigen",
+        "description": "Sie werden Ihren Portfoliowert hier sehen, sobald Sie Ihre ersten Vermögenswerte erhalten"
       }
+    },
+    "portfolio": {
+      "summary": {
+        "title": "Portfolio-Zusammenfassung",
+        "description": "Sehen Sie Ihren Gesamtportfoliowert und Ihre Bestände",
+        "totalValue": "Gesamtwert",
+        "assetFactories": "Vermögensarten",
+        "totalAssets": "Gesamtvermögenswerte"
+      },
+      "breakdown": {
+        "title": "Portfolio-Aufschlüsselung",
+        "description": "Detaillierte Aufschlüsselung Ihrer Vermögenswerte nach Art",
+        "chartTitle": "Vermögenszuweisung",
+        "chartDescription": "Sehen Sie, wie Ihre Bestände nach Vermögensart aufgeteilt sind",
+        "detailsTitle": "Zuweisungsdetails",
+        "assetType": "Vermögensart",
+        "factory": "Fabrik",
+        "value": "Wert",
+        "percentage": "Prozentsatz",
+        "assets": "Vermögenswerte"
+      },
+      "empty": {
+        "summary": "Ihre Portfolio-Zusammenfassung wird hier erscheinen, wenn Sie Vermögenswerte erhalten",
+        "breakdown": "Ihre Vermögensaufschlüsselung wird hier erscheinen, wenn Sie Vermögenswerte erhalten"
+      }
+    },
+    "yieldDistribution": {
+      "title": "Yield-Verteilung",
+      "description": "Gesamtertrag generiert und beansprucht im Laufe der Zeit",
+      "totalYield": "Gesamtertrag",
+      "claimed": "Beansprucht",
+      "noData": "Keine Yield-Verteilungsdaten verfügbar",
+      "error": "Fehler beim Laden der Yield-Verteilungsdaten"
     }
   },
   "title": "Statistiken",
   "widgets": {
     "assets": {
       "empty": "Noch keine Vermögenswerte",
-      "title": "Gesamtvermögen"
+      "title": "Gesamtvermögenswerte"
     },
     "pendingLaunches": {
       "description": "Erstellt {{created}}, gestartet {{launched}}",
@@ -128,8 +180,8 @@
       "title": "Gesamttransaktionen"
     },
     "users": {
-      "description": "{{count}} aktive Nutzer in den letzten {{days}} Tagen",
-      "title": "Aktive Nutzer"
+      "description": "{{count}} aktive Benutzer in den letzten {{days}} Tagen",
+      "title": "Aktive Benutzer"
     },
     "value": {
       "description": "Kombinierter Wert aller Vermögenswerte",

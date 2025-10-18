@@ -1,7 +1,7 @@
 {
   "whichAssetClass": "Welche Anlageklasse möchten Sie gestalten?",
   "assetClassDifferences": "Jede Anlageklasse bietet ein unterschiedliches Risiko-Rendite-Profil.",
-  "includes": "Enthält",
+  "includes": "Beinhaltet",
   "categories": {
     "cashEquivalent": {
       "description": "Hochliquide Investitionen, die leicht in bekannte Geldbeträge umgewandelt werden können.",
@@ -10,7 +10,7 @@
     },
     "fixedIncome": {
       "description": "Vermögenswerte, die Erträge in Form von regelmäßigen, festen Zinszahlungen und der Rückzahlung des Kapitals bei Fälligkeit bieten.",
-      "icon": "Steigend",
+      "icon": "TendenzSteigend",
       "name": "Festverzinslich"
     },
     "flexibleIncome": {
@@ -45,9 +45,9 @@
       "category": "flexiblesEinkommen"
     },
     "stablecoin": {
-      "name": "Stablecoin",
-      "namePlural": "Stablecoins",
-      "description": "Digitale Währungen, die darauf ausgelegt sind, einen stabilen Wert im Verhältnis zu einem Referenzvermögen zu halten.",
+      "name": "Stabile Währung",
+      "namePlural": "Stabile Währungen",
+      "description": "Digitale Währungen, die darauf ausgelegt sind, einen stabilen Wert im Verhältnis zu einem Referenzvermögen aufrechtzuerhalten.",
       "category": "bargeldäquivalent"
     }
   }

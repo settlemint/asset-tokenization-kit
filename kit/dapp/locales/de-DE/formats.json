@@ -1,23 +1,23 @@
 {
   "date": {
-    "short": "TT/MM/JJJJ",
-    "medium": "MMM T, JJJJ",
-    "long": "MMMM T, JJJJ",
-    "full": "dddd, MMMM T, JJJJ",
+    "short": "DD.MM.YYYY",
+    "medium": "D. MMM YYYY",
+    "long": "D. MMMM YYYY",
+    "full": "dddd, D. MMMM YYYY",
     "relative": {
-      "justNow": "gerade jetzt",
-      "minutesAgo": "{{count}} Minute zuvor",
-      "minutesAgo_other": "{{count}} Minuten zuvor",
-      "hoursAgo": "{{count}} Stunde zuvor",
-      "hoursAgo_other": "{{count}} Stunden zuvor",
-      "daysAgo": "{{count}} Tag zuvor",
-      "daysAgo_other": "{{count}} Tage zuvor",
-      "weeksAgo": "{{count}} Woche zuvor",
-      "weeksAgo_other": "{{count}} Wochen zuvor",
-      "monthsAgo": "{{count}} Monat zuvor",
-      "monthsAgo_other": "{{count}} Monate zuvor",
-      "yearsAgo": "{{count}} Jahr zuvor",
-      "yearsAgo_other": "{{count}} Jahre zuvor",
+      "justNow": "gerade eben",
+      "minutesAgo": "vor {{count}} Minute",
+      "minutesAgo_other": "vor {{count}} Minuten",
+      "hoursAgo": "vor {{count}} Stunde",
+      "hoursAgo_other": "vor {{count}} Stunden",
+      "daysAgo": "vor {{count}} Tag",
+      "daysAgo_other": "vor {{count}} Tagen",
+      "weeksAgo": "vor {{count}} Woche",
+      "weeksAgo_other": "vor {{count}} Wochen",
+      "monthsAgo": "vor {{count}} Monat",
+      "monthsAgo_other": "vor {{count}} Monaten",
+      "yearsAgo": "vor {{count}} Jahr",
+      "yearsAgo_other": "vor {{count}} Jahren",
       "inMinutes": "in {{count}} Minute",
       "inMinutes_other": "in {{count}} Minuten",
       "inHours": "in {{count}} Stunde",
@@ -33,48 +33,48 @@
     }
   },
   "time": {
-    "short": "h:mm UHR",
-    "medium": "h:mm:ss UHR",
-    "long": "h:mm:ss UHR z",
-    "24hour": "HH:mm",
-    "24hourWithSeconds": "HH:mm:ss"
+    "short": "HH:mm",
+    "medium": "HH:mm:ss",
+    "long": "HH:mm:ss z",
+    "24hour": "HH:mm Uhr",
+    "24hourWithSeconds": "HH:mm:ss Uhr"
   },
   "dateTime": {
-    "short": "TT/MM/JJJJ h:mm UHR",
-    "medium": "MMM T, JJJJ h:mm UHR",
-    "long": "MMMM T, JJJJ um h:mm UHR",
-    "full": "dddd, MMMM T, JJJJ um h:mm:ss UHR z"
+    "short": "DD.MM.YYYY HH:mm",
+    "medium": "D. MMM YYYY HH:mm",
+    "long": "D. MMMM YYYY um HH:mm",
+    "full": "dddd, D. MMMM YYYY um HH:mm:ss z"
   },
   "number": {
-    "decimal": ".",
-    "thousands": ",",
+    "decimal": ",",
+    "thousands": ".",
     "grouping": "3",
     "currency": {
       "symbol": "€",
-      "decimal": ".",
-      "thousands": ",",
+      "decimal": ",",
+      "thousands": ".",
       "precision": "2",
-      "format": "{{symbol}}{{value}}"
+      "format": "{{value}} {{symbol}}"
     },
     "percentage": {
-      "decimal": ".",
-      "thousands": ",",
+      "decimal": ",",
+      "thousands": ".",
       "precision": "2",
       "format": "{{value}}%"
     },
     "compact": {
-      "thousand": "K",
-      "million": "M",
-      "billion": "B",
-      "trillion": "T"
+      "thousand": "Tsd",
+      "million": "Mio",
+      "billion": "Mrd",
+      "trillion": "Bio"
     }
   },
   "fileSize": {
-    "bytes": "{{size}} B",
-    "kilobytes": "{{size}} KB",
-    "megabytes": "{{size}} MB",
-    "gigabytes": "{{size}} GB",
-    "terabytes": "{{size}} TB"
+    "bytes": "{{size}} Byte",
+    "kilobytes": "{{size}} Kilobyte",
+    "megabytes": "{{size}} Megabyte",
+    "gigabytes": "{{size}} Gigabyte",
+    "terabytes": "{{size}} Terabyte"
   },
   "duration": {
     "seconds": "{{count}} Sekunde",
@@ -92,13 +92,13 @@
     "years": "{{count}} Jahr",
     "years_other": "{{count}} Jahre",
     "short": {
-      "seconds": "{{count}}s",
-      "minutes": "{{count}}m",
-      "hours": "{{count}}h",
-      "days": "{{count}}d",
-      "weeks": "{{count}}w",
-      "months": "{{count}}mo",
-      "years": "{{count}}y"
+      "seconds": "{{count}} Sek",
+      "minutes": "{{count}} Min",
+      "hours": "{{count}} Std",
+      "days": "{{count}} Tg",
+      "weeks": "{{count}} Wo",
+      "months": "{{count}} Mon",
+      "years": "{{count}} J"
     }
   },
   "blockchain": {
@@ -114,14 +114,14 @@
     "amount": {
       "token": "{{amount}} {{symbol}}",
       "tokenWithDecimals": "{{amount}} {{symbol}}",
-      "wei": "{{amount}} wei",
-      "gwei": "{{amount}} gwei",
-      "ether": "{{amount}} ETH"
+      "wei": "{{amount}} Wei",
+      "gwei": "{{amount}} Gwei",
+      "ether": "{{amount}} Ether"
     },
     "gas": {
-      "limit": "{{limit}} gas",
-      "price": "{{price}} gwei",
-      "fee": "{{fee}} ETH"
+      "limit": "{{limit}} Gas",
+      "price": "{{price}} Gwei",
+      "fee": "{{fee}} ETH Gebühren"
     }
   },
   "lists": {

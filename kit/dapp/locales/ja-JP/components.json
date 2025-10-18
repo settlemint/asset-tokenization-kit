@@ -2,33 +2,45 @@
   "expressionBuilder": {
     "title": "エクスプレッションビルダー",
     "topics": {
-      "kyc": "KYC",
-      "aml": "AML",
+      "knowYourCustomer": "顧客を知る",
+      "antiMoneyLaundering": "マネーロンダリング防止",
+      "qualifiedInstitutionalInvestor": "適格機関投資家",
+      "professionalInvestor": "プロフェッショナル投資家",
+      "accreditedInvestor": "認定投資家",
+      "accreditedInvestorVerified": "認定投資家確認済み",
+      "regulationS": "規制S",
+      "issuerProspectusFiled": "目論見書提出済み",
+      "issuerProspectusExempt": "目論見書免除",
+      "issuerLicensed": "発行者ライセンス",
+      "issuerReportingCompliant": "発行者報告コンプライアンス",
+      "issuerJurisdiction": "発行者管轄",
       "collateral": "担保",
-      "isin": "ISIN",
+      "isin": "ISIN コード",
       "assetClassification": "資産分類",
-      "basePrice": "基準価格"
+      "basePrice": "基準価格",
+      "assetIssuer": "資産発行者",
+      "contractIdentity": "契約ID"
     },
     "topicInput": {
       "selectPlaceholder": "トピックを選択",
-      "notLabel": "NOT",
+      "notLabel": "NOT（否定）",
       "addButton": "追加",
-      "orStartGroup": "グループを開始",
+      "orStartGroup": "またはグループを開始",
       "startGroupButton": "グループを開始"
     },
     "operatorInput": {
       "chooseOperatorLabel": "オペレーターを選択",
-      "andButton": "AND",
-      "orButton": "OR",
+      "andButton": "AND（かつ）",
+      "orButton": "OR（または）",
       "endGroupButton": "グループを終了",
       "openGroupsText": "{{count}} のオープングループ{{plural}}を閉じる"
     },
     "display": {
       "clearAllButton": "すべてクリア",
-      "validExpression": "エクスプレッションは完了し、有効です",
-      "closeGroupsPrompt": "{{count}} のグループ{{plural}}を閉じて完了します",
-      "addTopicPrompt": "トピックを追加するか、グループを開始してください",
-      "unknownNode": "UNKNOWN"
+      "validExpression": "エクスプレッションは完了しており、有効です",
+      "closeGroupsPrompt": "{{count}} のグループ{{plural}}を閉じて完了",
+      "addTopicPrompt": "トピックを追加するか、グループを開始",
+      "unknownNode": "不明"
     }
   },
   "kycForm": {
@@ -37,20 +49,20 @@
     "firstName": "名",
     "lastName": "姓",
     "nationalId": "国民ID",
-    "residencyStatus": "居住状況",
+    "residencyStatus": "居住ステータス",
     "residencyStatusOptions": {
-      "dual_resident": "二重居住者 - 私は複数の国において法的/税務上の居住者です",
-      "non_resident": "非居住者 - 私は上記の国に住んでいないか、居住者とは見なされていません",
+      "dual_resident": "二重居住者 - 私は法的/税務上、複数の国に居住しています",
+      "non_resident": "非居住者 - 私は上記の国に住んでいないか、居住者と見なされていません",
       "resident": "単独居住者 - 私は上記の国にのみ住んでおり、法的/税務上の居住者です",
       "unknown": "言いたくない"
     },
     "submit": "保存して続行",
     "identity": {
       "confirm-description": "オンチェーンIDを作成するために、あなたの身元を確認してください。",
-      "confirm-title": "ID作成を確認",
-      "deployed-toast": "IDが正常に登録されました！",
-      "deploying-toast": "IDを登録中...",
-      "failed-toast": "IDの登録に失敗しました: "
+      "confirm-title": "身元作成を確認",
+      "deployed-toast": "身元が正常に登録されました！",
+      "deploying-toast": "身元を登録中...",
+      "failed-toast": "身元の登録に失敗しました: "
     }
   },
   "verificationDialog": {
@@ -61,5 +73,14 @@
     "pinCode": "PINコード",
     "useAuthenticatorInstead": "代わりに認証アプリを使用",
     "usePinInstead": "代わりにPINコードを使用"
+  },
+  "changeRolesSheet": {
+    "title": "役割を変更",
+    "description": "このアドレスの役割を割り当てるか削除する",
+    "cta": "役割を変更",
+    "accountLabel": "アカウント",
+    "rolesLabel": "役割",
+    "networkError": "ネットワーク接続に失敗しました。接続を確認してもう一度お試しください。",
+    "unexpectedError": "予期しないエラーが発生しました。もう一度お試しください。"
   }
 }

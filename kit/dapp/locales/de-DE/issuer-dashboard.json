@@ -1,14 +1,14 @@
 {
   "actions-heading": "Aktionen",
-  "asset-management": "Vermögensverwaltung",
+  "asset-management": "Asset-Verwaltung",
   "charts": {
     "assetActivity": {
-      "description": "Die Anzahl der durchgeführten Aktionen in den verschiedenen Anlageklassen",
-      "title": "Vermögensaktivität"
+      "description": "Die Anzahl der Aktionen, die auf den verschiedenen Asset-Klassen durchgeführt wurden",
+      "title": "Asset-Aktivität"
     },
     "assetSupply": {
-      "description": "Die Verteilung der Vermögenswerte nach Anlageklasse",
-      "title": "Vermögensangebot"
+      "description": "Die Verteilung der Assets pro Asset-Klasse",
+      "title": "Asset-Angebot"
     },
     "transactionHistory": {
       "currentPeriod": "Aktuell",
@@ -17,20 +17,20 @@
     },
     "userGrowth": {
       "currentPeriod": "Aktuell",
-      "description": "Anzahl der in der letzten Woche registrierten Benutzer",
+      "description": "Anzahl der registrierten Benutzer in der letzten Woche",
       "title": "Registrierte Benutzer"
     }
   },
-  "description": "Vermögensverwaltung",
+  "description": "Asset-Verwaltung",
   "latest-events-heading": "Neueste Ereignisse",
   "stats": {
     "assets": "Vermögenswerte",
-    "assetsDescription": "{{bonds}} Anleihen | {{cryptocurrencies}} Kryptowährungen | {{equities}} Aktien | {{funds}} Fonds | {{stableCoins}} Stablecoins | {{deposits}} Einlagen",
-    "loading": "Statistiken werden geladen...",
-    "noAssets": "Keine Vermögenswerte gefunden",
+    "assetsDescription": "{{bonds}} Anleihen | {{cryptocurrencies}} Kryptowährungen | {{equities}} Eigenkapitalanlagen | {{funds}} Fonds | {{stableCoins}} Stablecoins | {{deposits}} Einlagen",
+    "loading": "Statistiken laden...",
+    "noAssets": "Keine Assets gefunden",
     "title": "Plattformstatistiken",
     "totalValue": "Wert",
-    "totalValueDescription": "Gesamtwert aller Vermögenswerte",
+    "totalValueDescription": "Gesamtwert über alle Assets",
     "transactions": "Transaktionen",
     "transactionsDescription": "{{count}} Transaktionen in den letzten {{days}} Tagen verarbeitet",
     "transactionsDescription_one": "{{count}} Transaktion in den letzten {{days}} Tagen verarbeitet",
@@ -45,5 +45,5 @@
     "actions": "Ausstehende Aktionen",
     "latestEvents": "Neueste Ereignisse"
   },
-  "title": "Dashboard"
+  "title": "Plattformübersicht"
 }

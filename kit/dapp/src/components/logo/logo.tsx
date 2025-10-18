@@ -1,116 +1,111 @@
-/**
- * Application Logo Component
- *
- * This module provides a flexible logo component that adapts to different display
- * contexts and theme settings. It supports multiple logo variants and automatically
- * switches between light and dark versions based on the current theme.
- *
- * The component handles theme-aware logo rendering, ensuring the logo remains
- * visible and aesthetically appropriate across different color schemes.
- * @see {@link https://github.com/pacocoursey/next-themes} - Next Themes for theme detection
- */
+import { useThemeAssets } from "@/components/theme/hooks/use-theme-assets";
 import { cn } from "@/lib/utils";
+import { useMounted } from "@/hooks/use-mounted";
 import { useTheme } from "next-themes";
 import type { PropsWithChildren } from "react";
+import { DEFAULT_THEME } from "@/components/theme/lib/schema";
 
-/**
- * Props for the Logo component.
- */
+type LogoVariant = "horizontal" | "vertical" | "icon";
+
+const FALLBACK_LOGOS: Record<
+  LogoVariant,
+  {
+    light: string;
+    dark: string;
+  }
+> = {
+  horizontal: {
+    light: "/logos/settlemint-logo-h-lm.svg",
+    dark: "/logos/settlemint-logo-h-dm.svg",
+  },
+  vertical: {
+    light: "/logos/settlemint-logo-v-lm.svg",
+    dark: "/logos/settlemint-logo-v-dm.svg",
+  },
+  icon: {
+    light: "/logos/settlemint-logo-i-lm.svg",
+    dark: "/logos/settlemint-logo-i-dm.svg",
+  },
+};
+
 interface LogoProps {
-  /**
-   * Additional CSS classes to apply to the logo container.
-   * Useful for controlling size, positioning, or adding custom styles.
-   */
   className?: string;
-
-  /**
-   * Logo variant to display.
-   * - "horizontal": Wide logo with text beside the icon (default)
-   * - "vertical": Stacked logo with text below the icon
-   * - "icon": Icon-only logo without text
-   */
-  variant?: "horizontal" | "vertical" | "icon";
-
-  /**
-   * Force a specific color mode regardless of the current theme.
-   * Useful when the logo appears on a contrasting background.
-   * - "light": Use light mode logo
-   * - "dark": Use dark mode logo
-   * - undefined: Auto-detect based on theme (default)
-   */
+  imgClassName?: string;
+  variant?: LogoVariant;
   forcedColorMode?: "light" | "dark";
 }
 
-/**
- * Logo component that displays the application's branding.
- *
- * This component renders the SettleMint logo with automatic theme adaptation
- * and support for different layout variants. It intelligently selects the
- * appropriate logo file based on:
- * - Current theme (light/dark)
- * - Requested variant (horizontal/vertical/icon)
- * - Forced color mode override
- *
- * The logo files are expected to be in the `/public/logos/` directory with
- * the following naming convention:
- * - `settlemint-logo-{variant}-{mode}.svg`
- * - Where variant is: h (horizontal), v (vertical), or i (icon)
- * - Where mode is: lm (light mode) or dm (dark mode)
- * @example
- * ```tsx
- * // Default horizontal logo
- * <Logo />
- *
- * // Icon-only logo with custom size
- * <Logo variant="icon" className="w-8 h-8" />
- *
- * // Force dark mode logo on light background
- * <Logo forcedColorMode="dark" />
- *
- * // Vertical logo for mobile layouts
- * <Logo variant="vertical" className="max-w-[200px]" />
- * ```
- */
 export function Logo({
-  className = "",
+  className,
+  imgClassName,
   variant = "horizontal",
   forcedColorMode,
 }: PropsWithChildren<LogoProps>) {
+  const { logo } = useThemeAssets();
   const { resolvedTheme } = useTheme();
+  const mounted = useMounted();
+  const fallback = FALLBACK_LOGOS[variant];
 
-  /**
-   * Determines the appropriate logo file path based on theme and variant.
-   * Prioritizes forcedColorMode over the detected theme when specified.
-   */
-  const getLogoSrc = () => {
-    // Check if dark mode should be used (either from theme or forced)
-    const isDark =
-      forcedColorMode === "dark" ||
-      (forcedColorMode !== "light" && resolvedTheme === "dark");
+  const lightUrl = logo.lightUrl?.trim();
+  const darkUrl = logo.darkUrl?.trim();
+  const logoAlt = logo.alt?.trim();
 
-    // Select logo file based on variant and color mode
-    switch (variant) {
-      case "horizontal":
-        return isDark
-          ? "/logos/settlemint-logo-h-dm.svg"
-          : "/logos/settlemint-logo-h-lm.svg";
-      case "vertical":
-        return isDark
-          ? "/logos/settlemint-logo-v-dm.svg"
-          : "/logos/settlemint-logo-v-lm.svg";
-      case "icon":
-        return isDark
-          ? "/logos/settlemint-logo-i-dm.svg"
-          : "/logos/settlemint-logo-i-lm.svg";
-      default:
-        // Fallback to horizontal light mode logo
-        return "/logos/settlemint-logo-h-lm.svg";
+  const resolveSrc = (
+    value: string | undefined,
+    fallbackSrc: string
+  ): string => {
+    const trimmed = value?.trim();
+    if (!trimmed) {
+      return fallbackSrc;
     }
+    if (/^(https:|data:|blob:)/i.test(trimmed)) {
+      return trimmed;
+    }
+    if (trimmed.startsWith("/")) {
+      if (globalThis.window !== undefined && globalThis.location?.origin) {
+        return new URL(trimmed, globalThis.location.origin).toString();
+      }
+      return trimmed;
+    }
+    return trimmed;
   };
 
+  const lightSrc = resolveSrc(lightUrl, fallback.light);
+  const darkSrc = resolveSrc(darkUrl, fallback.dark);
+  const alt =
+    logoAlt && logoAlt.length > 0
+      ? logoAlt
+      : (DEFAULT_THEME.logo.alt ?? "SettleMint");
+  const width = logo.width && logo.width > 0 ? logo.width : undefined;
+  const height = logo.height && logo.height > 0 ? logo.height : undefined;
+
+  const wrapperClass = cn("inline-flex items-center", className);
+  const imageClass = cn("h-full w-auto max-h-full max-w-full", imgClassName);
+  const imageProps = {
+    alt,
+    width,
+    height,
+    loading: "eager" as const,
+    decoding: "async" as const,
+    className: imageClass,
+  };
+
+  if (forcedColorMode === "light" || forcedColorMode === "dark") {
+    const src = forcedColorMode === "dark" ? darkSrc : lightSrc;
+    return (
+      <span className={wrapperClass}>
+        <img src={src} {...imageProps} />
+      </span>
+    );
+  }
+
+  const effectiveMode =
+    forcedColorMode ?? (mounted ? resolvedTheme : undefined);
+  const src = effectiveMode === "dark" ? darkSrc : lightSrc;
+
   return (
-    <div className={cn("relative", className)}>
-      <img src={getLogoSrc()} alt="SettleMint" className="h-full w-full" />
-    </div>
+    <span className={wrapperClass}>
+      <img src={src} {...imageProps} />
+    </span>
   );
 }

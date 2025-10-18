@@ -44,7 +44,7 @@ export function StepItem<StepId>({
           <div className="mt-2">
             {isCompleted ? (
               <div className="flex h-4 w-4 items-center justify-center rounded-full bg-sm-graphics-secondary">
-                <Check className="h-3 w-3 text-white" />
+                <Check className="h-3 w-3 text-primary-foreground" />
               </div>
             ) : isCurrent ? (
               <div className="h-4 w-4 rounded-full bg-sm-state-success-background animate-pulse" />
@@ -58,10 +58,12 @@ export function StepItem<StepId>({
             type="button"
             className={cn(
               "w-full text-left px-4 py-3 rounded-lg transition-all duration-200 relative z-20",
-              isCurrent && "bg-white/10 backdrop-blur-sm",
+              isCurrent && "bg-primary-foreground/10 backdrop-blur-sm",
               !isAccessible && "cursor-not-allowed opacity-60",
-              isAccessible && "hover:bg-white/15",
-              isCompleted && !isCurrent && "cursor-pointer hover:bg-white/10"
+              isAccessible && "hover:bg-primary-foreground/15",
+              isCompleted &&
+                !isCurrent &&
+                "cursor-pointer hover:bg-primary-foreground/10"
             )}
             onClick={() => {
               if (isAccessible) {
