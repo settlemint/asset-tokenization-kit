@@ -22,6 +22,10 @@
  */
 
 import { AuthProvider } from "@/providers/auth";
+import { ThemeProvider } from "@/providers/theme-context";
+import { ThemeSync } from "@/components/theme/components/theme-sync";
+import type { FontVariables } from "@/components/theme/lib/compile-css";
+import type { ThemeConfig } from "@/components/theme/lib/schema";
 import { MotionConfig } from "motion/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { I18nProvider } from "./i18n-provider";
@@ -50,7 +54,17 @@ import { I18nProvider } from "./i18n-provider";
  * }
  * ```
  */
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({
+  children,
+  theme,
+  themeHash,
+  fontVariables,
+}: {
+  children: React.ReactNode;
+  theme: ThemeConfig;
+  themeHash?: string;
+  fontVariables?: FontVariables;
+}) {
   return (
     <I18nProvider>
       <MotionConfig reducedMotion="user">
@@ -76,7 +90,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
            */
           storageKey="vite-ui-theme"
         >
-          <AuthProvider>{children}</AuthProvider>
+          <ThemeProvider theme={theme} hash={themeHash}>
+            <AuthProvider>
+              <ThemeSync fontVariables={fontVariables} />
+              {children}
+            </AuthProvider>
+          </ThemeProvider>
         </NextThemesProvider>
       </MotionConfig>
     </I18nProvider>

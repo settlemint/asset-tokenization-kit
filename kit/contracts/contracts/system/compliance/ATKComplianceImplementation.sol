@@ -55,8 +55,14 @@ contract ATKComplianceImplementation is
     /// @notice Ensures that a hook is invoked only by the token specified in the call
     /// @param _token The token address that must be the caller
     modifier onlyToken(address _token) {
-        if (msg.sender != _token) revert UnauthorizedCaller(msg.sender, _token);
+        _onlyToken(_token);
         _;
+    }
+
+    /// @notice Restricts hook calls to the originating SMART token.
+    /// @param _token Expected token caller.
+    function _onlyToken(address _token) internal view {
+        if (msg.sender != _token) revert UnauthorizedCaller(msg.sender, _token);
     }
 
     // --- Constructor ---

@@ -46,7 +46,7 @@ graph TB
             end
             
             subgraph "Application Layer"
-                WebPods[Web Application Pods<br/>Next.js Frontend<br/>• React application<br/>• Static assets<br/>• Client-side routing]
+                WebPods[Web Application Pods<br/>TanStack Start Frontend<br/>• React application<br/>• Static assets<br/>• Client-side routing]
                 
                 APIPods[API Service Pods<br/>ORPC Backend<br/>• Business logic<br/>• Authentication<br/>• Data processing]
                 
@@ -502,7 +502,7 @@ The Asset Tokenization Kit uses advanced container orchestration patterns for re
 
 | Component | Container Strategy | Base Image | Optimization | Security |
 |-----------|-------------------|------------|--------------|----------|
-| **Frontend (Next.js)** | Multi-stage build | Node.js Alpine | Asset optimization, static generation | Non-root user, minimal attack surface |
+| **Frontend (TanStack Start)** | Multi-stage build | Node.js Alpine | Asset optimization, static generation | Non-root user, minimal attack surface |
 | **API Server (ORPC)** | Distroless runtime | Node.js distroless | Bundle optimization, tree shaking | Distroless, security scanning |
 | **Database (PostgreSQL)** | Official image | PostgreSQL Alpine | Connection pooling, query optimization | Encrypted storage, access controls |
 | **Cache (Redis)** | Official image | Redis Alpine | Memory optimization, persistence | Password protection, network isolation |

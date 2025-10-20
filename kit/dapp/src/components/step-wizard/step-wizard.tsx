@@ -155,12 +155,12 @@ export function StepWizard({
                             height="24"
                             viewBox="0 0 16 16"
                             fill="none"
-                            className="text-current"
+                            className="text-destructive"
                           >
-                            <circle cx="8" cy="8" r="7" fill="#ef4444" />
+                            <circle cx="8" cy="8" r="7" fill="currentColor" />
                             <path
                               d="M6 6L10 10M10 6L6 10"
-                              stroke="white"
+                              stroke="var(--destructive-foreground)"
                               strokeWidth="1.5"
                               strokeLinecap="round"
                             />
@@ -172,12 +172,17 @@ export function StepWizard({
                             height="20"
                             viewBox="0 0 16 16"
                             fill="none"
-                            className="text-current"
+                            className="text-primary"
                           >
-                            <circle cx="8" cy="8" r="7" fill="white" />
+                            <circle
+                              cx="8"
+                              cy="8"
+                              r="7"
+                              fill="var(--background)"
+                            />
                             <path
                               d="M10.5 6.5L7 9.5L5.5 8"
-                              stroke="rgba(54, 139, 207, 1)"
+                              stroke="currentColor"
                               strokeWidth="1.50"
                               strokeLinecap="round"
                               strokeLinejoin="round"
@@ -227,7 +232,9 @@ export function StepWizard({
                       <div
                         className={cn(
                           "w-0 border-l-2 border-dashed flex-grow transition-colors duration-300",
-                          isCompleted ? "border-white/60" : "border-white/30"
+                          isCompleted
+                            ? "border-primary-foreground/60"
+                            : "border-primary-foreground/30"
                         )}
                       />
                     )}
@@ -239,12 +246,13 @@ export function StepWizard({
                       type="button"
                       className={cn(
                         "flex flex-col w-full px-4 py-3 rounded-lg transition-all duration-200 text-left relative z-20 group",
-                        isCurrent && "bg-white/10 backdrop-blur-sm",
+                        isCurrent &&
+                          "bg-primary-foreground/10 backdrop-blur-sm",
                         finalDisabled && "cursor-not-allowed opacity-60",
-                        !finalDisabled && "hover:bg-white/15",
+                        !finalDisabled && "hover:bg-primary-foreground/15",
                         isCompleted &&
                           !isCurrent &&
-                          "cursor-pointer hover:bg-white/10"
+                          "cursor-pointer hover:bg-primary-foreground/10"
                       )}
                       onClick={createStepClickHandler(step.id, !finalDisabled)}
                       disabled={finalDisabled}
@@ -256,13 +264,13 @@ export function StepWizard({
                             isCurrent
                               ? "font-bold text-primary-foreground"
                               : "font-medium text-primary-foreground/90",
-                            isError && "text-red-200"
+                            isError && "text-destructive-foreground"
                           )}
                         >
                           {step.title}
                         </span>
                         {isError && (
-                          <span className="text-xs text-red-200 font-medium">
+                          <span className="text-xs text-destructive-foreground font-medium">
                             Error
                           </span>
                         )}
@@ -273,7 +281,7 @@ export function StepWizard({
                           isCurrent
                             ? "text-primary-foreground/90"
                             : "text-primary-foreground/70",
-                          isError && "text-red-200/80"
+                          isError && "text-destructive-foreground/80"
                         )}
                       >
                         {step.description}
@@ -289,7 +297,7 @@ export function StepWizard({
           {onClose && (
             <Button
               variant="ghost"
-              className="mt-auto w-full text-primary-foreground hover:bg-white/10 hover:text-primary-foreground transition-all duration-200"
+              className="mt-auto w-full text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground transition-all duration-200"
               onClick={onClose}
             >
               Cancel

@@ -1,6 +1,6 @@
 {
   "title": "Aktionen",
-  "description": "Behalten Sie anstehende, kommende und abgeschlossene Aktionen im Blick, die Sie ausführen dürfen.",
+  "description": "Verfolgen Sie bevorstehende, ausstehende und abgeschlossene Aktionen, die Sie ausführen dürfen.",
   "tabs": {
     "pending": "Ausstehend",
     "upcoming": "Bevorstehend",
@@ -9,18 +9,18 @@
   "table": {
     "columns": {
       "name": "Aktion",
-      "status": "Status",
+      "status": "Bearbeitungsstatus",
       "type": "Typ",
       "activeAt": "Geplant",
-      "executedAt": "Abgeschlossen am",
+      "executedAt": "Abgeschlossen",
       "executedBy": "Ausgeführt von",
       "execute": "Ausführen"
     },
     "empty": {
-      "title": "Keine Aktionen vorhanden",
-      "description": "Sie sind auf dem neuesten Stand. Neue Aktionen erscheinen hier, sobald sie verfügbar sind."
+      "title": "Keine Aktionen anzuzeigen",
+      "description": "Sie sind auf dem neuesten Stand. Wir werden hier neue Aktionen auflisten, sobald sie verfügbar sind."
     },
-    "authorizedBadge": "{{count}} berechtigt",
+    "authorizedBadge": "{{count}} autorisiert",
     "execute": {
       "label": "Ausführen",
       "loading": "Wird ausgeführt…",
@@ -28,7 +28,7 @@
     }
   },
   "filters": {
-    "searchPlaceholder": "Aktionen durchsuchen"
+    "searchPlaceholder": "Aktionen suchen"
   },
   "status": {
     "PENDING": "Bevorstehend",
@@ -37,23 +37,25 @@
     "EXPIRED": "Abgelaufen"
   },
   "labels": {
-    "MatureBond": "Anleihe fällig stellen",
-    "ApproveXvPSettlement": "Settlement genehmigen",
-    "ExecuteXvPSettlement": "Settlement ausführen"
+    "MatureBond": "Fällige Anleihe",
+    "ApproveXvPSettlement": "Genehmigen Sie die Abwicklung",
+    "ExecuteXvPSettlement": "Abwicklung ausführen",
+    "RedeemBond": "Anleihe einlösen",
+    "ClaimYield": "Ertrag beanspruchen"
   },
   "types": {
     "bond": "Anleihe",
-    "settlement": "Settlement",
+    "settlement": "Abwicklung",
     "generic": "Aktion"
   },
   "execute": {
     "messages": {
-      "loading": "„{{action}}“ wird ausgeführt…",
-      "success": "„{{action}}“ wurde erfolgreich ausgeführt."
+      "loading": "Führe {{action}} aus…",
+      "success": "{{action}} erfolgreich ausgeführt."
     },
     "errors": {
       "notAuthorized": "Sie haben keine Berechtigung, diese Aktion auszuführen.",
-      "unsupported": "Diese Aktion kann im Portal noch nicht ausgeführt werden."
+      "unsupported": "Diese Aktion kann derzeit noch nicht über das Portal ausgeführt werden."
     }
   }
 }

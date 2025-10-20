@@ -1,14 +1,14 @@
 {
   "compliance": {
     "available": {
-      "description": "以下のコンプライアンスモジュールのいずれかを有効にして、あなたの資産にアクセスできる人を制御できます。",
+      "description": "あなたは、資産にアクセスできる人を制御するために、以下のコンプライアンスモジュールのいずれかを有効にできます。",
       "title": "利用可能なモジュール"
     },
     "configured": {
       "description": "あなたの資産に対して有効になっているコンプライアンスモジュール。",
       "title": "有効なモジュール"
     },
-    "description": "コンプライアンスモジュールを有効にして構成し、あなたの資産にアクセスできる人を制御します。",
+    "description": "資産にアクセスできる人を制御するために、コンプライアンスモジュールを有効にして設定します。",
     "title": "コンプライアンスモジュール"
   },
   "form": {
@@ -25,66 +25,85 @@
       "submit": "送信",
       "leave": "離れる"
     },
-    "description": "{{type}}の基本情報を以下に提供して構成します。",
+    "description": "{{type}}の基本情報を以下に提供して設定します。",
     "errors": {
-      "denominationAssetFetch": "このトークンを読み込めません。別のトークンを選択するか、少しお待ちください。"
+      "denominationAssetFetch": "このトークンを読み込むことができません。別のものを選択するか、しばらくお待ちください。",
+      "maturityDateTooEarly": "{{minDateTime}}の後の日付でなければなりません。"
     },
     "fields": {
+      "basePrice": {
+        "description": "{{type}}の基準価格",
+        "label": "基準価格",
+        "placeholder": "例：1000 USD"
+      },
       "cap": {
-        "description": "発行できるトークンの最大数",
-        "label": "トークンキャップ",
+        "description": "{{type}}として発行できる最大数",
+        "label": "最大制限",
         "placeholder": "例：1000000"
       },
+      "category": {
+        "description": "{{type}}のカテゴリ",
+        "label": "カテゴリ"
+      },
+      "class": {
+        "description": "{{type}}のクラス",
+        "label": "クラス"
+      },
       "countryCode": {
-        "description": "資産が登録される場所を選択してください",
+        "description": "{{type}}が登録される場所を選択してください。",
         "label": "国"
       },
       "decimals": {
-        "description": "トークンの小数点以下の桁数（0-18、デフォルトは18）",
-        "label": "小数",
-        "placeholder": "18"
+        "description": "{{type}}の小数点以下の桁数（0〜18、既定値は18）です。精度を決める指標になります。",
+        "label": "小数点桁数",
+        "placeholder": "例：18"
       },
       "faceValue": {
-        "description": "各債券トークンの額面",
+        "description": "各{{type}}の額面",
         "label": "額面",
         "placeholder": "例：1000"
       },
       "isin": {
-        "description": "トークンのISIN。これは金融システムにおけるトークンのオプションの一意の識別子です。",
-        "label": "ISIN（オプション）",
-        "placeholder": "例：US0378331005"
+        "description": "{{type}}のISIN。金融システムで{{type}}を識別する任意の一意識別子です。",
+        "label": "ISIN（任意）",
+        "placeholder": "例：JP0000000000"
       },
       "managementFeeBps": {
         "description": "ベーシスポイントでの管理手数料（100 BPS = 1%）",
         "label": "管理手数料（BPS）",
-        "placeholder": "例：100"
+        "placeholder": "例：100",
+        "inPercentage": "パーセンテージ："
       },
       "maturityDate": {
-        "description": "債券の満期日",
+        "description": "{{type}}の満期日",
         "label": "満期日",
         "placeholder": "日付を選択"
       },
       "name": {
-        "description": "トークンの名前。これはUIでトークンを識別するために使用され、作成後は変更できません。",
-        "label": "名前",
-        "placeholder": "例：政府の{{type}}シリーズA"
+        "description": "{{type}}の名称です。UIで{{type}}を識別するために使用され、作成後は変更できません。",
+        "label": "資産名",
+        "placeholder": "例：政府系{{type}}シリーズA"
       },
       "symbol": {
-        "description": "トークンの短いシンボル（通常は3-5文字）",
-        "label": "シンボル",
+        "description": "{{type}}の短いシンボル（通常3〜5文字、最大10文字）。",
+        "label": "ティッカーシンボル",
         "placeholder": "例：GBSA"
       },
       "type": {
-        "description": "作成したい資産のタイプを選択してください。デプロイされたファクトリーを持つ資産タイプのみが利用可能です。",
+        "description": "作成したいデジタル資産の種類を選択してください。展開されたファクトリーを持つ資産タイプのみが利用可能です。",
         "label": "資産タイプ"
       },
       "denominationAsset": {
-        "description": " denomination 資産の Ethereum アドレス",
-        "label": " denomination 資産",
+        "description": "単位資産のアドレス",
+        "label": "単位資産",
         "placeholder": "例：0x..."
+      },
+      "assetClass": {
+        "description": "{{type}}のクラス",
+        "label": "資産クラス"
       }
     },
-    "title": "{{type}}を作成"
+    "title": "{{type}}を展開"
   },
   "leave-confirmation": {
     "title": "資産デザイナーを離れますか？",
@@ -97,11 +116,11 @@
     "created": "{{type}}が正常に作成されました。",
     "creating": "{{type}}を作成中...",
     "creation-failed": "{{type}}の作成に失敗しました。",
-    "error-toast": "{{type}}の作成に失敗しました",
+    "error-toast": "{{type}}の作成に失敗しました。",
     "loading": "利用可能な資産タイプを読み込んでいます...",
-    "loading-description": "利用可能なトークンファクトリーを取得中です。お待ちください。",
+    "loading-description": "利用可能なトークンファクトリーを取得するまでお待ちください。",
     "no-asset-types": "利用可能な資産タイプはありません",
-    "no-asset-types-description": "トークンファクトリーはまだデプロイされていません。トークンを作成する前に、まずトークンファクトリーをデプロイしてください。",
+    "no-asset-types-description": "トークンファクトリーはまだ展開されていません。トークンを作成する前に、まずトークンファクトリーを展開してください。",
     "success-toast": "{{type}}が正常に作成されました！"
   },
   "streaming-messages": {
@@ -112,43 +131,76 @@
     "no-result-error": "{{type}}の作成からトランザクションハッシュが受信されませんでした。"
   },
   "validation": {
-    "type-required": "資産タイプを選択してください"
+    "type-required": "資産タイプを選択してください。"
   },
   "verification": {
-    "confirm-description": "デジタル資産を作成するためにあなたの身元を確認してください。",
+    "confirm-description": "デジタル資産を作成するために、あなたの身元を確認してください。",
     "confirm-title": "資産作成を確認"
   },
   "wizard": {
     "description": "規制コンプライアンスと投資家保護を備えたトークン化された資産を作成するための各ステップを案内します。",
-    "steps": {
-      "asset-type": {
-        "description": "作成したいトークンのタイプを選択してください",
-        "title": "トークンタイプを選択"
+    "groups": {
+      "chooseAssetType": {
+        "title": "資産タイプを選択",
+        "description": "トークン化したい資産クラスとタイプを選択してください。"
       },
-      "assetBasics": {
-        "description": "資産を定義する基本的な特性と詳細を設定します",
-        "title": "資産を定義"
+      "configureAssetDetails": {
+        "title": "詳細を設定",
+        "description": "資産の基本的なプロパティと設定を定義します。"
       },
-      "complianceModules": {
-        "description": "資産が法的要件を満たすようにコンプライアンスモジュールを設定します",
-        "title": "コンプライアンスを構成"
-      },
-      "selectAssetType": {
-        "description": "ブロックチェーン上でトークン化したい実世界の資産のタイプを選択してください",
-        "title": "資産タイプを選択"
+      "compliance": {
+        "title": "コンプライアンス設定",
+        "description": "法的要件を満たすために規制モジュールを設定します。"
       },
       "summary": {
-        "description": "コンプライアンスのあるデジタル資産をブロックチェーンに確認してデプロイします",
-        "title": "レビュー＆デプロイ"
+        "title": "概要",
+        "description": "展開前に資産の設定を確認します。"
+      }
+    },
+    "steps": {
+      "assetClass": {
+        "description": "作成したい資産クラスを選択してください。",
+        "title": "資産クラスを選択"
       },
-      "token-details": {
-        "description": "トークンの基本的な特性を構成します",
-        "title": "トークンの詳細"
+      "assetType": {
+        "description": "ブロックチェーン上でトークン化したい実世界の資産の種類を選択してください。",
+        "title": "資産タイプを選択"
+      },
+      "assetBasics": {
+        "description": "この資産の一般情報を指定してください。",
+        "title": "一般情報"
+      },
+      "assetSpecificConfig": {
+        "description": "{{type}}に特有のパラメータを設定します。",
+        "title": "金融商品特有の詳細"
+      },
+      "complianceModules": {
+        "description": "資産が法的要件を満たすようにコンプライアンスモジュールを設定します。",
+        "title": "コンプライアンスを設定する"
+      },
+      "summary": {
+        "description": "コンプライアンスに準拠したデジタル資産をブロックチェーンに確認して展開します",
+        "title": "レビュー & 展開",
+        "generalInfo": {
+          "title": "一般情報",
+          "description": "あなたの{{type}}に関する一般情報"
+        },
+        "instrumentSpecificDetails": {
+          "title": "楽器固有の詳細",
+          "description": "{{type}}固有の詳細"
+        },
+        "complianceModules": {
+          "title": "コンプライアンスモジュール",
+          "description": "あなたの{{type}}に対して有効化されたコンプライアンスモジュール"
+        },
+        "availability": {
+          "checking": "確認中",
+          "availableDescription": "あなたの資産名、シンボル、および小数点以下の桁数が利用可能です。",
+          "unavailableDescription": "この名前、シンボル、および小数点以下の桁数を持つ資産は既に存在します。続行するには、これらのいずれかを変更してください。",
+          "errorDescription": "利用可能性を確認できませんでした。資産の詳細を確認して再試行してください。"
+        }
       }
     },
     "title": "資産を設計する"
-  },
-  "sidebar": {
-    "button-title": "アセットデザイナー"
   }
 }

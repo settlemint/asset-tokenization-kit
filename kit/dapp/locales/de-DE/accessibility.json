@@ -14,7 +14,7 @@
   "buttons": {
     "close": "Schließen",
     "expand": "Erweitern",
-    "collapse": "Einklappen",
+    "collapse": "Zusammenklappen",
     "menu": "Menü",
     "more": "Weitere Optionen",
     "settings": "Einstellungen",
@@ -41,7 +41,7 @@
     "reset": "Von vorne beginnen"
   },
   "loading": {
-    "loading": "Laden...",
+    "loading": "Wird geladen...",
     "loadingContent": "Bereite deinen Inhalt vor...",
     "loadingPage": "Richte alles ein...",
     "processingRequest": "Ich arbeite daran...",
@@ -58,14 +58,14 @@
     "nextPage": "Eine Seite vorwärts gehen"
   },
   "status": {
-    "online": "Online",
-    "offline": "Offline",
+    "online": "Online-Status",
+    "offline": "Offline-Modus",
     "active": "Aktiv",
     "inactive": "Inaktiv",
     "success": "Erfolg",
     "error": "Fehler",
     "warning": "Warnung",
-    "info": "Information"
+    "info": "Hinweis"
   },
   "table": {
     "sortable": "Klicken, um diese Spalte zu sortieren",
@@ -89,13 +89,13 @@
     "markAsRead": "Als gelesen markieren"
   },
   "wallet": {
-    "connectWallet": "Verbinde deine Wallet",
-    "disconnectWallet": "Wallet trennen",
+    "connectWallet": "Verbinde deine Brieftasche",
+    "disconnectWallet": "Brieftasche trennen",
     "switchAccount": "Zu einem anderen Konto wechseln",
-    "copyAddress": "Kopiere deine Wallet-Adresse"
+    "copyAddress": "Kopiere deine Brieftaschenadresse"
   },
   "images": {
-    "logo": "Logo des Asset-Tokenisierungs-Kits",
+    "logo": "Logo des Asset-Tokenisierungskits",
     "tokenIcon": "{{name}} Token-Icon",
     "userAvatar": "Dein Profilbild",
     "assetImage": "{{name}} Asset-Bild"

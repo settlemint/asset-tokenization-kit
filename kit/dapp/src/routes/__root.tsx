@@ -19,6 +19,19 @@
 
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { NotFound } from "@/components/error/not-found";
+import {
+  compileThemeCSS,
+  resolveFontLinks,
+  resolveFontVariables,
+  hashTheme,
+  type ResolvedFontLink,
+  type FontVariables,
+} from "@/components/theme/lib/compile-css";
+import { DEFAULT_THEME, type ThemeConfig } from "@/components/theme/lib/schema";
+import {
+  getThemeCssFromCache,
+  setThemeCssCache,
+} from "@/components/theme/lib/theme-css-cache";
 import { patchBigIntToJSON } from "@/lib/utils/json";
 import type { orpc } from "@/orpc/orpc-client";
 import { Providers } from "@/providers";
@@ -37,17 +50,75 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { useMemo, type ReactNode } from "react";
+import {
+  useMemo,
+  type ReactNode,
+  type DetailedHTMLProps,
+  type LinkHTMLAttributes,
+} from "react";
 import { Toaster } from "sonner";
 
 patchBigIntToJSON();
+
+type LinkDescriptor = DetailedHTMLProps<
+  LinkHTMLAttributes<HTMLLinkElement>,
+  HTMLLinkElement
+>;
+
+type RootLoaderData = {
+  theme: ThemeConfig;
+  themeHash: string;
+  themeCss: string;
+  fontLinks: ResolvedFontLink[];
+  fontVariables: FontVariables;
+};
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
   orpc: typeof orpc;
 }>()({
-  head: () => ({
-    meta: [
+  loader: async ({ context }): Promise<RootLoaderData> => {
+    const { queryClient, orpc } = context;
+
+    try {
+      const theme = await queryClient.ensureQueryData(
+        orpc.settings.theme.get.queryOptions({ input: {} })
+      );
+      const hash = hashTheme(theme);
+      const cachedCss = await getThemeCssFromCache(hash);
+      const css = cachedCss ?? compileThemeCSS(theme);
+
+      if (!cachedCss) {
+        await setThemeCssCache(hash, css);
+      }
+
+      return {
+        theme,
+        themeHash: hash,
+        themeCss: css,
+        fontLinks: resolveFontLinks(theme.fonts),
+        fontVariables: resolveFontVariables(theme.fonts),
+      };
+    } catch {
+      const hash = hashTheme(DEFAULT_THEME);
+      const cachedCss = await getThemeCssFromCache(hash);
+      const css = cachedCss ?? compileThemeCSS(DEFAULT_THEME);
+
+      if (!cachedCss) {
+        await setThemeCssCache(hash, css);
+      }
+
+      return {
+        theme: DEFAULT_THEME,
+        themeHash: hash,
+        themeCss: css,
+        fontLinks: resolveFontLinks(DEFAULT_THEME.fonts),
+        fontVariables: resolveFontVariables(DEFAULT_THEME.fonts),
+      };
+    }
+  },
+  head: ({ loaderData }) => {
+    const baseMeta = [
       {
         // eslint-disable-next-line unicorn/text-encoding-identifier-case
         charSet: "utf-8",
@@ -61,8 +132,9 @@ export const Route = createRootRouteWithContext<{
         content: "light dark",
       },
       ...seo({}),
-    ],
-    links: [
+    ];
+
+    const baseLinks = [
       {
         rel: "stylesheet",
         href: appCss,
@@ -85,11 +157,29 @@ export const Route = createRootRouteWithContext<{
       },
       { rel: "shortcut icon", href: "/favicon.ico" },
       { rel: "manifest", href: "/site.webmanifest", color: "#ffffff" },
-    ],
-  }),
+    ];
+
+    const resolvedFontLinks =
+      loaderData?.fontLinks ?? resolveFontLinks(DEFAULT_THEME.fonts);
+    const fontLinks: LinkDescriptor[] = resolvedFontLinks.map((link) => ({
+      rel: link.rel,
+      href: link.href,
+      crossOrigin: link.crossOrigin,
+    }));
+
+    return {
+      meta: baseMeta,
+      links: [...baseLinks, ...fontLinks],
+    };
+  },
   errorComponent: (props) => {
     return (
-      <RootDocument>
+      <RootDocument
+        theme={DEFAULT_THEME}
+        initialThemeCss={compileThemeCSS(DEFAULT_THEME)}
+        initialThemeHash={hashTheme(DEFAULT_THEME)}
+        fontVariables={resolveFontVariables(DEFAULT_THEME.fonts)}
+      >
         <DefaultCatchBoundary {...props} />
       </RootDocument>
     );
@@ -106,8 +196,14 @@ export const Route = createRootRouteWithContext<{
  * HTML structure and global providers.
  */
 function RootComponent() {
+  const { theme, themeHash, themeCss, fontVariables } = Route.useLoaderData();
   return (
-    <RootDocument>
+    <RootDocument
+      theme={theme}
+      initialThemeCss={themeCss}
+      initialThemeHash={themeHash}
+      fontVariables={fontVariables}
+    >
       <Outlet />
     </RootDocument>
   );
@@ -126,12 +222,38 @@ function RootComponent() {
  * user's theme preference, preventing any visual flicker during page load.
  * @param children.children
  * @param children - The route content to render within the document
+ * @param initialThemeCss - Precompiled CSS overrides for persisted theme
  */
-function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
+function RootDocument({
+  children,
+  theme,
+  initialThemeCss,
+  initialThemeHash,
+  fontVariables,
+}: Readonly<{
+  children: ReactNode;
+  theme: ThemeConfig;
+  initialThemeCss?: string;
+  initialThemeHash?: string;
+  fontVariables?: FontVariables;
+}>) {
   return (
     <html suppressHydrationWarning>
       <head>
         <HeadContent />
+        {initialThemeCss ? (
+          <style
+            id="theme-overrides"
+            data-origin="persisted"
+            data-hash={initialThemeHash}
+            dangerouslySetInnerHTML={useMemo(
+              () => ({
+                __html: initialThemeCss,
+              }),
+              [initialThemeCss]
+            )}
+          />
+        ) : null}
         {/**
          * Theme initialization script that runs before React hydration.
          * This prevents flash of unstyled content by immediately applying
@@ -156,7 +278,10 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
                 }
 
                 // Apply theme class for CSS theme variables
+                root.classList.remove("light", "dark");
                 root.classList.add(appliedTheme);
+                root.dataset.theme = appliedTheme;
+                root.dataset.themeMode = theme;
 
                 // Set background color immediately to prevent flash
                 // Colors match --sm-background-lightest CSS variables
@@ -175,7 +300,11 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         />
       </head>
       <body>
-        <Providers>
+        <Providers
+          theme={theme}
+          themeHash={initialThemeHash}
+          fontVariables={fontVariables}
+        >
           {children}
           <Toaster richColors />
           <TanStackDevtools

@@ -1,36 +1,42 @@
 {
   "title": "أصولي",
   "actions": {
-    "addressCopied": "تم نسخ عنوان الرمز المميز إلى الحافظة",
+    "addressCopied": "تم نسخ عنوان الرمز إلى الحافظة",
     "copyAddress": "نسخ العنوان",
-    "tokenDetailsNotImplemented": "عرض تفاصيل الرمز المميز غير مطبق بعد",
-    "viewOnBlockExplorer": "عرض في مستكشف الكتل",
-    "viewTokenDetails": "عرض تفاصيل الرمز المميز",
+    "tokenDetailsNotImplemented": "عرض تفاصيل الرمز غير مطبق بعد",
+    "viewOnBlockExplorer": "عرض على مستكشف الكتل",
+    "viewTokenDetails": "عرض تفاصيل الرمز",
     "transfer": {
-      "label": "Transfer",
-      "title": "Transfer Tokens",
-      "description": "Send tokens to one or more recipient addresses. This action requires verification.",
-      "submit": "Confirm Transfer",
-      "reviewTitle": "Review Transfer",
-      "fromLabel": "From",
-      "recipientLabel": "Recipient",
-      "recipientDescription": "Select or enter the address that will receive these tokens.",
-      "amountLabel": "Amount",
-      "amountDescription": "Enter the number of tokens to transfer.",
-      "availableLabel": "Current Available",
-      "remainingLabel": "Available After Transfer",
-      "availableMessage": "You can transfer up to {{amount}} {{symbol}}.",
-      "amountRequired": "Add an amount greater than zero to keep going.",
-      "exceedsAvailable": "Amount exceeds your available balance.",
-      "recipientsTitle": "Recipients",
-      "addRecipient": "Add recipient",
-      "totalLabel": "Total",
-      "overAvailable": "Lower the total so it stays within your available balance."
+      "label": "تحويل",
+      "title": "تحويل الرموز",
+      "description": "إرسال الرموز إلى عنوان أو أكثر من عناوين المستلمين. هذا الإجراء يتطلب التحقق.",
+      "submit": "تأكيد التحويل",
+      "reviewTitle": "مراجعة التحويل",
+      "fromLabel": "من",
+      "recipientLabel": "المستلم",
+      "recipientDescription": "اختر أو أدخل العنوان الذي سيتلقى هذه الرموز.",
+      "amountLabel": "المبلغ",
+      "amountDescription": "أدخل عدد الرموز المراد تحويلها.",
+      "availableLabel": "المتاح الحالي",
+      "remainingLabel": "المتاح بعد التحويل",
+      "availableMessage": "يمكنك تحويل حتى {{amount}} {{symbol}}.",
+      "amountRequired": "أضف مبلغًا أكبر من الصفر للمتابعة.",
+      "exceedsAvailable": "المبلغ يتجاوز رصيدك المتاح.",
+      "recipientsTitle": "المستلمون",
+      "addRecipient": "إضافة مستلم",
+      "totalLabel": "الإجمالي",
+      "overAvailable": "قلل الإجمالي ليبقى ضمن رصيدك المتاح."
+    },
+    "redeem": {
+      "label": "استرداد"
+    },
+    "claimYield": {
+      "label": "المطالبة بالعائد"
     }
   },
   "bulkActions": {
-    "addressesCopied": "تم نسخ {{count}} عناوين الرموز المميزة إلى الحافظة",
-    "exportMessage": "يتم تصدير {{count}} الأصول المحددة"
+    "addressesCopied": "تم نسخ {{count}} عنوان رمز إلى الحافظة",
+    "exportMessage": "تصدير {{count}} أصل محدد"
   },
   "columns": {
     "actions": "الإجراءات",
@@ -38,14 +44,14 @@
     "balance": "الرصيد",
     "contractAddress": "عنوان العقد",
     "frozen": "مجمد",
-    "ownership": "الملكية %",
+    "ownership": "نسبة الملكية %",
     "symbol": "الرمز",
-    "tokenName": "اسم الرمز المميز",
+    "tokenName": "اسم الرمز",
     "totalSupply": "إجمالي العرض"
   },
   "emptyState": {
-    "description": "لا تملك أي رموز مميزة بعد. عندما تحصل على الرموز، ستظهر هنا.",
+    "description": "لا تمتلك أي رموز بعد. عندما تحصل على رموز، ستظهر هنا.",
     "title": "لم يتم العثور على أصول"
   },
-  "searchPlaceholder": "البحث بالاسم أو الرمز أو العنوان..."
+  "searchPlaceholder": "البحث باسم الرمز أو الرمز أو العنوان..."
 }

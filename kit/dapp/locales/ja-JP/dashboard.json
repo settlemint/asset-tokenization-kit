@@ -1,9 +1,9 @@
 {
   "charts": {
     "assetDistribution": {
-      "description": "資産タイプ別内訳",
-      "empty": "表示する資産はありません",
-      "title": "資産分布"
+      "description": "タイプ別にグループ化された資産を表示",
+      "empty": "このチャートを見るために資産を追加",
+      "title": "資産のミックス"
     },
     "topAssets": {
       "columns": {
@@ -13,19 +13,19 @@
         "value": "価値",
         "volume": "ボリューム"
       },
-      "description": "リターン割合による資産",
-      "title": "最もパフォーマンスの良い資産"
+      "description": "最高のリターンを持つ資産を表示",
+      "title": "トップ資産"
     },
     "transactionVolume": {
       "axes": {
         "x": "日付",
         "y": "取引"
       },
-      "description": "日次取引数",
+      "description": "日々の取引ボリュームを追跡",
       "title": "取引ボリューム"
     },
     "valueOverTime": {
-      "description": "時間経過に伴う総価値",
+      "description": "ポートフォリオの価値が時間とともにどのように変化するかを観察",
       "periods": {
         "all": "すべて",
         "day": "24時間",
@@ -39,23 +39,23 @@
   },
   "empty": {
     "action": "資産を作成",
-    "subtitle": "最初のトークン化された資産を作成することから始めましょう",
-    "title": "表示するデータはありません"
+    "subtitle": "追跡を開始するために最初のトークン化された資産を作成",
+    "title": "まだ何もありません"
   },
   "errors": {
-    "loadFailed": "ダッシュボードデータの読み込みに失敗しました",
+    "loadFailed": "ダッシュボードを読み込めませんでした",
     "retry": "再試行"
   },
   "export": {
     "formats": {
-      "csv": "CSV",
-      "json": "JSON",
+      "csv": "CSVファイル",
+      "json": "JSONファイル",
       "pdf": "PDFレポート",
-      "xlsx": "Excel"
+      "xlsx": "Excelワークブック"
     },
     "sections": {
-      "all": "すべてのデータ",
-      "analytics": "分析レポート",
+      "all": "すべて",
+      "analytics": "分析の概要",
       "assets": "資産のみ",
       "transactions": "取引のみ"
     },
@@ -63,79 +63,83 @@
   },
   "identityMetrics": {
     "title": "アイデンティティ概要",
-    "description": "現在のシステムアイデンティティの状態と登録",
+    "description": "現在のシステムアイデンティティのステータスと登録",
     "totalIdentities": "総アイデンティティ数",
     "activeRegistrations": "アクティブな登録",
-    "pendingRegistrations": "保留中の登録"
+    "pendingRegistrations": "保留中の登録",
+    "chartTitle": "アクティブな登録",
+    "chartDescription": "過去7日間のアクティブなアイデンティティ登録のデイリートレンド",
+    "emptyStateMessage": "まだ登録はありません",
+    "emptyStateDescription": "ユーザーが確認プロセスを開始すると、アイデンティティ登録がここに表示されます"
   },
   "portfolioDetails": {
-    "name": "ポートフォリオ詳細",
+    "name": "ポートフォリオの詳細",
     "summary": {
-      "title": "ポートフォリオ概要",
-      "description": "ポートフォリオの総価値と保有資産を確認できます"
+      "title": "ポートフォリオの概要",
+      "description": "総ポートフォリオの価値と保有資産を表示"
     },
     "breakdown": {
-      "title": "ポートフォリオ内訳",
-      "description": "資産タイプごとの内訳を表示します"
+      "title": "ポートフォリオの内訳",
+      "description": "タイプ別の資産の詳細な内訳"
     },
     "performance": {
       "title": "ポートフォリオのパフォーマンス",
-      "description": "時間の経過によるポートフォリオ価値の推移を追跡します"
+      "description": "時間とともにポートフォリオの価値を追跡"
     }
   },
   "filters": {
     "apply": "フィルターを適用",
     "assetType": "資産タイプ",
     "dateRange": "日付範囲",
-    "reset": "リセット",
+    "reset": "フィルターをクリア",
     "status": "ステータス"
   },
   "loading": {
-    "activity": "アクティビティを読み込んでいます...",
-    "charts": "チャートを読み込んでいます...",
-    "stats": "統計を読み込んでいます..."
+    "activity": "アクティビティを読み込み中",
+    "charts": "チャートを読み込み中",
+    "stats": "統計を読み込み中"
   },
   "quickActions": {
-    "createAsset": "新しい資産を作成",
-    "generateReport": "レポートを生成",
+    "createAsset": "資産を作成",
+    "generateReport": "レポートを作成",
     "title": "クイックアクション",
     "transferTokens": "トークンを転送",
-    "viewPortfolio": "ポートフォリオを表示"
+    "viewPortfolio": "ポートフォリオを開く"
   },
   "stats": {
     "activeUsers": {
-      "description": "過去30日間のユーザー",
+      "description": "過去30日間にアクティブなユーザー",
       "title": "アクティブユーザー",
-      "trend": "{{count}} 今週の新規"
+      "trend": "{{count}}が今週参加"
     },
     "totalAssets": {
-      "description": "アクティブなトークン化資産",
+      "description": "ライブトークン化された資産",
       "title": "総資産",
       "trend": "{{percentage}}% 前月比"
     },
     "totalValue": {
-      "description": "すべての資産の合計価値",
+      "description": "資産全体の合計価値",
       "title": "ロックされた総価値",
       "trend": "{{percentage}}% 前月比"
     },
     "transactions": {
-      "description": "処理された総取引数",
+      "description": "完了した取引",
       "title": "取引",
       "trend": "{{count}} 今日"
     }
   },
-  "subtitle": "あなたのトークン化資産の概要",
+  "subtitle": "資産の状況を確認",
   "title": "ダッシュボード",
   "welcome": {
-    "subtitle": "今日の資産の状況は以下の通りです",
+    "subtitle": "今日の資産活動を一目で",
     "title": "お帰りなさい、{{name}}"
   },
   "assetOverview": {
-    "title": "資産概要",
-    "subtitle": "トークン化された資産を追跡・分析",
+    "title": "資産の概要",
+    "subtitle": "トークン化された資産を追跡し分析",
     "emptyState": {
-      "title": "資産概要がここに表示されます",
-      "description": "最初のトークン化資産を作成すると、チャートと統計が表示されます"
+      "title": "あなたの資産の概要がここに表示されます",
+      "description": "最初のトークン化された資産を設計すると、チャートと統計が表示されます"
     }
   },
   "widgets": {
@@ -148,36 +152,138 @@
         "success": "成功",
         "warning": "警告"
       },
-      "viewDetails": "詳細を表示"
+      "viewDetails": "詳細を見る"
     },
     "pendingActions": {
-      "empty": "保留中のアクションはありません",
+      "empty": "保留中の作業はありません",
       "title": "保留中のアクション",
       "types": {
         "approval": "承認が必要",
-        "kyc": "KYC確認待ち",
+        "kyc": "KYCレビュー保留中",
         "signature": "署名が必要"
       }
     },
     "recentActivity": {
-      "empty": "最近のアクティビティはありません",
-      "title": "最近のアクティビティ",
+      "empty": "最近の活動はありません",
+      "title": "最近の活動",
       "types": {
-        "approval": "{{user}} が {{spender}} を承認しました",
+        "approval": "{{user}}が{{spender}}を承認",
         "burn": "{{amount}} {{token}} が焼却されました",
         "deployment": "新しい {{type}} が展開されました",
         "mint": "{{amount}} {{token}} が鋳造されました",
         "transfer": "{{user}} が {{amount}} {{token}} を転送しました"
       },
-      "viewAll": "すべてのアクティビティを表示"
+      "viewAll": "すべてのアクティビティを見る"
     },
     "latestEvents": {
+      "title": "最新のアクティビティ",
+      "empty": "まだレビューするものはありません",
+      "emptyDescription": "ここにあなたの最近の成功した取引が5件表示されます",
+      "viewAll": "すべてを見る",
+      "loading": "アクティビティを読み込んでいます",
+      "error": "アクティビティを読み込めませんでした",
+      "errorRetry": "再試行してください",
+      "types": {
+        "TransferCompleted": "転送が完了しました",
+        "MintCompleted": "資産が鋳造されました",
+        "BurnCompleted": "資産が焼却されました",
+        "Approval": "承認が付与されました",
+        "Paused": "取引が一時停止されました",
+        "Unpaused": "取引が再開されました",
+        "RoleGranted": "役割が付与されました",
+        "RoleRevoked": "役割が取り消されました",
+        "RoleAdminChanged": "管理者の役割が変更されました",
+        "IdentityRegistered": "身分が確認されました",
+        "IdentityCreated": "身分が作成されました",
+        "IdentityModified": "身分が更新されました",
+        "IdentityStored": "身分が保存されました",
+        "IdentityUnstored": "身分が削除されました",
+        "ClaimAdded": "請求が追加されました",
+        "ClaimRemoved": "請求が削除されました",
+        "ClaimRevoked": "請求が取り消されました",
+        "ClaimChanged": "請求が更新されました",
+        "ComplianceAdded": "コンプライアンスが追加されました",
+        "ComplianceModuleAdded": "ルールモジュールが追加されました",
+        "ComplianceModuleRemoved": "ルールモジュールが削除されました",
+        "ModuleParametersUpdated": "モジュール設定が更新されました",
+        "AddressFrozen": "アカウントが凍結されました",
+        "TokensFrozen": "資産が凍結されました",
+        "TokensUnfrozen": "資産の凍結が解除されました",
+        "RecoverySuccess": "資産が回収されました",
+        "YieldClaimed": "利回りが請求されました",
+        "CheckpointUpdated": "利回りのチェックポイントが更新されました",
+        "YieldScheduleSet": "利回りのスケジュールが更新されました",
+        "FixedYieldScheduleSet": "固定利回りが設定されました",
+        "BondCreated": "債券が発行されました",
+        "BondMatured": "債券が満期になりました",
+        "BondRedeemed": "債券が償還されました",
+        "FundCreated": "ファンドが作成されました",
+        "EquityCreated": "株式が発行されました",
+        "DepositCreated": "預金が作成されました",
+        "StableCoinCreated": "ステーブルコインが発行されました",
+        "ManagementFeeCollected": "管理手数料が徴収されました",
+        "AirdropTokensTransferred": "エアドロップを受け取りました",
+        "AirdropBatchTokensTransferred": "バッチエアドロップが送信されました",
+        "VestingInitialized": "ベスティングが開始されました",
+        "BatchVestingInitialized": "バッチベスティングが開始されました",
+        "VestingStrategyUpdated": "ベスティング戦略が更新されました",
+        "XvPSettlementExecuted": "決済が実行されました",
+        "XvPSettlementApproved": "決済が承認されました",
+        "XvPSettlementCancelled": "決済がキャンセルされました",
+        "XvPSettlementApprovalRevoked": "決済の承認が取り消されました",
+        "Deposit": "ボールトに預金",
+        "ExecuteTransaction": "取引が実行されました",
+        "SubmitTransactionWithSignatures": "取引が提出されました",
+        "SignaturesProvided": "署名が提供されました",
+        "RequirementChanged": "要件が変更されました",
+        "Bootstrapped": "システムが初期化されました",
+        "TokenAssetCreated": "資産が作成されました",
+        "TokenImplementationUpdated": "資産の実装が更新されました",
+        "CapSet": "供給上限が設定されました",
+        "Redeemed": "資産が償還されました",
+        "TrustedIssuerAdded": "信頼できる発行者が追加されました",
+        "TrustedIssuerRemoved": "信頼できる発行者が削除されました",
+        "ClaimTopicsUpdated": "請求トピックが更新されました",
+        "TopicSchemeRegistered": "トピックが登録されました",
+        "TopicSchemeRemoved": "トピックが削除されました",
+        "TopicSchemeUpdated": "トピックが更新されました",
+        "IdentityRegistryBound": "身分登録がバインドされました",
+        "IdentityRegistryUnbound": "身分登録がアンバインドされました",
+        "CountryModified": "国が更新されました",
+        "AddressAddedToBypassList": "バイパスリストのエントリが追加されました",
+        "AddressRemovedFromBypassList": "バイパスリストのエントリが削除されました",
+        "GlobalComplianceModuleAdded": "グローバルモジュールが追加されました",
+        "GlobalComplianceModuleRemoved": "グローバルモジュールが削除されました",
+        "ERC20TokenRecovered": "ERC20トークンが回収されました",
+        "UpdatedTokenInformation": "トークンの詳細が更新されました",
+        "ATKSystemCreated": "ATKシステムが作成されました",
+        "ATKXvPSettlementCreated": "XvP決済が作成されました",
+        "ATKVaultCreated": "ボールトが作成されました",
+        "ATKPushAirdropCreated": "プッシュエアドロップが作成されました",
+        "ATKVestingAirdropCreated": "ベスティングエアドロップが作成されました",
+        "ATKTimeBoundAirdropCreated": "時間制限付きエアドロップが作成されました",
+        "ATKFixedYieldScheduleCreated": "固定利回りスケジュールが作成されました",
+        "TokenFactoryRegistered": "トークンファクトリーが登録されました",
+        "SystemAddonRegistered": "システムアドオンが登録されました",
+        "ComplianceModuleRegistered": "コンプライアンスモジュールが登録されました",
+        "OwnershipTransferred": "所有権が移転されました",
+        "TokensWithdrawn": "資産が引き出されました",
+        "DenominationAssetTopUp": "単位資産が補充されました",
+        "DenominationAssetWithdrawn": "単位資産が引き出されました",
+        "DistributionCapUpdated": "配分上限が更新されました"
+      },
+      "timeAgo": {
+        "justNow": "たった今",
+        "minutesAgo": "{{count}} 分前",
+        "hoursAgo": "{{count}} 時間前",
+        "daysAgo": "{{count}} 日前"
+      },
       "columns": {
         "event": "イベント",
-        "asset": "アセット",
+        "asset": "資産",
         "account": "アカウント",
         "time": "時間",
-        "transaction": "トランザクション"
+        "transaction": "取引"
       }
     }
   }

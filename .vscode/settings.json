@@ -127,7 +127,6 @@
   "typescript.inlayHints.variableTypes.enabled": true,
   "typescript.preferences.autoImportSpecifierExcludeRegexes": [
     "@radix-ui",
-    "next/router",
     "@atk/zod/src",
     "@atk/config/src"
   ],

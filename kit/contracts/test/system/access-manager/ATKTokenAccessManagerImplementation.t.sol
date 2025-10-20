@@ -227,6 +227,7 @@ contract ATKTokenAccessManagerImplementationTest is Test {
         // Create array of accounts
         address[] memory accounts = new address[](numAccounts);
         for (uint256 i = 0; i < numAccounts; i++) {
+            // forge-lint: disable-next-line(unsafe-typecast) -- 0x1000 + i fits within 160 bits for numAccounts <= 20
             accounts[i] = address(uint160(0x1000 + i));
         }
 

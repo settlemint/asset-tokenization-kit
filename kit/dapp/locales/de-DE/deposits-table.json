@@ -3,26 +3,26 @@
     "addressCopied": "Token-Adresse in die Zwischenablage kopiert",
     "copyAddress": "Adresse kopieren",
     "createToken": "Token erstellen",
-    "viewDetails": "Details anzeigen",
-    "viewOnEtherscan": "Auf Etherscan anzeigen"
+    "viewDetails": "Details ansehen",
+    "viewOnEtherscan": "Auf Etherscan ansehen"
   },
   "bulkActions": {
-    "archiveMessage": "Würde {{count}} Token archivieren. Dies ist eine Demomaßnahme.",
-    "duplicateMessage": "Würde {{count}} Token duplizieren. Dies ist eine Demomaßnahme."
+    "archiveMessage": "Würde {{count}} Token(s) archivieren. Dies ist eine Demo-Aktion.",
+    "duplicateMessage": "Würde {{count}} Token(s) duplizieren. Dies ist eine Demo-Aktion."
   },
   "columns": {
     "actions": "Aktionen",
     "contractAddress": "Vertragsadresse",
     "decimals": "Dezimalstellen",
-    "name": "Name",
-    "paused": "Status",
-    "symbol": "Symbol",
+    "name": "Einlagenname",
+    "paused": "Pausiert",
+    "symbol": "Ticker",
     "tokenName": "Token-Name",
     "tokenSymbol": "Token-Symbol",
     "totalSupply": "Gesamtangebot"
   },
   "emptyState": {
-    "description": "Diese Fabrik hat noch keine Tokens erstellt. Erstellen Sie Ihr erstes Token, um zu beginnen.",
+    "description": "Diese Fabrik hat noch keine Tokens erstellt. Erstellen Sie Ihren ersten Token, um zu beginnen.",
     "title": "Keine Tokens gefunden"
   },
   "searchPlaceholder": "Tokens nach Name, Symbol oder Adresse suchen...",

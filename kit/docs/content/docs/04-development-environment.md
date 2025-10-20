@@ -31,7 +31,7 @@ The development environment follows a microservices architecture that closely mi
 graph TB
     subgraph "Development Environment Architecture"
         subgraph "Developer Interface"
-            DevServer[Development Server<br/>Next.js Dev Server<br/>• Hot reloading<br/>• Source maps<br/>• Debug tools]
+            DevServer[Development Server<br/>TanStack Start Dev Server<br/>• Hot reloading<br/>• Source maps<br/>• Debug tools]
             
             IDE[Integrated Development Environment<br/>VSCode/Cursor<br/>• TypeScript support<br/>• Debugging integration<br/>• Extension ecosystem]
             
@@ -39,7 +39,7 @@ graph TB
         end
         
         subgraph "Application Services"
-            Frontend[Frontend Application<br/>Next.js dApp<br/>• React components<br/>• TanStack ecosystem<br/>• Wallet integration]
+            Frontend[Frontend Application<br/>TanStack Start dApp<br/>• React components<br/>• TanStack ecosystem<br/>• Wallet integration]
             
             API[API Server<br/>ORPC Backend<br/>• Type-safe procedures<br/>• Authentication<br/>• Business logic]
             
@@ -309,7 +309,7 @@ graph TB
         subgraph "Application Packages"
             Contracts[kit/contracts<br/>Smart Contracts<br/>• Solidity compilation<br/>• Testing framework<br/>• Deployment scripts]
             
-            DApp[kit/dapp<br/>Frontend Application<br/>• Next.js development<br/>• Component library<br/>• API integration]
+            DApp[kit/dapp<br/>Frontend Application<br/>• TanStack Start development<br/>• Component library<br/>• API integration]
             
             Subgraph[kit/subgraph<br/>Indexing Layer<br/>• GraphQL schema<br/>• Event handlers<br/>• Query interface]
             
@@ -832,7 +832,7 @@ graph TB
 
 | Service | Log Level | Log Format | Storage | Retention | Access Method |
 |---------|-----------|------------|---------|-----------|---------------|
-| **Next.js Dev Server** | Debug | Structured JSON | Console + file | Session | Terminal, browser |
+| **TanStack Start Dev Server** | Debug | Structured JSON | Console + file | Session | Terminal, browser |
 | **ORPC API** | Info | Structured JSON | Console | Session | Terminal |
 | **PostgreSQL** | All statements | SQL + performance | Log file | 7 days | Docker logs |
 | **Anvil** | All transactions | JSON-RPC | Console | Session | Terminal |
@@ -966,7 +966,7 @@ Common development environment issues and their solutions:
 ### Package-Specific Development
 
 - **Contract Development**: [`kit/contracts/`](../../contracts/) - Smart contract development environment
-- **Frontend Development**: [`kit/dapp/`](../../dapp/) - Next.js application development
+- **Frontend Development**: [`kit/dapp/`](../../dapp/) - TanStack Start application development
 - **Subgraph Development**: [`kit/subgraph/`](../../subgraph/) - TheGraph indexing development
 - **E2E Testing**: [`kit/e2e/`](../../e2e/) - End-to-end testing setup
 

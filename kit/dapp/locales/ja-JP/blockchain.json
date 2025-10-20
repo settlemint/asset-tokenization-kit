@@ -2,7 +2,7 @@
   "blocks": {
     "difficulty": "難易度",
     "gasLimit": "ガス制限",
-    "gasUsed": "使用ガス",
+    "gasUsed": "使用したガス",
     "hash": "ブロックハッシュ",
     "miner": "マイナー",
     "number": "ブロック #{{number}}",
@@ -12,7 +12,7 @@
   },
   "confirmations": {
     "count": "{{current}} / {{required}} 確認",
-    "final": "トランザクション確定",
+    "final": "トランザクションが確定しました",
     "waiting": "確認を待っています..."
   },
   "contract": {
@@ -41,19 +41,19 @@
       "AlreadyInitialized": "すでに初期化されています",
       "InsufficientBalance": "残高不足",
       "InvalidAddress": "無効なアドレス",
-      "NotInitialized": "未初期化",
+      "NotInitialized": "初期化されていません",
       "NotOwner": "呼び出し元は所有者ではありません",
       "Overflow": "数値オーバーフロー",
       "Paused": "契約は一時停止されています",
       "TransferFailed": "転送に失敗しました",
-      "Unauthorized": "未承認",
+      "Unauthorized": "権限がありません",
       "Underflow": "数値アンダーフロー",
       "ZeroAddress": "ゼロアドレスは使用できません"
     },
     "revert": {
       "executionReverted": "実行が取り消されました",
       "generic": "トランザクションが取り消されました",
-      "outOfGas": "ガス不足",
+      "outOfGas": "ガスが不足しています",
       "reason": "取り消し理由: {{reason}}"
     }
   },
@@ -92,20 +92,20 @@
     "permit": "許可署名",
     "personal": "個人署名",
     "request": "署名が要求されました",
-    "typed": "タイプデータ署名"
+    "typed": "タイプ付きデータ署名"
   },
   "tokens": {
     "allowance": {
-      "decrease": "許可を減少",
-      "increase": "許可を増加",
+      "decrease": "許可を減少させる",
+      "increase": "許可を増加させる",
       "revoke": "許可を取り消す",
-      "set": "許可を設定",
+      "set": "許可を設定する",
       "unlimited": "無制限"
     },
     "operations": {
       "approve": "承認 {{symbol}} の支出",
       "burn": "燃焼 {{amount}} {{symbol}}",
-      "mint": "ミント {{amount}} {{symbol}}",
+      "mint": "発行 {{amount}} {{symbol}}",
       "pause": "転送を一時停止",
       "transfer": "転送 {{symbol}}",
       "transferFrom": "転送 {{symbol}} から {{owner}}",
@@ -114,7 +114,7 @@
     "standards": {
       "ERC1155": "ERC-1155 マルチトークン",
       "ERC20": "ERC-20 トークン",
-      "ERC721": "ERC-721 NFT",
+      "ERC721": "ERC-721 NFT（非代替トークン）",
       "ERC777": "ERC-777 トークン"
     }
   },
@@ -126,7 +126,7 @@
       "from": "から",
       "gasLimit": "ガス制限",
       "gasPrice": "ガス価格",
-      "gasUsed": "使用ガス",
+      "gasUsed": "使用したガス",
       "hash": "トランザクションハッシュ",
       "nonce": "ノンス",
       "timestamp": "タイムスタンプ",
@@ -153,26 +153,26 @@
     },
     "types": {
       "approve": "承認する",
-      "burn": "燃焼",
-      "claim": "請求",
-      "delegate": "委任",
+      "burn": "燃やす",
+      "claim": "請求する",
+      "delegate": "委任する",
       "deploy": "契約をデプロイ",
       "mint": "ミント",
       "stake": "ステーク",
       "swap": "スワップ",
       "transfer": "転送",
       "unstake": "アンステーク",
-      "vote": "投票"
+      "vote": "投票する"
     }
   },
   "transactions": {
     "tracking": {
-      "indexingTimeout": "インデクシングタイムアウト。トランザクションは成功しましたが、表示されるまでに時間がかかる場合があります。",
+      "indexingTimeout": "インデックス作成タイムアウト。トランザクションは成功しましたが、表示されるまでに時間がかかる場合があります。",
       "streamTimeout": "トランザクショントラッキングがタイムアウトしました。トランザクションのステータスを手動で確認してください。",
       "transactionDropped": "トランザクションはメモリプールからドロップされました",
       "transactionFailed": "トランザクションが失敗しました",
-      "transactionIndexed": "トランザクションは正常にインデックスされました。",
-      "waitingForIndexing": "トランザクションが確認されました。インデクシングを待っています...",
+      "transactionIndexed": "トランザクションが正常にインデックス作成されました。",
+      "waitingForIndexing": "トランザクションが確認されました。インデックス作成を待っています...",
       "waitingForMining": "トランザクションがマイニングされるのを待っています..."
     }
   }

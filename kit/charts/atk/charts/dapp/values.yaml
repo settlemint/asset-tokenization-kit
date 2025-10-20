@@ -423,7 +423,7 @@ initContainer:
       # -- (string) Image repository for wait-for-it utility
       repository: ghcr.io/settlemint/btp-waitforit
       # -- (string) Image tag for wait-for-it utility
-      tag: v7.7.13
+      tag: v7.7.14
       # -- (string) Image pull policy
       pullPolicy: IfNotPresent
     # -- (int) Timeout in seconds for all TCP checks to complete

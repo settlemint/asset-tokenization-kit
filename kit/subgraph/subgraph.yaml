@@ -24,8 +24,7 @@ dataSources:
         - name: System
           file: ../contracts/.generated/artifacts/contracts/system/IATKSystem.sol/IATKSystem.json
       eventHandlers:
-        - event:
-            ATKSystemCreated(indexed address,indexed address,indexed address)
+        - event: ATKSystemCreated(indexed address,indexed address,indexed address)
           handler: handleATKSystemCreated
       file: ./src/system-factory/system-factory.ts
 templates:
@@ -45,8 +44,7 @@ templates:
         - name: AccessControl
           file: ../contracts/.generated/artifacts/@openzeppelin/contracts/access/AccessControl.sol/AccessControl.json
       eventHandlers:
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: RoleGranted(indexed bytes32,indexed address,indexed address)
           handler: handleRoleGranted
@@ -73,58 +71,39 @@ templates:
         - name: IERC165
           file: ../contracts/.generated/artifacts/@openzeppelin/contracts/utils/introspection/IERC165.sol/IERC165.json
       eventHandlers:
-        - event:
-            Bootstrapped(indexed address,indexed address,indexed
+        - event: Bootstrapped(indexed address,indexed address,indexed
             address,address,address,address,address,address,address,address,address,address)
           handler: handleBootstrapped
-        - event:
-            ComplianceImplementationUpdated(indexed address,indexed address)
+        - event: ComplianceImplementationUpdated(indexed address,indexed address)
           handler: handleComplianceImplementationUpdated
-        - event:
-            IdentityFactoryImplementationUpdated(indexed address,indexed
-            address)
+        - event: IdentityFactoryImplementationUpdated(indexed address,indexed address)
           handler: handleIdentityFactoryImplementationUpdated
         - event: IdentityImplementationUpdated(indexed address,indexed address)
           handler: handleIdentityImplementationUpdated
-        - event:
-            IdentityRegistryImplementationUpdated(indexed address,indexed
-            address)
+        - event: IdentityRegistryImplementationUpdated(indexed address,indexed address)
           handler: handleIdentityRegistryImplementationUpdated
-        - event:
-            IdentityRegistryStorageImplementationUpdated(indexed address,indexed
+        - event: IdentityRegistryStorageImplementationUpdated(indexed address,indexed
             address)
           handler: handleIdentityRegistryStorageImplementationUpdated
-        - event:
-            TokenAccessManagerImplementationUpdated(indexed address,indexed
-            address)
+        - event: TokenAccessManagerImplementationUpdated(indexed address,indexed address)
           handler: handleTokenAccessManagerImplementationUpdated
-        - event:
-            ContractIdentityImplementationUpdated(indexed address,indexed
-            address)
+        - event: ContractIdentityImplementationUpdated(indexed address,indexed address)
           handler: handleContractIdentityImplementationUpdated
-        - event:
-            SystemTrustedIssuersRegistryImplementationUpdated(indexed
-            address,indexed address)
-          handler: handleSystemTrustedIssuersRegistryImplementationUpdated
-        - event:
-            TrustedIssuersMetaRegistryImplementationUpdated(indexed
-            address,indexed address)
-          handler: handleTrustedIssuersMetaRegistryImplementationUpdated
-        - event:
-            TopicSchemeRegistryImplementationUpdated(indexed address,indexed
+        - event: SystemTrustedIssuersRegistryImplementationUpdated(indexed address,indexed
             address)
+          handler: handleSystemTrustedIssuersRegistryImplementationUpdated
+        - event: TrustedIssuersMetaRegistryImplementationUpdated(indexed address,indexed
+            address)
+          handler: handleTrustedIssuersMetaRegistryImplementationUpdated
+        - event: TopicSchemeRegistryImplementationUpdated(indexed address,indexed address)
           handler: handleTopicSchemeRegistryImplementationUpdated
-        - event:
-            TokenFactoryRegistryImplementationUpdated(indexed address,indexed
+        - event: TokenFactoryRegistryImplementationUpdated(indexed address,indexed
             address)
           handler: handleTokenFactoryRegistryImplementationUpdated
-        - event:
-            ComplianceModuleRegistryImplementationUpdated(indexed
-            address,indexed address)
-          handler: handleComplianceModuleRegistryImplementationUpdated
-        - event:
-            SystemAddonRegistryImplementationUpdated(indexed address,indexed
+        - event: ComplianceModuleRegistryImplementationUpdated(indexed address,indexed
             address)
+          handler: handleComplianceModuleRegistryImplementationUpdated
+        - event: SystemAddonRegistryImplementationUpdated(indexed address,indexed address)
           handler: handleSystemAddonRegistryImplementationUpdated
       file: ./src/system/system.ts
   - kind: ethereum
@@ -145,16 +124,13 @@ templates:
         - name: Token
           file: ../contracts/.generated/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
       eventHandlers:
-        - event:
-            TokenAssetCreated(indexed address,indexed address,indexed
+        - event: TokenAssetCreated(indexed address,indexed address,indexed
             address,bytes4[],address)
           handler: handleTokenAssetCreated
-        - event:
-            TokenTrustedIssuersRegistryCreated(indexed address,indexed
+        - event: TokenTrustedIssuersRegistryCreated(indexed address,indexed
             address,indexed address,address)
           handler: handleTokenTrustedIssuersRegistryCreated
-        - event:
-            TokenImplementationUpdated(indexed address,indexed address,indexed
+        - event: TokenImplementationUpdated(indexed address,indexed address,indexed
             address)
           handler: handleTokenImplementationUpdated
       file: ./src/token-factory/token-factory.ts
@@ -190,16 +166,12 @@ templates:
           handler: handleMintCompleted
         - event: ModuleParametersUpdated(indexed address,indexed address,bytes)
           handler: handleModuleParametersUpdated
-        - event:
-            TransferCompleted(indexed address,indexed address,indexed
+        - event: TransferCompleted(indexed address,indexed address,indexed
             address,uint256)
           handler: handleTransferCompleted
-        - event:
-            UpdatedTokenInformation(indexed address,indexed uint8,indexed
-            address)
+        - event: UpdatedTokenInformation(indexed address,indexed uint8,indexed address)
           handler: handleUpdatedTokenInformation
-        - event:
-            ERC20TokenRecovered(indexed address,indexed address,indexed
+        - event: ERC20TokenRecovered(indexed address,indexed address,indexed
             address,uint256)
           handler: handleERC20TokenRecovered
       file: ./src/token/token.ts
@@ -261,29 +233,22 @@ templates:
       eventHandlers:
         - event: Approved(indexed uint256,bool)
           handler: handleApproved
-        - event:
-            ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimAdded
-        - event:
-            ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimChanged
-        - event:
-            ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimRemoved
         - event: ClaimRevoked(indexed bytes)
           handler: handleClaimRevoked
         - event: Executed(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecuted
-        - event:
-            ExecutionFailed(indexed uint256,indexed address,indexed
-            uint256,bytes)
+        - event: ExecutionFailed(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecutionFailed
-        - event:
-            ExecutionRequested(indexed uint256,indexed address,indexed
-            uint256,bytes)
+        - event: ExecutionRequested(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecutionRequested
         - event: KeyAdded(indexed bytes32,indexed uint256,indexed uint256)
           handler: handleKeyAdded
@@ -308,12 +273,9 @@ templates:
         - name: Token
           file: ../contracts/.generated/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
       eventHandlers:
-        - event:
-            IdentityCreated(indexed address,indexed address,indexed address)
+        - event: IdentityCreated(indexed address,indexed address,indexed address)
           handler: handleIdentityCreated
-        - event:
-            ContractIdentityCreated(indexed address,indexed address,indexed
-            address)
+        - event: ContractIdentityCreated(indexed address,indexed address,indexed address)
           handler: handleContractIdentityCreated
       file: ./src/identity-factory/identity-factory.ts
   - kind: ethereum
@@ -332,18 +294,13 @@ templates:
         - name: TopicSchemeRegistry
           file: ../contracts/.generated/artifacts/contracts/smart/interface/ISMARTTopicSchemeRegistry.sol/ISMARTTopicSchemeRegistry.json
       eventHandlers:
-        - event:
-            TopicSchemeRegistered(indexed address,indexed uint256,string,string)
+        - event: TopicSchemeRegistered(indexed address,indexed uint256,string,string)
           handler: handleTopicSchemeRegistered
         - event: TopicSchemeRemoved(indexed address,indexed uint256,string)
           handler: handleTopicSchemeRemoved
-        - event:
-            TopicSchemeUpdated(indexed address,indexed
-            uint256,string,string,string)
+        - event: TopicSchemeUpdated(indexed address,indexed uint256,string,string,string)
           handler: handleTopicSchemeUpdated
-        - event:
-            TopicSchemesBatchRegistered(indexed
-            address,uint256[],string[],string[])
+        - event: TopicSchemesBatchRegistered(indexed address,uint256[],string[],string[])
           handler: handleTopicSchemesBatchRegistered
       file: ./src/topic-scheme-registry/topic-scheme-registry.ts
   - kind: ethereum
@@ -369,15 +326,12 @@ templates:
           handler: handleTopicSchemeRegistrySet
         - event: TrustedIssuersRegistrySet(indexed address,indexed address)
           handler: handleTrustedIssuersRegistrySet
-        - event:
-            IdentityRegistered(indexed address,indexed address,indexed
+        - event: IdentityRegistered(indexed address,indexed address,indexed
             address,uint16)
           handler: handleIdentityRegistered
-        - event:
-            IdentityRemoved(indexed address,indexed address,indexed address)
+        - event: IdentityRemoved(indexed address,indexed address,indexed address)
           handler: handleIdentityRemoved
-        - event:
-            IdentityRecovered(indexed address,indexed address,indexed
+        - event: IdentityRecovered(indexed address,indexed address,indexed
             address,address,address)
           handler: handleIdentityRecovered
       file: ./src/identity-registry/identity-registry.ts
@@ -399,9 +353,7 @@ templates:
       eventHandlers:
         - event: AddressFrozen(indexed address,indexed address,indexed bool)
           handler: handleAddressFrozen
-        - event:
-            RecoverySuccess(indexed address,indexed address,indexed
-            address,address)
+        - event: RecoverySuccess(indexed address,indexed address,indexed address,address)
           handler: handleRecoverySuccess
         - event: TokensFrozen(indexed address,indexed address,indexed uint256)
           handler: handleTokensFrozen
@@ -443,8 +395,7 @@ templates:
         - name: Yield
           file: ../contracts/.generated/artifacts/contracts/smart/extensions/yield/ISMARTYield.sol/ISMARTYield.json
       eventHandlers:
-        - event:
-            CheckpointUpdated(indexed address,indexed address,indexed
+        - event: CheckpointUpdated(indexed address,indexed address,indexed
             uint256,uint256)
           handler: handleCheckpointUpdated
         - event: YieldScheduleSet(indexed address,indexed address)
@@ -472,8 +423,7 @@ templates:
           handler: handleDenominationAssetTopUp
         - event: DenominationAssetWithdrawn(indexed address,indexed uint256)
           handler: handleDenominationAssetWithdrawn
-        - event:
-            YieldClaimed(indexed
+        - event: YieldClaimed(indexed
             address,uint256,uint256,uint256,uint256[],uint256[],uint256)
           handler: handleYieldClaimed
       file: ./src/token-extensions/fixed-yield-schedule/fixed-yield-schedule.ts
@@ -516,9 +466,7 @@ templates:
       eventHandlers:
         - event: BondMatured(indexed uint256)
           handler: handleBondMatured
-        - event:
-            BondRedeemed(indexed address,indexed address,indexed
-            uint256,uint256)
+        - event: BondRedeemed(indexed address,indexed address,indexed uint256,uint256)
           handler: handleBondRedeemed
       file: ./src/token-assets/bond/bond.ts
   - kind: ethereum
@@ -539,8 +487,7 @@ templates:
         - name: Token
           file: ../contracts/.generated/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
       eventHandlers:
-        - event:
-            BondCreated(indexed address,indexed address,indexed
+        - event: BondCreated(indexed address,indexed address,indexed
             address,string,string,uint8,uint256,uint256,uint256,address,uint16)
           handler: handleBondCreated
       file: ./src/token-assets/bond-factory/bond-factory.ts
@@ -560,8 +507,7 @@ templates:
         - name: DepositFactory
           file: ../contracts/.generated/artifacts/contracts/assets/deposit/IATKDepositFactory.sol/IATKDepositFactory.json
       eventHandlers:
-        - event:
-            DepositCreated(indexed address,indexed address,indexed
+        - event: DepositCreated(indexed address,indexed address,indexed
             address,string,string,uint8,uint16)
           handler: handleDepositCreated
       file: ./src/token-assets/deposit-factory/deposit-factory.ts
@@ -581,8 +527,7 @@ templates:
         - name: EquityFactory
           file: ../contracts/.generated/artifacts/contracts/assets/equity/IATKEquityFactory.sol/IATKEquityFactory.json
       eventHandlers:
-        - event:
-            EquityCreated(indexed address,indexed address,indexed
+        - event: EquityCreated(indexed address,indexed address,indexed
             address,string,string,uint8,uint16)
           handler: handleEquityCreated
       file: ./src/token-assets/equity-factory/equity-factory.ts
@@ -602,9 +547,7 @@ templates:
         - name: Fund
           file: ../contracts/.generated/artifacts/contracts/assets/fund/IATKFund.sol/IATKFund.json
       eventHandlers:
-        - event:
-            ManagementFeeCollected(indexed address,indexed uint256,indexed
-            uint256)
+        - event: ManagementFeeCollected(indexed address,indexed uint256,indexed uint256)
           handler: handleManagementFeeCollected
       file: ./src/token-assets/fund/fund.ts
   - kind: ethereum
@@ -623,8 +566,7 @@ templates:
         - name: FundFactory
           file: ../contracts/.generated/artifacts/contracts/assets/fund/IATKFundFactory.sol/IATKFundFactory.json
       eventHandlers:
-        - event:
-            FundCreated(indexed address,indexed address,indexed
+        - event: FundCreated(indexed address,indexed address,indexed
             address,string,string,uint8,uint16,uint16)
           handler: handleFundCreated
       file: ./src/token-assets/fund-factory/fund-factory.ts
@@ -644,8 +586,7 @@ templates:
         - name: StableCoinFactory
           file: ../contracts/.generated/artifacts/contracts/assets/stable-coin/IATKStableCoinFactory.sol/IATKStableCoinFactory.json
       eventHandlers:
-        - event:
-            StableCoinCreated(indexed address,indexed address,indexed
+        - event: StableCoinCreated(indexed address,indexed address,indexed
             address,string,string,uint8,uint16)
           handler: handleStableCoinCreated
       file: ./src/token-assets/stable-coin-factory/stable-coin-factory.ts
@@ -686,8 +627,7 @@ templates:
         - name: Vault
           file: ../contracts/.generated/artifacts/contracts/addons/vault/ATKVault.sol/ATKVault.json
       eventHandlers:
-        - event:
-            ATKVaultCreated(indexed address,indexed address,indexed address)
+        - event: ATKVaultCreated(indexed address,indexed address,indexed address)
           handler: handleATKVaultCreated
       file: ./src/system-addons/addons/vault/vault-factory.ts
   - kind: ethereum
@@ -708,9 +648,8 @@ templates:
       eventHandlers:
         - event: Deposit(indexed address,indexed uint256,indexed uint256)
           handler: handleDeposit
-        - event:
-            SubmitTransactionWithSignatures(indexed address,indexed
-            uint256,indexed address,uint256,bytes,string,uint256)
+        - event: SubmitTransactionWithSignatures(indexed address,indexed uint256,indexed
+            address,uint256,bytes,string,uint256)
           handler: handleSubmitTransactionWithSignatures
         - event: ExecuteTransaction(indexed address,indexed uint256)
           handler: handleExecuteTransaction
@@ -720,9 +659,7 @@ templates:
           handler: handleWeightedSignaturesToggled
         - event: SignerWeightUpdated(indexed address,indexed uint256)
           handler: handleSignerWeightUpdated
-        - event:
-            SignaturesProvided(indexed address,indexed
-            uint256,address[],uint256)
+        - event: SignaturesProvided(indexed address,indexed uint256,address[],uint256)
           handler: handleSignaturesProvided
         - event: OnchainIdSet(indexed address)
           handler: handleOnchainIdSet
@@ -813,9 +750,7 @@ templates:
         - name: Airdrop
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
       eventHandlers:
-        - event:
-            AirdropTokensTransferred(indexed address,indexed uint256,indexed
-            uint256)
+        - event: AirdropTokensTransferred(indexed address,indexed uint256,indexed uint256)
           handler: handleAirdropTokensTransferred
         - event: AirdropBatchTokensTransferred(address[],uint256[],uint256[])
           handler: handleAirdropBatchTokensTransferred
@@ -892,8 +827,7 @@ templates:
         - name: Airdrop
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
       eventHandlers:
-        - event:
-            ATKVestingAirdropCreated(indexed address,string,indexed
+        - event: ATKVestingAirdropCreated(indexed address,string,indexed
             address,bytes32,indexed address,address,uint256,address)
           handler: handleATKVestingAirdropCreated
       file: ./src/system-addons/addons/airdrop/vesting-airdrop-factory.ts
@@ -919,8 +853,7 @@ templates:
         - name: Airdrop
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
       eventHandlers:
-        - event:
-            VestingInitialized(indexed address,indexed uint256,indexed uint256)
+        - event: VestingInitialized(indexed address,indexed uint256,indexed uint256)
           handler: handleVestingInitialized
         - event: BatchVestingInitialized(indexed address,uint256[],uint256[])
           handler: handleBatchVestingInitialized
@@ -968,12 +901,10 @@ templates:
         - name: IERC165
           file: ../contracts/.generated/artifacts/@openzeppelin/contracts/utils/introspection/IERC165.sol/IERC165.json
       eventHandlers:
-        - event:
-            TokenFactoryImplementationUpdated(indexed address,indexed
-            bytes32,indexed address)
+        - event: TokenFactoryImplementationUpdated(indexed address,indexed bytes32,indexed
+            address)
           handler: handleTokenFactoryImplementationUpdated
-        - event:
-            TokenFactoryRegistered(indexed
+        - event: TokenFactoryRegistered(indexed
             address,string,bytes32,address,address,address,bytes4[],uint256)
           handler: handleTokenFactoryRegistered
       file: ./src/token-factory/token-factory-registry.ts
@@ -993,12 +924,10 @@ templates:
         - name: SystemAddonRegistry
           file: ../contracts/.generated/artifacts/contracts/system/addons/IATKSystemAddonRegistry.sol/IATKSystemAddonRegistry.json
       eventHandlers:
-        - event:
-            AddonImplementationUpdated(indexed address,indexed bytes32,indexed
+        - event: AddonImplementationUpdated(indexed address,indexed bytes32,indexed
             address)
           handler: handleAddonImplementationUpdated
-        - event:
-            SystemAddonRegistered(indexed address,string,bytes32,indexed
+        - event: SystemAddonRegistered(indexed address,string,bytes32,indexed
             address,indexed address,bytes,uint256)
           handler: handleSystemAddonRegistered
       file: ./src/system-addons/system-addon-registry.ts
@@ -1018,9 +947,8 @@ templates:
         - name: ComplianceModuleRegistry
           file: ../contracts/.generated/artifacts/contracts/system/compliance/IATKComplianceModuleRegistry.sol/IATKComplianceModuleRegistry.json
       eventHandlers:
-        - event:
-            ComplianceModuleRegistered(indexed address,string,indexed
-            bytes32,indexed address,uint256)
+        - event: ComplianceModuleRegistered(indexed address,string,indexed bytes32,indexed
+            address,uint256)
           handler: handleComplianceModuleRegistered
       file: ./src/compliance/compliance-module-registry.ts
   - kind: ethereum
@@ -1039,13 +967,11 @@ templates:
         - name: Compliance
           file: ../contracts/.generated/artifacts/contracts/system/compliance/IATKCompliance.sol/IATKCompliance.json
       eventHandlers:
-        - event:
-            GlobalComplianceModuleAdded(indexed address,indexed address,bytes)
+        - event: GlobalComplianceModuleAdded(indexed address,indexed address,bytes)
           handler: handleGlobalComplianceModuleAdded
         - event: GlobalComplianceModuleRemoved(indexed address,indexed address)
           handler: handleGlobalComplianceModuleRemoved
-        - event:
-            GlobalComplianceModuleParametersUpdated(indexed address,indexed
+        - event: GlobalComplianceModuleParametersUpdated(indexed address,indexed
             address,bytes)
           handler: handleGlobalComplianceModuleParametersUpdated
         - event: AddressAddedToBypassList(indexed address,indexed address)
@@ -1069,17 +995,13 @@ templates:
         - name: TrustedIssuersRegistry
           file: ../contracts/.generated/out/IATKTrustedIssuersRegistry.sol/IATKTrustedIssuersRegistry.json
       eventHandlers:
-        - event:
-            ClaimTopicsUpdated(indexed address,indexed address,uint256[],indexed
+        - event: ClaimTopicsUpdated(indexed address,indexed address,uint256[],indexed
             address)
           handler: handleClaimTopicsUpdated
-        - event:
-            TrustedIssuerAdded(indexed address,indexed address,uint256[],indexed
+        - event: TrustedIssuerAdded(indexed address,indexed address,uint256[],indexed
             address)
           handler: handleTrustedIssuerAdded
-        - event:
-            TrustedIssuerRemoved(indexed address,indexed address,indexed
-            address)
+        - event: TrustedIssuerRemoved(indexed address,indexed address,indexed address)
           handler: handleTrustedIssuerRemoved
       file: ./src/trusted-issuers-registry/trusted-issuers-registry.ts
   - kind: ethereum
@@ -1098,11 +1020,9 @@ templates:
         - name: TrustedIssuersMetaRegistry
           file: ../contracts/.generated/out/IATKTrustedIssuersMetaRegistry.sol/IATKTrustedIssuersMetaRegistry.json
       eventHandlers:
-        - event:
-            SystemRegistrySet(indexed address,indexed address,indexed address)
+        - event: SystemRegistrySet(indexed address,indexed address,indexed address)
           handler: handleSystemRegistrySet
-        - event:
-            SubjectRegistrySet(indexed address,indexed address,indexed
+        - event: SubjectRegistrySet(indexed address,indexed address,indexed
             address,address)
           handler: handleSubjectRegistrySet
       file: ./src/trusted-issuers-registry/trusted-issuers-meta-registry.ts
@@ -1124,8 +1044,7 @@ templates:
       eventHandlers:
         - event: CountryModified(indexed address,indexed uint16)
           handler: handleCountryModified
-        - event:
-            IdentityModified(indexed address,indexed address,indexed address)
+        - event: IdentityModified(indexed address,indexed address,indexed address)
           handler: handleIdentityModified
         - event: IdentityRegistryBound(indexed address)
           handler: handleIdentityRegistryBound
@@ -1135,12 +1054,9 @@ templates:
           handler: handleIdentityStored
         - event: IdentityUnstored(indexed address,indexed address)
           handler: handleIdentityUnstored
-        - event:
-            IdentityWalletMarkedAsLost(indexed address,indexed address,indexed
+        - event: IdentityWalletMarkedAsLost(indexed address,indexed address,indexed
             address)
           handler: handleIdentityWalletMarkedAsLost
-        - event:
-            WalletRecoveryLinked(indexed address,indexed address,indexed
-            address)
+        - event: WalletRecoveryLinked(indexed address,indexed address,indexed address)
           handler: handleWalletRecoveryLinked
       file: ./src/identity-registry-storage/identity-registry-storage.ts

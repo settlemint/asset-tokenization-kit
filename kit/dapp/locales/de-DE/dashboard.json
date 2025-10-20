@@ -1,167 +1,171 @@
 {
   "charts": {
     "assetDistribution": {
-      "description": "Aufschlüsselung nach Asset-Typ",
-      "empty": "Keine Assets anzuzeigen",
-      "title": "Asset-Verteilung"
+      "description": "Sehen Sie Assets nach Typ gruppiert",
+      "empty": "Fügen Sie ein Asset hinzu, um dieses Diagramm zu sehen",
+      "title": "Asset-Mix"
     },
     "topAssets": {
       "columns": {
-        "change": "24h Veränderung",
-        "name": "Asset",
+        "change": "24-Stunden-Änderung",
+        "name": "Vermögenswert",
         "rank": "#",
         "value": "Wert",
         "volume": "Volumen"
       },
-      "description": "Assets nach Rendite-Prozentsatz",
-      "title": "Am besten abschneidende Assets"
+      "description": "Zeigt Assets mit den besten Renditen",
+      "title": "Top-Assets"
     },
     "transactionVolume": {
       "axes": {
         "x": "Datum",
         "y": "Transaktionen"
       },
-      "description": "Tägliche Transaktionsanzahl",
+      "description": "Verfolgen Sie das tägliche Transaktionsvolumen",
       "title": "Transaktionsvolumen"
     },
     "valueOverTime": {
-      "description": "Gesamtwert über die Zeit",
+      "description": "Beobachten Sie, wie sich der Portfolio-Wert im Laufe der Zeit verschiebt",
       "periods": {
         "all": "ALLE",
-        "day": "24H",
-        "month": "1M",
-        "quarter": "3M",
-        "week": "7D",
-        "year": "1J"
+        "day": "Tag",
+        "month": "Monat",
+        "quarter": "Quartal",
+        "week": "Woche",
+        "year": "Jahr"
       },
       "title": "Portfolio-Wert"
     }
   },
   "empty": {
-    "action": "Asset erstellen",
-    "subtitle": "Beginnen Sie mit der Erstellung Ihres ersten tokenisierten Assets",
-    "title": "Keine Daten anzuzeigen"
+    "action": "Ein Asset erstellen",
+    "subtitle": "Erstellen Sie Ihr erstes tokenisiertes Asset, um mit der Verfolgung zu beginnen",
+    "title": "Hier ist noch nichts"
   },
   "errors": {
-    "loadFailed": "Laden der Dashboard-Daten fehlgeschlagen",
+    "loadFailed": "Wir konnten das Dashboard nicht laden",
     "retry": "Erneut versuchen"
   },
   "export": {
     "formats": {
-      "csv": "CSV",
-      "json": "JSON",
+      "csv": "CSV-Datei",
+      "json": "JSON-Datei",
       "pdf": "PDF-Bericht",
-      "xlsx": "Excel"
+      "xlsx": "Excel-Arbeitsmappe"
     },
     "sections": {
-      "all": "Alle Daten",
-      "analytics": "Analytik-Bericht",
+      "all": "Alles",
+      "analytics": "Analyse-Zusammenfassung",
       "assets": "Nur Assets",
       "transactions": "Nur Transaktionen"
     },
-    "title": "Daten exportieren"
+    "title": "Ihre Daten exportieren"
   },
   "identityMetrics": {
-    "title": "Identitäts-Übersicht",
-    "description": "Aktueller Status der Systemidentitäten und Registrierungen",
-    "totalIdentities": "Gesamte Identitäten",
+    "title": "Identity-Übersicht",
+    "description": "Aktueller System-Identity-Status und Registrierungen",
+    "totalIdentities": "Gesamtidentitäten",
     "activeRegistrations": "Aktive Registrierungen",
-    "pendingRegistrations": "Ausstehende Registrierungen"
+    "pendingRegistrations": "Ausstehende Registrierungen",
+    "chartTitle": "Aktive Registrierungen",
+    "chartDescription": "Tägliche Trends der aktiven Identity-Registrierungen in den letzten 7 Tagen",
+    "emptyStateMessage": "Noch keine Registrierungen",
+    "emptyStateDescription": "Identity-Registrierungen erscheinen hier, sobald Benutzer den Verifizierungsprozess starten"
   },
   "portfolioDetails": {
     "name": "Portfolio-Details",
     "summary": {
-      "title": "Portfolioübersicht",
-      "description": "Gesamtwert und Bestände Ihres Portfolios anzeigen"
+      "title": "Portfolio-Zusammenfassung",
+      "description": "Sehen Sie Ihren Gesamtportfolio-Wert und Ihre Bestände"
     },
     "breakdown": {
       "title": "Portfolio-Aufschlüsselung",
       "description": "Detaillierte Aufschlüsselung Ihrer Assets nach Typ"
     },
     "performance": {
-      "title": "Portfolio-Performance",
-      "description": "Verfolgen Sie den Wert Ihres Portfolios im Zeitverlauf"
+      "title": "Portfolio-Leistung",
+      "description": "Verfolgen Sie Ihren Portfolio-Wert im Laufe der Zeit"
     }
   },
   "filters": {
     "apply": "Filter anwenden",
     "assetType": "Asset-Typ",
     "dateRange": "Datumsbereich",
-    "reset": "Zurücksetzen",
-    "status": "Status"
+    "reset": "Filter löschen",
+    "status": "Statusfilter"
   },
   "loading": {
-    "activity": "Aktivität wird geladen...",
-    "charts": "Diagramme werden geladen...",
-    "stats": "Statistiken werden geladen..."
+    "activity": "Aktivität laden",
+    "charts": "Diagramme laden",
+    "stats": "Statistiken laden"
   },
   "quickActions": {
-    "createAsset": "Neues Asset erstellen",
-    "generateReport": "Bericht generieren",
+    "createAsset": "Ein Asset erstellen",
+    "generateReport": "Einen Bericht erstellen",
     "title": "Schnellaktionen",
-    "transferTokens": "Token übertragen",
-    "viewPortfolio": "Portfolio anzeigen"
+    "transferTokens": "Tokens übertragen",
+    "viewPortfolio": "Portfolio öffnen"
   },
   "stats": {
     "activeUsers": {
-      "description": "Nutzer in den letzten 30 Tagen",
-      "title": "Aktive Nutzer",
-      "trend": "{{count}} neu in dieser Woche"
+      "description": "Benutzer aktiv in den letzten 30 Tagen",
+      "title": "Aktive Benutzer",
+      "trend": "{{count}} dieser Woche beigetreten"
     },
     "totalAssets": {
-      "description": "Aktive tokenisierte Assets",
-      "title": "Gesamtanzahl der Assets",
-      "trend": "{{percentage}}% im Vergleich zum letzten Monat"
+      "description": "Live tokenisierte Assets",
+      "title": "Gesamtassets",
+      "trend": "{{percentage}}% vs letzten Monat"
     },
     "totalValue": {
-      "description": "Kombinierter Wert aller Assets",
-      "title": "Total Value Locked",
-      "trend": "{{percentage}}% im Vergleich zum letzten Monat"
+      "description": "Kombinierter Wert über Assets",
+      "title": "Gesamtwert gesperrt",
+      "trend": "{{percentage}}% vs letzten Monat"
     },
     "transactions": {
-      "description": "Insgesamt verarbeitete Transaktionen",
+      "description": "Abgeschlossene Transaktionen",
       "title": "Transaktionen",
       "trend": "{{count}} heute"
     }
   },
-  "subtitle": "Übersicht über Ihre tokenisierten Assets",
-  "title": "Dashboard",
+  "subtitle": "Sehen Sie, wie es Ihren Assets geht",
+  "title": "Übersicht",
   "welcome": {
-    "subtitle": "Hier ist, was heute mit Ihren Assets passiert",
+    "subtitle": "Heutige Asset-Aktivität auf einen Blick",
     "title": "Willkommen zurück, {{name}}"
   },
   "assetOverview": {
     "title": "Asset-Übersicht",
     "subtitle": "Verfolgen und analysieren Sie Ihre tokenisierten Assets",
     "emptyState": {
-      "title": "Ihre Asset-Übersicht wird hier angezeigt",
-      "description": "Diagramme und Statistiken werden angezeigt, sobald Sie Ihr erstes tokenisiertes Asset erstellen"
+      "title": "Ihre Asset-Übersicht erscheint hier",
+      "description": "Diagramme und Statistiken zeigen sich, sobald Sie Ihr erstes tokenisiertes Asset gestalten"
     }
   },
   "widgets": {
     "alerts": {
-      "dismiss": "Schließen",
-      "title": "Benachrichtigungen",
+      "dismiss": "Verwerfen",
+      "title": "Warnungen",
       "types": {
         "error": "Fehler",
-        "info": "Information",
+        "info": "Hinweis",
         "success": "Erfolg",
         "warning": "Warnung"
       },
-      "viewDetails": "Details anzeigen"
+      "viewDetails": "Details ansehen"
     },
     "pendingActions": {
-      "empty": "Keine ausstehenden Aktionen",
+      "empty": "Keine ausstehende Arbeit",
       "title": "Ausstehende Aktionen",
       "types": {
-        "approval": "Genehmigung erforderlich",
+        "approval": "Braucht Genehmigung",
         "kyc": "KYC-Überprüfung ausstehend",
-        "signature": "Unterschrift erforderlich"
+        "signature": "Signatur erforderlich"
       }
     },
     "recentActivity": {
-      "empty": "Keine aktuellen Aktivitäten",
-      "title": "Aktuelle Aktivitäten",
+      "empty": "Keine kürzliche Aktivität",
+      "title": "Kürzliche Aktivität",
       "types": {
         "approval": "{{user}} genehmigte {{spender}}",
         "burn": "{{amount}} {{token}} verbrannt",
@@ -169,12 +173,114 @@
         "mint": "{{amount}} {{token}} geprägt",
         "transfer": "{{user}} übertrug {{amount}} {{token}}"
       },
-      "viewAll": "Alle Aktivitäten anzeigen"
+      "viewAll": "Alle Aktivität ansehen"
     },
     "latestEvents": {
+      "title": "Neueste Aktivität",
+      "empty": "Nichts zu überprüfen",
+      "emptyDescription": "Ihre fünf jüngsten erfolgreichen Transaktionen erscheinen hier",
+      "viewAll": "Alle ansehen",
+      "loading": "Aktivität laden",
+      "error": "Wir konnten Aktivität nicht laden",
+      "errorRetry": "Erneut versuchen",
+      "types": {
+        "TransferCompleted": "Übertragung abgeschlossen",
+        "MintCompleted": "Assets geprägt",
+        "BurnCompleted": "Assets verbrannt",
+        "Approval": "Genehmigung erteilt",
+        "Paused": "Handel pausiert",
+        "Unpaused": "Handel wieder aufgenommen",
+        "RoleGranted": "Rolle erteilt",
+        "RoleRevoked": "Rolle widerrufen",
+        "RoleAdminChanged": "Admin-Rolle geändert",
+        "IdentityRegistered": "Identität verifiziert",
+        "IdentityCreated": "Identität erstellt",
+        "IdentityModified": "Identität aktualisiert",
+        "IdentityStored": "Identität gespeichert",
+        "IdentityUnstored": "Identität entfernt",
+        "ClaimAdded": "Anspruch hinzugefügt",
+        "ClaimRemoved": "Anspruch entfernt",
+        "ClaimRevoked": "Anspruch widerrufen",
+        "ClaimChanged": "Anspruch aktualisiert",
+        "ComplianceAdded": "Compliance hinzugefügt",
+        "ComplianceModuleAdded": "Regelmodul hinzugefügt",
+        "ComplianceModuleRemoved": "Regelmodul entfernt",
+        "ModuleParametersUpdated": "Modul-Einstellungen aktualisiert",
+        "AddressFrozen": "Konto eingefroren",
+        "TokensFrozen": "Assets eingefroren",
+        "TokensUnfrozen": "Assets aufgetaut",
+        "RecoverySuccess": "Assets wiederhergestellt",
+        "YieldClaimed": "Ertrag beansprucht",
+        "YieldScheduleSet": "Ertrag-Zeitplan aktualisiert",
+        "FixedYieldScheduleSet": "Fester Ertrag festgelegt",
+        "BondCreated": "Anleihe ausgegeben",
+        "BondMatured": "Anleihe fällig",
+        "BondRedeemed": "Anleihe eingelöst",
+        "FundCreated": "Fonds erstellt",
+        "EquityCreated": "Eigenkapital ausgegeben",
+        "DepositCreated": "Einzahlung erstellt",
+        "StableCoinCreated": "Stablecoin ausgegeben",
+        "ManagementFeeCollected": "Verwaltungsgebühr eingezogen",
+        "AirdropTokensTransferred": "Airdrop erhalten",
+        "AirdropBatchTokensTransferred": "Batch-Airdrop gesendet",
+        "VestingInitialized": "Vesting gestartet",
+        "BatchVestingInitialized": "Batch-Vesting gestartet",
+        "VestingStrategyUpdated": "Vesting-Strategie aktualisiert",
+        "XvPSettlementExecuted": "Abwicklung ausgeführt",
+        "XvPSettlementApproved": "Abwicklung genehmigt",
+        "XvPSettlementCancelled": "Abwicklung storniert",
+        "XvPSettlementApprovalRevoked": "Abwicklungsgenehmigung widerrufen",
+        "Deposit": "Einzahlung in Vault",
+        "ExecuteTransaction": "Transaktion ausgeführt",
+        "SubmitTransactionWithSignatures": "Transaktion eingereicht",
+        "SignaturesProvided": "Signaturen bereitgestellt",
+        "RequirementChanged": "Anforderungen geändert",
+        "Bootstrapped": "System initialisiert",
+        "TokenAssetCreated": "Asset erstellt",
+        "TokenImplementationUpdated": "Asset-Implementierung aktualisiert",
+        "CapSet": "Angebots-Cap festgelegt",
+        "Redeemed": "Assets eingelöst",
+        "TrustedIssuerAdded": "Vertrauenswürdiger Emittent hinzugefügt",
+        "TrustedIssuerRemoved": "Vertrauenswürdiger Emittent entfernt",
+        "ClaimTopicsUpdated": "Anspruchsthemen aktualisiert",
+        "TopicSchemeRegistered": "Thema registriert",
+        "TopicSchemeRemoved": "Thema entfernt",
+        "TopicSchemeUpdated": "Thema aktualisiert",
+        "IdentityRegistryBound": "Identity-Registry gebunden",
+        "IdentityRegistryUnbound": "Identity-Registry entbunden",
+        "CountryModified": "Land aktualisiert",
+        "AddressAddedToBypassList": "Bypass-Liste-Eintrag hinzugefügt",
+        "AddressRemovedFromBypassList": "Bypass-Liste-Eintrag entfernt",
+        "GlobalComplianceModuleAdded": "Globales Modul hinzugefügt",
+        "GlobalComplianceModuleRemoved": "Globales Modul entfernt",
+        "ERC20TokenRecovered": "ERC20-Tokens wiederhergestellt",
+        "UpdatedTokenInformation": "Token-Details aktualisiert",
+        "ATKSystemCreated": "ATK-System erstellt",
+        "ATKXvPSettlementCreated": "XvP-Abwicklung erstellt",
+        "ATKVaultCreated": "Vault erstellt",
+        "ATKPushAirdropCreated": "Push-Airdrop erstellt",
+        "ATKVestingAirdropCreated": "Vesting-Airdrop erstellt",
+        "ATKTimeBoundAirdropCreated": "Zeitgebundener Airdrop erstellt",
+        "ATKFixedYieldScheduleCreated": "Fester Ertrag-Zeitplan erstellt",
+        "TokenFactoryRegistered": "Token-Fabrik registriert",
+        "SystemAddonRegistered": "System-Addon registriert",
+        "ComplianceModuleRegistered": "Compliance-Modul registriert",
+        "OwnershipTransferred": "Eigentum übertragen",
+        "TokensWithdrawn": "Assets abgehoben",
+        "DenominationAssetTopUp": "Nennwert-Asset aufgestockt",
+        "DenominationAssetWithdrawn": "Nennwert-Asset abgehoben",
+        "DistributionCapUpdated": "Verteilung-Cap aktualisiert",
+        "CheckpointUpdated": "Checkpoint aktualisiert"
+      },
+      "timeAgo": {
+        "justNow": "Gerade eben",
+        "minutesAgo": "{{count}} Min. her",
+        "hoursAgo": "{{count}} Std. her",
+        "daysAgo": "{{count}} Tage her"
+      },
       "columns": {
         "event": "Ereignis",
-        "asset": "Asset",
+        "asset": "Vermögenswert",
         "account": "Konto",
         "time": "Zeit",
         "transaction": "Transaktion"

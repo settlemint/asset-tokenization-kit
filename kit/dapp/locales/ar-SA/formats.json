@@ -36,8 +36,8 @@
     "short": "h:mm ص",
     "medium": "h:mm:ss ص",
     "long": "h:mm:ss ص z",
-    "24hour": "HH:mm",
-    "24hourWithSeconds": "HH:mm:ss"
+    "24hour": "HH:mm (نظام 24 ساعة)",
+    "24hourWithSeconds": "HH:mm:ss (نظام 24 ساعة)"
   },
   "dateTime": {
     "short": "DD/MM/YYYY h:mm ص",
@@ -46,27 +46,27 @@
     "full": "dddd، D MMMM، YYYY في h:mm:ss ص z"
   },
   "number": {
-    "decimal": ".",
-    "thousands": ",",
+    "decimal": "٫",
+    "thousands": "٬",
     "grouping": "3",
     "currency": {
-      "symbol": "$",
-      "decimal": ".",
-      "thousands": ",",
+      "symbol": "ر.س",
+      "decimal": "٫",
+      "thousands": "٬",
       "precision": "2",
-      "format": "{{symbol}}{{value}}"
+      "format": "{{value}} {{symbol}}"
     },
     "percentage": {
-      "decimal": ".",
-      "thousands": ",",
+      "decimal": "٫",
+      "thousands": "٬",
       "precision": "2",
-      "format": "{{value}}%"
+      "format": "{{value}}٪"
     },
     "compact": {
-      "thousand": "K",
-      "million": "M",
-      "billion": "B",
-      "trillion": "T"
+      "thousand": "ألف",
+      "million": "مليون",
+      "billion": "مليار",
+      "trillion": "تريليون"
     }
   },
   "fileSize": {
@@ -92,13 +92,13 @@
     "years": "{{count}} سنة",
     "years_other": "{{count}} سنوات",
     "short": {
-      "seconds": "{{count}}s",
-      "minutes": "{{count}}m",
-      "hours": "{{count}}h",
-      "days": "{{count}}d",
-      "weeks": "{{count}}w",
-      "months": "{{count}}mo",
-      "years": "{{count}}y"
+      "seconds": "{{count}}ث",
+      "minutes": "{{count}}د",
+      "hours": "{{count}}س",
+      "days": "{{count}}ي",
+      "weeks": "{{count}}أ",
+      "months": "{{count}}ش",
+      "years": "{{count}}سنة"
     }
   },
   "blockchain": {
@@ -114,14 +114,14 @@
     "amount": {
       "token": "{{amount}} {{symbol}}",
       "tokenWithDecimals": "{{amount}} {{symbol}}",
-      "wei": "{{amount}} wei",
-      "gwei": "{{amount}} gwei",
-      "ether": "{{amount}} ETH"
+      "wei": "{{amount}} وي",
+      "gwei": "{{amount}} غيغاواي",
+      "ether": "{{amount}} إيثير"
     },
     "gas": {
       "limit": "{{limit}} غاز",
-      "price": "{{price}} gwei",
-      "fee": "{{fee}} ETH"
+      "price": "{{price}} غيغاواي",
+      "fee": "{{fee}} إيثير"
     }
   },
   "lists": {

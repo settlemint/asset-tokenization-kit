@@ -133,7 +133,8 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
         if (_trustedIssuers[issuerAddress].exists) revert IssuerAlreadyExists(issuerAddress);
 
         // Store issuer details
-        _trustedIssuers[issuerAddress] = TrustedIssuer(issuerAddress, true, _claimTopics);
+        _trustedIssuers[issuerAddress] =
+            TrustedIssuer({ issuer: issuerAddress, exists: true, claimTopics: _claimTopics });
         _issuerAddresses.push(issuerAddress);
 
         // Add issuer to claim topic mappings

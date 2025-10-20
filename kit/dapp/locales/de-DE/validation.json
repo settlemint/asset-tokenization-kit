@@ -1,92 +1,92 @@
 {
   "common": {
-    "required": "Wir benötigen diese Informationen, um fortzufahren",
-    "invalid": "Das sieht nicht ganz richtig aus – lass es uns noch einmal versuchen",
-    "tooShort": "Nur noch ein bisschen – verwende mindestens {{min}} Zeichen",
-    "tooLong": "Das ist ein bisschen lang – lass es uns unter {{max}} Zeichen halten",
-    "invalidFormat": "Etwas stimmt nicht mit dem Format – überprüfe es bitte noch einmal?"
+    "required": "Diese Angabe benötigen wir, um fortzufahren",
+    "invalid": "Das sieht nicht ganz richtig aus – bitte erneut versuchen",
+    "tooShort": "Noch ein wenig mehr – mindestens {{min}} Zeichen verwenden",
+    "tooLong": "Das ist etwas lang – bitte auf unter {{max}} Zeichen kürzen",
+    "invalidFormat": "Das Format passt nicht ganz – bitte noch einmal prüfen"
   },
   "amount": {
-    "invalid": "Gib einen gültigen Betrag ein, um fortzufahren",
-    "mustBePositive": "Der Betrag muss größer als null sein – selbst ein kleiner Betrag zählt!",
-    "tooSmall": "Das liegt unter unserem Minimum von {{min}} – versuche es mit etwas mehr",
-    "tooLarge": "Whoa, das überschreitet unser Maximum von {{max}}",
-    "tooManyDecimals": "Lass uns bei {{decimals}} Dezimalstellen oder weniger bleiben",
-    "insufficientBalance": "Du benötigst ein bisschen mehr Guthaben für diese Transaktion"
+    "invalid": "Bitte einen gültigen Betrag eingeben",
+    "mustBePositive": "Der Betrag muss größer als Null sein – auch kleine Beträge zählen",
+    "tooSmall": "Das unterschreitet unser Minimum von {{min}} – bitte etwas erhöhen",
+    "tooLarge": "Das überschreitet unser Maximum von {{max}}",
+    "tooManyDecimals": "Bitte höchstens {{decimals}} Nachkommastellen verwenden",
+    "insufficientBalance": "Für diese Transaktion wird mehr Guthaben benötigt"
   },
   "ethereum": {
-    "invalidAddress": "Hmm, das sieht nicht nach einer gültigen Ethereum-Adresse aus – überprüfe es bitte?",
-    "invalidHash": "Lass uns diesen Transaktions-Hash noch einmal überprüfen",
-    "checksumMismatch": "Die Adress-Prüfziffer stimmt nicht überein – überprüfe die Großschreibung",
-    "ensNotResolved": "Wir konnten diesen ENS-Namen nicht finden – ist er richtig geschrieben?"
+    "invalidAddress": "Das ist keine gültige Ethereum-Adresse – bitte prüfen",
+    "invalidHash": "Bitte den Transaktionshash noch einmal überprüfen",
+    "checksumMismatch": "Die Prüfsumme der Adresse stimmt nicht – Groß-/Kleinschreibung kontrollieren",
+    "ensNotResolved": "Diese ENS-Adresse wurde nicht gefunden – stimmt die Schreibweise?"
   },
   "isin": {
-    "invalid": "Lass uns einen gültigen ISIN-Code eingeben, um dieses Asset zu identifizieren",
-    "wrongLength": "ISIN-Codes sind immer genau 12 Zeichen – nicht mehr, nicht weniger",
-    "invalidCountryCode": "Der Ländercode am Anfang wird nicht erkannt – überprüfe die ersten beiden Buchstaben",
-    "invalidChecksum": "Die Prüfziffer der ISIN stimmt nicht überein – überprüfe den gesamten Code"
+    "invalid": "Bitte einen gültigen ISIN-Code eingeben",
+    "wrongLength": "ISIN-Codes haben immer genau 12 Zeichen",
+    "invalidCountryCode": "Der Ländercode am Anfang ist unbekannt – die ersten zwei Buchstaben prüfen",
+    "invalidChecksum": "Die Prüfziffer passt nicht – bitte den Code komplett überprüfen"
   },
   "pin": {
-    "invalid": "Lass uns eine gültige PIN erstellen, um deine Wallet zu sichern",
-    "wrongLength": "Deine PIN sollte genau {{length}} Ziffern haben",
-    "sequential": "Aufeinanderfolgende Zahlen wie 123456 sind zu leicht zu erraten – mische sie!",
-    "repeated": "Das Wiederholen derselben Ziffer macht es zu vorhersehbar – versuche, Zahlen zu mischen",
-    "tooWeak": "Lass uns eine stärkere PIN wählen – deine Sicherheit ist uns wichtig"
+    "invalid": "Bitte eine gültige PIN festlegen",
+    "wrongLength": "Die PIN muss genau {{length}} Ziffern haben",
+    "sequential": "Fortlaufende Zahlen wie 123456 sind zu leicht – bitte variieren",
+    "repeated": "Wiederholte Ziffern sind zu einfach – bitte mischen",
+    "tooWeak": "Wir benötigen eine stärkere PIN – Sicherheit hat Priorität"
   },
   "symbol": {
-    "invalid": "Lass uns ein gültiges Symbol für deinen Token erstellen",
-    "tooShort": "Symbole benötigen mindestens {{min}} Zeichen, um sinnvoll zu sein",
-    "tooLong": "Halte dein Symbol prägnant – {{max}} Zeichen oder weniger funktionieren am besten",
-    "invalidCharacters": "Bleibe bei Buchstaben und Zahlen für dein Symbol",
-    "reserved": "Dieses Symbol ist bereits vergeben – lass uns ein anderes versuchen"
+    "invalid": "Bitte ein gültiges Symbol für den Token wählen",
+    "tooShort": "Symbole benötigen mindestens {{min}} Zeichen",
+    "tooLong": "Bitte das Symbol auf höchstens {{max}} Zeichen begrenzen",
+    "invalidCharacters": "Für das Symbol nur Buchstaben und Zahlen verwenden",
+    "reserved": "Dieses Symbol ist bereits vergeben – bitte ein anderes wählen"
   },
   "price": {
-    "invalid": "Lass uns einen gültigen Preis eingeben, um fortzufahren",
-    "mustBePositive": "Preise müssen größer als null sein – selbst Bruchteile funktionieren",
-    "tooVolatile": "Das ist ein ganz schöner Preissprung – es überschreitet unsere Sicherheitsgrenzen für die Marktstabilität"
+    "invalid": "Bitte einen gültigen Preis eingeben",
+    "mustBePositive": "Der Preis muss größer als Null sein – auch Bruchteile sind erlaubt",
+    "tooVolatile": "Diese Preisabweichung ist zu groß – sie überschreitet unsere Sicherheitsgrenzen"
   },
   "timestamp": {
-    "invalid": "Lass uns ein gültiges Datum und eine Uhrzeit auswählen",
-    "tooEarly": "Das ist zu weit zurück – wähle ein Datum nach {{min}}",
-    "tooLate": "Das ist zu weit in der Zukunft – wähle ein Datum vor {{max}}",
-    "inPast": "Wir benötigen ein zukünftiges Datum dafür – wann möchtest du es planen?",
-    "inFuture": "Wir benötigen hier ein vergangenes Datum – wann ist das passiert?"
+    "invalid": "Bitte ein gültiges Datum und eine gültige Uhrzeit wählen",
+    "tooEarly": "Das liegt zu weit zurück – bitte ein Datum nach {{min}} auswählen",
+    "tooLate": "Das liegt zu weit in der Zukunft – bitte vor {{max}} bleiben",
+    "inPast": "Hier ist ein zukünftiges Datum erforderlich – wann soll es stattfinden?",
+    "inFuture": "Hier benötigen wir ein vergangenes Datum – wann ist es passiert?"
   },
   "twoFactor": {
-    "invalid": "Dieser Code stimmt nicht überein – überprüfe deine Authenticator-App",
-    "expired": "Dieser Code ist abgelaufen – hole dir einen neuen aus deiner App",
-    "alreadyUsed": "Du hast diesen Code bereits verwendet – warte auf den nächsten"
+    "invalid": "Der Code stimmt nicht – bitte den Authentifikator prüfen",
+    "expired": "Der Code ist abgelaufen – bitte einen neuen verwenden",
+    "alreadyUsed": "Dieser Code wurde bereits benutzt – auf den nächsten warten"
   },
   "file": {
-    "tooLarge": "Diese Datei ist ein bisschen schwer – lass sie unter {{max}} halten",
-    "invalidType": "Wir können diesen Dateityp nicht verarbeiten. Kompatible Formate: {{types}}",
-    "uploadFailed": "Ups, etwas ist beim Hochladen schiefgegangen – sollen wir es noch einmal versuchen?"
+    "tooLarge": "Diese Datei ist zu groß – bitte unter {{max}} bleiben",
+    "invalidType": "Dieser Dateityp wird nicht unterstützt. Erlaubte Formate: {{types}}",
+    "uploadFailed": "Beim Hochladen ist etwas schiefgelaufen – bitte erneut versuchen"
   },
   "email": {
-    "invalid": "Lass uns eine gültige E-Mail-Adresse hinzufügen",
-    "alreadyExists": "Willkommen zurück! Sieht so aus, als hättest du bereits ein Konto mit dieser E-Mail",
-    "domainNotAllowed": "Es tut uns leid, wir können E-Mails von dieser Domain aus Sicherheitsgründen nicht akzeptieren"
+    "invalid": "Bitte eine gültige E-Mail-Adresse angeben",
+    "alreadyExists": "Willkommen zurück! Diese E-Mail wird bereits verwendet",
+    "domainNotAllowed": "E-Mails von dieser Domain sind aus Sicherheitsgründen nicht erlaubt"
   },
   "password": {
-    "tooWeak": "Lass uns dein Passwort stärken – deine Sicherheit ist wichtig",
-    "mustContainUppercase": "Füge mindestens einen Großbuchstaben (A-Z) hinzu",
-    "mustContainLowercase": "Füge mindestens einen Kleinbuchstaben (a-z) hinzu",
-    "mustContainNumber": "Mische mindestens eine Zahl (0-9) ein",
-    "mustContainSpecial": "Füge ein Sonderzeichen für zusätzliche Sicherheit hinzu (!@#$%^&*)",
-    "commonPassword": "Dieses Passwort ist zu häufig – lass uns etwas Einzigartiges für dich erstellen",
-    "previouslyUsed": "Du hast dieses Passwort bereits verwendet – Zeit für ein neues"
+    "tooWeak": "Wir benötigen ein stärkeres Passwort – Ihre Sicherheit zählt",
+    "mustContainUppercase": "Mindestens einen Großbuchstaben (A-Z) hinzufügen",
+    "mustContainLowercase": "Mindestens einen Kleinbuchstaben (a-z) hinzufügen",
+    "mustContainNumber": "Mindestens eine Zahl (0-9) verwenden",
+    "mustContainSpecial": "Ein Sonderzeichen hinzufügen (!@#$%^&*)",
+    "commonPassword": "Dieses Passwort ist zu verbreitet – bitte etwas Einzigartiges wählen",
+    "previouslyUsed": "Dieses Passwort wurde bereits verwendet – bitte ein neues festlegen"
   },
   "token": {
-    "nameRequired": "Jeder Token benötigt einen Namen – wie sollen wir deinen nennen?",
-    "symbolRequired": "Dein Token benötigt ein Symbol – wie BTC oder ETH",
-    "decimalsInvalid": "Die Dezimalstellen sollten zwischen 0 und 18 liegen",
-    "supplyInvalid": "Lass uns einen gültigen Anfangsbestand für deinen Token eingeben",
-    "capExceeded": "Das überschreitet den maximalen Bestand – lass uns innerhalb der Obergrenze bleiben"
+    "nameRequired": "Jeder Token braucht einen Namen – wie soll er heißen?",
+    "symbolRequired": "Ihr Token benötigt ein Symbol – z. B. BTC oder ETH",
+    "decimalsInvalid": "Die Nachkommastellen müssen zwischen 0 und 18 liegen",
+    "supplyInvalid": "Bitte eine gültige Anfangsmenge für den Token eingeben",
+    "capExceeded": "Das überschreitet die maximale Menge – bitte darunter bleiben"
   },
   "transaction": {
-    "gasLimitTooLow": "Diese Transaktion benötigt ein bisschen mehr Gas, um abzuschließen",
-    "gasLimitTooHigh": "Dieses Gaslimit überschreitet das Erlaubte – lass es uns senken",
-    "nonceTooLow": "Die Transaktionsnonce ist zu niedrig – sie könnte bereits verwendet worden sein",
-    "insufficientGas": "Du benötigst mehr Gas, um diese Transaktion abzuschließen"
+    "gasLimitTooLow": "Für diese Transaktion wird ein höheres Gaslimit benötigt",
+    "gasLimitTooHigh": "Das Gaslimit ist zu hoch – bitte reduzieren",
+    "nonceTooLow": "Diese Nonce wurde bereits verwendet – bitte eine höhere wählen",
+    "insufficientGas": "Für diese Transaktion wird mehr Gas benötigt"
   }
 }

@@ -792,7 +792,7 @@ The API includes comprehensive testing strategies for reliability and performanc
 
 - **Previous**: [15 - Web3 Wallet Integration](./15-web3-wallet-integration.md) - Wallet integration
 - **Next**: [17 - Database Schema Design](./17-database-schema-design.md) - Database design
-- **Related**: [11 - Next.js dApp Architecture](./11-nextjs-dapp-architecture.md) - Frontend architecture
+- **Related**: [11 - TanStack Start dApp Architecture](./11-tanstack-start-dapp-architecture.md) - Frontend architecture
 - **Related**: [14 - Form State Management](./14-form-state-management.md) - State management
 
 ### External Framework References

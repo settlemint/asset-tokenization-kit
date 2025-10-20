@@ -30,7 +30,7 @@ contract MockATKToken {
     }
 
     function addModule(address module, bytes memory params) external {
-        _modules.push(SMARTComplianceModuleParamPair(module, params));
+        _modules.push(SMARTComplianceModuleParamPair({ module: module, params: params }));
     }
 
     function clearModules() external {
@@ -197,8 +197,8 @@ contract ATKComplianceImplementationTest is Test {
         MockedComplianceModule module2 = new MockedComplianceModule();
 
         SMARTComplianceModuleParamPair[] memory pairs = new SMARTComplianceModuleParamPair[](2);
-        pairs[0] = SMARTComplianceModuleParamPair(address(validModule), abi.encode(uint256(100)));
-        pairs[1] = SMARTComplianceModuleParamPair(address(module2), abi.encode(uint256(200)));
+        pairs[0] = SMARTComplianceModuleParamPair({ module: address(validModule), params: abi.encode(uint256(100)) });
+        pairs[1] = SMARTComplianceModuleParamPair({ module: address(module2), params: abi.encode(uint256(200)) });
 
         ISMARTCompliance(address(compliance)).areValidComplianceModules(pairs);
         // Should not revert
@@ -206,8 +206,8 @@ contract ATKComplianceImplementationTest is Test {
 
     function testAreValidComplianceModulesWithOneInvalidModule() public {
         SMARTComplianceModuleParamPair[] memory pairs = new SMARTComplianceModuleParamPair[](2);
-        pairs[0] = SMARTComplianceModuleParamPair(address(validModule), abi.encode(uint256(100)));
-        pairs[1] = SMARTComplianceModuleParamPair(address(0), abi.encode(uint256(200)));
+        pairs[0] = SMARTComplianceModuleParamPair({ module: address(validModule), params: abi.encode(uint256(100)) });
+        pairs[1] = SMARTComplianceModuleParamPair({ module: address(0), params: abi.encode(uint256(200)) });
 
         vm.expectRevert(ISMARTCompliance.ZeroAddressNotAllowed.selector);
         ISMARTCompliance(address(compliance)).areValidComplianceModules(pairs);

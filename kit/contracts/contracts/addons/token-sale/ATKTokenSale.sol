@@ -132,36 +132,53 @@ contract ATKTokenSale is
 
     /// @notice Ensures the sale is in the specified status
     modifier onlyInStatus(SaleStatus _status) {
+        _onlyInStatus(_status);
+        _;
+    }
+
+    /// @notice Ensures the sale matches the required lifecycle status.
+    /// @param _status Expected sale status for the guarded call.
+    function _onlyInStatus(SaleStatus _status) internal view {
         if (status != _status) {
             if (_status == SaleStatus.ACTIVE) {
                 revert SaleNotActive();
             }
             revert Unauthorized();
         }
-        _;
     }
 
     /// @notice Ensures the sale is active and within the valid time window
     modifier whenSaleOpen() {
+        _whenSaleOpen();
+        _;
+    }
+
+    /// @notice Confirms the sale is running and within the scheduled window.
+    function _whenSaleOpen() internal view {
         if (status != SaleStatus.ACTIVE) {
             revert SaleNotActive();
         }
         if (block.timestamp < saleStartTime) {
             revert SaleNotStarted();
         }
-        if (block.timestamp > saleEndTime) {
+        // solhint-disable-next-line gas-strict-inequalities
+        if (block.timestamp >= saleEndTime) {
             revert SaleEnded();
         }
-        _;
     }
 
     /// @notice Ensures the buyer is eligible to participate in the sale
     /// @dev Checks the identity registry to ensure the buyer has the required claims
     modifier onlyEligibleBuyer() {
+        _onlyEligibleBuyer();
+        _;
+    }
+
+    /// @notice Requires the caller to pass eligibility screening.
+    function _onlyEligibleBuyer() internal view {
         if (!_isEligibleBuyer(_msgSender())) {
             revert BuyerNotEligible();
         }
-        _;
     }
 
     /// @notice Constructor that disables initializers to prevent implementation contract initialization

@@ -1,31 +1,14 @@
 {
-  "whichAssetType": "أي نوع من الأصول ترغب في تصميمه؟",
-  "whichAssetTypeForClass": "أي أصل من نوع {{assetClass}} ترغب في تصميمه؟",
-  "assetTypeDifferences": "كل نوع من الأصول له هياكل دفع وشروط سيولة وحقوق مستثمر مختلفة.",
   "bond": {
     "description": "أوراق الدين التي تدفع فائدة ثابتة على مدى فترة محددة",
     "name": "رموز السندات"
   },
-  "categories": {
-    "cashEquivalent": {
-      "description": "استثمارات عالية السيولة يمكن تحويلها بسهولة إلى مبالغ معروفة من النقد.",
-      "icon": "محفظة",
-      "name": "ما يعادل النقد"
-    },
-    "fixedIncome": {
-      "description": "أصول توفر عوائد على شكل مدفوعات فائدة ثابتة منتظمة واسترداد رأس المال عند الاستحقاق.",
-      "icon": "اتجاه صعودي",
-      "name": "دخل ثابت"
-    },
-    "flexibleIncome": {
-      "description": "أصول تولد عوائد متغيرة بناءً على ظروف السوق والأداء الأساسي.",
-      "icon": "نشاط",
-      "name": "دخل مرن"
-    }
-  },
+  "whichAssetType": "أي نوع من الأصول ترغب في تصميمه؟",
+  "whichAssetTypeForClass": "أي أصل من {{assetClass}} ترغب في تصميمه؟",
+  "assetTypeDifferences": "كل نوع من الأصول له هياكل دفع وشروط سيولة وحقوق مستثمرين مختلفة.",
   "deposit": {
-    "description": "ودائع مقفلة زمنياً تكسب فائدة على مدى فترة ثابتة",
-    "name": "رموز الإيداع"
+    "description": "ودائع مؤمنة زمنياً تكسب فائدة على مدى فترة ثابتة",
+    "name": "رموز الودائع"
   },
   "equity": {
     "description": "أسهم الملكية التي تمثل حقاً في الأصول والأرباح",
@@ -33,25 +16,25 @@
   },
   "fields": {
     "common": {
-      "decimals": "الأماكن العشرية",
+      "decimals": "أماكن عشرية",
       "description": "الوصف",
       "issuanceDate": "تاريخ الإصدار",
       "issuer": "المصدر",
       "name": "اسم الأصل",
       "status": "الحالة",
       "symbol": "الرمز",
-      "totalSupply": "الإجمالي المعروض"
+      "totalSupply": "الإجمالي المتاح"
     },
     "compliance": {
       "accreditation": "التصديق المطلوب",
       "holdingPeriod": "أدنى فترة احتفاظ",
-      "kyc": "مطلوب معرفة العميل",
+      "kyc": "مطلوب KYC",
       "maxInvestors": "الحد الأقصى للمستثمرين",
       "transferRestrictions": "قيود النقل"
     }
   },
   "fund": {
-    "description": "صناديق استثمار مجمعة تجمع رأس المال من عدة مستثمرين",
+    "description": "أدوات استثمار مجمعة تجمع رأس المال من عدة مستثمرين",
     "name": "رموز الصندوق"
   },
   "metadata": {
@@ -77,7 +60,7 @@
     "defaulted": "متعثر",
     "frozen": "مجمد",
     "matured": "استحق",
-    "paused": "مؤجل",
+    "paused": "معلق",
     "redeemed": "مسترد"
   },
   "types": {
@@ -94,11 +77,13 @@
         "coupon": "معدل القسيمة",
         "faceValue": "القيمة الاسمية",
         "maturity": "تاريخ الاستحقاق",
-        "rating": "تصنيف الائتمان",
+        "rating": "تقييم الائتمان",
         "yield": "العائد حتى الاستحقاق"
       },
       "name": "سند",
-      "namePlural": "سندات"
+      "namePlural": "سندات",
+      "nameLowercaseSingular": "سند",
+      "nameLowercasePlural": "سندات"
     },
     "deposit": {
       "actions": {
@@ -107,21 +92,23 @@
         "renew": "تجديد الإيداع",
         "withdraw": "سحب"
       },
-      "category": "ما يعادل النقد",
-      "description": "ودائع مقفلة زمنياً تكسب فائدة على مدى فترة ثابتة.",
+      "category": "معادل نقدي",
+      "description": "ودائع مؤمنة زمنياً تكسب فائدة على مدى فترة ثابتة.",
       "features": {
         "earlyWithdrawal": "غرامة السحب المبكر",
-        "minAmount": "المبلغ الأدنى",
+        "minAmount": "الحد الأدنى للمبلغ",
         "rate": "معدل الفائدة",
         "term": "مدة الإيداع"
       },
       "name": "إيداع",
-      "namePlural": "ودائع"
+      "namePlural": "ودائع",
+      "nameLowercaseSingular": "إيداع",
+      "nameLowercasePlural": "ودائع"
     },
     "equity": {
       "actions": {
-        "issue": "إصدار الأسهم",
-        "payDividend": "دفع الأرباح",
+        "issue": "إصدار أسهم",
+        "payDividend": "دفع توزيعات الأرباح",
         "transfer": "نقل الملكية",
         "vote": "إدلاء بالصوت"
       },
@@ -134,17 +121,19 @@
         "votingRights": "حقوق التصويت"
       },
       "name": "الأسهم",
-      "namePlural": "الأسهم"
+      "namePlural": "الأسهم",
+      "nameLowercaseSingular": "سهم",
+      "nameLowercasePlural": "أسهم"
     },
     "fund": {
       "actions": {
-        "calculateNAV": "احسب صافي قيمة الأصول",
+        "calculateNAV": "احسب NAV",
         "distribute": "توزيع العوائد",
         "redeem": "استرداد الأسهم",
         "subscribe": "الاشتراك"
       },
       "category": "دخل مرن",
-      "description": "صناديق استثمار مجمعة تجمع رأس المال من عدة مستثمرين.",
+      "description": "أدوات استثمار مجمعة تجمع رأس المال من عدة مستثمرين.",
       "features": {
         "managementFee": "رسوم الإدارة",
         "nav": "صافي قيمة الأصول",
@@ -152,7 +141,9 @@
         "strategy": "استراتيجية الاستثمار"
       },
       "name": "صندوق",
-      "namePlural": "صناديق"
+      "namePlural": "صناديق",
+      "nameLowercaseSingular": "صندوق",
+      "nameLowercasePlural": "صناديق"
     },
     "stablecoin": {
       "actions": {
@@ -161,16 +152,18 @@
         "mint": "سك الرموز",
         "rebalance": "إعادة توازن الاحتياطيات"
       },
-      "category": "ما يعادل النقد",
+      "category": "نقد معادل",
       "description": "العملات الرقمية المصممة للحفاظ على قيمة مستقرة بالنسبة لأصل مرجعي.",
       "features": {
         "collateral": "نسبة الضمان",
         "mechanism": "آلية الاستقرار",
         "peg": "الأصل المرتبط",
-        "reserves": "احتياطيات الاحتفاظ"
+        "reserves": "حيازات الاحتياطي"
       },
-      "name": "العملة المستقرة",
-      "namePlural": "العملات المستقرة"
+      "name": "عملة مستقرة",
+      "namePlural": "عملات مستقرة",
+      "nameLowercaseSingular": "عملة مستقرة",
+      "nameLowercasePlural": "عملات مستقرة"
     }
   }
 }

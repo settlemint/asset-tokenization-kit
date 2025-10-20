@@ -1,9 +1,9 @@
 {
   "date": {
-    "short": "MM/DD/YYYY",
-    "medium": "MMM D, YYYY",
-    "long": "MMMM D, YYYY",
-    "full": "dddd, MMMM D, YYYY",
+    "short": "YYYY/MM/DD",
+    "medium": "YYYY年MMM D日",
+    "long": "YYYY年MMMM D日",
+    "full": "dddd, YYYY年MMMM D日",
     "relative": {
       "justNow": "たった今",
       "minutesAgo": "{{count}} 分前",
@@ -33,48 +33,48 @@
     }
   },
   "time": {
-    "short": "h:mm A",
-    "medium": "h:mm:ss A",
-    "long": "h:mm:ss A z",
-    "24hour": "HH:mm",
-    "24hourWithSeconds": "HH:mm:ss"
+    "short": "HH時mm分",
+    "medium": "HH時mm分ss秒",
+    "long": "HH時mm分ss秒 z",
+    "24hour": "HH時mm分",
+    "24hourWithSeconds": "HH時mm分ss秒"
   },
   "dateTime": {
-    "short": "MM/DD/YYYY h:mm A",
-    "medium": "MMM D, YYYY h:mm A",
-    "long": "MMMM D, YYYY の h:mm A",
-    "full": "dddd, MMMM D, YYYY の h:mm:ss A z"
+    "short": "YYYY/MM/DD h:mm A",
+    "medium": "YYYY年MMM D日 h:mm A",
+    "long": "YYYY年MMMM D日 h:mm A",
+    "full": "dddd, YYYY年MMMM D日 h:mm:ss A z"
   },
   "number": {
-    "decimal": ".",
-    "thousands": ",",
+    "decimal": "．",
+    "thousands": "，",
     "grouping": "3",
     "currency": {
-      "symbol": "$",
-      "decimal": ".",
-      "thousands": ",",
+      "symbol": "￥",
+      "decimal": "．",
+      "thousands": "，",
       "precision": "2",
       "format": "{{symbol}}{{value}}"
     },
     "percentage": {
-      "decimal": ".",
-      "thousands": ",",
+      "decimal": "．",
+      "thousands": "，",
       "precision": "2",
-      "format": "{{value}}%"
+      "format": "{{value}}％"
     },
     "compact": {
-      "thousand": "K",
-      "million": "M",
-      "billion": "B",
-      "trillion": "T"
+      "thousand": "千",
+      "million": "百万",
+      "billion": "10億",
+      "trillion": "兆"
     }
   },
   "fileSize": {
-    "bytes": "{{size}} B",
-    "kilobytes": "{{size}} KB",
-    "megabytes": "{{size}} MB",
-    "gigabytes": "{{size}} GB",
-    "terabytes": "{{size}} TB"
+    "bytes": "{{size}} バイト",
+    "kilobytes": "{{size}} キロバイト",
+    "megabytes": "{{size}} メガバイト",
+    "gigabytes": "{{size}} ギガバイト",
+    "terabytes": "{{size}} テラバイト"
   },
   "duration": {
     "seconds": "{{count}} 秒",
@@ -92,13 +92,13 @@
     "years": "{{count}} 年",
     "years_other": "{{count}} 年",
     "short": {
-      "seconds": "{{count}}s",
-      "minutes": "{{count}}m",
-      "hours": "{{count}}h",
-      "days": "{{count}}d",
-      "weeks": "{{count}}w",
-      "months": "{{count}}mo",
-      "years": "{{count}}y"
+      "seconds": "{{count}}秒",
+      "minutes": "{{count}}分",
+      "hours": "{{count}}時",
+      "days": "{{count}}日",
+      "weeks": "{{count}}週",
+      "months": "{{count}}か月",
+      "years": "{{count}}年"
     }
   },
   "blockchain": {
@@ -114,14 +114,14 @@
     "amount": {
       "token": "{{amount}} {{symbol}}",
       "tokenWithDecimals": "{{amount}} {{symbol}}",
-      "wei": "{{amount}} wei",
-      "gwei": "{{amount}} gwei",
-      "ether": "{{amount}} ETH"
+      "wei": "{{amount}} ウェイ",
+      "gwei": "{{amount}} ギガウェイ",
+      "ether": "{{amount}} イーサ"
     },
     "gas": {
-      "limit": "{{limit}} gas",
-      "price": "{{price}} gwei",
-      "fee": "{{fee}} ETH"
+      "limit": "ガス上限 {{limit}}",
+      "price": "{{price}} Gwei",
+      "fee": "{{fee}} イーサ"
     }
   },
   "lists": {
@@ -140,7 +140,7 @@
   },
   "range": {
     "date": "{{start}} から {{end}}",
-    "number": "{{min}} - {{max}}",
+    "number": "{{min}}〜{{max}}",
     "page": "{{first}} - {{last}} の {{total}}"
   }
 }

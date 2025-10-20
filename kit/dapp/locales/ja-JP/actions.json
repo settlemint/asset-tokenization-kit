@@ -1,9 +1,9 @@
 {
   "title": "アクション",
-  "description": "実行権限のある今後・保留中・完了済みのアクションを追跡します。",
+  "description": "実行を許可された今後の、保留中の、完了したアクションを追跡します。",
   "tabs": {
     "pending": "保留中",
-    "upcoming": "予定",
+    "upcoming": "今後",
     "completed": "完了"
   },
   "table": {
@@ -11,16 +11,16 @@
       "name": "アクション",
       "status": "ステータス",
       "type": "タイプ",
-      "activeAt": "予定時刻",
-      "executedAt": "完了時刻",
+      "activeAt": "予定",
+      "executedAt": "完了",
       "executedBy": "実行者",
       "execute": "実行"
     },
     "empty": {
-      "title": "表示できるアクションはありません",
-      "description": "現在すべて完了しています。新しいアクションが利用可能になるとここに表示されます。"
+      "title": "表示するアクションはありません",
+      "description": "すべてのアクションが完了しました。新しいアクションが利用可能になると、ここにリストします。"
     },
-    "authorizedBadge": "認可 {{count}} 件",
+    "authorizedBadge": "{{count}} の承認済み",
     "execute": {
       "label": "実行",
       "loading": "実行中…",
@@ -31,15 +31,17 @@
     "searchPlaceholder": "アクションを検索"
   },
   "status": {
-    "PENDING": "予定",
+    "PENDING": "今後",
     "ACTIVE": "保留中",
     "EXECUTED": "完了",
     "EXPIRED": "期限切れ"
   },
   "labels": {
-    "MatureBond": "債券を償還する",
+    "MatureBond": "満期債券",
     "ApproveXvPSettlement": "決済を承認",
-    "ExecuteXvPSettlement": "決済を実行"
+    "ExecuteXvPSettlement": "決済を実行",
+    "RedeemBond": "債券を償還",
+    "ClaimYield": "利回りを請求"
   },
   "types": {
     "bond": "債券",
@@ -48,12 +50,12 @@
   },
   "execute": {
     "messages": {
-      "loading": "{{action}} を実行しています…",
-      "success": "{{action}} を正常に実行しました。"
+      "loading": "実行中 {{action}}…",
+      "success": "{{action}} が正常に実行されました。"
     },
     "errors": {
       "notAuthorized": "このアクションを実行する権限がありません。",
-      "unsupported": "このアクションはポータルからはまだ実行できません。"
+      "unsupported": "このアクションはまだポータルから実行できません。"
     }
   }
 }

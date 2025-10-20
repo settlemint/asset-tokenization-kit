@@ -25,13 +25,13 @@ export function UserWalletCard() {
       <CardContent className="flex flex-1 flex-col items-center justify-center">
         {user.wallet && user.wallet !== zeroAddress ? (
           <>
-            <div className="rounded-lg bg-white p-4 shadow-sm border mb-6">
+            <div className="rounded-lg bg-card text-card-foreground p-4 shadow-sm border mb-6">
               <QRCode
                 value={user.wallet}
                 size={200}
                 level="H"
-                fgColor="#000000"
-                bgColor="#ffffff"
+                fgColor="var(--foreground)"
+                bgColor="var(--background)"
               />
             </div>
             <div className="w-full max-w-md">

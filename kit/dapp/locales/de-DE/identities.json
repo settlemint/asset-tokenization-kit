@@ -4,16 +4,60 @@
     "registerIdentity": {
       "label": "Identität registrieren",
       "title": "Identität registrieren",
-      "description": "Registrieren Sie diese Identität im Identitätsregister mit Länderinformationen"
+      "description": "Diese Identität in der Identity-Registry mit Länderinformationen registrieren"
     },
-    "viewEvents": "Ereignisse anzeigen"
+    "viewEvents": "Ereignisse ansehen",
+    "issueClaim": {
+      "title": "Anspruch ausstellen",
+      "description": "Einen Anspruch an {{identity}} ausstellen",
+      "submit": "Anspruch ausstellen",
+      "success": "Anspruch erfolgreich ausgestellt",
+      "submitting": "Anspruch wird ausgestellt...",
+      "error": "Fehler beim Ausstellen des Anspruchs: {{error}}",
+      "confirmTitle": "Anspruchsausstellung bestätigen",
+      "confirmTargetIdentity": "Zielidentität",
+      "confirmClaimType": "Anspruchstyp",
+      "confirmClaimData": "Anspruchsdaten",
+      "confirmWarning": "Stellen Sie sicher, dass alle Details korrekt sind, bevor Sie signieren und ausstellen. Diese Aktion kann irreversibel sein.",
+      "notTrustedIssuer": "Sie sind nicht berechtigt, diesen Anspruchsthema auszustellen.",
+      "customClaimNotSupported": "Dieser benutzerdefinierte Anspruchstyp wird in der Benutzeroberfläche nicht unterstützt.",
+      "fields": {
+        "claimTopic": "Anspruchsthema",
+        "selectTopic": "Ein Anspruchsthema auswählen",
+        "topicDescription": "Wählen Sie den Anspruchstyp zum Ausstellen",
+        "claimValue": "Anspruchswert",
+        "claimValuePlaceholder": "Anspruchswert eingeben",
+        "claimValueDescription": "Geben Sie den Wert für diesen Anspruch an.",
+        "collateralAmount": "Sicherheitsbetrag (wei)",
+        "collateralAmountDescription": "Geben Sie den Sicherheitsbetrag in wei ein.",
+        "expiryTimestamp": "Ablaufzeitstempel",
+        "expiryTimestampDescription": "Wählen Sie, wann dieser Anspruch ablaufen soll.",
+        "assetClass": "Asset-Klasse",
+        "assetCategory": "Asset-Kategorie",
+        "priceAmount": "Preisbetrag",
+        "currencyCode": "Währungscode",
+        "decimals": "Dezimalstellen",
+        "licenseType": "Lizenztyp",
+        "licenseNumber": "Lizenznummer",
+        "licenseJurisdiction": "Lizenzjurisdiktion",
+        "validUntil": "Gültig bis",
+        "reportingCompliant": "Berichterstattung konform",
+        "reportingCompliantDescription": "Geben Sie an, ob der Emittent berichterstattungskonform ist.",
+        "issuerAddress": "Emittentenadresse",
+        "contractAddress": "Vertragsadresse",
+        "isin": "ISIN-Code",
+        "jurisdiction": "Jurisdiktion",
+        "exemptionReference": "Ausnahmereferenz",
+        "prospectusReference": "Prospektreferenz"
+      }
+    }
   },
   "register": {
     "form": {
       "country": "Land",
-      "countryInfo": "Wählen Sie das Land für diese Identitätsregistrierung aus",
+      "countryInfo": "Wählen Sie das Land für diese Identitätsregistrierung",
       "walletAddress": "Wallet-Adresse",
-      "walletAddressInfo": "Zu registrierende Wallet-Adresse (standardmäßig der Identitätsinhaber)"
+      "walletAddressInfo": "Wallet-Adresse zum Registrieren (standardmäßig Identitätsbesitzer)"
     },
     "success": "Identität erfolgreich registriert",
     "confirm": {
@@ -37,8 +81,8 @@
       "user": "Benutzer",
       "claimType": "Anspruchstyp",
       "topic": "Thema",
-      "status": "Status",
-      "issuer": "Aussteller",
+      "status": "Statusübersicht",
+      "issuer": "Emittent",
       "issuedAt": "Ausgestellt am",
       "expiresAt": "Läuft ab am",
       "verifiedAt": "Verifiziert am"
@@ -49,23 +93,23 @@
     "emptyState": {
       "title": "Keine Ansprüche gefunden",
       "description": "Es wurden noch keine Identitätsansprüche ausgestellt.",
-      "loading": "Lade Ansprüche..."
+      "loading": "Ansprüche laden..."
     },
     "errors": {
       "loadFailed": "Fehler beim Laden der Ansprüche. Bitte versuchen Sie es erneut.",
       "navigationFailed": "Fehler beim Navigieren zu den Anspruchsdetails"
     },
     "fallback": {
-      "noExpiry": "Kein Ablaufdatum",
+      "noExpiry": "Kein Ablauf",
       "notVerified": "Nicht verifiziert"
     }
   },
   "identityTable": {
     "columns": {
-      "id": "ID",
+      "id": "ID-Nummer",
       "type": "Typ",
       "entity": "Entität",
-      "linkedEntity": "Konto / Vertrag",
+      "linkedEntity": "Verknüpfte Entität",
       "activeClaims": "Aktive Ansprüche",
       "revokedClaims": "Widerrufene Ansprüche",
       "deployment": "Bereitstellungs-Tx"
@@ -85,8 +129,8 @@
     },
     "emptyState": {
       "title": "Keine Identitäten gefunden",
-      "description": "Keine Identitäten entsprechen Ihren Filtern.",
-      "loading": "Identitäten werden geladen..."
+      "description": "Keine Identitäten entsprechen Ihren Filtern bisher.",
+      "loading": "Identitäten laden..."
     },
     "errors": {
       "loadFailed": "Fehler beim Laden der Identitäten. Bitte versuchen Sie es erneut.",
@@ -94,13 +138,13 @@
     }
   },
   "page": {
-    "description": "Identitätsansprüche, Verifizierungsstatus und Compliance für Benutzer verwalten.",
-    "loading": "Ansprüche werden geladen..."
+    "description": "Verwalten Sie Identitätsansprüche, Verifizierungsstatus und Compliance für Benutzer.",
+    "loading": "Ansprüche laden..."
   },
   "details": {
-    "title": "Konto-Ansprüche",
+    "title": "Kontoansprüche",
     "summary": {
-      "total": "Ansprüche gesamt",
+      "total": "Gesamtansprüche",
       "verified": "Verifiziert",
       "pending": "Ausstehend",
       "rejectedExpired": "Abgelehnt/Abgelaufen"
@@ -110,6 +154,59 @@
     "noClaimsDescription": "Diesem Konto wurden noch keine Identitätsansprüche zugewiesen."
   },
   "tabs": {
-    "details": "Details"
+    "details": "Einzelheiten",
+    "claims": "Ansprüche"
+  },
+  "fields": {
+    "identityAddress": "Identitätsadresse",
+    "identityAddressInfo": "Die Blockchain-Adresse dieser Identität",
+    "registrationStatus": "Registrierungsstatus",
+    "registrationStatusInfo": "Ob diese Identität on-chain registriert ist",
+    "linkedEntity": "Verknüpfte Entität",
+    "linkedEntityInfo": "Die mit dieser Identität verknüpfte Entität"
+  },
+  "claimsTable": {
+    "columns": {
+      "claimName": "Anspruchsname",
+      "status": "Prüfstatus",
+      "issuer": "Emittent",
+      "claimData": "Anspruchsdaten",
+      "issuedDate": "Ausstellungsdatum",
+      "actions": "Aktionen"
+    },
+    "noClaimData": "Keine Daten",
+    "status": {
+      "active": "Aktiv",
+      "revoked": "Widerrufen"
+    },
+    "actions": {
+      "revoke": "Anspruch widerrufen",
+      "remove": "Anspruch entfernen",
+      "revokeTitle": "Anspruch widerrufen",
+      "revokeDescription": "Widerrufen markiert diesen Anspruch als ungültig, während er für die Audit-Historie erhalten bleibt.",
+      "revokeConfirm": "Anspruch widerrufen",
+      "revokeSubmitting": "Widerrufen...",
+      "revokeSuccess": "Anspruch erfolgreich widerrufen",
+      "revokeLoading": "Anspruch widerrufen...",
+      "revokeError": "Fehler beim Widerrufen des Anspruchs",
+      "removeTitle": "Anspruch entfernen",
+      "removeDescription": "Entfernen löscht den Anspruch von dieser Identität. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "removeConfirm": "Anspruch entfernen",
+      "removeSubmitting": "Entfernen...",
+      "verification": {
+        "revokeTitle": "Zum Widerrufen verifizieren",
+        "revokeDescription": "Geben Sie Ihren Verifizierungscode ein, um diesen Anspruch zu widerrufen.",
+        "removeTitle": "Zum Entfernen verifizieren",
+        "removeDescription": "Geben Sie Ihren Verifizierungscode ein, um diesen Anspruch zu entfernen."
+      },
+      "success": {
+        "revoke": "Anspruch erfolgreich widerrufen",
+        "remove": "Anspruch erfolgreich entfernt"
+      }
+    },
+    "emptyState": {
+      "title": "Keine Ansprüche gefunden",
+      "description": "Diese Identität hat keine zugeordneten Ansprüche."
+    }
   }
 }

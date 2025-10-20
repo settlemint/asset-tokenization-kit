@@ -91,9 +91,13 @@ const READ_TOKEN_QUERY = theGraphGraphql(
         ...AccessControlFragment
       }
       yield: yield_ {
-        id
         schedule {
           id
+          denominationAsset {
+            id
+            decimals
+            symbol
+          }
         }
       }
       complianceModuleConfigs {

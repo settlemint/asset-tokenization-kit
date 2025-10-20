@@ -43,6 +43,7 @@ import { Route as PrivateOnboardedSidebarAdminUserManagementIndexRouteImport } f
 import { Route as PrivateOnboardedSidebarAdminIdentityManagementIndexRouteImport } from './routes/_private/_onboarded/_sidebar/admin/identity-management/index'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress'
 import { Route as PrivateOnboardedSidebarAdminUserManagementUserIdRouteImport } from './routes/_private/_onboarded/_sidebar/admin/user-management/$userId'
+import { Route as PrivateOnboardedSidebarAdminPlatformSettingsThemeRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/theme'
 import { Route as PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/permissions'
 import { Route as PrivateOnboardedSidebarAdminPlatformSettingsComplianceRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/compliance'
 import { Route as PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRouteImport } from './routes/_private/_onboarded/_sidebar/admin/platform-settings/claim-topics-issuers'
@@ -60,6 +61,7 @@ import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressDenomina
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressActionsRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/actions'
 import { Route as PrivateOnboardedSidebarAdminIdentityManagementAddressClaimsRouteImport } from './routes/_private/_onboarded/_sidebar/admin/identity-management/$address/claims'
+import { ServerRoute as ApiThemeDotcssServerRouteImport } from './routes/api/theme[.]css'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
@@ -247,6 +249,12 @@ const PrivateOnboardedSidebarAdminUserManagementUserIdRoute =
     path: '/admin/user-management/$userId',
     getParentRoute: () => PrivateOnboardedSidebarRoute,
   } as any)
+const PrivateOnboardedSidebarAdminPlatformSettingsThemeRoute =
+  PrivateOnboardedSidebarAdminPlatformSettingsThemeRouteImport.update({
+    id: '/admin/platform-settings/theme',
+    path: '/admin/platform-settings/theme',
+    getParentRoute: () => PrivateOnboardedSidebarRoute,
+  } as any)
 const PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute =
   PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRouteImport.update({
     id: '/admin/platform-settings/permissions',
@@ -379,6 +387,11 @@ const PrivateOnboardedSidebarAdminIdentityManagementAddressClaimsRoute =
         PrivateOnboardedSidebarAdminIdentityManagementAddressRoute,
     } as any,
   )
+const ApiThemeDotcssServerRoute = ApiThemeDotcssServerRouteImport.update({
+  id: '/api/theme.css',
+  path: '/api/theme.css',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
 const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
   id: '/api/$',
   path: '/api/$',
@@ -425,6 +438,7 @@ export interface FileRoutesByFullPath {
   '/admin/platform-settings/claim-topics-issuers': typeof PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute
   '/admin/platform-settings/compliance': typeof PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute
   '/admin/platform-settings/permissions': typeof PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute
+  '/admin/platform-settings/theme': typeof PrivateOnboardedSidebarAdminPlatformSettingsThemeRoute
   '/admin/user-management/$userId': typeof PrivateOnboardedSidebarAdminUserManagementUserIdRouteWithChildren
   '/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren
   '/admin/identity-management': typeof PrivateOnboardedSidebarAdminIdentityManagementIndexRoute
@@ -470,6 +484,7 @@ export interface FileRoutesByTo {
   '/admin/platform-settings/claim-topics-issuers': typeof PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute
   '/admin/platform-settings/compliance': typeof PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute
   '/admin/platform-settings/permissions': typeof PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute
+  '/admin/platform-settings/theme': typeof PrivateOnboardedSidebarAdminPlatformSettingsThemeRoute
   '/admin/identity-management': typeof PrivateOnboardedSidebarAdminIdentityManagementIndexRoute
   '/admin/user-management': typeof PrivateOnboardedSidebarAdminUserManagementIndexRoute
   '/token/$factoryAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
@@ -520,6 +535,7 @@ export interface FileRoutesById {
   '/_private/_onboarded/_sidebar/admin/platform-settings/claim-topics-issuers': typeof PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute
   '/_private/_onboarded/_sidebar/admin/platform-settings/compliance': typeof PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute
   '/_private/_onboarded/_sidebar/admin/platform-settings/permissions': typeof PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute
+  '/_private/_onboarded/_sidebar/admin/platform-settings/theme': typeof PrivateOnboardedSidebarAdminPlatformSettingsThemeRoute
   '/_private/_onboarded/_sidebar/admin/user-management/$userId': typeof PrivateOnboardedSidebarAdminUserManagementUserIdRouteWithChildren
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren
   '/_private/_onboarded/_sidebar/admin/identity-management/': typeof PrivateOnboardedSidebarAdminIdentityManagementIndexRoute
@@ -569,6 +585,7 @@ export interface FileRouteTypes {
     | '/admin/platform-settings/claim-topics-issuers'
     | '/admin/platform-settings/compliance'
     | '/admin/platform-settings/permissions'
+    | '/admin/platform-settings/theme'
     | '/admin/user-management/$userId'
     | '/token/$factoryAddress/$tokenAddress'
     | '/admin/identity-management'
@@ -614,6 +631,7 @@ export interface FileRouteTypes {
     | '/admin/platform-settings/claim-topics-issuers'
     | '/admin/platform-settings/compliance'
     | '/admin/platform-settings/permissions'
+    | '/admin/platform-settings/theme'
     | '/admin/identity-management'
     | '/admin/user-management'
     | '/token/$factoryAddress'
@@ -663,6 +681,7 @@ export interface FileRouteTypes {
     | '/_private/_onboarded/_sidebar/admin/platform-settings/claim-topics-issuers'
     | '/_private/_onboarded/_sidebar/admin/platform-settings/compliance'
     | '/_private/_onboarded/_sidebar/admin/platform-settings/permissions'
+    | '/_private/_onboarded/_sidebar/admin/platform-settings/theme'
     | '/_private/_onboarded/_sidebar/admin/user-management/$userId'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress'
     | '/_private/_onboarded/_sidebar/admin/identity-management/'
@@ -687,30 +706,34 @@ export interface RootRouteChildren {
 }
 export interface FileServerRoutesByFullPath {
   '/api/$': typeof ApiSplatServerRoute
+  '/api/theme.css': typeof ApiThemeDotcssServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
 }
 export interface FileServerRoutesByTo {
   '/api/$': typeof ApiSplatServerRoute
+  '/api/theme.css': typeof ApiThemeDotcssServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
 }
 export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
   '/api/$': typeof ApiSplatServerRoute
+  '/api/theme.css': typeof ApiThemeDotcssServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
 }
 export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/api/$' | '/api/auth/$' | '/api/rpc/$'
+  fullPaths: '/api/$' | '/api/theme.css' | '/api/auth/$' | '/api/rpc/$'
   fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/api/$' | '/api/auth/$' | '/api/rpc/$'
-  id: '__root__' | '/api/$' | '/api/auth/$' | '/api/rpc/$'
+  to: '/api/$' | '/api/theme.css' | '/api/auth/$' | '/api/rpc/$'
+  id: '__root__' | '/api/$' | '/api/theme.css' | '/api/auth/$' | '/api/rpc/$'
   fileServerRoutesById: FileServerRoutesById
 }
 export interface RootServerRouteChildren {
   ApiSplatServerRoute: typeof ApiSplatServerRoute
+  ApiThemeDotcssServerRoute: typeof ApiThemeDotcssServerRoute
   ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute
   ApiRpcSplatServerRoute: typeof ApiRpcSplatServerRoute
 }
@@ -941,6 +964,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardedSidebarAdminUserManagementUserIdRouteImport
       parentRoute: typeof PrivateOnboardedSidebarRoute
     }
+    '/_private/_onboarded/_sidebar/admin/platform-settings/theme': {
+      id: '/_private/_onboarded/_sidebar/admin/platform-settings/theme'
+      path: '/admin/platform-settings/theme'
+      fullPath: '/admin/platform-settings/theme'
+      preLoaderRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsThemeRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarRoute
+    }
     '/_private/_onboarded/_sidebar/admin/platform-settings/permissions': {
       id: '/_private/_onboarded/_sidebar/admin/platform-settings/permissions'
       path: '/admin/platform-settings/permissions'
@@ -1064,6 +1094,13 @@ declare module '@tanstack/react-router' {
 }
 declare module '@tanstack/react-start/server' {
   interface ServerFileRoutesByPath {
+    '/api/theme.css': {
+      id: '/api/theme.css'
+      path: '/api/theme.css'
+      fullPath: '/api/theme.css'
+      preLoaderRoute: typeof ApiThemeDotcssServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
     '/api/$': {
       id: '/api/$'
       path: '/api/$'
@@ -1174,6 +1211,7 @@ interface PrivateOnboardedSidebarRouteChildren {
   PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsClaimTopicsIssuersRoute
   PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute
   PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute
+  PrivateOnboardedSidebarAdminPlatformSettingsThemeRoute: typeof PrivateOnboardedSidebarAdminPlatformSettingsThemeRoute
   PrivateOnboardedSidebarAdminUserManagementUserIdRoute: typeof PrivateOnboardedSidebarAdminUserManagementUserIdRouteWithChildren
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren
   PrivateOnboardedSidebarAdminIdentityManagementIndexRoute: typeof PrivateOnboardedSidebarAdminIdentityManagementIndexRoute
@@ -1212,6 +1250,8 @@ const PrivateOnboardedSidebarRouteChildren: PrivateOnboardedSidebarRouteChildren
       PrivateOnboardedSidebarAdminPlatformSettingsComplianceRoute,
     PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute:
       PrivateOnboardedSidebarAdminPlatformSettingsPermissionsRoute,
+    PrivateOnboardedSidebarAdminPlatformSettingsThemeRoute:
+      PrivateOnboardedSidebarAdminPlatformSettingsThemeRoute,
     PrivateOnboardedSidebarAdminUserManagementUserIdRoute:
       PrivateOnboardedSidebarAdminUserManagementUserIdRouteWithChildren,
     PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute:
@@ -1323,6 +1363,7 @@ export const routeTree = rootRouteImport
   ._addFileTypes<FileRouteTypes>()
 const rootServerRouteChildren: RootServerRouteChildren = {
   ApiSplatServerRoute: ApiSplatServerRoute,
+  ApiThemeDotcssServerRoute: ApiThemeDotcssServerRoute,
   ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,
   ApiRpcSplatServerRoute: ApiRpcSplatServerRoute,
 }

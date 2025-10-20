@@ -1,13 +1,25 @@
 {
   "expressionBuilder": {
-    "title": "Ausdrucks-Builder",
+    "title": "Ausdruck-Builder",
     "topics": {
-      "kyc": "KYC",
-      "aml": "AML",
-      "collateral": "Sicherheit",
-      "isin": "ISIN",
-      "assetClassification": "Vermögensklassifizierung",
-      "basePrice": "Basispreis"
+      "knowYourCustomer": "Know-Your-Customer",
+      "antiMoneyLaundering": "Anti-Geldwäsche",
+      "qualifiedInstitutionalInvestor": "Qualifizierter institutioneller Anleger",
+      "professionalInvestor": "Professioneller Anleger",
+      "accreditedInvestor": "Akkreditierter Anleger",
+      "accreditedInvestorVerified": "Akkreditierter Anleger verifiziert",
+      "regulationS": "Regulation S (US)",
+      "issuerProspectusFiled": "Prospekt eingereicht",
+      "issuerProspectusExempt": "Prospektbefreit",
+      "issuerLicensed": "Lizenzierter Emittent",
+      "issuerReportingCompliant": "Emittent meldet konform",
+      "issuerJurisdiction": "Jurisdiktion des Emittenten",
+      "collateral": "Sicherheiten",
+      "isin": "ISIN-Code",
+      "assetClassification": "Asset-Klassifizierung",
+      "basePrice": "Basispreis",
+      "assetIssuer": "Asset-Emittent",
+      "contractIdentity": "Vertragsidentität"
     },
     "topicInput": {
       "selectPlaceholder": "Wählen Sie ein Thema",
@@ -17,17 +29,17 @@
       "startGroupButton": "Gruppe starten"
     },
     "operatorInput": {
-      "chooseOperatorLabel": "Wählen Sie einen Operator",
+      "chooseOperatorLabel": "Operator wählen",
       "andButton": "UND",
       "orButton": "ODER",
       "endGroupButton": "Gruppe beenden",
-      "openGroupsText": "{{count}} offene Gruppe{{plural}} schließen"
+      "openGroupsText": "{{count}} offene Gruppe{{plural}} zu schließen"
     },
     "display": {
       "clearAllButton": "Alles löschen",
-      "validExpression": "Der Ausdruck ist vollständig und gültig",
-      "closeGroupsPrompt": "Schließen Sie {{count}} Gruppe{{plural}} ab, um abzuschließen",
-      "addTopicPrompt": "Fügen Sie ein Thema hinzu oder starten Sie eine Gruppe",
+      "validExpression": "Ausdruck ist vollständig und gültig",
+      "closeGroupsPrompt": "{{count}} Gruppe{{plural}} schließen, um zu vervollständigen",
+      "addTopicPrompt": "Ein Thema hinzufügen oder eine Gruppe starten",
       "unknownNode": "UNBEKANNT"
     }
   },
@@ -36,27 +48,27 @@
     "dob": "Geburtsdatum",
     "firstName": "Vorname",
     "lastName": "Nachname",
-    "nationalId": "Nationale ID",
+    "nationalId": "Personalausweis",
     "residencyStatus": "Aufenthaltsstatus",
     "residencyStatusOptions": {
-      "dual_resident": "Doppelansässiger - Ich bin rechtlich/steuerlich in mehr als einem Land ansässig",
-      "non_resident": "Nichtansässiger - Ich lebe nicht im oben genannten Land oder werde dort nicht als ansässig betrachtet",
+      "dual_resident": "Doppelresident - Ich bin rechtlich/steuerlich in mehr als einem Land ansässig",
+      "non_resident": "Nichtresident - Ich lebe nicht in oder bin nicht als Resident des oben genannten Landes betrachtet",
       "resident": "Alleinansässiger - Ich lebe im oben genannten Land und bin dort rechtlich/steuerlich ansässig",
-      "unknown": "Bevorzuge es, nichts zu sagen"
+      "unknown": "Bevorzuge es nicht zu sagen"
     },
     "submit": "Speichern und fortfahren",
     "identity": {
       "confirm-description": "Bitte verifizieren Sie Ihre Identität, um Ihre On-Chain-Identität zu erstellen.",
-      "confirm-title": "Bestätigen Sie die Erstellung der Identität",
+      "confirm-title": "Identitätserstellung bestätigen",
       "deployed-toast": "Identität erfolgreich registriert!",
       "deploying-toast": "Identität wird registriert...",
-      "failed-toast": "Registrierung der Identität fehlgeschlagen: "
+      "failed-toast": "Fehler bei der Registrierung der Identität: "
     }
   },
   "verificationDialog": {
     "authenticatorCode": "Authenticator-Code",
     "cancel": "Abbrechen",
-    "codeLengthError": "Der Code muss 6 Ziffern haben",
+    "codeLengthError": "Code muss 6 Ziffern haben",
     "confirm": "Bestätigen",
     "pinCode": "PIN-Code",
     "useAuthenticatorInstead": "Stattdessen Authenticator-App verwenden",
