@@ -29,12 +29,6 @@ export const FixedYieldScheduleWithdrawInputSchema =
 
 /**
  * Output schema for fixed yield schedule withdraw operation.
- *
- * This schema defines the structure of the response returned when
- * withdrawing the denomination asset from a fixed yield schedule,
- * providing the transaction hash of the operation.
- *
- * @property {string} transactionHash - The transaction hash of the withdraw operation
  */
 export const FixedYieldScheduleWithdrawOutputSchema = BaseMutationOutputSchema;
 

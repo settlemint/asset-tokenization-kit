@@ -21,12 +21,6 @@ export const FixedYieldScheduleTopUpInputSchema =
 
 /**
  * Output schema for fixed yield schedule top up operation.
- *
- * This schema defines the structure of the response returned when
- * topping up the denomination asset in a fixed yield schedule,
- * providing the transaction hash of the operation.
- *
- * @property {string} transactionHash - The transaction hash of the top up operation
  */
 export const FixedYieldScheduleTopUpOutputSchema = BaseMutationOutputSchema;
 
