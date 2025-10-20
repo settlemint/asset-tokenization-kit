@@ -1,6 +1,6 @@
 # network-nodes
 
-![Version: 2.0.0-beta.4](https://img.shields.io/badge/Version-2.0.0--beta.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.4](https://img.shields.io/badge/AppVersion-2.0.0--beta.4-informational?style=flat-square)
+![Version: 2.0.0-beta.5](https://img.shields.io/badge/Version-2.0.0--beta.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.5](https://img.shields.io/badge/AppVersion-2.0.0--beta.5-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -87,7 +87,7 @@ The following table lists the configurable parameters of this chart and their de
 |httpRoute.rules[0].matches[0].path.value|string|`"/headers"`|Path value used when evaluating the request URL.|
 |image|object|-|Container image configuration shared by validator and RPC pods.|
 |image.pullPolicy|string|`"IfNotPresent"`|Kubernetes image pull policy for Besu containers.|
-|image.repository|string|`"docker.io/hyperledger/besu"`|OCI image repository hosting Hyperledger Besu.|
+|image.repository|string|`"harbor.settlemint.com/docker.io/hyperledger/besu"`|OCI image repository hosting Hyperledger Besu.|
 |image.tag|string|`"25.10.0"`|Specific Besu image tag to deploy.|
 |imagePullSecrets|list|-|Image pull secrets granting registry access for the Besu image.|
 |ingress|object|-|Ingress configuration used to expose RPC services via Kubernetes Ingress resources.|
@@ -105,7 +105,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.compileGenesis.enabled|bool|`true`|Enable the compile-genesis init container that merges allocation ConfigMaps into the runtime genesis file.|
 |initContainer.compileGenesis.image|object|-|Container image configuration for the compile-genesis init container.|
 |initContainer.compileGenesis.image.pullPolicy|string|`"IfNotPresent"`|Image pull policy for the compile-genesis init container.|
-|initContainer.compileGenesis.image.repository|string|`"ghcr.io/settlemint/network-bootstrapper"`|OCI image hosting the network-bootstrapper CLI used for genesis compilation.|
+|initContainer.compileGenesis.image.repository|string|`"harbor.settlemint.com/ghcr.io/settlemint/network-bootstrapper"`|OCI image hosting the network-bootstrapper CLI used for genesis compilation.|
 |initContainer.compileGenesis.image.tag|string|`"1.2.3"`|Image tag for the network-bootstrapper CLI.|
 |initContainer.compileGenesis.outputPath|string|`""`|Filesystem path populated with the compiled genesis JSON. Leave empty to mirror config.genesisFile.|
 |initContainer.compileGenesis.resources|object|-|Optional Kubernetes resource requests/limits for the compile-genesis init container.|
@@ -114,7 +114,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.tcpCheck.enabled|bool|`false`|Enable a tcp-check init container before Besu pods start.|
 |initContainer.tcpCheck.image|object|-|Container image configuration for the tcp-check init container.|
 |initContainer.tcpCheck.image.pullPolicy|string|`"IfNotPresent"`|Image pull policy for the tcp-check init container.|
-|initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|OCI image hosting the tcp-check utility.|
+|initContainer.tcpCheck.image.repository|string|`"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit"`|OCI image hosting the tcp-check utility.|
 |initContainer.tcpCheck.image.tag|string|`"v7.7.14"`|Image tag for the tcp-check utility.|
 |initContainer.tcpCheck.resources|object|-|Resource requests and limits for the tcp-check init container.|
 |initContainer.tcpCheck.resources.limits|object|-|Maximum resource limits.|

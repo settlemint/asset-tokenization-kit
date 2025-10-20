@@ -12,6 +12,7 @@
       "status": "Bearbeitungsstatus",
       "type": "Typ",
       "activeAt": "Geplant",
+      "expiresAt": "Läuft ab",
       "executedAt": "Abgeschlossen",
       "executedBy": "Ausgeführt von",
       "execute": "Ausführen"
@@ -20,7 +21,7 @@
       "title": "Keine Aktionen anzuzeigen",
       "description": "Sie sind auf dem neuesten Stand. Wir werden hier neue Aktionen auflisten, sobald sie verfügbar sind."
     },
-    "authorizedBadge": "{{count}} autorisiert",
+    "authorizedBadge": "{{count}} Autorisierte",
     "execute": {
       "label": "Ausführen",
       "loading": "Wird ausgeführt…",
@@ -31,8 +32,8 @@
     "searchPlaceholder": "Aktionen suchen"
   },
   "status": {
-    "PENDING": "Bevorstehend",
-    "ACTIVE": "Ausstehend",
+    "UPCOMING": "Bevorstehend",
+    "PENDING": "Ausstehend",
     "EXECUTED": "Abgeschlossen",
     "EXPIRED": "Abgelaufen"
   },
