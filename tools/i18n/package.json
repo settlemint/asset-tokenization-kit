@@ -1,5 +1,5 @@
 {
-  "name": "@tools/verify-translations",
+  "name": "@tools/i18n",
   "scripts": {
     "verify-translations": "bun run src/verify-translations.ts"
   },
