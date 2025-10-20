@@ -112,7 +112,6 @@ export class BasePage {
         `[Calendar] (${context}) could not set month '${monthLabel}'.`
       );
     }
-    await this.page.waitForTimeout(300);
   }
 
   private async pickCalendarYear(
@@ -133,7 +132,6 @@ export class BasePage {
       );
       throw new Error(`[Calendar] (${context}) could not set year '${year}'.`);
     }
-    await this.page.waitForTimeout(300);
   }
 
   private async pickCalendarDay(

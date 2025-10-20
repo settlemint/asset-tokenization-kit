@@ -68,7 +68,7 @@ export class CreateAssetForm extends BasePage {
       date.setDate(date.getDate() + daysOffset);
     }
 
-    return date.toISOString().slice(0, 16);
+    return date.toISOString();
   }
 
   async selectBondMaturityDate(isoDate: string) {
@@ -91,6 +91,12 @@ export class CreateAssetForm extends BasePage {
       day,
       "bond maturity"
     );
+
+    await this.page
+      .locator('[data-slot="popover-content"][data-state="open"]')
+      .first()
+      .waitFor({ state: "detached", timeout: 2000 })
+      .catch(() => {});
   }
 
   async expectErrorMessage(message: string) {
