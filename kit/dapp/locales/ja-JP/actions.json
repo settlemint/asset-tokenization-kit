@@ -12,6 +12,7 @@
       "status": "ステータス",
       "type": "タイプ",
       "activeAt": "予定",
+      "expiresAt": "有効期限",
       "executedAt": "完了",
       "executedBy": "実行者",
       "execute": "実行"
@@ -20,7 +21,7 @@
       "title": "表示するアクションはありません",
       "description": "すべてのアクションが完了しました。新しいアクションが利用可能になると、ここにリストします。"
     },
-    "authorizedBadge": "{{count}} の承認済み",
+    "authorizedBadge": "承認済み {{count}} 件",
     "execute": {
       "label": "実行",
       "loading": "実行中…",
@@ -31,8 +32,8 @@
     "searchPlaceholder": "アクションを検索"
   },
   "status": {
-    "PENDING": "今後",
-    "ACTIVE": "保留中",
+    "UPCOMING": "今後",
+    "PENDING": "保留中",
     "EXECUTED": "完了",
     "EXPIRED": "期限切れ"
   },
@@ -50,7 +51,7 @@
   },
   "execute": {
     "messages": {
-      "loading": "実行中 {{action}}…",
+      "loading": "{{action}} を実行しています…",
       "success": "{{action}} が正常に実行されました。"
     },
     "errors": {
