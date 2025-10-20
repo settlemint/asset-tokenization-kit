@@ -41,7 +41,7 @@ const LIST_SYSTEM_ADDONS_QUERY = theGraphGraphql(`
 /**
  * System addon listing route handler.
  *
- * Retrieves a paginated list of system addons with optional filtering
+ * Retrieves a list of system addons with optional filtering
  * by type and deploying account. This endpoint is designed to support
  * UI components that need to display addon lists, such as addon management
  * interfaces or token configuration screens.
@@ -50,7 +50,7 @@ const LIST_SYSTEM_ADDONS_QUERY = theGraphGraphql(`
  * Permissions: Requires "read" permission on system addons
  * Method: GET /addons
  *
- * @param input - List parameters including pagination, sorting, and optional filters
+ * @param input - List parameters including sorting options
  * @param context - Request context with TheGraph client and authenticated user
  * @returns Promise<SystemAddon[]> - Array of system addon objects
  * @throws UNAUTHORIZED - If user is not authenticated
@@ -59,7 +59,7 @@ const LIST_SYSTEM_ADDONS_QUERY = theGraphGraphql(`
  *
  * @example
  * ```typescript
- * // Get all system addons (default pagination)
+ * // Get all system addons
  * const addons = await orpc.addons.list.query({});
  *
  * // Get only airdrop addons
@@ -75,14 +75,6 @@ const LIST_SYSTEM_ADDONS_QUERY = theGraphGraphql(`
  * // Get yield addons, sorted by name
  * const yieldAddons = await orpc.addons.list.query({
  *   typeId: "yield",
- *   orderBy: "name",
- *   orderDirection: "asc"
- * });
- *
- * // Paginated retrieval (page 2, 50 items per page)
- * const page2 = await orpc.addons.list.query({
- *   offset: 50,
- *   limit: 50
  * });
  * ```
  */

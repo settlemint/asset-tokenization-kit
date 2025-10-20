@@ -27,7 +27,7 @@ const LIST_SYSTEM_QUERY = theGraphGraphql(`
 /**
  * System listing route handler.
  *
- * Retrieves a paginated list of SMART system contracts from TheGraph indexer.
+ * Retrieves a list of SMART system contracts from TheGraph indexer.
  * Systems are the core infrastructure contracts that manage tokenized assets,
  * compliance modules, identity registries, and access control within the SMART
  * protocol ecosystem.
@@ -35,7 +35,7 @@ const LIST_SYSTEM_QUERY = theGraphGraphql(`
  * Authentication: Required (uses authenticated router)
  * Permissions: Requires "read" permission - available to admin, issuer, user, and auditor roles
  * Method: GET /systems
- * @param input - List parameters including pagination and sorting options
+ * @param input - List parameters including sorting options
  * @param context - Request context with TheGraph client and authenticated user
  * @returns Promise<System[]> - Array of system objects with their blockchain addresses
  * @throws UNAUTHORIZED - If user is not authenticated
