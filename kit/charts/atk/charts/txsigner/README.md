@@ -1,6 +1,6 @@
 # txsigner
 
-![Version: 2.0.0-beta.4](https://img.shields.io/badge/Version-2.0.0--beta.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.4](https://img.shields.io/badge/AppVersion-2.0.0--beta.4-informational?style=flat-square)
+![Version: 2.0.0-beta.5](https://img.shields.io/badge/Version-2.0.0--beta.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.5](https://img.shields.io/badge/AppVersion-2.0.0--beta.5-informational?style=flat-square)
 
 TxSigner is a secure transaction signing service for blockchain applications that provides
 automated transaction signing, key management, and transaction queuing capabilities. It offers
@@ -109,7 +109,7 @@ The following table lists the configurable parameters of this chart and their de
 |image.digest|string|`""`|TxSigner image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag|
 |image.pullPolicy|string|`"IfNotPresent"`|TxSigner image pull policy|
 |image.pullSecrets|list|-|TxSigner image pull secrets (list)|
-|image.registry|string|`"ghcr.io"`|TxSigner image registry|
+|image.registry|string|`"harbor.settlemint.com/ghcr.io"`|TxSigner image registry|
 |image.repository|string|`"settlemint/btp-signer"`|TxSigner image repository|
 |image.tag|string|`"7.15.13"`|TxSigner image tag (immutable tags are recommended)|
 |ingress|object|-|Ingress parameters (object)|
@@ -135,7 +135,7 @@ The following table lists the configurable parameters of this chart and their de
 |initContainer.tcpCheck.enabled|bool|`true`|Enable TCP check init container|
 |initContainer.tcpCheck.image|object|-|Init container image configuration|
 |initContainer.tcpCheck.image.pullPolicy|string|`"IfNotPresent"`|Init container image pull policy|
-|initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|Init container image repository|
+|initContainer.tcpCheck.image.repository|string|`"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit"`|Init container image repository|
 |initContainer.tcpCheck.image.tag|string|`"v7.7.14"`|Init container image tag|
 |initContainer.tcpCheck.resources|object|-|Init container resource requests and limits|
 |initContainer.tcpCheck.resources.limits|object|-|Resource limits|
@@ -275,7 +275,7 @@ The following table lists the configurable parameters of this chart and their de
 |tests|object|-|Test parameters (object)|
 |tests.image|object|-|Image for test pods|
 |tests.image.pullPolicy|string|`"IfNotPresent"`|Test image pull policy|
-|tests.image.registry|string|`"docker.io"`|Test image registry|
+|tests.image.registry|string|`"harbor.settlemint.com/docker.io"`|Test image registry|
 |tests.image.repository|string|`"busybox"`|Test image repository|
 |tests.image.tag|string|`"1.37.0"`|Test image tag|
 |tolerations|list|-|Tolerations for pod assignment (list)|
