@@ -12,6 +12,7 @@
       "status": "الحالة",
       "type": "النوع",
       "activeAt": "المجدول",
+      "expiresAt": "ينتهي",
       "executedAt": "مكتمل",
       "executedBy": "تم التنفيذ بواسطة",
       "execute": "تنفيذ"
@@ -20,7 +21,7 @@
       "title": "لا توجد إجراءات لعرضها",
       "description": "لقد انتهيت من جميع الإجراءات. سنقوم بإدراج إجراءات جديدة هنا عند توفرها."
     },
-    "authorizedBadge": "{{count}} مخول",
+    "authorizedBadge": "{{count}} مخولين",
     "execute": {
       "label": "تنفيذ",
       "loading": "يتم التنفيذ…",
@@ -31,8 +32,8 @@
     "searchPlaceholder": "بحث عن الإجراءات"
   },
   "status": {
-    "PENDING": "قادم",
-    "ACTIVE": "معلق",
+    "UPCOMING": "قادم",
+    "PENDING": "معلق",
     "EXECUTED": "مكتمل",
     "EXPIRED": "منتهي"
   },
@@ -44,14 +45,14 @@
     "ClaimYield": "المطالبة بالعائد"
   },
   "types": {
-    "bond": "السند",
+    "bond": "سند",
     "settlement": "التسوية",
     "generic": "إجراء"
   },
   "execute": {
     "messages": {
       "loading": "يتم تنفيذ {{action}}…",
-      "success": "{{action}} تم تنفيذه بنجاح."
+      "success": "تم تنفيذ {{action}} بنجاح."
     },
     "errors": {
       "notAuthorized": "ليس لديك إذن لتنفيذ هذا الإجراء.",
