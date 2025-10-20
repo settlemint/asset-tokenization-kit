@@ -30,7 +30,7 @@ image:
   # -- (string) Graph Node image pull policy
   pullPolicy: IfNotPresent
   # -- (string) Overrides the image tag. Defaults to Chart.appVersion if not set
-  tag: "v0.40.2"
+  tag: "v0.41.0"
 # -- (object) Init container configuration
 initContainer:
   # -- (object) Image for init container kubectl
