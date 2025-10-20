@@ -63,8 +63,8 @@
     "postdev:reset": "bun run dev:up",
     "artifacts": "turbo run artifacts ",
     "extract-env": "bun run tools/extract-env.ts",
-    "db:studio": "turbo run db:studio ",
-    "verify-translations": "bun run tools/verify-translations.ts"
+    "db:studio": "turbo run db:studio",
+    "verify-translations": "turbo run verify-translations"
   },
   "dependencies": {
     "@noble/hashes": "2.0.1",
@@ -80,7 +80,6 @@
     "@typescript/native-preview": "7.0.0-dev.20251019.1",
     "graphql": "16.11.0",
     "prettier": "3.6.2",
-    "ts-morph": "21.0.0",
     "turbo": "2.5.8",
     "typescript": "5.9.3",
     "yaml": "2.8.1"

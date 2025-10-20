@@ -1,0 +1,12 @@
+{
+  "name": "@tools/verify-translations",
+  "scripts": {
+    "verify-translations": "bun run src/verify-translations.ts"
+  },
+  "devDependencies": {
+    "@settlemint/sdk-utils": "2.6.2",
+    "@tools/typescript-config": "workspace:*",
+    "@types/bun": "1.3.0",
+    "ts-morph": "27.0.2"
+  }
+}
