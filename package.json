@@ -80,6 +80,7 @@
     "@typescript/native-preview": "7.0.0-dev.20251019.1",
     "graphql": "16.11.0",
     "prettier": "3.6.2",
+    "ts-morph": "21.0.0",
     "turbo": "2.5.8",
     "typescript": "5.9.3",
     "yaml": "2.8.1"
