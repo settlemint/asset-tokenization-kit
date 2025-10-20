@@ -168,7 +168,7 @@ export const revoke = authRouter.system.identity.claims.revoke
     });
 
     // Submit claim revocation via helper
-    const result = await revokeClaim({
+    const txHash = await revokeClaim({
       user: context.auth.user,
       issuer: issuerIdentity,
       walletVerification,
@@ -179,7 +179,7 @@ export const revoke = authRouter.system.identity.claims.revoke
 
     return {
       success: true,
-      transactionHash: result,
+      txHash,
       claimId: extractedClaimId,
     };
   });

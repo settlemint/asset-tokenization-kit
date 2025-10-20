@@ -1,3 +1,4 @@
+import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
 import * as z from "zod";
 
@@ -18,8 +19,7 @@ export type TopicDeleteInput = z.infer<typeof TopicDeleteInputSchema>;
  * Topic Delete Output Schema
  * Response after successfully removing a topic scheme
  */
-export const TopicDeleteOutputSchema = z.object({
-  transactionHash: z.string().describe("Transaction hash of the removal"),
+export const TopicDeleteOutputSchema = BaseMutationOutputSchema.extend({
   name: z.string().describe("Name of the removed topic"),
 });
 

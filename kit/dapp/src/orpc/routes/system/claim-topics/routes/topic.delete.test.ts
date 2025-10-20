@@ -78,7 +78,7 @@ describe("system.claim-topics.topic.delete unit", () => {
     });
 
     expect(result).toEqual({
-      transactionHash:
+      txHash:
         "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       name: "KYC Verification",
     });
@@ -192,7 +192,7 @@ describe("system.claim-topics.topic.delete unit", () => {
       });
 
       expect(result.name).toBe(testCase.name);
-      expect(result.transactionHash).toBe(
+      expect(result.txHash).toBe(
         "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
       );
     }

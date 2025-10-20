@@ -24,10 +24,7 @@ import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockch
 import { systemRouter } from "@/orpc/procedures/system.router";
 // No need to import SYSTEM_PERMISSIONS - using direct role requirements
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
-import {
-  TopicDeleteOutputSchema,
-  type TopicDeleteOutput,
-} from "./topic.delete.schema";
+import { type TopicDeleteOutput } from "./topic.delete.schema";
 
 /**
  * GraphQL mutation for removing a topic scheme
@@ -89,7 +86,7 @@ export const topicDelete = systemRouter.system.claimTopics.topicDelete
     const registryAddress = system.topicSchemeRegistry.id;
 
     // Execute the removal transaction
-    const transactionHash = await context.portalClient.mutate(
+    const txHash = await context.portalClient.mutate(
       REMOVE_TOPIC_SCHEME_MUTATION,
       {
         address: registryAddress,
@@ -104,8 +101,8 @@ export const topicDelete = systemRouter.system.claimTopics.topicDelete
     );
 
     // Return success response with transaction details
-    return TopicDeleteOutputSchema.parse({
-      transactionHash,
+    return {
+      txHash,
       name,
-    });
+    };
   });

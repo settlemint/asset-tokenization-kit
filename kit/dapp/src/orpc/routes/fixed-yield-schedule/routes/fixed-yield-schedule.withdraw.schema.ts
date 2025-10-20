@@ -1,3 +1,4 @@
+import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
 import { apiBigInt } from "@atk/zod/bigint";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
@@ -35,11 +36,7 @@ export const FixedYieldScheduleWithdrawInputSchema =
  *
  * @property {string} transactionHash - The transaction hash of the withdraw operation
  */
-export const FixedYieldScheduleWithdrawOutputSchema = z.object({
-  transactionHash: z
-    .string()
-    .describe("The transaction hash of the withdraw operation"),
-});
+export const FixedYieldScheduleWithdrawOutputSchema = BaseMutationOutputSchema;
 
 /**
  * Type representing the validated fixed yield schedule withdraw input.

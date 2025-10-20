@@ -94,7 +94,7 @@ export const withdraw = tokenRouter.fixedYieldSchedule.withdraw
     const sender = auth.user;
 
     // Execute the withdraw transaction
-    const transactionHash = await context.portalClient.mutate(
+    const txHash = await context.portalClient.mutate(
       WITHDRAW_DENOMINATION_ASSET_MUTATION,
       {
         address: yieldSchedule,
@@ -110,6 +110,6 @@ export const withdraw = tokenRouter.fixedYieldSchedule.withdraw
     );
 
     return {
-      transactionHash,
+      txHash,
     };
   });
