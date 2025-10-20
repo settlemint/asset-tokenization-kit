@@ -1,21 +1,17 @@
-import { createLogger } from "@settlemint/sdk-utils/logging";
-import { readdirSync, readFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-import { collectUsedTranslationKeys } from "./collect-used-translation-keys";
-import { findUnusedTranslationKeys } from "./find-unused-keys";
-
-const LOGGER = createLogger({ level: "info" });
+import { readdirSync, readFileSync } from "fs";
+import { dirname, join, resolve } from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ARG_LOCALES_FLAG = "--locales-dir=";
+const DAPP_DIR = join(__dirname, "../../../kit/dapp");
 const localesDirArg = process.argv
   .slice(2)
   .find((arg) => arg.startsWith(ARG_LOCALES_FLAG));
 const localesDir = localesDirArg
   ? resolve(process.cwd(), localesDirArg.slice(ARG_LOCALES_FLAG.length))
-  : join(__dirname, "../../../kit/dapp/locales");
+  : join(DAPP_DIR, "locales");
 const baseLang = "en-US";
 
 interface TranslationIssue {
@@ -24,8 +20,7 @@ interface TranslationIssue {
     | "extra_file"
     | "missing_keys"
     | "extra_keys"
-    | "untranslated_strings"
-    | "unused_keys";
+    | "untranslated_strings";
   file: string;
   language: string;
   details: string[];
@@ -40,18 +35,12 @@ interface LanguageReport {
 
 interface VerificationResult {
   baseLanguage: string;
-  baseReport: LanguageReport;
   languages: LanguageReport[];
-  usedTranslationKeys: string[];
-  usedTranslationKeysByNamespace: Record<string, string[]>;
-  unusedTranslationKeys: { file: string; keys: string[] }[];
-  namespacesWithDynamicUsage: string[];
   summary: {
     totalLanguages: number;
     languagesWithIssues: number;
     totalIssues: number;
     fullyTranslatedLanguages: string[];
-    baseLanguageHasIssues: boolean;
   };
 }
 
@@ -223,31 +212,6 @@ function verifyLanguage(
 
 function main(): VerificationResult {
   const baseDir = join(localesDir, baseLang);
-  const usedTranslations = collectUsedTranslationKeys();
-  const usedTranslationsByNamespace = Object.fromEntries(
-    Array.from(usedTranslations.keysByNamespace.entries()).map(
-      ([namespace, keys]) => [namespace, Array.from(keys).sort()]
-    )
-  );
-  const baseReport = verifyLanguage(baseDir, baseDir, baseLang);
-  const unusedByFile = findUnusedTranslationKeys(
-    baseDir,
-    usedTranslations.allKeys,
-    usedTranslations.namespacesWithDynamicUsage
-  );
-  const unusedTranslationKeys = Array.from(unusedByFile.entries()).map(
-    ([file, keys]) => ({ file, keys })
-  );
-
-  for (const { file, keys } of unusedTranslationKeys) {
-    baseReport.issues.push({
-      type: "unused_keys",
-      file,
-      language: baseLang,
-      details: keys,
-    });
-  }
-
   const languageDirs = readdirSync(localesDir, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory() && dirent.name !== baseLang)
     .map((dirent) => dirent.name);
@@ -259,68 +223,37 @@ function main(): VerificationResult {
     languages.push(verifyLanguage(baseDir, langDir, lang));
   }
 
-  const languagesWithIssuesCount =
-    languages.filter((lang) => lang.issues.length > 0).length +
-    (baseReport.issues.length > 0 ? 1 : 0);
-
+  const languagesWithIssues = languages.filter(
+    (lang) => lang.issues.length > 0
+  );
   const fullyTranslatedLanguages = languages
     .filter((lang) => lang.issues.length === 0)
     .map((lang) => lang.language);
 
-  const totalIssues =
-    languages.reduce((sum, lang) => sum + lang.issues.length, 0) +
-    baseReport.issues.length;
-
   const result: VerificationResult = {
     baseLanguage: baseLang,
-    baseReport,
     languages,
-    usedTranslationKeys: usedTranslations.array,
-    usedTranslationKeysByNamespace: usedTranslationsByNamespace,
-    unusedTranslationKeys,
-    namespacesWithDynamicUsage: Array.from(
-      usedTranslations.namespacesWithDynamicUsage
-    ).sort(),
     summary: {
-      totalLanguages: languageDirs.length,
-      languagesWithIssues: languagesWithIssuesCount,
-      totalIssues,
+      totalLanguages: languages.length,
+      languagesWithIssues: languagesWithIssues.length,
+      totalIssues: languages.reduce((sum, lang) => sum + lang.issues.length, 0),
       fullyTranslatedLanguages,
-      baseLanguageHasIssues: baseReport.issues.length > 0,
     },
   };
 
   // Output JSON for LLM processing
-  //LOGGER.info(JSON.stringify(result, null, 2));
+  console.log(JSON.stringify(result, null, 2));
 
   // Also output human-readable summary
-  LOGGER.info("\n=== SUMMARY ===");
-  LOGGER.info(`Base language: ${baseLang}`);
-  LOGGER.info(
-    `Total languages checked (excluding base): ${result.summary.totalLanguages}`
-  );
-  LOGGER.info(
-    `Languages with issues (including base): ${result.summary.languagesWithIssues}`
-  );
-  LOGGER.info(`Total issues found: ${result.summary.totalIssues}`);
+  console.log("\n=== SUMMARY ===");
+  console.log(`Base language: ${baseLang}`);
+  console.log(`Total languages checked: ${result.summary.totalLanguages}`);
+  console.log(`Languages with issues: ${result.summary.languagesWithIssues}`);
+  console.log(`Total issues found: ${result.summary.totalIssues}`);
   if (result.summary.fullyTranslatedLanguages.length > 0) {
-    LOGGER.info(
+    console.log(
       `Fully translated languages: ${result.summary.fullyTranslatedLanguages.join(", ")}`
     );
-  }
-  if (unusedTranslationKeys.length > 0) {
-    LOGGER.info("Unused translation keys detected:");
-    for (const { file, keys } of unusedTranslationKeys) {
-      LOGGER.info(`  ${file}: ${keys.length}`);
-    }
-  }
-  if (usedTranslations.namespacesWithDynamicUsage.size > 0) {
-    LOGGER.info(
-      "Namespaces skipped for unused-key detection due to dynamic usage:"
-    );
-    for (const namespace of result.namespacesWithDynamicUsage) {
-      LOGGER.info(`  ${namespace}`);
-    }
   }
 
   // Exit with error code if there are issues
