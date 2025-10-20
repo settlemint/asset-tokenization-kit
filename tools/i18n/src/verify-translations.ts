@@ -1,16 +1,21 @@
-import { readdirSync, readFileSync } from "fs";
-import { dirname, join, resolve } from "path";
-import { fileURLToPath } from "url";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+import { readdirSync, readFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ARG_LOCALES_FLAG = "--locales-dir=";
+const DAPP_DIR = join(__dirname, "../../../kit/dapp");
+const LOGGER = createLogger({
+  level: "info",
+});
 const localesDirArg = process.argv
   .slice(2)
   .find((arg) => arg.startsWith(ARG_LOCALES_FLAG));
 const localesDir = localesDirArg
   ? resolve(process.cwd(), localesDirArg.slice(ARG_LOCALES_FLAG.length))
-  : join(__dirname, "../kit/dapp/locales");
+  : join(DAPP_DIR, "locales");
 const baseLang = "en-US";
 
 interface TranslationIssue {
@@ -52,42 +57,6 @@ function getAllKeys(obj: any, prefix = ""): string[] {
     }
   }
   return keys;
-}
-
-function isSkippableString(value: string): boolean {
-  if (typeof value !== "string") {
-    return false;
-  }
-
-  const trimmed = value.trim();
-
-  if (trimmed === "") {
-    return true;
-  }
-
-  if (/^https?:\/\//i.test(trimmed)) {
-    return true;
-  }
-
-  if (trimmed.startsWith("/")) {
-    return true;
-  }
-
-  if (trimmed.startsWith("@")) {
-    return true;
-  }
-
-  if (/^[A-Za-z0-9]+(?:_[A-Za-z0-9]+)+$/.test(trimmed)) {
-    return true;
-  }
-
-  const withoutPlaceholders = value
-    .replace(/\{\{[^}]+\}\}/g, "")
-    .replace(/\[[^\]]+\]/g, "");
-
-  const cleaned = withoutPlaceholders.replace(/[%@#^&*()_=+~`<>/"'.,:;!?\\-]/g, "").trim();
-
-  return cleaned === "" || !/\p{L}/u.test(cleaned);
 }
 
 function keysMatch(
@@ -277,16 +246,16 @@ function main(): VerificationResult {
   };
 
   // Output JSON for LLM processing
-  console.log(JSON.stringify(result, null, 2));
+  LOGGER.info(JSON.stringify(result, null, 2));
 
   // Also output human-readable summary
-  console.log("\n=== SUMMARY ===");
-  console.log(`Base language: ${baseLang}`);
-  console.log(`Total languages checked: ${result.summary.totalLanguages}`);
-  console.log(`Languages with issues: ${result.summary.languagesWithIssues}`);
-  console.log(`Total issues found: ${result.summary.totalIssues}`);
+  LOGGER.info("\n=== SUMMARY ===");
+  LOGGER.info(`Base language: ${baseLang}`);
+  LOGGER.info(`Total languages checked: ${result.summary.totalLanguages}`);
+  LOGGER.info(`Languages with issues: ${result.summary.languagesWithIssues}`);
+  LOGGER.info(`Total issues found: ${result.summary.totalIssues}`);
   if (result.summary.fullyTranslatedLanguages.length > 0) {
-    console.log(
+    LOGGER.info(
       `Fully translated languages: ${result.summary.fullyTranslatedLanguages.join(", ")}`
     );
   }

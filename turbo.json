@@ -74,7 +74,7 @@
     "dependencies": {},
     "format": {},
     "lint": {
-      "dependsOn": ["//#verify-translations"]
+      "dependsOn": ["verify-translations"]
     },
     "dev": {
       "cache": false,
@@ -103,7 +103,7 @@
     "typecheck": {
       "dependsOn": ["codegen"]
     },
-    "//#verify-translations": {
+    "verify-translations": {
       "inputs": ["kit/dapp/locales/**/*"]
     },
     "test:ci": {
