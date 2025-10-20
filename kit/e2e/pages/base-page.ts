@@ -46,10 +46,14 @@ export class BasePage {
     await this.pickCalendarYear(popover, year, context);
     await this.pickCalendarDay(popover, monthIndex, day, month, year, context);
 
-    await this.page.waitForTimeout(300);
     await popover
       .waitFor({ state: "detached", timeout: 20000 })
-      .catch(() => {});
+      .catch((error) => {
+        console.warn(
+          "[WARN] calendar popover did not detach within timeout",
+          error
+        );
+      });
     await this.waitForReactStateSettle();
   }
 
@@ -96,10 +100,16 @@ export class BasePage {
     const options = await monthSelect.locator("option").allTextContents();
     if (monthIndex >= 0 && monthIndex < options.length) {
       await monthSelect.selectOption(monthIndex.toString());
+      await expect(monthSelect).toHaveValue(monthIndex.toString(), {
+        timeout: 5000,
+      });
     } else {
       console.warn(
         `[WARN] (${context}) Target month '${monthLabel}' not found in options:`,
         options
+      );
+      throw new Error(
+        `[Calendar] (${context}) could not set month '${monthLabel}'.`
       );
     }
     await this.page.waitForTimeout(300);
@@ -115,11 +125,13 @@ export class BasePage {
     const options = await yearSelect.locator("option").allTextContents();
     if (options.includes(year)) {
       await yearSelect.selectOption(year);
+      await expect(yearSelect).toHaveValue(year, { timeout: 5000 });
     } else {
       console.warn(
         `[WARN] (${context}) Target year '${year}' not found in options:`,
         options
       );
+      throw new Error(`[Calendar] (${context}) could not set year '${year}'.`);
     }
     await this.page.waitForTimeout(300);
   }
@@ -175,6 +187,9 @@ export class BasePage {
     console.warn(
       `[WARN] (${context}) Target day '${day}' not found. Available aria-labels:`,
       availableLabels
+    );
+    throw new Error(
+      `[Calendar] (${context}) could not select day '${day}' for ${monthLabel} ${year}.`
     );
   }
 

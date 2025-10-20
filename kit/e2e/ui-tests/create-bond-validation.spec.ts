@@ -9,13 +9,6 @@ import {
 import { errorMessageData } from "../test-data/message-data";
 import { getSetupUser } from "../utils/setup-user";
 
-const testData = {
-  stablecoinName: "",
-  name: "",
-  symbol: "",
-  decimals: "",
-};
-
 test.describe.serial("Bond Creation Validation", () => {
   let adminContext: BrowserContext;
   let adminPages: ReturnType<typeof Pages>;
@@ -254,12 +247,14 @@ test.describe.serial("Bond Creation Validation", () => {
         symbol: stablecoinData.symbol,
         decimals: stablecoinData.decimals,
       });
-      await adminPages.adminPage.clickAssetDetails(testData.name);
+      await adminPages.adminPage.clickAssetDetails(
+        stableCoinTestData.stablecoinName
+      );
       await adminPages.adminPage.grantAssetPermissions({
         user: setupUser.name,
         permissions: assetPermissions,
         pincode: setupUser.pincode,
-        assetName: testData.name,
+        assetName: stableCoinTestData.stablecoinName,
       });
       await adminPages.adminPage.unpauseAsset({
         pincode: setupUser.pincode,
@@ -267,7 +262,7 @@ test.describe.serial("Bond Creation Validation", () => {
     });
 
     test("Create Bond asset", async () => {
-      const testData = {
+      const bondTestData = {
         name: "",
         symbol: "",
         decimals: "",
@@ -294,7 +289,7 @@ test.describe.serial("Bond Creation Validation", () => {
       await createAssetForm.clickNextButton();
       await adminPage.waitForLoadState("networkidle");
       await createAssetForm.fillBondConfigurationFields({
-        maximumLimit: bondDataWithStablecoin.decimals,
+        maximumLimit: bondDataWithStablecoin.maximumLimit,
         maturityDate: createAssetForm.getMaturityDate({ daysOffset: 365 }),
         denominationAsset: stableCoinTestData.stablecoinName,
         faceValue: bondDataWithStablecoin.faceValue,
@@ -302,22 +297,22 @@ test.describe.serial("Bond Creation Validation", () => {
 
       await createAssetForm.clickNextButton();
 
-      testData.name = bondDataWithStablecoin.name;
-      testData.symbol = bondDataWithStablecoin.symbol;
-      testData.decimals = bondDataWithStablecoin.decimals;
+      bondTestData.name = bondDataWithStablecoin.name;
+      bondTestData.symbol = bondDataWithStablecoin.symbol;
+      bondTestData.decimals = bondDataWithStablecoin.decimals;
 
       await createAssetForm.completeAssetCreation(setupUser.pincode, "bond");
       await createAssetForm.verifyAssetCreated({
-        name: testData.name,
-        symbol: testData.symbol,
-        decimals: testData.decimals,
+        name: bondTestData.name,
+        symbol: bondTestData.symbol,
+        decimals: bondTestData.decimals,
       });
-      await adminPages.adminPage.clickAssetDetails(testData.name);
+      await adminPages.adminPage.clickAssetDetails(bondTestData.name);
       await adminPages.adminPage.grantAssetPermissions({
         user: setupUser.name,
         permissions: assetPermissions,
         pincode: setupUser.pincode,
-        assetName: testData.name,
+        assetName: bondTestData.name,
       });
       await adminPages.adminPage.unpauseAsset({
         pincode: setupUser.pincode,

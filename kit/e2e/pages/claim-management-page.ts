@@ -51,7 +51,7 @@ export class ClaimManagementPage extends BasePage {
       typingDelay: 60,
     });
 
-    await expect(userTrigger).toContainText(userName, { timeout: 10000 });
+    await expect(userTrigger).toHaveText(userName, { timeout: 10000 });
 
     const topicsInput = dialog.getByPlaceholder("Select topics...");
     await expect(topicsInput).toBeVisible({ timeout: 15000 });

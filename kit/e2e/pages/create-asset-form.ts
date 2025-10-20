@@ -91,8 +91,6 @@ export class CreateAssetForm extends BasePage {
       day,
       "bond maturity"
     );
-
-    await this.page.waitForTimeout(200);
   }
 
   async expectErrorMessage(message: string) {
