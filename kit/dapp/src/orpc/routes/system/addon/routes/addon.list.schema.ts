@@ -1,4 +1,4 @@
-import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
+import { SortableListSchema } from "@/orpc/routes/common/schemas/sortable-list.schema";
 import { addonFactoryTypeId, addonType } from "@atk/zod/addon-types";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { ethereumHash } from "@atk/zod/ethereum-hash";
@@ -46,7 +46,7 @@ export const AddonListSchema = z.array(SystemAddonSchema);
  * List schema for system addons that extends the base ListSchema
  * with an optional filter for addon types.
  */
-export const SystemAddonListSchema = ListSchema.extend({
+export const SystemAddonListSchema = SortableListSchema.extend({
   /**
    * Filter addons by type.
    *

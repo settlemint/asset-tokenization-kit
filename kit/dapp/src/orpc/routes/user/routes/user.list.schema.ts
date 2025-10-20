@@ -1,4 +1,4 @@
-import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
+import { PaginatedListSchema } from "@/orpc/routes/common/schemas/paginated-list.schema";
 import { UserSchema } from "@/orpc/routes/user/routes/user.me.schema";
 import { accessControlRoles } from "@atk/zod/access-control-roles";
 import { identityClaim } from "@atk/zod/claim";
@@ -12,8 +12,8 @@ import * as z from "zod";
  * to maintain backwards compatibility. Users are typically ordered
  * by creation date to show newest users first.
  */
-export const UserListInputSchema = ListSchema.extend({
-  orderBy: ListSchema.shape.orderBy.default("createdAt"),
+export const UserListInputSchema = PaginatedListSchema.extend({
+  orderBy: PaginatedListSchema.shape.orderBy.default("createdAt"),
   filters: z
     .object({
       search: z.string().optional().describe("Search query"),
