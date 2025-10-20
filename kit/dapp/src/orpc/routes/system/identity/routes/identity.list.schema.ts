@@ -1,4 +1,4 @@
-import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
+import { PaginatedListSchema } from "@/orpc/routes/common/schemas/paginated-list.schema";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import * as z from "zod";
 
@@ -17,8 +17,8 @@ export const IdentityListFiltersSchema = z
 /**
  * Input schema for identity listing.
  */
-export const IdentityListInputSchema = ListSchema.extend({
-  orderBy: ListSchema.shape.orderBy.default("id"),
+export const IdentityListInputSchema = PaginatedListSchema.extend({
+  orderBy: PaginatedListSchema.shape.orderBy.default("id"),
   filters: IdentityListFiltersSchema.optional(),
 });
 

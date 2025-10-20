@@ -1,4 +1,4 @@
-import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
+import { SortableListSchema } from "@/orpc/routes/common/schemas/sortable-list.schema";
 import { accessManagerContract } from "@/orpc/routes/system/access-manager/access-manager.contract";
 import { addonContract } from "@/orpc/routes/system/addon/addon.contract";
 import { claimTopicsContract } from "@/orpc/routes/system/claim-topics/claim-topics.contract";
@@ -19,7 +19,7 @@ import { SystemListItemSchema } from "./routes/system.list.schema";
  *
  * Defines the type-safe interface for retrieving SMART systems including:
  * - HTTP method and path configuration
- * - Input validation using the standard ListSchema for pagination
+ * - Input validation using the standard SortableListSchema
  * - Output validation ensuring an array of valid System objects
  * - OpenAPI documentation metadata
  *
@@ -36,7 +36,7 @@ const list = baseContract
       "List of SMART systems with deployment details and registry addresses",
     tags: ["system"],
   })
-  .input(ListSchema) // Standard list query parameters (pagination, filters, etc.)
+  .input(SortableListSchema)
   .output(z.array(SystemListItemSchema)); // Return array of system objects
 
 /**
@@ -90,7 +90,7 @@ const read = baseContract
  *
  * Exports all system-related API contracts for use in the main contract registry.
  * Currently includes:
- * - list: Retrieve paginated list of SMART systems
+ * - list: Retrieve list of SMART systems
  * - create: Deploy a new SMART system
  * - read: Retrieve a specific system with its token factories
  * - addonCreate: Register system add-ons
