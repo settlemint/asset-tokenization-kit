@@ -30,8 +30,17 @@ export function updateYield(token: Token): TokenFixedYieldSchedule | null {
     fixedYieldSchedule.denominationAsset
   );
   const denominationAssetDecimals = getTokenDecimals(denominationAssetAddress);
-  if (!fixedYieldSchedule.nextPeriod) {
-    // There is no next period, the schedule has ended
+  const periods = fixedYieldSchedule.periods.load();
+  let isCompleted = !fixedYieldSchedule.nextPeriod;
+  for (let i = 0; i < periods.length; i++) {
+    const period = periods[i];
+    if (!period.completed) {
+      isCompleted = false;
+      break;
+    }
+  }
+  if (isCompleted) {
+    // The schedule is completed
     return fixedYieldSchedule;
   }
 
@@ -46,7 +55,6 @@ export function updateYield(token: Token): TokenFixedYieldSchedule | null {
   }
 
   const currentPeriodValue = currentPeriod.value.toI32();
-  const periods = fixedYieldSchedule.periods.load();
   const scheduleEnded = currentPeriodValue === periods.length;
   const scheduleNotStarted = currentPeriodValue === 0;
   if (scheduleEnded || scheduleNotStarted) {

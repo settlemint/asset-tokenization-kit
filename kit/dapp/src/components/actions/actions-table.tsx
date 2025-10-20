@@ -6,6 +6,7 @@ import type { ColumnOption } from "@/components/data-table/filters/types/column-
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
+import { ClaimYieldSheet } from "@/components/manage-dropdown/sheets/claim-yield-sheet";
 import { MatureConfirmationSheet } from "@/components/manage-dropdown/sheets/mature-confirmation-sheet";
 import { RedeemSheet } from "@/components/manage-dropdown/sheets/redeem-sheet";
 import { Badge } from "@/components/ui/badge";
@@ -19,8 +20,8 @@ import type {
   Action,
   ActionStatus,
 } from "@/orpc/routes/actions/routes/actions.list.schema";
-import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import type { TokenBalance } from "@/orpc/routes/user/routes/user.assets.schema";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import type {
@@ -29,12 +30,10 @@ import type {
   SortingState,
 } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
-import { from } from "dnum";
 import { ClipboardList } from "lucide-react";
 import { useMemo, useState } from "react";
-import { getAddress } from "viem";
-import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { useTranslation } from "react-i18next";
+import { getAddress } from "viem";
 
 const columnHelper = createStrictColumnHelper<Action>();
 
@@ -60,21 +59,22 @@ type ActionTypeMetaValue =
   | (typeof ACTION_TYPE_MAP)[keyof typeof ACTION_TYPE_MAP]
   | typeof UNKNOWN_ACTION_TYPE;
 
-const ACTION_STATUSES: readonly ActionStatus[] = [
-  "PENDING",
-  "ACTIVE",
-  "EXECUTED",
-  "EXPIRED",
-] as const;
-
 function isKnownLabelAction(
   name: string
 ): name is keyof typeof ACTION_LABEL_MAP {
   return Object.prototype.hasOwnProperty.call(ACTION_LABEL_MAP, name);
 }
 
-function isKnownTypeAction(name: string): name is keyof typeof ACTION_TYPE_MAP {
-  return Object.prototype.hasOwnProperty.call(ACTION_TYPE_MAP, name);
+enum ActionType {
+  MatureBond = "MatureBond",
+  RedeemBond = "RedeemBond",
+  ClaimYield = "ClaimYield",
+  ApproveXvPSettlement = "ApproveXvPSettlement",
+  ExecuteXvPSettlement = "ExecuteXvPSettlement",
+}
+
+function isKnownTypeAction(name: string): name is ActionType {
+  return ActionType[name as keyof typeof ActionType] !== undefined;
 }
 
 interface ActionsTableProps {
@@ -116,31 +116,30 @@ export function ActionsTable({
     }
   }, [userWallet]);
 
-  const [matureAction, setMatureAction] = useState<Action | null>(null);
-  const [redeemAction, setRedeemAction] = useState<Action | null>(null);
+  const [selectedTarget, setSelectedTarget] = useState<EthereumAddress | null>(
+    null
+  );
+  const [selectedActionType, setSelectedActionType] =
+    useState<ActionType | null>(null);
 
   // Preload token data for sheets (hooks must be top-level and unconditional)
-  const matureTokenQuery = useQuery(
+  const tokenQuery = useQuery(
     orpc.token.read.queryOptions({
-      input: { tokenAddress: matureAction?.target ?? "" },
-      enabled: !!matureAction,
+      input: { tokenAddress: selectedTarget ?? "" },
+      enabled: !!selectedTarget && !!selectedActionType,
     })
   );
 
-  const redeemTokenQuery = useQuery(
-    orpc.token.read.queryOptions({
-      input: { tokenAddress: redeemAction?.target ?? "" },
-      enabled: !!redeemAction,
-    })
-  );
-
-  const redeemHolderQuery = useQuery(
+  const holderQuery = useQuery(
     orpc.token.holder.queryOptions({
       input: {
-        tokenAddress: redeemAction?.target ?? "",
+        tokenAddress: selectedTarget ?? "",
         holderAddress: normalizedWallet ?? "",
       },
-      enabled: !!redeemAction && !!normalizedWallet,
+      enabled:
+        !!selectedTarget &&
+        selectedActionType === ActionType.RedeemBond &&
+        !!normalizedWallet,
     })
   );
 
@@ -226,8 +225,7 @@ export function ActionsTable({
                   address={row.original.target}
                   copyToClipboard
                   size="small"
-                  showPrettyName={false}
-                  skipDataQueries
+                  showSymbol={false}
                 />
                 <Badge variant="outline" className="w-fit text-xs">
                   {t("table.authorizedBadge", { count: authorizedCount })}
@@ -267,19 +265,18 @@ export function ActionsTable({
                 </span>
               );
             },
-          } satisfies ColumnMeta<Action, ActionTypeMetaValue>,
+          },
         }
       ),
 
-      columnHelper.accessor("status", {
+      // We use display here because we dont allow filtering or sorting by status
+      // The actions are already filtered by status (by using tabs), makes no sense if there is only one possible value
+      columnHelper.display({
+        id: "status",
         header: t("table.columns.status"),
         meta: {
           displayName: t("table.columns.status"),
           type: "status",
-          options: ACTION_STATUSES.map((status) => ({
-            value: status,
-            label: t(`status.${status}`),
-          })),
           renderCell: ({ row }) => {
             const executedDate = row.original.executedAt ?? null;
             const activeAt = row.original.activeAt;
@@ -292,12 +289,7 @@ export function ActionsTable({
             return (
               <div className="flex flex-col gap-1">
                 <ActionStatusBadge status={row.original.status} />
-                {row.original.status === "PENDING" && (
-                  <span className="text-xs text-muted-foreground">
-                    {relativeActive}
-                  </span>
-                )}
-                {row.original.status === "ACTIVE" && (
+                {row.original.status !== "EXECUTED" && (
                   <span className="text-xs text-muted-foreground">
                     {relativeActive}
                   </span>
@@ -317,7 +309,7 @@ export function ActionsTable({
               </div>
             );
           },
-        } satisfies ColumnMeta<Action, ActionStatus>,
+        },
       }),
 
       columnHelper.accessor("activeAt", {
@@ -326,58 +318,75 @@ export function ActionsTable({
         meta: {
           displayName: t("table.columns.activeAt"),
           type: "date",
-          dateOptions: { relative: true },
+          dateOptions: { relative: true, includeTime: true },
           className: "text-muted-foreground",
-        } satisfies ColumnMeta<Action, unknown>,
+        },
       }),
 
-      columnHelper.accessor("executedAt", {
-        id: "executedAt",
-        header: t("table.columns.executedAt"),
+      columnHelper.accessor("expiresAt", {
+        id: "expiresAt",
+        header: t("table.columns.expiresAt"),
         meta: {
-          displayName: t("table.columns.executedAt"),
+          displayName: t("table.columns.expiresAt"),
           type: "date",
           dateOptions: { includeTime: true },
           className: "text-muted-foreground",
           emptyValue: "—",
-        } satisfies ColumnMeta<Action, unknown>,
+        },
       }),
+    ] as ColumnDef<Action>[];
 
-      columnHelper.accessor("executedBy", {
-        header: t("table.columns.executedBy"),
-        meta: {
-          displayName: t("table.columns.executedBy"),
-          type: "address",
-          showPrettyName: false,
-          emptyValue: "—",
-        } satisfies ColumnMeta<Action, unknown>,
-      }),
+    if (statuses.includes("EXECUTED")) {
+      baseColumns.push(
+        columnHelper.accessor("executedAt", {
+          id: "executedAt",
+          header: t("table.columns.executedAt"),
+          meta: {
+            displayName: t("table.columns.executedAt"),
+            type: "date",
+            dateOptions: { includeTime: true },
+            className: "text-muted-foreground",
+            emptyValue: "—",
+          },
+        }) as ColumnDef<Action>,
+        columnHelper.accessor("executedBy", {
+          header: t("table.columns.executedBy"),
+          meta: {
+            displayName: t("table.columns.executedBy"),
+            type: "address",
+            showPrettyName: false,
+            emptyValue: "—",
+          },
+        }) as ColumnDef<Action>
+      );
+    }
 
-      columnHelper.display({
-        id: "execute",
-        header: t("table.columns.execute"),
-        meta: {
-          displayName: t("table.columns.execute"),
-          type: "none",
-          enableCsvExport: false,
-        } satisfies ColumnMeta<Action, unknown>,
-        cell: ({ row }) => (
-          <ExecuteActionButton
-            action={row.original}
-            actionLabel={resolveActionLabel(row.original.name)}
-            onOpenMature={(a) => {
-              setMatureAction(a);
-            }}
-            onOpenRedeem={(a) => {
-              setRedeemAction(a);
-            }}
-          />
-        ),
-      }),
-    ];
+    if (statuses.includes("PENDING")) {
+      baseColumns.push(
+        columnHelper.display({
+          id: "execute",
+          header: t("table.columns.execute"),
+          meta: {
+            displayName: t("table.columns.execute"),
+            type: "none",
+            enableCsvExport: false,
+          },
+          cell: ({ row }) => (
+            <ExecuteActionButton
+              action={row.original}
+              actionLabel={resolveActionLabel(row.original.name)}
+              onOpen={(target, actionType) => {
+                setSelectedTarget(target);
+                setSelectedActionType(actionType);
+              }}
+            />
+          ),
+        })
+      );
+    }
 
-    return withAutoFeatures(baseColumns) as ColumnDef<Action>[];
-  }, [t, i18n.language]);
+    return withAutoFeatures(baseColumns);
+  }, [t, i18n.language, statuses]);
 
   return (
     <>
@@ -410,46 +419,68 @@ export function ActionsTable({
         }}
       />
 
-      {matureAction ? (
+      {selectedTarget && tokenQuery.data ? (
         <MatureConfirmationSheet
-          open={!!matureAction}
+          open={selectedActionType === ActionType.MatureBond}
           onOpenChange={(open) => {
-            setMatureAction(open ? matureAction : null);
+            if (!open) {
+              setSelectedActionType(null);
+              setSelectedTarget(null);
+            }
           }}
-          asset={matureTokenQuery.data as Token}
+          asset={tokenQuery.data}
         />
       ) : null}
 
-      {redeemAction
+      {selectedTarget && tokenQuery.data
         ? (() => {
-            const token = redeemTokenQuery.data;
-            if (!token) return null;
-
-            const zero = from(0n, token.decimals);
-            const holderResult = redeemHolderQuery.data;
+            const token = tokenQuery.data;
+            const holderResult = holderQuery.data;
+            if (!token || !holderResult || !holderResult.holder) return null;
 
             const assetBalance: TokenBalance = {
               id: token.id,
-              value: holderResult?.holder?.value ?? zero,
-              frozen: holderResult?.holder?.frozen ?? zero,
-              available: holderResult?.holder?.available ?? zero,
+              value: holderResult.holder.value,
+              frozen: holderResult.holder.frozen,
+              available: holderResult.holder.available,
               token: {
                 id: token.id,
                 name: token.name,
                 symbol: token.symbol,
                 decimals: token.decimals,
                 totalSupply: token.totalSupply,
+                yield: null,
               },
             };
 
             return (
               <RedeemSheet
-                open={!!redeemAction}
+                open={selectedActionType === ActionType.RedeemBond}
                 onClose={() => {
-                  setRedeemAction(null);
+                  setSelectedActionType(null);
+                  setSelectedTarget(null);
                 }}
                 assetBalance={assetBalance}
                 holderAddress={normalizedWallet}
+              />
+            );
+          })()
+        : null}
+
+      {selectedTarget && tokenQuery.data
+        ? (() => {
+            const token = tokenQuery.data;
+
+            return (
+              <ClaimYieldSheet
+                open={selectedActionType === ActionType.ClaimYield}
+                onClose={() => {
+                  setSelectedActionType(null);
+                  setSelectedTarget(null);
+                }}
+                assetBalance={{
+                  token,
+                }}
               />
             );
           })()
@@ -461,31 +492,19 @@ export function ActionsTable({
 interface ExecuteActionButtonProps {
   action: Action;
   actionLabel: string;
-  onOpenMature: (action: Action) => void;
-  onOpenRedeem: (action: Action) => void;
+  onOpen: (target: EthereumAddress, actionType: ActionType) => void;
 }
 
 function ExecuteActionButton({
   action,
   actionLabel,
-  onOpenMature,
-  onOpenRedeem,
+  onOpen,
 }: ExecuteActionButtonProps) {
   const { t } = useTranslation(["actions", "tokens", "common"]);
 
-  const isMatureAction = action.name === "MatureBond";
-  const isRedeemAction = action.name === "RedeemBond";
-  const isSupportedAction = isMatureAction || isRedeemAction;
-  const isActive = action.status === "ACTIVE";
-  const activeAtTime =
-    action.activeAt == null ? null : new Date(action.activeAt).getTime();
-  const hasReachedSchedule =
-    activeAtTime !== null &&
-    Number.isFinite(activeAtTime) &&
-    activeAtTime <= Date.now();
-  // Allow execution once the scheduled time has passed, but only when a schedule exists,
-  // so execution stays blocked for actions without an activation timestamp.
-  const canExecute = isSupportedAction && (isActive || hasReachedSchedule);
+  const isSupportedAction = isKnownTypeAction(action.name);
+  const isPending = action.status === "PENDING";
+  const canExecute = isSupportedAction && isPending;
 
   return (
     <Button
@@ -495,8 +514,7 @@ function ExecuteActionButton({
       disabled={!canExecute}
       onClick={() => {
         if (!canExecute) return;
-        if (isMatureAction) onOpenMature(action);
-        else if (isRedeemAction) onOpenRedeem(action);
+        onOpen(action.target, action.name as ActionType);
       }}
       aria-label={actionLabel}
     >

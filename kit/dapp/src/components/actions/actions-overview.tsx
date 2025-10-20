@@ -30,7 +30,7 @@ const TAB_IDS: readonly TabId[] = ["pending", "upcoming", "completed"] as const;
 const BASE_TABS: Array<Omit<TabDefinition, "label">> = [
   {
     id: "pending",
-    statuses: ["ACTIVE"],
+    statuses: ["PENDING"],
     defaultSorting: [
       {
         id: "activeAt",
@@ -40,7 +40,7 @@ const BASE_TABS: Array<Omit<TabDefinition, "label">> = [
   },
   {
     id: "upcoming",
-    statuses: ["PENDING"],
+    statuses: ["UPCOMING"],
     defaultSorting: [
       {
         id: "activeAt",

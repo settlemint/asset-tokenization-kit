@@ -38,7 +38,7 @@ export function handleYieldScheduleSet(event: YieldScheduleSet): void {
       createAction(
         event.block.timestamp,
         ActionName.ClaimYield,
-        event.params.schedule,
+        event.address, // Use the address of the token as the target
         period.endDate,
         null,
         [balance.account],
