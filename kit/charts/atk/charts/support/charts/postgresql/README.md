@@ -1,6 +1,6 @@
 # postgresql
 
-![Version: 2.0.0-beta.4](https://img.shields.io/badge/Version-2.0.0--beta.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.4](https://img.shields.io/badge/AppVersion-2.0.0--beta.4-informational?style=flat-square)
+![Version: 2.0.0-beta.5](https://img.shields.io/badge/Version-2.0.0--beta.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.0-beta.5](https://img.shields.io/badge/AppVersion-2.0.0--beta.5-informational?style=flat-square)
 
 A simple PostgreSQL Helm chart for ATK development
 
@@ -19,7 +19,7 @@ The following table lists the configurable parameters of this chart and their de
 |fullnameOverride|string|`"postgresql"`|String to fully override common.names.fullname (string)|
 |image|object|-|Image configuration|
 |image.pullPolicy|string|`"IfNotPresent"`|Image pull policy|
-|image.registry|string|`"docker.io"`|Image registry|
+|image.registry|string|`"harbor.settlemint.com/docker.io"`|Image registry|
 |image.repository|string|`"postgres"`|Image repository|
 |image.tag|string|`"18.0-alpine"`|Image tag|
 |initdb|object|-|Database initialization configuration (object)|
