@@ -24,7 +24,7 @@ describe("Actions Schemas", () => {
     it("should validate all status enum values", () => {
       const validStatuses = [
         "PENDING",
-        "ACTIVE",
+        "UPCOMING",
         "EXECUTED",
         "EXPIRED",
       ] as const;
@@ -96,7 +96,8 @@ describe("Actions Schemas", () => {
       name: "Test Action",
       target: "0x1234567890123456789012345678901234567890",
       activeAt: "1700000100",
-      status: "ACTIVE" as const,
+      status: "PENDING" as const,
+      expiresAt: null,
       executedAt: null,
       executedBy: null,
       executor: {
@@ -109,7 +110,7 @@ describe("Actions Schemas", () => {
       const result = ActionSchema.parse(validAction);
       expect(result.id).toBe("action-123");
       expect(result.name).toBe("Test Action");
-      expect(result.status).toBe("ACTIVE");
+      expect(result.status).toBe("PENDING");
       expect(result.activeAt.getTime()).toBe(1_700_000_100_000);
     });
 
@@ -243,7 +244,8 @@ describe("Actions Schemas", () => {
       name: "Test Action",
       target: "0x1234567890123456789012345678901234567890",
       activeAt: "1700000100",
-      status: "ACTIVE" as const,
+      status: "PENDING" as const,
+      expiresAt: null,
       executedAt: null,
       executedBy: null,
       executor: {
@@ -295,6 +297,7 @@ describe("Actions Schemas", () => {
         target: "0x1234567890123456789012345678901234567890",
         activeAt: "1700000100",
         status: "PENDING" as const,
+        expiresAt: null,
         executedAt: null,
         executedBy: null,
         executor: {

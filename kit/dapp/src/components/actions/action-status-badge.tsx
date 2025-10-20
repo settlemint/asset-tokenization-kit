@@ -13,11 +13,11 @@ const STATUS_CONFIG: Record<
     icon: LucideIcon;
   }
 > = {
-  ACTIVE: {
+  PENDING: {
     variant: "default",
     icon: Hourglass,
   },
-  PENDING: {
+  UPCOMING: {
     variant: "outline",
     icon: CalendarClock,
   },

@@ -6,14 +6,14 @@ import * as z from "zod";
  * Action status enumeration matching the subgraph schema.
  *
  * These statuses represent the current state of an action:
- * - PENDING: Action is not yet active (activeAt is in the future)
- * - ACTIVE: Action is currently executable (activeAt has passed, expiresAt hasn't)
+ * - PENDING: Action is ready to be executed (activeAt has passed, expiresAt hasn't)
+ * - UPCOMING: Action is not yet active (activeAt is in the future)
  * - EXECUTED: Action has been successfully executed
  * - EXPIRED: Action has expired without being executed
  */
 export const ActionStatusSchema = z.enum([
   "PENDING",
-  "ACTIVE",
+  "UPCOMING",
   "EXECUTED",
   "EXPIRED",
 ]);
@@ -53,6 +53,9 @@ export const ActionSchema = z.object({
   executor: ActionExecutorSchema.describe(
     "Executor information for the action"
   ),
+  expiresAt: timestamp()
+    .nullable()
+    .describe("Timestamp when the action expires"),
 });
 
 /**

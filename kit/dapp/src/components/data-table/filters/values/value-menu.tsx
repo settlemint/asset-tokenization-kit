@@ -61,6 +61,7 @@ export function PropertyFilterValueMenu<TData, TValue>({
 }: PropertyFilterValueMenuProps<TData, TValue>) {
   switch (columnMeta.type) {
     case "option":
+    case "status":
       return (
         <PropertyFilterOptionValueMenu
           id={id}
