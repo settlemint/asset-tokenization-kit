@@ -15,7 +15,7 @@
     "eslint-plugin-turbo": "2.5.8",
     "globals": "16.4.0",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.46.1",
+    "typescript-eslint": "8.46.2",
     "eslint": "9.38.0",
     "eslint-plugin-boundaries": "5.1.0",
     "eslint-plugin-no-barrel-files": "1.2.2",
