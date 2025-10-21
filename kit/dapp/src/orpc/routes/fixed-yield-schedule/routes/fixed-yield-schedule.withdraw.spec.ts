@@ -161,8 +161,8 @@ describe("Fixed yield schedule withdraw", async () => {
     const result = await adminClient.fixedYieldSchedule.withdraw(withdrawData);
 
     expect(result).toBeDefined();
-    expect(result.transactionHash).toBeDefined();
-    expect(result.transactionHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
+    expect(result.txHash).toBeDefined();
+    expect(result.txHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
 
     // Check that the yield schedule balance decreased
     const yieldBalance = await adminClient.token.holder({
@@ -214,8 +214,8 @@ describe("Fixed yield schedule withdraw", async () => {
     const result = await adminClient.fixedYieldSchedule.withdraw(withdrawData);
 
     expect(result).toBeDefined();
-    expect(result.transactionHash).toBeDefined();
-    expect(result.transactionHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
+    expect(result.txHash).toBeDefined();
+    expect(result.txHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
 
     // Check that the yield schedule balance decreased further
     const yieldBalance = await adminClient.token.holder({

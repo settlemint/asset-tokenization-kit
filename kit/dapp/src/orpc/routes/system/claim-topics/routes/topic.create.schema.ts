@@ -1,3 +1,4 @@
+import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
 import * as z from "zod";
 
@@ -23,8 +24,7 @@ export type TopicCreateInput = z.infer<typeof TopicCreateInputSchema>;
  * Topic Create Output Schema
  * Response after successfully creating a topic scheme
  */
-export const TopicCreateOutputSchema = z.object({
-  transactionHash: z.string().describe("Transaction hash of the creation"),
+export const TopicCreateOutputSchema = BaseMutationOutputSchema.extend({
   name: z.string().describe("Name of the created topic"),
 });
 

@@ -156,8 +156,8 @@ describe("Fixed yield schedule top up", async () => {
     const result = await adminClient.fixedYieldSchedule.topUp(topUpData);
 
     expect(result).toBeDefined();
-    expect(result.transactionHash).toBeDefined();
-    expect(result.transactionHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
+    expect(result.txHash).toBeDefined();
+    expect(result.txHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
 
     const readResult = await adminClient.fixedYieldSchedule.read({
       id: yieldScheduleAddress,
@@ -191,8 +191,8 @@ describe("Fixed yield schedule top up", async () => {
     const result = await investorClient.fixedYieldSchedule.topUp(topUpData);
 
     expect(result).toBeDefined();
-    expect(result.transactionHash).toBeDefined();
-    expect(result.transactionHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
+    expect(result.txHash).toBeDefined();
+    expect(result.txHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
 
     const readResult = await investorClient.fixedYieldSchedule.read({
       id: yieldScheduleAddress,

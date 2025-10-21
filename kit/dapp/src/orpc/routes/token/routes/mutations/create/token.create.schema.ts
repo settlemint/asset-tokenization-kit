@@ -37,7 +37,6 @@ import { DepositTokenSchema } from "@/orpc/routes/token/routes/mutations/create/
 import { EquityTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/equity.create.schema";
 import { FundTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/fund.create.schema";
 import { StablecoinTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/stablecoin.create.schema";
-import { assetTypeArray } from "@atk/zod/asset-types";
 import * as z from "zod";
 
 /**
@@ -54,18 +53,5 @@ export const TokenCreateSchema = z.discriminatedUnion("type", [
   StablecoinTokenSchema,
 ]);
 
-/**
- * Output schema for streaming events during token creation
- * Used by both deposit and bond token creation flows
- */
-export const TokenCreateOutputSchema = z.object({
-  status: z.enum(["pending", "confirmed", "failed"]),
-  message: z.string(),
-  transactionHash: z.string().optional(),
-  result: z.string().optional(), // For compatibility with useStreamingMutation hook
-  tokenType: assetTypeArray().optional(),
-});
-
 // Type exports using Zod's type inference
 export type TokenCreateInput = z.infer<typeof TokenCreateSchema>;
-export type TokenCreateOutput = z.infer<typeof TokenCreateOutputSchema>;

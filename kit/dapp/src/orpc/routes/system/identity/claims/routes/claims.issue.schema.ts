@@ -1,3 +1,4 @@
+import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { ClaimTopicSchema } from "@atk/zod/claim";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
@@ -175,19 +176,11 @@ export const ClaimsIssueInputSchema = z.object({
 /**
  * Output schema for claims issue endpoint.
  */
-export const ClaimsIssueOutputSchema = z.object({
+export const ClaimsIssueOutputSchema = BaseMutationOutputSchema.extend({
   /**
    * Whether the claim was successfully issued.
    */
   success: z.boolean().describe("Whether claim issuance was successful"),
-
-  /**
-   * Transaction hash if successful.
-   */
-  transactionHash: z
-    .string()
-    .optional()
-    .describe("Blockchain transaction hash"),
 
   /**
    * The issued claim topic for confirmation.

@@ -116,7 +116,7 @@ export const issue = authRouter.system.identity.claims.issue
     // Convert API claim data to internal format and issue via helper
     const claimInfo = toClaimInfo(claim);
 
-    const transactionHash = await issueClaim({
+    const txHash = await issueClaim({
       user: context.auth.user,
       issuer: context.userIssuerIdentity,
       walletVerification,
@@ -127,7 +127,7 @@ export const issue = authRouter.system.identity.claims.issue
 
     return {
       success: true,
-      transactionHash,
+      txHash,
       claimTopic: topicName,
       targetWallet: targetIdentityAddress,
     };

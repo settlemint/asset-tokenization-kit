@@ -1,3 +1,4 @@
+import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import * as z from "zod";
@@ -18,10 +19,7 @@ export const TrustedIssuerCreateInputSchema = MutationInputSchema.extend({
 /**
  * Output schema for creating a trusted issuer
  */
-export const TrustedIssuerCreateOutputSchema = z.object({
-  transactionHash: z
-    .string()
-    .describe("Transaction hash of the create operation"),
+export const TrustedIssuerCreateOutputSchema = BaseMutationOutputSchema.extend({
   issuerAddress: ethereumAddress.describe(
     "Address of the added trusted issuer"
   ),

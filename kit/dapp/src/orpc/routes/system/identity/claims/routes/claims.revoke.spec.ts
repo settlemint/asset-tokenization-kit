@@ -104,7 +104,7 @@ describe("Claims revoke with MANAGEMENT_KEY authorization (integration)", () => 
 
     expect(result.success).toBe(true);
     expect(result.claimId).toBeDefined();
-    expect(result.transactionHash).toBeDefined();
+    expect(result.txHash).toBeDefined();
   });
 
   it("should fail when user does not have MANAGEMENT_KEY on the target identity", async () => {

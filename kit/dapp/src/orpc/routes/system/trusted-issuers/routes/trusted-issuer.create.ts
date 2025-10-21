@@ -18,10 +18,7 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
-import {
-  TrustedIssuerCreateOutputSchema,
-  type TrustedIssuerCreateOutput,
-} from "./trusted-issuer.create.schema";
+import { type TrustedIssuerCreateOutput } from "./trusted-issuer.create.schema";
 
 /**
  * GraphQL mutation for creating a new trusted issuer
@@ -82,7 +79,7 @@ export const trustedIssuerCreate = systemRouter.system.trustedIssuers.create
     const registryAddress = system.trustedIssuersRegistry.id;
 
     // Execute the registration transaction
-    const transactionHash = await context.portalClient.mutate(
+    const txHash = await context.portalClient.mutate(
       CREATE_TRUSTED_ISSUER_MUTATION,
       {
         address: registryAddress,
@@ -98,8 +95,8 @@ export const trustedIssuerCreate = systemRouter.system.trustedIssuers.create
     );
 
     // Return success response with transaction details
-    return TrustedIssuerCreateOutputSchema.parse({
-      transactionHash,
+    return {
+      txHash,
       issuerAddress,
-    });
+    };
   });

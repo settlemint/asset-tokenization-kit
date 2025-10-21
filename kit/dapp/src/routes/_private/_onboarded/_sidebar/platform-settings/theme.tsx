@@ -1,15 +1,20 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
+import { FontSettingsCard } from "@/components/theme/components/font-settings-card";
+import { LogoSettingsCard } from "@/components/theme/components/logo-settings-card";
+import { PaletteCard } from "@/components/theme/components/palette-card";
+import { StatusBanner } from "@/components/theme/components/status-banner";
+import { ThemePreviewPanel } from "@/components/theme/components/theme-preview-panel";
 import {
   compileThemeCSS,
   resolveFontVariables,
 } from "@/components/theme/lib/compile-css";
 import { PALETTE_TOKENS } from "@/components/theme/lib/constants";
-import { FontSettingsCard } from "@/components/theme/components/font-settings-card";
-import { LogoSettingsCard } from "@/components/theme/components/logo-settings-card";
-import { PaletteCard } from "@/components/theme/components/palette-card";
+import {
+  prepareThemePayload,
+  sanitizeLogoUrlForPayload,
+} from "@/components/theme/lib/payload";
 import { DEFAULT_THEME, type ThemeConfig } from "@/components/theme/lib/schema";
-import { StatusBanner } from "@/components/theme/components/status-banner";
 import { queueThemeDomUpdates } from "@/components/theme/lib/theme-dom-updater";
 import type { IdleHandle } from "@/components/theme/lib/theme-editor-helpers";
 import {
@@ -25,16 +30,7 @@ import {
   setThemeOverridesCss,
   THEME_COMPILE_THRESHOLD,
 } from "@/components/theme/lib/theme-editor-helpers";
-import { ThemePreviewPanel } from "@/components/theme/components/theme-preview-panel";
 import type { ThemeFormApi } from "@/components/theme/lib/types";
-import {
-  prepareThemePayload,
-  sanitizeLogoUrlForPayload,
-} from "@/components/theme/lib/payload";
-import type {
-  ThemeLogoUploadInput,
-  ThemeLogoUploadOutput,
-} from "@/orpc/routes/settings/routes/theme.upload-logo.schema";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -47,6 +43,10 @@ import {
 } from "@/lib/utils/format-validation-error";
 import { localStorageService } from "@/lib/utils/local-storage";
 import { orpc } from "@/orpc/orpc-client";
+import type {
+  ThemeLogoUploadInput,
+  ThemeLogoUploadOutput,
+} from "@/orpc/routes/settings/routes/theme.upload-logo.schema";
 import { useStore } from "@tanstack/react-form";
 import {
   useMutation,

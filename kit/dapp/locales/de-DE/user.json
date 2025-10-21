@@ -18,17 +18,11 @@
     "page": {
       "description": "Verwalten Sie Benutzer, Rollen und Berechtigungen Ihrer Plattform."
     },
-    "accessDenied": {
-      "title": "Zugriff eingeschränkt",
-      "description": "Sie verfügen nicht über die Berechtigung, Benutzer zu verwalten. Bitte wenden Sie sich an Ihre Administratorin oder Ihren Administrator."
-    },
     "table": {
       "columns": {
         "name": "Benutzername",
         "email": "E-Mail",
         "wallet": "Wallet-Adresse",
-        "type": "Typ",
-        "verifications": "Verifizierungen",
         "role": "Rolle",
         "identity": "Identität",
         "status": "Statusanzeige",
@@ -55,14 +49,6 @@
       "identity": {
         "none": "Keine Identität"
       },
-      "userType": {
-        "admin": "Administrator",
-        "investor": "Investor",
-        "trustedIssuer": "Vertrauenswürdiger Emittent"
-      },
-      "verifications": {
-        "none": "Keine Verifizierungen"
-      },
       "actions": {
         "viewDetails": "Details anzeigen",
         "menu": "Aktionsmenü",
@@ -82,8 +68,7 @@
         "navigationFailed": "Navigation zu den Benutzerdetails fehlgeschlagen"
       },
       "fallback": {
-        "never": "Nie",
-        "unknown": "Unbekannt"
+        "never": "Nie"
       }
     }
   },

@@ -149,7 +149,7 @@ export const topUp = systemRouter.fixedYieldSchedule.topUp.handler(
     );
 
     // Step 3: Execute the top up transaction
-    const transactionHash = await context.portalClient.mutate(
+    const txHash = await context.portalClient.mutate(
       TOP_UP_DENOMINATION_ASSET_MUTATION,
       {
         address: contract,
@@ -164,7 +164,7 @@ export const topUp = systemRouter.fixedYieldSchedule.topUp.handler(
     );
 
     return {
-      transactionHash,
+      txHash,
     };
   }
 );

@@ -17,10 +17,7 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
-import {
-  TrustedIssuerDeleteOutputSchema,
-  type TrustedIssuerDeleteOutput,
-} from "./trusted-issuer.delete.schema";
+import { type TrustedIssuerDeleteOutput } from "./trusted-issuer.delete.schema";
 
 /**
  * GraphQL mutation for removing a trusted issuer
@@ -78,7 +75,7 @@ export const trustedIssuerDelete = systemRouter.system.trustedIssuers.delete
     const registryAddress = system.trustedIssuersRegistry.id;
 
     // Execute the deletion transaction
-    const transactionHash = await context.portalClient.mutate(
+    const txHash = await context.portalClient.mutate(
       REMOVE_TRUSTED_ISSUER_MUTATION,
       {
         address: registryAddress,
@@ -93,8 +90,8 @@ export const trustedIssuerDelete = systemRouter.system.trustedIssuers.delete
     );
 
     // Return success response with transaction details
-    return TrustedIssuerDeleteOutputSchema.parse({
-      transactionHash,
+    return {
+      txHash,
       issuerAddress,
-    });
+    };
   });

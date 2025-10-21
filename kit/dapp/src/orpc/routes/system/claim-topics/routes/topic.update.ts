@@ -20,10 +20,7 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
-import {
-  TopicUpdateOutputSchema,
-  type TopicUpdateOutput,
-} from "./topic.update.schema";
+import { type TopicUpdateOutput } from "./topic.update.schema";
 
 /**
  * GraphQL mutation for updating a topic scheme's signature
@@ -85,7 +82,7 @@ export const topicUpdate = systemRouter.system.claimTopics.topicUpdate
     const registryAddress = system.topicSchemeRegistry.id;
 
     // Execute the update transaction
-    const transactionHash = await context.portalClient.mutate(
+    const txHash = await context.portalClient.mutate(
       UPDATE_TOPIC_SCHEME_MUTATION,
       {
         address: registryAddress,
@@ -101,9 +98,9 @@ export const topicUpdate = systemRouter.system.claimTopics.topicUpdate
     );
 
     // Return success response with transaction details
-    return TopicUpdateOutputSchema.parse({
-      transactionHash,
+    return {
+      txHash,
       name,
       newSignature: signature,
-    });
+    };
   });
