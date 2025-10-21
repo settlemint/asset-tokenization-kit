@@ -180,7 +180,6 @@ export function TransferAssetSheet({
                     {senderWallet ? (
                       <Web3Address
                         address={getEthereumAddress(senderWallet)}
-                        copyToClipboard
                         size="small"
                       />
                     ) : (
@@ -210,7 +209,6 @@ export function TransferAssetSheet({
                             {recipient ? (
                               <Web3Address
                                 address={getEthereumAddress(recipient)}
-                                copyToClipboard
                                 size="small"
                               />
                             ) : (

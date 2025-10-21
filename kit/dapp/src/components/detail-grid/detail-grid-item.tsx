@@ -34,8 +34,6 @@ export interface DetailGridItemProps extends PropsWithChildren {
   currency?: FormatValueOptions["currency"];
   /** Value to display when the value is empty/null/undefined */
   emptyValue?: React.ReactNode;
-  /** Whether to show pretty name for addresses (only applies when type="address") */
-  showPrettyName?: boolean;
   /** Options for date formatting */
   dateOptions?: FormatValueOptions["dateOptions"];
   /** Options for address formatting */

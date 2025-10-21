@@ -144,7 +144,6 @@ export function BaseActionSheet({
                     </span>
                     <Web3Address
                       address={asset.id}
-                      copyToClipboard
                       size="tiny"
                       className="font-mono text-sm"
                     />

@@ -40,9 +40,8 @@ export function WalletCreated() {
           <div className="flex items-center justify-center gap-2">
             <Web3Address
               address={user.wallet}
-              truncate
-              copyToClipboard
-              showPrettyName // Skip queries during onboarding
+              truncate={false}
+              showPrettyName={false}
             />
           </div>
         </div>

@@ -264,7 +264,6 @@ export function BurnSheet({
                           {addr ? (
                             <Web3Address
                               address={getEthereumAddress(addr)}
-                              copyToClipboard
                               size="small"
                             />
                           ) : (
