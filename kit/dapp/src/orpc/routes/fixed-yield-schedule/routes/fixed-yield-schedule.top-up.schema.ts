@@ -1,3 +1,4 @@
+import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
 import { apiBigInt } from "@atk/zod/bigint";
 import * as z from "zod";
@@ -20,18 +21,8 @@ export const FixedYieldScheduleTopUpInputSchema =
 
 /**
  * Output schema for fixed yield schedule top up operation.
- *
- * This schema defines the structure of the response returned when
- * topping up the denomination asset in a fixed yield schedule,
- * providing the transaction hash of the operation.
- *
- * @property {string} transactionHash - The transaction hash of the top up operation
  */
-export const FixedYieldScheduleTopUpOutputSchema = z.object({
-  transactionHash: z
-    .string()
-    .describe("The transaction hash of the top up operation"),
-});
+export const FixedYieldScheduleTopUpOutputSchema = BaseMutationOutputSchema;
 
 /**
  * Type representing the validated fixed yield schedule top up input.

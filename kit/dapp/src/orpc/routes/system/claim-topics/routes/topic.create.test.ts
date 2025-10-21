@@ -79,7 +79,7 @@ describe("system.claim-topics.topic.create unit", () => {
     });
 
     expect(result).toEqual({
-      transactionHash:
+      txHash:
         "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       name: "KYC Verification",
     });
@@ -139,7 +139,7 @@ describe("system.claim-topics.topic.create unit", () => {
     });
 
     expect(result).toEqual({
-      transactionHash:
+      txHash:
         "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
       name: "Age Verification",
     });
@@ -234,7 +234,7 @@ describe("system.claim-topics.topic.create unit", () => {
       });
 
       expect(result.name).toBe(testCase.name);
-      expect(result.transactionHash).toBe(
+      expect(result.txHash).toBe(
         "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
       );
     }

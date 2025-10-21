@@ -1,3 +1,4 @@
+import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { ClaimTopicSchema } from "@atk/zod/claim";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
@@ -44,19 +45,11 @@ export const ClaimsRevokeInputSchema = z.object({
 /**
  * Output schema for claims revoke endpoint.
  */
-export const ClaimsRevokeOutputSchema = z.object({
+export const ClaimsRevokeOutputSchema = BaseMutationOutputSchema.extend({
   /**
    * Whether the claim was successfully revoked.
    */
   success: z.boolean().describe("Whether claim revocation was successful"),
-
-  /**
-   * Transaction hash if successful.
-   */
-  transactionHash: z
-    .string()
-    .optional()
-    .describe("Blockchain transaction hash"),
 
   /**
    * Claim ID that was revoked.
