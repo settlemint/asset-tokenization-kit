@@ -1,7 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { Context } from "@/orpc/context/context";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import {
@@ -26,7 +25,6 @@ const SEARCH_ACCOUNT_QUERY = theGraphGraphql(`
 
 export const search = authRouter.account.search
   .use(systemMiddleware)
-  .use(databaseMiddleware)
   .use(
     blockchainPermissionsMiddleware({
       requiredRoles: SYSTEM_PERMISSIONS.accountSearch,
@@ -96,7 +94,7 @@ async function getDisplayName(
           }
         );
         if (identity) {
-          wallet = identity?.account.id;
+          wallet = identity.account.id;
           fallbackName = `${identity.account.contractName} (ONCHAINID)`;
         }
       }

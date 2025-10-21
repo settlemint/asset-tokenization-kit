@@ -1,4 +1,3 @@
-import { describe, expect, it, vi } from "vitest";
 import {
   createBaseContext,
   createMockErrors,
@@ -6,6 +5,7 @@ import {
   installAuthRouterCaptureMock,
   type OrpcHandler,
 } from "@/test/orpc-route-helpers";
+import { describe, expect, it, vi } from "vitest";
 
 // Capture auth router handler
 installAuthRouterCaptureMock();
@@ -22,6 +22,20 @@ vi.mock("@/orpc/middlewares/auth/offchain-permissions.middleware", () => ({
 }));
 vi.mock("@/orpc/middlewares/services/the-graph.middleware", () => ({
   theGraphMiddleware: () => undefined,
+}));
+vi.mock("@/orpc/routes/system/identity/routes/identity.read", () => ({
+  identityRead: vi.fn(() => ({
+    account: {
+      id: "0x1111111111111111111111111111111111111111",
+      contractName: "UnitTestContract",
+    },
+  })),
+}));
+vi.mock("@/orpc/routes/user/routes/user.read", () => ({
+  read: vi.fn(() => ({
+    id: "0x1111111111111111111111111111111111111111",
+    name: "UnitTestUser",
+  })),
 }));
 
 // Import route to register handler with mocked router
@@ -58,7 +72,12 @@ describe("account.search (unit)", () => {
 
     expect(query).toHaveBeenCalled();
     expect(result).toEqual([
-      { id: ADDRESS, isContract: true, contractName: "UnitTestContract" },
+      {
+        id: ADDRESS,
+        isContract: true,
+        contractName: "UnitTestContract",
+        displayName: "UnitTestContract",
+      },
     ]);
   });
 });

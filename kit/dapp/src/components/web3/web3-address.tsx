@@ -82,45 +82,8 @@ function Web3AddressComponent({
     return renderAddress();
   }, [displayName, address, truncate, truncatedAddressDisplay]);
 
-  if (copyToClipboard) {
-    const content = (
-      <>
-        <Web3Avatar
-          address={address}
-          size={size}
-          name={displayName}
-          className="mr-2"
-        />
-        {displayContent}
-      </>
-    );
-    if (linkOptions) {
-      return (
-        <CopyToClipboard
-          value={address}
-          className={cn("inline-flex items-center", className)}
-        >
-          <Link
-            className="inline-flex min-w-0 max-w-full items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm transition-colors hover:text-primary"
-            {...linkOptions}
-          >
-            {content}
-          </Link>
-        </CopyToClipboard>
-      );
-    }
-    return (
-      <CopyToClipboard
-        value={address}
-        className={cn("inline-flex items-center", className)}
-      >
-        {content}
-      </CopyToClipboard>
-    );
-  }
-
-  const content = (
-    <div className={cn("flex items-center", className)}>
+  const avatar = (
+    <>
       <Web3Avatar
         address={address}
         size={size}
@@ -128,21 +91,43 @@ function Web3AddressComponent({
         className="mr-2"
       />
       {displayContent}
-    </div>
+    </>
   );
 
-  if (linkOptions) {
+  if (copyToClipboard) {
     return (
-      <Link
-        className="inline-flex min-w-0 max-w-full items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm transition-colors hover:text-primary"
-        {...linkOptions}
+      <CopyToClipboard
+        value={address}
+        className={cn("inline-flex items-center", className)}
       >
-        {content}
-      </Link>
+        {linkOptions ? (
+          <Link
+            className="inline-flex min-w-0 max-w-full items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm transition-colors hover:text-primary"
+            {...linkOptions}
+          >
+            {avatar}
+          </Link>
+        ) : (
+          avatar
+        )}
+      </CopyToClipboard>
     );
   }
 
-  return content;
+  const content = (
+    <div className={cn("flex items-center", className)}>{avatar}</div>
+  );
+
+  return linkOptions ? (
+    <Link
+      className="inline-flex min-w-0 max-w-full items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm transition-colors hover:text-primary"
+      {...linkOptions}
+    >
+      {content}
+    </Link>
+  ) : (
+    content
+  );
 }
 
 // Memoize the component to prevent unnecessary re-renders
