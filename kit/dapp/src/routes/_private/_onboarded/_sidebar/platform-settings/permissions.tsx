@@ -10,14 +10,14 @@ import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
-  "/_private/_onboarded/_sidebar/admin/platform-settings/permissions"
+  "/_private/_onboarded/_sidebar/platform-settings/permissions"
 )({
   component: PermissionsPage,
   loader: () => {
     return {
       breadcrumb: [
         createI18nBreadcrumbMetadata("platformSettings", {
-          href: "/admin/platform-settings/permissions",
+          href: "/platform-settings/permissions",
         }),
         createI18nBreadcrumbMetadata("settings.permissions.title"),
       ],

@@ -4,7 +4,7 @@ import { BasePage } from "./base-page";
 
 export class ClaimManagementPage extends BasePage {
   async navigateTo(): Promise<void> {
-    await this.page.goto("/admin/platform-settings/claim-topics-issuers");
+    await this.page.goto("/platform-settings/claim-topics-issuers");
     await this.waitForReactStateSettle();
   }
 

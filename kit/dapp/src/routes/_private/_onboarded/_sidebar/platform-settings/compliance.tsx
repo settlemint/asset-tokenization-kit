@@ -1,17 +1,17 @@
-import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
+import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
-  "/_private/_onboarded/_sidebar/admin/platform-settings/compliance"
+  "/_private/_onboarded/_sidebar/platform-settings/compliance"
 )({
   component: CompliancePage,
   loader: () => {
     return {
       breadcrumb: [
         createI18nBreadcrumbMetadata("platformSettings", {
-          href: "/admin/platform-settings/compliance",
+          href: "/platform-settings/compliance",
         }),
         createI18nBreadcrumbMetadata("settings.compliance"),
       ],
