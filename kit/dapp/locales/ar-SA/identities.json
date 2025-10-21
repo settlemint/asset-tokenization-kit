@@ -106,7 +106,7 @@
   },
   "identityTable": {
     "columns": {
-      "id": "معرف",
+      "id": "الهوية على السلسلة",
       "type": "النوع",
       "entity": "الكيان",
       "linkedEntity": "الكيان المرتبط",
