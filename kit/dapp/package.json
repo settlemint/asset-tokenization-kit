@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "bun --bun vite dev",
     "typecheck": "tsgo --noEmit",
-    "posttypecheck": "bun gql-tada check",
+    "posttypecheck": "bunx gql.tada check",
     "watch": "tsgo --noEmit --watch",
     "build": "bun --bun vite build",
     "postbuild": "bun run tools/fix-noble-crypto.ts",
