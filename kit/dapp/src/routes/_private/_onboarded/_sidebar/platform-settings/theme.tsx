@@ -88,7 +88,7 @@ export const Route = createFileRoute(
     return {
       breadcrumb: [
         createI18nBreadcrumbMetadata("platformSettings", {
-          href: "/admin/platform-settings/theme",
+          href: "/platform-settings/theme",
         }),
         createI18nBreadcrumbMetadata("settings.theme.title"),
       ],

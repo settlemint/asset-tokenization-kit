@@ -62,7 +62,7 @@ export function NavSettings() {
     {
       name: t("settings.theme.title"),
       icon: Paintbrush,
-      path: "/admin/platform-settings/theme",
+      path: "/platform-settings/theme",
       enabled: system.userPermissions?.roles.admin === true,
     },
     {
