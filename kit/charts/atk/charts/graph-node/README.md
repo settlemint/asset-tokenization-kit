@@ -87,7 +87,7 @@ The following table lists the configurable parameters of this chart and their de
 |image|object|-|Graph Node image configuration|
 |image.pullPolicy|string|`"IfNotPresent"`|Graph Node image pull policy|
 |image.repository|string|`"graphprotocol/graph-node"`|Image for Graph Node|
-|image.tag|string|`"v0.40.2"`|Overrides the image tag. Defaults to Chart.appVersion if not set|
+|image.tag|string|`"v0.41.0"`|Overrides the image tag. Defaults to Chart.appVersion if not set|
 |imagePullSecrets|list|-|Pull secrets required to fetch the Image|
 |ingress|object|-|Ingress configuration|
 |ingress.annotations|object|-|Additional annotations for the Ingress resource|

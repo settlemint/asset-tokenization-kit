@@ -111,7 +111,7 @@ The following table lists the configurable parameters of this chart and their de
 |image.pullSecrets|list|-|TxSigner image pull secrets (list)|
 |image.registry|string|`"ghcr.io"`|TxSigner image registry|
 |image.repository|string|`"settlemint/btp-signer"`|TxSigner image repository|
-|image.tag|string|`"7.15.13"`|TxSigner image tag (immutable tags are recommended)|
+|image.tag|string|`"7.15.14"`|TxSigner image tag (immutable tags are recommended)|
 |ingress|object|-|Ingress parameters (object)|
 |ingress.annotations|object|-|Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.|
 |ingress.apiVersion|string|`""`|Force Ingress API version (automatically detected if not set)|
