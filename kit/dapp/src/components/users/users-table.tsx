@@ -201,16 +201,12 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
               }
 
               return (
-                <CopyToClipboard value={address} className="max-w-full">
-                  <Web3Address
-                    address={address}
-                    copyToClipboard={false}
-                    size="small"
-                    showBadge={false}
-                    showPrettyName={false}
-                    className="max-w-full"
-                  />
-                </CopyToClipboard>
+                <Web3Address
+                  address={address}
+                  size="tiny"
+                  showPrettyName={false}
+                  className="max-w-full"
+                />
               );
             },
           },
