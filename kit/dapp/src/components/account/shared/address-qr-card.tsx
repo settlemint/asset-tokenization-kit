@@ -24,6 +24,7 @@ interface AddressQrCardProps {
   addressClassName?: string;
   qrSize?: number;
   qrLevel?: "L" | "M" | "Q" | "H";
+  showPrettyName?: boolean;
 }
 
 export function AddressQrCard({
@@ -36,6 +37,7 @@ export function AddressQrCard({
   qrWrapperClassName,
   addressContainerClassName,
   addressClassName,
+  showPrettyName = false,
   qrSize = 200,
   qrLevel = "H",
 }: AddressQrCardProps) {
@@ -71,6 +73,8 @@ export function AddressQrCard({
               <Web3Address
                 address={address}
                 className={cn("justify-center", addressClassName)}
+                showPrettyName={showPrettyName}
+                truncate={showPrettyName}
               />
             </div>
           </>

@@ -106,7 +106,7 @@
   },
   "identityTable": {
     "columns": {
-      "id": "ID",
+      "id": "On-chain Identity",
       "type": "Type",
       "entity": "Entity",
       "linkedEntity": "Linked entity",

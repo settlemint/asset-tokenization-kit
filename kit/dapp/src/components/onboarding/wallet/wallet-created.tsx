@@ -42,7 +42,7 @@ export function WalletCreated() {
               address={user.wallet}
               truncate
               copyToClipboard
-              skipDataQueries // Skip queries during onboarding
+              showPrettyName // Skip queries during onboarding
             />
           </div>
         </div>

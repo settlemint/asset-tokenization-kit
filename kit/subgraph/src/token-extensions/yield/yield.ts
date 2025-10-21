@@ -2,6 +2,7 @@ import {
   CheckpointUpdated,
   YieldScheduleSet,
 } from "../../../generated/templates/Yield/Yield";
+import { setAccountContractName } from "../../account/utils/account-contract-name";
 import {
   ActionName,
   createAction,
@@ -26,9 +27,15 @@ export function handleYieldScheduleSet(event: YieldScheduleSet): void {
   fixedYieldSchedule.token = event.address;
   fixedYieldSchedule.save();
 
+  // Give the account of the contract a human-readable name
+  const token = fetchToken(event.address);
+  setAccountContractName(
+    event.params.schedule,
+    `Fixed Yield Schedule (${token.name})`
+  );
+
   // Create ClaimYield actions for all holders for each period
   // Looping balances as part of this event, should be ok as it is not expected that there are many balances yet when this event is emitted
-  const token = fetchToken(event.address);
   const balances = token.balances.load();
   const periods = fixedYieldSchedule.periods.load();
   for (let balanceIndex = 0; balanceIndex < balances.length; balanceIndex++) {

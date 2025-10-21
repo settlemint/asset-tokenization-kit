@@ -1,11 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link, useRouter } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { Users } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboard";
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
@@ -104,19 +103,16 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
             }
 
             return (
-              <CopyToClipboard value={identityAddress} className="max-w-full">
-                <Link
-                  to="/admin/identity-management/$address"
-                  params={{ address: identityAddress }}
-                  className="inline-flex min-w-0 max-w-full items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm transition-colors hover:text-primary"
-                >
-                  <Web3Address
-                    address={identityAddress}
-                    size="small"
-                    className="max-w-full"
-                  />
-                </Link>
-              </CopyToClipboard>
+              <Web3Address
+                address={identityAddress}
+                size="tiny"
+                className="max-w-full"
+                showPrettyName={false}
+                linkOptions={{
+                  to: "/admin/identity-management/$address",
+                  params: { address: identityAddress },
+                }}
+              />
             );
           },
           meta: {

@@ -21,7 +21,7 @@ function FormattedCell<TData, TValue>({
         displayName: meta?.displayName,
         currency: meta?.currency,
         emptyValue: meta?.emptyValue,
-        showPrettyName: meta?.showPrettyName,
+        addressOptions: meta?.addressOptions,
         dateOptions: meta?.dateOptions,
         multiOptionOptions: meta?.multiOptionOptions,
       })}

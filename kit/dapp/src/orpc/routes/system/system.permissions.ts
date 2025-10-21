@@ -1,5 +1,4 @@
 import type { systemContract } from "@/orpc/routes/system/system.contract";
-import { roles } from "@atk/zod/access-control-roles";
 import type { RoleRequirement } from "@atk/zod/role-requirement";
 
 /**
@@ -50,7 +49,7 @@ type AssertValidContract =
  * The SystemContractValidation type above ensures these mappings stay valid during refactoring.
  */
 export const SYSTEM_PERMISSIONS = {
-  accountSearch: { any: ["identityManager", "systemManager", "claimIssuer"] },
+  accountSearch: { any: [] }, // No roles required
   addonCreate: "addonManager",
   addonFactoryCreate: { any: ["addonManager", "systemManager"] },
   claimCreate: { any: ["claimIssuer", "systemModule"] },
@@ -80,7 +79,7 @@ export const SYSTEM_PERMISSIONS = {
   trustedIssuerUpdate: { any: ["claimPolicyManager", "systemModule"] },
   userList: { any: ["identityManager", "claimIssuer"] },
   userRead: { any: ["identityManager", "claimIssuer"] },
-  userSearch: { any: [...roles] }, // at least one blockchain role is required to search for users
+  userSearch: { any: ["identityManager", "claimIssuer"] },
 } as const satisfies Record<string, RoleRequirement>;
 
 // Use the validation type to ensure it's not stripped

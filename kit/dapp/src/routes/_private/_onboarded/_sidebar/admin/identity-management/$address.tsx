@@ -5,7 +5,9 @@ import { IdentityStatusBadge } from "@/components/identity/identity-status-badge
 import { ManageIdentityDropdown } from "@/components/manage-dropdown/manage-identity-dropdown";
 import { getIdentityTabConfiguration } from "@/components/tab-navigation/identity-tab-configuration";
 import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
+import { Web3Address } from "@/components/web3/web3-address";
 import { client } from "@/orpc/orpc-client";
+import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -87,8 +89,6 @@ function RouteComponent() {
   const { address } = Route.useParams();
   const { t } = useTranslation(["identities", "common"]);
 
-  const displayAddress = `${address.slice(0, 6)}...${address.slice(-4)}`;
-
   // Generate tab configuration based on identity data
   // Only memoize based on properties that affect tab configuration
   const tabConfigs = useMemo(
@@ -114,7 +114,11 @@ function RouteComponent() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h1 className="text-3xl font-bold tracking-tight">
-              {displayAddress}
+              <Web3Address
+                address={getEthereumAddress(address)}
+                showPrettyName={false}
+                copyToClipboard={false}
+              />
             </h1>
             <IdentityStatusBadge isRegistered={claimsData.isRegistered} />
           </div>

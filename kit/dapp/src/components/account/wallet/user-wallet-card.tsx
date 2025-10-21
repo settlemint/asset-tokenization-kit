@@ -39,6 +39,7 @@ export function UserWalletCard() {
                 address={user.wallet}
                 className="justify-center"
                 truncate={false}
+                showPrettyName={false}
               />
             </div>
           </>

@@ -1,3 +1,4 @@
+import type { Web3AddressProps } from "@/components/web3/web3-address";
 import type { FiatCurrency } from "@atk/zod/fiat-currency";
 
 export type FormatType =
@@ -24,6 +25,7 @@ export interface FormatValueOptions {
 
   emptyValue?: React.ReactNode;
 
+  addressOptions?: FormatAddressOptions;
   dateOptions?: FormatDateOptions;
   multiOptionOptions?: FormatMultiOptionOptions;
 
@@ -39,6 +41,8 @@ export interface FormatDateOptions {
   includeTime?: boolean;
   relative?: boolean;
 }
+
+export type FormatAddressOptions = Omit<Web3AddressProps, "address">;
 
 export interface FormatMultiOptionOptions {
   getLabel?(value: unknown): string;

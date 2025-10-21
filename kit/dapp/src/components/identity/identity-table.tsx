@@ -56,19 +56,15 @@ export const IdentityTable = withErrorBoundary(function IdentityTable() {
     () =>
       withAutoFeatures([
         // Identity ID column - shows the unique identity identifier
-        columnHelper.display({
+        columnHelper.accessor("id", {
           id: "identityId",
           header: t("identityTable.columns.id"),
-          cell: ({ row }) => (
-            <Web3Address
-              address={row.original.id}
-              size="small"
-              copyToClipboard
-            />
-          ),
           meta: {
             displayName: t("identityTable.columns.id"),
-            type: "none",
+            type: "address",
+            addressOptions: {
+              showPrettyName: false,
+            },
           },
         }),
         // Hidden accessor column for filtering functionality
@@ -104,7 +100,7 @@ export const IdentityTable = withErrorBoundary(function IdentityTable() {
           id: "linkedEntity",
           header: t("identityTable.columns.entity"),
           cell: ({ row }: CellContext<IdentityRow, unknown>) => {
-            const { account, isContract } = row.original;
+            const { account } = row.original;
 
             if (!account) {
               return (
@@ -114,30 +110,7 @@ export const IdentityTable = withErrorBoundary(function IdentityTable() {
               );
             }
 
-            if (isContract === true) {
-              return (
-                <div className="flex flex-col gap-1">
-                  {account.contractName && (
-                    <span className="font-medium">{account.contractName}</span>
-                  )}
-                  <Web3Address
-                    address={account.id}
-                    size="small"
-                    copyToClipboard
-                    showBadge={!account.contractName}
-                  />
-                </div>
-              );
-            }
-
-            return (
-              <Web3Address
-                address={account.id}
-                size="small"
-                copyToClipboard
-                showBadge
-              />
-            );
+            return <Web3Address address={account.id} size="tiny" />;
           },
           meta: {
             displayName: t("identityTable.columns.entity"),

@@ -3,12 +3,11 @@ import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { safeToString } from "./safe-to-string";
 import type { FormatValueProps } from "./types";
 
-export function FormatAddress({ value }: FormatValueProps) {
+export function FormatAddress({ value, options }: FormatValueProps) {
   try {
     const validAddress = getEthereumAddress(value);
-    return (
-      <Web3Address address={validAddress} size="tiny" showSymbol={false} />
-    );
+    const { addressOptions } = options;
+    return <Web3Address address={validAddress} {...addressOptions} />;
   } catch {
     // If address is invalid, show the raw value
     return (

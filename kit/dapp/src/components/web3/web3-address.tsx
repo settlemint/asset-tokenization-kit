@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc/orpc-client";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { useQuery } from "@tanstack/react-query";
+import { Link, type LinkComponentProps } from "@tanstack/react-router";
 import { memo, useMemo } from "react";
 
 const COMMON_QUERY_OPTIONS = {
@@ -14,14 +15,14 @@ const COMMON_QUERY_OPTIONS = {
   throwOnError: false, // Don't throw if address is not a user
   refetchOnMount: false,
 };
-interface Web3AddressProps {
+export interface Web3AddressProps {
   address: EthereumAddress;
   size?: "tiny" | "small" | "medium" | "big" | "large";
   copyToClipboard?: boolean;
   truncate?: boolean;
   className?: string;
-  showSymbol?: boolean;
-  skipDataQueries?: boolean; // Skip user/token queries during onboarding
+  showPrettyName?: boolean;
+  linkOptions?: Omit<LinkComponentProps, "className">;
 }
 
 function Web3AddressComponent({
@@ -30,57 +31,25 @@ function Web3AddressComponent({
   size = "tiny",
   truncate = true,
   className,
-  showSymbol = true,
-  skipDataQueries = false,
+  showPrettyName = true,
+  linkOptions,
 }: Web3AddressProps) {
-  // Query for user data by wallet address
-  const { data: userSearch } = useQuery(
-    orpc.user.search.queryOptions({
-      input: { query: address, limit: 1 },
-      enabled: !skipDataQueries, // Disable during onboarding
-      ...COMMON_QUERY_OPTIONS,
-    })
-  );
-  const user = userSearch?.[0];
-
-  // Query for token data by address
-  const { data: tokenSearch } = useQuery(
-    orpc.token.search.queryOptions({
-      input: { query: address, limit: 1 },
-      enabled: !skipDataQueries, // Disable during onboarding
-      ...COMMON_QUERY_OPTIONS,
-    })
-  );
-  const token = tokenSearch?.[0];
-
-  // Query for account data by address (for contract name fallback)
+  // Query for account data by address
   const { data: accountSearch } = useQuery(
     orpc.account.search.queryOptions({
       input: { query: address, limit: 1 },
-      enabled: !skipDataQueries, // Disable during onboarding
+      enabled: showPrettyName,
       ...COMMON_QUERY_OPTIONS,
     })
   );
   const account = accountSearch?.[0];
 
-  const data = useMemo(() => {
-    if (token) {
-      return {
-        name: token.name,
-        symbol: token.symbol,
-      };
+  const displayName = useMemo(() => {
+    if (!showPrettyName) {
+      return undefined;
     }
-    if (user) {
-      return {
-        name: user.name,
-        symbol: undefined,
-      };
-    }
-    return {
-      name: account?.contractName,
-      symbol: undefined,
-    };
-  }, [user, token, account]);
+    return account?.displayName;
+  }, [showPrettyName, account]);
 
   // Memoize truncated address display
   const truncatedAddressDisplay = useMemo(() => {
@@ -98,15 +67,10 @@ function Web3AddressComponent({
       );
     };
 
-    if (data?.name) {
+    if (displayName) {
       return (
         <div className="flex items-center gap-2">
-          <span className="font-medium">{data.name}</span>
-          {showSymbol && data.symbol && (
-            <span className="text-muted-foreground text-xs">
-              ({data.symbol})
-            </span>
-          )}
+          <span className="font-medium">{displayName}</span>
 
           <Badge className="min-w-0 max-w-24" variant="outline" title={address}>
             {renderAddress("text-xs")}
@@ -116,36 +80,69 @@ function Web3AddressComponent({
     }
 
     return renderAddress();
-  }, [data, address, showSymbol, truncate, truncatedAddressDisplay]);
+  }, [displayName, address, truncate, truncatedAddressDisplay]);
 
   if (copyToClipboard) {
+    const content = (
+      <>
+        <Web3Avatar
+          address={address}
+          size={size}
+          name={displayName}
+          className="mr-2"
+        />
+        {displayContent}
+      </>
+    );
+    if (linkOptions) {
+      return (
+        <CopyToClipboard
+          value={address}
+          className={cn("inline-flex items-center", className)}
+        >
+          <Link
+            className="inline-flex min-w-0 max-w-full items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm transition-colors hover:text-primary"
+            {...linkOptions}
+          >
+            {content}
+          </Link>
+        </CopyToClipboard>
+      );
+    }
     return (
       <CopyToClipboard
         value={address}
         className={cn("inline-flex items-center", className)}
       >
-        <Web3Avatar
-          address={address}
-          size={size}
-          name={data?.name}
-          className="mr-2"
-        />
-        {displayContent}
+        {content}
       </CopyToClipboard>
     );
   }
 
-  return (
+  const content = (
     <div className={cn("flex items-center", className)}>
       <Web3Avatar
         address={address}
         size={size}
-        name={data?.name}
+        name={displayName}
         className="mr-2"
       />
       {displayContent}
     </div>
   );
+
+  if (linkOptions) {
+    return (
+      <Link
+        className="inline-flex min-w-0 max-w-full items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm transition-colors hover:text-primary"
+        {...linkOptions}
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return content;
 }
 
 // Memoize the component to prevent unnecessary re-renders

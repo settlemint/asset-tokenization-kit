@@ -39,6 +39,9 @@ function IdentityDetailPage() {
           info={t("identities:fields.identityAddressInfo")}
           value={claimsData.identity}
           type="address"
+          addressOptions={{
+            showPrettyName: false,
+          }}
         />
 
         <DetailGridItem

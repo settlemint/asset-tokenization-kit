@@ -38,6 +38,8 @@ export interface DetailGridItemProps extends PropsWithChildren {
   showPrettyName?: boolean;
   /** Options for date formatting */
   dateOptions?: FormatValueOptions["dateOptions"];
+  /** Options for address formatting */
+  addressOptions?: FormatValueOptions["addressOptions"];
 }
 
 /**
@@ -61,6 +63,7 @@ export function DetailGridItem({
   currency,
   emptyValue,
   dateOptions,
+  addressOptions,
 }: DetailGridItemProps) {
   const { t } = useTranslation("detail-grid");
 
@@ -74,6 +77,7 @@ export function DetailGridItem({
           currency,
           emptyValue,
           dateOptions,
+          addressOptions,
         })
       : safeToString(value ?? ""));
 
