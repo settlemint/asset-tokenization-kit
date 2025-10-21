@@ -18,6 +18,12 @@ const { getThemeMock, updateThemeMock } = vi.hoisted(() => ({
   updateThemeMock: vi.fn(),
 }));
 
+vi.mock("@/lib/settlemint/postgres", () => ({
+  postgresPool: vi.fn(),
+}));
+vi.mock("@atk/config/env", () => ({
+  env: {},
+}));
 vi.mock("@/components/theme/lib/repository", async (importOriginal) => {
   const actual =
     await importOriginal<typeof import("@/components/theme/lib/repository")>();

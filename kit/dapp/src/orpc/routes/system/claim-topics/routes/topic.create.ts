@@ -22,10 +22,7 @@ import { systemRouter } from "@/orpc/procedures/system.router";
 // No need to import SYSTEM_PERMISSIONS - using direct role requirements
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { ORPCError } from "@orpc/server";
-import {
-  TopicCreateOutputSchema,
-  type TopicCreateOutput,
-} from "./topic.create.schema";
+import { type TopicCreateOutput } from "./topic.create.schema";
 
 /**
  * GraphQL mutation for registering a new topic scheme
@@ -86,7 +83,7 @@ export const topicCreate = systemRouter.system.claimTopics.topicCreate
     const registryAddress = system.topicSchemeRegistry.id;
 
     // Execute the registration transaction
-    const transactionHash = await context.portalClient
+    const txHash = await context.portalClient
       .mutate(
         REGISTER_TOPIC_SCHEME_MUTATION,
         {
@@ -124,8 +121,8 @@ export const topicCreate = systemRouter.system.claimTopics.topicCreate
       });
 
     // Return success response with transaction details
-    return TopicCreateOutputSchema.parse({
-      transactionHash,
+    return {
+      txHash,
       name,
-    });
+    };
   });

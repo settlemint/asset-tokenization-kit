@@ -84,7 +84,7 @@ describe("system.trusted-issuers.create unit", () => {
     });
 
     expect(result).toEqual({
-      transactionHash:
+      txHash:
         "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
       issuerAddress: "0x1111111111111111111111111111111111111111",
     });
@@ -144,7 +144,7 @@ describe("system.trusted-issuers.create unit", () => {
     });
 
     expect(result).toEqual({
-      transactionHash:
+      txHash:
         "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
       issuerAddress: "0x2222222222222222222222222222222222222222",
     });

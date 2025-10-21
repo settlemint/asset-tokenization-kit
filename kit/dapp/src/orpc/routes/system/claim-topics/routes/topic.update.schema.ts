@@ -1,3 +1,4 @@
+import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
 import * as z from "zod";
 
@@ -26,8 +27,7 @@ export type TopicUpdateInput = z.infer<typeof TopicUpdateInputSchema>;
  * Topic Update Output Schema
  * Response after successfully updating a topic scheme
  */
-export const TopicUpdateOutputSchema = z.object({
-  transactionHash: z.string().describe("Transaction hash of the update"),
+export const TopicUpdateOutputSchema = BaseMutationOutputSchema.extend({
   name: z.string().describe("Name of the updated topic"),
   newSignature: z.string().describe("New signature that was set"),
 });
