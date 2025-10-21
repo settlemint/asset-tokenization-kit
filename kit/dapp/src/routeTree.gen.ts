@@ -8,6 +8,8 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createServerRootRoute } from '@tanstack/react-start/server'
+
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PrivateRouteImport } from './routes/_private'
@@ -59,6 +61,12 @@ import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressDenomina
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressActionsRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/actions'
 import { Route as PrivateOnboardedSidebarParticipantsEntitiesAddressClaimsRouteImport } from './routes/_private/_onboarded/_sidebar/participants/entities/$address/claims'
+import { ServerRoute as ApiThemeDotcssServerRouteImport } from './routes/api/theme[.]css'
+import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
+import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
+import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
+
+const rootServerRouteImport = createServerRootRoute()
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -375,6 +383,26 @@ const PrivateOnboardedSidebarParticipantsEntitiesAddressClaimsRoute =
     getParentRoute: () =>
       PrivateOnboardedSidebarParticipantsEntitiesAddressRoute,
   } as any)
+const ApiThemeDotcssServerRoute = ApiThemeDotcssServerRouteImport.update({
+  id: '/api/theme.css',
+  path: '/api/theme.css',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
+const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
+  id: '/api/$',
+  path: '/api/$',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
+const ApiRpcSplatServerRoute = ApiRpcSplatServerRouteImport.update({
+  id: '/api/rpc/$',
+  path: '/api/rpc/$',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
+const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
@@ -671,6 +699,39 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   PrivateRoute: typeof PrivateRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
+}
+export interface FileServerRoutesByFullPath {
+  '/api/$': typeof ApiSplatServerRoute
+  '/api/theme.css': typeof ApiThemeDotcssServerRoute
+  '/api/auth/$': typeof ApiAuthSplatServerRoute
+  '/api/rpc/$': typeof ApiRpcSplatServerRoute
+}
+export interface FileServerRoutesByTo {
+  '/api/$': typeof ApiSplatServerRoute
+  '/api/theme.css': typeof ApiThemeDotcssServerRoute
+  '/api/auth/$': typeof ApiAuthSplatServerRoute
+  '/api/rpc/$': typeof ApiRpcSplatServerRoute
+}
+export interface FileServerRoutesById {
+  __root__: typeof rootServerRouteImport
+  '/api/$': typeof ApiSplatServerRoute
+  '/api/theme.css': typeof ApiThemeDotcssServerRoute
+  '/api/auth/$': typeof ApiAuthSplatServerRoute
+  '/api/rpc/$': typeof ApiRpcSplatServerRoute
+}
+export interface FileServerRouteTypes {
+  fileServerRoutesByFullPath: FileServerRoutesByFullPath
+  fullPaths: '/api/$' | '/api/theme.css' | '/api/auth/$' | '/api/rpc/$'
+  fileServerRoutesByTo: FileServerRoutesByTo
+  to: '/api/$' | '/api/theme.css' | '/api/auth/$' | '/api/rpc/$'
+  id: '__root__' | '/api/$' | '/api/theme.css' | '/api/auth/$' | '/api/rpc/$'
+  fileServerRoutesById: FileServerRoutesById
+}
+export interface RootServerRouteChildren {
+  ApiSplatServerRoute: typeof ApiSplatServerRoute
+  ApiThemeDotcssServerRoute: typeof ApiThemeDotcssServerRoute
+  ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute
+  ApiRpcSplatServerRoute: typeof ApiRpcSplatServerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1027,6 +1088,38 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+declare module '@tanstack/react-start/server' {
+  interface ServerFileRoutesByPath {
+    '/api/theme.css': {
+      id: '/api/theme.css'
+      path: '/api/theme.css'
+      fullPath: '/api/theme.css'
+      preLoaderRoute: typeof ApiThemeDotcssServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/$': {
+      id: '/api/$'
+      path: '/api/$'
+      fullPath: '/api/$'
+      preLoaderRoute: typeof ApiSplatServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/rpc/$': {
+      id: '/api/rpc/$'
+      path: '/api/rpc/$'
+      fullPath: '/api/rpc/$'
+      preLoaderRoute: typeof ApiRpcSplatServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+  }
+}
 
 interface PrivateOnboardedSidebarParticipantsEntitiesAddressRouteChildren {
   PrivateOnboardedSidebarParticipantsEntitiesAddressClaimsRoute: typeof PrivateOnboardedSidebarParticipantsEntitiesAddressClaimsRoute
@@ -1264,3 +1357,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+const rootServerRouteChildren: RootServerRouteChildren = {
+  ApiSplatServerRoute: ApiSplatServerRoute,
+  ApiThemeDotcssServerRoute: ApiThemeDotcssServerRoute,
+  ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,
+  ApiRpcSplatServerRoute: ApiRpcSplatServerRoute,
+}
+export const serverRouteTree = rootServerRouteImport
+  ._addFileChildren(rootServerRouteChildren)
+  ._addFileTypes<FileServerRouteTypes>()
