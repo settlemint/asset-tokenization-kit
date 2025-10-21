@@ -26,10 +26,23 @@ import { timestampSerializer } from "@atk/zod/timestamp";
 import { onError } from "@orpc/client";
 import { RPCHandler } from "@orpc/server/fetch";
 import { BatchHandlerPlugin } from "@orpc/server/plugins";
+import type { AnyServerRouteWithTypes } from "@tanstack/start-server-core";
 import {
   createServerFileRoute,
   getHeaders,
 } from "@tanstack/react-start/server";
+
+declare module "@tanstack/start-server-core" {
+  interface ServerFileRoutesByPath {
+    "/api/rpc/$": {
+      parentRoute: AnyServerRouteWithTypes;
+      id: string;
+      path: string;
+      fullPath: string;
+      children: unknown;
+    };
+  }
+}
 
 /**
  * OpenAPI handler configuration.
