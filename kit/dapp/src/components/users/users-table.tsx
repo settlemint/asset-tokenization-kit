@@ -120,6 +120,25 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
     []
   );
 
+  const externalState = useMemo(
+    () => ({
+      pagination,
+      sorting,
+      globalFilter,
+      onPaginationChange: setPagination,
+      onGlobalFilterChange: handleGlobalFilterChange,
+      onSortingChange: handleSortingChange,
+    }),
+    [
+      globalFilter,
+      handleGlobalFilterChange,
+      handleSortingChange,
+      pagination,
+      setPagination,
+      sorting,
+    ]
+  );
+
   // Normalize blockchain roles into the high-level participant types we surface.
   const resolveUserType = useCallback((user: UserWithIdentity) => {
     if (user.isAdmin || user.roles.admin || user.roles.systemManager) {
@@ -346,14 +365,7 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
         enabled: true,
         totalCount,
       }}
-      externalState={{
-        pagination,
-        sorting,
-        globalFilter,
-        onPaginationChange: setPagination,
-        onGlobalFilterChange: handleGlobalFilterChange,
-        onSortingChange: handleSortingChange,
-      }}
+      externalState={externalState}
       urlState={{
         enabled: false, // Disable URL state since we're managing it manually
       }}
