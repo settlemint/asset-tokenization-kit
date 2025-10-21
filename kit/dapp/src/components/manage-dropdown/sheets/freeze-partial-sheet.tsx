@@ -102,9 +102,7 @@ export function FreezePartialSheet({
                       {userAddress ? (
                         <Web3Address
                           address={getEthereumAddress(userAddress)}
-                          copyToClipboard
                           size="small"
-                          showFullAddress={false}
                         />
                       ) : (
                         t("common:unknown")

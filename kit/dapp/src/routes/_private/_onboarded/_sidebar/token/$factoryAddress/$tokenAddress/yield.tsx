@@ -144,6 +144,9 @@ function RouteComponent() {
           info={t("tokens:fields.contractAddressInfo")}
           value={yieldSchedule.id}
           type="address"
+          addressOptions={{
+            showPrettyName: false,
+          }}
         />
         <DetailGridItem
           label={t("tokens:yield.fields.startDate")}

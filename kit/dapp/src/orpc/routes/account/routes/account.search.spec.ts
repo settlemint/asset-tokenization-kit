@@ -30,10 +30,53 @@ describe("Account search (integration)", () => {
     });
   });
 
-  it("finds the token account by address and returns contractName", async () => {
+  it("finds the token account by address and returns contractName and displayName", async () => {
     const results = await client.account.search({ query: token.id, limit: 1 });
     expect(results.length).toBe(1);
     expect(results[0]?.id).toBe(token.id);
-    expect(results[0]?.contractName).toBeDefined();
+    expect(results[0]?.contractName).toBe(token.name);
+    expect(results[0]?.displayName).toBe(token.name);
+  });
+
+  it("finds the admin user by wallet and returns contractName and displayName", async () => {
+    const adminUser = await client.user.me();
+    expect(adminUser).toBeDefined();
+    expect(adminUser.wallet).toBeDefined();
+    if (!adminUser.wallet) {
+      throw new Error("Admin user wallet is not defined");
+    }
+    const results = await client.account.search({
+      query: adminUser.wallet,
+      limit: 1,
+    });
+    expect(results.length).toBe(1);
+    expect(results[0]?.id).toBe(adminUser.wallet);
+    expect(results[0]?.contractName).toBeUndefined();
+    expect(results[0]?.displayName).toBe(adminUser.name);
+  });
+
+  it("finds the admin user by its identity and returns contractName and displayName", async () => {
+    const adminUser = await client.user.me();
+    expect(adminUser).toBeDefined();
+    expect(adminUser.wallet).toBeDefined();
+    if (!adminUser.wallet) {
+      throw new Error("Admin user wallet is not defined");
+    }
+    const identity = await client.system.identity.read({
+      wallet: adminUser.wallet,
+    });
+    expect(identity).toBeDefined();
+    expect(identity.id).toBeDefined();
+    if (!identity.id) {
+      throw new Error("Identity is not defined");
+    }
+    const results = await client.account.search({
+      query: identity.id,
+      limit: 1,
+    });
+    expect(results.length).toBe(1);
+    expect(results[0]?.id).toBe(identity.id);
+    expect(results[0]?.contractName).toBe("Identity");
+    expect(results[0]?.displayName).toBe(`${adminUser.name} (ONCHAINID)`);
   });
 });

@@ -39,7 +39,9 @@ function IdentityDetailPage() {
           info={t("identities:fields.identityAddressInfo")}
           value={claimsData.identity}
           type="address"
-          showPrettyName={false}
+          addressOptions={{
+            showPrettyName: false,
+          }}
         />
 
         <DetailGridItem
@@ -47,7 +49,6 @@ function IdentityDetailPage() {
           info={t("identities:fields.linkedEntityInfo")}
           value={entityAddress ?? t("common:none")}
           type="address"
-          showPrettyName={false}
         />
 
         <DetailGridItem

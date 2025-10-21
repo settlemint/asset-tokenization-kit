@@ -8,9 +8,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { orpc } from "@/orpc/orpc-client";
-import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
-import type { AccessControlRoles } from "@atk/zod/access-control-roles";
-import { satisfiesRoleRequirement } from "@atk/zod/role-requirement";
 import { useQuery } from "@tanstack/react-query";
 import type { LucideIcon } from "lucide-react";
 import { ChevronDown, FilePlus, UserPlus } from "lucide-react";
@@ -66,23 +63,12 @@ export function ManageIdentityDropdown({
     })
   );
 
-  const userRoles = useMemo(() => {
-    if (!system?.userPermissions?.roles) {
-      return [] as AccessControlRoles[];
-    }
-
-    return Object.entries(system.userPermissions.roles)
-      .filter(([, hasRole]) => hasRole)
-      .map(([role]) => role as AccessControlRoles);
-  }, [system?.userPermissions?.roles]);
-
   const canExecuteRegister = Boolean(
     system?.userPermissions?.actions.identityRegister
   );
 
-  const canExecuteIssueClaim = useMemo(
-    () => satisfiesRoleRequirement(userRoles, SYSTEM_PERMISSIONS.claimCreate),
-    [userRoles]
+  const canExecuteIssueClaim = Boolean(
+    system?.userPermissions?.actions.claimCreate
   );
 
   const actions = useMemo<DropdownAction[]>(() => {

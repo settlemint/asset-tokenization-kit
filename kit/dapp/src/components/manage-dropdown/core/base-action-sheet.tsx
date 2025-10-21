@@ -144,10 +144,6 @@ export function BaseActionSheet({
                     </span>
                     <Web3Address
                       address={asset.id}
-                      copyToClipboard
-                      showFullAddress={false}
-                      showPrettyName={false}
-                      showBadge={false}
                       size="tiny"
                       className="font-mono text-sm"
                     />

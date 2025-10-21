@@ -37,10 +37,9 @@ export function UserWalletCard() {
             <div className="w-full max-w-md">
               <Web3Address
                 address={user.wallet}
-                showFullAddress={true}
-                copyToClipboard={true}
-                showPrettyName={false}
                 className="justify-center"
+                truncate={false}
+                showPrettyName={false}
               />
             </div>
           </>

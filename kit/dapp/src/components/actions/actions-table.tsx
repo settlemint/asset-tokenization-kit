@@ -221,12 +221,7 @@ export function ActionsTable({
             return (
               <div className="flex flex-col gap-1">
                 <span className="font-medium leading-tight">{label}</span>
-                <Web3Address
-                  address={row.original.target}
-                  copyToClipboard
-                  size="small"
-                  showSymbol={false}
-                />
+                <Web3Address address={row.original.target} size="tiny" />
                 <Badge variant="outline" className="w-fit text-xs">
                   {t("table.authorizedBadge", { count: authorizedCount })}
                 </Badge>
@@ -354,7 +349,6 @@ export function ActionsTable({
           meta: {
             displayName: t("table.columns.executedBy"),
             type: "address",
-            showPrettyName: false,
             emptyValue: "—",
           },
         }) as ColumnDef<Action>

@@ -38,9 +38,8 @@ export function IdentityCreated() {
             <div className="flex items-center justify-center gap-2">
               <Web3Address
                 address={identity.id}
+                truncate={false}
                 showPrettyName={false}
-                showFullAddress
-                copyToClipboard
               />
             </div>
           </div>

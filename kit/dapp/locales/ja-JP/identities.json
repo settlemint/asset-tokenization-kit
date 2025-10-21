@@ -106,7 +106,7 @@
   },
   "identityTable": {
     "columns": {
-      "id": "ID番号",
+      "id": "オンチェーンアイデンティティ",
       "type": "タイプ",
       "entity": "エンティティ",
       "linkedEntity": "リンクされたエンティティ",
