@@ -45,7 +45,7 @@ const LIST_TOKEN_FACTORIES_QUERY = theGraphGraphql(`
  * Permissions: Requires "read" permission on token factories
  * Method: GET /token/factories
  *
- * @param input - List parameters including pagination, sorting, and optional hasTokens filter
+ * @param input - List parameters including sorting, and optional hasTokens filter
  * @param context - Request context with TheGraph client and authenticated user
  * @returns Promise<TokenFactory[]> - Array of token factory objects
  * @throws UNAUTHORIZED - If user is not authenticated
@@ -54,7 +54,7 @@ const LIST_TOKEN_FACTORIES_QUERY = theGraphGraphql(`
  *
  * @example
  * ```typescript
- * // Get all token factories (default pagination)
+ * // Get all token factories
  * const factories = await orpc.system.factory.list.query({});
  *
  * // Get only factories that have created tokens
@@ -67,12 +67,6 @@ const LIST_TOKEN_FACTORIES_QUERY = theGraphGraphql(`
  *   hasTokens: false,
  *   orderBy: 'name',
  *   orderDirection: 'asc'
- * });
- *
- * // Paginated retrieval (page 2, 50 items per page)
- * const page2 = await orpc.system.factory.list.query({
- *   offset: 50,
- *   limit: 50
  * });
  * ```
  */

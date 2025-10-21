@@ -1,4 +1,4 @@
-import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
+import { PaginatedListSchema } from "@/orpc/routes/common/schemas/paginated-list.schema";
 import { SettingSchema } from "./settings.read.schema";
 
 /**
@@ -8,8 +8,8 @@ import { SettingSchema } from "./settings.read.schema";
  * to maintain backwards compatibility. Settings are typically ordered
  * by key for easier navigation.
  */
-export const SettingsListSchema = ListSchema.extend({
-  orderBy: ListSchema.shape.orderBy.default("key"),
+export const SettingsListSchema = PaginatedListSchema.extend({
+  orderBy: PaginatedListSchema.shape.orderBy.default("key"),
 });
 
 /**

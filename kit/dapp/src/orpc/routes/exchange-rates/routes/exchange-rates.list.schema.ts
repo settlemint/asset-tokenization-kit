@@ -4,14 +4,14 @@
  * Validation schemas for listing exchange rates with pagination.
  * @module ExchangeRatesListSchema
  */
-import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
+import { PaginatedListSchema } from "@/orpc/routes/common/schemas/paginated-list.schema";
 import { type FiatCurrency, fiatCurrency } from "@atk/zod/fiat-currency";
 import * as z from "zod";
 
 /**
  * Schema for listing exchange rates with optional filters.
  */
-export const ExchangeRatesListSchema = ListSchema.extend({
+export const ExchangeRatesListSchema = PaginatedListSchema.extend({
   /** Optional base currency filter */
   baseCurrency: fiatCurrency().optional(),
   /** Optional quote currency filter */

@@ -1,4 +1,4 @@
-import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
+import { SortableListSchema } from "@/orpc/routes/common/schemas/sortable-list.schema";
 import { assetExtensionArray } from "@atk/zod/asset-extensions";
 import { assetFactoryTypeId } from "@atk/zod/asset-types";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
@@ -46,7 +46,7 @@ export const FactoryListSchema = z.array(TokenFactorySchema);
  * List schema for token factories that extends the base ListSchema
  * with an optional filter for factories that have created tokens.
  */
-export const TokenFactoryListSchema = ListSchema.extend({
+export const TokenFactoryListSchema = SortableListSchema.extend({
   /**
    * Filter factories by whether they have created tokens.
    *
