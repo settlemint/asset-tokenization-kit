@@ -95,8 +95,10 @@ async function getDisplayName(
             context,
           }
         );
-        wallet = identity?.account.id;
-        fallbackName = identity?.account.contractName ?? undefined;
+        if (identity) {
+          wallet = identity?.account.id;
+          fallbackName = `${identity.account.contractName} (ONCHAINID)`;
+        }
       }
       const user = await call(
         userRead,
