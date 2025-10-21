@@ -64,8 +64,6 @@ export const IdentityTable = withErrorBoundary(function IdentityTable() {
               address={row.original.id}
               size="small"
               copyToClipboard
-              showBadge={false}
-              showPrettyName={false}
             />
           ),
           meta: {
@@ -127,7 +125,6 @@ export const IdentityTable = withErrorBoundary(function IdentityTable() {
                     size="small"
                     copyToClipboard
                     showBadge={!account.contractName}
-                    showPrettyName={false}
                   />
                 </div>
               );
@@ -139,7 +136,6 @@ export const IdentityTable = withErrorBoundary(function IdentityTable() {
                 size="small"
                 copyToClipboard
                 showBadge
-                showPrettyName={false}
               />
             );
           },

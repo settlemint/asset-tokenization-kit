@@ -104,7 +104,6 @@ export function FreezePartialSheet({
                           address={getEthereumAddress(userAddress)}
                           copyToClipboard
                           size="small"
-                          showFullAddress={false}
                         />
                       ) : (
                         t("common:unknown")

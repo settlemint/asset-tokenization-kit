@@ -22,9 +22,6 @@ interface AddressQrCardProps {
   qrWrapperClassName?: string;
   addressContainerClassName?: string;
   addressClassName?: string;
-  showPrettyName?: boolean;
-  showFullAddress?: boolean;
-  copyToClipboard?: boolean;
   qrSize?: number;
   qrLevel?: "L" | "M" | "Q" | "H";
 }
@@ -39,9 +36,6 @@ export function AddressQrCard({
   qrWrapperClassName,
   addressContainerClassName,
   addressClassName,
-  showPrettyName = false,
-  showFullAddress = true,
-  copyToClipboard = true,
   qrSize = 200,
   qrLevel = "H",
 }: AddressQrCardProps) {
@@ -76,9 +70,6 @@ export function AddressQrCard({
             <div className={cn("w-full max-w-md", addressContainerClassName)}>
               <Web3Address
                 address={address}
-                showFullAddress={showFullAddress}
-                copyToClipboard={copyToClipboard}
-                showPrettyName={showPrettyName}
                 className={cn("justify-center", addressClassName)}
               />
             </div>

@@ -18,25 +18,19 @@ interface Web3AddressProps {
   address: EthereumAddress;
   size?: "tiny" | "small" | "medium" | "big" | "large";
   copyToClipboard?: boolean;
-  showFullAddress?: boolean;
+  truncate?: boolean;
   className?: string;
-  avatarOnly?: boolean;
-  showBadge?: boolean;
   showSymbol?: boolean;
-  showPrettyName?: boolean;
   skipDataQueries?: boolean; // Skip user/token queries during onboarding
 }
 
 function Web3AddressComponent({
   address,
-  copyToClipboard = false,
+  copyToClipboard = true,
   size = "tiny",
-  showFullAddress = true,
+  truncate = true,
   className,
-  avatarOnly = false,
-  showBadge = false,
   showSymbol = true,
-  showPrettyName = true,
   skipDataQueries = false,
 }: Web3AddressProps) {
   // Query for user data by wallet address
@@ -95,7 +89,7 @@ function Web3AddressComponent({
 
   const displayContent = useMemo(() => {
     const renderAddress = (addressClassName?: string) => {
-      const displayValue = showFullAddress ? address : truncatedAddressDisplay;
+      const displayValue = truncate ? truncatedAddressDisplay : address;
 
       return (
         <span className={cn("font-mono", addressClassName)} title={address}>
@@ -104,9 +98,7 @@ function Web3AddressComponent({
       );
     };
 
-    if (avatarOnly) return null;
-
-    if (showPrettyName && data?.name) {
+    if (data?.name) {
       return (
         <div className="flex items-center gap-2">
           <span className="font-medium">{data.name}</span>
@@ -115,32 +107,18 @@ function Web3AddressComponent({
               ({data.symbol})
             </span>
           )}
-          {showBadge && (
-            <Badge
-              className="min-w-0 max-w-24"
-              variant="outline"
-              title={address}
-            >
-              {renderAddress("text-xs")}
-            </Badge>
-          )}
+
+          <Badge className="min-w-0 max-w-24" variant="outline" title={address}>
+            {renderAddress("text-xs")}
+          </Badge>
         </div>
       );
     }
 
     return renderAddress();
-  }, [
-    avatarOnly,
-    data,
-    showBadge,
-    address,
-    showSymbol,
-    showPrettyName,
-    showFullAddress,
-    truncatedAddressDisplay,
-  ]);
+  }, [data, address, showSymbol, truncate, truncatedAddressDisplay]);
 
-  if (copyToClipboard && !avatarOnly) {
+  if (copyToClipboard) {
     return (
       <CopyToClipboard
         value={address}

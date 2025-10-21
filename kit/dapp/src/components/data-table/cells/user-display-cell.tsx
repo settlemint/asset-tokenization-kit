@@ -26,7 +26,6 @@ export function UserDisplayCell({ user }: UserDisplayCellProps) {
         size="small"
         showPrettyName={true}
         showBadge={true}
-        copyToClipboard={true}
       />
     </div>
   );

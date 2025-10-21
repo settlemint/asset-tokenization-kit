@@ -23,7 +23,6 @@ export interface FormatValueOptions {
   currency?: { assetSymbol: string } | FiatCurrency;
 
   emptyValue?: React.ReactNode;
-  showPrettyName?: boolean;
 
   dateOptions?: FormatDateOptions;
   multiOptionOptions?: FormatMultiOptionOptions;

@@ -297,7 +297,6 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                             address={getEthereumAddress(addr)}
                             copyToClipboard
                             size="small"
-                            showFullAddress={false}
                           />
                         ) : (
                           t("common:unknown")

@@ -60,7 +60,6 @@ export function DetailGridItem({
   displayName,
   currency,
   emptyValue,
-  showPrettyName,
   dateOptions,
 }: DetailGridItemProps) {
   const { t } = useTranslation("detail-grid");
@@ -74,7 +73,6 @@ export function DetailGridItem({
           displayName: displayName ?? label,
           currency,
           emptyValue,
-          showPrettyName,
           dateOptions,
         })
       : safeToString(value ?? ""));

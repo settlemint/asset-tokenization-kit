@@ -108,9 +108,6 @@ export function DeploymentDetails() {
                   <Web3Address
                     address={systemDetails.id}
                     copyToClipboard
-                    showFullAddress={false}
-                    showBadge={false}
-                    showPrettyName={false}
                     size="small"
                     className="text-xs text-muted-foreground"
                   />
@@ -125,9 +122,6 @@ export function DeploymentDetails() {
                     <Web3Address
                       address={systemDetails.identityRegistry.id}
                       copyToClipboard
-                      showFullAddress={false}
-                      showBadge={false}
-                      showPrettyName={false}
                       size="small"
                       className="text-xs text-muted-foreground"
                     />
@@ -143,9 +137,6 @@ export function DeploymentDetails() {
                     <Web3Address
                       address={systemDetails.complianceModuleRegistry.id}
                       copyToClipboard
-                      showFullAddress={false}
-                      showBadge={false}
-                      showPrettyName={false}
                       size="small"
                       className="text-xs text-muted-foreground"
                     />
@@ -161,9 +152,6 @@ export function DeploymentDetails() {
                     <Web3Address
                       address={systemDetails.trustedIssuersRegistry.id}
                       copyToClipboard
-                      showFullAddress={false}
-                      showBadge={false}
-                      showPrettyName={false}
                       size="small"
                       className="text-xs text-muted-foreground"
                     />
@@ -179,9 +167,6 @@ export function DeploymentDetails() {
                     <Web3Address
                       address={systemDetails.tokenFactoryRegistry.id}
                       copyToClipboard
-                      showFullAddress={false}
-                      showBadge={false}
-                      showPrettyName={false}
                       size="small"
                       className="text-xs text-muted-foreground"
                     />

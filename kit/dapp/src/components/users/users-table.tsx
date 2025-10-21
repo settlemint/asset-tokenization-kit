@@ -113,9 +113,6 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
                   <Web3Address
                     address={identityAddress}
                     size="small"
-                    showBadge={false}
-                    showPrettyName={false}
-                    showFullAddress={false}
                     className="max-w-full"
                   />
                 </Link>

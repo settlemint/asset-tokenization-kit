@@ -161,7 +161,6 @@ function RouteComponent() {
           info={t("tokens:fields.contractAddressInfo")}
           value={asset.id}
           type="address"
-          showPrettyName={false}
         />
 
         <DetailGridItem

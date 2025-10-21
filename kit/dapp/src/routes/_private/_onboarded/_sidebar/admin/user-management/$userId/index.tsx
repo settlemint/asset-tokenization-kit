@@ -108,7 +108,6 @@ function RouteComponent() {
           info={t("user:fields.walletAddressInfo")}
           value={user.wallet}
           type="address"
-          showPrettyName={false}
           emptyValue={t("user:fields.noWalletConnected")}
         />
 
@@ -127,9 +126,6 @@ function RouteComponent() {
                 <Web3Address
                   address={identity.id}
                   size="small"
-                  showBadge={false}
-                  showPrettyName={false}
-                  showFullAddress={false}
                   className="max-w-full"
                 />
               </Link>

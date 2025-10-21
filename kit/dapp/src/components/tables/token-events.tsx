@@ -114,7 +114,6 @@ function EventDetailsSheet({
                   <Web3Address
                     address={getEthereumAddress(event.sender.id)}
                     size="tiny"
-                    showFullAddress={false}
                   />
                 </dd>
 
@@ -122,11 +121,7 @@ function EventDetailsSheet({
                   {t("tokens:events.details.asset")}:
                 </dt>
                 <dd className="text-sm">
-                  <Web3Address
-                    address={token.id}
-                    size="tiny"
-                    showFullAddress={false}
-                  />
+                  <Web3Address address={token.id} size="tiny" />
                 </dd>
 
                 <dt className="text-muted-foreground text-sm">

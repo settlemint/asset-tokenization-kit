@@ -182,7 +182,6 @@ export function TransferAssetSheet({
                         address={getEthereumAddress(senderWallet)}
                         copyToClipboard
                         size="small"
-                        showFullAddress={false}
                       />
                     ) : (
                       t("common:unknown")
@@ -213,7 +212,6 @@ export function TransferAssetSheet({
                                 address={getEthereumAddress(recipient)}
                                 copyToClipboard
                                 size="small"
-                                showFullAddress={false}
                               />
                             ) : (
                               <span>{t("common:unknown")}</span>

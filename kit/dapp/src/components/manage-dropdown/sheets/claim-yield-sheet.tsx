@@ -112,9 +112,7 @@ export function ClaimYieldSheet({
               <Web3Address
                 address={denominationAsset.id}
                 copyToClipboard
-                showFullAddress={false}
                 showPrettyName={true}
-                showBadge={false}
                 size="tiny"
                 className="font-mono text-sm"
               />

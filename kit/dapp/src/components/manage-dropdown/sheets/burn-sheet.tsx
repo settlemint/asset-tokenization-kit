@@ -266,7 +266,6 @@ export function BurnSheet({
                               address={getEthereumAddress(addr)}
                               copyToClipboard
                               size="small"
-                              showFullAddress={false}
                             />
                           ) : (
                             t("common:unknown")
