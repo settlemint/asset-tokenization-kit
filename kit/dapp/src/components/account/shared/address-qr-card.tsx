@@ -22,9 +22,10 @@ interface AddressQrCardProps {
   qrWrapperClassName?: string;
   addressContainerClassName?: string;
   addressClassName?: string;
+  showPrettyName?: boolean;
+  truncate?: boolean;
   qrSize?: number;
   qrLevel?: "L" | "M" | "Q" | "H";
-  showPrettyName?: boolean;
 }
 
 export function AddressQrCard({
@@ -38,6 +39,7 @@ export function AddressQrCard({
   addressContainerClassName,
   addressClassName,
   showPrettyName = false,
+  truncate = false,
   qrSize = 200,
   qrLevel = "H",
 }: AddressQrCardProps) {
@@ -74,7 +76,7 @@ export function AddressQrCard({
                 address={address}
                 className={cn("justify-center", addressClassName)}
                 showPrettyName={showPrettyName}
-                truncate={showPrettyName}
+                truncate={truncate}
               />
             </div>
           </>
