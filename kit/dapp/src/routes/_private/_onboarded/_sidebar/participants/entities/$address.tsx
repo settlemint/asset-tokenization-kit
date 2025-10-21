@@ -6,7 +6,11 @@ import { ManageIdentityDropdown } from "@/components/manage-dropdown/manage-iden
 import { getIdentityTabConfiguration } from "@/components/tab-navigation/identity-tab-configuration";
 import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
 import { client } from "@/orpc/orpc-client";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import {
+  CLAIM_ISSUER_ROLE,
+  IDENTITY_MANAGER_ROLE,
+} from "@/lib/constants/roles";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import * as z from "zod";
@@ -46,7 +50,26 @@ export const Route = createFileRoute(
   /**
    * Loader function to fetch identity data from ORPC API
    */
-  loader: async ({ params: { address } }) => {
+  loader: async ({ context: { queryClient, orpc }, params: { address } }) => {
+    const system = await queryClient.ensureQueryData(
+      orpc.system.read.queryOptions({
+        input: { id: "default" },
+      })
+    );
+
+    const roles = system.userPermissions?.roles;
+
+    const canViewEntities = Boolean(
+      roles?.[IDENTITY_MANAGER_ROLE.fieldName] ||
+        roles?.[CLAIM_ISSUER_ROLE.fieldName]
+    );
+
+    if (!canViewEntities) {
+      throw redirect({
+        to: "/",
+      });
+    }
+
     const identity = await client.system.identity.read({
       identityId: address,
     });

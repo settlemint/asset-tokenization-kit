@@ -265,6 +265,32 @@ function DataTableComponent<TData>({
             pagination: { pageIndex: 0, pageSize: initialPageSize ?? 10 },
           };
 
+  const debouncedExternalGlobalFilterChange = React.useMemo(() => {
+    if (!externalState?.onGlobalFilterChange) {
+      return null;
+    }
+
+    const state = externalState;
+
+    const handler = (updater: string | ((old: string) => string)) => {
+      let nextValue = "";
+      setLocalGlobalFilter((previous) => {
+        const base = state.globalFilter ?? previous;
+        nextValue = typeof updater === "function" ? updater(base) : updater;
+        return nextValue;
+      });
+      state.onGlobalFilterChange!(nextValue);
+    };
+
+    return debounce(handler, urlState?.debounceMs ?? 300);
+  }, [externalState, urlState?.debounceMs]);
+
+  React.useEffect(() => {
+    return () => {
+      debouncedExternalGlobalFilterChange?.cancel();
+    };
+  }, [debouncedExternalGlobalFilterChange]);
+
   const stateHandlers =
     isUsingUrlState && urlState?.routePath
       ? {
@@ -281,24 +307,8 @@ function DataTableComponent<TData>({
             onSortingChange: externalState.onSortingChange ?? setLocalSorting,
             onColumnFiltersChange: setLocalColumnFilters,
             onColumnVisibilityChange: setLocalColumnVisibility,
-            onGlobalFilterChange: externalState.onGlobalFilterChange
-              ? debounce((updater: string | ((old: string) => string)) => {
-                  setLocalGlobalFilter((previous) =>
-                    typeof updater === "function"
-                      ? updater(externalState.globalFilter ?? previous)
-                      : updater
-                  );
-
-                  const currentValue =
-                    externalState.globalFilter ?? localGlobalFilter;
-                  const nextValue =
-                    typeof updater === "function"
-                      ? updater(currentValue)
-                      : updater;
-
-                  externalState.onGlobalFilterChange?.(nextValue);
-                }, 1000)
-              : setLocalGlobalFilter,
+            onGlobalFilterChange:
+              debouncedExternalGlobalFilterChange ?? setLocalGlobalFilter,
             onPaginationChange: externalState.onPaginationChange ?? (() => {}),
           }
         : {
