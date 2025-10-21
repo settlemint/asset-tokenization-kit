@@ -18,11 +18,17 @@
     "page": {
       "description": "プラットフォームのユーザー、役割、権限を管理します。"
     },
+    "accessDenied": {
+      "title": "アクセスが制限されています",
+      "description": "ユーザーを管理する権限がありません。管理者に連絡してください。"
+    },
     "table": {
       "columns": {
         "name": "名前",
         "email": "メール",
         "wallet": "ウォレット",
+        "type": "タイプ",
+        "verifications": "検証",
         "role": "役割",
         "identity": "アイデンティティ",
         "status": "ステータス",
@@ -49,6 +55,14 @@
       "identity": {
         "none": "アイデンティティなし"
       },
+      "userType": {
+        "admin": "管理者",
+        "investor": "投資家",
+        "trustedIssuer": "信頼された発行者"
+      },
+      "verifications": {
+        "none": "検証なし"
+      },
       "actions": {
         "viewDetails": "詳細を表示",
         "menu": "アクションメニュー",
@@ -68,7 +82,8 @@
         "navigationFailed": "ユーザー詳細へのナビゲーションに失敗しました"
       },
       "fallback": {
-        "never": "なし"
+        "never": "なし",
+        "unknown": "不明"
       }
     }
   },

@@ -141,6 +141,10 @@
     "description": "Verwalten Sie Identitätsansprüche, Verifizierungsstatus und Compliance für Benutzer.",
     "loading": "Ansprüche laden..."
   },
+  "accessDenied": {
+    "title": "Zugriff eingeschränkt",
+    "description": "Sie verfügen nicht über die Berechtigung, Entitäten zu verwalten. Bitte wenden Sie sich an Ihre Administratorin oder Ihren Administrator."
+  },
   "details": {
     "title": "Kontoansprüche",
     "summary": {

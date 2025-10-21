@@ -18,6 +18,10 @@
     "page": {
       "description": "Manage users, roles, and permissions for your platform."
     },
+    "accessDenied": {
+      "title": "Access restricted",
+      "description": "You do not have permission to manage users. Contact an administrator for additional access."
+    },
     "table": {
       "columns": {
         "name": "Name",

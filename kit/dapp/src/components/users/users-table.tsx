@@ -111,9 +111,10 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
 
   const handleGlobalFilterChange = useCallback(
     (updater: string | ((old: string) => string)) => {
-      setGlobalFilter((prev) =>
-        typeof updater === "function" ? updater(prev) : updater
-      );
+      setGlobalFilter((prev) => {
+        const next = typeof updater === "function" ? updater(prev) : updater;
+        return next.trim();
+      });
       setPagination((prev) => ({ ...prev, pageIndex: 0 }));
     },
     []

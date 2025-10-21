@@ -5,14 +5,14 @@ import {
   CLAIM_ISSUER_ROLE,
   IDENTITY_MANAGER_ROLE,
 } from "@/lib/constants/roles";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/participants/users/"
 )({
-  beforeLoad: async ({ context: { queryClient, orpc } }) => {
+  loader: async ({ context: { queryClient, orpc } }) => {
     const system = await queryClient.ensureQueryData(
       orpc.system.read.queryOptions({
         input: { id: "default" },
@@ -20,18 +20,11 @@ export const Route = createFileRoute(
     );
 
     const roles = system.userPermissions?.roles;
+    const canViewUsers = Boolean(
+      roles?.[IDENTITY_MANAGER_ROLE.fieldName] ||
+        roles?.[CLAIM_ISSUER_ROLE.fieldName]
+    );
 
-    if (
-      !roles?.[IDENTITY_MANAGER_ROLE.fieldName] &&
-      !roles?.[CLAIM_ISSUER_ROLE.fieldName]
-    ) {
-      throw redirect({
-        to: "/",
-      });
-    }
-  },
-  component: UserManagementPage,
-  loader: () => {
     return {
       breadcrumb: [
         createI18nBreadcrumbMetadata("participants", {
@@ -39,12 +32,31 @@ export const Route = createFileRoute(
         }),
         createI18nBreadcrumbMetadata("participantsUsers"),
       ],
-    };
+      canViewUsers,
+    } as const;
   },
+  component: UserManagementPage,
 });
 
 function UserManagementPage() {
   const { t } = useTranslation(["navigation", "user"]);
+  const { canViewUsers } = Route.useLoaderData();
+
+  if (!canViewUsers) {
+    return (
+      <div className="container mx-auto p-6">
+        <RouterBreadcrumb />
+        <div className="mt-6 rounded-lg border bg-card p-6">
+          <h1 className="text-2xl font-semibold">
+            {t("user:management.accessDenied.title")}
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            {t("user:management.accessDenied.description")}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-6">

@@ -1,29 +1,30 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { IdentityTable } from "@/components/identity/identity-table";
-import { CLAIM_ISSUER_ROLE } from "@/lib/constants/roles";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import {
+  CLAIM_ISSUER_ROLE,
+  IDENTITY_MANAGER_ROLE,
+} from "@/lib/constants/roles";
+import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/participants/entities/"
 )({
-  beforeLoad: async ({ context: { queryClient, orpc } }) => {
+  loader: async ({ context: { queryClient, orpc } }) => {
     const system = await queryClient.ensureQueryData(
       orpc.system.read.queryOptions({
         input: { id: "default" },
       })
     );
 
-    if (!system.userPermissions?.roles[CLAIM_ISSUER_ROLE.fieldName]) {
-      throw redirect({
-        to: "/",
-      });
-    }
-  },
-  component: EntityManagementPage,
-  loader: () => {
+    const roles = system.userPermissions?.roles;
+    const canViewEntities = Boolean(
+      roles?.[IDENTITY_MANAGER_ROLE.fieldName] ||
+        roles?.[CLAIM_ISSUER_ROLE.fieldName]
+    );
+
     return {
       breadcrumb: [
         createI18nBreadcrumbMetadata("participants", {
@@ -31,12 +32,31 @@ export const Route = createFileRoute(
         }),
         createI18nBreadcrumbMetadata("participantsEntities"),
       ],
-    };
+      canViewEntities,
+    } as const;
   },
+  component: EntityManagementPage,
 });
 
 function EntityManagementPage() {
   const { t } = useTranslation(["identities", "navigation"]);
+  const { canViewEntities } = Route.useLoaderData();
+
+  if (!canViewEntities) {
+    return (
+      <div className="container mx-auto p-6">
+        <RouterBreadcrumb />
+        <div className="mt-6 rounded-lg border bg-card p-6">
+          <h1 className="text-2xl font-semibold">
+            {t("identities:accessDenied.title")}
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            {t("identities:accessDenied.description")}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-6">
