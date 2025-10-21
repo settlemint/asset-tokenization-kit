@@ -74,6 +74,8 @@ async function getDisplayName(
   const isUserWallet = !account.isContract;
   const isIdentityContract =
     account.isContract && account.contractName === "Identity";
+
+  let fallbackName = account.contractName ?? undefined;
   try {
     if (isUserWallet || isIdentityContract) {
       if (!hasUserReadPermission) {
@@ -94,6 +96,7 @@ async function getDisplayName(
           }
         );
         wallet = identity?.account.id;
+        fallbackName = identity?.account.contractName ?? undefined;
       }
       const user = await call(
         userRead,
@@ -107,10 +110,10 @@ async function getDisplayName(
       return isIdentityContract ? `${user.name} (ONCHAINID)` : user.name;
     }
 
-    return account.contractName ?? undefined;
+    return fallbackName;
   } catch (error: unknown) {
     if (error instanceof ORPCError && error.status === 404) {
-      return account.contractName ?? undefined;
+      return fallbackName;
     }
     throw error;
   }
