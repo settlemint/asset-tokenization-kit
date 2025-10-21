@@ -33,7 +33,7 @@
   "forms": {
     "required": "このフィールドは必須です",
     "optional": "オプションフィールド",
-    "error": "何かが正しくありません: {{message}}",
+    "error": "何かがおかしいです: {{message}}",
     "success": "完璧です！ {{message}}",
     "hint": "クイックヒント: {{message}}",
     "characterCount": "{{current}} / {{max}} 文字使用中",
@@ -50,7 +50,7 @@
   "navigation": {
     "breadcrumb": "あなたはここにいます",
     "pagination": "ページナビゲーション",
-    "currentPage": "あなたはページ {{page}} にいます",
+    "currentPage": "ページ {{page}} にいます",
     "goToPage": "ページ {{page}} にジャンプ",
     "firstPage": "最初に戻る",
     "lastPage": "最後にスキップ",

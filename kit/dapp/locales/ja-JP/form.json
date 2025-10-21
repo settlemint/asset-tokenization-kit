@@ -1,19 +1,18 @@
 {
   "letters-only": "文字のみが許可されています",
-  "noCountryFound": "国が見つかりません。",
+  "noCountryFound": "国が見つかりませんでした。",
   "valid-email": "有効なメールアドレスを入力してください",
   "address": {
     "selectPlaceholder": "住所を選択",
     "searchPlaceholder": "住所を検索",
     "loading": "読み込み中",
     "noResults": "一致する住所が見つかりませんでした",
+    "noAddressesCreated": "まだ住所が作成されていません",
     "recent": "最近",
     "searchResults": "結果",
-    "recentAddresses": "最近",
+    "allAddresses": "すべて",
     "searchInstead": "代わりに検索",
     "enterManually": "手動で入力",
-    "noAddressesCreated": "まだ住所が作成されていません",
-    "allAddresses": "すべて",
     "addAddress": "住所を追加"
   },
   "buttons": {

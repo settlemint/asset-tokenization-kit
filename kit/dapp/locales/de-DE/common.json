@@ -1,24 +1,25 @@
 {
   "actions": {
+    "add": "Hinzufügen",
     "cancel": "Abbrechen",
-    "skip": "Überspringen",
-    "add": "Hinzufügen"
+    "skip": "Überspringen"
   },
   "appDescription": "In Minuten bereitstellen, einfach anpassen",
   "appName": "Asset-Tokenisierungs-Kit",
   "complete": "Vollständig",
   "continue": "Fortfahren",
+  "days": "Tage",
   "deploying": "Wird bereitgestellt...",
   "generating": "Wird generiert...",
-  "next": "Nächster",
-  "previous": "Vorheriger",
+  "next": "Weiter",
+  "previous": "Zurück",
   "transaction": {
     "indexed": "Transaktion bestätigt und indiziert",
-    "waitingForMining": "Warten auf das Mining der Transaktion..."
+    "waitingForMining": "Warten auf Mining der Transaktion..."
   },
   "transactionHash": {
     "copied": "Kopiert!",
-    "copyToClipboard": "Transaktionshash kopieren"
+    "copyToClipboard": "Transaktions-Hash kopieren"
   },
   "verification": {
     "pincode": {
@@ -26,27 +27,41 @@
       "label": "Bestätigungscode"
     }
   },
+  "password-confirmation": {
+    "title": "Passwort bestätigen",
+    "description": "Geben Sie Ihr Passwort ein, um fortzufahren.",
+    "passwordLabel": "Passwort",
+    "submit": "Fortfahren",
+    "submitting": "Wird verarbeitet...",
+    "cancel": "Abbrechen"
+  },
   "errors": {
     "somethingWentWrong": "Hier ist etwas schiefgelaufen"
   },
   "saving": "Änderungen werden gespeichert...",
   "saved": "Änderungen gespeichert",
-  "error": "Speichern der Änderungen fehlgeschlagen",
+  "error": "Fehler beim Speichern der Änderungen. {{message}}",
   "remove": "Entfernen",
   "unknown": "Unbekannt",
   "save": "Speichern",
   "add": "Gewähren",
   "none": "Keine",
+  "yes": "Ja",
+  "no": "Nein",
   "timeInterval": {
     "DAILY": "Täglich",
     "WEEKLY": "Wöchentlich",
-    "MONTHLY": "Monatlich",
-    "QUARTERLY": "Vierteljährlich",
-    "YEARLY": "Jährlich"
+    "MONTHLY": "Monatlich (30 Tage)",
+    "QUARTERLY": "Vierteljährlich (90 Tage)",
+    "YEARLY": "Jährlich (365 Tage)"
   },
   "dates": {
     "today": "Heute",
     "yesterday": "Gestern"
+  },
+  "timeframes": {
+    "trailing24Hours": "Letzte 24 Stunden",
+    "trailing7Days": "Letzte 7 Tage"
   },
   "chart": {
     "update": {
@@ -56,10 +71,148 @@
       "inOneHour": "Aktualisierung in 1 Stunde",
       "inHours": "Aktualisierung in {{count}} Stunden",
       "tomorrow": "Aktualisierung morgen",
-      "soon": "Aktualisierung in Kürze",
+      "soon": "Aktualisierung bald",
       "info": "Diagramm-Aktualisierungsinformationen",
       "lastUpdated": "Zuletzt aktualisiert",
       "nextUpdate": "Nächste Aktualisierung"
+    }
+  },
+  "roles": {
+    "addonmanager": {
+      "title": "Addon-Manager",
+      "description": "Verwaltet Protokoll-Addons und deren Fabriken."
+    },
+    "addonmodule": {
+      "title": "Addon-Fabrik-Modul",
+      "description": "Verwaltet Addon-Module und kann Addon-Instanzverträge zu Compliance-Allow-Listen hinzufügen."
+    },
+    "addonregistrymodule": {
+      "title": "Addon-Fabrik-Registry-Modul",
+      "description": "Verwaltet das Addon-Registry-Modul und administriert Addon-Fabrik-Module."
+    },
+    "admin": {
+      "title": "Standard-Admin",
+      "description": "Kann alle Rollen gewähren und widerrufen. Vollständige Protokollkontrolle."
+    },
+    "auditor": {
+      "title": "Prüfer",
+      "description": "Nur-Lese-Zugriff auf Berechtigungen, Identitäten, Audit-Logs und Systemstatus."
+    },
+    "burner": {
+      "title": "Burn-Operator",
+      "description": "Berechtigt, Tokens zu verbrennen (zerstören), wodurch das Gesamtangebot verringert wird. Wird für Einlösungen oder Angebotsverwaltung verwendet."
+    },
+    "capmanagement": {
+      "title": "Cap-Management",
+      "description": "Berechtigt, die Cap des Tokens festzulegen, die die maximale Anzahl an Tokens ist, die geprägt werden können."
+    },
+    "claimpolicymanager": {
+      "title": "Claim-Policy-Manager",
+      "description": "Verwaltet vertrauenswürdige Emittenten und Claim-Themen für Identitätsüberprüfung."
+    },
+    "claimissuer": {
+      "title": "Claim-Emittent",
+      "description": "Kann Claims erstellen und an Identitäten anhängen. Gewährt nicht automatisch den Status eines vertrauenswürdigen Emittenten."
+    },
+    "complianceadmin": {
+      "title": "Compliance-Admin",
+      "description": "Verwaltet Compliance-bezogene Einstellungen, einschließlich Festlegung des Haupt-Compliance-Vertrags, Hinzufügen oder Entfernen von Compliance-Modulen und Konfiguration ihrer Parameter. Schlüssel zur Durchsetzung regulatorischer Regeln für Token-Transfers und -Interaktionen."
+    },
+    "compliancemanager": {
+      "title": "Compliance-Manager",
+      "description": "Registriert und konfiguriert Compliance-Module, einschließlich globaler Compliance-Einstellungen und Bypass-Listen."
+    },
+    "custodian": {
+      "title": "Verwahrer",
+      "description": "Behandelt Einfrieren, erzwungene Transfers und Asset-Wiederherstellung."
+    },
+    "emergency": {
+      "title": "Notfall",
+      "description": "Kann Verträge pausieren und Notfallinterventionen durchführen."
+    },
+    "forcedtransfer": {
+      "title": "Erzwungener Transfer",
+      "description": "Berechtigt, erzwungene Transfers von Tokens zwischen Adressen auszuführen. Typischerweise in außergewöhnlichen Umständen verwendet, wie Asset-Wiederherstellung oder Fehlerkorrektur unter strenger Governance."
+    },
+    "freezer": {
+      "title": "Sperrverwalter",
+      "description": "Kann Token-Salden für bestimmte Adressen einfrieren oder auftauen, einschließlich teilweiser Beträge. Wird verwendet, um rechtlichen Anordnungen zu entsprechen oder Konten in besonderen Situationen zu verwalten."
+    },
+    "fundsmanager": {
+      "title": "Funds-Manager",
+      "description": "Berechtigt, Mittel abzuheben, die während des Token-Verkaufs gesammelt wurden, einschließlich nativer und ERC20-Währungen."
+    },
+    "governance": {
+      "title": "Governance-Leitung",
+      "description": "Verwaltet Token-Governance, -Verifizierung und -Compliance."
+    },
+    "identitymanager": {
+      "title": "Identity-Manager",
+      "description": "Verwaltet die Identity-Registry, einschließlich Registrierung und Wiederherstellung von Identitäten und Onboarding von Benutzern."
+    },
+    "identityregistrymodule": {
+      "title": "Identity-Registry-Modul",
+      "description": "Verwaltet das Identity-Registry-Modul und kann Identity-Speicher modifizieren."
+    },
+    "minter": {
+      "title": "Prägeberechtigter",
+      "description": "Berechtigt, neue Tokens zu prägen, wodurch das Gesamtangebot erhöht wird. Der Zugriff auf diese Rolle sollte streng kontrolliert werden."
+    },
+    "organisationidentitymanager": {
+      "title": "Organisations-Identity-Manager",
+      "description": "Verwaltet organisationsweite Identity-Claims, wie KYC, AML und Lizenzen."
+    },
+    "pauser": {
+      "title": "Pausierungs-Operator",
+      "description": "Kann den gesamten Vertrag pausieren oder fortsetzen. Wenn pausiert, sind die meisten Token-Operationen blockiert. Dies ist eine Notfall-Sicherheitsfunktion."
+    },
+    "recovery": {
+      "title": "Wiederherstellung",
+      "description": "Berechtigt, Adressenwiederherstellung für Investoren durchzuführen, wodurch die Übertragung von Tokens von einer verlorenen Wallet zu einer neuen ermöglicht wird, vorausgesetzt, die richtige Verifizierung ist erfüllt."
+    },
+    "saleadmin": {
+      "title": "Sale-Admin",
+      "description": "Verwaltet Token-Sale-Parameter und -Operationen, einschließlich Konfiguration von Sale-Einstellungen und Kontrolle des Sale-Lebenszyklus."
+    },
+    "signer": {
+      "title": "Unterzeichner",
+      "description": "Rollenbezeichnung für Signer, die Transaktionen für den Vault einreichen und bestätigen können."
+    },
+    "supplymanagement": {
+      "title": "Supply-Management",
+      "description": "Kann Tokens prägen und verbrennen. Kontrolliert das Token-Angebot."
+    },
+    "systemmanager": {
+      "title": "System-Manager",
+      "description": "Bootstrapped und verwaltet das System, Upgrades und Kernprotokollkonfiguration. Kann Token-Fabriken, Addons und Compliance-Module registrieren."
+    },
+    "systemmodule": {
+      "title": "System-Modul",
+      "description": "Verwaltet System-Module, einschließlich Registrierung von Compliance-Modulen und Topic-Schemes. Administriert Registry-Modul-Rollen."
+    },
+    "tokenadmin": {
+      "title": "Token-Admin",
+      "description": "Kann allgemeine Token-Einstellungen aktualisieren, wie Name, Symbol und OnchainID-Vertragsadresse. Kritisch für die Verwaltung der grundlegenden Identität des Tokens und seiner Verbindung zu externen Identity-Systemen."
+    },
+    "tokenfactorymodule": {
+      "title": "Token-Fabrik-Modul",
+      "description": "Verwaltet Token-Fabrik-Module und kann Token-Verträge zu Compliance-Allow-Listen hinzufügen."
+    },
+    "tokenfactoryregistrymodule": {
+      "title": "Token-Fabrik-Registry-Modul",
+      "description": "Verwaltet das Token-Fabrik-Registry-Modul und administriert Token-Fabrik-Module."
+    },
+    "tokenmanager": {
+      "title": "Token-Manager",
+      "description": "Bereitstellt und konfiguriert Tokens innerhalb des Protokolls."
+    },
+    "trustedissuersmetaregistrymodule": {
+      "title": "Trusted-Issuers-Meta-Registry-Modul",
+      "description": "Verwaltet die Trusted-Issuers-Meta-Registry und kann vertrauenswürdige Emittenten hinzufügen."
+    },
+    "verificationadmin": {
+      "title": "Verification-Admin",
+      "description": "Verwaltet Investor-Verifizierungseinstellungen, wie Festlegung der Identity-Registry und Angabe erforderlicher Claim-Themen für Investoren. Entscheidend für KYC/AML-Prozesse."
     }
   }
 }

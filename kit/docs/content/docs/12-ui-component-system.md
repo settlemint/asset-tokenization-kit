@@ -843,7 +843,7 @@ The component system includes comprehensive testing strategies for quality assur
 
 ### Documentation Navigation
 
-- **Previous**: [11 - Next.js dApp Architecture](./11-nextjs-dapp-architecture.md) - Frontend architecture
+- **Previous**: [11 - TanStack Start dApp Architecture](./11-tanstack-start-dapp-architecture.md) - Frontend architecture
 - **Next**: [13 - Asset Management Interface](./13-asset-management-interface.md) - Asset management
 - **Related**: [14 - Form State Management](./14-form-state-management.md) - Form management
 - **Related**: [15 - Web3 Wallet Integration](./15-web3-wallet-integration.md) - Wallet integration

@@ -4,8 +4,8 @@
     "gasLimit": "Gaslimit",
     "gasUsed": "Verwendetes Gas",
     "hash": "Block-Hash",
-    "miner": "Miner",
-    "number": "Block #{{number}}",
+    "miner": "Miner-Adresse",
+    "number": "Block-Nr. {{number}}",
     "timestamp": "Blockzeit",
     "transactions": "Transaktionen",
     "uncles": "Onkel"
@@ -13,7 +13,7 @@
   "confirmations": {
     "count": "{{current}} von {{required}} Bestätigungen",
     "final": "Transaktion abgeschlossen",
-    "waiting": "Warten auf Bestätigungen..."
+    "waiting": "Warte auf Bestätigungen..."
   },
   "contract": {
     "events": {
@@ -82,7 +82,7 @@
       "fast": "Schnell",
       "instant": "Sofort",
       "slow": "Langsam",
-      "standard": "Standard"
+      "standard": "Standardtempo"
     },
     "total": "Gesamtkosten"
   },
@@ -92,7 +92,7 @@
     "permit": "Genehmigungssignatur",
     "personal": "Persönliche Signatur",
     "request": "Signatur angefordert",
-    "typed": "Typed Data Signatur"
+    "typed": "Signatur für typisierte Daten"
   },
   "tokens": {
     "allowance": {
@@ -112,10 +112,10 @@
       "unpause": "Übertragungen wieder aktivieren"
     },
     "standards": {
-      "ERC1155": "ERC-1155 Multi-Token",
-      "ERC20": "ERC-20 Token",
-      "ERC721": "ERC-721 NFT",
-      "ERC777": "ERC-777 Token"
+      "ERC1155": "ERC-1155-Multi-Token",
+      "ERC20": "ERC-20-Token",
+      "ERC721": "ERC-721-NFT",
+      "ERC777": "ERC-777-Token"
     }
   },
   "transaction": {
@@ -128,7 +128,7 @@
       "gasPrice": "Gaspreis",
       "gasUsed": "Verwendetes Gas",
       "hash": "Transaktions-Hash",
-      "nonce": "Nonce",
+      "nonce": "Nonce (Zähler)",
       "timestamp": "Zeitstempel",
       "to": "An",
       "value": "Wert"
@@ -140,12 +140,12 @@
       "failed": "Transaktion fehlgeschlagen: {{reason}}",
       "speedUp": "Transaktion beschleunigen",
       "viewOnExplorer": "Auf Block-Explorer anzeigen",
-      "waiting": "Warte auf Bestätigung..."
+      "waiting": "Warten auf Bestätigung..."
     },
     "status": {
       "cancelled": "Abgebrochen",
       "confirmed": "Bestätigt",
-      "confirming": "Wird bestätigt",
+      "confirming": "Bestätige",
       "dropped": "Abgelehnt",
       "failed": "Fehlgeschlagen",
       "pending": "Ausstehend",
@@ -168,12 +168,12 @@
   "transactions": {
     "tracking": {
       "indexingTimeout": "Indexierungszeitüberschreitung. Die Transaktion war erfolgreich, kann aber einige Zeit dauern, bis sie angezeigt wird.",
-      "streamTimeout": "Transaktionsverfolgung zeitüberschreitung. Bitte überprüfen Sie den Transaktionsstatus manuell.",
+      "streamTimeout": "Transaktionsverfolgung zeitlich begrenzt. Bitte überprüfen Sie den Transaktionsstatus manuell.",
       "transactionDropped": "Transaktion wurde aus dem Mempool entfernt",
       "transactionFailed": "Transaktion fehlgeschlagen",
       "transactionIndexed": "Transaktion erfolgreich indiziert.",
-      "waitingForIndexing": "Transaktion bestätigt. Warte auf Indizierung...",
-      "waitingForMining": "Warte darauf, dass die Transaktion gemined wird..."
+      "waitingForIndexing": "Transaktion bestätigt. Warten auf Indizierung...",
+      "waitingForMining": "Warten, bis die Transaktion gemined wird..."
     }
   }
 }

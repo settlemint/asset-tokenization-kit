@@ -73,7 +73,9 @@
     },
     "dependencies": {},
     "format": {},
-    "lint": {},
+    "lint": {
+      "dependsOn": ["//#verify-translations"]
+    },
     "dev": {
       "cache": false,
       "persistent": true,
@@ -100,6 +102,9 @@
     },
     "typecheck": {
       "dependsOn": ["codegen"]
+    },
+    "//#verify-translations": {
+      "inputs": ["kit/dapp/locales/**/*"]
     },
     "test:ci": {
       "dependsOn": ["^test:ci"],

@@ -8,7 +8,7 @@
       "description": "Compliance-Module, die für Ihr Asset aktiviert wurden.",
       "title": "Aktivierte Module"
     },
-    "description": "Aktivieren und konfigurieren Sie Compliance-Module, um zu steuern, wer auf Ihr Asset zugreifen kann",
+    "description": "Aktivieren und konfigurieren Sie Compliance-Module, um zu steuern, wer auf Ihr Asset zugreifen kann.",
     "title": "Compliance-Module"
   },
   "form": {
@@ -25,80 +25,99 @@
       "submit": "Einreichen",
       "leave": "Verlassen"
     },
-    "description": "Konfigurieren Sie Ihr {{type}}, indem Sie die grundlegenden Informationen unten bereitstellen.",
+    "description": "Konfigurieren Sie Ihr {{type}} indem Sie die grundlegenden Informationen unten bereitstellen.",
     "errors": {
-      "denominationAssetFetch": "Wir können diesen Token nicht laden. Versuchen Sie einen anderen zu wählen oder warten Sie einen Moment."
+      "denominationAssetFetch": "Wir können dieses Token nicht laden. Versuchen Sie, ein anderes auszuwählen oder warten Sie einen Moment.",
+      "maturityDateTooEarly": "Das Fälligkeitsdatum muss nach {{minDateTime}} liegen."
     },
     "fields": {
+      "basePrice": {
+        "description": "Der Basispreis des {{type}}",
+        "label": "Basispreis",
+        "placeholder": "z.B. 1000 USD"
+      },
       "cap": {
-        "description": "Die maximale Anzahl von Token, die ausgegeben werden können",
-        "label": "Token-Obergrenze",
+        "description": "Die maximale Anzahl von {{type}}, die ausgegeben werden kann.",
+        "label": "Maximale Grenze",
         "placeholder": "z.B. 1000000"
       },
+      "category": {
+        "description": "Die Kategorie des {{type}}",
+        "label": "Kategorie"
+      },
+      "class": {
+        "description": "Die Klasse des {{type}}",
+        "label": "Klasse"
+      },
       "countryCode": {
-        "description": "Wählen Sie, wo Ihr Vermögenswert registriert wird",
+        "description": "Wählen Sie, wo Ihr {{type}} registriert wird.",
         "label": "Land"
       },
       "decimals": {
-        "description": "Anzahl der Dezimalstellen für das Token (0-18, Standard ist 18)",
+        "description": "Anzahl der Dezimalstellen für das {{type}} (0-18, Standard ist 18). Dies wird verwendet, um die Genauigkeit zu bestimmen.",
         "label": "Dezimalstellen",
-        "placeholder": "18"
+        "placeholder": "z. B. 18"
       },
       "faceValue": {
-        "description": "Der Nennwert jedes Anleihe-Token",
+        "description": "Der Nennwert jedes {{type}}",
         "label": "Nennwert",
         "placeholder": "z.B. 1000"
       },
       "isin": {
-        "description": "Die ISIN des Tokens. Dies ist ein optionaler eindeutiger Identifikator für das Token im Finanzsystem.",
-        "label": "ISIN (Optional)",
+        "description": "Die ISIN des {{type}}. Dies ist ein optionaler eindeutiger Identifikator für das {{type}} im Finanzsystem.",
+        "label": "ISIN (optional)",
         "placeholder": "z.B. US0378331005"
       },
       "managementFeeBps": {
         "description": "Verwaltungsgebühr in Basispunkten (100 BPS = 1%)",
         "label": "Verwaltungsgebühr (BPS)",
-        "placeholder": "z.B. 100"
+        "placeholder": "z.B. 100",
+        "inPercentage": "Prozentsatz: "
       },
       "maturityDate": {
-        "description": "Das Fälligkeitsdatum der Anleihe",
+        "description": "Das Fälligkeitsdatum des {{type}}",
         "label": "Fälligkeitsdatum",
         "placeholder": "Datum auswählen"
       },
       "name": {
-        "description": "Der Name des Tokens. Dieser wird verwendet, um das Token in der Benutzeroberfläche zu identifizieren und kann nach der Erstellung nicht mehr geändert werden.",
-        "label": "Name",
-        "placeholder": "z.B. Regierung {{type}} Serie A"
+        "description": "Der Name des {{type}}. Dies wird verwendet, um das {{type}} in der Benutzeroberfläche zu identifizieren und kann nach der Erstellung nicht mehr geändert werden.",
+        "label": "Name des Assets",
+        "placeholder": "z.B. Regierungs-{{type}} Serie A"
       },
       "symbol": {
-        "description": "Ein kurzes Symbol für das Token (normalerweise 3-5 Zeichen)",
-        "label": "Symbol",
+        "description": "Ein kurzes Symbol für das {{type}} (normalerweise 3-5 Zeichen). Es kann bis zu 10 Zeichen lang sein.",
+        "label": "Ticker-Symbol",
         "placeholder": "z.B. GBSA"
       },
       "type": {
-        "description": "Wählen Sie den Typ des Assets, das Sie erstellen möchten. Nur Asset-Typen mit bereitgestellten Fabriken sind verfügbar.",
+        "description": "Wählen Sie den Typ des digitalen Assets, das Sie erstellen möchten. Nur Asset-Typen mit bereitgestellten Fabriken sind verfügbar.",
         "label": "Asset-Typ"
       },
       "denominationAsset": {
-        "description": "Die Ethereum-Adresse des Nennwertvermögens",
-        "label": "Nennwertvermögen",
+        "description": "Die Adresse des Nennwert-Assets",
+        "label": "Nennwert-Asset",
         "placeholder": "z.B. 0x..."
+      },
+      "assetClass": {
+        "description": "Die Klasse des {{type}}",
+        "label": "Asset-Klasse"
       }
     },
-    "title": "Erstellen {{type}}"
+    "title": "Bereitstellen {{type}}"
   },
   "leave-confirmation": {
-    "title": "Vermögensdesigner verlassen?",
-    "description": "Ihr Fortschritt geht verloren, wenn Sie jetzt verlassen. Alle Informationen, die Sie eingegeben haben, werden nicht gespeichert.",
+    "title": "Asset-Designer verlassen?",
+    "description": "Ihr Fortschritt geht verloren, wenn Sie jetzt gehen. Alle Informationen, die Sie eingegeben haben, werden nicht gespeichert.",
     "stay": "Bleiben",
     "leave": "Verlassen"
   },
   "messages": {
-    "comingSoon": "Bald verfügbar!",
+    "comingSoon": "Demnächst!",
     "created": "{{type}} erfolgreich erstellt.",
     "creating": "Erstelle das {{type}}...",
     "creation-failed": "Erstellung des {{type}} fehlgeschlagen.",
-    "error-toast": "Erstellung von {{type}} fehlgeschlagen",
-    "loading": "Lade verfügbare Asset-Typen...",
+    "error-toast": "Erstellung von {{type}} fehlgeschlagen.",
+    "loading": "Verfügbare Asset-Typen werden geladen...",
     "loading-description": "Bitte warten Sie, während wir die verfügbaren Token-Fabriken abrufen.",
     "no-asset-types": "Keine verfügbaren Asset-Typen",
     "no-asset-types-description": "Es wurden noch keine Token-Fabriken bereitgestellt. Bitte stellen Sie zuerst Token-Fabriken bereit, bevor Sie Tokens erstellen.",
@@ -109,10 +128,10 @@
     "creation-success": "{{type}} erfolgreich erstellt.",
     "default-error": "Erstellung von {{type}} fehlgeschlagen.",
     "initial-loading": "Bereite die Erstellung von {{type}} vor...",
-    "no-result-error": "Es wurde kein Transaktionshash von der Erstellung des {{type}} empfangen."
+    "no-result-error": "Kein Transaktionshash von der Erstellung des {{type}} erhalten."
   },
   "validation": {
-    "type-required": "Bitte wählen Sie einen Asset-Typ aus"
+    "type-required": "Bitte wählen Sie einen Asset-Typ aus."
   },
   "verification": {
     "confirm-description": "Bitte verifizieren Sie Ihre Identität, um Ihr digitales Asset zu erstellen.",
@@ -120,35 +139,68 @@
   },
   "wizard": {
     "description": "Wir führen Sie durch jeden Schritt, um Ihr tokenisiertes Asset mit integrierter regulatorischer Compliance und Anlegerschutz zu erstellen.",
-    "steps": {
-      "asset-type": {
-        "description": "Wählen Sie den Typ des Tokens, den Sie erstellen möchten",
-        "title": "Token-Typ auswählen"
+    "groups": {
+      "chooseAssetType": {
+        "title": "Wählen Sie den Asset-Typ",
+        "description": "Wählen Sie die Asset-Klasse und den Typ, den Sie tokenisieren möchten."
       },
-      "assetBasics": {
-        "description": "Legen Sie die grundlegenden Eigenschaften und Details fest, die Ihr Asset definieren",
-        "title": "Definieren Sie Ihr Asset"
+      "configureAssetDetails": {
+        "title": "Details konfigurieren",
+        "description": "Definieren Sie grundlegende Eigenschaften und Einstellungen für Ihr Asset."
       },
-      "complianceModules": {
-        "description": "Richten Sie Compliance-Module ein, um sicherzustellen, dass Ihr Asset den gesetzlichen Anforderungen entspricht",
-        "title": "Compliance konfigurieren"
-      },
-      "selectAssetType": {
-        "description": "Wählen Sie den Typ des realen Assets, das Sie auf der Blockchain tokenisieren möchten",
-        "title": "Wählen Sie Ihren Asset-Typ"
+      "compliance": {
+        "title": "Compliance-Einstellungen",
+        "description": "Richten Sie regulatorische Module ein, um rechtliche Anforderungen zu erfüllen."
       },
       "summary": {
-        "description": "Bestätigen und stellen Sie Ihr konformes digitales Asset auf der Blockchain bereit",
-        "title": "Überprüfen & Bereitstellen"
+        "title": "Zusammenfassung",
+        "description": "Überprüfen Sie Ihre Asset-Konfiguration vor der Bereitstellung."
+      }
+    },
+    "steps": {
+      "assetClass": {
+        "description": "Wählen Sie die Asset-Klasse, die Sie erstellen möchten.",
+        "title": "Asset-Klasse auswählen"
       },
-      "token-details": {
-        "description": "Konfigurieren Sie die grundlegenden Eigenschaften Ihres Tokens",
-        "title": "Token-Details"
+      "assetType": {
+        "description": "Wählen Sie den Typ des realen Assets, das Sie auf der Blockchain tokenisieren möchten.",
+        "title": "Wählen Sie Ihren Asset-Typ"
+      },
+      "assetBasics": {
+        "description": "Geben Sie die allgemeinen Informationen für dieses Asset an.",
+        "title": "Allgemeine Informationen"
+      },
+      "assetSpecificConfig": {
+        "description": "Legen Sie die spezifischen Parameter für Ihr {{type}} fest.",
+        "title": "Instrumentenspezifische Details"
+      },
+      "complianceModules": {
+        "description": "Richten Sie Compliance-Module ein, um sicherzustellen, dass Ihr Asset den rechtlichen Anforderungen entspricht.",
+        "title": "Compliance konfigurieren"
+      },
+      "summary": {
+        "description": "Bestätigen und Ihr konformes digitales Asset auf die Blockchain bereitstellen",
+        "title": "Überprüfen & bereitstellen",
+        "generalInfo": {
+          "title": "Allgemeine Informationen",
+          "description": "Allgemeine Informationen über Ihr {{type}}"
+        },
+        "instrumentSpecificDetails": {
+          "title": "Instrumentenspezifische Details",
+          "description": "{{type}} spezifische Details"
+        },
+        "complianceModules": {
+          "title": "Compliance-Module",
+          "description": "Compliance-Module, die für Ihr {{type}} aktiviert wurden"
+        },
+        "availability": {
+          "checking": "Überprüfung",
+          "availableDescription": "Ihr Asset-Name, Symbol und Dezimalstellen sind verfügbar.",
+          "unavailableDescription": "Ein Asset mit diesem Namen, Symbol und Dezimalstellen existiert bereits. Ändern Sie eines dieser Elemente, um fortzufahren.",
+          "errorDescription": "Verfügbarkeit kann nicht überprüft werden. Überprüfen Sie Ihre Asset-Details und versuchen Sie es erneut."
+        }
       }
     },
     "title": "Gestalten Sie Ihr Asset"
-  },
-  "sidebar": {
-    "button-title": "Asset-Designer"
   }
 }

@@ -8,8 +8,6 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createServerRootRoute } from '@tanstack/react-start/server'
-
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PrivateRouteImport } from './routes/_private'
@@ -34,6 +32,7 @@ import { Route as PrivateOnboardedSidebarAddonDesignerRouteImport } from './rout
 import { Route as PrivateOnboardedSidebarActionsRouteImport } from './routes/_private/_onboarded/_sidebar/actions'
 import { Route as PrivateOnboardedSidebarAddonIndexRouteImport } from './routes/_private/_onboarded/_sidebar/addon/index'
 import { Route as PrivateOnboardedSidebarTokenStatsRouteImport } from './routes/_private/_onboarded/_sidebar/token/stats'
+import { Route as PrivateOnboardedSidebarPlatformSettingsThemeRouteImport } from './routes/_private/_onboarded/_sidebar/platform-settings/theme'
 import { Route as PrivateOnboardedSidebarPlatformSettingsPermissionsRouteImport } from './routes/_private/_onboarded/_sidebar/platform-settings/permissions'
 import { Route as PrivateOnboardedSidebarPlatformSettingsComplianceRouteImport } from './routes/_private/_onboarded/_sidebar/platform-settings/compliance'
 import { Route as PrivateOnboardedSidebarPlatformSettingsClaimTopicsIssuersRouteImport } from './routes/_private/_onboarded/_sidebar/platform-settings/claim-topics-issuers'
@@ -60,11 +59,6 @@ import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressDenomina
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressActionsRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/actions'
 import { Route as PrivateOnboardedSidebarParticipantsEntitiesAddressClaimsRouteImport } from './routes/_private/_onboarded/_sidebar/participants/entities/$address/claims'
-import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
-import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
-import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
-
-const rootServerRouteImport = createServerRootRoute()
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -191,6 +185,12 @@ const PrivateOnboardedSidebarTokenStatsRoute =
   PrivateOnboardedSidebarTokenStatsRouteImport.update({
     id: '/token/stats',
     path: '/token/stats',
+    getParentRoute: () => PrivateOnboardedSidebarRoute,
+  } as any)
+const PrivateOnboardedSidebarPlatformSettingsThemeRoute =
+  PrivateOnboardedSidebarPlatformSettingsThemeRouteImport.update({
+    id: '/platform-settings/theme',
+    path: '/platform-settings/theme',
     getParentRoute: () => PrivateOnboardedSidebarRoute,
   } as any)
 const PrivateOnboardedSidebarPlatformSettingsPermissionsRoute =
@@ -375,21 +375,6 @@ const PrivateOnboardedSidebarParticipantsEntitiesAddressClaimsRoute =
     getParentRoute: () =>
       PrivateOnboardedSidebarParticipantsEntitiesAddressRoute,
   } as any)
-const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
-  id: '/api/$',
-  path: '/api/$',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
-const ApiRpcSplatServerRoute = ApiRpcSplatServerRouteImport.update({
-  id: '/api/rpc/$',
-  path: '/api/rpc/$',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
-const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
@@ -418,6 +403,7 @@ export interface FileRoutesByFullPath {
   '/platform-settings/claim-topics-issuers': typeof PrivateOnboardedSidebarPlatformSettingsClaimTopicsIssuersRoute
   '/platform-settings/compliance': typeof PrivateOnboardedSidebarPlatformSettingsComplianceRoute
   '/platform-settings/permissions': typeof PrivateOnboardedSidebarPlatformSettingsPermissionsRoute
+  '/platform-settings/theme': typeof PrivateOnboardedSidebarPlatformSettingsThemeRoute
   '/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
   '/addon': typeof PrivateOnboardedSidebarAddonIndexRoute
   '/participants/entities/$address': typeof PrivateOnboardedSidebarParticipantsEntitiesAddressRouteWithChildren
@@ -464,6 +450,7 @@ export interface FileRoutesByTo {
   '/platform-settings/claim-topics-issuers': typeof PrivateOnboardedSidebarPlatformSettingsClaimTopicsIssuersRoute
   '/platform-settings/compliance': typeof PrivateOnboardedSidebarPlatformSettingsComplianceRoute
   '/platform-settings/permissions': typeof PrivateOnboardedSidebarPlatformSettingsPermissionsRoute
+  '/platform-settings/theme': typeof PrivateOnboardedSidebarPlatformSettingsThemeRoute
   '/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
   '/addon': typeof PrivateOnboardedSidebarAddonIndexRoute
   '/participants/entities': typeof PrivateOnboardedSidebarParticipantsEntitiesIndexRoute
@@ -513,6 +500,7 @@ export interface FileRoutesById {
   '/_private/_onboarded/_sidebar/platform-settings/claim-topics-issuers': typeof PrivateOnboardedSidebarPlatformSettingsClaimTopicsIssuersRoute
   '/_private/_onboarded/_sidebar/platform-settings/compliance': typeof PrivateOnboardedSidebarPlatformSettingsComplianceRoute
   '/_private/_onboarded/_sidebar/platform-settings/permissions': typeof PrivateOnboardedSidebarPlatformSettingsPermissionsRoute
+  '/_private/_onboarded/_sidebar/platform-settings/theme': typeof PrivateOnboardedSidebarPlatformSettingsThemeRoute
   '/_private/_onboarded/_sidebar/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
   '/_private/_onboarded/_sidebar/addon/': typeof PrivateOnboardedSidebarAddonIndexRoute
   '/_private/_onboarded/_sidebar/participants/entities/$address': typeof PrivateOnboardedSidebarParticipantsEntitiesAddressRouteWithChildren
@@ -562,6 +550,7 @@ export interface FileRouteTypes {
     | '/platform-settings/claim-topics-issuers'
     | '/platform-settings/compliance'
     | '/platform-settings/permissions'
+    | '/platform-settings/theme'
     | '/token/stats'
     | '/addon'
     | '/participants/entities/$address'
@@ -608,6 +597,7 @@ export interface FileRouteTypes {
     | '/platform-settings/claim-topics-issuers'
     | '/platform-settings/compliance'
     | '/platform-settings/permissions'
+    | '/platform-settings/theme'
     | '/token/stats'
     | '/addon'
     | '/participants/entities'
@@ -656,6 +646,7 @@ export interface FileRouteTypes {
     | '/_private/_onboarded/_sidebar/platform-settings/claim-topics-issuers'
     | '/_private/_onboarded/_sidebar/platform-settings/compliance'
     | '/_private/_onboarded/_sidebar/platform-settings/permissions'
+    | '/_private/_onboarded/_sidebar/platform-settings/theme'
     | '/_private/_onboarded/_sidebar/token/stats'
     | '/_private/_onboarded/_sidebar/addon/'
     | '/_private/_onboarded/_sidebar/participants/entities/$address'
@@ -680,35 +671,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   PrivateRoute: typeof PrivateRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
-}
-export interface FileServerRoutesByFullPath {
-  '/api/$': typeof ApiSplatServerRoute
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-  '/api/rpc/$': typeof ApiRpcSplatServerRoute
-}
-export interface FileServerRoutesByTo {
-  '/api/$': typeof ApiSplatServerRoute
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-  '/api/rpc/$': typeof ApiRpcSplatServerRoute
-}
-export interface FileServerRoutesById {
-  __root__: typeof rootServerRouteImport
-  '/api/$': typeof ApiSplatServerRoute
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-  '/api/rpc/$': typeof ApiRpcSplatServerRoute
-}
-export interface FileServerRouteTypes {
-  fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/api/$' | '/api/auth/$' | '/api/rpc/$'
-  fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/api/$' | '/api/auth/$' | '/api/rpc/$'
-  id: '__root__' | '/api/$' | '/api/auth/$' | '/api/rpc/$'
-  fileServerRoutesById: FileServerRoutesById
-}
-export interface RootServerRouteChildren {
-  ApiSplatServerRoute: typeof ApiSplatServerRoute
-  ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute
-  ApiRpcSplatServerRoute: typeof ApiRpcSplatServerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -872,6 +834,13 @@ declare module '@tanstack/react-router' {
       path: '/token/stats'
       fullPath: '/token/stats'
       preLoaderRoute: typeof PrivateOnboardedSidebarTokenStatsRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarRoute
+    }
+    '/_private/_onboarded/_sidebar/platform-settings/theme': {
+      id: '/_private/_onboarded/_sidebar/platform-settings/theme'
+      path: '/platform-settings/theme'
+      fullPath: '/platform-settings/theme'
+      preLoaderRoute: typeof PrivateOnboardedSidebarPlatformSettingsThemeRouteImport
       parentRoute: typeof PrivateOnboardedSidebarRoute
     }
     '/_private/_onboarded/_sidebar/platform-settings/permissions': {
@@ -1058,31 +1027,6 @@ declare module '@tanstack/react-router' {
     }
   }
 }
-declare module '@tanstack/react-start/server' {
-  interface ServerFileRoutesByPath {
-    '/api/$': {
-      id: '/api/$'
-      path: '/api/$'
-      fullPath: '/api/$'
-      preLoaderRoute: typeof ApiSplatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/rpc/$': {
-      id: '/api/rpc/$'
-      path: '/api/rpc/$'
-      fullPath: '/api/rpc/$'
-      preLoaderRoute: typeof ApiRpcSplatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-  }
-}
 
 interface PrivateOnboardedSidebarParticipantsEntitiesAddressRouteChildren {
   PrivateOnboardedSidebarParticipantsEntitiesAddressClaimsRoute: typeof PrivateOnboardedSidebarParticipantsEntitiesAddressClaimsRoute
@@ -1167,6 +1111,7 @@ interface PrivateOnboardedSidebarRouteChildren {
   PrivateOnboardedSidebarPlatformSettingsClaimTopicsIssuersRoute: typeof PrivateOnboardedSidebarPlatformSettingsClaimTopicsIssuersRoute
   PrivateOnboardedSidebarPlatformSettingsComplianceRoute: typeof PrivateOnboardedSidebarPlatformSettingsComplianceRoute
   PrivateOnboardedSidebarPlatformSettingsPermissionsRoute: typeof PrivateOnboardedSidebarPlatformSettingsPermissionsRoute
+  PrivateOnboardedSidebarPlatformSettingsThemeRoute: typeof PrivateOnboardedSidebarPlatformSettingsThemeRoute
   PrivateOnboardedSidebarTokenStatsRoute: typeof PrivateOnboardedSidebarTokenStatsRoute
   PrivateOnboardedSidebarAddonIndexRoute: typeof PrivateOnboardedSidebarAddonIndexRoute
   PrivateOnboardedSidebarParticipantsEntitiesAddressRoute: typeof PrivateOnboardedSidebarParticipantsEntitiesAddressRouteWithChildren
@@ -1202,6 +1147,8 @@ const PrivateOnboardedSidebarRouteChildren: PrivateOnboardedSidebarRouteChildren
       PrivateOnboardedSidebarPlatformSettingsComplianceRoute,
     PrivateOnboardedSidebarPlatformSettingsPermissionsRoute:
       PrivateOnboardedSidebarPlatformSettingsPermissionsRoute,
+    PrivateOnboardedSidebarPlatformSettingsThemeRoute:
+      PrivateOnboardedSidebarPlatformSettingsThemeRoute,
     PrivateOnboardedSidebarTokenStatsRoute:
       PrivateOnboardedSidebarTokenStatsRoute,
     PrivateOnboardedSidebarAddonIndexRoute:
@@ -1317,11 +1264,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-const rootServerRouteChildren: RootServerRouteChildren = {
-  ApiSplatServerRoute: ApiSplatServerRoute,
-  ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,
-  ApiRpcSplatServerRoute: ApiRpcSplatServerRoute,
-}
-export const serverRouteTree = rootServerRouteImport
-  ._addFileChildren(rootServerRouteChildren)
-  ._addFileTypes<FileServerRouteTypes>()

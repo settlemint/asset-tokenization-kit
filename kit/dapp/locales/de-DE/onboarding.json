@@ -1,100 +1,97 @@
 {
   "assets": {
     "asset-factories-deployed-successfully": "Asset-Fabriken erfolgreich bereitgestellt",
-    "asset-factories-description": "Sie werden gebeten, jede Transaktion mit Ihrer PIN oder OTP zu bestätigen.",
-    "asset-types-deployed": "Bereitgestellte Vermögensarten",
+    "asset-factories-description": "Sie werden aufgefordert, jede Transaktion mit Zwei-Faktor-Authentifizierung zu bestätigen.",
+    "asset-types-deployed": "Vermögensarten bereitgestellt",
     "available-asset-types": "Verfügbare Vermögensarten",
-    "choose-asset-types": "Definieren Sie, welche Arten von tokenisierten Vermögenswerten Ihre Plattform unterstützen wird.",
-    "confirm-deployment-description": "Sie sind dabei, die ausgewählten Vermögenswertfabriken mit Ihrem Wallet bereitzustellen. Um diese kritische Aktion zu autorisieren, müssen wir Ihre Identität bestätigen.",
-    "confirm-deployment-title": "Geben Sie Ihren PIN-Code ein, um die Bereitstellung fortzusetzen.",
+    "choose-asset-types": "Definieren Sie, welche Arten von tokenisierten Vermögenswerten Ihre Plattform unterstützen soll.",
+    "confirm-deployment-description": "Sie sind dabei, die ausgewählten Asset-Fabriken mit Ihrer Wallet bereitzustellen. Um diese kritische Aktion zu autorisieren, müssen wir Ihre Identität bestätigen.",
+    "confirm-deployment-title": "Geben Sie Ihren PIN-Code ein, um die Bereitstellung fortzusetzen",
+    "deploy": "Asset-Fabriken bereitstellen",
     "deploy-assets": "Vermögenswerte bereitstellen",
     "deployed": "Asset-Fabriken erfolgreich bereitgestellt",
     "deployed-factories": "Bereitgestellte Fabriken",
     "deployed-label": "(Bereitgestellt)",
-    "deploying-toast": "Asset-Fabriken werden bereitgestellt...",
-    "description": "Wählen Sie, welche Arten von digitalen Vermögenswerten Sie auf Ihrer Plattform aktivieren möchten",
+    "deploying": "Bereitstellen...",
+    "deploying-toast": "Asset-Fabriken bereitstellen...",
+    "deployment-warning": "Dieser Prozess kann je nach Ihren Auswahlen bis zu 2-3 Minuten dauern.",
+    "description": "Wählen Sie, welche Arten von digitalen Vermögenswerten auf Ihrer Plattform aktiviert werden sollen",
     "descriptions": {
-      "bond": "Tokenisierte Schuldverschreibungen mit festen Einkommensmerkmalen",
-      "deposit": "Tokenisierte Bankeinlagen und -zertifikate",
-      "equity": "Digitale Aktien, die Eigentum an Unternehmen repräsentieren",
-      "fund": "Investmentfonds-Token für gebündelte Investitionen",
-      "stablecoin": "Preis-stabile digitale Währungen"
+      "bond": "Tokenisierte Schuldtitel mit festverzinslichen Merkmalen",
+      "deposit": "Tokenisierte Bankeinlagen und Zertifikate",
+      "equity": "Digitale Anteile, die Eigentum an Unternehmen repräsentieren",
+      "fund": "Investmentfonds-Token für gepoolte Investitionen",
+      "stablecoin": "Preisstabile digitale Währungen"
     },
-    "info": "Wählen Sie die Arten von digitalen Vermögenswerten aus, die Ihre Plattform unterstützen wird. Sie können später weitere Vermögensarten hinzufügen.",
+    "factory-explanation-1": "Jeder Vermögensart, die Sie auf Ihrer Plattform unterstützen, wie Anleihen, Eigenkapital oder Stablecoins, wird von einer dedizierten Asset-Fabrik verwaltet.",
+    "factory-explanation-2": "Asset-Fabriken sind Smart Contracts, die definieren, wie eine bestimmte Vermögensklasse on-chain funktioniert, einschließlich ihrer Merkmale, Regeln und Compliance-Logik.",
+    "factory-explanation-3": "Indem Sie die Vermögensarten auswählen, die Sie unterstützen möchten, stellen Sie die notwendigen Smart Contracts bereit, die sie antreiben. Sie können später weitere Fabriken in Ihren Plattformeinstellungen hinzufügen.",
+    "failed-toast": "Fehler beim Bereitstellen von Asset-Fabriken: ",
+    "info": "Wählen Sie die Arten von digitalen Vermögenswerten aus, die Ihre Plattform unterstützen soll. Sie können später weitere Vermögensarten hinzufügen.",
     "no-system": "System nicht gefunden. Bitte stellen Sie zuerst das System bereit.",
     "select-all-asset-types": "Wählen Sie alle Vermögensarten aus, die Sie tokenisieren möchten",
-    "select-asset-types": "Wählen Sie Vermögensarten aus",
     "title": "Unterstützte Vermögensarten konfigurieren",
     "validation-error": "Wählen Sie mindestens eine Vermögensart aus",
     "what-are-asset-factories": "Was sind Asset-Fabriken?",
-    "your-asset-factories-ready": "Ihre Asset-Fabriken sind bereit zur Tokenisierung",
-    "deploy": "Vermögensfabriken bereitstellen",
-    "deploying": "Wird bereitgestellt...",
-    "deployment-warning": "Dieser Prozess kann je nach Ihren Auswahlmöglichkeiten bis zu 2–3 Minuten dauern.",
-    "failed-toast": "Bereitstellung der Vermögensfabriken fehlgeschlagen: ",
-    "factory-explanation-1": "Jede Vermögensart, die Sie auf Ihrer Plattform unterstützen, wie Anleihen, Aktien oder Stablecoins, wird von einer speziellen Vermögenswertfabrik verwaltet.",
-    "factory-explanation-2": "Vermögenswertfabriken sind Smart Contracts, die definieren, wie sich eine bestimmte Vermögensklasse on-chain verhält, einschließlich ihrer Eigenschaften, Regeln und Compliance-Logik.",
-    "factory-explanation-3": "Indem Sie die Vermögensarten auswählen, die Sie unterstützen möchten, stellen Sie die notwendigen Smart Contracts bereit, die sie antreiben. Sie können später in den Plattform-Einstellungen jederzeit weitere Fabriken hinzufügen."
+    "your-asset-factories-ready": "Ihre Asset-Fabriken sind bereit für die Tokenisierung"
   },
   "groups": {
     "addons": {
-      "description": "Aktivieren Sie optionale Plattformfunktionen",
-      "title": "Zusatzmodule"
+      "description": "Optionale Plattformfunktionen aktivieren",
+      "title": "Erweiterungen"
     },
     "identity": {
-      "description": "Richten Sie Ihre on-chain Identität ein",
+      "description": "Stellen Sie Ihre on-chain Identität her",
       "title": "Identität"
     },
     "system": {
-      "description": "Bereitstellen und Konfigurieren Ihres Systems",
-      "title": "System"
+      "description": "Stellen Sie Ihr System bereit und konfigurieren Sie es",
+      "title": "Systemeinrichtung"
     },
     "wallet": {
-      "description": "Richten Sie Ihr Wallet und Sicherheitsmaßnahmen ein",
-      "title": "Brieftasche"
+      "description": "Richten Sie Ihre Wallet und Sicherheitsmaßnahmen ein",
+      "title": "Wallet-Sicherheit"
     }
   },
   "identity": {
-    "confirm-description": "Bitte verifizieren Sie Ihre Identität, um Ihre On-Chain-Identität zu erstellen.",
-    "confirm-title": "Bestätigen Sie die Erstellung der Identität",
-    "deployed-toast": "Identität erfolgreich registriert!",
-    "deploying-toast": "Registrierung der Identität...",
-    "description": "Erforderlich für die Identitätsregistrierung und KYC-Verifizierung",
-    "failed-toast": "Identität konnte nicht registriert werden: ",
-    "intro": "Vervollständigen Sie Ihre Identitätsverifizierung, um vollen Zugriff auf die Plattform zu erhalten. Dies gewährleistet die Einhaltung der Finanzvorschriften (KYC/AML).\n\nSie können dies vorerst überspringen, müssen jedoch mindestens Ihr Wohnsitzland angeben, um Ihre Identität zu registrieren.\n\nIhre Daten sind verschlüsselt und werden nur zur Einhaltung der Vorschriften verwendet.",
-    "title": "Persönliche Informationen hinzufügen"
+    "description": "Erforderlich für Identitätsregistrierung und KYC-Verifizierung",
+    "intro": "Schließen Sie Ihre Identitätsverifizierung ab, um vollen Plattformzugriff freizuschalten. Dies stellt die Einhaltung von Finanzvorschriften (KYC/AML) sicher.\n\nSie können dies vorerst überspringen, aber Sie benötigen mindestens Ihr Wohnsitzland, um Ihre Identität zu registrieren.\n\nIhre Daten werden verschlüsselt und nur für regulatorische Compliance verwendet.",
+    "intro-paragraph-1": "Um Ihre Identität abzuschließen und die Plattform zu verwenden, benötigen wir einige grundlegende Informationen. Dies hilft uns, regulatorische Anforderungen (KYC/AML) zu erfüllen und ermöglicht es Ihrer Identität, auf der Blockchain registriert zu werden.",
+    "intro-paragraph-2": "Wir verwenden diese Informationen, um Ihre Identität zu verifizieren und Compliance-Anforderungen zu erfüllen. Sie können dies später von Ihrem Dashboard aus aktualisieren oder vervollständigen. Felder mit * sind erforderlich. Land ist für die Identitätsregistrierung erforderlich.",
+    "intro-paragraph-3": "Ihre Daten werden sicher gespeichert und nur für Compliance-Zwecke verwendet. Sie können dies später von Ihrem Dashboard aus aktualisieren oder vervollständigen.",
+    "title": "Schließen Sie Ihre persönlichen Informationen ab"
   },
   "identity-setup": {
     "address-title": "Dies ist Ihre ONCHAINID-Adresse",
-    "confirm-description": "Sie sind dabei, Ihre ONCHAINID mit Ihrem Wallet bereitzustellen. Um diese kritische Aktion zu autorisieren, müssen wir Ihre Identität bestätigen.",
-    "confirm-title": "Geben Sie Ihren PIN-Code ein, um die Bereitstellung fortzusetzen.",
+    "confirm-description": "Sie sind dabei, Ihre ONCHAINID mit Ihrer Wallet bereitzustellen. Um diese kritische Aktion zu autorisieren, müssen wir Ihre Identität bestätigen.",
+    "confirm-title": "Geben Sie Ihren PIN-Code ein, um die Bereitstellung fortzusetzen",
     "deployed-toast": "ONCHAINID erfolgreich erstellt!",
-    "deploying-toast": "ONCHAINID wird erstellt...",
-    "description": "Verbinden Sie Ihre verifizierte Identität mit Ihrem Wallet.",
-    "failed-toast": "ONCHAINID konnte nicht erstellt werden: ",
+    "deploying-toast": "ONCHAINID erstellen...",
+    "description": "Verbinden Sie Ihre verifizierte Identität mit Ihrer Wallet",
+    "failed-toast": "Fehler beim Erstellen von ONCHAINID: ",
     "form": {
-      "submit": "Erstellen Sie Meine ONCHAINID",
-      "submitting": "ONCHAINID wird erstellt..."
+      "submit": "Meine ONCHAINID erstellen",
+      "submitting": "ONCHAINID erstellen..."
     },
-    "info": "Wir erstellen Ihr ONCHAINID mit der Identitätsfabrik.",
-    "info-description": "Dies erstellt Ihren Identitäts-Smart-Contract auf der Blockchain - einen sicheren Container für Ihre verifizierten Anmeldeinformationen.\n\nEs werden noch keine persönlichen Daten gespeichert. Das kommt als Nächstes. Für den Moment richten wir Ihre einzigartige Identitätsadresse ein, die nur Sie kontrollieren.\n\nDies dauert in der Regel 10-30 Sekunden.",
-    "success-message": "Ihre on-chain Identität wurde erstellt. Sie können sie jetzt registrieren und Ihre verifizierten Informationen hinzufügen oder dies später von Ihrem Dashboard aus tun.",
+    "info": "Wir erstellen Ihre ONCHAINID mit der Identitätsfabrik.",
+    "info-description": "Dies erstellt Ihren Identitäts-Smart-Contract auf der Blockchain — einen sicheren Container für Ihre verifizierten Anmeldedaten.\n\nKeine persönlichen Daten werden noch gespeichert. Das kommt als Nächstes. Für jetzt etablieren wir Ihre einzigartige Identitätsadresse, die nur Sie kontrollieren.\n\nDies dauert typischerweise 10-30 Sekunden.",
+    "success-message": "Ihre on-chain Identität wurde erstellt. Sie können sie nun registrieren und Ihre verifizierten Informationen hinzufügen oder dies später von Ihrem Dashboard aus tun.",
     "success-title": "Identität erfolgreich erstellt",
-    "title": "Ihre On-Chain Identität",
-    "deployment-warning": "Dieser Prozess kann bis zu 2–3 Minuten dauern.",
-    "transaction-confirmation-info": "Sie werden gebeten, jede Transaktion mit Ihrer PIN oder OTP zu bestätigen.",
-    "body-1": "Ihr Wallet beweist, dass Sie den Zugriff auf Ihre Vermögenswerte kontrollieren, aber es beweist nicht, wer Sie sind.",
-    "body-2": "ONCHAINID ist Ihre on-chain Identität, die sicher mit Ihrem Wallet verknüpft ist. Es enthält verifizierte Informationen wie Ihren Namen, Ihr Land oder Ihren KYC-Status, die von vertrauenswürdigen Quellen hinzugefügt werden. Diese Verifizierungen werden als „Ansprüche“ bezeichnet und helfen der Plattform, die Compliance-Anforderungen zu erfüllen und die Benutzer zu schützen.",
-    "body-3": "Denken Sie daran, dass es Ihr digitales Passwort für die Blockchain ist: einzigartig, verifizierbar und vollständig unter Ihrer Kontrolle.",
-    "body-4": "Die Erstellung Ihrer ONCHAINID ist schnell und erfolgt direkt on-chain. Sie können Ihre Identität jederzeit von Ihrem Dashboard aus aktualisieren oder vervollständigen."
+    "title": "Ihre On-Chain-Identität",
+    "deployment-warning": "Dieser Prozess kann bis zu 2–3 Minuten dauern",
+    "transaction-confirmation-info": "Sie werden aufgefordert, jede Transaktion mit Zwei-Faktor-Authentifizierung zu bestätigen.",
+    "body-1": "Ihre Wallet beweist, dass Sie den Zugriff auf Ihre Vermögenswerte kontrollieren, aber sie beweist nicht, wer Sie sind.",
+    "body-2": "ONCHAINID ist Ihre on-chain Identität, sicher mit Ihrer Wallet verbunden. Sie enthält verifizierte Informationen wie Ihren Namen, Land oder KYC-Status, die von vertrauenswürdigen Quellen hinzugefügt werden. Diese Verifizierungen werden als „Ansprüche“ bezeichnet und helfen der Plattform, Compliance-Anforderungen zu erfüllen und Benutzer zu schützen.",
+    "body-3": "Stellen Sie es sich als Ihren digitalen Pass für die Blockchain vor: einzigartig, verifizierbar und vollständig unter Ihrer Kontrolle.",
+    "body-4": "Ihre ONCHAINID zu erstellen ist schnell und geschieht direkt on-chain. Sie können Ihre Identität jederzeit von Ihrem Dashboard aus aktualisieren oder vervollständigen."
   },
   "sidebar": {
-    "description": "Befolgen Sie diese einfachen Schritte, um die Macht der Tokenisierung freizuschalten - von der Brieftellerstellung bis zur Bereitstellung der Plattform.",
-    "title": "Ihr Fortschritt bei der Einrichtung"
+    "description": "Befolgen Sie diese einfachen Schritte, um die Macht der Tokenisierung freizuschalten — von der Wallet-Erstellung bis zur Plattform-Bereitstellung.",
+    "title": "Ihr Setup-Fortschritt"
   },
   "steps": {
     "identity": {
-      "description": "Fügen Sie persönliche Informationen zur Einhaltung hinzu",
+      "description": "Persönliche Infos für Compliance hinzufügen",
       "title": "Identität verifizieren"
     },
     "identity-setup": {
@@ -102,128 +99,145 @@
       "title": "Blockchain-Identität erstellen"
     },
     "system-addons": {
-      "description": "Aktivieren Sie optionale Plattformfunktionen",
-      "title": "Systemzusatzmodule"
+      "description": "Optionale Plattformfunktionen aktivieren",
+      "title": "System-Add-ons"
     },
     "system-assets": {
-      "description": "Aktivieren Sie Anleihen, Eigenkapital, Fonds und mehr",
-      "title": "Wählen Sie Vermögensarten aus"
+      "description": "Anleihen, Eigenkapital, Fonds und mehr aktivieren",
+      "title": "Vermögensarten auswählen"
     },
     "system-deploy": {
       "description": "Initialisieren Sie die Kern-Smart-Contracts",
       "title": "System bereitstellen"
     },
     "system-settings": {
-      "description": "Systemparameter und -einstellungen einrichten",
-      "title": "System konfigurieren"
+      "description": "Plattformpräferenzen und -einstellungen einrichten",
+      "title": "Plattform konfigurieren"
     },
     "wallet": {
-      "description": "Sehen Sie Ihre Blockchain-Brieftasche an",
-      "title": "Ihre Brieftasche"
+      "description": "Sehen Sie sich Ihre Blockchain-Wallet an",
+      "title": "Ihre Wallet"
     },
     "wallet-recovery-codes": {
-      "description": "Sichern Sie Sicherungscodes für den Notfallzugriff",
+      "description": "Sichern Sie Backup-Codes für Notfallzugriff",
       "title": "Wiederherstellungscodes"
     },
     "wallet-security": {
-      "description": "Fügen Sie PIN- oder OTP-Authentifizierung hinzu",
-      "title": "Sichern Sie Ihre Brieftasche"
+      "description": "PIN-Authentifizierung hinzufügen",
+      "title": "Ihre Wallet sichern"
+    }
+  },
+  "identityProgress": {
+    "title": "Bereit zum Investieren",
+    "description": "Schließen Sie diese Schritte ab, um Zugriff auf Ihre Vermögenswerte zu erhalten.",
+    "steps": {
+      "personalInfo": {
+        "title": "Persönliche Informationen gespeichert",
+        "description": "Ihre Profilinformationen sind gesperrt."
+      },
+      "registry": {
+        "title": "Identitätsüberprüfung läuft",
+        "description": "Ein Administrator überprüft Ihre Identität. Überprüfen Sie auf Updates."
+      }
+    },
+    "cta": {
+      "label": "Persönliche Infos überprüfen"
     }
   },
   "system": {
-    "admin-role-explanation": "Indem Sie dies tun, werden Sie der erste Administrator des Systems und erhalten die volle Kontrolle über seine grundlegenden Komponenten. Später können Sie zusätzliche Administratoren einladen, um bei der Verwaltung der Abläufe zu helfen.",
+    "admin-role-explanation": "Dadurch werden Sie der erste Administrator des Systems und erhalten volle Kontrolle über seine grundlegenden Komponenten. Später können Sie zusätzliche Administratoren einladen, um bei der Betriebsverwaltung zu helfen.",
     "bootstrap-contracts-header": "Das Bootstrapping des Systems umfasst die Bereitstellung dieser kritischen Smart Contracts:",
-    "bootstrap-explanation": "Als erster Benutzer sind Sie verantwortlich für das Bootstrapping des Systems — eine einmalige Einrichtung, die die Kern-Smart Contracts bereitstellt, die die Plattform antreiben.",
+    "bootstrap-explanation": "Als erster Benutzer sind Sie verantwortlich für das Bootstrapping des Systems — eine einmalige Einrichtung, die die Kern-Smart-Contracts bereitstellt, die die Plattform antreiben.",
     "compliance-engine": "• Compliance-Engine für regulatorische Anforderungen",
-    "compliance-engine-description": "setzt Regeln wie KYC, Gerichtsbarkeit und Übertragungsbeschränkungen durch",
+    "compliance-engine-description": "erzwingt Regeln wie KYC, Gerichtsbarkeit und Transferbeschränkungen",
     "compliance-engine-label": "Compliance-Engine",
     "compliance-engine-name": "Compliance-Engine",
-    "confirm-deployment-description": "Bitte verifizieren Sie Ihre Identität, um das Blockchain-System bereitzustellen.",
-    "confirm-deployment-title": "Bestätigen Sie die Bereitstellung des Systems",
-    "core-system-contract": "• Kern-System-Smart-Contract",
+    "confirm-deployment-description": "Sie sind dabei, das Kernsystem mit Ihrer Wallet bereitzustellen. Um diese kritische Aktion zu autorisieren, müssen wir Ihre Identität bestätigen.",
+    "confirm-deployment-title": "Systembereitstellung bestätigen",
+    "core-system-contract": "• Kernsystem-Smart-Contract",
     "deploy": "System bereitstellen",
     "deployed-contracts": "Bereitgestellte Vertragsadressen",
     "deployed-toast": "System erfolgreich bereitgestellt!",
-    "deploying": "Wird bereitgestellt...",
-    "deploying-toast": "System wird bereitgestellt...",
-    "deployment-details-description": "Sehen Sie sich die Einzelheiten der Systembereitstellung an",
+    "deploying": "Bereitstellen...",
+    "deploying-toast": "System bereitstellen...",
+    "deployment-details-description": "Sehen Sie sich die Details der Systembereitstellung an",
     "deployment-details-title": "System erfolgreich bereitgestellt",
-    "deployment-warning": "Hinweis: Dieser Schritt kann 2–3 Minuten dauern, während das System Smart Contracts on-chain bereitstellt. Bitte halten Sie diesen Tab offen und aktualisieren Sie nicht.",
-    "failed-toast": "System konnte nicht bereitgestellt werden: ",
-    "identity-registry": "• Identitätsregister zur Benutzerverifizierung",
+    "deployment-warning": "Hinweis: Dieser Schritt kann 2-3 Minuten dauern, da Smart-Contracts on-chain bereitgestellt werden. Bitte lassen Sie diese Registerkarte offen und aktualisieren Sie nicht.",
+    "failed-toast": "Fehler beim Bereitstellen des Systems: ",
+    "identity-registry": "• Identitätsregistrierung für Benutzerverifizierung",
     "identity-registry-description": "verwaltet Benutzeridentitäten on-chain",
-    "identity-registry-label": "Identitätsregister",
-    "identity-registry-name": "Identitätsregister",
-    "infrastructure-conclusion": "Diese Smart Contracts bilden die sichere Infrastruktur hinter Benutzeridentität, Compliance und Vermögensausgabe. Nach der Bereitstellung wird Ihre Plattform bereit sein, die Tokenisierung der realen Welt zu unterstützen.",
-    "initialize-subtitle": "Sie sind dabei, das Fundament der Plattform einzurichten",
+    "identity-registry-label": "Identitätsregistrierung",
+    "identity-registry-name": "Identitätsregistrierung",
+    "infrastructure-conclusion": "Diese Smart Contracts bilden die sichere Infrastruktur hinter Benutzeridentität, Compliance und Vermögensausgabe. Sobald bereitgestellt, ist Ihre Plattform bereit, reale Tokenisierung zu unterstützen.",
+    "initialize-subtitle": "Sie sind dabei, die Grundlage der Plattform einzurichten",
     "initialize-title": "System initialisieren",
     "system-contract": "Systemvertrag",
-    "token-factory": "• Token-Fabrikregister zur Erstellung von Vermögenswerten",
-    "token-factory-label": "Token-Fabrikregister",
-    "trusted-issuers": "• Vertrauenswürdige Aussteller-Register für autorisierte Parteien",
-    "trusted-issuers-description": "definiert, welche Stellen verifizierte Berechtigungen ausstellen können",
-    "trusted-issuers-label": "Register vertrauenswürdiger Aussteller",
-    "trusted-issuers-name": "Vertrauenswürdige Aussteller-Register",
+    "token-factory": "• Token-Fabrik-Registrierung für Vermögenserstellung",
+    "token-factory-label": "Token-Fabrik-Registrierung",
+    "trusted-issuers": "• Vertrauenswürdige Emittenten-Registrierung für autorisierte Parteien",
+    "trusted-issuers-description": "definiert, welche Einheiten verifizierte Anmeldedaten ausstellen können",
+    "trusted-issuers-label": "Vertrauenswürdige Emittenten-Registrierung",
+    "trusted-issuers-name": "Vertrauenswürdige Emittenten-Registrierung",
     "view-deployment-details": "Bereitstellungsdetails anzeigen",
-    "what-gets-deployed": "Was bereitgestellt wird:",
-    "admin-role-granted": "Sie sind jetzt der erste Administrator der Plattform.",
+    "what-gets-deployed": "Was wird bereitgestellt:",
+    "admin-role-granted": "Sie sind nun der erste Administrator der Plattform.",
     "admin-capabilities-intro": "Von hier aus können Sie:",
     "admin-capability-assets": "Unterstützte Vermögenswerte konfigurieren",
     "admin-capability-admins": "Zusätzliche Administratoren einladen",
-    "admin-capability-compliance": "Compliance- und Identitätsmodule verwalten",
-    "contracts-live-message": "Die Smart Contracts, die Ihre Plattform antreiben, sind jetzt live auf der Blockchain.",
-    "configure-system": "System konfigurieren"
+    "admin-capability-compliance": "Compliance und Identitätsmodule verwalten",
+    "contracts-live-message": "Die Smart Contracts, die Ihre Plattform antreiben, sind nun live auf der Blockchain.",
+    "configure-platform": "Plattform konfigurieren"
   },
   "system-addons": {
     "addon-deployment": {
       "addons-deployed-successfully": "Add-ons erfolgreich bereitgestellt",
       "deployed-addons": "Bereitgestellte Add-ons",
       "description": "Ihre Add-ons sind einsatzbereit",
-      "title": "Add-Ons erfolgreich bereitgestellt",
-      "intro-1": "Alle ausgewählten Plattform-Add-Ons wurden erfolgreich bereitgestellt.",
-      "intro-2": "Diese Funktionen sind jetzt verfügbar zur Nutzung und Konfiguration. Als Plattformadministrator kontrollieren Sie deren Parameter und Zugriffe.",
-      "continue-to-identity-setup": "Fahren Sie mit der Identitätseinrichtung fort"
+      "title": "Add-ons erfolgreich bereitgestellt",
+      "intro-1": "Alle ausgewählten Plattform-Add-ons wurden erfolgreich bereitgestellt.",
+      "intro-2": "Diese Funktionen sind nun verfügbar und können konfiguriert werden. Als Plattformadministrator kontrollieren Sie ihre Parameter und ihren Zugriff.",
+      "continue-to-identity-setup": "Mit Identitätseinrichtung fortfahren"
     },
     "addon-selection": {
       "addon-types": {
         "airdrops": {
-          "description": "Aktivieren Sie die Airdrop-Funktionalität für Ihre Plattform. Dies ermöglicht es Ihnen, Airdrops für Ihre Vermögenswerte zu erstellen.",
-          "title": "Airdrops"
+          "description": "Airdrop-Funktionalität für Ihre Plattform aktivieren. Dies ermöglicht es Ihnen, Airdrops für Ihre Vermögenswerte zu erstellen.",
+          "title": "Airdrops (Verteilungen)"
         },
         "xvp": {
-          "description": "Aktivieren Sie die XvP (Lieferung gegen Zahlung) Funktionalität für Ihre Plattform. Dies ermöglicht es Benutzern, ihre Positionen mit XvP anstelle des Standardmechanismus Lieferung gegen Zahlung abzurechnen.",
-          "title": "XvP"
+          "description": "XvP (Delivery vs Payment) Funktionalität für Ihre Plattform aktivieren. Dies ermöglicht es Benutzern, ihre Positionen mit XvP anstelle des Standardmechanismus Delivery vs Payment zu begleichen.",
+          "title": "XvP-Abwicklung"
         },
         "yield": {
-          "description": "Aktivieren Sie die Ertragsfunktionalität für Ihre Plattform. Dies ermöglicht es Ihnen, ertragsbringende Vermögenswerte wie Anleihen und andere festverzinsliche Produkte zu erstellen.",
-          "title": "Ertrag"
+          "description": "Yield-Funktionalität für Ihre Plattform aktivieren. Dies ermöglicht es Ihnen, yield-tragende Vermögenswerte wie Anleihen und andere festverzinsliche Produkte zu erstellen.",
+          "title": "Rendite"
         }
       },
       "addons-description": "Add-ons sind zusätzliche Funktionen und Integrationen für Ihre Plattform. Sie können hier aktiviert oder deaktiviert werden.",
       "available-addons": "Verfügbare Add-ons",
-      "confirm-deployment-description": "Bitte verifizieren Sie Ihre Identität, um die Add-ons bereitzustellen.",
-      "confirm-deployment-title": "Bestätigen Sie die Bereitstellung des Add-ons",
-      "deploy-addons": "Ausgewählte Add-Ons bereitstellen",
+      "deployment-warning": "Dieser Prozess kann je nach Ihren Auswahlen bis zu 2-3 Minuten dauern.",
+      "confirm-deployment-description": "Sie sind dabei, die ausgewählten Add-ons mit Ihrer Wallet bereitzustellen. Um diese kritische Aktion zu autorisieren, müssen wir Ihre Identität bestätigen.",
+      "confirm-deployment-title": "Add-on-Bereitstellung bestätigen",
+      "deploy-addons": "Ausgewählte Add-ons bereitstellen",
       "deployed-toast": "Add-ons erfolgreich bereitgestellt!",
-      "deploying-toast": "Add-ons werden bereitgestellt...",
+      "deploying": "Bereitstellen...",
+      "deploying-toast": "Add-ons bereitstellen...",
       "description": "Erweitern Sie Ihre Plattform mit optionalen Funktionen.",
-      "failed-toast": "Bereitstellung der Add-ons fehlgeschlagen: ",
+      "failed-toast": "Fehler beim Bereitstellen von Add-ons: ",
       "no-system": "System nicht gefunden. Bitte stellen Sie zuerst das System bereit.",
+      "required-for-bonds": "Für Anleihen erforderlich",
+      "intro-1": "Plattform-Add-ons ermöglichen es Ihnen, die Fähigkeiten Ihrer Tokenisierungsplattform zu erweitern. Diese Funktionen — wie Airdrops, Yield oder XVP — werden als Smart Contracts bereitgestellt, genau wie das Kernsystem.",
+      "intro-2": "Sie können diejenigen aktivieren, die Sie jetzt benötigen, und sie später einfach ändern oder erweitern in den Einstellungen.",
+      "transaction-confirmation-info": "Sie werden aufgefordert, jede Transaktion mit Zwei-Faktor-Authentifizierung zu bestätigen.",
       "select-all-addons": "Wählen Sie alle Add-ons aus, die Sie aktivieren möchten",
-      "title": "Plattform-Add-Ons konfigurieren",
+      "title": "Plattform-Add-ons konfigurieren",
+      "enabled-addons": "Aktivierte Add-ons",
+      "enabled-addons-description": "Diese Add-ons sind derzeit in Ihrem System aktiv und können nicht deaktiviert werden",
+      "all-addons-enabled": "Alle verfügbaren Add-ons wurden aktiviert.",
       "validation": {
         "invalid": "Wählen Sie mindestens ein Add-on aus"
       },
-      "what-are-addons": "Was sind Add-ons?",
-      "deploying": "Wird bereitgestellt...",
-      "required-for-bonds": "Erforderlich für Anleihen",
-      "deployment-warning": "Dieser Prozess kann je nach Ihren Auswahlmöglichkeiten bis zu 2–3 Minuten dauern.",
-      "intro-1": "Plattform-Add-Ons ermöglichen es Ihnen, die Funktionen Ihrer Tokenisierungsplattform zu erweitern. Diese Funktionen — wie Airdrops, Erträge oder XVP — werden als Smart Contracts bereitgestellt, genau wie das Kernsystem.",
-      "intro-2": "Sie können die, die Sie jetzt benötigen, aktivieren und später in den Einstellungen einfach ändern oder erweitern.",
-      "transaction-confirmation-info": "Sie werden gebeten, jede Transaktion mit Ihrer PIN oder OTP zu bestätigen.",
-      "enabled-addons": "Aktivierte Add-Ons",
-      "enabled-addons-description": "Diese Add-Ons sind derzeit in Ihrem System aktiv und können nicht deaktiviert werden",
-      "all-addons-enabled": "Alle verfügbaren Add-Ons wurden aktiviert."
+      "what-are-addons": "Was sind Add-ons?"
     }
   },
   "system-settings": {
@@ -232,69 +246,69 @@
       "saving": "Speichern..."
     },
     "description": {
-      "intro": "Bevor Sie mit der Ausgabe von Vermögenswerten beginnen, lassen Sie uns einige grundlegende Einstellungen konfigurieren, die bestimmen, wie sich die Plattform verhält. Diese Standardwerte helfen, die Erfahrung für Sie und Ihre Benutzer zu personalisieren.",
-      "update": "Sie können diese Präferenzen später in den Plattform-Einstellungen aktualisieren."
+      "intro": "Bevor Sie mit der Ausgabe von Vermögenswerten beginnen, konfigurieren wir einige grundlegende Einstellungen, die bestimmen, wie die Plattform sich verhält. Diese Standardwerte helfen, die Erfahrung für Sie und Ihre Benutzer zu personalisieren.",
+      "update": "Sie können diese Präferenzen später in den Plattformeinstellungen aktualisieren."
     },
     "form": {
       "baseCurrency": {
         "description": "Wählen Sie die Standardwährung für Ihre Plattform",
         "label": "Basiswährung",
         "validation": {
-          "invalid": "Ungültige Währungswahl"
+          "invalid": "Ungültige Währungsauswahl"
         }
       }
     },
-    "subtitle": "Definieren Sie, wie sich Ihre Plattform standardmäßig verhält",
-    "title": "Plattform-Einstellungen konfigurieren",
+    "subtitle": "Definieren Sie, wie Ihre Plattform sich standardmäßig verhält",
+    "title": "Plattformeinstellungen konfigurieren",
     "toast": {
-      "error": "Speichern der Plattform-Einstellungen fehlgeschlagen: {{message}}",
-      "exchangeRateSyncWarning": "Basiswährung gespeichert, aber Wechselkurse konnten nicht synchronisiert werden. Sie werden später automatisch synchronisiert.",
-      "saving": "Plattform-Einstellungen werden gespeichert...",
-      "success": "Plattform-Einstellungen erfolgreich gespeichert!"
+      "error": "Fehler beim Speichern der Plattformeinstellungen: {{message}}",
+      "exchangeRateSyncWarning": "Basiswährung gespeichert, aber Wechselkurse konnten nicht synchronisiert werden. Sie werden automatisch später synchronisiert.",
+      "saving": "Plattformeinstellungen speichern...",
+      "success": "Plattformeinstellungen erfolgreich gespeichert!"
     }
   },
   "wallet": {
-    "access-your-assets": "Zugriff auf Ihre Vermögenswerte",
-    "access-your-assets-description": "Sehen, verwalten und handeln Sie mit Ihren tokenisierten Vermögenswerten. Während Tokens auf der Blockchain leben, kann nur Ihr Wallet sie kontrollieren.",
-    "address-explanation": "Teilen Sie diese Adresse frei – sie ist wie eine E-Mail-Adresse zum Empfangen von Tokens. Transaktionen sind öffentlich, aber Ihre Identität bleibt privat.",
+    "access-your-assets": "Greifen Sie auf Ihre Vermögenswerte zu",
+    "access-your-assets-description": "Sehen Sie sich an, verwalten und handeln Sie Ihre tokenisierten Vermögenswerte. Während Token auf der Blockchain leben, kann nur Ihre Wallet sie kontrollieren.",
+    "address-explanation": "Teilen Sie diese Adresse frei — sie ist wie eine E-Mail-Adresse für den Empfang von Token. Transaktionen sind öffentlich, aber Ihre Identität bleibt privat.",
     "asset-control": "Vermögenskontrolle",
-    "asset-control-description": "Vollständige Kontrolle über Ihre tokenisierten Vermögenswerte – sehen Sie Salden, verfolgen Sie die Leistung und verwalten Sie Ihr Portfolio.",
+    "asset-control-description": "Volle Kontrolle über Ihre tokenisierten Vermögenswerte — Salden anzeigen, Leistung verfolgen und Ihr Portfolio verwalten.",
     "authorize-transactions": "Transaktionen autorisieren",
-    "authorize-transactions-description": "Jede Aktion – Kaufen, Verkaufen oder Übertragen von Tokens – benötigt Ihre digitale Signatur. Dies beweist, dass Sie es sind, ohne Ihren privaten Schlüssel offenzulegen.",
-    "created-title": "Ihr Wallet",
+    "authorize-transactions-description": "Jede Aktion — kaufen, verkaufen oder übertragen von Token — benötigt Ihre digitale Signatur. Dies beweist, dass es Sie sind, ohne Ihren privaten Schlüssel preiszugeben.",
+    "created-title": "Ihre Wallet",
     "creating-wallet": "Erstellen...",
     "failed-to-create-wallet": "Wallet konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
-    "how-it-works": "So funktioniert es (wie eine spezielle Bankkarte):",
-    "how-it-works-description": "Wie eine Bankkarte mit einer PIN ermöglicht Ihnen der private Schlüssel Ihres Wallets:",
-    "intro": "Ihre Wallet ist mehr als nur ein Speicher — sie ist Ihr Hauptschlüssel zur Blockchain. Dieser einzigartige kryptografische Schlüssel beweist, dass Sie Ihre Token besitzen, und ermöglicht es Ihnen, jede Transaktion zu autorisieren.",
+    "how-it-works": "Wie es funktioniert (wie eine spezielle Bankkarte):",
+    "how-it-works-description": "Wie eine Bankkarte mit PIN ermöglicht Ihnen der private Schlüssel Ihrer Wallet:",
+    "intro": "Ihre Wallet ist mehr als Speicher — sie ist Ihr Master-Schlüssel zur Blockchain. Dieser einzigartige kryptografische Schlüssel beweist, dass Sie Ihre Token besitzen und ermöglicht Ihnen, jede Transaktion zu autorisieren.",
     "invest-in-digital-assets": "In digitale Vermögenswerte investieren",
-    "invest-in-digital-assets-description": "Zugriff auf tokenisierte Aktien, Anleihen, Fonds und andere digitale Vermögenswerte von verifizierten Emittenten.",
-    "manage-on-chain-identity": "Verwalten Sie Ihre On-Chain-Identität",
-    "manage-on-chain-identity-description": "Ihr Wallet verankert Ihre verifizierte Identität on-chain und verknüpft, wer Sie sind, mit dem, was Sie besitzen.",
+    "invest-in-digital-assets-description": "Greifen Sie auf tokenisierte Eigenkapital, Anleihen, Fonds und andere digitale Vermögenswerte von verifizierten Emittenten zu.",
+    "manage-on-chain-identity": "Ihre on-chain Identität verwalten",
+    "manage-on-chain-identity-description": "Ihre Wallet verankert Ihre verifizierte Identität on-chain, verknüpft wer Sie sind mit was Sie besitzen.",
     "manage-your-digital-assets": "Verwalten Sie Ihre digitalen Vermögenswerte",
-    "manage-your-digital-assets-description": "Kaufen, verkaufen, übertragen und verfolgen Sie alle Ihre digitalen Vermögenswerte auf einer sicheren Plattform.",
-    "secure-wallet-button": "Mein Wallet sichern",
-    "security-importance": "Ihr Wallet kontrolliert wertvolle Vermögenswerte. Lassen Sie uns sicherstellen, dass es richtig gesichert ist.",
-    "security-next-steps": "Als nächstes fügen Sie die Authentifizierung hinzu und speichern Sicherungscodes – einfache Schritte, die Ihre Vermögenswerte schützen und sicherstellen, dass Sie niemals den Zugang verlieren.",
-    "submit": "Mein Wallet erstellen",
+    "manage-your-digital-assets-description": "Kaufen, verkaufen, übertragen und verfolgen Sie alle Ihre digitalen Vermögenswerte in einer sicheren Plattform.",
+    "secure-wallet-button": "Meine Wallet sichern",
+    "security-importance": "Ihre Wallet kontrolliert wertvolle Vermögenswerte. Lassen Sie uns sie ordnungsgemäß sichern.",
+    "security-next-steps": "Als Nächstes fügen Sie Authentifizierung hinzu und speichern Backup-Codes — einfache Schritte, die Ihre Vermögenswerte schützen und sicherstellen, dass Sie nie den Zugriff verlieren.",
+    "submit": "Meine Wallet erstellen",
     "subtitle": "Ihr digitaler Schlüssel zur Blockchain",
-    "success-message": "Herzlichen Glückwunsch! Ihr Web3-Wallet wurde erfolgreich erstellt",
-    "wallet-address-description": "Ihre einzigartige Blockchain-Identifikationsnummer zum Empfangen von Vermögenswerten und zur Interaktion mit Smart Contracts.",
+    "success-message": "Herzlichen Glückwunsch! Ihre Web3-Wallet wurde erfolgreich erstellt",
+    "wallet-address-description": "Ihre einzigartige Blockchain-Kennung für den Empfang von Vermögenswerten und die Interaktion mit Smart Contracts.",
     "wallet-address-title": "Dies ist Ihre Wallet-Adresse",
     "wallet-created-successfully": "Wallet erfolgreich erstellt!",
-    "what-your-wallet-enables": "Was Ihr Wallet ermöglicht:"
+    "what-your-wallet-enables": "Was Ihre Wallet ermöglicht:"
   },
   "wallet-security": {
     "method-selector": {
-      "choose-one": "Wählen Sie die Option, die Ihren Sicherheitsbedürfnissen entspricht. OTP wird für maximalen Schutz empfohlen.",
+      "choose-one": "Wählen Sie die Option, die Ihren Sicherheitsanforderungen entspricht. OTP wird für maximalen Schutz empfohlen.",
       "comparison": {
-        "choose-otp": "Wählen Sie OTP",
-        "choose-pin": "Wählen Sie PIN",
+        "choose-otp": "OTP wählen",
+        "choose-pin": "PIN wählen",
         "description": "Beschreibung",
         "ease-of-use": "Benutzerfreundlichkeit",
         "feature": "Funktion",
         "offline-access": "Offline-Zugriff",
-        "requires-phone-app": "Benötigt Telefon-App",
+        "requires-phone-app": "Erfordert Telefon-App",
         "security-good": "Gut",
         "security-level": "Sicherheitsstufe",
         "security-maximum": "Maximal",
@@ -302,12 +316,12 @@
         "setup-time-otp": "2-3 Minuten",
         "setup-time-pin": "1 Minute"
       },
-      "description": "Wie Ihre Bankkarte eine PIN benötigt, benötigt auch Ihr Wallet Schutz.\n\nWählen Sie zwischen einem schnellen PIN-Code oder stärkeren Einmalpasswörtern (OTP) aus einer Authentifizierungs-App.",
-      "generate-backup-codes": "Generieren Sie Ihre Sicherungscodes",
+      "description": "Wie Ihre Bankkarte einen PIN für Sicherheit benötigt, braucht Ihre Wallet Schutz.\n\nSetzen Sie einen sicheren 6-stelligen PIN-Code.",
+      "generate-backup-codes": "Generieren Sie Ihre Backup-Codes",
       "otp": {
         "description": "Verwendet eine App wie Google Authenticator, um alle 30 Sekunden einen neuen Code zu generieren. Maximale Sicherheit für Ihre Vermögenswerte.",
         "summary": "Maximale Sicherheit",
-        "title": "OTP"
+        "title": "Einmalpasswort (OTP)"
       },
       "pin": {
         "description": "Ein 6-stelliger Code, den Sie zur Autorisierung von Transaktionen eingeben. Schnell und bequem für den täglichen Gebrauch.",
@@ -316,13 +330,13 @@
       },
       "recommended": "Empfohlen",
       "security-methods": {
-        "one-time-password": "Einmalpasswort",
+        "one-time-password": "Einmal-Passwort",
         "pin-code": "PIN-Code"
       },
-      "success": "Großartig! Ihre Sicherheitsmethode ist festgelegt.",
-      "success-content": "Sie haben erfolgreich Ihre {{method}} eingerichtet. Dies fügt eine wichtige Schutzschicht zu Ihrem Wallet hinzu und hält Ihre Vermögenswerte sicherer vor unbefugtem Zugriff.\n\nUm die Sicherheit Ihres Wallets abzuschließen, besteht der letzte Schritt darin, Sicherungscodes zu generieren. Dies sind geheime Wiederherstellungsschlüssel, die es Ihnen ermöglichen, den Zugang wiederzuerlangen, falls Sie jemals Ihre PIN oder Authentifizierungsmethode verlieren.\n\nStellen Sie sicher, dass Sie diese Sicherungscodes an einem sicheren und privaten Ort speichern – sie sind Ihre letzte Verteidigungslinie.",
-      "success-description": "Ein weiterer Schritt, um Ihr Wallet vollständig zu sichern.",
-      "title": "Sichern Sie Ihr Wallet"
+      "success": "Großartig! Ihre Sicherheitsmethode ist eingestellt.",
+      "success-content": "Sie haben Ihre {{method}} erfolgreich eingerichtet. Dies fügt einen wichtigen Schutzschicht zu Ihrer Wallet hinzu und hält Ihre Vermögenswerte sicherer vor unbefugtem Zugriff.\n\nUm Ihre Wallet-Sicherheit vollständig abzuschließen, ist der letzte Schritt, Backup-Codes zu generieren. Dies sind geheime Wiederherstellungsschlüssel, die Ihnen erlauben, Zugriff wiederzuerlangen, wenn Sie Ihren PIN oder Authentifizierungsmethode verlieren.\n\nStellen Sie sicher, dass Sie diese Backup-Codes an einem sicheren und privaten Ort speichern — sie sind Ihre letzte Verteidigungslinie.",
+      "success-description": "Ein weiterer Schritt zur vollständigen Sicherung Ihrer Wallet.",
+      "title": "Ihre Wallet sichern"
     },
     "otp": {
       "back": "Zurück",
@@ -333,66 +347,66 @@
       "manual-entry": "Kann nicht scannen? Manuell eingeben",
       "manual-entry-key": "Geheimer Schlüssel nur:",
       "manual-entry-url": "Vollständige Authenticator-URL:",
-      "qr-code-alt": "QR-Code für OTP-Setup",
+      "qr-code-alt": "QR-Code für OTP-Einrichtung",
       "qr-code-label": "QR-Code",
-      "refresh-failed": "Fehler beim Aktualisieren des Benutzerstatus",
-      "scan-with-app": "Scannen Sie mit Ihrer App",
-      "setting-up": "OTP wird eingerichtet...",
+      "refresh-failed": "Benutzerstatus konnte nicht aktualisiert werden",
+      "scan-with-app": "Mit Ihrer App scannen",
+      "setting-up": "OTP einrichten...",
       "setting-up-description": "Bitte warten Sie, während wir Ihren QR-Code generieren.",
       "setup-description": "Scannen Sie diesen QR-Code mit Ihrer Authenticator-App",
-      "setup-error": "Fehler beim Einrichten von OTP",
-      "setup-failed": "Fehler beim Abrufen der OTP-Setup-Daten",
-      "setup-failed-description": "Fehler beim Einrichten der OTP-Authentifizierung. Bitte versuchen Sie es erneut.",
+      "setup-error": "OTP-Einrichtung fehlgeschlagen",
+      "setup-failed": "OTP-Authentifizierung konnte nicht eingerichtet werden. Bitte versuchen Sie es erneut.",
+      "setup-failed-description": "Die OTP-Authentifizierung konnte nicht eingerichtet werden. Bitte erneut versuchen.",
       "setup-failed-title": "Einrichtung fehlgeschlagen",
-      "setup-initiated": "OTP-Setup initiiert",
+      "setup-initiated": "OTP-Einrichtung initiiert",
       "setup-title": "Authenticator-App einrichten",
       "try-again": "Erneut versuchen",
       "verified-success": "OTP erfolgreich verifiziert",
-      "verify-code": "Code überprüfen",
-      "verifying": "Überprüfe..."
+      "verify-code": "Code verifizieren",
+      "verifying": "Verifizieren..."
     },
     "pincode": {
       "confirm-pin": "PIN-Code bestätigen",
-      "description": "Erstellen Sie einen 6-stelligen PIN-Code, um Ihre Wallet-Transaktionen zu sichern",
+      "description": "Erstellen Sie einen 6-stelligen PIN-Code zur Sicherung Ihrer Wallet-Transaktionen",
       "enter-pin": "PIN-Code eingeben",
       "invalid-pin-format": "Ungültiges PIN-Code-Format",
       "pin-codes-dont-match": "PIN-Codes stimmen nicht überein",
       "pin-codes-match": "✓ PIN-Codes stimmen überein",
-      "set-pin": "PIN-Code festlegen",
-      "setup-failed": "Fehler beim Einrichten des PIN-Codes",
-      "submitting": "Wird eingerichtet...",
-      "success": "PIN-Code erfolgreich festgelegt",
-      "title": "PIN-Code einrichten"
+      "set-pin": "PIN-Code setzen",
+      "setup-failed": "PIN-Code-Einrichtung fehlgeschlagen",
+      "submitting": "Einrichten...",
+      "success": "PIN-Code erfolgreich gesetzt",
+      "title": "Einen PIN-Code einrichten"
     },
     "recovery-codes": {
+      "action-required": "Kopieren oder laden Sie Ihre Codes zuerst herunter, bevor Sie bestätigen",
       "confirm": "Wallet-Einrichtung abschließen",
-      "confirm-error": "Fehler beim Bestätigen der geheimen Codes",
-      "confirm-stored": "Bestätigen Sie, dass Sie Ihre Wiederherstellungsschlüssel an einem sicheren Ort aufbewahrt haben.",
+      "confirm-error": "Geheime Codes konnten nicht bestätigt werden",
+      "confirm-stored": "Bestätigen Sie, dass Sie Ihre Wiederherstellungsschlüssel an einem sicheren Ort gespeichert haben.",
       "copied-to-clipboard": "Geheime Codes in die Zwischenablage kopiert!",
-      "copy-all": "Alles kopieren",
+      "copy-all": "Alle kopieren",
       "description": "Speichern Sie diese Codes an einem sicheren Ort",
       "description-2": "Diese Codes können verwendet werden, um Ihre Wallet wiederherzustellen, wenn Sie Ihren PIN vergessen oder den Zugriff auf Ihre Authenticator-App verlieren.",
       "download": "Herunterladen",
       "downloaded": "Geheime Codes heruntergeladen!",
-      "generated-error": "Fehler beim Generieren der geheimen Codes",
+      "generated-error": "Geheime Codes konnten nicht generiert werden",
       "generated-success": "Geheime Codes erfolgreich generiert!",
-      "generating": "Generiere Ihre geheimen Codes...",
+      "generating": "Ihre geheimen Codes generieren...",
       "title": "Ihre geheimen Codes",
-      "warning": "Wichtig: Bewahren Sie diese Codes sicher auf! Sie sind Ihr einziger Weg, um den Zugriff wiederzuerlangen, wenn Sie andere Sicherheitsmethoden verlieren.",
-      "your-recovery-codes": "Ihre geheimen Codes ({{count}})",
-      "action-required": "Kopieren oder laden Sie zuerst Ihre Codes herunter, bevor Sie bestätigen."
+      "warning": "Wichtig: Halten Sie diese Codes sicher! Sie sind Ihr einziger Weg, um Zugriff wiederzuerlangen, wenn Sie andere Sicherheitsmethoden verlieren.",
+      "your-recovery-codes": "Ihre geheimen Codes ({{count}})"
     }
   },
+  "wallet-security.method-selector.otp.title": "Einmalpasswort (OTP)",
   "welcome": {
-    "complete-journey": "Bereit, Ihre Plattform einzurichten?",
+    "complete-journey": "Bereit, Ihre Plattform-Einrichtung abzuschließen?",
     "continue-setup": "Einrichtung fortsetzen",
-    "description": "Transformieren Sie reale Vermögenswerte in sichere digitale Token – alles konform, transparent und vollständig unter Ihrer Kontrolle.",
+    "description": "Transformieren Sie reale Vermögenswerte in sichere digitale Token — alles compliant, transparent und vollständig unter Ihrer Kontrolle.",
     "get-started": "Loslegen",
-    "setup-description-new": "In nur 5 Minuten helfen wir Ihnen, alles einzurichten, was Sie benötigen, um Vermögenswerte zu tokenisieren. Erstellen Sie Ihre sichere Wallet, etablieren Sie Ihre Blockchain-Identität und konfigurieren Sie Ihre Plattform – es ist einfacher als die Eröffnung eines Bankkontos, aber viel leistungsfähiger.",
-    "setup-description-returning": "Nur noch ein paar Schritte, um das volle Potenzial Ihrer Plattform freizuschalten. Wir sichern Ihre digitale Wallet, etablieren Ihre Blockchain-Identität und konfigurieren Ihre Plattform – dann sind Sie bereit, Vermögenswerte zu tokenisieren und zu transformieren, wie Wert geschaffen und ausgetauscht wird.",
-    "setup-overview": "Ihr Weg nach vorne",
-    "title": "Willkommen auf Ihrer digitalen Vermögensplattform",
+    "setup-description-new": "In nur 5 Minuten helfen wir Ihnen, alles einzurichten, was Sie brauchen, um mit der Tokenisierung von Vermögenswerten zu beginnen. Erstellen Sie Ihre sichere Wallet, etablieren Sie Ihre Blockchain-Identität und konfigurieren Sie Ihre Plattform — es ist einfacher als eine Bank einzurichten, aber weitaus mächtiger.",
+    "setup-description-returning": "Nur ein paar weitere Schritte, um das volle Potenzial Ihrer Plattform freizuschalten. Wir sichern Ihre digitale Wallet, etablieren Ihre Blockchain-Identität und konfigurieren Ihre Plattform — dann sind Sie bereit, Vermögenswerte zu tokenisieren und zu transformieren, wie Wert geschaffen und ausgetauscht wird.",
+    "setup-overview": "Ihre Reise voraus",
+    "title": "Willkommen bei Ihrer digitalen Vermögensplattform",
     "welcome-back": "Willkommen zurück!"
-  },
-  "wallet-security.method-selector.otp.title": "OTP"
+  }
 }

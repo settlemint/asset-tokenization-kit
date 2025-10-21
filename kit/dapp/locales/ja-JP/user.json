@@ -4,32 +4,6 @@
       "success": "ウォレットが正常に作成されました"
     }
   },
-  "details": {
-    "kycInformation": "Information"
-  },
-  "fields": {
-    "accountCreated": "Account Created",
-    "accountCreatedInfo": "When the user account was created",
-    "email": "Email",
-    "emailInfo": "User's email address",
-    "firstName": "First Name",
-    "firstNameInfo": "Legal first name",
-    "fullName": "Full Name",
-    "fullNameInfo": "User's display name",
-    "lastLogin": "Last Login",
-    "lastLoginInfo": "Most recent login time",
-    "lastName": "Last Name",
-    "lastNameInfo": "Legal last name",
-    "neverLoggedIn": "Never logged in",
-    "noIdentityRegistered": "No identity registered",
-    "noWalletConnected": "No wallet connected",
-    "onChainIdentity": "On-chain Identity",
-    "onChainIdentityInfo": "User's on-chain identity contract",
-    "role": "Role",
-    "roleInfo": "User's system role",
-    "walletAddress": "Wallet Address",
-    "walletAddressInfo": "User's connected wallet address"
-  },
   "kyc": {
     "actions": {
       "delete": {
@@ -42,188 +16,203 @@
   },
   "management": {
     "page": {
-      "description": "Manage users, roles, and permissions for your platform."
+      "description": "プラットフォームのユーザー、役割、権限を管理します。"
     },
     "table": {
-      "actions": {
-        "menu": "Actions menu",
-        "openMenu": "Open actions menu",
-        "viewDetails": "View Details"
-      },
       "columns": {
-        "name": "Name",
-        "email": "Email",
-        "wallet": "EOA (Wallet Address)",
-        "identity": "Identity Address",
-        "type": "Type",
-        "verifications": "Verifications",
-        "status": "Status",
-        "lastActive": "Last Activity",
-        "created": "Created",
-        "role": "Role",
-        "actions": "Actions"
+        "name": "名前",
+        "email": "メール",
+        "wallet": "ウォレット",
+        "role": "役割",
+        "identity": "アイデンティティ",
+        "status": "ステータス",
+        "created": "作成日",
+        "lastActive": "最終アクティブ",
+        "actions": "アクション"
       },
-      "emptyState": {
-        "description": "No users have been registered yet.",
-        "loading": "Loading users...",
-        "title": "No users found"
-      },
-      "errors": {
-        "loadFailed": "Failed to load users. Please try again.",
-        "navigationFailed": "Failed to navigate to user details"
-      },
-      "fallback": {
-        "never": "Never",
-        "unknown": "Unknown"
+      "status": {
+        "registered": "登録済み",
+        "pending": "保留中",
+        "notConnected": "未接続",
+        "identityNeeded": "アイデンティティが必要",
+        "notRegistered": "未登録",
+        "pendingRegistration": "登録保留中",
+        "admin": "管理者",
+        "adminAriaLabel": "ユーザーはシステム内の管理者役割を持っています",
+        "registeredAriaLabel": "ユーザーはオンチェーンで登録および検証されています",
+        "notRegisteredAriaLabel": "ユーザーはオンチェーンで登録されていません",
+        "pendingAriaLabel": "ユーザーはウォレットを接続しましたが、まだオンチェーンで登録されていません",
+        "notConnectedAriaLabel": "ユーザーはウォレットを接続していません",
+        "identityNeededAriaLabel": "ユーザーはウォレットを持っていますが、登録されたアイデンティティがありません",
+        "pendingRegistrationAriaLabel": "ユーザーアイデンティティの登録が保留中です"
       },
       "identity": {
         "none": "アイデンティティなし"
       },
-      "noWallet": "No wallet",
+      "actions": {
+        "viewDetails": "詳細を表示",
+        "menu": "アクションメニュー",
+        "openMenu": "アクションメニューを開く"
+      },
       "search": {
-        "placeholder": "Search by name, email, or wallet..."
+        "placeholder": "名前、メール、またはウォレットで検索..."
       },
-      "status": {
-        "admin": "Admin",
-        "adminAriaLabel": "User has any admin role in the system",
-        "identityNeeded": "Identity needed",
-        "identityNeededAriaLabel": "User has wallet but no identity registered",
-        "notConnected": "未接続",
-        "notConnectedAriaLabel": "ユーザーはウォレットを接続していません",
-        "notRegistered": "Not Registered",
-        "notRegisteredAriaLabel": "User is not registered on-chain",
-        "pending": "保留中",
-        "pendingAriaLabel": "ユーザーはウォレットを接続していますが、まだオンチェーンで登録されていません",
-        "pendingRegistration": "Pending registration",
-        "pendingRegistrationAriaLabel": "User identity registration is pending",
-        "registered": "登録済み",
-        "registeredAriaLabel": "ユーザーは登録済みで、オンチェーンで検証されています"
+      "noWallet": "ウォレットなし",
+      "emptyState": {
+        "title": "ユーザーが見つかりません",
+        "description": "まだユーザーが登録されていません。",
+        "loading": "ユーザーを読み込み中..."
       },
-      "userType": {
-        "admin": "Admin",
-        "investor": "Investor",
-        "trustedIssuer": "Trusted Issuer"
+      "errors": {
+        "loadFailed": "ユーザーの読み込みに失敗しました。もう一度お試しください。",
+        "navigationFailed": "ユーザー詳細へのナビゲーションに失敗しました"
       },
-      "verifications": {
-        "none": "No verifications"
+      "fallback": {
+        "never": "なし"
       }
     }
   },
   "permissions": {
     "groups": {
-      "assets-management": "Assets Management",
-      "compliance": "Compliance",
-      "identity-management": "Identity Management",
-      "other": "Other",
-      "system-administration": "System Administration"
+      "compliance": "コンプライアンス",
+      "identity-management": "アイデンティティ管理",
+      "assets-management": "資産管理",
+      "system-administration": "システム管理",
+      "other": "その他"
     },
     "table": {
-      "actions": {
-        "changeRoles": "Change roles"
-      },
       "columns": {
-        "name": "Name",
-        "role": "Roles"
-      },
-      "emptyState": {
-        "description": "No users have been registered yet.",
-        "loading": "Loading users...",
-        "title": "No users found"
+        "name": "名前",
+        "role": "役割"
       },
       "errors": {
-        "loadFailed": "Failed to load users. Please try again.",
-        "navigationFailed": "Failed to navigate to user details"
+        "navigationFailed": "ユーザー詳細へのナビゲーションに失敗しました",
+        "loadFailed": "ユーザーの読み込みに失敗しました。もう一度お試しください。"
       },
       "search": {
-        "placeholder": "Search by wallet address..."
+        "placeholder": "ウォレットアドレスで検索..."
+      },
+      "emptyState": {
+        "title": "ユーザーが見つかりません",
+        "description": "まだユーザーが登録されていません。",
+        "loading": "ユーザーを読み込み中..."
+      },
+      "actions": {
+        "changeRoles": "役割を変更"
       }
     }
   },
+  "tabs": {
+    "details": "詳細",
+    "claims": "クレーム"
+  },
+  "fields": {
+    "fullName": "フルネーム",
+    "fullNameInfo": "ユーザーの表示名",
+    "email": "メール",
+    "emailInfo": "ユーザーのメールアドレス",
+    "role": "役割",
+    "roleInfo": "ユーザーのシステム役割",
+    "accountCreated": "アカウント作成日",
+    "accountCreatedInfo": "ユーザーアカウントが作成された日時",
+    "lastLogin": "最終ログイン",
+    "lastLoginInfo": "最新のログイン時間",
+    "neverLoggedIn": "ログインしたことがありません",
+    "walletAddress": "ウォレットアドレス",
+    "walletAddressInfo": "ユーザーの接続されたウォレットアドレス",
+    "noWalletConnected": "ウォレットが接続されていません",
+    "onChainIdentity": "オンチェーンアイデンティティ",
+    "onChainIdentityInfo": "ユーザーのオンチェーンアイデンティティコントラクト",
+    "noIdentityRegistered": "アイデンティティが登録されていません",
+    "firstName": "名",
+    "firstNameInfo": "法的名",
+    "lastName": "姓",
+    "lastNameInfo": "法的姓"
+  },
+  "details": {
+    "kycInformation": "情報"
+  },
   "profile": {
-    "changePassword": {
-      "confirmPassword": "パスワードを確認",
-      "currentPassword": "現在のパスワード",
-      "description": "セキュリティのためにアカウントのパスワードを更新します。",
-      "newPassword": "新しいパスワード",
-      "revokeOtherSessions": "他のデバイスからサインアウト",
-      "revokeOtherSessionsDescription": "これにより、他のすべてのデバイスとブラウザからサインアウトされます。",
-      "success": "パスワードが正常に変更されました。",
-      "title": "パスワードを変更"
-    },
-    "description": "プロファイル情報を表示し、管理します。",
-    "editKyc": {
-      "description": "KYC情報を編集します。",
-      "title": "KYCを編集"
-    },
+    "title": "プロフィール",
+    "description": "プロフィール情報を表示および管理します。",
+    "manage": "プロフィールを管理",
     "email": {
-      "change-disabled": "この環境ではメールアドレスの変更は無効になっています。",
-      "current": "現在のメールアドレス"
+      "change-disabled": "この環境ではメールの変更が無効です。",
+      "current": "現在のメール"
+    },
+    "messages": {
+      "genericError": "エラーが発生しました。もう一度お試しください。"
     },
     "kyc": {
+      "cardDescription": "個人情報を管理します。",
       "actions": {
-        "success": "KYCプロファイルが正常に更新されました。"
+        "success": "情報が正常に更新されました。"
       },
-      "cardDescription": "オンチェーンIDを作成するために、あなたの身元を確認してください。",
       "fields": {
-        "country": "居住国",
-        "dob": "生年月日",
         "firstName": "名",
         "lastName": "姓",
-        "nationalId": "国民ID",
-        "residencyStatus": "居住状況"
+        "dob": "生年月日",
+        "country": "居住国",
+        "residencyStatus": "居住ステータス",
+        "nationalId": "国民ID"
       },
       "residencyStatusOptions": {
-        "dual_resident": "二重居住者 - 私は複数の国において法的/税務上の居住者です",
-        "non_resident": "非居住者 - 私は上記の国に住んでいないか、居住者とは見なされていません",
-        "resident": "単独居住者 - 私は上記の国にのみ住んでおり、法的/税務上の居住者です",
-        "unknown": "言いたくない"
+        "resident": "単一居住者 - 上記の国に住んでおり、法的/税務居住者である",
+        "non_resident": "非居住者 - 上記の国に住んでおらず、その国の居住者と見なされない",
+        "dual_resident": "二重居住者 - 複数の国で法的/税務居住者である",
+        "unknown": "言及しない"
       }
     },
-    "manage": "プロファイルを管理",
-    "messages": {
-      "genericError": "問題が発生しました。もう一度お試しください。"
+    "editKyc": {
+      "title": "情報を編集",
+      "description": "情報を編集します。"
     },
-    "title": "プロファイル"
-  },
-  "tabs": {
-    "claims": "Claims",
-    "details": "Details"
+    "changePassword": {
+      "title": "パスワードを変更",
+      "description": "セキュリティのためにアカウントパスワードを更新します。",
+      "success": "パスワードが正常に変更されました。",
+      "currentPassword": "現在のパスワード",
+      "newPassword": "新しいパスワード",
+      "confirmPassword": "パスワードを確認",
+      "revokeOtherSessions": "他のデバイスからログアウト",
+      "revokeOtherSessionsDescription": "これにより、他のすべてのデバイスとブラウザからログアウトされます。"
+    }
   },
   "wallet": {
     "title": "ウォレット",
     "description": "ウォレットアドレスとセキュリティ設定を管理します。",
     "userWallet": "ユーザーウォレット",
-    "userWalletDescription": "支払いを受け取るためのウォレットアドレスとQRコードです。",
+    "userWalletDescription": "支払いを受け取るためのウォレットアドレスとQRコード。",
     "qrCode": "QRコード",
-    "verificationFactors": "認証要素",
-    "verificationFactorsDescription": "ウォレットで有効になっているセキュリティ方法です。",
+    "verificationFactors": "検証要因",
+    "verificationFactorsDescription": "ウォレットで有効化されたセキュリティ方法。",
     "recoveryCodesCard": "リカバリーコード",
-    "recoveryCodesDescription": "他の認証方法が利用できない場合のためのバックアップコードです。",
+    "recoveryCodesDescription": "他の検証方法が利用できない場合のアカウントリカバリー用のバックアップコード。",
     "passwordPromptTitle": "パスワードを確認",
-    "passwordPromptDescription": "新しいリカバリーコードを生成するにはパスワードを入力してください。",
+    "passwordPromptDescription": "新しいリカバリーコードを生成するためにパスワードを入力してください。",
     "passwordLabel": "パスワード",
-    "passwordRequired": "パスワードは必須です",
+    "passwordRequired": "パスワードが必要です",
     "pinCodeEnabled": "PINコード",
-    "otpEnabled": "OTP",
+    "otpEnabled": "ワンタイムパスワード",
     "recoveryCodesEnabled": "リカバリーコード",
     "regenerateRecoveryCodes": "リカバリーコードを再生成",
     "downloadRecoveryCodes": "リカバリーコードをダウンロード",
     "copyAllRecoveryCodes": "すべてコピー",
     "confirmRecoveryCodesStored": "これらのリカバリーコードを安全な場所に保存しました",
-    "noVerificationMethods": "有効な認証方法がありません",
+    "noVerificationMethods": "検証方法が有効化されていません",
     "enabled": "有効",
     "disabled": "無効",
     "changePincode": {
       "button": "PINコードを変更",
       "title": "PINコードを変更",
-      "description": "ウォレット操作を保護するために新しい6桁のPINコードを設定します。",
+      "description": "機密ウォレットアクションを保護するために6桁の新しいPINを設定します。",
       "submit": "続行",
       "submitting": "準備中...",
       "success": "PINコードが更新されました。",
       "passwordTitle": "パスワードを確認",
-      "passwordDescription": "PINコードの更新を完了するためにアカウントのパスワードを入力してください。",
+      "passwordDescription": "PINコードの更新を完了するためにアカウントパスワードを入力してください。",
       "passwordSubmit": "PINコードを更新",
-      "passwordSubmitting": "PINを更新中..."
+      "passwordSubmitting": "PINコードを更新中..."
     }
   }
 }

@@ -112,8 +112,8 @@ export function StepGroupComponent<StepId, GroupId>({
         >
           <AccordionTrigger
             className={cn(
-              "justify-start text-left mb-3 p-2 rounded-lg transition-all duration-200 hover:bg-white/10 hover:no-underline [&>svg]:hidden",
-              hasActiveStep && "bg-white/5"
+              "justify-start text-left mb-3 p-2 rounded-lg transition-all duration-200 hover:bg-primary-foreground/10 hover:no-underline [&>svg]:hidden",
+              hasActiveStep && "bg-primary-foreground/5"
             )}
           >
             <div className="flex flex-col w-full text-left">

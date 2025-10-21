@@ -8,7 +8,14 @@ import {
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useMatches } from "@tanstack/react-router";
-import { ClipboardCheck, FileText, Key, Puzzle, Shield } from "lucide-react";
+import {
+  ClipboardCheck,
+  FileText,
+  Key,
+  Paintbrush,
+  Puzzle,
+  Shield,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -51,6 +58,12 @@ export function NavSettings() {
       icon: Puzzle,
       path: "/platform-settings/addons",
       enabled: system.userPermissions?.actions.addonFactoryCreate,
+    },
+    {
+      name: t("settings.theme.title"),
+      icon: Paintbrush,
+      path: "/admin/platform-settings/theme",
+      enabled: system.userPermissions?.roles.admin === true,
     },
     {
       name: t("settings.claimTopicsIssuers"),

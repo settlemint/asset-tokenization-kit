@@ -1,4 +1,6 @@
-import { AssetTokenizationKitLogo } from "@/components/asset-tokenization-kit-logo";
+import { Logo } from "@/components/logo/logo";
+import { DEFAULT_THEME } from "@/components/theme/lib/schema";
+import { useThemeAssets } from "@/components/theme/hooks/use-theme-assets";
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -10,6 +12,11 @@ import { Link } from "@tanstack/react-router";
  * Sidebar logo component that displays the SettleMint logo and app name.
  */
 export function SidebarLogo() {
+  const { logo } = useThemeAssets();
+  const alt = logo.alt?.trim();
+  const brandLabel =
+    alt && alt.length > 0 ? alt : (DEFAULT_THEME.logo.alt ?? "SettleMint");
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -18,8 +25,8 @@ export function SidebarLogo() {
           className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground px-4"
           asChild
         >
-          <Link to="/">
-            <AssetTokenizationKitLogo />
+          <Link to="/" aria-label={brandLabel} title={brandLabel}>
+            <Logo variant="horizontal" className="h-8" />
           </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>

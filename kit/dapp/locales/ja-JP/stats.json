@@ -1,32 +1,59 @@
 {
   "charts": {
+    "common": {
+      "noData": "データは利用できません",
+      "noDataDescription": "このチャートに表示するデータは現在ありません",
+      "intervalLabel": {
+        "hour": "時間ごと",
+        "day": "日ごと"
+      },
+      "range": {
+        "duration": "過去{{duration}}",
+        "window": "{{start}}から{{end}}まで"
+      },
+      "units": {
+        "hour_one": "{{count}}時間",
+        "hour_other": "{{count}}時間",
+        "day_one": "{{count}}日",
+        "day_other": "{{count}}日"
+      }
+    },
     "assetActivity": {
-      "title": "資産活動",
-      "description": "転送、発行、焼却イベントを追跡",
+      "title": "資産の活動",
+      "description": "転送、ミント、バーンイベントを追跡",
       "transferEventsLabel": "転送",
-      "mintEventsLabel": "発行",
-      "burnEventsLabel": "焼却",
+      "mintEventsLabel": "ミント",
+      "burnEventsLabel": "バーン",
       "empty": {
-        "title": "まだ活動がありません",
-        "description": "転送、発行、または焼却が発生すると、ここに資産活動が表示されます"
+        "title": "まだ活動はありません",
+        "description": "転送、ミント、またはバーンが発生すると、ここに資産の活動が表示されます"
       }
     },
     "assetSupply": {
-      "description": "時間経過に伴う資産の総供給量",
+      "description": "時間経過に伴う資産の総供給",
       "title": "資産供給"
     },
     "assetValue": {
       "description": "資産タイプ別の総価値の内訳",
-      "title": "資産価値配分"
+      "title": "資産価値の分布"
     },
     "assetLifecycle": {
-      "title": "資産のローンチとデザインの比較",
-      "description": "資産のローンチが新しい作成に追いついているかを追跡",
-      "createdLabel": "デザインされた資産",
+      "title": "ローンチされた資産",
+      "description": "資産のローンチが新しい創造物にどのように追いついているかを追跡",
+      "createdLabel": "作成された資産",
       "launchedLabel": "ローンチされた資産",
       "empty": {
-        "title": "ライフサイクルデータはまだありません",
-        "description": "新しく資産がデザインされると、ここにデザインとローンチの推移が表示されます"
+        "title": "まだ資産のトレンドはありません",
+        "description": "資産が作成されると、これらのトレンドが表示されます"
+      }
+    },
+    "identityGrowth": {
+      "title": "アイデンティティの成長",
+      "description": "確認済みのアイデンティティが{{overRange}}成長するのを見守る",
+      "label": "アクティブな登録",
+      "empty": {
+        "title": "まだ登録はありません",
+        "description": "アイデンティティが登録されると、ここにアイデンティティ登録が表示されます"
       }
     },
     "totalCollateral": {
@@ -37,11 +64,16 @@
       "label": "総供給",
       "title": "トークン供給履歴"
     },
+    "totalVolume": {
+      "description": "過去{{days}}日間の総取引量",
+      "label": "総取引量",
+      "title": "取引量"
+    },
     "supplyChanges": {
-      "description": "過去{{days}}日間に発行および焼却された資産",
+      "description": "過去{{days}}日間のミントおよびバーンされた資産",
       "title": "供給の変化",
-      "minted": "発行済み",
-      "burned": "焼却済み"
+      "minted": "ミントされた",
+      "burned": "バーンされた"
     },
     "transactionHistory": {
       "description": "時間経過に伴う取引量",
@@ -49,16 +81,7 @@
     },
     "userGrowth": {
       "description": "時間経過に伴うユーザー数",
-      "title": "ユーザー成長"
-    },
-    "common": {
-      "noData": "データは利用できません",
-      "noDataDescription": "このチャートに表示するデータは現在ありません"
-    },
-    "totalVolume": {
-      "description": "過去{{days}}日間の総取引量",
-      "label": "総量",
-      "title": "取引量"
+      "title": "ユーザーの成長"
     },
     "walletDistribution": {
       "title": "ウォレットの分布",
@@ -89,19 +112,52 @@
     },
     "collateralRatio": {
       "title": "担保比率",
-      "description": "利用可能な担保と使用中の担保の内訳",
+      "description": "利用可能な担保と使用された担保の内訳",
       "available": "利用可能な担保",
-      "used": "使用中の担保",
-      "ratio": "担保比率: {{ratio}}%"
+      "used": "使用された担保",
+      "ratio": "担保化: {{ratio}}%"
     },
     "portfolioValue": {
-      "title": "ポートフォリオ価値",
-      "description": "ポートフォリオの価値が時間の経過とともにどのように変化したかを確認",
+      "title": "ポートフォリオの価値",
+      "description": "時間経過に伴うポートフォリオの価値の変化を確認",
       "label": "価値",
       "empty": {
-        "title": "まだデータがありません",
+        "title": "まだ表示するデータはありません",
         "description": "最初の資産を受け取ると、ここにポートフォリオの価値が表示されます"
       }
+    },
+    "portfolio": {
+      "summary": {
+        "title": "ポートフォリオの概要",
+        "description": "総ポートフォリオの価値と保有資産を表示",
+        "totalValue": "総価値",
+        "assetFactories": "資産タイプ",
+        "totalAssets": "総資産"
+      },
+      "breakdown": {
+        "title": "ポートフォリオの内訳",
+        "description": "資産タイプ別の詳細な内訳",
+        "chartTitle": "資産配分",
+        "chartDescription": "資産タイプ別の保有資産の分割を確認",
+        "detailsTitle": "配分の詳細",
+        "assetType": "資産タイプ",
+        "factory": "工場",
+        "value": "価値",
+        "percentage": "割合",
+        "assets": "資産"
+      },
+      "empty": {
+        "summary": "資産を受け取ると、ここにポートフォリオの概要が表示されます",
+        "breakdown": "資産を受け取ると、ここに資産の内訳が表示されます"
+      }
+    },
+    "yieldDistribution": {
+      "title": "利回りの分布",
+      "description": "時間経過に伴う総利回りの生成と請求",
+      "totalYield": "総利回り",
+      "claimed": "請求済み",
+      "noData": "利回りの分布データは利用できません",
+      "error": "利回りの分布データの読み込み中にエラーが発生しました"
     }
   },
   "title": "統計",
@@ -120,11 +176,11 @@
       "retry": "再試行"
     },
     "transactions": {
-      "description": "{{count}}件の取引が過去{{days}}日間に発生しました",
+      "description": "過去 {{days}} 日間の取引数 {{count}}",
       "title": "総取引数"
     },
     "users": {
-      "description": "{{count}}人のアクティブユーザーが過去{{days}}日間にいます",
+      "description": "過去 {{days}} 日間のアクティブユーザー数 {{count}}",
       "title": "アクティブユーザー"
     },
     "value": {

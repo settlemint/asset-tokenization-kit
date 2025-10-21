@@ -9,3 +9,4 @@ src/erc165/utils/interfaceids.ts
 the-graph-env.d.ts
 the-graph-cache.d.ts
 .generated/**
+subgraph.yaml

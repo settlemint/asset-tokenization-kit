@@ -1,16 +1,16 @@
-# 📱 Next.js dApp Architecture
+# 📱 TanStack Start dApp Architecture
 
 ## Executive Summary
 
-The Next.js dApp Architecture provides a modern, scalable frontend application built on Next.js with App Router, React, and the TanStack ecosystem for state management, routing, and form handling. This architecture delivers a comprehensive user interface for asset tokenization, featuring sophisticated onboarding workflows, asset management interfaces, compliance dashboards, and administrative tools, all optimized for performance, accessibility, and user experience.
+The TanStack Start dApp Architecture provides a modern, scalable frontend application built on TanStack Start with App Router, React, and the TanStack ecosystem for state management, routing, and form handling. This architecture delivers a comprehensive user interface for asset tokenization, featuring sophisticated onboarding workflows, asset management interfaces, compliance dashboards, and administrative tools, all optimized for performance, accessibility, and user experience.
 
-The application leverages cutting-edge web technologies including Server Components, streaming, and advanced caching strategies to deliver exceptional performance while maintaining type safety and developer experience. The modular component architecture enables rapid feature development and customization while ensuring consistency and maintainability across the entire application.
+The application leverages cutting-edge web technologies including Full Document SSR, streaming, and advanced caching strategies to deliver exceptional performance while maintaining type safety and developer experience. The modular component architecture enables rapid feature development and customization while ensuring consistency and maintainability across the entire application.
 
 ## Table of Contents
 
 - [Executive Summary](#executive-summary)
 - [Application Architecture](#application-architecture)
-- [Next.js App Router](#nextjs-app-router)
+- [TanStack Start App Router](#tanstack-start-app-router)
 - [TanStack Router Integration](#tanstack-router-integration)
 - [Authentication System](#authentication-system)
 - [Onboarding Flow Architecture](#onboarding-flow-architecture)
@@ -25,13 +25,13 @@ The application leverages cutting-edge web technologies including Server Compone
 
 ## Application Architecture
 
-The Next.js dApp follows a modern, scalable architecture that separates concerns while maintaining tight integration between components:
+The TanStack Start dApp follows a modern, scalable architecture that separates concerns while maintaining tight integration between components:
 
 ```mermaid
 graph TB
-    subgraph "Next.js dApp Architecture"
+    subgraph "TanStack Start dApp Architecture"
         subgraph "Presentation Layer"
-            AppRouter[App Router<br/>Next.js Routing<br/>• File-based routing<br/>• Server Components<br/>• Streaming support]
+            AppRouter[App Router<br/>TanStack Start Routing<br/>• File-based routing<br/>• Full Document SSR<br/>• Streaming support]
             
             PageComponents[Page Components<br/>Route Components<br/>• Layout components<br/>• Page-specific logic<br/>• Data fetching]
             
@@ -110,13 +110,13 @@ graph TB
 
 The architecture demonstrates clear separation of concerns with unidirectional data flow and well-defined integration points between layers.
 
-## Next.js App Router
+## TanStack Start App Router
 
-The application leverages Next.js App Router for modern, performant routing with Server Components and streaming capabilities:
+The application leverages TanStack Start App Router for modern, performant routing with Full Document SSR and streaming capabilities:
 
 ```mermaid
 graph TB
-    subgraph "Next.js App Router Architecture"
+    subgraph "TanStack Start App Router Architecture"
         subgraph "Route Structure"
             RootLayout[__root.tsx<br/>Root Layout<br/>• Global providers<br/>• Theme provider<br/>• Query client setup]
             
@@ -148,7 +148,7 @@ graph TB
         end
         
         subgraph "Layout Features"
-            ServerComponents[Server Components<br/>Server-Side Rendering<br/>• Data fetching<br/>• SEO optimization<br/>• Performance benefits]
+            ServerComponents[Full Document SSR<br/>Server-Side Rendering<br/>• Data fetching<br/>• SEO optimization<br/>• Performance benefits]
             
             ClientComponents[Client Components<br/>Interactive Elements<br/>• User interactions<br/>• State management<br/>• Real-time updates]
             
@@ -195,7 +195,7 @@ graph TB
 
 | Feature | Implementation | Benefits | Use Cases | Performance Impact |
 |---------|----------------|----------|-----------|-------------------|
-| **Server Components** | React Server Components | Reduced bundle size, SEO | Data fetching, static content | 30-50% smaller bundles |
+| **Full Document SSR** | Full Document SSR | Reduced bundle size, SEO | Data fetching, static content | 30-50% smaller bundles |
 | **Client Components** | 'use client' directive | Interactivity, state management | Forms, real-time updates | Selective hydration |
 | **Streaming** | Suspense boundaries | Progressive loading | Large data sets, slow queries | Improved perceived performance |
 | **Route Groups** | Folder organization | Clean URL structure | Feature organization | No performance impact |
@@ -680,7 +680,7 @@ The component architecture follows modern React patterns with reusable, composab
 
 | Component Level | Purpose | Technology | Reusability | Complexity |
 |-----------------|---------|------------|-------------|------------|
-| **Page Components** | Route-level components | Next.js pages | Low | High |
+| **Page Components** | Route-level components | TanStack Start pages | Low | High |
 | **Layout Components** | Layout and structure | React components | Medium | Medium |
 | **Feature Components** | Feature-specific | React + hooks | Medium | High |
 | **UI Components** | Design system | Radix UI + custom | High | Low |
@@ -712,7 +712,7 @@ The application implements comprehensive performance optimization strategies:
 
 | Optimization Category | Techniques | Implementation | Benefits | Monitoring |
 |----------------------|------------|----------------|----------|------------|
-| **Bundle Optimization** | Code splitting, tree shaking | Vite + Next.js | Smaller bundles | Bundle analysis |
+| **Bundle Optimization** | Code splitting, tree shaking | Vite + TanStack Start | Smaller bundles | Bundle analysis |
 | **Rendering Optimization** | React optimization | Memoization, virtualization | Faster renders | Performance profiler |
 | **Network Optimization** | Caching, compression | HTTP caching, gzip | Faster loading | Network monitoring |
 | **State Optimization** | Efficient state management | Optimized selectors | Better UX | State monitoring |
@@ -731,9 +731,9 @@ The application implements comprehensive performance optimization strategies:
 
 | Technique | Implementation | Performance Gain | Complexity | Maintenance |
 |-----------|----------------|------------------|------------|-------------|
-| **Server Components** | Next.js App Router | 30-50% bundle reduction | Low | Low |
+| **Full Document SSR** | TanStack Start App Router | 30-50% bundle reduction | Low | Low |
 | **Code Splitting** | Dynamic imports | 20-40% faster loads | Medium | Medium |
-| **Image Optimization** | Next.js Image | 50-70% faster images | Low | Low |
+| **Image Optimization** | TanStack Start Image | 50-70% faster images | Low | Low |
 | **Font Optimization** | Font loading strategies | 10-20% faster text | Low | Low |
 | **Caching Strategies** | Multi-layer caching | 40-60% faster data | High | High |
 
@@ -812,7 +812,7 @@ The application prioritizes developer experience with modern tooling and develop
 | **Code Writing** | IDE, TypeScript | Auto-completion | Type checking | Immediate |
 | **Code Review** | Git, GitHub | PR automation | Automated checks | Review feedback |
 | **Testing** | Vitest, Playwright | Automated testing | Test validation | Test results |
-| **Building** | Vite, Next.js | Build automation | Build validation | Build reports |
+| **Building** | Vite, TanStack Start | Build automation | Build validation | Build reports |
 | **Deployment** | CI/CD pipeline | Automated deployment | Deployment validation | Deployment status |
 
 ### Developer Experience Metrics
@@ -828,14 +828,14 @@ The application prioritizes developer experience with modern tooling and develop
 
 ### Core Implementation Files
 
-- **Next.js Application**: [`kit/dapp/src/`](../../dapp/src/) - Complete frontend implementation
+- **TanStack Start Application**: [`kit/dapp/src/`](../../dapp/src/) - Complete frontend implementation
 - **App Router**: [`kit/dapp/src/routes/`](../../dapp/src/routes/) - Route definitions and layouts
 - **Components**: [`kit/dapp/src/components/`](../../dapp/src/components/) - Component library
 
 ### Configuration Files
 
-- **Next.js Config**: [`kit/dapp/next.config.js`](../../dapp/next.config.js) - Next.js configuration
-- **Vite Config**: [`kit/dapp/vite.config.ts`](../../dapp/vite.config.ts) - Vite build configuration
+- **Vite + TanStack Start Plugin**: [`kit/dapp/vite.config.ts`](../../dapp/vite.config.ts) - Vite build configuration with TanStack Start plugin
+- **TypeScript Config**: [`kit/dapp/tsconfig.json`](../../dapp/tsconfig.json) - Compiler options for the TanStack Start app
 - **TanStack Router**: [`kit/dapp/src/router.tsx`](../../dapp/src/router.tsx) - Router configuration
 
 ### Authentication and State
@@ -859,7 +859,7 @@ The application prioritizes developer experience with modern tooling and develop
 
 ### External Framework References
 
-- **Next.js Documentation**: [https://nextjs.org/docs](https://nextjs.org/docs) - Next.js framework
+- **TanStack Start Documentation**: [https://tanstack.com/start](https://tanstack.com/start) - TanStack Start framework
 - **TanStack Query**: [https://tanstack.com/query](https://tanstack.com/query) - Server state management
 - **TanStack Router**: [https://tanstack.com/router](https://tanstack.com/router) - Type-safe routing
 - **TanStack Form**: [https://tanstack.com/form](https://tanstack.com/form) - Form management

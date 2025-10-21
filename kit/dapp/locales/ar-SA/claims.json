@@ -1,32 +1,32 @@
 {
   "status": {
     "pending": "معلق",
-    "verified": "تم التحقق",
+    "verified": "تم التحقق منه",
     "rejected": "مرفوض",
-    "expired": "منتهي الصلاحية",
+    "expired": "منتهي",
     "registered": "مسجل",
     "notRegistered": "غير مسجل",
-    "verifiedAriaLabel": "هوية متحقق منها مع مطالبات",
-    "registeredAriaLabel": "هوية مسجلة بدون مطالبات",
+    "verifiedAriaLabel": "تم التحقق من الهوية مع المطالبات",
+    "registeredAriaLabel": "تم تسجيل الهوية بدون مطالبات",
     "notRegisteredAriaLabel": "لا توجد هوية مسجلة"
   },
   "table": {
     "columns": {
-      "user": "المستخدم",
+      "user": "مستخدم",
       "claimType": "نوع المطالبة",
       "topic": "الموضوع",
       "status": "الحالة",
-      "issuer": "المُصدر",
+      "issuer": "الجهة المصدرة",
       "issuedAt": "تاريخ الإصدار",
-      "expiresAt": "تاريخ انتهاء الصلاحية",
+      "expiresAt": "تاريخ الانتهاء",
       "verifiedAt": "تاريخ التحقق"
     },
     "search": {
-      "placeholder": "البحث في المطالبات..."
+      "placeholder": "البحث عن المطالبات..."
     },
     "emptyState": {
       "title": "لم يتم العثور على مطالبات",
-      "description": "لم يتم إصدار أي مطالبات هوية بعد.",
+      "description": "لم يتم إصدار أي مطالبات هوية حتى الآن.",
       "loading": "جارٍ تحميل المطالبات..."
     },
     "errors": {
@@ -34,13 +34,13 @@
       "navigationFailed": "فشل في الانتقال إلى تفاصيل المطالبة"
     },
     "fallback": {
-      "noExpiry": "لا يوجد تاريخ انتهاء",
-      "notVerified": "غير محقق"
+      "noExpiry": "لا يوجد انتهاء",
+      "notVerified": "غير موثق"
     }
   },
   "identityTable": {
     "columns": {
-      "id": "المعرف",
+      "id": "المعرّف",
       "type": "النوع",
       "entity": "الكيان",
       "linkedEntity": "الحساب / العقد",
@@ -49,21 +49,21 @@
       "deployment": "معاملة النشر"
     },
     "types": {
-      "account": "حساب",
-      "contract": "عقد"
+      "account": "الحساب",
+      "contract": "العقد"
     },
     "fallback": {
       "noAccount": "لا يوجد حساب",
       "noContract": "لا يوجد عقد",
       "noDeployment": "لا يوجد نشر",
-      "noEntity": "لا توجد كيانات مرتبطة"
+      "noEntity": "لا يوجد كيان مرتبط"
     },
     "search": {
-      "placeholder": "البحث في الهويات..."
+      "placeholder": "البحث عن الهويات..."
     },
     "emptyState": {
       "title": "لم يتم العثور على هويات",
-      "description": "لا توجد هويات تطابق عوامل التصفية الخاصة بك حتى الآن.",
+      "description": "لا توجد هويات تتطابق مع مرشحاتك حتى الآن.",
       "loading": "جارٍ تحميل الهويات..."
     },
     "errors": {
@@ -72,16 +72,16 @@
     }
   },
   "page": {
-    "description": "إدارة مطالبات الهوية وحالة التحقق والامتثال للمستخدمين.",
-    "loading": "جارِ تحميل المطالبات..."
+    "description": "إدارة مطالبات الهوية، حالة التحقق، والامتثال للمستخدمين.",
+    "loading": "جارٍ تحميل المطالبات..."
   },
   "details": {
     "title": "مطالبات الحساب",
     "summary": {
       "total": "إجمالي المطالبات",
-      "verified": "تم التحقق",
+      "verified": "تم التحقق منه",
       "pending": "معلق",
-      "rejectedExpired": "مرفوض/منتهي الصلاحية"
+      "rejectedExpired": "مرفوض/منتهي"
     },
     "claimId": "معرف المطالبة",
     "noClaimsTitle": "لم يتم العثور على مطالبات",

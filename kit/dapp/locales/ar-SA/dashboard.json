@@ -1,9 +1,9 @@
 {
   "charts": {
     "assetDistribution": {
-      "description": "تحليل حسب نوع الأصول",
-      "empty": "لا توجد أصول لعرضها",
-      "title": "توزيع الأصول"
+      "description": "شاهد الأصول مجمعة حسب النوع",
+      "empty": "أضف أصلًا لرؤية هذا الرسم البياني",
+      "title": "مزيج الأصول"
     },
     "topAssets": {
       "columns": {
@@ -13,19 +13,19 @@
         "value": "القيمة",
         "volume": "الحجم"
       },
-      "description": "الأصول حسب نسبة العائد",
-      "title": "أفضل الأصول أداءً"
+      "description": "يعرض الأصول ذات العوائد الأفضل",
+      "title": "أفضل الأصول"
     },
     "transactionVolume": {
       "axes": {
         "x": "التاريخ",
         "y": "المعاملات"
       },
-      "description": "عدد المعاملات اليومية",
+      "description": "تتبع حجم المعاملات اليومية",
       "title": "حجم المعاملات"
     },
     "valueOverTime": {
-      "description": "إجمالي القيمة على مر الزمن",
+      "description": "راقب كيف تتغير قيمة المحفظة مع مرور الوقت",
       "periods": {
         "all": "الكل",
         "day": "24 ساعة",
@@ -39,103 +39,107 @@
   },
   "empty": {
     "action": "إنشاء أصل",
-    "subtitle": "ابدأ بإنشاء أول أصل موحد لك",
-    "title": "لا توجد بيانات لعرضها"
+    "subtitle": "أنشئ أول أصل موحد لك لبدء التتبع",
+    "title": "لا شيء هنا بعد"
   },
   "errors": {
-    "loadFailed": "فشل في تحميل بيانات لوحة التحكم",
-    "retry": "إعادة المحاولة"
+    "loadFailed": "لم نتمكن من تحميل لوحة المعلومات",
+    "retry": "حاول مرة أخرى"
   },
   "export": {
     "formats": {
-      "csv": "CSV",
-      "json": "JSON",
+      "csv": "ملف CSV",
+      "json": "ملف JSON",
       "pdf": "تقرير PDF",
-      "xlsx": "Excel"
+      "xlsx": "دفتر عمل Excel"
     },
     "sections": {
-      "all": "جميع البيانات",
-      "analytics": "تقرير التحليلات",
+      "all": "كل شيء",
+      "analytics": "ملخص التحليلات",
       "assets": "الأصول فقط",
       "transactions": "المعاملات فقط"
     },
-    "title": "تصدير البيانات"
+    "title": "قم بتصدير بياناتك"
   },
   "identityMetrics": {
     "title": "نظرة عامة على الهوية",
-    "description": "الحالة الحالية لهويات النظام والتسجيلات",
+    "description": "حالة الهوية الحالية في النظام والتسجيلات",
     "totalIdentities": "إجمالي الهويات",
     "activeRegistrations": "التسجيلات النشطة",
-    "pendingRegistrations": "التسجيلات المعلقة"
+    "pendingRegistrations": "التسجيلات المعلقة",
+    "chartTitle": "التسجيلات النشطة",
+    "chartDescription": "اتجاهات التسجيلات النشطة للهوية اليومية خلال الأيام السبعة الماضية",
+    "emptyStateMessage": "لا توجد تسجيلات بعد",
+    "emptyStateDescription": "ستظهر تسجيلات الهوية هنا بمجرد أن يبدأ المستخدمون عملية التحقق"
   },
   "portfolioDetails": {
     "name": "تفاصيل المحفظة",
     "summary": {
       "title": "ملخص المحفظة",
-      "description": "اعرض إجمالي قيمة محفظتك ومقتنياتك"
+      "description": "عرض إجمالي قيمة المحفظة والممتلكات"
     },
     "breakdown": {
-      "title": "تفصيل المحفظة",
-      "description": "تفصيل مفصل لأصولك حسب النوع"
+      "title": "تحليل المحفظة",
+      "description": "تحليل مفصل لأصولك حسب النوع"
     },
     "performance": {
       "title": "أداء المحفظة",
-      "description": "تتبع قيمة محفظتك عبر الزمن"
+      "description": "تتبع قيمة محفظتك مع مرور الوقت"
     }
   },
   "filters": {
     "apply": "تطبيق الفلاتر",
     "assetType": "نوع الأصل",
     "dateRange": "نطاق التاريخ",
-    "reset": "إعادة تعيين",
+    "reset": "مسح الفلاتر",
     "status": "الحالة"
   },
   "loading": {
-    "activity": "جارٍ تحميل النشاط...",
-    "charts": "جارٍ تحميل الرسوم البيانية...",
-    "stats": "جارٍ تحميل الإحصائيات..."
+    "activity": "تحميل النشاط",
+    "charts": "تحميل الرسوم البيانية",
+    "stats": "تحميل الإحصائيات"
   },
   "quickActions": {
-    "createAsset": "إنشاء أصل جديد",
-    "generateReport": "توليد تقرير",
+    "createAsset": "إنشاء أصل",
+    "generateReport": "إنشاء تقرير",
     "title": "إجراءات سريعة",
     "transferTokens": "نقل الرموز",
-    "viewPortfolio": "عرض المحفظة"
+    "viewPortfolio": "فتح المحفظة"
   },
   "stats": {
     "activeUsers": {
-      "description": "المستخدمون في آخر 30 يومًا",
+      "description": "المستخدمون النشطون في آخر 30 يومًا",
       "title": "المستخدمون النشطون",
-      "trend": "{{count}} جديد هذا الأسبوع"
+      "trend": "{{count}} انضموا هذا الأسبوع"
     },
     "totalAssets": {
-      "description": "الأصول الموحدة النشطة",
+      "description": "الأصول الموحدة الحية",
       "title": "إجمالي الأصول",
-      "trend": "{{percentage}}% من الشهر الماضي"
+      "trend": "{{percentage}}% مقارنة بالشهر الماضي"
     },
     "totalValue": {
-      "description": "القيمة المجمعة لجميع الأصول",
+      "description": "القيمة المجمعة عبر الأصول",
       "title": "إجمالي القيمة المقفلة",
-      "trend": "{{percentage}}% من الشهر الماضي"
+      "trend": "{{percentage}}% مقارنة بالشهر الماضي"
     },
     "transactions": {
-      "description": "إجمالي المعاملات المعالجة",
+      "description": "المعاملات المكتملة",
       "title": "المعاملات",
       "trend": "{{count}} اليوم"
     }
   },
-  "subtitle": "نظرة عامة على أصولك الموحدة",
-  "title": "لوحة التحكم",
+  "subtitle": "شاهد كيف تسير أصولك",
+  "title": "لوحة المعلومات",
   "welcome": {
-    "subtitle": "إليك ما يحدث مع أصولك اليوم",
+    "subtitle": "نشاط الأصول اليومي في لمحة",
     "title": "مرحبًا بعودتك، {{name}}"
   },
   "assetOverview": {
     "title": "نظرة عامة على الأصول",
-    "subtitle": "تتبع وتحليل أصولك المميزة",
+    "subtitle": "تتبع وتحليل أصولك الموحدة",
     "emptyState": {
       "title": "ستظهر نظرة عامة على أصولك هنا",
-      "description": "ستظهر الرسوم البيانية والإحصائيات بمجرد إنشاء أول أصل مميز لك"
+      "description": "ستظهر الرسوم البيانية والإحصائيات بمجرد تصميم أول أصل موحد لك"
     }
   },
   "widgets": {
@@ -148,36 +152,138 @@
         "success": "نجاح",
         "warning": "تحذير"
       },
-      "viewDetails": "عرض التفاصيل"
+      "viewDetails": "شاهد التفاصيل"
     },
     "pendingActions": {
-      "empty": "لا توجد إجراءات معلقة",
+      "empty": "لا توجد أعمال معلقة",
       "title": "الإجراءات المعلقة",
       "types": {
-        "approval": "موافقة مطلوبة",
-        "kyc": "التحقق من الهوية KYC معلق",
-        "signature": "التوقيع مطلوب"
+        "approval": "تحتاج إلى موافقة",
+        "kyc": "مراجعة KYC معلقة",
+        "signature": "توقيع مطلوب"
       }
     },
     "recentActivity": {
       "empty": "لا توجد نشاطات حديثة",
-      "title": "النشاطات الحديثة",
+      "title": "نشاط حديث",
       "types": {
         "approval": "{{user}} وافق على {{spender}}",
-        "burn": "{{amount}} {{token}} تم حرقها",
+        "burn": "{{amount}} {{token}} تم حرقه",
         "deployment": "تم نشر {{type}} جديدة",
-        "mint": "{{amount}} {{token}} تم سكها",
+        "mint": "{{amount}} {{token}} تم سكّه",
         "transfer": "{{user}} نقل {{amount}} {{token}}"
       },
       "viewAll": "عرض جميع الأنشطة"
     },
     "latestEvents": {
+      "title": "أحدث الأنشطة",
+      "empty": "لا يوجد شيء للمراجعة حتى الآن",
+      "emptyDescription": "تظهر هنا آخر خمس معاملات ناجحة لك",
+      "viewAll": "عرض الكل",
+      "loading": "جارٍ تحميل الأنشطة",
+      "error": "لم نتمكن من تحميل الأنشطة",
+      "errorRetry": "حاول مرة أخرى",
+      "types": {
+        "TransferCompleted": "تم إكمال التحويل",
+        "MintCompleted": "تم سك الأصول",
+        "BurnCompleted": "تم حرق الأصول",
+        "Approval": "تم منح الموافقة",
+        "Paused": "تم إيقاف التداول",
+        "Unpaused": "تم استئناف التداول",
+        "RoleGranted": "تم منح الدور",
+        "RoleRevoked": "تم إلغاء الدور",
+        "RoleAdminChanged": "تم تغيير دور الإدارة",
+        "IdentityRegistered": "تم التحقق من الهوية",
+        "IdentityCreated": "تم إنشاء الهوية",
+        "IdentityModified": "تم تحديث الهوية",
+        "IdentityStored": "تم تخزين الهوية",
+        "IdentityUnstored": "تمت إزالة الهوية",
+        "ClaimAdded": "تمت إضافة المطالبة",
+        "ClaimRemoved": "تمت إزالة المطالبة",
+        "ClaimRevoked": "تم إلغاء المطالبة",
+        "ClaimChanged": "تم تحديث المطالبة",
+        "ComplianceAdded": "تمت إضافة الامتثال",
+        "ComplianceModuleAdded": "تمت إضافة وحدة القاعدة",
+        "ComplianceModuleRemoved": "تمت إزالة وحدة القاعدة",
+        "ModuleParametersUpdated": "تم تحديث إعدادات الوحدة",
+        "AddressFrozen": "تم تجميد الحساب",
+        "TokensFrozen": "تم تجميد الأصول",
+        "TokensUnfrozen": "تم فك تجميد الأصول",
+        "RecoverySuccess": "تم استرداد الأصول",
+        "YieldClaimed": "تم المطالبة بالعائد",
+        "CheckpointUpdated": "تم تحديث نقطة العائد",
+        "YieldScheduleSet": "تم تحديث جدول العائد",
+        "FixedYieldScheduleSet": "تم تعيين عائد ثابت",
+        "BondCreated": "تم إصدار السند",
+        "BondMatured": "انتهت صلاحية السند",
+        "BondRedeemed": "تم استرداد السند",
+        "FundCreated": "تم إنشاء الصندوق",
+        "EquityCreated": "تم إصدار الأسهم",
+        "DepositCreated": "تم إنشاء الإيداع",
+        "StableCoinCreated": "تم إصدار العملة المستقرة",
+        "ManagementFeeCollected": "تم جمع رسوم الإدارة",
+        "AirdropTokensTransferred": "تم استلام الإهداء",
+        "AirdropBatchTokensTransferred": "تم إرسال دفعة الإهداء",
+        "VestingInitialized": "بدأت فترة الاستحقاق",
+        "BatchVestingInitialized": "بدأت فترة استحقاق الدفعة",
+        "VestingStrategyUpdated": "تم تحديث استراتيجية الاستحقاق",
+        "XvPSettlementExecuted": "تم تنفيذ التسوية",
+        "XvPSettlementApproved": "تمت الموافقة على التسوية",
+        "XvPSettlementCancelled": "تم إلغاء التسوية",
+        "XvPSettlementApprovalRevoked": "تم إلغاء موافقة التسوية",
+        "Deposit": "إيداع في الخزنة",
+        "ExecuteTransaction": "تم تنفيذ المعاملة",
+        "SubmitTransactionWithSignatures": "تم تقديم المعاملة",
+        "SignaturesProvided": "تم تقديم التوقيعات",
+        "RequirementChanged": "تم تغيير المتطلبات",
+        "Bootstrapped": "تم تهيئة النظام",
+        "TokenAssetCreated": "تم إنشاء الأصل",
+        "TokenImplementationUpdated": "تم تحديث تنفيذ الأصل",
+        "CapSet": "تم تعيين حد العرض",
+        "Redeemed": "تم استرداد الأصول",
+        "TrustedIssuerAdded": "تمت إضافة مصدر موثوق",
+        "TrustedIssuerRemoved": "تمت إزالة مصدر موثوق",
+        "ClaimTopicsUpdated": "تم تحديث مواضيع المطالبة",
+        "TopicSchemeRegistered": "تم تسجيل الموضوع",
+        "TopicSchemeRemoved": "تمت إزالة الموضوع",
+        "TopicSchemeUpdated": "تم تحديث الموضوع",
+        "IdentityRegistryBound": "تم ربط سجل الهوية",
+        "IdentityRegistryUnbound": "تم فك ربط سجل الهوية",
+        "CountryModified": "تم تحديث الدولة",
+        "AddressAddedToBypassList": "تمت إضافة إدخال إلى قائمة التجاوز",
+        "AddressRemovedFromBypassList": "تمت إزالة إدخال من قائمة التجاوز",
+        "GlobalComplianceModuleAdded": "تمت إضافة وحدة عالمية",
+        "GlobalComplianceModuleRemoved": "تمت إزالة وحدة عالمية",
+        "ERC20TokenRecovered": "تم استرداد رموز ERC20",
+        "UpdatedTokenInformation": "تم تحديث تفاصيل الرمز",
+        "ATKSystemCreated": "تم إنشاء نظام ATK",
+        "ATKXvPSettlementCreated": "تم إنشاء تسوية XvP",
+        "ATKVaultCreated": "تم إنشاء الخزنة",
+        "ATKPushAirdropCreated": "تم إنشاء إهداء الدفع",
+        "ATKVestingAirdropCreated": "تم إنشاء إهداء الاستحقاق",
+        "ATKTimeBoundAirdropCreated": "تم إنشاء إهداء محدد بالوقت",
+        "ATKFixedYieldScheduleCreated": "تم إنشاء جدول عائد ثابت",
+        "TokenFactoryRegistered": "تم تسجيل مصنع الرموز",
+        "SystemAddonRegistered": "تم تسجيل إضافة النظام",
+        "ComplianceModuleRegistered": "تم تسجيل وحدة الامتثال",
+        "OwnershipTransferred": "تم نقل الملكية",
+        "TokensWithdrawn": "تم سحب الأصول",
+        "DenominationAssetTopUp": "تم تعبئة أصل الفئة",
+        "DenominationAssetWithdrawn": "تم سحب أصل الفئة",
+        "DistributionCapUpdated": "تم تحديث حد التوزيع"
+      },
+      "timeAgo": {
+        "justNow": "الآن فقط",
+        "minutesAgo": "{{count}} دقيقة مضت",
+        "hoursAgo": "{{count}} ساعة مضت",
+        "daysAgo": "{{count}} أيام مضت"
+      },
       "columns": {
-        "event": "الحدث",
-        "asset": "الأصل",
-        "account": "الحساب",
-        "time": "الوقت",
-        "transaction": "المعاملة"
+        "event": "حدث",
+        "asset": "أصل",
+        "account": "حساب",
+        "time": "وقت",
+        "transaction": "معاملة"
       }
     }
   }

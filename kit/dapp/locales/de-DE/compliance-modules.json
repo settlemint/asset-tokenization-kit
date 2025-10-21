@@ -1,38 +1,53 @@
 {
   "modules": {
-    "addressBlockList": {
-      "description": "Blockieren Sie bestimmte Wallet-Adressen, um auf Ihr Vermögen zuzugreifen. Verhindert, dass sanktionierte oder problematische Adressen teilnehmen.",
-      "shortDescription": "Blockieren Sie bestimmte Wallet-Adressen",
-      "title": "Adressen blockieren",
-      "addButtonLabel": "Adresse hinzufügen"
+    "AddressBlockListComplianceModule": {
+      "description": "Blockieren Sie spezifische Wallet-Adressen vom Zugriff auf Ihr Asset. Verhindert, dass sanktionierte oder problematische Adressen teilnehmen.",
+      "shortDescription": "Blockieren Sie spezifische Wallet-Adressen vom Zugriff auf Ihr Asset",
+      "title": "Adressen blockieren"
     },
-    "countryAllowList": {
-      "description": "Erlauben Sie nur Investoren aus bestimmten Ländern. Hilft, regionale Compliance-Anforderungen zu erfüllen.",
-      "shortDescription": "Nur bestimmte Länder erlauben",
-      "title": "Länder-Whitelist"
+    "CountryAllowListComplianceModule": {
+      "description": "Ermöglichen Sie Investoren aus spezifischen Ländern den Zugriff auf Ihr Asset. Hilft bei der Erfüllung regionaler Compliance-Anforderungen.",
+      "shortDescription": "Ermöglichen Sie Investoren aus spezifischen Ländern den Zugriff auf Ihr Asset",
+      "title": "Länder-Allowlist"
     },
-    "countryBlockList": {
-      "description": "Blockieren Sie Investoren aus bestimmten Ländern oder Regionen. Hilft, Sanktionen und regulatorische Einschränkungen einzuhalten.",
-      "shortDescription": "Bestimmte Länder blockieren",
-      "title": "Länder-Blacklist"
+    "CountryBlockListComplianceModule": {
+      "description": "Blockieren Sie Investoren aus spezifischen Ländern vom Zugriff auf Ihr Asset. Hilft bei der Einhaltung von Sanktionen und regulatorischen Beschränkungen.",
+      "shortDescription": "Blockieren Sie Investoren aus spezifischen Ländern vom Zugriff auf Ihr Asset",
+      "title": "Länder-Blocklist"
     },
-    "identityAllowList": {
-      "description": "Erlauben Sie nur verifizierte Identitäten aus Ihrer genehmigten Liste. Funktioniert gut für exklusive Angebote und private Verkäufe.",
-      "shortDescription": "Nur genehmigte Identitäten erlauben",
-      "title": "Identitäts-Whitelist"
+    "IdentityAllowListComplianceModule": {
+      "description": "Ermöglichen Sie nur verifizierte Identitäten aus Ihrer genehmigten Liste. Funktioniert gut für exklusive Angebote und private Verkäufe.",
+      "shortDescription": "Ermöglichen Sie genehmigten Identitäten den Zugriff auf Ihr Asset",
+      "title": "Identity-Allowlist"
     },
-    "identityBlockList": {
-      "description": "Blockieren Sie bestimmte verifizierte Identitäten, um auf Ihr Vermögen zuzugreifen. Entfernen Sie problematische Investoren und bleiben Sie compliant.",
-      "shortDescription": "Bestimmte Identitäten blockieren",
-      "title": "Identitäts-Blacklist"
+    "IdentityBlockListComplianceModule": {
+      "description": "Blockieren Sie spezifische verifizierte Identitäten vom Zugriff auf Ihr Asset. Entfernen Sie problematische Investoren, während Sie compliant bleiben.",
+      "shortDescription": "Blockieren Sie spezifische Identitäten vom Zugriff auf Ihr Asset",
+      "title": "Identity-Blocklist"
     },
-    "smartIdentityVerification": {
-      "description": "Erfordern Sie eine Identitätsverifizierung für alle Investoren. Bietet KYC- und AML-Compliance durch das SMART-Protokoll.",
-      "shortDescription": "Identitätsverifizierung erforderlich",
-      "title": "SMART-Identitätsverifizierung"
+    "SMARTIdentityVerificationComplianceModule": {
+      "description": "SMART Identity-Verifizierung stellt sicher, dass nur verifizierte Investoren diesen Token halten oder handeln können. Es prüft, ob die digitale Identität eines Investors die richtigen Claims enthält, wie \"KYC bestanden\", \"akkreditierter Investor\" oder \"nicht auf Sanktionsliste\".",
+      "shortDescription": "SMART Identity-Verifizierung stellt sicher, dass nur verifizierte Investoren diesen Token halten oder handeln können",
+      "title": "SMART Identity-Verifizierung",
+      "helper": {
+        "title": "Identity-Verifizierungsregeln",
+        "intro": "SMART Identity-Verifizierung stellt sicher, dass nur verifizierte Investoren diesen Token halten oder handeln können. Es prüft, ob die digitale Identität eines Investors die richtigen Claims enthält, wie \"KYC bestanden\", \"akkreditierter Investor\" oder \"nicht auf Sanktionsliste\".",
+        "howToTitle": "Wie man Ausdrücke baut",
+        "howToItems": [
+          "Wählen Sie ein Claim-Thema (KYC, AML, Akkreditierung, etc.).",
+          "Kombinieren Sie Themen mit logischen Operatoren: AND -> alle müssen wahr sein, OR -> mindestens eines muss wahr sein, NOT -> eine Bedingung ausschließen.",
+          "Verwenden Sie Gruppen, um Teile der Regel für fortgeschrittenere Logik zu bündeln."
+        ],
+        "examplesTitle": "Beispiele",
+        "examples": [
+          "MiCA / EU: Ausdruck (KYC AND AML) AND (PROFESSIONAL_INVESTOR OR ACCREDITED_INVESTOR)",
+          "MiCA / EU (alle Verträge wie Tokens, Vaults, ... erlauben): CONTRACT OR ((KYC AND AML) AND (PROFESSIONAL_INVESTOR OR ACCREDITED_INVESTOR))"
+        ]
+      }
     }
   },
-  "title": "Compliance",
+  "title": "Compliance-Module",
+  "complianceModuleName": "Modulname",
   "sections": {
     "enabled": {
       "title": "Aktiviert",

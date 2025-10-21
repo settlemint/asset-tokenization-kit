@@ -2,7 +2,12 @@
 @import "tw-animate-css";
 @source "../../../../node_modules/@daveyplate/better-auth-ui";
 
-@custom-variant dark (&:is(.dark *));
+/* Scope dark utilities to the nearest theme container so light previews stay isolated */
+@custom-variant dark (
+  &:where(:is(.dark *, [data-theme="dark"] *)):where(
+    :not(:is([data-theme="light"] *))
+  )
+);
 
 @theme inline {
   /* SettleMint Brand Colors */
@@ -74,28 +79,51 @@
   /* Onboarding Background */
   --onboarding-background: url("/backgrounds/background-lm.svg");
   /* SettleMint Brand Colors */
+  /* ThemeToken: sm-text */
   --sm-text: oklch(0.2264 0 87);
+  /* ThemeToken: sm-text-contrast */
   --sm-text-contrast: oklch(1 0 87);
+  /* ThemeToken: sm-accent */
   --sm-accent: oklch(0.5745 0.2028 263.15);
+  /* ThemeToken: sm-accent-hover */
   --sm-accent-hover: oklch(0.5745 0.2028 263.15 / 0.2);
+  /* ThemeToken: sm-background-darkest */
   --sm-background-darkest: oklch(0.9359 0.0275 265.45);
+  /* ThemeToken: sm-background-lightest */
   --sm-background-lightest: oklch(0.967 0.014 268.49);
+  /* ThemeToken: sm-background-gradient-start */
   --sm-background-gradient-start: oklch(0.9886 0.0026 286.35);
+  /* ThemeToken: sm-background-gradient-end */
   --sm-background-gradient-end: oklch(0.9691 0.0103 261.79);
+  /* ThemeToken: sm-state-success */
   --sm-state-success: var(--sm-text);
+  /* ThemeToken: sm-state-success-background */
   --sm-state-success-background: oklch(0.812 0.1064 153.89);
+  /* ThemeToken: sm-state-success-fg-deep */
   --sm-state-success-fg-deep: hsl(140, 100%, 27%);
+  /* ThemeToken: sm-state-warning */
   --sm-state-warning: var(--sm-text);
+  /* ThemeToken: sm-state-warning-background */
   --sm-state-warning-background: oklch(0.8354 0.1274 72.2);
+  /* ThemeToken: sm-state-error */
   --sm-state-error: var(--sm-text);
+  /* ThemeToken: sm-state-error-background */
   --sm-state-error-background: oklch(0.7044 0.1872 23.19);
+  /* ThemeToken: sm-graphics-primary */
   --sm-graphics-primary: oklch(0.7675 0.0982 182.83);
+  /* ThemeToken: sm-graphics-secondary */
   --sm-graphics-secondary: oklch(0.7284 0.1133 210.64);
+  /* ThemeToken: sm-graphics-tertiary */
   --sm-graphics-tertiary: oklch(0.6396 0.145 248.18);
+  /* ThemeToken: sm-graphics-quaternary */
   --sm-graphics-quaternary: oklch(0.6296 0.2209 300.47);
+  /* ThemeToken: sm-colored-shadow */
   --sm-colored-shadow: oklch(0.5745 0.2028 263.15 / 0.12);
+  /* ThemeToken: sm-inset-shadow */
   --sm-inset-shadow: rgba(0, 0, 0, 0.21);
+  /* ThemeToken: sm-muted */
   --sm-muted: oklch(0.2264 0 87 / 32%);
+  /* ThemeToken: sm-border */
   --sm-border: oklch(0.2264 0 87 / 12%);
   /* Step Wizard Sidebar Gradient */
   --sm-wizard-sidebar-gradient: linear-gradient(
@@ -105,45 +133,85 @@
     var(--sm-graphics-primary) 100%
   );
   /* shadcn colors */
+  /* ThemeToken: background */
   --background: var(--sm-background-lightest);
+  /* ThemeToken: foreground */
   --foreground: var(--sm-text);
+  /* ThemeToken: card */
   --card: var(--sm-colored-shadow);
+  /* ThemeToken: card-foreground */
   --card-foreground: var(--sm-text);
+  /* ThemeToken: popover */
   --popover: var(--sm-background-lightest);
+  /* ThemeToken: popover-foreground */
   --popover-foreground: var(--sm-text);
+  /* ThemeToken: primary */
   --primary: var(--sm-accent);
+  /* ThemeToken: primary-foreground */
   --primary-foreground: var(--sm-text-contrast);
+  /* ThemeToken: secondary */
   --secondary: var(--sm-graphics-primary);
+  /* ThemeToken: secondary-foreground */
   --secondary-foreground: var(--sm-text);
+  /* ThemeToken: muted */
   --muted: var(--sm-colored-shadow);
+  /* ThemeToken: muted-foreground */
   --muted-foreground: var(--sm-muted);
+  /* ThemeToken: accent */
   --accent: var(--sm-accent);
+  /* ThemeToken: accent-foreground */
   --accent-foreground: var(--sm-text-contrast);
+  /* ThemeToken: accent-hover */
   --accent-hover: var(--sm-accent-hover);
+  /* ThemeToken: destructive */
   --destructive: var(--sm-state-error-background);
+  /* ThemeToken: destructive-foreground */
   --destructive-foreground: var(--sm-state-error);
+  /* ThemeToken: success */
   --success: var(--sm-state-success-background);
+  /* ThemeToken: success-foreground */
   --success-foreground: var(--sm-state-success);
+  /* ThemeToken: success-fg-deep */
   --success-fg-deep: var(--sm-state-success-fg-deep);
+  /* ThemeToken: warning */
   --warning: var(--sm-state-warning-background);
+  /* ThemeToken: warning-foreground */
   --warning-foreground: var(--sm-state-warning);
+  /* ThemeToken: border */
   --border: var(--sm-border);
+  /* ThemeToken: input */
   --input: var(--sm-border);
+  /* ThemeToken: ring */
   --ring: var(--sm-accent);
+  /* ThemeToken: chart-1 */
   --chart-1: var(--sm-graphics-primary);
+  /* ThemeToken: chart-2 */
   --chart-2: var(--sm-graphics-quaternary);
+  /* ThemeToken: chart-3 */
   --chart-3: var(--sm-graphics-tertiary);
+  /* ThemeToken: chart-4 */
   --chart-4: var(--sm-graphics-secondary);
+  /* ThemeToken: chart-5 */
   --chart-5: var(--sm-accent);
+  /* ThemeToken: chart-6 */
   --chart-6: var(--sm-state-warning-background);
+  /* ThemeToken: radius */
   --radius: 0.625rem;
+  /* ThemeToken: sidebar */
   --sidebar: var(--sm-background-darkest);
+  /* ThemeToken: sidebar-foreground */
   --sidebar-foreground: var(--sm-text);
+  /* ThemeToken: sidebar-primary */
   --sidebar-primary: var(--sm-accent);
+  /* ThemeToken: sidebar-primary-foreground */
   --sidebar-primary-foreground: var(--sm-text);
+  /* ThemeToken: sidebar-accent */
   --sidebar-accent: var(--sm-background-gradient-start);
+  /* ThemeToken: sidebar-accent-foreground */
   --sidebar-accent-foreground: var(--sm-text);
+  /* ThemeToken: sidebar-border */
   --sidebar-border: var(--sm-border);
+  /* ThemeToken: sidebar-ring */
   --sidebar-ring: var(--sm-accent);
 }
 
@@ -151,27 +219,49 @@
   /* Onboarding Background */
   --onboarding-background: url("/backgrounds/background-dm.svg");
   /* SettleMint Brand Colors */
+  /* ThemeToken: sm-text */
   --sm-text: oklch(1 0 87);
+  /* ThemeToken: sm-text-contrast */
   --sm-text-contrast: oklch(0.2264 0 87);
+  /* ThemeToken: sm-accent */
   --sm-accent: oklch(0.6219 0.1772 263.65);
+  /* ThemeToken: sm-accent-hover */
   --sm-accent-hover: oklch(0.5745 0.2028 263.15 / 0.2);
+  /* ThemeToken: sm-background-darkest */
   --sm-background-darkest: oklch(0.2264 0 0);
+  /* ThemeToken: sm-background-lightest */
   --sm-background-lightest: oklch(0.2809 0 0);
+  /* ThemeToken: sm-background-gradient-start */
   --sm-background-gradient-start: oklch(0.3368 0 0);
+  /* ThemeToken: sm-background-gradient-end */
   --sm-background-gradient-end: oklch(0.3092 0 0);
+  /* ThemeToken: sm-state-success */
   --sm-state-success: var(--sm-text);
+  /* ThemeToken: sm-state-success-background */
   --sm-state-success-background: oklch(0.812 0.1064 153.89);
+  /* ThemeToken: sm-state-warning */
   --sm-state-warning: var(--sm-text);
+  /* ThemeToken: sm-state-warning-background */
   --sm-state-warning-background: oklch(0.8354 0.1274 72.2);
+  /* ThemeToken: sm-state-error */
   --sm-state-error: var(--sm-text);
+  /* ThemeToken: sm-state-error-background */
   --sm-state-error-background: oklch(0.7044 0.1872 23.19);
+  /* ThemeToken: sm-graphics-primary */
   --sm-graphics-primary: oklch(0.7675 0.0982 182.83);
+  /* ThemeToken: sm-graphics-secondary */
   --sm-graphics-secondary: oklch(0.7284 0.1133 210.64);
+  /* ThemeToken: sm-graphics-tertiary */
   --sm-graphics-tertiary: oklch(0.6396 0.145 248.18);
+  /* ThemeToken: sm-graphics-quaternary */
   --sm-graphics-quaternary: oklch(0.6296 0.2209 300.47);
+  /* ThemeToken: sm-colored-shadow */
   --sm-colored-shadow: oklch(0.2264 0 0);
+  /* ThemeToken: sm-inset-shadow */
   --sm-inset-shadow: rgba(0, 0, 0, 0.21);
+  /* ThemeToken: sm-muted */
   --sm-muted: oklch(1 0 87 / 32%);
+  /* ThemeToken: sm-border */
   --sm-border: oklch(1 0 87 / 12%);
   /* Step Wizard Sidebar Gradient */
   --sm-wizard-sidebar-gradient: linear-gradient(
@@ -181,43 +271,81 @@
     var(--sm-graphics-primary) 100%
   );
   /* shadcn colors */
+  /* ThemeToken: background */
   --background: var(--sm-background-lightest);
+  /* ThemeToken: foreground */
   --foreground: var(--sm-text);
+  /* ThemeToken: card */
   --card: var(--sm-background-gradient-start);
+  /* ThemeToken: card-foreground */
   --card-foreground: var(--sm-text);
+  /* ThemeToken: popover */
   --popover: var(--sm-background-gradient-start);
+  /* ThemeToken: popover-foreground */
   --popover-foreground: var(--sm-text);
+  /* ThemeToken: primary */
   --primary: var(--sm-accent);
+  /* ThemeToken: primary-foreground */
   --primary-foreground: var(--sm-text);
+  /* ThemeToken: secondary */
   --secondary: var(--sm-graphics-primary);
+  /* ThemeToken: secondary-foreground */
   --secondary-foreground: var(--sm-text);
+  /* ThemeToken: muted */
   --muted: var(--sm-muted);
+  /* ThemeToken: muted-foreground */
   --muted-foreground: var(--sm-muted);
+  /* ThemeToken: accent */
   --accent: var(--sm-accent);
+  /* ThemeToken: accent-foreground */
   --accent-foreground: var(--sm-text);
+  /* ThemeToken: accent-hover */
   --accent-hover: var(--sm-accent-hover);
+  /* ThemeToken: destructive */
   --destructive: var(--sm-state-error-background);
+  /* ThemeToken: destructive-foreground */
   --destructive-foreground: var(--sm-state-error);
+  /* ThemeToken: success */
   --success: var(--sm-state-success-background);
+  /* ThemeToken: success-foreground */
   --success-foreground: var(--sm-state-success);
+  /* ThemeToken: warning */
   --warning: var(--sm-state-warning-background);
+  /* ThemeToken: warning-foreground */
   --warning-foreground: var(--sm-state-warning);
+  /* ThemeToken: border */
   --border: var(--sm-border);
+  /* ThemeToken: input */
   --input: var(--sm-border);
+  /* ThemeToken: ring */
   --ring: var(--sm-accent);
+  /* ThemeToken: chart-1 */
   --chart-1: var(--sm-graphics-primary);
+  /* ThemeToken: chart-2 */
   --chart-2: var(--sm-graphics-quaternary);
+  /* ThemeToken: chart-3 */
   --chart-3: var(--sm-graphics-tertiary);
+  /* ThemeToken: chart-4 */
   --chart-4: var(--sm-graphics-secondary);
+  /* ThemeToken: chart-5 */
   --chart-5: var(--sm-accent);
+  /* ThemeToken: chart-6 */
   --chart-6: var(--sm-state-warning-background);
+  /* ThemeToken: sidebar */
   --sidebar: var(--sm-background-darkest);
+  /* ThemeToken: sidebar-foreground */
   --sidebar-foreground: var(--sm-text);
+  /* ThemeToken: sidebar-primary */
   --sidebar-primary: var(--sm-accent);
+  /* ThemeToken: sidebar-primary-foreground */
   --sidebar-primary-foreground: var(--sm-text);
+  /* ThemeToken: sidebar-accent */
   --sidebar-accent: var(--sm-background-gradient-start);
+  /* ThemeToken: sidebar-accent-foreground */
   --sidebar-accent-foreground: var(--sm-text);
+  /* ThemeToken: sidebar-border */
   --sidebar-border: var(--sm-border);
+  /* ThemeToken: sidebar-ring */
   --sidebar-ring: var(--sm-accent);
 }
 
@@ -227,10 +355,17 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Ensure runtime-selected sans-serif font propagates globally */
+    font-family: var(--font-sans);
     overflow: hidden;
     transition:
       background-color 0.15s ease,
       color 0.15s ease;
+  }
+
+  :is(code, kbd, pre, samp) {
+    /* Keep code surfaces aligned with theme monospace selection */
+    font-family: var(--font-mono);
   }
 }
 

@@ -1,5 +1,3 @@
-import { useTheme } from "next-themes";
-
 interface SolidityIconProps {
   className?: string;
 }
@@ -16,9 +14,6 @@ interface SolidityIconProps {
  * @returns {JSX.Element} A React component that renders the Solidity icon as an SVG
  */
 export function SolidityIcon({ className }: SolidityIconProps) {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
-
   return (
     <svg
       className={className}
@@ -29,73 +24,70 @@ export function SolidityIcon({ className }: SolidityIconProps) {
       <g opacity="0.45">
         <path
           d="M1101.1 0L733.9 660.4L550.3 330.2L1101.1 0Z"
-          fill={isDark ? "#FFFFFF" : "#000000"}
+          fill="currentColor"
         />
       </g>
       <g opacity="0.6">
-        <path
-          d="M366.7 0H917.5L733.9 330.2L366.7 0Z"
-          fill={isDark ? "#FFFFFF" : "#000000"}
-        />
+        <path d="M366.7 0H917.5L733.9 330.2L366.7 0Z" fill="currentColor" />
       </g>
       <g opacity="0.8">
         <path
           d="M1284.7 330.2L1101.1 660.4L733.9 0H1284.7V330.2Z"
-          fill={isDark ? "#FFFFFF" : "#000000"}
+          fill="currentColor"
         />
       </g>
       <g opacity="0.45">
         <path
           d="M550.3 990.6L733.9 660.4L1101.1 1320.8L550.3 990.6Z"
-          fill={isDark ? "#FFFFFF" : "#000000"}
+          fill="currentColor"
         />
       </g>
       <g opacity="0.6">
         <path
           d="M733.9 990.6L1101.1 1320.8H550.3L733.9 990.6Z"
-          fill={isDark ? "#FFFFFF" : "#000000"}
+          fill="currentColor"
         />
       </g>
       <g opacity="0.8">
         <path
           d="M183.1 990.6L366.7 660.4L733.9 1320.8H183.1V990.6Z"
-          fill={isDark ? "#FFFFFF" : "#000000"}
+          fill="currentColor"
         />
       </g>
       <g opacity="0.45">
         <path
           d="M366.7 2500L733.9 1839.6L917.5 2169.8L366.7 2500Z"
-          fill={isDark ? "#FFFFFF" : "#000000"}
+          fill="currentColor"
         />
       </g>
       <g opacity="0.6">
         <path
           d="M1101.1 2500H550.3L733.9 2169.8L1101.1 2500Z"
-          fill={isDark ? "#FFFFFF" : "#000000"}
+          fill="currentColor"
         />
       </g>
       <g opacity="0.8">
         <path
           d="M183.1 2169.8L366.7 1839.6L733.9 2500H183.1V2169.8Z"
-          fill={isDark ? "#FFFFFF" : "#000000"}
+          fill="currentColor"
         />
       </g>
       <g opacity="0.45">
         <path
           d="M917.5 1509.4L733.9 1839.6L366.7 1179.2L917.5 1509.4Z"
-          fill={isDark ? "#FFFFFF" : "#000000"}
+          fill="currentColor"
         />
       </g>
       <g opacity="0.6">
         <path
           d="M733.9 1509.4L366.7 1179.2H917.5L733.9 1509.4Z"
-          fill={isDark ? "#FFFFFF" : "#000000"}
+          fill="currentColor"
         />
       </g>
       <g opacity="0.8">
         <path
           d="M1284.7 1509.4L1101.1 1839.6L733.9 1179.2H1284.7V1509.4Z"
-          fill={isDark ? "#FFFFFF" : "#000000"}
+          fill="currentColor"
         />
       </g>
     </svg>

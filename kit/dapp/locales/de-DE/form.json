@@ -1,19 +1,18 @@
 {
   "letters-only": "Es sind nur Buchstaben erlaubt",
   "noCountryFound": "Kein Land gefunden.",
-  "valid-email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+  "valid-email": "Bitte eine gültige E-Mail-Adresse eingeben",
   "address": {
-    "selectPlaceholder": "Adresse wählen",
-    "searchPlaceholder": "Adressen suchen",
-    "loading": "Laden",
+    "selectPlaceholder": "Adresse auswählen",
+    "searchPlaceholder": "Adressen durchsuchen",
+    "loading": "Wird geladen...",
     "noResults": "Keine passenden Adressen gefunden",
-    "recent": "Kürzlich",
-    "searchResults": "Ergebnisse",
-    "recentAddresses": "Kürzlich",
+    "noAddressesCreated": "Noch keine Adressen erstellt",
+    "recent": "Zuletzt verwendet",
+    "searchResults": "Suchergebnisse",
+    "allAddresses": "Alle",
     "searchInstead": "Stattdessen suchen",
     "enterManually": "Manuell eingeben",
-    "noAddressesCreated": "Noch keine Adressen erstellt",
-    "allAddresses": "Alle",
     "addAddress": "Adresse hinzufügen"
   },
   "buttons": {
@@ -22,7 +21,7 @@
     "disable": "Deaktivieren",
     "enable": "Aktivieren",
     "next": "Weiter",
-    "submit": "Einreichen",
+    "submit": "Senden",
     "leave": "Verlassen",
     "save": "Speichern"
   }

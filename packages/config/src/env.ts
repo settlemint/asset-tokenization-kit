@@ -87,6 +87,11 @@ export const env = createEnv({
     SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT: z.url(),
 
     /**
+     * MinIO bucket used for storing tenant assets such as logos.
+     */
+    SETTLEMINT_MINIO_BUCKET: z.string().min(1).default("atk"),
+
+    /**
      * Don't run database migrations on startup
      */
     DISABLE_MIGRATIONS_ON_STARTUP: z.coerce.boolean().default(false),

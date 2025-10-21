@@ -66,7 +66,7 @@ The following table lists the configurable parameters of this chart and their de
 |blockscout.initContainer.tcpCheck.image|object|-|TCP check container image configuration|
 |blockscout.initContainer.tcpCheck.image.pullPolicy|string|`"IfNotPresent"`|TCP check container image pull policy|
 |blockscout.initContainer.tcpCheck.image.repository|string|`"ghcr.io/settlemint/btp-waitforit"`|TCP check container image repository|
-|blockscout.initContainer.tcpCheck.image.tag|string|`"v7.7.13"`|TCP check container image tag|
+|blockscout.initContainer.tcpCheck.image.tag|string|`"v7.7.14"`|TCP check container image tag|
 |blockscout.initContainer.tcpCheck.resources|object|-|TCP check container resource requests and limits|
 |blockscout.initContainer.tcpCheck.resources.dependencies|list|-|List of service dependencies to check|
 |blockscout.initContainer.tcpCheck.resources.dependencies[0]|string|`{"endpoint":"{{ include \"atk.postgresql.endpoint\" (dict \"context\" $ \"chartKey\" \"blockscout\" \"local\" $.Values.postgresql) }}","name":"postgresql"}`|Dependency name|

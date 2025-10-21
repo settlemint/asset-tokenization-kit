@@ -1,19 +1,20 @@
 {
   "actions": {
+    "add": "追加",
     "cancel": "キャンセル",
-    "skip": "スキップ",
-    "add": "追加"
+    "skip": "スキップ"
   },
   "appDescription": "数分でデプロイし、簡単にカスタマイズ",
   "appName": "資産トークン化キット",
   "complete": "完了",
-  "continue": "続ける",
+  "continue": "続行",
+  "days": "日",
   "deploying": "デプロイ中...",
   "generating": "生成中...",
   "next": "次へ",
   "previous": "前へ",
   "transaction": {
-    "indexed": "トランザクションが確認され、インデックス化されました",
+    "indexed": "トランザクションが確認され、インデックスされました",
     "waitingForMining": "トランザクションがマイニングされるのを待っています..."
   },
   "transactionHash": {
@@ -26,27 +27,41 @@
       "label": "確認コード"
     }
   },
+  "password-confirmation": {
+    "title": "パスワードを確認",
+    "description": "続行するにはパスワードを入力してください。",
+    "passwordLabel": "パスワード",
+    "submit": "続行",
+    "submitting": "処理中...",
+    "cancel": "キャンセル"
+  },
   "errors": {
     "somethingWentWrong": "ここで何かがうまくいきませんでした"
   },
-  "saving": "変更を保存しています...",
+  "saving": "変更を保存中...",
   "saved": "変更が保存されました",
-  "error": "変更の保存に失敗しました",
+  "error": "変更の保存に失敗しました。{{message}}",
   "remove": "削除",
   "unknown": "不明",
   "save": "保存",
   "add": "付与",
   "none": "なし",
+  "yes": "はい",
+  "no": "いいえ",
   "timeInterval": {
     "DAILY": "毎日",
     "WEEKLY": "毎週",
-    "MONTHLY": "毎月",
-    "QUARTERLY": "四半期",
-    "YEARLY": "年次"
+    "MONTHLY": "毎月（30日）",
+    "QUARTERLY": "四半期ごと（90日）",
+    "YEARLY": "毎年（365日）"
   },
   "dates": {
     "today": "今日",
     "yesterday": "昨日"
+  },
+  "timeframes": {
+    "trailing24Hours": "過去24時間",
+    "trailing7Days": "過去7日間"
   },
   "chart": {
     "update": {
@@ -56,10 +71,148 @@
       "inOneHour": "1時間後に更新",
       "inHours": "{{count}}時間後に更新",
       "tomorrow": "明日更新",
-      "soon": "まもなく更新",
+      "soon": "すぐに更新",
       "info": "チャート更新情報",
       "lastUpdated": "最終更新",
-      "nextUpdate": "次回更新"
+      "nextUpdate": "次の更新"
+    }
+  },
+  "roles": {
+    "addonmanager": {
+      "title": "アドオンマネージャー",
+      "description": "プロトコルアドオンとそのファクトリーを管理します。"
+    },
+    "addonmodule": {
+      "title": "アドオンファクトリーモジュール",
+      "description": "アドオンモジュールを管理し、アドオンインスタンス契約をコンプライアンス許可リストに追加できます。"
+    },
+    "addonregistrymodule": {
+      "title": "アドオンファクトリー登録モジュール",
+      "description": "アドオン登録モジュールを管理し、アドオンファクトリーモジュールを管理します。"
+    },
+    "admin": {
+      "title": "デフォルト管理者",
+      "description": "すべての役割を付与および取り消すことができます。プロトコルの完全な制御。"
+    },
+    "auditor": {
+      "title": "監査人",
+      "description": "権限、アイデンティティ、監査ログ、およびシステム状態への閲覧専用アクセス。"
+    },
+    "burner": {
+      "title": "バーナー",
+      "description": "トークンを焼却（破壊）する権限があり、総供給量を減少させます。償還や供給管理に使用されます。"
+    },
+    "capmanagement": {
+      "title": "キャップ管理",
+      "description": "トークンの上限を設定する権限があり、これはミントできるトークンの最大数です。"
+    },
+    "claimpolicymanager": {
+      "title": "クレームポリシーマネージャー",
+      "description": "信頼できる発行者とアイデンティティ確認のためのクレームトピックを管理します。"
+    },
+    "claimissuer": {
+      "title": "クレーム発行者",
+      "description": "アイデンティティにクレームを作成し、添付できます。信頼できる発行者の地位は自動的には付与されません。"
+    },
+    "complianceadmin": {
+      "title": "コンプライアンス管理者",
+      "description": "主要なコンプライアンス契約の設定、コンプライアンスモジュールの追加または削除、およびそのパラメータの構成を含むコンプライアンス関連の設定を管理します。トークンの転送と相互作用に関する規制ルールを強制するための重要な役割を果たします。"
+    },
+    "compliancemanager": {
+      "title": "コンプライアンスマネージャー",
+      "description": "グローバルコンプライアンス設定やバイパスリストを含むコンプライアンスモジュールを登録および構成します。"
+    },
+    "custodian": {
+      "title": "カストディアン",
+      "description": "資産の凍結、強制移転、および資産回収を処理します。"
+    },
+    "emergency": {
+      "title": "緊急",
+      "description": "契約を一時停止し、緊急介入を行う権限があります。"
+    },
+    "forcedtransfer": {
+      "title": "強制移転",
+      "description": "アドレス間でトークンの強制移転を実行する権限があります。通常、資産回収や厳格なガバナンスの下でのエラー修正などの特別な状況で使用されます。"
+    },
+    "freezer": {
+      "title": "フリーザー",
+      "description": "特定のアドレスのトークン残高を凍結または凍結解除でき、部分的な金額も含まれます。法的命令に従うためや特別な状況でアカウントを管理するために使用されます。"
+    },
+    "fundsmanager": {
+      "title": "ファンドマネージャー",
+      "description": "トークンセール中に集められた資金を引き出す権限があり、ネイティブ通貨とERC20通貨の両方を含みます。"
+    },
+    "governance": {
+      "title": "ガバナンス",
+      "description": "トークンのガバナンス、検証、およびコンプライアンスを管理します。"
+    },
+    "identitymanager": {
+      "title": "アイデンティティマネージャー",
+      "description": "アイデンティティレジストリを管理し、アイデンティティの登録、回復、およびユーザーのオンボーディングを行います。"
+    },
+    "identityregistrymodule": {
+      "title": "アイデンティティレジストリモジュール",
+      "description": "アイデンティティレジストリモジュールを管理し、アイデンティティストレージを変更できます。"
+    },
+    "minter": {
+      "title": "ミンター",
+      "description": "新しいトークンをミントする権限があり、総供給量を増加させます。この役割へのアクセスは厳格に制御されるべきです。"
+    },
+    "organisationidentitymanager": {
+      "title": "組織アイデンティティマネージャー",
+      "description": "KYC、AML、およびライセンスなどの組織レベルのアイデンティティクレームを管理します。"
+    },
+    "pauser": {
+      "title": "ポーズ",
+      "description": "契約全体を一時停止または再開できます。一時停止中は、ほとんどのトークン操作がブロックされます。これは緊急の安全機能です。"
+    },
+    "recovery": {
+      "title": "回復",
+      "description": "投資家のためのアドレス回復を実行する権限があり、適切な確認が満たされている場合、失われたウォレットから新しいウォレットへのトークンの転送を許可します。"
+    },
+    "saleadmin": {
+      "title": "セール管理者",
+      "description": "トークンセールのパラメータと操作を管理し、セール設定の構成やセールライフサイクルの制御を行います。"
+    },
+    "signer": {
+      "title": "署名者",
+      "description": "ボールトのトランザクションを提出し、確認できる署名者の役割識別子です。"
+    },
+    "supplymanagement": {
+      "title": "供給管理",
+      "description": "トークンをミントおよびバーンできます。トークン供給を制御します。"
+    },
+    "systemmanager": {
+      "title": "システム管理者",
+      "description": "システムをブートストラップし、管理し、アップグレードおよびコアプロトコルの構成を行います。トークンファクトリー、アドオン、およびコンプライアンスモジュールを登録できます。"
+    },
+    "systemmodule": {
+      "title": "システムモジュール",
+      "description": "コンプライアンスモジュールやトピックスキームの登録を含むシステムモジュールを管理します。レジストリモジュールの役割を管理します。"
+    },
+    "tokenadmin": {
+      "title": "トークン管理者",
+      "description": "名前、シンボル、OnchainIDコントラクトアドレスなどの一般的なトークン設定を更新できます。トークンの基本的なアイデンティティと外部アイデンティティシステムとのリンクを管理するために重要です。"
+    },
+    "tokenfactorymodule": {
+      "title": "トークンファクトリモジュール",
+      "description": "トークンファクトリモジュールを管理し、コンプライアンス許可リストにトークンコントラクトを追加できます。"
+    },
+    "tokenfactoryregistrymodule": {
+      "title": "トークンファクトリレジストリモジュール",
+      "description": "トークンファクトリレジストリモジュールを管理し、トークンファクトリモジュールを管理します。"
+    },
+    "tokenmanager": {
+      "title": "トークンマネージャー",
+      "description": "プロトコル内でトークンをデプロイおよび構成します。"
+    },
+    "trustedissuersmetaregistrymodule": {
+      "title": "信頼された発行者メタレジストリモジュール",
+      "description": "信頼された発行者メタレジストリを管理し、信頼された発行者を追加できます。"
+    },
+    "verificationadmin": {
+      "title": "検証管理者",
+      "description": "投資家の検証設定を管理し、アイデンティティレジストリの設定や投資家に必要なクレームトピックの指定を行います。KYC/AMLプロセスにとって重要です。"
     }
   }
 }

@@ -698,7 +698,7 @@ The testing framework follows established best practices for maintainable, effec
 ### Documentation Navigation
 
 - **Previous**: [09 - Factory Proxy Patterns](./09-factory-proxy-patterns.md) - Factory and proxy patterns
-- **Next**: [11 - Next.js dApp Architecture](./11-nextjs-dapp-architecture.md) - Frontend architecture
+- **Next**: [11 - TanStack Start dApp Architecture](./11-tanstack-start-dapp-architecture.md) - Frontend architecture
 - **Related**: [06 - Asset Token Contracts](./06-asset-token-contracts.md) - Asset implementations
 - **Related**: [20 - Testing Quality Assurance](./20-testing-quality-assurance.md) - Comprehensive testing
 

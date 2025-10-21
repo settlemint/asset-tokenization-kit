@@ -1,38 +1,53 @@
 {
   "modules": {
-    "addressBlockList": {
+    "AddressBlockListComplianceModule": {
       "description": "特定のウォレットアドレスがあなたの資産にアクセスするのをブロックします。制裁対象または問題のあるアドレスが参加するのを防ぎます。",
-      "shortDescription": "特定のウォレットアドレスをブロック",
-      "title": "アドレスをブロック",
-      "addButtonLabel": "アドレスを追加"
+      "shortDescription": "特定のウォレットアドレスがあなたの資産にアクセスするのをブロックします",
+      "title": "アドレスをブロック"
     },
-    "countryAllowList": {
-      "description": "特定の国からの投資家のみを許可します。地域のコンプライアンス要件を満たすのに役立ちます。",
-      "shortDescription": "特定の国のみを許可",
+    "CountryAllowListComplianceModule": {
+      "description": "特定の国の投資家があなたの資産にアクセスできるようにします。地域のコンプライアンス要件を満たすのに役立ちます。",
+      "shortDescription": "特定の国の投資家があなたの資産にアクセスできるようにします",
       "title": "国の許可リスト"
     },
-    "countryBlockList": {
-      "description": "特定の国または地域からの投資家をブロックします。制裁および規制の制限に準拠するのに役立ちます。",
-      "shortDescription": "特定の国をブロック",
+    "CountryBlockListComplianceModule": {
+      "description": "特定の国の投資家があなたの資産にアクセスするのをブロックします。制裁や規制の制限に準拠するのに役立ちます。",
+      "shortDescription": "特定の国の投資家があなたの資産にアクセスするのをブロックします",
       "title": "国のブロックリスト"
     },
-    "identityAllowList": {
-      "description": "承認されたリストからの確認済みの身元のみを許可します。独占的なオファリングやプライベートセールに適しています。",
-      "shortDescription": "承認された身元のみを許可",
-      "title": "身元の許可リスト"
+    "IdentityAllowListComplianceModule": {
+      "description": "承認されたリストからの確認済みのアイデンティティのみを許可します。排他的なオファリングやプライベートセールに適しています。",
+      "shortDescription": "承認されたアイデンティティがあなたの資産にアクセスできるようにします",
+      "title": "アイデンティティ許可リスト"
     },
-    "identityBlockList": {
-      "description": "特定の確認済みの身元があなたの資産にアクセスするのをブロックします。問題のある投資家を排除しながらコンプライアンスを維持します。",
-      "shortDescription": "特定の身元をブロック",
-      "title": "身元のブロックリスト"
+    "IdentityBlockListComplianceModule": {
+      "description": "特定の確認済みアイデンティティがあなたの資産にアクセスするのをブロックします。問題のある投資家を排除しながらコンプライアンスを維持します。",
+      "shortDescription": "特定のアイデンティティがあなたの資産にアクセスするのをブロックします",
+      "title": "アイデンティティブロックリスト"
     },
-    "smartIdentityVerification": {
-      "description": "すべての投資家に対して身元確認を要求します。SMARTプロトコルを通じてKYCおよびAMLコンプライアンスを提供します。",
-      "shortDescription": "身元確認を要求",
-      "title": "SMART身元確認"
+    "SMARTIdentityVerificationComplianceModule": {
+      "description": "SMARTアイデンティティ検証により、確認済みの投資家のみがこのトークンを保有または取引できることが保証されます。投資家のデジタルアイデンティティが「KYC通過」、「認定投資家」、または「制裁リストに載っていない」といった正しい主張を含んでいるかを確認します。",
+      "shortDescription": "SMARTアイデンティティ検証により、確認済みの投資家のみがこのトークンを保有または取引できることが保証されます",
+      "title": "SMARTアイデンティティ検証",
+      "helper": {
+        "title": "アイデンティティ検証ルール",
+        "intro": "SMARTアイデンティティ検証により、確認済みの投資家のみがこのトークンを保有または取引できることが保証されます。投資家のデジタルアイデンティティが「KYC通過」、「認定投資家」、または「制裁リストに載っていない」といった正しい主張を含んでいるかを確認します。",
+        "howToTitle": "表現の構築方法",
+        "examplesTitle": "例",
+        "howToItems": [
+          "主張のトピックを選択します（KYC、AML、認定など）。",
+          "論理演算子を使用してトピックを組み合わせます：AND -> すべてが真でなければならない、OR -> 少なくとも1つが真でなければならない、NOT -> 条件を除外します。",
+          "グループを使用してルールの一部をまとめ、より高度なロジックを実現します。"
+        ],
+        "examples": [
+          "MiCA / EU： (KYC と AML) かつ (PROFESSIONAL_INVESTOR または ACCREDITED_INVESTOR)",
+          "MiCA / EU（トークン、ボールトなどのすべての契約を許可する）：CONTRACT OR ((KYC AND AML) AND (PROFESSIONAL_INVESTOR OR ACCREDITED_INVESTOR))"
+        ]
+      }
     }
   },
   "title": "コンプライアンス",
+  "complianceModuleName": "モジュール名",
   "sections": {
     "enabled": {
       "title": "有効",

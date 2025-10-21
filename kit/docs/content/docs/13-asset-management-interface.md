@@ -792,7 +792,7 @@ The interface implements comprehensive accessibility features for inclusive user
 
 - **Previous**: [12 - UI Component System](./12-ui-component-system.md) - Component system
 - **Next**: [14 - Form State Management](./14-form-state-management.md) - Form management
-- **Related**: [11 - Next.js dApp Architecture](./11-nextjs-dapp-architecture.md) - Frontend architecture
+- **Related**: [11 - TanStack Start dApp Architecture](./11-tanstack-start-dapp-architecture.md) - Frontend architecture
 - **Related**: [21-25 - Asset Workflows](./21-bond-workflows-user-stories.md) - Asset-specific workflows
 
 ### External UX Resources
