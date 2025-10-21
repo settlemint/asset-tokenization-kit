@@ -6,9 +6,13 @@ import { ManageIdentityDropdown } from "@/components/manage-dropdown/manage-iden
 import { getIdentityTabConfiguration } from "@/components/tab-navigation/identity-tab-configuration";
 import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
 import { Web3Address } from "@/components/web3/web3-address";
+import {
+  CLAIM_ISSUER_ROLE,
+  IDENTITY_MANAGER_ROLE,
+} from "@/lib/constants/roles";
 import { client } from "@/orpc/orpc-client";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import * as z from "zod";
@@ -24,7 +28,7 @@ const routeParamsSchema = z.object({
  * for all identity detail sub-routes. The route is authenticated and requires
  * the user to be onboarded.
  *
- * Route path: `/admin/identity-management/{address}`
+ * Route path: `/participants/entities/{address}`
  *
  * @remarks
  * - The address parameter must be a non-empty string (wallet/identity address)
@@ -36,19 +40,38 @@ const routeParamsSchema = z.object({
  * ```
  * // Navigating to this route
  * navigate({
- *   to: '/admin/identity-management/$address',
+ *   to: '/participants/entities/$address',
  *   params: { address: '0x1234567890123456789012345678901234567890' }
  * });
  * ```
  */
 export const Route = createFileRoute(
-  "/_private/_onboarded/_sidebar/admin/identity-management/$address"
+  "/_private/_onboarded/_sidebar/participants/entities/$address"
 )({
   parseParams: (params) => routeParamsSchema.parse(params),
   /**
    * Loader function to fetch identity data from ORPC API
    */
-  loader: async ({ params: { address } }) => {
+  loader: async ({ context: { queryClient, orpc }, params: { address } }) => {
+    const system = await queryClient.ensureQueryData(
+      orpc.system.read.queryOptions({
+        input: { id: "default" },
+      })
+    );
+
+    const roles = system.userPermissions?.roles;
+
+    const canViewEntities = Boolean(
+      roles?.[IDENTITY_MANAGER_ROLE.fieldName] ||
+        roles?.[CLAIM_ISSUER_ROLE.fieldName]
+    );
+
+    if (!canViewEntities) {
+      throw redirect({
+        to: "/",
+      });
+    }
+
     const identity = await client.system.identity.read({
       identityId: address,
     });
@@ -66,10 +89,15 @@ export const Route = createFileRoute(
     return {
       claimsData,
       breadcrumb: [
-        createI18nBreadcrumbMetadata("identityManagement"),
+        createI18nBreadcrumbMetadata("participants", {
+          href: "/participants/users",
+        }),
+        createI18nBreadcrumbMetadata("participantsEntities", {
+          href: "/participants/entities",
+        }),
         {
           title: `${address.slice(0, 6)}...${address.slice(-4)}`,
-          href: `/admin/identity-management/${address}`,
+          href: `/participants/entities/${address}`,
         },
       ],
     };

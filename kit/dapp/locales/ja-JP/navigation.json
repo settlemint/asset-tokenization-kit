@@ -18,11 +18,14 @@
     "custody": "カストディ",
     "income": "収入"
   },
-  "administration": "管理",
+  "participants": "参加者",
+  "participantsUsers": "ユーザー",
+  "participantsEntities": "エンティティ",
   "platformSettings": "プラットフォーム設定",
   "userManagement": "ユーザー管理",
-  "identityManagement": "アイデンティティ管理",
+  "entityManagement": "エンティティ",
   "settings": {
+    "noAvailable": "この権限では利用できるプラットフォーム設定がありません。",
     "assetTypes": {
       "title": "資産タイプ",
       "description": "プラットフォームで利用可能な異なるタイプの資産を設定して有効にします。有効にすると、資産タイプは無効にできません。",

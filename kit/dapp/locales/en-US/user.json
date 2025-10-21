@@ -18,16 +18,22 @@
     "page": {
       "description": "Manage users, roles, and permissions for your platform."
     },
+    "accessDenied": {
+      "title": "Access restricted",
+      "description": "You do not have permission to manage users. Contact an administrator for additional access."
+    },
     "table": {
       "columns": {
         "name": "Name",
         "email": "Email",
-        "wallet": "Wallet",
-        "role": "Role",
-        "identity": "Identity",
+        "wallet": "EOA",
+        "identity": "Identity Address",
+        "type": "Type",
+        "verifications": "Verifications",
         "status": "Status",
+        "lastActive": "Last Activity",
         "created": "Created",
-        "lastActive": "Last Active",
+        "role": "Role",
         "actions": "Actions"
       },
       "status": {
@@ -45,6 +51,14 @@
         "notConnectedAriaLabel": "User has not connected a wallet",
         "identityNeededAriaLabel": "User has wallet but no identity registered",
         "pendingRegistrationAriaLabel": "User identity registration is pending"
+      },
+      "userType": {
+        "admin": "Admin",
+        "investor": "Investor",
+        "trustedIssuer": "Trusted Issuer"
+      },
+      "verifications": {
+        "none": "No verifications"
       },
       "identity": {
         "none": "No identity"
@@ -68,7 +82,8 @@
         "navigationFailed": "Failed to navigate to user details"
       },
       "fallback": {
-        "never": "Never"
+        "never": "Never",
+        "unknown": "Unknown"
       }
     }
   },

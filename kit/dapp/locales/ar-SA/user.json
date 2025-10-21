@@ -18,6 +18,10 @@
     "page": {
       "description": "إدارة المستخدمين والأدوار والأذونات لمنصتك."
     },
+    "accessDenied": {
+      "title": "الوصول مقيد",
+      "description": "ليس لديك إذن لإدارة المستخدمين. تواصل مع المسؤول للحصول على صلاحيات إضافية."
+    },
     "table": {
       "columns": {
         "name": "الاسم",
@@ -25,6 +29,8 @@
         "wallet": "المحفظة",
         "role": "الدور",
         "identity": "الهوية",
+        "type": "النوع",
+        "verifications": "التحقق",
         "status": "الحالة",
         "created": "تم الإنشاء",
         "lastActive": "آخر نشاط",
@@ -45,6 +51,14 @@
         "notConnectedAriaLabel": "المستخدم لم يربط محفظة",
         "identityNeededAriaLabel": "المستخدم لديه محفظة لكن لا هوية مسجلة",
         "pendingRegistrationAriaLabel": "تسجيل هوية المستخدم معلق"
+      },
+      "userType": {
+        "admin": "مدير",
+        "investor": "مستثمر",
+        "trustedIssuer": "مُصدر موثوق"
+      },
+      "verifications": {
+        "none": "لا تحقق"
       },
       "identity": {
         "none": "لا هوية"
@@ -68,7 +82,8 @@
         "navigationFailed": "فشل في التنقل إلى تفاصيل المستخدم"
       },
       "fallback": {
-        "never": "أبدًا"
+        "never": "أبدًا",
+        "unknown": "غير معروف"
       }
     }
   },

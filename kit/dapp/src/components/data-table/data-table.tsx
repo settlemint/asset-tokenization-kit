@@ -30,7 +30,7 @@ import {
 } from "@tanstack/react-table";
 import { PackageOpen } from "lucide-react";
 import * as React from "react";
-import { type ComponentType, useMemo, useState } from "react";
+import { type ComponentType, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DataTableActionBar } from "./data-table-action-bar";
 import {
@@ -121,6 +121,7 @@ export interface DataTableProps<TData> {
   externalState?: {
     pagination?: PaginationState;
     sorting?: SortingState;
+    globalFilter?: string;
     onPaginationChange?: (
       updater: PaginationState | ((old: PaginationState) => PaginationState)
     ) => void;
@@ -240,61 +241,159 @@ function DataTableComponent<TData>({
       urlStateConfig: urlState,
     });
   }
-  const currentState =
-    isUsingUrlState && urlState?.routePath
-      ? tableState.tableOptions.state
-      : externalState
-        ? {
-            rowSelection: localRowSelection,
-            sorting: externalState.sorting ?? localSorting,
-            columnFilters: localColumnFilters,
-            columnVisibility: localColumnVisibility,
-            globalFilter: localGlobalFilter,
-            pagination: externalState.pagination ?? {
-              pageIndex: 0,
-              pageSize: initialPageSize ?? 10,
-            },
-          }
-        : {
-            rowSelection: localRowSelection,
-            sorting: localSorting,
-            columnFilters: localColumnFilters,
-            columnVisibility: localColumnVisibility,
-            globalFilter: localGlobalFilter,
-            pagination: { pageIndex: 0, pageSize: initialPageSize ?? 10 },
-          };
+  const externalPagination = externalState?.pagination;
+  const externalSorting = externalState?.sorting;
+  const externalGlobalFilter = externalState?.globalFilter;
+  const externalOnPaginationChange = externalState?.onPaginationChange;
+  const externalOnGlobalFilterChange = externalState?.onGlobalFilterChange;
+  const externalOnSortingChange = externalState?.onSortingChange;
 
-  const stateHandlers =
-    isUsingUrlState && urlState?.routePath
-      ? {
-          onRowSelectionChange: tableState.setRowSelection,
-          onSortingChange: tableState.setSorting,
-          onColumnFiltersChange: tableState.setColumnFilters,
-          onColumnVisibilityChange: tableState.setColumnVisibility,
-          onGlobalFilterChange: tableState.setGlobalFilter,
-          onPaginationChange: tableState.setPagination,
-        }
-      : externalState
-        ? {
-            onRowSelectionChange: setLocalRowSelection,
-            onSortingChange: externalState.onSortingChange ?? setLocalSorting,
-            onColumnFiltersChange: setLocalColumnFilters,
-            onColumnVisibilityChange: setLocalColumnVisibility,
-            onGlobalFilterChange: externalState.onGlobalFilterChange
-              ? debounce(externalState.onGlobalFilterChange, 1000)
-              : setLocalGlobalFilter,
-            onPaginationChange: externalState.onPaginationChange ?? (() => {}),
-          }
-        : {
-            onRowSelectionChange: setLocalRowSelection,
-            onSortingChange: setLocalSorting,
-            onColumnFiltersChange: setLocalColumnFilters,
-            onColumnVisibilityChange: setLocalColumnVisibility,
-            onGlobalFilterChange: setLocalGlobalFilter,
-            onPaginationChange: () => {
-              // Local pagination is handled differently
-            },
-          };
+  const defaultPagination = React.useMemo(
+    () => ({
+      pageIndex: 0,
+      pageSize: initialPageSize ?? 10,
+    }),
+    [initialPageSize]
+  );
+
+  const currentState = React.useMemo(() => {
+    if (isUsingUrlState && urlState?.routePath) {
+      return tableState.tableOptions.state;
+    }
+
+    if (externalState) {
+      return {
+        rowSelection: localRowSelection,
+        sorting: externalSorting ?? localSorting,
+        columnFilters: localColumnFilters,
+        columnVisibility: localColumnVisibility,
+        globalFilter: externalGlobalFilter ?? localGlobalFilter,
+        pagination: externalPagination ?? defaultPagination,
+      };
+    }
+
+    return {
+      rowSelection: localRowSelection,
+      sorting: localSorting,
+      columnFilters: localColumnFilters,
+      columnVisibility: localColumnVisibility,
+      globalFilter: localGlobalFilter,
+      pagination: defaultPagination,
+    };
+  }, [
+    defaultPagination,
+    externalGlobalFilter,
+    externalPagination,
+    externalSorting,
+    externalState,
+    isUsingUrlState,
+    localColumnFilters,
+    localColumnVisibility,
+    localGlobalFilter,
+    localRowSelection,
+    localSorting,
+    tableState.tableOptions.state,
+    urlState?.routePath,
+  ]);
+
+  // Track latest external filter state for stable debounce updates.
+  const externalGlobalFilterRef = React.useRef<string | undefined>(
+    externalGlobalFilter
+  );
+  const externalGlobalFilterChangeRef = React.useRef<
+    ((updater: string | ((old: string) => string)) => void) | null
+  >(externalOnGlobalFilterChange ?? null);
+
+  React.useEffect(() => {
+    externalGlobalFilterRef.current = externalGlobalFilter;
+  }, [externalGlobalFilter]);
+
+  React.useEffect(() => {
+    externalGlobalFilterChangeRef.current =
+      externalOnGlobalFilterChange ?? null;
+  }, [externalOnGlobalFilterChange]);
+
+  const hasExternalGlobalFilterChange = Boolean(externalOnGlobalFilterChange);
+
+  const debouncedExternalGlobalFilterChange = React.useMemo(() => {
+    if (!hasExternalGlobalFilterChange) {
+      return null;
+    }
+
+    const handler = (updater: string | ((old: string) => string)) => {
+      let nextValue = "";
+      setLocalGlobalFilter((previous) => {
+        const base = externalGlobalFilterRef.current ?? previous;
+        nextValue = typeof updater === "function" ? updater(base) : updater;
+        externalGlobalFilterRef.current = nextValue;
+        return nextValue;
+      });
+      externalGlobalFilterChangeRef.current?.(nextValue);
+    };
+
+    return debounce(handler, urlState?.debounceMs ?? 300);
+  }, [hasExternalGlobalFilterChange, urlState?.debounceMs]);
+
+  React.useEffect(() => {
+    return () => {
+      debouncedExternalGlobalFilterChange?.cancel();
+    };
+  }, [debouncedExternalGlobalFilterChange]);
+
+  const noopPaginationChange = useCallback(() => {}, []);
+
+  const stateHandlers = useMemo(() => {
+    if (isUsingUrlState && urlState?.routePath) {
+      return {
+        onRowSelectionChange: tableState.setRowSelection,
+        onSortingChange: tableState.setSorting,
+        onColumnFiltersChange: tableState.setColumnFilters,
+        onColumnVisibilityChange: tableState.setColumnVisibility,
+        onGlobalFilterChange: tableState.setGlobalFilter,
+        onPaginationChange: tableState.setPagination,
+      };
+    }
+
+    if (externalState) {
+      return {
+        onRowSelectionChange: setLocalRowSelection,
+        onSortingChange: externalOnSortingChange ?? setLocalSorting,
+        onColumnFiltersChange: setLocalColumnFilters,
+        onColumnVisibilityChange: setLocalColumnVisibility,
+        onGlobalFilterChange:
+          debouncedExternalGlobalFilterChange ?? setLocalGlobalFilter,
+        onPaginationChange: externalOnPaginationChange ?? noopPaginationChange,
+      };
+    }
+
+    return {
+      onRowSelectionChange: setLocalRowSelection,
+      onSortingChange: setLocalSorting,
+      onColumnFiltersChange: setLocalColumnFilters,
+      onColumnVisibilityChange: setLocalColumnVisibility,
+      onGlobalFilterChange: setLocalGlobalFilter,
+      onPaginationChange: noopPaginationChange,
+    };
+  }, [
+    debouncedExternalGlobalFilterChange,
+    externalOnPaginationChange,
+    externalOnSortingChange,
+    externalState,
+    isUsingUrlState,
+    noopPaginationChange,
+    setLocalColumnFilters,
+    setLocalColumnVisibility,
+    setLocalGlobalFilter,
+    setLocalRowSelection,
+    setLocalSorting,
+    tableState.setColumnFilters,
+    tableState.setColumnVisibility,
+    tableState.setGlobalFilter,
+    tableState.setPagination,
+    tableState.setRowSelection,
+    tableState.setSorting,
+    urlState?.routePath,
+  ]);
 
   const table = useReactTable({
     data,

@@ -18,11 +18,14 @@
     "custody": "الحفظ",
     "income": "الدخل"
   },
-  "administration": "الإدارة",
+  "participants": "المشاركون",
+  "participantsUsers": "المستخدمون",
+  "participantsEntities": "الكيانات",
   "platformSettings": "إعدادات المنصة",
   "userManagement": "إدارة المستخدمين",
-  "identityManagement": "إدارة الهوية",
+  "entityManagement": "إدارة الكيانات",
   "settings": {
+    "noAvailable": "لا تتوفر إعدادات للمنصة لدورك.",
     "assetTypes": {
       "title": "أنواع الأصول",
       "description": "قم بتكوين وتمكين أنواع الأصول المختلفة المتاحة على المنصة. بمجرد التمكين، لا يمكن تعطيل أنواع الأصول.",

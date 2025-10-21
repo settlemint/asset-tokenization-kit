@@ -78,7 +78,7 @@ export const UsersPermissionsTable = withErrorBoundary(
       void (async () => {
         try {
           await router.navigate({
-            to: "/admin/user-management/$userId",
+            to: "/participants/users/$userId",
             params: { userId: user.id },
           });
         } catch {

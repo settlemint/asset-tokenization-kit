@@ -43,7 +43,7 @@ export async function confirmPinCode(
   }
 }
 
-const escapeForRegex = (value: string) =>
+export const escapeForRegex = (value: string) =>
   value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 type SelectDropdownOptionParams = {

@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
  * It inherits the user data from its parent route and displays the main
  * user information in detail grids.
  *
- * Route path: `/admin/user-management/{userId}/`
+ * Route path: `/participants/users/{userId}/`
  *
  * @remarks
  * - This is a child route that inherits data from the parent $userId route
@@ -27,7 +27,7 @@ import { useTranslation } from "react-i18next";
  * - Parent route handles layout, breadcrumbs, and tab navigation
  */
 export const Route = createFileRoute(
-  "/_private/_onboarded/_sidebar/admin/user-management/$userId/"
+  "/_private/_onboarded/_sidebar/participants/users/$userId/"
 )({
   errorComponent: DefaultCatchBoundary,
   component: RouteComponent,
@@ -43,7 +43,7 @@ export const Route = createFileRoute(
 function RouteComponent() {
   // Get data from parent route loader
   const { user, identity } = useLoaderData({
-    from: "/_private/_onboarded/_sidebar/admin/user-management/$userId",
+    from: "/_private/_onboarded/_sidebar/participants/users/$userId",
   });
   const { t } = useTranslation(["user", "common"]);
 
@@ -123,7 +123,7 @@ function RouteComponent() {
             showPrettyName: false,
             linkOptions: identity
               ? {
-                  to: "/admin/identity-management/$address",
+                  to: "/participants/entities/$address",
                   params: { address: identity.id },
                 }
               : undefined,

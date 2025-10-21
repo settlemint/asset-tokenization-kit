@@ -16,11 +16,11 @@ export function getIdentityTabConfiguration({
 }: GetIdentityTabConfigurationProps): IdentityTabConfig[] {
   return [
     {
-      href: `/admin/identity-management/${address}`,
+      href: `/participants/entities/${address}`,
       tabKey: "details",
     },
     {
-      href: `/admin/identity-management/${address}/claims`,
+      href: `/participants/entities/${address}/claims`,
       tabKey: "claims",
     },
   ];

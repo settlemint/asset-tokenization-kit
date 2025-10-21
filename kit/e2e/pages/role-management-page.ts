@@ -11,7 +11,7 @@ export class RoleManagementPage extends BasePage {
       await this.page.getByRole("link", { name: "Platform admins" }).click();
       await this.waitForReactStateSettle();
     } catch (error) {
-      await this.page.goto("/admin/platform-settings/permissions");
+      await this.page.goto("/platform-settings/permissions");
       await this.page.waitForLoadState("networkidle");
       await this.waitForReactStateSettle();
     }

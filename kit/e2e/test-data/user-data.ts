@@ -132,7 +132,8 @@ export const onboardingTestData = {
       formatted: "January 15th, 1990",
     },
     countryOfResidence: "United States of America",
-    residencyStatus: onboardingResidencyStatus,
+    residencyStatus:
+      "Dual resident - I am legally/tax resident in more than one country",
     nationalId: "123-45-6789",
   },
 
