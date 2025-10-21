@@ -18,6 +18,10 @@
     "page": {
       "description": "Verwalten Sie Benutzer, Rollen und Berechtigungen Ihrer Plattform."
     },
+    "accessDenied": {
+      "title": "Zugang eingeschränkt",
+      "description": "Sie haben keine Berechtigung, Benutzer zu verwalten. Kontaktieren Sie einen Administrator für zusätzliche Rechte."
+    },
     "table": {
       "columns": {
         "name": "Benutzername",
@@ -25,6 +29,8 @@
         "wallet": "Wallet-Adresse",
         "role": "Rolle",
         "identity": "Identität",
+        "type": "Typ",
+        "verifications": "Verifizierungen",
         "status": "Statusanzeige",
         "created": "Erstellt",
         "lastActive": "Zuletzt aktiv",
@@ -45,6 +51,14 @@
         "notConnectedAriaLabel": "Benutzer hat kein Wallet verbunden",
         "identityNeededAriaLabel": "Benutzer hat ein Wallet, aber keine registrierte Identität",
         "pendingRegistrationAriaLabel": "Die Registrierung der Benutzeridentität ist in Bearbeitung"
+      },
+      "userType": {
+        "admin": "Administrator",
+        "investor": "Investor",
+        "trustedIssuer": "Vertrauenswürdiger Emittent"
+      },
+      "verifications": {
+        "none": "Keine Verifizierungen"
       },
       "identity": {
         "none": "Keine Identität"
@@ -68,7 +82,8 @@
         "navigationFailed": "Navigation zu den Benutzerdetails fehlgeschlagen"
       },
       "fallback": {
-        "never": "Nie"
+        "never": "Nie",
+        "unknown": "Unbekannt"
       }
     }
   },
