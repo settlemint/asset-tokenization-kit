@@ -28,23 +28,11 @@ import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
 import { CORSPlugin } from "@orpc/server/plugins";
 import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
-import type { AnyServerRouteWithTypes } from "@tanstack/start-server-core";
+// import { createFileRoute } from "@tanstack/react-router";
 import {
   createServerFileRoute,
   getHeaders,
 } from "@tanstack/react-start/server";
-
-declare module "@tanstack/start-server-core" {
-  interface ServerFileRoutesByPath {
-    "/api/$": {
-      parentRoute: AnyServerRouteWithTypes;
-      id: string;
-      path: string;
-      fullPath: string;
-      children: unknown;
-    };
-  }
-}
 import pkgjson from "../../../package.json";
 
 /**

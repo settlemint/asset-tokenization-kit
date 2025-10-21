@@ -22,20 +22,7 @@
  */
 
 import { auth } from "@/lib/auth";
-import type { AnyServerRouteWithTypes } from "@tanstack/start-server-core";
 import { createServerFileRoute } from "@tanstack/react-start/server";
-
-declare module "@tanstack/start-server-core" {
-  interface ServerFileRoutesByPath {
-    "/api/auth/$": {
-      parentRoute: AnyServerRouteWithTypes;
-      id: string;
-      path: string;
-      fullPath: string;
-      children: unknown;
-    };
-  }
-}
 
 // export const Route = createFileRoute("/api/auth/$")({
 //   server: {

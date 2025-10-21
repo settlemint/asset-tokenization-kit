@@ -20,20 +20,7 @@ import {
   getThemeCssFromCache,
   setThemeCssCache,
 } from "@/components/theme/lib/theme-css-cache";
-import type { AnyServerRouteWithTypes } from "@tanstack/start-server-core";
 import { createServerFileRoute } from "@tanstack/react-start/server";
-
-declare module "@tanstack/start-server-core" {
-  interface ServerFileRoutesByPath {
-    "/api/theme.css": {
-      parentRoute: AnyServerRouteWithTypes;
-      id: string;
-      path: string;
-      fullPath: string;
-      children: unknown;
-    };
-  }
-}
 
 /**
  * Handles GET requests for theme CSS
