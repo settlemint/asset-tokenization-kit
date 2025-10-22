@@ -106,7 +106,7 @@ export const list = authRouter.actions.list.handler(
       case "PENDING":
         where = {
           and: [
-            { ...where },
+            { ...where }, // Include existing where clause
             { executed: false },
             { activeAt_lte: nowMicroseconds },
             {
