@@ -295,9 +295,7 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
                         {addr ? (
                           <Web3Address
                             address={getEthereumAddress(addr)}
-                            copyToClipboard
                             size="small"
-                            showFullAddress={false}
                           />
                         ) : (
                           t("common:unknown")

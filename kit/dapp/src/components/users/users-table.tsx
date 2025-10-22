@@ -1,16 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link, useRouter } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { Users } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboard";
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
+import { Badge } from "@/components/ui/badge";
 import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
 import { UserWithIdentity } from "@/orpc/routes/user/routes/user.list.schema";
@@ -27,13 +27,41 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
   const { t } = useTranslation("user");
   const router = useRouter();
 
-  // Use local pagination state for server-side pagination
+  const defaultSorting = useMemo<SortingState>(
+    () => [
+      {
+        id: "lastActivity",
+        desc: true,
+      },
+    ],
+    []
+  );
+
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 20,
   });
   const [globalFilter, setGlobalFilter] = useState("");
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>(defaultSorting);
+
+  const sortColumnMap = useMemo(
+    () => ({
+      name: "name",
+      email: "email",
+      wallet: "wallet",
+      identity: "wallet",
+      lastActivity: "lastLoginAt",
+      createdAt: "createdAt",
+    }),
+    []
+  );
+
+  const activeSorting = sorting[0];
+  const orderBy = activeSorting
+    ? (sortColumnMap[activeSorting.id as keyof typeof sortColumnMap] ??
+      "createdAt")
+    : "createdAt";
+  const orderDirection = activeSorting?.desc ? "desc" : "asc";
 
   // Fetch users data using ORPC with server-side pagination
   const { data, isLoading, error } = useQuery(
@@ -41,11 +69,10 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
       input: {
         limit: pagination.pageSize,
         offset: pagination.pageIndex * pagination.pageSize,
-        orderBy: sorting.length > 0 ? sorting[0]?.id : "createdAt",
-        orderDirection:
-          sorting.length > 0 ? (sorting[0]?.desc ? "desc" : "asc") : "desc",
+        orderBy,
+        orderDirection,
         filters: {
-          search: globalFilter,
+          search: globalFilter.trim(),
         },
       },
     })
@@ -55,19 +82,81 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
   const users = data?.items ?? [];
   const totalCount = data?.total ?? 0;
 
-  // Handle row click to navigate to user detail
-  const handleRowClick = (user: User) => {
-    void (async () => {
-      try {
-        await router.navigate({
-          to: "/admin/user-management/$userId",
-          params: { userId: user.id },
-        });
-      } catch {
-        toast.error(t("management.table.errors.navigationFailed"));
-      }
-    })();
-  };
+  const handleRowClick = useCallback(
+    (user: User) => {
+      void (async () => {
+        try {
+          await router.navigate({
+            to: "/participants/users/$userId",
+            params: { userId: user.id },
+          });
+        } catch {
+          toast.error(t("management.table.errors.navigationFailed"));
+        }
+      })();
+    },
+    [router, t]
+  );
+
+  const handleSortingChange = useCallback(
+    (updater: SortingState | ((old: SortingState) => SortingState)): void => {
+      setSorting((prev) =>
+        typeof updater === "function" ? updater(prev) : updater
+      );
+      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    },
+    []
+  );
+
+  const handleGlobalFilterChange = useCallback(
+    (updater: string | ((old: string) => string)) => {
+      setGlobalFilter((prev) => {
+        const next = typeof updater === "function" ? updater(prev) : updater;
+        return next.trim();
+      });
+      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    },
+    []
+  );
+
+  const externalState = useMemo(
+    () => ({
+      pagination,
+      sorting,
+      globalFilter,
+      onPaginationChange: setPagination,
+      onGlobalFilterChange: handleGlobalFilterChange,
+      onSortingChange: handleSortingChange,
+    }),
+    [
+      globalFilter,
+      handleGlobalFilterChange,
+      handleSortingChange,
+      pagination,
+      setPagination,
+      sorting,
+    ]
+  );
+
+  // Normalize blockchain roles into the high-level participant types we surface.
+  const resolveUserType = useCallback((user: UserWithIdentity) => {
+    if (user.isAdmin || user.roles.admin || user.roles.systemManager) {
+      return "admin" as const;
+    }
+
+    if (user.roles.claimIssuer || user.roles.trustedIssuersMetaRegistryModule) {
+      return "trustedIssuer" as const;
+    }
+
+    return "investor" as const;
+  }, []);
+
+  // Collapse raw registration flags to the two badge states shown in the table UI.
+  const resolveStatus = useCallback(
+    (user: UserWithIdentity) =>
+      user.isRegistered ? "registered" : "pendingRegistration",
+    []
+  );
 
   /**
    * Defines the column configuration for the users table
@@ -75,23 +164,57 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
   const columns = useMemo(
     () =>
       withAutoFeatures([
-        columnHelper.accessor("wallet", {
+        columnHelper.accessor("name", {
           header: t("management.table.columns.name"),
+          enableSorting: true,
           meta: {
             displayName: t("management.table.columns.name"),
-            type: "address",
+            type: "text",
+            emptyValue: t("management.table.fallback.unknown"),
           },
         }),
         columnHelper.accessor("email", {
           header: t("management.table.columns.email"),
+          enableSorting: true,
           meta: {
             displayName: t("management.table.columns.email"),
             type: "text",
+            emptyValue: t("management.table.fallback.unknown"),
+          },
+        }),
+        columnHelper.accessor("wallet", {
+          header: t("management.table.columns.wallet"),
+          enableSorting: true,
+          meta: {
+            displayName: t("management.table.columns.wallet"),
+            type: "address",
+            emptyValue: t("management.table.noWallet"),
+            renderCell: ({ row }) => {
+              const address = row.original.wallet;
+
+              if (!address) {
+                return (
+                  <span className="text-muted-foreground">
+                    {t("management.table.noWallet")}
+                  </span>
+                );
+              }
+
+              return (
+                <Web3Address
+                  address={address}
+                  size="tiny"
+                  showPrettyName={false}
+                  className="max-w-full"
+                />
+              );
+            },
           },
         }),
         columnHelper.display({
           id: "identity",
           header: t("management.table.columns.identity"),
+          enableSorting: false,
           cell: ({ row }) => {
             const identityAddress = row.original.identity;
 
@@ -104,22 +227,16 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
             }
 
             return (
-              <CopyToClipboard value={identityAddress} className="max-w-full">
-                <Link
-                  to="/admin/identity-management/$address"
-                  params={{ address: identityAddress }}
-                  className="inline-flex min-w-0 max-w-full items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm transition-colors hover:text-primary"
-                >
-                  <Web3Address
-                    address={identityAddress}
-                    size="small"
-                    showBadge={false}
-                    showPrettyName={false}
-                    showFullAddress={false}
-                    className="max-w-full"
-                  />
-                </Link>
-              </CopyToClipboard>
+              <Web3Address
+                address={identityAddress}
+                size="tiny"
+                className="max-w-full"
+                showPrettyName={false}
+                linkOptions={{
+                  to: "/participants/entities/$address",
+                  params: { address: identityAddress },
+                }}
+              />
             );
           },
           meta: {
@@ -127,25 +244,93 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
             type: "address",
           },
         }),
-        columnHelper.accessor("createdAt", {
-          header: t("management.table.columns.created"),
+        columnHelper.display({
+          id: "type",
+          header: t("management.table.columns.type"),
+          enableSorting: false,
+          cell: ({ row }) => {
+            const type = resolveUserType(row.original);
+            const label = t(`management.table.userType.${type}`);
+
+            return <Badge variant="outline">{label}</Badge>;
+          },
           meta: {
-            displayName: t("management.table.columns.created"),
-            type: "date",
+            displayName: t("management.table.columns.type"),
+            type: "text",
+          },
+        }),
+        columnHelper.display({
+          id: "verifications",
+          header: t("management.table.columns.verifications"),
+          enableSorting: false,
+          cell: ({ row }) => {
+            const activeClaims = row.original.claims.filter(
+              (claim) => !claim.revoked
+            );
+
+            if (activeClaims.length === 0) {
+              return (
+                <span className="text-muted-foreground">
+                  {t("management.table.verifications.none")}
+                </span>
+              );
+            }
+
+            const visibleClaims = activeClaims.slice(0, 3);
+            const extraCount = activeClaims.length - visibleClaims.length;
+
+            return (
+              <div className="flex flex-wrap gap-1">
+                {visibleClaims.map((claim) => (
+                  <Badge key={claim.id} variant="secondary" className="text-xs">
+                    {claim.name}
+                  </Badge>
+                ))}
+                {extraCount > 0 && (
+                  <Badge variant="outline" className="text-xs">
+                    +{extraCount}
+                  </Badge>
+                )}
+              </div>
+            );
+          },
+          meta: {
+            displayName: t("management.table.columns.verifications"),
+            type: "text",
+          },
+        }),
+        columnHelper.display({
+          id: "status",
+          header: t("management.table.columns.status"),
+          enableSorting: false,
+          cell: ({ row }) => {
+            const status = resolveStatus(row.original);
+            const label = t(`management.table.status.${status}`);
+
+            const variant = status === "registered" ? "default" : "outline";
+
+            return <Badge variant={variant}>{label}</Badge>;
+          },
+          meta: {
+            displayName: t("management.table.columns.status"),
+            type: "text",
           },
         }),
         columnHelper.accessor("lastLoginAt", {
+          id: "lastActivity",
           header: t("management.table.columns.lastActive"),
+          enableSorting: true,
           meta: {
             displayName: t("management.table.columns.lastActive"),
             type: "date",
             dateOptions: {
               relative: true,
             },
+            emptyValue: t("management.table.fallback.never"),
           },
         }),
       ] as ColumnDef<UserWithIdentity>[]),
-    [t]
+    [resolveStatus, resolveUserType, t]
   );
 
   // Handle loading and error states
@@ -169,13 +354,7 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
         enabled: true,
         totalCount,
       }}
-      externalState={{
-        pagination,
-        sorting,
-        onPaginationChange: setPagination,
-        onGlobalFilterChange: setGlobalFilter,
-        onSortingChange: setSorting,
-      }}
+      externalState={externalState}
       urlState={{
         enabled: false, // Disable URL state since we're managing it manually
       }}
@@ -191,12 +370,7 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
         totalCount,
       }}
       initialPageSize={20}
-      initialSorting={[
-        {
-          id: "createdAt",
-          desc: true,
-        },
-      ]}
+      initialSorting={defaultSorting}
       customEmptyState={{
         title: isLoading
           ? t("management.table.emptyState.loading")

@@ -4,20 +4,10 @@ import { safeToString } from "./safe-to-string";
 import type { FormatValueProps } from "./types";
 
 export function FormatAddress({ value, options }: FormatValueProps) {
-  const { showPrettyName = true } = options;
-
   try {
     const validAddress = getEthereumAddress(value);
-    return (
-      <Web3Address
-        address={validAddress}
-        copyToClipboard={true}
-        showFullAddress={false}
-        size="tiny"
-        showSymbol={false}
-        showPrettyName={showPrettyName}
-      />
-    );
+    const { addressOptions } = options;
+    return <Web3Address address={validAddress} {...addressOptions} />;
   } catch {
     // If address is invalid, show the raw value
     return (

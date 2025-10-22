@@ -95,7 +95,11 @@ export function AddressSelect({
         >
           <div className="flex-1 truncate text-left">
             {value ? (
-              <Web3Address address={value} size="tiny" showBadge={false} />
+              <Web3Address
+                address={value}
+                size="tiny"
+                copyToClipboard={false}
+              />
             ) : (
               <span className="text-muted-foreground">
                 {placeholder || t("address.selectPlaceholder")}
@@ -201,8 +205,8 @@ const AddressCommandItem = memo(
         <Web3Address
           address={address}
           size="tiny"
-          showBadge={false}
           className="flex-1"
+          copyToClipboard={false}
         />
         <Check
           className={cn(

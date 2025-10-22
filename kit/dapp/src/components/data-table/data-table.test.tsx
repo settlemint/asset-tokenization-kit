@@ -6,6 +6,11 @@ import userEvent from "@testing-library/user-event";
 import { Search } from "lucide-react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  type ColumnFiltersState,
+  type SortingState,
+  type VisibilityState,
+} from "@tanstack/react-table";
+import {
   defaultColumns,
   generateMockData,
   mockActionGroups,
@@ -27,20 +32,39 @@ vi.mock("react-i18next", () => ({
 }));
 
 // Mock the hooks
-vi.mock("@/hooks/use-data-table-state", () => ({
-  useDataTableState: vi.fn().mockReturnValue({
-    sorting: [],
-    setSorting: vi.fn(),
-    columnFilters: [],
-    setColumnFilters: vi.fn(),
-    columnVisibility: {},
-    setColumnVisibility: vi.fn(),
-    globalFilter: "",
-    setGlobalFilter: vi.fn(),
-    rowSelection: {},
-    setRowSelection: vi.fn(),
-  }),
-}));
+vi.mock("@/hooks/use-data-table-state", () => {
+  const mockPagination = { pageIndex: 0, pageSize: 10 };
+  const mockSorting: SortingState = [];
+  const mockColumnFilters: ColumnFiltersState = [];
+  const mockColumnVisibility: VisibilityState = {};
+  const mockRowSelection: Record<string, boolean> = {};
+
+  return {
+    useDataTableState: vi.fn().mockReturnValue({
+      sorting: mockSorting,
+      setSorting: vi.fn(),
+      columnFilters: mockColumnFilters,
+      setColumnFilters: vi.fn(),
+      columnVisibility: mockColumnVisibility,
+      setColumnVisibility: vi.fn(),
+      globalFilter: "",
+      setGlobalFilter: vi.fn(),
+      rowSelection: mockRowSelection,
+      setRowSelection: vi.fn(),
+      setPagination: vi.fn(),
+      tableOptions: {
+        state: {
+          pagination: mockPagination,
+          sorting: mockSorting,
+          columnFilters: mockColumnFilters,
+          globalFilter: "",
+          columnVisibility: mockColumnVisibility,
+          rowSelection: mockRowSelection,
+        },
+      },
+    }),
+  };
+});
 
 describe("DataTable", () => {
   const mockData = generateMockData(5);

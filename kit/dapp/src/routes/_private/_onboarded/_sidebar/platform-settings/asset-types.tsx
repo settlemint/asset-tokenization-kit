@@ -5,14 +5,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
-  "/_private/_onboarded/_sidebar/admin/platform-settings/asset-types"
+  "/_private/_onboarded/_sidebar/platform-settings/asset-types"
 )({
   component: AssetTypesSettingsPage,
   loader: () => {
     return {
       breadcrumb: [
         createI18nBreadcrumbMetadata("platformSettings", {
-          href: "/admin/platform-settings/asset-types",
+          href: "/platform-settings/asset-types",
         }),
         createI18nBreadcrumbMetadata("settings.assetTypes.title"),
       ],

@@ -8,7 +8,7 @@ type ThemeMode = "light" | "dark";
 
 export class ThemeSettingsPage extends BasePage {
   async goto(): Promise<void> {
-    await this.page.goto("/admin/platform-settings/theme");
+    await this.page.goto("/platform-settings/theme");
     await this.waitForLoaded();
   }
 

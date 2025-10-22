@@ -106,7 +106,7 @@
   },
   "identityTable": {
     "columns": {
-      "id": "ID",
+      "id": "On-chain Identity",
       "type": "Type",
       "entity": "Entity",
       "linkedEntity": "Linked entity",
@@ -140,6 +140,10 @@
   "page": {
     "description": "Manage identity claims, verification status, and compliance for users.",
     "loading": "Loading claims..."
+  },
+  "accessDenied": {
+    "title": "Access restricted",
+    "description": "You do not have permission to manage entities. Contact an administrator for additional access."
   },
   "details": {
     "title": "Account Claims",

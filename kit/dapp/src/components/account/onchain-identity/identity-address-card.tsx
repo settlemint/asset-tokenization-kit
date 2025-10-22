@@ -24,7 +24,6 @@ export function OnchainIdentityAddressCard() {
       description={t("fields.onChainIdentityInfo")}
       address={identityId}
       emptyMessage={t("fields.noIdentityRegistered")}
-      showPrettyName={false}
     />
   );
 }

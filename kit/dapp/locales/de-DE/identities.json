@@ -106,7 +106,7 @@
   },
   "identityTable": {
     "columns": {
-      "id": "ID-Nummer",
+      "id": "On-Chain-Identität",
       "type": "Typ",
       "entity": "Entität",
       "linkedEntity": "Verknüpfte Entität",
@@ -140,6 +140,10 @@
   "page": {
     "description": "Verwalten Sie Identitätsansprüche, Verifizierungsstatus und Compliance für Benutzer.",
     "loading": "Ansprüche laden..."
+  },
+  "accessDenied": {
+    "title": "Zugriff beschränkt",
+    "description": "Sie haben keine Berechtigung, Entitäten zu verwalten. Kontaktieren Sie einen Administrator für zusätzliche Zugriffe."
   },
   "details": {
     "title": "Kontoansprüche",
