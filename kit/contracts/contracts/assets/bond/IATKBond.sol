@@ -57,15 +57,6 @@ interface IATKBond is
     error InsufficientDenominationAssetBalance(uint256 currentBalance, uint256 requiredBalance);
     /// @notice Error an invalid redemption amount was specified.
     error InvalidRedemptionAmount();
-    /// @notice Error the caller does not have enough redeemable bond tokens for the operation.
-    /// @param currentBalance The current balance of the redeemable bond tokens in the contract.
-    /// @param requiredBalance The required balance of the redeemable bond tokens for the operation.
-    error InsufficientRedeemableBalance(uint256 currentBalance, uint256 requiredBalance);
-    /// @notice Error an unauthorized caller attempted to redeem on behalf of `owner`.
-    /// @param caller The address that initiated the redemption.
-    /// @param owner The owner whose balance was targeted.
-    error UnauthorizedRedeemer(address caller, address owner);
-
     /// @notice Emitted when the bond reaches maturity and is closed
     /// @param timestamp The block timestamp when the bond matured
     event BondMatured(uint256 indexed timestamp);

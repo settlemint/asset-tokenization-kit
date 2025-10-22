@@ -810,14 +810,6 @@ contract ATKBondImplementation is
     /// @param amount The amount of tokens to redeem.
     /// @return success True if the redemption succeeded.
     function redeemFor(address owner, uint256 amount) external virtual override nonReentrant returns (bool success) {
-        address caller = _msgSender();
-        if (caller != owner) revert UnauthorizedRedeemer(caller, owner);
-
-        uint256 currentBalance = balanceOf(owner);
-        if (currentBalance < amount) {
-            revert InsufficientRedeemableBalance(currentBalance, amount);
-        }
-
         _smart_redeemFor(owner, amount);
         return true;
     }

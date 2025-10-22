@@ -216,7 +216,7 @@ describe(
             },
           }
         )
-      ).rejects.toThrow("InsufficientRedeemableBalance");
+      ).rejects.toThrow("ERC20InsufficientBalance");
     });
   }
 );
