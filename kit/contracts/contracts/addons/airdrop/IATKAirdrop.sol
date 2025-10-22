@@ -79,7 +79,11 @@ interface IATKAirdrop {
     /// @param indices The indices of the claims in the Merkle tree.
     /// @param totalAmounts The total amounts allocated for each index.
     /// @param merkleProofs The Merkle proofs for each index.
-    function batchClaim(uint256[] calldata indices, uint256[] calldata totalAmounts, bytes32[][] calldata merkleProofs)
+    function batchClaim(
+        uint256[] calldata indices,
+        uint256[] calldata totalAmounts,
+        bytes32[][] calldata merkleProofs
+    )
         external;
 
     /// @notice Allows the owner to withdraw any tokens remaining in the contract.
