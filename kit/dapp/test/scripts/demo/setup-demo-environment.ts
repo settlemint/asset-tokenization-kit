@@ -71,9 +71,10 @@ await Promise.all([
     await setupTrustedClaimIssuers(adminClient, ISSUER);
     await createAndRegisterUserIdentities(
       adminClient,
-      [GERMAN_INVESTOR_1, GERMAN_INVESTOR_2, US_INVESTOR],
+      [GERMAN_INVESTOR_1, GERMAN_INVESTOR_2],
       "DE"
     );
+    await createAndRegisterUserIdentities(adminClient, [US_INVESTOR], "US");
     await issueDefaultKycClaims(adminClient, [
       ADMIN,
       ISSUER,
