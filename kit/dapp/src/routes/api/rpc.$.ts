@@ -79,6 +79,7 @@ export async function handle({ request }: { request: Request }) {
 export const Route = createFileRoute("/api/rpc/$")({
   server: {
     handlers: {
+      OPTIONS: handle,
       HEAD: handle,
       GET: handle,
       POST: handle,
