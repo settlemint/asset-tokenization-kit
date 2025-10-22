@@ -1,7 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { getUnixTimeMicroseconds } from "@atk/zod/src/timestamp";
 import type { VariablesOf } from "@settlemint/sdk-thegraph";
+import { getUnixTime } from "date-fns";
 import * as z from "zod";
 import {
   ActionSchema,
@@ -92,7 +92,7 @@ type ActionsGraphResponse = z.infer<typeof ActionsGraphResponseSchema>;
 export const list = authRouter.actions.list.handler(
   async ({ input, context }): Promise<ActionsListResponse> => {
     // Build where clause with user filtering and optional filters
-    const where: VariablesOf<typeof LIST_ACTIONS_QUERY>["where"] = {
+    let where: VariablesOf<typeof LIST_ACTIONS_QUERY>["where"] = {
       // Filter actions to only those where the user is an authorized executor
       executor_: {
         executors_contains: [context.auth.user.wallet.toLowerCase()],
@@ -101,23 +101,51 @@ export const list = authRouter.actions.list.handler(
 
     // Apply optional filters
     const now = new Date();
-    const nowMicroseconds = getUnixTimeMicroseconds(now);
+    const nowUnixTime = getUnixTime(now).toString();
     switch (input.status) {
       case "PENDING":
-        where.activeAt_lte = nowMicroseconds;
-        where.expiresAt_gt = nowMicroseconds;
-        where.executed = false;
+        where = {
+          and: [
+            { ...where }, // Include existing where clause
+            { executed: false },
+            { activeAt_lte: nowUnixTime },
+            {
+              or: [
+                {
+                  expiresAt_gt: nowUnixTime,
+                },
+                {
+                  expiresAt: null,
+                },
+              ],
+            },
+          ],
+        };
         break;
       case "UPCOMING":
-        where.activeAt_gt = nowMicroseconds;
-        where.expiresAt_gt = nowMicroseconds;
-        where.executed = false;
+        where = {
+          and: [
+            { ...where }, // Include existing where clause
+            { executed: false },
+            { activeAt_gt: nowUnixTime },
+            {
+              or: [
+                {
+                  expiresAt_gt: nowUnixTime,
+                },
+                {
+                  expiresAt: null,
+                },
+              ],
+            },
+          ],
+        };
         break;
       case "EXECUTED":
         where.executed = true;
         break;
       case "EXPIRED":
-        where.expiresAt_lte = nowMicroseconds;
+        where.expiresAt_lte = nowUnixTime;
         where.executed = false;
         break;
     }

@@ -1,17 +1,21 @@
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
+import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { DenominationAssetTable } from "@/components/tables/denomination-assets";
 import { useTokenLoaderQuery } from "@/hooks/use-token-loader-query";
-import { seo } from "@atk/config/metadata";
 import { createFileRoute } from "@tanstack/react-router";
+import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/denomination-asset"
 )({
-  head: () => ({
-    meta: seo({
-      title: "Denomination Assets",
-    }),
-  }),
+  loader: ({ context: { queryClient, orpc }, params: { tokenAddress } }) => {
+    // Prefetch token details to ensure snappy UX
+    void queryClient.prefetchQuery(
+      orpc.token.read.queryOptions({ input: { tokenAddress } })
+    );
+  },
+  errorComponent: DefaultCatchBoundary,
   component: RouteComponent,
 });
 
@@ -32,7 +36,9 @@ function RouteComponent() {
         </p>
       </div>
 
-      <DenominationAssetTable tokenAddress={asset.id} />
+      <Suspense fallback={<DataTableSkeleton />}>
+        <DenominationAssetTable tokenAddress={asset.id} />
+      </Suspense>
     </div>
   );
 }

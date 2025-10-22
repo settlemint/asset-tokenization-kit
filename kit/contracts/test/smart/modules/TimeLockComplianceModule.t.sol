@@ -35,11 +35,10 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     // Helper function to create secondary sale approval expression
     function _secondarySaleApprovalExpression() internal view returns (ExpressionNode[] memory) {
         ExpressionNode[] memory expression = new ExpressionNode[](1);
-        expression[0] =
-            ExpressionNode({
-                nodeType: ExpressionType.TOPIC,
-                value: secondarySaleTopicId // Use dynamic topic ID
-            });
+        expression[0] = ExpressionNode({
+            nodeType: ExpressionType.TOPIC,
+            value: secondarySaleTopicId // Use dynamic topic ID
+        });
         return expression;
     }
 

@@ -161,7 +161,11 @@ contract ATKVestingAirdropImplementation is IATKVestingAirdrop, ATKAirdrop, Reen
     /// @param index The index of the claim in the Merkle tree.
     /// @param totalAmount The total amount allocated for this index.
     /// @param merkleProof The Merkle proof array for verification.
-    function initializeVesting(uint256 index, uint256 totalAmount, bytes32[] calldata merkleProof)
+    function initializeVesting(
+        uint256 index,
+        uint256 totalAmount,
+        bytes32[] calldata merkleProof
+    )
         external
         nonReentrant
     {
@@ -225,7 +229,11 @@ contract ATKVestingAirdropImplementation is IATKVestingAirdrop, ATKAirdrop, Reen
     /// @param index The index of the claim in the Merkle tree.
     /// @param totalAmount The total amount allocated for this index.
     /// @param merkleProof The Merkle proof array (required by base contract but not used in verification here).
-    function claim(uint256 index, uint256 totalAmount, bytes32[] calldata merkleProof)
+    function claim(
+        uint256 index,
+        uint256 totalAmount,
+        bytes32[] calldata merkleProof
+    )
         external
         override(ATKAirdrop, IATKAirdrop)
         nonReentrant
@@ -251,7 +259,11 @@ contract ATKVestingAirdropImplementation is IATKVestingAirdrop, ATKAirdrop, Reen
     /// @param indices The indices of the claims in the Merkle tree.
     /// @param totalAmounts The total amounts allocated for each index.
     /// @param merkleProofs The Merkle proof arrays (required by base contract but not used in verification here).
-    function batchClaim(uint256[] calldata indices, uint256[] calldata totalAmounts, bytes32[][] calldata merkleProofs)
+    function batchClaim(
+        uint256[] calldata indices,
+        uint256[] calldata totalAmounts,
+        bytes32[][] calldata merkleProofs
+    )
         external
         override(ATKAirdrop, IATKAirdrop)
         nonReentrant

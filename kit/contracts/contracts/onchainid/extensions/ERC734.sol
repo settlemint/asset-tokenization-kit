@@ -231,7 +231,11 @@ contract ERC734 is IERC734, ReentrancyGuard {
     /// @param _value The amount of ETH to send
     /// @param _data The data payload for the call
     /// @return executionId The ID of the created execution request
-    function execute(address _to, uint256 _value, bytes calldata _data)
+    function execute(
+        address _to,
+        uint256 _value,
+        bytes calldata _data
+    )
         public
         payable
         virtual
