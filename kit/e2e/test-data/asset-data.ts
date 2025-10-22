@@ -437,7 +437,7 @@ export const fundData = {
   basePrice: "100",
   fundClass: "Emerging Markets",
   fundCategory: "Early Stage",
-  managementFeeBps: "200",
+  managementFeeBps: "2",
   initialSupply: "0",
   pincode: pincode,
   sidebarAssetTypes: "Funds",
