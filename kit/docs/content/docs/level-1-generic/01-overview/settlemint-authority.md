@@ -1,186 +1,73 @@
 ---
-title: SettleMint Authority & Credentials
-description: Enterprise Blockchain Leadership - 9 Years, 60+ Deployments, Zero Compromises
+title: SettleMint Authority & Evidence
+description: Proof that SettleMint’s Asset Tokenization Kit runs the Digital Asset Lifecycle Platform in production today
 ---
 
-<!-- SOURCE: Part 0 - Category Design/1. Problem Definition.md -->
 <!-- SOURCE: Part 0 - Category Design/2. The Solution + Category Name.md -->
-<!-- SOURCE: Part 0 - Category Design/3. Point of View.md -->
-<!-- SOURCE: Part III/Chapter 14 — Security Model & Controls.md -->
-<!-- SOURCE: Part IV/Chapter 21 — Reference Implementations.md -->
-<!-- STATUS: COMPILED | VERIFIED -->
+<!-- SOURCE: Part II — The Architecture/Chapter 5 — Deployment & White‑Label, Your Brand, Your Environment.md -->
+<!-- SOURCE: Part III — Operating the Platform/Chapter 14 — Security Model & Controls.md -->
+<!-- SOURCE: Part IV — Adoption & Execution/Chapter 21 — Reference Implementations (Copy These Into Your RFP).md -->
+<!-- SOURCE: Part IV — Adoption & Execution/Chapter 22 — Metrics & OKRs, Evidence You’re Winning (or Not).md -->
+<!-- SOURCE: Part V - Appendices/Appendix S — Licensing & Deployment Options.md -->
+<!-- SOURCE: README.md -->
+<!-- STATUS: UPDATED -->
 
 # SettleMint Authority
 
-**SettleMint brings 9 years of enterprise blockchain expertise with 60+ institutional deployments, creating the category-defining Digital Asset Lifecycle Platform that institutions trust.**
+**SettleMint’s Asset Tokenization Kit (ATK) is the production-grade slice of the Digital Asset Lifecycle Platform (DALP): compliance-native assets, deterministic settlement, lifecycle automation, and the operational stack needed to run them.**
 
-## Company Track Record
+## What Ships Today
 
-### Institutional Focus from Day One
-Unlike crypto-native platforms that pivot to institutions, SettleMint was built for enterprises from inception. We understand that **institutions cannot trust fragmented infrastructure** - they need bank-grade security, regulatory compliance, and single-vendor accountability. This institutional DNA drives every architectural decision in the Asset Tokenization Kit.
+- **Compliance-native assets** — SMART protocol / ERC‑3643 primitives with identity registry, claims, compliance contracts, and emergency controls keep eligibility in the transfer path.  
+- **Lifecycle automation** — Bond, equity, deposit, fund, and stablecoin templates bundle issuance flows, role-based operations, corporate actions, and add-ons like airdrops, vaults, and XvP settlement.  
+- **Deterministic settlement services** — Transaction signer, policy engine, and rail adapters coordinate cash and token legs with atomic guarantees and reconciliation feeds.  
+- **Operational stack** — Next.js portal, ORPC API, Hasura, The Graph indexer, ERPC/LB, Blockscout, Prometheus/Grafana/Loki, and scripted automation via Docker Compose and Helm.  
+- **Licensing clarity** — Code is published under FSL‑1.1‑MIT while proprietary backend services (transaction signer, portal runtime) license through SettleMint for on‑prem or run managed in console.settlemint.com.
 
-### Production Reality, Not Promises
-**SettleMint's Asset Tokenization Kit (ATK) is the production-grade implementation of the Digital Asset Lifecycle Platform (DALP) vision that exists today.** While others promise future capabilities, we deliver:
-- Compliance-native assets with SMART protocol / ERC-3643 primitives
-- Hardened bond, equity, deposit, fund, and stablecoin templates
-- Deterministic settlement services with atomicity guarantees
-- Operational stack packaged for enterprise deployment
+## Security, Compliance, and Operations Evidence
 
-### Category Creation
-We're not following the market - we're defining it. **The Digital Asset Lifecycle Platform (DALP) is the category we are creating.** It's the single control plane that collapses issuance, compliance, custody, settlement, and lifecycle operations into one programmable system. ATK proves this category is real while staying honest about the roadmap ahead.
+- **Defense-in-depth security** — MPC/HSM key management, policy-driven approvals, and dual-control enforcement prevent unilateral movements; every sensitive action is logged to SIEM systems.  
+- **Enterprise identity & access** — SSO/SAML/OIDC integration, MFA, and RBAC/ABAC down to action scopes mirror bank identity doctrine, producing zero critical audit findings on access control.  
+- **Pre-transfer compliance gates** — Jurisdictional rules, allowlists, holding periods, and concentration caps execute before any state change; violations revert on-chain with full audit trails.  
+- **Data protection by design** — PII stays off-chain, data in transit and at rest is encrypted, and network policies enforce least privilege across services.  
+- **Incident playbooks that pass the 3 a.m. test** — Automated responses pause affected flows, rotate keys, and generate regulator-ready evidence without manual heroics.
 
-## Intellectual Property & Innovation
+## Metrics Risk Committees Expect
 
-### Open Innovation Model
-- **FSL-1.1-MIT License**: Source-available with MIT grant for designated components
-- **SMART Protocol Architecture**: Our proprietary design with identity registry, compliance contract, and pluggable modules
-- **ERC-3643 Implementation**: Production-ready implementation of the compliance standard
-- **Proprietary Backend Services**: Transaction Signer, Portal/API, and runtime services under commercial license
+| KPI | Target | Source |
+|-----|--------|--------|
+| Regulatory incidents | **0** | DALP metrics & OKRs |
+| Compliance block rate | **100%** of restricted transfers stopped; >95% approvals automated | DALP metrics & OKRs |
+| First-attempt settlement | **≥99%** | DALP metrics & OKRs |
+| T+0 settlement share | ~**99%** where tokenized cash exists | DALP metrics & OKRs |
+| KYC turnaround | Median **<1 day** | DALP metrics & OKRs |
+| Platform uptime | **≥99.9%** with no outages >1 h | DALP metrics & OKRs |
+| Corporate-action accuracy | **100% on schedule, zero reconciliation leaks** | DALP metrics & OKRs |
 
-### Technical Leadership
-Our technical innovations solve real institutional problems:
-- **Compliance in the token path** - not bolted on afterward
-- **Atomic DvP settlement** - eliminating counterparty risk
-- **ISO 20022 native integration** - speaking bank language
-- **Multi-chain continuity** - compliance that doesn't break across chains
+Every metric is instrumented in event-sourced logs and ISO 20022 mirrors, exposed through the regulatory dashboard rather than manual reporting.
 
-## Industry Certifications & Standards
+## Deployment Control and Licensing
 
-### Security Posture
-<!-- SOURCE: Part III/Chapter 14 — Security Model & Controls.md, lines 6-7 -->
+- **Self-hosted Kubernetes** — Helm charts in `kit/charts/atk` deploy the full stack (dApp, ORPC, Besu, Blockscout, Hasura, observability) with isolation policies, backups, and disaster recovery guidance.  
+- **Developer & QA automation** — `docker-compose.yml` plus `bun run dev:up` reproduce the same artifacts locally so sandbox environments mirror production behaviour.  
+- **Managed SettleMint Console** — Identical stack operated by SettleMint for teams that prefer SaaS while retaining the option to migrate to BYOC or on‑prem.  
+- **Licensing model** — Source components remain FSL‑1.1‑MIT; proprietary backend services license through SettleMint for on‑prem deployments or run as part of the managed Console offer (Appendix S).  
+- **CI discipline** — `bun run ci` enforces formatting, compilation, codegen, linting, and tests; these workflows underpin both customer pipelines and Console releases, creating a single definition of “ready.”
 
-**Enterprise-Grade Security Architecture**:
-- **Identity Management**: SSO/MFA/SAML/OIDC with enterprise provider integration
-- **Access Control**: RBAC/ABAC down to specific action scopes
-- **Key Management**: MPC/HSM architectures preventing single points of failure
-- **Audit Trail**: SIEM integration with complete forensic capabilities
-- **Zero Critical Findings**: Audit-ready platform with proven track record
+## Reference Implementations in Production
 
-### Compliance & Governance
-- **Multi-Jurisdictional Coverage**: EU (MiCA), US (SEC), Singapore (MAS), GCC frameworks
-- **Automated Reporting**: Real-time regulatory dashboard for examiner access
-- **Policy Engine**: Dual control mechanisms with full audit trails
-- **Recovery Procedures**: 3AM-tested playbooks that work under pressure
+- **Tokenized bond launch** — Deploy bond template, onboard investors through the identity registry, run Ready‑for‑Exchange adapters for secondary trading, and execute ISO 20022 mirrored atomic DvP with ≥99% first-attempt settlement.  
+- **Private fund infrastructure** — Mint fund units, schedule NAV windows, automate subscriptions/redemptions and payouts, enforce investor class rules, and expose optional verified holder bulletin boards.  
+- **Equity registry & governance** — Maintain the canonical cap table, run on-chain voting with record-date snapshots, execute buybacks/redemptions with instant reconciliation, and deliver audit-grade tallies.
 
-### Operational Excellence
-**Proven Metrics Across Deployments**:
-- **99.9% Platform Uptime** - Enterprise SLA guarantee
-- **Zero Regulatory Incidents** - Perfect compliance record
-- **<1 Day KYC Processing** - Rapid investor onboarding
-- **99% First-Attempt Settlement** - Minimal operational friction
-- **100% Audit Success** - Clean examination results
+These blueprints run without glue code because eligibility, venue adapters, DvP, and corporate-action engines are native to ATK.
 
-## Team Expertise
+## Ecosystem Integrations
 
-### Institutional Infrastructure Veterans
-Our team brings deep expertise from traditional finance and enterprise technology:
-- **Capital Markets Experience**: Building and operating institutional trading systems
-- **Regulatory Expertise**: Former compliance officers and regulatory technologists
-- **Enterprise Architecture**: Scaling mission-critical systems for global banks
-- **Blockchain Pioneers**: Early adopters who understand both promise and reality
+- **Custody providers** — Fireblocks, Coinbase, Copper, Metaco, and bespoke custodians connect through standardized APIs so banks keep their existing control rooms while preserving DALP compliance gates.  
+- **Banking & payment rails** — ISO 20022 adapters coordinate fiat settlement with token legs, enabling deterministic DvP whether cash is on-chain or delivered through RTGS/SWIFT/SEPA instructions.  
+- **Observability & identity** — Prometheus/Grafana/Loki ship by default; OAuth flows, MFA, and granular roles in the dApp and ORPC backend tie into enterprise identity providers without custom builds.
 
-### Vision & Leadership
-<!-- SOURCE: Part 0/3. Point of View.md, lines 14-15 -->
+## Engage with SettleMint
 
-**"Fragmented tokenization is dead; lifecycle control is non-negotiable."** This isn't just our belief - it's the principle driving platform development. We're building the infrastructure that lets institutions own the lifecycle or get left behind.
-
-## Industry Partnerships & Ecosystem
-
-### Custodian Integrations
-Production-ready connectors with leading digital asset custodians:
-- **Fireblocks** - API integration for institutional custody
-- **Coinbase Custody** - Qualified custodian connectivity
-- **Copper** - Multi-signature wallet infrastructure
-- **Metaco** - Bank-grade key management
-- **Custom Integrations** - Support for proprietary custody solutions
-
-### Banking & Settlement Partners
-- **SWIFT Integration** - ISO 20022 message handling
-- **SEPA Rails** - European payment connectivity
-- **RTGS Systems** - Real-time gross settlement
-- **Core Banking APIs** - Direct integration capabilities
-
-### Technology Alliances
-- **Cloud Providers**: Deployment-ready on AWS, Azure, GCP
-- **Identity Providers**: KYC/KYB partner network
-- **Blockchain Networks**: Multi-chain support across all major EVMs
-
-## Reference Implementations
-
-<!-- SOURCE: Part IV/Chapter 21 — Reference Implementations.md -->
-
-### Production Blueprints
-Three proven architectures deployed in production:
-
-**Tokenized Bond Platform**
-- Issuance to settlement in days, not months
-- 99% first-attempt settlement rate
-- T+0 baseline with ISO 20022 reconciliation
-- Zero manual intervention in coupon payments
-
-**Private Fund Infrastructure**
-- Periodic NAV windows with automated calculations
-- Investor subscription/redemption workflows
-- Rule-based eligibility enforcement
-- Optional P2P transfer capabilities
-
-**Equity Registry System**
-- Corporate governance with on-chain voting
-- Canonical cap table management
-- Record-date snapshots for corporate actions
-- Audit-grade vote tallies
-
-### Execution Excellence
-<!-- SOURCE: Part IV/Chapter 22 — Metrics & OKRs.md, lines 39-43 -->
-
-**2025-2026 Targets**:
-- **4 new enterprise clients** on branded stacks
-- **2 white-label partners** activated by Q2 2026
-- **Full compliance** in ≥2 major jurisdictions
-- **$2.3T addressable market** capture strategy
-
-## Awards & Recognition
-
-### Industry Leadership
-- **Category Creator**: Defining the Digital Asset Lifecycle Platform space
-- **Production Pioneer**: First to deliver compliance-native tokenization
-- **Enterprise Trust**: 60+ institutional deployments globally
-- **Zero Incidents**: Perfect regulatory compliance record
-
-### Client Success
-- **95% Cost Reduction** achieved for issuance operations
-- **T+0 Settlement** standard across implementations
-- **3-6 Month Payback** typical for enterprise deployments
-- **99.9% Uptime** maintained across all production systems
-
-## Why Institutions Choose SettleMint
-
-### Single Vendor Accountability
-Unlike consortiums of point solutions, SettleMint provides:
-- One contract, one SLA, one throat to choke
-- Unified platform instead of integration nightmares
-- Consistent updates across all components
-- Enterprise support with guaranteed response times
-
-### Proven at Scale
-- **9 years** building enterprise blockchain
-- **60+ deployments** across institutions
-- **Zero failures** in production
-- **Multiple jurisdictions** successfully navigated
-
-### Future-Proof Architecture
-- Modular design allowing seamless upgrades
-- Multi-chain ready for evolving infrastructure
-- Regulatory adaptability as frameworks mature
-- Continuous innovation without disruption
-
-## Contact & Engagement
-
-**Ready to join the institutions already capturing the $2.3T tokenization opportunity?**
-
-- **Sales**: sales@settlemint.com
-- **Technical**: support@settlemint.com
-- **Partnerships**: partners@settlemint.com
-- **Platform Access**: console.settlemint.com
-
-**SettleMint - The institutional choice for tokenization infrastructure.**
+For licensing, deployment planning, or managed Console onboarding, contact **support@settlemint.com**. The same team maintains the public repository (`README.md`) and operating guides so every engagement starts from the documented, production-ready stack.

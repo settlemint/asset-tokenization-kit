@@ -82,7 +82,7 @@ The Asset Tokenization Kit implements the DALP vision through a unified three-la
 
 ## Platform Non-Negotiables
 
-If any of these are missing, you have another integration project, not a DALP:
+A true Digital Asset Lifecycle Platform delivers all of the following; without them, institutions fall back into multi-vendor integration projects:
 
 ### 1. Unified Lifecycle Core
 Issuance, servicing, settlement, and reporting run on the same cap table and data model so every state change is authoritative and auditable.
@@ -184,4 +184,3 @@ Unlike point solutions that create new integration nightmares, ATK delivers:
 - **T+0 settlement** as the default, not the exception
 
 This is not another toolbox. This is institutional-grade market infrastructure.
-

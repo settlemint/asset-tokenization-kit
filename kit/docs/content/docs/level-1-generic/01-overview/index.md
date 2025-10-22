@@ -9,17 +9,17 @@ description: Navigate the Asset Tokenization Kit platform capabilities and marke
 
 ## In This Section
 
-### 📊 [Market Opportunity](./market-opportunity)
-The $2.3 trillion tokenization opportunity - market sizing, growth drivers, competitive landscape, and why institutions are moving now.
+### [Market Opportunity](./market-opportunity)
+**Quantifies the $2.3T addressable market** with adoption curves, demand drivers, and regulatory catalysts signalling immediate institutional movement.
 
-### 🏗️ [Platform Capabilities](./platform-capabilities)  
-Complete DALP architecture - how one control plane replaces fragmented vendors with unified infrastructure for the complete asset lifecycle.
+### [Platform Capabilities](./platform-capabilities)  
+**Explains the Digital Asset Lifecycle Platform (DALP)**—one control plane replacing fragmented vendors with compliance-native lifecycle infrastructure.
 
-### 💰 [Business Value & ROI](./business-value-roi)
-95% cost reduction metrics - detailed ROI analysis, TCO comparisons, and measurable business outcomes from production deployments.
+### [Business Value & ROI](./business-value-roi)
+**Documents the proven 95% cost reduction** with TCO comparisons, payback models, and outcome metrics drawn from production deployments.
 
-### 🏆 [SettleMint Authority](./settlemint-authority)
-Why institutions trust SettleMint - 9 years expertise, 60+ deployments, security certifications, and ecosystem partnerships.
+### [SettleMint Authority](./settlemint-authority)
+**Shows why institutions trust SettleMint** with DALP evidence covering security controls, deployment options, metrics, and reference implementations.
 
 ## Quick Facts
 
@@ -32,4 +32,4 @@ Why institutions trust SettleMint - 9 years expertise, 60+ deployments, security
 
 ## Get Started
 
-Ready to capture your share of the tokenization opportunity? Start with our [Market Opportunity](./market-opportunity) analysis or dive into [Platform Capabilities](./platform-capabilities) to understand the technology.
+Executives assessing market timing typically start with the [Market Opportunity](./market-opportunity) analysis, then review [Platform Capabilities](./platform-capabilities) to map DALP capabilities to institutional requirements.

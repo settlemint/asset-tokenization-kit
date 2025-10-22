@@ -59,26 +59,27 @@ The DALP is the single control plane that collapses issuance, compliance, custod
 - **Lifecycle automation.** Hardened bond, equity, deposit, fund, and stablecoin templates include issuance flows, role-based operations, corporate-action primitives (income distribution, redemption), and add-ons for airdrops, vaults, and atomic XvP settlement.
 - **Deterministic settlement services.** Transaction signer, policy engine, and adapters coordinate cash/digital security legs with atomicity guarantees, alongside data feeds for reconciliation.
 - **Operational stack.** API & portal, Hasura (GraphQL over Postgres), The Graph indexer, ERPC/LB, Blockscout, and observability tooling packaged via Docker Compose and Helm so teams can deploy, monitor, and scale with enterprise discipline.
+- **Composable delivery.** Modular compliance modules, asset templates, UI surfaces, and automation hooks can be mixed, extended, or replaced so institutions tailor ATK to local governance, integration landscapes, and product roadmaps.
 
 <!-- SOURCE: Part 0 - Category Design/3. Point of View.md -->
 
-### Our Point of View: Fragmented Tokenization is Dead
+### Our Point of View: Lifecycle Control Wins Institutional Tokenization
 
-Legendary categories are won by weaponizing a provocative point of view that names the enemy, paints the new world, and calls people to move now. Our POV is simple: **fragmented tokenization is dead; lifecycle control is non‑negotiable.**
+Institutions succeed with tokenization when they treat lifecycle control as core market infrastructure. ATK proves that principle in production today.
 
-**1. Name the enemy: Fragmentation keeps institutions exposed**
-The old model chains together point solutions for issuance, compliance, custody, and settlement. Every handoff creates blind spots that regulators punish and boards fear. Compliance lives outside the asset. Settlement stalls at T+2. Operations run on spreadsheets. The cost is reputational risk, stranded capital, and projects that never make it past the pilot stage.
+**1. Diagnose the gap: Fragmented stacks create institutional risk**  
+Point solutions across issuance, compliance, custody, and settlement introduce handoffs that regulators scrutinize and boards question. Compliance often lives outside the asset, settlement remains at T+2, and spreadsheet-led operations slow every launch. The result is stranded capital and programmes that struggle to scale.
 
-**2. Reframe the future: Lifecycle-native infrastructure is the new default**
-The Digital Asset Lifecycle Platform (DALP) collapses the stack into one programmable control plane. Identity, rules, custody policies, and cash legs execute before any state change, keeping the ledger, the cap table, and the regulator in lockstep. Compliance stops being an afterthought; it becomes the operating system for digital assets.
+**2. Define the target state: Lifecycle-native infrastructure as default**  
+The Digital Asset Lifecycle Platform (DALP) unifies identity, rules, custody policies, and cash legs before any state change. That programmable control plane keeps the ledger, the cap table, and regulators aligned so compliance becomes the operating system—not an afterthought.
 
-**3. Prove the shift in human terms**
-- **For institutions:** Stop choosing between innovation and audit. Adopt infrastructure that clears regulatory committees on day zero and lets you originate, service, and settle on rails you command.
-- **For developers:** Ship new financial products without rebuilding compliance plumbing. Compose with APIs, not spreadsheets. Focus on customer value while the platform enforces policy.
-- **For investors:** Expect predictable settlement windows, transparent rights, and lifecycle communications that mirror top-tier capital markets.
+**3. Translate the impact for each stakeholder**  
+- **Institutions:** Clear risk committees on day zero by demonstrating audit-ready controls while originating, servicing, and settling on infrastructure the organisation governs.  
+- **Developers:** Launch new financial products without rebuilding compliance plumbing; compose with APIs while the platform enforces policy.  
+- **Investors:** Gain predictable settlement windows, transparent rights, and lifecycle communications consistent with tier-one capital markets.
 
-**4. Call to action: Own the lifecycle or get left behind**
-SettleMint's Asset Tokenization Kit is the production-ready slice of DALP your teams can deploy today. Stand up compliance-native assets, deterministic settlement, and automated servicing now—then expand into the full DALP blueprint as the category matures. The first movers who institutionalize lifecycle control will define the standards everyone else licenses.
+**4. Execute the play: Institutionalise lifecycle control**  
+SettleMint's Asset Tokenization Kit gives teams the production-grade subset of DALP that is available now—compliance-native assets, deterministic settlement, and automated servicing. Organisations that embed lifecycle control today establish the operating standards the market will follow.
 
 ### The Business Case
 
