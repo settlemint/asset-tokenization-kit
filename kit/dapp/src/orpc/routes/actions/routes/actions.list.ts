@@ -101,18 +101,18 @@ export const list = authRouter.actions.list.handler(
 
     // Apply optional filters
     const now = new Date();
-    const nowMicroseconds = getUnixTime(now).toString();
+    const nowUnixTime = getUnixTime(now).toString();
     switch (input.status) {
       case "PENDING":
         where = {
           and: [
             { ...where }, // Include existing where clause
             { executed: false },
-            { activeAt_lte: nowMicroseconds },
+            { activeAt_lte: nowUnixTime },
             {
               or: [
                 {
-                  expiresAt_gt: nowMicroseconds,
+                  expiresAt_gt: nowUnixTime,
                 },
                 {
                   expiresAt: null,
@@ -127,11 +127,11 @@ export const list = authRouter.actions.list.handler(
           and: [
             { ...where }, // Include existing where clause
             { executed: false },
-            { activeAt_gt: nowMicroseconds },
+            { activeAt_gt: nowUnixTime },
             {
               or: [
                 {
-                  expiresAt_gt: nowMicroseconds,
+                  expiresAt_gt: nowUnixTime,
                 },
                 {
                   expiresAt: null,
@@ -145,7 +145,7 @@ export const list = authRouter.actions.list.handler(
         where.executed = true;
         break;
       case "EXPIRED":
-        where.expiresAt_lte = nowMicroseconds;
+        where.expiresAt_lte = nowUnixTime;
         where.executed = false;
         break;
     }
