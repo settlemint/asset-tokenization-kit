@@ -3,15 +3,12 @@ import { apiBigInt } from "@atk/zod/bigint";
 import * as z from "zod";
 
 export const TokenRedeemInputSchema = MutationInputSchemaWithContract.extend({
-  amount: apiBigInt.describe("The amount of tokens to redeem").optional(),
-  redeemAll: z
-    .boolean()
+  owner: z
+    .string()
+    .trim()
     .optional()
-    .default(false)
-    .describe("Whether to redeem all tokens (typically for bonds)"),
+    .describe("Token holder address to redeem for (defaults to caller)"),
+  amount: apiBigInt.describe("Amount of tokens to redeem"),
 });
 
-export const TokenRedeemAllInputSchema = MutationInputSchemaWithContract;
-
 export type TokenRedeemInput = z.infer<typeof TokenRedeemInputSchema>;
-export type TokenRedeemAllInput = z.infer<typeof TokenRedeemAllInputSchema>;
