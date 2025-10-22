@@ -28,11 +28,8 @@ import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
 import { CORSPlugin } from "@orpc/server/plugins";
 import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
-// import { createFileRoute } from "@tanstack/react-router";
-import {
-  createServerFileRoute,
-  getHeaders,
-} from "@tanstack/react-start/server";
+import { createFileRoute } from "@tanstack/react-router";
+import { getRequestHeaders } from "@tanstack/react-start/server";
 import pkgjson from "../../../package.json";
 
 /**
@@ -115,7 +112,7 @@ const handler = new OpenAPIHandler(router, {
 export async function handle({ request }: { request: Request }) {
   let headers: Headers | Record<string, string | string[]> = {};
   try {
-    headers = normalizeHeaders(getHeaders());
+    headers = normalizeHeaders(getRequestHeaders());
   } catch {
     headers = {};
   }
@@ -130,24 +127,15 @@ export async function handle({ request }: { request: Request }) {
   return response ?? new Response("Not Found", { status: 404 });
 }
 
-// export const Route = createFileRoute("/api/$")({
-//   server: {
-//     handlers: {
-//       HEAD: handle,
-//       GET: handle,
-//       POST: handle,
-//       PUT: handle,
-//       PATCH: handle,
-//       DELETE: handle,
-//     },
-//   },
-// });
-
-export const ServerRoute = createServerFileRoute("/api/$").methods({
-  HEAD: handle,
-  GET: handle,
-  POST: handle,
-  PUT: handle,
-  PATCH: handle,
-  DELETE: handle,
+export const Route = createFileRoute("/api/$")({
+  server: {
+    handlers: {
+      HEAD: handle,
+      GET: handle,
+      POST: handle,
+      PUT: handle,
+      PATCH: handle,
+      DELETE: handle,
+    },
+  },
 });
