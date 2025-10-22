@@ -125,7 +125,7 @@ export const list = authRouter.actions.list.handler(
       case "UPCOMING":
         where = {
           and: [
-            { ...where },
+            { ...where }, // Include existing where clause
             { executed: false },
             { activeAt_gt: nowMicroseconds },
             {
