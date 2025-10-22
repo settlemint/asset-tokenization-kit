@@ -13,17 +13,18 @@ description: Deploy on any EVM network without losing compliance guarantees
 
 # Chain-Agnostic Deployment
 
-**Deploy once, run anywhere** ATK’s release process packages the same SMART contracts, identity services, compliance modules, and observability stack so they can be promoted from pilot sandboxes to production-grade EVM networks without rewriting code or rebuilding infrastructure. 
+**Deploy once, run anywhere.** ATK’s release process packages the same SMART contracts, identity services, compliance modules, and observability stack so they can be promoted from pilot sandboxes to production-grade EVM networks without rewriting code or rebuilding infrastructure. 
 
 ## Deployment targets covered out of the box
 
 - **Public EVM networks.** Ethereum Mainnet and EVM layer-2 ecosystems such as Polygon are first-class targets for distribution scale and integrations. 
 - **Permissioned EVM ledgers.** Hyperledger Besu, Quorum, and equivalent consortium chains run the same package for private membership scenarios that still require regulator audit hooks. 
+- **Additional EVM venues.** Regulator-approved chains join once they prove the SMART protocol, identity registry, compliance modules, and monitoring stack deploy and function identically; anything less stays off the promotion list. 
 
 
 ## What “chain-agnostic” means in practice
 
-- **Standardised Solidity surface.** Contracts target Solidity 0.8.x with OpenZeppelin upgrade patterns, so the bytecode is portable across public and permissioned EVMs without edits. 
+- **Standardized Solidity surface.** Contracts target Solidity 0.8.x with OpenZeppelin upgrade patterns, so the bytecode is portable across public and permissioned EVMs without edits. (Source: Book of DALP Part II/Chapter 1)
 - **Single release artifact.** Docker Compose, Helm charts, and managed-console pipelines all derive from the same tag, letting teams switch settlement networks by swapping connection details—not regenerating stacks. 
 - **Identity and compliance continuity.** OnchainID registries, claim topics, and compliance modules travel with the release. If a destination cannot host them or emit the required telemetry, promotion is blocked. 
 - **Consistent user experience.** The white-label Next.js portal and ORPC/GraphQL APIs ship unchanged, so issuers and investors keep the same workflows regardless of where the contracts settle. 

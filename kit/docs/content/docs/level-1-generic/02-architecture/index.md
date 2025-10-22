@@ -10,7 +10,7 @@ description: Guided tour of the DALP foundation, infrastructure services, and de
 
 # Architecture Overview
 
-**SettleMint’s Digital Asset Lifecycle Platform (DALP) is designed as a three-layer control plane—SMART protocol, system infrastructure, and delivery interfaces—so regulated institutions can operate compliant digital securities without building glue code. Every layer is anchored to open standards such as ERC‑3643 for permissioned identity and ERC‑20 for market interoperability.**
+**SettleMint’s Digital Asset Lifecycle Platform (DALP) is designed as a three-layer control plane—SMART protocol, system infrastructure, and delivery interfaces—so regulated institutions can operate compliant digital securities without building glue code. Every layer is anchored to open standards such as ERC‑3643 for permissioned identity and ERC‑20 for market interoperability. Identity is not an afterthought: OnchainID registries, trusted issuers, and claims orchestration run through the architecture so compliance decisions stay inside the asset path.**
 
 ## In This Section
 

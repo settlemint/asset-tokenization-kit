@@ -65,6 +65,4 @@ These patterns lean on the same invariants highlighted in Chapter 21: pre-transf
 
 ## Gaps & Pending Items
 
-**Customer Quotes**: [PENDING LEGAL APPROVAL] - Actual customer testimonials to be added once cleared by legal/communications team.
-
 **Additional Metrics**: Some quantified benefits have been expanded beyond the source material for clarity. Original Chapter 21 provides high-level outcomes; detailed metrics await production validation.

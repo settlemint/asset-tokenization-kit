@@ -43,6 +43,13 @@ graph TB
 
 ATK is one possible implementation of the SMART Protocol, designed for enterprise-grade asset tokenization with particular choices around access control, proxy patterns, and infrastructure management.
 
+## Identity Backbone Across the Stack
+
+- **OnchainID anchors every wallet to a legal entity.** The system layer keeps the identity registry and recovery flows so investors regain access without breaking governance.
+- **Trusted issuers control attestations.** Only vetted KYC/KYB providers, banks, and auditors can publish claims that the compliance engine accepts, keeping accountability inside the protocol.
+- **Claim topics drive policy.** Assets declare the topics they require—accredited investors, jurisdictional eligibility, institutional status—so compliance modules enforce rules without custom contracts.
+- **Portability is built in.** Identities, claims, and issuer permissions travel with the release when ATK deploys to new networks, ensuring the same policy engine governs pilots, permissioned ledgers, and public venues.
+
 ## Why Financial Institutions Trust the Stack
 
 - **Standards-led design** — ERC‑3643, ERC‑734/735 (identity and claims), and ERC‑20 compatibility ensure the platform aligns with the leading digital asset regulations and market plumbing.
@@ -69,7 +76,7 @@ The foundational layer implementing the SMART Protocol (SettleMint Adaptable Reg
 - **ERC20 Compliance**: Fully implements ERC20 and ERC20Upgradeable, ensuring compatibility with financial tooling and ecosystems
 - **Externally Modular Architecture**: SMART uses composable extensions (e.g., Burnable, Collateral) in a plug-and-play model
 - **Token-Configurable Compliance**: Tokens can be configured to use specific modular rules and parameters without needing custom compliance contracts
-- **Token-Agnostic Identity Verification**: Identity registry remains reusable across tokens and use cases—tokens dynamically pass required claim topics into the verification logic, and transfers only clear when the claim issuer is recognised in the trusted issuer registry
+- **Token-Agnostic Identity Verification**: Identity registry remains reusable across tokens and use cases—tokens dynamically pass required claim topics into the verification logic, and transfers only clear when the claim issuer is recognized in the trusted issuer registry
 - **Authorization Agnostic**: Compatible with any authorization logic via hooks
 - **ERC-2771 Meta-Transaction Support**: Compatible with trusted forwarders for gasless transactions and improved user experience
 - **Upgradeable & Non-Upgradeable Support**: SMART supports both upgradeable (proxy-based) and fixed (non-upgradeable) token deployments—giving issuers full control over token mutability
@@ -133,6 +140,8 @@ Production-ready tokenized financial instruments built on the SMART Protocol usi
 
 ### Available Asset Types
 
+Beyond the stock templates listed below, institutions can extend ATK to new asset classes by composing SMART extensions and compliance modules—custom categories inherit the same governance, identity, and servicing infrastructure. Native blueprints include:
+
 1. **Bond**: Fixed-term debt instruments with maturity and redemption
    - Fixed maturity date and face value
    - Denomination asset backing (collateral)
@@ -152,7 +161,7 @@ Production-ready tokenized financial instruments built on the SMART Protocol usi
    - Subscription and redemption windows
    - Performance tracking
 
-4. **StableCoin**: Fiat-pegged tokens with collateral backing
+4. **Stablecoin**: Fiat-pegged tokens with collateral backing
    - Collateral management system
    - Minting and burning controls
    - Price stability mechanisms
@@ -230,4 +239,3 @@ Every external dependency is monitored from the platform's cockpit, maintaining 
 6. **Flexibility**: Support for multiple asset types and use cases
 
 The architecture ensures that compliance executes in the asset path, not around it—preventing violations rather than detecting them after the fact.
-

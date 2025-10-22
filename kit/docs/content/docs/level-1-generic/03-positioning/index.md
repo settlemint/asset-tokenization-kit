@@ -10,10 +10,8 @@ description: Proof points, metrics, and patterns demonstrating why ATK wins inst
 ## Quick Navigation
 
 - [Success Stories](./success-stories) — Problem → Solution → Results breakdowns from live deployments
-- [Metrics & ROI](./metrics-roi) — KPI catalogue, ROI calculator, and geographic reach dashboard
+- [Metrics & ROI](./metrics-roi) — KPI catalog, ROI calculator, and geographic reach dashboard
 - [Proven Patterns](./reference-architectures) — Blueprint library covering architectures, timelines, and integration playbooks
 
-Use these artefacts together: lead with success stories in executive briefings, quantify impact with the metrics workbook, and de-risk delivery using the proven pattern catalogue.
-
-
+Use these artifacts together: lead with success stories in executive briefings, quantify impact with the metrics workbook, and de-risk delivery using the proven pattern catalog.
 

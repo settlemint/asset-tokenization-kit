@@ -28,7 +28,7 @@ description: How compliance executes in the asset path, not around it
 - **ERC‑734/735 anchor identity.** OnchainID uses these identity and claims registries to make investors, institutions, and issuers portable across deployments while retaining attestation history.
 - **ERC‑20 keeps market access open.** Every regulated asset still speaks the de-facto liquidity standard, ensuring listings, custody, and treasury tooling connect without bespoke adapters.
 
-Every control is traceable to these open standards, giving regulators and procurement teams confidence that ATK aligns with the most widely recognised foundations for digital securities.
+Every control is traceable to these open standards, giving regulators and procurement teams confidence that ATK aligns with the most widely recognized foundations for digital securities.
 
 ## How ATK enforces law inside the transfer path
 
