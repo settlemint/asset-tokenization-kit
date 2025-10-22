@@ -425,6 +425,10 @@ type Identity @entity(immutable: false) {
   identityFactory: IdentityFactory!
   # Account associated with this identity
   account: Account!
+  # ERC-165 interface identifiers supported by the represented contract
+  supportedInterfaces: [Bytes!]!
+  # High-level classification derived from supported interfaces
+  entityType: String!
   # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
   # List of claims associated with this identity
