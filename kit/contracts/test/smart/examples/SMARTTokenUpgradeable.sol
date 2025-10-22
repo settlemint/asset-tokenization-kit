@@ -63,6 +63,9 @@ contract SMARTTokenUpgradeable is
     SMARTHistoricalBalancesUpgradeable,
     SMARTCappedUpgradeable
 {
+    error UnauthorizedRedeemer(address caller, address owner);
+    error InvalidRedemptionAmount();
+
     // Role constants
     /// @notice Role identifier for administrators who can update general token settings like name, symbol, and the
     /// OnchainID contract address.
@@ -220,6 +223,17 @@ contract SMARTTokenUpgradeable is
         onlyAccessManagerRole(MINTER_ROLE)
     {
         _smart_batchMint(_toList, _amounts);
+    }
+
+    /// @notice Redeems `amount` of tokens from `owner`.
+    /// @dev Authorization policy: only the owner may redeem on their behalf.
+    function redeemFor(address owner, uint256 amount) external override returns (bool success) {
+        address caller = _msgSender();
+        if (caller != owner) revert UnauthorizedRedeemer(caller, owner);
+        if (amount == 0) revert InvalidRedemptionAmount();
+
+        _smart_redeemFor(owner, amount);
+        return true;
     }
 
     /// @notice Transfers tokens from the caller to a recipient.

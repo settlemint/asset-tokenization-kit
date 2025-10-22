@@ -623,4 +623,19 @@ contract ATKStableCoinImplementation is
     {
         return ERC2771ContextUpgradeable._contextSuffixLength();
     }
+
+    /// @notice Hook that is called before tokens are redeemed
+    /// @dev Stable coin keeps the override to satisfy multiple inheritance requirements even though
+    ///      the redeemable extension was removed. It simply chains custodian validations.
+    /// @inheritdoc SMARTHooks
+    function _beforeRedeem(
+        address owner,
+        uint256 amount
+    )
+        internal
+        virtual
+        override(SMARTCustodianUpgradeable, SMARTHooks)
+    {
+        super._beforeRedeem(owner, amount);
+    }
 }
