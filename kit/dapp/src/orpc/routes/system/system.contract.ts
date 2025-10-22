@@ -3,6 +3,7 @@ import { accessManagerContract } from "@/orpc/routes/system/access-manager/acces
 import { addonContract } from "@/orpc/routes/system/addon/addon.contract";
 import { claimTopicsContract } from "@/orpc/routes/system/claim-topics/claim-topics.contract";
 import { complianceModuleContract } from "@/orpc/routes/system/compliance-module/compliance-module.contract";
+import { entityContract } from "@/orpc/routes/system/entity/entity.contract";
 import { identityContract } from "@/orpc/routes/system/identity/identity.contract";
 import { SystemCreateSchema } from "@/orpc/routes/system/routes/system.create.schema";
 import { SystemSchema } from "@/orpc/routes/system/routes/system.read.schema";
@@ -120,6 +121,7 @@ export const systemContract = {
   read,
   addon: addonContract,
   identity: identityContract,
+  entity: entityContract,
   compliance: complianceModuleContract,
   claimTopics: claimTopicsContract,
   trustedIssuers: trustedIssuersContract,
