@@ -88,10 +88,7 @@ export default defineConfig({
     devtools(),
     tsConfigPaths(),
     tailwindcss(),
-    tanstackStart({
-      target: "bun",
-      customViteReactPlugin: true,
-    }),
+    tanstackStart(),
     viteReact({
       babel: {
         plugins: [["babel-plugin-react-compiler", {}]],

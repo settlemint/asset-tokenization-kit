@@ -21,7 +21,7 @@ import type { RouterClient } from "@orpc/server";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { createIsomorphicFn } from "@tanstack/react-start";
-import { getHeaders } from "@tanstack/react-start/server";
+import { getRequestHeaders } from "@tanstack/react-start/server";
 import type { router } from "./routes/router";
 
 const logger = createLogger();
@@ -45,7 +45,7 @@ const getORPCClient = createIsomorphicFn()
       url: `http://localhost:3000/api/rpc`,
       headers: () => {
         try {
-          const headers = getHeaders();
+          const headers = getRequestHeaders();
           return normalizeHeaders(headers);
         } catch (error) {
           // Handle cases where there's no HTTP event in AsyncLocalStorage
