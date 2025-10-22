@@ -25,6 +25,7 @@ import { SMARTPausable } from "../../../contracts/smart/extensions/pausable/SMAR
 import { SMARTBurnable } from "../../../contracts/smart/extensions/burnable/SMARTBurnable.sol";
 import { SMARTCustodian } from "../../../contracts/smart/extensions/custodian/SMARTCustodian.sol";
 import { SMARTRedeemable } from "../../../contracts/smart/extensions/redeemable/SMARTRedeemable.sol";
+import { ISMARTRedeemable } from "../../../contracts/smart/extensions/redeemable/ISMARTRedeemable.sol";
 import { SMARTCollateral } from "../../../contracts/smart/extensions/collateral/SMARTCollateral.sol";
 import {
     SMARTHistoricalBalances
@@ -90,9 +91,13 @@ contract SMARTToken is
     /// @dev This can be used to comply with legal orders or to manage accounts in specific situations.
     /// It also allows freezing partial amounts of tokens for an address.
     bytes32 public constant FREEZER_ROLE = keccak256("FREEZER_ROLE");
+
+    error UnauthorizedRedeemer(address caller, address owner);
+    error InvalidRedemptionAmount();
     /// @notice Role identifier for entities authorized to execute forced transfers of tokens between addresses.
     /// @dev This is a powerful role typically used in exceptional circumstances, such as recovering assets or
     /// rectifying errors under strict governance.
+
     bytes32 public constant FORCED_TRANSFER_ROLE = keccak256("FORCED_TRANSFER_ROLE");
     /// @notice Role identifier for entities authorized to perform address recovery for investors.
     /// @dev This allows transferring tokens from a lost wallet to a new wallet, provided proper verification (e.g., via
@@ -176,7 +181,10 @@ contract SMARTToken is
     /// callable by an address with `COMPLIANCE_ADMIN_ROLE`.
     /// @param _module The address of the compliance module to configure.
     /// @param _params The new parameters for the module, encoded as bytes.
-    function setParametersForComplianceModule(address _module, bytes calldata _params)
+    function setParametersForComplianceModule(
+        address _module,
+        bytes calldata _params
+    )
         external
         override
         onlyAccessManagerRole(COMPLIANCE_ADMIN_ROLE)
@@ -199,12 +207,26 @@ contract SMARTToken is
     /// All compliance and verification checks are performed for each recipient before minting.
     /// @param _toList An array of addresses to receive the newly minted tokens.
     /// @param _amounts An array of token quantities to mint, corresponding to each address in `_toList`.
-    function batchMint(address[] calldata _toList, uint256[] calldata _amounts)
+    function batchMint(
+        address[] calldata _toList,
+        uint256[] calldata _amounts
+    )
         external
         override
         onlyAccessManagerRole(MINTER_ROLE)
     {
         _smart_batchMint(_toList, _amounts);
+    }
+
+    /// @notice Redeems `amount` of tokens from `owner`.
+    /// @dev Authorization policy: only the owner may redeem on their behalf.
+    function redeemFor(address owner, uint256 amount) external override returns (bool success) {
+        address caller = _msgSender();
+        if (caller != owner) revert UnauthorizedRedeemer(caller, owner);
+        if (amount == 0) revert InvalidRedemptionAmount();
+
+        _smart_redeemFor(owner, amount);
+        return true;
     }
 
     /// @notice Transfers tokens from the caller's account to a specified recipient address.
@@ -223,7 +245,11 @@ contract SMARTToken is
     /// @param token The address of the ERC20 token contract to recover.
     /// @param to The address to send the recovered tokens to.
     /// @param amount The quantity of tokens to recover and send.
-    function recoverERC20(address token, address to, uint256 amount)
+    function recoverERC20(
+        address token,
+        address to,
+        uint256 amount
+    )
         external
         override
         onlyAccessManagerRole(TOKEN_ADMIN_ROLE)
@@ -236,7 +262,10 @@ contract SMARTToken is
     /// `COMPLIANCE_ADMIN_ROLE`.
     /// @param _module The address of the compliance module to add.
     /// @param _params The initial parameters for the new module, encoded as bytes.
-    function addComplianceModule(address _module, bytes calldata _params)
+    function addComplianceModule(
+        address _module,
+        bytes calldata _params
+    )
         external
         override
         onlyAccessManagerRole(COMPLIANCE_ADMIN_ROLE)
@@ -266,7 +295,10 @@ contract SMARTToken is
     /// @dev Batch version of the `burn` function for efficiency. Only callable by an address with `BURNER_ROLE`.
     /// @param userAddresses An array of addresses from which tokens will be burned.
     /// @param amounts An array of token quantities to burn, corresponding to each address.
-    function batchBurn(address[] calldata userAddresses, uint256[] calldata amounts)
+    function batchBurn(
+        address[] calldata userAddresses,
+        uint256[] calldata amounts
+    )
         external
         override
         onlyAccessManagerRole(BURNER_ROLE)
@@ -286,7 +318,14 @@ contract SMARTToken is
     /// @dev If an address is frozen, it cannot send or receive tokens. Only callable by an address with `FREEZER_ROLE`.
     /// @param userAddress The address to freeze or unfreeze.
     /// @param freeze `true` to freeze the address, `false` to unfreeze it.
-    function setAddressFrozen(address userAddress, bool freeze) external override onlyAccessManagerRole(FREEZER_ROLE) {
+    function setAddressFrozen(
+        address userAddress,
+        bool freeze
+    )
+        external
+        override
+        onlyAccessManagerRole(FREEZER_ROLE)
+    {
         _smart_setAddressFrozen(userAddress, freeze);
     }
 
@@ -294,7 +333,10 @@ contract SMARTToken is
     /// @dev The frozen tokens cannot be transferred until unfrozen. Only callable by an address with `FREEZER_ROLE`.
     /// @param userAddress The address whose tokens are to be partially frozen.
     /// @param amount The quantity of tokens to freeze.
-    function freezePartialTokens(address userAddress, uint256 amount)
+    function freezePartialTokens(
+        address userAddress,
+        uint256 amount
+    )
         external
         override
         onlyAccessManagerRole(FREEZER_ROLE)
@@ -306,7 +348,10 @@ contract SMARTToken is
     /// @dev Allows previously frozen tokens to be transferred again. Only callable by an address with `FREEZER_ROLE`.
     /// @param userAddress The address whose tokens are to be partially unfrozen.
     /// @param amount The quantity of tokens to unfreeze.
-    function unfreezePartialTokens(address userAddress, uint256 amount)
+    function unfreezePartialTokens(
+        address userAddress,
+        uint256 amount
+    )
         external
         override
         onlyAccessManagerRole(FREEZER_ROLE)
@@ -319,7 +364,10 @@ contract SMARTToken is
     /// @param userAddresses An array of addresses to freeze or unfreeze.
     /// @param freeze An array of boolean values indicating whether to freeze (`true`) or unfreeze (`false`) each
     /// corresponding address.
-    function batchSetAddressFrozen(address[] calldata userAddresses, bool[] calldata freeze)
+    function batchSetAddressFrozen(
+        address[] calldata userAddresses,
+        bool[] calldata freeze
+    )
         external
         override
         onlyAccessManagerRole(FREEZER_ROLE)
@@ -331,7 +379,10 @@ contract SMARTToken is
     /// @dev Batch version of `freezePartialTokens`. Only callable by an address with `FREEZER_ROLE`.
     /// @param userAddresses An array of addresses whose tokens are to be partially frozen.
     /// @param amounts An array of token quantities to freeze for each corresponding address.
-    function batchFreezePartialTokens(address[] calldata userAddresses, uint256[] calldata amounts)
+    function batchFreezePartialTokens(
+        address[] calldata userAddresses,
+        uint256[] calldata amounts
+    )
         external
         override
         onlyAccessManagerRole(FREEZER_ROLE)
@@ -343,7 +394,10 @@ contract SMARTToken is
     /// @dev Batch version of `unfreezePartialTokens`. Only callable by an address with `FREEZER_ROLE`.
     /// @param userAddresses An array of addresses whose tokens are to be partially unfrozen.
     /// @param amounts An array of token quantities to unfreeze for each corresponding address.
-    function batchUnfreezePartialTokens(address[] calldata userAddresses, uint256[] calldata amounts)
+    function batchUnfreezePartialTokens(
+        address[] calldata userAddresses,
+        uint256[] calldata amounts
+    )
         external
         override
         onlyAccessManagerRole(FREEZER_ROLE)
@@ -358,7 +412,11 @@ contract SMARTToken is
     /// @param to The address to which tokens will be transferred.
     /// @param amount The quantity of tokens to transfer.
     /// @return A boolean indicating whether the forced transfer was successful.
-    function forcedTransfer(address from, address to, uint256 amount)
+    function forcedTransfer(
+        address from,
+        address to,
+        uint256 amount
+    )
         external
         override
         onlyAccessManagerRole(FORCED_TRANSFER_ROLE)
@@ -372,7 +430,11 @@ contract SMARTToken is
     /// @param fromList An array of addresses from which tokens will be transferred.
     /// @param toList An array of addresses to which tokens will be transferred.
     /// @param amounts An array of token quantities to transfer for each corresponding pair.
-    function batchForcedTransfer(address[] calldata fromList, address[] calldata toList, uint256[] calldata amounts)
+    function batchForcedTransfer(
+        address[] calldata fromList,
+        address[] calldata toList,
+        uint256[] calldata amounts
+    )
         external
         override
         onlyAccessManagerRole(FORCED_TRANSFER_ROLE)
@@ -385,7 +447,10 @@ contract SMARTToken is
     /// provided their identity is verified. Only callable by an address with `RECOVERY_ROLE`.
     /// @param lostWallet The address of the compromised or lost wallet.
     /// @param newWallet The address of the new wallet to which tokens will be transferred.
-    function forcedRecoverTokens(address lostWallet, address newWallet)
+    function forcedRecoverTokens(
+        address lostWallet,
+        address newWallet
+    )
         external
         override
         onlyAccessManagerRole(RECOVERY_ROLE)
@@ -442,7 +507,10 @@ contract SMARTToken is
     /// status.
     /// @param to The address that will receive the minted tokens.
     /// @param amount The amount of tokens to be minted.
-    function _beforeMint(address to, uint256 amount)
+    function _beforeMint(
+        address to,
+        uint256 amount
+    )
         internal
         virtual
         override(SMART, SMARTCollateral, SMARTCustodian, SMARTCapped, SMARTHooks)
@@ -457,7 +525,11 @@ contract SMARTToken is
     /// @param from The address sending tokens.
     /// @param to The address receiving tokens.
     /// @param amount The amount of tokens being transferred.
-    function _beforeTransfer(address from, address to, uint256 amount)
+    function _beforeTransfer(
+        address from,
+        address to,
+        uint256 amount
+    )
         internal
         virtual
         override(SMART, SMARTCustodian, SMARTHooks)
@@ -487,7 +559,10 @@ contract SMARTToken is
     /// instance, to record balance snapshots.
     /// @param to The address that received the minted tokens.
     /// @param amount The amount of tokens that were minted.
-    function _afterMint(address to, uint256 amount)
+    function _afterMint(
+        address to,
+        uint256 amount
+    )
         internal
         virtual
         override(SMART, SMARTHistoricalBalances, SMARTHooks)
@@ -500,7 +575,11 @@ contract SMARTToken is
     /// @param from The address that sent tokens.
     /// @param to The address that received tokens.
     /// @param amount The amount of tokens that were transferred.
-    function _afterTransfer(address from, address to, uint256 amount)
+    function _afterTransfer(
+        address from,
+        address to,
+        uint256 amount
+    )
         internal
         virtual
         override(SMART, SMARTHistoricalBalances, SMARTHooks)
@@ -512,7 +591,10 @@ contract SMARTToken is
     /// @dev Allows extensions (like SMARTHistoricalBalances) to update their state after tokens have been destroyed.
     /// @param from The address whose tokens were burned.
     /// @param amount The amount of tokens that were burned.
-    function _afterBurn(address from, uint256 amount)
+    function _afterBurn(
+        address from,
+        uint256 amount
+    )
         internal
         virtual
         override(SMART, SMARTHistoricalBalances, SMARTHooks)
@@ -521,7 +603,10 @@ contract SMARTToken is
     }
 
     /// @inheritdoc SMARTHooks
-    function _afterRecoverTokens(address lostWallet, address newWallet)
+    function _afterRecoverTokens(
+        address lostWallet,
+        address newWallet
+    )
         internal
         virtual
         override(SMARTCustodian, SMARTHooks)

@@ -5,40 +5,24 @@ import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
 import { read } from "../../token.read";
 
-const TOKEN_REDEEM_MUTATION = portalGraphql(`
-  mutation TokenRedeem(
+const TOKEN_REDEEM_FOR_MUTATION = portalGraphql(`
+  mutation TokenRedeemFor(
     $challengeId: String
     $challengeResponse: String
     $address: String!
     $from: String!
+    $owner: String!
     $amount: String!
   ) {
-    redeem: ISMARTRedeemableRedeem(
+    redeemFor: ISMARTRedeemableRedeemFor(
       address: $address
       from: $from
       challengeId: $challengeId
       challengeResponse: $challengeResponse
       input: {
+        owner: $owner
         amount: $amount
       }
-    ) {
-      transactionHash
-    }
-  }
-`);
-
-const TOKEN_REDEEM_ALL_MUTATION = portalGraphql(`
-  mutation TokenRedeemAll(
-    $challengeId: String
-    $challengeResponse: String
-    $address: String!
-    $from: String!
-  ) {
-    redeemAll: ISMARTRedeemableRedeemAll(
-      address: $address
-      from: $from
-      challengeId: $challengeId
-      challengeResponse: $challengeResponse
     ) {
       transactionHash
     }
@@ -53,45 +37,33 @@ export const redeem = tokenRouter.token.redeem
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const { contract, walletVerification, amount, redeemAll } = input;
+    const { contract, walletVerification, amount, owner } = input;
     const { auth } = context;
 
-    // Validate input parameters
-    if (!redeemAll && !amount) {
+    if (!amount) {
       throw errors.INPUT_VALIDATION_FAILED({
-        message: "Amount or redeem all required",
+        message: "Amount required",
         data: { errors: ["Invalid redeem parameters"] },
       });
     }
 
     const sender = auth.user;
-    // Choose mutation based on whether we're redeeming all or a specific amount
-    await (redeemAll
-      ? context.portalClient.mutate(
-          TOKEN_REDEEM_ALL_MUTATION,
-          {
-            address: contract,
-            from: sender.wallet,
-          },
-          {
-            sender: sender,
-            code: walletVerification.secretVerificationCode,
-            type: walletVerification.verificationType,
-          }
-        )
-      : context.portalClient.mutate(
-          TOKEN_REDEEM_MUTATION,
-          {
-            address: contract,
-            from: sender.wallet,
-            amount: amount?.toString() ?? "",
-          },
-          {
-            sender: sender,
-            code: walletVerification.secretVerificationCode,
-            type: walletVerification.verificationType,
-          }
-        ));
+    const ownerAddress = owner ?? sender.wallet;
+
+    await context.portalClient.mutate(
+      TOKEN_REDEEM_FOR_MUTATION,
+      {
+        address: contract,
+        from: sender.wallet,
+        owner: ownerAddress,
+        amount: amount.toString(),
+      },
+      {
+        sender,
+        code: walletVerification.secretVerificationCode,
+        type: walletVerification.verificationType,
+      }
+    );
 
     return await call(
       read,

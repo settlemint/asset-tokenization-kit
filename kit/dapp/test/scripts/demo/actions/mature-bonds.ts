@@ -29,14 +29,17 @@ for (const bond of createdBonds) {
   const bondData = await adminClient.token.read({ tokenAddress: bond.id });
   if (bondData.bond?.isMatured) {
     // Redeem the bond
-    await issuerClient.token.redeem({
-      contract: bond.id,
-      redeemAll: true,
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
-      },
-    });
+    const totalSupply = bondData.totalSupply?.[0] ?? 0n;
+    if (totalSupply > 0n) {
+      await issuerClient.token.redeem({
+        contract: bond.id,
+        amount: totalSupply,
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+      });
+    }
     continue;
   }
   await increaseAnvilTimeForDate(bondData.bond?.maturityDate);

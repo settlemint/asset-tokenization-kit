@@ -317,11 +317,11 @@ contract SMARTCrossExtensionTest is Test {
             abi.encodeWithSignature("ERC20InsufficientBalance(address,uint256,uint256)", user1, 600e18, 700e18)
         );
         vm.prank(user1);
-        crossExtToken.redeem(700e18);
+        crossExtToken.redeemFor(user1, 700e18);
 
         // Can redeem up to unfrozen amount
         vm.prank(user1);
-        crossExtToken.redeem(600e18);
+        crossExtToken.redeemFor(user1, 600e18);
         assertEq(crossExtToken.balanceOf(user1), 400e18);
         assertEq(crossExtToken.getFrozenTokens(user1), 400e18);
     }
@@ -388,7 +388,7 @@ contract SMARTCrossExtensionTest is Test {
 
         vm.prank(user1);
         vm.expectRevert(abi.encodeWithSignature("TokenPaused()"));
-        crossExtToken.redeem(100e18);
+        crossExtToken.redeemFor(user1, 100e18);
 
         // Admin operations are also blocked when paused
         vm.prank(owner);
@@ -594,7 +594,7 @@ contract SMARTCrossExtensionTest is Test {
             } else if (operation == 7) {
                 // Redeem
                 vm.prank(user1);
-                try crossExtToken.redeem(100e18) { } catch { }
+                try crossExtToken.redeemFor(user1, 100e18) { } catch { }
             } else if (operation == 8) {
                 // Forced transfer
                 vm.prank(owner);

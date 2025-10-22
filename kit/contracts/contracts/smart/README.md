@@ -247,7 +247,7 @@ Each extension adds specific functionality through well-defined interfaces:
 4. **Redeemable Extension** (`extensions/redeemable/`)
    - **Purpose**: Users can burn their own tokens (self-redemption)
    - **Use Cases**: Token buybacks, voluntary redemptions, exit mechanisms
-   - **Key Functions**: `redeem(uint256 amount)`
+   - **Key Functions**: `redeemFor(address owner, uint256 amount)`
    - **Access Control**: Token holders can redeem their own tokens
 
 5. **Yield Extension** (`extensions/yield/`)
