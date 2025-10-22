@@ -32,7 +32,6 @@ import { SMARTCollateralUpgradeable } from "../../smart/extensions/collateral/SM
 import {
     SMARTTokenAccessManagedUpgradeable
 } from "../../smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
-import { SMARTRedeemableUpgradeable } from "../../smart/extensions/redeemable/SMARTRedeemableUpgradeable.sol";
 
 /// @title ATKStableCoin
 /// @author SettleMint
@@ -47,7 +46,6 @@ contract ATKStableCoinImplementation is
     SMARTUpgradeable,
     SMARTTokenAccessManagedUpgradeable,
     SMARTCollateralUpgradeable,
-    SMARTRedeemableUpgradeable,
     SMARTCustodianUpgradeable,
     SMARTPausableUpgradeable,
     SMARTBurnableUpgradeable,
@@ -89,7 +87,6 @@ contract ATKStableCoinImplementation is
         __SMARTPausable_init(true);
         __SMARTTokenAccessManaged_init(accessManager_);
         __SMARTCollateral_init(collateralTopicId_);
-        __SMARTRedeemable_init();
 
         _registerInterface(type(IATKStableCoin).interfaceId);
         _registerInterface(type(IContractWithIdentity).interfaceId);
@@ -508,23 +505,6 @@ contract ATKStableCoinImplementation is
         override(SMARTCustodianUpgradeable, SMARTHooks)
     {
         super._beforeBurn(from, amount);
-    }
-
-    /// @notice Hook that is called before tokens are redeemed
-    /// @dev This hook chains validation logic from multiple extensions:
-    ///      SMARTCustodianUpgradeable: Validates frozen status and partial freezes
-    /// @param owner The address that owns the tokens being redeemed
-    /// @param amount The amount of tokens to be redeemed
-    /// @inheritdoc SMARTHooks
-    function _beforeRedeem(
-        address owner,
-        uint256 amount
-    )
-        internal
-        virtual
-        override(SMARTCustodianUpgradeable, SMARTHooks)
-    {
-        super._beforeRedeem(owner, amount);
     }
 
     /// @notice Hook that is called after tokens are minted

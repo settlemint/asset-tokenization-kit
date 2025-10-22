@@ -9,19 +9,11 @@ import { ISMARTCustodian } from "../../smart/extensions/custodian/ISMARTCustodia
 import { ISMARTPausable } from "../../smart/extensions/pausable/ISMARTPausable.sol";
 import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.sol";
 import { ISMARTCollateral } from "../../smart/extensions/collateral/ISMARTCollateral.sol";
-import { ISMARTRedeemable } from "../../smart/extensions/redeemable/ISMARTRedeemable.sol";
 
 /// @title Interface for a ATK Stable Coin
 /// @author SettleMint
 /// @notice Defines the core functionality and extensions for a ATK Stable Coin.
-interface IATKStableCoin is
-    IATKToken,
-    ISMARTCollateral,
-    ISMARTRedeemable,
-    ISMARTCustodian,
-    ISMARTPausable,
-    ISMARTBurnable
-{
+interface IATKStableCoin is IATKToken, ISMARTCollateral, ISMARTCustodian, ISMARTPausable, ISMARTBurnable {
     /// @notice Initializes the ATK Stable Coin contract.
     /// @param name_ The name of the stable coin.
     /// @param symbol_ The symbol of the stable coin.
