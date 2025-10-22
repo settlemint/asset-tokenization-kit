@@ -172,6 +172,7 @@ interface InMemoryAsset {
  * Result of static asset preloading process
  */
 interface PreloadResult {
+  // eslint-disable-next-line no-unused-vars
   routes: Record<string, (req: Request) => Response | Promise<Response>>;
   loaded: AssetMetadata[];
   skipped: AssetMetadata[];
@@ -229,6 +230,7 @@ function compressDataIfAppropriate(
  */
 function createResponseHandler(
   asset: InMemoryAsset
+  // eslint-disable-next-line no-unused-vars
 ): (req: Request) => Response {
   return (req: Request) => {
     const headers: Record<string, string> = {
@@ -275,7 +277,8 @@ function createCompositeGlobPattern(): Bun.Glob {
     .map((s) => s.trim())
     .filter(Boolean);
   if (raw.length === 0) return new Bun.Glob("**/*");
-  if (raw.length === 1) return new Bun.Glob(raw[0]);
+  if (raw.length === 1 && typeof raw[0] === "string")
+    return new Bun.Glob(raw[0]);
   return new Bun.Glob(`{${raw.join(",")}}`);
 }
 
@@ -286,6 +289,7 @@ function createCompositeGlobPattern(): Bun.Glob {
 async function initializeStaticRoutes(
   clientDirectory: string
 ): Promise<PreloadResult> {
+  // eslint-disable-next-line no-unused-vars
   const routes: Record<string, (req: Request) => Response | Promise<Response>> =
     {};
   const loaded: AssetMetadata[] = [];
@@ -505,10 +509,11 @@ async function initializeServer() {
   log.header("Starting Production Server");
 
   // Load TanStack Start server handler
+  // eslint-disable-next-line no-unused-vars
   let handler: { fetch: (request: Request) => Response | Promise<Response> };
   try {
     const serverModule = (await import(SERVER_ENTRY_POINT)) as {
-      default: { fetch: (request: Request) => Response | Promise<Response> };
+      default: typeof handler;
     };
     handler = serverModule.default;
     log.success("TanStack Start application handler initialized");
