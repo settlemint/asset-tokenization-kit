@@ -29,10 +29,6 @@ abstract contract SMARTRedeemableUpgradeable is
         __SMARTRedeemable_init_unchained();
     }
 
-    /// @notice Executes the token burn for a redemption in upgradeable contexts.
-    /// @dev Delegates to the ERC20Upgradeable `_burn`. Override to extend behaviour.
-    /// @param owner The address whose balance should be decreased.
-    /// @param amount The amount of tokens to burn.
     function __redeemable_redeem(address owner, uint256 amount) internal virtual override {
         _burn(owner, amount);
     }
