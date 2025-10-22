@@ -4,6 +4,7 @@ description: Deploy on any EVM network without losing compliance guarantees
 ---
 
 <!-- SOURCE: Book of DALP Part III/Chapter 17 — Multi‑Chain Strategy -->
+<!-- SOURCE: Book of DALP Part II/Chapter 1 — Issuance & Lifecycle, from Zero to Regulated Asset.md -->
 <!-- SOURCE: Book of DALP Part II/Chapter 5 — Deployment & White‑Label, Your Brand, Your Environment.md -->
 <!-- SOURCE: Book of DALP Part II/Chapter 7 — User & Developer Experience (UXDX) Speed Without Chaos.md -->
 <!-- SOURCE: kit/charts/atk/README.md -->
@@ -12,58 +13,54 @@ description: Deploy on any EVM network without losing compliance guarantees
 
 # Chain-Agnostic Deployment
 
-**“Multi-chain” means nothing if compliance falls off at the bridge. ATK only promotes assets to networks that can prove they uphold the same identity, policy, and audit guarantees as the source chain.**
+**Deploy once, run anywhere** ATK’s release process packages the same SMART contracts, identity services, compliance modules, and observability stack so they can be promoted from pilot sandboxes to production-grade EVM networks without rewriting code or rebuilding infrastructure. 
 
-## Why compliance-first multi-chain is mandatory
+## Deployment targets covered out of the box
 
-- **Regulators scrutinize continuity.** If a bridge mints tokens on a network without trusted issuers or rule enforcement, the chain of custody breaks—and so does the license to operate.
-- **Operations need deterministic playbooks.** Deployment cannot depend on bespoke scripts per network; infrastructure teams expect charts, values files, and CI pipelines that look identical everywhere.
-- **Brand and UX must follow.** Investors and issuers interact with a single portal. Moving chains cannot require separate front-ends or duplicated onboarding flows.
+- **Public EVM networks.** Ethereum Mainnet and EVM layer-2 ecosystems such as Polygon are first-class targets for distribution scale and integrations. 
+- **Permissioned EVM ledgers.** Hyperledger Besu, Quorum, and equivalent consortium chains run the same package for private membership scenarios that still require regulator audit hooks. 
 
-## Deployment models packaged with ATK
 
-| Model | What ships | Primary use case | Control surface |
-|-------|------------|------------------|-----------------|
-| **Docker Compose** (`docker-compose.yml`) | Full stack in containers: Besu node, Blockscout, Hasura, ORPC services, dApp | Developer sandboxes, QA environments, demos | `.env` + Compose overrides |
-| **Helm charts** (`kit/charts/atk`) | Modular Kubernetes deployment with namespaces, ingress, MinIO, observability | Production BYOC or on-prem clusters | `values*.yaml`, namespaces, network policies |
-| **SettleMint Console** (managed) | Hosted instance of the same stack with tenant automation and export tooling | Institutions that want fully managed ATK now with option to migrate later | Console UI + API, still backed by Helm artefacts |
+## What “chain-agnostic” means in practice
 
-Each model shares the same contracts, schema, ORPC APIs, and CI pipeline (`bun run ci`), so migrating between them is a configuration change—not a rewrite.
+- **Standardised Solidity surface.** Contracts target Solidity 0.8.x with OpenZeppelin upgrade patterns, so the bytecode is portable across public and permissioned EVMs without edits. 
+- **Single release artifact.** Docker Compose, Helm charts, and managed-console pipelines all derive from the same tag, letting teams switch settlement networks by swapping connection details—not regenerating stacks. 
+- **Identity and compliance continuity.** OnchainID registries, claim topics, and compliance modules travel with the release. If a destination cannot host them or emit the required telemetry, promotion is blocked. 
+- **Consistent user experience.** The white-label Next.js portal and ORPC/GraphQL APIs ship unchanged, so issuers and investors keep the same workflows regardless of where the contracts settle. 
 
-## Compliance-first bridge pattern
+## Delivery footprints provided with ATK
 
-ATK treats cross-network movement as a governance workflow, not a convenience script:
+| Footprint | What’s included | Primary use | Control surface | Source |
+|-----------|-----------------|-------------|-----------------|--------|
+| **Docker Compose** | Local Besu node, ORPC services, Hasura, Blockscout, dApp | Developer sandboxes, QA, demos | `.env` + Compose overrides | `docker-compose.yml` |
+| **Helm charts** | Modular Kubernetes deployment with namespaces, ingress, MinIO, observability, tx signer | Self-managed production clusters | `kit/charts/atk` values files | `kit/charts/atk/README.md` |
+| **SettleMint Console** | Hosted implementation of the same stack with tenancy automation | Fully managed deployments with export path | Console UI & API (backed by Helm artifacts) | `kit/charts/atk/README.md`; README.md |
 
-1. **Lock source token** once all policy checks pass.
-2. **Run destination readiness tests**—the network must expose the identity registry, compliance modules, and observability hooks required to mirror policy.
-3. **Mint mirror token** on the target chain only after proving whitelists, claim topics, and module parameters load successfully.
-4. **Emit evidence** packaging both sides of the transfer so auditors see one lifecycle record.
+Each footprint runs through `bun run ci`, which compiles contracts, generates types, runs linting/tests, and validates code generation before artifacts move between environments. (Source: README.md)
 
-If any prerequisite fails—missing compliance modules, unavailable identity provider, or unsupported emergency controls—the mint aborts and the source token unlocks automatically. **No compliance, no bridge.**
+## Governed bridge process
 
-## Network coverage
+ATK treats cross-network promotion as a compliance workflow, not a convenience script. (Source: Book of DALP Part III/Chapter 17)
 
-- **EVM-first footprint.** ATK deploys to Ethereum Mainnet, Polygon, Hyperledger Besu, Quorum, and any institutionally-approved EVM network that can run the SMART contracts and supporting services (Book of DALP, Multi-Chain Strategy).
-- **Selection criteria.** Institutions weigh investor distribution, transaction fees, legal recognition, and risk management posture before authorizing a network. ATK’s artifacts keep these evaluations technical, not political.
-- **Identity continuity.** OnchainID identities, claim topics, trusted issuers, and freeze semantics must resolve identically on every approved network. Compliance modules rely on those artifacts, so a token cannot exist where the registry does not.
+1. **Lock the source token** after pre-transfer policy checks succeed.
+2. **Validate the destination environment**—identity registry, trusted issuers, compliance modules, and monitoring integrations must load successfully.
+3. **Mint the mirror token** only when enforcement semantics match the source chain.
+4. **Emit an evidence bundle** that links both sides of the move for auditors.
 
-## White-label and experience parity
+If any control fails (missing module, incomplete identity mapping, unavailable freeze semantics), the bridge aborts and the source token unlocks automatically. No compliance parity, no bridge.
 
-- **One branded surface.** The Next.js application (`kit/dapp`) exposes issuer, investor, and admin portals with theming tokens so every environment feels like the institution’s own product.
-- **Consistent APIs.** ORPC procedures and Hasura GraphQL endpoints expose identical interfaces regardless of network, letting downstream systems (ERP, CRM, reporting) operate without custom branches.
-- **Operational telemetry.** Helm charts embed Prometheus, Grafana, Loki, and alerting so runbooks look the same whether workloads run on cloud clusters, sovereign deployments, or the managed console.
+## Operational guardrails that travel with the stack
 
-## Operational readiness baked in
+- **Identity continuity.** Wallets map to the same legal person on every network via carried claims or bound identity systems. Transfers halt if the subject cannot be resolved. 
+- **Emergency tooling.** Freeze, force-transfer, and pause semantics mirror across chains so governance interventions work everywhere the asset lives. 
+- **Observability and audit trails.** Prometheus, Grafana, Loki, and Blockscout registries deploy alongside the contracts, keeping telemetry and evidence collections consistent. 
+- **White-label continuity.** The branded issuer/investor/admin portals wake up with the same theming and navigation in each environment, minimizing change management for clients.
 
-- **CI as deployment gate.** `bun run ci` compiles contracts, generates types, runs lint/tests, and validates codegen before artifacts ship to any environment.
-- **Secrets and tenancy.** Helm values and Compose overrides isolate MinIO buckets, Postgres databases, and Besu nodes per tenant; the managed console enforces the same isolation boundaries.
-- **Rollback discipline.** Versioned Helm releases, container tags, and policy checkpoints make rollbacks a single command without leaving orphaned assets on any chain.
+## Executive takeaways
 
-## Business outcomes
+- **Regulatory continuity:** Assets only land on chains that prove they can enforce the same rules and produce the same evidence as the origin network.
+- **Operational speed:** A single release and CI pipeline covers sandboxes, private pilots, and public market launches.
+- **Experience control:** Brand, workflows, and APIs remain identical as assets progress from private ledgers to public venues.
+- **Cost discipline:** Institutions reuse the same infrastructure-as-code footprint rather than funding bespoke builds per jurisdiction.
 
-- **Regulatory continuity**—compliance, identity, and audit evidence remain intact across networks.
-- **Speed to market**—move from sandbox to production chains without rewriting deployment automation.
-- **Brand control**—white-label experiences follow the asset wherever it trades.
-- **Cost discipline**—reuse the same infrastructure-as-code footprint instead of funding bespoke builds per jurisdiction.
-
-**ATK’s multi-chain strategy is simple: deploy anywhere that can prove compliance parity. The moment a network cannot, the bridge stays closed.**
+**Chain-agnostic isn’t “copy contracts everywhere.” It’s one release, one governance model, and compliant lifecycle control on every network the institution trusts.** 
