@@ -77,7 +77,7 @@ The foundational layer implementing the SMART Protocol (SettleMint Adaptable Reg
 - **Built-in ERC-165 Interface Detection**: Every SMART token implements ERC-165, allowing external systems to query which capabilities a token supports—improving composability and tooling
 - **Two-Step Identity Recovery Flow**: If a user loses access to their wallet, recovery happens in two stages—offering secure and structured recovery
 
-**Why First**: Everything else builds on this foundation. It provides the basic token functionality, compliance framework, and extension system that all other layers depend on.
+**Layer 1 sets the protocol bedrock.** It defines transfer logic, embeds compliance enforcement, and exposes the extension surface that every other layer consumes.
 
 ## Layer 2: ATK System Infrastructure
 
@@ -123,7 +123,7 @@ The ATK System implements 19 distinct roles for granular access control:
 - **IDENTITY_MANAGER_ROLE**: Manage identity registrations
 - **TOKEN_MANAGER_ROLE**: Token-specific administration
 
-**Why Second**: The system layer manages the infrastructure that assets need to operate. It provides the identity management, compliance orchestration, and factory systems that assets use.
+**Layer 2 runs the control plane.** Identity services, compliance orchestration, and factory registries live here so assets inherit consistent governance.
 
 ## Layer 3: Asset Implementations
 
@@ -164,7 +164,7 @@ Production-ready tokenized financial instruments built on the SMART Protocol usi
    - Withdrawal restrictions
    - Yield generation
 
-**Why Third**: Assets are built on top of the SMART Protocol foundation and use the system infrastructure. They represent the actual tokenized financial instruments that users interact with.
+**Layer 3 publishes investable products.** Each template composes the lower layers into regulated instruments that product teams can launch without rebuilding primitives.
 
 ## Layer 4: Operational Addons
 
@@ -195,7 +195,7 @@ Additional functionality that extends the ATK platform with operational capabili
   - Proportional payments
   - Reinvestment options
 
-**Why Fourth**: Addons provide operational tools that work with assets and the system layer to enable advanced use cases like airdrops, yield distribution, and cross-chain settlements.
+**Layer 4 adds operational breadth.** Addons coordinate yield events, settlement tooling, and treasury workflows around the core assets to support advanced scenarios.
 
 ## Data Flow Through the Layers
 
@@ -230,5 +230,4 @@ Every external dependency is monitored from the platform's cockpit, maintaining 
 6. **Flexibility**: Support for multiple asset types and use cases
 
 The architecture ensures that compliance executes in the asset path, not around it—preventing violations rather than detecting them after the fact.
-
 
