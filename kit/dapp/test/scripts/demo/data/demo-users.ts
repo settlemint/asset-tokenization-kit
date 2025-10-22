@@ -37,3 +37,10 @@ export const JAPANESE_INVESTOR: User = {
   firstName: "Japanese",
   lastName: "Investor",
 };
+
+export const US_INVESTOR: User = {
+  ...DEFAULT_INVESTOR,
+  email: "us.investor@settlemint.com",
+  firstName: "US",
+  lastName: "Investor",
+};

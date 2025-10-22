@@ -61,6 +61,10 @@ const COMPLIANCE_TYPE_TO_IMPLEMENTATION_NAME = {
   AddressBlockListComplianceModule: "sanctionsModuleFactory",
   IdentityBlockListComplianceModule: "sanctionsModuleFactory",
   IdentityAllowListComplianceModule: "sanctionsModuleFactory",
+  TokenSupplyLimitComplianceModule: "tokenSupplyLimitModuleFactory",
+  InvestorCountComplianceModule: "investorCountModuleFactory",
+  TimeLockComplianceModule: "timeLockModuleFactory",
+  TransferApprovalComplianceModule: "transferApprovalModuleFactory",
 };
 
 /**

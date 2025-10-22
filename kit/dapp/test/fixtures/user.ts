@@ -273,7 +273,7 @@ export const setupUser = (user: User) =>
       }
     },
     3,
-    30_000 // Most likely we're hitting the rate limits of better auth, wait long enough
+    10_000 // Most likely we're hitting the rate limits of better auth, wait 10s for it to reset
   );
 
 export async function getUserData(user: User) {
