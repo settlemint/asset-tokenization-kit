@@ -3,7 +3,6 @@ title: Level 1 Overview
 description: Map of every executive and business document in the Asset Tokenization Kit
 ---
 
-<!-- SOURCE: WINNER-PLAN-FINAL.MD -->
 <!-- EXTRACTION: Level 1 structure summary for executive documentation -->
 <!-- STATUS: CREATED -->
 

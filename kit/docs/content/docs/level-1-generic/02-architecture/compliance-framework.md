@@ -22,6 +22,14 @@ description: How compliance executes in the asset path, not around it
 - **Auditors reject unverifiable controls.** Without machine-readable evidence tied to every transfer, regulators cannot rely on the platform’s records.
 - **Policy drift invites enforcement.** If claims, whitelists, and rules live in different systems, someone will forget to update one of them—and the first mistake becomes a reportable incident.
 
+## Standards-backed controls
+
+- **ERC‑3643 governs the asset path.** The SMART Protocol implements the permissioned security token standard end to end, so compliance rules travel with the instrument rather than the venue.
+- **ERC‑734/735 anchor identity.** OnchainID uses these identity and claims registries to make investors, institutions, and issuers portable across deployments while retaining attestation history.
+- **ERC‑20 keeps market access open.** Every regulated asset still speaks the de-facto liquidity standard, ensuring listings, custody, and treasury tooling connect without bespoke adapters.
+
+Every control is traceable to these open standards, giving regulators and procurement teams confidence that ATK aligns with the most widely recognised foundations for digital securities.
+
 ## How ATK enforces law inside the transfer path
 
 | Requirement | Implementation | Evidence | Outcome |
@@ -37,6 +45,15 @@ description: How compliance executes in the asset path, not around it
 - **Trusted issuers registry.** Only approved issuers can attach claims; claim topics define what a “verified investor”, “eligible jurisdiction”, or “accredited institution” means.
 - **Separation of duties.** `SYSTEM_MANAGER_ROLE`, `IDENTITY_MANAGER_ROLE`, and `CLAIM_POLICY_MANAGER_ROLE` enforce that no single operator can create, approve, and distribute claims.
 
+### Claims, topics, and trusted issuers
+
+- **Claims are attestations.** Think “Alice passed KYC on 7 March” or “This token is backed by EUR 1M.” Each claim is a signed statement anchored to an identity.
+- **Topics define meaning.** A topic such as `knowYourCustomer` or `eligibleJurisdiction` tells the system which regulatory obligation the claim satisfies.
+- **Trusted issuers provide authority.** Only auditors, banks, or service providers placed on the trusted issuers registry can assert specific topics, so the platform knows whose word to accept.
+- **Composite policies stay readable.** Compliance officers work with sentence-level rules—“only investors with accreditedInvestor and euroAreaResidence claims may subscribe”—instead of smart contract code.
+
+This structure mirrors how capital markets operate today: regulated authorities issue credentials, issuers validate them, and transfers clear only when the right attestations are present.
+
 ### Programmable policy modules
 
 - **Core controls ship ready-made.** Country allow/block lists, investor concentration caps, time-locks, supply limits, and transfer approval workflows are delivered as stateless modules.
@@ -44,6 +61,8 @@ description: How compliance executes in the asset path, not around it
 - **Composable logic.** Assets can combine multiple modules, with precedence rules ensuring hard constraints (sanctions, identity) always override softer limits (per-period thresholds).
 
 ### Deterministic execution path
+
+The code path below illustrates how compliance checks run before balances change; it is included for teams who want to inspect the enforcement hook that regulators reviewed.
 
 ```solidity
 function _beforeTransfer(address from, address to, uint256 amount)
