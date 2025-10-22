@@ -44,6 +44,26 @@
           "MiCA / EU (allowing all contracts like tokens, vaults, ...): CONTRACT OR ((KYC AND AML) AND (PROFESSIONAL_INVESTOR OR ACCREDITED_INVESTOR))"
         ]
       }
+    },
+    "TokenSupplyLimitComplianceModule": {
+      "description": "Enforce a maximum token supply limit. Helps comply with jurisdictional caps.",
+      "shortDescription": "Enforce a maximum token supply limit",
+      "title": "Token supply limit"
+    },
+    "InvestorCountComplianceModule": {
+      "description": "Enforce a maximum investor count. Helps comply with jurisdictional caps.",
+      "shortDescription": "Enforce a maximum investor count",
+      "title": "Investor count"
+    },
+    "TimeLockComplianceModule": {
+      "description": "Enforce a time lock on the token. Helps comply with jurisdictional caps.",
+      "shortDescription": "Enforce a time lock on the token",
+      "title": "Time lock"
+    },
+    "TransferApprovalComplianceModule": {
+      "description": "Enforce a transfer approval. Helps comply with jurisdictional caps.",
+      "shortDescription": "Enforce a transfer approval",
+      "title": "Transfer approval"
     }
   },
   "title": "Compliance",
