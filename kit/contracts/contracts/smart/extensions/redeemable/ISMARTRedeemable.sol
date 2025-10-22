@@ -6,10 +6,10 @@ pragma solidity ^0.8.28;
 ///         take full responsibility for prerequisite checks, authorization, burning, payouts, and event emission.
 interface ISMARTRedeemable {
     /// @notice Emitted when tokens are redeemed from `owner` and burned.
+    /// @param sender The message sender that initiated the redemption.
     /// @param owner The holder whose balance decreased.
-    /// @param caller The message sender that initiated the redemption.
     /// @param amount The amount of tokens redeemed.
-    event Redeemed(address indexed owner, address indexed caller, uint256 amount);
+    event Redeemed(address indexed sender, address indexed owner, uint256 amount);
 
     /// @notice Redeem `amount` of tokens from `owner`.
     /// @dev Implementations must enforce access policy, run hooks, burn tokens, route payouts, and emit the event.
