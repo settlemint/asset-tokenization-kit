@@ -257,7 +257,11 @@ contract ATKIdentityRegistryImplementation is
     /// @param _identity The address of the `IIdentity` (ERC725/ERC734) contract representing the user's on-chain
     /// identity.
     /// @param _country A numerical code (uint16) representing the user's country of residence or jurisdiction.
-    function registerIdentity(address _userAddress, IIdentity _identity, uint16 _country)
+    function registerIdentity(
+        address _userAddress,
+        IIdentity _identity,
+        uint16 _country
+    )
         external
         override
         onlySystemRoles3(
@@ -310,7 +314,10 @@ contract ATKIdentityRegistryImplementation is
     /// @param _userAddress The blockchain address of the user whose country code is to be updated.
     /// Reverts with `IdentityNotRegistered` if the address is not found.
     /// @param _country The new numerical country code (uint16) for the user.
-    function updateCountry(address _userAddress, uint16 _country)
+    function updateCountry(
+        address _userAddress,
+        uint16 _country
+    )
         external
         override
         onlySystemRole(ATKPeopleRoles.IDENTITY_MANAGER_ROLE)
@@ -332,7 +339,10 @@ contract ATKIdentityRegistryImplementation is
     /// Reverts with `IdentityNotRegistered` if the address is not found.
     /// @param _identity The address of the new `IIdentity` contract to associate with the `_userAddress`.
     /// Reverts with `InvalidIdentityAddress` if this is the zero address.
-    function updateIdentity(address _userAddress, IIdentity _identity)
+    function updateIdentity(
+        address _userAddress,
+        IIdentity _identity
+    )
         external
         override
         onlySystemRole(ATKPeopleRoles.IDENTITY_MANAGER_ROLE)
@@ -385,7 +395,11 @@ contract ATKIdentityRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTIdentityRegistry
-    function recoverIdentity(address lostWallet, address newWallet, address newOnchainId)
+    function recoverIdentity(
+        address lostWallet,
+        address newWallet,
+        address newOnchainId
+    )
         external
         override
         onlySystemRole(ATKPeopleRoles.IDENTITY_MANAGER_ROLE)
@@ -483,7 +497,10 @@ contract ATKIdentityRegistryImplementation is
     /// @param _userAddress The investor's wallet address to verify.
     /// @param expression An array of ExpressionNode structs representing a postfix expression.
     /// @return True if the investor's identity satisfies the logical expression, false otherwise.
-    function isVerified(address _userAddress, ExpressionNode[] calldata expression)
+    function isVerified(
+        address _userAddress,
+        ExpressionNode[] calldata expression
+    )
         external
         view
         override
