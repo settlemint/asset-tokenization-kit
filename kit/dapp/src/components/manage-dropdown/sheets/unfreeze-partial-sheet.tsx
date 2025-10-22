@@ -150,7 +150,7 @@ export function UnfreezePartialSheet({
               const promise = unfreezePartial({
                 contract: asset.id,
                 userAddress,
-                amount: format(amount, { digits: 18 }),
+                amount,
                 walletVerification: verification,
               });
 
