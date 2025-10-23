@@ -8,7 +8,7 @@ export const encodeTokenSupplyLimitParams = (
     parseAbiParameters("(uint256,uint256,bool,bool,bool)"),
     [
       [
-        BigInt(params.maxSupply),
+        params.maxSupply,
         BigInt(params.periodLength),
         params.rolling,
         params.useBasePrice,

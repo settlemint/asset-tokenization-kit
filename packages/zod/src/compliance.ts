@@ -8,6 +8,7 @@
  */
 
 import * as z from "zod";
+import { apiBigInt } from "./bigint";
 import { ethereumAddress } from "./ethereum-address";
 import { expressionNodeWithGroups } from "./expression-node";
 import { isoCountryCodeNumeric } from "./iso-country-code";
@@ -99,13 +100,9 @@ export const smartIdentityVerificationValues = () =>
 export const tokenSupplyLimitValues = () =>
   z
     .object({
-      maxSupply: z
-        .number()
-        .int()
-        .positive()
-        .describe(
-          "Maximum allowed supply (whole numbers only). If useBasePrice=false: whole token count (e.g., 1000 = 1000 tokens). If useBasePrice=true: whole currency amount (e.g., 8000000 = €8M). For MiCA compliance, specify 8000000."
-        ),
+      maxSupply: apiBigInt.describe(
+        "Maximum allowed supply (whole numbers only). If useBasePrice=false: whole token count (e.g., 1000 = 1000 tokens). If useBasePrice=true: whole currency amount (e.g., 8000000 = €8M). For MiCA compliance, specify 8000000."
+      ),
       periodLength: z
         .number()
         .int()
@@ -372,7 +369,7 @@ export type ComplianceModulePairInputArray = z.input<
 /**
  * Type representing the value of a token supply limit compliance module.
  */
-export type TokenSupplyLimitParams = z.input<
+export type TokenSupplyLimitParams = z.infer<
   ReturnType<typeof tokenSupplyLimitValues>
 >;
 
