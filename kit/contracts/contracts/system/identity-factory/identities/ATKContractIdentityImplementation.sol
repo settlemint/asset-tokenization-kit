@@ -64,7 +64,10 @@ contract ATKContractIdentityImplementation is
     /// @param contractAddr The address of the contract that owns this identity
     /// @param claimAuthorizationContracts Array of addresses implementing IClaimAuthorizer to register as claim
     /// authorizers
-    function initialize(address contractAddr, address[] calldata claimAuthorizationContracts)
+    function initialize(
+        address contractAddr,
+        address[] calldata claimAuthorizationContracts
+    )
         external
         override
         initializer
@@ -72,8 +75,9 @@ contract ATKContractIdentityImplementation is
         if (contractAddr == address(0)) revert InvalidContractAddress();
 
         // Verify the contract implements IContractWithIdentity
-        try IContractWithIdentity(contractAddr)
-            .supportsInterface(type(IContractWithIdentity).interfaceId) returns (bool supported) {
+        try IContractWithIdentity(contractAddr).supportsInterface(type(IContractWithIdentity).interfaceId) returns (
+            bool supported
+        ) {
             if (!supported) revert InvalidContractAddress();
         } catch {
             revert InvalidContractAddress();

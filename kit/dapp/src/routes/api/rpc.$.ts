@@ -26,10 +26,8 @@ import { timestampSerializer } from "@atk/zod/timestamp";
 import { onError } from "@orpc/client";
 import { RPCHandler } from "@orpc/server/fetch";
 import { BatchHandlerPlugin } from "@orpc/server/plugins";
-import {
-  createServerFileRoute,
-  getHeaders,
-} from "@tanstack/react-start/server";
+import { createFileRoute } from "@tanstack/react-router";
+import { getRequestHeaders } from "@tanstack/react-start/server";
 
 /**
  * OpenAPI handler configuration.
@@ -64,7 +62,7 @@ const handler = new RPCHandler(router, {
 export async function handle({ request }: { request: Request }) {
   let headers: Headers | Record<string, string | string[]> = {};
   try {
-    headers = normalizeHeaders(getHeaders());
+    headers = normalizeHeaders(getRequestHeaders());
   } catch {
     headers = {};
   }
@@ -78,11 +76,16 @@ export async function handle({ request }: { request: Request }) {
   return response ?? new Response("Not Found", { status: 404 });
 }
 
-export const ServerRoute = createServerFileRoute("/api/rpc/$").methods({
-  HEAD: handle,
-  GET: handle,
-  POST: handle,
-  PUT: handle,
-  PATCH: handle,
-  DELETE: handle,
+export const Route = createFileRoute("/api/rpc/$")({
+  server: {
+    handlers: {
+      OPTIONS: handle,
+      HEAD: handle,
+      GET: handle,
+      POST: handle,
+      PUT: handle,
+      PATCH: handle,
+      DELETE: handle,
+    },
+  },
 });

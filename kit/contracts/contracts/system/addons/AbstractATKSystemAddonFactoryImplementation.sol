@@ -177,7 +177,10 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
     /// @param contractAddress The address of the addon contract
     /// @param country Country code for compliance purposes
     /// @return contractIdentity The address of the created contract identity
-    function _deployContractIdentity(address contractAddress, uint16 country)
+    function _deployContractIdentity(
+        address contractAddress,
+        uint16 country
+    )
         internal
         returns (address contractIdentity)
     {

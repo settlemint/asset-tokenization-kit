@@ -888,7 +888,11 @@ contract ATKSystemImplementation is
     /// @param targetIdentity The identity contract to receive the claim
     /// @param topicId The topic ID of the claim
     /// @param claimData The claim data
-    function issueClaimByOrganisation(address targetIdentity, uint256 topicId, bytes calldata claimData)
+    function issueClaimByOrganisation(
+        address targetIdentity,
+        uint256 topicId,
+        bytes calldata claimData
+    )
         external
         onlySystemRoles2(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, ATKPeopleRoles.ORGANISATION_IDENTITY_MANAGER_ROLE)
     {

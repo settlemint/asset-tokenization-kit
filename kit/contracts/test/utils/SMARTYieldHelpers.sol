@@ -84,7 +84,12 @@ abstract contract SMARTYieldHelpers is Test {
     /// @param yieldPaymentToken The token to use for funding
     /// @param funder The address that will fund the schedule
     /// @param amount The amount to fund
-    function _fundYieldSchedule(address scheduleAddress, address yieldPaymentToken, address funder, uint256 amount)
+    function _fundYieldSchedule(
+        address scheduleAddress,
+        address yieldPaymentToken,
+        address funder,
+        uint256 amount
+    )
         internal
     {
         // Mint yield tokens to funder

@@ -1,5 +1,6 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { AddTopicDialog } from "@/components/platform-settings/claim-topics/add-topic-dialog";
 import { TopicsTable } from "@/components/platform-settings/claim-topics/topics-table";
 import { AddTrustedIssuerSheet } from "@/components/platform-settings/trusted-issuers/add-trusted-issuer-sheet";
@@ -16,7 +17,7 @@ import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
@@ -80,7 +81,9 @@ function ClaimTopicsIssuersPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <TopicsTable />
+            <Suspense fallback={<DataTableSkeleton />}>
+              <TopicsTable />
+            </Suspense>
           </CardContent>
         </Card>
 
@@ -106,7 +109,9 @@ function ClaimTopicsIssuersPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <TrustedIssuersTable />
+            <Suspense fallback={<DataTableSkeleton />}>
+              <TrustedIssuersTable />
+            </Suspense>
           </CardContent>
         </Card>
       </div>
@@ -115,10 +120,12 @@ function ClaimTopicsIssuersPage() {
         open={showAddTopicDialog}
         onOpenChange={setShowAddTopicDialog}
       />
-      <AddTrustedIssuerSheet
-        open={showAddIssuerSheet}
-        onOpenChange={setShowAddIssuerSheet}
-      />
+      <Suspense>
+        <AddTrustedIssuerSheet
+          open={showAddIssuerSheet}
+          onOpenChange={setShowAddIssuerSheet}
+        />
+      </Suspense>
     </div>
   );
 }
