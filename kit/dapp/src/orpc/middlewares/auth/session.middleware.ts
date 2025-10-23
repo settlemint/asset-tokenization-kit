@@ -1,4 +1,4 @@
-import { auth, type Session, type SessionUser } from "@/lib/auth";
+import { auth, type SessionUser } from "@/lib/auth";
 import type { Context } from "@/orpc/context/context";
 import { baseRouter } from "@/orpc/procedures/base.router";
 
@@ -71,7 +71,7 @@ export const sessionMiddleware = baseRouter.middleware<
     context: {
       auth: {
         user: session?.user as SessionUser,
-        session: session as Session,
+        session: session,
       },
     },
   });

@@ -22,7 +22,6 @@ import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.s
 import { ISMART } from "../../smart/interface/ISMART.sol";
 import { _SMARTLogic } from "../../smart/extensions/core/internal/_SMARTLogic.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ISMARTRedeemable } from "../../smart/extensions/redeemable/ISMARTRedeemable.sol";
 
 // Core extensions
 import { SMARTUpgradeable } from "../../smart/extensions/core/SMARTUpgradeable.sol"; // Base SMART logic + ERC20

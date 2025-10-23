@@ -9,10 +9,10 @@ import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/Co
 import { SMARTExtensionUpgradeable } from "../common/SMARTExtensionUpgradeable.sol";
 
 // Interface imports
-import { ISMARTRedeemable } from "./ISMARTRedeemable.sol";
 import { _SMARTRedeemableLogic } from "./internal/_SMARTRedeemableLogic.sol";
 
 /// @title Upgradeable SMART Redeemable Extension
+/// @author SettleMint
 /// @notice Provides ERC165 registration and common redemption helpers for SMART tokens.
 abstract contract SMARTRedeemableUpgradeable is
     Initializable,
@@ -20,6 +20,7 @@ abstract contract SMARTRedeemableUpgradeable is
     SMARTExtensionUpgradeable,
     _SMARTRedeemableLogic
 {
+    /// @notice Initialises interface registration for the upgradeable variant.
     constructor() {
         __SMARTRedeemable_init_unchained();
     }
@@ -29,6 +30,9 @@ abstract contract SMARTRedeemableUpgradeable is
         __SMARTRedeemable_init_unchained();
     }
 
+    /// @notice Performs the token burn for a redemption in upgradeable context.
+    /// @param owner The address whose balance will be reduced.
+    /// @param amount The amount of tokens to burn.
     function __redeemable_redeem(address owner, uint256 amount) internal virtual override {
         _burn(owner, amount);
     }

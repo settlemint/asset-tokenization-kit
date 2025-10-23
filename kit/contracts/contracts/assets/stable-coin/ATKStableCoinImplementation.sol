@@ -627,7 +627,8 @@ contract ATKStableCoinImplementation is
     /// @notice Hook that is called before tokens are redeemed
     /// @dev Stable coin keeps the override to satisfy multiple inheritance requirements even though
     ///      the redeemable extension was removed. It simply chains custodian validations.
-    /// @inheritdoc SMARTHooks
+    /// @param owner The address whose tokens are being redeemed.
+    /// @param amount The amount of tokens requested for redemption.
     function _beforeRedeem(
         address owner,
         uint256 amount
