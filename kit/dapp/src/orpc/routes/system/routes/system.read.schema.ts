@@ -7,9 +7,9 @@ import { addonFactoryTypeId } from "@atk/zod/addon-types";
 import { assetFactoryTypeId } from "@atk/zod/asset-types";
 import { complianceTypeId } from "@atk/zod/compliance";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { ethereumCompositeId } from "@atk/zod/ethereum-composite-id";
 import { ethereumHex } from "@atk/zod/ethereum-hex";
 import { isoCountryCode } from "@atk/zod/iso-country-code";
-import { ethereumCompositeId } from "@atk/zod/src/ethereum-composite-id";
 import * as z from "zod";
 
 /**

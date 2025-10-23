@@ -1,6 +1,6 @@
 import { complianceTypeId } from "@atk/zod/compliance";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import { ethereumCompositeId } from "@atk/zod/src/ethereum-composite-id";
+import { ethereumCompositeId } from "@atk/zod/ethereum-composite-id";
 import * as z from "zod";
 import { GlobalComplianceModuleConfigSchema } from "./compliance-module.config.schema";
 
