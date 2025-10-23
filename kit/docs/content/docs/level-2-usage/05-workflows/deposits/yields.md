@@ -3,8 +3,8 @@ title: Deposit Yield Workflow
 description: Calculate and distribute yield for deposit certificates
 ---
 
-<!-- SOURCE: kit/docs/content/docs/25-deposit-workflows-user-stories.md -->
 <!-- SOURCE: kit/contracts/contracts/assets/deposit/ -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md -->
 
 # Deposit Yield Workflow
 
@@ -45,7 +45,7 @@ Manage periodic yield accrual and payouts for deposit certificates, including ea
 ## References
 
 - `kit/contracts/contracts/assets/deposit/` — yield logic.
-- `kit/docs/content/docs/25-deposit-workflows-user-stories.md` — workflow stories.
+- `the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md` — reporting considerations.
 
 ## Related Guides
 

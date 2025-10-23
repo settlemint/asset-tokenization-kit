@@ -4,7 +4,7 @@ description: Compose AND/OR/NOT rules and validate expressions in ATK
 ---
 
 <!-- SOURCE: kit/dapp/src/components/compliance/ -->
-<!-- SOURCE: kit/contracts/contracts/smart/compliance-modules/ -->
+<!-- SOURCE: kit/contracts/contracts/smart/modules/ -->
 
 # Compliance Logic Builder
 

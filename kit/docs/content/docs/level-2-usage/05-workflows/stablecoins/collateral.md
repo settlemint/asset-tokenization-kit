@@ -3,8 +3,8 @@ title: Collateral Management
 description: Monitor and rebalance collateral backing ATK stablecoins
 ---
 
-<!-- SOURCE: kit/docs/content/docs/24-stablecoin-workflows-user-stories.md -->
 <!-- SOURCE: kit/contracts/contracts/assets/stablecoin/ -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md -->
 
 # Collateral Management
 
@@ -43,7 +43,7 @@ Maintain collateral coverage for stablecoins, execute adjustments, and document 
 ## References
 
 - `kit/contracts/contracts/assets/stablecoin/` — collateral operations.
-- `kit/docs/content/docs/24-stablecoin-workflows-user-stories.md` — scenario guidance.
+- `the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md` — collateral reporting guidance.
 
 ## Related Guides
 

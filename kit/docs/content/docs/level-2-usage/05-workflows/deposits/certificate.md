@@ -3,8 +3,8 @@ title: Deposit Certificate Workflow
 description: Issue deposit certificates with collateral checks and maturity schedules
 ---
 
-<!-- SOURCE: kit/docs/content/docs/25-deposit-workflows-user-stories.md -->
 <!-- SOURCE: kit/contracts/contracts/assets/deposit/ -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md -->
 
 # Deposit Certificate Workflow
 
@@ -42,7 +42,7 @@ Issue deposit-backed tokens representing fixed-term deposits or certificates wit
 ## References
 
 - `kit/contracts/contracts/assets/deposit/` — deposit logic.
-- `kit/docs/content/docs/25-deposit-workflows-user-stories.md` — scenarios.
+- `the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md` — operational reporting.
 
 ## Related Guides
 

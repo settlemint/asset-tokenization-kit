@@ -103,7 +103,12 @@ contract ATKFixedYieldProxy is Proxy {
     /// @dev Executes a delegatecall to the implementation with the provided initialization data
     /// @param implementationAddress_ The non-zero address of the logic contract to `delegatecall` to.
     /// @param initializeData_ The ABI-encoded data for the `initialize` function call.
-    function _performInitializationDelegatecall(address implementationAddress_, bytes memory initializeData_) internal {
+    function _performInitializationDelegatecall(
+        address implementationAddress_,
+        bytes memory initializeData_
+    )
+        internal
+    {
         if (implementationAddress_ == address(0)) {
             revert InitializationWithZeroAddress();
         }

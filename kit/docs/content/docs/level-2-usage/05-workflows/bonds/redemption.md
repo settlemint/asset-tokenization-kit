@@ -3,8 +3,8 @@ title: Bond Redemption Workflow
 description: Execute bond redemptions, reconcile payments, and close lifecycle records
 ---
 
-<!-- SOURCE: kit/docs/content/docs/21-bond-workflows-user-stories.md -->
 <!-- SOURCE: kit/contracts/contracts/assets/bond/ -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md -->
 
 # Bond Redemption Workflow
 
@@ -45,7 +45,7 @@ Carry out bond redemption events—scheduled or early—with full transparency a
 ## References
 
 - `kit/contracts/contracts/assets/bond/` — redemption-related functions.
-- `kit/docs/content/docs/21-bond-workflows-user-stories.md` — workflows and stories.
+- `the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md` — governance and reporting context.
 
 ## Related Guides
 

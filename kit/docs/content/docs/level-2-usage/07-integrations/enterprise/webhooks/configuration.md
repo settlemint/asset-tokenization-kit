@@ -1,57 +1,45 @@
 ---
 title: Webhook Configuration
-description: Subscribe to ATK events and deliver them to enterprise systems
+description: Configure ATK webhook endpoints, event subscriptions, retries, and security controls
 ---
 
 <!-- SOURCE: kit/subgraph/schema.graphql -->
+<!-- SOURCE: kit/dapp/src/orpc/procedures/ -->
+<!-- SOURCE: kit/dapp/src/lib/auth/ -->
+<!-- SOURCE: doc-planing-archive/c-ATK_DOCUMENTATION_MASTER_PLAN.md -->
 
 # Webhook Configuration
 
-> **Status:** Draft skeleton — specify event catalog, payload formats, and retry policy.
+> **Status:** Draft skeleton — fill with endpoint setup steps, event payload references, and operational checklists.
 
 ## Objective
 
-Deliver ATK events (transactions, compliance actions, user updates) to external systems via webhooks.
+Establish reliable webhook integrations so downstream systems receive ATK events (issuance, compliance, treasury) with retries and monitoring.
 
 ## Prerequisites
 
-- [ ] Endpoint hosted with TLS and authentication
-- [ ] Event subscription permissions granted
-- [ ] Logging/monitoring in place for webhook receivers
+- [ ] Endpoint host reachable over HTTPS with TLS 1.2+
+- [ ] API credentials or signatures agreed with receiving system
+- [ ] Event catalog reviewed in `kit/subgraph/schema.graphql`
 
-## Event Catalogue
+## Tasks
 
-- TODO: Table of event types (transfer.created, compliance.blocked, user.invited) with payload references.
-- TODO: Align event schema with `kit/subgraph/schema.graphql` where applicable.
-
-## Procedure
-
-1. **Register endpoint**
-   - TODO: Steps to add endpoint in ATK console (URL, secret, retry policy).
-2. **Select events**
-   - TODO: Document event filters, environment scope (sandbox vs. production).
-3. **Validate delivery**
-   - TODO: Provide signature verification, response expectations (2xx).
-4. **Handle retries**
-   - TODO: Describe retry schedule, dead-letter handling.
-5. **Monitor**
-   - TODO: Logging best practices, alerting for failures.
+1. **Provision endpoint**
+   - TODO: Document endpoint creation and authentication (API key, HMAC, OAuth).
+2. **Select event topics**
+   - TODO: Map operational events to webhook subscriptions (issuance, compliance, custody).
+3. **Configure delivery settings**
+   - TODO: Note retry attempts, backoff, and dead-letter storage.
+4. **Validate payloads**
+   - TODO: Provide sample payloads and signature verification steps.
+5. **Monitor & alert**
+   - TODO: Define monitoring hooks and failure notifications.
 
 ## Verification
 
-- TODO: Checklist using test events to confirm successful delivery and processing.
+- TODO: Checklist to confirm successful event receipt, signature validation, and error handling.
 
-## SLA
+## Runbook Links
 
-- Delivery target: near real-time (<30 seconds).
-- Failure escalation: investigate after 3 consecutive failures.
-
-## References
-
-- `kit/subgraph/schema.graphql` — event field definitions.
-- `../api/authentication.md` — authentication for webhook management API.
-
-## Related Guides
-
-- [`reporting-apis.md`](../reporting-apis.md)
-- [`../../08-troubleshooting/integration-timeout.md`](../../08-troubleshooting/integration-timeout.md) (future)
+- Reference [`../../../../06-operations/monitoring/alerts.md`](../../../../06-operations/monitoring/alerts.md) for alert setup.
+- Reference [`../../../../08-troubleshooting/transaction-issues.md`](../../../../08-troubleshooting/transaction-issues.md) for failure analysis.

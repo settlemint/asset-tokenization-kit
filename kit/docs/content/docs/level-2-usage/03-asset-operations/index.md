@@ -24,7 +24,7 @@ description: Day-to-day procedures for designing, launching, and servicing ATK a
 
 - UI flows from `kit/dapp/src/components/asset-designer/` and supporting hooks.
 - Asset contract behaviours from `kit/contracts/contracts/assets/`.
-- Lifecycle insights from existing workflow stories in `kit/docs/content/docs/21-25-*`.
+- Lifecycle insights from smart contract templates in `kit/contracts/contracts/assets/` and operational guidance in `the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md`.
 
 ## Delivery Notes
 

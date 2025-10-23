@@ -25,7 +25,11 @@ contract ATKContractIdentityProxy is AbstractATKSystemProxy {
     /// @param contractAddress The address of the contract that will own this identity.
     /// @param claimAuthorizationContracts Array of addresses implementing IClaimAuthorizer to register as claim
     /// authorizers.
-    constructor(address systemAddress, address contractAddress, address[] memory claimAuthorizationContracts)
+    constructor(
+        address systemAddress,
+        address contractAddress,
+        address[] memory claimAuthorizationContracts
+    )
         AbstractATKSystemProxy(systemAddress)
     {
         if (contractAddress == address(0)) revert ZeroAddressNotAllowed();

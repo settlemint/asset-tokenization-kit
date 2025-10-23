@@ -3,8 +3,8 @@ title: Fund Workflows
 description: Procedures for fund setup, NAV operations, and fee handling
 ---
 
-<!-- SOURCE: kit/docs/content/docs/23-fund-workflows-user-stories.md -->
 <!-- SOURCE: kit/contracts/contracts/assets/fund/ -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md -->
 
 # Fund Workflows
 

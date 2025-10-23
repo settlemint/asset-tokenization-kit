@@ -3,8 +3,8 @@ title: Peg Stability Operations
 description: Detect and respond to price deviations for ATK stablecoins
 ---
 
-<!-- SOURCE: kit/docs/content/docs/24-stablecoin-workflows-user-stories.md -->
 <!-- SOURCE: kit/contracts/contracts/assets/stablecoin/ -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md -->
 
 # Peg Stability Operations
 
@@ -45,7 +45,7 @@ Maintain stablecoin price parity through monitoring, intervention, and stakehold
 ## References
 
 - `kit/contracts/contracts/assets/stablecoin/` — peg-related functions.
-- `kit/docs/content/docs/24-stablecoin-workflows-user-stories.md` — scenario references.
+- `the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md` — monitoring and reporting structure.
 
 ## Related Guides
 

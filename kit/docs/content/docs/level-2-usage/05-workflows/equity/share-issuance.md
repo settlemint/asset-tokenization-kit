@@ -3,8 +3,8 @@ title: Equity Share Issuance
 description: Launch equity tokens with governance rights and compliance controls
 ---
 
-<!-- SOURCE: kit/docs/content/docs/22-equity-workflows-user-stories.md -->
 <!-- SOURCE: kit/contracts/contracts/assets/equity/ -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md -->
 
 # Equity Share Issuance
 
@@ -45,7 +45,7 @@ Issue equity shares with defined voting rights, classes, and investor eligibilit
 ## References
 
 - `kit/contracts/contracts/assets/equity/` — voting and governance logic.
-- `kit/docs/content/docs/22-equity-workflows-user-stories.md` — scenario narratives.
+- `the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md` — operational reporting.
 
 ## Related Guides
 

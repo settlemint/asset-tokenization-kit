@@ -219,15 +219,17 @@ abstract contract _SMARTCollateralLogic is _SMARTExtension, ISMARTCollateral {
     /// @return amount The decoded collateral amount if `validClaim` is true.
     /// @return issuer The address of the trusted issuer if `validClaim` is true.
     /// @return expiry The expiry timestamp of the claim if `validClaim` is true.
-    function __checkSingleClaim(IIdentity tokenID, bytes32 claimId, IClaimIssuer[] memory trustedIssuers)
+    function __checkSingleClaim(
+        IIdentity tokenID,
+        bytes32 claimId,
+        IClaimIssuer[] memory trustedIssuers
+    )
         private
         view
         returns (bool validClaim, uint256 amount, address issuer, uint256 expiry)
     {
         // Attempt to retrieve the claim from the identity contract.
-        try tokenID.getClaim(
-            claimId
-        ) returns (
+        try tokenID.getClaim(claimId) returns (
             uint256 topicFromClaim,
             uint256, // scheme is not used here
             address actualClaimIssuerAddress,

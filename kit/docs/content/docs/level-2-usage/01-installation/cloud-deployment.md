@@ -5,7 +5,7 @@ description: Deploy ATK to Kubernetes using the packaged Helm charts
 
 <!-- SOURCE: kit/charts/atk/README.md -->
 <!-- SOURCE: kit/charts/atk/values.yaml -->
-<!-- SOURCE: WINNER-PLAN-FINAL.MD -->
+
 
 # Cloud Deployment
 

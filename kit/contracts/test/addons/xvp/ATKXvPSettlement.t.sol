@@ -103,7 +103,12 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
     bytes32 internal constant NO_HASHLOCK = bytes32(0);
 
-    function _localFlow(address asset, address from, address to, uint256 amount)
+    function _localFlow(
+        address asset,
+        address from,
+        address to,
+        uint256 amount
+    )
         internal
         pure
         returns (IATKXvPSettlement.Flow memory)
@@ -111,7 +116,13 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         return IATKXvPSettlement.Flow({ asset: asset, from: from, to: to, amount: amount, externalChainId: 0 });
     }
 
-    function _externalFlow(address asset, address from, address to, uint256 amount, uint64 chainId)
+    function _externalFlow(
+        address asset,
+        address from,
+        address to,
+        uint256 amount,
+        uint64 chainId
+    )
         internal
         pure
         returns (IATKXvPSettlement.Flow memory)

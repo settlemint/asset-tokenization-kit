@@ -3,8 +3,8 @@ title: Stablecoin Workflows
 description: Operational playbooks for minting, collateral management, and peg stability
 ---
 
-<!-- SOURCE: kit/docs/content/docs/24-stablecoin-workflows-user-stories.md -->
 <!-- SOURCE: kit/contracts/contracts/assets/stablecoin/ -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md -->
 
 # Stablecoin Workflows
 

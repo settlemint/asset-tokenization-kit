@@ -3,8 +3,8 @@ title: Equity Voting Workflow
 description: Run shareholder votes from proposal creation to certification
 ---
 
-<!-- SOURCE: kit/docs/content/docs/22-equity-workflows-user-stories.md -->
 <!-- SOURCE: kit/contracts/contracts/assets/equity/ -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md -->
 
 # Equity Voting Workflow
 
@@ -45,7 +45,7 @@ Facilitate shareholder voting events on ATK, ensuring eligibility, quorum, and a
 ## References
 
 - `kit/contracts/contracts/assets/equity/` — voting mechanics (ERC20Votes).
-- `kit/docs/content/docs/22-equity-workflows-user-stories.md` — scenario references.
+- `the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md` — governance evidence approach.
 
 ## Related Guides
 

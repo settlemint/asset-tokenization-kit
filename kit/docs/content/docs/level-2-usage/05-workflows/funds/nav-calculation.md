@@ -3,8 +3,8 @@ title: NAV Calculation Workflow
 description: Calculate and publish net asset value for ATK funds
 ---
 
-<!-- SOURCE: kit/docs/content/docs/23-fund-workflows-user-stories.md -->
 <!-- SOURCE: kit/contracts/contracts/assets/fund/ -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md -->
 
 # NAV Calculation Workflow
 
@@ -45,7 +45,7 @@ Compute and publish fund NAV on the defined schedule with full auditability.
 ## References
 
 - `kit/contracts/contracts/assets/fund/` — functions referencing NAV updates.
-- `kit/docs/content/docs/23-fund-workflows-user-stories.md` — scenario guidance.
+- `the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md` — NAV evidence guidance.
 
 ## Related Guides
 

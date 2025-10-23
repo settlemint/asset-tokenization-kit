@@ -3,8 +3,8 @@ title: Bond Workflows
 description: End-to-end operations for ATK bond instruments
 ---
 
-<!-- SOURCE: kit/docs/content/docs/21-bond-workflows-user-stories.md -->
 <!-- SOURCE: kit/contracts/contracts/assets/bond/ -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md -->
 
 # Bond Workflows
 

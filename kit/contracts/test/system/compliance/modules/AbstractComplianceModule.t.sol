@@ -168,7 +168,13 @@ contract AbstractComplianceModuleTest is Test {
         vm.stopPrank();
     }
 
-    function test_Fuzz_CanTransfer(address token, address from, address to, uint256 value, bytes calldata params)
+    function test_Fuzz_CanTransfer(
+        address token,
+        address from,
+        address to,
+        uint256 value,
+        bytes calldata params
+    )
         public
     {
         module.setAllowTransfers(true);

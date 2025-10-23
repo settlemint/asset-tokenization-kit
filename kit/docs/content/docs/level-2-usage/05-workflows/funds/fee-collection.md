@@ -3,8 +3,8 @@ title: Fund Fee Collection
 description: Process management and performance fees for ATK funds
 ---
 
-<!-- SOURCE: kit/docs/content/docs/23-fund-workflows-user-stories.md -->
 <!-- SOURCE: kit/contracts/contracts/assets/fund/ -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md -->
 
 # Fund Fee Collection
 
@@ -45,7 +45,7 @@ Collect management and performance fees while keeping investor records reconcile
 ## References
 
 - `kit/contracts/contracts/assets/fund/` — fee-related functions.
-- `kit/docs/content/docs/23-fund-workflows-user-stories.md` — scenario references.
+- `the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md` — fee reporting context.
 
 ## Related Guides
 

@@ -722,7 +722,11 @@ contract ATKIdentityRegistryImplementationTest is Test {
     }
 
     /// @dev Helper function to create (A AND B) OR C expression: [TOPIC_A, TOPIC_B, AND, TOPIC_C, OR]
-    function _createComplexExpression1(uint256 topicA, uint256 topicB, uint256 topicC)
+    function _createComplexExpression1(
+        uint256 topicA,
+        uint256 topicB,
+        uint256 topicC
+    )
         internal
         pure
         returns (ExpressionNode[] memory)
@@ -737,7 +741,14 @@ contract ATKIdentityRegistryImplementationTest is Test {
     }
 
     /// @dev Helper function to create A AND NOT B expression: [TOPIC_A, TOPIC_B, NOT, AND]
-    function _createAndNotExpression(uint256 topicA, uint256 topicB) internal pure returns (ExpressionNode[] memory) {
+    function _createAndNotExpression(
+        uint256 topicA,
+        uint256 topicB
+    )
+        internal
+        pure
+        returns (ExpressionNode[] memory)
+    {
         ExpressionNode[] memory nodes = new ExpressionNode[](4);
         nodes[0] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: topicA });
         nodes[1] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: topicB });
@@ -873,11 +884,10 @@ contract ATKIdentityRegistryImplementationTest is Test {
         // Create expression: KYC AND (KYC OR AML) - KYC appears twice
         ExpressionNode[] memory expression = new ExpressionNode[](5);
         expression[0] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: kycTopicId });
-        expression[1] =
-            ExpressionNode({
-                nodeType: ExpressionType.TOPIC,
-                value: kycTopicId // Repeated topic for caching test
-            });
+        expression[1] = ExpressionNode({
+            nodeType: ExpressionType.TOPIC,
+            value: kycTopicId // Repeated topic for caching test
+        });
         expression[2] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: amlTopicId });
         expression[3] = ExpressionNode({ nodeType: ExpressionType.OR, value: 0 });
         expression[4] = ExpressionNode({ nodeType: ExpressionType.AND, value: 0 });

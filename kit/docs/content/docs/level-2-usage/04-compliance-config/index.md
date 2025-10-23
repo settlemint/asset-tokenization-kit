@@ -3,7 +3,7 @@ title: Compliance Configuration
 description: Configure policy modules, logic expressions, and regional templates
 ---
 
-<!-- SOURCE: kit/contracts/contracts/smart/compliance-modules/ -->
+<!-- SOURCE: kit/contracts/contracts/smart/modules/ -->
 <!-- SOURCE: kit/dapp/src/components/compliance/ -->
 <!-- SOURCE: doc-planing-archive/c-ATK_DOCUMENTATION_MASTER_PLAN.md -->
 <!-- SOURCE: ASSET_TOKENIZATION_LANGUAGE_GUIDE.md -->
@@ -22,7 +22,7 @@ description: Configure policy modules, logic expressions, and regional templates
 
 ## Inputs to Capture
 
-- Module implementations from `kit/contracts/contracts/smart/compliance-modules/`.
+- Module implementations from `kit/contracts/contracts/smart/modules/`.
 - Operator UX from `kit/dapp/src/components/compliance/` and related forms.
 - Regional guardrails from Level 1 compliance pages and plan artefacts.
 

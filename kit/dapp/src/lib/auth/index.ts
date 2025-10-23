@@ -31,7 +31,7 @@ import { env } from "@atk/config/env";
 import { metadata } from "@atk/config/metadata";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import type { UserRole } from "@atk/zod/user-roles";
-import { serverOnly } from "@tanstack/react-start";
+import { createServerOnlyFn } from "@tanstack/react-start";
 import {
   betterAuth,
   type BetterAuthOptions,
@@ -375,7 +375,7 @@ const options = {
  * This function is wrapped with `serverOnly` to ensure it only runs on the server,
  * preventing sensitive configuration like secrets from being exposed to the client.
  */
-const getAuthConfig = serverOnly(() => {
+const getAuthConfig = createServerOnlyFn(() => {
   return betterAuth(options);
 });
 

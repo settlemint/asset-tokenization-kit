@@ -3,8 +3,8 @@ title: Core Banking Integration
 description: Connect ATK to core banking systems for settlement and reconciliation
 ---
 
-<!-- SOURCE: kit/docs/content/docs/26-core-banking-integration-architecture.md -->
-<!-- SOURCE: kit/docs/content/docs/27-payment-rails-settlement-architecture.md -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 16 — Integration Patterns (Banking, Custody, Venues).md -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 17 — Multi‑Chain Strategy (Without Losing the Law).md -->
 
 # Core Banking Integration
 
@@ -45,8 +45,8 @@ Link ATK with core banking platforms to orchestrate settlement, ledger reconcili
 
 ## References
 
-- `kit/docs/content/docs/26-core-banking-integration-architecture.md`
-- `kit/docs/content/docs/27-payment-rails-settlement-architecture.md`
+- `the-book-of-dalp/Part III — Operating the Platform/Chapter 16 — Integration Patterns (Banking, Custody, Venues).md`
+- `the-book-of-dalp/Part III — Operating the Platform/Chapter 17 — Multi‑Chain Strategy (Without Losing the Law).md`
 
 ## Related Guides
 

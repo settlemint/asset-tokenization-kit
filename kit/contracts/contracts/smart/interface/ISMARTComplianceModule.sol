@@ -54,7 +54,13 @@ interface ISMARTComplianceModule is IERC165, IWithTypeIdentifier {
      * to the token.
      *                These parameters allow the module's behavior to be tailored for different tokens or scenarios.
      */
-    function canTransfer(address _token, address _from, address _to, uint256 _value, bytes calldata _params)
+    function canTransfer(
+        address _token,
+        address _from,
+        address _to,
+        uint256 _value,
+        bytes calldata _params
+    )
         external
         view;
 
@@ -71,7 +77,14 @@ interface ISMARTComplianceModule is IERC165, IWithTypeIdentifier {
      * @param _value The amount of tokens that were transferred.
      * @param _params Token-specific configuration parameters for this module instance.
      */
-    function transferred(address _token, address _from, address _to, uint256 _value, bytes calldata _params) external;
+    function transferred(
+        address _token,
+        address _from,
+        address _to,
+        uint256 _value,
+        bytes calldata _params
+    )
+        external;
 
     /**
      * @notice Called by the main `ISMARTCompliance` contract immediately AFTER a token mint operation has successfully

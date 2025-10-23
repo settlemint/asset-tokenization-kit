@@ -3,8 +3,8 @@ title: Bond Maturity Workflow
 description: Manage approaching maturity, investor notifications, and settlement for bonds
 ---
 
-<!-- SOURCE: kit/docs/content/docs/21-bond-workflows-user-stories.md -->
 <!-- SOURCE: kit/contracts/contracts/assets/bond/ -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md -->
 
 # Bond Maturity Workflow
 
@@ -45,7 +45,7 @@ Coordinate bond maturity from D-30 notifications through final settlement and re
 ## References
 
 - `kit/contracts/contracts/assets/bond/` — functions supporting maturity handling.
-- `kit/docs/content/docs/21-bond-workflows-user-stories.md` — scenario narratives.
+- `the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md` — guidance on evidencing lifecycle events.
 
 ## Related Guides
 

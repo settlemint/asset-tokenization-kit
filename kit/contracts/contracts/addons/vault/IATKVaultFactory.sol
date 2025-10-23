@@ -19,7 +19,13 @@ interface IATKVaultFactory {
     /// @param salt Salt value for deterministic address generation
     /// @param country Country code for compliance purposes
     /// @return contractAddress Address of the newly created vault
-    function createVault(address[] memory signers, uint256 required, address initialOwner, bytes32 salt, uint16 country)
+    function createVault(
+        address[] memory signers,
+        uint256 required,
+        address initialOwner,
+        bytes32 salt,
+        uint16 country
+    )
         external
         returns (address contractAddress);
 
@@ -29,7 +35,12 @@ interface IATKVaultFactory {
     /// @param initialOwner Address that will have admin role
     /// @param salt Salt value for deterministic address generation
     /// @return predictedAddress The predicted address of the vault
-    function predictVaultAddress(address[] memory signers, uint256 required, address initialOwner, bytes32 salt)
+    function predictVaultAddress(
+        address[] memory signers,
+        uint256 required,
+        address initialOwner,
+        bytes32 salt
+    )
         external
         view
         returns (address predictedAddress);

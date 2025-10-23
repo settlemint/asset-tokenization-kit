@@ -4,8 +4,8 @@ description: Connect ATK with banking rails, exchanges, custody, and enterprise 
 ---
 
 <!-- SOURCE: WINNER-PLAN-FINAL.MD -->
-<!-- SOURCE: kit/docs/content/docs/26-core-banking-integration-architecture.md -->
-<!-- SOURCE: kit/docs/content/docs/27-payment-rails-settlement-architecture.md -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 16 — Integration Patterns (Banking, Custody, Venues).md -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 17 — Multi‑Chain Strategy (Without Losing the Law).md -->
 <!-- SOURCE: doc-planing-archive/c-ATK_DOCUMENTATION_MASTER_PLAN.md -->
 
 # Integrations
@@ -39,6 +39,6 @@ description: Connect ATK with banking rails, exchanges, custody, and enterprise 
 
 ## Delivery Notes
 
-- Align integration runbooks with existing architecture documents (`kit/docs/content/docs/26-*`, `27-*`).
+- Align integration runbooks with integration guidance in `the-book-of-dalp/Part III — Operating the Platform/Chapter 16 — Integration Patterns (Banking, Custody, Venues).md`.
 - Document API authentication flows referencing `kit/dapp/src/lib/auth/`.
 - Highlight compliance dependencies (e.g., travel rule, KYC) for each integration.

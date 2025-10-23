@@ -3,7 +3,7 @@ title: SEPA Integration
 description: Enable SEPA and SEPA Instant payments for ATK deployments in Europe
 ---
 
-<!-- SOURCE: kit/docs/content/docs/27-payment-rails-settlement-architecture.md -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 16 — Integration Patterns (Banking, Custody, Venues).md -->
 
 # SEPA Integration
 
@@ -43,7 +43,7 @@ Connect ATK to SEPA credit transfer schemes (standard and instant) to support eu
 
 ## References
 
-- `kit/docs/content/docs/27-payment-rails-settlement-architecture.md`
+- `the-book-of-dalp/Part III — Operating the Platform/Chapter 16 — Integration Patterns (Banking, Custody, Venues).md`
 
 ## Related Guides
 

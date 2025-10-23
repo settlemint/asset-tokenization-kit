@@ -201,7 +201,7 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         DEFAULT_IDENTITY_REGISTRY_IMPLEMENTATION = implementations.identityRegistryImplementation;
         DEFAULT_IDENTITY_REGISTRY_STORAGE_IMPLEMENTATION = implementations.identityRegistryStorageImplementation;
         DEFAULT_SYSTEM_TRUSTED_ISSUERS_REGISTRY_IMPLEMENTATION =
-            implementations.systemTrustedIssuersRegistryImplementation;
+        implementations.systemTrustedIssuersRegistryImplementation;
         DEFAULT_TOPIC_SCHEME_REGISTRY_IMPLEMENTATION = implementations.topicSchemeRegistryImplementation;
         DEFAULT_IDENTITY_FACTORY_IMPLEMENTATION = implementations.identityFactoryImplementation;
         DEFAULT_IDENTITY_IMPLEMENTATION = implementations.identityImplementation;

@@ -3,7 +3,7 @@ title: ACH Integration
 description: Configure ACH rails for fiat settlement and investor payouts
 ---
 
-<!-- SOURCE: kit/docs/content/docs/27-payment-rails-settlement-architecture.md -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 16 — Integration Patterns (Banking, Custody, Venues).md -->
 
 # ACH Integration
 
@@ -43,7 +43,7 @@ Enable ACH transfers for ATK deployments to handle fiat inflows/outflows and inv
 
 ## References
 
-- `kit/docs/content/docs/27-payment-rails-settlement-architecture.md`
+- `the-book-of-dalp/Part III — Operating the Platform/Chapter 16 — Integration Patterns (Banking, Custody, Venues).md`
 
 ## Related Guides
 

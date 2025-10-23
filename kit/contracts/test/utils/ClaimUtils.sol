@@ -74,7 +74,11 @@ contract ClaimUtils is Test {
      * @return data The ABI encoded claim data.
      * @return signature The packed ECDSA signature (r, s, v).
      */
-    function createClaimSignature(address clientIdentityAddr, uint256 claimTopic, string memory claimDataString)
+    function createClaimSignature(
+        address clientIdentityAddr,
+        uint256 claimTopic,
+        string memory claimDataString
+    )
         public
         view
         returns (bytes memory data, bytes memory signature)
@@ -270,7 +274,13 @@ contract ClaimUtils is Test {
      * @param topicId The numeric topic ID for the claim.
      * @param claimDataString The string data for the claim.
      */
-    function issueCustomClaim(address clientWalletAddress_, uint256 topicId, string memory claimDataString) public {
+    function issueCustomClaim(
+        address clientWalletAddress_,
+        uint256 topicId,
+        string memory claimDataString
+    )
+        public
+    {
         bytes memory encodedData = abi.encode(claimDataString);
         _issueInvestorIdentityClaimInternal(clientWalletAddress_, topicId, encodedData);
     }
@@ -281,7 +291,11 @@ contract ClaimUtils is Test {
      * @param claimTopic The numeric topic ID of the claim.
      * @param claimData The ABI encoded data for the claim.
      */
-    function issueInvestorIdentityClaim(address clientWalletAddress_, uint256 claimTopic, bytes memory claimData)
+    function issueInvestorIdentityClaim(
+        address clientWalletAddress_,
+        uint256 claimTopic,
+        bytes memory claimData
+    )
         public
     {
         _issueInvestorIdentityClaimInternal(clientWalletAddress_, claimTopic, claimData);

@@ -3,11 +3,12 @@ title: Asset Workflows
 description: End-to-end operational playbooks for each ATK asset class
 ---
 
-<!-- SOURCE: kit/docs/content/docs/21-bond-workflows-user-stories.md -->
-<!-- SOURCE: kit/docs/content/docs/22-equity-workflows-user-stories.md -->
-<!-- SOURCE: kit/docs/content/docs/23-fund-workflows-user-stories.md -->
-<!-- SOURCE: kit/docs/content/docs/24-stablecoin-workflows-user-stories.md -->
-<!-- SOURCE: kit/docs/content/docs/25-deposit-workflows-user-stories.md -->
+<!-- SOURCE: kit/contracts/contracts/assets/bond/ -->
+<!-- SOURCE: kit/contracts/contracts/assets/equity/ -->
+<!-- SOURCE: kit/contracts/contracts/assets/fund/ -->
+<!-- SOURCE: kit/contracts/contracts/assets/stablecoin/ -->
+<!-- SOURCE: kit/contracts/contracts/assets/deposit/ -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md -->
 <!-- SOURCE: doc-planing-archive/c-ATK_DOCUMENTATION_MASTER_PLAN.md -->
 
 # Asset Workflows

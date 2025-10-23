@@ -3,8 +3,8 @@ title: Banking Integrations
 description: Connect ATK to core banking rails and payment networks
 ---
 
-<!-- SOURCE: kit/docs/content/docs/26-core-banking-integration-architecture.md -->
-<!-- SOURCE: kit/docs/content/docs/27-payment-rails-settlement-architecture.md -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 16 — Integration Patterns (Banking, Custody, Venues).md -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 17 — Multi‑Chain Strategy (Without Losing the Law).md -->
 
 # Banking Integrations
 

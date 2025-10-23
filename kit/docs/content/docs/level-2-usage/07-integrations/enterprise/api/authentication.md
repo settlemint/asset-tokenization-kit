@@ -1,52 +1,44 @@
 ---
 title: API Authentication
-description: Manage API keys and OAuth flows for ATK integrations
+description: Manage ATK API keys, scopes, rotation policies, and OAuth extensions for external integrations
 ---
 
 <!-- SOURCE: kit/dapp/src/lib/auth/ -->
+<!-- SOURCE: kit/dapp/src/orpc/procedures/ -->
+<!-- SOURCE: doc-planing-archive/c-ATK_DOCUMENTATION_MASTER_PLAN.md -->
 
 # API Authentication
 
-> **Status:** Draft skeleton — document key lifecycle, scopes, and OAuth configuration.
+> **Status:** Draft skeleton — populate with concrete procedures for key issuance, rotation, and incident response.
 
 ## Objective
 
-Secure ATK APIs by managing API keys, scopes, and OAuth providers for internal and external integrations.
+Provide secure, auditable authentication for external systems consuming ATK APIs and ORPC procedures.
 
 ## Prerequisites
 
-- [ ] Administrator access to API management console
-- [ ] Identity provider configured for OAuth (if applicable)
-- [ ] Policy outlining key rotation and scope approvals
+- [ ] Admin access to the API key management console (or ORPC configuration files).
+- [ ] Access to `kit/dapp/src/lib/auth/` for scope definitions and middleware.
+- [ ] Documented SLAs for key rotation and revocation.
 
-## Procedure
+## Tasks
 
-1. **Create API keys**
-   - TODO: Steps to generate keys, assign scopes, set expiry.
-2. **Rotate or revoke keys**
-   - TODO: Document rotation cadence, revocation steps, incident handling.
-3. **Configure OAuth provider**
-   - TODO: Setup instructions for supported providers (authorize URL, client IDs).
-4. **Assign scopes**
-   - TODO: Define available scopes and approval workflow.
-5. **Monitor usage**
-   - TODO: Log access, detect anomalies, enforce rate limits.
+1. **Issue API credentials**
+   - TODO: Detail API key creation flow, including scopes and expiration.
+2. **Configure OAuth providers**
+   - TODO: Describe optional OAuth/OIDC setup for enterprise SSO.
+3. **Rotate secrets**
+   - TODO: Provide rotation cadence, automation scripts, and validation steps.
+4. **Monitor usage**
+   - TODO: Outline logging, anomaly detection, and rate limiting.
+5. **Handle incidents**
+   - TODO: Document revocation process, notification templates, and post-incident review.
 
 ## Verification
 
-- TODO: Checklist confirming keys function, OAuth tokens issued, rate limiting enforced.
+- TODO: Checklist verifying new credentials, permission scopes, and logging coverage.
 
-## SLA
+## Runbook Links
 
-- Key issuance: <1 business day after approval.
-- Revocation: immediate upon request or incident detection.
-
-## References
-
-- `kit/dapp/src/lib/auth/` — authentication utilities.
-- Security policy documents (link once available).
-
-## Related Guides
-
-- [`../webhooks/configuration.md`](../webhooks/configuration.md)
-- [`../../08-troubleshooting/not-authorized.md`](../../08-troubleshooting/common-errors.md) (future mapping)
+- Reference [`../../../../02-administration/audit-logging.md`](../../../../02-administration/audit-logging.md) for audit trail exports.
+- Reference [`../../../../08-troubleshooting/common-errors.md`](../../../../08-troubleshooting/common-errors.md) for authentication error handling.

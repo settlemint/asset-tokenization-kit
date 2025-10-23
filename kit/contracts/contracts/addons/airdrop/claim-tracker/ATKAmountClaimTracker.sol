@@ -58,7 +58,11 @@ contract ATKAmountClaimTracker is IATKClaimTracker, Ownable {
     /// @param claimAmount The amount being claimed.
     /// @param totalAmount The total amount allocated for this index.
     /// @return isValid True if the new claim amount is valid, false otherwise.
-    function isClaimAmountValid(uint256 index, uint256 claimAmount, uint256 totalAmount)
+    function isClaimAmountValid(
+        uint256 index,
+        uint256 claimAmount,
+        uint256 totalAmount
+    )
         external
         view
         override

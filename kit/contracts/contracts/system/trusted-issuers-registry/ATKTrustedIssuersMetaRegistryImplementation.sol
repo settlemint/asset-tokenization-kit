@@ -120,7 +120,10 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     /// @dev Part of the meta-registry pattern - manages subject-specific registries
     /// @param subject The subject address to set the registry for
     /// @param registry The address of the trusted issuers registry for this subject (can be address(0) to remove)
-    function setRegistryForSubject(address subject, address registry)
+    function setRegistryForSubject(
+        address subject,
+        address registry
+    )
         external
         onlySystemRoles3(
             ATKPeopleRoles.SYSTEM_MANAGER_ROLE,
@@ -164,7 +167,10 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     // --- IATKTrustedIssuersRegistry Implementation ---
 
     /// @inheritdoc IATKTrustedIssuersRegistry
-    function addTrustedIssuer(IClaimIssuer _trustedIssuer, uint256[] calldata _claimTopics)
+    function addTrustedIssuer(
+        IClaimIssuer _trustedIssuer,
+        uint256[] calldata _claimTopics
+    )
         external
         override
         onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
@@ -182,7 +188,10 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     }
 
     /// @inheritdoc IATKTrustedIssuersRegistry
-    function updateIssuerClaimTopics(IClaimIssuer _trustedIssuer, uint256[] calldata _newClaimTopics)
+    function updateIssuerClaimTopics(
+        IClaimIssuer _trustedIssuer,
+        uint256[] calldata _newClaimTopics
+    )
         external
         override
         onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
@@ -198,7 +207,10 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function getTrustedIssuersForClaimTopic(uint256 claimTopic, address _subject)
+    function getTrustedIssuersForClaimTopic(
+        uint256 claimTopic,
+        address _subject
+    )
         external
         view
         override
@@ -213,7 +225,11 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function hasClaimTopic(address _issuer, uint256 _claimTopic, address _subject)
+    function hasClaimTopic(
+        address _issuer,
+        uint256 _claimTopic,
+        address _subject
+    )
         external
         view
         override
@@ -223,7 +239,10 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTTrustedIssuersRegistry
-    function getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer, address _subject)
+    function getTrustedIssuerClaimTopics(
+        IClaimIssuer _trustedIssuer,
+        address _subject
+    )
         external
         view
         override
@@ -235,7 +254,11 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     // --- IClaimAuthorizer Implementation ---
 
     /// @inheritdoc IClaimAuthorizer
-    function isAuthorizedToAddClaim(address issuer, uint256 topic, address subject)
+    function isAuthorizedToAddClaim(
+        address issuer,
+        uint256 topic,
+        address subject
+    )
         external
         view
         override
@@ -358,7 +381,10 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     /// @dev Meta-registry implementation that checks both contract-specific and system registries.
     ///      For subject = address(0), only system registry is checked.
     ///      For other subjects (identity contracts), both registries are checked and merged.
-    function _getTrustedIssuersForClaimTopic(uint256 claimTopic, address subject)
+    function _getTrustedIssuersForClaimTopic(
+        uint256 claimTopic,
+        address subject
+    )
         internal
         view
         returns (IClaimIssuer[] memory)
@@ -393,7 +419,10 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     /// @param _trustedIssuer The trusted issuer to get claim topics for
     /// @param _subject The subject identifier (address(0) for global only, or specific subject address)
     /// @return Array of claim topics the trusted issuer is authorized for
-    function _getTrustedIssuerClaimTopics(IClaimIssuer _trustedIssuer, address _subject)
+    function _getTrustedIssuerClaimTopics(
+        IClaimIssuer _trustedIssuer,
+        address _subject
+    )
         internal
         view
         returns (uint256[] memory)
@@ -425,7 +454,10 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     /// @param array1 First array of uint256 values
     /// @param array2 Second array of uint256 values
     /// @return merged Array containing unique values from both input arrays
-    function _mergeUint256Arrays(uint256[] memory array1, uint256[] memory array2)
+    function _mergeUint256Arrays(
+        uint256[] memory array1,
+        uint256[] memory array2
+    )
         internal
         pure
         returns (uint256[] memory merged)
@@ -484,7 +516,10 @@ contract ATKTrustedIssuersMetaRegistryImplementation is
     /// @param array1 First array of claim issuers
     /// @param array2 Second array of claim issuers
     /// @return merged Array containing unique issuers from both input arrays
-    function _mergeIssuerArrays(IClaimIssuer[] memory array1, IClaimIssuer[] memory array2)
+    function _mergeIssuerArrays(
+        IClaimIssuer[] memory array1,
+        IClaimIssuer[] memory array2
+    )
         internal
         pure
         returns (IClaimIssuer[] memory merged)

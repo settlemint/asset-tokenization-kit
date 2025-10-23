@@ -71,7 +71,11 @@ contract ATKTokenFactoryRegistryImplementation is
     /// @param _tokenImplementation The implementation contract address for tokens created by this factory
     /// @return The address of the deployed factory proxy
     /// @dev Creates an upgradeable proxy for the factory and grants necessary permissions
-    function registerTokenFactory(string calldata _name, address _factoryImplementation, address _tokenImplementation)
+    function registerTokenFactory(
+        string calldata _name,
+        address _factoryImplementation,
+        address _tokenImplementation
+    )
         external
         override
         nonReentrant
@@ -121,7 +125,10 @@ contract ATKTokenFactoryRegistryImplementation is
     /// @param factoryTypeHash The type hash of the factory to update
     /// @param implementation_ The new implementation contract address
     /// @dev Only callable by addresses with IMPLEMENTATION_MANAGER_ROLE
-    function setTokenFactoryImplementation(bytes32 factoryTypeHash, address implementation_)
+    function setTokenFactoryImplementation(
+        bytes32 factoryTypeHash,
+        address implementation_
+    )
         public
         override
         onlySystemRole(ATKPeopleRoles.SYSTEM_MANAGER_ROLE)

@@ -3,8 +3,8 @@ title: Bond Issuance Workflow
 description: Launch regulated bond tokens from term definition to distribution
 ---
 
-<!-- SOURCE: kit/docs/content/docs/21-bond-workflows-user-stories.md -->
 <!-- SOURCE: kit/contracts/contracts/assets/bond/ -->
+<!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md -->
 
 # Bond Issuance Workflow
 
@@ -44,7 +44,8 @@ Issue a bond instrument on ATK with defined terms, investor eligibility, and com
 ## References
 
 - `kit/contracts/contracts/assets/bond/` — contract behaviours.
-- `kit/docs/content/docs/21-bond-workflows-user-stories.md` — story-driven scenarios.
+- `kit/contracts/contracts/assets/bond/` — implementation specifics.
+- `the-book-of-dalp/Part III — Operating the Platform/Chapter 18 — Data, Evidence, and Operational Truth (Going Deeper).md` — operational evidence framework.
 
 ## Related Guides
 

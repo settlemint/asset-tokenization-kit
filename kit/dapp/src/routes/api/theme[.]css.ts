@@ -20,7 +20,7 @@ import {
   getThemeCssFromCache,
   setThemeCssCache,
 } from "@/components/theme/lib/theme-css-cache";
-import { createServerFileRoute } from "@tanstack/react-start/server";
+import { createFileRoute } from "@tanstack/react-router";
 
 /**
  * Handles GET requests for theme CSS
@@ -44,6 +44,10 @@ async function handleGet() {
   });
 }
 
-export const ServerRoute = createServerFileRoute("/api/theme.css").methods({
-  GET: handleGet,
+export const Route = createFileRoute("/api/theme.css")({
+  server: {
+    handlers: {
+      GET: handleGet,
+    },
+  },
 });

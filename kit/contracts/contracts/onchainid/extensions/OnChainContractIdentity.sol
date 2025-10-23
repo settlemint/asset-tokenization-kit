@@ -51,9 +51,7 @@ abstract contract OnChainContractIdentity is IContractIdentity {
     {
         bytes32 claimId = keccak256(abi.encode(address(this), topic));
 
-        try subject.getClaim(
-            claimId
-        ) returns (
+        try subject.getClaim(claimId) returns (
             uint256 storedTopic,
             uint256 scheme,
             address storedIssuer,
@@ -77,7 +75,12 @@ abstract contract OnChainContractIdentity is IContractIdentity {
     /// @param data The claim data
     /// @param uri The claim URI (e.g., IPFS hash)
     /// @return claimId The ID of the created claim
-    function issueClaimTo(IIdentity subject, uint256 topic, bytes calldata data, string calldata uri)
+    function issueClaimTo(
+        IIdentity subject,
+        uint256 topic,
+        bytes calldata data,
+        string calldata uri
+    )
         external
         virtual
         returns (bytes32 claimId)

@@ -69,7 +69,11 @@ contract TestableOnChainIdentityWithRevocation is ERC734, ERC735, OnChainIdentit
 
     /// @inheritdoc IERC734
     /// @dev Adds a key with a specific purpose and type. Requires MANAGEMENT_KEY purpose.
-    function addKey(bytes32 _key, uint256 _purpose, uint256 _keyType)
+    function addKey(
+        bytes32 _key,
+        uint256 _purpose,
+        uint256 _keyType
+    )
         public
         virtual
         override(ERC734, IERC734) // Overrides ERC734's implementation and fulfills IERC734
@@ -82,7 +86,10 @@ contract TestableOnChainIdentityWithRevocation is ERC734, ERC735, OnChainIdentit
     /// @inheritdoc IERC734
     /// @dev Removes a purpose from a key. If it's the last purpose, the key is removed. Requires MANAGEMENT_KEY
     /// purpose.
-    function removeKey(bytes32 _key, uint256 _purpose)
+    function removeKey(
+        bytes32 _key,
+        uint256 _purpose
+    )
         public
         virtual
         override(ERC734, IERC734)
@@ -117,7 +124,11 @@ contract TestableOnChainIdentityWithRevocation is ERC734, ERC735, OnChainIdentit
     /// @inheritdoc IERC734
     /// @dev Initiates an execution. If the sender has MANAGEMENT_KEY, or ACTION_KEY (for external calls),
     ///      the execution is auto-approved.
-    function execute(address _to, uint256 _value, bytes calldata _data)
+    function execute(
+        address _to,
+        uint256 _value,
+        bytes calldata _data
+    )
         public
         payable
         virtual
@@ -142,7 +153,10 @@ contract TestableOnChainIdentityWithRevocation is ERC734, ERC735, OnChainIdentit
         return executionId;
     }
 
-    function keyHasPurpose(bytes32 _key, uint256 _purpose)
+    function keyHasPurpose(
+        bytes32 _key,
+        uint256 _purpose
+    )
         public
         view
         virtual

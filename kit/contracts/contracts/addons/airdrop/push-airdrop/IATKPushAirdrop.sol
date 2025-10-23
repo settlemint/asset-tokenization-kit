@@ -53,7 +53,13 @@ interface IATKPushAirdrop is IATKAirdrop {
     /// @param recipient The address to receive tokens.
     /// @param amount The amount of tokens to distribute.
     /// @param merkleProof The Merkle proof array for verification.
-    function distribute(uint256 index, address recipient, uint256 amount, bytes32[] calldata merkleProof) external;
+    function distribute(
+        uint256 index,
+        address recipient,
+        uint256 amount,
+        bytes32[] calldata merkleProof
+    )
+        external;
 
     /// @notice Distributes tokens to multiple recipients in a single transaction.
     /// @dev Only the contract owner can distribute tokens.

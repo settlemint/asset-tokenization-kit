@@ -38,7 +38,11 @@ interface IATKClaimTracker {
     /// @param claimedAmount The amount being claimed.
     /// @param totalAmount The total amount allocated for this index.
     /// @return isValid True if the new claim amount is valid, false otherwise.
-    function isClaimAmountValid(uint256 index, uint256 claimedAmount, uint256 totalAmount)
+    function isClaimAmountValid(
+        uint256 index,
+        uint256 claimedAmount,
+        uint256 totalAmount
+    )
         external
         view
         returns (bool isValid);
