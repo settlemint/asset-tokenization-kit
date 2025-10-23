@@ -232,7 +232,11 @@ contract ATKTokenSale is
     }
 
     /// @inheritdoc IATKTokenSale
-    function configureVesting(uint256 vestingStart, uint256 vestingDuration, uint256 vestingCliff)
+    function configureVesting(
+        uint256 vestingStart,
+        uint256 vestingDuration,
+        uint256 vestingCliff
+    )
         external
         onlyRole(SALE_ADMIN_ROLE)
         onlyInStatus(SaleStatus.SETUP)
@@ -320,7 +324,10 @@ contract ATKTokenSale is
     }
 
     /// @inheritdoc IATKTokenSale
-    function buyTokensWithERC20(address currency, uint256 amount)
+    function buyTokensWithERC20(
+        address currency,
+        uint256 amount
+    )
         external
         nonReentrant
         whenSaleOpen
@@ -360,7 +367,10 @@ contract ATKTokenSale is
     }
 
     /// @inheritdoc IATKTokenSale
-    function withdrawFunds(address currency, address recipient)
+    function withdrawFunds(
+        address currency,
+        address recipient
+    )
         external
         nonReentrant
         onlyRole(FUNDS_MANAGER_ROLE)
@@ -485,7 +495,10 @@ contract ATKTokenSale is
     /// @param currency The address of the payment currency (address(0) for native currency)
     /// @param paymentAmount The amount of payment currency
     /// @return tokenAmount The amount of tokens that can be purchased
-    function _calculateTokenAmount(address currency, uint256 paymentAmount)
+    function _calculateTokenAmount(
+        address currency,
+        uint256 paymentAmount
+    )
         internal
         view
         returns (uint256 tokenAmount)
@@ -518,7 +531,14 @@ contract ATKTokenSale is
     /// @param currency The address of the payment currency
     /// @param paymentAmount The amount of payment currency
     /// @param tokenAmount The amount of tokens to be purchased
-    function _processPurchase(address buyer, address currency, uint256 paymentAmount, uint256 tokenAmount) internal {
+    function _processPurchase(
+        address buyer,
+        address currency,
+        uint256 paymentAmount,
+        uint256 tokenAmount
+    )
+        internal
+    {
         // Validate purchase amount
         if (tokenAmount < minPurchase) {
             revert PurchaseAmountTooLow();

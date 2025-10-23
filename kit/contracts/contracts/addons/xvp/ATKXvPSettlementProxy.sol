@@ -90,7 +90,12 @@ contract ATKXvPSettlementProxy is Proxy {
     /// @dev Performs the delegatecall to initialize the implementation contract.
     /// @param implementationAddress_ The non-zero address of the logic contract to `delegatecall` to.
     /// @param initializeData_ The ABI-encoded data for the `initialize` function call.
-    function _performInitializationDelegatecall(address implementationAddress_, bytes memory initializeData_) internal {
+    function _performInitializationDelegatecall(
+        address implementationAddress_,
+        bytes memory initializeData_
+    )
+        internal
+    {
         if (implementationAddress_ == address(0)) {
             revert InitializationWithZeroAddress();
         }
