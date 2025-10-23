@@ -31,9 +31,8 @@ export function createRouter() {
   return getRouter();
 }
 
-const IS_SERVER = globalThis.window === undefined;
-
 export function getRouter() {
+  const IS_SERVER = globalThis.window === undefined;
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {

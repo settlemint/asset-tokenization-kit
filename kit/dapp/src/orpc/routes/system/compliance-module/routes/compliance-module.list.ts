@@ -11,6 +11,7 @@ const COMPLIANCE_MODULES_QUERY = theGraphGraphql(
   query GetComplianceModules($registryAddress: String!) {
     complianceModules(where: {complianceModuleRegistry: $registryAddress}) @fetchAll {
       id
+      address
       typeId
       name
       globalConfigs {

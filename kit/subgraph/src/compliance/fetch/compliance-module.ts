@@ -3,18 +3,23 @@ import { ComplianceModule } from "../../../generated/schema";
 import { fetchAccount } from "../../account/fetch/account";
 import { setAccountContractName } from "../../account/utils/account-contract-name";
 
-export function fetchComplianceModule(address: Address): ComplianceModule {
-  let complianceModule = ComplianceModule.load(address);
+export function fetchComplianceModule(
+  systemAddress: Address,
+  complianceModuleAddress: Address
+): ComplianceModule {
+  const id = systemAddress.concat(complianceModuleAddress);
+  let complianceModule = ComplianceModule.load(id);
 
   if (!complianceModule) {
-    complianceModule = new ComplianceModule(address);
-    complianceModule.account = fetchAccount(address).id;
+    complianceModule = new ComplianceModule(id);
+    complianceModule.address = complianceModuleAddress;
+    complianceModule.account = fetchAccount(complianceModuleAddress).id;
     complianceModule.name = "unknown";
     complianceModule.typeId = "unknown";
     complianceModule.deployedInTransaction = Bytes.empty();
     complianceModule.complianceModuleRegistry = Address.zero();
     complianceModule.save();
-    setAccountContractName(address, "Compliance Module");
+    setAccountContractName(complianceModuleAddress, "Compliance Module");
   }
 
   return complianceModule;

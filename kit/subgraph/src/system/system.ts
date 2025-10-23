@@ -124,7 +124,11 @@ export function handleBootstrapped(event: Bootstrapped): void {
   }
   organisationIdentity.save();
 
-  system.compliance = fetchCompliance(event.params.complianceProxy).id;
+  const compliance = fetchCompliance(event.params.complianceProxy);
+  system.compliance = compliance.id;
+  compliance.system = system.id;
+  compliance.save();
+
   system.identityRegistry = identityRegistry.id;
   system.identityRegistryStorage = identityRegistryStorage.id;
   system.trustedIssuersRegistry = trustedIssuersRegistry.id;

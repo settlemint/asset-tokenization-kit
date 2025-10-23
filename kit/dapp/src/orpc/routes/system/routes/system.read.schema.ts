@@ -9,6 +9,7 @@ import { complianceTypeId } from "@atk/zod/compliance";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { ethereumHex } from "@atk/zod/ethereum-hex";
 import { isoCountryCode } from "@atk/zod/iso-country-code";
+import { ethereumCompositeId } from "@atk/zod/src/ethereum-composite-id";
 import * as z from "zod";
 
 /**
@@ -33,9 +34,11 @@ const SystemAddonSchema = z.object({
  * Schema for compliance module entries
  */
 const ComplianceModuleSchema = z.object({
-  id: ethereumAddress,
-  typeId: complianceTypeId(),
-  name: z.string(),
+  id: ethereumCompositeId.describe(
+    "Compliance module ID (concatenation of system address and compliance module address)"
+  ),
+  typeId: complianceTypeId().describe("Compliance module type ID"),
+  name: z.string().describe("Compliance module name"),
 });
 
 /**

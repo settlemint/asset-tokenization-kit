@@ -31,6 +31,7 @@ import {
 import { fetchToken } from "./fetch/token";
 import { fetchTokenComplianceModuleConfig } from "./fetch/token-compliance-module-config";
 import { handleMint } from "./utils/token-mint-utils";
+import { getTokenSystemAddress } from "./utils/token-utils";
 
 export function handleApproval(event: Approval): void {
   fetchEvent(event, "Approval");
@@ -45,7 +46,12 @@ export function handleComplianceModuleAdded(
 ): void {
   fetchEvent(event, "ComplianceModuleAdded");
 
-  const complianceModule = fetchComplianceModule(event.params._module);
+  const token = fetchToken(event.address);
+  const systemAddress = getTokenSystemAddress(token);
+  const complianceModule = fetchComplianceModule(
+    systemAddress,
+    event.params._module
+  );
   const complianceModuleConfig = fetchTokenComplianceModuleConfig(
     event.address,
     event.params._module
@@ -100,7 +106,12 @@ export function handleModuleParametersUpdated(
 ): void {
   fetchEvent(event, "ModuleParametersUpdated");
 
-  const complianceModule = fetchComplianceModule(event.params._module);
+  const token = fetchToken(event.address);
+  const systemAddress = getTokenSystemAddress(token);
+  const complianceModule = fetchComplianceModule(
+    systemAddress,
+    event.params._module
+  );
   const tokenComplianceModuleConfig = fetchTokenComplianceModuleConfig(
     event.address,
     event.params._module
