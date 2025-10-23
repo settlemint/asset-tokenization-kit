@@ -161,8 +161,6 @@ describe(
         },
       ]);
 
-      const redeemAmount = 10n * 10n ** 18n;
-
       const result = await adminClient.token.redeem({
         contract: bond.id,
         redeemAll: true,

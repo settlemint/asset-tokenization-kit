@@ -6,6 +6,7 @@ import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 // Interface imports
 import {
@@ -57,7 +58,8 @@ contract SMARTToken is
     SMARTBurnable,
     SMARTRedeemable,
     SMARTHistoricalBalances,
-    SMARTCapped
+    SMARTCapped,
+    ReentrancyGuard
 {
     using SafeERC20 for IERC20;
 
@@ -220,7 +222,7 @@ contract SMARTToken is
 
     /// @notice Redeems `amount` of tokens from `owner`.
     /// @dev Authorization policy: only the owner may redeem on their behalf.
-    function redeemFor(address owner, uint256 amount) external override returns (bool success) {
+    function redeemFor(address owner, uint256 amount) external override nonReentrant returns (bool success) {
         address caller = _msgSender();
         if (caller != owner) revert UnauthorizedRedeemer(caller, owner);
         if (amount == 0) revert InvalidRedemptionAmount();

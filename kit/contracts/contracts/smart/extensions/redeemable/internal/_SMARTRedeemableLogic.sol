@@ -8,7 +8,12 @@ import { ISMARTRedeemable } from "../ISMARTRedeemable.sol";
 /// @author SettleMint
 /// @notice Centralises hook orchestration and interface registration for redeemable flows.
 abstract contract _SMARTRedeemableLogic is _SMARTExtension, ISMARTRedeemable {
-    /// @notice Registers the redeeemable interface on inheriting contracts.
+    /// @notice Thrown when attempting to redeem to or from the zero address.
+    error InvalidRedeemAddress();
+    /// @notice Thrown when attempting to redeem a zero token amount.
+    error InvalidRedeemAmount();
+
+    /// @notice Registers the redeemable interface on inheriting contracts.
     function __SMARTRedeemable_init_unchained() internal {
         _registerInterface(type(ISMARTRedeemable).interfaceId);
     }
@@ -22,6 +27,9 @@ abstract contract _SMARTRedeemableLogic is _SMARTExtension, ISMARTRedeemable {
     /// @param owner The address whose tokens are redeemed.
     /// @param amount The number of tokens redeemed.
     function _smart_redeemFor(address owner, uint256 amount) internal virtual {
+        if (owner == address(0)) revert InvalidRedeemAddress();
+        if (amount == 0) revert InvalidRedeemAmount();
+
         _beforeRedeem(owner, amount);
         __redeemable_redeem(owner, amount);
         _afterRedeem(owner, amount);
