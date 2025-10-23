@@ -230,6 +230,8 @@ templates:
       abis:
         - name: ClaimIssuer
           file: ../contracts/.generated/artifacts/@onchainid/contracts/interface/IClaimIssuer.sol/IClaimIssuer.json
+        - name: IERC165
+          file: ../contracts/.generated/artifacts/@openzeppelin/contracts/utils/introspection/IERC165.sol/IERC165.json
       eventHandlers:
         - event: Approved(indexed uint256,bool)
           handler: handleApproved
