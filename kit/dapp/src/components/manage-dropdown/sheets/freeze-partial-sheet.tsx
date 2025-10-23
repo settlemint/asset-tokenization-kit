@@ -148,7 +148,7 @@ export function FreezePartialSheet({
               const promise = freezePartial({
                 contract: asset.id,
                 userAddress,
-                amount: format(amount, { digits: 18 }),
+                amount,
                 walletVerification: verification,
               });
 

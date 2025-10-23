@@ -1,5 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { AddonsResponseSchema } from "@/orpc/routes/system/addon/routes/addon.list.schema";
 import { getFactoryTypeIdsFromAddonType } from "@atk/zod/addon-types";
@@ -21,18 +22,24 @@ import { getEthereumAddress } from "@atk/zod/ethereum-address";
  * while account filtering enables finding addons deployed by specific users.
  */
 const LIST_SYSTEM_ADDONS_QUERY = theGraphGraphql(`
-  query ListSystemAddons($orderBy: SystemAddon_orderBy, $orderDirection: OrderDirection, $where: SystemAddon_filter) {
-    systemAddons(
-      orderBy: $orderBy
-      orderDirection: $orderDirection
-      where: $where
-    ) @fetchAll {
+  query ListSystemAddons($systemAddress: ID!, $orderBy: SystemAddon_orderBy, $orderDirection: OrderDirection, $where: SystemAddon_filter) {
+    system(id: $systemAddress) {
       id
-      name
-      typeId
-      deployedInTransaction
-      account {
+      systemAddonRegistry {
         id
+        systemAddons(
+          orderBy: $orderBy
+          orderDirection: $orderDirection
+          where: $where
+        ) @fetchAll {
+          id
+          name
+          typeId
+          deployedInTransaction
+          account {
+            id
+          }
+        }
       }
     }
   }
@@ -80,6 +87,7 @@ const LIST_SYSTEM_ADDONS_QUERY = theGraphGraphql(`
  */
 export const addonList = authRouter.system.addon.list
   .use(theGraphMiddleware)
+  .use(systemMiddleware)
   .handler(async ({ input, context }) => {
     // Build where clause based on filters
     const where: Record<string, unknown> = {};
@@ -98,6 +106,7 @@ export const addonList = authRouter.system.addon.list
       {
         input: {
           ...input,
+          systemAddress: context.system.id,
           where: Object.keys(where).length > 0 ? where : undefined,
         },
         output: AddonsResponseSchema,
@@ -105,11 +114,13 @@ export const addonList = authRouter.system.addon.list
     );
 
     // Transform the response to match the schema with hoisted account address
-    return response.systemAddons.map((addon) => ({
-      id: addon.id,
-      name: addon.name,
-      typeId: addon.typeId,
-      deployedInTransaction: addon.deployedInTransaction,
-      account: getEthereumAddress(addon.account.id),
-    }));
+    return (
+      response.system.systemAddonRegistry?.systemAddons.map((addon) => ({
+        id: addon.id,
+        name: addon.name,
+        typeId: addon.typeId,
+        deployedInTransaction: addon.deployedInTransaction,
+        account: getEthereumAddress(addon.account.id),
+      })) ?? []
+    );
   });

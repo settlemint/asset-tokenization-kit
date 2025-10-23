@@ -21,7 +21,12 @@ import {
   signInWithUser,
 } from "@test/fixtures/user";
 import { from } from "dnum";
-import { BONDS } from "./data/demo-assets";
+import {
+  BONDS,
+  DEPOSITS,
+  STABLECOINS,
+  type DemoAsset,
+} from "./data/demo-assets";
 import { DE_COUNTRY_CODE } from "./data/demo-country-codes";
 import {
   ADMIN,
@@ -29,6 +34,7 @@ import {
   GERMAN_INVESTOR_2,
   ISSUER,
   JAPANESE_INVESTOR,
+  US_INVESTOR,
 } from "./data/demo-users";
 
 const logger = createLogger({ level: "info" });
@@ -43,6 +49,7 @@ await setupUser(GERMAN_INVESTOR_1);
 await setupUser(GERMAN_INVESTOR_2);
 await setupUser(ISSUER);
 await setupUser(JAPANESE_INVESTOR);
+await setupUser(US_INVESTOR);
 
 const adminClient = getOrpcClient(await signInWithUser(ADMIN));
 const issuerClient = getOrpcClient(await signInWithUser(ISSUER));
@@ -67,11 +74,13 @@ await Promise.all([
       [GERMAN_INVESTOR_1, GERMAN_INVESTOR_2],
       "DE"
     );
+    await createAndRegisterUserIdentities(adminClient, [US_INVESTOR], "US");
     await issueDefaultKycClaims(adminClient, [
       ADMIN,
       ISSUER,
       GERMAN_INVESTOR_1,
       GERMAN_INVESTOR_2,
+      US_INVESTOR,
     ]);
   })(),
   setupDefaultIssuerRoles(adminClient, ISSUER),
@@ -79,35 +88,42 @@ await Promise.all([
   createAndRegisterUserIdentities(adminClient, [JAPANESE_INVESTOR], "JP", true),
 ]);
 
-logger.info("Creating denomination token");
+let denominationToken: Awaited<ReturnType<typeof createToken>> | undefined =
+  undefined;
 
 // Create tokens with compliance enabled
-const denominationToken = await createToken(
-  issuerClient,
-  {
-    type: "deposit",
-    name: "Proof-of-Deposit",
-    symbol: "POD",
-    decimals: 18,
-    countryCode: DE_COUNTRY_CODE,
-    basePrice: from("1.00", 2),
-    walletVerification: {
-      secretVerificationCode: DEFAULT_PINCODE,
-      verificationType: "PINCODE",
+
+for (const depositToCreate of DEPOSITS) {
+  const { isDenominationToken, ...depositData } = depositToCreate;
+  logger.info(`Creating deposit: ${depositData.name}`);
+  const token = await createToken(
+    issuerClient,
+    {
+      type: "deposit",
+      ...depositData,
+      basePrice: from("1.00", 2),
+      initialModulePairs: getInitialModulePairs(depositData),
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
     },
-  },
-  {
-    useExactName: true,
-    grantRole: [
-      "custodian",
-      "emergency",
-      "governance",
-      "supplyManagement",
-      "tokenManager",
-    ],
-    unpause: true,
+    {
+      useExactName: true,
+      grantRole: [
+        "custodian",
+        "emergency",
+        "governance",
+        "supplyManagement",
+        "tokenManager",
+      ],
+      unpause: true,
+    }
+  );
+  if (isDenominationToken) {
+    denominationToken = token;
   }
-);
+}
 
 const countryAllowListModule =
   system.complianceModuleRegistry.complianceModules.find(
@@ -117,60 +133,33 @@ const smartIdentityVerificationModule =
   system.complianceModuleRegistry.complianceModules.find(
     (m) => m.typeId === "SMARTIdentityVerificationComplianceModule"
   );
+const tokenSupplyLimitModule =
+  system.complianceModuleRegistry.complianceModules.find(
+    (m) => m.typeId === "TokenSupplyLimitComplianceModule"
+  );
 const topics = await adminClient.system.claimTopics.topicList({});
 const amlTopic = topics.find((t) => t.name === "antiMoneyLaundering");
 const kycTopic = topics.find((t) => t.name === "knowYourCustomer");
 
 for (const bondToCreate of BONDS) {
+  if (!denominationToken) {
+    throw new Error("Denomination token not found");
+  }
   logger.info(`Creating bond: ${bondToCreate.name}`);
-  const initialModulePairs: Parameters<
-    typeof createToken
-  >[1]["initialModulePairs"] = [];
-  if (
-    countryAllowListModule &&
-    Array.isArray(bondToCreate.countries) &&
-    bondToCreate.countries.length > 0
-  ) {
-    initialModulePairs.push({
-      typeId: "CountryAllowListComplianceModule",
-      module: countryAllowListModule.id,
-      values: bondToCreate.countries,
-    });
-  }
-  if (smartIdentityVerificationModule && amlTopic && kycTopic) {
-    initialModulePairs.push({
-      typeId: "SMARTIdentityVerificationComplianceModule",
-      module: smartIdentityVerificationModule.id,
-      values: [
-        {
-          nodeType: 0,
-          value: BigInt(amlTopic?.topicId),
-        },
-        {
-          nodeType: 1,
-          value: 0n,
-        },
-        {
-          nodeType: 0,
-          value: BigInt(kycTopic?.topicId),
-        },
-      ],
-    });
-  }
   const bond = await createToken(
     issuerClient,
     {
+      type: "bond",
       name: bondToCreate.name,
       symbol: bondToCreate.symbol,
       isin: bondToCreate.isin,
-      decimals: 18,
-      type: "bond",
-      countryCode: DE_COUNTRY_CODE,
+      decimals: bondToCreate.decimals,
+      countryCode: bondToCreate.countryCode,
       cap: bondToCreate.cap,
-      faceValue: from(1, 18),
+      faceValue: bondToCreate.faceValue,
       maturityDate: bondToCreate.maturityDate,
       denominationAsset: denominationToken.id,
-      initialModulePairs,
+      initialModulePairs: getInitialModulePairs(bondToCreate),
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
@@ -255,4 +244,103 @@ for (const bondToCreate of BONDS) {
       verificationType: "PINCODE",
     },
   });
+}
+
+for (const stableCoinToCreate of STABLECOINS) {
+  const { collateral, ...stableCoinData } = stableCoinToCreate;
+  logger.info(`Creating stablecoin: ${stableCoinToCreate.name}`);
+  const token = await createToken(
+    issuerClient,
+    {
+      type: "stablecoin",
+      ...stableCoinData,
+      basePrice: from("1.00", 2),
+      initialModulePairs: getInitialModulePairs(stableCoinData),
+      walletVerification: {
+        secretVerificationCode: DEFAULT_PINCODE,
+        verificationType: "PINCODE",
+      },
+    },
+    {
+      useExactName: true,
+      grantRole: [
+        "custodian",
+        "emergency",
+        "governance",
+        "supplyManagement",
+        "tokenManager",
+      ],
+      unpause: true,
+    }
+  );
+  if (!token.identity?.id) {
+    throw new Error("Token does not have an identity");
+  }
+  const oneHundredDaysFromNow = new Date(
+    Date.now() + 1000 * 60 * 60 * 24 * 100
+  );
+  await issuerClient.token.updateCollateral({
+    contract: token.id,
+    walletVerification: {
+      secretVerificationCode: DEFAULT_PINCODE,
+      verificationType: "PINCODE",
+    },
+    amount: collateral,
+    expiryTimestamp: oneHundredDaysFromNow,
+  });
+}
+
+function getInitialModulePairs(assetToCreate: DemoAsset) {
+  const { compliance } = assetToCreate;
+  if (!compliance) {
+    return [];
+  }
+  const initialModulePairs: Parameters<
+    typeof createToken
+  >[1]["initialModulePairs"] = [];
+  if (
+    countryAllowListModule &&
+    Array.isArray(compliance.allowedCountries) &&
+    compliance.allowedCountries.length > 0
+  ) {
+    initialModulePairs.push({
+      typeId: "CountryAllowListComplianceModule",
+      module: countryAllowListModule.module,
+      values: compliance.allowedCountries,
+    });
+  }
+  if (smartIdentityVerificationModule && amlTopic && kycTopic) {
+    initialModulePairs.push({
+      typeId: "SMARTIdentityVerificationComplianceModule",
+      module: smartIdentityVerificationModule.module,
+      values: [
+        {
+          nodeType: 0,
+          value: BigInt(amlTopic?.topicId),
+        },
+        {
+          nodeType: 1,
+          value: 0n,
+        },
+        {
+          nodeType: 0,
+          value: BigInt(kycTopic?.topicId),
+        },
+      ],
+    });
+  }
+  if (tokenSupplyLimitModule && compliance.tokenSupplyLimit) {
+    initialModulePairs.push({
+      typeId: "TokenSupplyLimitComplianceModule",
+      module: tokenSupplyLimitModule.module,
+      values: {
+        maxSupply: compliance.tokenSupplyLimit,
+        periodLength: 0,
+        rolling: false,
+        useBasePrice: false,
+        global: false,
+      },
+    });
+  }
+  return initialModulePairs;
 }

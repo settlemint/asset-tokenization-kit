@@ -8,6 +8,7 @@
  */
 
 import * as z from "zod";
+import { apiBigInt } from "./bigint";
 import { ethereumAddress } from "./ethereum-address";
 import { expressionNodeWithGroups } from "./expression-node";
 import { isoCountryCodeNumeric } from "./iso-country-code";
@@ -30,6 +31,10 @@ export const complianceTypeIds = [
   "IdentityAllowListComplianceModule",
   "IdentityBlockListComplianceModule",
   "SMARTIdentityVerificationComplianceModule",
+  "TokenSupplyLimitComplianceModule",
+  "InvestorCountComplianceModule",
+  "TimeLockComplianceModule",
+  "TransferApprovalComplianceModule",
 ] as const;
 
 /**
@@ -61,6 +66,10 @@ export const ComplianceTypeIdEnum = {
   IdentityBlockListComplianceModule: "IdentityBlockListComplianceModule",
   SMARTIdentityVerificationComplianceModule:
     "SMARTIdentityVerificationComplianceModule",
+  TokenSupplyLimitComplianceModule: "TokenSupplyLimitComplianceModule",
+  InvestorCountComplianceModule: "InvestorCountComplianceModule",
+  TimeLockComplianceModule: "TimeLockComplianceModule",
+  TransferApprovalComplianceModule: "TransferApprovalComplianceModule",
 } as const;
 
 export const complianceTypeId = () =>
@@ -87,6 +96,118 @@ export const identityBlockListValues = () =>
 
 export const smartIdentityVerificationValues = () =>
   z.array(expressionNodeWithGroups).describe("Array of expression nodes");
+
+export const tokenSupplyLimitValues = () =>
+  z
+    .object({
+      maxSupply: apiBigInt.describe(
+        "Maximum allowed supply (whole numbers only). If useBasePrice=false: whole token count (e.g., 1000 = 1000 tokens). If useBasePrice=true: whole currency amount (e.g., 8000000 = €8M). For MiCA compliance, specify 8000000."
+      ),
+      periodLength: z
+        .number()
+        .int()
+        .min(0)
+        .describe(
+          "Length of tracking period in days. 0 = lifetime cap, >0 = periodic cap (fixed or rolling window)."
+        ),
+      rolling: z
+        .boolean()
+        .describe(
+          "Whether to use rolling window (true) or fixed periods (false). Only applicable when periodLength > 0."
+        ),
+      useBasePrice: z
+        .boolean()
+        .describe(
+          "Whether to convert token amounts to base currency using price claims for limit calculation."
+        ),
+      global: z
+        .boolean()
+        .describe(
+          "Track globally across all tokens for this issuer (issuer-wide caps)."
+        ),
+    })
+    .describe("Token supply limit parameters");
+
+export const investorCountValues = () =>
+  z
+    .object({
+      maxInvestors: z
+        .number()
+        .int()
+        .min(0)
+        .describe(
+          "Maximum total investors across all countries (0 = no global limit). Example: maxInvestors=1000 with US=500, EU=300 means max 1000 total, but US capped at 500 and EU at 300 within that total."
+        ),
+      global: z
+        .boolean()
+        .describe(
+          "Whether to track globally across all tokens for this issuer (issuer-wide caps)."
+        ),
+      countryCodes: z
+        .array(z.number().int().min(0).max(65_535))
+        .describe(
+          "Array of country codes (ISO 3166-1 numeric). countryCodes[i] corresponds to countryLimits[i]."
+        ),
+      countryLimits: z
+        .array(z.number().int().min(0))
+        .describe(
+          "Array of investor limits corresponding to countryCodes. Arrays must have the same length."
+        ),
+      topicFilter: z
+        .array(expressionNodeWithGroups)
+        .describe(
+          "ExpressionNode array for filtering which investors count toward the limit. Uses postfix notation for logical expressions (e.g., KYC AND AML requirements). Empty array means all investors count."
+        ),
+    })
+    .describe("Investor count limit parameters");
+
+export const timeLockValues = () =>
+  z
+    .object({
+      holdPeriod: z
+        .number()
+        .int()
+        .min(0)
+        .describe(
+          "Minimum holding period in seconds before tokens can be transferred."
+        ),
+      allowExemptions: z
+        .boolean()
+        .describe("Whether to allow exemptions via identity claims."),
+      exemptionExpression: z
+        .array(expressionNodeWithGroups)
+        .describe(
+          "Postfix logical expression for exemption logic (empty array = no exemptions)."
+        ),
+    })
+    .describe("Time lock parameters");
+
+export const transferApprovalValues = () =>
+  z
+    .object({
+      approvalAuthorities: z
+        .array(ethereumAddress)
+        .describe(
+          "Identity addresses allowed to grant approvals for this token."
+        ),
+      allowExemptions: z
+        .boolean()
+        .describe("Whether exemptions based on identity claims are allowed."),
+      oneTimeUse: z
+        .boolean()
+        .describe(
+          "Whether approvals are single-use (one-time execution); set to true for regulatory compliance."
+        ),
+      exemptionExpression: z
+        .array(expressionNodeWithGroups)
+        .describe("Expression defining exemption logic (e.g., [TOPIC_QII])."),
+      approvalExpiry: z
+        .number()
+        .int()
+        .min(0)
+        .describe("Default expiry for approvals in seconds."),
+    })
+    .describe("Transfer approval parameters");
 
 /**
  * Discriminated union schema for compliance module parameters.
@@ -143,6 +264,26 @@ export const complianceParams = () =>
       z.object({
         typeId: z.literal("SMARTIdentityVerificationComplianceModule"),
         values: smartIdentityVerificationValues(),
+        module: ethereumAddress,
+      }),
+      z.object({
+        typeId: z.literal("TokenSupplyLimitComplianceModule"),
+        values: tokenSupplyLimitValues(),
+        module: ethereumAddress,
+      }),
+      z.object({
+        typeId: z.literal("InvestorCountComplianceModule"),
+        values: investorCountValues(),
+        module: ethereumAddress,
+      }),
+      z.object({
+        typeId: z.literal("TimeLockComplianceModule"),
+        values: timeLockValues(),
+        module: ethereumAddress,
+      }),
+      z.object({
+        typeId: z.literal("TransferApprovalComplianceModule"),
+        values: transferApprovalValues(),
         module: ethereumAddress,
       }),
     ])
@@ -223,4 +364,30 @@ export type ComplianceModulePairInput = z.input<
  */
 export type ComplianceModulePairInputArray = z.input<
   ReturnType<typeof complianceModulePairArray>
+>;
+
+/**
+ * Type representing the value of a token supply limit compliance module.
+ */
+export type TokenSupplyLimitParams = z.infer<
+  ReturnType<typeof tokenSupplyLimitValues>
+>;
+
+/**
+ * Type representing the value of a time lock compliance module.
+ */
+export type TimeLockParams = z.infer<ReturnType<typeof timeLockValues>>;
+
+/**
+ * Type representing the value of a transfer approval compliance module.
+ */
+export type TransferApprovalParams = z.infer<
+  ReturnType<typeof transferApprovalValues>
+>;
+
+/**
+ * Type representing the value of an investor count compliance module.
+ */
+export type InvestorCountParams = z.infer<
+  ReturnType<typeof investorCountValues>
 >;

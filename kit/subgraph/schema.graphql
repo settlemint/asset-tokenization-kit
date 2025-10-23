@@ -360,6 +360,8 @@ type VaultSigner @entity(immutable: false) {
 type Compliance @entity(immutable: false) {
   # Unique identifier - compliance contract address
   id: Bytes!
+  # System this compliance belongs to
+  system: System!
   # Account representation of the compliance contract
   account: Account!
   # List of accounts exempt from compliance checks
@@ -802,8 +804,10 @@ type ComplianceModuleRegistry @entity(immutable: false) {
 }
 
 type ComplianceModule @entity(immutable: false) {
-  # Unique identifier - module contract address
+  # Unique identifier - system address + compliance module contract address
   id: Bytes!
+  # Compliance module contract address
+  module: Bytes!
   # Human-readable name of the module
   name: String!
   # Type identifier for the module

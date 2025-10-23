@@ -39,7 +39,7 @@ understand the resulting environment at a glance.
 - **Access level:** No administrative roles; behaves like a standard investor
   account.
 - **Compliance status:** Equipped with `kyc-verified` and `aml-verified` claims
-  so it easily passes bond checks.
+  so it easily passes compliance checks.
 - **Profile location:** Identity details are stored and registered in Germany
   (`DE`).
 
@@ -47,9 +47,10 @@ understand the resulting environment at a glance.
 
 - **Who is this?** A second German investor, useful for showing transfers or
   comparing user journeys.
-- **Access level:** Same as Investor 1—no special blockchain permissions.
-- **Compliance status:** Shares the `kyc-verified` and `aml-verified` claims
-  from setup, mirroring the first investor.
+- **Access level:** No administrative roles; behaves like a standard investor
+  account.
+- **Compliance status:** Equipped with `kyc-verified` and `aml-verified` claims
+  so it easily passes compliance checks.
 - **Profile location:** Identity details are stored and registered in Germany
   (`DE`).
 
@@ -63,6 +64,17 @@ understand the resulting environment at a glance.
 - **Profile location:** Identity details use Japanese (`JP`) information, but
   registration is intentionally left unfinished to simulate onboarding.
 
+### `US Investor (`us.investor@settlemint.com`)
+
+- **Who is this?** An investor from the US, useful for showing transfers or
+  comparing user journeys.
+- **Access level:** No administrative roles; behaves like a standard investor
+  account.
+- **Compliance status:** Equipped with `kyc-verified` and `aml-verified` claims
+  so it easily passes compliance checks.
+- **Profile location:** Identity details are stored and registered in the United
+  States (`US`).
+
 ## Assets
 
 ### Deposits
@@ -71,8 +83,8 @@ understand the resulting environment at a glance.
 
 - **Type & Extension**: Deposit token used as the denomination asset for bond
   issuances.
-- **Claims**: No compliance claims are required; it acts as an internal
-  settlement asset minted to the issuer and to the bond contract.
+- **Claims**: Requires holders to present `kyc-verified` and `aml-verified`
+  claims through the SMART Identity Verification module.
 - **Compliance Rules**: No compliance modules are attached, so any wallet can
   hold POD.
 
@@ -82,7 +94,8 @@ understand the resulting environment at a glance.
 
 - **Type & Extension**: Bond token that references the `POD` denomination token
   and a yearly fixed-yield schedule (1.10%).
-- **Claims**: No compliance claims are required.
+- **Claims**: Requires holders to present `kyc-verified` and `aml-verified`
+  claims through the SMART Identity Verification module.
 - **Compliance Rules**: No compliance modules are attached, so any wallet can
   hold STB.
 
@@ -98,7 +111,59 @@ understand the resulting environment at a glance.
 
 - **Type & Extension**: Bond token with ISIN `DE000BU2Z056` using the same `POD`
   denomination token and yearly fixed-yield schedule (2.60%).
-- **Claims**: Requires the same `kyc-verified` and `aml-verified` claims via the
-  SMART Identity Verification module.
+- **Claims**: Requires holders to present `kyc-verified` and `aml-verified`
+  claims through the SMART Identity Verification module.
 - **Compliance Rules**: Country allow-list admits both Germany (`DE`) and Japan
   (`JP`).
+
+### Stablecoins
+
+#### Tether (`USDT`)
+
+- **Type & Extension**: Major USD stablecoin, 18 decimals, used for
+  dollar-denominated settlement.
+- **Claims**: Requires holders to present `kyc-verified` and `aml-verified`
+  claims through the SMART Identity Verification module.
+- **Compliance Rules**: No compliance modules are attached, so any wallet can
+  hold USDT.
+
+#### USD Coin (`USDC`)
+
+- **Type & Extension**: Prominent USD stablecoin with 18 decimals; generally
+  interchangeable with USDT in demo flows.
+- **Claims**: Requires holders to present `kyc-verified` and `aml-verified`
+  claims through the SMART Identity Verification module.
+- **Compliance Rules**: No compliance modules are attached, so any wallet can
+  hold USDC.
+
+#### Euro Coin (`EUROC`)
+
+- **Type & Extension**: Unofficial euro-pegged stablecoin with 18 decimals.
+- **Claims**: Requires holders to present `kyc-verified` and `aml-verified`
+  claims through the SMART Identity Verification module.
+- **Compliance Rules**: No compliance modules are attached, so any wallet can
+  hold EUROC.
+
+#### STASIS EURO (`EURS`)
+
+- **Type & Extension**: EUR-pegged stablecoin, 18 decimals.
+- **Claims**: Requires holders to present `kyc-verified` and `aml-verified`
+  claims through the SMART Identity Verification module.
+- **Compliance Rules**: No compliance modules are attached, so any wallet can
+  hold EURS.
+
+#### JPYC (`JPYC`)
+
+- **Type & Extension**: Japanese yen stablecoin with 18 decimals.
+- **Claims**: Requires holders to present `kyc-verified` and `aml-verified`
+  claims through the SMART Identity Verification module.
+- **Compliance Rules**: No compliance modules are attached, so any wallet can
+  hold JPYC.
+
+#### Max Supply (100) (`MAX100`)
+
+- **Type & Extension**: Synthetic stablecoin with strict max supply of 100
+  tokens, 18 decimals.
+- **Claims**: Requires holders to present `kyc-verified` and `aml-verified`
+  claims through the SMART Identity Verification module.
+- **Compliance Rules**: Enforces a total token supply limit of 100.

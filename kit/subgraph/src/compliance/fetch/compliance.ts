@@ -9,6 +9,7 @@ export function fetchCompliance(address: Address): Compliance {
 
   if (!compliance) {
     compliance = new Compliance(address);
+    compliance.system = Address.zero();
     compliance.account = fetchAccount(address).id;
     compliance.bypassList = [];
     compliance.save();

@@ -44,6 +44,26 @@
           "MiCA / EU（トークン、ボールトなどのすべての契約を許可する）：CONTRACT OR ((KYC AND AML) AND (PROFESSIONAL_INVESTOR OR ACCREDITED_INVESTOR))"
         ]
       }
+    },
+    "TokenSupplyLimitComplianceModule": {
+      "description": "最大トークン供給量の上限を強制します。法的な上限への準拠を支援します。",
+      "shortDescription": "最大トークン供給量の上限を強制",
+      "title": "トークン供給上限"
+    },
+    "InvestorCountComplianceModule": {
+      "description": "投資家の最大人数を強制します。法的な上限への準拠を支援します。",
+      "shortDescription": "最大投資家数の制限を強制",
+      "title": "投資家数"
+    },
+    "TimeLockComplianceModule": {
+      "description": "トークンが譲渡可能になる前に、最低保有期間を強制します。",
+      "shortDescription": "トークンにタイムロックを強制",
+      "title": "タイムロック"
+    },
+    "TransferApprovalComplianceModule": {
+      "description": "譲渡を実行する前に、指定された権限から明示的な承認を要求します。",
+      "shortDescription": "譲渡の承認を強制",
+      "title": "譲渡承認"
     }
   },
   "title": "コンプライアンス",
