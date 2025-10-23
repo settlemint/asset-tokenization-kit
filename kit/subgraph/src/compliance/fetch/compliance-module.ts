@@ -12,7 +12,7 @@ export function fetchComplianceModule(
 
   if (!complianceModule) {
     complianceModule = new ComplianceModule(id);
-    complianceModule.address = complianceModuleAddress;
+    complianceModule.module = complianceModuleAddress;
     complianceModule.account = fetchAccount(complianceModuleAddress).id;
     complianceModule.name = "unknown";
     complianceModule.typeId = "unknown";

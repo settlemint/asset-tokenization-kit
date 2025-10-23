@@ -42,7 +42,7 @@ const SYSTEM_QUERY = theGraphGraphql(
         id
         complianceModules {
           id
-          address
+          module
           typeId
           name
         }

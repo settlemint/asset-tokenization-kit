@@ -113,11 +113,11 @@ export function ComplianceModules({
               if (module) {
                 setActiveModule({
                   typeId,
-                  module: module.address,
+                  module: module.module,
                 });
                 onActiveModuleChange?.({
                   typeId,
-                  module: module.address,
+                  module: module.module,
                 });
               }
             }}

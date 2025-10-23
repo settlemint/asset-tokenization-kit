@@ -20,7 +20,7 @@ import {
   setupUser,
   signInWithUser,
 } from "@test/fixtures/user";
-import { from, toNumber } from "dnum";
+import { from } from "dnum";
 import {
   BONDS,
   DEPOSITS,
@@ -305,14 +305,14 @@ function getInitialModulePairs(assetToCreate: DemoAsset) {
   ) {
     initialModulePairs.push({
       typeId: "CountryAllowListComplianceModule",
-      module: countryAllowListModule.address,
+      module: countryAllowListModule.module,
       values: compliance.allowedCountries,
     });
   }
   if (smartIdentityVerificationModule && amlTopic && kycTopic) {
     initialModulePairs.push({
       typeId: "SMARTIdentityVerificationComplianceModule",
-      module: smartIdentityVerificationModule.address,
+      module: smartIdentityVerificationModule.module,
       values: [
         {
           nodeType: 0,
@@ -332,9 +332,9 @@ function getInitialModulePairs(assetToCreate: DemoAsset) {
   if (tokenSupplyLimitModule && compliance.tokenSupplyLimit) {
     initialModulePairs.push({
       typeId: "TokenSupplyLimitComplianceModule",
-      module: tokenSupplyLimitModule.address,
+      module: tokenSupplyLimitModule.module,
       values: {
-        maxSupply: toNumber(compliance.tokenSupplyLimit),
+        maxSupply: compliance.tokenSupplyLimit,
         periodLength: 0,
         rolling: false,
         useBasePrice: false,

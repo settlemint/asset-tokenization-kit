@@ -807,7 +807,7 @@ type ComplianceModule @entity(immutable: false) {
   # Unique identifier - system address + compliance module contract address
   id: Bytes!
   # Compliance module contract address
-  address: Bytes!
+  module: Bytes!
   # Human-readable name of the module
   name: String!
   # Type identifier for the module

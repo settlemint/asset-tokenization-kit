@@ -11,7 +11,7 @@ export const ComplianceModuleSchema = z.object({
   id: ethereumCompositeId.describe(
     "Compliance module ID (concatenation of system address and compliance module address)"
   ),
-  address: ethereumAddress.describe("Compliance module contract address"),
+  module: ethereumAddress.describe("Compliance module contract address"),
   typeId: complianceTypeId(),
   name: z.string(),
   globalConfigs: z.array(GlobalComplianceModuleConfigSchema).default([]),
