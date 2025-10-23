@@ -1,6 +1,7 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
 import * as z from "zod";
 import { read } from "../../token.read";
@@ -76,7 +77,14 @@ export const redeem = tokenRouter.token.redeem
     const normalizedCaller = sender.wallet.toLowerCase();
 
     if (normalizedOwner !== normalizedCaller) {
-      const userRoles = context.token.userPermissions.roles;
+      const userRoles = context.token?.userPermissions?.roles;
+      if (!userRoles) {
+        throw errors.INTERNAL_SERVER_ERROR({
+          message: "Missing token permission context",
+          data: { errors: ["Token permissions unavailable"] },
+        });
+      }
+
       const canDelegate = userRoles.custodian ?? false;
 
       if (!canDelegate) {

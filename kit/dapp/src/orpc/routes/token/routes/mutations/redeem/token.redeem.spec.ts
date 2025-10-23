@@ -9,8 +9,8 @@ import { getOrpcClient, type OrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
   DEFAULT_ADMIN,
+  DEFAULT_INVESTOR,
   DEFAULT_PINCODE,
-  GERMAN_INVESTOR_1,
   getUserData,
   signInWithUser,
 } from "@test/fixtures/user";
@@ -34,7 +34,7 @@ describe(
       const headers = await signInWithUser(DEFAULT_ADMIN);
       adminClient = getOrpcClient(headers);
       adminUserData = await getUserData(DEFAULT_ADMIN);
-      investorClient = getOrpcClient(await signInWithUser(GERMAN_INVESTOR_1));
+      investorClient = getOrpcClient(await signInWithUser(DEFAULT_INVESTOR));
 
       // Deposit token to use as denomination asset
       depositToken = await createToken(
