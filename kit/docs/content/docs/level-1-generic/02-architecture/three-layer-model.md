@@ -43,13 +43,6 @@ graph TB
 
 ATK is one possible implementation of the SMART Protocol, designed for enterprise-grade asset tokenization with particular choices around access control, proxy patterns, and infrastructure management.
 
-## Identity Backbone Across the Stack
-
-- **OnchainID anchors every wallet to a legal entity.** The system layer keeps the identity registry and recovery flows so investors regain access without breaking governance.
-- **Trusted issuers control attestations.** Only vetted KYC/KYB providers, banks, and auditors can publish claims that the compliance engine accepts, keeping accountability inside the protocol.
-- **Claim topics drive policy.** Assets declare the topics they require—accredited investors, jurisdictional eligibility, institutional status—so compliance modules enforce rules without custom contracts.
-- **Portability is built in.** Identities, claims, and issuer permissions travel with the release when ATK deploys to new networks, ensuring the same policy engine governs pilots, permissioned ledgers, and public venues.
-
 ## Why Financial Institutions Trust the Stack
 
 - **Standards-led design** — ERC‑3643, ERC‑734/735 (identity and claims), and ERC‑20 compatibility ensure the platform aligns with the leading digital asset regulations and market plumbing.
@@ -109,6 +102,13 @@ While **SMART** is the foundational protocol (like HTTP), **ATK** is SettleMint'
 2. **Compliance System**: Compliance orchestration and module registry
 3. **Access Control**: Role-based permissions and access management
 4. **Registries**: Discovery and management of factories, modules, and addons
+
+### Identity Backbone Keeps Policy Portable
+
+- **OnchainID ties wallets to real entities.** Lost key recovery, role assignments, and legal-person mapping stay in the system layer so governance teams never rebuild identity rails per asset.
+- **Trusted issuers publish accountable claims.** Banks, auditors, and KYC providers listed in the trusted issuer registry are the only parties allowed to issue accreditation, jurisdiction, or collateral proofs that compliance will honour.
+- **Claim topics define enforcement.** Assets state which claim topics they require—accredited investor, eligible geography, institutional status—and compliance modules evaluate those topics before every movement.
+- **Deployments carry identity with them.** When ATK moves between pilots, permissioned ledgers, and public venues, the same identity registry, issuers, and claim definitions ship with the release, keeping policy consistent on every network.
 
 ### The 19 Roles Explained
 

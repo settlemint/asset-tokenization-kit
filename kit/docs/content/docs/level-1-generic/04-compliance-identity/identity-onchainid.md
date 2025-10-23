@@ -13,6 +13,8 @@ description: Business translation of ERC-3643 identity, compliance automation, a
 
 **ERC-3643 combines identity, rule engines, and audit evidence directly inside the token logic. OnchainID gives institutions reusable digital identities while the compliance engine enforces every jurisdictional rule before a transfer executes.**
 
+> **Read alongside:** The [Three-Layer Architecture Model](../02-architecture/three-layer-model) explains where the identity backbone lives in the system layer. This page translates those mechanics into business outcomes.
+
 ## Business Outcomes Delivered by ERC-3643
 
 - **Identity bound to assets** — Every wallet links to a verified investor identity with accredited, jurisdictional, and eligibility claims (Appendix A).
@@ -78,4 +80,3 @@ sequenceDiagram
 6. **Monitor metrics** — Track MFA coverage, identity linkage, and compliance block events to prove control (Chapter 6).
 
 By binding identity, compliance, and privacy expectations into one runtime, ATK delivers the trust posture regulators demand while letting business teams launch new assets without repeating onboarding or rewiring policies.
-

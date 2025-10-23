@@ -76,4 +76,3 @@ description: Executive evidence pack with verified KPIs, ROI guidance, and growt
 - **Procurement cycles:** use the KPI catalogue and ROI toolkit to substantiate business cases with finance teams.
 - **Commercial negotiations:** reference the scaling indicators and expansion milestones to align expectations on growth and support.
 
-Every data point here has a DALP chapter reference so decision makers can audit the source material and move forward with confidence.

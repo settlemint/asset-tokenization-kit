@@ -11,6 +11,8 @@ description: Jurisdiction-specific regulatory frameworks and identity enforcemen
 
 **The DALP treats regulation as code by shipping jurisdiction templates, eligibility rule packs, and audit evidence bundles so cross-border programmes stay compliant from day one.**
 
+> **Context:** The architecture overview describes how identity and trusted issuers sit inside the system layer. Use this section when you need jurisdictional playbooks, evidence artefacts, or business translations of ERC‑3643 compliance behaviour.
+
 ## How to Use This Section
 
 - [European Union — MiCA Playbook](./regional-guides/europe-mica) maps €8 million issuance caps, whitepaper workflows, and reserve requirements into automated rule sets.
@@ -26,5 +28,4 @@ description: Jurisdiction-specific regulatory frameworks and identity enforcemen
 - **Identity anchored in ERC‑3643:** OnchainID claims and identity registries give institutions a consistent way to assert investor status, trusted issuer roles, and revocation events across jurisdictions (Part II Ch 8).
 
 Select the jurisdiction relevant to your programme, apply the provided templates, and the platform enforces the right guardrails before any asset changes hands.
-
 
