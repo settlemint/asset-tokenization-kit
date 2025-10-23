@@ -1,6 +1,12 @@
 import * as z from "zod";
 
-export const entityTypes = ["token", "vault", "custodian", "contract"] as const;
+export const entityTypes = [
+  "token",
+  "vault",
+  "custodian",
+  "contract",
+  "wallet",
+] as const;
 
 export const EntityTypeSchema = z.enum(entityTypes);
 
@@ -11,4 +17,5 @@ export const EntityTypeLabels: Record<EntityType, string> = {
   vault: "Vault",
   custodian: "Custodian",
   contract: "Contract",
+  wallet: "Wallet",
 };
