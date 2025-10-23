@@ -7,7 +7,7 @@ import {
   log,
   store,
 } from "@graphprotocol/graph-ts";
-import { Identity, Token, TopicScheme } from "../../generated/schema";
+import { Identity, Token, TopicScheme, Vault } from "../../generated/schema";
 import {
   Approved,
   ClaimAdded,
@@ -143,6 +143,7 @@ function ensureIdentityClassification(identity: Identity): void {
     }
   } else {
     const accountAddress = Address.fromBytes(identity.account);
+    const vault = Vault.load(accountAddress);
     const currentInterfaces = identity.supportedInterfaces;
     const resolvedInterfaces = resolveSupportedInterfaces(
       accountAddress,
@@ -154,7 +155,13 @@ function ensureIdentityClassification(identity: Identity): void {
       mutated = true;
     }
 
-    const nextType = deriveEntityType(resolvedInterfaces, "contract");
+    let nextType = deriveEntityType(resolvedInterfaces, "contract");
+    if (vault) {
+      // Vault contracts only advertise AccessControl + IContractWithIdentity.
+      // Interface-based detection alone mislabels them as generic contracts.
+      // Persisted Vault entity from factory events proves the account is a vault.
+      nextType = "vault";
+    }
     if (identity.entityType != nextType) {
       identity.entityType = nextType;
       mutated = true;

@@ -3,6 +3,10 @@ import { Address, Bytes } from "@graphprotocol/graph-ts";
 import { checkSupportsInterface } from "../../erc165/erc165";
 import { InterfaceIds } from "../../erc165/utils/interfaceids";
 
+// OpenZeppelin AccessControl interface identifiers help distinguish vault contracts
+const IACCESS_CONTROL = Bytes.fromHexString("0x7965db0b");
+const IACCESS_CONTROL_ENUMERABLE = Bytes.fromHexString("0x5a05180f");
+
 const ENTITY_INTERFACE_CANDIDATES: Bytes[] = [
   InterfaceIds.ISMART,
   InterfaceIds.IATKToken,
@@ -12,6 +16,9 @@ const ENTITY_INTERFACE_CANDIDATES: Bytes[] = [
   InterfaceIds.IATKDeposit,
   InterfaceIds.IATKEquity,
   InterfaceIds.ISMARTCustodian,
+  InterfaceIds.IContractWithIdentity,
+  IACCESS_CONTROL,
+  IACCESS_CONTROL_ENUMERABLE,
 ];
 
 const TOKEN_INTERFACE_CANDIDATES: Bytes[] = [
@@ -21,6 +28,12 @@ const TOKEN_INTERFACE_CANDIDATES: Bytes[] = [
   InterfaceIds.IATKStableCoin,
   InterfaceIds.IATKDeposit,
   InterfaceIds.IATKEquity,
+];
+
+const VAULT_INTERFACE_CANDIDATES: Bytes[] = [
+  InterfaceIds.IContractWithIdentity,
+  IACCESS_CONTROL,
+  IACCESS_CONTROL_ENUMERABLE,
 ];
 
 function includesInterface(collection: Bytes[], candidate: Bytes): boolean {
@@ -84,14 +97,20 @@ export function deriveEntityType(
   supportedInterfaces: Bytes[],
   fallback: string | null = null
 ): string {
-  if (includesInterface(supportedInterfaces, InterfaceIds.ISMARTCustodian)) {
-    return "custodian";
-  }
-
   for (let i = 0; i < TOKEN_INTERFACE_CANDIDATES.length; i++) {
     if (includesInterface(supportedInterfaces, TOKEN_INTERFACE_CANDIDATES[i])) {
       return "token";
     }
+  }
+
+  for (let i = 0; i < VAULT_INTERFACE_CANDIDATES.length; i++) {
+    if (includesInterface(supportedInterfaces, VAULT_INTERFACE_CANDIDATES[i])) {
+      return "vault";
+    }
+  }
+
+  if (includesInterface(supportedInterfaces, InterfaceIds.ISMARTCustodian)) {
+    return "custodian";
   }
 
   if (fallback !== null) {
