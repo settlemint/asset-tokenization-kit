@@ -19,6 +19,7 @@ description: Production-ready financial instruments built on the SMART protocol 
 - [Funds](./funds) — NAV calculation, subscription/redemption gates, and fee management for open-ended or closed-ended vehicles.
 - [Stablecoins](./stablecoins) — Collateral management, reserve attestations, and transfer policies for payment and settlement programmes.
 - [Deposits](./deposits) — Time-locked certificates and yield distribution logic aligned with treasury and cash management requirements.
+- [Custom asset blueprints](./custom-assets) — Compose new instruments on SMART foundations without rebuilding compliance or lifecycle automation.
 
 ## Shared Foundation
 

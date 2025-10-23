@@ -10,15 +10,15 @@ description: Executive evidence pack with verified KPIs, ROI guidance, and growt
 
 # Metrics & ROI
 
-**Boards ask three questions: does ATK satisfy regulators, does it accelerate operations, and when do we see payback? These metrics answer each question with audited outcomes and the formulas teams use during diligence.** Figures marked with ✓ are sourced from Chapter 22 of the Book of DALP; chapter numbers are noted for quick reference.
+**Executives evaluating ATK want proof on three fronts: regulatory assurance, operational lift, and time to payback. The numbers below come from regulated deployments documented in the Book of DALP.** Figures marked with ✓ are sourced directly from Chapter 22; chapter references are included for due diligence.
 
 ## Executive Snapshot
 
-- **Compliance certainty.** Zero regulatory incidents; 100% of attempted violations are blocked on-chain while >95% of approvals complete automatically. ✓
-- **Settlement performance.** ≥99% of transactions settle on the first attempt, with T+0 finality wherever tokenized cash is connected. ✓
-- **Operational resilience.** Platform uptime holds at ≥99.9%; custody integrations respond in <1 second; corporate actions execute on schedule. ✓
-- **Adoption velocity.** Issuance cadence, AUM, and tenant migrations (SaaS ↔ BYOC ↔ on-prem) are tracked per jurisdiction to measure scale. ✓
-- **Developer experience.** >90% of asset wizards complete without human intervention; developer satisfaction remains in the top decile. ✓
+- **Compliance certainty.** Zero regulatory incidents; 100% of attempted violations block on-chain while >95% of approvals finish automatically. ✓
+- **Settlement performance.** ≥99% of transactions settle on the first attempt with T+0 finality wherever tokenized cash is live. ✓
+- **Operational resilience.** Platform uptime stays at ≥99.9%, custody integrations respond in under one second, and corporate actions run on schedule. ✓
+- **Commercial traction.** Issuances, AUM, and tenant migrations (SaaS ↔ BYOC ↔ on-prem) are tracked per jurisdiction to show market expansion. ✓
+- **Time-to-productivity.** >90% of asset wizards complete without human intervention, proving rapid operator onboarding. ✓
 
 ## KPI Catalogue
 
@@ -45,17 +45,17 @@ description: Executive evidence pack with verified KPIs, ROI guidance, and growt
 | Compliance throughput | Manual review queues | >95% approvals auto-handled | **Automation >95%** | ✓ Chapter 22 |
 | Governance reconciliation | Fragmented cap table updates | 0 cap-table drift post-settlement | **Real-time accuracy** | ✓ Part I, Chapter 2 |
 
-## ROI Toolkit for Diligence Workshops
+## ROI Estimator
 
-| Step | Capture | Formula / Guidance |
-|------|---------|--------------------|
-| 1. Baseline costs | Annualized OpEx + amortized CapEx for the incumbent stack | `Baseline = (Annual OpEx × 3) + CapEx` |
-| 2. ATK scenario | Annualized OpEx + ATK subscription/hosting + deployment fee | `ATK = (ATK OpEx × 3) + Deployment Fee` |
+| Step | What to capture | Formula |
+|------|-----------------|---------|
+| 1. Baseline costs | Annualised OpEx plus amortised CapEx for the incumbent stack | `Baseline = (Annual OpEx × 3) + CapEx` |
+| 2. ATK scenario | Annualised OpEx plus subscription/hosting and deployment fee for ATK | `ATK = (ATK OpEx × 3) + Deployment Fee` |
 | 3. ROI summary | Savings, ROI %, and payback period | `Savings = Baseline – ATK`<br>`ROI % = (Savings / ATK) × 100`<br>`Payback (months) = Deployment Fee / (Monthly Savings)` |
 
-**How to run the session:** capture the client’s cost baseline, model the ATK scenario, calculate ROI %, and then anchor the conversation with the verified KPI catalogue above. Finance and operations leaders see both the monetary and operational gains in one view.
+Use the verified KPIs above to stress-test assumptions before presenting results to finance or investment committees.
 
-## Scaling Indicators to Monitor
+## Growth Indicators
 
 - **Issuances & AUM:** Track quarterly issuance counts, assets under management, and cumulative on-chain exposure per jurisdiction. ✓
 - **Tenant portfolio:** Monitor the mix of branded enterprise stacks versus white-label partners and migrations between SaaS, BYOC, and on-prem deployments. ✓
@@ -70,9 +70,4 @@ description: Executive evidence pack with verified KPIs, ROI guidance, and growt
 | Phase 3 – Liquidity & Custody | Venue and custody partners live | ≥99% first-attempt settlement; custody uptime ≥99.9% | ✓ Chapter 23 |
 | Phase 4 – Scale | EU, GCC, SG plus new jurisdictions | T+0 as default; regulators accept electronic filings | ✓ Chapter 23 |
 
-## Using This Evidence in the Field
-
-- **Board packs:** lead with the Executive Snapshot and ROI outcomes to show tangible impact.
-- **Procurement cycles:** use the KPI catalogue and ROI toolkit to substantiate business cases with finance teams.
-- **Commercial negotiations:** reference the scaling indicators and expansion milestones to align expectations on growth and support.
-
+Use these metrics as a shared evidence base when engaging boards, finance teams, and commercial partners.

@@ -1,50 +1,69 @@
 ---
-title: Proven Patterns
-description: Client-facing blueprints with benefits, timelines, and integration guardrails
+title: Reference Architectures
+description: Client-ready blueprints that show how institutions launch ATK with predictable timelines, integrations, and outcomes
 ---
 
 <!-- SOURCE: the-book-of-dalp/Part IV — Adoption & Execution/Chapter 21 — Reference Implementations (Copy These Into Your RFP).md -->
 <!-- SOURCE: the-book-of-dalp/Part III — Operating the Platform/Chapter 16 — Integration Patterns (Banking, Custody, Venues).md -->
 
-# Proven Patterns
+# Reference Architectures
 
-**Executives, solution architects, and delivery leads can reuse these patterns without guesswork. Each blueprint distills a live ATK deployment, the measurable outcomes it produced, and the integration runbooks that satisfied bank-grade risk teams.**
+**These reference architectures show how institutions structure ATK deployments end to end—what goes live, why stakeholders back the programme, and which artefacts satisfy boards and regulators.**
 
-## Pattern Library at a Glance
+---
 
-- **Tokenized bond spine (capital markets).** Launch €100M-class issuances in days, pairing identity-controlled distribution with ISO 20022 cash legs and ≥99% first-attempt settlement. ✓
-- **Periodic NAV fund (asset management).** Automate subscription/redemption windows, enforce investor classes, and alert before regulatory thresholds breach. ✓
-- **On-chain equity governance (corporate finance).** Make the on-chain cap table canonical, run transparent votes, and execute buybacks via the freeze → calculate → pay → burn flow. ✓
-- **Integration adapters (banking & venues).** Ready-for-Exchange, omnibus custody attestations, and fiat DvP bridges maintain compliance at every hand-off. ✓
+## Institutional Bond Spine — Launch Regulated Debt in Days
 
-## Core Deployment Blueprints
+- **Designed for:** Capital-markets teams that want to issue €100M-class bonds without multi-vendor programmes.
+- **Value delivered:** ≥99% first-attempt settlement with T+0 finality wherever tokenized cash is connected, plus ready-made audit evidence. ✓ Chapter 21
+- **What goes live:** Bond template, trusted issuer-backed identity registry, Ready-for-Exchange adapter, ISO 20022 cash translator, automated coupon servicing.
+- **Integration highlights:** Straight-through ISO 20022 messaging, eligibility ticket sync to ATS/MTF venues, regulator-ready evidence bundles.
+- **Typical timeline:** Offering documents, KYC/AML onboarding, and allocation minting complete in a go-live measured in days (Chapter 21).
 
-| Blueprint | Customer Goal | Components in Scope | Verified Outcome |
-|-----------|----------------|---------------------|------------------|
-| Tokenized bond spine | Issue, distribute, and service regulated debt | Bond template, identity registry, Ready-for-Exchange adapter, ISO 20022 translator | Go-live in days, ≥99% first-attempt settlement, T+0 finality (Chapter 21) |
-| Periodic NAV fund | Automate subscription/redemption windows | Fund template, NAV scheduler, rule-library alerts, optional secondary bulletin board | Alerts fired before limits breached; lifecycle automation logged on/off chain (Chapter 21) |
-| On-chain equity governance | Modernize cap table and corporate actions | Equity template, record-date snapshots, freeze→calculate→pay→burn workflow | Audit-grade voting tallies; zero cap-table drift after actions (Chapter 21) |
+Clients retain full control while replacing manual reconciliation with programmable settlement.
 
-## Delivery Timelines and Playbooks
+---
 
-- **Tokenized bond launch.** Configure stock modules, attach disclosure packs, and distribute to underwriters; production go-live measured in days. (Chapter 21)
-- **Fund lifecycle automation.** Schedule NAV windows, enforce investor gates, and switch on bulletin-board liquidity for verified holders. (Chapter 21)
-- **Equity modernization.** Digitize governance once templates are live; corporate actions, buybacks, and redemptions flow through the automated servicing pattern. (Chapter 21)
+## Periodic NAV Fund Automation — Keep Windows On Schedule
 
-## Integration Runbooks That Keep Compliance Intact
+- **Designed for:** Asset managers who need predictable subscription/redemption windows and real-time regulatory oversight.
+- **Value delivered:** Lifecycle automation with alerts before thresholds breach; investor classes enforced without extra headcount. ✓ Chapter 21
+- **What goes live:** Fund template, NAV scheduler, rule-library alerts, optional bulletin-board liquidity module, AUM threshold monitoring.
+- **Integration highlights:** Treasury flows for subscriptions/redemptions, portfolio valuation feeds, compliance dashboards for alert review.
+- **Typical timeline:** NAV windows and investor gates configured in a phased rollout measured in weeks rather than quarters (Chapter 21).
 
-| Flow | What Happens | Client Benefit | Source |
-|------|--------------|----------------|--------|
-| Fiat DvP bridge | Hold the token leg until banking rails confirm funds; auto-revert on timeout | Synchronizes cash and token settlement without manual reconciliation | Chapter 16 |
-| Venue settlement | Eligibility ticket → venue match → compliance ticket → DvP → cap-table update | Maintains regulatory guardrails while delivering exchange-grade settlement speed | Chapter 16 |
-| Omnibus custody attestation | Custodian proves beneficial ownership; compliance retains veto rights | Enables omnibus accounts without losing sight of ultimate holders | Chapter 16 |
+Investors enjoy reliable liquidity, while compliance teams monitor every step from one control plane.
 
-## Guardrails to Reuse on Every Engagement
+---
 
-- **Start with stock modules.** Chapter 21’s implementations avoided custom forks; mirroring that discipline keeps upgrades safe.
-- **Keep compliance pre-transfer.** Whitelists, eligibility tickets, and rule checks execute before any state change; never demote them to middleware.
-- **Mirror events with ISO 20022 artifacts.** Finance teams receive the evidence they already trust, eliminating reconciliation churn.
-- **Automate servicing.** Coupons, dividends, and buybacks rely on the freeze → calculate → pay → burn workflow to stop value leakage.
-- **Instrument outcomes.** Track first-attempt settlement, T+0 share, and alert efficacy against the KPI catalog to prove control to boards.
+## On-Chain Equity Governance — Make the Cap Table Canonical
 
-Use these patterns as ready-made inserts for executive briefings, partner enablement kits, and delivery playbooks. They demonstrate that ATK is not theory—it is a repeatable system already operating in production.
+- **Designed for:** Corporates replacing spreadsheets with a regulated, audit-grade equity stack.
+- **Value delivered:** Record-date voting, instant buybacks/redemptions, and zero cap-table drift after settlement. ✓ Chapter 21
+- **What goes live:** Equity template with governance hooks, record-date snapshot service, freeze → calculate → pay → burn corporate-action engine.
+- **Integration highlights:** HRIS/ERP roster feeds, board portal notifications, treasury payout rails, legal approvals.
+- **Typical timeline:** Governance digitisation begins as soon as templates are live; corporate actions deploy once notification flows are authorised (Chapter 21).
+
+Boards receive real-time visibility, and regulators see evidence for every decision.
+
+---
+
+## Banking & Venue Connectivity — Keep Compliance in Every Hand-Off
+
+- **Designed for:** Institutions that need fiat rails, custodians, and trading venues tied into the same compliance engine.
+- **Value delivered:** Seamless Delivery-versus-Payment, exchange-grade settlement, and custodial transparency without manual reconciliation. ✓ Chapter 16
+- **What goes live:** Fiat DvP bridge, venue settlement loop, omnibus custody attestation service.
+- **Integration highlights:** ISO 20022-confirmed cash instructions, venue eligibility tickets, custodian attestations that maintain beneficial-ownership visibility.
+- **Typical timeline:** Connectivity activates as soon as counterparties complete onboarding and reconciliation tests (Chapter 16).
+
+Regulators receive the same evidence regardless of which external party touches the asset.
+
+---
+
+## Why clients rely on these blueprints
+
+- **Predictable delivery:** Budgets and timelines stay within the windows above because the implementations avoid bespoke forks (Chapter 21).
+- **Evidence on demand:** Every architecture ships with the metrics and artefacts referenced in the Level 1 KPI catalogue, simplifying board and regulator briefings.
+- **Scalable foundation:** Once live, the same controls extend to new jurisdictions and asset types without rebuilding policy, identity, or integration layers.
+
+These reference architectures help institutions move from exploration to production with confidence that every stakeholder—commercial, operational, and regulatory—can verify the outcome.
