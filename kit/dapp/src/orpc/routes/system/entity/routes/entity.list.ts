@@ -5,8 +5,8 @@
  * (tokenized assets, vaults, custodians) with their associated metadata, claims, and registration status.
  *
  * The entity list handler queries The Graph protocol to fetch identity records from the blockchain,
- * transforms them into a standardized format, and applies client-side filtering for entity types
- * that cannot be efficiently filtered at the GraphQL level.
+ * transforms them into a standardized format, and delegates entity-type filtering to the subgraph
+ * for consistent pagination and reduced post-processing.
  *
  * @module EntityListHandler
  * @description Handles entity discovery, type detection, and status aggregation for the dApp UI
@@ -14,7 +14,6 @@
  */
 
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { detectEntityType } from "@/lib/utils/entity-type-detection";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
@@ -55,6 +54,7 @@ const ENTITY_LIST_QUERY = theGraphGraphql(`
     ) {
       id
       isContract
+      entityType
       account {
         id
         isContract
@@ -93,6 +93,8 @@ const EntityListGraphSchema = z.object({
         id: z.string(),
         /** Whether this identity represents a smart contract */
         isContract: z.boolean().nullish(),
+        /** High-level entity type classification */
+        entityType: z.string().nullish(),
         /** Associated account information for contract entities */
         account: z
           .object({
@@ -172,8 +174,8 @@ const resolveOrderBy = (orderBy: string | undefined): EntityOrderField => {
  *
  * This endpoint retrieves tokenized assets, vaults, and other contract entities from The Graph
  * subgraph, enriches them with type information and claim statistics, and returns a paginated
- * list suitable for UI display. The handler applies role-based access control and supports
- * client-side filtering for entity types that cannot be efficiently filtered at the GraphQL level.
+ * list suitable for UI display. The handler applies role-based access control and pushes
+ * entity-type filtering down to the subgraph for efficient querying.
  *
  * **Permission Requirements:**
  * Requires one of: identityManager, systemManager, claimIssuer, or systemModule roles
@@ -181,9 +183,8 @@ const resolveOrderBy = (orderBy: string | undefined): EntityOrderField => {
  * **Business Logic:**
  * 1. Queries The Graph for contract identities within the current system
  * 2. Calculates claim statistics (active vs revoked) for verification status
- * 3. Detects entity types using contract naming patterns as heuristics
+ * 3. Uses subgraph-provided entity type metadata for classification
  * 4. Determines registration status based on registry records
- * 5. Applies client-side filtering for entity types (post-GraphQL)
  *
  * @param input - Pagination, ordering, and filtering parameters
  * @param context - Request context including system configuration and Graph client
@@ -209,7 +210,6 @@ const resolveOrderBy = (orderBy: string | undefined): EntityOrderField => {
  * });
  * ```
  *
- * @see {@link detectEntityType} for entity type classification logic
  * @see {@link SYSTEM_PERMISSIONS.entityList} for permission requirements
  */
 export const entityList = systemRouter.system.entity.list
@@ -239,6 +239,9 @@ export const entityList = systemRouter.system.entity.list
       identityFactory: system.identityFactory.id, // Scope to current system's entities
       isContract: true, // Only show contract entities, not EOA identities
     };
+    if (filters?.entityType) {
+      whereFilters.entityType = filters.entityType;
+    }
 
     // Prepare GraphQL query variables with pagination and filtering
     const variables: EntityListVariables = {
@@ -246,7 +249,7 @@ export const entityList = systemRouter.system.entity.list
       skip,
       orderBy: graphOrderBy,
       orderDirection: graphOrderDirection,
-      where: Object.keys(whereFilters).length > 0 ? whereFilters : undefined,
+      where: whereFilters,
     };
 
     // Execute The Graph query with type-safe response validation
@@ -268,23 +271,7 @@ export const entityList = systemRouter.system.entity.list
       const contractAddress = identity.account?.id ?? null;
       const contractName = identity.account?.contractName ?? null;
 
-      // Use contract name as heuristic for entity type detection when interface metadata is unavailable
-      // This fallback strategy leverages deployment naming conventions to classify entities
-      const interfaceCandidates = contractName ? [contractName] : undefined;
-
-      /**
-       * Detect entity type using contract naming patterns as interface candidates.
-       *
-       * When ERC-165 interface detection is not available or hasn't been indexed,
-       * we fall back to using the contract's deployment name as a hint for classification.
-       * This works because most contracts follow naming conventions like "ATKBondImplementation"
-       * or "VaultProxy" that contain recognizable keywords.
-       *
-       * @see {@link detectEntityType} for the keyword matching logic
-       */
-      const entityType = interfaceCandidates?.length
-        ? detectEntityType(interfaceCandidates)
-        : null;
+      const entityType = identity.entityType ?? null;
 
       // Determine registration status based on presence of registry records
       // Entities are "registered" when they appear in the identity registry, "pending" otherwise
@@ -306,34 +293,14 @@ export const entityList = systemRouter.system.entity.list
     });
 
     /**
-     * Apply client-side entity type filtering.
-     *
-     * Entity type filtering happens after GraphQL query execution because:
-     * 1. The Graph subgraph doesn't index entity types directly
-     * 2. Entity types are derived from contract naming patterns
-     * 3. Adding complex type detection to the subgraph would hurt performance
-     *
-     * This trade-off means entity type filters may return fewer results than
-     * the requested page size, but keeps the GraphQL queries simple and fast.
+     * Calculate total count using the subgraph's aggregate, which already
+     * respects the applied filters in the where clause.
      */
-    const filteredItems = filters?.entityType
-      ? items.filter((item) => item.entityType === filters.entityType)
-      : items;
-
-    /**
-     * Calculate total count accounting for client-side filtering.
-     *
-     * When entity type filtering is applied, we can only count the filtered results
-     * since we don't know how many total entities match the type filter without
-     * fetching all entities. For unfiltered queries, we use the Graph's total count.
-     */
-    const total = filters?.entityType
-      ? filteredItems.length
-      : (response?.total?.length ?? items.length);
+    const total = response?.total?.length ?? items.length;
 
     // Validate and return the final response using the output schema
     return EntityListOutputSchema.parse({
-      items: filteredItems,
+      items,
       total,
       limit,
       offset,
