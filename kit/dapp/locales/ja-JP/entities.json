@@ -1,0 +1,44 @@
+{
+  "page": {
+    "description": "ユーザーのアイデンティティ請求、確認状況、およびコンプライアンスを管理します。",
+    "loading": "請求を読み込み中..."
+  },
+  "accessDenied": {
+    "title": "アクセス制限",
+    "description": "エンティティを管理する権限がありません。追加のアクセスについては管理者に連絡してください。"
+  },
+  "status": {
+    "registered": "登録済み",
+    "pending": "保留中"
+  },
+  "entityTable": {
+    "columns": {
+      "name": "名称",
+      "address": "アドレス",
+      "identityAddress": "アイデンティティアドレス",
+      "type": "タイプ",
+      "status": "ステータス"
+    },
+    "types": {
+      "token": "Token",
+      "vault": "Vault",
+      "custodian": "Custodian",
+      "contract": "契約"
+    },
+    "fallback": {
+      "noType": "不明なタイプ",
+      "noName": "契約名なし",
+      "noContractAddress": "契約アドレスなし",
+      "noIdentity": "アイデンティティアドレスなし"
+    },
+    "emptyState": {
+      "title": "アイデンティティが見つかりません",
+      "description": "まだフィルターに一致するアイデンティティはありません。",
+      "loading": "アイデンティティを読み込み中..."
+    },
+    "errors": {
+      "loadFailed": "アイデンティティの読み込みに失敗しました。再試行してください。",
+      "navigationFailed": "アイデンティティの詳細を開けませんでした"
+    }
+  }
+}

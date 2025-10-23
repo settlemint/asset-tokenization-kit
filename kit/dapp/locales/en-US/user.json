@@ -16,7 +16,7 @@
   },
   "management": {
     "page": {
-      "description": "Manage users, roles, and permissions for your platform."
+      "description": "Manage participants with login credentials."
     },
     "accessDenied": {
       "title": "Access restricted",
@@ -42,7 +42,7 @@
         "notConnected": "Not Connected",
         "identityNeeded": "Identity needed",
         "notRegistered": "Not Registered",
-        "pendingRegistration": "Pending registration",
+        "pendingRegistration": "Pending Registration",
         "admin": "Admin",
         "adminAriaLabel": "User has any admin role in the system",
         "registeredAriaLabel": "User is registered and verified on-chain",

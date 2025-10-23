@@ -39,7 +39,7 @@ export const Route = createFileRoute(
 });
 
 function EntityManagementPage() {
-  const { t } = useTranslation(["identities", "navigation"]);
+  const { t } = useTranslation(["entities", "navigation"]);
   const { canViewEntities } = Route.useLoaderData();
 
   if (!canViewEntities) {
@@ -48,10 +48,10 @@ function EntityManagementPage() {
         <RouterBreadcrumb />
         <div className="mt-6 rounded-lg border bg-card p-6">
           <h1 className="text-2xl font-semibold">
-            {t("identities:accessDenied.title")}
+            {t("entities:accessDenied.title")}
           </h1>
           <p className="text-muted-foreground mt-2">
-            {t("identities:accessDenied.description")}
+            {t("entities:accessDenied.description")}
           </p>
         </div>
       </div>
@@ -66,7 +66,7 @@ function EntityManagementPage() {
           {t("navigation:entityManagement")}
         </h1>
         <p className="text-muted-foreground mt-2">
-          {t("identities:page.description")}
+          {t("entities:page.description")}
         </p>
       </div>
 
@@ -74,7 +74,7 @@ function EntityManagementPage() {
         fallback={
           <div className="rounded-lg border bg-card p-6">
             <p className="text-muted-foreground">
-              {t("identities:page.loading")}
+              {t("entities:page.loading")}
             </p>
           </div>
         }

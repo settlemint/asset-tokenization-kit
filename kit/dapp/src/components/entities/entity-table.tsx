@@ -5,7 +5,6 @@ import { createStrictColumnHelper } from "@/components/data-table/utils/typed-co
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { Badge } from "@/components/ui/badge";
 import { Web3Address } from "@/components/web3/web3-address";
-import { Web3TransactionHash } from "@/components/web3/web3-transaction-hash";
 import { orpc } from "@/orpc/orpc-client";
 import type { EntityListOutput } from "@/orpc/routes/system/entity/routes/entity.list.schema";
 import { useQuery } from "@tanstack/react-query";
@@ -16,7 +15,6 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
-import { isEthereumHash } from "@atk/zod/ethereum-hash";
 import { EntityTypeLabels } from "@atk/zod/entity-types";
 
 type EntityRow = EntityListOutput["items"][number];
@@ -26,16 +24,11 @@ const columnHelper = createStrictColumnHelper<EntityRow>();
 type EntityStatus = EntityRow["status"];
 
 function EntityStatusBadge({ status }: { status: EntityStatus }) {
-  const { t } = useTranslation("identities");
+  const { t } = useTranslation("entities");
   const isRegistered = status === "registered";
   const labelKey = isRegistered ? "status.registered" : "status.pending";
   return (
-    <Badge
-      variant={isRegistered ? "default" : "outline"}
-      className={isRegistered ? "bg-green-500 hover:bg-green-600" : undefined}
-    >
-      {t(labelKey)}
-    </Badge>
+    <Badge variant={isRegistered ? "default" : "outline"}>{t(labelKey)}</Badge>
   );
 }
 
@@ -44,7 +37,7 @@ function EntityTypeBadge({
 }: {
   entityType: EntityRow["entityType"];
 }) {
-  const { t } = useTranslation("identities");
+  const { t } = useTranslation("entities");
   if (!entityType) {
     return (
       <span className="text-muted-foreground">
@@ -61,12 +54,12 @@ function EntityTypeBadge({
     defaultValue: fallbackLabel,
   });
 
-  return <Badge variant="secondary">{label}</Badge>;
+  return <Badge variant="outline">{label}</Badge>;
 }
 
 export const EntityTable = withErrorBoundary(function EntityTable() {
   const router = useRouter();
-  const { t } = useTranslation("identities");
+  const { t } = useTranslation("entities");
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 20,
@@ -93,11 +86,7 @@ export const EntityTable = withErrorBoundary(function EntityTable() {
         params: { address: entity.id },
       });
     } catch {
-      toast.error(
-        t("entityTable.errors.navigationFailed", {
-          defaultValue: t("identityTable.errors.navigationFailed"),
-        })
-      );
+      toast.error(t("entityTable.errors.navigationFailed"));
     }
   };
 
@@ -110,21 +99,6 @@ export const EntityTable = withErrorBoundary(function EntityTable() {
     );
 
     return withAutoFeatures([
-      columnHelper.accessor("id", {
-        id: "entityIdentity",
-        header: t("entityTable.columns.identity", {
-          defaultValue: t("identityTable.columns.id"),
-        }),
-        meta: {
-          displayName: t("entityTable.columns.identity", {
-            defaultValue: t("identityTable.columns.id"),
-          }),
-          type: "address",
-          addressOptions: {
-            showPrettyName: false,
-          },
-        },
-      }),
       columnHelper.accessor(
         (row) =>
           [
@@ -141,76 +115,95 @@ export const EntityTable = withErrorBoundary(function EntityTable() {
           header: "",
           enableHiding: false,
           meta: {
-            displayName: t("entityTable.columns.entity", {
-              defaultValue: t("identityTable.columns.entity"),
-            }),
+            displayName: t("entityTable.columns.name"),
             type: "text",
           },
         }
       ),
       columnHelper.display({
-        id: "entity",
-        header: t("entityTable.columns.entity", {
-          defaultValue: t("identityTable.columns.entity"),
-        }),
+        id: "name",
+        header: t("entityTable.columns.name"),
         cell: ({ row }: CellContext<EntityRow, unknown>) => {
-          const { contractName, contractAddress, id } = row.original;
-          const targetAddress = getEthereumAddress(contractAddress ?? id);
+          const { contractName } = row.original;
+          if (!contractName) {
+            return (
+              <span className="text-muted-foreground">
+                {t("entityTable.fallback.noName")}
+              </span>
+            );
+          }
+
+          return <span className="font-medium">{contractName}</span>;
+        },
+        meta: {
+          displayName: t("entityTable.columns.name"),
+          type: "text",
+          emptyValue: t("entityTable.fallback.noName"),
+        },
+      }),
+      columnHelper.display({
+        id: "contractAddress",
+        header: t("entityTable.columns.address"),
+        cell: ({ row }: CellContext<EntityRow, unknown>) => {
+          const { contractAddress } = row.original;
+          if (!contractAddress) {
+            return (
+              <span className="text-muted-foreground">
+                {t("entityTable.fallback.noContractAddress")}
+              </span>
+            );
+          }
 
           return (
-            <div className="flex flex-col gap-1">
-              {contractName ? (
-                <span className="font-medium">{contractName}</span>
-              ) : (
-                <span className="text-muted-foreground">
-                  {t("entityTable.fallback.noEntity", {
-                    defaultValue: t("identityTable.fallback.noEntity"),
-                  })}
-                </span>
-              )}
-              <Web3Address
-                address={targetAddress}
-                size="tiny"
-                showPrettyName={!contractName}
-              />
-            </div>
+            <Web3Address
+              address={getEthereumAddress(contractAddress)}
+              size="tiny"
+              showPrettyName={false}
+            />
           );
         },
         meta: {
-          displayName: t("entityTable.columns.entity", {
-            defaultValue: t("identityTable.columns.entity"),
-          }),
-          type: "none",
+          displayName: t("entityTable.columns.address"),
+          type: "address",
+          emptyValue: t("entityTable.fallback.noContractAddress"),
+        },
+      }),
+      columnHelper.display({
+        id: "identityAddress",
+        header: t("entityTable.columns.identityAddress"),
+        cell: ({ row }: CellContext<EntityRow, unknown>) => (
+          <Web3Address
+            address={row.original.id}
+            size="tiny"
+            showPrettyName={false}
+          />
+        ),
+        meta: {
+          displayName: t("entityTable.columns.identityAddress"),
+          type: "address",
+          emptyValue: t("entityTable.fallback.noIdentity"),
         },
       }),
       columnHelper.display({
         id: "entityType",
-        header: t("entityTable.columns.type", {
-          defaultValue: t("identityTable.columns.type"),
-        }),
+        header: t("entityTable.columns.type"),
         cell: ({ row }: CellContext<EntityRow, unknown>) => (
           <EntityTypeBadge entityType={row.original.entityType} />
         ),
         meta: {
-          displayName: t("entityTable.columns.type", {
-            defaultValue: t("identityTable.columns.type"),
-          }),
+          displayName: t("entityTable.columns.type"),
           type: "option",
           options: entityTypeOptions,
         },
       }),
       columnHelper.display({
         id: "status",
-        header: t("entityTable.columns.status", {
-          defaultValue: t("table.columns.status"),
-        }),
+        header: t("entityTable.columns.status"),
         cell: ({ row }: CellContext<EntityRow, unknown>) => (
           <EntityStatusBadge status={row.original.status} />
         ),
         meta: {
-          displayName: t("entityTable.columns.status", {
-            defaultValue: t("table.columns.status"),
-          }),
+          displayName: t("entityTable.columns.status"),
           type: "option",
           options: [
             {
@@ -224,69 +217,6 @@ export const EntityTable = withErrorBoundary(function EntityTable() {
           ],
         },
       }),
-      columnHelper.display({
-        id: "activeClaimsCount",
-        header: t("entityTable.columns.activeClaims", {
-          defaultValue: t("identityTable.columns.activeClaims"),
-        }),
-        cell: ({ row }: CellContext<EntityRow, unknown>) =>
-          row.original.activeClaimsCount,
-        meta: {
-          displayName: t("entityTable.columns.activeClaims", {
-            defaultValue: t("identityTable.columns.activeClaims"),
-          }),
-          type: "number",
-        },
-      }),
-      columnHelper.display({
-        id: "revokedClaimsCount",
-        header: t("entityTable.columns.revokedClaims", {
-          defaultValue: t("identityTable.columns.revokedClaims"),
-        }),
-        cell: ({ row }: CellContext<EntityRow, unknown>) =>
-          row.original.revokedClaimsCount,
-        meta: {
-          displayName: t("entityTable.columns.revokedClaims", {
-            defaultValue: t("identityTable.columns.revokedClaims"),
-          }),
-          type: "number",
-        },
-      }),
-      columnHelper.display({
-        id: "lastActivity",
-        header: t("entityTable.columns.lastActivity", {
-          defaultValue: t("identityTable.columns.deployment"),
-        }),
-        cell: ({ row }: CellContext<EntityRow, unknown>) => {
-          const { deployedInTransaction } = row.original;
-          if (
-            !deployedInTransaction ||
-            !isEthereumHash(deployedInTransaction)
-          ) {
-            return (
-              <span className="text-muted-foreground">
-                {t("entityTable.fallback.noActivity", {
-                  defaultValue: t("identityTable.fallback.noDeployment"),
-                })}
-              </span>
-            );
-          }
-
-          return (
-            <Web3TransactionHash
-              hash={deployedInTransaction}
-              copyToClipboard
-              showFullHash={false}
-            />
-          );
-        },
-        meta: {
-          displayName: t("entityTable.columns.lastActivity", {
-            defaultValue: t("identityTable.columns.deployment"),
-          }),
-          type: "text",
-        },
-      }),
     ]) as ColumnDef<EntityRow>[];
   }, [t]);
 
@@ -294,9 +224,7 @@ export const EntityTable = withErrorBoundary(function EntityTable() {
     return (
       <div className="flex items-center justify-center p-8">
         <p className="text-muted-foreground">
-          {t("entityTable.errors.loadFailed", {
-            defaultValue: t("identityTable.errors.loadFailed"),
-          })}
+          {t("entityTable.errors.loadFailed")}
         </p>
       </div>
     );
@@ -333,16 +261,10 @@ export const EntityTable = withErrorBoundary(function EntityTable() {
         entity_filter: false,
       }}
       customEmptyState={{
-        title: t("entityTable.emptyState.title", {
-          defaultValue: t("identityTable.emptyState.title"),
-        }),
+        title: t("entityTable.emptyState.title"),
         description: isLoading
-          ? t("entityTable.emptyState.loading", {
-              defaultValue: t("identityTable.emptyState.loading"),
-            })
-          : t("entityTable.emptyState.description", {
-              defaultValue: t("identityTable.emptyState.description"),
-            }),
+          ? t("entityTable.emptyState.loading")
+          : t("entityTable.emptyState.description"),
         icon: Building2,
       }}
       onRowClick={handleRowClick}

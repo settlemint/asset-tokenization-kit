@@ -24,11 +24,11 @@
     },
     "table": {
       "columns": {
-        "name": "الاسم",
+        "name": "اسم العرض",
         "email": "البريد الإلكتروني",
-        "wallet": "المحفظة",
+        "wallet": "EOA",
         "role": "الدور",
-        "identity": "الهوية",
+        "identity": "عنوان الهوية",
         "type": "النوع",
         "verifications": "التحقق",
         "status": "الحالة",

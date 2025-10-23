@@ -1,0 +1,44 @@
+{
+  "page": {
+    "description": "Verwalten Sie Identitätsansprüche, Verifizierungsstatus und Compliance für Benutzer.",
+    "loading": "Ansprüche laden..."
+  },
+  "accessDenied": {
+    "title": "Zugriff beschränkt",
+    "description": "Sie haben keine Berechtigung, Entitäten zu verwalten. Kontaktieren Sie einen Administrator für zusätzliche Zugriffe."
+  },
+  "status": {
+    "registered": "Registriert",
+    "pending": "Ausstehend"
+  },
+  "entityTable": {
+    "columns": {
+      "name": "Name",
+      "address": "Adresse",
+      "identityAddress": "Identitätsadresse",
+      "type": "Typ",
+      "status": "Status"
+    },
+    "types": {
+      "token": "Token",
+      "vault": "Vault",
+      "custodian": "Custodian",
+      "contract": "Vertrag"
+    },
+    "fallback": {
+      "noType": "Unbekannter Typ",
+      "noName": "Kein Vertragsname",
+      "noContractAddress": "Keine Vertragsadresse",
+      "noIdentity": "Keine Identitätsadresse"
+    },
+    "emptyState": {
+      "title": "Keine Identitäten gefunden",
+      "description": "Keine Identitäten entsprechen Ihren Filtern bisher.",
+      "loading": "Identitäten laden..."
+    },
+    "errors": {
+      "loadFailed": "Fehler beim Laden der Identitäten. Bitte versuchen Sie es erneut.",
+      "navigationFailed": "Fehler beim Öffnen der Identitätsdetails"
+    }
+  }
+}

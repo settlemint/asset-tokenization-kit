@@ -24,11 +24,11 @@
     },
     "table": {
       "columns": {
-        "name": "名前",
+        "name": "表示名",
         "email": "メール",
-        "wallet": "ウォレット",
+        "wallet": "EOA",
         "role": "役割",
-        "identity": "アイデンティティ",
+        "identity": "アイデンティティアドレス",
         "type": "タイプ",
         "verifications": "検証",
         "status": "ステータス",

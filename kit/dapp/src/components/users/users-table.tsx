@@ -30,8 +30,8 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
   const defaultSorting = useMemo<SortingState>(
     () => [
       {
-        id: "lastActivity",
-        desc: true,
+        id: "name",
+        desc: false,
       },
     ],
     []
@@ -50,7 +50,6 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
       email: "email",
       wallet: "wallet",
       identity: "wallet",
-      lastActivity: "lastLoginAt",
       createdAt: "createdAt",
     }),
     []
@@ -260,46 +259,6 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
           },
         }),
         columnHelper.display({
-          id: "verifications",
-          header: t("management.table.columns.verifications"),
-          enableSorting: false,
-          cell: ({ row }) => {
-            const activeClaims = row.original.claims.filter(
-              (claim) => !claim.revoked
-            );
-
-            if (activeClaims.length === 0) {
-              return (
-                <span className="text-muted-foreground">
-                  {t("management.table.verifications.none")}
-                </span>
-              );
-            }
-
-            const visibleClaims = activeClaims.slice(0, 3);
-            const extraCount = activeClaims.length - visibleClaims.length;
-
-            return (
-              <div className="flex flex-wrap gap-1">
-                {visibleClaims.map((claim) => (
-                  <Badge key={claim.id} variant="secondary" className="text-xs">
-                    {claim.name}
-                  </Badge>
-                ))}
-                {extraCount > 0 && (
-                  <Badge variant="outline" className="text-xs">
-                    +{extraCount}
-                  </Badge>
-                )}
-              </div>
-            );
-          },
-          meta: {
-            displayName: t("management.table.columns.verifications"),
-            type: "text",
-          },
-        }),
-        columnHelper.display({
           id: "status",
           header: t("management.table.columns.status"),
           enableSorting: false,
@@ -314,19 +273,6 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
           meta: {
             displayName: t("management.table.columns.status"),
             type: "text",
-          },
-        }),
-        columnHelper.accessor("lastLoginAt", {
-          id: "lastActivity",
-          header: t("management.table.columns.lastActive"),
-          enableSorting: true,
-          meta: {
-            displayName: t("management.table.columns.lastActive"),
-            type: "date",
-            dateOptions: {
-              relative: true,
-            },
-            emptyValue: t("management.table.fallback.never"),
           },
         }),
       ] as ColumnDef<UserWithIdentity>[]),

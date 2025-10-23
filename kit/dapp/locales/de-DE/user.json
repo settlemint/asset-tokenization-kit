@@ -24,11 +24,11 @@
     },
     "table": {
       "columns": {
-        "name": "Benutzername",
+        "name": "Anzeigename",
         "email": "E-Mail",
-        "wallet": "Wallet-Adresse",
+        "wallet": "EOA",
         "role": "Rolle",
-        "identity": "Identität",
+        "identity": "Identitätsadresse",
         "type": "Typ",
         "verifications": "Verifizierungen",
         "status": "Statusanzeige",
