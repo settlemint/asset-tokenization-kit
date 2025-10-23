@@ -56,12 +56,12 @@
       "title": "Investor count"
     },
     "TimeLockComplianceModule": {
-      "description": "Enforce a time lock on the token. Helps comply with jurisdictional caps.",
+      "description": "Enforce a minimum holding period before tokens can be transferred.",
       "shortDescription": "Enforce a time lock on the token",
       "title": "Time lock"
     },
     "TransferApprovalComplianceModule": {
-      "description": "Enforce a transfer approval. Helps comply with jurisdictional caps.",
+      "description": "Require explicit approval from designated authorities before transfers can execute.",
       "shortDescription": "Enforce a transfer approval",
       "title": "Transfer approval"
     }

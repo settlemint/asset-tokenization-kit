@@ -375,3 +375,22 @@ export type ComplianceModulePairInputArray = z.input<
 export type TokenSupplyLimitParams = z.input<
   ReturnType<typeof tokenSupplyLimitValues>
 >;
+
+/**
+ * Type representing the value of a time lock compliance module.
+ */
+export type TimeLockParams = z.infer<ReturnType<typeof timeLockValues>>;
+
+/**
+ * Type representing the value of a transfer approval compliance module.
+ */
+export type TransferApprovalParams = z.infer<
+  ReturnType<typeof transferApprovalValues>
+>;
+
+/**
+ * Type representing the value of an investor count compliance module.
+ */
+export type InvestorCountParams = z.infer<
+  ReturnType<typeof investorCountValues>
+>;

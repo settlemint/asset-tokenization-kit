@@ -64,7 +64,7 @@ understand the resulting environment at a glance.
 - **Profile location:** Identity details use Japanese (`JP`) information, but
   registration is intentionally left unfinished to simulate onboarding.
 
-### US Investor (us.investor@settlemint.com)
+### `US Investor (`us.investor@settlemint.com`)
 
 - **Who is this?** An investor from the US, useful for showing transfers or
   comparing user journeys.

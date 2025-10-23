@@ -1,4 +1,4 @@
-import { TokenSupplyLimitParams } from "@atk/zod/src/compliance";
+import type { TokenSupplyLimitParams } from "@atk/zod/compliance";
 import { encodeAbiParameters, parseAbiParameters } from "viem";
 
 export const encodeTokenSupplyLimitParams = (

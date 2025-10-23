@@ -1,7 +1,10 @@
 import { encodeAddressParams } from "@/lib/compliance/encoding/encode-address-params";
 import { encodeCountryParams } from "@/lib/compliance/encoding/encode-country-params";
 import { encodeExpressionParams } from "@/lib/compliance/encoding/encode-expression-params";
+import { encodeInvestorCountParams } from "@/lib/compliance/encoding/encode-investor-count-params";
+import { encodeTimeLockParams } from "@/lib/compliance/encoding/encode-timelock-params";
 import { encodeTokenSupplyLimitParams } from "@/lib/compliance/encoding/encode-token-supply-limit-params";
+import { encodeTransferApprovalParams } from "@/lib/compliance/encoding/encode-transfer-approval-params";
 import type { ComplianceParams } from "@atk/zod/compliance";
 import { convertInfixToPostfix } from "@atk/zod/expression-node";
 
@@ -25,6 +28,12 @@ export function encodeComplianceParams(params: ComplianceParams) {
       return encodeAddressParams(params.values);
     case "TokenSupplyLimitComplianceModule":
       return encodeTokenSupplyLimitParams(params.values);
+    case "InvestorCountComplianceModule":
+      return encodeInvestorCountParams(params.values);
+    case "TimeLockComplianceModule":
+      return encodeTimeLockParams(params.values);
+    case "TransferApprovalComplianceModule":
+      return encodeTransferApprovalParams(params.values);
     default:
       throw new Error(
         `Unknown compliance module type: ${(params as { typeId: string }).typeId}`
