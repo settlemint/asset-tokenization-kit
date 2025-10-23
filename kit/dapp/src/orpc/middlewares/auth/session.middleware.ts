@@ -64,14 +64,15 @@ export const sessionMiddleware = baseRouter.middleware<
     headers.append(key, value);
   }
 
-  const session = await auth.api.getSession({
+  const session = (await auth.api.getSession({
     headers,
-  });
+  })) as unknown as Session;
+
   return next({
     context: {
       auth: {
-        user: session?.user as SessionUser,
-        session: session as unknown as Session,
+        user: session.user as SessionUser,
+        session: session,
       },
     },
   });
