@@ -1,7 +1,6 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
 import * as z from "zod";
 import { read } from "../../token.read";
@@ -73,6 +72,20 @@ export const redeem = tokenRouter.token.redeem
 
     const sender = auth.user;
     const ownerAddress = owner ?? sender.wallet;
+    const normalizedOwner = ownerAddress.toLowerCase();
+    const normalizedCaller = sender.wallet.toLowerCase();
+
+    if (normalizedOwner !== normalizedCaller) {
+      const userRoles = context.token.userPermissions.roles;
+      const canDelegate = userRoles.custodian ?? false;
+
+      if (!canDelegate) {
+        throw errors.FORBIDDEN({
+          message: "Delegated redemption requires custodian role",
+          data: { errors: ["Delegated redemption requires custodian role"] },
+        });
+      }
+    }
 
     let amountToRedeem = amount;
 
