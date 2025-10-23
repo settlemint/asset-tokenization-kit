@@ -1,6 +1,6 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
-import { IdentityTable } from "@/components/identity/identity-table";
+import { EntityTable } from "@/components/entities/entity-table";
 import {
   CLAIM_ISSUER_ROLE,
   IDENTITY_MANAGER_ROLE,
@@ -79,7 +79,7 @@ function EntityManagementPage() {
           </div>
         }
       >
-        <IdentityTable />
+        <EntityTable />
       </Suspense>
     </div>
   );
