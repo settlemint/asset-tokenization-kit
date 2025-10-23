@@ -87,7 +87,19 @@ export const redeem = tokenRouter.token.redeem
       }
     }
 
-    let amountToRedeem = amount;
+    let amountToRedeem: bigint | undefined = undefined;
+
+    if (!redeemAll && amount !== undefined) {
+      try {
+        amountToRedeem =
+          typeof amount === "bigint" ? amount : BigInt(String(amount));
+      } catch {
+        throw errors.INPUT_VALIDATION_FAILED({
+          message: "Invalid amount",
+          data: { errors: ["Amount must be an integer string or bigint"] },
+        });
+      }
+    }
 
     if (redeemAll) {
       const balanceResult = await context.portalClient.query(
@@ -119,7 +131,7 @@ export const redeem = tokenRouter.token.redeem
       });
     }
 
-    if (amountToRedeem <= 0n) {
+    if ((amountToRedeem as bigint) <= 0n) {
       throw errors.INPUT_VALIDATION_FAILED({
         message: "Nothing to redeem",
         data: { errors: ["No redeemable balance found"] },
