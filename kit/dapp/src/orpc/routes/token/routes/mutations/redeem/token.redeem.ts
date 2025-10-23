@@ -131,7 +131,7 @@ export const redeem = tokenRouter.token.redeem
       });
     }
 
-    if ((amountToRedeem as bigint) <= 0n) {
+    if (amountToRedeem <= 0n) {
       throw errors.INPUT_VALIDATION_FAILED({
         message: "Nothing to redeem",
         data: { errors: ["No redeemable balance found"] },

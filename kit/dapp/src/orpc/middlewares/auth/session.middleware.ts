@@ -71,7 +71,7 @@ export const sessionMiddleware = baseRouter.middleware<
     context: {
       auth: {
         user: session?.user as SessionUser,
-        session: session as Session,
+        session: session as unknown as Session,
       },
     },
   });

@@ -17,7 +17,7 @@ export const TokenRedeemInputSchema = MutationInputSchemaWithContract.extend({
 }).superRefine((value, ctx) => {
   if (!value.redeemAll && value.amount === undefined) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: "custom",
       message: "Amount required when redeemAll is false",
       path: ["amount"],
     });
