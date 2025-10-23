@@ -3,6 +3,7 @@ import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permiss
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
+import * as z from "zod";
 import { read } from "../../token.read";
 
 const TOKEN_REDEEM_FOR_MUTATION = portalGraphql(`
@@ -29,6 +30,30 @@ const TOKEN_REDEEM_FOR_MUTATION = portalGraphql(`
   }
 `);
 
+const TOKEN_BALANCE_QUERY = portalGraphql(`
+  query TokenRedeemBalance($address: String!, $owner: String!) {
+    IERC20(address: $address) {
+      balanceOf(account_: $owner) {
+        value
+      }
+    }
+  }
+`);
+
+const TokenBalanceResponseSchema = z.object({
+  IERC20: z.object({
+    balanceOf: z.union([
+      z.string(),
+      z.object({
+        value: z.string(),
+      }),
+      z.object({
+        balance: z.string(),
+      }),
+    ]),
+  }),
+});
+
 export const redeem = tokenRouter.token.redeem
   .use(
     tokenPermissionMiddleware({
@@ -37,18 +62,56 @@ export const redeem = tokenRouter.token.redeem
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const { contract, walletVerification, amount, owner } = input;
+    const {
+      contract,
+      walletVerification,
+      amount,
+      owner,
+      redeemAll = false,
+    } = input;
     const { auth } = context;
 
-    if (!amount) {
+    const sender = auth.user;
+    const ownerAddress = owner ?? sender.wallet;
+
+    let amountToRedeem = amount;
+
+    if (redeemAll) {
+      const balanceResult = await context.portalClient.query(
+        TOKEN_BALANCE_QUERY,
+        {
+          address: contract,
+          owner: ownerAddress,
+        },
+        TokenBalanceResponseSchema
+      );
+
+      const balanceField = balanceResult.IERC20.balanceOf;
+      const balanceString =
+        typeof balanceField === "string"
+          ? balanceField
+          : "value" in balanceField
+            ? balanceField.value
+            : "balance" in balanceField
+              ? balanceField.balance
+              : "0";
+
+      amountToRedeem = BigInt(balanceString);
+    }
+
+    if (amountToRedeem === undefined) {
       throw errors.INPUT_VALIDATION_FAILED({
         message: "Amount required",
         data: { errors: ["Invalid redeem parameters"] },
       });
     }
 
-    const sender = auth.user;
-    const ownerAddress = owner ?? sender.wallet;
+    if (amountToRedeem <= 0n) {
+      throw errors.INPUT_VALIDATION_FAILED({
+        message: "Nothing to redeem",
+        data: { errors: ["No redeemable balance found"] },
+      });
+    }
 
     await context.portalClient.mutate(
       TOKEN_REDEEM_FOR_MUTATION,
@@ -56,7 +119,7 @@ export const redeem = tokenRouter.token.redeem
         address: contract,
         from: sender.wallet,
         owner: ownerAddress,
-        amount: amount.toString(),
+        amount: amountToRedeem.toString(),
       },
       {
         sender,

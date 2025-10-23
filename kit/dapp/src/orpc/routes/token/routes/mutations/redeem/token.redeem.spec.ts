@@ -165,7 +165,7 @@ describe(
 
       const result = await adminClient.token.redeem({
         contract: bond.id,
-        amount: redeemAmount,
+        redeemAll: true,
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
@@ -204,7 +204,7 @@ describe(
         adminClient.token.redeem(
           {
             contract: bond.id,
-            amount: redeemAmount,
+            redeemAll: true,
             walletVerification: {
               secretVerificationCode: DEFAULT_PINCODE,
               verificationType: "PINCODE",
@@ -216,7 +216,7 @@ describe(
             },
           }
         )
-      ).rejects.toThrow("ERC20InsufficientBalance");
+      ).rejects.toThrow("Nothing to redeem");
     });
   }
 );

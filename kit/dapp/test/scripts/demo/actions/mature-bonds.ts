@@ -33,7 +33,7 @@ for (const bond of createdBonds) {
     if (totalSupply > 0n) {
       await issuerClient.token.redeem({
         contract: bond.id,
-        amount: totalSupply,
+        redeemAll: true,
         walletVerification: {
           secretVerificationCode: DEFAULT_PINCODE,
           verificationType: "PINCODE",
