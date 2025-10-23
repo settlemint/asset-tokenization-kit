@@ -1,4 +1,5 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
@@ -30,28 +31,22 @@ const TOKEN_REDEEM_FOR_MUTATION = portalGraphql(`
   }
 `);
 
-const TOKEN_BALANCE_QUERY = portalGraphql(`
-  query TokenRedeemBalance($address: String!, $owner: String!) {
-    IERC20(address: $address) {
-      balanceOf(account_: $owner) {
-        value
-      }
+const TOKEN_BALANCE_QUERY = theGraphGraphql(`
+  query TokenRedeemBalance($token: String!, $account: String!) {
+    tokenBalances(where: { token_: { id: $token }, account: $account }, first: 1) {
+      valueExact
     }
   }
 `);
 
 const TokenBalanceResponseSchema = z.object({
-  IERC20: z.object({
-    balanceOf: z.union([
-      z.string(),
+  tokenBalances: z
+    .array(
       z.object({
-        value: z.string(),
-      }),
-      z.object({
-        balance: z.string(),
-      }),
-    ]),
-  }),
+        valueExact: z.string(),
+      })
+    )
+    .default([]),
 });
 
 export const redeem = tokenRouter.token.redeem
@@ -70,6 +65,12 @@ export const redeem = tokenRouter.token.redeem
       redeemAll = false,
     } = input;
     const { auth } = context;
+    if (!context.token) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: "Token context not initialised",
+        data: { errors: ["tokenMiddleware must run before redeem"] },
+      });
+    }
 
     const sender = auth.user;
     const ownerAddress = owner ?? sender.wallet;
@@ -77,7 +78,7 @@ export const redeem = tokenRouter.token.redeem
     const normalizedCaller = sender.wallet.toLowerCase();
 
     if (normalizedOwner !== normalizedCaller) {
-      const userRoles = context.token?.userPermissions?.roles;
+      const userRoles = context.token.userPermissions?.roles;
       if (!userRoles) {
         throw errors.INTERNAL_SERVER_ERROR({
           message: "Missing token permission context",
@@ -110,24 +111,25 @@ export const redeem = tokenRouter.token.redeem
     }
 
     if (redeemAll) {
-      const balanceResult = await context.portalClient.query(
+      if (!context.theGraphClient) {
+        throw errors.INTERNAL_SERVER_ERROR({
+          message: "theGraphMiddleware should be called before token.redeem",
+          data: { errors: ["Missing The Graph client"] },
+        });
+      }
+
+      const balanceResult = await context.theGraphClient.query(
         TOKEN_BALANCE_QUERY,
         {
-          address: contract,
-          owner: ownerAddress,
-        },
-        TokenBalanceResponseSchema
+          input: {
+            token: contract.toLowerCase(),
+            account: ownerAddress.toLowerCase(),
+          },
+          output: TokenBalanceResponseSchema,
+        }
       );
 
-      const balanceField = balanceResult.IERC20.balanceOf;
-      const balanceString =
-        typeof balanceField === "string"
-          ? balanceField
-          : "value" in balanceField
-            ? balanceField.value
-            : "balance" in balanceField
-              ? balanceField.balance
-              : "0";
+      const balanceString = balanceResult.tokenBalances[0]?.valueExact ?? "0";
 
       amountToRedeem = BigInt(balanceString);
     }
