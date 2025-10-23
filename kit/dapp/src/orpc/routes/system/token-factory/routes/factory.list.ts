@@ -1,5 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { FactoriesResponseSchema } from "@/orpc/routes/system/token-factory/routes/factory.list.schema";
 
@@ -18,17 +19,23 @@ import { FactoriesResponseSchema } from "@/orpc/routes/system/token-factory/rout
  * allowing UIs to show only active factories or hide empty ones.
  */
 const LIST_TOKEN_FACTORIES_QUERY = theGraphGraphql(`
-  query ListTokenFactories($orderBy: TokenFactory_orderBy, $orderDirection: OrderDirection, $where: TokenFactory_filter) {
-    tokenFactories(
-      orderBy: $orderBy
-      orderDirection: $orderDirection
-      where: $where
-    ) @fetchAll {
+  query ListTokenFactories($systemAddress: ID!, $orderBy: TokenFactory_orderBy, $orderDirection: OrderDirection, $where: TokenFactory_filter) {
+    system(id: $systemAddress) {
       id
-      name
-      typeId
-      hasTokens
-      tokenExtensions
+      tokenFactoryRegistry{
+        id
+        tokenFactories(
+          orderBy: $orderBy
+          orderDirection: $orderDirection
+          where: $where
+        ) @fetchAll {
+          id
+          name
+          typeId
+          hasTokens
+          tokenExtensions
+        }
+      }
     }
   }
 `);
@@ -72,6 +79,7 @@ const LIST_TOKEN_FACTORIES_QUERY = theGraphGraphql(`
  */
 export const factoryList = authRouter.system.factory.list
   .use(theGraphMiddleware)
+  .use(systemMiddleware)
   .handler(async ({ input, context }) => {
     // Build where clause if hasTokens filter is provided
     const where =
@@ -84,11 +92,12 @@ export const factoryList = authRouter.system.factory.list
       {
         input: {
           ...input,
+          systemAddress: context.system.id,
           where,
         },
         output: FactoriesResponseSchema,
       }
     );
 
-    return response.tokenFactories;
+    return response.system.tokenFactoryRegistry?.tokenFactories ?? [];
   });

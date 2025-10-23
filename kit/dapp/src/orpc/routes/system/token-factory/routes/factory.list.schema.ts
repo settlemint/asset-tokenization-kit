@@ -95,7 +95,13 @@ export const TokenFactoryListSchema = SortableListSchema.extend({
  * ```
  */
 export const FactoriesResponseSchema = z.object({
-  tokenFactories: FactoryListSchema,
+  system: z.object({
+    tokenFactoryRegistry: z
+      .object({
+        tokenFactories: FactoryListSchema,
+      })
+      .nullable(),
+  }),
 });
 
 // Type exports for enhanced TypeScript integration

@@ -126,7 +126,13 @@ const TheGraphSystemAddonSchema = z.object({
  * ```
  */
 export const AddonsResponseSchema = z.object({
-  systemAddons: z.array(TheGraphSystemAddonSchema),
+  system: z.object({
+    systemAddonRegistry: z
+      .object({
+        systemAddons: z.array(TheGraphSystemAddonSchema),
+      })
+      .nullable(),
+  }),
 });
 
 // Type exports for enhanced TypeScript integration
