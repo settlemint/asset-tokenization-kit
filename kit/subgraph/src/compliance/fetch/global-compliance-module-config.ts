@@ -5,10 +5,12 @@ import { fetchComplianceModule } from "./compliance-module";
 import { fetchComplianceModuleParameters } from "./compliance-module-parameters";
 
 export function fetchGlobalComplianceModuleConfig(
-  compliance: Address,
+  complianceAddress: Address,
   complianceModuleAddress: Address
 ): GlobalComplianceModuleConfig {
-  let complianceModuleConfigId = compliance.concat(complianceModuleAddress);
+  const complianceModuleConfigId = complianceAddress.concat(
+    complianceModuleAddress
+  );
   let globalComplianceModule = GlobalComplianceModuleConfig.load(
     complianceModuleConfigId
   );
@@ -17,8 +19,10 @@ export function fetchGlobalComplianceModuleConfig(
     globalComplianceModule = new GlobalComplianceModuleConfig(
       complianceModuleConfigId
     );
-    globalComplianceModule.compliance = fetchCompliance(compliance).id;
+    const compliance = fetchCompliance(complianceAddress);
+    globalComplianceModule.compliance = compliance.id;
     globalComplianceModule.complianceModule = fetchComplianceModule(
+      Address.fromBytes(compliance.system),
       complianceModuleAddress
     ).id;
     globalComplianceModule.parameters = fetchComplianceModuleParameters(
