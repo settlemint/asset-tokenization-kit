@@ -305,14 +305,14 @@ function getInitialModulePairs(assetToCreate: DemoAsset) {
   ) {
     initialModulePairs.push({
       typeId: "CountryAllowListComplianceModule",
-      module: countryAllowListModule.id,
+      module: countryAllowListModule.address,
       values: compliance.allowedCountries,
     });
   }
   if (smartIdentityVerificationModule && amlTopic && kycTopic) {
     initialModulePairs.push({
       typeId: "SMARTIdentityVerificationComplianceModule",
-      module: smartIdentityVerificationModule.id,
+      module: smartIdentityVerificationModule.address,
       values: [
         {
           nodeType: 0,
@@ -332,7 +332,7 @@ function getInitialModulePairs(assetToCreate: DemoAsset) {
   if (tokenSupplyLimitModule && compliance.tokenSupplyLimit) {
     initialModulePairs.push({
       typeId: "TokenSupplyLimitComplianceModule",
-      module: tokenSupplyLimitModule.id,
+      module: tokenSupplyLimitModule.address,
       values: {
         maxSupply: toNumber(compliance.tokenSupplyLimit),
         periodLength: 0,

@@ -37,6 +37,7 @@ const ComplianceModuleSchema = z.object({
   id: ethereumCompositeId.describe(
     "Compliance module ID (concatenation of system address and compliance module address)"
   ),
+  address: ethereumAddress.describe("Compliance module address"),
   typeId: complianceTypeId().describe("Compliance module type ID"),
   name: z.string().describe("Compliance module name"),
 });
