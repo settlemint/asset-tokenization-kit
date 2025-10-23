@@ -288,6 +288,9 @@ export const TokensTable = withErrorBoundary(function TokensTable({
             displayName: t("columns.contractAddress"),
             type: "address",
             icon: Copy,
+            addressOptions: {
+              showPrettyName: false,
+            },
           },
         }),
         columnHelper.accessor("name", {
@@ -622,9 +625,6 @@ export const TokensTable = withErrorBoundary(function TokensTable({
        * - This ensures financial data is visible when relevant without manual configuration
        */
       initialColumnVisibility={{
-        name: false, // Symbol is usually sufficient for token identification
-        createdAt: false, // Detailed timestamp less critical for overview
-        price: true, // Always show price column; row cells decide visibility
         category: hasAssetClassification, // Show when classification exists
         class: hasAssetClassification, // Show when classification exists
       }}
