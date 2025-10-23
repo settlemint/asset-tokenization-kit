@@ -32,7 +32,7 @@ const TOKEN_REDEEM_FOR_MUTATION = portalGraphql(`
 `);
 
 const TOKEN_BALANCE_QUERY = theGraphGraphql(`
-  query TokenRedeemBalance($token: String!, $account: String!) {
+  query TokenRedeemBalance($token: Bytes!, $account: Bytes!) {
     tokenBalances(where: { token_: { id: $token }, account: $account }, first: 1) {
       valueExact
     }
