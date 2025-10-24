@@ -38,39 +38,6 @@
       "notVerified": "Nicht verifiziert"
     }
   },
-  "identityTable": {
-    "columns": {
-      "id": "ID-Nummer",
-      "type": "Typ",
-      "entity": "Entität",
-      "linkedEntity": "Konto / Vertrag",
-      "activeClaims": "Aktive Ansprüche",
-      "revokedClaims": "Widerrufene Ansprüche",
-      "deployment": "Bereitstellungs-Tx"
-    },
-    "types": {
-      "account": "Konto",
-      "contract": "Vertrag"
-    },
-    "fallback": {
-      "noAccount": "Kein Konto",
-      "noContract": "Kein Vertrag",
-      "noDeployment": "Keine Bereitstellung",
-      "noEntity": "Keine verknüpfte Entität"
-    },
-    "search": {
-      "placeholder": "Identitäten suchen..."
-    },
-    "emptyState": {
-      "title": "Keine Identitäten gefunden",
-      "description": "Keine Identitäten entsprechen Ihren Filtern bisher.",
-      "loading": "Identitäten laden..."
-    },
-    "errors": {
-      "loadFailed": "Fehler beim Laden der Identitäten. Bitte versuchen Sie es erneut.",
-      "navigationFailed": "Fehler beim Öffnen der Identitätsdetails"
-    }
-  },
   "page": {
     "description": "Verwalten Sie Identitätsansprüche, Verifizierungsstatus und Compliance für Benutzer.",
     "loading": "Ansprüche laden..."

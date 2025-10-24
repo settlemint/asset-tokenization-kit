@@ -1,0 +1,45 @@
+{
+  "page": {
+    "description": "Verwalten Sie Teilnehmer ohne Anmeldedaten wie Tokens, Vaults, Verwahrer, Verträge und andere Systemidentitäten.",
+    "loading": "Entitäten werden geladen..."
+  },
+  "accessDenied": {
+    "title": "Zugriff eingeschränkt",
+    "description": "Sie haben keine Berechtigung, Entitäten zu verwalten. Kontaktieren Sie einen Administrator für zusätzliche Zugriffe."
+  },
+  "status": {
+    "registered": "Registriert",
+    "pending": "Registrierung ausstehend"
+  },
+  "entityTable": {
+    "columns": {
+      "name": "Name",
+      "address": "Vertragsadresse",
+      "identityAddress": "Identitätsadresse",
+      "type": "Typ",
+      "status": "Status"
+    },
+    "types": {
+      "token": "Token",
+      "vault": "Vault",
+      "contract": "Vertrag",
+      "wallet": "Wallet"
+    },
+    "fallback": {
+      "noType": "Kein Typ",
+      "noName": "Kein Name",
+      "noContractAddress": "Keine Vertragsadresse",
+      "noIdentity": "Keine Identitätsadresse",
+      "unknown": "Unbekannt"
+    },
+    "emptyState": {
+      "title": "Keine Entitäten gefunden",
+      "description": "Noch keine Entitäten entsprechen Ihren Filtern.",
+      "loading": "Entitäten werden geladen..."
+    },
+    "errors": {
+      "loadFailed": "Entitäten konnten nicht geladen werden. Bitte erneut versuchen.",
+      "navigationFailed": "Entitätsdetails konnten nicht geöffnet werden"
+    }
+  }
+}

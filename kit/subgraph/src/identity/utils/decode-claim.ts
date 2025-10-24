@@ -14,9 +14,20 @@ export function decodeClaimValues(
 
   // Parse the signature to extract parameter names and types
   const signatureWithNames = topicScheme.signature;
+  const normalizedSignature = signatureWithNames.trim();
+
+  if (normalizedSignature.length === 0) {
+    log.warning("Skipping decode for topic {} because signature missing", [
+      topicScheme.name,
+    ]);
+    const claimValue = fetchIdentityClaimValue(claim, "rawData");
+    claimValue.value = data.toHexString();
+    claimValue.save();
+    return;
+  }
 
   // Split by comma to get individual parameters
-  const params = signatureWithNames.split(",");
+  const params = normalizedSignature.split(",");
   const paramNames = new Array<string>();
   const paramTypes = new Array<string>();
 

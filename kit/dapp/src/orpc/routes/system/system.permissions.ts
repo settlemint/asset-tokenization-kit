@@ -11,6 +11,7 @@ type AddonOperations = keyof typeof systemContract.addon;
 type AccessManagerOperations = keyof typeof systemContract.accessManager;
 type ComplianceOperations = keyof typeof systemContract.compliance;
 type IdentityOperations = keyof typeof systemContract.identity;
+type EntityOperations = keyof typeof systemContract.entity;
 
 // Create a type that uses all the operation checks
 type SystemContractValidation = {
@@ -24,6 +25,7 @@ type SystemContractValidation = {
     : never;
   complianceHasCreate: "create" extends ComplianceOperations ? true : never;
   identityHasRegister: "register" extends IdentityOperations ? true : never;
+  entityHasList: "list" extends EntityOperations ? true : never;
 };
 
 // This type will cause a compile error if any operation is missing
@@ -62,6 +64,9 @@ export const SYSTEM_PERMISSIONS = {
   identityRead: { any: ["identityManager", "systemManager", "claimIssuer"] },
   identitySearch: { any: ["identityManager", "systemManager", "claimIssuer"] },
   identityList: {
+    any: ["identityManager", "systemManager", "claimIssuer", "systemModule"],
+  },
+  entityList: {
     any: ["identityManager", "systemManager", "claimIssuer", "systemModule"],
   },
   kycDelete: { any: ["identityManager", "claimIssuer"] },

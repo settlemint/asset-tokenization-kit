@@ -1,0 +1,45 @@
+{
+  "page": {
+    "description": "Manage participants without login credentials, such as Tokens, Vaults, and other system identities",
+    "loading": "Loading entities..."
+  },
+  "accessDenied": {
+    "title": "Access restricted",
+    "description": "You do not have permission to manage entities. Contact an administrator for additional access."
+  },
+  "status": {
+    "registered": "Registered",
+    "pending": "Pending registration"
+  },
+  "entityTable": {
+    "columns": {
+      "name": "Name",
+      "address": "Contract address",
+      "identityAddress": "Identity address",
+      "type": "Type",
+      "status": "Status"
+    },
+    "types": {
+      "token": "Token",
+      "vault": "Vault",
+      "contract": "Contract",
+      "wallet": "Wallet"
+    },
+    "fallback": {
+      "noType": "No type",
+      "noName": "No name",
+      "noContractAddress": "No contract address",
+      "noIdentity": "No identity address",
+      "unknown": "Unknown"
+    },
+    "emptyState": {
+      "title": "No entities found",
+      "description": "No entities match your filters yet.",
+      "loading": "Loading entities..."
+    },
+    "errors": {
+      "loadFailed": "Failed to load entities. Please try again.",
+      "navigationFailed": "Failed to open entity details"
+    }
+  }
+}

@@ -251,6 +251,7 @@ export function getSystemPermissions(
     identityRead: false,
     identitySearch: false,
     identityList: false,
+    entityList: false,
     identityRegister: false,
     kycDelete: false,
     kycList: false,

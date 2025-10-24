@@ -7,7 +7,7 @@ import {
   log,
   store,
 } from "@graphprotocol/graph-ts";
-import { Identity, Token, TopicScheme } from "../../generated/schema";
+import { Identity, Token, TopicScheme, Vault } from "../../generated/schema";
 import {
   Approved,
   ClaimAdded,
@@ -52,6 +52,10 @@ import {
   getIdentityKeyType,
 } from "./utils/identity-key-utils";
 import { isBasePriceClaim } from "./utils/is-claim";
+import {
+  deriveEntityType,
+  resolveSupportedInterfaces,
+} from "./utils/supported-interfaces";
 
 /**
  * Update account stats for all holders of a token when its base price changes
@@ -110,6 +114,81 @@ function updateAccountStatsForAllTokenHolders(
   }
 }
 
+function interfacesDiffer(left: Bytes[], right: Bytes[]): boolean {
+  if (left.length != right.length) {
+    return true;
+  }
+
+  for (let i = 0; i < left.length; i++) {
+    if (left[i].toHexString() != right[i].toHexString()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Mutates in-memory classification fields and signals whether persistence is required.
+ */
+export function ensureIdentityClassification(identity: Identity): boolean {
+  let mutated = false;
+
+  if (!identity.isContract) {
+    const supported = identity.supportedInterfaces;
+    if (supported.length > 0) {
+      identity.supportedInterfaces = new Array<Bytes>();
+      mutated = true;
+    }
+    if (identity.entityType != "wallet") {
+      identity.entityType = "wallet";
+      mutated = true;
+    }
+  } else {
+    const accountAddress = Address.fromBytes(identity.account);
+    // TODO(ENG-4174): Temporary fallback until vault contracts expose a dedicated interface; see https://linear.app/settlemint/issue/ENG-4174/add-iatkvault-interface.
+    let vault = Vault.load(accountAddress);
+
+    if (!vault) {
+      const registrations = identity.registered.load();
+      for (let i = 0; i < registrations.length; i++) {
+        const registrationAccount = Address.fromBytes(registrations[i].account);
+        const candidate = Vault.load(registrationAccount);
+        if (candidate) {
+          vault = candidate;
+          break;
+        }
+      }
+    }
+
+    const targetAddress = vault ? Address.fromBytes(vault.id) : accountAddress;
+    const currentInterfaces = identity.supportedInterfaces;
+    const resolvedInterfaces = resolveSupportedInterfaces(
+      targetAddress,
+      currentInterfaces
+    );
+
+    if (interfacesDiffer(currentInterfaces, resolvedInterfaces)) {
+      identity.supportedInterfaces = resolvedInterfaces;
+      mutated = true;
+    }
+
+    let nextType = deriveEntityType(resolvedInterfaces, "contract");
+    if (vault) {
+      // Vault contracts only advertise AccessControl + IContractWithIdentity.
+      // Interface-based detection alone mislabels them as generic contracts.
+      // Persisted Vault entity from factory events proves the account is a vault.
+      nextType = "vault";
+    }
+    if (identity.entityType != nextType) {
+      identity.entityType = nextType;
+      mutated = true;
+    }
+  }
+
+  return mutated;
+}
+
 export function handleApproved(event: Approved): void {
   fetchEvent(event, "Approved");
 }
@@ -117,10 +196,14 @@ export function handleApproved(event: Approved): void {
 export function handleClaimAdded(event: ClaimAdded): void {
   fetchEvent(event, "ClaimAdded");
   const identity = fetchIdentity(event.address);
+  const classificationMutated = ensureIdentityClassification(identity);
 
   // Decode claim data and create IdentityClaimValue entities
   const topicScheme = getTopicSchemeFromIdentity(event.params.topic, identity);
   if (!topicScheme) {
+    if (classificationMutated) {
+      identity.save();
+    }
     return;
   }
 
@@ -170,15 +253,23 @@ export function handleClaimAdded(event: ClaimAdded): void {
       updateAccountStatsForAllTokenHolders(token, BigDecimal.zero(), newPrice);
     }
   }
+
+  if (classificationMutated) {
+    identity.save();
+  }
 }
 
 export function handleClaimChanged(event: ClaimChanged): void {
   fetchEvent(event, "ClaimChanged");
   const identity = fetchIdentity(event.address);
+  const classificationMutated = ensureIdentityClassification(identity);
 
   // Decode claim data and create IdentityClaimValue entities
   const topicScheme = getTopicSchemeFromIdentity(event.params.topic, identity);
   if (!topicScheme) {
+    if (classificationMutated) {
+      identity.save();
+    }
     return;
   }
   const identityClaim = fetchIdentityClaim(identity, event.params.claimId);
@@ -223,11 +314,16 @@ export function handleClaimChanged(event: ClaimChanged): void {
       updateAccountStatsForAllTokenHolders(token, oldPrice, newPrice);
     }
   }
+
+  if (classificationMutated) {
+    identity.save();
+  }
 }
 
 export function handleClaimRemoved(event: ClaimRemoved): void {
   fetchEvent(event, "ClaimRemoved");
   const identity = fetchIdentity(event.address);
+  const classificationMutated = ensureIdentityClassification(identity);
   const identityClaim = fetchIdentityClaim(identity, event.params.claimId);
 
   const wasAlreadyRevoked = identityClaim.revoked;
@@ -279,6 +375,10 @@ export function handleClaimRemoved(event: ClaimRemoved): void {
       );
     }
   }
+
+  if (classificationMutated) {
+    identity.save();
+  }
 }
 
 export function handleExecuted(event: Executed): void {
@@ -296,23 +396,34 @@ export function handleExecutionRequested(event: ExecutionRequested): void {
 export function handleKeyAdded(event: KeyAdded): void {
   fetchEvent(event, "KeyAdded");
   const identity = fetchIdentity(event.address);
+  const classificationMutated = ensureIdentityClassification(identity);
   const identityKey = fetchIdentityKey(identity, event.params.key);
   identityKey.identity = identity.id;
   identityKey.type = getIdentityKeyType(event.params.keyType);
   identityKey.purpose = getIdentityKeyPurpose(event.params.purpose);
   identityKey.save();
+
+  if (classificationMutated) {
+    identity.save();
+  }
 }
 
 export function handleKeyRemoved(event: KeyRemoved): void {
   fetchEvent(event, "KeyRemoved");
   const identity = fetchIdentity(event.address);
+  const classificationMutated = ensureIdentityClassification(identity);
   const identityKey = fetchIdentityKey(identity, event.params.key);
   store.remove("IdentityKey", identityKey.id.toHexString());
+
+  if (classificationMutated) {
+    identity.save();
+  }
 }
 
 export function handleClaimRevoked(event: ClaimRevoked): void {
   fetchEvent(event, "ClaimRevoked");
   const identity = fetchIdentity(event.address);
+  const classificationMutated = ensureIdentityClassification(identity);
   const identityClaims = identity.claims.load();
   for (let i = 0; i < identityClaims.length; i++) {
     const identityClaim = identityClaims[i];
@@ -370,6 +481,10 @@ export function handleClaimRevoked(event: ClaimRevoked): void {
       }
       break;
     }
+  }
+
+  if (classificationMutated) {
+    identity.save();
   }
 }
 

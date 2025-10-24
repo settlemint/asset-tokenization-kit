@@ -16,62 +16,62 @@
   },
   "management": {
     "page": {
-      "description": "إدارة المستخدمين والأدوار والأذونات لمنصتك."
+      "description": "إدارة المشاركين الذين لديهم بيانات اعتماد تسجيل الدخول."
     },
     "accessDenied": {
-      "title": "الوصول مقيد",
+      "title": "الوصول مقيّد",
       "description": "ليس لديك إذن لإدارة المستخدمين. تواصل مع المسؤول للحصول على صلاحيات إضافية."
     },
     "table": {
       "columns": {
         "name": "الاسم",
         "email": "البريد الإلكتروني",
-        "wallet": "المحفظة",
-        "role": "الدور",
-        "identity": "الهوية",
+        "wallet": "EOA",
+        "identity": "عنوان الهوية",
         "type": "النوع",
-        "verifications": "التحقق",
+        "verifications": "عمليات التحقق",
         "status": "الحالة",
-        "created": "تم الإنشاء",
         "lastActive": "آخر نشاط",
-        "actions": "الإجراءات"
+        "created": "تاريخ الإنشاء",
+        "role": "الدور",
+        "actions": "إجراءات"
       },
       "status": {
         "registered": "مسجل",
-        "pending": "في الانتظار",
+        "pending": "معلق",
         "notConnected": "غير متصل",
-        "identityNeeded": "هوية مطلوبة",
+        "identityNeeded": "مطلوب هوية",
         "notRegistered": "غير مسجل",
-        "pendingRegistration": "تسجيل معلق",
-        "admin": "مدير",
-        "adminAriaLabel": "المستخدم لديه أي دور إداري في النظام",
-        "registeredAriaLabel": "المستخدم مسجل وموثق على السلسلة",
-        "notRegisteredAriaLabel": "المستخدم غير مسجل على السلسلة",
-        "pendingAriaLabel": "المستخدم ربط محفظة لكنه غير مسجل بعد على السلسلة",
-        "notConnectedAriaLabel": "المستخدم لم يربط محفظة",
-        "identityNeededAriaLabel": "المستخدم لديه محفظة لكن لا هوية مسجلة",
-        "pendingRegistrationAriaLabel": "تسجيل هوية المستخدم معلق"
+        "pendingRegistration": "التسجيل قيد المعالجة",
+        "admin": "مسؤول",
+        "adminAriaLabel": "المستخدم لديه صلاحيات المسؤول",
+        "registeredAriaLabel": "المستخدم مسجل",
+        "notRegisteredAriaLabel": "المستخدم غير مسجل",
+        "pendingAriaLabel": "حالة المستخدم معلقة",
+        "notConnectedAriaLabel": "محفظة المستخدم غير متصلة",
+        "identityNeededAriaLabel": "المستخدم يحتاج إلى هوية",
+        "pendingRegistrationAriaLabel": "تسجيل المستخدم قيد المعالجة"
       },
-      "userType": {
-        "admin": "مدير",
+      "type": {
+        "admin": "مسؤول",
         "investor": "مستثمر",
-        "trustedIssuer": "مُصدر موثوق"
+        "trustedIssuer": "مُصدِر موثوق"
       },
       "verifications": {
         "none": "لا تحقق"
       },
       "identity": {
-        "none": "لا هوية"
+        "none": "لا توجد هوية"
       },
       "actions": {
         "viewDetails": "عرض التفاصيل",
-        "menu": "قائمة الإجراءات",
-        "openMenu": "فتح قائمة الإجراءات"
+        "menu": "القائمة",
+        "openMenu": "فتح القائمة"
       },
       "search": {
         "placeholder": "البحث بالاسم أو البريد الإلكتروني أو المحفظة..."
       },
-      "noWallet": "لا محفظة",
+      "noWallet": "لا توجد محفظة",
       "emptyState": {
         "title": "لم يتم العثور على مستخدمين",
         "description": "لم يتم تسجيل أي مستخدمين بعد.",
@@ -82,7 +82,7 @@
         "navigationFailed": "فشل في التنقل إلى تفاصيل المستخدم"
       },
       "fallback": {
-        "never": "أبدًا",
+        "never": "أبداً",
         "unknown": "غير معروف"
       }
     }
@@ -98,7 +98,7 @@
     "table": {
       "columns": {
         "name": "الاسم",
-        "role": "الأدوار"
+        "role": "الدور"
       },
       "errors": {
         "navigationFailed": "فشل في التنقل إلى تفاصيل المستخدم",

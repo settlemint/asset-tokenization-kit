@@ -21,16 +21,16 @@ export function UserStatusBadge({
   identity,
   isAdmin,
 }: UserStatusBadgeProps) {
-  const { t } = useTranslation("user");
+  const { t } = useTranslation("participants");
 
   if (user.wallet === zeroAddress) {
     return (
       <Badge
         variant="outline"
         className="text-muted-foreground"
-        aria-label={t("management.table.status.notConnectedAriaLabel")}
+        aria-label={t("status.notConnectedAriaLabel")}
       >
-        {t("management.table.status.notConnected")}
+        {t("status.notConnected")}
       </Badge>
     );
   }
@@ -42,13 +42,13 @@ export function UserStatusBadge({
         <Badge
           variant="secondary"
           className="bg-gray-500 hover:bg-gray-600 text-white"
-          aria-label={t("management.table.status.identityNeededAriaLabel")}
+          aria-label={t("status.identityNeededAriaLabel")}
         >
-          {t("management.table.status.identityNeeded")}
+          {t("status.identityNeeded")}
         </Badge>
         {isAdmin && (
           <Badge variant="default" className="bg-blue-500 hover:bg-blue-600">
-            {t("management.table.status.admin")}
+            {t("status.admin")}
           </Badge>
         )}
       </div>
@@ -62,26 +62,24 @@ export function UserStatusBadge({
       <div className="flex items-center gap-2">
         {isAdmin && (
           <Badge variant="default" className="bg-blue-500 hover:bg-blue-600">
-            {t("management.table.status.admin")}
+            {t("status.admin")}
           </Badge>
         )}
         {isAdmin ? (
           <Badge
             variant="secondary"
             className="bg-blue-500 hover:bg-blue-600"
-            aria-label={t("management.table.status.notRegisteredAriaLabel")}
+            aria-label={t("status.notRegisteredAriaLabel")}
           >
-            {t("management.table.status.notRegistered")}
+            {t("status.notRegistered")}
           </Badge>
         ) : (
           <Badge
             variant="secondary"
             className="bg-yellow-500 hover:bg-yellow-600 text-white"
-            aria-label={t(
-              "management.table.status.pendingRegistrationAriaLabel"
-            )}
+            aria-label={t("status.pendingRegistrationAriaLabel")}
           >
-            {t("management.table.status.pendingRegistration")}
+            {t("status.pendingRegistration")}
           </Badge>
         )}
       </div>
@@ -93,13 +91,13 @@ export function UserStatusBadge({
       <Badge
         variant="default"
         className="bg-green-500 hover:bg-green-600"
-        aria-label={t("management.table.status.registeredAriaLabel")}
+        aria-label={t("status.registeredAriaLabel")}
       >
-        {t("management.table.status.registered")}
+        {t("status.registered")}
       </Badge>
       {isAdmin && (
         <Badge variant="default" className="bg-blue-500 hover:bg-blue-600">
-          {t("management.table.status.admin")}
+          {t("status.admin")}
         </Badge>
       )}
     </div>

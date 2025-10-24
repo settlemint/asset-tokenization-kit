@@ -38,39 +38,6 @@
       "notVerified": "غير موثق"
     }
   },
-  "identityTable": {
-    "columns": {
-      "id": "المعرّف",
-      "type": "النوع",
-      "entity": "الكيان",
-      "linkedEntity": "الحساب / العقد",
-      "activeClaims": "المطالبات النشطة",
-      "revokedClaims": "المطالبات الملغاة",
-      "deployment": "معاملة النشر"
-    },
-    "types": {
-      "account": "الحساب",
-      "contract": "العقد"
-    },
-    "fallback": {
-      "noAccount": "لا يوجد حساب",
-      "noContract": "لا يوجد عقد",
-      "noDeployment": "لا يوجد نشر",
-      "noEntity": "لا يوجد كيان مرتبط"
-    },
-    "search": {
-      "placeholder": "البحث عن الهويات..."
-    },
-    "emptyState": {
-      "title": "لم يتم العثور على هويات",
-      "description": "لا توجد هويات تتطابق مع مرشحاتك حتى الآن.",
-      "loading": "جارٍ تحميل الهويات..."
-    },
-    "errors": {
-      "loadFailed": "فشل في تحميل الهويات. يرجى المحاولة مرة أخرى.",
-      "navigationFailed": "فشل في فتح تفاصيل الهوية"
-    }
-  },
   "page": {
     "description": "إدارة مطالبات الهوية، حالة التحقق، والامتثال للمستخدمين.",
     "loading": "جارٍ تحميل المطالبات..."
