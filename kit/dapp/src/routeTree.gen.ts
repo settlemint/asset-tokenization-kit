@@ -60,6 +60,7 @@ import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissi
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressDenominationAssetRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/denomination-asset'
+import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressComplianceRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/compliance'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressActionsRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/actions'
 import { Route as PrivateOnboardedSidebarParticipantsEntitiesAddressClaimsRouteImport } from './routes/_private/_onboarded/_sidebar/participants/entities/$address/claims'
@@ -374,6 +375,15 @@ const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressDenominationAssetRou
         PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute,
     } as any,
   )
+const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressComplianceRoute =
+  PrivateOnboardedSidebarTokenFactoryAddressTokenAddressComplianceRouteImport.update(
+    {
+      id: '/compliance',
+      path: '/compliance',
+      getParentRoute: () =>
+        PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute,
+    } as any,
+  )
 const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute =
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRouteImport.update(
     {
@@ -443,6 +453,7 @@ export interface FileRoutesByFullPath {
   '/participants/entities/$address/claims': typeof PrivateOnboardedSidebarParticipantsEntitiesAddressClaimsRoute
   '/token/$factoryAddress/$tokenAddress/actions': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressActionsRoute
   '/token/$factoryAddress/$tokenAddress/blocklist': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute
+  '/token/$factoryAddress/$tokenAddress/compliance': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressComplianceRoute
   '/token/$factoryAddress/$tokenAddress/denomination-asset': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressDenominationAssetRoute
   '/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   '/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
@@ -491,6 +502,7 @@ export interface FileRoutesByTo {
   '/participants/entities/$address/claims': typeof PrivateOnboardedSidebarParticipantsEntitiesAddressClaimsRoute
   '/token/$factoryAddress/$tokenAddress/actions': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressActionsRoute
   '/token/$factoryAddress/$tokenAddress/blocklist': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute
+  '/token/$factoryAddress/$tokenAddress/compliance': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressComplianceRoute
   '/token/$factoryAddress/$tokenAddress/denomination-asset': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressDenominationAssetRoute
   '/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   '/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
@@ -548,6 +560,7 @@ export interface FileRoutesById {
   '/_private/_onboarded/_sidebar/participants/entities/$address/claims': typeof PrivateOnboardedSidebarParticipantsEntitiesAddressClaimsRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/actions': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressActionsRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute
+  '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/compliance': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressComplianceRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/denomination-asset': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressDenominationAssetRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
@@ -602,6 +615,7 @@ export interface FileRouteTypes {
     | '/participants/entities/$address/claims'
     | '/token/$factoryAddress/$tokenAddress/actions'
     | '/token/$factoryAddress/$tokenAddress/blocklist'
+    | '/token/$factoryAddress/$tokenAddress/compliance'
     | '/token/$factoryAddress/$tokenAddress/denomination-asset'
     | '/token/$factoryAddress/$tokenAddress/events'
     | '/token/$factoryAddress/$tokenAddress/holders'
@@ -650,6 +664,7 @@ export interface FileRouteTypes {
     | '/participants/entities/$address/claims'
     | '/token/$factoryAddress/$tokenAddress/actions'
     | '/token/$factoryAddress/$tokenAddress/blocklist'
+    | '/token/$factoryAddress/$tokenAddress/compliance'
     | '/token/$factoryAddress/$tokenAddress/denomination-asset'
     | '/token/$factoryAddress/$tokenAddress/events'
     | '/token/$factoryAddress/$tokenAddress/holders'
@@ -706,6 +721,7 @@ export interface FileRouteTypes {
     | '/_private/_onboarded/_sidebar/participants/entities/$address/claims'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/actions'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist'
+    | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/compliance'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/denomination-asset'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders'
@@ -1084,6 +1100,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressDenominationAssetRouteImport
       parentRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute
     }
+    '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/compliance': {
+      id: '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/compliance'
+      path: '/compliance'
+      fullPath: '/token/$factoryAddress/$tokenAddress/compliance'
+      preLoaderRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressComplianceRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute
+    }
     '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist': {
       id: '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/blocklist'
       path: '/blocklist'
@@ -1144,6 +1167,7 @@ const PrivateOnboardedSidebarParticipantsUsersUserIdRouteWithChildren =
 interface PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteChildren {
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressActionsRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressActionsRoute
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute
+  PrivateOnboardedSidebarTokenFactoryAddressTokenAddressComplianceRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressComplianceRoute
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressDenominationAssetRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressDenominationAssetRoute
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
@@ -1158,6 +1182,8 @@ const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteChildren: Priva
       PrivateOnboardedSidebarTokenFactoryAddressTokenAddressActionsRoute,
     PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute:
       PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute,
+    PrivateOnboardedSidebarTokenFactoryAddressTokenAddressComplianceRoute:
+      PrivateOnboardedSidebarTokenFactoryAddressTokenAddressComplianceRoute,
     PrivateOnboardedSidebarTokenFactoryAddressTokenAddressDenominationAssetRoute:
       PrivateOnboardedSidebarTokenFactoryAddressTokenAddressDenominationAssetRoute,
     PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute:

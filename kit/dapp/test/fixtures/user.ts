@@ -2,6 +2,7 @@ import { retryWhenFailed } from "@settlemint/sdk-utils";
 import { randomUUID } from "node:crypto";
 import { zeroAddress } from "viem";
 import { getAuthClient } from "./auth-client";
+import { getDappUrl } from "./dapp";
 import { getOrpcClient } from "./orpc-client";
 
 export interface User {
@@ -44,6 +45,7 @@ export async function signInWithUser(user: User, bypassCache = false) {
   }
   const authClient = getAuthClient();
   const newHeaders = new Headers();
+  newHeaders.set("Origin", getDappUrl());
   const { error: signInError } = await authClient.signIn.email(
     {
       email: user.email,

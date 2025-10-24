@@ -25,7 +25,8 @@ export type AssetTabKey =
   | "allowlist"
   | "blocklist"
   | "denominationAsset"
-  | "yield";
+  | "yield"
+  | "compliance";
 
 export type AssetTabRequirement = {
   extensions?: AssetExtension[];
@@ -54,6 +55,7 @@ export const ASSET_TAB_REQUIREMENTS: Record<
   holders: {},
   events: {},
   actions: {},
+  compliance: {},
 
   // Extension-based tabs
   permissions: { extensions: [AssetExtensionEnum.ACCESS_MANAGED] },
@@ -134,6 +136,7 @@ export function getAssetTabConfiguration({
     { tabKey: "events", href: `${baseUrl}/events`, badgeType: "events" },
     { tabKey: "actions", href: `${baseUrl}/actions`, badgeType: "actions" },
     { tabKey: "permissions", href: `${baseUrl}/permissions` },
+    { tabKey: "compliance", href: `${baseUrl}/compliance` },
     // {
     //   tabKey: "allowlist",
     //   href: `${baseUrl}/allowlist`,
