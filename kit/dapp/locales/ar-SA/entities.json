@@ -4,31 +4,33 @@
     "loading": "جارٍ تحميل الكيانات..."
   },
   "accessDenied": {
-    "title": "$t(participants.accessDenied.title)",
+    "title": "الوصول مقيّد",
     "description": "ليس لديك إذن لإدارة الكيانات. تواصل مع المسؤول للحصول على صلاحيات إضافية."
   },
   "status": {
-    "registered": "$t(participants.status.registered)",
-    "pending": "$t(participants.status.pendingRegistration)"
+    "registered": "مسجل",
+    "pending": "قيد التسجيل"
   },
   "entityTable": {
     "columns": {
-      "name": "$t(participants.table.columns.name)",
-      "address": "$t(participants.table.columns.address)",
-      "identityAddress": "$t(participants.table.columns.identityAddress)",
-      "type": "$t(participants.table.columns.type)",
-      "status": "$t(participants.table.columns.status)"
+      "name": "الاسم",
+      "address": "عنوان العقد",
+      "identityAddress": "عنوان الهوية",
+      "type": "النوع",
+      "status": "الحالة"
     },
     "types": {
-      "token": "$t(participants.entityTypes.token)",
-      "vault": "$t(participants.entityTypes.vault)",
-      "contract": "$t(participants.entityTypes.contract)"
+      "token": "رمز",
+      "vault": "خزينة",
+      "contract": "عقد",
+      "wallet": "محفظة"
     },
     "fallback": {
-      "noType": "$t(participants.table.fallback.noType)",
-      "noName": "$t(participants.table.fallback.noName)",
-      "noContractAddress": "$t(participants.table.fallback.noContractAddress)",
-      "noIdentity": "$t(participants.table.fallback.noIdentityAddress)"
+      "noType": "بدون نوع",
+      "noName": "بدون اسم",
+      "noContractAddress": "لا يوجد عنوان للعقد",
+      "noIdentity": "لا يوجد عنوان هوية",
+      "unknown": "غير معروف"
     },
     "emptyState": {
       "title": "لا توجد كيانات",

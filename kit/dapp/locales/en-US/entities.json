@@ -1,34 +1,36 @@
 {
   "page": {
-    "description": "Manage participants without login credentials, such as Tokens, Vaults, Custodians, Contracts, and other system identities",
+    "description": "Manage participants without login credentials, such as Tokens, Vaults, and other system identities",
     "loading": "Loading entities..."
   },
   "accessDenied": {
-    "title": "$t(participants.accessDenied.title)",
+    "title": "Access restricted",
     "description": "You do not have permission to manage entities. Contact an administrator for additional access."
   },
   "status": {
-    "registered": "$t(participants.status.registered)",
-    "pending": "$t(participants.status.pendingRegistration)"
+    "registered": "Registered",
+    "pending": "Pending registration"
   },
   "entityTable": {
     "columns": {
-      "name": "$t(participants.table.columns.name)",
-      "address": "$t(participants.table.columns.address)",
-      "identityAddress": "$t(participants.table.columns.identityAddress)",
-      "type": "$t(participants.table.columns.type)",
-      "status": "$t(participants.table.columns.status)"
+      "name": "Name",
+      "address": "Contract address",
+      "identityAddress": "Identity address",
+      "type": "Type",
+      "status": "Status"
     },
     "types": {
-      "token": "$t(participants.entityTypes.token)",
-      "vault": "$t(participants.entityTypes.vault)",
-      "contract": "$t(participants.entityTypes.contract)"
+      "token": "Token",
+      "vault": "Vault",
+      "contract": "Contract",
+      "wallet": "Wallet"
     },
     "fallback": {
-      "noType": "$t(participants.table.fallback.noType)",
-      "noName": "$t(participants.table.fallback.noName)",
-      "noContractAddress": "$t(participants.table.fallback.noContractAddress)",
-      "noIdentity": "$t(participants.table.fallback.noIdentityAddress)"
+      "noType": "No type",
+      "noName": "No name",
+      "noContractAddress": "No contract address",
+      "noIdentity": "No identity address",
+      "unknown": "Unknown"
     },
     "emptyState": {
       "title": "No entities found",

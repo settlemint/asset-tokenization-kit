@@ -19,59 +19,42 @@
       "description": "Manage participants with login credentials."
     },
     "accessDenied": {
-      "title": "$t(participants.accessDenied.title)",
+      "title": "Access restricted",
       "description": "You do not have permission to manage users. Contact an administrator for additional access."
     },
     "table": {
       "columns": {
-        "name": "$t(participants.table.columns.name)",
-        "email": "$t(participants.table.columns.email)",
-        "wallet": "$t(participants.table.columns.wallet)",
-        "identity": "$t(participants.table.columns.identityAddress)",
-        "type": "$t(participants.table.columns.type)",
-        "verifications": "$t(participants.table.columns.verifications)",
-        "status": "$t(participants.table.columns.status)",
-        "lastActive": "$t(participants.table.columns.lastActive)",
-        "created": "$t(participants.table.columns.created)",
-        "role": "$t(participants.table.columns.role)",
-        "actions": "$t(participants.table.columns.actions)"
+        "name": "Name",
+        "email": "Email",
+        "wallet": "EOA",
+        "identity": "Identity address",
+        "type": "Type",
+        "status": "Status"
       },
-      "status": {
-        "registered": "$t(participants.status.registered)",
-        "pending": "$t(participants.status.pending)",
-        "notConnected": "$t(participants.status.notConnected)",
-        "identityNeeded": "$t(participants.status.identityNeeded)",
-        "notRegistered": "$t(participants.status.notRegistered)",
-        "pendingRegistration": "$t(participants.status.pendingRegistration)",
-        "admin": "$t(participants.status.admin)",
-        "adminAriaLabel": "$t(participants.status.adminAriaLabel)",
-        "registeredAriaLabel": "$t(participants.status.registeredAriaLabel)",
-        "notRegisteredAriaLabel": "$t(participants.status.notRegisteredAriaLabel)",
-        "pendingAriaLabel": "$t(participants.status.pendingAriaLabel)",
-        "notConnectedAriaLabel": "$t(participants.status.notConnectedAriaLabel)",
-        "identityNeededAriaLabel": "$t(participants.status.identityNeededAriaLabel)",
-        "pendingRegistrationAriaLabel": "$t(participants.status.pendingRegistrationAriaLabel)"
+      "fallback": {
+        "unknown": "Unknown",
+        "none": "None"
       },
       "type": {
-        "admin": "$t(participants.table.userType.admin)",
-        "investor": "$t(participants.table.userType.investor)",
-        "trustedIssuer": "$t(participants.table.userType.trustedIssuer)"
+        "admin": "Admin",
+        "investor": "Investor",
+        "trustedIssuer": "Trusted issuer"
+      },
+      "status": {
+        "registered": "Registered",
+        "pending": "Pending registration"
       },
       "verifications": {
         "none": "No verifications"
       },
-      "identity": {
-        "none": "$t(participants.table.fallback.noIdentity)"
-      },
       "actions": {
-        "viewDetails": "$t(participants.table.actions.viewDetails)",
-        "menu": "$t(participants.table.actions.menu)",
-        "openMenu": "$t(participants.table.actions.openMenu)"
+        "viewDetails": "View details",
+        "menu": "Menu",
+        "openMenu": "Open menu"
       },
       "search": {
         "placeholder": "Search by name, email, or wallet..."
       },
-      "noWallet": "$t(participants.table.fallback.noWallet)",
       "emptyState": {
         "title": "No users found",
         "description": "No users have been registered yet.",
@@ -80,10 +63,6 @@
       "errors": {
         "loadFailed": "Failed to load users. Please try again.",
         "navigationFailed": "Failed to navigate to user details"
-      },
-      "fallback": {
-        "never": "$t(participants.table.fallback.never)",
-        "unknown": "$t(participants.table.fallback.unknown)"
       }
     }
   },
@@ -97,8 +76,8 @@
     },
     "table": {
       "columns": {
-        "name": "$t(participants.table.columns.name)",
-        "role": "$t(participants.table.columns.role)"
+        "name": "Name",
+        "role": "Role"
       },
       "errors": {
         "navigationFailed": "Failed to navigate to user details",
@@ -113,7 +92,7 @@
         "loading": "Loading users..."
       },
       "actions": {
-        "changeRoles": "$t(participants.table.actions.changeRoles)"
+        "changeRoles": "Change roles"
       }
     }
   },

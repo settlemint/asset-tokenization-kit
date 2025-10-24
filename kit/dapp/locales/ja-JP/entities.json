@@ -4,31 +4,33 @@
     "loading": "エンティティを読み込み中..."
   },
   "accessDenied": {
-    "title": "$t(participants.accessDenied.title)",
+    "title": "アクセス制限",
     "description": "エンティティを管理する権限がありません。追加のアクセスについては管理者に連絡してください。"
   },
   "status": {
-    "registered": "$t(participants.status.registered)",
-    "pending": "$t(participants.status.pendingRegistration)"
+    "registered": "登録済み",
+    "pending": "登録待ち"
   },
   "entityTable": {
     "columns": {
-      "name": "$t(participants.table.columns.name)",
-      "address": "$t(participants.table.columns.address)",
-      "identityAddress": "$t(participants.table.columns.identityAddress)",
-      "type": "$t(participants.table.columns.type)",
-      "status": "$t(participants.table.columns.status)"
+      "name": "名前",
+      "address": "コントラクトアドレス",
+      "identityAddress": "アイデンティティアドレス",
+      "type": "種類",
+      "status": "ステータス"
     },
     "types": {
-      "token": "$t(participants.entityTypes.token)",
-      "vault": "$t(participants.entityTypes.vault)",
-      "contract": "$t(participants.entityTypes.contract)"
+      "token": "トークン",
+      "vault": "ボールト",
+      "contract": "コントラクト",
+      "wallet": "ウォレット"
     },
     "fallback": {
-      "noType": "$t(participants.table.fallback.noType)",
-      "noName": "$t(participants.table.fallback.noName)",
-      "noContractAddress": "$t(participants.table.fallback.noContractAddress)",
-      "noIdentity": "$t(participants.table.fallback.noIdentityAddress)"
+      "noType": "種類なし",
+      "noName": "名前なし",
+      "noContractAddress": "コントラクトアドレスなし",
+      "noIdentity": "アイデンティティアドレスなし",
+      "unknown": "不明"
     },
     "emptyState": {
       "title": "エンティティが見つかりません",

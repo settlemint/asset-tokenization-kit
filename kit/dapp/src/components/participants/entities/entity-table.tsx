@@ -3,7 +3,6 @@ import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
-import { ParticipantStatusBadge } from "@/components/participants/participant-status-badge";
 import { Badge } from "@/components/ui/badge";
 import { orpc } from "@/orpc/orpc-client";
 import type { EntityListOutput } from "@/orpc/routes/system/entity/routes/entity.list.schema";
@@ -23,7 +22,6 @@ const columnHelper = createStrictColumnHelper<EntityRow>();
 export const EntityTable = withErrorBoundary(function EntityTable() {
   const router = useRouter();
   const { t } = useTranslation("entities");
-  const { t: tParticipants } = useTranslation("participants");
   const isNavigatingRef = useRef(false);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -118,28 +116,6 @@ export const EntityTable = withErrorBoundary(function EntityTable() {
     );
 
     return withAutoFeatures([
-      columnHelper.accessor(
-        (row) =>
-          [
-            row.contractName,
-            row.contractAddress,
-            row.id,
-            row.entityType,
-            row.status,
-          ]
-            .filter(Boolean)
-            .join(" "),
-        {
-          id: "entity_filter",
-          header: "",
-          enableHiding: false,
-          meta: {
-            displayName: t("entityTable.columns.name"),
-            type: "text",
-          },
-        }
-      ),
-      // Accessor-based columns keep filter values aligned with DataTable tooling.
       columnHelper.accessor("contractName", {
         id: "name",
         header: t("entityTable.columns.name"),
@@ -189,7 +165,7 @@ export const EntityTable = withErrorBoundary(function EntityTable() {
             if (!type) {
               return (
                 <span className="text-muted-foreground">
-                  {tParticipants("table.fallback.noType")}
+                  {t("entityTable.fallback.unknown")}
                 </span>
               );
             }
@@ -209,20 +185,25 @@ export const EntityTable = withErrorBoundary(function EntityTable() {
           options: [
             {
               value: "registered",
-              label: tParticipants("status.registered"),
+              label: t("status.registered"),
             },
             {
               value: "pending",
-              label: tParticipants("status.pending"),
+              label: t("status.pending"),
             },
           ],
-          renderCell: ({ getValue }) => (
-            <ParticipantStatusBadge status={getValue()} />
-          ),
+          renderCell: ({ getValue }) => {
+            const status = getValue();
+            const translationKey =
+              status === "registered" ? "status.registered" : "status.pending";
+            const variant = status === "registered" ? "default" : "outline";
+
+            return <Badge variant={variant}>{t(translationKey)}</Badge>;
+          },
         },
       }),
     ]) as ColumnDef<EntityRow>[];
-  }, [t, tParticipants]);
+  }, [t]);
 
   if (error) {
     return (

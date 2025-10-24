@@ -1,6 +1,6 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
-import { UsersTable } from "@/components/users/users-table";
+import { UsersTable } from "@/components/participants/users/users-table";
 import {
   CLAIM_ISSUER_ROLE,
   IDENTITY_MANAGER_ROLE,

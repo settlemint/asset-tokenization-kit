@@ -19,59 +19,59 @@
       "description": "إدارة المشاركين الذين لديهم بيانات اعتماد تسجيل الدخول."
     },
     "accessDenied": {
-      "title": "$t(participants.accessDenied.title)",
+      "title": "الوصول مقيّد",
       "description": "ليس لديك إذن لإدارة المستخدمين. تواصل مع المسؤول للحصول على صلاحيات إضافية."
     },
     "table": {
       "columns": {
-        "name": "$t(participants.table.columns.name)",
-        "email": "$t(participants.table.columns.email)",
-        "wallet": "$t(participants.table.columns.wallet)",
-        "identity": "$t(participants.table.columns.identityAddress)",
-        "type": "$t(participants.table.columns.type)",
-        "verifications": "$t(participants.table.columns.verifications)",
-        "status": "$t(participants.table.columns.status)",
-        "lastActive": "$t(participants.table.columns.lastActive)",
-        "created": "$t(participants.table.columns.created)",
-        "role": "$t(participants.table.columns.role)",
-        "actions": "$t(participants.table.columns.actions)"
+        "name": "الاسم",
+        "email": "البريد الإلكتروني",
+        "wallet": "EOA",
+        "identity": "عنوان الهوية",
+        "type": "النوع",
+        "verifications": "عمليات التحقق",
+        "status": "الحالة",
+        "lastActive": "آخر نشاط",
+        "created": "تاريخ الإنشاء",
+        "role": "الدور",
+        "actions": "إجراءات"
       },
       "status": {
-        "registered": "$t(participants.status.registered)",
-        "pending": "$t(participants.status.pending)",
-        "notConnected": "$t(participants.status.notConnected)",
-        "identityNeeded": "$t(participants.status.identityNeeded)",
-        "notRegistered": "$t(participants.status.notRegistered)",
-        "pendingRegistration": "$t(participants.status.pendingRegistration)",
-        "admin": "$t(participants.status.admin)",
-        "adminAriaLabel": "$t(participants.status.adminAriaLabel)",
-        "registeredAriaLabel": "$t(participants.status.registeredAriaLabel)",
-        "notRegisteredAriaLabel": "$t(participants.status.notRegisteredAriaLabel)",
-        "pendingAriaLabel": "$t(participants.status.pendingAriaLabel)",
-        "notConnectedAriaLabel": "$t(participants.status.notConnectedAriaLabel)",
-        "identityNeededAriaLabel": "$t(participants.status.identityNeededAriaLabel)",
-        "pendingRegistrationAriaLabel": "$t(participants.status.pendingRegistrationAriaLabel)"
+        "registered": "مسجل",
+        "pending": "معلق",
+        "notConnected": "غير متصل",
+        "identityNeeded": "مطلوب هوية",
+        "notRegistered": "غير مسجل",
+        "pendingRegistration": "التسجيل قيد المعالجة",
+        "admin": "مسؤول",
+        "adminAriaLabel": "المستخدم لديه صلاحيات المسؤول",
+        "registeredAriaLabel": "المستخدم مسجل",
+        "notRegisteredAriaLabel": "المستخدم غير مسجل",
+        "pendingAriaLabel": "حالة المستخدم معلقة",
+        "notConnectedAriaLabel": "محفظة المستخدم غير متصلة",
+        "identityNeededAriaLabel": "المستخدم يحتاج إلى هوية",
+        "pendingRegistrationAriaLabel": "تسجيل المستخدم قيد المعالجة"
       },
       "type": {
-        "admin": "$t(participants.table.userType.admin)",
-        "investor": "$t(participants.table.userType.investor)",
-        "trustedIssuer": "$t(participants.table.userType.trustedIssuer)"
+        "admin": "مسؤول",
+        "investor": "مستثمر",
+        "trustedIssuer": "مُصدِر موثوق"
       },
       "verifications": {
         "none": "لا تحقق"
       },
       "identity": {
-        "none": "$t(participants.table.fallback.noIdentity)"
+        "none": "لا توجد هوية"
       },
       "actions": {
-        "viewDetails": "$t(participants.table.actions.viewDetails)",
-        "menu": "$t(participants.table.actions.menu)",
-        "openMenu": "$t(participants.table.actions.openMenu)"
+        "viewDetails": "عرض التفاصيل",
+        "menu": "القائمة",
+        "openMenu": "فتح القائمة"
       },
       "search": {
         "placeholder": "البحث بالاسم أو البريد الإلكتروني أو المحفظة..."
       },
-      "noWallet": "$t(participants.table.fallback.noWallet)",
+      "noWallet": "لا توجد محفظة",
       "emptyState": {
         "title": "لم يتم العثور على مستخدمين",
         "description": "لم يتم تسجيل أي مستخدمين بعد.",
@@ -82,8 +82,8 @@
         "navigationFailed": "فشل في التنقل إلى تفاصيل المستخدم"
       },
       "fallback": {
-        "never": "$t(participants.table.fallback.never)",
-        "unknown": "$t(participants.table.fallback.unknown)"
+        "never": "أبداً",
+        "unknown": "غير معروف"
       }
     }
   },
@@ -97,8 +97,8 @@
     },
     "table": {
       "columns": {
-        "name": "$t(participants.table.columns.name)",
-        "role": "$t(participants.table.columns.role)"
+        "name": "الاسم",
+        "role": "الدور"
       },
       "errors": {
         "navigationFailed": "فشل في التنقل إلى تفاصيل المستخدم",
@@ -113,7 +113,7 @@
         "loading": "جارٍ تحميل المستخدمين..."
       },
       "actions": {
-        "changeRoles": "$t(participants.table.actions.changeRoles)"
+        "changeRoles": "تغيير الأدوار"
       }
     }
   },

@@ -3,7 +3,6 @@ import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
-import { ParticipantStatusBadge } from "@/components/participants/participant-status-badge";
 import { Badge } from "@/components/ui/badge";
 import { orpc } from "@/orpc/orpc-client";
 import { UserWithIdentity } from "@/orpc/routes/user/routes/user.list.schema";
@@ -24,7 +23,6 @@ const columnHelper = createStrictColumnHelper<UserWithIdentity>();
  */
 export const UsersTable = withErrorBoundary(function UsersTable() {
   const { t } = useTranslation("user");
-  const { t: tParticipants } = useTranslation("participants");
   const router = useRouter();
 
   const defaultSorting = useMemo<SortingState>(
@@ -161,21 +159,6 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
    * Defines the column configuration for the users table
    */
   const columns = useMemo(() => {
-    const userTypeOptions = [
-      {
-        value: "admin",
-        label: t("management.table.userType.admin"),
-      },
-      {
-        value: "trustedIssuer",
-        label: t("management.table.userType.trustedIssuer"),
-      },
-      {
-        value: "investor",
-        label: t("management.table.userType.investor"),
-      },
-    ];
-
     return withAutoFeatures([
       columnHelper.accessor("name", {
         header: t("management.table.columns.name"),
@@ -201,7 +184,7 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
         meta: {
           displayName: t("management.table.columns.wallet"),
           type: "address",
-          emptyValue: t("management.table.noWallet"),
+          emptyValue: t("management.table.fallback.unknown"),
           addressOptions: {
             size: "tiny",
             showPrettyName: false,
@@ -215,7 +198,7 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
         meta: {
           displayName: t("management.table.columns.identity"),
           type: "address",
-          emptyValue: t("management.table.identity.none"),
+          emptyValue: t("management.table.fallback.unknown"),
           addressOptions: {
             size: "tiny",
             showPrettyName: false,
@@ -233,19 +216,36 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
         meta: {
           displayName: t("management.table.columns.type"),
           type: "option",
-          options: userTypeOptions,
+          options: [
+            {
+              value: "admin",
+              label: t("management.table.type.admin"),
+            },
+            {
+              value: "trustedIssuer",
+              label: t("management.table.type.trustedIssuer"),
+            },
+            {
+              value: "investor",
+              label: t("management.table.type.investor"),
+            },
+          ],
           renderCell: ({ getValue }) => {
             const type = getValue();
 
-            if (!type) {
+            if (typeof type !== "string" || type.length === 0) {
               return (
                 <span className="text-muted-foreground">
-                  {tParticipants("table.fallback.noType")}
+                  {t("management.table.fallback.unknown")}
                 </span>
               );
             }
 
-            return <Badge variant="outline">{t(`table.types.${type}`)}</Badge>;
+            return (
+              <Badge variant="outline">
+                {t(`management.table.type.${type}`)}
+              </Badge>
+            );
           },
         },
       }),
@@ -258,20 +258,27 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
           options: [
             {
               value: "registered",
-              label: tParticipants("status.registered"),
+              label: t("management.table.status.registered"),
             },
             {
               value: "pending",
-              label: tParticipants("status.pending"),
+              label: t("management.table.status.pending"),
             },
           ],
           renderCell: ({ getValue }) => {
-            return <ParticipantStatusBadge status={getValue()} />;
+            const status = getValue();
+            const translationKey =
+              status === "registered"
+                ? "management.table.status.registered"
+                : "management.table.status.pending";
+            const variant = status === "registered" ? "default" : "outline";
+
+            return <Badge variant={variant}>{t(translationKey)}</Badge>;
           },
         },
       }),
     ]) as ColumnDef<UserWithIdentity>[];
-  }, [resolveStatus, resolveUserType, t, tParticipants]);
+  }, [resolveStatus, resolveUserType, t]);
 
   // Handle loading and error states
   if (error) {
@@ -296,11 +303,11 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
       }}
       externalState={externalState}
       urlState={{
-        enabled: false, // Disable URL state since we're managing it manually
+        enabled: true,
       }}
       advancedToolbar={{
-        enableGlobalSearch: true, // Search by name (server side)
-        enableFilters: false,
+        enableGlobalSearch: true,
+        enableFilters: true,
         enableExport: true,
         enableViewOptions: true,
         placeholder: t("management.table.search.placeholder"),
