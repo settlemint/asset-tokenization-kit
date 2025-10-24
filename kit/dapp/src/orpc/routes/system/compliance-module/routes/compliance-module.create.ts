@@ -27,6 +27,7 @@ import {
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { complianceTypeIds } from "@atk/zod/compliance";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { call } from "@orpc/server";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 
@@ -54,27 +55,14 @@ const REGISTER_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
   }
 `);
 
-const COMPLIANCE_TYPE_TO_IMPLEMENTATION_NAME = {
-  SMARTIdentityVerificationComplianceModule: "kycModuleFactory",
-  CountryAllowListComplianceModule: "amlModuleFactory",
-  CountryBlockListComplianceModule: "sanctionsModuleFactory",
-  AddressBlockListComplianceModule: "sanctionsModuleFactory",
-  IdentityBlockListComplianceModule: "sanctionsModuleFactory",
-  IdentityAllowListComplianceModule: "sanctionsModuleFactory",
-};
-
 /**
  * Gets the implementation address for a compliance module configuration
  */
 function getComplianceImplementationAddress(
   moduleConfig: SystemComplianceModuleConfig
-): string {
-  const implementationName =
-    COMPLIANCE_TYPE_TO_IMPLEMENTATION_NAME[moduleConfig.type];
-
-  // Use custom implementation if provided, otherwise use default
-  if (moduleConfig.implementations?.[implementationName]) {
-    return moduleConfig.implementations[implementationName];
+): EthereumAddress {
+  if (moduleConfig.implementation) {
+    return moduleConfig.implementation;
   }
 
   // Get the default implementation for the compliance module type

@@ -46,8 +46,13 @@ export function ComplianceModulesGrid({
           <SelectableCard
             key={typeId}
             onClick={() => {
-              onModuleSelect(typeId);
+              if (config.implemented) {
+                onModuleSelect(typeId);
+              }
             }}
+            className={cn(
+              !config.implemented && "opacity-50 cursor-not-allowed"
+            )}
           >
             <SelectableCardIcon>
               <IconComponent className="w-4 h-4" />

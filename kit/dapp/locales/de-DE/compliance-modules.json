@@ -44,6 +44,26 @@
           "MiCA / EU (alle Verträge wie Tokens, Vaults, ... erlauben): CONTRACT OR ((KYC AND AML) AND (PROFESSIONAL_INVESTOR OR ACCREDITED_INVESTOR))"
         ]
       }
+    },
+    "TokenSupplyLimitComplianceModule": {
+      "description": "Erzwingt eine maximale Token-Versorgungsgrenze. Hilft bei der Einhaltung gesetzlicher Obergrenzen.",
+      "shortDescription": "Erzwingt eine maximale Token-Versorgungsgrenze",
+      "title": "Token-Versorgungsgrenze"
+    },
+    "InvestorCountComplianceModule": {
+      "description": "Erzwingt eine maximale Anzahl von Investoren. Hilft bei der Einhaltung gesetzlicher Obergrenzen.",
+      "shortDescription": "Erzwingt eine maximale Anzahl von Investoren",
+      "title": "Anzahl der Investoren"
+    },
+    "TimeLockComplianceModule": {
+      "description": "Erzwingt eine Mindesthaltefrist, bevor Token übertragen werden können.",
+      "shortDescription": "Erzwingt eine zeitliche Sperre für das Token",
+      "title": "Zeitliche Sperre"
+    },
+    "TransferApprovalComplianceModule": {
+      "description": "Erfordert eine ausdrückliche Genehmigung durch bestimmte Behörden, bevor Übertragungen ausgeführt werden können.",
+      "shortDescription": "Erzwingt eine Übertragungsfreigabe",
+      "title": "Übertragungsfreigabe"
     }
   },
   "title": "Compliance-Module",
