@@ -16,6 +16,13 @@ import * as z from "zod";
  */
 export const expressionTypes = [0, 1, 2, 3] as const;
 
+/***
+ * Tuple of valid expression type keys for type-safe iteration.
+ * Used to define the type of operation in expression nodes.
+ * Keys match ExpressionType from Solidity contracts.
+ */
+export const expressionTypeKeys = ["TOPIC", "AND", "OR", "NOT"] as const;
+
 /**
  * Enum-like object for dot notation access to expression type values.
  * Provides a convenient way to reference expression types in code.
@@ -37,12 +44,24 @@ export const expressionTypes = [0, 1, 2, 3] as const;
  * }
  * ```
  */
-export const ExpressionTypeEnum = {
+export const ExpressionTypeEnum: Record<ExpressionTypeKey, ExpressionType> = {
   TOPIC: 0,
   AND: 1,
   OR: 2,
   NOT: 3,
-} as const;
+};
+
+/**
+ * Creates a Zod schema that validates an expression type key.
+ * @returns A Zod schema that validates an expression type key.
+ */
+export const expressionTypeKey = () =>
+  z.literal(expressionTypeKeys).describe("Expression type key identifier");
+
+/**
+ * Type representing a validated expression type key.
+ */
+export type ExpressionTypeKey = z.infer<ReturnType<typeof expressionTypeKey>>;
 
 /**
  * Creates a Zod schema that validates an expression type.

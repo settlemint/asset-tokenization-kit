@@ -1,4 +1,5 @@
 {
+  "noModules": "Keine Compliance-Regeln gefunden",
   "modules": {
     "AddressBlockListComplianceModule": {
       "description": "Blockieren Sie spezifische Wallet-Adressen vom Zugriff auf Ihr Asset. Verhindert, dass sanktionierte oder problematische Adressen teilnehmen.",
@@ -48,7 +49,10 @@
     "TokenSupplyLimitComplianceModule": {
       "description": "Erzwingt eine maximale Token-Versorgungsgrenze. Hilft bei der Einhaltung gesetzlicher Obergrenzen.",
       "shortDescription": "Erzwingt eine maximale Token-Versorgungsgrenze",
-      "title": "Token-Versorgungsgrenze"
+      "title": "Token-Versorgungsgrenze",
+      "details": {
+        "maxSupplyLimit": "Maximale Versorgungsgrenze"
+      }
     },
     "InvestorCountComplianceModule": {
       "description": "Erzwingt eine maximale Anzahl von Investoren. Hilft bei der Einhaltung gesetzlicher Obergrenzen.",
