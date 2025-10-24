@@ -292,23 +292,9 @@ for (const stableCoinToCreate of STABLECOINS) {
 
 function getInitialModulePairs(assetToCreate: DemoAsset) {
   const { compliance } = assetToCreate;
-  if (!compliance) {
-    return [];
-  }
   const initialModulePairs: Parameters<
     typeof createToken
   >[1]["initialModulePairs"] = [];
-  if (
-    countryAllowListModule &&
-    Array.isArray(compliance.allowedCountries) &&
-    compliance.allowedCountries.length > 0
-  ) {
-    initialModulePairs.push({
-      typeId: "CountryAllowListComplianceModule",
-      module: countryAllowListModule.module,
-      values: compliance.allowedCountries,
-    });
-  }
   if (smartIdentityVerificationModule && amlTopic && kycTopic) {
     initialModulePairs.push({
       typeId: "SMARTIdentityVerificationComplianceModule",
@@ -329,6 +315,22 @@ function getInitialModulePairs(assetToCreate: DemoAsset) {
       ],
     });
   }
+  if (!compliance) {
+    return initialModulePairs;
+  }
+
+  if (
+    countryAllowListModule &&
+    Array.isArray(compliance.allowedCountries) &&
+    compliance.allowedCountries.length > 0
+  ) {
+    initialModulePairs.push({
+      typeId: "CountryAllowListComplianceModule",
+      module: countryAllowListModule.module,
+      values: compliance.allowedCountries,
+    });
+  }
+
   if (tokenSupplyLimitModule && compliance.tokenSupplyLimit) {
     initialModulePairs.push({
       typeId: "TokenSupplyLimitComplianceModule",

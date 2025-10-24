@@ -1,5 +1,6 @@
 import { apiBigInt } from "@atk/zod/bigint";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { expressionTypeKey } from "@atk/zod/expression-type";
 import { isoCountryCodeNumeric } from "@atk/zod/iso-country-code";
 import * as z from "zod";
 
@@ -28,7 +29,7 @@ export const TokenComplianceResponseSchema = z.object({
                       })
                       .nullable(),
                     index: z.int(),
-                    nodeType: z.string(),
+                    nodeType: expressionTypeKey(),
                   })
                 )
                 .nullable(),
