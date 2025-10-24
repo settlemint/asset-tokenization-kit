@@ -9,7 +9,7 @@ import { ExpressionTypeEnum } from "@atk/zod/src/expression-type";
 import { getTopicId, type ATKTopic } from "@atk/zod/src/topics";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { from } from "dnum";
+import { divide, from } from "dnum";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
@@ -83,11 +83,14 @@ function RouteComponent() {
                 label={t(
                   `modules.${module.complianceModule.typeId}.details.maxSupplyLimit`
                 )}
-                value={from(
-                  params.tokenSupplyLimit?.maxSupplyExact ?? 0n,
-                  asset.decimals
-                )}
                 type="currency"
+                value={divide(
+                  from(
+                    params.tokenSupplyLimit?.maxSupplyExact ?? 0n,
+                    asset.decimals
+                  ),
+                  10n ** BigInt(asset.decimals)
+                )}
                 currency={{ assetSymbol: asset.symbol }}
                 emptyValue={"-"}
               />
