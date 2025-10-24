@@ -16,62 +16,62 @@
   },
   "management": {
     "page": {
-      "description": "プラットフォームのユーザー、役割、権限を管理します。"
+      "description": "ログイン資格情報を持つ参加者を管理します。"
     },
     "accessDenied": {
-      "title": "アクセス制限",
+      "title": "$t(participants.accessDenied.title)",
       "description": "ユーザーを管理する権限がありません。追加のアクセスについては管理者に連絡してください。"
     },
     "table": {
       "columns": {
-        "name": "表示名",
-        "email": "メール",
-        "wallet": "EOA",
-        "role": "役割",
-        "identity": "アイデンティティアドレス",
-        "type": "タイプ",
-        "verifications": "検証",
-        "status": "ステータス",
-        "created": "作成日",
-        "lastActive": "最終アクティブ",
-        "actions": "アクション"
+        "name": "$t(participants.table.columns.name)",
+        "email": "$t(participants.table.columns.email)",
+        "wallet": "$t(participants.table.columns.wallet)",
+        "identity": "$t(participants.table.columns.identityAddress)",
+        "type": "$t(participants.table.columns.type)",
+        "verifications": "$t(participants.table.columns.verifications)",
+        "status": "$t(participants.table.columns.status)",
+        "lastActive": "$t(participants.table.columns.lastActive)",
+        "created": "$t(participants.table.columns.created)",
+        "role": "$t(participants.table.columns.role)",
+        "actions": "$t(participants.table.columns.actions)"
       },
       "status": {
-        "registered": "登録済み",
-        "pending": "保留中",
-        "notConnected": "未接続",
-        "identityNeeded": "アイデンティティが必要",
-        "notRegistered": "未登録",
-        "pendingRegistration": "登録保留中",
-        "admin": "管理者",
-        "adminAriaLabel": "ユーザーはシステム内の管理者役割を持っています",
-        "registeredAriaLabel": "ユーザーはオンチェーンで登録および検証されています",
-        "notRegisteredAriaLabel": "ユーザーはオンチェーンで登録されていません",
-        "pendingAriaLabel": "ユーザーはウォレットを接続しましたが、まだオンチェーンで登録されていません",
-        "notConnectedAriaLabel": "ユーザーはウォレットを接続していません",
-        "identityNeededAriaLabel": "ユーザーはウォレットを持っていますが、登録されたアイデンティティがありません",
-        "pendingRegistrationAriaLabel": "ユーザーアイデンティティの登録が保留中です"
+        "registered": "$t(participants.status.registered)",
+        "pending": "$t(participants.status.pending)",
+        "notConnected": "$t(participants.status.notConnected)",
+        "identityNeeded": "$t(participants.status.identityNeeded)",
+        "notRegistered": "$t(participants.status.notRegistered)",
+        "pendingRegistration": "$t(participants.status.pendingRegistration)",
+        "admin": "$t(participants.status.admin)",
+        "adminAriaLabel": "$t(participants.status.adminAriaLabel)",
+        "registeredAriaLabel": "$t(participants.status.registeredAriaLabel)",
+        "notRegisteredAriaLabel": "$t(participants.status.notRegisteredAriaLabel)",
+        "pendingAriaLabel": "$t(participants.status.pendingAriaLabel)",
+        "notConnectedAriaLabel": "$t(participants.status.notConnectedAriaLabel)",
+        "identityNeededAriaLabel": "$t(participants.status.identityNeededAriaLabel)",
+        "pendingRegistrationAriaLabel": "$t(participants.status.pendingRegistrationAriaLabel)"
       },
-      "userType": {
-        "admin": "管理者",
-        "investor": "投資家",
-        "trustedIssuer": "信頼できる発行者"
+      "type": {
+        "admin": "$t(participants.table.userType.admin)",
+        "investor": "$t(participants.table.userType.investor)",
+        "trustedIssuer": "$t(participants.table.userType.trustedIssuer)"
       },
       "verifications": {
         "none": "検証なし"
       },
       "identity": {
-        "none": "アイデンティティなし"
+        "none": "$t(participants.table.fallback.noIdentity)"
       },
       "actions": {
-        "viewDetails": "詳細を表示",
-        "menu": "アクションメニュー",
-        "openMenu": "アクションメニューを開く"
+        "viewDetails": "$t(participants.table.actions.viewDetails)",
+        "menu": "$t(participants.table.actions.menu)",
+        "openMenu": "$t(participants.table.actions.openMenu)"
       },
       "search": {
         "placeholder": "名前、メール、またはウォレットで検索..."
       },
-      "noWallet": "ウォレットなし",
+      "noWallet": "$t(participants.table.fallback.noWallet)",
       "emptyState": {
         "title": "ユーザーが見つかりません",
         "description": "まだユーザーが登録されていません。",
@@ -82,8 +82,8 @@
         "navigationFailed": "ユーザー詳細へのナビゲーションに失敗しました"
       },
       "fallback": {
-        "never": "なし",
-        "unknown": "不明"
+        "never": "$t(participants.table.fallback.never)",
+        "unknown": "$t(participants.table.fallback.unknown)"
       }
     }
   },
@@ -97,8 +97,8 @@
     },
     "table": {
       "columns": {
-        "name": "名前",
-        "role": "役割"
+        "name": "$t(participants.table.columns.name)",
+        "role": "$t(participants.table.columns.role)"
       },
       "errors": {
         "navigationFailed": "ユーザー詳細へのナビゲーションに失敗しました",
@@ -113,7 +113,7 @@
         "loading": "ユーザーを読み込み中..."
       },
       "actions": {
-        "changeRoles": "役割を変更"
+        "changeRoles": "$t(participants.table.actions.changeRoles)"
       }
     }
   },

@@ -1,0 +1,41 @@
+{
+  "accessDenied": {
+    "title": "Zugang eingeschränkt"
+  },
+  "table": {
+    "columns": {
+      "name": "Name",
+      "address": "Adresse",
+      "identityAddress": "Identitätsadresse",
+      "type": "Typ",
+      "status": "Status",
+      "email": "E-Mail",
+      "wallet": "EOA",
+      "verifications": "Verifizierungen",
+      "lastActive": "Zuletzt aktiv",
+      "created": "Erstellt",
+      "role": "Rolle",
+      "actions": "Aktionen"
+    },
+    "actions": {
+      "viewDetails": "Details anzeigen",
+      "menu": "Aktionsmenü",
+      "openMenu": "Aktionsmenü öffnen",
+      "changeRoles": "Rollen ändern"
+    },
+    "fallback": {
+      "noType": "Unbekannter Typ",
+      "noName": "Kein Vertragsname",
+      "noContractAddress": "Keine Vertragsadresse",
+      "noIdentityAddress": "Keine Identitätsadresse",
+      "noIdentity": "Keine Identität",
+      "noWallet": "Kein Wallet",
+      "unknown": "Unbekannt",
+      "never": "Nie"
+    }
+  },
+  "status": {
+    "registered": "Registriert",
+    "pending": "Ausstehend"
+  }
+}

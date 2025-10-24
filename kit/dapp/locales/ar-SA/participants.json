@@ -1,0 +1,41 @@
+{
+  "accessDenied": {
+    "title": "الوصول مقيد"
+  },
+  "table": {
+    "columns": {
+      "name": "اسم العرض",
+      "address": "العنوان",
+      "identityAddress": "عنوان الهوية",
+      "type": "النوع",
+      "status": "الحالة",
+      "email": "البريد الإلكتروني",
+      "wallet": "EOA",
+      "verifications": "التحقق",
+      "lastActive": "آخر نشاط",
+      "created": "تم الإنشاء",
+      "role": "الدور",
+      "actions": "الإجراءات"
+    },
+    "actions": {
+      "viewDetails": "عرض التفاصيل",
+      "menu": "قائمة الإجراءات",
+      "openMenu": "فتح قائمة الإجراءات",
+      "changeRoles": "تغيير الأدوار"
+    },
+    "fallback": {
+      "noType": "نوع غير معروف",
+      "noName": "لا يوجد اسم عقد",
+      "noContractAddress": "لا يوجد عنوان عقد",
+      "noIdentityAddress": "لا يوجد عنوان هوية",
+      "noIdentity": "لا هوية",
+      "noWallet": "لا محفظة",
+      "unknown": "غير معروف",
+      "never": "أبدًا"
+    }
+  },
+  "status": {
+    "registered": "مسجل",
+    "pending": "في الانتظار"
+  }
+}

@@ -1,44 +1,43 @@
 {
   "page": {
-    "description": "ユーザーのアイデンティティ請求、確認状況、およびコンプライアンスを管理します。",
-    "loading": "請求を読み込み中..."
+    "description": "トークン、ボールト、カストディアン、契約などのログイン資格情報を持たない参加者を管理します。",
+    "loading": "エンティティを読み込み中..."
   },
   "accessDenied": {
-    "title": "アクセス制限",
+    "title": "$t(participants.accessDenied.title)",
     "description": "エンティティを管理する権限がありません。追加のアクセスについては管理者に連絡してください。"
   },
   "status": {
-    "registered": "登録済み",
-    "pending": "保留中"
+    "registered": "$t(participants.status.registered)",
+    "pending": "$t(participants.status.pendingRegistration)"
   },
   "entityTable": {
     "columns": {
-      "name": "名称",
-      "address": "アドレス",
-      "identityAddress": "アイデンティティアドレス",
-      "type": "タイプ",
-      "status": "ステータス"
+      "name": "$t(participants.table.columns.name)",
+      "address": "$t(participants.table.columns.address)",
+      "identityAddress": "$t(participants.table.columns.identityAddress)",
+      "type": "$t(participants.table.columns.type)",
+      "status": "$t(participants.table.columns.status)"
     },
     "types": {
-      "token": "Token",
-      "vault": "Vault",
-      "custodian": "Custodian",
-      "contract": "契約"
+      "token": "$t(participants.entityTypes.token)",
+      "vault": "$t(participants.entityTypes.vault)",
+      "contract": "$t(participants.entityTypes.contract)"
     },
     "fallback": {
-      "noType": "不明なタイプ",
-      "noName": "契約名なし",
-      "noContractAddress": "契約アドレスなし",
-      "noIdentity": "アイデンティティアドレスなし"
+      "noType": "$t(participants.table.fallback.noType)",
+      "noName": "$t(participants.table.fallback.noName)",
+      "noContractAddress": "$t(participants.table.fallback.noContractAddress)",
+      "noIdentity": "$t(participants.table.fallback.noIdentityAddress)"
     },
     "emptyState": {
-      "title": "アイデンティティが見つかりません",
-      "description": "まだフィルターに一致するアイデンティティはありません。",
-      "loading": "アイデンティティを読み込み中..."
+      "title": "エンティティが見つかりません",
+      "description": "フィルターに一致するエンティティはまだありません。",
+      "loading": "エンティティを読み込み中..."
     },
     "errors": {
-      "loadFailed": "アイデンティティの読み込みに失敗しました。再試行してください。",
-      "navigationFailed": "アイデンティティの詳細を開けませんでした"
+      "loadFailed": "エンティティの読み込みに失敗しました。再試行してください。",
+      "navigationFailed": "エンティティの詳細を開けませんでした"
     }
   }
 }

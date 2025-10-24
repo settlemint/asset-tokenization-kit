@@ -3,20 +3,14 @@ import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
+import { ParticipantStatusBadge } from "@/components/participants/participant-status-badge";
 import { Badge } from "@/components/ui/badge";
-import { Web3Address } from "@/components/web3/web3-address";
-import { ParticipantTypeBadge } from "@/components/participants/participant-type-badge";
 import { orpc } from "@/orpc/orpc-client";
 import type { EntityListOutput } from "@/orpc/routes/system/entity/routes/entity.list.schema";
 import { EntityTypeLabels } from "@atk/zod/entity-types";
-import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import type {
-  CellContext,
-  ColumnDef,
-  SortingState,
-} from "@tanstack/react-table";
+import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { Building2 } from "lucide-react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -26,20 +20,10 @@ type EntityRow = EntityListOutput["items"][number];
 
 const columnHelper = createStrictColumnHelper<EntityRow>();
 
-type EntityStatus = EntityRow["status"];
-
-function EntityStatusBadge({ status }: { status: EntityStatus }) {
-  const { t } = useTranslation("entities");
-  const isRegistered = status === "registered";
-  const labelKey = isRegistered ? "status.registered" : "status.pending";
-  return (
-    <Badge variant={isRegistered ? "default" : "outline"}>{t(labelKey)}</Badge>
-  );
-}
-
 export const EntityTable = withErrorBoundary(function EntityTable() {
   const router = useRouter();
   const { t } = useTranslation("entities");
+  const { t: tParticipants } = useTranslation("participants");
   const isNavigatingRef = useRef(false);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -129,7 +113,7 @@ export const EntityTable = withErrorBoundary(function EntityTable() {
     const entityTypeOptions = Object.entries(EntityTypeLabels).map(
       ([value, label]) => ({
         value,
-        label: t<string>(`entityTable.types.${value}`, { defaultValue: label }),
+        label: t(`entityTable.types.${value}`, { defaultValue: label }),
       })
     );
 
@@ -155,110 +139,90 @@ export const EntityTable = withErrorBoundary(function EntityTable() {
           },
         }
       ),
-      columnHelper.display({
+      // Accessor-based columns keep filter values aligned with DataTable tooling.
+      columnHelper.accessor("contractName", {
         id: "name",
         header: t("entityTable.columns.name"),
-        cell: ({ row }: CellContext<EntityRow, unknown>) => {
-          const { contractName } = row.original;
-          if (!contractName) {
-            return (
-              <span className="text-muted-foreground">
-                {t("entityTable.fallback.noName")}
-              </span>
-            );
-          }
-
-          return <span className="font-medium">{contractName}</span>;
-        },
         meta: {
           displayName: t("entityTable.columns.name"),
           type: "text",
           emptyValue: t("entityTable.fallback.noName"),
         },
       }),
-      columnHelper.display({
+      columnHelper.accessor("contractAddress", {
         id: "contractAddress",
         header: t("entityTable.columns.address"),
-        cell: ({ row }: CellContext<EntityRow, unknown>) => {
-          const { contractAddress } = row.original;
-          if (!contractAddress) {
-            return (
-              <span className="text-muted-foreground">
-                {t("entityTable.fallback.noContractAddress")}
-              </span>
-            );
-          }
-
-          return (
-            <Web3Address
-              address={getEthereumAddress(contractAddress)}
-              size="tiny"
-              showPrettyName={false}
-            />
-          );
-        },
         meta: {
           displayName: t("entityTable.columns.address"),
           type: "address",
           emptyValue: t("entityTable.fallback.noContractAddress"),
+          addressOptions: {
+            size: "tiny",
+            showPrettyName: false,
+          },
         },
       }),
-      columnHelper.display({
+      columnHelper.accessor("id", {
         id: "identityAddress",
         header: t("entityTable.columns.identityAddress"),
-        cell: ({ row }: CellContext<EntityRow, unknown>) => (
-          <Web3Address
-            address={row.original.id}
-            size="tiny"
-            showPrettyName={false}
-          />
-        ),
         enableSorting: true,
         meta: {
           displayName: t("entityTable.columns.identityAddress"),
           type: "address",
           emptyValue: t("entityTable.fallback.noIdentity"),
+          addressOptions: {
+            size: "tiny",
+            showPrettyName: false,
+          },
         },
       }),
-      columnHelper.display({
+      columnHelper.accessor("entityType", {
         id: "entityType",
         header: t("entityTable.columns.type"),
-        cell: ({ row }: CellContext<EntityRow, unknown>) => (
-          <ParticipantTypeBadge
-            value={row.original.entityType ?? undefined}
-            translationKeyPrefix="entityTypes"
-            fallbackLabelMap={EntityTypeLabels}
-          />
-        ),
         meta: {
           displayName: t("entityTable.columns.type"),
           type: "option",
           options: entityTypeOptions,
+          renderCell: ({ getValue }) => {
+            const type = getValue();
+
+            if (!type) {
+              return (
+                <span className="text-muted-foreground">
+                  {tParticipants("table.fallback.noType")}
+                </span>
+              );
+            }
+
+            return (
+              <Badge variant="outline">{t(`entityTable.types.${type}`)}</Badge>
+            );
+          },
         },
       }),
-      columnHelper.display({
+      columnHelper.accessor("status", {
         id: "status",
         header: t("entityTable.columns.status"),
-        cell: ({ row }: CellContext<EntityRow, unknown>) => (
-          <EntityStatusBadge status={row.original.status} />
-        ),
         meta: {
           displayName: t("entityTable.columns.status"),
           type: "option",
           options: [
             {
               value: "registered",
-              label: t("status.registered"),
+              label: tParticipants("status.registered"),
             },
             {
               value: "pending",
-              label: t("status.pending"),
+              label: tParticipants("status.pending"),
             },
           ],
+          renderCell: ({ getValue }) => (
+            <ParticipantStatusBadge status={getValue()} />
+          ),
         },
       }),
     ]) as ColumnDef<EntityRow>[];
-  }, [t]);
+  }, [t, tParticipants]);
 
   if (error) {
     return (

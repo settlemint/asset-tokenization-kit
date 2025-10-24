@@ -4,32 +4,31 @@
     "loading": "Loading entities..."
   },
   "accessDenied": {
-    "title": "Access restricted",
+    "title": "$t(participants.accessDenied.title)",
     "description": "You do not have permission to manage entities. Contact an administrator for additional access."
   },
   "status": {
-    "registered": "Registered",
-    "pending": "Pending Registration"
+    "registered": "$t(participants.status.registered)",
+    "pending": "$t(participants.status.pendingRegistration)"
   },
   "entityTable": {
     "columns": {
-      "name": "Name",
-      "address": "Address",
-      "identityAddress": "Identity Address",
-      "type": "Type",
-      "status": "Status"
+      "name": "$t(participants.table.columns.name)",
+      "address": "$t(participants.table.columns.address)",
+      "identityAddress": "$t(participants.table.columns.identityAddress)",
+      "type": "$t(participants.table.columns.type)",
+      "status": "$t(participants.table.columns.status)"
     },
     "types": {
-      "token": "Token",
-      "vault": "Vault",
-      "custodian": "Custodian",
-      "contract": "Contract"
+      "token": "$t(participants.entityTypes.token)",
+      "vault": "$t(participants.entityTypes.vault)",
+      "contract": "$t(participants.entityTypes.contract)"
     },
     "fallback": {
-      "noType": "Unknown type",
-      "noName": "No contract name",
-      "noContractAddress": "No contract address",
-      "noIdentity": "No identity address"
+      "noType": "$t(participants.table.fallback.noType)",
+      "noName": "$t(participants.table.fallback.noName)",
+      "noContractAddress": "$t(participants.table.fallback.noContractAddress)",
+      "noIdentity": "$t(participants.table.fallback.noIdentityAddress)"
     },
     "emptyState": {
       "title": "No entities found",

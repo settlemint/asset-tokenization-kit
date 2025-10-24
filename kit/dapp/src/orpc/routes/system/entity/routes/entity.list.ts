@@ -282,7 +282,7 @@ export const entityList = systemRouter.system.entity.list
         contractAddress,
         contractName,
         entityType,
-        isContract: identity.isContract,
+        isContract: identity.isContract ?? null,
         status,
         verificationBadges: [], // Placeholder for future verification badge system
         lastActivity: identity.deployedInTransaction ?? "",

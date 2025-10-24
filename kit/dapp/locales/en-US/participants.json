@@ -1,0 +1,41 @@
+{
+  "accessDenied": {
+    "title": "Access restricted"
+  },
+  "table": {
+    "columns": {
+      "name": "Name",
+      "address": "Address",
+      "identityAddress": "Identity Address",
+      "type": "Type",
+      "status": "Status",
+      "email": "Email",
+      "wallet": "EOA",
+      "verifications": "Verifications",
+      "lastActive": "Last Activity",
+      "created": "Created",
+      "role": "Role",
+      "actions": "Actions"
+    },
+    "actions": {
+      "viewDetails": "View Details",
+      "menu": "Actions menu",
+      "openMenu": "Open actions menu",
+      "changeRoles": "Change roles"
+    },
+    "fallback": {
+      "noType": "Unknown type",
+      "noName": "No contract name",
+      "noContractAddress": "No contract address",
+      "noIdentityAddress": "No identity address",
+      "noIdentity": "No identity",
+      "noWallet": "No wallet",
+      "unknown": "Unknown",
+      "never": "Never"
+    }
+  },
+  "status": {
+    "registered": "Registered",
+    "pending": "Pending"
+  }
+}

@@ -7,6 +7,8 @@ import { InterfaceIds } from "../../erc165/utils/interfaceids";
 const IACCESS_CONTROL = Bytes.fromHexString("0x7965db0b");
 const IACCESS_CONTROL_ENUMERABLE = Bytes.fromHexString("0x5a05180f");
 
+const INTERFACE_ID_LENGTH = 4;
+
 const ENTITY_INTERFACE_CANDIDATES: Bytes[] = [
   InterfaceIds.ISMART,
   InterfaceIds.IATKToken,
@@ -70,11 +72,31 @@ function canonicalise(values: Bytes[]): Bytes[] {
   return ordered;
 }
 
+function filterMalformedInterfaceIds(values: Bytes[]): Bytes[] {
+  const filtered = new Array<Bytes>();
+
+  for (let i = 0; i < values.length; i++) {
+    const candidate = values[i];
+    if (candidate.length == INTERFACE_ID_LENGTH) {
+      filtered.push(candidate);
+    }
+  }
+
+  return filtered;
+}
+
+/**
+ * Resolve the canonical list of ERC-165 interface identifiers for a contract address.
+ * Normalises user-provided values by dropping any non-4-byte entries so stale store data
+ * cannot poison later lookups or trigger invalid on-chain probes.
+ */
 export function resolveSupportedInterfaces(
   contractAddress: Address,
   provided: Bytes[] | null = null
 ): Bytes[] {
-  const resolved = provided ? canonicalise(provided) : new Array<Bytes>();
+  const resolved = provided
+    ? canonicalise(filterMalformedInterfaceIds(provided))
+    : new Array<Bytes>();
 
   if (contractAddress.equals(Address.zero())) {
     return canonicalise(resolved);

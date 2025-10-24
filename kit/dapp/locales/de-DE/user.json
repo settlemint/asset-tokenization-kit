@@ -16,62 +16,62 @@
   },
   "management": {
     "page": {
-      "description": "Verwalten Sie Benutzer, Rollen und Berechtigungen Ihrer Plattform."
+      "description": "Verwalten Sie Teilnehmer mit Anmeldedaten."
     },
     "accessDenied": {
-      "title": "Zugang eingeschränkt",
+      "title": "$t(participants.accessDenied.title)",
       "description": "Sie haben keine Berechtigung, Benutzer zu verwalten. Kontaktieren Sie einen Administrator für zusätzliche Rechte."
     },
     "table": {
       "columns": {
-        "name": "Anzeigename",
-        "email": "E-Mail",
-        "wallet": "EOA",
-        "role": "Rolle",
-        "identity": "Identitätsadresse",
-        "type": "Typ",
-        "verifications": "Verifizierungen",
-        "status": "Statusanzeige",
-        "created": "Erstellt",
-        "lastActive": "Zuletzt aktiv",
-        "actions": "Aktionen"
+        "name": "$t(participants.table.columns.name)",
+        "email": "$t(participants.table.columns.email)",
+        "wallet": "$t(participants.table.columns.wallet)",
+        "identity": "$t(participants.table.columns.identityAddress)",
+        "type": "$t(participants.table.columns.type)",
+        "verifications": "$t(participants.table.columns.verifications)",
+        "status": "$t(participants.table.columns.status)",
+        "lastActive": "$t(participants.table.columns.lastActive)",
+        "created": "$t(participants.table.columns.created)",
+        "role": "$t(participants.table.columns.role)",
+        "actions": "$t(participants.table.columns.actions)"
       },
       "status": {
-        "registered": "Registriert",
-        "pending": "Ausstehend",
-        "notConnected": "Nicht verbunden",
-        "identityNeeded": "Identität erforderlich",
-        "notRegistered": "Nicht registriert",
-        "pendingRegistration": "Registrierung ausstehend",
-        "admin": "Administrator",
-        "adminAriaLabel": "Benutzer hat mindestens eine Admin-Rolle im System",
-        "registeredAriaLabel": "Benutzer ist registriert und on-chain verifiziert",
-        "notRegisteredAriaLabel": "Benutzer ist nicht on-chain registriert",
-        "pendingAriaLabel": "Benutzer hat Wallet verbunden, ist aber noch nicht on-chain registriert",
-        "notConnectedAriaLabel": "Benutzer hat kein Wallet verbunden",
-        "identityNeededAriaLabel": "Benutzer hat ein Wallet, aber keine registrierte Identität",
-        "pendingRegistrationAriaLabel": "Die Registrierung der Benutzeridentität ist in Bearbeitung"
+        "registered": "$t(participants.status.registered)",
+        "pending": "$t(participants.status.pending)",
+        "notConnected": "$t(participants.status.notConnected)",
+        "identityNeeded": "$t(participants.status.identityNeeded)",
+        "notRegistered": "$t(participants.status.notRegistered)",
+        "pendingRegistration": "$t(participants.status.pendingRegistration)",
+        "admin": "$t(participants.status.admin)",
+        "adminAriaLabel": "$t(participants.status.adminAriaLabel)",
+        "registeredAriaLabel": "$t(participants.status.registeredAriaLabel)",
+        "notRegisteredAriaLabel": "$t(participants.status.notRegisteredAriaLabel)",
+        "pendingAriaLabel": "$t(participants.status.pendingAriaLabel)",
+        "notConnectedAriaLabel": "$t(participants.status.notConnectedAriaLabel)",
+        "identityNeededAriaLabel": "$t(participants.status.identityNeededAriaLabel)",
+        "pendingRegistrationAriaLabel": "$t(participants.status.pendingRegistrationAriaLabel)"
       },
-      "userType": {
-        "admin": "Administrator",
-        "investor": "Investor",
-        "trustedIssuer": "Vertrauenswürdiger Emittent"
+      "type": {
+        "admin": "$t(participants.table.userType.admin)",
+        "investor": "$t(participants.table.userType.investor)",
+        "trustedIssuer": "$t(participants.table.userType.trustedIssuer)"
       },
       "verifications": {
         "none": "Keine Verifizierungen"
       },
       "identity": {
-        "none": "Keine Identität"
+        "none": "$t(participants.table.fallback.noIdentity)"
       },
       "actions": {
-        "viewDetails": "Details anzeigen",
-        "menu": "Aktionsmenü",
-        "openMenu": "Aktionsmenü öffnen"
+        "viewDetails": "$t(participants.table.actions.viewDetails)",
+        "menu": "$t(participants.table.actions.menu)",
+        "openMenu": "$t(participants.table.actions.openMenu)"
       },
       "search": {
         "placeholder": "Nach Name, E-Mail oder Wallet suchen..."
       },
-      "noWallet": "Kein Wallet",
+      "noWallet": "$t(participants.table.fallback.noWallet)",
       "emptyState": {
         "title": "Keine Benutzer gefunden",
         "description": "Es wurden noch keine Benutzer registriert.",
@@ -82,8 +82,8 @@
         "navigationFailed": "Navigation zu den Benutzerdetails fehlgeschlagen"
       },
       "fallback": {
-        "never": "Nie",
-        "unknown": "Unbekannt"
+        "never": "$t(participants.table.fallback.never)",
+        "unknown": "$t(participants.table.fallback.unknown)"
       }
     }
   },
@@ -97,8 +97,8 @@
     },
     "table": {
       "columns": {
-        "name": "Rollenname",
-        "role": "Rollen"
+        "name": "$t(participants.table.columns.name)",
+        "role": "$t(participants.table.columns.role)"
       },
       "errors": {
         "navigationFailed": "Navigation zu den Benutzerdetails fehlgeschlagen",
@@ -113,7 +113,7 @@
         "loading": "Benutzer werden geladen..."
       },
       "actions": {
-        "changeRoles": "Rollen ändern"
+        "changeRoles": "$t(participants.table.actions.changeRoles)"
       }
     }
   },

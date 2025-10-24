@@ -1,0 +1,41 @@
+{
+  "accessDenied": {
+    "title": "アクセス制限"
+  },
+  "table": {
+    "columns": {
+      "name": "名称",
+      "address": "アドレス",
+      "identityAddress": "アイデンティティアドレス",
+      "type": "タイプ",
+      "status": "ステータス",
+      "email": "メール",
+      "wallet": "EOA",
+      "verifications": "検証",
+      "lastActive": "最終アクティブ",
+      "created": "作成日",
+      "role": "役割",
+      "actions": "アクション"
+    },
+    "actions": {
+      "viewDetails": "詳細を表示",
+      "menu": "アクションメニュー",
+      "openMenu": "アクションメニューを開く",
+      "changeRoles": "役割を変更"
+    },
+    "fallback": {
+      "noType": "不明なタイプ",
+      "noName": "契約名なし",
+      "noContractAddress": "契約アドレスなし",
+      "noIdentityAddress": "アイデンティティアドレスなし",
+      "noIdentity": "アイデンティティなし",
+      "noWallet": "ウォレットなし",
+      "unknown": "不明",
+      "never": "なし"
+    }
+  },
+  "status": {
+    "registered": "登録済み",
+    "pending": "保留中"
+  }
+}
