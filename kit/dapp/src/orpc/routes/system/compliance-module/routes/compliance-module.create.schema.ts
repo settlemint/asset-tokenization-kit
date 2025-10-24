@@ -1,5 +1,9 @@
 import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
 import { type ComplianceTypeId, complianceTypeId } from "@atk/zod/compliance";
+import {
+  ethereumAddress,
+  type EthereumAddress,
+} from "@atk/zod/ethereum-address";
 import * as z from "zod";
 
 /**
@@ -7,7 +11,7 @@ import * as z from "zod";
  */
 const DEFAULT_COMPLIANCE_MODULE_IMPLEMENTATIONS: Record<
   ComplianceTypeId,
-  string
+  EthereumAddress
 > = {
   SMARTIdentityVerificationComplianceModule:
     "0x5e771e1417100000000000000000000000020100",
@@ -21,6 +25,12 @@ const DEFAULT_COMPLIANCE_MODULE_IMPLEMENTATIONS: Record<
     "0x5e771e1417100000000000000000000000020104",
   IdentityAllowListComplianceModule:
     "0x5e771e1417100000000000000000000000020105",
+  TokenSupplyLimitComplianceModule:
+    "0x5e771e1417100000000000000000000000020106",
+  InvestorCountComplianceModule: "0x5e771e1417100000000000000000000000020107",
+  TimeLockComplianceModule: "0x5e771e1417100000000000000000000000020108",
+  TransferApprovalComplianceModule:
+    "0x5e771e1417100000000000000000000000020109",
 } as const;
 
 /**
@@ -37,10 +47,8 @@ export function getDefaultComplianceModuleImplementations(
  */
 const SystemComplianceModuleConfigSchema = z.object({
   type: complianceTypeId(),
-  // Optional implementation addresses for custom deployments
-  implementations: z
-    .record(z.string(), z.string().regex(/^0x[a-fA-F0-9]{40}$/))
-    .optional(),
+  // Optional implementation address for custom deployment
+  implementation: ethereumAddress.optional(),
 });
 
 /**

@@ -1,48 +1,61 @@
 import type { ComplianceTypeId } from "@atk/zod/compliance";
 import {
   BanIcon,
+  HandshakeIcon,
+  LockIcon,
   MapPinCheck,
   MapPinMinus,
+  PercentIcon,
   ShieldCheckIcon,
   ShieldIcon,
   UserIcon,
+  UsersIcon,
 } from "lucide-react";
 
 interface ComplianceModuleConfig {
   icon: React.ComponentType<{ className?: string }>;
-  titleKey: string;
-  descriptionKey: string;
+  implemented: boolean;
 }
 
 export const complianceModuleConfig = {
   AddressBlockListComplianceModule: {
     icon: BanIcon,
-    titleKey: "modules.addressBlockList.title",
-    descriptionKey: "modules.addressBlockList.shortDescription",
+    implemented: true,
   },
   CountryAllowListComplianceModule: {
     icon: MapPinCheck,
-    titleKey: "modules.countryAllowList.title",
-    descriptionKey: "modules.countryAllowList.shortDescription",
+    implemented: true,
   },
   CountryBlockListComplianceModule: {
     icon: MapPinMinus,
-    titleKey: "modules.countryBlockList.title",
-    descriptionKey: "modules.countryBlockList.shortDescription",
+    implemented: true,
   },
   IdentityAllowListComplianceModule: {
     icon: UserIcon,
-    titleKey: "modules.identityAllowList.title",
-    descriptionKey: "modules.identityAllowList.shortDescription",
+    implemented: true,
   },
   IdentityBlockListComplianceModule: {
     icon: ShieldIcon,
-    titleKey: "modules.identityBlockList.title",
-    descriptionKey: "modules.identityBlockList.shortDescription",
+    implemented: true,
   },
   SMARTIdentityVerificationComplianceModule: {
     icon: ShieldCheckIcon,
-    titleKey: "modules.smartIdentityVerification.title",
-    descriptionKey: "modules.smartIdentityVerification.shortDescription",
+    implemented: true,
+  },
+  TokenSupplyLimitComplianceModule: {
+    icon: PercentIcon,
+    implemented: false,
+  },
+  InvestorCountComplianceModule: {
+    icon: UsersIcon,
+    implemented: false,
+  },
+  TimeLockComplianceModule: {
+    icon: LockIcon,
+    implemented: false,
+  },
+  TransferApprovalComplianceModule: {
+    icon: HandshakeIcon,
+    implemented: false,
   },
 } as const satisfies Record<ComplianceTypeId, ComplianceModuleConfig>;

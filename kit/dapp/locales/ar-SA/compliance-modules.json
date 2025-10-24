@@ -44,6 +44,26 @@
           "MiCA / الاتحاد الأوروبي (يسمح بجميع العقود مثل الرموز، والخزائن، ...): CONTRACT OR ((KYC AND AML) AND (PROFESSIONAL_INVESTOR OR ACCREDITED_INVESTOR))"
         ]
       }
+    },
+    "TokenSupplyLimitComplianceModule": {
+      "description": "يفرض حدًا أقصى لإجمالي المعروض من الرموز. يساعد في الامتثال للحدود القانونية.",
+      "shortDescription": "يفرض حدًا أقصى لإجمالي المعروض من الرموز",
+      "title": "حد المعروض من الرموز"
+    },
+    "InvestorCountComplianceModule": {
+      "description": "يفرض حدًا أقصى لعدد المستثمرين. يساعد في الامتثال للحدود القانونية.",
+      "shortDescription": "يفرض حدًا أقصى لعدد المستثمرين",
+      "title": "عدد المستثمرين"
+    },
+    "TimeLockComplianceModule": {
+      "description": "يفرض فترة احتفاظ دنيا قبل أن يمكن نقل الرموز.",
+      "shortDescription": "يفرض قفلًا زمنيًا على الرمز",
+      "title": "قفل زمني"
+    },
+    "TransferApprovalComplianceModule": {
+      "description": "يتطلب موافقة صريحة من السلطات المختصة قبل تنفيذ عمليات النقل.",
+      "shortDescription": "يفرض موافقة على التحويل",
+      "title": "موافقة التحويل"
     }
   },
   "title": "الامتثال",

@@ -50,10 +50,10 @@ describe("System Compliance Module create", () => {
 
     const updatedSystem = await client.system.read({ id: result.id });
 
-    // Should have all 6 compliance module types
+    // Should have all 10 compliance module types
     expect(
       updatedSystem.complianceModuleRegistry.complianceModules.length
-    ).toBe(6);
+    ).toBe(10);
 
     // Verify all expected compliance module types are present
     const expectedTypes = complianceTypeIds;

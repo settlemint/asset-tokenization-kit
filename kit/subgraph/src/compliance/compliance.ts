@@ -1,4 +1,4 @@
-import { Bytes, store } from "@graphprotocol/graph-ts";
+import { Address, Bytes, store } from "@graphprotocol/graph-ts";
 import {
   AddressAddedToBypassList as AddressAddedToBypassListEvent,
   AddressRemovedFromBypassList as AddressRemovedFromBypassListEvent,
@@ -20,12 +20,16 @@ export function handleGlobalComplianceModuleAdded(
 ): void {
   fetchEvent(event, "GlobalComplianceModuleAdded");
 
-  let complianceModule = fetchComplianceModule(event.params.module);
-  let complianceModuleConfig = fetchGlobalComplianceModuleConfig(
+  const compliance = fetchCompliance(event.address);
+  const complianceModule = fetchComplianceModule(
+    Address.fromBytes(compliance.system),
+    event.params.module
+  );
+  const complianceModuleConfig = fetchGlobalComplianceModuleConfig(
     event.address,
     event.params.module
   );
-  let complianceModuleParameters = fetchComplianceModuleParameters(
+  const complianceModuleParameters = fetchComplianceModuleParameters(
     complianceModuleConfig.id
   );
 
@@ -41,7 +45,7 @@ export function handleGlobalComplianceModuleRemoved(
 ): void {
   fetchEvent(event, "GlobalComplianceModuleRemoved");
 
-  let complianceModuleConfig = fetchGlobalComplianceModuleConfig(
+  const complianceModuleConfig = fetchGlobalComplianceModuleConfig(
     event.address,
     event.params.module
   );
@@ -56,12 +60,16 @@ export function handleGlobalComplianceModuleParametersUpdated(
 ): void {
   fetchEvent(event, "GlobalComplianceModuleParametersUpdated");
 
-  let complianceModule = fetchComplianceModule(event.params.module);
-  let complianceModuleConfig = fetchGlobalComplianceModuleConfig(
+  const compliance = fetchCompliance(event.address);
+  const complianceModule = fetchComplianceModule(
+    Address.fromBytes(compliance.system),
+    event.params.module
+  );
+  const complianceModuleConfig = fetchGlobalComplianceModuleConfig(
     event.address,
     event.params.module
   );
-  let complianceModuleParameters = fetchComplianceModuleParameters(
+  const complianceModuleParameters = fetchComplianceModuleParameters(
     complianceModuleConfig.id
   );
 

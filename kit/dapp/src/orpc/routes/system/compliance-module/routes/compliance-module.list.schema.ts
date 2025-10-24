@@ -1,5 +1,6 @@
 import { complianceTypeId } from "@atk/zod/compliance";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { ethereumCompositeId } from "@atk/zod/ethereum-composite-id";
 import * as z from "zod";
 import { GlobalComplianceModuleConfigSchema } from "./compliance-module.config.schema";
 
@@ -7,7 +8,10 @@ import { GlobalComplianceModuleConfigSchema } from "./compliance-module.config.s
  * Schema for a compliance module returned by the list API
  */
 export const ComplianceModuleSchema = z.object({
-  id: ethereumAddress,
+  id: ethereumCompositeId.describe(
+    "Compliance module ID (concatenation of system address and compliance module address)"
+  ),
+  module: ethereumAddress.describe("Compliance module contract address"),
   typeId: complianceTypeId(),
   name: z.string(),
   globalConfigs: z.array(GlobalComplianceModuleConfigSchema).default([]),

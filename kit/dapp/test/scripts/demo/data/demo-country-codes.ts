@@ -1,2 +1,13 @@
 export const DE_COUNTRY_CODE = "276";
 export const JP_COUNTRY_CODE = "392";
+export const BE_COUNTRY_CODE = "056";
+export const US_COUNTRY_CODE = "840";
+export const GB_COUNTRY_CODE = "826";
+export const NL_COUNTRY_CODE = "528";
+export const FR_COUNTRY_CODE = "250";
+export const IT_COUNTRY_CODE = "380";
+export const ES_COUNTRY_CODE = "724";
+export const PT_COUNTRY_CODE = "620";
+export const SE_COUNTRY_CODE = "752";
+export const NO_COUNTRY_CODE = "578";
+export const DK_COUNTRY_CODE = "208";

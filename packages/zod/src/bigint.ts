@@ -44,7 +44,11 @@ import * as z from "zod";
  * apiBigInt.parse("1e30"); // 1000000000000000000000000000000n
  * ```
  */
-export const apiBigInt = z.preprocess((value, ctx) => {
+export const apiBigInt = z.preprocess<
+  unknown,
+  z.ZodBigInt,
+  string | number | bigint | Dnum
+>((value, ctx) => {
   // If already a bigint, return as is (efficient pass-through)
   if (typeof value === "bigint") {
     return value;
