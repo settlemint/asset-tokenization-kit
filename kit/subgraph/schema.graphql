@@ -1063,8 +1063,10 @@ type Token @entity(immutable: false) {
   bond: TokenBond
   # Fund-specific data
   fund: TokenFund
-  # Base price claim for valuation
-  basePriceClaim: IdentityClaim
+  # Base price value
+  basePrice: BigDecimal!
+  # Base price currency code
+  basePriceCurrencyCode: String
   # Compliance module configurations
   complianceModuleConfigs: [TokenComplianceModuleConfig!]!
     @derivedFrom(field: "token")

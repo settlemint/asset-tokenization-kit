@@ -5,22 +5,12 @@ type TOKEN_QUERY = ReturnType<
   typeof theGraphGraphql<
     `query {
     tokens {
-      basePriceClaim {
-        values {
-          key
-          value
-        }
-      }
+      basePrice
       totalSupply
       bond {
         faceValue
         denominationAsset {
-          basePriceClaim {
-            values {
-              key
-              value
-            }
-          }
+          basePrice
         }
       }
     }
@@ -38,24 +28,13 @@ export const getBasePrice = (
   if (!token) {
     return 0;
   }
-  let basePriceClaim: Token["basePriceClaim"] | undefined;
   if (token.bond) {
-    basePriceClaim = token.bond.denominationAsset?.basePriceClaim;
-  } else {
-    basePriceClaim = token.basePriceClaim;
+    return (
+      Number(token.bond.denominationAsset.basePrice) *
+      Number(token.bond.faceValue)
+    );
   }
-  const basePrice = basePriceClaim?.values.find(
-    (value) => value.key === "amount"
-  )?.value;
-  const basePriceDecimals =
-    basePriceClaim?.values.find((value) => value.key === "decimals")?.value ??
-    "0";
-  const basePriceParsed =
-    Number(basePrice) / Math.pow(10, Number(basePriceDecimals));
-  if (token.bond) {
-    return basePriceParsed * Number(token.bond.faceValue);
-  }
-  return basePriceParsed;
+  return token.basePrice;
 };
 
 export const getTotalValueInBaseCurrency = (

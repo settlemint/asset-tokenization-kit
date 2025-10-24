@@ -140,22 +140,11 @@ describe("TokenTypeStats", () => {
               id
               type
               totalSupply
-              basePriceClaim {
-                id
-                values {
-                  key
-                  value
-                }
-              }
+              basePrice
               bond {
                 faceValue
                 denominationAsset {
-                  basePriceClaim {
-                    values {
-                      key
-                      value
-                    }
-                  }
+                  basePrice
                 }
               }
             }

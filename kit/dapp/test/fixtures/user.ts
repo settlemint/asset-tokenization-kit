@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { zeroAddress } from "viem";
 import { getAuthClient } from "./auth-client";
 import { getOrpcClient } from "./orpc-client";
+import { getDappUrl } from "./dapp";
 
 export interface User {
   email: string;
@@ -44,6 +45,7 @@ export async function signInWithUser(user: User, bypassCache = false) {
   }
   const authClient = getAuthClient();
   const newHeaders = new Headers();
+  newHeaders.set("Origin", getDappUrl());
   const { error: signInError } = await authClient.signIn.email(
     {
       email: user.email,

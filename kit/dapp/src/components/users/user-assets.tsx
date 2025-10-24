@@ -14,6 +14,7 @@ import { useSession } from "@/hooks/use-auth";
 import { formatValue } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenBalance } from "@/orpc/routes/user/routes/user.assets.schema";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -34,7 +35,6 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getAddress } from "viem";
-import type { EthereumAddress } from "@atk/zod/ethereum-address";
 
 const columnHelper = createStrictColumnHelper<TokenBalance>();
 
@@ -187,6 +187,9 @@ export const UserAssetsTable = withErrorBoundary(function UserAssetsTable() {
             displayName: t("user-assets:columns.contractAddress"),
             type: "address",
             icon: Copy,
+            addressOptions: {
+              showPrettyName: false,
+            },
           },
         }),
         columnHelper.accessor("token.name", {
@@ -294,9 +297,6 @@ export const UserAssetsTable = withErrorBoundary(function UserAssetsTable() {
           enableGlobalFilter: true,
           enableRowSelection: true,
           debounceMs: 300,
-        }}
-        initialColumnVisibility={{
-          name: false,
         }}
         advancedToolbar={{
           enableGlobalSearch: true,

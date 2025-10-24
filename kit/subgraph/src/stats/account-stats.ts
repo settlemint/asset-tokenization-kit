@@ -14,10 +14,7 @@ import { fetchSystem } from "../system/fetch/system";
 import { fetchBond } from "../token-assets/bond/fetch/bond";
 import { fetchTokenFactory } from "../token-factory/fetch/token-factory";
 import { fetchToken } from "../token/fetch/token";
-import {
-  getTokenBasePrice,
-  getTokenSystemAddress,
-} from "../token/utils/token-utils";
+import { getTokenSystemAddress } from "../token/utils/token-utils";
 import { toBigDecimal } from "../utils/token-decimals";
 
 /**
@@ -109,11 +106,11 @@ export function updateAccountStatsForBalanceChange(
     const denominationAsset = fetchToken(
       Address.fromBytes(bond.denominationAsset)
     );
-    const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
-    valueDelta = balanceDelta.times(bond.faceValue).times(basePrice);
+    valueDelta = balanceDelta
+      .times(bond.faceValue)
+      .times(denominationAsset.basePrice);
   } else {
-    const basePrice = getTokenBasePrice(token.basePriceClaim);
-    valueDelta = balanceDelta.times(basePrice);
+    valueDelta = balanceDelta.times(token.basePrice);
   }
 
   state.totalValueInBaseCurrency =

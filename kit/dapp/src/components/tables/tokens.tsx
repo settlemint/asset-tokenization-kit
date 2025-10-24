@@ -10,23 +10,13 @@ import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
-import { parseClaim } from "@/lib/utils/claims/parse-claim";
 import { formatValue } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
-import type { EquityCategory } from "@atk/zod/equity-categories";
-import { equityCategory } from "@atk/zod/equity-categories";
-import type { EquityClass } from "@atk/zod/equity-classes";
-import { equityClass } from "@atk/zod/equity-classes";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
-import type { FundCategory } from "@atk/zod/fund-categories";
-import { fundCategory } from "@atk/zod/fund-categories";
-import type { FundClass } from "@atk/zod/fund-classes";
-import { fundClass } from "@atk/zod/fund-classes";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { from } from "dnum";
 import {
   Coins,
   Copy,
@@ -133,6 +123,9 @@ export const TokensTable = withErrorBoundary(function TokensTable({
   // Get the current route's path pattern from the matched route
   const routePath = router.state.matches.at(-1)?.pathname;
 
+  const { data: baseCurrency } = useSuspenseQuery(
+    orpc.settings.read.queryOptions({ input: { key: "BASE_CURRENCY" } })
+  );
   const { data: response } = useSuspenseQuery(
     orpc.token.list.queryOptions({
       input: {
@@ -143,15 +136,6 @@ export const TokensTable = withErrorBoundary(function TokensTable({
 
   const tokens = response.tokens;
   const totalCount = response.totalCount;
-
-  // Note: We now always show the Price column (cells still hide per-row when not applicable)
-  const hasAssetClassification = tokens.some((t: Token) => {
-    const classification = parseClaim<{ class?: string; category?: string }>(
-      t.claims,
-      "assetClassification"
-    );
-    return classification !== undefined;
-  });
 
   /**
    * Creates contextual action items for each token row.
@@ -278,276 +262,198 @@ export const TokensTable = withErrorBoundary(function TokensTable({
    *
    * @returns {ColumnDef<Token>[]} Array of column definitions for the table
    */
-  const columns = useMemo(
-    () =>
-      withAutoFeatures([
-        createSelectionColumn<Token>(),
-        columnHelper.accessor("id", {
-          header: t("columns.contractAddress"),
-          meta: {
-            displayName: t("columns.contractAddress"),
-            type: "address",
-            icon: Copy,
+  const columns = useMemo(() => {
+    const defaultColumns = [
+      columnHelper.accessor("id", {
+        header: t("columns.contractAddress"),
+        meta: {
+          displayName: t("columns.contractAddress"),
+          type: "address",
+          icon: Copy,
+          addressOptions: {
+            showPrettyName: false,
           },
-        }),
-        columnHelper.accessor("name", {
-          header: t("columns.name"),
-          meta: {
-            displayName: t("columns.tokenName"),
-            type: "text",
-            icon: Type,
-          },
-        }),
-        columnHelper.accessor("symbol", {
-          header: t("columns.symbol"),
-          meta: {
-            displayName: t("columns.tokenSymbol"),
-            type: "text",
-            icon: Coins,
-          },
-        }),
-        columnHelper.accessor("decimals", {
-          header: t("columns.decimals"),
-          meta: {
-            displayName: t("columns.decimals"),
-            type: "number",
-            icon: Hash,
-            max: 18,
-          },
-        }),
-        columnHelper.display({
-          id: "totalSupply",
-          header: t("columns.totalSupply"),
-          cell: ({ row }) => {
-            return formatValue(row.original.totalSupply, {
-              type: "currency",
-              currency: { assetSymbol: row.original.symbol },
-            });
-          },
-          meta: {
-            displayName: t("columns.totalSupply"),
-            type: "none",
-            icon: Coins,
-          },
-        }),
-        columnHelper.display({
-          id: "paused",
-          header: t("columns.paused"),
-          cell: ({ row }) => {
-            const paused = row.original.pausable.paused;
-            return <TokenStatusBadge paused={paused} />;
-          },
-          meta: {
-            displayName: t("columns.paused"),
-            type: "none",
-            icon: PauseCircle,
-          },
-        }),
-        // Category (from assetClassification)
-        columnHelper.display({
-          id: "category",
-          header: t("fields.category"),
-          cell: ({ row }) => {
-            const classification = parseClaim<{
-              class?: string;
-              category?: string;
-            }>(row.original.claims, "assetClassification");
-            const category = classification?.category;
-            if (!category) return "-";
+        },
+      }),
+      columnHelper.accessor("name", {
+        header: t("columns.name"),
+        meta: {
+          displayName: t("columns.tokenName"),
+          type: "text",
+          icon: Type,
+        },
+      }),
+      columnHelper.accessor("symbol", {
+        header: t("columns.symbol"),
+        meta: {
+          displayName: t("columns.tokenSymbol"),
+          type: "text",
+          icon: Coins,
+        },
+      }),
+      columnHelper.accessor("decimals", {
+        header: t("columns.decimals"),
+        meta: {
+          displayName: t("columns.decimals"),
+          type: "number",
+          icon: Hash,
+          max: 18,
+        },
+      }),
+      columnHelper.display({
+        id: "totalSupply",
+        header: t("columns.totalSupply"),
+        cell: ({ row }) => {
+          return formatValue(row.original.totalSupply, {
+            type: "currency",
+            currency: { assetSymbol: row.original.symbol },
+          });
+        },
+        meta: {
+          displayName: t("columns.totalSupply"),
+          type: "none",
+          icon: Coins,
+        },
+      }),
+      columnHelper.display({
+        id: "paused",
+        header: t("columns.paused"),
+        cell: ({ row }) => {
+          const paused = row.original.pausable.paused;
+          return <TokenStatusBadge paused={paused} />;
+        },
+        meta: {
+          displayName: t("columns.paused"),
+          type: "none",
+          icon: PauseCircle,
+        },
+      }),
+    ];
+    // if (hasAssetClassification) {
+    //   defaultColumns.push(
+    //     // Category (from assetClassification)
+    //     columnHelper.display({
+    //       id: "category",
+    //       header: t("fields.category"),
+    //       cell: ({ row }) => {
+    //         const classification = parseClaim<{
+    //           class?: string;
+    //           category?: string;
+    //         }>(row.original.claims, "assetClassification");
+    //         const category = classification?.category;
+    //         if (!category) return "-";
 
-            // Translate based on actual token type with validation
-            if (row.original.type === "equity") {
-              // Validate the category matches expected enum values
-              const equitySchema = equityCategory();
-              const parseResult = equitySchema.safeParse(category);
-              if (parseResult.success) {
-                // Use type-safe translation key with validated enum value
-                return t(
-                  `assetClassification.equity.categories.${parseResult.data.toLowerCase() as Lowercase<EquityCategory>}`
-                );
-              }
-            } else if (row.original.type === "fund") {
-              // Validate the category matches expected enum values
-              const fundSchema = fundCategory();
-              const parseResult = fundSchema.safeParse(category);
-              if (parseResult.success) {
-                // Use type-safe translation key with validated enum value
-                return t(
-                  `assetClassification.funds.categories.${parseResult.data.toLowerCase() as Lowercase<FundCategory>}`
-                );
-              }
-            }
-            // For invalid/unknown categories or other token types, return raw value
-            return category;
-          },
-          meta: {
-            displayName: t("fields.category"),
-            type: "text",
-            emptyValue: "-",
-            icon: Type,
-          },
-        }),
-        // Class (from assetClassification)
-        columnHelper.display({
-          id: "class",
-          header: t("fields.class"),
-          cell: ({ row }) => {
-            const classification = parseClaim<{
-              class?: string;
-              category?: string;
-            }>(row.original.claims, "assetClassification");
-            const classificationClass = classification?.class;
-            if (!classificationClass) return "-";
+    //         // Translate based on actual token type with validation
+    //         if (row.original.type === "equity") {
+    //           // Validate the category matches expected enum values
+    //           const equitySchema = equityCategory();
+    //           const parseResult = equitySchema.safeParse(category);
+    //           if (parseResult.success) {
+    //             // Use type-safe translation key with validated enum value
+    //             return t(
+    //               `assetClassification.equity.categories.${parseResult.data.toLowerCase() as Lowercase<EquityCategory>}`
+    //             );
+    //           }
+    //         } else if (row.original.type === "fund") {
+    //           // Validate the category matches expected enum values
+    //           const fundSchema = fundCategory();
+    //           const parseResult = fundSchema.safeParse(category);
+    //           if (parseResult.success) {
+    //             // Use type-safe translation key with validated enum value
+    //             return t(
+    //               `assetClassification.funds.categories.${parseResult.data.toLowerCase() as Lowercase<FundCategory>}`
+    //             );
+    //           }
+    //         }
+    //         // For invalid/unknown categories or other token types, return raw value
+    //         return category;
+    //       },
+    //       meta: {
+    //         displayName: t("fields.category"),
+    //         type: "text",
+    //         emptyValue: "-",
+    //         icon: Type,
+    //       },
+    //     }),
+    //     // Class (from assetClassification)
+    //     columnHelper.display({
+    //       id: "class",
+    //       header: t("fields.class"),
+    //       cell: ({ row }) => {
+    //         const classification = parseClaim<{
+    //           class?: string;
+    //           category?: string;
+    //         }>(row.original.claims, "assetClassification");
+    //         const classificationClass = classification?.class;
+    //         if (!classificationClass) return "-";
 
-            // Translate based on actual token type with validation
-            if (row.original.type === "equity") {
-              // Validate the class matches expected enum values
-              const equityClassSchema = equityClass();
-              const parseResult =
-                equityClassSchema.safeParse(classificationClass);
-              if (parseResult.success) {
-                // Use type-safe translation key with validated enum value
-                return t(
-                  `assetClassification.equity.classes.${parseResult.data.toLowerCase() as Lowercase<EquityClass>}`
-                );
-              }
-            } else if (row.original.type === "fund") {
-              // Validate the class matches expected enum values
-              const fundClassSchema = fundClass();
-              const parseResult =
-                fundClassSchema.safeParse(classificationClass);
-              if (parseResult.success) {
-                // Use type-safe translation key with validated enum value
-                return t(
-                  `assetClassification.funds.classes.${parseResult.data.toLowerCase() as Lowercase<FundClass>}`
-                );
-              }
-            }
-            // For invalid/unknown classes or other token types, return raw value
-            return classificationClass;
-          },
-          meta: {
-            displayName: t("fields.class"),
-            type: "text",
-            emptyValue: "-",
-            icon: Type,
-          },
-        }),
-        /**
-         * Price column for financial assets.
-         *
-         * Why this column is conditionally rendered:
-         * 1. User Experience: Price is only meaningful for financial assets (bonds, stocks, etc.)
-         * 2. Data Integrity: Prevents confusion by hiding price for utility/governance tokens
-         * 3. Business Logic: Price display depends on asset classification from identity claims
-         * 4. Performance: Avoids unnecessary formatting for tokens without price data
-         *
-         * Display Logic Design Decisions:
-         * - null return: Completely hides the cell content for non-financial assets
-         * - "-" display: Shows placeholder for financial assets without pricing data
-         * - formatValue: Uses the standard currency formatter for consistency across the app
-         *
-         * This approach provides a clean, contextual user interface where price information
-         * appears only when relevant and useful to the user.
-         */
-        columnHelper.display({
-          id: "price",
-          header: t("columns.price"),
-          cell: ({ row }) => {
-            /**
-             * Guard clause: Only display price for tokens with asset classification.
-             *
-             * Why we check assetClassification first:
-             * 1. Business Rule: Price is only relevant for classified financial assets
-             * 2. UI Consistency: Prevents empty cells for utility tokens
-             * 3. Data Validation: Ensures we have a valid asset context before showing price
-             * 4. Performance: Early return avoids unnecessary price data processing
-             *
-             * Returning null completely hides the cell content, creating a cleaner
-             * table layout where irrelevant data doesn't create visual noise.
-             */
-            // Show if token has classification OR explicit price present
-            const assetClassification = parseClaim<{
-              class?: string;
-              category?: string;
-            }>(row.original.claims, "assetClassification");
-            const price = parseClaim<{
-              amount?: string;
-              currencyCode?: string;
-              decimals?: number;
-            }>(row.original.claims, "basePrice");
-            const hasPriceContext =
-              Boolean(assetClassification) || Boolean(price);
-            if (hasPriceContext) {
-              /**
-               * Handle missing or incomplete price data gracefully.
-               *
-               * Why we show "-" instead of null:
-               * 1. User Feedback: Indicates that price should exist but isn't available
-               * 2. Consistency: Maintains table column alignment and structure
-               * 3. Distinction: Different from non-financial assets (which show nothing)
-               * 4. Future Data: Placeholder for when pricing becomes available
-               *
-               * The muted styling indicates incomplete/unavailable data to users.
-               */
-              if (!price || !price.amount || !price.currencyCode) {
-                return <span className="text-muted-foreground">-</span>;
-              }
-
-              /**
-               * Format and display the price using the standard currency formatter.
-               *
-               * Why we use formatValue with currency type:
-               * 1. Consistency: Same formatting logic used across the entire application
-               * 2. Internationalization: Handles different currency codes and locale formatting
-               * 3. Precision: Respects the decimals field from price data for proper display
-               * 4. Accessibility: Provides proper currency formatting for screen readers
-               *
-               * The currency.assetSymbol parameter allows formatValue to handle
-               * various currencies (USD, EUR, ETH, etc.) with appropriate symbols.
-               */
-              const decimalsValue =
-                typeof price.decimals === "number" ? price.decimals : 2;
-              // Always use dnum to preserve precision and scale properly
-              const formattedAmount = from([
-                BigInt(price.amount),
-                decimalsValue,
-              ]);
-
-              return formatValue(formattedAmount, {
-                type: "currency",
-                currency: {
-                  assetSymbol: price.currencyCode,
-                },
-              });
-            }
-            return null;
-          },
-          meta: {
-            displayName: t("columns.price"),
-            type: "none", // No automatic filtering - price display is business-logic driven
-            icon: DollarSign,
-          },
-        }),
-        columnHelper.accessor("createdAt", {
-          header: t("columns.createdAt"),
-          meta: {
-            displayName: t("columns.createdAt"),
-            type: "date",
-          },
-        }),
-        columnHelper.display({
-          id: "actions",
-          header: t("columns.actions"),
-          meta: {
-            type: "none",
-            enableCsvExport: false, // Disable CSV export for actions column
-          },
-          cell: ({ row }) => <ActionsCell actions={createRowActions(row)} />,
-        }),
-      ] as ColumnDef<Token>[]),
-    [t, createRowActions]
-  );
+    //         // Translate based on actual token type with validation
+    //         if (row.original.type === "equity") {
+    //           // Validate the class matches expected enum values
+    //           const equityClassSchema = equityClass();
+    //           const parseResult =
+    //             equityClassSchema.safeParse(classificationClass);
+    //           if (parseResult.success) {
+    //             // Use type-safe translation key with validated enum value
+    //             return t(
+    //               `assetClassification.equity.classes.${parseResult.data.toLowerCase() as Lowercase<EquityClass>}`
+    //             );
+    //           }
+    //         } else if (row.original.type === "fund") {
+    //           // Validate the class matches expected enum values
+    //           const fundClassSchema = fundClass();
+    //           const parseResult =
+    //             fundClassSchema.safeParse(classificationClass);
+    //           if (parseResult.success) {
+    //             // Use type-safe translation key with validated enum value
+    //             return t(
+    //               `assetClassification.funds.classes.${parseResult.data.toLowerCase() as Lowercase<FundClass>}`
+    //             );
+    //           }
+    //         }
+    //         // For invalid/unknown classes or other token types, return raw value
+    //         return classificationClass;
+    //       },
+    //       meta: {
+    //         displayName: t("fields.class"),
+    //         type: "text",
+    //         emptyValue: "-",
+    //         icon: Type,
+    //       },
+    //     })
+    //   );
+    // }
+    return withAutoFeatures([
+      createSelectionColumn<Token>(),
+      ...defaultColumns,
+      columnHelper.accessor("basePrice", {
+        id: "basePrice",
+        header: t("columns.price"),
+        meta: {
+          displayName: t("columns.price"),
+          type: "currency",
+          currency: { assetSymbol: baseCurrency ?? "" },
+          icon: DollarSign,
+        },
+      }),
+      columnHelper.accessor("createdAt", {
+        header: t("columns.createdAt"),
+        meta: {
+          displayName: t("columns.createdAt"),
+          type: "date",
+        },
+      }),
+      columnHelper.display({
+        id: "actions",
+        header: t("columns.actions"),
+        meta: {
+          type: "none",
+          enableCsvExport: false, // Disable CSV export for actions column
+        },
+        cell: ({ row }) => <ActionsCell actions={createRowActions(row)} />,
+      }),
+    ] as ColumnDef<Token>[]);
+  }, [t, createRowActions, baseCurrency]);
 
   /**
    * Handles row click events to navigate to token details page.
@@ -622,11 +528,8 @@ export const TokensTable = withErrorBoundary(function TokensTable({
        * - This ensures financial data is visible when relevant without manual configuration
        */
       initialColumnVisibility={{
-        name: false, // Symbol is usually sufficient for token identification
-        createdAt: false, // Detailed timestamp less critical for overview
-        price: true, // Always show price column; row cells decide visibility
-        category: hasAssetClassification, // Show when classification exists
-        class: hasAssetClassification, // Show when classification exists
+        category: false, // Show when classification exists
+        class: false, // Show when classification exists
       }}
       advancedToolbar={{
         enableGlobalSearch: false,

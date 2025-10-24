@@ -16,7 +16,7 @@ import { fetchIdentityClaimValue } from "../../identity/fetch/identity-claim-val
 import { updateTokenStatsTotalValueInBaseCurrency } from "../../stats/token-stats";
 import { setBigNumber } from "../../utils/bignumber";
 import { toBigDecimal } from "../../utils/token-decimals";
-import { fetchTokenByIdentity } from "../fetch/token";
+import { fetchToken, fetchTokenByIdentity } from "../fetch/token";
 
 export function increaseTokenSupply(token: Token, amount: BigInt): void {
   setBigNumber(
@@ -58,7 +58,22 @@ export function updateBasePrice(basePriceClaim: IdentityClaim): void {
     return;
   }
 
-  token.basePriceClaim = basePriceClaim.id;
+  const basePriceInfo = getTokenBasePriceWithCurrencyCode(basePriceClaim.id);
+  token.basePrice = basePriceInfo.value;
+  token.basePriceCurrencyCode = basePriceInfo.currencyCode;
+
+  const denominationAssetForBond = token.denominationAssetForBond.load();
+  for (let i = 0; i < denominationAssetForBond.length; i++) {
+    const bond = denominationAssetForBond[i];
+    const bondToken = fetchToken(
+      Address.fromBytes(denominationAssetForBond[i].id)
+    );
+
+    bondToken.basePrice = bond.faceValue.times(basePriceInfo.value);
+    bondToken.basePriceCurrencyCode = basePriceInfo.currencyCode;
+    bondToken.save();
+  }
+
   token.save();
 
   // Update token stats
@@ -82,30 +97,58 @@ export function getTokenType(tokenFactory: TokenFactory): string {
   }
 }
 
+class TokenBasePrice {
+  value: BigDecimal;
+  currencyCode: string;
+}
+
+export function getTokenBasePrice(basePriceClaim: Bytes | null): BigDecimal {
+  const basePriceInfo = getTokenBasePriceWithCurrencyCode(basePriceClaim);
+  return basePriceInfo.value;
+}
+
 /**
  * Get base price for a token from its basePriceClaim
  */
-export function getTokenBasePrice(basePriceClaim: Bytes | null): BigDecimal {
+export function getTokenBasePriceWithCurrencyCode(
+  basePriceClaim: Bytes | null
+): TokenBasePrice {
   if (!basePriceClaim) {
-    return BigDecimal.zero();
+    return { value: BigDecimal.zero(), currencyCode: "" };
   }
 
   const claim = IdentityClaim.load(basePriceClaim);
   if (!claim) {
-    return BigDecimal.zero();
+    return { value: BigDecimal.zero(), currencyCode: "" };
   }
 
   const basePriceClaimValue = fetchIdentityClaimValue(claim, "amount");
   const basePriceClaimDecimals = fetchIdentityClaimValue(claim, "decimals");
+  const basePriceClaimCurrencyCode = fetchIdentityClaimValue(
+    claim,
+    "currencyCode"
+  );
 
   if (!basePriceClaimValue || !basePriceClaimValue.value) {
-    return BigDecimal.zero();
+    return {
+      value: BigDecimal.zero(),
+      currencyCode: basePriceClaimCurrencyCode
+        ? basePriceClaimCurrencyCode.value
+        : "",
+    };
   }
 
-  return toBigDecimal(
+  const basePrice = toBigDecimal(
     BigInt.fromString(basePriceClaimValue.value),
     I32.parseInt(basePriceClaimDecimals.value)
   );
+
+  return {
+    value: basePrice,
+    currencyCode: basePriceClaimCurrencyCode
+      ? basePriceClaimCurrencyCode.value
+      : "",
+  };
 }
 
 /**

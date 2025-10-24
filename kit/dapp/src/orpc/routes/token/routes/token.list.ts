@@ -1,67 +1,10 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { systemRouter } from "@/orpc/procedures/system.router";
-// TokensResponseSchema kept for reference; using permissive schema for nested claims extraction
 import {
   TokenListResponseSchema,
   TokenListSchema,
 } from "@/orpc/routes/token/routes/token.list.schema";
 import * as z from "zod";
-
-/**
- * Schema for TheGraph response with nested identity claims.
- * This provides type safety for the raw GraphQL response.
- */
-const GraphQLTokenSchema = z
-  .object({
-    id: z.string(),
-    type: z.string().optional(),
-    createdAt: z.string().optional(),
-    name: z.string(),
-    symbol: z.string(),
-    decimals: z.number(),
-    totalSupply: z.string().optional(),
-    pausable: z
-      .object({
-        paused: z.boolean(),
-      })
-      .optional(),
-    account: z
-      .object({
-        identities: z
-          .array(
-            z.object({
-              id: z.string(),
-              claims: z
-                .array(
-                  z.object({
-                    id: z.string(),
-                    name: z.string(),
-                    revoked: z.boolean(),
-                    values: z.array(
-                      z.object({
-                        key: z.string(),
-                        value: z.string(),
-                      })
-                    ),
-                  })
-                )
-                .optional()
-                .default([]),
-            })
-          )
-          .optional()
-          .default([]),
-      })
-      .optional()
-      .nullable(),
-  })
-  .loose(); // Allow additional fields that might come from GraphQL
-
-const GraphQLResponseSchema = z.object({
-  tokens: z.array(GraphQLTokenSchema),
-});
-
-type GraphQLToken = z.infer<typeof GraphQLTokenSchema>;
 
 /**
  * GraphQL query for retrieving tokenized assets from TheGraph.
@@ -81,7 +24,7 @@ type GraphQLToken = z.infer<typeof GraphQLTokenSchema>;
  * current state or whether they have any holders.
  */
 const LIST_TOKEN_QUERY = theGraphGraphql(`
-  query ListTokenQuery($orderBy: Token_orderBy, $orderDirection: OrderDirection, $where: Token_filter, $identityFactory: String!) {
+  query ListTokenQuery($orderBy: Token_orderBy, $orderDirection: OrderDirection, $where: Token_filter) {
     tokens(
         where: $where
         orderBy: $orderBy
@@ -97,23 +40,8 @@ const LIST_TOKEN_QUERY = theGraphGraphql(`
         pausable {
           paused
         }
-        account {
-          identities(
-            where: { identityFactory: $identityFactory }
-            first: 1
-          ) {
-            id
-            claims {
-              id
-              name
-              revoked
-              values {
-                key
-                value
-              }
-            }
-          }
-        }
+        basePrice
+        basePriceCurrencyCode
       }
     }
   `);
@@ -158,72 +86,23 @@ const LIST_TOKEN_QUERY = theGraphGraphql(`
  * @see {@link ListSchema} for pagination parameters
  */
 export const list = systemRouter.token.list.handler(
-  async ({ input, context, errors }) => {
-    if (!context.system?.identityFactory?.id) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: "System identity factory not found",
-      });
-    }
-
+  async ({ input, context }) => {
     // Manually construct GraphQL variables for pagination and filtering
     const response = await context.theGraphClient.query(LIST_TOKEN_QUERY, {
       input: {
         where: input.tokenFactory
           ? { tokenFactory_: { id: input.tokenFactory } }
           : undefined,
-        identityFactory: context.system.identityFactory.id.toLowerCase(),
       },
       // Use typed schema for the GraphQL response
-      output: GraphQLResponseSchema,
+      output: z.object({
+        tokens: TokenListSchema,
+      }),
     });
 
-    /**
-     * Transform tokens to include identity claims for client-side processing.
-     *
-     * The client has utilities like `parseClaim` to extract specific claim data,
-     * so we just return the raw claims and let the client handle the transformation.
-     * This approach provides better separation of concerns and allows the client
-     * to use existing utilities for claim parsing.
-     */
-    const tokensWithClaims = response.tokens.map((token: GraphQLToken) => {
-      /**
-       * Extract the first identity's claims (if available)
-       * Each token account can have multiple identities, but we only process the first one.
-       */
-      const identity = token.account?.identities?.[0];
-      const claims = identity?.claims || [];
-
-      /**
-       * Return token without the account field but with claims included.
-       * This provides a cleaner API surface while making claims available for client processing.
-       */
-      const { account: _account, ...tokenWithoutAccount } = token;
-      return {
-        ...tokenWithoutAccount,
-        /**
-         * Include raw claims for client-side processing.
-         * The client can use utilities like `parseClaim` to extract specific data.
-         */
-        claims,
-      };
-    });
-
-    // Parse and validate the tokens
-    const parsedTokens = TokenListSchema.parse(tokensWithClaims);
-
-    // Return the response with tokens and total count
-    //
-    // Current approach: @fetchAll directive fetches ALL tokens, so parsedTokens.length
-    // represents the true total count. This works well for small to medium datasets.
-    //
-    // Future optimization: For large datasets (1000+ tokens), consider implementing:
-    // 1. Server-side pagination with limit/offset parameters
-    // 2. Separate count query that only fetches minimal token data (id only)
-    // 3. Parallel execution of data and count queries
-    // This would reduce memory usage and improve response times for large factories.
     return TokenListResponseSchema.parse({
-      tokens: parsedTokens,
-      totalCount: parsedTokens.length,
+      tokens: response.tokens,
+      totalCount: response.tokens.length,
     });
   }
 );
