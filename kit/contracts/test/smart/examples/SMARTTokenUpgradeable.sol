@@ -194,7 +194,10 @@ contract SMARTTokenUpgradeable is
     /// @dev Only callable by `COMPLIANCE_ADMIN_ROLE`.
     /// @param _module The address of the compliance module.
     /// @param _params The new parameters for the module (encoded bytes).
-    function setParametersForComplianceModule(address _module, bytes calldata _params)
+    function setParametersForComplianceModule(
+        address _module,
+        bytes calldata _params
+    )
         external
         override
         onlyAccessManagerRole(COMPLIANCE_ADMIN_ROLE)
@@ -214,7 +217,10 @@ contract SMARTTokenUpgradeable is
     /// @dev Only callable by `MINTER_ROLE`. Subject to compliance checks for each recipient.
     /// @param _toList Array of recipient addresses.
     /// @param _amounts Array of token quantities to mint.
-    function batchMint(address[] calldata _toList, uint256[] calldata _amounts)
+    function batchMint(
+        address[] calldata _toList,
+        uint256[] calldata _amounts
+    )
         external
         override
         onlyAccessManagerRole(MINTER_ROLE)
@@ -239,7 +245,10 @@ contract SMARTTokenUpgradeable is
     /// @param _to The recipient address.
     /// @param _amount The quantity of tokens to transfer.
     /// @return `true` if successful.
-    function transfer(address _to, uint256 _amount)
+    function transfer(
+        address _to,
+        uint256 _amount
+    )
         public
         override(SMARTUpgradeable, ERC20Upgradeable, IERC20)
         returns (bool)
@@ -253,7 +262,11 @@ contract SMARTTokenUpgradeable is
     /// @param token The address of the ERC20 token to recover.
     /// @param to The address to send the recovered tokens to.
     /// @param amount The quantity of tokens to recover.
-    function recoverERC20(address token, address to, uint256 amount)
+    function recoverERC20(
+        address token,
+        address to,
+        uint256 amount
+    )
         external
         override
         onlyAccessManagerRole(TOKEN_ADMIN_ROLE)
@@ -265,7 +278,10 @@ contract SMARTTokenUpgradeable is
     /// @dev Only callable by `COMPLIANCE_ADMIN_ROLE`.
     /// @param _module The address of the compliance module to add.
     /// @param _params Initial parameters for the module (encoded bytes).
-    function addComplianceModule(address _module, bytes calldata _params)
+    function addComplianceModule(
+        address _module,
+        bytes calldata _params
+    )
         external
         override
         onlyAccessManagerRole(COMPLIANCE_ADMIN_ROLE)
@@ -294,7 +310,10 @@ contract SMARTTokenUpgradeable is
     /// @dev Only callable by `BURNER_ROLE`.
     /// @param userAddresses Array of addresses from which tokens will be burned.
     /// @param amounts Array of token quantities to burn.
-    function batchBurn(address[] calldata userAddresses, uint256[] calldata amounts)
+    function batchBurn(
+        address[] calldata userAddresses,
+        uint256[] calldata amounts
+    )
         external
         override
         onlyAccessManagerRole(BURNER_ROLE)
@@ -314,7 +333,14 @@ contract SMARTTokenUpgradeable is
     /// @dev Only callable by `FREEZER_ROLE`.
     /// @param userAddress The address to freeze or unfreeze.
     /// @param freeze `true` to freeze, `false` to unfreeze.
-    function setAddressFrozen(address userAddress, bool freeze) external override onlyAccessManagerRole(FREEZER_ROLE) {
+    function setAddressFrozen(
+        address userAddress,
+        bool freeze
+    )
+        external
+        override
+        onlyAccessManagerRole(FREEZER_ROLE)
+    {
         _smart_setAddressFrozen(userAddress, freeze);
     }
 
@@ -322,7 +348,10 @@ contract SMARTTokenUpgradeable is
     /// @dev Only callable by `FREEZER_ROLE`.
     /// @param userAddress The address whose tokens are to be partially frozen.
     /// @param amount The quantity of tokens to freeze.
-    function freezePartialTokens(address userAddress, uint256 amount)
+    function freezePartialTokens(
+        address userAddress,
+        uint256 amount
+    )
         external
         override
         onlyAccessManagerRole(FREEZER_ROLE)
@@ -334,7 +363,10 @@ contract SMARTTokenUpgradeable is
     /// @dev Only callable by `FREEZER_ROLE`.
     /// @param userAddress The address whose tokens are to be partially unfrozen.
     /// @param amount The quantity of tokens to unfreeze.
-    function unfreezePartialTokens(address userAddress, uint256 amount)
+    function unfreezePartialTokens(
+        address userAddress,
+        uint256 amount
+    )
         external
         override
         onlyAccessManagerRole(FREEZER_ROLE)
@@ -346,7 +378,10 @@ contract SMARTTokenUpgradeable is
     /// @dev Only callable by `FREEZER_ROLE`.
     /// @param userAddresses Array of addresses to freeze/unfreeze.
     /// @param freeze Array of booleans indicating freeze/unfreeze status.
-    function batchSetAddressFrozen(address[] calldata userAddresses, bool[] calldata freeze)
+    function batchSetAddressFrozen(
+        address[] calldata userAddresses,
+        bool[] calldata freeze
+    )
         external
         override
         onlyAccessManagerRole(FREEZER_ROLE)
@@ -358,7 +393,10 @@ contract SMARTTokenUpgradeable is
     /// @dev Only callable by `FREEZER_ROLE`.
     /// @param userAddresses Array of addresses for partial freeze.
     /// @param amounts Array of token quantities to freeze.
-    function batchFreezePartialTokens(address[] calldata userAddresses, uint256[] calldata amounts)
+    function batchFreezePartialTokens(
+        address[] calldata userAddresses,
+        uint256[] calldata amounts
+    )
         external
         override
         onlyAccessManagerRole(FREEZER_ROLE)
@@ -370,7 +408,10 @@ contract SMARTTokenUpgradeable is
     /// @dev Only callable by `FREEZER_ROLE`.
     /// @param userAddresses Array of addresses for partial unfreeze.
     /// @param amounts Array of token quantities to unfreeze.
-    function batchUnfreezePartialTokens(address[] calldata userAddresses, uint256[] calldata amounts)
+    function batchUnfreezePartialTokens(
+        address[] calldata userAddresses,
+        uint256[] calldata amounts
+    )
         external
         override
         onlyAccessManagerRole(FREEZER_ROLE)
@@ -384,7 +425,11 @@ contract SMARTTokenUpgradeable is
     /// @param to The address to transfer tokens to.
     /// @param amount The quantity of tokens to transfer.
     /// @return `true` if successful.
-    function forcedTransfer(address from, address to, uint256 amount)
+    function forcedTransfer(
+        address from,
+        address to,
+        uint256 amount
+    )
         external
         override
         onlyAccessManagerRole(FORCED_TRANSFER_ROLE)
@@ -398,7 +443,11 @@ contract SMARTTokenUpgradeable is
     /// @param fromList Array of sender addresses.
     /// @param toList Array of recipient addresses.
     /// @param amounts Array of token quantities to transfer.
-    function batchForcedTransfer(address[] calldata fromList, address[] calldata toList, uint256[] calldata amounts)
+    function batchForcedTransfer(
+        address[] calldata fromList,
+        address[] calldata toList,
+        uint256[] calldata amounts
+    )
         external
         override
         onlyAccessManagerRole(FORCED_TRANSFER_ROLE)
@@ -411,7 +460,10 @@ contract SMARTTokenUpgradeable is
     /// provided their identity is verified. Only callable by an address with `RECOVERY_ROLE`.
     /// @param lostWallet The address of the compromised or lost wallet.
     /// @param newWallet The address of the new wallet to which tokens will be transferred.
-    function forcedRecoverTokens(address lostWallet, address newWallet)
+    function forcedRecoverTokens(
+        address lostWallet,
+        address newWallet
+    )
         external
         override
         onlyAccessManagerRole(RECOVERY_ROLE)
@@ -477,7 +529,11 @@ contract SMARTTokenUpgradeable is
      * @param to Recipient's address (or zero address for burns).
      * @param value Amount of tokens to transfer.
      */
-    function _update(address from, address to, uint256 value)
+    function _update(
+        address from,
+        address to,
+        uint256 value
+    )
         internal
         virtual
         override(SMARTUpgradeable, SMARTPausableUpgradeable, ERC20Upgradeable)
@@ -498,7 +554,10 @@ contract SMARTTokenUpgradeable is
     /// Allows for pre-mint checks like collateral sufficiency or custodian approvals.
     /// @param to The address receiving minted tokens.
     /// @param amount The amount of tokens to be minted.
-    function _beforeMint(address to, uint256 amount)
+    function _beforeMint(
+        address to,
+        uint256 amount
+    )
         internal
         virtual
         override(
@@ -518,7 +577,11 @@ contract SMARTTokenUpgradeable is
     /// @param from The address sending tokens.
     /// @param to The address receiving tokens.
     /// @param amount The amount of tokens being transferred.
-    function _beforeTransfer(address from, address to, uint256 amount)
+    function _beforeTransfer(
+        address from,
+        address to,
+        uint256 amount
+    )
         internal
         virtual
         override(SMARTUpgradeable, SMARTCustodianUpgradeable, SMARTHooks)
@@ -532,7 +595,10 @@ contract SMARTTokenUpgradeable is
     /// Used for pre-burn custodian checks or other logic.
     /// @param from The address whose tokens are being burned.
     /// @param amount The amount of tokens to be burned.
-    function _beforeBurn(address from, uint256 amount)
+    function _beforeBurn(
+        address from,
+        uint256 amount
+    )
         internal
         virtual
         override(SMARTCustodianUpgradeable, SMARTHooks) // SMARTUpgradeable
@@ -547,7 +613,10 @@ contract SMARTTokenUpgradeable is
     /// For pre-redemption checks, often related to custodian actions.
     /// @param owner The address redeeming tokens.
     /// @param amount The amount of tokens being redeemed.
-    function _beforeRedeem(address owner, uint256 amount)
+    function _beforeRedeem(
+        address owner,
+        uint256 amount
+    )
         internal
         virtual
         override(SMARTCustodianUpgradeable, SMARTHooks)
@@ -560,7 +629,10 @@ contract SMARTTokenUpgradeable is
     /// Used for post-mint actions like updating historical balance snapshots.
     /// @param to The address that received the minted tokens.
     /// @param amount The amount of tokens that were minted.
-    function _afterMint(address to, uint256 amount)
+    function _afterMint(
+        address to,
+        uint256 amount
+    )
         internal
         virtual
         override(SMARTUpgradeable, SMARTHistoricalBalancesUpgradeable, SMARTHooks)
@@ -575,7 +647,11 @@ contract SMARTTokenUpgradeable is
     /// @param from The address that sent tokens.
     /// @param to The address that received tokens.
     /// @param amount The amount of tokens that were transferred.
-    function _afterTransfer(address from, address to, uint256 amount)
+    function _afterTransfer(
+        address from,
+        address to,
+        uint256 amount
+    )
         internal
         virtual
         override(SMARTUpgradeable, SMARTHistoricalBalancesUpgradeable, SMARTHooks)
@@ -590,7 +666,10 @@ contract SMARTTokenUpgradeable is
     /// For post-burn actions like updating balance snapshots.
     /// @param from The address whose tokens were burned.
     /// @param amount The amount of tokens that were burned.
-    function _afterBurn(address from, uint256 amount)
+    function _afterBurn(
+        address from,
+        uint256 amount
+    )
         internal
         virtual
         override(SMARTUpgradeable, SMARTHistoricalBalancesUpgradeable, SMARTHooks)
@@ -600,7 +679,10 @@ contract SMARTTokenUpgradeable is
     }
 
     /// @inheritdoc SMARTHooks
-    function _afterRecoverTokens(address lostWallet, address newWallet)
+    function _afterRecoverTokens(
+        address lostWallet,
+        address newWallet
+    )
         internal
         virtual
         override(SMARTCustodianUpgradeable, SMARTHooks)

@@ -124,7 +124,9 @@ contract ATKBondImplementation is
         if (bondParams.denominationAsset == address(0)) revert InvalidDenominationAsset();
 
         // Verify the denomination asset contract exists by attempting to call a view function
-        try IERC20(bondParams.denominationAsset).totalSupply() returns (uint256) {
+        try IERC20(bondParams.denominationAsset).totalSupply() returns (
+            uint256
+        ) {
         // Contract exists and implements IERC20
         }
         catch {
@@ -254,7 +256,10 @@ contract ATKBondImplementation is
     /// @dev Only callable by addresses with GOVERNANCE_ROLE
     /// @param _module The address of the compliance module
     /// @param _params The encoded parameters to set for the module
-    function setParametersForComplianceModule(address _module, bytes calldata _params)
+    function setParametersForComplianceModule(
+        address _module,
+        bytes calldata _params
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
@@ -266,7 +271,10 @@ contract ATKBondImplementation is
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
     /// @param _to The address to mint tokens to
     /// @param _amount The amount of tokens to mint
-    function mint(address _to, uint256 _amount)
+    function mint(
+        address _to,
+        uint256 _amount
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
@@ -278,7 +286,10 @@ contract ATKBondImplementation is
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
     /// @param _toList Array of addresses to mint tokens to
     /// @param _amounts Array of amounts to mint to each address
-    function batchMint(address[] calldata _toList, uint256[] calldata _amounts)
+    function batchMint(
+        address[] calldata _toList,
+        uint256[] calldata _amounts
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
@@ -291,7 +302,10 @@ contract ATKBondImplementation is
     /// @param _to The address to transfer tokens to
     /// @param _amount The amount of tokens to transfer
     /// @return bool Returns true if the transfer was successful
-    function transfer(address _to, uint256 _amount)
+    function transfer(
+        address _to,
+        uint256 _amount
+    )
         public
         override(SMARTUpgradeable, ERC20Upgradeable, IERC20)
         returns (bool)
@@ -304,7 +318,11 @@ contract ATKBondImplementation is
     /// @param token The address of the ERC20 token to recover
     /// @param to The address to send the recovered tokens to
     /// @param amount The amount of tokens to recover
-    function recoverERC20(address token, address to, uint256 amount)
+    function recoverERC20(
+        address token,
+        address to,
+        uint256 amount
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.EMERGENCY_ROLE)
@@ -316,7 +334,10 @@ contract ATKBondImplementation is
     /// @dev Only callable by addresses with GOVERNANCE_ROLE
     /// @param _module The address of the compliance module to add
     /// @param _params The initialization parameters for the module
-    function addComplianceModule(address _module, bytes calldata _params)
+    function addComplianceModule(
+        address _module,
+        bytes calldata _params
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
@@ -341,7 +362,10 @@ contract ATKBondImplementation is
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
     /// @param userAddress The address to burn tokens from
     /// @param amount The amount of tokens to burn
-    function burn(address userAddress, uint256 amount)
+    function burn(
+        address userAddress,
+        uint256 amount
+    )
         external
         override(ISMARTBurnable)
         onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
@@ -353,7 +377,10 @@ contract ATKBondImplementation is
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
     /// @param userAddresses Array of addresses to burn tokens from
     /// @param amounts Array of amounts to burn from each address
-    function batchBurn(address[] calldata userAddresses, uint256[] calldata amounts)
+    function batchBurn(
+        address[] calldata userAddresses,
+        uint256[] calldata amounts
+    )
         external
         override(ISMARTBurnable)
         onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
@@ -376,7 +403,10 @@ contract ATKBondImplementation is
     /// @dev Only callable by addresses with CUSTODIAN_ROLE
     /// @param userAddress The address to freeze/unfreeze
     /// @param freeze True to freeze the address, false to unfreeze
-    function setAddressFrozen(address userAddress, bool freeze)
+    function setAddressFrozen(
+        address userAddress,
+        bool freeze
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -388,7 +418,10 @@ contract ATKBondImplementation is
     /// @dev Only callable by addresses with CUSTODIAN_ROLE
     /// @param userAddress The address to freeze tokens for
     /// @param amount The amount of tokens to freeze
-    function freezePartialTokens(address userAddress, uint256 amount)
+    function freezePartialTokens(
+        address userAddress,
+        uint256 amount
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -400,7 +433,10 @@ contract ATKBondImplementation is
     /// @dev Only callable by addresses with CUSTODIAN_ROLE
     /// @param userAddress The address to unfreeze tokens for
     /// @param amount The amount of tokens to unfreeze
-    function unfreezePartialTokens(address userAddress, uint256 amount)
+    function unfreezePartialTokens(
+        address userAddress,
+        uint256 amount
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -412,7 +448,10 @@ contract ATKBondImplementation is
     /// @dev Only callable by addresses with CUSTODIAN_ROLE
     /// @param userAddresses Array of addresses to freeze/unfreeze
     /// @param freeze Array of booleans indicating freeze (true) or unfreeze (false) for each address
-    function batchSetAddressFrozen(address[] calldata userAddresses, bool[] calldata freeze)
+    function batchSetAddressFrozen(
+        address[] calldata userAddresses,
+        bool[] calldata freeze
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -424,7 +463,10 @@ contract ATKBondImplementation is
     /// @dev Only callable by addresses with CUSTODIAN_ROLE
     /// @param userAddresses Array of addresses to freeze tokens for
     /// @param amounts Array of amounts to freeze for each address
-    function batchFreezePartialTokens(address[] calldata userAddresses, uint256[] calldata amounts)
+    function batchFreezePartialTokens(
+        address[] calldata userAddresses,
+        uint256[] calldata amounts
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -436,7 +478,10 @@ contract ATKBondImplementation is
     /// @dev Only callable by addresses with CUSTODIAN_ROLE
     /// @param userAddresses Array of addresses to unfreeze tokens for
     /// @param amounts Array of amounts to unfreeze for each address
-    function batchUnfreezePartialTokens(address[] calldata userAddresses, uint256[] calldata amounts)
+    function batchUnfreezePartialTokens(
+        address[] calldata userAddresses,
+        uint256[] calldata amounts
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -450,7 +495,11 @@ contract ATKBondImplementation is
     /// @param to The address to transfer tokens to
     /// @param amount The amount of tokens to transfer
     /// @return bool Returns true if the transfer was successful
-    function forcedTransfer(address from, address to, uint256 amount)
+    function forcedTransfer(
+        address from,
+        address to,
+        uint256 amount
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -464,7 +513,11 @@ contract ATKBondImplementation is
     /// @param fromList Array of addresses to transfer tokens from
     /// @param toList Array of addresses to transfer tokens to
     /// @param amounts Array of amounts to transfer
-    function batchForcedTransfer(address[] calldata fromList, address[] calldata toList, uint256[] calldata amounts)
+    function batchForcedTransfer(
+        address[] calldata fromList,
+        address[] calldata toList,
+        uint256[] calldata amounts
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -476,7 +529,10 @@ contract ATKBondImplementation is
     /// @dev Only callable by addresses with CUSTODIAN_ROLE. Transfers all tokens from the lost wallet.
     /// @param lostWallet The address of the wallet that lost access
     /// @param newWallet The address of the new wallet to receive the tokens
-    function forcedRecoverTokens(address lostWallet, address newWallet)
+    function forcedRecoverTokens(
+        address lostWallet,
+        address newWallet
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -585,7 +641,10 @@ contract ATKBondImplementation is
     /// @notice Hook that is called before minting tokens
     /// @param to The address that will receive the minted tokens
     /// @param amount The amount of tokens to be minted
-    function _beforeMint(address to, uint256 amount)
+    function _beforeMint(
+        address to,
+        uint256 amount
+    )
         internal
         virtual
         override(SMARTUpgradeable, SMARTCappedUpgradeable, SMARTCustodianUpgradeable, SMARTYieldUpgradeable, SMARTHooks)
@@ -598,7 +657,11 @@ contract ATKBondImplementation is
     /// @param from The address transferring the tokens
     /// @param to The address that will receive the tokens
     /// @param amount The amount of tokens to be transferred
-    function _beforeTransfer(address from, address to, uint256 amount)
+    function _beforeTransfer(
+        address from,
+        address to,
+        uint256 amount
+    )
         internal
         virtual
         override(SMARTUpgradeable, SMARTCustodianUpgradeable, SMARTHooks)
@@ -616,7 +679,10 @@ contract ATKBondImplementation is
     /// @notice Hook that is called before burning tokens
     /// @param from The address whose tokens will be burned
     /// @param amount The amount of tokens to be burned
-    function _beforeBurn(address from, uint256 amount)
+    function _beforeBurn(
+        address from,
+        uint256 amount
+    )
         internal
         virtual
         override(SMARTCustodianUpgradeable, SMARTHooks)
@@ -628,7 +694,10 @@ contract ATKBondImplementation is
     /// @notice Hook that is called before redeeming tokens
     /// @param owner The address redeeming the tokens
     /// @param amount The amount of tokens to be redeemed
-    function _beforeRedeem(address owner, uint256 amount)
+    function _beforeRedeem(
+        address owner,
+        uint256 amount
+    )
         internal
         virtual
         override(SMARTCustodianUpgradeable, SMARTHooks)
@@ -673,7 +742,10 @@ contract ATKBondImplementation is
     /// @notice Hook that is called after minting tokens
     /// @param to The address that received the minted tokens
     /// @param amount The amount of tokens that were minted
-    function _afterMint(address to, uint256 amount)
+    function _afterMint(
+        address to,
+        uint256 amount
+    )
         internal
         virtual
         override(SMARTUpgradeable, SMARTHistoricalBalancesUpgradeable, SMARTHooks)
@@ -686,7 +758,11 @@ contract ATKBondImplementation is
     /// @param from The address that transferred the tokens
     /// @param to The address that received the tokens
     /// @param amount The amount of tokens that were transferred
-    function _afterTransfer(address from, address to, uint256 amount)
+    function _afterTransfer(
+        address from,
+        address to,
+        uint256 amount
+    )
         internal
         virtual
         override(SMARTUpgradeable, SMARTHistoricalBalancesUpgradeable, SMARTHooks)
@@ -698,7 +774,10 @@ contract ATKBondImplementation is
     /// @notice Hook that is called after burning tokens
     /// @param from The address whose tokens were burned
     /// @param amount The amount of tokens that were burned
-    function _afterBurn(address from, uint256 amount)
+    function _afterBurn(
+        address from,
+        uint256 amount
+    )
         internal
         virtual
         override(SMARTUpgradeable, SMARTHistoricalBalancesUpgradeable, SMARTHooks)
@@ -710,7 +789,10 @@ contract ATKBondImplementation is
     /// @notice Hook that is called after recovering tokens from a lost wallet
     /// @param lostWallet The address of the wallet from which tokens were recovered
     /// @param newWallet The address of the wallet that received the recovered tokens
-    function _afterRecoverTokens(address lostWallet, address newWallet)
+    function _afterRecoverTokens(
+        address lostWallet,
+        address newWallet
+    )
         internal
         virtual
         override(SMARTCustodianUpgradeable, SMARTHooks)
@@ -759,7 +841,11 @@ contract ATKBondImplementation is
     /// @param from The address transferring tokens
     /// @param to The address receiving tokens
     /// @param value The amount of tokens being transferred
-    function _update(address from, address to, uint256 value)
+    function _update(
+        address from,
+        address to,
+        uint256 value
+    )
         internal
         virtual
         override(SMARTPausableUpgradeable, SMARTUpgradeable, ERC20Upgradeable)

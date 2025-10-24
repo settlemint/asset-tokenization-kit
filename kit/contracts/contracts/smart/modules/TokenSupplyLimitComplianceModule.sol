@@ -258,7 +258,13 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
     /// @param tracker The storage reference to the tracker to update
     /// @param amount The already-converted amount to add to tracking
     /// @param config The supply limit configuration
-    function _updateTracker(SupplyTracker storage tracker, uint256 amount, SupplyLimitConfig memory config) private {
+    function _updateTracker(
+        SupplyTracker storage tracker,
+        uint256 amount,
+        SupplyLimitConfig memory config
+    )
+        private
+    {
         if (config.periodLength == 0) {
             // Lifetime cap
             tracker.totalSupply += amount;
@@ -306,7 +312,11 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
     /// @param tracker The storage reference to the tracker to update
     /// @param amount The already-converted amount to subtract from tracking
     /// @param config The supply limit configuration
-    function _subtractFromTracker(SupplyTracker storage tracker, uint256 amount, SupplyLimitConfig memory config)
+    function _subtractFromTracker(
+        SupplyTracker storage tracker,
+        uint256 amount,
+        SupplyLimitConfig memory config
+    )
         private
     {
         if (config.periodLength == 0) {
@@ -473,8 +483,9 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
                         // Verify the claim is valid with the trusted issuer
                         bool valid;
                         // Protect against malicious issuers reverting
-                        try trustedIssuers[j]
-                        .isClaimValid(tokenIdentity, BASE_PRICE_TOPIC_ID, sig, data) returns (bool ok) {
+                        try trustedIssuers[j].isClaimValid(tokenIdentity, BASE_PRICE_TOPIC_ID, sig, data) returns (
+                            bool ok
+                        ) {
                             valid = ok;
                         } catch {
                             valid = false;
@@ -520,7 +531,11 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
     /// @param _token The token address to get decimals from
     /// @param config The configuration to determine conversion type
     /// @return The equivalent raw amount with maximum precision
-    function _convertConfigLimitToRawAmount(uint256 _configLimit, address _token, SupplyLimitConfig memory config)
+    function _convertConfigLimitToRawAmount(
+        uint256 _configLimit,
+        address _token,
+        SupplyLimitConfig memory config
+    )
         private
         view
         returns (uint256)

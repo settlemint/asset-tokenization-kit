@@ -103,7 +103,10 @@ contract ATKTopicSchemeRegistryImplementation is
     // --- Topic Scheme Management Functions ---
 
     /// @inheritdoc ISMARTTopicSchemeRegistry
-    function registerTopicScheme(string calldata name, string calldata signature)
+    function registerTopicScheme(
+        string calldata name,
+        string calldata signature
+    )
         external
         override
         onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
@@ -127,7 +130,10 @@ contract ATKTopicSchemeRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTTopicSchemeRegistry
-    function batchRegisterTopicSchemes(string[] calldata names, string[] calldata signatures)
+    function batchRegisterTopicSchemes(
+        string[] calldata names,
+        string[] calldata signatures
+    )
         external
         override
         onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
@@ -188,7 +194,10 @@ contract ATKTopicSchemeRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTTopicSchemeRegistry
-    function updateTopicScheme(string calldata name, string calldata newSignature)
+    function updateTopicScheme(
+        string calldata name,
+        string calldata newSignature
+    )
         external
         override
         onlySystemRoles2(ATKPeopleRoles.CLAIM_POLICY_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)

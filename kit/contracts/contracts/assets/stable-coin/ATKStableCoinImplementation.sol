@@ -140,7 +140,10 @@ contract ATKStableCoinImplementation is
     /// @notice Sets parameters for a compliance module
     /// @param _module The address of the compliance module
     /// @param _params The encoded parameters for the compliance module
-    function setParametersForComplianceModule(address _module, bytes calldata _params)
+    function setParametersForComplianceModule(
+        address _module,
+        bytes calldata _params
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
@@ -151,7 +154,10 @@ contract ATKStableCoinImplementation is
     /// @notice Mints new tokens to a specified address
     /// @param _to The address to mint tokens to
     /// @param _amount The amount of tokens to mint
-    function mint(address _to, uint256 _amount)
+    function mint(
+        address _to,
+        uint256 _amount
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
@@ -162,7 +168,10 @@ contract ATKStableCoinImplementation is
     /// @notice Mints tokens to multiple addresses in a batch
     /// @param _toList Array of addresses to mint tokens to
     /// @param _amounts Array of amounts to mint to each address
-    function batchMint(address[] calldata _toList, uint256[] calldata _amounts)
+    function batchMint(
+        address[] calldata _toList,
+        uint256[] calldata _amounts
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
@@ -174,7 +183,10 @@ contract ATKStableCoinImplementation is
     /// @param _to The address to transfer tokens to
     /// @param _amount The amount of tokens to transfer
     /// @return bool indicating success of the transfer
-    function transfer(address _to, uint256 _amount)
+    function transfer(
+        address _to,
+        uint256 _amount
+    )
         public
         override(SMARTUpgradeable, ERC20Upgradeable, IERC20)
         returns (bool)
@@ -186,7 +198,11 @@ contract ATKStableCoinImplementation is
     /// @param token The address of the ERC20 token to recover
     /// @param to The address to send recovered tokens to
     /// @param amount The amount of tokens to recover
-    function recoverERC20(address token, address to, uint256 amount)
+    function recoverERC20(
+        address token,
+        address to,
+        uint256 amount
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.EMERGENCY_ROLE)
@@ -197,7 +213,10 @@ contract ATKStableCoinImplementation is
     /// @notice Adds a new compliance module
     /// @param _module The address of the compliance module to add
     /// @param _params The encoded parameters for the compliance module
-    function addComplianceModule(address _module, bytes calldata _params)
+    function addComplianceModule(
+        address _module,
+        bytes calldata _params
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
@@ -220,7 +239,10 @@ contract ATKStableCoinImplementation is
     /// @notice Burns tokens from a specified address
     /// @param userAddress The address to burn tokens from
     /// @param amount The amount of tokens to burn
-    function burn(address userAddress, uint256 amount)
+    function burn(
+        address userAddress,
+        uint256 amount
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
@@ -231,7 +253,10 @@ contract ATKStableCoinImplementation is
     /// @notice Burns tokens from multiple addresses in a batch
     /// @param userAddresses Array of addresses to burn tokens from
     /// @param amounts Array of amounts to burn from each address
-    function batchBurn(address[] calldata userAddresses, uint256[] calldata amounts)
+    function batchBurn(
+        address[] calldata userAddresses,
+        uint256[] calldata amounts
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
@@ -244,7 +269,10 @@ contract ATKStableCoinImplementation is
     /// @notice Freezes or unfreezes an address
     /// @param userAddress The address to freeze or unfreeze
     /// @param freeze True to freeze, false to unfreeze
-    function setAddressFrozen(address userAddress, bool freeze)
+    function setAddressFrozen(
+        address userAddress,
+        bool freeze
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -255,7 +283,10 @@ contract ATKStableCoinImplementation is
     /// @notice Freezes a partial amount of tokens for an address
     /// @param userAddress The address to freeze tokens for
     /// @param amount The amount of tokens to freeze
-    function freezePartialTokens(address userAddress, uint256 amount)
+    function freezePartialTokens(
+        address userAddress,
+        uint256 amount
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -266,7 +297,10 @@ contract ATKStableCoinImplementation is
     /// @notice Unfreezes a partial amount of tokens for an address
     /// @param userAddress The address to unfreeze tokens for
     /// @param amount The amount of tokens to unfreeze
-    function unfreezePartialTokens(address userAddress, uint256 amount)
+    function unfreezePartialTokens(
+        address userAddress,
+        uint256 amount
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -277,7 +311,10 @@ contract ATKStableCoinImplementation is
     /// @notice Freezes or unfreezes multiple addresses in a batch
     /// @param userAddresses Array of addresses to freeze or unfreeze
     /// @param freeze Array of booleans indicating freeze (true) or unfreeze (false) for each address
-    function batchSetAddressFrozen(address[] calldata userAddresses, bool[] calldata freeze)
+    function batchSetAddressFrozen(
+        address[] calldata userAddresses,
+        bool[] calldata freeze
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -288,7 +325,10 @@ contract ATKStableCoinImplementation is
     /// @notice Freezes partial tokens for multiple addresses in a batch
     /// @param userAddresses Array of addresses to freeze tokens for
     /// @param amounts Array of amounts to freeze for each address
-    function batchFreezePartialTokens(address[] calldata userAddresses, uint256[] calldata amounts)
+    function batchFreezePartialTokens(
+        address[] calldata userAddresses,
+        uint256[] calldata amounts
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -299,7 +339,10 @@ contract ATKStableCoinImplementation is
     /// @notice Unfreezes partial tokens for multiple addresses in a batch
     /// @param userAddresses Array of addresses to unfreeze tokens for
     /// @param amounts Array of amounts to unfreeze for each address
-    function batchUnfreezePartialTokens(address[] calldata userAddresses, uint256[] calldata amounts)
+    function batchUnfreezePartialTokens(
+        address[] calldata userAddresses,
+        uint256[] calldata amounts
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -312,7 +355,11 @@ contract ATKStableCoinImplementation is
     /// @param to The address to transfer tokens to
     /// @param amount The amount of tokens to transfer
     /// @return bool indicating success of the transfer
-    function forcedTransfer(address from, address to, uint256 amount)
+    function forcedTransfer(
+        address from,
+        address to,
+        uint256 amount
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -325,7 +372,11 @@ contract ATKStableCoinImplementation is
     /// @param fromList Array of addresses to transfer tokens from
     /// @param toList Array of addresses to transfer tokens to
     /// @param amounts Array of amounts to transfer
-    function batchForcedTransfer(address[] calldata fromList, address[] calldata toList, uint256[] calldata amounts)
+    function batchForcedTransfer(
+        address[] calldata fromList,
+        address[] calldata toList,
+        uint256[] calldata amounts
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -336,7 +387,10 @@ contract ATKStableCoinImplementation is
     /// @notice Recovers all tokens from a lost wallet and transfers them to a new wallet
     /// @param lostWallet The address of the lost wallet
     /// @param newWallet The address of the new wallet to transfer tokens to
-    function forcedRecoverTokens(address lostWallet, address newWallet)
+    function forcedRecoverTokens(
+        address lostWallet,
+        address newWallet
+    )
         external
         override
         onlyAccessManagerRole(ATKAssetRoles.CUSTODIAN_ROLE)
@@ -405,7 +459,10 @@ contract ATKStableCoinImplementation is
     /// @param to The address that will receive the minted tokens
     /// @param amount The amount of tokens to be minted
     /// @inheritdoc SMARTHooks
-    function _beforeMint(address to, uint256 amount)
+    function _beforeMint(
+        address to,
+        uint256 amount
+    )
         internal
         virtual
         override(SMARTCollateralUpgradeable, SMARTCustodianUpgradeable, SMARTUpgradeable, SMARTHooks)
@@ -421,7 +478,11 @@ contract ATKStableCoinImplementation is
     /// @param to The address tokens are transferred to
     /// @param amount The amount of tokens being transferred
     /// @inheritdoc SMARTHooks
-    function _beforeTransfer(address from, address to, uint256 amount)
+    function _beforeTransfer(
+        address from,
+        address to,
+        uint256 amount
+    )
         internal
         virtual
         override(SMARTCustodianUpgradeable, SMARTUpgradeable, SMARTHooks)
@@ -435,7 +496,10 @@ contract ATKStableCoinImplementation is
     /// @param from The address tokens are burned from
     /// @param amount The amount of tokens to be burned
     /// @inheritdoc SMARTHooks
-    function _beforeBurn(address from, uint256 amount)
+    function _beforeBurn(
+        address from,
+        uint256 amount
+    )
         internal
         virtual
         override(SMARTCustodianUpgradeable, SMARTHooks)
@@ -460,7 +524,11 @@ contract ATKStableCoinImplementation is
     /// @param to The address tokens were transferred to
     /// @param amount The amount of tokens that were transferred
     /// @inheritdoc SMARTHooks
-    function _afterTransfer(address from, address to, uint256 amount)
+    function _afterTransfer(
+        address from,
+        address to,
+        uint256 amount
+    )
         internal
         virtual
         override(SMARTUpgradeable, SMARTHooks)
@@ -484,7 +552,10 @@ contract ATKStableCoinImplementation is
     /// @param lostWallet The address of the wallet that lost access
     /// @param newWallet The address that received the recovered tokens
     /// @inheritdoc SMARTHooks
-    function _afterRecoverTokens(address lostWallet, address newWallet)
+    function _afterRecoverTokens(
+        address lostWallet,
+        address newWallet
+    )
         internal
         virtual
         override(SMARTCustodianUpgradeable, SMARTHooks)
@@ -501,7 +572,11 @@ contract ATKStableCoinImplementation is
      * @param to The address tokens are transferred to
      * @param value The amount of tokens being transferred
      */
-    function _update(address from, address to, uint256 value)
+    function _update(
+        address from,
+        address to,
+        uint256 value
+    )
         internal
         virtual
         override(SMARTPausableUpgradeable, SMARTUpgradeable, ERC20Upgradeable)
@@ -554,7 +629,10 @@ contract ATKStableCoinImplementation is
     ///      the redeemable extension was removed. It simply chains custodian validations.
     /// @param owner The address whose tokens are being redeemed.
     /// @param amount The amount of tokens requested for redemption.
-    function _beforeRedeem(address owner, uint256 amount)
+    function _beforeRedeem(
+        address owner,
+        uint256 amount
+    )
         internal
         virtual
         override(SMARTCustodianUpgradeable, SMARTHooks)
