@@ -55,6 +55,9 @@ function RouteComponent() {
             <DetailGrid
               key={module.complianceModule.typeId}
               title={t(`modules.${module.complianceModule.typeId}.title`)}
+              description={t(
+                `modules.${module.complianceModule.typeId}.description`
+              )}
             >
               <ExpressionView
                 expressionWithGroups={expression.map((node) => ({
@@ -78,6 +81,9 @@ function RouteComponent() {
             <DetailGrid
               key={module.complianceModule.typeId}
               title={t(`modules.${module.complianceModule.typeId}.title`)}
+              description={t(
+                `modules.${module.complianceModule.typeId}.description`
+              )}
             >
               <DetailGridItem
                 label={t(
@@ -114,6 +120,9 @@ function RouteComponent() {
             <DetailGrid
               key={module.complianceModule.typeId}
               title={t(`modules.${module.complianceModule.typeId}.title`)}
+              description={t(
+                `modules.${module.complianceModule.typeId}.description`
+              )}
             >
               {countryNames.join(", ")}
             </DetailGrid>
