@@ -20,7 +20,7 @@ export const redeem = async (
 
   const tokenAmount = toBaseUnits(amount, asset.decimals);
   const transactionHash = await withDecodedRevertReason(() =>
-    redeemableContract.write.redeem([tokenAmount])
+    redeemableContract.write.redeemFor([actor.address, tokenAmount])
   );
 
   await waitForSuccess(transactionHash);

@@ -78,7 +78,6 @@ describe("Token Factories", () => {
           "COLLATERAL",
           "CUSTODIAN",
           "PAUSABLE",
-          "REDEEMABLE",
         ],
         tokenImplementsERC3643: false,
         tokenImplementsSMART: true,

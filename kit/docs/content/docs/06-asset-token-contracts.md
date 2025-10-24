@@ -434,7 +434,7 @@ graph TB
             
             PegMaintenance[Peg Maintenance<br/>Price Stability<br/>• Price oracle integration<br/>• Stability mechanisms<br/>• Deviation monitoring]
             
-            MintingBurning[Minting & Burning<br/>Supply Control<br/>• Collateral-backed minting<br/>• Redemption burning<br/>• Supply adjustments]
+            MintingBurning[Minting & Burning<br/>Supply Control<br/>• Collateral-backed minting<br/>• Administrative burning<br/>• Supply adjustments]
             
             ReserveManagement[Reserve Management<br/>Treasury Operations<br/>• Reserve allocation<br/>• Liquidity management<br/>• Risk management]
         end
@@ -443,8 +443,6 @@ graph TB
             CoreExtensions[Core Extensions<br/>Basic Operations<br/>• SMARTPausableUpgradeable<br/>• SMARTBurnableUpgradeable<br/>• SMARTCustodianUpgradeable]
             
             CollateralExtensions[Collateral Extensions<br/>Backing Features<br/>• SMARTCollateralUpgradeable<br/>• Backing verification<br/>• Reserve requirements]
-            
-            RedemptionExtensions[Redemption Extensions<br/>Burning Controls<br/>• SMARTRedeemableUpgradeable<br/>• User redemption rights<br/>• Collateral recovery]
         end
         
         subgraph "Stability Mechanisms"
@@ -471,7 +469,6 @@ graph TB
     
     %% Extension relationships
     CoreExtensions --> CollateralExtensions
-    CollateralExtensions --> RedemptionExtensions
     
     %% Stability mechanisms
     OracleIntegration --> StabilityPool
@@ -644,7 +641,7 @@ All asset tokens share a common framework of extensions that provide operational
 | **SMARTYieldUpgradeable** | ✅ | ❌ | ❌ | ❌ | ❌ | Dividend/interest distribution |
 | **SMARTVotingUpgradeable** | ❌ | ✅ | ✅ | ❌ | ❌ | Governance participation |
 | **SMARTCollateralUpgradeable** | ✅ | ❌ | ❌ | ✅ | ✅ | Asset backing |
-| **SMARTRedeemableUpgradeable** | ✅ | ❌ | ❌ | ✅ | ✅ | User redemption |
+| **SMARTRedeemableUpgradeable** | ✅ | ❌ | ❌ | ❌ | ❌ | User redemption |
 | **SMARTHistoricalBalancesUpgradeable** | ✅ | ❌ | ❌ | ❌ | ❌ | Balance snapshots |
 | **SMARTCappedUpgradeable** | ✅ | ❌ | ❌ | ❌ | ❌ | Supply limits |
 

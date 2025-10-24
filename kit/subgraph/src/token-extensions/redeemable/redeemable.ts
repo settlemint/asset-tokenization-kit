@@ -21,11 +21,11 @@ export function handleRedeemed(event: Redeemed): void {
   // Update the yield schedule
   updateYield(token);
 
-  // Burn the redeemed amount
+  // Burn the redeemed amount from the token holder
   handleBurn(
     eventEntry,
     token,
-    event.params.sender,
+    event.params.owner,
     event.params.amount,
     event.block.timestamp
   );

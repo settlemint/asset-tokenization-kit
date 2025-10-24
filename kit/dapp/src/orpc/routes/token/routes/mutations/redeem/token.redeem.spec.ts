@@ -9,6 +9,7 @@ import { getOrpcClient, type OrpcClient } from "@test/fixtures/orpc-client";
 import { createToken } from "@test/fixtures/token";
 import {
   DEFAULT_ADMIN,
+  DEFAULT_INVESTOR,
   DEFAULT_PINCODE,
   getUserData,
   signInWithUser,
@@ -26,12 +27,14 @@ describe(
   () => {
     let depositToken: Awaited<ReturnType<typeof createToken>>;
     let adminClient: OrpcClient;
+    let investorClient: OrpcClient;
     let adminUserData: Awaited<ReturnType<typeof getUserData>>;
 
     beforeAll(async () => {
       const headers = await signInWithUser(DEFAULT_ADMIN);
       adminClient = getOrpcClient(headers);
       adminUserData = await getUserData(DEFAULT_ADMIN);
+      investorClient = getOrpcClient(await signInWithUser(DEFAULT_INVESTOR));
 
       // Deposit token to use as denomination asset
       depositToken = await createToken(
@@ -137,6 +140,25 @@ describe(
 
       await increaseAnvilTimeForDate(bond.bond?.maturityDate);
 
+      await expect(
+        investorClient.token.redeem(
+          {
+            contract: bond.id,
+            owner: adminUserData.wallet,
+            amount: 1n * 10n ** 18n,
+            walletVerification: {
+              secretVerificationCode: DEFAULT_PINCODE,
+              verificationType: "PINCODE",
+            },
+          },
+          {
+            context: {
+              skipLoggingFor: [CUSTOM_ERROR_CODES.PORTAL_ERROR],
+            },
+          }
+        )
+      ).rejects.toThrow("Delegated redemption requires custodian role");
+
       const actionsBeforeRedeem = await adminClient.token.actions({
         tokenAddress: bond.id,
       });
@@ -214,7 +236,7 @@ describe(
             },
           }
         )
-      ).rejects.toThrow("InvalidRedemptionAmount");
+      ).rejects.toThrow("Nothing to redeem");
     });
   }
 );
