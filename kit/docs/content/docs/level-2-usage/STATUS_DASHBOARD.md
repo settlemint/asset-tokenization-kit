@@ -183,9 +183,9 @@ description: Execution checklist tracking every usage runbook deliverable
 
 ## Asset Workflows
 
-- [ ] `05-workflows/bonds/issuance.md` (reference `kit/docs/content/docs/21-bond-workflows-user-stories.md`)
-- [ ] `05-workflows/bonds/maturity.md`
-- [ ] `05-workflows/bonds/redemption.md`
+- [x] `05-workflows/bonds/issuance.md` (sources: `kit/dapp/src/components/asset-designer/asset-specific-details/bond.tsx`, `kit/dapp/src/orpc/routes/token/routes/mutations/create/token.create.ts`, `kit/contracts/contracts/assets/bond/ATKBondImplementation.sol`)
+- [x] `05-workflows/bonds/maturity.md`
+- [x] `05-workflows/bonds/redemption.md`
 - [ ] `05-workflows/equity/share-issuance.md` (reference `kit/docs/content/docs/22-equity-workflows-user-stories.md`)
 - [ ] `05-workflows/equity/voting.md`
 - [ ] `05-workflows/equity/dividends.md`

@@ -25,9 +25,9 @@ description: End-to-end operational playbooks for each ATK asset class
 
 ## Roadmap
 
-- [ ] `bonds/issuance.md`
-- [ ] `bonds/maturity.md`
-- [ ] `bonds/redemption.md`
+- [x] `bonds/issuance.md`
+- [x] `bonds/maturity.md`
+- [x] `bonds/redemption.md`
 - [ ] `equity/share-issuance.md`
 - [ ] `equity/voting.md`
 - [ ] `equity/dividends.md`
@@ -45,3 +45,4 @@ description: End-to-end operational playbooks for each ATK asset class
 - Cross-reference Level 1 asset overviews for business context and compliance expectations.
 - Highlight prerequisites (roles, compliance modules, integrations) at the top of each workflow.
 - Include contingency procedures (pause, freeze, emergency transfer) within each asset guide.
+- Bond workflows are production-ready; use them as the template when drafting equity, fund, stablecoin, and deposit runbooks.
