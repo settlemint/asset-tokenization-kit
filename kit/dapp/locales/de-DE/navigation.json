@@ -25,7 +25,6 @@
   "userManagement": "Benutzerverwaltung",
   "entityManagement": "Entitäten",
   "settings": {
-    "noAvailable": "Für Ihre Rolle sind keine Plattformeinstellungen verfügbar.",
     "assetTypes": {
       "title": "Vermögensarten",
       "description": "Konfigurieren und aktivieren Sie verschiedene Arten von Vermögenswerten, die auf der Plattform verfügbar sind. Sobald aktiviert, können Vermögensarten nicht deaktiviert werden.",

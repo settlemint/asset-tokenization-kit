@@ -21,7 +21,7 @@ describe("Token redeemable extension", () => {
         redeemable_not: null,
       },
     });
-    expect(response.tokens.length).toBe(3);
+    expect(response.tokens.length).toBe(1);
     expect(response.tokens).toEqual([
       {
         name: "Euro Bonds",
@@ -29,22 +29,6 @@ describe("Token redeemable extension", () => {
         redeemable: {
           redeemedAmount: "24",
           redeemedAmountExact: "24000000000000000000",
-        },
-      },
-      {
-        name: "Paused Stablecoin",
-        type: "stablecoin",
-        redeemable: {
-          redeemedAmount: "0",
-          redeemedAmountExact: "0",
-        },
-      },
-      {
-        name: "Tether",
-        type: "stablecoin",
-        redeemable: {
-          redeemedAmount: "0",
-          redeemedAmountExact: "0",
         },
       },
     ]);

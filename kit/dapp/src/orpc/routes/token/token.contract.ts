@@ -42,6 +42,7 @@ import { statsVolumeContract } from "@/orpc/routes/token/routes/stats/volume.con
 import { statsWalletDistributionContract } from "@/orpc/routes/token/routes/stats/wallet-distribution.contract";
 import { statsYieldCoverageContract } from "@/orpc/routes/token/routes/stats/yield-coverage.contract";
 import { statsYieldDistributionContract } from "@/orpc/routes/token/routes/stats/yield-distribution.contract";
+import { tokenComplianceContract } from "@/orpc/routes/token/routes/token.compliance.contract";
 
 export const tokenContract = {
   // Mutations
@@ -78,6 +79,7 @@ export const tokenContract = {
   events: tokenEventsContract,
   holder: tokenHolderContract,
   holders: tokenHoldersContract,
+  compliance: tokenComplianceContract,
 
   // Stats
   statsBondStatus: statsBondStatusContract,

@@ -445,7 +445,7 @@ templates:
         - name: FixedYieldSchedule
           file: ../contracts/.generated/artifacts/contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json
       eventHandlers:
-        - event: Redeemed(indexed address,indexed uint256)
+        - event: Redeemed(indexed address,indexed address,indexed uint256)
           handler: handleRedeemed
       file: ./src/token-extensions/redeemable/redeemable.ts
   - kind: ethereum

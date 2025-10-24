@@ -25,7 +25,6 @@
   "userManagement": "Users",
   "entityManagement": "Entities",
   "settings": {
-    "noAvailable": "No platform settings are available for your role.",
     "assetTypes": {
       "title": "Asset Types",
       "description": "Configure and enable different types of assets available on the platform. Once enabled, asset types cannot be disabled.",

@@ -5,6 +5,7 @@ pragma solidity ^0.8.28;
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { ERC20Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
+import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
@@ -61,8 +62,12 @@ contract SMARTTokenUpgradeable is
     SMARTBurnableUpgradeable,
     SMARTRedeemableUpgradeable,
     SMARTHistoricalBalancesUpgradeable,
-    SMARTCappedUpgradeable
+    SMARTCappedUpgradeable,
+    ReentrancyGuardUpgradeable
 {
+    error UnauthorizedRedeemer(address caller, address owner);
+    error InvalidRedemptionAmount();
+
     // Role constants
     /// @notice Role identifier for administrators who can update general token settings like name, symbol, and the
     /// OnchainID contract address.
@@ -159,6 +164,7 @@ contract SMARTTokenUpgradeable is
         __SMARTCollateral_init(collateralProofTopic_); // Initializes collateral features
         __SMARTHistoricalBalances_init(); // Initializes historical balance tracking
         __SMARTCapped_init(cap_); // Initializes capped token features
+        __ReentrancyGuard_init();
     }
 
     // --- ISMART Implementation ---
@@ -214,6 +220,17 @@ contract SMARTTokenUpgradeable is
         onlyAccessManagerRole(MINTER_ROLE)
     {
         _smart_batchMint(_toList, _amounts);
+    }
+
+    /// @notice Redeems `amount` of tokens from `owner`.
+    /// @dev Authorization policy: only the owner may redeem on their behalf.
+    function redeemFor(address owner, uint256 amount) external override nonReentrant returns (bool success) {
+        address caller = _msgSender();
+        if (caller != owner) revert UnauthorizedRedeemer(caller, owner);
+        if (amount == 0) revert InvalidRedemptionAmount();
+
+        _smart_redeemFor(owner, amount);
+        return true;
     }
 
     /// @notice Transfers tokens from the caller to a recipient.

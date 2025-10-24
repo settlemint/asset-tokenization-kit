@@ -462,7 +462,7 @@ contract ATKBondTest is AbstractATKAssetTest {
 
         // User1 redeems their bonds
         vm.prank(user1);
-        bond.redeem(user1Bonds);
+        bond.redeemFor(user1, user1Bonds);
 
         // Calculate new required reserve after redemption
         uint256 remainingBonds = initialSupply - user1Bonds;
@@ -522,7 +522,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         // User1 redeems their bonds
         vm.startPrank(user1);
         uint256 expectedDenominationAssetAmount = user1Bonds * faceValue / (10 ** DECIMALS);
-        bond.redeem(user1Bonds);
+        bond.redeemFor(user1, user1Bonds);
 
         // Verify redemption
         assertEq(bond.balanceOf(user1), 0);
@@ -542,7 +542,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         vm.startPrank(user1);
         uint256 currentTime = block.timestamp;
         vm.expectRevert(abi.encodeWithSelector(IATKBond.BondNotYetMatured.selector, currentTime, maturityDate));
-        bond.redeem(redeemAmount);
+        bond.redeemFor(user1, redeemAmount);
         vm.stopPrank();
 
         // Verify balance unchanged after failed redemption

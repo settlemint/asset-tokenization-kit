@@ -21,7 +21,7 @@ export const EXPRESSION_COLORS = {
  * @returns Tailwind CSS classes for the expression type
  */
 export function getExpressionColor(nodeType: ExpressionType) {
-  return EXPRESSION_COLORS[nodeType];
+  return EXPRESSION_COLORS[nodeType] ?? EXPRESSION_COLORS.PARENTHESES;
 }
 
 /**

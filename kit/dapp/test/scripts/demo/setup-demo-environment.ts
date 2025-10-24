@@ -61,6 +61,22 @@ const issuer = await getUserData(ISSUER);
 // Setup system
 const system = await bootstrapSystem(adminClient);
 
+const countryAllowListModule =
+  system.complianceModuleRegistry.complianceModules.find(
+    (m) => m.typeId === "CountryAllowListComplianceModule"
+  );
+const smartIdentityVerificationModule =
+  system.complianceModuleRegistry.complianceModules.find(
+    (m) => m.typeId === "SMARTIdentityVerificationComplianceModule"
+  );
+const tokenSupplyLimitModule =
+  system.complianceModuleRegistry.complianceModules.find(
+    (m) => m.typeId === "TokenSupplyLimitComplianceModule"
+  );
+const topics = await adminClient.system.claimTopics.topicList({});
+const amlTopic = topics.find((t) => t.name === "antiMoneyLaundering");
+const kycTopic = topics.find((t) => t.name === "knowYourCustomer");
+
 logger.info("Bootstrapping system");
 await Promise.all([
   bootstrapTokenFactories(adminClient),
@@ -84,7 +100,7 @@ await Promise.all([
     ]);
   })(),
   setupDefaultIssuerRoles(adminClient, ISSUER),
-  setDefaultSystemSettings(adminClient, "EUR"),
+  setDefaultSystemSettings(adminClient, "USD"),
   createAndRegisterUserIdentities(adminClient, [JAPANESE_INVESTOR], "JP", true),
 ]);
 
@@ -124,22 +140,6 @@ for (const depositToCreate of DEPOSITS) {
     denominationToken = token;
   }
 }
-
-const countryAllowListModule =
-  system.complianceModuleRegistry.complianceModules.find(
-    (m) => m.typeId === "CountryAllowListComplianceModule"
-  );
-const smartIdentityVerificationModule =
-  system.complianceModuleRegistry.complianceModules.find(
-    (m) => m.typeId === "SMARTIdentityVerificationComplianceModule"
-  );
-const tokenSupplyLimitModule =
-  system.complianceModuleRegistry.complianceModules.find(
-    (m) => m.typeId === "TokenSupplyLimitComplianceModule"
-  );
-const topics = await adminClient.system.claimTopics.topicList({});
-const amlTopic = topics.find((t) => t.name === "antiMoneyLaundering");
-const kycTopic = topics.find((t) => t.name === "knowYourCustomer");
 
 for (const bondToCreate of BONDS) {
   if (!denominationToken) {
@@ -292,23 +292,9 @@ for (const stableCoinToCreate of STABLECOINS) {
 
 function getInitialModulePairs(assetToCreate: DemoAsset) {
   const { compliance } = assetToCreate;
-  if (!compliance) {
-    return [];
-  }
   const initialModulePairs: Parameters<
     typeof createToken
   >[1]["initialModulePairs"] = [];
-  if (
-    countryAllowListModule &&
-    Array.isArray(compliance.allowedCountries) &&
-    compliance.allowedCountries.length > 0
-  ) {
-    initialModulePairs.push({
-      typeId: "CountryAllowListComplianceModule",
-      module: countryAllowListModule.module,
-      values: compliance.allowedCountries,
-    });
-  }
   if (smartIdentityVerificationModule && amlTopic && kycTopic) {
     initialModulePairs.push({
       typeId: "SMARTIdentityVerificationComplianceModule",
@@ -329,6 +315,22 @@ function getInitialModulePairs(assetToCreate: DemoAsset) {
       ],
     });
   }
+  if (!compliance) {
+    return initialModulePairs;
+  }
+
+  if (
+    countryAllowListModule &&
+    Array.isArray(compliance.allowedCountries) &&
+    compliance.allowedCountries.length > 0
+  ) {
+    initialModulePairs.push({
+      typeId: "CountryAllowListComplianceModule",
+      module: countryAllowListModule.module,
+      values: compliance.allowedCountries,
+    });
+  }
+
   if (tokenSupplyLimitModule && compliance.tokenSupplyLimit) {
     initialModulePairs.push({
       typeId: "TokenSupplyLimitComplianceModule",

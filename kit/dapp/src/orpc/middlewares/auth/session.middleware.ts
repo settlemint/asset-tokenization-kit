@@ -1,4 +1,4 @@
-import { auth, type Session, type SessionUser } from "@/lib/auth";
+import { auth, type SessionUser } from "@/lib/auth";
 import type { Context } from "@/orpc/context/context";
 import { baseRouter } from "@/orpc/procedures/base.router";
 
@@ -37,7 +37,7 @@ import { baseRouter } from "@/orpc/procedures/base.router";
  * @see {@link @/lib/auth/auth} - Authentication system
  */
 export const sessionMiddleware = baseRouter.middleware<
-  Required<Pick<Context, "auth">>,
+  Partial<Pick<Context, "auth">>,
   unknown
 >(async ({ context, next }) => {
   if (context.auth) {
@@ -67,11 +67,18 @@ export const sessionMiddleware = baseRouter.middleware<
   const session = await auth.api.getSession({
     headers,
   });
+  // Only populate auth context when a valid session exists
+  if (!session) {
+    return next({
+      context: {},
+    });
+  }
+
   return next({
     context: {
       auth: {
-        user: session?.user as SessionUser,
-        session: session as Session,
+        user: session.user as SessionUser,
+        session: session,
       },
     },
   });

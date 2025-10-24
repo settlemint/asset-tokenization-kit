@@ -84,18 +84,7 @@ export function NavSettings() {
   ].filter((item) => item.enabled);
 
   if (settingsItems.length === 0) {
-    return (
-      <SidebarGroup>
-        <SidebarGroupLabel>{t("platformSettings")}</SidebarGroupLabel>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <span className="px-2 py-1 text-sm text-muted-foreground">
-              {t("settings.noAvailable")}
-            </span>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarGroup>
-    );
+    return null;
   }
 
   return (
