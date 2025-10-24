@@ -62,10 +62,6 @@ Confirm these items so the wizard flow completes without rework:
 - Query `orpc.token.statsBondStatus` to confirm coverage metrics and ensure `coveredPercentage ≥ 100%` once the treasury wallet funds the denomination asset (`kit/dapp/src/orpc/routes/token/routes/stats/bond-status.ts:11`).
 - Review portal audit logs for the `TokenCreated` event and subsequent mint transactions; ERC-20 transfers emit during minting (`kit/contracts/contracts/assets/bond/ATKBondImplementation.sol:511`).
 
-## SLA
-
-- Complete the wizard, approvals, and deployment within **30 minutes**.
-- Finalize initial investor allocations and reconciliation within **1 hour** of deployment.
 
 ## References
 

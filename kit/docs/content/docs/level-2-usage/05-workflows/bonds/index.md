@@ -10,6 +10,14 @@ description: End-to-end operations for ATK bond instruments
 
 This section outlines how operators manage the full lifecycle of ATK bond instruments—from issuance and compliance setup to maturity execution and redemption closure. Each workflow provides step-by-step runbooks, code references, and operational SLAs to ensure regulated bond operations run smoothly and on schedule.
 
+## End-to-End Flow
+
+- **Issuer onboarding locks identity and roles.** Platform admins provision the issuer organisation, grant `token:create` and treasury permissions, and anchor the issuer OnchainID with trusted claims so `ATKBondImplementation.initialize` accepts the identity registry (`kit/contracts/contracts/assets/bond/ATKBondImplementation.sol:74`).
+- **Denomination liquidity is primed.** Treasury operators deploy or select the reserve-backed stablecoin that represents the bond face value and pre-fund it according to the allocation plan (`kit/dapp/src/components/asset-designer/asset-designer-wizard/asset-specific-details/bond.tsx:34`).
+- **Asset Designer captures the term sheet.** Asset managers step through the wizard to encode coupon, maturity, supply cap, and compliance modules, resulting in a deployed bond contract tied to the denomination asset (`kit/dapp/src/orpc/routes/token/routes/mutations/create/token.create.ts`).
+- **Primary issuance distributes positions.** Operations mint to investors through the bond dashboard, delivering allocations and publishing transaction hashes for audit while compliance monitors module enforcement via `orpc.token.read` and `orpc.token.statsBondStatus`.
+- **Maturity and redemption settle obligations.** Custodians confirm denomination coverage, execute `token.mature`, and run the redemption playbook so outstanding supply is burned, collateral is released, and investor ledgers are reconciled (`kit/dapp/src/orpc/routes/token/routes/mutations/mature/token.mature.ts`, `kit/dapp/src/orpc/routes/token/routes/mutations/redeem/token.redeem.ts`).
+
 
 ## Lifecycle Map
 
@@ -27,21 +35,4 @@ Follow the documents in sequence: issuance establishes the instrument, maturity 
 - `maturity.md` — Governance prerequisites, coverage enforcement, pause/unpause procedures, and maturity transaction execution.
 - `redemption.md` — Investor communications, self-service vs custodian-led redemptions, reconciliation tooling, and lifecycle closure.
 
-Use the guides together with:
 
-- Level 2 quickstart for environment provisioning (`../00-quickstart/first-token-10min.md`).
-- Level 2 compliance modules reference (`../../04-compliance-config/compliance-modules.md`, once available) to confirm rule sets applied during issuance.
-- Troubleshooting runbooks for transaction or compliance errors (`../../08-troubleshooting/transaction-issues.md` planned).
-
-## Roadmap
-
-- [x] `issuance.md` — Create bond tokens, configure terms, and distribute allocations.
-- [x] `maturity.md` — Track approaching maturity, notify investors, and prepare settlement funds.
-- [x] `redemption.md` — Execute redemption, reconcile payments, and close out positions.
-
-## Delivery Notes
-
-- Align terminology with bond market conventions (coupon, face value, ISIN).
-- Reference contract functions in `kit/contracts/contracts/assets/bond/` for verification steps.
-- Highlight the enforcement of denomination asset coverage prior to maturity and redemption.
-- Use SLA expectations for maturity execution and redemption exception handling to drive operational readiness.
