@@ -59,14 +59,24 @@ function RouteComponent() {
                 `modules.${module.complianceModule.typeId}.description`
               )}
             >
-              <ExpressionView
-                expressionWithGroups={expression.map((node) => ({
-                  nodeType: ExpressionTypeEnum[node.nodeType],
-                  value: node.topicScheme
-                    ? getTopicId(node.topicScheme?.name as ATKTopic)
-                    : 0n,
-                }))}
-              />
+              <DetailGridItem
+                label={t(
+                  `modules.${module.complianceModule.typeId}.helper.title`
+                )}
+                type="text"
+                value={t(
+                  `modules.${module.complianceModule.typeId}.helper.intro`
+                )}
+              >
+                <ExpressionView
+                  expressionWithGroups={expression.map((node) => ({
+                    nodeType: ExpressionTypeEnum[node.nodeType],
+                    value: node.topicScheme
+                      ? getTopicId(node.topicScheme?.name as ATKTopic)
+                      : 0n,
+                  }))}
+                />
+              </DetailGridItem>
             </DetailGrid>
           );
         }
