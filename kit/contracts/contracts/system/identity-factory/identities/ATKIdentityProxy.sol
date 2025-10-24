@@ -35,11 +35,7 @@ contract ATKIdentityProxy is AbstractATKSystemProxy {
     /// @param initialManagementKey The address to be set as the first management key for this identity.
     /// @param claimAuthorizationContracts Array of addresses implementing IClaimAuthorizer to register as claim
     /// authorizers.
-    constructor(
-        address systemAddress,
-        address initialManagementKey,
-        address[] memory claimAuthorizationContracts
-    )
+    constructor(address systemAddress, address initialManagementKey, address[] memory claimAuthorizationContracts)
         AbstractATKSystemProxy(systemAddress)
     {
         if (initialManagementKey == address(0)) revert ZeroAddressNotAllowed();

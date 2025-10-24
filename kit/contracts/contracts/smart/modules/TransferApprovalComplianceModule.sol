@@ -151,13 +151,7 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
     /// @param _value The amount of tokens being transferred
     /// @param _params ABI-encoded Config containing the compliance configuration
     /// @custom:throws ComplianceCheckFailed when the transfer lacks required approval or exemption
-    function canTransfer(
-        address _token,
-        address _from,
-        address _to,
-        uint256 _value,
-        bytes calldata _params
-    )
+    function canTransfer(address _token, address _from, address _to, uint256 _value, bytes calldata _params)
         external
         view
         override
@@ -212,13 +206,7 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
     /// @param _to The address to which tokens were transferred
     /// @param _value The amount of tokens transferred
     /// @param _params ABI-encoded Config containing the compliance configuration
-    function transferred(
-        address _token,
-        address _from,
-        address _to,
-        uint256 _value,
-        bytes calldata _params
-    )
+    function transferred(address _token, address _from, address _to, uint256 _value, bytes calldata _params)
         external
         override
         onlyTokenOrCompliance(_token)
@@ -308,14 +296,7 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
     /// @param _toIdentity The identity address to which tokens will be transferred
     /// @param _value The amount of tokens to approve for transfer
     /// @custom:throws ComplianceCheckFailed when the caller is not an authorized approval authority
-    function approveTransfer(
-        address _token,
-        address _fromIdentity,
-        address _toIdentity,
-        uint256 _value
-    )
-        external
-    {
+    function approveTransfer(address _token, address _fromIdentity, address _toIdentity, uint256 _value) external {
         // Get the module configuration from the token
         bytes memory params = _getModuleParameters(_token);
         Config memory config = abi.decode(params, (Config));
@@ -355,14 +336,7 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
     /// @param _fromIdentity The identity address from which tokens were to be transferred
     /// @param _toIdentity The identity address to which tokens were to be transferred
     /// @param _value The amount of tokens for which to revoke approval
-    function revokeApproval(
-        address _token,
-        address _fromIdentity,
-        address _toIdentity,
-        uint256 _value
-    )
-        external
-    {
+    function revokeApproval(address _token, address _fromIdentity, address _toIdentity, uint256 _value) external {
         // Get the caller's identity address
         address callerIdentity = _getIdentityAddress(_token, _msgSender());
         if (callerIdentity == address(0)) {
@@ -389,12 +363,7 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
     /// @param _toIdentity The identity address to which tokens would be transferred
     /// @param _value The amount of tokens
     /// @return approval The approval record containing expiry, used status, and approver identity
-    function getApproval(
-        address _token,
-        address _fromIdentity,
-        address _toIdentity,
-        uint256 _value
-    )
+    function getApproval(address _token, address _fromIdentity, address _toIdentity, uint256 _value)
         external
         view
         returns (ApprovalRecord memory approval)
@@ -445,11 +414,7 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
     /// @param _wallet The wallet address to check
     /// @param exemptionExpression The ExpressionNode array defining exemption requirements
     /// @return True if the wallet qualifies for exemption
-    function _qualifiesForExemption(
-        address _token,
-        address _wallet,
-        ExpressionNode[] memory exemptionExpression
-    )
+    function _qualifiesForExemption(address _token, address _wallet, ExpressionNode[] memory exemptionExpression)
         private
         view
         returns (bool)

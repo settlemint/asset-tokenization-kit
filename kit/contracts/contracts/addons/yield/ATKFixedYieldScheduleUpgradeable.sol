@@ -149,10 +149,7 @@ contract ATKFixedYieldScheduleUpgradeable is
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
-    function withdrawDenominationAsset(
-        address to,
-        uint256 amount
-    )
+    function withdrawDenominationAsset(address to, uint256 amount)
         external
         override
         nonReentrant

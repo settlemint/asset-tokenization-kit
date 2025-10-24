@@ -168,10 +168,7 @@ abstract contract _SMARTHistoricalBalancesLogic is _SMARTExtension, ISMARTHistor
     /// @param delta The positive change in value to be added to the latest checkpoint value.
     /// @return previousValue The value stored in the checkpoint *before* this update.
     /// @return newValue The value stored in the checkpoint *after* this update.
-    function _writeCheckpointAdd(
-        Checkpoints.Trace208 storage store,
-        uint208 delta
-    )
+    function _writeCheckpointAdd(Checkpoints.Trace208 storage store, uint208 delta)
         private
         returns (uint208 previousValue, uint208 newValue)
     {
@@ -187,10 +184,7 @@ abstract contract _SMARTHistoricalBalancesLogic is _SMARTExtension, ISMARTHistor
     /// @param delta The positive change in value to be subtracted from the latest checkpoint value.
     /// @return previousValue The value before this update.
     /// @return newValue The value after this update.
-    function _writeCheckpointSubtract(
-        Checkpoints.Trace208 storage store,
-        uint208 delta
-    )
+    function _writeCheckpointSubtract(Checkpoints.Trace208 storage store, uint208 delta)
         private
         returns (uint208 previousValue, uint208 newValue)
     {

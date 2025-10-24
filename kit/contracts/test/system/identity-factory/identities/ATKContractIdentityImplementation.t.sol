@@ -90,25 +90,14 @@ contract FailingClaimAuthorizer is IClaimAuthorizer, ERC165 {
 contract MockClaimIssuer is ERC165 {
     mapping(bytes32 => bool) public validClaims;
 
-    function setClaimValid(
-        address identity,
-        uint256 topic,
-        bytes memory signature,
-        bytes memory data,
-        bool valid
-    )
+    function setClaimValid(address identity, uint256 topic, bytes memory signature, bytes memory data, bool valid)
         external
     {
         bytes32 claimHash = keccak256(abi.encode(identity, topic, signature, data));
         validClaims[claimHash] = valid;
     }
 
-    function isClaimValid(
-        IIdentity identity,
-        uint256 topic,
-        bytes calldata signature,
-        bytes calldata data
-    )
+    function isClaimValid(IIdentity identity, uint256 topic, bytes calldata signature, bytes calldata data)
         external
         view
         returns (bool)
@@ -269,17 +258,7 @@ contract MockIdentityReceiver is IIdentity, ERC165 {
         return false;
     }
 
-    function isClaimValid(
-        IIdentity,
-        uint256,
-        bytes calldata,
-        bytes calldata
-    )
-        external
-        pure
-        override
-        returns (bool)
-    {
+    function isClaimValid(IIdentity, uint256, bytes calldata, bytes calldata) external pure override returns (bool) {
         return false;
     }
 

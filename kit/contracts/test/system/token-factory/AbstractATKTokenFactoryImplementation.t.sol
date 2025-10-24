@@ -272,22 +272,14 @@ contract TestableTokenFactoryWithSystem is AbstractATKTokenFactoryImplementation
     }
 
     // Expose _deployContractIdentity for testing
-    function exposedDeployContractIdentity(
-        address contractAddress,
-        string memory description,
-        uint16 country
-    )
+    function exposedDeployContractIdentity(address contractAddress, string memory description, uint16 country)
         external
         returns (address)
     {
         return _deployContractIdentity(contractAddress, description, country);
     }
 
-    function exposedCalculateSalt(
-        string memory name,
-        string memory symbol,
-        uint8 decimals
-    )
+    function exposedCalculateSalt(string memory name, string memory symbol, uint8 decimals)
         external
         view
         returns (bytes32)
@@ -344,11 +336,7 @@ contract TestableTokenFactoryWithMockSystem is AbstractATKTokenFactoryImplementa
     bytes32 public constant override typeId = keccak256("TestableTokenFactoryWithMockSystem");
     MockSystemWithoutIssuer public mockSystem;
 
-    constructor(
-        address forwarder,
-        address identityFactory_,
-        address identityRegistry_
-    )
+    constructor(address forwarder, address identityFactory_, address identityRegistry_)
         AbstractATKTokenFactoryImplementation(forwarder)
     {
         mockSystem = new MockSystemWithoutIssuer(identityFactory_, identityRegistry_);
@@ -358,11 +346,7 @@ contract TestableTokenFactoryWithMockSystem is AbstractATKTokenFactoryImplementa
         return true;
     }
 
-    function exposedDeployContractIdentity(
-        address contractAddress,
-        string memory description,
-        uint16 country
-    )
+    function exposedDeployContractIdentity(address contractAddress, string memory description, uint16 country)
         external
         returns (address)
     {

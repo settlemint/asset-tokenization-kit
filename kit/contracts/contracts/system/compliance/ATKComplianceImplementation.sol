@@ -188,10 +188,7 @@ contract ATKComplianceImplementation is
     /// @notice Adds a global compliance module that applies to all tokens
     /// @param module Address of the compliance module to add
     /// @param params ABI-encoded parameters for the module
-    function addGlobalComplianceModule(
-        address module,
-        bytes calldata params
-    )
+    function addGlobalComplianceModule(address module, bytes calldata params)
         external
         onlySystemRoles2(ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE, ATKSystemRoles.SYSTEM_MODULE_ROLE)
     {
@@ -242,10 +239,7 @@ contract ATKComplianceImplementation is
     /// @notice Updates the parameters for an existing global compliance module
     /// @param module Address of the compliance module to update
     /// @param params New ABI-encoded parameters for the module
-    function setParametersForGlobalComplianceModule(
-        address module,
-        bytes calldata params
-    )
+    function setParametersForGlobalComplianceModule(address module, bytes calldata params)
         external
         onlySystemRole(ATKPeopleRoles.COMPLIANCE_MANAGER_ROLE)
     {
@@ -282,12 +276,7 @@ contract ATKComplianceImplementation is
     /// @param _from Address tokens were transferred from
     /// @param _to Address tokens were transferred to
     /// @param _amount Amount of tokens transferred
-    function transferred(
-        address _token,
-        address _from,
-        address _to,
-        uint256 _amount
-    )
+    function transferred(address _token, address _from, address _to, uint256 _amount)
         external
         virtual
         override
@@ -400,12 +389,7 @@ contract ATKComplianceImplementation is
     /// @param _to Address tokens would be transferred to
     /// @param _amount Amount of tokens to transfer
     /// @return True if the transfer is compliant, false otherwise
-    function canTransfer(
-        address _token,
-        address _from,
-        address _to,
-        uint256 _amount
-    )
+    function canTransfer(address _token, address _from, address _to, uint256 _amount)
         external
         view
         virtual

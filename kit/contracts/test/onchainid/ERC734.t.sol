@@ -23,11 +23,7 @@ contract MockERC734 is ERC734 {
         return super.approve(_id, _approve);
     }
 
-    function execute(
-        address _to,
-        uint256 _value,
-        bytes calldata _data
-    )
+    function execute(address _to, uint256 _value, bytes calldata _data)
         public
         payable
         override

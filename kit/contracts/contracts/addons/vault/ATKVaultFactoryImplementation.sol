@@ -63,12 +63,7 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
     /// @return saltInputData The salt input data for CREATE2
     /// @return constructorArgs The constructor arguments for the vault
     /// @return vaultBytecode The bytecode for the vault contract
-    function _getVaultDeploymentData(
-        address[] memory signers,
-        uint256 required,
-        address initialOwner,
-        bytes32 salt
-    )
+    function _getVaultDeploymentData(address[] memory signers, uint256 required, address initialOwner, bytes32 salt)
         private
         view
         returns (bytes memory saltInputData, bytes memory constructorArgs, bytes memory vaultBytecode)
@@ -148,12 +143,7 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
     /// @param initialOwner Address that will have admin role
     /// @param salt Salt value for deterministic address generation
     /// @return predictedAddress The predicted address of the vault
-    function predictVaultAddress(
-        address[] calldata signers,
-        uint256 required,
-        address initialOwner,
-        bytes32 salt
-    )
+    function predictVaultAddress(address[] calldata signers, uint256 required, address initialOwner, bytes32 salt)
         external
         view
         override(IATKVaultFactory)

@@ -57,13 +57,7 @@ contract MockedComplianceModule is AbstractComplianceModule {
      * @inheritdoc AbstractComplianceModule
      * @dev Tracks the call count and stores parameters in the unified history.
      */
-    function transferred(
-        address _token,
-        address _from,
-        address _to,
-        uint256 _value,
-        bytes calldata _params
-    )
+    function transferred(address _token, address _from, address _to, uint256 _value, bytes calldata _params)
         external
         virtual
         override
@@ -80,12 +74,7 @@ contract MockedComplianceModule is AbstractComplianceModule {
      * @inheritdoc AbstractComplianceModule
      * @dev Tracks the call count and stores parameters in the unified history.
      */
-    function destroyed(
-        address _token,
-        address _from,
-        uint256 _value,
-        bytes calldata _params
-    )
+    function destroyed(address _token, address _from, uint256 _value, bytes calldata _params)
         external
         virtual
         override

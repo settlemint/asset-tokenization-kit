@@ -23,14 +23,7 @@ abstract contract AbstractIdentityComplianceModule is AbstractAddressListComplia
     /// @param _user The user address to check
     /// @return hasIdentity True if the user has a registered identity
     /// @return identity The user's identity contract interface
-    function _getIdentity(
-        address _token,
-        address _user
-    )
-        internal
-        view
-        returns (bool hasIdentity, IIdentity identity)
-    {
+    function _getIdentity(address _token, address _user) internal view returns (bool hasIdentity, IIdentity identity) {
         ISMARTIdentityRegistry identityRegistry = ISMART(_token).identityRegistry();
         hasIdentity = identityRegistry.contains(_user);
         if (!hasIdentity) {

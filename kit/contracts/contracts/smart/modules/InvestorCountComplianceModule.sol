@@ -277,15 +277,7 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
     /// @param _country The country code to check
     /// @param _global Whether to check global tracking
     /// @return The current number of investors from the specified country
-    function getCountryInvestorCount(
-        address _token,
-        uint16 _country,
-        bool _global
-    )
-        external
-        view
-        returns (uint256)
-    {
+    function getCountryInvestorCount(address _token, uint16 _country, bool _global) external view returns (uint256) {
         if (_global) {
             return globalInvestorTracker.countryInvestorCounts[_country];
         } else {
@@ -315,11 +307,7 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
     /// @param _investor The investor address to check
     /// @param config The compliance configuration
     /// @return True if already tracked as investor
-    function _isExistingInvestor(
-        address _token,
-        address _investor,
-        InvestorCountConfig memory config
-    )
+    function _isExistingInvestor(address _token, address _investor, InvestorCountConfig memory config)
         private
         view
         returns (bool)
@@ -374,11 +362,7 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
     /// @param _investor The investor address
     /// @param config The compliance configuration
     /// @return The stored country code for the investor
-    function _getStoredInvestorCountry(
-        address _token,
-        address _investor,
-        InvestorCountConfig memory config
-    )
+    function _getStoredInvestorCountry(address _token, address _investor, InvestorCountConfig memory config)
         private
         view
         returns (uint16)
@@ -437,10 +421,7 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
     /// @param _token The token address
     /// @param config The compliance configuration
     /// @return The current investor count
-    function _getCurrentInvestorCount(
-        address _token,
-        InvestorCountConfig memory config
-    )
+    function _getCurrentInvestorCount(address _token, InvestorCountConfig memory config)
         private
         view
         returns (uint256)
@@ -458,11 +439,7 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
     /// @param _country The country code
     /// @param config The compliance configuration
     /// @return The current investor count for the country
-    function _getCountryInvestorCount(
-        address _token,
-        uint16 _country,
-        InvestorCountConfig memory config
-    )
+    function _getCountryInvestorCount(address _token, uint16 _country, InvestorCountConfig memory config)
         private
         view
         returns (uint256)
@@ -480,11 +457,7 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
     /// @param _country The country code
     /// @param config The compliance configuration
     /// @return The investor limit for the country (0 = no limit)
-    function _getCountryLimit(
-        address _token,
-        uint16 _country,
-        InvestorCountConfig memory config
-    )
+    function _getCountryLimit(address _token, uint16 _country, InvestorCountConfig memory config)
         private
         view
         returns (uint256)
@@ -511,12 +484,7 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
     /// @dev Sets all country limits from config to avoid lazy initialization inconsistencies
     /// @param tracker The storage reference to the tracker to initialize
     /// @param config The compliance configuration containing country codes and limits
-    function _initializeCountryLimits(
-        InvestorTracker storage tracker,
-        InvestorCountConfig memory config
-    )
-        private
-    {
+    function _initializeCountryLimits(InvestorTracker storage tracker, InvestorCountConfig memory config) private {
         // Only initialize if we have country limits configured and they haven't been set yet
         if (config.countryCodes.length > 0) {
             // Check if already initialized by testing the first country code
@@ -552,11 +520,7 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
     /// @param _investor The investor address to check
     /// @param topicFilter The ExpressionNode array defining requirements
     /// @return True if the investor satisfies the filter (only investors with identities can satisfy filters)
-    function _satisfiesTopicFilter(
-        address _token,
-        address _investor,
-        ExpressionNode[] memory topicFilter
-    )
+    function _satisfiesTopicFilter(address _token, address _investor, ExpressionNode[] memory topicFilter)
         private
         view
         returns (bool)

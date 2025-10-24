@@ -19,6 +19,11 @@ interface RadioOption {
   footer?: ReactNode;
   icon?: LucideIcon;
   className?: string;
+  disabled?: boolean;
+  disabledLabel?: string;
+  isRequired?: boolean;
+  isSelected?: boolean;
+  onToggle?: (selected: boolean) => void;
 }
 
 export function RadioField({
@@ -53,52 +58,110 @@ export function RadioField({
 
   const currentValue = useStore(field.store, (s) => s.value);
 
+  const activeValue =
+    options.find((option) => option.isSelected)?.value ?? currentValue ?? "";
+
+  // Allow callers to override selection behaviour (e.g. toggle cards) while keeping default radio semantics intact.
+  const handleOptionSelect = (option: RadioOption, nextSelected?: boolean) => {
+    const isDisabled = option.disabled ?? false;
+    const isRequired = option.isRequired ?? false;
+
+    if (isDisabled || isRequired) {
+      return;
+    }
+
+    const isCurrentlySelected =
+      option.isSelected ?? activeValue === option.value;
+    const shouldSelect =
+      nextSelected ?? (option.onToggle ? !isCurrentlySelected : true);
+
+    if (option.onToggle) {
+      option.onToggle(shouldSelect);
+      field.handleChange(shouldSelect ? option.value : "");
+      onSelect?.(option.value);
+      return;
+    }
+
+    field.handleChange(option.value);
+    onSelect?.(option.value);
+  };
+
   const renderCardRadio = () => (
     <RadioGroup
-      value={currentValue ?? ""}
+      value={activeValue}
       onValueChange={(value) => {
-        field.handleChange(value);
-        onSelect?.(value);
+        const option = options.find((opt) => opt.value === value);
+        if (!option) {
+          return;
+        }
+        handleOptionSelect(option, true);
       }}
       className={cn(getGridClasses(), className)}
     >
-      {options.map((option) => (
-        <div key={option.value} className="relative h-full">
-          <RadioGroupItem
-            value={option.value}
-            id={`${field.name}-${option.value}`}
-            className="sr-only"
-          />
-          <Label
-            htmlFor={`${field.name}-${option.value}`}
-            className={cn(
-              "flex cursor-pointer select-none rounded-lg border border-input bg-background hover:bg-accent/50 hover:text-accent-foreground transition-all h-full",
-              currentValue === option.value &&
-                "border-primary bg-primary/5 text-primary"
-            )}
-          >
-            <div className="flex flex-col h-full p-4">
-              {/* Header with icon and title */}
-              <div className="flex items-center gap-2 mb-2">
-                {option.icon && <option.icon className="h-5 w-5" />}
-                <div className="text-base font-semibold capitalize">
-                  {option.label}
-                </div>
-              </div>
+      {options.map((option) => {
+        const isDisabled = option.disabled ?? false;
+        const isRequired = option.isRequired ?? false;
+        const isInteractionDisabled = isDisabled || isRequired;
+        const isSelected = option.isSelected ?? activeValue === option.value;
 
-              {/* Description - takes up available space */}
-              {option.description && (
-                <div className="text-sm text-muted-foreground mb-4 flex-1">
-                  {option.description}
-                </div>
+        return (
+          <div key={option.value} className="relative h-full">
+            <RadioGroupItem
+              value={option.value}
+              id={`${field.name}-${option.value}`}
+              className="sr-only"
+              disabled={isInteractionDisabled}
+            />
+            <Label
+              htmlFor={`${field.name}-${option.value}`}
+              onClick={(event) => {
+                event.preventDefault();
+                handleOptionSelect(option);
+              }}
+              onKeyDown={(event) => {
+                if (event.key === " " || event.key === "Enter") {
+                  event.preventDefault();
+                  handleOptionSelect(option);
+                }
+              }}
+              tabIndex={isInteractionDisabled ? -1 : 0}
+              aria-disabled={isInteractionDisabled}
+              className={cn(
+                "flex select-none rounded-lg border border-input bg-background transition-all h-full",
+                isInteractionDisabled
+                  ? "cursor-not-allowed opacity-60"
+                  : "cursor-pointer hover:bg-accent/50 hover:text-accent-foreground",
+                isSelected && "border-primary bg-primary/5 text-primary",
+                option.className
               )}
+            >
+              <div className="flex flex-col h-full p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  {option.icon && <option.icon className="h-5 w-5" />}
+                  <div className="text-base font-semibold capitalize">
+                    {option.label}
+                  </div>
+                  {isInteractionDisabled && option.disabledLabel && (
+                    <span className="text-xs text-muted-foreground">
+                      {option.disabledLabel}
+                    </span>
+                  )}
+                </div>
 
-              {/* Footer - always at bottom */}
-              {option.footer && <div className="mt-auto">{option.footer}</div>}
-            </div>
-          </Label>
-        </div>
-      ))}
+                {option.description && (
+                  <div className="text-sm text-muted-foreground mb-4 flex-1">
+                    {option.description}
+                  </div>
+                )}
+
+                {option.footer && (
+                  <div className="mt-auto">{option.footer}</div>
+                )}
+              </div>
+            </Label>
+          </div>
+        );
+      })}
     </RadioGroup>
   );
 

@@ -45,12 +45,7 @@ contract MockTokenFactory is IATKTokenFactory, IWithTypeIdentifier {
         return true;
     }
 
-    function predictAccessManagerAddress(
-        string memory,
-        string memory,
-        uint8,
-        address
-    )
+    function predictAccessManagerAddress(string memory, string memory, uint8, address)
         external
         pure
         override
@@ -94,12 +89,7 @@ contract MockInvalidTokenFactory is IATKTokenFactory {
         return true;
     }
 
-    function predictAccessManagerAddress(
-        string memory,
-        string memory,
-        uint8,
-        address
-    )
+    function predictAccessManagerAddress(string memory, string memory, uint8, address)
         external
         pure
         override

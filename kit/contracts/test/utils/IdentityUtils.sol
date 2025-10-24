@@ -65,13 +65,7 @@ contract IdentityUtils is Test {
      * @param claimTopics The claim topics the issuer is trusted for.
      * @return The address of the newly created and registered issuer identity contract.
      */
-    function createIssuerIdentity(
-        address issuerWalletAddress_,
-        uint256[] memory claimTopics
-    )
-        public
-        returns (address)
-    {
+    function createIssuerIdentity(address issuerWalletAddress_, uint256[] memory claimTopics) public returns (address) {
         // Create the identity using the factory
         address issuerIdentityAddr = createIdentity(issuerWalletAddress_);
 

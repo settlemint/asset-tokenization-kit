@@ -49,10 +49,7 @@ interface IATKIdentityFactory is IERC165 {
     ///                        These keys grant administrative control over the identity contract according to
     /// ERC734/ERC725 standards.
     /// @return identityContract The address of the newly deployed identity contract.
-    function createIdentity(
-        address _wallet,
-        bytes32[] calldata _managementKeys
-    )
+    function createIdentity(address _wallet, bytes32[] calldata _managementKeys)
         external
         returns (address identityContract);
 
@@ -88,10 +85,7 @@ interface IATKIdentityFactory is IERC165 {
     /// @param _initialManager The address that would be (or was) set as the initial manager during the identity's
     /// creation.
     /// @return predictedAddress The pre-computed or actual deployment address of the wallet's identity contract.
-    function calculateWalletIdentityAddress(
-        address _walletAddress,
-        address _initialManager
-    )
+    function calculateWalletIdentityAddress(address _walletAddress, address _initialManager)
         external
         view
         returns (address predictedAddress);

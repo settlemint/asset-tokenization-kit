@@ -239,12 +239,7 @@ contract TokenUtils is Test {
      * @param userAddress The target user address.
      * @param freeze True to freeze, false to unfreeze.
      */
-    function setAddressFrozenAsExecutor(
-        address tokenAddress,
-        address executor,
-        address userAddress,
-        bool freeze
-    )
+    function setAddressFrozenAsExecutor(address tokenAddress, address executor, address userAddress, bool freeze)
         public
     {
         vm.startPrank(executor);
@@ -259,14 +254,7 @@ contract TokenUtils is Test {
      * @param userAddress The target user address.
      * @param amount The amount to freeze.
      */
-    function freezePartialTokens(
-        address tokenAddress,
-        address owner,
-        address userAddress,
-        uint256 amount
-    )
-        public
-    {
+    function freezePartialTokens(address tokenAddress, address owner, address userAddress, uint256 amount) public {
         // Call the executor version, passing the owner as the executor
         freezePartialTokensAsExecutor(tokenAddress, owner, userAddress, amount);
     }
@@ -278,12 +266,7 @@ contract TokenUtils is Test {
      * @param userAddress The target user address.
      * @param amount The amount to freeze.
      */
-    function freezePartialTokensAsExecutor(
-        address tokenAddress,
-        address executor,
-        address userAddress,
-        uint256 amount
-    )
+    function freezePartialTokensAsExecutor(address tokenAddress, address executor, address userAddress, uint256 amount)
         public
     {
         vm.startPrank(executor);
@@ -298,14 +281,7 @@ contract TokenUtils is Test {
      * @param userAddress The target user address.
      * @param amount The amount to unfreeze.
      */
-    function unfreezePartialTokens(
-        address tokenAddress,
-        address owner,
-        address userAddress,
-        uint256 amount
-    )
-        public
-    {
+    function unfreezePartialTokens(address tokenAddress, address owner, address userAddress, uint256 amount) public {
         // Call the executor version, passing the owner as the executor
         unfreezePartialTokensAsExecutor(tokenAddress, owner, userAddress, amount);
     }
@@ -338,15 +314,7 @@ contract TokenUtils is Test {
      * @param to The recipient address.
      * @param amount The amount to transfer.
      */
-    function forcedTransfer(
-        address tokenAddress,
-        address owner,
-        address from,
-        address to,
-        uint256 amount
-    )
-        public
-    {
+    function forcedTransfer(address tokenAddress, address owner, address from, address to, uint256 amount) public {
         // Call the executor version, passing the owner as the executor
         forcedTransferAsExecutor(tokenAddress, owner, from, to, amount);
     }
@@ -359,13 +327,7 @@ contract TokenUtils is Test {
      * @param to The recipient address.
      * @param amount The amount to transfer.
      */
-    function forcedTransferAsExecutor(
-        address tokenAddress,
-        address executor,
-        address from,
-        address to,
-        uint256 amount
-    )
+    function forcedTransferAsExecutor(address tokenAddress, address executor, address from, address to, uint256 amount)
         public
     {
         vm.startPrank(executor);

@@ -62,9 +62,8 @@ contract ClaimAuthorizationExtension {
         }
 
         // Check if contract implements IClaimAuthorization
-        try IERC165(authorizationContract).supportsInterface(type(IClaimAuthorizer).interfaceId) returns (
-            bool supported
-        ) {
+        try IERC165(authorizationContract)
+            .supportsInterface(type(IClaimAuthorizer).interfaceId) returns (bool supported) {
             if (!supported) {
                 revert InvalidAuthorizationContract(authorizationContract);
             }
@@ -130,9 +129,8 @@ contract ClaimAuthorizationExtension {
         for (uint256 i = 0; i < contractsLength;) {
             address authContract = _claimAuthorizationContracts[i];
 
-            try IClaimAuthorizer(authContract).isAuthorizedToAddClaim(issuer, topic, address(this)) returns (
-                bool authorized
-            ) {
+            try IClaimAuthorizer(authContract)
+                .isAuthorizedToAddClaim(issuer, topic, address(this)) returns (bool authorized) {
                 if (authorized) {
                     return true;
                 }
@@ -172,9 +170,8 @@ contract ClaimAuthorizationExtension {
         try IERC165(issuer).supportsInterface(type(IERC734).interfaceId) returns (bool supportsERC734) {
             if (supportsERC734) {
                 bytes32 callerKeyHash = keccak256(abi.encode(caller));
-                try IERC734(issuer).keyHasPurpose(callerKeyHash, ERC734KeyPurposes.ACTION_KEY) returns (
-                    bool hasClaimKey
-                ) {
+                try IERC734(issuer)
+                    .keyHasPurpose(callerKeyHash, ERC734KeyPurposes.ACTION_KEY) returns (bool hasClaimKey) {
                     if (hasClaimKey) {
                         return true;
                     }
@@ -182,9 +179,8 @@ contract ClaimAuthorizationExtension {
                     // If the call fails, continue to check management key
                 }
 
-                try IERC734(issuer).keyHasPurpose(callerKeyHash, ERC734KeyPurposes.MANAGEMENT_KEY) returns (
-                    bool hasManagementKey
-                ) {
+                try IERC734(issuer)
+                    .keyHasPurpose(callerKeyHash, ERC734KeyPurposes.MANAGEMENT_KEY) returns (bool hasManagementKey) {
                     return hasManagementKey;
                 } catch {
                     // If the call fails, treat as unauthorized

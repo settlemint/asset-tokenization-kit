@@ -486,10 +486,11 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
     /// @dev Helper function to create QII exemption expression
     function _createQIIExemptionExpression() internal view returns (ExpressionNode[] memory) {
         ExpressionNode[] memory expression = new ExpressionNode[](1);
-        expression[0] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: qiiTopicId // Use the topic ID created in setUp
-        });
+        expression[0] =
+            ExpressionNode({
+                nodeType: ExpressionType.TOPIC,
+                value: qiiTopicId // Use the topic ID created in setUp
+            });
         return expression;
     }
 

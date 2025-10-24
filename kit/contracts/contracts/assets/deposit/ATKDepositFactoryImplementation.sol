@@ -41,11 +41,7 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
     /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param tokenImplementation_ The initial address of the token implementation contract.
     /// @param initialAdmin The address to be granted the DEFAULT_ADMIN_ROLE and DEPLOYER_ROLE.
-    function initialize(
-        address systemAddress,
-        address tokenImplementation_,
-        address initialAdmin
-    )
+    function initialize(address systemAddress, address tokenImplementation_, address initialAdmin)
         public
         override(AbstractATKTokenFactoryImplementation, IATKTokenFactory)
         initializer

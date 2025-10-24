@@ -213,6 +213,7 @@ export function AddonsManagement() {
                     onToggle={(checked) => {
                       handleToggleAddon(addonType, checked);
                     }}
+                    form={form as ReturnType<typeof useAppForm>}
                   />
                 );
               })}

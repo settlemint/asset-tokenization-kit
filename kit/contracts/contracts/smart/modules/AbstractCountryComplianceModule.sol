@@ -89,14 +89,7 @@ abstract contract AbstractCountryComplianceModule is AbstractComplianceModule {
     /// @return country The user's registered country code (as a `uint16` ISO 3166-1 numeric value). Returns `0` if the
     /// user has no identity
     ///                 or if the country code is not set or is explicitly zero in the registry.
-    function _getUserCountry(
-        address _token,
-        address _user
-    )
-        internal
-        view
-        returns (bool hasIdentity, uint16 country)
-    {
+    function _getUserCountry(address _token, address _user) internal view returns (bool hasIdentity, uint16 country) {
         // Obtain the ISMARTIdentityRegistry instance associated with the specific ISMART token.
         ISMARTIdentityRegistry identityRegistry = ISMART(_token).identityRegistry();
 
