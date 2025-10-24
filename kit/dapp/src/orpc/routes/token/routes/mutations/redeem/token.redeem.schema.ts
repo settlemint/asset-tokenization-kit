@@ -4,9 +4,9 @@ import { ethereumAddress } from "@atk/zod/ethereum-address";
 import * as z from "zod";
 
 export const TokenRedeemInputSchema = MutationInputSchemaWithContract.extend({
-  owner: ethereumAddress.describe(
-    "Token holder address to redeem for (defaults to caller)"
-  ),
+  owner: ethereumAddress
+    .optional()
+    .describe("Token holder address to redeem for (defaults to caller)"),
   amount: apiBigInt.describe("Amount of tokens to redeem").optional(),
   redeemAll: z
     .boolean()
