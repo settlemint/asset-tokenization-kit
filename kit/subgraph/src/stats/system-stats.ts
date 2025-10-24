@@ -7,10 +7,7 @@ import {
 import { fetchSystem } from "../system/fetch/system";
 import { fetchBond } from "../token-assets/bond/fetch/bond";
 import { fetchToken } from "../token/fetch/token";
-import {
-  getTokenBasePrice,
-  getTokenSystemAddress,
-} from "../token/utils/token-utils";
+import { getTokenSystemAddress } from "../token/utils/token-utils";
 
 export class SystemAssetActivity {
   static TRANSFER: string = "transfer";
@@ -78,12 +75,12 @@ export function updateSystemStatsForSupplyChange(
     const denominationAsset = fetchToken(
       Address.fromBytes(bond.denominationAsset)
     );
-    const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
-    valueDelta = supplyDelta.times(bond.faceValue).times(basePrice);
+    valueDelta = supplyDelta
+      .times(bond.faceValue)
+      .times(denominationAsset.basePrice);
   } else {
-    const basePrice = getTokenBasePrice(token.basePriceClaim);
     // Calculate value delta = supplyDelta * basePrice
-    valueDelta = supplyDelta.times(basePrice);
+    valueDelta = supplyDelta.times(token.basePrice);
   }
 
   if (valueDelta.equals(BigDecimal.zero())) {

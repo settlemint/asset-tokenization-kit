@@ -119,22 +119,12 @@ describe("TokenStats", () => {
           token {
             symbol
             decimals
-            basePriceClaim {
-              values {
-                key
-                value
-              }
-            }
+            basePrice
             totalSupply
             bond {
               faceValue
               denominationAsset {
-                basePriceClaim {
-                  values {
-                    key
-                    value
-                  }
-                }
+                basePrice
               }
             }
           }

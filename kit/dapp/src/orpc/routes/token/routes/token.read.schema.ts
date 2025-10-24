@@ -13,6 +13,7 @@ import { complianceTypeId } from "@atk/zod/compliance";
 import { decimals } from "@atk/zod/decimals";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { ethereumCompositeId } from "@atk/zod/ethereum-composite-id";
+import { fiatCurrency } from "@atk/zod/fiat-currency";
 import { timestamp } from "@atk/zod/timestamp";
 import { from } from "dnum";
 import * as z from "zod";
@@ -42,14 +43,18 @@ import * as z from "zod";
  * Schema for the raw token data from GraphQL
  * This matches what comes from TheGraph with totalSupply as string
  */
-export const RawTokenSchema = z.object({
+export const TokenSchema = z.object({
   id: ethereumAddress.describe("The token contract address"),
   type: assetType(),
   createdAt: timestamp().describe("The timestamp of the token creation"),
   name: z.string().describe("The name of the token"),
   symbol: z.string().describe("The symbol of the token"),
   decimals: decimals(),
-  totalSupply: z.string().describe("The total supply of the token as string"),
+  basePrice: bigDecimal().describe("The base price of the token"),
+  basePriceCurrencyCode: fiatCurrency()
+    .nullable()
+    .describe("The base price currency code of the token"),
+  totalSupply: bigDecimal().describe("The total supply of the token"),
   extensions: assetExtensionArray().describe("The extensions of the token"),
   implementsERC3643: z
     .boolean()
@@ -284,14 +289,6 @@ export const RawTokenSchema = z.object({
     })
     .nullable()
     .describe("The stats of the token"),
-});
-
-/**
- * Schema for the transformed token data with totalSupply as Dnum
- * This is what the API returns after transformation
- */
-export const TokenSchema = RawTokenSchema.extend({
-  totalSupply: bigDecimal().describe("The total supply of the token"),
 });
 
 /**

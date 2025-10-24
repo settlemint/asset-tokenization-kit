@@ -7,10 +7,7 @@ import {
 import { fetchSystem } from "../system/fetch/system";
 import { fetchBond } from "../token-assets/bond/fetch/bond";
 import { fetchToken } from "../token/fetch/token";
-import {
-  getTokenBasePrice,
-  getTokenSystemAddress,
-} from "../token/utils/token-utils";
+import { getTokenSystemAddress } from "../token/utils/token-utils";
 import { SystemAssetActivity } from "./system-stats";
 
 /**
@@ -40,11 +37,11 @@ export function updateTokenTypeStatsForTokenCreation(token: Token): void {
     const denominationAsset = fetchToken(
       Address.fromBytes(bond.denominationAsset)
     );
-    const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
-    initialValue = token.totalSupply.times(bond.faceValue).times(basePrice);
+    initialValue = token.totalSupply
+      .times(bond.faceValue)
+      .times(denominationAsset.basePrice);
   } else {
-    const basePrice = getTokenBasePrice(token.basePriceClaim);
-    initialValue = token.totalSupply.times(basePrice);
+    initialValue = token.totalSupply.times(token.basePrice);
   }
 
   state.totalValueInBaseCurrency =
@@ -103,11 +100,11 @@ export function updateTokenTypeStatsForSupplyChange(
     const denominationAsset = fetchToken(
       Address.fromBytes(bond.denominationAsset)
     );
-    const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
-    valueDelta = supplyDelta.times(bond.faceValue).times(basePrice);
+    valueDelta = supplyDelta
+      .times(bond.faceValue)
+      .times(denominationAsset.basePrice);
   } else {
-    const basePrice = getTokenBasePrice(token.basePriceClaim);
-    valueDelta = supplyDelta.times(basePrice);
+    valueDelta = supplyDelta.times(token.basePrice);
   }
 
   if (valueDelta.equals(BigDecimal.zero())) {

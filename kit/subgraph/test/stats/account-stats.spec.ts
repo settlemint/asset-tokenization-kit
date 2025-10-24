@@ -127,22 +127,11 @@ describe("AccountStats", () => {
               type
               symbol
               decimals
-              basePriceClaim {
-                id
-                values {
-                  key
-                  value
-                }
-              }
+              basePrice
               bond {
                 faceValue
                 denominationAsset {
-                  basePriceClaim {
-                    values {
-                      key
-                      value
-                    }
-                  }
+                  basePrice
                 }
               }
             }
@@ -436,12 +425,7 @@ describe("AccountStats", () => {
               id
               symbol
               totalSupply
-              basePriceClaim {
-                values {
-                  key
-                  value
-                }
-              }
+              basePrice
               tokenFactory {
                 tokenFactoryRegistry {
                   system {
@@ -505,12 +489,7 @@ describe("AccountStats", () => {
               id
               symbol
               totalSupply
-              basePriceClaim {
-                values {
-                  key
-                  value
-                }
-              }
+              basePrice
               tokenFactory {
                 id
                 name

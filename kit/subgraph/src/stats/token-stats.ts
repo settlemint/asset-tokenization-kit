@@ -7,7 +7,6 @@ import {
 } from "../../generated/schema";
 import { fetchBond } from "../token-assets/bond/fetch/bond";
 import { fetchToken } from "../token/fetch/token";
-import { getTokenBasePrice } from "../token/utils/token-utils";
 import { setBigNumber } from "../utils/bignumber";
 
 /**
@@ -51,17 +50,15 @@ export function updateTokenStatsTotalValueInBaseCurrency(token: Token): void {
     const denominationAsset = fetchToken(
       Address.fromBytes(bond.denominationAsset)
     );
-    const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
     const totalValueInBaseCurrency = token.totalSupply
       .times(bond.faceValue)
-      .times(basePrice);
+      .times(denominationAsset.basePrice);
     state.totalValueInBaseCurrency = totalValueInBaseCurrency;
     state.save();
     return;
   }
 
-  const basePrice = getTokenBasePrice(token.basePriceClaim);
-  const totalValueInBaseCurrency = token.totalSupply.times(basePrice);
+  const totalValueInBaseCurrency = token.totalSupply.times(token.basePrice);
   state.totalValueInBaseCurrency = totalValueInBaseCurrency;
   state.save();
 
@@ -72,10 +69,9 @@ export function updateTokenStatsTotalValueInBaseCurrency(token: Token): void {
     const denominationAsset = fetchToken(
       Address.fromBytes(bonds[i].denominationAsset)
     );
-    const basePrice = getTokenBasePrice(denominationAsset.basePriceClaim);
     const totalValueInBaseCurrency = bondToken.totalSupply
       .times(bonds[i].faceValue)
-      .times(basePrice);
+      .times(denominationAsset.basePrice);
     const bondState = fetchTokenStatsState(Address.fromBytes(bonds[i].id));
     if (totalValueInBaseCurrency.notEqual(bondState.totalValueInBaseCurrency)) {
       bondState.totalValueInBaseCurrency = totalValueInBaseCurrency;

@@ -28,6 +28,8 @@ const READ_TOKEN_QUERY = theGraphGraphql(
       symbol
       decimals
       totalSupply
+      basePrice
+      basePriceCurrencyCode
       extensions
       implementsERC3643
       implementsSMART

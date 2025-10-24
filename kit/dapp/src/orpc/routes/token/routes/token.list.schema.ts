@@ -63,35 +63,6 @@ export const TokenListSchema = z.array(
     complianceModuleConfigs: true,
     accessControl: true,
     userPermissions: true,
-  }).extend({
-    /**
-     * Identity claims associated with the token.
-     *
-     * Claims contain flexible key-value data about the token including:
-     * - basePrice: Pricing information for financial assets
-     * - assetClassification: Asset type and category information
-     * - isin: International Securities Identification Number
-     * - And other domain-specific claims
-     *
-     * The client uses utilities like `parseClaim` to extract specific claim data,
-     * providing better separation of concerns and reusability.
-     */
-    claims: z
-      .array(
-        z.object({
-          id: z.string(),
-          name: z.string(),
-          revoked: z.boolean(),
-          values: z.array(
-            z.object({
-              key: z.string(),
-              value: z.string(),
-            })
-          ),
-        })
-      )
-      .optional()
-      .default([]),
   })
 );
 

@@ -249,9 +249,7 @@ export function handleClaimRemoved(event: ClaimRemoved): void {
   if (isBasePriceClaim(identityClaim)) {
     const token = fetchTokenByIdentity(identity);
     // Get old price before updating claim (should be 0 for new claims)
-    const oldPrice = token
-      ? getTokenBasePrice(token.basePriceClaim)
-      : BigDecimal.zero();
+    const oldPrice = token ? token.basePrice : BigDecimal.zero();
 
     updateBasePrice(identityClaim);
 
@@ -337,9 +335,7 @@ export function handleClaimRevoked(event: ClaimRevoked): void {
       if (isBasePriceClaim(identityClaim)) {
         const token = fetchTokenByIdentity(identity);
         // Get old price before updating claim (should be 0 for new claims)
-        const oldPrice = token
-          ? getTokenBasePrice(token.basePriceClaim)
-          : BigDecimal.zero();
+        const oldPrice = token ? token.basePrice : BigDecimal.zero();
 
         updateBasePrice(identityClaim);
 
