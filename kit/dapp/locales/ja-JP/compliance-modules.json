@@ -1,4 +1,5 @@
 {
+  "noModules": "コンプライアンスルールが見つかりません",
   "modules": {
     "AddressBlockListComplianceModule": {
       "description": "特定のウォレットアドレスがあなたの資産にアクセスするのをブロックします。制裁対象または問題のあるアドレスが参加するのを防ぎます。",
@@ -48,7 +49,10 @@
     "TokenSupplyLimitComplianceModule": {
       "description": "最大トークン供給量の上限を強制します。法的な上限への準拠を支援します。",
       "shortDescription": "最大トークン供給量の上限を強制",
-      "title": "トークン供給上限"
+      "title": "トークン供給上限",
+      "details": {
+        "maxSupplyLimit": "最大供給量の上限"
+      }
     },
     "InvestorCountComplianceModule": {
       "description": "投資家の最大人数を強制します。法的な上限への準拠を支援します。",

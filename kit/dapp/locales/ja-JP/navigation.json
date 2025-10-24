@@ -25,7 +25,6 @@
   "userManagement": "ユーザー管理",
   "entityManagement": "エンティティ",
   "settings": {
-    "noAvailable": "この権限では利用できるプラットフォーム設定がありません。",
     "assetTypes": {
       "title": "資産タイプ",
       "description": "プラットフォームで利用可能な異なるタイプの資産を設定して有効にします。有効にすると、資産タイプは無効にできません。",

@@ -1,4 +1,5 @@
 {
+  "noModules": "لم يتم العثور على قواعد الامتثال",
   "modules": {
     "AddressBlockListComplianceModule": {
       "description": "قم بحظر عناوين المحفظة المحددة من الوصول إلى أصولك. يمنع العناوين المعاقبة أو الإشكالية من المشاركة.",
@@ -48,7 +49,10 @@
     "TokenSupplyLimitComplianceModule": {
       "description": "يفرض حدًا أقصى لإجمالي المعروض من الرموز. يساعد في الامتثال للحدود القانونية.",
       "shortDescription": "يفرض حدًا أقصى لإجمالي المعروض من الرموز",
-      "title": "حد المعروض من الرموز"
+      "title": "حد المعروض من الرموز",
+      "details": {
+        "maxSupplyLimit": "حد المعروض الأقصى"
+      }
     },
     "InvestorCountComplianceModule": {
       "description": "يفرض حدًا أقصى لعدد المستثمرين. يساعد في الامتثال للحدود القانونية.",
