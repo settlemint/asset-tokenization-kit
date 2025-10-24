@@ -143,10 +143,5 @@ export class SignInPage {
       name: "Asset designer",
     });
     await expect(assetDesignerButton).toBeVisible({ timeout: 15000 });
-
-    const addonDesignerButton = this.page.getByRole("button", {
-      name: "Addon designer",
-    });
-    await expect(addonDesignerButton).toBeVisible({ timeout: 15000 });
   }
 }

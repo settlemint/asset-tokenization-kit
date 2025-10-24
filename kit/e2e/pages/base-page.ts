@@ -316,10 +316,10 @@ export class BasePage {
     }
 
     let resolvedSearchInput = searchInput;
-    if ((await resolvedSearchInput.count()) === 0) {
+    if ((await resolvedSearchInput.count()) !== 1) {
       resolvedSearchInput = this.page
         .locator(
-          'input[placeholder="Search for an asset..."], input[placeholder="Search addresses"]'
+          'input[data-slot="command-input"], input[placeholder="Search addresses"], input[placeholder="Search addresses..."]'
         )
         .first();
     }
@@ -329,7 +329,15 @@ export class BasePage {
     await resolvedTrigger.click();
 
     await expect(resolvedDialog).toBeVisible({ timeout: 20000 });
+    const dialogSearchInput = resolvedDialog
+      .locator(
+        'input[data-slot="command-input"], input[placeholder="Search addresses"], input[placeholder="Search addresses..."]'
+      )
+      .first();
 
+    if ((await dialogSearchInput.count()) === 1) {
+      resolvedSearchInput = dialogSearchInput;
+    }
     await resolvedSearchInput.fill("");
     if (searchTerm.length > 0) {
       await resolvedSearchInput.type(searchTerm, { delay: typingDelay });

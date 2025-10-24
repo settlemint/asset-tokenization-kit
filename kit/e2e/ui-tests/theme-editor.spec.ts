@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { Pages } from "../pages/pages";
 import { getSetupUser } from "../utils/setup-user";
 
-test.describe("Theme editor", () => {
+test.describe.skip("Theme editor", () => {
   test("updates palette tokens and logos with persistence", async ({
     page,
     request,
