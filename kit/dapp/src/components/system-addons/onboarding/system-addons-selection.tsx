@@ -297,6 +297,7 @@ export function SystemAddonsSelection() {
                                       : undefined
                                 }
                                 onToggle={handleToggle}
+                                form={form as ReturnType<typeof useAppForm>}
                               />
                             );
                           })}
