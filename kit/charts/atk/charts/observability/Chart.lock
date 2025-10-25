@@ -19,9 +19,9 @@ dependencies:
   version: 6.44.0
 - name: prometheus-node-exporter
   repository: https://prometheus-community.github.io/helm-charts
-  version: 4.48.0
+  version: 4.49.0
 - name: tempo
   repository: https://grafana.github.io/helm-charts
   version: 1.23.3
-digest: sha256:d9c7192a0724c58e7f453c8faecb57e7c1ac63bdc0f407953b22c2340da80353
-generated: "2025-10-24T03:16:47.452357608Z"
+digest: sha256:87623a04be4784627febda0bd7e6efad90e0ad16e1ae385d5f68437194b33f55
+generated: "2025-10-25T00:39:15.854468172Z"
