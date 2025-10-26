@@ -128,7 +128,7 @@
     "@tanstack/react-router": "1.133.28",
     "@tanstack/react-router-devtools": "1.133.28",
     "@tanstack/react-router-ssr-query": "1.133.28",
-    "@tanstack/react-start": "1.133.29",
+    "@tanstack/react-start": "1.133.31",
     "@tanstack/react-store": "0.8.0",
     "@tanstack/react-table": "8.21.3",
     "@tanstack/router-cli": "1.133.29",
