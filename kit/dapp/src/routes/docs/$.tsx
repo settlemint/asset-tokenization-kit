@@ -24,6 +24,7 @@ import {
   useLocation,
 } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
+import DOMPurify from "isomorphic-dompurify";
 import { useBreadcrumb } from "fumadocs-core/breadcrumb";
 import type * as PageTree from "fumadocs-core/page-tree";
 import { createClientLoader } from "fumadocs-mdx/runtime/vite";
@@ -192,7 +193,38 @@ function transformPageTree(tree: PageTree.Folder): PageTree.Folder {
       icon: (
         <span
           dangerouslySetInnerHTML={{
-            __html: item.icon,
+            __html: DOMPurify.sanitize(item.icon, {
+              ALLOWED_TAGS: [
+                "svg",
+                "path",
+                "g",
+                "circle",
+                "rect",
+                "line",
+                "polyline",
+                "polygon",
+              ],
+              ALLOWED_ATTR: [
+                "viewBox",
+                "fill",
+                "stroke",
+                "stroke-width",
+                "d",
+                "cx",
+                "cy",
+                "r",
+                "x",
+                "y",
+                "width",
+                "height",
+                "points",
+                "x1",
+                "y1",
+                "x2",
+                "y2",
+                "class",
+              ],
+            }),
           }}
         />
       ),

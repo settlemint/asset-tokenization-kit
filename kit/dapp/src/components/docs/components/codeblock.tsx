@@ -2,6 +2,7 @@
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 import { mergeRefs } from "@/lib/merge-refs";
+import DOMPurify from "isomorphic-dompurify";
 import { useCopyButton } from "fumadocs-ui/utils/use-copy-button";
 import { Check, Clipboard } from "lucide-react";
 import {
@@ -106,7 +107,38 @@ export function CodeBlock({
             <div
               className="[&_svg]:size-3.5"
               dangerouslySetInnerHTML={{
-                __html: icon,
+                __html: DOMPurify.sanitize(icon, {
+                  ALLOWED_TAGS: [
+                    "svg",
+                    "path",
+                    "g",
+                    "circle",
+                    "rect",
+                    "line",
+                    "polyline",
+                    "polygon",
+                  ],
+                  ALLOWED_ATTR: [
+                    "viewBox",
+                    "fill",
+                    "stroke",
+                    "stroke-width",
+                    "d",
+                    "cx",
+                    "cy",
+                    "r",
+                    "x",
+                    "y",
+                    "width",
+                    "height",
+                    "points",
+                    "x1",
+                    "y1",
+                    "x2",
+                    "y2",
+                    "class",
+                  ],
+                }),
               }}
             />
           ) : (

@@ -35,16 +35,11 @@ export function LLMCopyButton({
     setLoading(true);
 
     try {
-      await navigator.clipboard.write([
-        new ClipboardItem({
-          "text/plain": fetch(markdownUrl).then(async (res) => {
-            const content = await res.text();
-            cache.set(markdownUrl, content);
+      const res = await fetch(markdownUrl);
+      const content = await res.text();
+      cache.set(markdownUrl, content);
 
-            return content;
-          }),
-        }),
-      ]);
+      await navigator.clipboard.writeText(content);
     } finally {
       setLoading(false);
     }
