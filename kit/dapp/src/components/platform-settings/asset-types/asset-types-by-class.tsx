@@ -240,7 +240,7 @@ export function AssetTypesByClass() {
             );
           })}
         </div>
-      </form.AppForm>{" "}
+      </form.AppForm>
     </>
   );
 }

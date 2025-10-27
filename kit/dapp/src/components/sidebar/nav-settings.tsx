@@ -53,48 +53,45 @@ export function NavSettings() {
     return null;
   }
 
-  const settingsItems = [
+  const settingsItems: {
+    name: string;
+    icon: React.ElementType;
+    path: string;
+    disabled?: boolean;
+    disabledMessage?: string;
+  }[] = [
     {
       name: t("settings.assetTypes.title"),
       icon: FileText,
       path: "/platform-settings/asset-types",
-      enabled: true,
-      disabledMessage: t("settings.assetTypes.notAuthorized"),
     },
     /* {
       name: t("settings.compliance.title"),
       icon: Shield,
       path: "/platform-settings/compliance",
-      enabled: true,
       disabledMessage: t("settings.compliance.notAuthorized"),
     },*/
     {
       name: t("settings.addons.title"),
       icon: Puzzle,
       path: "/platform-settings/addons",
-      enabled: true,
-      disabledMessage: t("settings.addons.notAuthorized"),
     },
     {
       name: t("settings.theme.title"),
       icon: Paintbrush,
       path: "/platform-settings/theme",
-      enabled: system.userPermissions?.roles.admin === true,
+      disabled: system.userPermissions?.roles.admin !== true,
       disabledMessage: t("settings.theme.notAuthorized"),
     },
     {
       name: t("settings.claimTopicsIssuers.title"),
       icon: ClipboardCheck,
       path: "/platform-settings/claim-topics-issuers",
-      enabled: true,
-      disabledMessage: t("settings.claimTopicsIssuers.notAuthorized"),
     },
     {
       name: t("settings.permissions.title"),
       icon: Key,
       path: "/platform-settings/permissions",
-      enabled: true,
-      disabledMessage: t("settings.permissions.notAuthorized"),
     },
   ];
 
@@ -115,7 +112,7 @@ export function NavSettings() {
               <SidebarMenuButton
                 asChild
                 isActive={isActive}
-                disabled={!item.enabled}
+                disabled={item.disabled}
               >
                 <Link
                   to={item.path}
@@ -131,7 +128,7 @@ export function NavSettings() {
             </SidebarMenuItem>
           );
 
-          if (item.enabled) {
+          if (!item.disabled || !item.disabledMessage) {
             return button;
           }
 

@@ -323,7 +323,7 @@ export function AddonsManagement() {
               </Card>
             )}
         </div>
-      </form.AppForm>{" "}
+      </form.AppForm>
     </>
   );
 }
