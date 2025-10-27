@@ -78,6 +78,9 @@ The following table lists the configurable parameters of this chart and their de
 |dapp.secretEnv|object|-|Environment variables for DApp runtime configuration (stored as secrets)|
 |dapp.secretEnv.BETTER_AUTH_URL|string|`"https://dapp.k8s.orb.local"`|Base URL for authentication callbacks. Must match ingress hostname.|
 |dapp.secretEnv.SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT|string|`"https://blockscout.k8s.orb.local/"`|Blockscout explorer UI endpoint for blockchain browsing|
+|dapp.secretEnv.SETTLEMINT_MINIO_ACCESS_KEY|string|`"console"`|MinIO access key|
+|dapp.secretEnv.SETTLEMINT_MINIO_ENDPOINT|string|`"http://minio:9000"`|MinIO endpoint|
+|dapp.secretEnv.SETTLEMINT_MINIO_SECRET_KEY|string|`"console123"`|MinIO secret key|
 |erpc|object|-|ERPC Gateway configuration for RPC load balancing and caching|
 |erpc.enabled|bool|`true`|Enable deployment of ERPC gateway|
 |erpc.image|object|-|ERPC container image|
