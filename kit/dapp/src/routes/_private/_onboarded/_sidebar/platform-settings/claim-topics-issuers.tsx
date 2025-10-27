@@ -5,6 +5,7 @@ import { AddTopicDialog } from "@/components/platform-settings/claim-topics/add-
 import { TopicsTable } from "@/components/platform-settings/claim-topics/topics-table";
 import { AddTrustedIssuerSheet } from "@/components/platform-settings/trusted-issuers/add-trusted-issuer-sheet";
 import { TrustedIssuersTable } from "@/components/platform-settings/trusted-issuers/trusted-issuers-table";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,10 +14,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { CLAIM_POLICY_MANAGER_ROLE } from "@/lib/constants/roles";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
+import { Plus, Shield } from "lucide-react";
 import { Suspense, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -30,7 +32,7 @@ export const Route = createFileRoute(
         createI18nBreadcrumbMetadata("platformSettings", {
           href: "/platform-settings/claim-topics-issuers",
         }),
-        createI18nBreadcrumbMetadata("settings.claimTopicsIssuers"),
+        createI18nBreadcrumbMetadata("settings.claimTopicsIssuers.title"),
       ],
     };
   },
@@ -42,10 +44,16 @@ function ClaimTopicsIssuersPage() {
   const [showAddTopicDialog, setShowAddTopicDialog] = useState(false);
   const [showAddIssuerSheet, setShowAddIssuerSheet] = useState(false);
 
+  // Get current user data with roles
   const { data: system } = useSuspenseQuery(
     orpc.system.read.queryOptions({
       input: { id: "default" },
     })
+  );
+
+  const roles = system.userPermissions?.roles;
+  const canManageClaimTopicsIssuers = Boolean(
+    roles?.[CLAIM_POLICY_MANAGER_ROLE.fieldName]
   );
 
   return (
@@ -53,12 +61,20 @@ function ClaimTopicsIssuersPage() {
       <RouterBreadcrumb />
       <div className="mb-8 mt-4">
         <h1 className="text-3xl font-bold">
-          {tNav("settings.claimTopicsIssuers")}
+          {tNav("settings.claimTopicsIssuers.title")}
         </h1>
         <p className="text-muted-foreground mt-2">{t("page.description")}</p>
       </div>
 
       <div className="space-y-6">
+        {!canManageClaimTopicsIssuers && (
+          <Alert variant="destructive">
+            <Shield className="h-4 w-4" />
+            <AlertTitle>
+              {tNav("settings.claimTopicsIssuers.notAuthorized")}
+            </AlertTitle>
+          </Alert>
+        )}
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
