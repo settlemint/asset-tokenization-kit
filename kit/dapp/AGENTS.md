@@ -113,5 +113,6 @@ BASED ON THE CURRENT CHANGES YOU ARE MAKING: `README.md`, `docs/**`,
 
 - Ensure `bun --cwd kit/dapp lint` and `typecheck` remain clean
 - Regenerate route tree and codegen before commits
-- Verify Drizzle schema and migrations remain synchronized, do not make your own migrations, use the drizzle kit commands
+- Verify Drizzle schema and migrations remain synchronized, do not make your own
+  migrations, use the drizzle kit commands
 - Validate default locale translations exist for new keys
