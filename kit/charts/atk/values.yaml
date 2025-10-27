@@ -149,6 +149,9 @@ network:
         cpu: "600m"
         # -- (string) Memory limit for bootstrapper pods
         memory: "256Mi"
+    settings:
+      # -- (int) Number of validator identities to generate (default 4).
+      validators: 1
   # -- (object) Blockchain node configuration (validators and RPC)
   network-nodes:
     # -- (int) Total Besu pod replicas (validators + RPC). Used for resource summaries.
