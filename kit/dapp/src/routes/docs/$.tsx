@@ -3,6 +3,7 @@ import * as AccordionComponents from "@/components/docs/components/accordion";
 import * as BannerComponents from "@/components/docs/components/banner";
 import * as CodeBlockComponents from "@/components/docs/components/codeblock";
 import * as FilesComponents from "@/components/docs/components/files";
+import { Mermaid } from "@/components/docs/components/mermaid";
 import * as StepsComponents from "@/components/docs/components/steps";
 import * as TabsComponents from "@/components/docs/components/tabs";
 import { DocsLayout } from "@/components/docs/docs";
@@ -24,16 +25,47 @@ import {
   notFound,
   useLocation,
 } from "@tanstack/react-router";
-import DOMPurify from "isomorphic-dompurify";
 import { useBreadcrumb } from "fumadocs-core/breadcrumb";
 import type * as PageTree from "fumadocs-core/page-tree";
 import { createClientLoader } from "fumadocs-mdx/runtime/vite";
 import defaultMdxComponents from "fumadocs-ui/mdx";
+import DOMPurify from "isomorphic-dompurify";
 import { Home } from "lucide-react";
-import { Fragment, useMemo } from "react";
+import { Fragment, useMemo, type ReactNode } from "react";
+
+const ICON_ALLOWED_TAGS = [
+  "svg",
+  "path",
+  "g",
+  "circle",
+  "rect",
+  "line",
+  "polyline",
+  "polygon",
+];
+
+const ICON_ALLOWED_ATTRS = [
+  "viewBox",
+  "fill",
+  "stroke",
+  "stroke-width",
+  "d",
+  "cx",
+  "cy",
+  "r",
+  "x",
+  "y",
+  "width",
+  "height",
+  "points",
+  "x1",
+  "y1",
+  "x2",
+  "y2",
+  "class",
+];
 
 type DocsLoaderData = {
-  tree: object;
   path: string;
   slugs: string[];
   title: string;
@@ -45,8 +77,26 @@ type DocsLoaderData = {
 
 export const Route = createFileRoute("/docs/$")({
   component: Page,
+  loader: async ({ params }): Promise<DocsLoaderData> => {
+    const slugs = params._splat?.split("/").filter(Boolean) ?? [];
+    const page = source.getPage(slugs);
+    if (!page) throw notFound();
+
+    const data: DocsLoaderData = {
+      path: page.path,
+      slugs,
+      title: page.data.title,
+      navTitle: page.data.navTitle,
+      description: page.data.description,
+      keywords: page.data.keywords,
+      image: page.data.image,
+    };
+
+    await clientLoader.preload(data.path);
+    return data;
+  },
   head: ({ loaderData }) => {
-    const data = loaderData as DocsLoaderData | undefined;
+    const data = loaderData;
     if (data) {
       return {
         meta: seo({
@@ -60,26 +110,6 @@ export const Route = createFileRoute("/docs/$")({
     return {
       meta: seo({ title: "Documentation" }),
     };
-  },
-  // @ts-expect-error - TanStack Router has difficulty inferring deeply nested generic types with fumadocs
-  loader: async ({ params }) => {
-    const slugs = params._splat?.split("/") ?? [];
-    const page = source.getPage(slugs);
-    if (!page) throw notFound();
-
-    const data = {
-      tree: source.pageTree,
-      path: page.path,
-      slugs,
-      title: page.data.title,
-      navTitle: page.data.navTitle,
-      description: page.data.description,
-      keywords: page.data.keywords,
-      image: page.data.image,
-    };
-
-    await clientLoader.preload(data.path);
-    return data;
   },
 });
 
@@ -147,13 +177,9 @@ function DocsBreadcrumb({ tree }: { tree: PageTree.Root }) {
 const clientLoader = createClientLoader(docs.doc, {
   id: "docs",
   component({ toc, default: MDX }) {
-    const data = Route.useLoaderData() as DocsLoaderData;
-    const tree = useMemo(
-      () => transformPageTree(data.tree as PageTree.Folder),
-      [data.tree]
-    );
+    const data = Route.useLoaderData();
+    const tree = useDocsTree();
 
-    // Use full title for page display
     const pageTitle = data.title;
     const pageDescription = data.description;
 
@@ -163,7 +189,7 @@ const clientLoader = createClientLoader(docs.doc, {
           <DocsBreadcrumb tree={tree} />
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
-              <h1 className="text-3xl font-bold tracking-tight break-words">
+              <h1 className="text-3xl font-bold tracking-tight wrap-break-words">
                 {pageTitle}
               </h1>
               {pageDescription && (
@@ -191,6 +217,7 @@ const clientLoader = createClientLoader(docs.doc, {
               ...CodeBlockComponents,
               ...FilesComponents,
               ...StepsComponents,
+              Mermaid,
             }}
           />
         </DocsBody>
@@ -200,12 +227,9 @@ const clientLoader = createClientLoader(docs.doc, {
 });
 
 function Page() {
-  const data = Route.useLoaderData() as DocsLoaderData;
+  const data = Route.useLoaderData();
   const Content = clientLoader.getComponent(data.path);
-  const tree = useMemo(
-    () => transformPageTree(data.tree as PageTree.Folder),
-    [data.tree]
-  );
+  const tree = useDocsTree();
 
   return (
     <DocsLayout tree={tree}>
@@ -214,86 +238,113 @@ function Page() {
   );
 }
 
-function transformPageTree(tree: PageTree.Folder): PageTree.Folder {
-  function transformItem<T extends PageTree.Item | PageTree.Separator>(
-    item: T
-  ): T {
-    let transformed = { ...item };
+function useDocsTree(): PageTree.Root {
+  // Hydrate nav titles and sanitize icons once to keep server loader serializable
+  return useMemo(() => transformPageTree(getDocsPageTreeRoot()), []);
+}
 
-    // Use navTitle for navigation if available (only for page items with URLs)
-    if (item.type === "page" && "url" in item && item.url) {
-      const slugs = item.url
-        .replace("/docs/", "")
-        .replace(/^\//, "")
-        .split("/")
-        .filter(Boolean);
-      const page = source.getPage(slugs);
-      if (page?.data?.navTitle) {
-        transformed = {
-          ...transformed,
-          name: page.data.navTitle,
-        };
-      }
+function getDocsPageTreeRoot(): PageTree.Root {
+  const tree = source.pageTree;
+  if (isPageTreeRoot(tree)) {
+    return tree;
+  }
+  if (tree && typeof tree === "object") {
+    const localeTrees = Object.values(tree as Record<string, unknown>);
+    const root = localeTrees.find((candidate): candidate is PageTree.Root =>
+      isPageTreeRoot(candidate)
+    );
+    if (root) {
+      return root;
     }
+  }
+  throw new Error("Unable to resolve docs page tree root");
+}
 
-    // Transform icon if it's a string
-    if (typeof item.icon !== "string") return transformed;
+function transformPageTree(root: PageTree.Root): PageTree.Root {
+  const transformNode = (node: PageTree.Node): PageTree.Node => {
+    if (node.type === "folder") {
+      return transformFolder(node);
+    }
+    if (node.type === "page") {
+      return transformPageNode(node);
+    }
+    return transformSeparator(node);
+  };
 
-    return {
-      ...transformed,
-      icon: (
-        <span
-          dangerouslySetInnerHTML={{
-            __html: DOMPurify.sanitize(item.icon, {
-              ALLOWED_TAGS: [
-                "svg",
-                "path",
-                "g",
-                "circle",
-                "rect",
-                "line",
-                "polyline",
-                "polygon",
-              ],
-              ALLOWED_ATTR: [
-                "viewBox",
-                "fill",
-                "stroke",
-                "stroke-width",
-                "d",
-                "cx",
-                "cy",
-                "r",
-                "x",
-                "y",
-                "width",
-                "height",
-                "points",
-                "x1",
-                "y1",
-                "x2",
-                "y2",
-                "class",
-              ],
-            }),
-          }}
-        />
-      ),
-    } as T;
+  return {
+    ...root,
+    children: root.children.map((child) => transformNode(child)),
+    fallback: root.fallback ? transformPageTree(root.fallback) : undefined,
+  };
+}
+
+function transformFolder(folder: PageTree.Folder): PageTree.Folder {
+  return {
+    ...folder,
+    icon:
+      typeof folder.icon === "string" ? renderIcon(folder.icon) : folder.icon,
+    index: folder.index ? transformPageNode(folder.index) : undefined,
+    children: folder.children.map((child) => {
+      if (child.type === "folder") return transformFolder(child);
+      if (child.type === "page") return transformPageNode(child);
+      return transformSeparator(child);
+    }),
+  };
+}
+
+function transformPageNode(item: PageTree.Item): PageTree.Item {
+  let transformed: PageTree.Item = {
+    ...item,
+    icon: typeof item.icon === "string" ? renderIcon(item.icon) : item.icon,
+  };
+
+  if (item.url) {
+    const page = source.getPage(getPageSlugsFromUrl(item.url));
+    if (page?.data?.navTitle) {
+      transformed = {
+        ...transformed,
+        name: page.data.navTitle,
+      };
+    }
   }
 
-  function transformFolder(folder: PageTree.Folder): PageTree.Folder {
-    return {
-      ...folder,
-      index: folder.index ? transformItem(folder.index) : undefined,
-      children: folder.children.map((item) => {
-        if (item.type === "folder") return transformFolder(item);
-        if (item.type === "page") return transformItem(item);
-        if (item.type === "separator") return transformItem(item);
-        return item;
-      }),
-    };
-  }
+  return transformed;
+}
 
-  return transformFolder(tree);
+function transformSeparator(separator: PageTree.Separator): PageTree.Separator {
+  return {
+    ...separator,
+    icon:
+      typeof separator.icon === "string"
+        ? renderIcon(separator.icon)
+        : separator.icon,
+  };
+}
+
+function renderIcon(icon: string): ReactNode {
+  return (
+    <span
+      dangerouslySetInnerHTML={{
+        __html: DOMPurify.sanitize(icon, {
+          ALLOWED_TAGS: ICON_ALLOWED_TAGS,
+          ALLOWED_ATTR: ICON_ALLOWED_ATTRS,
+        }),
+      }}
+    />
+  );
+}
+
+function getPageSlugsFromUrl(url: string): string[] {
+  return url
+    .replace(/^\/?docs\/?/, "")
+    .split("/")
+    .map((slug) => slug.trim())
+    .filter(Boolean);
+}
+
+function isPageTreeRoot(value: unknown): value is PageTree.Root {
+  if (!value || typeof value !== "object") return false;
+  if (!("children" in value)) return false;
+  const children = (value as { children?: unknown }).children;
+  return Array.isArray(children);
 }

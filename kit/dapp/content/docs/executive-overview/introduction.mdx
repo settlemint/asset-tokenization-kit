@@ -11,25 +11,170 @@ tags: [concept, tokenization, blockchain, finance, introduction]
   **[Concept](https://www.thegooddocsproject.dev/template/concept)** template.
 </Callout>
 
-## Overview
+## What asset tokenization actually means
 
-_Content to be added: This page provides a layperson's explanation of asset
-tokenization and its importance._
+Asset tokenization converts ownership rights in real-world assets into digital
+tokens on a blockchain. Think of it like this: instead of paper certificates,
+database entries, or PDF documents representing ownership of a bond, a share of
+equity, or a unit in a fund, you get a digital token that lives on a distributed
+ledger.
 
-## Subsections (planned)
+The token carries the same legal rights as the traditional instrument, but it
+moves instantly across networks, settles in seconds rather than days, and
+enforces compliance rules automatically through code. You're not changing what
+the asset is; you're changing how ownership is recorded, transferred, and
+managed.
 
-### Definition of asset tokenization
+This isn't science fiction. The tokenized real-world asset market reached over
+$50 billion in 2024 and is projected to exceed $500 billion in 2025. Yet that's
+still a rounding error against the $230 trillion global asset pool. The gap
+exists not because the concept doesn't work, but because the infrastructure
+hasn't caught up to institutional requirements.
 
-_To be written_
+## Why businesses should care right now
 
-### Business benefits
+### Liquidity where none existed before
 
-_To be written - e.g. liquidity, fractional ownership_
+Traditional securities markets are surprisingly illiquid. Private equity lockups
+stretch for years. Real estate requires finding a specific buyer willing to
+purchase the entire asset. Fund units trade quarterly if you're lucky.
 
-### Current market trends
+Tokenization fracionalizes ownership, so a $10 million commercial property can
+have 10,000 token-holders each owning $1,000 worth. Secondary markets become
+feasible because transaction costs drop and settlement happens instantly.
+Holders can exit positions without waiting for fund wind-down schedules.
 
-_To be written - with stats on growth of tokenized assets_
+### Transparency that builds confidence
 
-### Real-world examples
+Every token holder can see their position in real time. The blockchain provides
+an immutable audit trail of every transfer, every compliance check, every
+corporate action. There's no three-week wait for a quarterly statement that's
+already outdated when it arrives.
 
-_To be written_
+Issuers gain real-time cap table visibility. Compliance officers see exactly who
+holds what, where they're located, and whether they meet eligibility
+requirements. Auditors get machine-readable proof instead of reconciling five
+different Excel files.
+
+### Automation that eliminates operational friction
+
+Corporate actions—dividends, coupon payments, voting rights, redemptions—are
+typically manual processes involving spreadsheets, email chains, and
+reconciliation nightmares. With tokenization, these operations execute
+programmatically through smart contracts.
+
+A bond coupon payment? The smart contract automatically distributes proportional
+amounts to all token holders on the payment date. A shareholder vote? Token
+balances at a snapshot determine voting power, and votes are tallied
+automatically on-chain. No manual lists, no missed notifications, no
+reconciliation errors.
+
+### Compliance that actually works
+
+Here's the part that makes risk officers sit up: compliance rules live in the
+token itself through the smart contract code. Before any transfer executes, the
+system checks whether the recipient is KYC-verified, whether they're in an
+approved jurisdiction, whether the transfer violates holding limits or lock-up
+periods.
+
+If a rule is violated, the transfer simply doesn't happen. There's no
+after-the-fact scramble to reverse an illegal transaction. It's ex-ante control,
+which is exactly what regulators want to see.
+
+## Current market trends and momentum
+
+Regulation is catching up. The European Union's Markets in Crypto-Assets (MiCA)
+regulation provides clear frameworks for tokenized instruments. Singapore's
+Monetary Authority continues to greenlight institutional pilots. Even the SEC,
+famously cautious, has approved spot Bitcoin ETFs and is engaging with security
+token frameworks.
+
+Major financial institutions aren't sitting on the sidelines. JPMorgan's Onyx
+platform processes billions in repo transactions daily using blockchain rails.
+Siemens issued a €60 million digital bond directly on-chain. Franklin Templeton
+runs an on-chain money market fund. These aren't experiments; they're production
+deployments managing real money for real clients.
+
+The infrastructure is maturing. Custody providers now offer institutional-grade
+key management with insurance and regulatory compliance. Settlement networks are
+building bridges to traditional payment rails. The missing piece? A unified
+platform that handles the entire lifecycle from issuance through ongoing
+servicing without forcing institutions to cobble together five different
+vendors.
+
+## Real-world examples already in production
+
+**Government bonds on-chain**: The European Investment Bank issued €100 million
+in digital bonds on Ethereum in 2021, settling with tokenized euros. Settlement
+time dropped from T+2 to near-instant, with all legal documentation
+cryptographically linked to the token metadata.
+
+**Private credit markets**: Multiple platforms now tokenize private credit
+instruments, allowing institutional investors to trade positions that
+traditionally locked up capital for years. Secondary markets emerged because
+24/7 settlement and fractional ownership made previously illiquid assets
+tradable.
+
+**Real estate fractionalization**: Commercial property worth millions gets
+divided into thousands of tokens, opening institutional-quality real estate to
+smaller investors while maintaining robust compliance controls. Rental income
+distributions happen automatically on preset schedules.
+
+**Fund administration**: Asset managers are tokenizing fund units to automate
+the entire lifecycle: subscription, NAV calculation, management fee collection,
+performance tracking, and redemption. Operations teams go from 40-hour monthly
+closes to real-time reporting.
+
+**Supply chain finance**: Tokenized receivables and payables allow working
+capital to flow more efficiently across supply chains, with compliance rules
+ensuring only authorized parties participate in factoring or discounting
+arrangements.
+
+## What's holding back faster adoption
+
+Fragmentation is the killer. Issuers need one vendor for token creation, another
+for KYC/AML, a third for custody, a fourth for settlement, and a fifth for
+reporting. Every integration point is a risk and a delay. When something breaks,
+five vendors point fingers at each other.
+
+Compliance gaps scare off institutions. Many early platforms treated compliance
+as an afterthought, maintaining eligibility lists off-chain or relying on
+post-transfer checks. That's unacceptable for regulated securities. If the token
+can move without checking eligibility first, regulators won't approve it.
+
+Custody standards aren't met. Single-key wallets without multi-signature
+controls, hardware security module (HSM) backing, or clear recovery procedures
+don't pass bank-grade due diligence. Risk committees shut down projects that
+can't demonstrate proper key governance.
+
+Settlement still happens on different rails. The token might move instantly
+on-chain, but the cash leg clears through traditional banking systems on T+1 or
+T+2 cycles. That asynchrony creates counterparty risk and reconciliation work
+that eliminates most of the benefit.
+
+Enterprise requirements get ignored. Banks need on-premises deployment options,
+single sign-on integration, multi-factor authentication, detailed audit logs,
+and data residency guarantees. Many blockchain platforms assume public chains
+and multi-tenant SaaS are fine. They're not.
+
+## Why this moment is different
+
+The infrastructure pieces are finally aligning. Regulatory clarity is emerging
+across major jurisdictions. Institutional custody providers are live. Settlement
+networks are operational. Blockchain technology has matured past the
+"experiment" phase into production-ready systems capable of handling regulated
+financial instruments at scale.
+
+But success requires more than just available components. It demands integrated
+infrastructure that handles the entire lifecycle without forcing institutions to
+become blockchain experts or system integrators. That's the gap the Asset
+Tokenization Kit was built to fill.
+
+Think of it like cloud computing. AWS didn't just provide virtual machines; it
+provided a complete platform where compute, storage, networking, security, and
+management tools worked together seamlessly. Tokenization needs the same
+integrated approach.
+
+The next section explores the specific pain points institutions face when trying
+to tokenize assets today, setting up why a unified Digital Asset Lifecycle
+Platform approach is the category answer the market has been waiting for.

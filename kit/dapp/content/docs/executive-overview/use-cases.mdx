@@ -1,5 +1,5 @@
 ---
-title: Real-World use cases for asset tokenization
+title: Real-world use cases for asset tokenization
 description:
   Illustrative scenarios showing how different industries or asset types utilize
   the ATK
@@ -12,29 +12,341 @@ tags: [concept, use-cases, scenarios, industry, examples]
   **[Concept](https://www.thegooddocsproject.dev/template/concept)** template.
 </Callout>
 
-## Overview
+## How different institutions use the platform
 
-_Content to be added: Short story vignettes of how the platform could be
-applied._
+These scenarios illustrate real workflows that ATK enables today. Names and
+specifics are illustrative, but the mechanics and outcomes reflect actual
+production capabilities.
 
-## Subsections (Planned)
+## Corporate bond issuance for capital markets
 
-### Bond Issuance for Capital Markets
+### The scenario
 
-_To be written_
+MidCorp Industries needs to raise $50 million through a three-year bond
+offering. Traditional underwriting would take months of roadshows, weeks of
+settlement, and ongoing manual processes for coupon payments and investor
+communications. They want faster execution, broader access, and automated
+servicing.
 
-### Real Estate Tokenization
+### How ATK handles it
 
-_To be written_
+**Term sheet to deployment in days**: MidCorp's treasury team uses the Asset
+Designer to configure a bond token: $50 million principal, 5% annual coupon paid
+quarterly, three-year maturity, USD denomination. They select Regulation D
+compliance template to limit the offering to accredited US investors.
 
-### Investment Fund Management
+The platform generates the smart contract with compliance controls embedded.
+MidCorp uploads their offering memorandum, which gets cryptographically hashed
+and linked to the token metadata. The legal documentation lives permanently with
+the asset.
 
-_To be written_
+**Investor onboarding with built-in compliance**: Accredited investors connect
+through the Investor Portal and complete KYC verification via an integrated
+provider. Their OnchainID gets updated with an accreditation claim. Only wallet
+addresses linked to verified, accredited identities can receive bond tokens.
 
-### Stablecoin for Payments
+**Primary distribution**: MidCorp allocates tokens to a subscriber list. The
+platform enforces that every recipient meets eligibility requirements.
+Non-accredited addresses simply cannot receive tokens; the transfer reverts
+automatically. No risk of accidental non-compliant distribution.
 
-_To be written_
+**Automated quarterly coupons**: Every quarter on the coupon date, the platform
+calculates interest owed to each holder based on their proportional ownership.
+Using integrated payment rails or tokenized cash, it distributes payments
+automatically. Every holder receives their exact amount without manual
+calculations or wire transfer instructions.
 
-### Deposits/Certificates
+**Real-time cap table visibility**: MidCorp's IR team sees current ownership in
+real time. No waiting for monthly reports from a transfer agent. When investors
+trade bonds on secondary markets (if permitted), the cap table updates
+immediately.
 
-_To be written_
+**Maturity and redemption**: At three years, the platform automatically handles
+redemption: bond tokens get burned, principal plus final interest gets
+distributed, and the issuance concludes with complete audit trails showing every
+payment, every holder, every compliance check throughout the lifecycle.
+
+### The outcomes
+
+**Time savings**: Traditional bond issuance took 8-12 weeks from term sheet to
+first settlement. With ATK, MidCorp went live in 10 days.
+
+**Cost reduction**: Eliminated transfer agent fees for ongoing servicing,
+reduced legal review time because compliance templates are pre-vetted, cut
+operations overhead because corporate actions are automated.
+
+**Broader access**: Secondary markets emerged because settlement happens
+instantly. Institutional investors could trade positions knowing settlement
+completes in minutes, not days.
+
+**Compliance certainty**: Zero non-compliant transfers because only verified
+accredited investors could hold tokens. Regulatory comfort increased
+dramatically.
+
+## Private equity fund tokenization
+
+### The scenario
+
+Apex Capital runs a $200 million venture fund with 80 institutional LPs.
+Traditional fund administration is expensive, slow, and opaque. Quarterly
+valuations take weeks to calculate and distribute. Capital calls and
+distributions require manual processing. Secondary transfers between LPs are
+nearly impossible due to paperwork complexity.
+
+### How ATK handles it
+
+**Fund unit creation**: Apex tokenizes their fund structure as equity tokens
+representing limited partner units. Each token carries ownership rights, profit
+sharing, and governance participation. The fund's operating agreement is
+cryptographically linked to the token metadata.
+
+**LP onboarding**: Institutional investors complete accredited investor
+verification and qualified purchaser checks through the platform's identity
+system. Their verified status enables participation across multiple Apex funds
+without re-verification.
+
+**Subscription processing**: When LPs commit capital, Apex issues fund tokens
+representing their percentage ownership. The platform tracks committed versus
+called capital, maintaining complex waterfall calculations that traditional fund
+administrators charge quarterly fees to manage.
+
+**NAV updates and performance tracking**: Monthly or quarterly, Apex updates the
+net asset value in the platform. The NAV per token updates automatically for all
+holders. Performance metrics—IRR, MOIC, quartile rankings—calculate
+programmatically from on-chain transaction history.
+
+**Automated distributions**: When portfolio companies exit or pay dividends,
+Apex distributes proceeds proportionally to all token holders through automated
+workflows. What used to require wire instructions to 80 different banks now
+executes through programmable distribution with instant settlement.
+
+**Management fee collection**: The platform automatically calculates management
+fees based on committed capital or NAV according to the fund terms, deducts the
+appropriate amount, and handles the transfer to Apex's treasury. No manual
+invoicing or collection processes.
+
+**Secondary trading among LPs**: When an LP wants to exit early, the platform
+facilitates transfer to another qualified institutional investor. Compliance
+checks ensure the buyer meets requirements. Settlement happens atomically.
+Transfer restrictions in the fund documents are enforced programmatically, so
+limited transfer windows or ROFR rights execute automatically.
+
+### The outcomes
+
+**Operational efficiency**: Fund administration costs dropped by 60% because NAV
+calculations, distributions, fee collection, and LP reporting are automated.
+
+**LP satisfaction**: Real-time holdings visibility and instant distributions
+improved investor experience. Support inquiries about "where's my distribution?"
+disappeared.
+
+**Secondary liquidity**: What used to take 90 days and significant legal costs
+now settles in hours with compliance built in. LPs value liquidity options, even
+if used rarely.
+
+## Real estate fractionalization
+
+### The scenario
+
+Highland Properties owns a $25 million office building in a major market. They
+want to fractionalize ownership to enable smaller investors to participate while
+maintaining professional property management and compliance controls.
+
+### How ATK handles it
+
+**Property tokenization as equity**: Highland creates 250,000 equity tokens,
+each representing $100 of building ownership. Token holders receive proportional
+rental income distributions and have voting rights on major property decisions.
+
+**Investor eligibility and documentation**: The platform enforces that only
+verified investors with appropriate accreditation levels can purchase tokens.
+Property documents—purchase agreements, operating agreements, building
+inspections, insurance policies—are hashed and linked to the token metadata for
+permanent transparency.
+
+**Fractional ownership**: Investors can purchase as few as 10 tokens ($1,000
+investment) or as many as they want up to regulatory limits. The platform
+enforces maximum ownership percentages to maintain distributed ownership.
+
+**Rental income distributions**: Monthly rental income from tenants flows into
+Highland's treasury. After deducting property management fees and reserves, the
+platform distributes net income proportionally to all token holders.
+Distributions happen automatically on a preset schedule.
+
+**Property expenses and reserves**: Major repairs or capital improvements
+require approval from token holders. Highland creates a governance proposal
+through the platform. Token holders vote with their holdings weighted
+proportionally. Approved expenses draw from reserves or trigger special
+assessments distributed fairly among holders.
+
+**Valuation updates**: Annual appraisals update the property's value in the
+platform, adjusting the implied token value. Holders see current valuations
+without requesting reports.
+
+**Compliance with securities and real estate law**: The platform enforces both
+securities regulations (accredited investor requirements) and any applicable
+real estate regulations (ownership transfer restrictions, FIRPTA withholding for
+foreign investors).
+
+**Exit mechanisms**: When Highland eventually sells the building, sale proceeds
+distribute automatically to all holders proportionally. Tokens are redeemed and
+the holding concludes with complete documentation of every income distribution,
+every expense, and every ownership change.
+
+### The outcomes
+
+**Democratized access**: Real estate institutional-quality investment became
+available to smaller investors who couldn't deploy $25 million.
+
+**Operational streamlining**: Distribution processing that used to take days of
+manual work now happens automatically each month.
+
+**Transparency**: Investors see property performance, expenses, and income in
+real time rather than waiting for quarterly reports.
+
+**Secondary market**: Token holders could sell positions to other qualified
+investors, creating liquidity in an traditionally illiquid asset class.
+
+## Bank-issued stablecoin for payment infrastructure
+
+### The scenario
+
+Regional Bank wants to issue a USD-backed stablecoin for commercial clients to
+use in B2B payments, trade finance, and treasury management. They need
+regulatory compliance, transparent reserves, and enterprise-grade controls.
+
+### How ATK handles it
+
+**Stablecoin deployment with reserve management**: Regional Bank creates a
+stablecoin token pegged 1:1 to USD. Each token is backed by an actual dollar in
+a segregated reserve account. The platform tracks reserve balances and enforces
+that tokens cannot be minted without corresponding fiat deposits.
+
+**Enterprise client onboarding**: Commercial clients complete corporate KYC/KYB
+verification. Their legal entities are registered with the platform, and
+authorized employees receive access to the treasury portal.
+
+**Minting process**: When a client deposits $1 million into the reserve account,
+Regional Bank's operations team verifies the deposit through their core banking
+system. Once confirmed, the platform mints 1 million stablecoins to the client's
+designated wallet. The reserve ratio stays balanced by construction.
+
+**B2B payments and settlements**: Clients use stablecoins for vendor payments,
+international transfers, and supply chain finance. Transactions settle instantly
+on-chain with atomic finality. Payment instructions include invoice references,
+purchase order numbers, and other business metadata.
+
+**Transparency and auditability**: The platform provides real-time visibility
+into total stablecoins issued, reserve balances, and reserve ratio. External
+auditors can verify reserves without disrupting operations. Regulators get
+read-only access to compliance dashboards.
+
+**Redemption workflows**: When clients want to convert stablecoins back to fiat,
+they initiate a redemption request. The platform burns tokens and triggers a
+wire transfer from reserves to the client's bank account. The reserve ratio
+updates automatically.
+
+**Compliance controls**: Even though stablecoins are designed for broad use,
+Regional Bank enforces transaction monitoring, AML screening, and sanctions list
+checks. Suspicious activity triggers alerts for investigation. Geographic
+restrictions prevent use in prohibited jurisdictions.
+
+**Integration with existing systems**: The platform's APIs integrate with
+Regional Bank's core banking system, treasury management platform, and
+accounting systems. Stablecoin transactions appear alongside traditional banking
+transactions in client portals.
+
+### The outcomes
+
+**Payment speed**: Cross-border B2B payments that took 3-5 days now settle in
+seconds with finality.
+
+**Cost reduction**: International wire fees disappeared. Treasury operations
+costs dropped because reconciliation is real-time.
+
+**Transparency**: Clients see reserve backing in real time, building confidence
+in the stablecoin's stability.
+
+**Regulatory acceptance**: Demonstrable compliance controls and transparent
+reserves satisfied regulators. Regional Bank got approval to scale the program.
+
+## Digital deposit certificates for retail banking
+
+### The scenario
+
+Metropolitan Bank wants to offer time deposits (certificates of deposit) as
+digital tokens to tech-savvy retail customers while maintaining FDIC insurance
+and regulatory compliance.
+
+### How ATK handles it
+
+**Deposit product configuration**: Metropolitan creates deposit tokens with
+specific terms: 6-month maturity, 4% APY, minimum $1,000 deposit, maximum
+$250,000 per customer to stay within FDIC coverage limits.
+
+**Retail customer onboarding**: Customers complete standard KYC verification
+through Metropolitan's existing processes. Their verification status links to
+their OnchainID, enabling them to receive deposit tokens.
+
+**Deposit and token issuance**: When a customer deposits $10,000 into a
+designated account, Metropolitan verifies the funds cleared and then mints
+10,000 deposit tokens to the customer's wallet. The tokens represent their claim
+on the principal plus accrued interest.
+
+**Time-lock enforcement**: The smart contract enforces the 6-month maturity.
+Customers cannot redeem early (or, if early redemption is allowed, the smart
+contract applies penalty calculations automatically).
+
+**Interest accrual tracking**: The platform tracks interest accrued daily based
+on the APY. Customers see current value including accumulated interest in real
+time.
+
+**Maturity and redemption**: At six months, the tokens become redeemable.
+Customers initiate redemption through the portal. The platform burns tokens and
+transfers principal plus interest to their designated bank account.
+
+**FDIC compliance**: The platform enforces per-customer deposit limits and
+maintains records required for FDIC coverage. All documentation is automatically
+generated and archived.
+
+**Collateral management**: Metropolitan maintains liquid reserves or collateral
+backing the deposit tokens. The platform tracks reserve ratios and alerts
+operations if reserves fall below policy thresholds.
+
+### The outcomes
+
+**Customer engagement**: Tech-forward customers appreciated blockchain-based
+deposits as innovative while maintaining FDIC insurance and familiar banking
+relationships.
+
+**Operational efficiency**: Deposit lifecycle management automated completely.
+No manual maturity tracking or redemption processing.
+
+**Transparency**: Customers saw exact interest accrued daily rather than waiting
+for statement dates.
+
+**Compliance confidence**: Regulatory filings and FDIC reporting requirements
+were satisfied through automated audit trails and data exports.
+
+## Why these scenarios work
+
+These use cases succeed because ATK provides unified lifecycle infrastructure.
+You're not cobbling together issuance, compliance, custody, settlement, and
+servicing from separate vendors. The platform handles the complete lifecycle,
+which is why complex workflows like quarterly coupon payments or NAV
+distributions happen automatically instead of requiring manual intervention.
+
+Compliance is embedded at the asset level, not layered on afterward. Bond tokens
+only transfer to accredited investors because the eligibility check is in the
+transfer path. Fund tokens enforce holding restrictions because the smart
+contract implements those rules. Stablecoins enforce monitoring requirements
+because compliance modules are part of the architecture.
+
+The platform adapts to different asset classes and regulatory frameworks without
+requiring separate deployments. The same infrastructure manages bonds, funds,
+real estate, stablecoins, and deposits because the SMART Protocol provides
+unified compliance and the addon system handles asset-specific features.
+
+The next section dives deeper into the compliance and security architecture that
+enables these use cases to operate with institutional confidence and regulatory
+acceptance.

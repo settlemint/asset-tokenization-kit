@@ -12,33 +12,230 @@ tags: [concept, challenges, pain-points, finance, compliance]
   **[Concept](https://www.thegooddocsproject.dev/template/concept)** template.
 </Callout>
 
-## Overview
+## The fragmentation nightmare
 
-_Content to be added: Explanation of the fragmented processes and risks in
-current tokenization efforts._
+Walk into any tokenization project today and you'll see the same pattern: five
+or more vendors stitched together with integration code, manual handoffs, and
+crossed fingers.
 
-## Subsections (Planned)
+One vendor handles token creation. Another manages investor onboarding and KYC
+checks. A third provides custody wallets. A fourth runs the marketplace or
+trading platform. A fifth handles settlement and bank connectivity. Maybe
+there's a sixth for reporting and compliance dashboards.
 
-### Fragmentation of Services
+Each integration is a point of failure. When settlement breaks at 2 a.m., three
+vendors blame each other while your operations team frantically debugs which API
+changed without warning. Procurement alone takes months as legal reviews five
+contracts, InfoSec evaluates five security questionnaires, and finance
+negotiates five SLAs.
 
-_To be written_
+Development velocity collapses because every new feature touches multiple
+systems. Want to add a new asset class? You're coordinating updates across the
+entire stack. Need to change a compliance rule? Better hope all five vendors can
+support it.
 
-### Off-chain Compliance Gaps
+Governance becomes impossible. There's no single source of truth for ownership,
+compliance status, or transaction history. Your team spends more time
+reconciling data between systems than actually servicing assets. When auditors
+ask for proof of compliance, you're compiling reports from five different
+platforms and praying they align.
 
-_To be written_
+## Off-chain compliance creates legal exposure
 
-### Custody and Security Shortfalls
+Here's where projects typically fail regulatory review: compliance logic runs
+off the blockchain in spreadsheets and middleware. The token itself has no idea
+who should be allowed to hold it.
 
-_To be written_
+A typical flow looks like this: an investor buys tokens, the transfer executes
+on-chain instantly, and then—sometime later—a compliance officer checks whether
+that investor should have been eligible. If they weren't, now you're unwinding a
+transaction that's already settled, burned gas, and potentially generated tax
+events.
 
-### Settlement Delays
+False positives are equally painful. Legitimate investors get blocked because
+the off-chain system can't verify their status in real time. Support tickets
+pile up. Your compliance team manually overrides blocks while trying not to
+accidentally approve someone they shouldn't.
 
-_To be written_
+Regulators see this architecture and immediately understand the problem: there's
+no ex-ante control. The ledger records transactions that violate rules, creating
+evidence of non-compliance that lives permanently on an immutable blockchain.
+That's precisely what risk committees veto.
 
-### Manual Operations
+Worse, different tokens on the same platform might have different compliance
+rules, but those rules live in external databases that can drift out of sync
+with actual token logic. You think a transfer restriction is enforced, but the
+middleware got updated and now there's a gap.
 
-_To be written_
+## Custody standards that don't pass institutional scrutiny
 
-### Enterprise IT Mismatch
+Most blockchain platforms default to single-key wallets. One private key
+controls the entire treasury. Whoever has that key can transfer all assets with
+no checks, no approvals, no audit trail beyond "the key signed this
+transaction."
 
-_To be written_
+Banks don't operate that way. Traditional custody involves segregation of
+duties, dual control, maker-checker workflows, transaction limits, and formal
+approval processes. Lose a signing key at a bank, and there are documented
+recovery procedures backed by insurance and legal accountability.
+
+Lose a blockchain private key? Those assets are gone. Permanently. There's no
+customer service line to call, no fraud protection, no insurance payout unless
+you've purchased specialized crypto custody coverage that comes with
+eye-watering premiums.
+
+Even when platforms offer multi-signature wallets, the implementation often
+lacks enterprise features. There's no policy engine defining who can approve
+what types of transactions. There's no time-based locks or velocity limits.
+There's no integration with hardware security modules (HSMs) that banks use to
+store signing keys in tamper-resistant hardware.
+
+Recovery procedures are typically "hope you backed up your seed phrase and
+stored it securely." Enterprise custody requires formal key ceremony processes,
+geographic distribution of key shards, time-locked recovery mechanisms, and
+clear legal accountability for who's responsible if something goes wrong.
+
+When a bank's risk committee asks, "What happens if your CTO gets hit by a bus?"
+the answer can't be "we hope someone finds the password written on a Post-it
+note." That's an automatic project shutdown.
+
+## Settlement delays hidden behind instant interfaces
+
+Blockchain promises instant settlement. And technically, the token does move
+instantly on-chain. But here's what nobody mentions: the cash leg still settles
+on traditional banking rails that operate on T+1 or T+2 cycles.
+
+Your interface might show "transaction complete," but behind the scenes, there's
+a gap between when the token transferred and when the cash actually cleared.
+During that window, you have counterparty risk. One party could default, a bank
+could freeze an account, or compliance could flag the transaction forcing a
+reversal.
+
+Operations teams spend hours reconciling blockchain transactions against bank
+statements, tracking which cash transfers cleared and which are still pending.
+The promise of instant settlement evaporates into the same reconciliation grind
+that plague traditional markets, just with blockchain theater on top.
+
+True atomic settlement—delivery versus payment (DvP) where both legs happen
+simultaneously or neither happens at all—requires both assets and cash to be
+on-chain. But most platforms don't provide tokenized cash integration, regulated
+stablecoin connectivity, or Central Bank Digital Currency (CBDC) bridges when
+those become available.
+
+Even when tokenized cash exists, cross-chain settlements remain a challenge.
+Your token lives on Ethereum, their payment token lives on Polygon, and now you
+need a bridge that maintains compliance checks across both chains while keeping
+the settlement atomic. Most platforms punt on this complexity, leaving
+institutions to figure it out themselves.
+
+## Corporate actions by email and spreadsheet
+
+Imagine your tokenized bond pays quarterly coupons. Here's the typical process:
+your finance team exports a list of token holders from the blockchain explorer,
+imports it into Excel, calculates pro-rata payments, generates wire transfer
+instructions, sends them to the bank, manually logs each payment, and then
+reconciles which payments cleared.
+
+Someone invariably gets missed because they acquired tokens between the snapshot
+date and the payment date. Another holder's bank account information changed. A
+third investor is in a jurisdiction that requires tax withholding, but nobody
+flagged that until after the payment went out.
+
+Shareholder votes are even worse. You need to snapshot token balances at a
+specific block height, export holder addresses, match them to real-world
+identities, send voting instructions via email, track responses in another
+spreadsheet, tally votes manually, and pray nobody challenges the results.
+
+Redemptions? More manual processes. An investor submits a redemption request via
+email or a web form. Someone verifies they actually hold the tokens. Someone
+else checks whether there's sufficient liquidity. A third person initiates the
+burn transaction on-chain. A fourth person processes the cash payment. Everyone
+hopes the reconciliation balances at month-end.
+
+Stock splits, dividend distributions, rights offerings, tender offers—every
+corporate action that's automated in traditional securities markets becomes a
+bespoke project in most tokenization platforms. Your operations team grows
+instead of shrinking. The efficiency gains disappear into operational overhead.
+
+## Enterprise integration gaps that stall deployment
+
+Banks and asset managers live in environments with strict IT controls. They use
+Active Directory or Okta for identity management. They require single sign-on
+(SSO) so employees don't manage separate credentials for every system. They
+enforce multi-factor authentication (MFA) as standard policy. They need Security
+Information and Event Management (SIEM) integration to feed all security events
+into centralized monitoring.
+
+Many blockchain platforms assume you'll create new user accounts in their
+system, manually provision access, and somehow duplicate your existing identity
+infrastructure. That's a non-starter. InfoSec immediately flags it as shadow IT
+with uncontrolled access.
+
+Data residency requirements mean European customers need data stored in EU data
+centers. Asian customers need data in their local region. Banks with specific
+regulatory constraints need on-premises deployment. Blockchain platforms built
+on public chains or single-region SaaS architectures can't accommodate these
+requirements.
+
+Audit logging needs to capture everything: who accessed what data, who approved
+what transactions, who changed what settings, with precise timestamps and
+immutable evidence. Most platforms provide basic transaction logs, but
+enterprise audit requirements go deeper—you need to prove not just what
+happened, but who had access to make it happen.
+
+Integration with existing systems is assumed to be someone else's problem. Your
+core banking system, your fund administration platform, your ERP, your CRM—all
+of these need to talk to the tokenization platform. When the platform provides
+only basic REST APIs with limited documentation, you're building all the
+integration code yourself.
+
+Change management and deployment controls are often nonexistent. Traditional
+financial systems have formal change approval processes, testing environments,
+staged rollouts, and rollback procedures. When blockchain updates require manual
+wallet upgrades with downtime windows, that doesn't fit enterprise operations.
+
+## The network and permissioning mismatch
+
+Public blockchain networks are brilliant for some use cases. But regulated
+securities often require permissioned networks where only authorized
+participants can run validators, submit transactions, or even read the ledger.
+
+Most tokenization platforms assume Ethereum mainnet or other public chains. When
+a bank needs a private Hyperledger Besu network or a consortium Polygon Edge
+deployment, the platform either doesn't support it or requires significant
+customization work.
+
+Gas fees on public networks create unpredictable operational costs. Ethereum gas
+spikes to hundreds of dollars per transaction during congestion. That's
+acceptable for high-value DeFi transactions, but when you're processing
+thousands of small fund distributions or dividend payments, the gas costs become
+prohibitive.
+
+Transaction throughput becomes a bottleneck. Ethereum processes about 15
+transactions per second. If you're trying to airdrop tokens to 10,000 holders,
+that's ten minutes of sequential transactions unless you batch them—which most
+platforms don't support elegantly.
+
+Privacy requirements conflict with public blockchain transparency. Regulated
+securities often can't disclose holder identities, transaction amounts, or even
+the existence of certain trades on a public ledger that anyone can analyze.
+Private or encrypted transactions add complexity that many platforms don't
+handle.
+
+## Why this matters for your organization
+
+If you're evaluating tokenization, every one of these pain points will surface
+during your pilot. The fragmentation will become apparent during vendor
+selection. The compliance gaps will emerge during regulatory review. The custody
+concerns will get raised by your risk committee. The settlement delays will
+frustrate your operations team. The corporate action nightmares will hit during
+your first distribution. The enterprise integration issues will get flagged by
+InfoSec.
+
+You can either cobble together point solutions and manage all the integration
+complexity yourself, or you can adopt a unified platform that's architected from
+the ground up to address these institutional requirements. That integrated
+approach is what defines a Digital Asset Lifecycle Platform (DALP).
+
+The next section explains what a DALP is, how it solves these problems, and why
+it represents the category answer institutions have been waiting for.
