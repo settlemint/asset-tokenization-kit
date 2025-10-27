@@ -13,7 +13,7 @@ export const Route = createFileRoute(
         createI18nBreadcrumbMetadata("platformSettings", {
           href: "/platform-settings/compliance",
         }),
-        createI18nBreadcrumbMetadata("settings.compliance"),
+        createI18nBreadcrumbMetadata("settings.compliance.title"),
       ],
     };
   },
@@ -26,7 +26,7 @@ function CompliancePage() {
     <div className="container mx-auto p-6">
       <RouterBreadcrumb />
       <div className="mb-8 mt-4">
-        <h1 className="text-3xl font-bold">{t("settings.compliance")}</h1>
+        <h1 className="text-3xl font-bold">{t("settings.compliance.title")}</h1>
         <p className="text-muted-foreground mt-2">
           Manage compliance rules, KYC/AML settings, and regulatory
           requirements.

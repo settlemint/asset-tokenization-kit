@@ -6,6 +6,7 @@ import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 // Interface imports
 import {
@@ -25,6 +26,7 @@ import { SMARTPausable } from "../../../contracts/smart/extensions/pausable/SMAR
 import { SMARTBurnable } from "../../../contracts/smart/extensions/burnable/SMARTBurnable.sol";
 import { SMARTCustodian } from "../../../contracts/smart/extensions/custodian/SMARTCustodian.sol";
 import { SMARTRedeemable } from "../../../contracts/smart/extensions/redeemable/SMARTRedeemable.sol";
+import { ISMARTRedeemable } from "../../../contracts/smart/extensions/redeemable/ISMARTRedeemable.sol";
 import { SMARTCollateral } from "../../../contracts/smart/extensions/collateral/SMARTCollateral.sol";
 import {
     SMARTHistoricalBalances
@@ -56,7 +58,8 @@ contract SMARTToken is
     SMARTBurnable,
     SMARTRedeemable,
     SMARTHistoricalBalances,
-    SMARTCapped
+    SMARTCapped,
+    ReentrancyGuard
 {
     using SafeERC20 for IERC20;
 
@@ -90,9 +93,13 @@ contract SMARTToken is
     /// @dev This can be used to comply with legal orders or to manage accounts in specific situations.
     /// It also allows freezing partial amounts of tokens for an address.
     bytes32 public constant FREEZER_ROLE = keccak256("FREEZER_ROLE");
+
+    error UnauthorizedRedeemer(address caller, address owner);
+    error InvalidRedemptionAmount();
     /// @notice Role identifier for entities authorized to execute forced transfers of tokens between addresses.
     /// @dev This is a powerful role typically used in exceptional circumstances, such as recovering assets or
     /// rectifying errors under strict governance.
+
     bytes32 public constant FORCED_TRANSFER_ROLE = keccak256("FORCED_TRANSFER_ROLE");
     /// @notice Role identifier for entities authorized to perform address recovery for investors.
     /// @dev This allows transferring tokens from a lost wallet to a new wallet, provided proper verification (e.g., via
@@ -211,6 +218,17 @@ contract SMARTToken is
         onlyAccessManagerRole(MINTER_ROLE)
     {
         _smart_batchMint(_toList, _amounts);
+    }
+
+    /// @notice Redeems `amount` of tokens from `owner`.
+    /// @dev Authorization policy: only the owner may redeem on their behalf.
+    function redeemFor(address owner, uint256 amount) external override nonReentrant returns (bool success) {
+        address caller = _msgSender();
+        if (caller != owner) revert UnauthorizedRedeemer(caller, owner);
+        if (amount == 0) revert InvalidRedemptionAmount();
+
+        _smart_redeemFor(owner, amount);
+        return true;
     }
 
     /// @notice Transfers tokens from the caller's account to a specified recipient address.

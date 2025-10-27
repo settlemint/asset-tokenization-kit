@@ -48,7 +48,7 @@ contract MaliciousERC20Token is MockedERC20Token {
         // Attempt reentrancy attack if enabled and targeting the bond redemption
         if (shouldAttack && address(targetBond) != address(0) && attackCount < 3) {
             attackCount++;
-            try targetBond.redeem(1) {
+            try targetBond.redeemFor(attacker, 1) {
             // If this succeeds, the reentrancy guard failed
             }
                 catch {
@@ -82,7 +82,7 @@ contract ReentrancyAttacker {
 
     function attemptReentrancy() external {
         attackAttempts++;
-        try bond.redeem(1) {
+        try bond.redeemFor(address(this), 1) {
             attackSucceeded = true;
         } catch {
             // Expected to fail
@@ -213,7 +213,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
         // User1 attempts redemption - should succeed despite malicious token
         vm.prank(user1);
-        bond.redeem(redeemAmount);
+        bond.redeemFor(user1, redeemAmount);
 
         // Verify redemption succeeded
         assertEq(bond.balanceOf(user1), 0, "User1 should have no bonds left");
@@ -251,14 +251,14 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
         // First redemption should work
         vm.prank(user1);
-        bond.redeem(redeemAmount);
+        bond.redeemFor(user1, redeemAmount);
 
         assertEq(bond.balanceOf(user1), redeemAmount, "User1 should have remaining bonds");
         assertEq(ATKBondImplementation(address(bond)).bondRedeemed(user1), redeemAmount, "Should track redeemed amount");
 
         // Second redemption should also work
         vm.prank(user1);
-        bond.redeem(redeemAmount);
+        bond.redeemFor(user1, redeemAmount);
 
         assertEq(bond.balanceOf(user1), 0, "User1 should have no bonds left");
     }
@@ -284,7 +284,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         // Try to redeem more than available - should fail because user doesn't have enough tokens
         vm.startPrank(user1);
         vm.expectRevert(); // The specific error depends on which check fails first
-        bond.redeem(excessAmount);
+        bond.redeemFor(user1, excessAmount);
         vm.stopPrank();
     }
 
@@ -302,7 +302,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         vm.startPrank(user1);
         uint256 currentTime = block.timestamp;
         vm.expectRevert(abi.encodeWithSelector(IATKBond.BondNotYetMatured.selector, currentTime, maturityDate));
-        bond.redeem(redeemAmount);
+        bond.redeemFor(user1, redeemAmount);
         vm.stopPrank();
     }
 
@@ -337,7 +337,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
                 IATKBond.InsufficientDenominationAssetBalance.selector, currentBalance - amountToRemove, 1000e18
             )
         );
-        bond.redeem(redeemAmount);
+        bond.redeemFor(user1, redeemAmount);
         vm.stopPrank();
     }
 
@@ -366,7 +366,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
         // Perform redemption
         vm.prank(user1);
-        bond.redeem(redeemAmount);
+        bond.redeemFor(user1, redeemAmount);
 
         // Verify state changes were applied correctly
         assertEq(bond.balanceOf(user1), initialBondBalance - redeemAmount, "Bond balance not updated correctly");
@@ -402,9 +402,10 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         // Enable attack mode
         maliciousToken.enableAttack();
 
-        // Use redeemAll function
+        // Use redeemAll equivalent
         vm.prank(user1);
-        bond.redeemAll();
+        uint256 balance = bond.balanceOf(user1);
+        bond.redeemFor(user1, balance);
 
         // Verify redemption succeeded
         assertEq(bond.balanceOf(user1), 0, "User1 should have no bonds left");
@@ -444,7 +445,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         // Try to redeem when denomination transfer will fail
         vm.startPrank(user1);
         vm.expectRevert(abi.encodeWithSelector(IATKBond.InsufficientDenominationAssetBalance.selector, 0, 1000e18));
-        bond.redeem(redeemAmount);
+        bond.redeemFor(user1, redeemAmount);
         vm.stopPrank();
 
         // Verify no state changes occurred
@@ -472,7 +473,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         // Measure gas consumption
         vm.prank(user1);
         uint256 gasBefore = gasleft();
-        bond.redeem(redeemAmount);
+        bond.redeemFor(user1, redeemAmount);
         uint256 gasUsed = gasBefore - gasleft();
 
         // Gas should be reasonable (less than 300k for a simple redemption with reentrancy protection)
@@ -527,7 +528,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
         // Normal redemption should work perfectly
         vm.prank(user1);
-        normalBond.redeem(redeemAmount);
+        normalBond.redeemFor(user1, redeemAmount);
 
         assertEq(normalBond.balanceOf(user1), 0, "Normal redemption should work");
         assertEq(normalToken.balanceOf(user1), denominationAmountNeeded, "Should receive denomination tokens");

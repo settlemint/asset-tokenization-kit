@@ -20,7 +20,7 @@ export const INTERFACE_IDS = {
   ISMARTCollateral: "0xb5cb9db3",
   ISMARTCustodian: "0x25e5ad79",
   ISMARTPausable: "0xe78a39d8",
-  ISMARTRedeemable: "0xf4433ab7",
+  ISMARTRedeemable: "0x7a82a198",
   ISMARTYield: "0x85ebbbb4",
   IERC3643: "0xb97d944c",
 } as const;

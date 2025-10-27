@@ -6,7 +6,7 @@ import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { SMART } from "../../contracts/smart/extensions/core/SMART.sol";
 import { SMARTPausable } from "../../contracts/smart/extensions/pausable/SMARTPausable.sol";
 import { SMARTBurnable } from "../../contracts/smart/extensions/burnable/SMARTBurnable.sol";
-import { SMARTRedeemable } from "../../contracts/smart/extensions/redeemable/SMARTRedeemable.sol";
+import { ISMARTRedeemable } from "../../contracts/smart/extensions/redeemable/ISMARTRedeemable.sol";
 import { SMARTCustodian } from "../../contracts/smart/extensions/custodian/SMARTCustodian.sol";
 
 import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
@@ -192,7 +192,7 @@ contract TokenUtils is Test {
      */
     function redeemTokenAsExecutor(address tokenAddress, address executor, uint256 amount) public {
         vm.startPrank(executor);
-        SMARTRedeemable(tokenAddress).redeem(amount);
+        ISMARTRedeemable(tokenAddress).redeemFor(executor, amount);
         vm.stopPrank();
     }
 
