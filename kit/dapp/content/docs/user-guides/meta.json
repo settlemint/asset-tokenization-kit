@@ -1,0 +1,16 @@
+{
+  "title": "User guides",
+  "pages": [
+    "getting-started",
+    "issue-bond",
+    "issue-equity",
+    "issue-fund",
+    "issue-stablecoin",
+    "issue-deposit",
+    "manage-investors",
+    "admin-settings",
+    "fiat-bridge",
+    "corporate-actions",
+    "troubleshooting"
+  ]
+}
