@@ -42,7 +42,6 @@ global:
         database: "postgres"
         # -- (string) SSL mode for PostgreSQL connections (disable, require, verify-ca, verify-full)
         sslMode: "disable"
-
     # -- (object) ERPC-specific datastore configuration for RPC gateway caching
     erpc:
       # -- (object) Redis database allocation for ERPC services
