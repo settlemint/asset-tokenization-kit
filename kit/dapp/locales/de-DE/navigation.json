@@ -5,7 +5,7 @@
   "assetManagement": "Vermögensverwaltung",
   "cashEquivalent": "Bargeldäquivalent",
   "fixedIncome": "Festverzinsliche Wertpapiere",
-  "flexibleIncome": "Flexible Einkommen",
+  "flexibleIncome": "Flexibles Einkommen",
   "home": "Übersicht",
   "myAssets": "Meine Vermögenswerte",
   "statistics": "Statistiken",
@@ -28,21 +28,32 @@
     "assetTypes": {
       "title": "Vermögensarten",
       "description": "Konfigurieren und aktivieren Sie verschiedene Arten von Vermögenswerten, die auf der Plattform verfügbar sind. Sobald aktiviert, können Vermögensarten nicht deaktiviert werden.",
+      "notAuthorized": "Sie sind nicht berechtigt, Vermögensarten zu verwalten.\nSie haben nicht die Rolle Systemmanager.",
       "allEnabled": "Alle verfügbaren Vermögensarten wurden aktiviert.",
       "enabledTitle": "Aktivierte Vermögensarten",
       "enabledDescription": "Diese Vermögensarten sind derzeit aktiv und auf der Plattform verfügbar.",
       "enable": "Aktivieren",
       "enabled": "Aktiviert",
       "confirmEnableTitle": "{{assetType}} aktivieren?",
-      "confirmEnableDescription": "Diese Aktion kann nicht rückgängig gemacht werden. Sobald aktiviert, ist dieser Vermögensart dauerhaft auf der Plattform verfügbar."
+      "confirmEnableDescription": "Diese Aktion kann nicht rückgängig gemacht werden. Sobald aktiviert, ist diese Vermögensart dauerhaft auf der Plattform verfügbar."
     },
-    "compliance": "Compliance-Einstellungen",
-    "addons": "Add-ons",
-    "claimTopicsIssuers": "Anspruchsthemen & Emittenten",
+    "compliance": {
+      "title": "Compliance",
+      "notAuthorized": "Sie sind nicht berechtigt, Compliance zu verwalten.\nSie haben nicht die Rolle Compliance-Manager."
+    },
+    "addons": {
+      "title": "Add-ons",
+      "notAuthorized": "Sie sind nicht berechtigt, Add-ons zu verwalten.\nSie haben nicht die Rolle Add-on-Manager."
+    },
+    "claimTopicsIssuers": {
+      "title": "Anspruchsthemen & Emittenten",
+      "notAuthorized": "Sie sind nicht berechtigt, Anspruchsthemen und Emittenten zu verwalten.\nSie haben nicht die Rolle Claim-Policy-Manager."
+    },
     "theme": {
       "title": "Thema",
       "description": "Passen Sie Branding-Assets, Typografie und Farb-Tokens für Ihre Mandantenoberfläche an.",
-      "placeholder": "Der Theme-Editor kommt bald. Überprüfen Sie kurz für Live-Anpassungstools.",
+      "notAuthorized": "Sie sind nicht berechtigt, das Thema zu verwalten.\nSie sind kein Administrator.",
+      "placeholder": "Der Theme-Editor kommt bald. Überprüfen Sie bald wieder für Live-Anpassungstools.",
       "dirtyBadge": "Nicht gespeicherte Änderungen",
       "pristineBadge": "Auf dem neuesten Stand",
       "versionBadgeTitle": "Aktuelle Theme-Version",
@@ -53,6 +64,7 @@
     "permissions": {
       "title": "Plattformadministratoren",
       "description": "Verwalten Sie Plattformadministratorrollen für das Asset Tokenization Kit",
+      "notAuthorized": "Sie sind nicht berechtigt, Berechtigungen zu verwalten.\nSie haben nicht die Administratorrolle.",
       "adminRequired": {
         "title": "Administratorzugriff erforderlich",
         "description": "Sie benötigen Administratorrechte, um Rollen zu verwalten. Bitte wenden Sie sich an Ihren Systemadministrator für Zugriff."
