@@ -444,7 +444,7 @@ describe("ChangeRolesSheet", () => {
         roleAdmins: [
           {
             roleFieldName: "custodian",
-            adminFieldName: "tokenAdmin",
+            adminFieldName: "tokenManager",
           },
         ],
       } as unknown as AccessControl;
@@ -511,7 +511,7 @@ describe("ChangeRolesSheet", () => {
         roleAdmins: [
           {
             roleFieldName: "custodian",
-            adminFieldName: "tokenAdmin",
+            adminFieldName: "tokenManager",
           },
         ],
       } as unknown as AccessControl;

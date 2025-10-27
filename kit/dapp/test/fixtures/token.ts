@@ -1,4 +1,4 @@
-import { AssetAccessControlRoles } from "@atk/zod/src/access-control-roles";
+import { AssetAccessControlRoles } from "@atk/zod/access-control-roles";
 import { DEFAULT_PINCODE } from "@test/fixtures/user";
 import { randomUUID } from "node:crypto";
 import { OrpcClient } from "./orpc-client";

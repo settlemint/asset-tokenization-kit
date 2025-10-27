@@ -31,12 +31,6 @@ import * as z from "zod";
  * @property {Object} [userPermissions] - Optional permissions object for the current user
  * @property {Object} userPermissions.roles - Boolean flags for each role the user has
  * @property {boolean} userPermissions.isAllowed - Whether the user can interact with the token
- * @remarks
- * - The userPermissions field is optional and will only be present when the
- *   API is called with authentication
- * - The roles object dynamically includes all roles defined in the ROLES array
- * - Compliance and allowance checks are performed against the token's specific
- *   requirements and the user's identity claims
  */
 /**
  * Schema for the raw token data from GraphQL
