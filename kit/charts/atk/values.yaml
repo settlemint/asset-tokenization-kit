@@ -102,7 +102,7 @@ global:
         existingSecretKeys:
           # - (object) DB Username
           username: username
-          # - (object) DB Passwor
+          # - (object) DB Password
           password: password
           # - (object) DB Host
           host: host
