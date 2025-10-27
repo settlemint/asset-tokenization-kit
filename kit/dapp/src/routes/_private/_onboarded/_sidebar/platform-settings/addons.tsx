@@ -14,7 +14,7 @@ export const Route = createFileRoute(
         createI18nBreadcrumbMetadata("platformSettings", {
           href: "/platform-settings/addons",
         }),
-        createI18nBreadcrumbMetadata("settings.addons"),
+        createI18nBreadcrumbMetadata("settings.addons.title"),
       ],
     };
   },
@@ -27,9 +27,9 @@ function AddonsSettingsPage() {
     <div className="container mx-auto p-6">
       <RouterBreadcrumb />
       <div className="mb-8 mt-4">
-        <h1 className="text-3xl font-bold">{t("settings.addons")}</h1>
+        <h1 className="text-3xl font-bold">{t("settings.addons.title")}</h1>
         <p className="text-muted-foreground mt-2">
-          Configure addon modules, integrations, and platform extensions.
+          {t("settings.addons.description")}
         </p>
       </div>
 

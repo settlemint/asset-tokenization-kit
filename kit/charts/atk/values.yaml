@@ -149,6 +149,9 @@ network:
         cpu: "600m"
         # -- (string) Memory limit for bootstrapper pods
         memory: "256Mi"
+    settings:
+      # -- (int) Number of validator identities to generate (default 4).
+      validators: 1
   # -- (object) Blockchain node configuration (validators and RPC)
   network-nodes:
     # -- (int) Total Besu pod replicas (validators + RPC). Used for resource summaries.
@@ -656,6 +659,12 @@ dapp:
     BETTER_AUTH_URL: "https://dapp.k8s.orb.local"
     # -- (string) Blockscout explorer UI endpoint for blockchain browsing
     SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "https://blockscout.k8s.orb.local/"
+    # -- (string) MinIO endpoint
+    SETTLEMINT_MINIO_ENDPOINT: "http://minio:9000"
+    # -- (string) MinIO access key
+    SETTLEMINT_MINIO_ACCESS_KEY: "console"
+    # -- (string) MinIO secret key
+    SETTLEMINT_MINIO_SECRET_KEY: "console123"
   # -- (object) Init containers for DApp startup dependencies
   initContainer:
     # -- (object) TCP check for backend services
