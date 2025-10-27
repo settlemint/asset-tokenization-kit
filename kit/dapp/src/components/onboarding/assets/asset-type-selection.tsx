@@ -2,7 +2,6 @@ import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { getAssetIcon } from "@/components/system-assets/components/asset-icons";
-import { AssetTypeCard } from "@/components/system-assets/components/asset-type-card";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { WarningAlert } from "@/components/ui/warning-alert";
 import { useAppForm } from "@/hooks/use-app-form";
@@ -72,15 +71,18 @@ export function AssetTypeSelection() {
       })
     );
 
+  // Cast to generic AppField API so UI-only selection state can live outside schema
+  const appForm = form as unknown as ReturnType<typeof useAppForm>;
+
   const availableAssets = TokenTypeEnum.options;
 
   // Create a set of already deployed asset types for easy lookup
   const deployedAssetTypes = useMemo(
     () =>
       new Set(
-        systemDetails?.tokenFactoryRegistry.tokenFactories.map((factory) =>
-          getAssetTypeFromFactoryTypeId(factory.typeId)
-        ) ?? []
+        (systemDetails?.tokenFactoryRegistry.tokenFactories ?? []).map(
+          (factory) => getAssetTypeFromFactoryTypeId(factory.typeId)
+        )
       ),
     [systemDetails?.tokenFactoryRegistry.tokenFactories]
   );
@@ -211,15 +213,40 @@ export function AssetTypeSelection() {
                             }
                           };
 
+                          const options = [
+                            {
+                              value: "selected",
+                              label: t(`asset-types.${assetType}`, {
+                                ns: "tokens",
+                              }),
+                              description: t(
+                                `assets.descriptions.${assetType}`
+                              ),
+                              icon: Icon,
+                              isSelected: isChecked,
+                              disabled: isDisabled,
+                              disabledLabel: isDisabled
+                                ? t("assets.deployed-label")
+                                : undefined,
+                              onToggle: (selected: boolean) => {
+                                handleToggle(selected);
+                              },
+                            },
+                          ];
+
                           return (
-                            <AssetTypeCard
+                            <appForm.AppField
                               key={assetType}
-                              assetType={assetType}
-                              icon={Icon}
-                              isChecked={isChecked}
-                              isDisabled={isDisabled}
-                              onToggle={handleToggle}
-                            />
+                              name={`ui.asset-type.${assetType}`}
+                              defaultValue={isChecked ? "selected" : ""}
+                            >
+                              {(assetField) => (
+                                <assetField.RadioField
+                                  options={options}
+                                  variant="card"
+                                />
+                              )}
+                            </appForm.AppField>
                           );
                         })}
                       </div>

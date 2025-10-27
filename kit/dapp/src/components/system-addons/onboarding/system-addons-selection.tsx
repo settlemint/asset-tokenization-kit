@@ -1,7 +1,6 @@
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { getAddonIcon } from "@/components/system-addons/components/addon-icons";
-import { AddonTypeCard } from "@/components/system-addons/components/addon-type-card";
 import { getAddonTypeFromTypeId } from "@/components/system-addons/components/addon-types-mapping";
 import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
@@ -51,7 +50,7 @@ export function SystemAddonsSelection() {
       new Set(
         systemDetails?.systemAddonRegistry.systemAddons.map((addon) =>
           getAddonTypeFromTypeId(addon.typeId)
-        ) ?? []
+        )
       ),
     [systemDetails?.systemAddonRegistry.systemAddons]
   );
@@ -90,6 +89,9 @@ export function SystemAddonsSelection() {
       });
     },
   });
+
+  // Cast to full AppField API so UI-only addon toggles can live outside schema
+  const appForm = form as unknown as ReturnType<typeof useAppForm>;
 
   const { mutateAsync: createAddons, isPending: isAddonsCreating } =
     useMutation(
@@ -280,25 +282,45 @@ export function SystemAddonsSelection() {
                               }
                             };
 
+                            const options = [
+                              {
+                                value: "selected",
+                                label: t(
+                                  `system-addons.addon-selection.addon-types.${addon}.title`
+                                ),
+                                description: t(
+                                  `system-addons.addon-selection.addon-types.${addon}.description`
+                                ),
+                                icon: Icon,
+                                isSelected: isChecked,
+                                disabled: isDisabled,
+                                disabledLabel: isYieldRequiredForBond
+                                  ? t(
+                                      "system-addons.addon-selection.required-for-bonds"
+                                    )
+                                  : isAlreadyDeployed
+                                    ? t("assets.deployed-label")
+                                    : undefined,
+                                isRequired: isYieldRequiredForBond,
+                                onToggle: (selected: boolean) => {
+                                  handleToggle(selected);
+                                },
+                              },
+                            ];
+
                             return (
-                              <AddonTypeCard
+                              <appForm.AppField
                                 key={addon}
-                                addonType={addon}
-                                icon={Icon}
-                                isChecked={isChecked}
-                                isDisabled={isDisabled}
-                                disabledLabel={
-                                  isYieldRequiredForBond
-                                    ? t(
-                                        "system-addons.addon-selection.required-for-bonds"
-                                      )
-                                    : isAlreadyDeployed
-                                      ? t("assets.deployed-label")
-                                      : undefined
-                                }
-                                onToggle={handleToggle}
-                                form={form as ReturnType<typeof useAppForm>}
-                              />
+                                name={`ui.addon-type.${addon}`}
+                                defaultValue={isChecked ? "selected" : ""}
+                              >
+                                {(addonField) => (
+                                  <addonField.RadioField
+                                    options={options}
+                                    variant="card"
+                                  />
+                                )}
+                              </appForm.AppField>
                             );
                           })}
                         </div>
