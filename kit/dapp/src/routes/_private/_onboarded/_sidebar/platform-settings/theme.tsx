@@ -31,7 +31,7 @@ import {
   THEME_COMPILE_THRESHOLD,
 } from "@/components/theme/lib/theme-editor-helpers";
 import type { ThemeFormApi } from "@/components/theme/lib/types";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAppForm } from "@/hooks/use-app-form";
@@ -115,11 +115,8 @@ function ThemeSettingsPage() {
         <Alert variant="destructive">
           <Shield className="h-4 w-4" />
           <AlertTitle>
-            {t("settings.permissions.adminRequired.title")}
+            {t("settings.theme.notAuthorized", { ns: "navigation" })}
           </AlertTitle>
-          <AlertDescription>
-            {t("settings.permissions.adminRequired.description")}
-          </AlertDescription>
         </Alert>
       </div>
     );

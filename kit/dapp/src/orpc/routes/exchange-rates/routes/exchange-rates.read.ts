@@ -48,7 +48,7 @@ export const read = publicRouter.exchangeRates.read
       };
     }
 
-    // Build query conditions
+    // Direct rate condition
     const conditions = [
       and(
         eq(fxRatesLatest.baseCode, baseCurrency),
