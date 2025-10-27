@@ -2,14 +2,12 @@ import {
   ChangeRolesSheet,
   ChangeRolesSheetProps,
   RoleInfo,
-  deriveAssignableRoles,
-  mergeRoles,
 } from "@/components/manage-dropdown/sheets/change-role/change-roles-sheet";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import {
   AccessControlRoles,
+  assetAccessControlRoles,
   type AssetAccessControlRoles,
 } from "@atk/zod/access-control-roles";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
@@ -80,17 +78,6 @@ export function ChangeTokenRolesSheet({
     [grantRole, asset.id]
   );
 
-  // Derive token-assignable roles from TOKEN_PERMISSIONS role requirements
-  const tokenAssignableRoles = useMemo(
-    () => deriveAssignableRoles(TOKEN_PERMISSIONS),
-    []
-  );
-
-  const rolesSet = useMemo(
-    () => mergeRoles(tokenAssignableRoles, asset.accessControl),
-    [asset.accessControl, tokenAssignableRoles]
-  );
-
   const groupedRoles = useMemo(() => {
     const groupForRole = (role: AccessControlRoles) => {
       if (role === "admin" || role === "tokenManager") return "Administration";
@@ -105,7 +92,7 @@ export function ChangeTokenRolesSheet({
     };
 
     const map = new Map<string, { label: string; roles: RoleInfo[] }>();
-    rolesSet.forEach((r) => {
+    assetAccessControlRoles.forEach((r) => {
       const g = groupForRole(r);
       const group = map.get(g) ?? {
         roles: [],
@@ -122,7 +109,7 @@ export function ChangeTokenRolesSheet({
       map.set(g, group);
     });
     return map;
-  }, [rolesSet, t]);
+  }, [t]);
 
   return (
     <ChangeRolesSheet
