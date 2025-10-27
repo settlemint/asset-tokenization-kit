@@ -11,8 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PrivateRouteImport } from './routes/_private'
+import { Route as DocsSplatRouteImport } from './routes/docs/$'
 import { Route as AuthPathnameRouteImport } from './routes/auth.$pathname'
 import { Route as ApiThemeDotcssRouteImport } from './routes/api/theme[.]css'
+import { Route as ApiSearchRouteImport } from './routes/api/search'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as PrivateOnboardingRouteImport } from './routes/_private/onboarding'
 import { Route as PrivateOnboardedRouteImport } from './routes/_private/_onboarded'
@@ -74,6 +76,11 @@ const PrivateRoute = PrivateRouteImport.update({
   id: '/_private',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocsSplatRoute = DocsSplatRouteImport.update({
+  id: '/docs/$',
+  path: '/docs/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthPathnameRoute = AuthPathnameRouteImport.update({
   id: '/$pathname',
   path: '/$pathname',
@@ -82,6 +89,11 @@ const AuthPathnameRoute = AuthPathnameRouteImport.update({
 const ApiThemeDotcssRoute = ApiThemeDotcssRouteImport.update({
   id: '/api/theme.css',
   path: '/api/theme.css',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSearchRoute = ApiSearchRouteImport.update({
+  id: '/api/search',
+  path: '/api/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiSplatRoute = ApiSplatRouteImport.update({
@@ -414,8 +426,10 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
   '/onboarding': typeof PrivateOnboardingSidebarRouteWithChildren
   '/api/$': typeof ApiSplatRoute
+  '/api/search': typeof ApiSearchRoute
   '/api/theme.css': typeof ApiThemeDotcssRoute
   '/auth/$pathname': typeof AuthPathnameRoute
+  '/docs/$': typeof DocsSplatRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/onboarding/': typeof PrivateOnboardingIndexRoute
@@ -466,8 +480,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
   '/api/$': typeof ApiSplatRoute
+  '/api/search': typeof ApiSearchRoute
   '/api/theme.css': typeof ApiThemeDotcssRoute
   '/auth/$pathname': typeof AuthPathnameRoute
+  '/docs/$': typeof DocsSplatRoute
   '/onboarding': typeof PrivateOnboardingIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
@@ -519,8 +535,10 @@ export interface FileRoutesById {
   '/_private/_onboarded': typeof PrivateOnboardedRouteWithChildren
   '/_private/onboarding': typeof PrivateOnboardingRouteWithChildren
   '/api/$': typeof ApiSplatRoute
+  '/api/search': typeof ApiSearchRoute
   '/api/theme.css': typeof ApiThemeDotcssRoute
   '/auth/$pathname': typeof AuthPathnameRoute
+  '/docs/$': typeof DocsSplatRoute
   '/_private/_onboarded/_sidebar': typeof PrivateOnboardedSidebarRouteWithChildren
   '/_private/onboarding/_sidebar': typeof PrivateOnboardingSidebarRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -576,8 +594,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/onboarding'
     | '/api/$'
+    | '/api/search'
     | '/api/theme.css'
     | '/auth/$pathname'
+    | '/docs/$'
     | '/api/auth/$'
     | '/api/rpc/$'
     | '/onboarding/'
@@ -628,8 +648,10 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/api/$'
+    | '/api/search'
     | '/api/theme.css'
     | '/auth/$pathname'
+    | '/docs/$'
     | '/onboarding'
     | '/api/auth/$'
     | '/api/rpc/$'
@@ -680,8 +702,10 @@ export interface FileRouteTypes {
     | '/_private/_onboarded'
     | '/_private/onboarding'
     | '/api/$'
+    | '/api/search'
     | '/api/theme.css'
     | '/auth/$pathname'
+    | '/docs/$'
     | '/_private/_onboarded/_sidebar'
     | '/_private/onboarding/_sidebar'
     | '/api/auth/$'
@@ -736,7 +760,9 @@ export interface RootRouteChildren {
   PrivateRoute: typeof PrivateRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   ApiSplatRoute: typeof ApiSplatRoute
+  ApiSearchRoute: typeof ApiSearchRoute
   ApiThemeDotcssRoute: typeof ApiThemeDotcssRoute
+  DocsSplatRoute: typeof DocsSplatRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiRpcSplatRoute: typeof ApiRpcSplatRoute
 }
@@ -757,6 +783,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/docs/$': {
+      id: '/docs/$'
+      path: '/docs/$'
+      fullPath: '/docs/$'
+      preLoaderRoute: typeof DocsSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/$pathname': {
       id: '/auth/$pathname'
       path: '/$pathname'
@@ -769,6 +802,13 @@ declare module '@tanstack/react-router' {
       path: '/api/theme.css'
       fullPath: '/api/theme.css'
       preLoaderRoute: typeof ApiThemeDotcssRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/search': {
+      id: '/api/search'
+      path: '/api/search'
+      fullPath: '/api/search'
+      preLoaderRoute: typeof ApiSearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/$': {
@@ -1367,7 +1407,9 @@ const rootRouteChildren: RootRouteChildren = {
   PrivateRoute: PrivateRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   ApiSplatRoute: ApiSplatRoute,
+  ApiSearchRoute: ApiSearchRoute,
   ApiThemeDotcssRoute: ApiThemeDotcssRoute,
+  DocsSplatRoute: DocsSplatRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiRpcSplatRoute: ApiRpcSplatRoute,
 }

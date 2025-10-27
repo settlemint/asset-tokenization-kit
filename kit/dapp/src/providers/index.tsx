@@ -21,13 +21,13 @@
  * @see {@link https://github.com/pacocoursey/next-themes} - Next Themes documentation
  */
 
-import { AuthProvider } from "@/providers/auth";
-import { ThemeProvider } from "@/providers/theme-context";
 import { ThemeSync } from "@/components/theme/components/theme-sync";
 import type { FontVariables } from "@/components/theme/lib/compile-css";
 import type { ThemeConfig } from "@/components/theme/lib/schema";
+import { AuthProvider } from "@/providers/auth";
+import { ThemeProvider } from "@/providers/theme-context";
+import { RootProvider } from "fumadocs-ui/provider/tanstack";
 import { MotionConfig } from "motion/react";
-import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { I18nProvider } from "./i18n-provider";
 
 /**
@@ -68,27 +68,29 @@ export function Providers({
   return (
     <I18nProvider>
       <MotionConfig reducedMotion="user">
-        <NextThemesProvider
-          /**
-           * The HTML attribute used to set the theme.
-           * "class" adds theme classes to the HTML element (e.g., "dark", "light").
-           */
-          attribute="class"
-          /**
-           * Default theme when user hasn't made a selection.
-           * "system" respects the user's OS theme preference.
-           */
-          defaultTheme="system"
-          /**
-           * Enable system theme detection.
-           * Automatically switches between light/dark based on OS settings.
-           */
-          enableSystem
-          /**
-           * localStorage key for persisting theme preference.
-           * Ensures theme selection persists across sessions.
-           */
-          storageKey="vite-ui-theme"
+        <RootProvider
+          theme={{
+            /**
+             * The HTML attribute used to set the theme.
+             * "class" adds theme classes to the HTML element (e.g., "dark", "light").
+             */
+            attribute: "class",
+            /**
+             * Default theme when user hasn't made a selection.
+             * "system" respects the user's OS theme preference.
+             */
+            defaultTheme: "system",
+            /**
+             * Enable system theme detection.
+             * Automatically switches between light/dark based on OS settings.
+             */
+            enableSystem: true,
+            /**
+             * localStorage key for persisting theme preference.
+             * Ensures theme selection persists across sessions.
+             */
+            storageKey: "vite-ui-theme",
+          }}
         >
           <ThemeProvider theme={theme} hash={themeHash}>
             <AuthProvider>
@@ -96,7 +98,7 @@ export function Providers({
               {children}
             </AuthProvider>
           </ThemeProvider>
-        </NextThemesProvider>
+        </RootProvider>
       </MotionConfig>
     </I18nProvider>
   );
