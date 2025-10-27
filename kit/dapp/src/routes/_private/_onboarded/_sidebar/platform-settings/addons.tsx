@@ -14,7 +14,7 @@ export const Route = createFileRoute(
         createI18nBreadcrumbMetadata("platformSettings", {
           href: "/platform-settings/addons",
         }),
-        createI18nBreadcrumbMetadata("settings.addons"),
+        createI18nBreadcrumbMetadata("settings.addons.title"),
       ],
     };
   },

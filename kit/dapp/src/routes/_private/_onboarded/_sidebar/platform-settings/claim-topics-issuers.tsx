@@ -32,7 +32,7 @@ export const Route = createFileRoute(
         createI18nBreadcrumbMetadata("platformSettings", {
           href: "/platform-settings/claim-topics-issuers",
         }),
-        createI18nBreadcrumbMetadata("settings.claimTopicsIssuers"),
+        createI18nBreadcrumbMetadata("settings.claimTopicsIssuers.title"),
       ],
     };
   },

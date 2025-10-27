@@ -111,7 +111,7 @@ export function NavSettings() {
           const isActive = isSettingsActive(item.path);
 
           const button = (
-            <SidebarMenuItem>
+            <SidebarMenuItem key={item.path}>
               <SidebarMenuButton
                 asChild
                 isActive={isActive}
@@ -122,7 +122,6 @@ export function NavSettings() {
                   activeProps={{
                     "data-active": true,
                   }}
-                  disabled={!item.enabled}
                   className={isActive ? "font-semibold" : undefined}
                 >
                   <Icon />
