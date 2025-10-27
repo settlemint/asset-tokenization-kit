@@ -152,7 +152,7 @@ jobs:
         id: playwright-ui
         # if: success() || steps.playwright-api.conclusion == 'failure'
         run: |
-          bun playwright test --config=playwright.ui.config.ts --project=deposit-tests --project=equity-tests --project=stablecoin-tests --project=fund-tests --project=bond-tests --retries 2 --reporter=html
+          bun playwright test --config=playwright.ui.config.ts --project=deposit-tests --project=equity-tests --project=stablecoin-tests --project=fund-tests --project=bond-tests --reporter=html
         working-directory: kit/e2e
         env:
           CI: true

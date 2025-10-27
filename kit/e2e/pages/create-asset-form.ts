@@ -543,9 +543,11 @@ export class CreateAssetForm extends BasePage {
     const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const nameMatcher = new RegExp(`\\b${escapedName}\\b`, "i");
 
-    const headerContractAddress = this.page.getByRole("columnheader", {
-      name: /^Contract Address$/,
-    });
+    const headerContractAddress = this.page
+      .getByRole("columnheader", {
+        name: /^(?:Contract\s+)?Address$/i,
+      })
+      .first();
 
     let onListing = false;
     try {
