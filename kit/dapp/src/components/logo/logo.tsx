@@ -46,8 +46,12 @@ export function Logo({
   const mounted = useMounted();
   const fallback = FALLBACK_LOGOS[variant];
 
-  const lightUrl = logo.lightUrl?.trim();
-  const darkUrl = logo.darkUrl?.trim();
+  const lightRaw =
+    variant === "icon" ? (logo.lightIconUrl ?? logo.lightUrl) : logo.lightUrl;
+  const darkRaw =
+    variant === "icon" ? (logo.darkIconUrl ?? logo.darkUrl) : logo.darkUrl;
+  const lightUrl = lightRaw?.trim();
+  const darkUrl = darkRaw?.trim();
   const logoAlt = logo.alt?.trim();
 
   const resolveSrc = (

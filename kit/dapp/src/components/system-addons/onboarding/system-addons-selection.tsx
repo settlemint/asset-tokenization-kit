@@ -46,15 +46,10 @@ export function SystemAddonsSelection() {
   );
 
   // Create a set of already deployed addons for easy lookup
-  const deployedAddons = useMemo(
-    () =>
-      new Set(
-        systemDetails?.systemAddonRegistry.systemAddons.map((addon) =>
-          getAddonTypeFromTypeId(addon.typeId)
-        ) ?? []
-      ),
-    [systemDetails?.systemAddonRegistry.systemAddons]
-  );
+  const deployedAddons = useMemo(() => {
+    const addons = systemDetails?.systemAddonRegistry.systemAddons ?? [];
+    return new Set(addons.map((addon) => getAddonTypeFromTypeId(addon.typeId)));
+  }, [systemDetails?.systemAddonRegistry.systemAddons]);
 
   const deployedAddonsConfig = useMemo(() => {
     return [...deployedAddons].map((addon) => ({

@@ -52,15 +52,10 @@ export function AddonsManagement() {
   );
 
   // Create a set of already deployed addons for easy lookup
-  const deployedAddons = useMemo(
-    () =>
-      new Set(
-        system?.systemAddonRegistry.systemAddons.map((addon) =>
-          getAddonTypeFromTypeId(addon.typeId)
-        ) ?? []
-      ),
-    [system?.systemAddonRegistry.systemAddons]
-  );
+  const deployedAddons = useMemo(() => {
+    const addons = system?.systemAddonRegistry.systemAddons ?? [];
+    return new Set(addons.map((addon) => getAddonTypeFromTypeId(addon.typeId)));
+  }, [system?.systemAddonRegistry.systemAddons]);
 
   const form = useAppForm({
     defaultValues: {

@@ -75,15 +75,12 @@ export function AssetTypeSelection() {
   const availableAssets = TokenTypeEnum.options;
 
   // Create a set of already deployed asset types for easy lookup
-  const deployedAssetTypes = useMemo(
-    () =>
-      new Set(
-        systemDetails?.tokenFactoryRegistry.tokenFactories.map((factory) =>
-          getAssetTypeFromFactoryTypeId(factory.typeId)
-        ) ?? []
-      ),
-    [systemDetails?.tokenFactoryRegistry.tokenFactories]
-  );
+  const deployedAssetTypes = useMemo(() => {
+    const factories = systemDetails?.tokenFactoryRegistry.tokenFactories ?? [];
+    return new Set(
+      factories.map((factory) => getAssetTypeFromFactoryTypeId(factory.typeId))
+    );
+  }, [systemDetails?.tokenFactoryRegistry.tokenFactories]);
 
   const handleAddFactory = (factory: SingleFactory) => {
     const alreadyIncluded = form.state.values.factories.some(

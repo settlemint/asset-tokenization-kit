@@ -6,8 +6,10 @@ const ALLOWED_CONTENT_TYPES = [
   "image/webp",
 ] as const;
 
+const LOGO_MODES = ["light", "dark", "lightIcon", "darkIcon"] as const;
+
 export const ThemeLogoUploadSchema = z.object({
-  mode: z.enum(["light", "dark"]),
+  mode: z.enum(LOGO_MODES),
   fileName: z
     .string()
     .min(1, "File name is required")
@@ -22,7 +24,7 @@ export const ThemeLogoUploadSchema = z.object({
 });
 
 export const ThemeLogoUploadOutputSchema = z.object({
-  mode: z.enum(["light", "dark"]),
+  mode: z.enum(LOGO_MODES),
   bucket: z.string(),
   objectKey: z.string(),
   publicUrl: z.string(),
@@ -32,5 +34,6 @@ export const ThemeLogoUploadOutputSchema = z.object({
   expiresAt: z.string().optional(),
 });
 
+export type ThemeLogoMode = (typeof LOGO_MODES)[number];
 export type ThemeLogoUploadInput = z.infer<typeof ThemeLogoUploadSchema>;
 export type ThemeLogoUploadOutput = z.infer<typeof ThemeLogoUploadOutputSchema>;
