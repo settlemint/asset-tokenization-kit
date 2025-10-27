@@ -44,26 +44,35 @@ export function NavSettings() {
     return matches.some((match) => match.pathname === path);
   };
 
+  const roles = system.userPermissions?.roles ?? {};
+  const canViewSettings =
+    Object.keys(roles).length > 0 ||
+    system.userPermissions?.roles.admin === true;
+
+  if (!canViewSettings) {
+    return null;
+  }
+
   const settingsItems = [
     {
       name: t("settings.assetTypes.title"),
       icon: FileText,
       path: "/platform-settings/asset-types",
-      enabled: system.userPermissions?.actions.tokenFactoryCreate,
+      enabled: true,
       disabledMessage: t("settings.assetTypes.notAuthorized"),
     },
     /* {
       name: t("settings.compliance.title"),
       icon: Shield,
       path: "/platform-settings/compliance",
-      enabled: system.userPermissions?.actions.complianceModuleCreate,
+      enabled: true,
       disabledMessage: t("settings.compliance.notAuthorized"),
     },*/
     {
       name: t("settings.addons.title"),
       icon: Puzzle,
       path: "/platform-settings/addons",
-      enabled: system.userPermissions?.actions.addonFactoryCreate,
+      enabled: true,
       disabledMessage: t("settings.addons.notAuthorized"),
     },
     {
@@ -77,18 +86,14 @@ export function NavSettings() {
       name: t("settings.claimTopicsIssuers.title"),
       icon: ClipboardCheck,
       path: "/platform-settings/claim-topics-issuers",
-      enabled:
-        system.userPermissions?.actions.topicCreate ||
-        system.userPermissions?.actions.trustedIssuerCreate,
+      enabled: true,
       disabledMessage: t("settings.claimTopicsIssuers.notAuthorized"),
     },
     {
       name: t("settings.permissions.title"),
       icon: Key,
       path: "/platform-settings/permissions",
-      enabled:
-        system.userPermissions?.actions.grantRole ||
-        system.userPermissions?.actions.revokeRole,
+      enabled: true,
       disabledMessage: t("settings.permissions.notAuthorized"),
     },
   ];

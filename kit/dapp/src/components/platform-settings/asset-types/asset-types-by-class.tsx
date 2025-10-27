@@ -1,3 +1,4 @@
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import {
   Card,
   CardContent,
@@ -18,7 +19,7 @@ import {
 } from "@/orpc/routes/system/token-factory/routes/factory.create.schema";
 import { getAssetTypeFromFactoryTypeId } from "@atk/zod/asset-types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Loader2, Shield } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -156,80 +157,90 @@ export function AssetTypesByClass() {
   );
 
   return (
-    <form.AppForm>
-      <div className="space-y-8">
-        {hasUndeployedAssets && (
-          <InfoAlert
-            description={t("assets.asset-factories-description", {
-              ns: "onboarding",
-            })}
-          />
-        )}
+    <>
+      {!canCreateAssetFactory && (
+        <Alert variant="destructive" className="mb-4">
+          <Shield className="h-4 w-4" />
+          <AlertTitle>
+            {t("settings.assetTypes.notAuthorized", { ns: "navigation" })}
+          </AlertTitle>
+        </Alert>
+      )}
+      <form.AppForm>
+        <div className="space-y-8">
+          {hasUndeployedAssets && (
+            <InfoAlert
+              description={t("assets.asset-factories-description", {
+                ns: "onboarding",
+              })}
+            />
+          )}
 
-        {assetClasses.map((assetClass) => {
-          // Get ALL asset types for this class using our helper function
-          const classAssetTypes = availableAssets.filter((assetType) => {
-            return getAssetClassFromAssetType(assetType) === assetClass.id;
-          });
+          {assetClasses.map((assetClass) => {
+            // Get ALL asset types for this class using our helper function
+            const classAssetTypes = availableAssets.filter((assetType) => {
+              return getAssetClassFromAssetType(assetType) === assetClass.id;
+            });
 
-          if (classAssetTypes.length === 0) return null;
+            if (classAssetTypes.length === 0) return null;
 
-          return (
-            <Card key={assetClass.id}>
-              <CardHeader>
-                <div>
-                  <CardTitle>{assetClass.name}</CardTitle>
-                  <CardDescription className="mt-1">
-                    {assetClass.description}
-                  </CardDescription>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4 md:grid-cols-2">
-                  {classAssetTypes.map((assetType) => {
-                    const isDeployed = deployedAssetTypes.has(assetType);
+            return (
+              <Card key={assetClass.id}>
+                <CardHeader>
+                  <div>
+                    <CardTitle>{assetClass.name}</CardTitle>
+                    <CardDescription className="mt-1">
+                      {assetClass.description}
+                    </CardDescription>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {classAssetTypes.map((assetType) => {
+                      const isDeployed = deployedAssetTypes.has(assetType);
 
-                    // Get factory data with extensions from all deployed factories
-                    const allFactories = [
-                      ...groupedFactories.fixedIncome,
-                      ...groupedFactories.flexibleIncome,
-                      ...groupedFactories.cashEquivalent,
-                    ];
-                    const factory = allFactories.find(
-                      (f) =>
-                        getAssetTypeFromFactoryTypeId(f.typeId) === assetType
-                    );
+                      // Get factory data with extensions from all deployed factories
+                      const allFactories = [
+                        ...groupedFactories.fixedIncome,
+                        ...groupedFactories.flexibleIncome,
+                        ...groupedFactories.cashEquivalent,
+                      ];
+                      const factory = allFactories.find(
+                        (f) =>
+                          getAssetTypeFromFactoryTypeId(f.typeId) === assetType
+                      );
 
-                    const extensions =
-                      factory?.tokenExtensions ||
-                      getDefaultExtensions(assetType);
+                      const extensions =
+                        factory?.tokenExtensions ||
+                        getDefaultExtensions(assetType);
 
-                    return (
-                      <AssetTypeCard
-                        key={assetType}
-                        assetType={assetType}
-                        extensions={extensions}
-                      >
-                        <AssetTypeActions
+                      return (
+                        <AssetTypeCard
+                          key={assetType}
                           assetType={assetType}
-                          isDeployed={isDeployed}
-                          canCreateAssetFactory={canCreateAssetFactory}
-                          isDeploying={isDeploying}
-                          isDeployingThisType={
-                            isDeploying && deployingAssetType === assetType
-                          }
-                          onEnable={handleEnableAssetType}
-                          form={form}
-                        />
-                      </AssetTypeCard>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-    </form.AppForm>
+                          extensions={extensions}
+                        >
+                          <AssetTypeActions
+                            assetType={assetType}
+                            isDeployed={isDeployed}
+                            canCreateAssetFactory={canCreateAssetFactory}
+                            isDeploying={isDeploying}
+                            isDeployingThisType={
+                              isDeploying && deployingAssetType === assetType
+                            }
+                            onEnable={handleEnableAssetType}
+                            form={form}
+                          />
+                        </AssetTypeCard>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </form.AppForm>{" "}
+    </>
   );
 }

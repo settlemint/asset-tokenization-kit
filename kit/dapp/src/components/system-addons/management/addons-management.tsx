@@ -1,6 +1,7 @@
 import { getAddonIcon } from "@/components/system-addons/components/addon-icons";
 import { AddonTypeCard } from "@/components/system-addons/components/addon-type-card";
 import { getAddonTypeFromTypeId } from "@/components/system-addons/components/addon-types-mapping";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import {
   Card,
   CardContent,
@@ -20,7 +21,7 @@ import { addonTypes } from "@atk/zod/addon-types";
 import { AssetFactoryTypeIdEnum } from "@atk/zod/asset-types";
 import { useStore } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Loader2, Shield } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -158,155 +159,171 @@ export function AddonsManagement() {
   );
 
   return (
-    <form.AppForm>
-      <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              {t("onboarding:system-addons.addon-selection.available-addons")}
-            </CardTitle>
-            <CardDescription>
-              {t("onboarding:system-addons.addon-selection.intro-1")}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {hasUndeployedAddons && (
-              <InfoAlert
-                description={t(
-                  "onboarding:system-addons.addon-selection.intro-2"
-                )}
-              />
-            )}
+    <>
+      {!canCreateAddon && (
+        <Alert variant="destructive" className="mb-4">
+          <Shield className="h-4 w-4" />
+          <AlertTitle>
+            {t("settings.addons.notAuthorized", { ns: "navigation" })}
+          </AlertTitle>
+        </Alert>
+      )}
+      <form.AppForm>
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                {t("onboarding:system-addons.addon-selection.available-addons")}
+              </CardTitle>
+              <CardDescription>
+                {t("onboarding:system-addons.addon-selection.intro-1")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {hasUndeployedAddons && (
+                <InfoAlert
+                  description={t(
+                    "onboarding:system-addons.addon-selection.intro-2"
+                  )}
+                />
+              )}
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {AVAILABLE_ADDONS.map((addonType) => {
-                const Icon = getAddonIcon(addonType);
-                const isDeployed = deployedAddons.has(addonType);
-                const isSelected = selectedAddons.some(
-                  (a) => a.type === addonType
-                );
-                const isYieldRequiredForBond =
-                  addonType === "yield" && hasBondFactory;
-                const isDisabled =
-                  isDeploying ||
-                  isDeployed ||
-                  isYieldRequiredForBond ||
-                  !canCreateAddon;
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {AVAILABLE_ADDONS.map((addonType) => {
+                  const Icon = getAddonIcon(addonType);
+                  const isDeployed = deployedAddons.has(addonType);
+                  const isSelected = selectedAddons.some(
+                    (a) => a.type === addonType
+                  );
+                  const isYieldRequiredForBond =
+                    addonType === "yield" && hasBondFactory;
+                  const isDisabled =
+                    isDeploying ||
+                    isDeployed ||
+                    isYieldRequiredForBond ||
+                    !canCreateAddon;
 
-                return (
-                  <AddonTypeCard
-                    key={addonType}
-                    addonType={addonType}
-                    icon={Icon}
-                    isChecked={isSelected}
-                    isDisabled={isDisabled}
-                    isRequired={isYieldRequiredForBond}
-                    disabledLabel={
-                      isYieldRequiredForBond
-                        ? t(
-                            "onboarding:system-addons.addon-selection.required-for-bonds"
-                          )
-                        : isDeployed
-                          ? t("assets.deployed-label")
-                          : undefined
-                    }
-                    onToggle={(checked) => {
-                      handleToggleAddon(addonType, checked);
+                  return (
+                    <AddonTypeCard
+                      key={addonType}
+                      addonType={addonType}
+                      icon={Icon}
+                      isChecked={isSelected}
+                      isDisabled={isDisabled}
+                      isRequired={isYieldRequiredForBond}
+                      disabledLabel={
+                        isYieldRequiredForBond
+                          ? t(
+                              "onboarding:system-addons.addon-selection.required-for-bonds"
+                            )
+                          : isDeployed
+                            ? t("assets.deployed-label")
+                            : undefined
+                      }
+                      onToggle={(checked) => {
+                        handleToggleAddon(addonType, checked);
+                      }}
+                    />
+                  );
+                })}
+              </div>
+
+              {selectedAddons.length > 0 && canCreateAddon && (
+                <div className="flex justify-end pt-4 border-t">
+                  <form.VerificationButton
+                    onSubmit={() => {
+                      void form.handleSubmit();
                     }}
-                  />
-                );
-              })}
-            </div>
+                    disabled={isDeploying || selectedAddons.length === 0}
+                    walletVerification={{
+                      title: t(
+                        "onboarding:system-addons.addon-selection.confirm-deployment-title"
+                      ),
+                      description: t(
+                        "onboarding:system-addons.addon-selection.confirm-deployment-description"
+                      ),
+                      setField: (verification) => {
+                        form.setFieldValue("walletVerification", verification);
+                      },
+                    }}
+                  >
+                    {isDeploying ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {t(
+                          "onboarding:system-addons.addon-selection.deploying"
+                        )}
+                      </>
+                    ) : selectedAddons.length > 1 ? (
+                      `${t("onboarding:system-addons.addon-selection.deploy-addons")} (${selectedAddons.length})`
+                    ) : (
+                      t(
+                        "onboarding:system-addons.addon-selection.deploy-addons"
+                      )
+                    )}
+                  </form.VerificationButton>
+                </div>
+              )}
 
-            {selectedAddons.length > 0 && canCreateAddon && (
-              <div className="flex justify-end pt-4 border-t">
-                <form.VerificationButton
-                  onSubmit={() => {
-                    void form.handleSubmit();
-                  }}
-                  disabled={isDeploying || selectedAddons.length === 0}
-                  walletVerification={{
-                    title: t(
-                      "onboarding:system-addons.addon-selection.confirm-deployment-title"
-                    ),
-                    description: t(
-                      "onboarding:system-addons.addon-selection.confirm-deployment-description"
-                    ),
-                    setField: (verification) => {
-                      form.setFieldValue("walletVerification", verification);
-                    },
-                  }}
-                >
-                  {isDeploying ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {t("onboarding:system-addons.addon-selection.deploying")}
-                    </>
-                  ) : selectedAddons.length > 1 ? (
-                    `${t("onboarding:system-addons.addon-selection.deploy-addons")} (${selectedAddons.length})`
-                  ) : (
-                    t("onboarding:system-addons.addon-selection.deploy-addons")
-                  )}
-                </form.VerificationButton>
-              </div>
-            )}
+              {!hasUndeployedAddons && (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>
+                    {t(
+                      "onboarding:system-addons.addon-selection.all-addons-enabled"
+                    )}
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-            {!hasUndeployedAddons && (
-              <div className="text-center py-8 text-muted-foreground">
-                <p>
-                  {t(
-                    "onboarding:system-addons.addon-selection.all-addons-enabled"
-                  )}
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+          {/* Show enabled addons in a separate section */}
+          {system?.systemAddonRegistry.systemAddons &&
+            system.systemAddonRegistry.systemAddons.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    {t(
+                      "onboarding:system-addons.addon-selection.enabled-addons"
+                    )}
+                  </CardTitle>
+                  <CardDescription>
+                    {t(
+                      "onboarding:system-addons.addon-selection.enabled-addons-description"
+                    )}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {system.systemAddonRegistry.systemAddons.map((addon) => {
+                      const addonType = getAddonTypeFromTypeId(addon.typeId);
+                      const Icon = getAddonIcon(addonType);
 
-        {/* Show enabled addons in a separate section */}
-        {system?.systemAddonRegistry.systemAddons &&
-          system.systemAddonRegistry.systemAddons.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {t("onboarding:system-addons.addon-selection.enabled-addons")}
-                </CardTitle>
-                <CardDescription>
-                  {t(
-                    "onboarding:system-addons.addon-selection.enabled-addons-description"
-                  )}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {system.systemAddonRegistry.systemAddons.map((addon) => {
-                    const addonType = getAddonTypeFromTypeId(addon.typeId);
-                    const Icon = getAddonIcon(addonType);
-
-                    return (
-                      <div
-                        key={addon.id}
-                        className="flex items-center justify-between p-3 rounded-lg border"
-                      >
-                        <div className="flex items-center gap-3">
-                          <Icon className="h-5 w-5 text-muted-foreground" />
-                          <div>
-                            <p className="font-medium">{addon.name}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {t(
-                                `onboarding:system-addons.addon-selection.addon-types.${addonType}.description`
-                              )}
-                            </p>
+                      return (
+                        <div
+                          key={addon.id}
+                          className="flex items-center justify-between p-3 rounded-lg border"
+                        >
+                          <div className="flex items-center gap-3">
+                            <Icon className="h-5 w-5 text-muted-foreground" />
+                            <div>
+                              <p className="font-medium">{addon.name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {t(
+                                  `onboarding:system-addons.addon-selection.addon-types.${addonType}.description`
+                                )}
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-      </div>
-    </form.AppForm>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+        </div>
+      </form.AppForm>{" "}
+    </>
   );
 }

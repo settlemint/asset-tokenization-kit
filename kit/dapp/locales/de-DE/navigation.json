@@ -64,11 +64,7 @@
     "permissions": {
       "title": "Plattformadministratoren",
       "description": "Verwalten Sie Plattformadministratorrollen für das Asset Tokenization Kit",
-      "notAuthorized": "Sie sind nicht berechtigt, Berechtigungen zu verwalten.\nSie haben nicht die Administratorrolle.",
-      "adminRequired": {
-        "title": "Administratorzugriff erforderlich",
-        "description": "Sie benötigen Administratorrechte, um Rollen zu verwalten. Bitte wenden Sie sich an Ihren Systemadministrator für Zugriff."
-      }
+      "notAuthorized": "Sie sind nicht berechtigt, Berechtigungen zu verwalten.\nSie haben nicht die Administratorrolle."
     }
   }
 }
