@@ -111,8 +111,7 @@ export function RadioField({
       {options.map((option) => {
         const isDisabled = option.disabled ?? false;
         const isRequired = option.isRequired ?? false;
-        const showDisabledMessage =
-          (isDisabled || isRequired) && option.disabledLabel;
+        const showDisabledMessage = isDisabled && option.disabledLabel;
         const isSelected = option.isSelected ?? activeValue === option.value;
 
         return (
