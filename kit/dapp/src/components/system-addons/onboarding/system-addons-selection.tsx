@@ -51,7 +51,7 @@ export function SystemAddonsSelection() {
       new Set(
         systemDetails?.systemAddonRegistry.systemAddons.map((addon) =>
           getAddonTypeFromTypeId(addon.typeId)
-        ) ?? []
+        )
       ),
     [systemDetails?.systemAddonRegistry.systemAddons]
   );

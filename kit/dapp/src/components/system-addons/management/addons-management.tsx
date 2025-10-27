@@ -57,7 +57,7 @@ export function AddonsManagement() {
       new Set(
         system?.systemAddonRegistry.systemAddons.map((addon) =>
           getAddonTypeFromTypeId(addon.typeId)
-        ) ?? []
+        )
       ),
     [system?.systemAddonRegistry.systemAddons]
   );

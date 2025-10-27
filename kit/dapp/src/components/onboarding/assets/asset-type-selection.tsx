@@ -80,7 +80,7 @@ export function AssetTypeSelection() {
       new Set(
         systemDetails?.tokenFactoryRegistry.tokenFactories.map((factory) =>
           getAssetTypeFromFactoryTypeId(factory.typeId)
-        ) ?? []
+        )
       ),
     [systemDetails?.tokenFactoryRegistry.tokenFactories]
   );

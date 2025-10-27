@@ -9,8 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PrivateRouteImport } from './routes/_private'
+import { Route as LlmsDotmdxSplatRouteImport } from './routes/llms[.]mdx.$'
 import { Route as DocsSplatRouteImport } from './routes/docs/$'
 import { Route as AuthPathnameRouteImport } from './routes/auth.$pathname'
 import { Route as ApiThemeDotcssRouteImport } from './routes/api/theme[.]css'
@@ -67,6 +69,11 @@ import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklis
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressActionsRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/actions'
 import { Route as PrivateOnboardedSidebarParticipantsEntitiesAddressClaimsRouteImport } from './routes/_private/_onboarded/_sidebar/participants/entities/$address/claims'
 
+const LlmsFullDottxtRoute = LlmsFullDottxtRouteImport.update({
+  id: '/llms-full.txt',
+  path: '/llms-full.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -74,6 +81,11 @@ const AuthRoute = AuthRouteImport.update({
 } as any)
 const PrivateRoute = PrivateRouteImport.update({
   id: '/_private',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsDotmdxSplatRoute = LlmsDotmdxSplatRouteImport.update({
+  id: '/llms.mdx/$',
+  path: '/llms.mdx/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsSplatRoute = DocsSplatRouteImport.update({
@@ -424,12 +436,14 @@ const PrivateOnboardedSidebarParticipantsEntitiesAddressClaimsRoute =
 
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/onboarding': typeof PrivateOnboardingSidebarRouteWithChildren
   '/api/$': typeof ApiSplatRoute
   '/api/search': typeof ApiSearchRoute
   '/api/theme.css': typeof ApiThemeDotcssRoute
   '/auth/$pathname': typeof AuthPathnameRoute
   '/docs/$': typeof DocsSplatRoute
+  '/llms.mdx/$': typeof LlmsDotmdxSplatRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/onboarding/': typeof PrivateOnboardingIndexRoute
@@ -479,11 +493,13 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/api/$': typeof ApiSplatRoute
   '/api/search': typeof ApiSearchRoute
   '/api/theme.css': typeof ApiThemeDotcssRoute
   '/auth/$pathname': typeof AuthPathnameRoute
   '/docs/$': typeof DocsSplatRoute
+  '/llms.mdx/$': typeof LlmsDotmdxSplatRoute
   '/onboarding': typeof PrivateOnboardingIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
@@ -532,6 +548,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_private': typeof PrivateRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/_private/_onboarded': typeof PrivateOnboardedRouteWithChildren
   '/_private/onboarding': typeof PrivateOnboardingRouteWithChildren
   '/api/$': typeof ApiSplatRoute
@@ -539,6 +556,7 @@ export interface FileRoutesById {
   '/api/theme.css': typeof ApiThemeDotcssRoute
   '/auth/$pathname': typeof AuthPathnameRoute
   '/docs/$': typeof DocsSplatRoute
+  '/llms.mdx/$': typeof LlmsDotmdxSplatRoute
   '/_private/_onboarded/_sidebar': typeof PrivateOnboardedSidebarRouteWithChildren
   '/_private/onboarding/_sidebar': typeof PrivateOnboardingSidebarRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -592,12 +610,14 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/auth'
+    | '/llms-full.txt'
     | '/onboarding'
     | '/api/$'
     | '/api/search'
     | '/api/theme.css'
     | '/auth/$pathname'
     | '/docs/$'
+    | '/llms.mdx/$'
     | '/api/auth/$'
     | '/api/rpc/$'
     | '/onboarding/'
@@ -647,11 +667,13 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
+    | '/llms-full.txt'
     | '/api/$'
     | '/api/search'
     | '/api/theme.css'
     | '/auth/$pathname'
     | '/docs/$'
+    | '/llms.mdx/$'
     | '/onboarding'
     | '/api/auth/$'
     | '/api/rpc/$'
@@ -699,6 +721,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_private'
     | '/auth'
+    | '/llms-full.txt'
     | '/_private/_onboarded'
     | '/_private/onboarding'
     | '/api/$'
@@ -706,6 +729,7 @@ export interface FileRouteTypes {
     | '/api/theme.css'
     | '/auth/$pathname'
     | '/docs/$'
+    | '/llms.mdx/$'
     | '/_private/_onboarded/_sidebar'
     | '/_private/onboarding/_sidebar'
     | '/api/auth/$'
@@ -759,16 +783,25 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   PrivateRoute: typeof PrivateRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
+  LlmsFullDottxtRoute: typeof LlmsFullDottxtRoute
   ApiSplatRoute: typeof ApiSplatRoute
   ApiSearchRoute: typeof ApiSearchRoute
   ApiThemeDotcssRoute: typeof ApiThemeDotcssRoute
   DocsSplatRoute: typeof DocsSplatRoute
+  LlmsDotmdxSplatRoute: typeof LlmsDotmdxSplatRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiRpcSplatRoute: typeof ApiRpcSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/llms-full.txt': {
+      id: '/llms-full.txt'
+      path: '/llms-full.txt'
+      fullPath: '/llms-full.txt'
+      preLoaderRoute: typeof LlmsFullDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -781,6 +814,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof PrivateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms.mdx/$': {
+      id: '/llms.mdx/$'
+      path: '/llms.mdx/$'
+      fullPath: '/llms.mdx/$'
+      preLoaderRoute: typeof LlmsDotmdxSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs/$': {
@@ -1406,10 +1446,12 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   PrivateRoute: PrivateRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
+  LlmsFullDottxtRoute: LlmsFullDottxtRoute,
   ApiSplatRoute: ApiSplatRoute,
   ApiSearchRoute: ApiSearchRoute,
   ApiThemeDotcssRoute: ApiThemeDotcssRoute,
   DocsSplatRoute: DocsSplatRoute,
+  LlmsDotmdxSplatRoute: LlmsDotmdxSplatRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiRpcSplatRoute: ApiRpcSplatRoute,
 }
@@ -1418,10 +1460,11 @@ export const routeTree = rootRouteImport
   ._addFileTypes<FileRouteTypes>()
 
 import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
+import type { startInstance } from './start.ts'
 declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }

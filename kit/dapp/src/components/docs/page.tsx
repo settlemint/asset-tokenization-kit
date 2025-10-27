@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Link, usePathname } from "fumadocs-core/framework";
 import type * as PageTree from "fumadocs-core/page-tree";
 import {
@@ -8,6 +9,7 @@ import {
   useActiveAnchors,
 } from "fumadocs-core/toc";
 import { useTreeContext } from "fumadocs-ui/contexts/tree";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { type ComponentProps, type ReactNode, useMemo } from "react";
 import { cn } from "../../lib/cn";
 
@@ -20,9 +22,9 @@ export interface DocsPageProps {
 export function DocsPage({ toc = [], ...props }: DocsPageProps) {
   return (
     <AnchorProvider toc={toc}>
-      <div className="flex w-full min-w-0 flex-row h-full">
+      <div className="flex w-full min-w-0 flex-row h-full ">
         <main className="flex flex-1 min-w-0 flex-col overflow-y-auto">
-          <article className="flex flex-1 flex-col w-full max-w-[860px] gap-6 px-4 py-8 md:px-6">
+          <article className="flex flex-1 flex-col w-full gap-6 px-4 py-8 md:px-6">
             {props.children}
             <Footer />
           </article>
@@ -49,28 +51,6 @@ export function DocsBody(props: ComponentProps<"div">) {
     <div {...props} className={cn("prose", props.className)}>
       {props.children}
     </div>
-  );
-}
-
-export function DocsDescription(props: ComponentProps<"p">) {
-  // don't render if no description provided
-  if (props.children === undefined) return null;
-
-  return (
-    <p
-      {...props}
-      className={cn("mb-8 text-lg text-fd-muted-foreground", props.className)}
-    >
-      {props.children}
-    </p>
-  );
-}
-
-export function DocsTitle(props: ComponentProps<"h1">) {
-  return (
-    <h1 {...props} className={cn("text-3xl font-semibold", props.className)}>
-      {props.children}
-    </h1>
   );
 }
 
@@ -124,9 +104,41 @@ function Footer() {
   }, [flatten, pathname]);
 
   return (
-    <div className="flex flex-row justify-between gap-2 items-center font-medium">
-      {previous ? <Link href={previous.url}>{previous.name}</Link> : null}
-      {next ? <Link href={next.url}>{next.name}</Link> : null}
+    <div className="flex flex-row justify-between gap-4 mt-8 pt-8 border-t">
+      {previous ? (
+        <Button
+          variant="outline"
+          size="lg"
+          asChild
+          className="flex-1 justify-start"
+        >
+          <Link href={previous.url}>
+            <ChevronLeft className="size-4" />
+            <div className="flex flex-col items-start gap-0.5">
+              <span className="font-medium">{previous.name}</span>
+            </div>
+          </Link>
+        </Button>
+      ) : (
+        <div />
+      )}
+      {next ? (
+        <Button
+          variant="outline"
+          size="lg"
+          asChild
+          className="flex-1 justify-end"
+        >
+          <Link href={next.url}>
+            <div className="flex flex-col items-end gap-0.5">
+              <span className="font-medium">{next.name}</span>
+            </div>
+            <ChevronRight className="size-4" />
+          </Link>
+        </Button>
+      ) : (
+        <div />
+      )}
     </div>
   );
 }
