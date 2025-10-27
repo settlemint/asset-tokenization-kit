@@ -28,6 +28,7 @@
     "assetTypes": {
       "title": "Asset Types",
       "description": "Configure and enable different types of assets available on the platform. Once enabled, asset types cannot be disabled.",
+      "notAuthorized": "You are not authorized to manage asset types.\nYou do not have the system manager role.",
       "allEnabled": "All available asset types have been enabled.",
       "enabledTitle": "Enabled Asset Types",
       "enabledDescription": "These asset types are currently active and available for use on the platform.",
@@ -36,12 +37,22 @@
       "confirmEnableTitle": "Enable {{assetType}}?",
       "confirmEnableDescription": "This action cannot be undone. Once enabled, this asset type will be permanently available on the platform."
     },
-    "compliance": "Compliance",
-    "addons": "Addons",
-    "claimTopicsIssuers": "Claim Topics & Issuers",
+    "compliance": {
+      "title": "Compliance",
+      "notAuthorized": "You are not authorized to manage compliance.\nYou do not have the compliance manager role."
+    },
+    "addons": {
+      "title": "Addons",
+      "notAuthorized": "You are not authorized to manage addons.\nYou do not have the addon manager role."
+    },
+    "claimTopicsIssuers": {
+      "title": "Claim Topics & Issuers",
+      "notAuthorized": "You are not authorized to manage claim topics and issuers.\nYou do not have the claim policy manager role."
+    },
     "theme": {
       "title": "Theme",
       "description": "Customize branding assets, typography, and color tokens for your tenant experience.",
+      "notAuthorized": "You are not authorized to manage theme.\nYou are not an administrator.",
       "placeholder": "Theme editor is coming soon. Check back shortly for live customization tools.",
       "dirtyBadge": "Unsaved changes",
       "pristineBadge": "Up to date",
@@ -53,6 +64,7 @@
     "permissions": {
       "title": "Platform admins",
       "description": "Manage platform admins roles for the Asset Tokenization Kit",
+      "notAuthorized": "You are not authorized to manage permissions.\nYou do not have the admin role.",
       "adminRequired": {
         "title": "Admin Access Required",
         "description": "You need administrator privileges to manage roles. Please contact your system administrator for access."

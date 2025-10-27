@@ -5,6 +5,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useMatches } from "@tanstack/react-router";
@@ -14,7 +19,6 @@ import {
   Key,
   Paintbrush,
   Puzzle,
-  Shield,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -46,32 +50,37 @@ export function NavSettings() {
       icon: FileText,
       path: "/platform-settings/asset-types",
       enabled: system.userPermissions?.actions.tokenFactoryCreate,
+      disabledMessage: t("settings.assetTypes.notAuthorized"),
     },
-    {
-      name: t("settings.compliance"),
+    /* {
+      name: t("settings.compliance.title"),
       icon: Shield,
       path: "/platform-settings/compliance",
       enabled: system.userPermissions?.actions.complianceModuleCreate,
-    },
+      disabledMessage: t("settings.compliance.notAuthorized"),
+    },*/
     {
-      name: t("settings.addons"),
+      name: t("settings.addons.title"),
       icon: Puzzle,
       path: "/platform-settings/addons",
       enabled: system.userPermissions?.actions.addonFactoryCreate,
+      disabledMessage: t("settings.addons.notAuthorized"),
     },
     {
       name: t("settings.theme.title"),
       icon: Paintbrush,
       path: "/platform-settings/theme",
       enabled: system.userPermissions?.roles.admin === true,
+      disabledMessage: t("settings.theme.notAuthorized"),
     },
     {
-      name: t("settings.claimTopicsIssuers"),
+      name: t("settings.claimTopicsIssuers.title"),
       icon: ClipboardCheck,
       path: "/platform-settings/claim-topics-issuers",
       enabled:
         system.userPermissions?.actions.topicCreate ||
         system.userPermissions?.actions.trustedIssuerCreate,
+      disabledMessage: t("settings.claimTopicsIssuers.notAuthorized"),
     },
     {
       name: t("settings.permissions.title"),
@@ -80,8 +89,9 @@ export function NavSettings() {
       enabled:
         system.userPermissions?.actions.grantRole ||
         system.userPermissions?.actions.revokeRole,
+      disabledMessage: t("settings.permissions.notAuthorized"),
     },
-  ].filter((item) => item.enabled);
+  ];
 
   if (settingsItems.length === 0) {
     return null;
@@ -94,14 +104,20 @@ export function NavSettings() {
         {settingsItems.map((item) => {
           const Icon = item.icon;
           const isActive = isSettingsActive(item.path);
-          return (
-            <SidebarMenuItem key={item.path}>
-              <SidebarMenuButton asChild isActive={isActive}>
+
+          const button = (
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={isActive}
+                disabled={!item.enabled}
+              >
                 <Link
                   to={item.path}
                   activeProps={{
                     "data-active": true,
                   }}
+                  disabled={!item.enabled}
                   className={isActive ? "font-semibold" : undefined}
                 >
                   <Icon />
@@ -109,6 +125,19 @@ export function NavSettings() {
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
+          );
+
+          if (item.enabled) {
+            return button;
+          }
+
+          return (
+            <Tooltip key={item.path}>
+              <TooltipTrigger asChild>{button}</TooltipTrigger>
+              <TooltipContent className="whitespace-pre-wrap">
+                {item.disabledMessage}
+              </TooltipContent>
+            </Tooltip>
           );
         })}
       </SidebarMenu>
