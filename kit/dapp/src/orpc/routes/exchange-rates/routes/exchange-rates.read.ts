@@ -48,12 +48,13 @@ export const read = publicRouter.exchangeRates.read
       };
     }
 
-    // Build query conditions
-    const directRateCondition = and(
-      eq(fxRatesLatest.baseCode, baseCurrency),
-      eq(fxRatesLatest.quoteCode, quoteCurrency)
-    );
-    const conditions = [directRateCondition];
+    // Direct rate condition
+    const conditions = [
+      and(
+        eq(fxRatesLatest.baseCode, baseCurrency),
+        eq(fxRatesLatest.quoteCode, quoteCurrency)
+      ),
+    ];
 
     // Query for the rate
     const [rate] = await context.db
