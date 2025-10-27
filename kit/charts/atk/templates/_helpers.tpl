@@ -314,18 +314,6 @@ Return the effective Redis datastore configuration with empty overrides pruned.
     {{- $_ := set $result $key $value -}}
   {{- end -}}
 {{- end -}}
-{{- $defaultSecretKeys := dict "host" "host" "port" "port" "database" "database" "username" "username" "password" "password" "url" "url" "metadataUrl" "metadataUrl" -}}
-{{- $providedSecretKeys := (index $result "existingSecretKeys") | default (dict) -}}
-{{- range $key, $value := $providedSecretKeys -}}
-  {{- $string := trim (printf "%v" $value) -}}
-  {{- if ne $string "" -}}
-    {{- $_ := set $defaultSecretKeys $key $value -}}
-  {{- end -}}
-{{- end -}}
-{{- $_ := set $result "existingSecretKeys" $defaultSecretKeys -}}
-{{- if not (hasKey $result "existingSecret") -}}
-  {{- $_ := set $result "existingSecret" "" -}}
-{{- end -}}
 {{- toYaml $result -}}
 {{- end -}}
 
@@ -351,6 +339,18 @@ Return the effective PostgreSQL datastore configuration with empty overrides pru
   {{- if ne $string "" -}}
     {{- $_ := set $result $key $value -}}
   {{- end -}}
+{{- end -}}
+{{- $defaultSecretKeys := dict "host" "host" "port" "port" "database" "database" "username" "username" "password" "password" "url" "url" "metadataUrl" "metadataUrl" -}}
+{{- $providedSecretKeys := (index $result "existingSecretKeys") | default (dict) -}}
+{{- range $key, $value := $providedSecretKeys -}}
+  {{- $string := trim (printf "%v" $value) -}}
+  {{- if ne $string "" -}}
+    {{- $_ := set $defaultSecretKeys $key $value -}}
+  {{- end -}}
+{{- end -}}
+{{- $_ := set $result "existingSecretKeys" $defaultSecretKeys -}}
+{{- if not (hasKey $result "existingSecret") -}}
+  {{- $_ := set $result "existingSecret" "" -}}
 {{- end -}}
 {{- toYaml $result -}}
 {{- end -}}
