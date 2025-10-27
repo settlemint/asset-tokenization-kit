@@ -80,7 +80,7 @@ export function ChangeTokenRolesSheet({
 
   const groupedRoles = useMemo(() => {
     const groupForRole = (role: AccessControlRoles) => {
-      if (role === "admin" || role === "tokenManager") return "Administration";
+      if (role === "admin") return "Administration";
       if (role === "governance") return "Compliance";
       if (
         role === "supplyManagement" ||
