@@ -64,21 +64,31 @@ export function RadioField({
   // Allow callers to override selection behaviour (e.g. toggle cards) while keeping default radio semantics intact.
   const handleOptionSelect = (option: RadioOption, nextSelected?: boolean) => {
     const isDisabled = option.disabled ?? false;
-    const isRequired = option.isRequired ?? false;
-
-    if (isDisabled || isRequired) {
+    if (isDisabled) {
       return;
     }
 
+    const isRequired = option.isRequired ?? false;
+    // Required options stay interactive; validation enforces the requirement rather than disabling the control.
     const isCurrentlySelected =
       option.isSelected ?? activeValue === option.value;
-    const shouldSelect =
+    const proposedSelected =
       nextSelected ?? (option.onToggle ? !isCurrentlySelected : true);
+    if (isRequired && isCurrentlySelected && !proposedSelected) {
+      return;
+    }
+    const shouldSelect = proposedSelected;
 
     if (option.onToggle) {
       option.onToggle(shouldSelect);
       field.handleChange(shouldSelect ? option.value : "");
-      onSelect?.(option.value);
+      onSelect?.(shouldSelect ? option.value : "");
+      return;
+    }
+
+    if (!shouldSelect) {
+      field.handleChange("");
+      onSelect?.("");
       return;
     }
 
@@ -101,7 +111,8 @@ export function RadioField({
       {options.map((option) => {
         const isDisabled = option.disabled ?? false;
         const isRequired = option.isRequired ?? false;
-        const isInteractionDisabled = isDisabled || isRequired;
+        const showDisabledMessage =
+          (isDisabled || isRequired) && option.disabledLabel;
         const isSelected = option.isSelected ?? activeValue === option.value;
 
         return (
@@ -110,8 +121,9 @@ export function RadioField({
               value={option.value}
               id={`${field.name}-${option.value}`}
               className="sr-only"
-              disabled={isInteractionDisabled}
+              disabled={isDisabled}
             />
+            {/* Override default label behaviour so the shared handler can gate disabled/required logic while the underlying Radix radio maintains aria-checked/aria-disabled semantics. */}
             <Label
               htmlFor={`${field.name}-${option.value}`}
               onClick={(event) => {
@@ -124,11 +136,13 @@ export function RadioField({
                   handleOptionSelect(option);
                 }
               }}
-              tabIndex={isInteractionDisabled ? -1 : 0}
-              aria-disabled={isInteractionDisabled}
+              // Required options must remain keyboard-focusable; only explicit disables exit the tab order.
+              tabIndex={isDisabled ? -1 : 0}
+              aria-disabled={isDisabled}
+              aria-required={isRequired || undefined}
               className={cn(
                 "flex select-none rounded-lg border border-input bg-background transition-all h-full",
-                isInteractionDisabled
+                isDisabled
                   ? "cursor-not-allowed opacity-60"
                   : "cursor-pointer hover:bg-accent/50 hover:text-accent-foreground",
                 isSelected && "border-primary bg-primary/5 text-primary",
@@ -141,7 +155,7 @@ export function RadioField({
                   <div className="text-base font-semibold capitalize">
                     {option.label}
                   </div>
-                  {isInteractionDisabled && option.disabledLabel && (
+                  {showDisabledMessage && (
                     <span className="text-xs text-muted-foreground">
                       {option.disabledLabel}
                     </span>
@@ -167,21 +181,41 @@ export function RadioField({
 
   const renderDefaultRadio = () => (
     <RadioGroup
-      value={field.state.value}
+      value={activeValue}
       onValueChange={(value) => {
-        field.handleChange(value);
-        onSelect?.(value);
+        const option = options.find((opt) => opt.value === value);
+        if (!option) {
+          field.handleChange(value);
+          onSelect?.(value);
+          return;
+        }
+        handleOptionSelect(option, true);
       }}
       className={className}
     >
-      {options.map((option) => (
-        <div key={option.value} className="flex items-center space-x-2">
-          <RadioGroupItem value={option.value} id={option.value} />
-          <Label htmlFor={option.value} className="cursor-pointer">
-            {option.label}
-          </Label>
-        </div>
-      ))}
+      {options.map((option) => {
+        const isDisabled = option.disabled ?? false;
+        const isRequired = option.isRequired ?? false;
+
+        return (
+          <div key={option.value} className="flex items-center space-x-2">
+            <RadioGroupItem
+              value={option.value}
+              id={`${field.name}-${option.value}`}
+              disabled={isDisabled}
+            />
+            <Label
+              htmlFor={`${field.name}-${option.value}`}
+              className={cn(
+                isDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"
+              )}
+              aria-required={isRequired || undefined}
+            >
+              {option.label}
+            </Label>
+          </div>
+        );
+      })}
     </RadioGroup>
   );
 

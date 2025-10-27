@@ -48,7 +48,7 @@ export function SystemAddonsSelection() {
   const deployedAddons = useMemo(
     () =>
       new Set(
-        systemDetails?.systemAddonRegistry.systemAddons.map((addon) =>
+        (systemDetails?.systemAddonRegistry.systemAddons ?? []).map((addon) =>
           getAddonTypeFromTypeId(addon.typeId)
         )
       ),
@@ -79,7 +79,16 @@ export function SystemAddonsSelection() {
         toast.error(t("system-addons.addon-selection.no-system"));
         return;
       }
-      const parsedValues = SystemAddonCreateSchema.parse(value);
+      const sanitizedValue = Object.entries(
+        value as Record<string, unknown>
+      ).reduce<Record<string, unknown>>((acc, [key, fieldValue]) => {
+        if (key === "ui" || key.startsWith("ui.")) {
+          return acc;
+        }
+        acc[key] = fieldValue;
+        return acc;
+      }, {});
+      const parsedValues = SystemAddonCreateSchema.parse(sanitizedValue);
 
       toast.promise(createAddons(parsedValues), {
         loading: t("system-addons.addon-selection.deploying-toast"),
@@ -299,7 +308,7 @@ export function SystemAddonsSelection() {
                                       "system-addons.addon-selection.required-for-bonds"
                                     )
                                   : isAlreadyDeployed
-                                    ? t("assets.deployed-label")
+                                    ? t("onboarding:assets.deployed-label")
                                     : undefined,
                                 isRequired: isYieldRequiredForBond,
                                 onToggle: (selected: boolean) => {
