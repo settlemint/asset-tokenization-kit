@@ -244,6 +244,19 @@ function isDebugEnabled(): boolean {
   );
 }
 
+const ANSI_ESCAPE_REGEX = /\u001B\[[0-9;]*[A-Za-z]/g;
+
+function normalizeForgeJsonOutput(raw: string): string {
+  // Forge prints ANSI escape codes around JSON; strip them and isolate the payload.
+  const stripped = raw.replace(ANSI_ESCAPE_REGEX, "").trim();
+  const start = stripped.indexOf("{");
+  const end = stripped.lastIndexOf("}");
+  if (start === -1 || end === -1 || end < start) {
+    return stripped;
+  }
+  return stripped.slice(start, end + 1).trim();
+}
+
 // =============================================================================
 // ANVIL NODE MANAGER
 // =============================================================================
@@ -483,6 +496,12 @@ class AnvilManager {
 // CONTRACT DEPLOYMENT
 // =============================================================================
 
+interface ForgeCreateJsonResult {
+  deployer?: string;
+  deployedTo: string;
+  transactionHash?: string;
+}
+
 interface DeploymentResult {
   deployedAddress: string;
   bytecode: string;
@@ -621,6 +640,7 @@ class ContractDeployer {
     }
 
     const output = result.stdout.toString();
+    const parsedOutput = normalizeForgeJsonOutput(output);
     const errorOutput = result.stderr.toString();
 
     logger.debug(`Deployment exit code: ${result.exitCode}`);
@@ -644,14 +664,15 @@ class ContractDeployer {
       );
     }
 
-    let deployData;
+    let deployData: ForgeCreateJsonResult;
     try {
-      deployData = JSON.parse(output);
+      deployData = JSON.parse(parsedOutput) as ForgeCreateJsonResult;
     } catch (error) {
       logger.error(`Error parsing JSON output for ${contractName}`);
       logger.error(`Raw output: ${output}`);
+      logger.error(`Normalized output: ${parsedOutput}`);
       throw new Error(
-        `Error parsing deployment output for ${contractName}: ${output.slice(0, 500)}...`
+        `Error parsing deployment output for ${contractName}: ${parsedOutput.slice(0, 500)}...`
       );
     }
 
