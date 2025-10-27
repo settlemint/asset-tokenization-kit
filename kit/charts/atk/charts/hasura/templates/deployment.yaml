@@ -74,14 +74,37 @@ spec:
             {{- end }}
 
             # Database configuration
-            {{- $dbUrl := include "hasura.databaseUrl" . }}
-            {{- if $dbUrl }}
+            {{- $dbLocal := default (dict) .Values.database }}
+            {{- $dbConfig := ((include "atk.datastores.postgresql.config" (dict "context" $ "chartKey" "hasura" "local" $dbLocal)) | fromYaml) | default (dict) }}
+            {{- $dbExistingSecret := trim (default "" (index $dbConfig "existingSecret")) }}
+            {{- $dbSecretKeys := (index $dbConfig "existingSecretKeys") | default (dict) }}
+            {{- $dbUrlKey := default "url" (index $dbSecretKeys "url") }}
+            {{- $dbUrl := "" }}
+            {{- if eq $dbExistingSecret "" }}
+              {{- $dbUrl = include "hasura.databaseUrl" . }}
+            {{- end }}
+            {{- if ne $dbExistingSecret "" }}
+            - name: HASURA_GRAPHQL_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $dbExistingSecret | quote }}
+                  key: {{ $dbUrlKey | quote }}
+            {{- else if $dbUrl }}
             - name: HASURA_GRAPHQL_DATABASE_URL
               value: {{ $dbUrl }}
             {{- end }}
 
-            {{- $metadataUrl := include "hasura.metadataUrl" . }}
-            {{- if $metadataUrl }}
+            {{- $metadataUrl := "" }}
+            {{- if eq $dbExistingSecret "" }}
+              {{- $metadataUrl = include "hasura.metadataUrl" . }}
+            {{- end }}
+            {{- if ne $dbExistingSecret "" }}
+            - name: HASURA_GRAPHQL_METADATA_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $dbExistingSecret | quote }}
+                  key: {{ $dbUrlKey | quote }}
+            {{- else if $metadataUrl }}
             - name: HASURA_GRAPHQL_METADATA_DATABASE_URL
               value: {{ $metadataUrl }}
             {{- end }}

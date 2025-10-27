@@ -42,6 +42,7 @@ global:
         database: "postgres"
         # -- (string) SSL mode for PostgreSQL connections (disable, require, verify-ca, verify-full)
         sslMode: "disable"
+
     # -- (object) ERPC-specific datastore configuration for RPC gateway caching
     erpc:
       # -- (object) Redis database allocation for ERPC services
@@ -60,6 +61,12 @@ global:
         username: "portal"
         # -- (string) Portal database password. Change for production deployments.
         password: "atk"
+        # -- (string) Name of an existing secret providing Portal PostgreSQL settings (optional)
+        existingSecret: ""
+        # -- (object) Secret key mapping for Portal PostgreSQL data
+        existingSecretKeys:
+          # - (object) DB URL in the format postgresql://username:password@dburl:5432/dbname?sslmode=disable
+          url: url
       # -- (object) Redis database for Portal session and caching
       redis:
         # -- (int) Redis database number for Portal data
@@ -74,6 +81,12 @@ global:
         username: "txsigner"
         # -- (string) Transaction signer database password. Change for production deployments.
         password: "atk"
+        # -- (string) Name of an existing secret providing TxSigner PostgreSQL settings (optional)
+        existingSecret: ""
+        # -- (object) Secret key mapping for TxSigner PostgreSQL data
+        existingSecretKeys:
+          # - (object) DB URL in the format postgresql://username:password@dburl:5432/dbname?sslmode=disable
+          url: url
     # -- (object) The Graph Node specific datastore configuration for blockchain indexing
     graphNode:
       # -- (object) PostgreSQL database for The Graph indexing data
@@ -84,6 +97,20 @@ global:
         username: "thegraph"
         # -- (string) The Graph database password. Change for production deployments.
         password: "atk"
+        # -- (string) Name of an existing secret providing Graph Node PostgreSQL settings (optional)
+        existingSecret: ""
+        # -- (object) Secret key mapping for Graph Node PostgreSQL data
+        existingSecretKeys:
+          # - (object) DB Username
+          username: username
+          # - (object) DB Passwor
+          password: password
+          # - (object) DB Host
+          host: host
+          # - (object) DB Port
+          port: port
+          # - (object) DB Database
+          database: database
     # -- (object) Blockscout specific datastore configuration for blockchain explorer
     blockscout:
       # -- (object) PostgreSQL database for Blockscout explorer data
@@ -94,6 +121,12 @@ global:
         username: "blockscout"
         # -- (string) Blockscout database password. Change for production deployments.
         password: "atk"
+        # -- (string) Name of an existing secret providing Blockscout PostgreSQL settings (optional)
+        existingSecret: ""
+        # -- (object) Secret key mapping for Blockscout PostgreSQL data
+        existingSecretKeys:
+          # - (object) DB URL in the format postgresql://username:password@dburl:5432/dbname?sslmode=disable
+          url: url
     # -- (object) Hasura GraphQL Engine specific datastore configuration
     hasura:
       # -- (object) PostgreSQL database for Hasura metadata and data
@@ -104,6 +137,12 @@ global:
         username: "hasura"
         # -- (string) Hasura database password. Change for production deployments.
         password: "atk"
+        # -- (string) Name of an existing secret providing Hasura PostgreSQL settings (optional)
+        existingSecret: ""
+        # -- (object) Secret key mapping for Hasura PostgreSQL data
+        existingSecretKeys:
+          # - (object) DB URL in the format postgresql://username:password@dburl:5432/dbname?sslmode=disable
+          url: url
       # -- (object) Redis databases for Hasura caching and rate limiting
       redis:
         # -- (int) Redis database number for Hasura query result caching

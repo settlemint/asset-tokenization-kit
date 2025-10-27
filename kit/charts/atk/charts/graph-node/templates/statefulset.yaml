@@ -32,13 +32,29 @@ spec:
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- $pgLocal := default (dict) .Values.postgresql }}
       {{- $pgConfig := ((include "atk.datastores.postgresql" (dict "context" $ "chartKey" "graphNode" "local" $pgLocal)) | fromYaml) | default (dict) }}
+      {{- $pgExistingSecret := trim (default "" (index $pgConfig "existingSecret")) }}
+      {{- $pgSecretKeys := (index $pgConfig "existingSecretKeys") | default (dict) }}
+      {{- $usernameKeyOverride := trim (default "" (index $pgSecretKeys "username")) }}
+      {{- $passwordKeyOverride := trim (default "" (index $pgSecretKeys "password")) }}
+      {{- $hostKeyOverride := trim (default "" (index $pgSecretKeys "host")) }}
+      {{- $portKeyOverride := trim (default "" (index $pgSecretKeys "port")) }}
+      {{- $databaseKeyOverride := trim (default "" (index $pgSecretKeys "database")) }}
+      {{- $pgSecretMeta := dict "name" (include "graph-node.pgSecretName" $) "usernameKey" "PGUSER" "passwordKey" "PGPASSWORD" }}
+      {{- if ne $pgExistingSecret "" }}
+        {{- $_ := set $pgSecretMeta "name" $pgExistingSecret }}
+        {{- $_ := set $pgSecretMeta "usernameKey" (default "username" $usernameKeyOverride) }}
+        {{- $_ := set $pgSecretMeta "passwordKey" (default "password" $passwordKeyOverride) }}
+        {{- $_ := set $pgSecretMeta "hostKey" (default "host" $hostKeyOverride) }}
+        {{- $_ := set $pgSecretMeta "portKey" (default "port" $portKeyOverride) }}
+        {{- $_ := set $pgSecretMeta "databaseKey" (default "database" $databaseKeyOverride) }}
+      {{- end }}
       {{- $pgHost := default "postgresql" (index $pgConfig "host") }}
       {{- $pgPortValue := default 5432 (index $pgConfig "port") }}
       {{- $pgPort := printf "%v" $pgPortValue }}
       {{- $pgDatabase := default "thegraph" (index $pgConfig "database") }}
       {{- $env := default (dict) .Values.env }}
       {{- $secretEnv := default (dict) .Values.secretEnv }}
-      {{- $pgSecretName := include "graph-node.pgSecretName" $ }}
+      {{- $pgSecretName := index $pgSecretMeta "name" }}
       {{- $waitForIt := include "atk.waitforit.containers" (dict "context" $ "config" .Values.initContainer.tcpCheck) }}
       {{- $extraInit := .Values.extraInitContainers | default (list) }}
       {{- if or $waitForIt (gt (len $extraInit) 0) }}
@@ -99,23 +115,55 @@ spec:
             {{- end }}
             {{- if not (hasKey $env "PRIMARY_SUBGRAPH_DATA_PGHOST") }}
             - name: "PRIMARY_SUBGRAPH_DATA_PGHOST"
+              {{- if and (ne $pgExistingSecret "") (hasKey $pgSecretMeta "hostKey") }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $pgSecretName | quote }}
+                  key: {{ index $pgSecretMeta "hostKey" | quote }}
+              {{- else }}
               value: {{ $pgHost | quote }}
+              {{- end }}
             {{- end }}
             {{- if not (hasKey $env "PRIMARY_SUBGRAPH_DATA_PGPORT") }}
             - name: "PRIMARY_SUBGRAPH_DATA_PGPORT"
+              {{- if and (ne $pgExistingSecret "") (hasKey $pgSecretMeta "portKey") }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $pgSecretName | quote }}
+                  key: {{ index $pgSecretMeta "portKey" | quote }}
+              {{- else }}
               value: {{ $pgPort | quote }}
+              {{- end }}
             {{- end }}
             {{- if not (hasKey $env "PRIMARY_SUBGRAPH_DATA_PGDATABASE") }}
             - name: "PRIMARY_SUBGRAPH_DATA_PGDATABASE"
+              {{- if and (ne $pgExistingSecret "") (hasKey $pgSecretMeta "databaseKey") }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $pgSecretName | quote }}
+                  key: {{ index $pgSecretMeta "databaseKey" | quote }}
+              {{- else }}
               value: {{ $pgDatabase | quote }}
+              {{- end }}
             {{- end }}
             {{- range $key, $val := $secretEnv }}
-            {{- if $val.key }}
+            {{- $rawSecretKey := trim (default "" $val.key) }}
+            {{- $secretKey := $rawSecretKey }}
+            {{- if and (ne $pgExistingSecret "") (eq $key "PRIMARY_SUBGRAPH_DATA_PGUSER") }}
+              {{- if or (eq $secretKey "") (eq $secretKey "PGUSER") }}
+                {{- $secretKey = index $pgSecretMeta "usernameKey" }}
+              {{- end }}
+            {{- else if and (ne $pgExistingSecret "") (eq $key "PRIMARY_SUBGRAPH_DATA_PGPASSWORD") }}
+              {{- if or (eq $secretKey "") (eq $secretKey "PGPASSWORD") }}
+                {{- $secretKey = index $pgSecretMeta "passwordKey" }}
+              {{- end }}
+            {{- end }}
+            {{- if ne $secretKey "" }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ if $val.secretName }}{{ $val.secretName | quote }}{{ else }}{{ include "graph-node.pgSecretName" $ | quote }}{{ end }}
-                  key: {{ $val.key | quote }}
+                  name: {{ if $val.secretName }}{{ $val.secretName | quote }}{{ else }}{{ $pgSecretName | quote }}{{ end }}
+                  key: {{ $secretKey | quote }}
             {{- end }}
             {{- end }}
             {{- /* Fallback to generated secret when credential env mappings are omitted */ -}}
@@ -125,7 +173,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ $pgSecretName | quote }}
-                  key: "PGUSER"
+                  key: {{ index $pgSecretMeta "usernameKey" | quote }}
             {{- end }}
             {{- $pgPasswordSecret := index $secretEnv "PRIMARY_SUBGRAPH_DATA_PGPASSWORD" }}
             {{- if not (and $pgPasswordSecret $pgPasswordSecret.key (ne (trim $pgPasswordSecret.key) "")) }}
@@ -133,7 +181,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ $pgSecretName | quote }}
-                  key: "PGPASSWORD"
+                  key: {{ index $pgSecretMeta "passwordKey" | quote }}
             {{- end }}
           {{- with .Values.subgraph.configMapName }}
           envFrom:
