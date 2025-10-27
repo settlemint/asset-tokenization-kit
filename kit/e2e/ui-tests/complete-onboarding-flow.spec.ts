@@ -101,7 +101,7 @@ test.describe.serial("Complete Onboarding Flow", () => {
       `${testData.kycData.firstName} ${testData.kycData.lastName}`
     );
 
-    saveSetupUser({
+    saveSetupUser("admin", {
       email: testData.email,
       password: testData.password,
       pincode: testData.pinCode,

@@ -1,13 +1,14 @@
 import {
   ChangeRolesSheet,
-  deriveAssignableRoles,
-  mergeRoles,
   type ChangeRolesSheetProps,
   type RoleInfo,
 } from "@/components/manage-dropdown/sheets/change-role/change-roles-sheet";
 import { orpc } from "@/orpc/orpc-client";
-import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
-import { AccessControlRoles } from "@atk/zod/access-control-roles";
+import {
+  AccessControlRoles,
+  systemAccessControlRoles,
+  type SystemAccessControlRoles,
+} from "@atk/zod/access-control-roles";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -49,7 +50,7 @@ export function ChangeSystemRolesSheet({
       await revokeRole({
         address: accountAddress,
         walletVerification,
-        role: roles,
+        role: roles as SystemAccessControlRoles[],
       });
     },
     [revokeRole]
@@ -60,21 +61,10 @@ export function ChangeSystemRolesSheet({
       await grantRole({
         address: accountAddress,
         walletVerification,
-        role: roles,
+        role: roles as SystemAccessControlRoles[],
       });
     },
     [grantRole]
-  );
-
-  // Derive system-assignable roles from SYSTEM_PERMISSIONS role requirements
-  const systemAssignableRoles = useMemo(
-    () => deriveAssignableRoles(SYSTEM_PERMISSIONS),
-    []
-  );
-
-  const rolesSet = useMemo(
-    () => mergeRoles(systemAssignableRoles, accessControl),
-    [accessControl, systemAssignableRoles]
   );
 
   const groupedRoles = useMemo(() => {
@@ -83,8 +73,7 @@ export function ChangeSystemRolesSheet({
       if (
         role === "admin" ||
         role === "systemManager" ||
-        role === "addonManager" ||
-        role === "systemModule"
+        role === "addonManager"
       ) {
         return "System-Administration";
       }
@@ -101,7 +90,7 @@ export function ChangeSystemRolesSheet({
     };
 
     const map = new Map<string, { label: string; roles: RoleInfo[] }>();
-    rolesSet.forEach((r) => {
+    systemAccessControlRoles.forEach((r) => {
       const g = groupForRole(r);
       const group = map.get(g) ?? {
         roles: [],
@@ -118,7 +107,7 @@ export function ChangeSystemRolesSheet({
       map.set(g, group);
     });
     return map;
-  }, [rolesSet, t]);
+  }, [t]);
 
   return (
     <ChangeRolesSheet

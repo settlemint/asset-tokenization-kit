@@ -1,5 +1,4 @@
 import { randomInt } from "crypto";
-import type { ResidencyStatus } from "@atk/zod/residency-status";
 
 const date = new Date()
   .toISOString()
@@ -37,7 +36,6 @@ const generateSecurePassword = (): string => {
 };
 
 const password = generateSecurePassword();
-const onboardingResidencyStatus: ResidencyStatus = "resident";
 interface SignUpData {
   name: string;
   email: string;
@@ -241,3 +239,18 @@ export const userAdminTrustedTopics = [
   "assetClassification",
   "isin",
 ];
+
+export const transferUserProfiles = [
+  {
+    key: "transfer-primary",
+    firstName: "Transfer",
+    lastName: "Primary",
+    nationalId: "TST-123-4567",
+  },
+  {
+    key: "transfer-secondary",
+    firstName: "Transfer",
+    lastName: "Secondary",
+    nationalId: "TST-987-6543",
+  },
+] as const;

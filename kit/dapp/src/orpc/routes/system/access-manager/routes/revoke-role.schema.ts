@@ -1,5 +1,5 @@
 import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
-import { accessControlRole } from "@atk/zod/access-control-roles";
+import { systemAccessControlRole } from "@atk/zod/access-control-roles";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import * as z from "zod";
 
@@ -19,7 +19,7 @@ export const RevokeRoleInputSchema = z.object({
   /**
    * The role(s) to revoke
    */
-  role: z.union([accessControlRole, z.array(accessControlRole)]),
+  role: z.union([systemAccessControlRole, z.array(systemAccessControlRole)]),
 });
 
 /**
@@ -27,7 +27,7 @@ export const RevokeRoleInputSchema = z.object({
  */
 export const RevokeRoleOutputSchema = z.object({
   addresses: z.array(ethereumAddress),
-  roles: z.array(accessControlRole),
+  roles: z.array(systemAccessControlRole),
 });
 
 /**
