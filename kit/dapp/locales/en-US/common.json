@@ -98,14 +98,6 @@
       "title": "Auditor",
       "description": "View-only access to permissions, identities, audit logs, and system state."
     },
-    "burner": {
-      "title": "Burner",
-      "description": "Authorized to burn (destroy) tokens, decreasing the total supply. Used for redemptions or supply management."
-    },
-    "capmanagement": {
-      "title": "Cap Management",
-      "description": "Authorized to set the cap on the token, which is the maximum number of tokens that can be minted."
-    },
     "claimpolicymanager": {
       "title": "Claim Policy Manager",
       "description": "Manages trusted issuers and claim topics for identity verification."
@@ -113,10 +105,6 @@
     "claimissuer": {
       "title": "Claim Issuer",
       "description": "Can create and attach claims to identities. Does not automatically grant trusted issuer status."
-    },
-    "complianceadmin": {
-      "title": "Compliance Admin",
-      "description": "Manages compliance-related settings, including setting the main compliance contract, adding or removing compliance modules, and configuring their parameters. Key to enforcing regulatory rules on token transfers and interactions."
     },
     "compliancemanager": {
       "title": "Compliance Manager",
@@ -129,14 +117,6 @@
     "emergency": {
       "title": "Emergency",
       "description": "Can pause contracts and perform emergency interventions."
-    },
-    "forcedtransfer": {
-      "title": "Forced Transfer",
-      "description": "Authorized to execute forced transfers of tokens between addresses. Typically used in exceptional circumstances, such as asset recovery or error rectification under strict governance."
-    },
-    "freezer": {
-      "title": "Freezer",
-      "description": "Can freeze or unfreeze token balances for specific addresses, including partial amounts. Used to comply with legal orders or manage accounts in special situations."
     },
     "fundsmanager": {
       "title": "Funds Manager",
@@ -154,29 +134,13 @@
       "title": "Identity Registry Module",
       "description": "Manages the identity registry module and can modify identity storage."
     },
-    "minter": {
-      "title": "Minter",
-      "description": "Authorized to mint new tokens, increasing the total supply. Access to this role should be strictly controlled."
-    },
     "organisationidentitymanager": {
       "title": "Organisation Identity Manager",
       "description": "Manages organisation-level identity claims, such as KYC, AML, and licenses."
     },
-    "pauser": {
-      "title": "Pauser",
-      "description": "Can pause or unpause the entire contract. When paused, most token operations are blocked. This is an emergency safety feature."
-    },
-    "recovery": {
-      "title": "Recovery",
-      "description": "Authorized to perform address recovery for investors, allowing transfer of tokens from a lost wallet to a new one, provided proper verification is met."
-    },
     "saleadmin": {
       "title": "Sale Admin",
       "description": "Manages token sale parameters and operations, including configuring sale settings and controlling sale lifecycle."
-    },
-    "signer": {
-      "title": "Signer",
-      "description": "Role identifier for signers who can submit and confirm transactions for the vault."
     },
     "supplymanagement": {
       "title": "Supply Management",
@@ -189,10 +153,6 @@
     "systemmodule": {
       "title": "System Module",
       "description": "Manages system modules, including registering compliance modules and topic schemes. Administers registry module roles."
-    },
-    "tokenadmin": {
-      "title": "Token Admin",
-      "description": "Can update general token settings such as name, symbol, and OnchainID contract address. Critical for managing the token's basic identity and its link to external identity systems."
     },
     "tokenfactorymodule": {
       "title": "Token Factory Module",
@@ -209,10 +169,6 @@
     "trustedissuersmetaregistrymodule": {
       "title": "Trusted Issuers Meta Registry Module",
       "description": "Manages the trusted issuers meta registry and can add trusted issuers."
-    },
-    "verificationadmin": {
-      "title": "Verification Admin",
-      "description": "Manages investor verification settings, such as setting the identity registry and specifying required claim topics for investors. Crucial for KYC/AML processes."
     }
   }
 }

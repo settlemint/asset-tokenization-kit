@@ -16,35 +16,24 @@ export const AccessControlFragment = theGraphGraphql(`
     addonRegistryModule { id isContract }
     admin { id isContract }
     auditor { id isContract }
-    burner { id isContract }
-    capManagement { id isContract }
     claimPolicyManager { id isContract }
     claimIssuer { id isContract }
-    complianceAdmin { id isContract }
     complianceManager { id isContract }
     custodian { id isContract }
     emergency { id isContract }
-    forcedTransfer { id isContract }
-    freezer { id isContract }
     fundsManager { id isContract }
     governance { id isContract }
     identityManager { id isContract }
     identityRegistryModule { id isContract }
-    minter { id isContract }
     organisationIdentityManager { id isContract }
-    pauser { id isContract }
-    recovery { id isContract }
     saleAdmin { id isContract }
-    signer { id isContract }
     supplyManagement { id isContract }
     systemManager { id isContract }
     systemModule { id isContract }
-    tokenAdmin { id isContract }
     tokenFactoryModule { id isContract }
     tokenFactoryRegistryModule { id isContract }
     tokenManager { id isContract }
     trustedIssuersMetaRegistryModule { id isContract }
-    verificationAdmin { id isContract }
     roleAdmins {
       id
       role

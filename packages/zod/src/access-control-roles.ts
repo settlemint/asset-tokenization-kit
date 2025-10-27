@@ -9,35 +9,24 @@ export const roles = [
   "addonRegistryModule",
   "admin",
   "auditor",
-  "burner",
-  "capManagement",
   "claimPolicyManager",
   "claimIssuer",
-  "complianceAdmin",
   "complianceManager",
   "custodian",
   "emergency",
-  "forcedTransfer",
-  "freezer",
   "fundsManager",
   "governance",
   "identityManager",
   "identityRegistryModule",
-  "minter",
   "organisationIdentityManager",
-  "pauser",
-  "recovery",
   "saleAdmin",
-  "signer",
   "supplyManagement",
   "systemManager",
   "systemModule",
-  "tokenAdmin",
   "tokenFactoryModule",
   "tokenFactoryRegistryModule",
   "tokenManager",
   "trustedIssuersMetaRegistryModule",
-  "verificationAdmin",
 ] as const;
 
 export type AccessControlRoles = (typeof roles)[number];
@@ -61,15 +50,55 @@ export const accessControlRole = z.enum(roles);
 
 export type AccessControlRole = z.infer<typeof accessControlRole>;
 
-export const assetAccessControlRoles: AccessControlRoles[] = [
+/**
+ * The roles that are available for the asset access control system.
+ */
+export const assetAccessControlRoles = [
   "admin",
   "custodian",
   "emergency",
   "governance",
   "supplyManagement",
-  "tokenManager",
-];
+] as const;
 export const assetAccessControlRole = z.enum(assetAccessControlRoles);
+
+export const assetAccessControlRolesSchema = accessControlRoles.pick({
+  admin: true,
+  custodian: true,
+  emergency: true,
+  governance: true,
+  supplyManagement: true,
+});
+
+export type AssetAccessControlRoles = z.infer<typeof assetAccessControlRole>;
+
+/**
+ * The roles that are available for the system access control system.
+ */
+export const systemAccessControlRoles = [
+  "admin",
+  "systemManager",
+  "tokenManager",
+  "complianceManager",
+  "addonManager",
+  "claimPolicyManager",
+  "claimIssuer",
+  "identityManager",
+] as const;
+export const systemAccessControlRole = z.enum(systemAccessControlRoles);
+
+export const systemAccessControlRolesSchema = accessControlRoles.pick({
+  admin: true,
+  systemManager: true,
+  tokenManager: true,
+  complianceManager: true,
+  addonManager: true,
+  claimPolicyManager: true,
+  claimIssuer: true,
+  identityManager: true,
+});
+
+export type SystemAccessControlRoles = z.infer<typeof systemAccessControlRole>;
 
 /**
  * Schema describing the AccessControl role admin linkage produced by the system access manager.
@@ -110,24 +139,15 @@ export const accessControlSchema = () =>
     ),
     admin: accountArray().describe("Accounts with admin role"),
     auditor: accountArray().describe("Accounts with auditor role"),
-    burner: accountArray().describe("Accounts with burner role"),
-    capManagement: accountArray().describe("Accounts with cap management role"),
     claimPolicyManager: accountArray().describe(
       "Accounts with claim policy manager role"
     ),
     claimIssuer: accountArray().describe("Accounts with claim issuer role"),
-    complianceAdmin: accountArray().describe(
-      "Accounts with compliance admin role"
-    ),
     complianceManager: accountArray().describe(
       "Accounts with compliance manager role"
     ),
     custodian: accountArray().describe("Accounts with custodian role"),
     emergency: accountArray().describe("Accounts with emergency role"),
-    forcedTransfer: accountArray().describe(
-      "Accounts with forced transfer role"
-    ),
-    freezer: accountArray().describe("Accounts with freezer role"),
     fundsManager: accountArray().describe("Accounts with funds manager role"),
     governance: accountArray().describe("Accounts with governance role"),
     identityManager: accountArray().describe(
@@ -136,20 +156,15 @@ export const accessControlSchema = () =>
     identityRegistryModule: accountArray().describe(
       "Accounts with identity registry module role"
     ),
-    minter: accountArray().describe("Accounts with minter role"),
     organisationIdentityManager: accountArray().describe(
       "Accounts with organisation identity manager role"
     ),
-    pauser: accountArray().describe("Accounts with pauser role"),
-    recovery: accountArray().describe("Accounts with recovery role"),
     saleAdmin: accountArray().describe("Accounts with sale admin role"),
-    signer: accountArray().describe("Accounts with signer role"),
     supplyManagement: accountArray().describe(
       "Accounts with supply management role"
     ),
     systemManager: accountArray().describe("Accounts with system manager role"),
     systemModule: accountArray().describe("Accounts with system module role"),
-    tokenAdmin: accountArray().describe("Accounts with token admin role"),
     tokenFactoryModule: accountArray().describe(
       "Accounts with token factory module role"
     ),
@@ -159,9 +174,6 @@ export const accessControlSchema = () =>
     tokenManager: accountArray().describe("Accounts with token manager role"),
     trustedIssuersMetaRegistryModule: accountArray().describe(
       "Accounts with trusted issuers meta registry module role"
-    ),
-    verificationAdmin: accountArray().describe(
-      "Accounts with verification admin role"
     ),
     roleAdmins: z
       .array(roleAdminSchema)

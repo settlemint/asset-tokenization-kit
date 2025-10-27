@@ -24,7 +24,7 @@ import { upsert } from "@/orpc/routes/settings/routes/settings.upsert";
 import { grantRole } from "@/orpc/routes/system/access-manager/routes/grant-role";
 import { complianceModuleCreate } from "@/orpc/routes/system/compliance-module/routes/compliance-module.create";
 import { read } from "@/orpc/routes/system/routes/system.read";
-import type { AccessControlRoles } from "@atk/zod/access-control-roles";
+import type { SystemAccessControlRoles } from "@atk/zod/access-control-roles";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -243,7 +243,7 @@ export const create = onboardedRouter.system.create
 
     // Grant operational roles to the system creator
     // These roles are required for managing various aspects of the system
-    const operationalRoles: AccessControlRoles[] = [
+    const operationalRoles: SystemAccessControlRoles[] = [
       "tokenManager",
       "identityManager",
       "complianceManager",

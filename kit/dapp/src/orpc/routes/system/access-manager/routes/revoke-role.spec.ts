@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { CUSTOM_ERROR_CODES } from "@/orpc/procedures/base.contract";
-import type { AccessControlRoles } from "@atk/zod/access-control-roles";
+import type { SystemAccessControlRoles } from "@atk/zod/access-control-roles";
 import { errorMessageForCode, getOrpcClient } from "@test/fixtures/orpc-client";
 import {
   DEFAULT_ADMIN,
@@ -31,7 +31,7 @@ describe("Access Manager - Revoke Role ORPC routes", () => {
     investorClient = getOrpcClient(investorHeaders);
 
     // Grant roles to the test addresses
-    const rolesToGrant: AccessControlRoles[] = [
+    const rolesToGrant: SystemAccessControlRoles[] = [
       "systemManager",
       "complianceManager",
       "tokenManager",

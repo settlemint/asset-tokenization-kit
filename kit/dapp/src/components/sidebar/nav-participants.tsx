@@ -5,10 +5,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import {
-  CLAIM_ISSUER_ROLE,
-  IDENTITY_MANAGER_ROLE,
-} from "@/lib/constants/roles";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
@@ -37,8 +33,7 @@ export function NavParticipants() {
 
   const roles = system.userPermissions?.roles;
   const canManageParticipants = Boolean(
-    roles?.[IDENTITY_MANAGER_ROLE.fieldName] ||
-      roles?.[CLAIM_ISSUER_ROLE.fieldName]
+    roles?.identityManager || roles?.claimIssuer
   );
 
   if (!canManageParticipants) {
