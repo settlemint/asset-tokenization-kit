@@ -185,8 +185,16 @@ function Page() {
 }
 
 function transformPageTree(tree: PageTree.Folder): PageTree.Folder {
-  function transform<T extends PageTree.Item | PageTree.Separator>(item: T) {
-    if (typeof item.icon !== "string") return item;
+  type ChildNode = PageTree.Folder["children"][number];
+  type NonFolderNode = Exclude<ChildNode, { type: "folder" }>;
+
+  const isFolderNode = (node: ChildNode): node is PageTree.Folder =>
+    node.type === "folder";
+
+  const decorateIcon = <Node extends { icon?: unknown }>(item: Node): Node => {
+    if (typeof item.icon !== "string") {
+      return item;
+    }
 
     return {
       ...item,
@@ -229,14 +237,20 @@ function transformPageTree(tree: PageTree.Folder): PageTree.Folder {
         />
       ),
     };
-  }
+  };
+
+  const transformLeaf = (item: NonFolderNode): NonFolderNode =>
+    decorateIcon(item);
+
+  const transformIndex = (index: PageTree.Folder["index"]) =>
+    index ? decorateIcon(index) : undefined;
+
+  const transformChild = (item: ChildNode): ChildNode =>
+    isFolderNode(item) ? transformPageTree(item) : transformLeaf(item);
 
   return {
     ...tree,
-    index: tree.index ? transform(tree.index) : undefined,
-    children: tree.children.map((item) => {
-      if (item.type === "folder") return transformPageTree(item);
-      return transform(item);
-    }),
+    index: transformIndex(tree.index),
+    children: tree.children.map((item) => transformChild(item)),
   };
 }

@@ -308,7 +308,7 @@ export function SystemAddonsSelection() {
                                       "system-addons.addon-selection.required-for-bonds"
                                     )
                                   : isAlreadyDeployed
-                                    ? t("onboarding:assets.deployed-label")
+                                    ? t("assets.deployed-label")
                                     : undefined,
                                 isRequired: isYieldRequiredForBond,
                                 onToggle: (selected: boolean) => {

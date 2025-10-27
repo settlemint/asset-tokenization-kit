@@ -86,6 +86,7 @@ export function AddonsManagement() {
       });
     },
   });
+  const appForm = form as unknown as ReturnType<typeof useAppForm>;
 
   const { mutateAsync: createAddons, isPending: isDeploying } = useMutation(
     orpc.system.addon.create.mutationOptions({
@@ -220,6 +221,7 @@ export function AddonsManagement() {
                             ? t("assets.deployed-label")
                             : undefined
                       }
+                      form={appForm}
                       onToggle={(checked) => {
                         handleToggleAddon(addonType, checked);
                       }}
