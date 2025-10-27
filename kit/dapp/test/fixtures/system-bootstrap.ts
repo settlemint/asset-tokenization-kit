@@ -1,9 +1,7 @@
-import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { isContractAddress } from "@/test/anvil";
 import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { getFactoryTypeIdFromAssetType } from "@atk/zod/asset-types";
 import type { FiatCurrency } from "@atk/zod/fiat-currency";
-import type { RoleRequirement } from "@atk/zod/role-requirement";
 import { ORPCError } from "@orpc/server";
 import { retryWhenFailed } from "@settlemint/sdk-utils";
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -11,8 +9,16 @@ import { type User } from "@test/fixtures/user";
 import { getOrpcClient, type OrpcClient } from "./orpc-client";
 import { DEFAULT_PINCODE, signInWithUser } from "./user";
 
-const { userSearch: _, ...otherSystemRoles } = SYSTEM_PERMISSIONS;
-const SYSTEM_MANAGEMENT_REQUIRED_ROLES = extractRequiredRoles(otherSystemRoles);
+const SYSTEM_MANAGEMENT_REQUIRED_ROLES: AccessControlRoles[] = [
+  "admin",
+  "systemManager",
+  "tokenManager",
+  "complianceManager",
+  "addonManager",
+  "claimPolicyManager",
+  "claimIssuer",
+  "identityManager",
+];
 
 const logger = createLogger({ level: "info" });
 
@@ -387,34 +393,4 @@ export async function issueDefaultKycClaims(
       }
     })
   );
-}
-
-function extractRequiredRoles(permissions: Record<string, RoleRequirement>) {
-  return Object.entries(permissions).reduce((acc, [, requiredRoles]) => {
-    const roles = getRoles([requiredRoles]);
-    roles.forEach((role) => {
-      if (!acc.includes(role)) {
-        acc.push(role);
-      }
-    });
-    return acc;
-  }, [] as AccessControlRoles[]);
-}
-
-function getRoles(requirements: RoleRequirement[], depth = 0) {
-  const roles: AccessControlRoles[] = [];
-  if (depth > 10) {
-    return [];
-  }
-  for (const requirement of requirements) {
-    if (typeof requirement === "string") {
-      roles.push(requirement);
-    } else if ("any" in requirement) {
-      roles.push(...getRoles(requirement.any, depth + 1));
-    } else if ("all" in requirement) {
-      roles.push(...getRoles(requirement.all, depth + 1));
-    }
-  }
-
-  return roles;
 }
