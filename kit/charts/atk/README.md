@@ -257,6 +257,7 @@ The following table lists the configurable parameters of this chart and their de
 |network.network-bootstrapper.resources.limits.memory|string|`"256Mi"`|Memory limit for bootstrapper pods|
 |network.network-bootstrapper.resources.requests.cpu|string|`"100m"`|CPU request for bootstrapper pods|
 |network.network-bootstrapper.resources.requests.memory|string|`"128Mi"`|Memory request for bootstrapper pods|
+|network.network-bootstrapper.settings.validators|int|`1`|Number of validator identities to generate (default 4).|
 |network.network-nodes|object|-|Blockchain node configuration (validators and RPC)|
 |network.network-nodes.compileGenesis.resources|object|-|Resource requests and limits for genesis compilation init container|
 |network.network-nodes.compileGenesis.resources.limits.cpu|string|`"600m"`|CPU limit for genesis compilation|
