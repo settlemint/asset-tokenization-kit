@@ -6,6 +6,7 @@ import { useEffectEvent } from "fumadocs-core/utils/use-effect-event";
 import {
   type ComponentProps,
   createContext,
+  forwardRef,
   useContext,
   useLayoutEffect,
   useMemo,
@@ -64,87 +65,95 @@ export const TabsTrigger = Primitive.TabsTrigger;
 /**
  * @internal You better not use it
  */
-export function Tabs({
-  ref,
-  groupId,
-  persist = false,
-  updateAnchor = false,
-  defaultValue,
-  value: _value,
-  onValueChange: _onValueChange,
-  ...props
-}: TabsProps) {
-  const tabsRef = useRef<HTMLDivElement>(null);
-  const [value, setValue] =
-    _value === undefined
-      ? useState(defaultValue)
-      : [_value, _onValueChange ?? (() => undefined)];
+export const Tabs = forwardRef<
+  React.ComponentRef<typeof Primitive.Tabs>,
+  TabsProps
+>(
+  (
+    {
+      groupId,
+      persist = false,
+      updateAnchor = false,
+      defaultValue,
+      value: _value,
+      onValueChange: _onValueChange,
+      ...props
+    },
+    ref
+  ) => {
+    const tabsRef = useRef<HTMLDivElement>(null);
+    const [value, setValue] =
+      _value === undefined
+        ? useState(defaultValue)
+        : [_value, _onValueChange ?? (() => undefined)];
 
-  const onChange = useEffectEvent((v: string) => {
-    setValue(v);
-  });
-  const valueToIdMap = useMemo(() => new Map<string, string>(), []);
+    const onChange = useEffectEvent((v: string) => {
+      setValue(v);
+    });
+    const valueToIdMap = useMemo(() => new Map<string, string>(), []);
 
-  useLayoutEffect(() => {
-    if (!groupId) return;
-    const previous = persist
-      ? localStorage.getItem(groupId)
-      : sessionStorage.getItem(groupId);
+    useLayoutEffect(() => {
+      if (!groupId) return;
+      const previous = persist
+        ? localStorage.getItem(groupId)
+        : sessionStorage.getItem(groupId);
 
-    if (previous) onChange(previous);
-    addChangeListener(groupId, onChange);
-    return () => {
-      removeChangeListener(groupId, onChange);
-    };
-  }, [groupId, persist]);
+      if (previous) onChange(previous);
+      addChangeListener(groupId, onChange);
+      return () => {
+        removeChangeListener(groupId, onChange);
+      };
+    }, [groupId, persist]);
 
-  useLayoutEffect(() => {
-    const hash = globalThis.location.hash.slice(1);
-    if (!hash) return;
+    useLayoutEffect(() => {
+      const hash = globalThis.location.hash.slice(1);
+      if (!hash) return;
 
-    for (const [value, id] of valueToIdMap.entries()) {
-      if (id === hash) {
-        onChange(value);
-        tabsRef.current?.scrollIntoView();
-        break;
+      for (const [value, id] of valueToIdMap.entries()) {
+        if (id === hash) {
+          onChange(value);
+          tabsRef.current?.scrollIntoView();
+          break;
+        }
       }
-    }
-  }, [valueToIdMap]);
+    }, [valueToIdMap]);
 
-  return (
-    <Primitive.Tabs
-      ref={mergeRefs(ref, tabsRef)}
-      value={value}
-      onValueChange={(v: string) => {
-        if (updateAnchor) {
-          const id = valueToIdMap.get(v);
+    return (
+      <Primitive.Tabs
+        ref={mergeRefs(ref, tabsRef)}
+        value={value}
+        onValueChange={(v: string) => {
+          if (updateAnchor) {
+            const id = valueToIdMap.get(v);
 
-          if (id) {
-            globalThis.history.replaceState(null, "", `#${id}`);
+            if (id) {
+              globalThis.history.replaceState(null, "", `#${id}`);
+            }
           }
-        }
 
-        if (groupId) {
-          listeners.get(groupId)?.forEach((item) => {
-            item(v);
-          });
+          if (groupId) {
+            listeners.get(groupId)?.forEach((item) => {
+              item(v);
+            });
 
-          if (persist) localStorage.setItem(groupId, v);
-          else sessionStorage.setItem(groupId, v);
-        } else {
-          setValue(v);
-        }
-      }}
-      {...props}
-    >
-      <TabsContext.Provider
-        value={useMemo(() => ({ valueToIdMap }), [valueToIdMap])}
+            if (persist) localStorage.setItem(groupId, v);
+            else sessionStorage.setItem(groupId, v);
+          } else {
+            setValue(v);
+          }
+        }}
+        {...props}
       >
-        {props.children}
-      </TabsContext.Provider>
-    </Primitive.Tabs>
-  );
-}
+        <TabsContext.Provider
+          value={useMemo(() => ({ valueToIdMap }), [valueToIdMap])}
+        >
+          {props.children}
+        </TabsContext.Provider>
+      </Primitive.Tabs>
+    );
+  }
+);
+Tabs.displayName = "Tabs";
 
 export function TabsContent({
   value,
