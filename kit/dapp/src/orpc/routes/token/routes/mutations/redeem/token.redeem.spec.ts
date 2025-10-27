@@ -153,7 +153,7 @@ describe(
           },
           {
             context: {
-              skipLoggingFor: [CUSTOM_ERROR_CODES.PORTAL_ERROR],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
             },
           }
         )
@@ -232,7 +232,7 @@ describe(
           },
           {
             context: {
-              skipLoggingFor: [CUSTOM_ERROR_CODES.PORTAL_ERROR],
+              skipLoggingFor: [CUSTOM_ERROR_CODES.INPUT_VALIDATION_FAILED],
             },
           }
         )
