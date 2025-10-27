@@ -21,11 +21,11 @@ import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary"
 import { NotFound } from "@/components/error/not-found";
 import {
   compileThemeCSS,
+  hashTheme,
   resolveFontLinks,
   resolveFontVariables,
-  hashTheme,
-  type ResolvedFontLink,
   type FontVariables,
+  type ResolvedFontLink,
 } from "@/components/theme/lib/compile-css";
 import { DEFAULT_THEME, type ThemeConfig } from "@/components/theme/lib/schema";
 import {
@@ -52,9 +52,9 @@ import {
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import {
   useMemo,
-  type ReactNode,
   type DetailedHTMLProps,
   type LinkHTMLAttributes,
+  type ReactNode,
 } from "react";
 import { Toaster } from "sonner";
 
