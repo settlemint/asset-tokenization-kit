@@ -99,40 +99,12 @@ export const SUPPLY_MANAGEMENT_ROLE = new RoleConfig(
 export const CUSTODIAN_ROLE = new RoleConfig("CUSTODIAN_ROLE", "custodian");
 export const EMERGENCY_ROLE = new RoleConfig("EMERGENCY_ROLE", "emergency");
 
-// --- SMART Token Extension Roles ---
-export const BURNER_ROLE = new RoleConfig("BURNER_ROLE", "burner");
-export const CAP_MANAGEMENT_ROLE = new RoleConfig(
-  "CAP_MANAGEMENT_ROLE",
-  "capManagement"
-);
-export const COMPLIANCE_ADMIN_ROLE = new RoleConfig(
-  "COMPLIANCE_ADMIN_ROLE",
-  "complianceAdmin"
-);
-export const FORCED_TRANSFER_ROLE = new RoleConfig(
-  "FORCED_TRANSFER_ROLE",
-  "forcedTransfer"
-);
-export const FREEZER_ROLE = new RoleConfig("FREEZER_ROLE", "freezer");
-export const MINTER_ROLE = new RoleConfig("MINTER_ROLE", "minter");
-export const PAUSER_ROLE = new RoleConfig("PAUSER_ROLE", "pauser");
-export const RECOVERY_ROLE = new RoleConfig("RECOVERY_ROLE", "recovery");
-export const TOKEN_ADMIN_ROLE = new RoleConfig(
-  "TOKEN_ADMIN_ROLE",
-  "tokenAdmin"
-);
-export const VERIFICATION_ADMIN_ROLE = new RoleConfig(
-  "VERIFICATION_ADMIN_ROLE",
-  "verificationAdmin"
-);
-
 // --- Addon-Specific Roles ---
 export const FUNDS_MANAGER_ROLE = new RoleConfig(
   "FUNDS_MANAGER_ROLE",
   "fundsManager"
 );
 export const SALE_ADMIN_ROLE = new RoleConfig("SALE_ADMIN_ROLE", "saleAdmin");
-export const SIGNER_ROLE = new RoleConfig("SIGNER_ROLE", "signer");
 
 // Export all roles as an array for iteration
 export const ALL_ROLES = [
@@ -154,19 +126,8 @@ export const ALL_ROLES = [
   SUPPLY_MANAGEMENT_ROLE,
   CUSTODIAN_ROLE,
   EMERGENCY_ROLE,
-  BURNER_ROLE,
-  CAP_MANAGEMENT_ROLE,
-  COMPLIANCE_ADMIN_ROLE,
-  FORCED_TRANSFER_ROLE,
-  FREEZER_ROLE,
-  MINTER_ROLE,
-  PAUSER_ROLE,
-  RECOVERY_ROLE,
-  TOKEN_ADMIN_ROLE,
-  VERIFICATION_ADMIN_ROLE,
   FUNDS_MANAGER_ROLE,
   SALE_ADMIN_ROLE,
-  SIGNER_ROLE,
   CLAIM_ISSUER_ROLE,
   ORGANISATION_IDENTITY_MANAGER_ROLE,
   TRUSTED_ISSUERS_META_REGISTRY_MODULE_ROLE,

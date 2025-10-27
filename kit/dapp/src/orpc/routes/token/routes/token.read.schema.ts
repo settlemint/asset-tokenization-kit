@@ -1,8 +1,8 @@
 import { IdentitySchema } from "@/orpc/routes/system/identity/routes/identity.read.schema";
 import type { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import {
-  accessControlRoles,
   accessControlSchema,
+  assetAccessControlRolesSchema,
 } from "@atk/zod/access-control-roles";
 import { assetExtensionArray } from "@atk/zod/asset-extensions";
 import { assetSymbol } from "@atk/zod/asset-symbol";
@@ -153,7 +153,9 @@ export const RawTokenSchema = z.object({
     .describe("Enabled compliance modules for this token"),
   userPermissions: z
     .object({
-      roles: accessControlRoles.describe("The roles of the user for the token"),
+      roles: assetAccessControlRolesSchema.describe(
+        "The roles of the user for the token"
+      ),
       isAllowed: z
         .boolean()
         .describe("Whether the user is allowed to interact with the token"),

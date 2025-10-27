@@ -50,16 +50,32 @@ export const accessControlRole = z.enum(roles);
 
 export type AccessControlRole = z.infer<typeof accessControlRole>;
 
-export const assetAccessControlRoles: AccessControlRoles[] = [
+/**
+ * The roles that are available for the asset access control system.
+ */
+export const assetAccessControlRoles = [
   "admin",
   "custodian",
   "emergency",
   "governance",
   "supplyManagement",
-];
+] as const;
 export const assetAccessControlRole = z.enum(assetAccessControlRoles);
 
-export const systemAccessControlRoles: AccessControlRoles[] = [
+export const assetAccessControlRolesSchema = accessControlRoles.pick({
+  admin: true,
+  custodian: true,
+  emergency: true,
+  governance: true,
+  supplyManagement: true,
+});
+
+export type AssetAccessControlRoles = z.infer<typeof assetAccessControlRole>;
+
+/**
+ * The roles that are available for the system access control system.
+ */
+export const systemAccessControlRoles = [
   "admin",
   "systemManager",
   "tokenManager",
@@ -68,8 +84,21 @@ export const systemAccessControlRoles: AccessControlRoles[] = [
   "claimPolicyManager",
   "claimIssuer",
   "identityManager",
-];
+] as const;
 export const systemAccessControlRole = z.enum(systemAccessControlRoles);
+
+export const systemAccessControlRolesSchema = accessControlRoles.pick({
+  admin: true,
+  systemManager: true,
+  tokenManager: true,
+  complianceManager: true,
+  addonManager: true,
+  claimPolicyManager: true,
+  claimIssuer: true,
+  identityManager: true,
+});
+
+export type SystemAccessControlRoles = z.infer<typeof systemAccessControlRole>;
 
 /**
  * Schema describing the AccessControl role admin linkage produced by the system access manager.

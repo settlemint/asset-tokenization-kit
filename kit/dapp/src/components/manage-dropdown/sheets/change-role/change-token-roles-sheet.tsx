@@ -8,7 +8,10 @@ import {
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { AccessControlRoles } from "@atk/zod/access-control-roles";
+import {
+  AccessControlRoles,
+  type AssetAccessControlRoles,
+} from "@atk/zod/access-control-roles";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
@@ -59,7 +62,7 @@ export function ChangeTokenRolesSheet({
         contract: asset.id,
         address: accountAddress,
         walletVerification,
-        role: roles,
+        role: roles as AssetAccessControlRoles[],
       });
     },
     [revokeRole, asset.id]
@@ -71,7 +74,7 @@ export function ChangeTokenRolesSheet({
         contract: asset.id,
         address: accountAddress,
         walletVerification,
-        roles,
+        roles: roles as AssetAccessControlRoles[],
       });
     },
     [grantRole, asset.id]

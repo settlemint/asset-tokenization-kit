@@ -7,6 +7,7 @@ import { orpc } from "@/orpc/orpc-client";
 import {
   AccessControlRoles,
   systemAccessControlRoles,
+  type SystemAccessControlRoles,
 } from "@atk/zod/access-control-roles";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
@@ -49,7 +50,7 @@ export function ChangeSystemRolesSheet({
       await revokeRole({
         address: accountAddress,
         walletVerification,
-        role: roles,
+        role: roles as SystemAccessControlRoles[],
       });
     },
     [revokeRole]
@@ -60,7 +61,7 @@ export function ChangeSystemRolesSheet({
       await grantRole({
         address: accountAddress,
         walletVerification,
-        role: roles,
+        role: roles as SystemAccessControlRoles[],
       });
     },
     [grantRole]

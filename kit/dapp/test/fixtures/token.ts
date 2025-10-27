@@ -1,4 +1,4 @@
-import { AccessControlRole } from "@atk/zod/access-control-roles";
+import { AssetAccessControlRoles } from "@atk/zod/src/access-control-roles";
 import { DEFAULT_PINCODE } from "@test/fixtures/user";
 import { randomUUID } from "node:crypto";
 import { OrpcClient } from "./orpc-client";
@@ -7,7 +7,7 @@ type TokenInput = Parameters<OrpcClient["token"]["create"]>[0];
 
 type TokenOptions = {
   useExactName?: boolean;
-  grantRole?: AccessControlRole | AccessControlRole[];
+  grantRole?: AssetAccessControlRoles | AssetAccessControlRoles[];
   unpause?: boolean;
 };
 
@@ -45,7 +45,7 @@ export async function createToken(
 
   const { grantRole, unpause } = options;
 
-  let rolesToGrant: AccessControlRole[] = grantRole
+  let rolesToGrant: AssetAccessControlRoles[] = grantRole
     ? Array.isArray(grantRole)
       ? grantRole
       : [grantRole]

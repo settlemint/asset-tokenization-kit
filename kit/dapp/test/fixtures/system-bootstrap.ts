@@ -1,5 +1,5 @@
 import { isContractAddress } from "@/test/anvil";
-import type { AccessControlRoles } from "@atk/zod/access-control-roles";
+import { systemAccessControlRoles } from "@atk/zod/access-control-roles";
 import { getFactoryTypeIdFromAssetType } from "@atk/zod/asset-types";
 import type { FiatCurrency } from "@atk/zod/fiat-currency";
 import { ORPCError } from "@orpc/server";
@@ -8,17 +8,6 @@ import { createLogger } from "@settlemint/sdk-utils/logging";
 import { type User } from "@test/fixtures/user";
 import { getOrpcClient, type OrpcClient } from "./orpc-client";
 import { DEFAULT_PINCODE, signInWithUser } from "./user";
-
-const SYSTEM_MANAGEMENT_REQUIRED_ROLES: AccessControlRoles[] = [
-  "admin",
-  "systemManager",
-  "tokenManager",
-  "complianceManager",
-  "addonManager",
-  "claimPolicyManager",
-  "claimIssuer",
-  "identityManager",
-];
 
 const logger = createLogger({ level: "info" });
 
@@ -191,10 +180,10 @@ export async function setupDefaultIssuerRoles(
   const issuerSystem = await issuerOrpcClient.system.read({ id: "default" });
 
   // Issuer needs both token management roles and the claimIssuer role
-  const issuerRequiredRoles: AccessControlRoles[] = [
+  const issuerRequiredRoles = [
     "tokenManager",
     "claimIssuer", // Required for issuing claims to user identities
-  ];
+  ] as const;
 
   const rolesToGrant = issuerRequiredRoles.filter(
     (role) => issuerSystem.userPermissions?.roles[role] !== true
@@ -208,7 +197,7 @@ export async function setupDefaultIssuerRoles(
         verificationType: "PINCODE",
       },
       address: (await issuerOrpcClient.user.me({})).wallet ?? "",
-      role: rolesToGrant as AccessControlRoles[],
+      role: rolesToGrant,
     });
   }
 }
@@ -216,7 +205,7 @@ export async function setupDefaultIssuerRoles(
 export async function setupDefaultAdminRoles(orpClient: OrpcClient) {
   const adminSystem = await orpClient.system.read({ id: "default" });
 
-  const rolesToGrant = SYSTEM_MANAGEMENT_REQUIRED_ROLES.filter(
+  const rolesToGrant = systemAccessControlRoles.filter(
     (role) => adminSystem.userPermissions?.roles[role] !== true
   );
 
