@@ -764,32 +764,6 @@ config:
                 successThresholdCount: 3
                 # -- (int) Capacity of success counter window
                 successThresholdCapacity: 10
-        # -- (object) Second Besu RPC node upstream
-        -
-          # -- (string) Unique identifier for this upstream
-          id: besu-node-rpc-1
-          # -- (string) RPC endpoint URL for this upstream
-          endpoint: http://besu-node-rpc-1.besu-node-rpc:8545
-          # -- (object) EVM-specific configuration for this upstream
-          evm: {}
-          # -- (list) Failsafe policies for this upstream
-          failsafe:
-            # -- (object) Circuit breaker policy for this upstream
-            -
-              # -- (string) RPC method pattern matching all methods
-              matchMethod: "*"
-              # -- (object) Circuit breaker configuration
-              circuitBreaker:
-                # -- (int) Number of failures before opening circuit
-                failureThresholdCount: 40
-                # -- (int) Capacity of failure counter window
-                failureThresholdCapacity: 80
-                # -- (string) Duration before attempting to close circuit
-                halfOpenAfter: 120s
-                # -- (int) Number of successes needed to close circuit
-                successThresholdCount: 3
-                # -- (int) Capacity of success counter window
-                successThresholdCapacity: 10
   # -- (object) Database configuration for caching and shared state
   database:
     # -- (object) EVM JSON-RPC response caching configuration

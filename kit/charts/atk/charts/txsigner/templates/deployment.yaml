@@ -65,8 +65,6 @@ spec:
 {{ toYaml $extraInit | nindent 8 }}
         {{- end }}
       {{- end }}
-      {{- $postgresLocal := default (dict) .Values.postgresql }}
-      {{- $postgresUrl := include "atk.datastores.postgresql.url" (dict "context" . "chartKey" "txsigner" "local" $postgresLocal) }}
       containers:
         - name: txsigner
           image: {{ include "common.images.image" (dict "imageRoot" .Values.image "global" .Values.global) }}
@@ -80,6 +78,11 @@ spec:
           lifecycle:
             {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
+          {{- $postgresLocal := default (dict) .Values.postgresql }}
+          {{- $postgresConfig := ((include "atk.datastores.postgresql" (dict "context" $ "chartKey" "txsigner" "local" $postgresLocal)) | fromYaml) | default (dict) }}
+          {{- $postgresExistingSecret := trim (default "" (index $postgresConfig "existingSecret")) }}
+          {{- $postgresSecretKeys := (index $postgresConfig "existingSecretKeys") | default (dict) }}
+          {{- $postgresUrlKey := trim (default "url" (index $postgresSecretKeys "url")) }}
           env:
             - name: TX_SIGNER_PORT
               value: {{ .Values.config.port | quote }}
@@ -95,10 +98,6 @@ spec:
               value: {{ .Values.config.debug | quote }}
             - name: TX_SIGNER_SIGNING_STRATEGY
               value: {{ .Values.config.signingStrategy | quote }}
-            {{- if ne (trim $postgresUrl) "" }}
-            - name: DATABASE_URL
-              value: {{ $postgresUrl | quote }}
-            {{- end }}
             {{- if eq .Values.config.signingStrategy "local" }}
               {{- if .Values.config.existingSecret }}
             - name: TX_SIGNER_PRIVATE_KEY
@@ -198,6 +197,13 @@ spec:
             - name: TX_SIGNER_CORS_HEADERS
               value: {{ join "," .Values.config.cors.headers | quote }}
           {{- end }}
+            {{- if ne $postgresExistingSecret "" }}
+            - name: DB_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $postgresExistingSecret | quote }}
+                  key: {{ $postgresUrlKey | quote }}
+            {{- end }}
           {{- if .Values.extraEnvVars }}
           {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
           {{- end }}

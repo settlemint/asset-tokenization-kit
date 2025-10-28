@@ -1,0 +1,147 @@
+---
+title: Corporate bonds
+pageTitle: Corporate bond issuance for capital markets
+description:
+  Corporate bond issuance with automated coupon payments and redemption
+tags: [use-case, bonds, debt, capital-markets, automation]
+---
+
+## The scenario
+
+MidCorp Industries needs to raise $50 million through a three-year bond
+offering. Traditional underwriting would take months of roadshows, weeks of
+settlement, and ongoing manual processes for coupon payments and investor
+communications. They want faster execution, broader access, and automated
+servicing.
+
+### Traditional approach
+
+<Mermaid
+  chart={`
+flowchart TB
+    START[Term Sheet]
+    LEGAL[Legal Review<br/>4-6 weeks]
+    ROADSHOW[Roadshow<br/>2-3 weeks]
+    BOOK[Book Building<br/>1-2 weeks]
+    SETTLE[Settlement<br/>T+2 to T+5]
+    MANUAL[Manual Processes]
+    
+    COUPON[Quarterly Coupon<br/>Manual Calculation]
+    WIRE[Wire Instructions<br/>80+ Investors]
+    RECON[Reconciliation<br/>Days of Work]
+    AGENT[Transfer Agent<br/>Monthly Fees]
+    
+    START --> LEGAL
+    LEGAL --> ROADSHOW
+    ROADSHOW --> BOOK
+    BOOK --> SETTLE
+    SETTLE --> MANUAL
+    MANUAL --> COUPON
+    MANUAL --> WIRE
+    MANUAL --> RECON
+    MANUAL --> AGENT
+    
+    style START fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style LEGAL fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style ROADSHOW fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style BOOK fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style SETTLE fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style MANUAL fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style COUPON fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style WIRE fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style RECON fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style AGENT fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+`}
+/>
+
+## How ATK handles it
+
+**Term sheet to deployment in days**: MidCorp's treasury team uses the Asset
+Designer to configure a bond token: $50 million principal, 5% annual coupon paid
+quarterly, three-year maturity, USD denomination. They select Regulation D
+compliance template to limit the offering to accredited US investors.
+
+The platform generates the smart contract with compliance controls embedded.
+MidCorp uploads their offering memorandum, which gets cryptographically hashed
+and linked to the token metadata. The legal documentation lives permanently with
+the asset.
+
+**Investor onboarding with built-in compliance**: Accredited investors connect
+through the Investor Portal and complete KYC verification via an integrated
+provider. Their OnchainID gets updated with an accreditation claim. Only wallet
+addresses linked to verified, accredited identities can receive bond tokens.
+
+**Primary distribution**: MidCorp allocates tokens to a subscriber list. The
+platform enforces that every recipient meets eligibility requirements.
+Non-accredited addresses simply cannot receive tokens; the transfer reverts
+automatically. No risk of accidental non-compliant distribution.
+
+**Automated quarterly coupons**: Every quarter on the coupon date, the platform
+calculates interest owed to each holder based on their proportional ownership.
+Using integrated payment rails or tokenized cash, it distributes payments
+automatically. Every holder receives their exact amount without manual
+calculations or wire transfer instructions.
+
+**Real-time cap table visibility**: MidCorp's IR team sees current ownership in
+real time. No waiting for monthly reports from a transfer agent. When investors
+trade bonds on secondary markets (if permitted), the cap table updates
+immediately.
+
+**Maturity and redemption**: At three years, the platform automatically handles
+redemption: bond tokens get burned, principal plus final interest gets
+distributed, and the issuance concludes with complete audit trails showing every
+payment, every holder, every compliance check throughout the lifecycle.
+
+## The outcomes
+
+### With ATK
+
+<Mermaid
+  chart={`
+flowchart TB
+    START[Term Sheet]
+    CONFIG[Asset Designer<br/>2-3 days]
+    DEPLOY[Smart Contract<br/>Deploy]
+    DIST[Primary Distribution<br/>Instant Settlement]
+    AUTO[Automated Lifecycle]
+    
+    COUPON[Quarterly Coupon<br/>Automatic Distribution]
+    REALTIME[Real-time Cap Table<br/>No Delays]
+    COMPLIANCE[Zero Non-compliant<br/>Transfers]
+    REDEMPTION[Maturity Redemption<br/>Fully Automated]
+    
+    START --> CONFIG
+    CONFIG --> DEPLOY
+    DEPLOY --> DIST
+    DIST --> AUTO
+    AUTO --> COUPON
+    AUTO --> REALTIME
+    AUTO --> COMPLIANCE
+    AUTO --> REDEMPTION
+    
+    style START fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style CONFIG fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style DEPLOY fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style DIST fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style AUTO fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style COUPON fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style REALTIME fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style COMPLIANCE fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style REDEMPTION fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+`}
+/>
+
+**Time savings**: Traditional bond issuance took 8-12 weeks from term sheet to
+first settlement. With ATK, MidCorp went live in 10 days.
+
+**Cost reduction**: Eliminated transfer agent fees for ongoing servicing,
+reduced legal review time because compliance templates are pre-vetted, cut
+operations overhead because corporate actions are automated.
+
+**Broader access**: Secondary markets emerged because settlement happens
+instantly. Institutional investors could trade positions knowing settlement
+completes in minutes, not days.
+
+**Compliance certainty**: Zero non-compliant transfers because only verified
+accredited investors could hold tokens. Regulatory comfort increased
+dramatically.

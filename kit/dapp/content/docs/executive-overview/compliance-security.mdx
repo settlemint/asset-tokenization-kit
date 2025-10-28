@@ -1,0 +1,459 @@
+---
+title: Compliance & security
+description:
+  Emphasizes the platform's approach to regulatory compliance and security
+  measures in business terms
+pageTitle: Compliance, security, and trust in ATK
+tags: [concept, compliance, security, trust, regulations]
+---
+
+<Callout type="info" title="Template guide">
+  This page follows The Good Docs Project
+  **[Concept](https://www.thegooddocsproject.dev/template/concept)** template.
+</Callout>
+
+## Why institutions need compliance-first architecture
+
+Risk committees don't approve blockchain projects because the technology is
+interesting. They approve platforms that demonstrate control, auditability, and
+regulatory alignment from the ground up. ATK was architected with this reality
+as the foundational requirement.
+
+Traditional securities have compliance processes that evolved over decades:
+transfer agents verify eligibility before updating ownership records, custodians
+enforce security controls before releasing assets, clearing houses guarantee
+settlement finality. These processes exist because regulators mandated them
+after costly failures.
+
+Blockchain technology promises to streamline these processes, but only if the
+platform implements controls at least as robust as what exists today. Replacing
+paper certificates with tokens while removing compliance controls isn't
+progress—it's a path to regulatory shutdown.
+
+ATK implements compliance as embedded infrastructure, not as an optional feature
+you enable through configuration. The architecture makes non-compliant
+operations impossible by design.
+
+## Regulatory compliance by design
+
+### Compliance in the transfer path, not after it
+
+Every token transfer in ATK executes through compliance checks before state
+changes. This isn't a best practice recommendation; it's how the ERC-3643
+standard works at the protocol level.
+
+<Mermaid
+  chart={`
+flowchart TB
+    INIT[Alice Initiates<br/>Token Transfer to Bob]
+    CHECK1{Alice Has<br/>Verified Identity?}
+    CHECK2{Bob Has<br/>Verified Identity?}
+    CHECK3{Bob Meets<br/>Eligibility Requirements?}
+    CHECK4{Transfer Within<br/>Holding Limits?}
+    CHECK5{No Asset-Wide<br/>Restrictions?}
+    EXECUTE[Execute Transfer<br/>Update Blockchain State]
+    REVERT[Revert Transaction<br/>Return Reason Code]
+    
+    INIT --> CHECK1
+    CHECK1 -->|Yes| CHECK2
+    CHECK1 -->|No| REVERT
+    CHECK2 -->|Yes| CHECK3
+    CHECK2 -->|No| REVERT
+    CHECK3 -->|Yes| CHECK4
+    CHECK3 -->|No| REVERT
+    CHECK4 -->|Yes| CHECK5
+    CHECK4 -->|No| REVERT
+    CHECK5 -->|Yes| EXECUTE
+    CHECK5 -->|No| REVERT
+    
+    style INIT fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style CHECK1 fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style CHECK2 fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style CHECK3 fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style CHECK4 fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style CHECK5 fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style EXECUTE fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style REVERT fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+`}
+/>
+
+When Alice tries to transfer bond tokens to Bob, the smart contract first
+checks:
+
+- Is Alice's wallet linked to a verified identity?
+- Is Bob's wallet linked to a verified identity?
+- Does Bob meet the eligibility requirements for this specific asset
+  (accreditation, jurisdiction, etc.)?
+- Does the transfer violate any holding limits, lockup periods, or concentration
+  rules?
+- Are there any asset-wide restrictions currently in force (trading halts,
+  emergency freezes)?
+
+If any check fails, the transfer reverts. The blockchain state doesn't change.
+Gas is still consumed for the failed attempt, even though the blockchain state
+is reverted. There is no "undo" process because state changes are reverted.
+
+This ex-ante control is what regulators want to see. Compliance isn't detected
+and corrected after the fact; it's enforced before execution.
+
+### Identity registry and OnchainID integration
+
+ATK uses OnchainID, a decentralized identity protocol specifically designed for
+compliance-aware tokenized securities. Each investor gets a persistent, portable
+identity that travels across assets.
+
+When you complete KYC/AML verification for one bond issuance, that verification
+carries forward to other investments on the platform. You don't repeat identity
+checks for every asset; your OnchainID accumulates verified claims from trusted
+issuers.
+
+**Identity Claims** are attestations about your identity:
+
+- "This person completed KYC verification to Level 2 standards on DATE"
+- "This entity is an accredited investor under Regulation D"
+- "This individual is a resident of JURISDICTION"
+- "This institution is a qualified institutional buyer"
+
+Claims are cryptographically signed by trusted verifiers (KYC providers, legal
+counsel, custodians) and attached to your OnchainID. They're revocable if
+circumstances change. They have expiration dates requiring periodic renewal.
+
+The **Identity Registry** maintains the mapping between wallet addresses and
+OnchainID identities. Only registered, verified identities can interact with
+compliant assets. Anonymous wallet addresses get rejected automatically.
+
+This architecture provides reusable identity while respecting privacy. Your full
+identity information doesn't live on a public blockchain. Only cryptographic
+proofs of necessary claims exist on-chain, with detailed PII held by trusted
+verifiers who can respond to legal requests.
+
+### Jurisdictional rule templates and policy engine
+
+Different jurisdictions have different rules. US Regulation D requires
+accredited investors for private placements. EU MiFID II has its own investor
+classification schemes. Singapore MAS has fit-and-proper requirements. Gulf
+Cooperation Council markets may have Shariah compliance considerations.
+
+ATK's Compliance Engine implements these as configurable rule modules that
+compliance officers activate for specific assets.
+
+**The Rule Library includes pre-built templates:**
+
+- **US Regulation D**: Accredited investor requirements, integration with 506(b)
+  vs 506(c) advertising restrictions, blue sky law considerations
+- **US Regulation S**: Non-US person verification, offering restrictions,
+  seasoning periods
+- **EU MiCA**: Investor classification, passporting requirements, disclosure
+  obligations
+- **Singapore MAS**: Institutional vs retail investor gates, prospectus
+  requirements, corporate disclosure
+- **UK FCA**: Sophisticated investor tests, high-net-worth certifications,
+  appropriateness assessments
+
+**Configurable compliance modules enforce:**
+
+- **Geographic restrictions**: Whitelist or blacklist specific countries
+- **Investor limits**: Maximum number of holders or maximum concentration per
+  holder
+- **Transfer restrictions**: Lock-up periods, vesting schedules, trading windows
+- **Holding requirements**: Minimum holding periods before transfers are
+  permitted
+- **Trading venues**: Restrict transfers to approved exchanges or platforms
+
+When regulations change—and they always do—compliance updates happen through the
+rule engine. You don't redeploy smart contracts or migrate tokens. The policy
+updates and affected assets inherit the new rules automatically.
+
+### Audit trails and regulatory reporting
+
+Every compliance decision generates an immutable audit record:
+
+- **Transaction ID**: Which transfer or operation was evaluated
+- **Timestamp**: Exactly when the check occurred (block number and timestamp)
+- **Parties**: Who initiated the transaction and who the counterparty was
+- **Identity verification**: Which OnchainID claims were evaluated
+- **Rule evaluation**: Which compliance modules were checked and their results
+- **Outcome**: Allow or deny with specific reason codes
+- **Administrator actions**: If manual override occurred, who approved it and
+  why
+
+Regulators reviewing your compliance program can query these records
+programmatically. You export machine-readable reports showing every transaction
+attempt, every eligibility check, every compliance decision over any time
+period.
+
+This isn't compliance theater. This is the evidence base that survives
+regulatory examination because it's cryptographically tamper-proof and complete.
+
+## Identity verification and KYC/AML integration
+
+### How investor onboarding works
+
+ATK integrates with professional KYC/AML providers who specialize in identity
+verification, sanctions screening, politically exposed person (PEP) checks, and
+adverse media monitoring.
+
+<Mermaid
+  chart={`
+flowchart TB
+    START[Investor Visits<br/>Onboarding Portal]
+    DOCS[Submit Personal Info<br/>& Documentation]
+    KYC[KYC Provider<br/>Verification]
+    CHECKS{Verification<br/>Checks}
+    REVIEW[Compliance Officer<br/>Review]
+    APPROVE{Approved?}
+    CLAIMS[Add Identity Claims<br/>to OnchainID]
+    REGISTER[Register Wallet<br/>in Identity Registry]
+    ACCESS[Access to<br/>Compliant Assets]
+    REJECT[Rejection Notice<br/>& Documentation]
+    
+    START --> DOCS
+    DOCS --> KYC
+    KYC --> CHECKS
+    CHECKS -->|Identity Verification| REVIEW
+    CHECKS -->|Sanctions Screening| REVIEW
+    CHECKS -->|PEP Checks| REVIEW
+    REVIEW --> APPROVE
+    APPROVE -->|Yes| CLAIMS
+    CLAIMS --> REGISTER
+    REGISTER --> ACCESS
+    APPROVE -->|No| REJECT
+    
+    style START fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style KYC fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style CHECKS fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style REVIEW fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style APPROVE fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style CLAIMS fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style REGISTER fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style ACCESS fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style REJECT fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+`}
+/>
+
+**Standard onboarding flow:**
+
+1. Investor visits your onboarding portal (white-labeled to your brand)
+2. They provide personal information, documentation (passport, proof of address,
+   etc.)
+3. The platform routes verification to an integrated KYC provider
+4. Provider performs identity verification, sanctions checks, PEP screening
+5. Results return to the platform with risk scoring and attestations
+6. Compliance officer reviews results and approves or rejects
+7. Approved investors get identity claims added to their OnchainID
+8. Their wallet address gets registered in the Identity Registry
+9. They can now interact with compliant assets
+
+**For institutional investors**, the process includes corporate KYC/KYB with
+beneficial ownership verification, entity structure documentation, authorized
+signer verification, and institutional due diligence questionnaires.
+
+### Ongoing monitoring and claim maintenance
+
+Identity verification isn't one-and-done. ATK supports periodic reverification,
+continuous monitoring for adverse events, and claim expiration requiring
+renewal.
+
+If a KYC provider flags an investor due to sanctions list addition or criminal
+proceedings, their claims get revoked automatically. Their tokens don't get
+confiscated, but they cannot transfer them until the issue is resolved. This is
+exactly how regulated securities should behave.
+
+Accreditation claims have expiration dates because investor circumstances
+change. A verified accredited investor from 2022 might not qualify in 2025. The
+platform enforces claim freshness requirements, prompting reinvestigation when
+needed.
+
+### Privacy and data protection
+
+GDPR, PDPA, and other privacy regulations constrain how identity information is
+handled. ATK implements privacy-conscious architecture:
+
+- **Minimal on-chain PII**: Only hashes and cryptographic claims live on-chain
+- **Encrypted off-chain storage**: Detailed identity documents stored encrypted
+  with access controls
+- **Right to be forgotten**: Personal data can be deleted while maintaining
+  transaction history (identities become pseudonymized)
+- **Selective disclosure**: Investors control which verifiers see which
+  information
+- **Data residency**: Deploy in jurisdictions matching data protection
+  requirements
+
+You get compliance with securities regulations and privacy regulations
+simultaneously because the architecture was designed for both.
+
+## Security architecture and threat mitigation
+
+### Multi-signature governance and role-based access
+
+ATK assumes that individual credentials will be compromised. Security is layered
+such that no single person can cause catastrophic loss.
+
+**Multi-signature treasury controls** require M-of-N approval for sensitive
+operations:
+
+- Token minting or burning requires 2-of-3 administrator approval
+- Large transfers require 3-of-5 treasury approval
+- Emergency freeze operations require 2-of-2 executive approval
+- Smart contract upgrades require 3-of-5 governance approval
+
+**Role-Based Access Control** defines what each role can do:
+
+- **Super Admin**: Platform configuration, role assignment, global settings
+- **Compliance Officer**: Investor approval, identity management, rule
+  configuration
+- **Treasury Manager**: Asset operations, distribution processing, reserve
+  management
+- **Support Agent**: Read-only access to assist users, cannot modify state
+- **Auditor**: Read-only access to all records for compliance review
+
+Roles follow principle of least privilege. Support agents can view information
+to help users but cannot approve transactions. Compliance officers can approve
+investors but cannot move assets. Treasury managers can distribute funds but
+cannot change compliance rules.
+
+### Hardware security modules and custody integration
+
+Private keys controlling substantial value require hardware protection. ATK
+supports integration with HSMs (Hardware Security Modules) that store keys in
+tamper-resistant hardware.
+
+**HSM benefits:**
+
+- Keys never leave the secure enclave
+- Signing operations happen inside tamper-proof hardware
+- Physical security controls protect against theft
+- Audit logs track every use of every key
+- Cryptographic evidence proves which keys signed which transactions
+
+**For institutions that already use custodians**, ATK integrates with:
+
+- **Fireblocks**: MPC-based institutional custody with policy engine
+- **Coinbase Custody**: Regulated custodian with insurance and SOC 2 compliance
+- **Copper**: ClearLoop settlement with custodial security
+- **Metaco**: Harmonize platform for digital asset custody and orchestration
+
+Integration means you can keep your existing custody relationship while gaining
+ATK's lifecycle management capabilities. The platform doesn't force you to trust
+new custody providers.
+
+### Network security and access controls
+
+**Production security hardening includes:**
+
+- **TLS encryption** for all API communications with modern cipher suites
+- **API authentication** via OAuth 2.0 / OIDC with short-lived tokens
+- **Rate limiting** to prevent abuse and DoS attacks
+- **IP allowlisting** for administrative operations from known networks
+- **DDoS protection** through Cloudflare or equivalent edge networks
+- **Web application firewall** protecting against common vulnerabilities
+- **Secrets management** via HashiCorp Vault or cloud provider secret stores
+
+**Monitoring and incident response:**
+
+- SIEM integration sends security events to centralized monitoring
+- Alert rules detect suspicious patterns (failed login attempts, unusual
+  transactions)
+- On-call rotations ensure 24/7 incident response capability
+- Incident playbooks define response procedures for security events
+- Quarterly tabletop exercises test incident response readiness
+
+### Operational security and recovery procedures
+
+Bad things will happen. Systems will fail. Keys will be compromised. Staff will
+make mistakes. ATK includes procedures for recovery:
+
+**Key compromise response:**
+
+- Detect compromise through monitoring or self-reporting
+- Immediately freeze affected operations
+- Execute key rotation procedures
+- Investigate scope of compromise
+- Notify affected parties per disclosure requirements
+- Document incident for regulators and auditors
+
+**System failure recovery:**
+
+- High-availability deployment across multiple availability zones
+- Automated failover for database and API services
+- Regular database backups with tested restore procedures
+- Disaster recovery site in separate geographic region
+- Recovery time objectives (RTO) and recovery point objectives (RPO) documented
+  and tested
+
+**Smart contract upgrade procedures:**
+
+- ATK uses proxy patterns allowing logic updates without changing addresses
+- Upgrades require multi-signature governance approval
+- Changes deploy first to testnet for validation
+- Mainnet upgrades during planned maintenance windows with user notification
+- Rollback capability if issues are discovered post-deployment
+
+## Standards, certifications, and regulatory alignment
+
+### Industry standards compliance
+
+ATK implements or aligns with:
+
+- **ERC-3643**: T-REX standard for permissioned token transfers
+- **ISO 20022**: Financial messaging standard for payment integration
+- **OpenID Connect**: Standard for identity federation
+- **OAuth 2.0**: Authorization framework for API access
+- **FIDO2/WebAuthn**: Strong authentication standards
+
+### Regulatory framework alignment
+
+The platform architecture supports compliance with:
+
+- **EU MiCA**: Markets in Crypto-Assets regulation for tokenized instruments
+- **EU GDPR**: Data protection and privacy requirements
+- **US Securities Act**: Regulation D, Regulation S compliance templates
+- **Singapore MAS**: Payment Services Act and Securities and Futures Act
+  requirements
+- **UK FCA**: Financial Conduct Authority rules for digital securities
+- **GCC Regulations**: Gulf Cooperation Council financial authority requirements
+
+### Security certifications and audits
+
+Organizations deploying ATK typically pursue:
+
+- **SOC 2 Type II**: Service organization controls for security, availability,
+  confidentiality
+- **ISO 27001**: Information security management system certification
+- **Smart contract audits**: Third-party security review of contract code
+- **Penetration testing**: Regular external security testing of infrastructure
+- **Regulatory examinations**: Cooperation with securities regulators reviewing
+  operations
+
+These aren't automatic with the platform; they're organizational certifications
+your deployment can pursue with ATK's architecture supporting the requirements.
+
+## What this means for adoption
+
+Risk committees approve platforms that demonstrate control. ATK provides:
+
+- **Compliance evidence** through audit trails showing every eligibility check
+- **Security controls** with multi-signature operations and HSM integration
+- **Regulatory alignment** via jurisdiction-specific rule templates
+- **Privacy protection** balancing transparency with data protection
+  requirements
+- **Operational resilience** through high availability and disaster recovery
+
+Compliance isn't bolted on. Security isn't an afterthought. Privacy isn't in
+tension with transparency. These are architectural foundations that enable
+institutional adoption.
+
+When you present ATK to your risk committee, you're presenting a platform that
+was designed from inception for regulated financial instruments with proper
+institutional controls. That's the difference between blockchain experimentation
+and production infrastructure.
+
+The next sections dive deeper into architecture, explore technical capabilities
+for developers, and provide operational guides for administrators. But the
+executive takeaway is this: ATK is compliance-native, security-first
+infrastructure built for institutions that have real regulatory obligations and
+real fiduciary responsibilities.
+
+That's not a marketing position. That's the architectural reality that makes
+deployment possible in regulated markets where compliance isn't optional and
+security gaps don't get second chances.

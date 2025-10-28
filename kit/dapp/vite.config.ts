@@ -21,6 +21,70 @@ export default defineConfig({
     target: "es2023",
     sourcemap: true,
     rollupOptions: {
+      output: {
+        manualChunks: (id: string) => {
+          // Skip node_modules processing for non-vendor chunks
+          if (!id.includes("node_modules")) {
+            return;
+          }
+
+          // Chart libraries - lazy-loaded by chart components
+          if (id.includes("recharts")) {
+            return "vendor-charts";
+          }
+
+          // Documentation libraries - only loaded in /docs routes
+          if (id.includes("mermaid") || id.includes("katex")) {
+            return "vendor-docs";
+          }
+
+          // Table utilities - code-split for table-heavy routes
+          if (id.includes("@tanstack/react-table")) {
+            return "vendor-tables";
+          }
+
+          // Core UI libraries - used across many routes
+          if (id.includes("@radix-ui")) {
+            return "vendor-ui";
+          }
+
+          // Form libraries - code-split for form-heavy routes
+          if (id.includes("@tanstack/react-form")) {
+            return "vendor-forms";
+          }
+
+          // TanStack Query & Router - used throughout app (before react check to avoid misclassification)
+          if (
+            id.includes("@tanstack/react-query") ||
+            id.includes("@tanstack/query-") ||
+            id.includes("@tanstack/react-router") ||
+            id.includes("@tanstack/router-")
+          ) {
+            return "vendor-tanstack";
+          }
+
+          // React core ecosystem - shared across all routes
+          // Match only actual react packages, not react-* third-party libs
+          if (
+            id.includes("/node_modules/react/") ||
+            id.includes("/node_modules/react-dom/") ||
+            id.includes("/node_modules/scheduler/") ||
+            id.endsWith("/node_modules/react") ||
+            id.endsWith("/node_modules/react-dom") ||
+            id.endsWith("/node_modules/scheduler")
+          ) {
+            return "vendor-react-core";
+          }
+
+          // Blockchain libraries - viem, etc
+          if (id.includes("viem") || id.includes("@noble")) {
+            return "vendor-blockchain";
+          }
+
+          // Everything else goes to vendor
+          return "vendor";
+        },
+      },
       onwarn(
         warning: MinimalRollupWarning,
         warn: (warning: MinimalRollupWarning) => void
@@ -92,7 +156,7 @@ export default defineConfig({
     tailwindcss(),
     tanstackStart({
       prerender: {
-        enabled: true,
+        enabled: false,
       },
     }),
     viteReact({

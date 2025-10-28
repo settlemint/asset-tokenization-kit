@@ -1,0 +1,470 @@
+---
+title: Frontend design
+description:
+  Modern TanStack-based web application with type-safe routing and reactive
+  state management
+pageTitle: Frontend architecture - TanStack dApp and UX principles
+tags: [architecture, frontend, tanstack, react, typescript, ui]
+---
+
+The Asset Tokenization Kit frontend is built as a modern, type-safe single-page
+application using TanStack's ecosystem. It delivers a responsive, accessible
+user experience for managing tokenized assets while maintaining strict type
+safety from backend to browser.
+
+## Technology foundation
+
+### Core framework stack
+
+The frontend leverages the TanStack ecosystem for routing, data fetching, and
+form management:
+
+- **TanStack Router** (version 1.133) - File-based routing with type-safe
+  navigation
+- **TanStack Query** (version 5.90) - Server state management with automatic
+  caching
+- **TanStack Form** (version 1.23) - Type-safe form handling with validation
+- **TanStack Start** (version 1.133) - Full-stack React framework with SSR
+  support
+
+This unified approach ensures consistency across routing, data fetching, and
+state management while providing automatic TypeScript inference throughout the
+application.
+
+### UI component system
+
+The interface is built on accessible, composable primitives:
+
+- **Radix UI** - Unstyled, accessible components (dialogs, dropdowns, tooltips)
+- **Tailwind CSS** (version 4.1) - Utility-first styling with custom design
+  tokens
+- **shadcn/ui** - Pre-styled component patterns built on Radix
+- **Lucide React** - Consistent icon library (version 0.548)
+
+All UI components prioritize accessibility (WCAG 2.1 AA compliance), keyboard
+navigation, and screen reader support. See `src/components/ui/` for the
+component library.
+
+### Type safety and validation
+
+End-to-end type safety is maintained through:
+
+- **TypeScript** (version 5.9) - Strict mode with exhaustive checking
+- **Zod** (version 4.1) - Runtime validation and schema inference
+- **ORPC** (version 1.10) - Type-safe RPC client with automatic serialization
+- **gql.tada** (version 1.8) - Type-safe GraphQL queries with code generation
+
+Input validation happens at the form level (via Zod schemas), API boundary (via
+ORPC contracts), and data layer (via Drizzle ORM). This eliminates an entire
+class of runtime errors.
+
+## Application architecture
+
+### File-based routing structure
+
+Routes are defined in `src/routes/` using TanStack Router's file conventions:
+
+<Mermaid
+  chart={`
+flowchart TB
+    Root["__root.tsx
+    (Global layout + providers)"]
+
+    Private["_private.tsx
+    (Auth guard)"]
+
+    Onboarding["onboarding.tsx
+    (Setup wizard)"]
+
+    Onboarded["_onboarded.tsx
+    (Main app layout)"]
+
+    Sidebar["_sidebar.tsx
+    (Navigation shell)"]
+
+    Pages["index.tsx
+    my-assets.tsx
+    addon-designer.tsx
+    token/$factoryAddress/$tokenAddress/*"]
+
+    Root --> Private
+    Private --> Onboarding
+    Private --> Onboarded
+    Onboarded --> Sidebar
+    Sidebar --> Pages
+
+    style Root fill:#0ea5e9,stroke:#0369a1,color:#fff
+    style Private fill:#8b5cf6,stroke:#6d28d9,color:#fff
+    style Onboarded fill:#10b981,stroke:#047857,color:#fff
+    style Sidebar fill:#10b981,stroke:#047857,color:#fff
+    style Pages fill:#10b981,stroke:#047857,color:#fff
+
+`} />
+
+**Route protection layers:**
+
+- `_private.tsx` - Requires authentication (redirects to login)
+- `onboarding.tsx` - First-time setup wizard (identity, wallet, system
+  deployment)
+- `_onboarded.tsx` - Requires completed onboarding
+- `_sidebar.tsx` - Main application shell with navigation
+
+Dynamic routes like `token/$factoryAddress/$tokenAddress/holders.tsx` provide
+type-safe parameter access via `useParams()`.
+
+### State management architecture
+
+State is distributed across specialized layers:
+
+<Mermaid
+  chart={`
+flowchart LR
+    subgraph "Client State"
+        UI["UI State
+        (TanStack Store)"]
+        Theme["Theme
+        (Context)"]
+        I18n["i18n
+        (Context)"]
+    end
+
+    subgraph "Server State"
+        Query["Query Cache
+        (TanStack Query)"]
+        Optimistic["Optimistic Updates"]
+    end
+
+    subgraph "Remote Sources"
+        ORPC["ORPC API"]
+        GraphQL["TheGraph Subgraph"]
+        Chain["Blockchain (Viem)"]
+    end
+
+    UI --> Query
+    Theme --> UI
+    I18n --> UI
+    Query --> ORPC
+    Query --> GraphQL
+    Query --> Chain
+    Optimistic --> Query
+
+    style UI fill:#8b5cf6,stroke:#6d28d9,color:#fff
+    style Query fill:#10b981,stroke:#047857,color:#fff
+    style ORPC fill:#0ea5e9,stroke:#0369a1,color:#fff
+
+`} />
+
+**Server state** (data from APIs/blockchain) is managed by TanStack Query with:
+
+- Automatic background refetching
+- Request deduplication
+- Optimistic updates for mutations
+- Persistent cache with broadcast sync across tabs
+
+**Client state** (UI preferences, form state) uses:
+
+- TanStack Form for form management with field-level validation
+- React Context for theme and i18n preferences
+- URL state for filters and pagination
+
+### Data fetching patterns
+
+The application uses three primary data sources:
+
+**1. ORPC API** (`src/orpc/`) - Type-safe RPC for business logic:
+
+```typescript
+import { orpc } from "@/orpc/client";
+
+// Type-safe client with automatic inference
+const { data: tokens } = orpc.token.list.useQuery({
+  typeId: "equity",
+  status: "active",
+});
+// TypeScript knows exact shape of `tokens`
+```
+
+**2. TheGraph Subgraph** - Indexed blockchain data:
+
+```typescript
+import { graphql } from "@/lib/graphql";
+
+const query = graphql(`
+  query GetTokenHolders($id: ID!) {
+    token(id: $id) {
+      holders {
+        address
+        balance
+      }
+    }
+  }
+`);
+// Fully typed via gql.tada
+```
+
+**3. ORPC backend procedures** - Type-safe RPC calls to backend:
+
+```typescript
+import { useQuery } from "@tanstack/react-query";
+import { orpc } from "@/lib/orpc/client";
+
+// Fetch theme settings via ORPC procedure
+const { data: theme } = useQuery(
+  orpc.settings.theme.get.queryOptions({ input: {} })
+);
+// Fully typed end-to-end with Zod schemas
+```
+
+## Key application features
+
+### Asset designer wizard
+
+Multi-step token creation interface at
+`src/routes/_private/_onboarded/_sidebar/addon-designer.tsx`:
+
+<Mermaid
+  chart={`
+flowchart TB
+    Start["Select Asset Type
+    (Bond, Equity, Fund, StableCoin)"]
+
+    Details["Configure Details
+    (Name, symbol, supply)"]
+
+    Compliance["Set Compliance Rules
+    (KYC, country filters, caps)"]
+
+    Extensions["Add Extensions
+    (Pausable, yield, voting)"]
+
+    Review["Review & Deploy
+    (Gas estimation, preview)"]
+
+    Deploy["Deploy Transaction
+    (Monitor status)"]
+
+    Complete["Asset Created
+    (Navigate to token page)"]
+
+    Start --> Details
+    Details --> Compliance
+    Compliance --> Extensions
+    Extensions --> Review
+    Review --> Deploy
+    Deploy --> Complete
+
+    style Start fill:#0ea5e9,stroke:#0369a1,color:#fff
+    style Details fill:#0ea5e9,stroke:#0369a1,color:#fff
+    style Compliance fill:#d97706,stroke:#92400e,color:#fff
+    style Extensions fill:#8b5cf6,stroke:#6d28d9,color:#fff
+    style Review fill:#8b5cf6,stroke:#6d28d9,color:#fff
+    style Deploy fill:#d97706,stroke:#92400e,color:#fff
+    style Complete fill:#10b981,stroke:#047857,color:#fff
+
+`} />
+
+Each step validates inputs before proceeding. The wizard persists progress in
+TanStack Query cache, allowing users to resume interrupted workflows.
+
+### Token management dashboard
+
+Asset-specific interface at
+`src/routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/`:
+
+- **Index** - Overview with supply, holders, compliance status
+- **Holders** - Cap table with balance distribution charts
+- **Events** - Transaction history (transfers, mints, burns)
+- **Compliance** - Identity registry, claim requirements, blocked addresses
+- **Yield** - Dividend/interest distribution management
+- **Permissions** - Role-based access control
+
+Each view combines on-chain data (via subgraph) with off-chain metadata (via
+ORPC).
+
+### Participant management
+
+Investor and entity onboarding at
+`src/routes/_private/_onboarded/_sidebar/participants/`:
+
+- **Users** - Individual investors with KYC status and identity claims
+- **Entities** - Corporate investors with representative hierarchies
+
+Compliance officers can review KYC documents, approve identities, and assign
+claim topics (accreditation levels, jurisdiction).
+
+### Platform administration
+
+System-wide settings at
+`src/routes/_private/_onboarded/_sidebar/platform-settings/`:
+
+- **Asset types** - Enable/disable token factories
+- **Compliance** - Global claim topics and trusted issuers
+- **Addons** - Manage vault, XvP, token sale modules
+- **Permissions** - Assign system-wide roles
+- **Theme** - Customize branding and colors
+
+Role-based access control restricts these pages to administrators.
+
+## User experience principles
+
+### Progressive disclosure
+
+Complex functionality is revealed gradually:
+
+- **Default view** - Essential information and common actions
+- **Advanced** - Detailed controls hidden behind accordions
+- **Expert mode** - Raw data and developer tools (contract ABIs, events)
+
+For example, token creation starts with basic fields (name, symbol) and
+progressively exposes compliance rules and advanced extensions.
+
+### Real-time feedback
+
+User actions provide immediate feedback:
+
+- **Optimistic updates** - UI updates before blockchain confirmation
+- **Progress indicators** - Transaction status with block confirmations
+- **Error recovery** - Clear error messages with actionable suggestions
+
+All blockchain transactions show pending status, estimated time, and block
+explorer links.
+
+### Responsive design
+
+The interface adapts to screen sizes:
+
+- **Desktop** (≥1024px) - Full sidebar navigation, multi-column layouts
+- **Tablet** (768-1023px) - Collapsible sidebar, single-column with cards
+- **Mobile** (&lt;768px) - Bottom navigation, stacked forms
+
+Critical actions (token transfers, approvals) remain accessible on all screen
+sizes.
+
+### Accessibility compliance
+
+WCAG 2.1 AA standards are met through:
+
+- **Keyboard navigation** - All interactive elements reachable via Tab
+- **Screen reader support** - ARIA labels and semantic HTML
+- **Focus management** - Visible focus indicators and logical tab order
+- **Color contrast** - 4.5:1 minimum contrast ratio for text
+
+See `AGENTS.md` section A for detailed accessibility guidelines enforced in the
+codebase.
+
+## Performance optimization
+
+### Code splitting and lazy loading
+
+Routes are automatically split into chunks:
+
+```typescript
+// Automatic route-based splitting via TanStack Router
+// Each route loads only required components
+```
+
+Heavy dependencies (charts, editors) are lazy-loaded:
+
+```typescript
+const ChartComponent = lazy(() => import("./chart-component"));
+```
+
+### Asset optimization
+
+- **Images** - SVG for icons, optimized PNGs for graphics
+- **Fonts** - Variable fonts (Figtree, Roboto Mono) with subset loading
+- **Bundle size** - Vite bundle analyzer tracks bundle growth
+
+### Caching strategies
+
+TanStack Query cache configuration:
+
+- **Stale time** - 5 minutes for relatively static data (token metadata)
+- **Cache time** - 15 minutes for expensive queries (holder lists)
+- **Refetch on window focus** - Enabled for critical data (balances, compliance)
+
+Persistent cache stores data in IndexedDB, surviving page reloads.
+
+### React compiler optimizations
+
+React Compiler (Babel plugin) automatically memoizes components and hooks,
+reducing manual `useMemo`/`useCallback` usage.
+
+## Security considerations
+
+### Content security policy
+
+Strict CSP headers prevent XSS attacks:
+
+```http
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'
+```
+
+### Secure authentication
+
+Session management via Better Auth:
+
+- **HTTP-only cookies** - Session tokens inaccessible to JavaScript
+- **CSRF protection** - Token validation for state-changing operations
+- **Rate limiting** - Protects login endpoints from brute force
+
+### Input sanitization
+
+All user inputs are sanitized:
+
+- **Form validation** - Zod schemas reject malicious patterns
+- **HTML sanitization** - DOMPurify cleans rich text before rendering
+- **Blockchain address validation** - Checksummed addresses only
+
+## Development workflow
+
+### Local development
+
+```bash
+bun run dev
+```
+
+Starts Vite dev server with:
+
+- Hot module replacement (HMR)
+- Type-safe routing with auto-complete
+- React Query devtools
+- TanStack Router devtools
+
+### Type generation
+
+```bash
+bun run route:gen  # Generate route types
+bun run posttypecheck  # Validate GraphQL queries
+```
+
+### Testing
+
+```bash
+bun run test:unit  # Vitest with React Testing Library
+bun run test:unit:ui  # Visual test runner
+```
+
+Component tests use `@testing-library/react` with user-centric queries
+(`getByRole`, `getByLabelText`).
+
+### Build and deployment
+
+```bash
+bun run build  # Production build
+bun run start  # Production server
+```
+
+Generates static assets with SSR support for faster initial loads.
+
+## Integration points
+
+The frontend connects to multiple backend services:
+
+- **ORPC API** (`/api/rpc`) - Business logic and database queries
+- **TheGraph Subgraph** - Blockchain event indexing
+- **Hasura GraphQL** - Real-time database subscriptions
+- **SettleMint Portal** - Blockchain transaction submission
+- **MinIO** - Document storage (KYC docs, asset prospectuses)
+
+See [Backend API architecture](./backend-api) for service integration details.

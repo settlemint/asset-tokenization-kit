@@ -1,0 +1,11 @@
+{
+  "title": "Architecture",
+  "pages": [
+    "overview",
+    "smart-contracts",
+    "application",
+    "data-indexing",
+    "integration-operations",
+    "quality-performance"
+  ]
+}
