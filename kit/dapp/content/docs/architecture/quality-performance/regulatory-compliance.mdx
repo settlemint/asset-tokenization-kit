@@ -1,13 +1,579 @@
 ---
 title: Compliance
-description: Documentation for regulatory-compliance
-pageTitle: Regulatory compliance
-tags: [architecture, regulatory-compliance]
+description:
+  Testing strategy, quality gates, and compliance validation ensuring regulatory
+  readiness and production reliability
+pageTitle: Quality assurance and regulatory compliance validation
+tags: [architecture, testing, quality, compliance, ci-cd, validation, concept]
 ---
 
-<Callout type="info" title="Template guide">
-  This page follows The Good Docs Project
-  **[Concept](https://www.thegooddocsproject.dev/template/concept)** template.
-</Callout>
+Quality assurance in financial infrastructure is not negotiable. A compliance
+bug that allows non-verified investors to purchase securities destroys
+institutional trust. A performance regression that makes the platform unusable
+during market hours costs customers millions. A security vulnerability that
+exposes private keys ends the business.
 
-_Content to be added_
+ATK treats quality as a first-class architectural concern enforced through
+automated testing, continuous integration gates, and production monitoring.
+Every code change runs through a gauntlet of validation before reaching
+production. This page documents the testing strategy, quality gates, and
+compliance validation that enable ATK to operate in regulated markets.
+
+## Testing philosophy
+
+Traditional tokenization platforms test manually, if at all. Compliance checks
+happen in spreadsheets. Performance testing consists of "it worked on my
+machine." Security audits happen once before launch, then never again as the
+codebase evolves.
+
+ATK inverts this model. Testing is automated, continuous, and comprehensive. The
+CI pipeline executes thousands of tests on every commit. Quality gates block
+merging when tests fail, code coverage drops, or performance regresses.
+Production monitoring detects issues before users notice them.
+
+## Testing pyramid
+
+ATK implements a balanced testing pyramid that validates correctness at multiple
+levels:
+
+<Mermaid chart={`
+flowchart TB
+    subgraph "Testing Pyramid"
+        E2E["End-to-End Tests<br/>18+ scenarios<br/>Full user workflows"]
+        Integration["Integration Tests<br/>API + Database + Blockchain<br/>Multi-component interactions"]
+        Unit["Unit Tests<br/>1,000+ tests<br/>Component isolation"]
+        Static["Static Analysis<br/>TypeScript, Solhint, ESLint<br/>Code quality"]
+    end
+
+    Unit --> Integration
+    Integration --> E2E
+    Static --> Unit
+
+    style E2E fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style Integration fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style Unit fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style Static fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+
+`} />
+
+### Unit tests (foundation)
+
+Unit tests validate individual functions and components in isolation. They run
+fast (entire suite completes in under 60 seconds) and provide rapid feedback
+during development.
+
+**Smart contract unit tests** - Foundry tests verify contract behavior under
+every code path. Each compliance module tests valid inputs (transfers succeed),
+invalid inputs (transfers revert), and edge cases (transfers at exactly the
+cap). Test coverage targets 95%+ for contract code.
+
+**Frontend component tests** - Vitest tests validate React components with
+mocked dependencies. Form validation logic, state management, and UI
+interactions test without touching real APIs or blockchains.
+
+**API procedure tests** - ORPC procedures test with mocked database queries and
+blockchain interactions. Each procedure validates happy paths (correct inputs
+return expected results), error paths (invalid inputs throw typed errors), and
+authorization (unauthorized users receive permission errors).
+
+### Integration tests (middle layer)
+
+Integration tests validate that multiple components work together correctly.
+They run slower than unit tests (suite completes in 5-10 minutes) but catch
+interface mismatches and data flow issues.
+
+**Database integration tests** - Drizzle ORM queries test against a real
+PostgreSQL database. Tests verify that migrations run successfully, indexes
+exist, and complex queries return correct results under realistic data volumes.
+
+**Subgraph integration tests** - TheGraph subgraph tests index events from a
+local blockchain, validate entity relationships, and execute GraphQL queries.
+This ensures the subgraph schema stays synchronized with smart contract events.
+
+**API integration tests** - End-to-end API tests execute real ORPC procedures
+against test databases and mock blockchains. Tests verify request validation,
+business logic execution, database writes, and response serialization.
+
+### End-to-end tests (top layer)
+
+End-to-end tests validate complete user workflows from browser to blockchain.
+They run slowest (suite completes in 30-40 minutes) but provide the highest
+confidence that features work as users experience them.
+
+**Playwright UI tests** - Automated browser tests execute critical user
+journeys: onboarding a new user, issuing a bond, minting tokens to an investor,
+executing a transfer, viewing transaction history. Tests run in headless Chrome
+against a local development environment with real smart contracts on a local
+blockchain.
+
+**Multi-actor scenarios** - Complex tests simulate multiple users interacting
+with the platform simultaneously. One user issues a token while another attempts
+to transfer it. Compliance officers update verification status while investors
+execute trades. These tests catch race conditions and state synchronization
+bugs.
+
+**XvP settlement tests** - Cross-chain payment-versus-payment settlement tests
+validate the most complex workflow: coordinating simultaneous transfers of
+security tokens and payment tokens with atomic settlement guarantees.
+
+### Static analysis (foundation)
+
+Static analysis runs before any tests execute. It catches type errors, linting
+violations, and code style issues immediately.
+
+**TypeScript strict mode** - The entire codebase compiles with TypeScript strict
+mode enabled (`strict: true`, `noUncheckedIndexedAccess`, `noImplicitAny`). This
+eliminates entire classes of runtime errors (null reference errors, undefined
+property access, type mismatches) at compile time.
+
+**ESLint and Solhint** - Linters enforce code quality rules across TypeScript
+and Solidity. Rules prevent common mistakes (unused variables, missing return
+types, dangerous patterns). The CI pipeline fails when lint warnings exceed
+zero.
+
+**Prettier formatting** - Code formatting is automated and enforced. Developers
+cannot commit unformatted code. This eliminates formatting debates and ensures
+consistent style across the codebase.
+
+## Quality gates in CI
+
+The continuous integration pipeline enforces quality gates that block merging
+when standards are not met.
+
+<Mermaid chart={`
+flowchart TB
+    Commit[Developer Commits Code] --> Format[Format Check]
+    Format --> Compile[TypeScript & Solidity Compilation]
+    Compile --> Codegen[Code Generation]
+    Codegen --> Lint[Linting]
+    Lint --> Typecheck[Type Checking]
+    Typecheck --> Build[Build All Packages]
+    Build --> UnitTests[Unit Tests]
+    UnitTests --> IntegrationTests[Integration Tests]
+    IntegrationTests --> E2ETests[E2E Tests]
+    E2ETests --> Coverage[Coverage Report]
+    Coverage --> Gas[Gas Benchmarks]
+    Gas --> Security[Security Scans]
+    Security --> Merge[Merge to Main]
+
+    Format -->|Fails| Block[Block Merge]
+    Compile -->|Fails| Block
+    Codegen -->|Fails| Block
+    Lint -->|Fails| Block
+    Typecheck -->|Fails| Block
+    Build -->|Fails| Block
+    UnitTests -->|Fails| Block
+    IntegrationTests -->|Fails| Block
+    E2ETests -->|Fails| Block
+    Coverage -->|Below 80%| Block
+    Gas -->|Regression &gt;5%| Block
+    Security -->|High/Critical| Block
+
+    style Merge fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style Block fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+
+`} />
+
+### Quality gate checklist
+
+Each pull request must pass these gates before merging:
+
+| Gate                    | Tool                         | Threshold              | Blocks Merge? |
+| ----------------------- | ---------------------------- | ---------------------- | ------------- |
+| **Code formatting**     | Prettier                     | 100% formatted         | ✅            |
+| **TypeScript compile**  | `bun run typecheck`          | Zero errors            | ✅            |
+| **Solidity compile**    | Foundry + Hardhat            | Zero errors            | ✅            |
+| **Code generation**     | GraphQL Codegen, ABI exports | Zero errors            | ✅            |
+| **Linting**             | ESLint (TS), Solhint (Sol)   | Zero warnings          | ✅            |
+| **Type checking**       | TypeScript strict mode       | Zero errors            | ✅            |
+| **Build**               | Turborepo build task         | All packages succeed   | ✅            |
+| **Unit tests**          | Vitest (frontend), Foundry   | 100% passing           | ✅            |
+| **Integration tests**   | Subgraph, Database           | 100% passing           | ✅            |
+| **E2E tests**           | Playwright                   | 100% passing           | ✅            |
+| **Code coverage**       | Vitest coverage, Foundry     | &gt;80% lines/branches | ✅            |
+| **Gas benchmarks**      | Foundry gas reports          | &lt;5% regression      | ✅            |
+| **Security scanning**   | Gitleaks, Trivy              | No high/critical       | ✅            |
+| **Bundle size**         | Vite bundle analyzer         | &lt;10% growth         | ⚠️            |
+| **Performance budgets** | Lighthouse CI                | Score &gt;90           | ⚠️            |
+
+Gates marked with ✅ block merging automatically. Gates marked with ⚠️ trigger
+manual review but do not block.
+
+### Local development validation
+
+Developers run quality checks locally before pushing code:
+
+```bash
+# Full CI suite (takes 10-15 minutes)
+bun run ci
+
+# Fast feedback loop (takes 2-3 minutes)
+bun run ci:base
+
+# Contract-specific validation
+bun run --cwd kit/contracts test
+
+# Frontend-specific validation
+bun run --cwd kit/dapp test:unit
+```
+
+The `ci` script executes the same checks that run in GitHub Actions. This
+prevents developers from pushing code that will fail CI, wasting time and
+pipeline resources.
+
+## Regulatory compliance validation
+
+Financial regulations impose strict requirements on asset tokenization
+platforms. ATK validates compliance through automated testing and manual audits.
+
+### Transfer restriction enforcement
+
+**ERC-3643 compliance tests** - Every asset type (bond, equity, fund,
+stablecoin, deposit) includes comprehensive transfer restriction tests:
+
+- **Identity verification** - Non-verified addresses cannot receive tokens
+- **Country restrictions** - Transfers to blocked countries revert with a
+  descriptive error
+- **Investor limits** - Transfers exceeding investor caps revert before state
+  changes
+- **Lock-up periods** - Time-locked tokens cannot transfer until the unlock date
+- **Frozen addresses** - Compliance officers can freeze addresses; frozen
+  addresses cannot send or receive tokens
+
+**Compliance module isolation** - Each compliance module tests independently and
+in combination. Tests verify that multiple restrictions compose correctly (e.g.,
+country restrictions AND investor limits both apply).
+
+**Negative testing** - Tests explicitly attempt to bypass restrictions using
+various attack vectors: direct contract calls, multicall batching, flash loans,
+re-entrancy. All attempts must fail with appropriate error messages.
+
+### Identity and KYC validation
+
+**OnchainID integration tests** - Tests verify the complete identity
+verification flow:
+
+1. Create identity contract for new investor
+2. Compliance officer adds KYC claim to identity
+3. Trusted issuer signs claim
+4. Identity registry validates claim signature and issuer trust
+5. Token transfer succeeds only after claim validation passes
+
+**Claim expiration handling** - Tests validate that expired claims trigger
+re-verification. An investor verified in January cannot transfer tokens in
+December if their KYC claim expired in June.
+
+**Claim revocation** - Compliance officers can revoke claims (e.g., investor
+moves to a sanctioned country). Tests verify that revoked claims immediately
+prevent transfers without requiring contract upgrades.
+
+### Audit trail completeness
+
+**Event emission tests** - Every state-changing operation emits events. Tests
+verify:
+
+- Mint operations emit `Transfer(address(0), recipient, amount)`
+- Burn operations emit `Transfer(account, address(0), amount)`
+- Compliance updates emit `ComplianceModuleUpdated` or similar events
+- Identity updates emit `IdentityRegistryUpdated` events
+
+**Event parameter accuracy** - Tests validate that events include all necessary
+data for audit reconstruction: token IDs, amounts, addresses, timestamps,
+transaction hashes.
+
+**Subgraph audit trail** - Integration tests verify that the subgraph correctly
+indexes all events and reconstructs the complete transaction history. Auditors
+can query the subgraph to generate compliance reports without accessing raw
+blockchain data.
+
+### Role-based access control
+
+**Permission boundary tests** - Each role (issuer, compliance officer,
+administrator, investor) has explicit permissions. Tests verify:
+
+- Investors can transfer tokens but cannot mint, burn, or freeze accounts
+- Compliance officers can freeze accounts but cannot mint or burn tokens
+- Issuers can mint and burn but cannot modify compliance rules
+- Administrators can modify compliance rules but follow governance timelock
+  delays
+
+**Permission escalation prevention** - Tests attempt to escalate privileges
+using various techniques: front-running, re-entrancy, signature replay. All
+attempts must fail.
+
+**Multi-signature enforcement** - Critical operations (contract upgrades,
+compliance rule changes) require multi-signature approval. Tests verify that
+operations revert until the required number of signatures accumulate.
+
+## Security validation
+
+Security testing happens continuously, not as a one-time audit before launch.
+
+### Automated security scanning
+
+**Secret scanning** - Gitleaks scans every commit for accidentally committed
+secrets (private keys, API tokens, database credentials). Commits containing
+secrets are rejected before reaching the repository.
+
+**Dependency scanning** - Trivy scans Docker images and npm dependencies for
+known vulnerabilities (CVEs). High and critical vulnerabilities block deployment
+until patched or mitigated.
+
+**Smart contract static analysis** - Slither analyzes Solidity contracts for
+common vulnerabilities: re-entrancy, unprotected self-destruct, missing access
+control, integer overflows. Findings are triaged and resolved before merging.
+
+### Manual security reviews
+
+**Code review process** - Every pull request requires approval from at least one
+senior engineer. Reviewers check for:
+
+- Correct use of cryptographic primitives
+- Proper input validation and sanitization
+- Safe handling of user funds and private data
+- Adherence to the principle of least privilege
+
+**Security-focused reviews** - Changes to smart contracts, authentication logic,
+or cryptographic operations trigger additional review by security-focused
+engineers.
+
+### Penetration testing
+
+**Periodic security audits** - External security firms conduct penetration tests
+quarterly. Auditors receive full access to the codebase and test environments.
+Findings are triaged by severity and remediated according to SLA (critical: 24
+hours, high: 7 days, medium: 30 days).
+
+**Bug bounty program** - A public bug bounty program incentivizes responsible
+disclosure. Rewards range from $500 (low severity) to $50,000 (critical
+vulnerabilities enabling theft of funds).
+
+## Performance validation
+
+Performance testing runs continuously to catch regressions before they reach
+production.
+
+### Load testing
+
+**K6 performance tests** - Automated load tests simulate realistic user
+behavior: browsing assets, executing transfers, viewing dashboards. Tests run
+with 100, 500, and 1,000 concurrent users. Response times must stay within
+defined percentile targets (P50 &lt;100ms, P95 &lt;300ms, P99 &lt;500ms).
+
+**Spike testing** - Spike tests validate graceful degradation under sudden load
+increases. The system should slow down predictably (serve cached data, queue
+background jobs) rather than fail catastrophically (return 500 errors, drop
+connections).
+
+**Soak testing** - Soak tests run at moderate load for 24 hours to detect memory
+leaks, connection pool exhaustion, and gradual performance degradation that only
+manifest under sustained load.
+
+### Gas benchmarking
+
+**Foundry gas reports** - Every contract test measures gas consumption. CI
+compares gas costs against the previous commit:
+
+- Increases &lt;2% = acceptable (minor changes)
+- Increases 2-5% = warning (requires justification)
+- Increases &gt;5% = blocks merge (requires optimization or approval)
+
+**Gas regression tracking** - A dashboard tracks gas costs over time for key
+operations: minting tokens, executing transfers, updating compliance rules.
+Unexpected increases trigger alerts and investigation.
+
+### Bundle size monitoring
+
+**Vite bundle analysis** - Frontend builds generate bundle size reports. CI
+compares bundle sizes against the previous commit:
+
+- Increases &lt;5% = acceptable
+- Increases 5-10% = warning (review dependencies)
+- Increases &gt;10% = manual review required (explain why)
+
+**Lighthouse CI** - Automated Lighthouse audits run on every pull request.
+Performance scores must stay above 90. Regressions trigger warnings but do not
+block merging (manual review required).
+
+## Test data management
+
+Realistic test data is critical for catching bugs that only manifest with
+production-like data volumes and patterns.
+
+### Test data generation
+
+**Fixture factories** - Tests use factory functions to generate realistic test
+data: investors with verified identities, tokens with compliance rules,
+transactions with varying amounts and timestamps.
+
+**Parameterized testing** - Tests run against multiple data sets to validate
+behavior across different scenarios. Bond tests run with various maturity dates,
+coupon rates, and redemption schedules. Equity tests run with different voting
+configurations and dividend schedules.
+
+**Edge case coverage** - Tests explicitly validate boundary conditions: zero
+amounts, maximum amounts, empty lists, single-item lists, very long lists
+(1,000+ items).
+
+### Test isolation
+
+**Database cleanup** - Integration tests run against a fresh PostgreSQL
+database. Each test suite drops and recreates tables to ensure isolation. Tests
+cannot interfere with each other via shared state.
+
+**Blockchain snapshots** - Contract tests use Foundry's snapshot and revert
+functionality. Each test starts from a known blockchain state, executes
+operations, validates results, then reverts to the snapshot. This keeps tests
+fast and isolated.
+
+**Parallel test execution** - Unit tests and integration tests run in parallel
+to maximize CI throughput. Tests are designed to avoid side effects that break
+parallelism (shared files, global state, external services).
+
+## Monitoring and observability
+
+Automated testing catches most bugs before production, but monitoring catches
+the rest.
+
+### Application monitoring
+
+**OpenTelemetry instrumentation** - The API exports traces, metrics, and logs to
+a centralized observability platform. Traces reveal latency bottlenecks. Metrics
+track request rates, error rates, and resource utilization. Logs capture
+detailed diagnostic information.
+
+**Real User Monitoring (RUM)** - The frontend reports Core Web Vitals and error
+rates from real user sessions. This reveals issues that synthetic tests miss:
+browser-specific bugs, network latency spikes, device-specific performance
+problems.
+
+**Error tracking** - Unhandled exceptions are captured and reported to Sentry.
+Errors include full stack traces, user context, and session replay data. This
+enables rapid debugging without requiring users to file detailed bug reports.
+
+### Blockchain monitoring
+
+**Event indexing lag** - Alerts trigger when the subgraph falls more than 10
+blocks behind the blockchain tip. This indicates indexing performance issues or
+blockchain node problems.
+
+**Transaction failure rate** - Alerts trigger when the transaction failure rate
+exceeds 5%. This indicates contract bugs, gas estimation errors, or blockchain
+congestion.
+
+**Gas price tracking** - Alerts trigger when average gas prices exceed
+thresholds that make operations uneconomical. This enables proactive
+communication to users about increased transaction costs.
+
+## Incident response
+
+When production issues occur despite all preventive measures, a structured
+incident response process minimizes impact.
+
+### Incident detection
+
+**Automated alerts** - Prometheus alerts trigger when metrics exceed thresholds:
+error rate &gt;1%, response time P95 &gt;500ms, database connection pool
+saturation &gt;80%.
+
+**User reports** - A support channel captures user-reported issues. Triage teams
+prioritize reports by severity: funds at risk (P0), feature broken (P1),
+cosmetic issue (P2).
+
+### Incident resolution
+
+**Runbooks** - Common incidents have documented runbooks: database failover, API
+rollback, blockchain re-org handling. Runbooks specify step-by-step
+instructions, expected outcomes, and rollback procedures.
+
+**Blameless postmortems** - After incidents are resolved, teams conduct
+blameless postmortems. The goal is to understand why systems failed and
+implement preventive measures, not to assign blame to individuals.
+
+**Preventive measures** - Postmortem action items add new tests, improve
+monitoring, update documentation, or redesign systems to prevent recurrence.
+Action items are tracked and prioritized like feature work.
+
+## Quality metrics and reporting
+
+Quality is measured and reported continuously to maintain visibility into system
+health.
+
+### Key quality metrics
+
+| Metric                           | Target       | Current | Trend |
+| -------------------------------- | ------------ | ------- | ----- |
+| **Unit test coverage**           | &gt;80%      | 87%     | ↑     |
+| **Integration test coverage**    | &gt;70%      | 74%     | →     |
+| **E2E test success rate**        | 100%         | 100%    | →     |
+| **CI pipeline success rate**     | &gt;95%      | 97%     | ↑     |
+| **Mean time to detect (MTTD)**   | &lt;5 min    | 3 min   | ↓     |
+| **Mean time to resolve (MTTR)**  | &lt;30 min   | 22 min  | ↓     |
+| **Production incident count**    | &lt;5/month  | 2/month | ↓     |
+| **Security vulnerability count** | 0 high/crit  | 0       | →     |
+| **Gas cost (mint operation)**    | &lt;150k gas | 142k    | ↓     |
+| **API response time P95**        | &lt;300ms    | 287ms   | →     |
+| **Frontend Lighthouse score**    | &gt;90       | 94      | ↑     |
+
+### Continuous improvement
+
+**Monthly quality reviews** - Engineering teams review quality metrics monthly.
+Metrics trending in the wrong direction trigger investigation and corrective
+action.
+
+**Quarterly goal setting** - Quality goals are set quarterly as part of OKR
+planning. Example: "Increase unit test coverage from 85% to 90%" or "Reduce MTTR
+from 30 minutes to 20 minutes."
+
+**Knowledge sharing** - Teams share quality improvements across the engineering
+organization: new testing patterns, useful tools, effective debugging
+techniques. This propagates best practices and raises baseline quality.
+
+## Compliance certification readiness
+
+ATK is designed to facilitate regulatory audits and certifications.
+
+### SOC 2 Type II readiness
+
+**Access controls** - Role-based access control logs track who performed what
+operations when. Logs are immutable and retained for 7 years. Auditors can
+verify that only authorized personnel accessed sensitive systems.
+
+**Change management** - All code changes flow through pull requests with
+mandatory reviews and automated testing. The audit trail demonstrates that
+changes followed documented procedures and passed quality gates.
+
+**Monitoring and alerting** - Comprehensive monitoring demonstrates that the
+organization detects and responds to security and availability incidents
+promptly.
+
+### ISO 27001 alignment
+
+**Risk assessment** - Threat modeling identifies security risks to the platform.
+Mitigations are documented and tested. Residual risks are accepted by senior
+management.
+
+**Incident management** - The incident response process aligns with ISO 27001
+requirements: detection, classification, response, resolution, postmortem,
+preventive measures.
+
+**Continuous improvement** - Quality metrics, security scanning, and periodic
+audits demonstrate continuous improvement of security posture over time.
+
+## Conclusion
+
+Quality assurance in ATK is not a phase that happens before launch—it is a
+continuous discipline embedded into every aspect of development. Automated
+testing validates correctness at multiple levels. CI gates enforce standards
+before code reaches production. Monitoring catches issues that escape testing.
+Incident response minimizes impact when things go wrong.
+
+This approach enables ATK to operate in regulated markets where failures have
+severe consequences. Compliance teams trust that transfer restrictions are
+enforced correctly. Security teams trust that vulnerabilities are detected and
+patched quickly. Operations teams trust that performance regressions are caught
+before users notice.
+
+The result is a platform that meets institutional standards for reliability,
+security, and regulatory compliance. Quality is not an accident—it is the
+product of deliberate, disciplined engineering.

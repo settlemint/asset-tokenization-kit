@@ -1,14 +1,687 @@
 ---
 title: Database model
-description: Documentation for database-model
-pageTitle: Database model
-tags: [architecture, database-model]
+description: PostgreSQL schema reference with Drizzle ORM for application state
+pageTitle: Database model - Application database schema and relationships
+tags: [architecture, database, postgresql, drizzle, schema, reference]
 ---
 
-<Callout type="info" title="Template guide">
-  This page follows The Good Docs Project
-  **[Reference](https://www.thegooddocsproject.dev/template/reference)**
-  template.
-</Callout>
+The Asset Tokenization Kit uses PostgreSQL with Drizzle ORM to store
+application-specific data that doesn't belong on-chain. This database layer
+handles user preferences, KYC workflows, session management, cached exchange
+rates, and other mutable state that requires fast updates and complex queries.
 
-_Content to be added_
+## Schema organization
+
+Database schemas are modular and domain-focused:
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph "Authentication Schema"
+        Users["users<br/>User accounts"]
+        Sessions["sessions<br/>Active sessions"]
+        Accounts["accounts<br/>OAuth providers"]
+        Verification["verification<br/>Email/phone codes"]
+    end
+    
+    subgraph "KYC Schema"
+        KYCApp["kyc_applications<br/>Verification requests"]
+        KYCDocs["kyc_documents<br/>Uploaded files"]
+        KYCStatus["kyc_status_history<br/>Audit trail"]
+    end
+    
+    subgraph "Settings Schema"
+        UserSettings["user_settings<br/>Preferences"]
+        NotifSettings["notification_settings<br/>Alerts config"]
+    end
+    
+    subgraph "Exchange Rates Schema"
+        Rates["exchange_rates<br/>Currency conversions"]
+        RatesCache["rates_cache_metadata<br/>Update tracking"]
+    end
+    
+    Users --> Sessions
+    Users --> Accounts
+    Users --> Verification
+    Users --> KYCApp
+    Users --> UserSettings
+    
+    KYCApp --> KYCDocs
+    KYCApp --> KYCStatus
+    
+    UserSettings --> NotifSettings
+    
+    style Users fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style KYCApp fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style Rates fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+`}
+/>
+
+Schemas are defined in `kit/dapp/src/lib/db/schemas/`:
+
+```
+schemas/
+├── auth.ts              # Authentication and session management
+├── kyc.ts               # KYC/AML verification workflows
+├── settings.ts          # User preferences and configuration
+└── exchange-rates.ts    # Currency conversion rates cache
+```
+
+## Authentication schema
+
+Managed by Better Auth with custom extensions:
+
+### users
+
+Core user accounts:
+
+| Column             | Type        | Constraints             | Description                   |
+| ------------------ | ----------- | ----------------------- | ----------------------------- |
+| `id`               | `text`      | PRIMARY KEY             | Unique user identifier (UUID) |
+| `email`            | `text`      | UNIQUE, NOT NULL        | User email address            |
+| `emailVerified`    | `boolean`   | NOT NULL, DEFAULT false | Email verification status     |
+| `name`             | `text`      |                         | Display name                  |
+| `image`            | `text`      |                         | Avatar URL                    |
+| `createdAt`        | `timestamp` | NOT NULL                | Account creation time         |
+| `updatedAt`        | `timestamp` | NOT NULL                | Last profile update           |
+| `walletAddress`    | `text`      | UNIQUE                  | Connected Ethereum address    |
+| `twoFactorEnabled` | `boolean`   | DEFAULT false           | MFA enabled flag              |
+
+Indexes:
+
+- Primary key on `id`
+- Unique index on `email`
+- Unique index on `walletAddress`
+
+### sessions
+
+Active authentication sessions:
+
+| Column      | Type        | Constraints             | Description                             |
+| ----------- | ----------- | ----------------------- | --------------------------------------- |
+| `id`        | `text`      | PRIMARY KEY             | Session ID (stored in HTTP-only cookie) |
+| `userId`    | `text`      | NOT NULL, FK → users.id | User owning this session                |
+| `expiresAt` | `timestamp` | NOT NULL                | Session expiration time                 |
+| `ipAddress` | `text`      |                         | IP address when created                 |
+| `userAgent` | `text`      |                         | Browser user agent                      |
+| `createdAt` | `timestamp` | NOT NULL                | Session start time                      |
+
+Indexes:
+
+- Primary key on `id`
+- Foreign key index on `userId`
+- Index on `expiresAt` for cleanup queries
+
+Session lifecycle:
+
+- Created on login
+- Renewed on activity (sliding expiration)
+- Deleted on logout
+- Auto-expired by background job
+
+### accounts
+
+OAuth provider connections:
+
+| Column              | Type        | Constraints             | Description                           |
+| ------------------- | ----------- | ----------------------- | ------------------------------------- |
+| `id`                | `text`      | PRIMARY KEY             | Account linkage ID                    |
+| `userId`            | `text`      | NOT NULL, FK → users.id | User this account belongs to          |
+| `provider`          | `text`      | NOT NULL                | OAuth provider (google, github, etc.) |
+| `providerAccountId` | `text`      | NOT NULL                | Provider's user ID                    |
+| `accessToken`       | `text`      |                         | OAuth access token (encrypted)        |
+| `refreshToken`      | `text`      |                         | OAuth refresh token (encrypted)       |
+| `expiresAt`         | `timestamp` |                         | Token expiration                      |
+| `scope`             | `text`      |                         | Granted scopes                        |
+| `tokenType`         | `text`      |                         | Token type (bearer, etc.)             |
+
+Indexes:
+
+- Primary key on `id`
+- Unique index on `(provider, providerAccountId)`
+- Foreign key index on `userId`
+
+### verification
+
+One-time codes for email/phone verification:
+
+| Column       | Type        | Constraints | Description                        |
+| ------------ | ----------- | ----------- | ---------------------------------- |
+| `id`         | `text`      | PRIMARY KEY | Verification request ID            |
+| `identifier` | `text`      | NOT NULL    | Email or phone being verified      |
+| `value`      | `text`      | NOT NULL    | Verification code (hashed)         |
+| `expiresAt`  | `timestamp` | NOT NULL    | Code expiration (typically 15 min) |
+| `createdAt`  | `timestamp` | NOT NULL    | Request creation time              |
+
+Indexes:
+
+- Primary key on `id`
+- Index on `identifier` for lookup
+- Index on `expiresAt` for cleanup
+
+Codes are single-use and deleted after successful verification.
+
+## KYC schema
+
+Manages identity verification workflows:
+
+### kyc_applications
+
+Main KYC verification requests:
+
+| Column             | Type        | Constraints             | Description                            |
+| ------------------ | ----------- | ----------------------- | -------------------------------------- |
+| `id`               | `text`      | PRIMARY KEY             | Application ID (UUID)                  |
+| `userId`           | `text`      | NOT NULL, FK → users.id | User submitting KYC                    |
+| `status`           | `text`      | NOT NULL                | Current status (see enum below)        |
+| `firstName`        | `text`      | NOT NULL                | Legal first name                       |
+| `lastName`         | `text`      | NOT NULL                | Legal last name                        |
+| `dateOfBirth`      | `date`      | NOT NULL                | Birth date for age verification        |
+| `nationality`      | `text`      | NOT NULL                | ISO 3166-1 alpha-2 country code        |
+| `residenceCountry` | `text`      | NOT NULL                | ISO 3166-1 alpha-2 country code        |
+| `residenceAddress` | `jsonb`     | NOT NULL                | Structured address object              |
+| `idDocumentType`   | `text`      | NOT NULL                | passport, drivers_license, national_id |
+| `idDocumentNumber` | `text`      | NOT NULL                | Document number                        |
+| `idDocumentExpiry` | `date`      |                         | Document expiration date               |
+| `submittedAt`      | `timestamp` | NOT NULL                | Submission timestamp                   |
+| `reviewedAt`       | `timestamp` |                         | Review completion time                 |
+| `reviewedBy`       | `text`      | FK → users.id           | Admin who reviewed                     |
+| `rejectionReason`  | `text`      |                         | Reason if rejected                     |
+| `expiresAt`        | `timestamp` |                         | KYC expiration (typically 1 year)      |
+| `createdAt`        | `timestamp` | NOT NULL                | Record creation                        |
+| `updatedAt`        | `timestamp` | NOT NULL                | Last update                            |
+
+Status enum values:
+
+- `draft` - User started but didn't submit
+- `submitted` - Awaiting review
+- `under_review` - Compliance team reviewing
+- `additional_info_required` - Needs more documents
+- `approved` - KYC passed
+- `rejected` - KYC failed
+- `expired` - Approval period ended
+
+Indexes:
+
+- Primary key on `id`
+- Foreign key index on `userId`
+- Index on `status` for filtering queues
+- Index on `submittedAt` for sorting
+- Index on `expiresAt` for expiration checks
+
+### kyc_documents
+
+Uploaded identity documents:
+
+| Column          | Type        | Constraints                        | Description                                 |
+| --------------- | ----------- | ---------------------------------- | ------------------------------------------- |
+| `id`            | `text`      | PRIMARY KEY                        | Document ID (UUID)                          |
+| `applicationId` | `text`      | NOT NULL, FK → kyc_applications.id | Parent application                          |
+| `documentType`  | `text`      | NOT NULL                           | id_front, id_back, selfie, proof_of_address |
+| `fileName`      | `text`      | NOT NULL                           | Original filename                           |
+| `fileSize`      | `integer`   | NOT NULL                           | Size in bytes                               |
+| `mimeType`      | `text`      | NOT NULL                           | MIME type (image/jpeg, etc.)                |
+| `storageKey`    | `text`      | NOT NULL                           | MinIO/S3 object key                         |
+| `uploadedAt`    | `timestamp` | NOT NULL                           | Upload timestamp                            |
+
+Indexes:
+
+- Primary key on `id`
+- Foreign key index on `applicationId`
+- Index on `documentType` for grouping
+
+Files stored in MinIO with encryption at rest, access controlled via pre-signed
+URLs with short expiration.
+
+### kyc_status_history
+
+Audit trail for KYC state changes:
+
+| Column          | Type        | Constraints                        | Description                        |
+| --------------- | ----------- | ---------------------------------- | ---------------------------------- |
+| `id`            | `text`      | PRIMARY KEY                        | History entry ID                   |
+| `applicationId` | `text`      | NOT NULL, FK → kyc_applications.id | Application being tracked          |
+| `fromStatus`    | `text`      |                                    | Previous status (null on creation) |
+| `toStatus`      | `text`      | NOT NULL                           | New status                         |
+| `changedBy`     | `text`      | FK → users.id                      | User who made the change           |
+| `reason`        | `text`      |                                    | Reason for change                  |
+| `metadata`      | `jsonb`     |                                    | Additional context                 |
+| `createdAt`     | `timestamp` | NOT NULL                           | Change timestamp                   |
+
+Indexes:
+
+- Primary key on `id`
+- Foreign key index on `applicationId`
+- Index on `createdAt` for timeline queries
+
+## Settings schema
+
+User preferences and configuration:
+
+### user_settings
+
+General user preferences:
+
+| Column         | Type        | Constraints                     | Description                 |
+| -------------- | ----------- | ------------------------------- | --------------------------- |
+| `id`           | `text`      | PRIMARY KEY                     | Settings ID                 |
+| `userId`       | `text`      | UNIQUE, NOT NULL, FK → users.id | User owning settings        |
+| `language`     | `text`      | DEFAULT 'en'                    | UI language (BCP 47 code)   |
+| `currency`     | `text`      | DEFAULT 'USD'                   | Display currency (ISO 4217) |
+| `timezone`     | `text`      | DEFAULT 'UTC'                   | IANA timezone               |
+| `theme`        | `text`      | DEFAULT 'system'                | light, dark, system         |
+| `dateFormat`   | `text`      | DEFAULT 'YYYY-MM-DD'            | Preferred date format       |
+| `numberFormat` | `text`      | DEFAULT 'en-US'                 | Number formatting locale    |
+| `createdAt`    | `timestamp` | NOT NULL                        | Record creation             |
+| `updatedAt`    | `timestamp` | NOT NULL                        | Last update                 |
+
+Indexes:
+
+- Primary key on `id`
+- Unique index on `userId`
+
+### notification_settings
+
+Notification preferences per channel:
+
+| Column                   | Type        | Constraints                     | Description                  |
+| ------------------------ | ----------- | ------------------------------- | ---------------------------- |
+| `id`                     | `text`      | PRIMARY KEY                     | Settings ID                  |
+| `userId`                 | `text`      | UNIQUE, NOT NULL, FK → users.id | User owning settings         |
+| `emailEnabled`           | `boolean`   | DEFAULT true                    | Email notifications enabled  |
+| `emailTokenTransfers`    | `boolean`   | DEFAULT true                    | Notify on token transfers    |
+| `emailComplianceUpdates` | `boolean`   | DEFAULT true                    | Notify on compliance changes |
+| `emailSystemAlerts`      | `boolean`   | DEFAULT true                    | Notify on system issues      |
+| `pushEnabled`            | `boolean`   | DEFAULT false                   | Browser push enabled         |
+| `pushTokenTransfers`     | `boolean`   | DEFAULT true                    | Push on transfers            |
+| `pushComplianceUpdates`  | `boolean`   | DEFAULT false                   | Push on compliance           |
+| `createdAt`              | `timestamp` | NOT NULL                        | Record creation              |
+| `updatedAt`              | `timestamp` | NOT NULL                        | Last update                  |
+
+Indexes:
+
+- Primary key on `id`
+- Unique index on `userId`
+
+## Exchange rates schema
+
+Caches external currency conversion rates:
+
+### exchange_rates
+
+Current conversion rates:
+
+| Column          | Type              | Constraints | Description                             |
+| --------------- | ----------------- | ----------- | --------------------------------------- |
+| `id`            | `text`            | PRIMARY KEY | Rate pair ID                            |
+| `baseCurrency`  | `text`            | NOT NULL    | Base currency (ISO 4217)                |
+| `quoteCurrency` | `text`            | NOT NULL    | Quote currency (ISO 4217)               |
+| `rate`          | `decimal(20, 10)` | NOT NULL    | Conversion rate (high precision)        |
+| `source`        | `text`            | NOT NULL    | Rate provider (coinbase, binance, etc.) |
+| `fetchedAt`     | `timestamp`       | NOT NULL    | When rate was fetched                   |
+| `expiresAt`     | `timestamp`       | NOT NULL    | Rate expiration (typically 5 min)       |
+
+Indexes:
+
+- Primary key on `id`
+- Unique index on `(baseCurrency, quoteCurrency, source)`
+- Index on `expiresAt` for cleanup
+
+Rates refreshed by background job every 5 minutes.
+
+## Type safety with Drizzle
+
+### Schema definition
+
+Example schema definition in TypeScript:
+
+```typescript
+// kit/dapp/src/lib/db/schemas/kyc.ts
+import { pgTable, text, timestamp, boolean, jsonb } from "drizzle-orm/pg-core";
+import { users } from "./auth";
+
+export const kycApplications = pgTable("kyc_applications", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  status: text("status", {
+    enum: [
+      "draft",
+      "submitted",
+      "under_review",
+      "approved",
+      "rejected",
+      "expired",
+    ],
+  }).notNull(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  dateOfBirth: text("date_of_birth").notNull(), // Stored as ISO 8601 string
+  nationality: text("nationality").notNull(),
+  residenceCountry: text("residence_country").notNull(),
+  residenceAddress: jsonb("residence_address")
+    .$type<{
+      street: string;
+      city: string;
+      state?: string;
+      postalCode: string;
+      country: string;
+    }>()
+    .notNull(),
+  submittedAt: timestamp("submitted_at"),
+  reviewedAt: timestamp("reviewed_at"),
+  reviewedBy: text("reviewed_by").references(() => users.id),
+  rejectionReason: text("rejection_reason"),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+```
+
+### Type inference
+
+Drizzle automatically infers TypeScript types:
+
+```typescript
+import type { InferSelectModel, InferInsertModel } from "drizzle-orm";
+import { kycApplications } from "./schemas/kyc";
+
+// Type for querying
+type KYCApplication = InferSelectModel<typeof kycApplications>;
+
+// Type for inserting
+type NewKYCApplication = InferInsertModel<typeof kycApplications>;
+
+// Use in queries
+const application: KYCApplication = await db
+  .select()
+  .from(kycApplications)
+  .where(eq(kycApplications.id, applicationId))
+  .get();
+```
+
+### Query builders
+
+Type-safe query construction:
+
+```typescript
+import { db } from "@/lib/db";
+import { kycApplications, kycDocuments } from "@/lib/db/schemas/kyc";
+import { eq, and, desc } from "drizzle-orm";
+
+// Simple select
+const pending = await db
+  .select()
+  .from(kycApplications)
+  .where(eq(kycApplications.status, "submitted"))
+  .orderBy(desc(kycApplications.submittedAt));
+
+// Join with related table
+const withDocuments = await db
+  .select({
+    application: kycApplications,
+    documents: kycDocuments,
+  })
+  .from(kycApplications)
+  .leftJoin(kycDocuments, eq(kycApplications.id, kycDocuments.applicationId))
+  .where(eq(kycApplications.userId, userId));
+
+// Transaction
+await db.transaction(async (tx) => {
+  await tx
+    .update(kycApplications)
+    .set({ status: "approved", reviewedAt: new Date() })
+    .where(eq(kycApplications.id, applicationId));
+
+  await tx.insert(kycStatusHistory).values({
+    applicationId,
+    fromStatus: "submitted",
+    toStatus: "approved",
+    changedBy: reviewerId,
+  });
+});
+```
+
+## Migrations
+
+### Generation
+
+Create migrations from schema changes:
+
+```bash
+cd kit/dapp
+
+# Generate migration
+bun run db:generate
+```
+
+Drizzle compares current schema to database and generates SQL:
+
+```sql
+-- drizzle/0008_add_kyc_expiration.sql
+ALTER TABLE "kyc_applications" ADD COLUMN "expires_at" timestamp;
+CREATE INDEX "kyc_applications_expires_at_idx" ON "kyc_applications" ("expires_at");
+```
+
+### Application
+
+Apply migrations:
+
+```bash
+# Apply all pending migrations
+bun run db:migrate
+
+# Apply specific migration
+bun run db:migrate --to 0008
+```
+
+Migrations are idempotent and safe to re-run.
+
+### Rollback
+
+Manual rollback by reverting migration SQL:
+
+```sql
+-- Manually create rollback script
+ALTER TABLE "kyc_applications" DROP COLUMN "expires_at";
+DROP INDEX "kyc_applications_expires_at_idx";
+```
+
+Production rollbacks require careful testing to avoid data loss.
+
+## Performance optimization
+
+### Indexing strategy
+
+Indexes created for common query patterns:
+
+```typescript
+// Composite index for common filter
+export const kycApplications = pgTable(
+  "kyc_applications",
+  {
+    // ... columns
+  },
+  (table) => ({
+    statusSubmittedIdx: index("kyc_status_submitted_idx").on(
+      table.status,
+      table.submittedAt
+    ),
+  })
+);
+```
+
+Index guidelines:
+
+- Primary keys automatically indexed
+- Foreign keys need explicit indexes
+- Add indexes for WHERE, ORDER BY, JOIN columns
+- Composite indexes for multi-column queries
+- Don't over-index (slows writes)
+
+### Connection pooling
+
+PgBouncer configuration:
+
+```ini
+[databases]
+atk = host=postgres port=5432 dbname=atk
+
+[pgbouncer]
+pool_mode = transaction
+max_client_conn = 1000
+default_pool_size = 25
+reserve_pool_size = 5
+reserve_pool_timeout = 3
+```
+
+Pool sizing:
+
+- **Transaction mode**: Connection reused after each transaction
+- **Pool size**: 25 connections per database
+- **Max clients**: 1000 simultaneous connections
+
+### Query optimization
+
+Use EXPLAIN ANALYZE to optimize slow queries:
+
+```sql
+EXPLAIN ANALYZE
+SELECT *
+FROM kyc_applications
+WHERE status = 'submitted'
+  AND submitted_at > NOW() - INTERVAL '7 days'
+ORDER BY submitted_at DESC
+LIMIT 20;
+```
+
+Optimization techniques:
+
+- Add indexes for WHERE/ORDER BY columns
+- Use covering indexes to avoid table lookups
+- Limit result sets with LIMIT/OFFSET
+- Avoid SELECT \* in production queries
+
+## Backup and recovery
+
+### Continuous archiving
+
+PostgreSQL WAL (Write-Ahead Log) archiving:
+
+```ini
+# postgresql.conf
+wal_level = replica
+archive_mode = on
+archive_command = 'cp %p /backup/wal/%f'
+archive_timeout = 300  # Force WAL switch every 5 minutes
+```
+
+### Point-in-time recovery
+
+Restore to specific timestamp:
+
+```bash
+# Restore base backup
+pg_restore -d atk /backup/base/latest.dump
+
+# Apply WAL logs up to target time
+recovery_target_time = '2025-01-15 14:30:00'
+```
+
+Recovery time: &lt;1 hour for typical database size.
+
+## Monitoring
+
+### Query performance
+
+Track slow queries:
+
+```sql
+-- Enable slow query logging
+ALTER DATABASE atk SET log_min_duration_statement = 100;  -- Log queries &gt;100ms
+
+-- View slow queries
+SELECT query, calls, total_time, mean_time
+FROM pg_stat_statements
+WHERE mean_time > 100
+ORDER BY mean_time DESC
+LIMIT 20;
+```
+
+### Table statistics
+
+Monitor table growth:
+
+```sql
+SELECT
+  schemaname,
+  tablename,
+  pg_size_pretty(pg_total_relation_size(schemaname || '.' || tablename)) AS size,
+  n_live_tup AS row_count
+FROM pg_stat_user_tables
+ORDER BY pg_total_relation_size(schemaname || '.' || tablename) DESC;
+```
+
+### Connection monitoring
+
+Track connection usage:
+
+```sql
+SELECT
+  state,
+  COUNT(*) AS connections
+FROM pg_stat_activity
+WHERE datname = 'atk'
+GROUP BY state;
+```
+
+## Security considerations
+
+### Encryption
+
+- **At rest**: PostgreSQL encrypted volumes via LUKS/dm-crypt
+- **In transit**: SSL/TLS required for all connections
+- **Application secrets**: Better Auth handles encryption of OAuth tokens
+
+### Access control
+
+Row-level security for multi-tenant isolation:
+
+```sql
+-- Enable RLS on user-specific tables
+ALTER TABLE user_settings ENABLE ROW LEVEL SECURITY;
+
+-- Policy: Users can only access their own settings
+CREATE POLICY user_settings_isolation ON user_settings
+  FOR ALL
+  USING (user_id = current_setting('app.user_id'));
+```
+
+### Audit logging
+
+Database-level audit trail:
+
+```sql
+CREATE TABLE audit_log (
+  id SERIAL PRIMARY KEY,
+  table_name TEXT NOT NULL,
+  operation TEXT NOT NULL,  -- INSERT, UPDATE, DELETE
+  old_values JSONB,
+  new_values JSONB,
+  changed_by TEXT NOT NULL,
+  changed_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- Trigger on sensitive tables
+CREATE TRIGGER kyc_audit_trigger
+  AFTER INSERT OR UPDATE OR DELETE ON kyc_applications
+  FOR EACH ROW EXECUTE FUNCTION log_audit_event();
+```
+
+## Related documentation
+
+- [Blockchain indexing](./blockchain-indexing) - TheGraph subgraph for on-chain
+  data
+- [Backend API](../application/backend-api) - ORPC procedures using database
+- [Performance & scalability](../quality-performance/performance-scalability) -
+  Database optimization

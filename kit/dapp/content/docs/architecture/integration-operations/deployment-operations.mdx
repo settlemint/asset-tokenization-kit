@@ -1,13 +1,740 @@
 ---
 title: Deployment
-description: Documentation for deployment-operations
-pageTitle: Deployment operations
-tags: [architecture, deployment-operations]
+description:
+  Production deployment options for ATK across multiple infrastructure
+  environments
+pageTitle: Deployment operations - Running ATK in production
+tags: [architecture, deployment, kubernetes, helm, operations, infrastructure]
 ---
 
-<Callout type="info" title="Template guide">
-  This page follows The Good Docs Project
-  **[Concept](https://www.thegooddocsproject.dev/template/concept)** template.
-</Callout>
+The Asset Tokenization Kit provides multiple production deployment options to
+suit different organizational requirements, from managed platform hosting to
+self-managed infrastructure. All deployments use **Kubernetes with Helm charts**
+for consistent orchestration, whether running on the SettleMint Platform, your
+own infrastructure, or public cloud providers.
 
-_Content to be added_
+This section covers **production deployment patterns only**. For local
+development setup, see the
+[Developer environment guide](../../developer-guides/dev-environment).
+
+## Deployment architecture overview
+
+ATK deployments consist of multiple interconnected components packaged as Helm
+charts. Understanding the component relationships helps plan capacity,
+networking, and security policies.
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph "ATK Deployment Architecture"
+        subgraph "User-Facing Services"
+            DApp[dApp Frontend<br/>TanStack Start<br/>Port 3000]
+            API[ORPC API<br/>HTTP/WebSocket<br/>Port 3000]
+        end
+        
+        subgraph "Blockchain Services"
+            Portal[SettleMint Portal<br/>Transaction Gateway<br/>Port 8080]
+            TxSigner[Transaction Signer<br/>Key Management<br/>Port 3000]
+            ERPC[ERPC Gateway<br/>RPC Load Balancer<br/>Port 4000]
+            Network[Blockchain Network<br/>EVM Node<br/>Ports 8545, 8546]
+        end
+        
+        subgraph "Data & Indexing"
+            GraphNode[TheGraph Node<br/>Blockchain Indexer<br/>Port 8000]
+            Hasura[Hasura GraphQL<br/>PostgreSQL API<br/>Port 8080]
+            Subgraph[Deployed Subgraph<br/>Query Endpoint<br/>Port 8000/subgraphs/...]
+        end
+        
+        subgraph "Storage Services"
+            PostgreSQL[(PostgreSQL<br/>Application Data<br/>Port 5432)]
+            Redis[(Redis<br/>Cache & Sessions<br/>Port 6379)]
+            MinIO[(MinIO<br/>S3-Compatible Storage<br/>Port 9000)]
+            IPFS[(IPFS Cluster<br/>Decentralized Storage<br/>Ports 4001, 5001)]
+        end
+        
+        subgraph "Monitoring"
+            Blockscout[Blockscout Explorer<br/>Block Explorer<br/>Port 4000]
+            Prometheus[Prometheus<br/>Metrics Collection<br/>Port 9090]
+        end
+    end
+    
+    DApp --> API
+    API --> Hasura
+    API --> GraphNode
+    API --> Portal
+    Portal --> TxSigner
+    Portal --> ERPC
+    ERPC --> Network
+    GraphNode --> Subgraph
+    GraphNode --> Network
+    Hasura --> PostgreSQL
+    API --> PostgreSQL
+    API --> Redis
+    API --> MinIO
+    TxSigner --> PostgreSQL
+    MinIO --> IPFS
+    Blockscout --> Network
+    Prometheus -.Monitors.-> DApp
+    Prometheus -.Monitors.-> API
+    Prometheus -.Monitors.-> Network
+    
+    style DApp fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style API fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style Network fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style PostgreSQL fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff`}
+/>
+
+### Component dependencies
+
+Understanding startup order and dependencies is critical for successful
+deployments:
+
+| Component     | Depends On                    | Purpose                          | External Access |
+| ------------- | ----------------------------- | -------------------------------- | --------------- |
+| PostgreSQL    | None (base dependency)        | Application and system database  | No              |
+| Redis         | None (base dependency)        | Session store and caching        | No              |
+| Network       | None (base dependency)        | Blockchain consensus layer       | Optional        |
+| ERPC          | Network, Redis                | RPC request routing              | No              |
+| TxSigner      | PostgreSQL, ERPC              | Transaction signing service      | No              |
+| Portal        | ERPC, TxSigner, PostgreSQL    | Blockchain gateway               | No              |
+| GraphNode     | PostgreSQL, Network           | Subgraph indexing engine         | Yes (HTTP)      |
+| Subgraph      | GraphNode                     | Deployed indexing logic          | Yes (GraphQL)   |
+| Hasura        | PostgreSQL                    | GraphQL API for application data | Yes (GraphQL)   |
+| MinIO         | None (optional: IPFS)         | Object storage                   | No              |
+| IPFS          | None (optional)               | Decentralized file storage       | Optional        |
+| API (Backend) | All data services, Portal     | Business logic layer             | No              |
+| dApp          | API, Hasura, Subgraph, Portal | User interface                   | Yes (HTTP)      |
+| Blockscout    | PostgreSQL, Network           | Blockchain explorer (optional)   | Yes (HTTP)      |
+
+## Deployment option 1: SettleMint Platform
+
+The **SettleMint Platform** provides fully managed ATK hosting with built-in
+compliance controls, enterprise SLAs, and automated operations.
+
+### Why choose the platform
+
+- **Fastest time to production** - Deploy in minutes with pre-configured
+  infrastructure
+- **Regulatory compliance** - SOC 2 Type II, ISO 27001, GDPR-compliant hosting
+- **Managed operations** - Automated updates, backups, monitoring, and incident
+  response
+- **Global availability** - Multi-region deployment options with geo-redundancy
+- **Integrated support** - Direct access to SettleMint engineering and success
+  teams
+
+### Architecture
+
+The platform runs ATK on **Kubernetes clusters** in regulated cloud environments
+(AWS, Azure, GCP) with additional layers:
+
+- **Control plane** - Web console for deployment management, monitoring, and
+  configuration
+- **Gateway services** - Enterprise-grade load balancing, DDoS protection, and
+  TLS termination
+- **Observability stack** - Centralized logging, metrics, and distributed
+  tracing
+- **Compliance tools** - Audit log retention, access controls, and reporting
+  dashboards
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph "SettleMint Platform"
+        Console[SettleMint Console<br/>Web Management UI]
+        
+        subgraph "Platform Services"
+            Gateway[API Gateway<br/>Load Balancer + WAF]
+            Monitoring[Observability Stack<br/>Logs, Metrics, Traces]
+            Backup[Backup Service<br/>Automated Snapshots]
+        end
+        
+        subgraph "Customer Namespace"
+            ATKHelm[ATK Helm Chart<br/>All Components]
+            CustomConfig[Custom Configuration<br/>Values Override]
+        end
+        
+        subgraph "Infrastructure"
+            K8s[Managed Kubernetes<br/>AWS EKS / Azure AKS / GKE]
+            Storage[Persistent Storage<br/>Block + Object Storage]
+            Network[Virtual Network<br/>Private Subnets + VPN]
+        end
+    end
+    
+    Console --> Gateway
+    Console --> Monitoring
+    Console --> Backup
+    Gateway --> ATKHelm
+    ATKHelm --> CustomConfig
+    ATKHelm --> K8s
+    K8s --> Storage
+    K8s --> Network
+    Monitoring -.Observes.-> ATKHelm
+    Backup -.Snapshots.-> Storage
+    
+    style Console fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style ATKHelm fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style K8s fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff`}
+/>
+
+### Deployment process
+
+1. **Access the SettleMint Console** at
+   [console.settlemint.com](https://console.settlemint.com)
+2. **Create a new application** from the ATK template
+3. **Configure deployment settings:**
+   - Select region (US, EU, APAC)
+   - Choose infrastructure tier (Starter, Professional, Enterprise)
+   - Set custom domain and TLS certificates
+   - Configure blockchain network (public chain, consortium, or private)
+4. **Deploy** - Platform provisions all infrastructure automatically
+5. **Access your instance** via the provided URL (e.g.,
+   `https://your-company.atk.settlemint.com`)
+
+### Ongoing operations
+
+The platform handles:
+
+- **Automated updates** - ATK version upgrades with zero-downtime rolling
+  deployments
+- **Backup and restore** - Daily snapshots with point-in-time recovery
+- **High availability** - Multi-zone deployment with automatic failover
+- **Scaling** - Auto-scaling based on traffic and resource utilization
+- **Security patches** - OS and dependency updates applied automatically
+- **Monitoring alerts** - Proactive incident detection and resolution
+
+### Documentation
+
+Full platform deployment guides available at:  
+[https://console.settlemint.com/documentation](https://console.settlemint.com/documentation)
+
+## Deployment option 2: Self-managed infrastructure (Helm)
+
+For organizations with existing Kubernetes infrastructure or specific compliance
+requirements, deploy ATK using the **open-source Helm charts** directly.
+
+### Prerequisites
+
+Before deploying, ensure you have:
+
+**Infrastructure:**
+
+- **Kubernetes cluster** version 1.28 or newer
+- **kubectl** CLI configured with cluster access
+- **Helm** version 3.12 or newer installed
+- **Persistent storage** provisioner (e.g., AWS EBS, Azure Disk, Ceph)
+- **LoadBalancer** service type support or Ingress controller (NGINX, Traefik)
+
+**Resources (minimum production):**
+
+- **CPU:** 16 cores total across nodes
+- **Memory:** 32 GB RAM total
+- **Storage:** 500 GB persistent volumes
+- **Network:** 1 Gbps node-to-node bandwidth
+
+**Access:**
+
+- **Container registry** access (Docker Hub, AWS ECR, or private registry)
+- **DNS management** for custom domain configuration
+- **TLS certificates** for HTTPS endpoints (Let's Encrypt, purchased, or
+  enterprise CA)
+
+### Installation steps
+
+#### 1. Add the Helm repository
+
+ATK charts are published to the SettleMint Helm repository:
+
+```bash
+# Add SettleMint chart repository
+helm repo add settlemint https://charts.settlemint.com
+
+# Update repository cache
+helm repo update
+```
+
+#### 2. Create a namespace
+
+Isolate ATK components in a dedicated Kubernetes namespace:
+
+```bash
+kubectl create namespace atk-production
+```
+
+#### 3. Configure values
+
+Create a `values-production.yaml` file with your environment-specific settings.
+Start from the
+[default values](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/charts/atk/values.yaml):
+
+```yaml
+# values-production.yaml
+global:
+  chainId: "1" # Ethereum mainnet, or your chain ID
+  chainName: "Production ATK"
+  datastores:
+    default:
+      postgresql:
+        host: "postgresql.atk-production.svc.cluster.local"
+        password: "CHANGE-ME-SECURE-PASSWORD"
+      redis:
+        host: "redis.atk-production.svc.cluster.local"
+        password: "CHANGE-ME-SECURE-PASSWORD"
+
+dapp:
+  image:
+    repository: settlemint/atk-dapp
+    tag: "1.0.0" # Replace with specific version
+  ingress:
+    enabled: true
+    host: "app.yourcompany.com"
+    tls:
+      enabled: true
+      secretName: "atk-tls-cert"
+
+network:
+  enabled: true # Set false if using external blockchain
+  replicaCount: 3 # Validator nodes for HA
+
+graphNode:
+  postgresql:
+    database: "thegraph"
+    password: "CHANGE-ME-SECURE-PASSWORD"
+
+# Set resource limits for production
+resources:
+  dapp:
+    limits:
+      cpu: "2000m"
+      memory: "4Gi"
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+```
+
+**Critical configuration areas:**
+
+- **Passwords and secrets** - Replace all default passwords with strong,
+  randomly generated values
+- **Storage classes** - Set `persistence.storageClass` for each component to
+  match your provider
+- **Ingress/LoadBalancer** - Configure DNS and TLS certificates for external
+  access
+- **Resource limits** - Adjust CPU/memory based on expected load
+- **Blockchain network** - Set `network.enabled: false` if connecting to
+  external chain (Ethereum mainnet, Polygon, etc.)
+
+#### 4. Install the chart
+
+Deploy ATK with your custom configuration:
+
+```bash
+helm install atk settlemint/atk \
+  --namespace atk-production \
+  --values values-production.yaml \
+  --timeout 15m \
+  --wait
+```
+
+The `--wait` flag ensures Helm monitors deployment until all components are
+healthy.
+
+#### 5. Verify deployment
+
+Check that all pods are running:
+
+```bash
+kubectl get pods -n atk-production
+
+# Expected output:
+# NAME                          READY   STATUS    RESTARTS   AGE
+# atk-dapp-xxx                  1/1     Running   0          5m
+# atk-portal-xxx                1/1     Running   0          5m
+# atk-graph-node-xxx            1/1     Running   0          5m
+# atk-hasura-xxx                1/1     Running   0          5m
+# postgresql-xxx                1/1     Running   0          5m
+# redis-xxx                     1/1     Running   0          5m
+# ...
+```
+
+Check service endpoints:
+
+```bash
+kubectl get svc -n atk-production
+
+# Look for LoadBalancer EXTERNAL-IP or Ingress hostname
+```
+
+#### 6. Access the application
+
+Once DNS is configured and TLS certificates are provisioned:
+
+```bash
+# Test the dApp frontend
+curl https://app.yourcompany.com/health
+
+# Test the GraphQL API
+curl https://app.yourcompany.com/api/graphql \
+  -H "Content-Type: application/json" \
+  -d '{"query":"{ __typename }"}'
+```
+
+### Upgrading deployments
+
+When new ATK versions are released:
+
+```bash
+# Update Helm repository
+helm repo update
+
+# Review changes
+helm diff upgrade atk settlemint/atk \
+  --namespace atk-production \
+  --values values-production.yaml
+
+# Apply upgrade
+helm upgrade atk settlemint/atk \
+  --namespace atk-production \
+  --values values-production.yaml \
+  --timeout 15m \
+  --wait
+```
+
+Upgrades use **rolling updates** to minimize downtime. Critical data migrations
+are handled automatically by the charts.
+
+### Backup and disaster recovery
+
+**Database backups:**
+
+Use your Kubernetes persistent volume snapshot capabilities:
+
+```bash
+# Example with AWS EBS snapshots
+aws ec2 create-snapshot \
+  --volume-id vol-xxx \
+  --description "ATK PostgreSQL backup $(date +%Y%m%d)"
+```
+
+Or use PostgreSQL native backups:
+
+```bash
+# Exec into PostgreSQL pod
+kubectl exec -it postgresql-xxx -n atk-production -- bash
+
+# Dump all databases
+pg_dumpall -U postgres > /backups/atk-backup-$(date +%Y%m%d).sql
+```
+
+**Smart contract state:**
+
+Blockchain state is immutable and replicated across nodes. For private networks,
+ensure:
+
+- **Genesis file** is stored in version control
+- **Validator keys** are backed up securely (HSM, vault)
+- **Node data directories** are snapshotted regularly
+
+**Restore procedure:**
+
+1. Provision a new Kubernetes cluster
+2. Restore persistent volume snapshots
+3. Re-deploy Helm chart with same configuration
+4. Verify data integrity and service health
+
+## Deployment option 3: AWS Marketplace
+
+For AWS customers, deploy ATK directly from the **AWS Marketplace** with
+integrated billing and streamlined procurement.
+
+### Why AWS Marketplace
+
+- **Simplified procurement** - Purchase through existing AWS spend commitments
+- **Consolidated billing** - ATK costs appear on AWS invoices
+- **Quick deployment** - One-click launch into your AWS account
+- **Enterprise agreements** - Leverage AWS Enterprise Discount Programs
+
+### Prerequisites
+
+- **AWS account** with EKS (Elastic Kubernetes Service) cluster
+- **IAM permissions** for Marketplace subscriptions and EKS management
+- **kubectl** and **Helm** configured for your EKS cluster
+
+### Deployment process
+
+1. **Subscribe to ATK** in the
+   [AWS Marketplace](https://aws.amazon.com/marketplace)
+2. **Launch via container** option, which provides Helm chart access
+3. **Configure EKS cluster** with required node groups and storage classes
+4. **Deploy using Helm** with AWS-specific values:
+
+```yaml
+# values-aws.yaml
+global:
+  cloudProvider: "aws"
+
+dapp:
+  service:
+    type: LoadBalancer
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+      service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+
+persistence:
+  storageClass: "gp3" # AWS EBS gp3 volumes
+
+network:
+  persistence:
+    storageClass: "gp3"
+    size: "1000Gi" # Blockchain storage
+
+postgresql:
+  persistence:
+    storageClass: "gp3"
+    size: "100Gi"
+```
+
+5. **Install via Helm** as described in the self-managed section
+
+### AWS-specific optimizations
+
+- **Use EBS gp3 volumes** for cost-effective persistent storage with
+  configurable IOPS
+- **Enable AWS LoadBalancer annotations** for automatic DNS and SSL via ACM
+- **Configure VPC networking** for private communication between services
+- **Integrate with CloudWatch** for centralized logging and metrics
+
+### Cost management
+
+Monitor costs through:
+
+- **AWS Cost Explorer** - Track ATK-related EC2, EBS, and data transfer costs
+- **Marketplace billing** - View ATK license fees separately from infrastructure
+- **Resource tagging** - Tag all ATK resources for cost allocation
+
+## Multi-environment deployment patterns
+
+### Environment segmentation
+
+Typical deployment topology for production organizations:
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph "Development Environment"
+        DevCluster[Single Node K8s<br/>Minikube/Kind<br/>Local or Cloud]
+        DevData[(Ephemeral Data<br/>Reset Frequently)]
+    end
+    
+    subgraph "Staging Environment"
+        StagingCluster[Multi-Node K8s<br/>Production-like Setup<br/>Separate Namespace]
+        StagingData[(Persistent Data<br/>Sanitized Production Copy)]
+    end
+    
+    subgraph "Production Environment"
+        ProdCluster[HA Kubernetes<br/>Multi-Zone Deployment<br/>Dedicated Cluster]
+        ProdData[(Production Data<br/>Encrypted + Backed Up)]
+    end
+    
+    Dev[Developers] --> DevCluster
+    QA[QA Team] --> StagingCluster
+    Users[End Users] --> ProdCluster
+    
+    DevCluster --> DevData
+    StagingCluster --> StagingData
+    ProdCluster --> ProdData
+    
+    DevData -.Promote.-> StagingData
+    StagingData -.Migrate.-> ProdData
+    
+    style DevCluster fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style StagingCluster fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style ProdCluster fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff`}
+/>
+
+### Configuration management
+
+Use **Helm values files** per environment:
+
+```bash
+charts/atk/
+├── values.yaml              # Base defaults
+├── values-dev.yaml          # Development overrides
+├── values-staging.yaml      # Staging overrides
+└── values-production.yaml   # Production overrides
+```
+
+Deploy each environment:
+
+```bash
+# Development
+helm install atk-dev settlemint/atk \
+  -n atk-dev \
+  -f values.yaml \
+  -f values-dev.yaml
+
+# Staging
+helm install atk-staging settlemint/atk \
+  -n atk-staging \
+  -f values.yaml \
+  -f values-staging.yaml
+
+# Production
+helm install atk-prod settlemint/atk \
+  -n atk-production \
+  -f values.yaml \
+  -f values-production.yaml
+```
+
+### Promotion workflows
+
+**Code promotion:**
+
+1. **Developer commits** to feature branch
+2. **CI/CD pipeline** builds and tests artifacts
+3. **Merge to `develop`** deploys to development environment
+4. **Merge to `staging`** deploys to staging environment
+5. **Merge to `main`** creates release candidate
+6. **Tagged release** triggers production deployment
+
+**Data promotion:**
+
+- **Never copy production data down** to lower environments (compliance, PII)
+- **Use synthetic data** or anonymized datasets in dev/staging
+- **Test migrations** in staging before applying to production
+
+## Operational considerations
+
+### High availability
+
+For production SLAs:
+
+- **Multi-replica deployments** - Run at least 3 replicas of stateless services
+- **Pod disruption budgets** - Ensure rolling updates never take all replicas
+  down
+- **Anti-affinity rules** - Spread pods across availability zones
+- **Readiness probes** - Only send traffic to healthy pods
+
+Example HA configuration:
+
+```yaml
+dapp:
+  replicaCount: 3
+  podDisruptionBudget:
+    minAvailable: 2
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - atk-dapp
+            topologyKey: topology.kubernetes.io/zone
+```
+
+### Monitoring and alerting
+
+Set up Prometheus alerts for critical conditions:
+
+- **Pod crash loops** - Service repeatedly failing to start
+- **High memory usage** - Risk of OOMKill
+- **Database connection exhaustion** - Connection pool saturated
+- **Blockchain sync lag** - Indexer falling behind chain head
+- **Disk space &lt; 20%** - Risk of write failures
+
+### Security hardening
+
+- **Network policies** - Restrict pod-to-pod communication to required paths
+  only
+- **RBAC** - Use least-privilege service accounts for all components
+- **Secrets management** - Use Kubernetes Secrets or external vaults (AWS
+  Secrets Manager, HashiCorp Vault)
+- **Image scanning** - Scan container images for CVEs before deployment
+- **TLS everywhere** - Encrypt all inter-service communication
+
+### Performance tuning
+
+For high-throughput deployments:
+
+- **Database connection pooling** - Set appropriate pool sizes in Hasura, API,
+  and GraphNode
+- **Redis maxmemory policies** - Configure eviction policies for cache layers
+- **Resource limits** - Set realistic CPU/memory limits to avoid throttling
+- **Horizontal scaling** - Use HPA (Horizontal Pod Autoscaler) for dApp and API
+  services
+
+## Troubleshooting common issues
+
+### Pods stuck in `CrashLoopBackOff`
+
+**Check logs:**
+
+```bash
+kubectl logs -n atk-production <pod-name> --previous
+```
+
+Common causes:
+
+- Database connection failures (wrong credentials, network policy blocking
+  access)
+- Missing environment variables or secrets
+- Resource limits too low (OOMKilled)
+
+### Services not accessible externally
+
+**Check ingress/service configuration:**
+
+```bash
+kubectl get ingress -n atk-production
+kubectl describe svc <service-name> -n atk-production
+```
+
+Common causes:
+
+- DNS not pointing to LoadBalancer or Ingress IP
+- TLS certificate issues (expired, wrong domain)
+- Network policies blocking ingress controller
+
+### Blockchain sync issues
+
+**Check GraphNode logs:**
+
+```bash
+kubectl logs -n atk-production atk-graph-node-xxx -f
+```
+
+Common causes:
+
+- ERPC or network nodes not responding
+- Subgraph deployment failed (check for errors in logs)
+- Insufficient resources for indexing (increase memory limits)
+
+### Database migrations failing
+
+**Check migration logs:**
+
+```bash
+kubectl logs -n atk-production atk-dapp-xxx -c init-db
+```
+
+Common causes:
+
+- Schema conflicts (manual changes to database)
+- Permission errors (user lacks ALTER TABLE privileges)
+- Concurrent migrations (multiple pods running migrations simultaneously)
+
+## Next steps
+
+- **Review
+  [Performance & scalability](../quality-performance/performance-scalability)**
+  for capacity planning
+- **Configure [External integrations](./external-integrations)** for KYC,
+  banking, and storage providers
+- **Set up monitoring dashboards** using Prometheus and Grafana
+- **Plan disaster recovery procedures** including backup schedules and restore
+  testing
+- **Engage SettleMint support** for production deployment assistance
+
+Production deployments require careful planning around availability, security,
+and compliance. Choose the deployment option that aligns with your
+organization's operational capabilities and regulatory requirements.

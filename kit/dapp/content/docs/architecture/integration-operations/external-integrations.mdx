@@ -1,13 +1,533 @@
 ---
 title: External integrations
-description: Documentation for external-integrations
-pageTitle: External integrations
-tags: [architecture, external-integrations]
+description:
+  Open-source integration patterns for KYC, exchange rates, banking, and storage
+  providers
+pageTitle: External integrations - Connecting to third-party services
+tags: [architecture, integrations, kyc, exchange-rates, banking, storage]
 ---
 
-<Callout type="info" title="Template guide">
-  This page follows The Good Docs Project
-  **[Concept](https://www.thegooddocsproject.dev/template/concept)** template.
-</Callout>
+The Asset Tokenization Kit is designed as an **open-source platform** that
+expects implementation partners and clients to integrate their own external
+service providers. Rather than prescribing specific vendors, ATK provides clean
+integration points and reference implementations that organizations can adapt to
+their compliance, operational, and commercial requirements.
 
-_Content to be added_
+This approach ensures you maintain control over vendor relationships, data
+sovereignty, and regulatory compliance while benefiting from ATK's core
+tokenization capabilities.
+
+## Integration philosophy
+
+### Open-source approach
+
+ATK provides the **infrastructure and patterns** for external integrations but
+deliberately avoids hard dependencies on specific commercial providers. This
+design recognizes that:
+
+- **Compliance requirements vary** by jurisdiction—a KYC provider approved in
+  Singapore may not satisfy MiCA requirements in Europe
+- **Banking relationships are institutional** decisions driven by existing
+  partnerships and regulatory licensing
+- **Data sovereignty** concerns may require specific geographic hosting or
+  vendor selection
+- **Commercial terms** differ across clients and implementation scales
+
+### Reference implementations
+
+The codebase includes **working examples** rather than production-ready
+integrations:
+
+- **Exchange rate sync** demonstrates external API consumption patterns
+  ([see `exchange-rates.sync.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/orpc/routes/exchange-rates/routes/exchange-rates.sync.ts))
+- **Identity claim structures** show how to integrate KYC data into OnchainID
+- **File storage abstractions** allow swapping between MinIO (S3-compatible) and
+  IPFS
+- **Database schemas** include extension points for vendor-specific metadata
+
+Implementation partners replace these reference implementations with
+production-grade integrations tailored to their client's requirements.
+
+## Key integration categories
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph "External Integration Points"
+        ATK[ATK Platform<br/>Core System]
+        
+        subgraph "Identity & Compliance"
+            KYC[KYC/AML Providers<br/>• Identity verification<br/>• Document validation<br/>• Sanctions screening]
+            AccredCheck[Accreditation Services<br/>• Investor qualification<br/>• Regulatory status<br/>• Entity verification]
+        end
+        
+        subgraph "Financial Services"
+            Banking[Banking Rails<br/>• Core banking systems<br/>• Payment gateways<br/>• SWIFT/ISO 20022]
+            ExchangeRate[Exchange Rate Feeds<br/>• FX rate providers<br/>• Price oracles<br/>• Market data]
+            Custody[Custody Providers<br/>• Wallet services<br/>• HSM integration<br/>• Key management]
+        end
+        
+        subgraph "Data & Storage"
+            FileStorage[File Storage<br/>• Document management<br/>• Media hosting<br/>• Compliance archives]
+            IPFS[Decentralized Storage<br/>• IPFS nodes<br/>• Arweave<br/>• Metadata hosting]
+        end
+        
+        subgraph "Monitoring & Operations"
+            Observability[Observability Stack<br/>• Logging aggregation<br/>• Metrics collection<br/>• Alert management]
+            SIEM[Security & Audit<br/>• SIEM integration<br/>• Audit log export<br/>• Compliance reporting]
+        end
+    end
+    
+    ATK --> KYC
+    ATK --> AccredCheck
+    ATK --> Banking
+    ATK --> ExchangeRate
+    ATK --> Custody
+    ATK --> FileStorage
+    ATK --> IPFS
+    ATK --> Observability
+    ATK --> SIEM
+    
+    style ATK fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style KYC fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style Banking fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style ExchangeRate fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style FileStorage fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff`}
+/>
+
+## Identity and compliance integrations
+
+### KYC/AML providers
+
+ATK uses the **OnchainID protocol** as the identity layer, which stores
+verifiable claims about users' KYC/AML status. Your KYC provider integration
+must:
+
+1. **Verify user identity** through your chosen provider's process (document
+   upload, liveness check, etc.)
+2. **Issue claims** to the user's OnchainID that attest to KYC completion,
+   jurisdiction, accreditation status
+3. **Update claims** when verification status changes (renewal, revocation,
+   updated sanctions screening)
+
+**Integration pattern:**
+
+```typescript
+// Example claim issuance after KYC provider approval
+async function issueKYCClaim(
+  userIdentityAddress: string,
+  kycProviderResult: KYCVerificationResult
+) {
+  // Map provider result to claim topics
+  const claims = [
+    { topic: "COUNTRY", value: kycProviderResult.nationality },
+    { topic: "KYC_VERIFIED", value: "true" },
+    { topic: "ACCREDITED_INVESTOR", value: kycProviderResult.isAccredited },
+  ];
+
+  // Issue claims to user's OnchainID
+  for (const claim of claims) {
+    await claimIssuerContract.addClaim(
+      userIdentityAddress,
+      claim.topic,
+      claim.value
+    );
+  }
+}
+```
+
+**Supported claim topics:**
+
+| Claim Topic              | Purpose                               | Example Values          |
+| ------------------------ | ------------------------------------- | ----------------------- |
+| `COUNTRY`                | User's legal jurisdiction             | `US`, `GB`, `SG`        |
+| `KYC_VERIFIED`           | Identity verification complete        | `true`, `false`         |
+| `ACCREDITED_INVESTOR`    | Qualified investor status             | `true`, `false`         |
+| `ENTITY_TYPE`            | Individual vs institutional           | `INDIVIDUAL`, `COMPANY` |
+| `SANCTIONS_CLEAR`        | Passed sanctions screening            | `true`, `false`         |
+| `LAST_VERIFICATION_DATE` | Timestamp of most recent verification | ISO 8601 date           |
+
+**Popular KYC provider categories:**
+
+- **Enterprise KYC platforms** - Jumio, Onfido, Trulioo, Refinitiv World-Check
+- **Blockchain-native identity** - Civic, Fractal, VerifyInvestor
+- **Regional specialists** - Sumsub (global), ComplyCube (Europe), Shufti Pro
+  (APAC)
+
+Implementation partners select providers based on client jurisdiction, volume
+requirements, and regulatory obligations.
+
+### Accreditation verification
+
+For offerings restricted to accredited or qualified investors (e.g., Reg D in
+the US), integrate with accreditation verification services:
+
+- **VerifyInvestor** - US accredited investor verification
+- **North Capital** - US broker-dealer verification services
+- **Manual review workflows** - For institutional investors, implement document
+  review and approval workflows in the admin dashboard
+
+Accreditation claims are stored in OnchainID just like KYC claims, enabling
+transfer restrictions based on investor qualification.
+
+## Financial service integrations
+
+### Banking and payment rails
+
+ATK does not include banking integrations out of the box. Implementation
+partners integrate with:
+
+**Fiat on/off ramps:**
+
+- **Payment gateways** - Stripe, Checkout.com for card payments
+- **Bank transfers** - Direct integration with core banking systems via ISO
+  20022, SWIFT messaging
+- **Stablecoin bridges** - USDC/USDT conversion services
+
+**Integration approach:**
+
+1. **Create a mediation service** that translates between ATK's internal events
+   and the banking system's APIs
+2. **Listen for settlement events** from the smart contracts (e.g.,
+   `TokensPurchased`, `RedemptionRequested`)
+3. **Trigger corresponding banking operations** (wire transfer, account credit,
+   payment collection)
+4. **Update ATK state** when banking operations complete or fail
+
+**Example architecture:**
+
+<Mermaid
+  chart={`flowchart LR
+    Token[Token Contract<br/>Settlement Event]
+    
+    Mediator[Mediation Service<br/>Event Processor]
+    
+    Banking[Banking System<br/>Core Banking API]
+    
+    Queue[Message Queue<br/>RabbitMQ/Kafka]
+    
+    Token --> Queue
+    Queue --> Mediator
+    Mediator --> Banking
+    Banking -.Response.-> Mediator
+    Mediator -.Update.-> Token
+    
+    style Token fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style Mediator fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style Banking fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff`}
+/>
+
+### Exchange rate providers
+
+ATK includes a **reference implementation** for exchange rate synchronization
+using the free [ExchangeRate-API](https://www.exchangerate-api.com/).
+
+**Production replacements:**
+
+- **Financial data providers** - Bloomberg, Refinitiv, FXStreet
+- **Crypto price oracles** - Chainlink, Tellor, Band Protocol
+- **Regional providers** - ECB for Euro rates, Bank of England for GBP
+
+**Integration pattern:**
+
+Replace the `fetchExchangeRatesFromApi` function in
+[`exchange-rates.sync.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/orpc/routes/exchange-rates/routes/exchange-rates.sync.ts):
+
+```typescript
+async function fetchExchangeRatesFromApi(
+  baseCurrency: string
+): Promise<Record<string, number>> {
+  // Replace with your provider's API
+  const response = await fetch(
+    `https://your-provider.com/rates/${baseCurrency}`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.EXCHANGE_RATE_API_KEY}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+  return data.rates; // Map to your provider's response structure
+}
+```
+
+The rest of the system consumes rates from the `fx_rates_latest` database table,
+so swapping providers requires no changes to application logic.
+
+### Custody and wallet services
+
+For institutional-grade key management, integrate with:
+
+- **HSM providers** - Thales, Securosys, Utimaco for hardware-secured private
+  keys
+- **Custody platforms** - Fireblocks, BitGo, Copper for multi-party computation
+  (MPC) wallets
+- **Self-custody solutions** - Gnosis Safe, Ledger Enterprise for on-premise key
+  management
+
+ATK's **TxSigner service** abstracts transaction signing. Replace the default
+implementation with your custody provider's SDK:
+
+```typescript
+// Example: Fireblocks integration
+import { FireblocksSDK } from "fireblocks-sdk";
+
+async function signTransaction(txData: TransactionRequest) {
+  const fireblocks = new FireblocksSDK(
+    process.env.FIREBLOCKS_API_KEY,
+    process.env.FIREBLOCKS_PRIVATE_KEY
+  );
+
+  const result = await fireblocks.createTransaction({
+    assetId: "ETH_TEST",
+    source: { type: "VAULT_ACCOUNT", id: vaultAccountId },
+    destination: { type: "ONE_TIME_ADDRESS", oneTimeAddress: txData.to },
+    amount: txData.value,
+    note: "ATK token operation",
+  });
+
+  return result.txHash;
+}
+```
+
+## Data and storage integrations
+
+### File storage systems
+
+ATK uses **MinIO** (S3-compatible object storage) by default for document
+management. Common integration scenarios:
+
+**Enterprise storage:**
+
+- **AWS S3** - Replace MinIO configuration with S3 bucket details
+- **Azure Blob Storage** - Use Azure SDK in place of MinIO client
+- **Google Cloud Storage** - Swap GCS credentials and endpoints
+
+**Configuration pattern:**
+
+All file operations go through the storage abstraction layer in
+`src/lib/storage`. Update the client initialization:
+
+```typescript
+// Default MinIO
+import { S3Client } from "@aws-sdk/client-s3";
+
+const client = new S3Client({
+  endpoint: process.env.MINIO_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.MINIO_ACCESS_KEY,
+    secretAccessKey: process.env.MINIO_SECRET_KEY,
+  },
+});
+
+// Production S3
+const client = new S3Client({
+  region: "us-east-1",
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
+```
+
+### Decentralized storage (IPFS)
+
+ATK includes **IPFS integration** for immutable document storage (prospectuses,
+term sheets, compliance documents).
+
+**IPFS node options:**
+
+- **Self-hosted IPFS cluster** - Included in Helm charts for data sovereignty
+- **Pinning services** - Pinata, Infura IPFS, Web3.Storage for managed hosting
+- **Filecoin storage** - Long-term archival with cryptographic proof of storage
+
+**Integration approach:**
+
+Documents are stored in MinIO/S3 with **IPFS CIDs as metadata**. This provides:
+
+- **Fast retrieval** from traditional storage
+- **Immutable proof** via IPFS content addressing
+- **Decentralized backup** for regulatory archives
+
+```typescript
+// Store document with IPFS backup
+async function storeDocument(file: File) {
+  // Upload to primary storage
+  const s3Key = await uploadToS3(file);
+
+  // Pin to IPFS for immutability
+  const ipfsCid = await pinToIPFS(file);
+
+  // Save metadata linking both
+  await db.insert(documents).values({
+    fileName: file.name,
+    s3Key,
+    ipfsCid,
+    uploadedAt: new Date(),
+  });
+
+  return { s3Key, ipfsCid };
+}
+```
+
+## Monitoring and observability
+
+### Logging and metrics
+
+ATK components emit structured logs and metrics that integrate with standard
+observability stacks:
+
+**Log aggregation:**
+
+- **ELK Stack** (Elasticsearch, Logstash, Kibana)
+- **Splunk** for enterprise log management
+- **Datadog** or **New Relic** for cloud-native monitoring
+
+**Metrics collection:**
+
+- **Prometheus** for time-series metrics (default in Helm charts)
+- **Grafana** for visualization and alerting
+- **CloudWatch** for AWS deployments
+
+**Integration pattern:**
+
+ATK services expose:
+
+- **Structured JSON logs** on stdout (capture with your log shipper)
+- **Prometheus metrics** on `/metrics` endpoints
+- **Health checks** on `/health` endpoints for load balancer integration
+
+### Security and audit logging
+
+For SIEM integration and compliance audits:
+
+**Export audit logs to:**
+
+- **Splunk Enterprise Security** for security operations
+- **IBM QRadar** for threat detection
+- **Azure Sentinel** for cloud-native SIEM
+- **Custom audit database** for long-term regulatory retention
+
+**Audit trail data:**
+
+ATK logs all material operations to the `audit_logs` table:
+
+- User authentication events
+- Token creation and configuration changes
+- Compliance rule updates
+- Transfer approvals and rejections
+- Administrative actions
+
+Export this table to your audit system:
+
+```typescript
+// Example: Stream audit logs to external SIEM
+export async function exportAuditLogs(since: Date) {
+  const logs = await db
+    .select()
+    .from(auditLogs)
+    .where(gt(auditLogs.timestamp, since))
+    .orderBy(auditLogs.timestamp);
+
+  for (const log of logs) {
+    await siemClient.send({
+      event: "atk.audit",
+      timestamp: log.timestamp,
+      user: log.userId,
+      action: log.action,
+      resource: log.resourceType,
+      details: log.metadata,
+    });
+  }
+}
+```
+
+## Integration best practices
+
+### API design principles
+
+When building integrations:
+
+- **Idempotency** - External API calls should be retryable without side effects
+- **Async patterns** - Use message queues for operations that may take time (KYC
+  verification, bank transfers)
+- **Graceful degradation** - If an external service is down, queue requests
+  rather than failing user operations
+- **Circuit breakers** - Prevent cascading failures when external providers have
+  outages
+
+### Secrets management
+
+Never commit API keys, credentials, or private keys to source code. Use:
+
+- **Kubernetes Secrets** for containerized deployments
+- **AWS Secrets Manager** or **HashiCorp Vault** for cloud environments
+- **Environment variables** injected at runtime
+
+### Testing external integrations
+
+Create **mock implementations** for testing:
+
+```typescript
+// Production KYC provider
+class JumioKYCProvider implements KYCProvider {
+  async verifyUser(userId: string): Promise<KYCResult> {
+    // Call Jumio API
+  }
+}
+
+// Test mock
+class MockKYCProvider implements KYCProvider {
+  async verifyUser(userId: string): Promise<KYCResult> {
+    return {
+      verified: true,
+      nationality: "US",
+      isAccredited: false,
+    };
+  }
+}
+```
+
+Use dependency injection to swap implementations:
+
+```typescript
+const kycProvider =
+  process.env.NODE_ENV === "test"
+    ? new MockKYCProvider()
+    : new JumioKYCProvider();
+```
+
+## Getting support for integrations
+
+### Documentation resources
+
+- **ORPC route patterns** - See [Backend API](../application/backend-api) for
+  creating new integration endpoints
+- **Database schema** - Extend tables for vendor-specific metadata
+  ([Database model](../data-indexing/database-model))
+- **Smart contract events** - Listen for blockchain events to trigger external
+  operations ([Blockchain indexing](../data-indexing/blockchain-indexing))
+
+### Implementation partner network
+
+SettleMint maintains a network of **certified implementation partners** with
+expertise in specific integrations:
+
+- **Banking integrations** - Partners with core banking and payment gateway
+  experience
+- **Compliance specialists** - Firms focused on KYC/AML and regulatory reporting
+- **Infrastructure providers** - Hosting and operations teams for production
+  deployments
+
+Contact SettleMint to connect with partners for your specific integration
+requirements.
+
+## Next steps
+
+- **Plan your integrations** based on jurisdiction and use case requirements
+- **Review reference implementations** in the codebase for patterns
+- **Engage implementation partners** for production-grade integrations
+- **Test thoroughly** with mock providers before connecting production systems
+
+The open-source approach ensures you maintain control and flexibility while
+benefiting from ATK's battle-tested core platform.
