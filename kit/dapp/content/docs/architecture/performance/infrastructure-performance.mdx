@@ -1,0 +1,231 @@
+---
+title: Infrastructure optimization
+description:
+  Smart contract gas optimization, blockchain indexing, database tuning, and
+  caching strategies
+pageTitle: Infrastructure optimization
+tags: [architecture, performance, smart-contracts, database, caching]
+---
+
+Infrastructure performance determines the cost and scalability of asset
+tokenization platforms. This page documents the smart contract gas
+optimizations, blockchain indexing strategies, database tuning, and caching
+architecture that keep ATK fast and cost-effective in production.
+
+## Smart contract performance
+
+Gas costs directly impact transaction economics. ATK optimizes contracts to
+minimize gas consumption while maintaining security and compliance.
+
+### Gas optimization strategies
+
+**Storage layout optimization** - Solidity structs pack tightly to minimize
+storage slots. A `uint32` timestamp, `uint16` country code, and `bool` flag fit
+into a single 32-byte slot (saving 15,000 gas per write) instead of spanning
+three slots (45,000 gas).
+
+**Batch operations** - Minting tokens to multiple recipients in one transaction
+costs 150,000 gas for the first recipient and 50,000 gas for each additional
+recipient. Ten individual transactions cost 1,500,000 gas; one batch transaction
+costs 600,000 gas. Batch operations reduce per-recipient costs by 60%.
+
+**Event optimization** - Events cost far less than storage writes (8 gas per
+byte vs 20,000 gas per word). Contracts emit detailed events for off-chain
+indexing rather than storing metadata on-chain. The subgraph reconstructs state
+from events, keeping gas costs low while preserving auditability.
+
+**Unchecked arithmetic** - Math operations in contexts where overflow is
+impossible (incrementing a counter guaranteed to stay under 2^32) use
+`unchecked` blocks to skip redundant safety checks. This saves approximately 100
+gas per operation.
+
+**Custom errors** - Contracts use custom errors
+(`error InsufficientBalance(address account)`) instead of revert strings. Custom
+errors cost 1,500 gas; revert strings cost 8,000 gas. This optimization applies
+to every failure case.
+
+### Compliance module efficiency
+
+**Modular validation** - Compliance checks run only the configured modules for
+each token. A bond with country restrictions and investor caps skips identity
+verification modules, saving 30,000 gas per transfer. An equity token with full
+KYC runs all modules, prioritizing security over gas savings.
+
+**Bitmap flags for eligibility** - Country allow/block lists use bitmaps instead
+of mappings. Checking if a country is allowed costs 2,100 gas (one storage slot
+read); a mapping check costs 2,100 gas plus 20,000 gas for a cold slot access.
+Bitmaps reduce average validation costs by 40%.
+
+**Signature verification caching** - Identity claim signatures verify once and
+cache the result. Subsequent transfers by the same address skip re-verification
+if the claim hasn't expired. This reduces the most expensive operation (ECDSA
+signature recovery: 3,000 gas) to a cheap storage read (2,100 gas).
+
+### Upgrade safety and gas costs
+
+**UUPS proxy pattern** - Contracts use Universal Upgradeable Proxy Standard
+(UUPS) for upgradeability. UUPS stores upgrade logic in the implementation
+contract, not the proxy. This saves 15,000 gas per call compared to Transparent
+Proxy patterns where the proxy checks `msg.sender` on every invocation.
+
+**Minimal proxy clones** - New token deployments use EIP-1167 minimal proxy
+clones pointing to a shared implementation. Deploying a clone costs 45,000 gas;
+deploying a full contract costs 1,200,000 gas. The factory pattern reduces
+deployment costs by 96%.
+
+## Blockchain and indexing performance
+
+Blockchain performance depends on the underlying network, but ATK optimizes
+interaction patterns to minimize latency.
+
+### Transaction batching
+
+**Multicall aggregation** - Reading multiple contract values (token balance,
+allowance, metadata) batches into a single multicall transaction. Instead of
+three JSON-RPC calls with 100ms latency each (300ms total), one multicall
+completes in 110ms (100ms latency + 10ms execution).
+
+**Sequential transaction pipelining** - When submitting dependent transactions
+(approve then transfer), the frontend estimates gas, signs both transactions,
+and submits them immediately rather than waiting for the first to confirm. Block
+builders include both in the same block when possible, reducing time-to-finality
+from 6 seconds (two blocks) to 3 seconds (one block).
+
+### Subgraph indexing speed
+
+**Event-driven architecture** - TheGraph subgraph subscribes to smart contract
+events rather than polling blocks. New events trigger indexing within 2-3
+seconds (one block time + processing). Polling architectures incur 10-30 second
+delays due to batch intervals.
+
+**Schema denormalization** - The subgraph schema denormalizes relationships to
+reduce query complexity. Token holder balances store both the `tokenId` and
+`tokenName` instead of requiring a join to the token entity. This trades storage
+space for query speed—acceptable because indexers handle storage well.
+
+**Parallel processing** - TheGraph node configuration enables parallel block
+processing when events are independent. Minting one token and transferring
+another token process concurrently, doubling indexing throughput.
+
+### GraphQL query optimization
+
+**Query cost limiting** - Clients paginate large result sets (max 1,000 items
+per query) to prevent unbounded queries from exhausting subgraph resources. The
+UI implements infinite scroll with cursor-based pagination rather than loading
+all token holders at once.
+
+**Field selection discipline** - Queries request only needed fields. Fetching a
+token holder list requests `address` and `balance`, not the full `Token` entity
+with metadata. This reduces response payload size from 500KB to 50KB and query
+execution time from 200ms to 50ms.
+
+## Database performance
+
+PostgreSQL serves as the source of truth for application state and user data.
+Its performance directly impacts API responsiveness.
+
+### Indexing strategy
+
+**Composite indexes** - Queries filtering by multiple columns (e.g.,
+`WHERE token_id = $1 AND status = 'active'`) use composite indexes
+`(token_id, status)` to avoid full table scans. Index-only scans complete in
+milliseconds; table scans take seconds as tables grow.
+
+**Partial indexes** - Indexes on filtered subsets (e.g.,
+`CREATE INDEX ON transfers (created_at) WHERE status = 'pending'`) reduce index
+size and improve write performance. A partial index on pending transfers is 1%
+the size of a full index, accelerating both reads and writes.
+
+**Covering indexes** - Indexes include all columns needed by a query to enable
+index-only scans that never touch the table. Example:
+`CREATE INDEX ON tokens (id) INCLUDE (name, symbol)` allows
+`SELECT id, name, symbol FROM tokens WHERE id = $1` to complete from the index
+alone.
+
+### Connection management
+
+**Connection pooling** - Drizzle ORM connects to PostgreSQL through PgBouncer in
+transaction pooling mode. The pool maintains 20 persistent connections to
+PostgreSQL while serving 200 concurrent application connections. Without
+pooling, 200 concurrent connections would exhaust PostgreSQL's connection limit
+and degrade performance.
+
+**Statement timeouts** - All queries have a 5-second timeout. Queries exceeding
+this limit are canceled and logged. This prevents slow queries (unindexed full
+table scans) from blocking connection slots and cascading into API timeouts.
+
+**Idle connection reaping** - Connections idle for more than 10 minutes close
+automatically to free resources. This prevents connection leaks from keeping
+database resources tied up.
+
+### Maintenance and vacuuming
+
+**Auto-vacuum tuning** - PostgreSQL auto-vacuum runs with aggressive settings
+(`autovacuum_vacuum_scale_factor = 0.05`) to reclaim space from deleted rows
+quickly. Frequent small vacuums prevent bloat from accumulating and degrading
+query performance.
+
+**Analyze for query planning** - Auto-analyze updates table statistics after 5%
+of rows change. Accurate statistics ensure the query planner chooses optimal
+index strategies. Stale statistics cause the planner to pick slow sequential
+scans instead of fast index scans.
+
+**Reindexing schedule** - Indexes rebuild quarterly to reclaim space and
+eliminate fragmentation. Fragmented indexes grow to 2-3× their optimal size,
+slowing lookups and wasting I/O.
+
+## Caching architecture
+
+Redis powers session management and hot-path caching. Its sub-millisecond
+latency keeps the application responsive even when the database is under load.
+
+### Cache hierarchy
+
+**L1: In-memory application cache** - TanStack Query caches API responses in the
+browser. Cache hits return data in microseconds without any network round-trip.
+Stale times (30 seconds to 5 minutes) balance freshness with performance.
+
+**L2: Redis cache** - API procedures cache frequently accessed data (user
+profiles, token metadata) in Redis with short TTLs (1-2 minutes). Cache hits
+return data in 2-5ms instead of 50ms (database query).
+
+**L3: Database query cache** - PostgreSQL's shared buffer cache keeps frequently
+accessed pages in memory. Hot data (recent transfers, active token holders)
+stays in cache, avoiding disk I/O.
+
+### Cache invalidation patterns
+
+**Time-based expiration** - Most cache entries expire after a fixed TTL. This
+works well for data that changes predictably (token prices update every minute;
+user profiles change rarely).
+
+**Event-driven invalidation** - Blockchain events trigger cache invalidation.
+When a token transfer occurs, the API invalidates cache entries for the sender's
+balance, recipient's balance, and token holder count. This ensures the UI
+reflects state changes within seconds.
+
+**Versioned cache keys** - Cache keys include a version component
+(`token_metadata:v2:${tokenId}`). When the metadata schema changes, incrementing
+the version abandons old cache entries without explicit deletion. This prevents
+stale data from persisting across deployments.
+
+### Cache warming strategies
+
+**Pre-warming on deployment** - After deploying new API instances, a startup
+script pre-warms the cache by fetching the 100 most popular tokens and their
+metadata. This prevents cache stampedes when users access the application
+immediately after deployment.
+
+**Background refresh for hot keys** - Keys accessed frequently (more than 100
+times per minute) refresh automatically 30 seconds before expiration. This
+ensures high-traffic data never expires, preventing temporary performance dips
+during cache rehydration.
+
+## See also
+
+- [Frontend and API optimization](/docs/architecture/performance/frontend-api-optimization) -
+  Build-time optimizations, runtime performance, and API strategies
+- [Scalability architecture](/docs/architecture/performance/scalability-architecture) -
+  Horizontal scaling, load balancing, and auto-scaling policies
+- [Performance operations](/docs/architecture/performance/performance-operations) -
+  Monitoring, load testing, and optimization workflows

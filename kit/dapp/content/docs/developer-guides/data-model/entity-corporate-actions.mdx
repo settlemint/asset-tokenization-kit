@@ -1,0 +1,475 @@
+---
+title: Corporate action entities
+description:
+  Dividends, voting proposals, and other corporate actions for token holders
+pageTitle: Corporate action entity reference (Dividends, Voting)
+tags: [dividends, voting, corporate-actions, governance, yield]
+---
+
+Corporate action entities track dividends, voting proposals, and other events
+that affect token holders. These entities are indexed by TheGraph from addon
+contract events.
+
+**Schema location**:
+[`kit/subgraph/schema.graphql`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/subgraph/schema.graphql)
+
+## DividendDistribution
+
+Dividend payment scheduled for token holders.
+
+### Fields
+
+```graphql
+type DividendDistribution @entity {
+  id: Bytes! # Distribution contract + distribution ID
+  token: Token! # Token receiving dividend
+  distributionToken: Token! # Token used for payment
+  totalAmount: BigDecimal! # Total dividend amount
+  amountPerToken: BigDecimal! # Amount per token unit
+  snapshotId: BigInt! # Balance snapshot ID
+  snapshotTimestamp: BigInt! # When snapshot was taken
+  claimDeadline: BigInt! # Last claim timestamp
+  createdAt: BigInt! # Creation timestamp
+  claimedAmount: BigDecimal! # Total claimed so far
+  claimCount: BigInt! # Number of claims
+  isActive: Boolean! # Currently claimable
+  claims: [DividendClaim!]! # Individual claims
+}
+```
+
+### Relationships
+
+- **Many-to-one**:
+  - `token` → Security token
+  - `distributionToken` → Payment token (can be same as `token` or different)
+- **One-to-many**:
+  - `claims` → Individual holder claims
+
+### Distribution lifecycle
+
+1. **Created** - Dividend announced with snapshot
+2. **Active** - Holders can claim proportional amounts
+3. **Expired** - After `claimDeadline`, unclaimed funds returned
+4. **Withdrawn** - Admin withdraws unclaimed after deadline
+
+### Usage example
+
+```graphql
+query GetDividends($tokenAddress: Bytes!) {
+  dividendDistributions(
+    where: { token: $tokenAddress, isActive: true }
+    orderBy: createdAt
+    orderDirection: desc
+  ) {
+    id
+    totalAmount
+    amountPerToken
+    distributionToken {
+      symbol
+      decimals
+    }
+    claimDeadline
+    claimedAmount
+    claimCount
+  }
+}
+
+# Get unclaimed dividends for holder
+query GetUnclaimedDividends($tokenAddress: Bytes!, $holderAddress: Bytes!) {
+  dividendDistributions(where: { token: $tokenAddress, isActive: true }) {
+    id
+    totalAmount
+    amountPerToken
+    claimDeadline
+    claims(where: { holder: $holderAddress }) {
+      id
+      claimed
+    }
+  }
+}
+```
+
+## DividendClaim
+
+Individual holder's claim on a dividend distribution.
+
+### Fields
+
+```graphql
+type DividendClaim @entity {
+  id: Bytes! # distribution + holder address
+  distribution: DividendDistribution! # Parent distribution
+  holder: Account! # Token holder
+  amount: BigDecimal! # Claimable amount
+  claimed: Boolean! # Claim status
+  claimedAt: BigInt # Claim timestamp
+  claimTx: Bytes # Claim transaction hash
+}
+```
+
+### Relationships
+
+- **Many-to-one**:
+  - `distribution` → Parent distribution
+  - `holder` → Token holder account (see
+    [Investor entities](/developer-guides/data-model/entity-investor))
+
+### Claim calculation
+
+```typescript
+// Amount holder can claim
+claimableAmount = (holderBalance at snapshotId) * amountPerToken
+
+// Example:
+// Holder has 1000 tokens at snapshot
+// amountPerToken = 0.05 USDC
+// claimableAmount = 1000 * 0.05 = 50 USDC
+```
+
+### Usage example
+
+```graphql
+query GetHolderClaims($holderAddress: Bytes!) {
+  dividendClaims(where: { holder: $holderAddress, claimed: false }) {
+    distribution {
+      token {
+        name
+        symbol
+      }
+      distributionToken {
+        symbol
+      }
+      claimDeadline
+    }
+    amount
+  }
+}
+
+# Claim history
+query GetClaimHistory($holderAddress: Bytes!) {
+  dividendClaims(
+    where: { holder: $holderAddress, claimed: true }
+    orderBy: claimedAt
+    orderDirection: desc
+  ) {
+    distribution {
+      token {
+        symbol
+      }
+    }
+    amount
+    claimedAt
+    claimTx
+  }
+}
+```
+
+## VotingProposal
+
+Shareholder voting proposal for governance decisions.
+
+### Fields
+
+```graphql
+type VotingProposal @entity {
+  id: Bytes! # Governance contract + proposal ID
+  token: Token! # Token for voting rights
+  proposalId: BigInt! # Proposal number
+  title: String! # Proposal title
+  description: String! # Full description
+  proposer: Account! # Proposal creator
+  snapshotId: BigInt! # Voting power snapshot
+  startTime: BigInt! # Voting start timestamp
+  endTime: BigInt! # Voting end timestamp
+  quorumRequired: BigDecimal! # Minimum votes for validity
+  votesFor: BigDecimal! # Total votes in favor
+  votesAgainst: BigDecimal! # Total votes against
+  votesAbstain: BigDecimal! # Total abstentions
+  voteCount: BigInt! # Number of voters
+  status: String! # 'active' | 'passed' | 'rejected' | 'cancelled' | 'executed'
+  executedAt: BigInt # Execution timestamp
+  executedTx: Bytes # Execution transaction
+  votes: [Vote!]! # Individual votes
+}
+```
+
+### Proposal status
+
+- `active` - Currently accepting votes
+- `passed` - Voting ended, quorum met, majority approved
+- `rejected` - Voting ended, quorum not met or majority rejected
+- `cancelled` - Proposal cancelled before voting ended
+- `executed` - Passed proposal executed on-chain
+
+### Quorum calculation
+
+```typescript
+// Check if proposal passes
+hasQuorum = votesFor + votesAgainst + votesAbstain >= quorumRequired;
+passes = hasQuorum && votesFor > votesAgainst;
+```
+
+### Usage example
+
+```graphql
+query GetProposals($tokenAddress: Bytes!) {
+  votingProposals(
+    where: { token: $tokenAddress }
+    orderBy: startTime
+    orderDirection: desc
+  ) {
+    id
+    title
+    status
+    startTime
+    endTime
+    votesFor
+    votesAgainst
+    votesAbstain
+    quorumRequired
+    voteCount
+  }
+}
+
+# Active proposals
+query GetActiveProposals($tokenAddress: Bytes!, $now: BigInt!) {
+  votingProposals(
+    where: {
+      token: $tokenAddress
+      status: "active"
+      startTime_lte: $now
+      endTime_gte: $now
+    }
+  ) {
+    id
+    title
+    description
+    endTime
+    votesFor
+    votesAgainst
+  }
+}
+```
+
+## Vote
+
+Individual holder's vote on a proposal.
+
+### Fields
+
+```graphql
+type Vote @entity {
+  id: Bytes! # proposal + voter address
+  proposal: VotingProposal! # Proposal voted on
+  voter: Account! # Voter
+  support: String! # 'for' | 'against' | 'abstain'
+  votingPower: BigDecimal! # Votes cast (based on balance)
+  votedAt: BigInt! # Vote timestamp
+  voteTx: Bytes! # Vote transaction hash
+}
+```
+
+### Relationships
+
+- **Many-to-one**:
+  - `proposal` → Parent proposal
+  - `voter` → Voting account
+
+### Voting power
+
+Voting power is determined by token balance at `proposal.snapshotId`:
+
+```typescript
+votingPower = tokenBalance(voter, snapshotId);
+```
+
+### Usage example
+
+```graphql
+query GetProposalVotes($proposalId: Bytes!) {
+  votingProposal(id: $proposalId) {
+    title
+    votesFor
+    votesAgainst
+    votesAbstain
+    votes(orderBy: votingPower, orderDirection: desc) {
+      voter {
+        id
+      }
+      support
+      votingPower
+      votedAt
+    }
+  }
+}
+
+# Check if holder voted
+query GetHolderVote($proposalId: Bytes!, $holderAddress: Bytes!) {
+  vote(id: $proposalId_$holderAddress) {
+    support
+    votingPower
+    votedAt
+  }
+}
+
+# Holder's voting history
+query GetVotingHistory($holderAddress: Bytes!) {
+  votes(
+    where: { voter: $holderAddress }
+    orderBy: votedAt
+    orderDirection: desc
+  ) {
+    proposal {
+      title
+      status
+    }
+    support
+    votingPower
+    votedAt
+  }
+}
+```
+
+## CorporateAction
+
+Generic corporate action event (mergers, splits, name changes, etc.).
+
+### Fields
+
+```graphql
+type CorporateAction @entity {
+  id: Bytes! # Action contract + action ID
+  token: Token! # Affected token
+  actionType: String! # 'split' | 'merge' | 'rename' | 'dividend' | 'other'
+  title: String! # Action title
+  description: String! # Details
+  effectiveDate: BigInt! # When action takes effect
+  executedAt: BigInt # Execution timestamp
+  status: String! # 'pending' | 'executed' | 'cancelled'
+  metadata: String # JSON metadata
+}
+```
+
+### Action types
+
+- `split` - Stock split (1 share becomes N)
+- `merge` - Reverse split (N shares become 1)
+- `rename` - Token name/symbol change
+- `dividend` - Dividend distribution (links to DividendDistribution)
+- `redemption` - Bond maturity redemption
+- `conversion` - Convertible security conversion
+- `other` - Custom action
+
+### Usage example
+
+```graphql
+query GetCorporateActions($tokenAddress: Bytes!) {
+  corporateActions(
+    where: { token: $tokenAddress }
+    orderBy: effectiveDate
+    orderDirection: desc
+  ) {
+    id
+    actionType
+    title
+    description
+    effectiveDate
+    status
+    executedAt
+  }
+}
+
+# Upcoming actions
+query GetUpcomingActions($tokenAddress: Bytes!, $now: BigInt!) {
+  corporateActions(
+    where: { token: $tokenAddress, status: "pending", effectiveDate_gte: $now }
+    orderBy: effectiveDate
+    orderDirection: asc
+  ) {
+    actionType
+    title
+    effectiveDate
+  }
+}
+```
+
+## Yield tracking
+
+For bonds and yield-bearing tokens, track interest payments and redemptions.
+
+### BondInterestPayment
+
+```graphql
+type BondInterestPayment @entity {
+  id: Bytes! # Bond + payment ID
+  bond: Token! # Bond token
+  paymentToken: Token! # Payment token
+  totalAmount: BigDecimal! # Total interest paid
+  amountPerToken: BigDecimal! # Interest per bond unit
+  paymentDate: BigInt! # Payment timestamp
+  periodStart: BigInt! # Interest period start
+  periodEnd: BigInt! # Interest period end
+  claims: [InterestClaim!]! # Holder claims
+}
+```
+
+### Usage example
+
+```graphql
+query GetBondPayments($bondAddress: Bytes!) {
+  bondInterestPayments(
+    where: { bond: $bondAddress }
+    orderBy: paymentDate
+    orderDirection: desc
+  ) {
+    totalAmount
+    amountPerToken
+    paymentToken {
+      symbol
+    }
+    paymentDate
+    periodStart
+    periodEnd
+  }
+}
+```
+
+## Cross-entity queries
+
+### Get holder's total claimable
+
+```graphql
+query GetHolderClaimables($holderAddress: Bytes!) {
+  # Unclaimed dividends
+  dividendClaims(where: { holder: $holderAddress, claimed: false }) {
+    distribution {
+      token {
+        symbol
+      }
+      distributionToken {
+        symbol
+      }
+    }
+    amount
+  }
+
+  # Active votes
+  votingProposals(
+    where: { status: "active", votes_: { voter: $holderAddress } }
+  ) {
+    title
+    endTime
+  }
+}
+```
+
+## See also
+
+- **[Token entities](/developer-guides/data-model/entity-token)** - Security
+  tokens affected by corporate actions
+- **[Investor entities](/developer-guides/data-model/entity-investor)** - Token
+  holders eligible for dividends/voting
+- **[Data model overview](/developer-guides/data-model/)** - Complete data
+  architecture
+- **[Contract reference](/developer-guides/smart-contracts/contract-reference)** -
+  Addon contract methods

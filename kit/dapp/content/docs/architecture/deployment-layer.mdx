@@ -1,0 +1,1087 @@
+---
+title: Deployment layer
+description:
+  End-to-end testing with Playwright, Kubernetes orchestration, Helm charts, and
+  production operations for the Asset Tokenization Kit
+pageTitle: Deployment layer - Testing, orchestration, and operations
+tags: [architecture, deployment, kubernetes, helm, playwright, testing]
+---
+
+## Overview
+
+The deployment layer encompasses end-to-end testing, containerization,
+orchestration, and production operations. Playwright validates complete user
+workflows, Docker containers package application components, Kubernetes
+orchestrates distributed services, and Helm charts provide declarative
+configuration management. This layer transforms development artifacts into
+production-ready systems with built-in observability, scalability, and
+resilience.
+
+### Problem
+
+Manual testing fails to catch integration bugs between frontend, API, and
+blockchain layers. Inconsistent deployment across environments introduces
+configuration drift and environment-specific bugs. Scaling individual components
+requires coordination between teams. Production incidents lack observability
+making root cause analysis difficult. Updates require downtime disrupting user
+operations.
+
+### Solution
+
+Playwright E2E tests execute real user workflows in automated browsers catching
+integration issues before production. Docker provides reproducible container
+images ensuring identical behavior across environments. Kubernetes declaratively
+manages desired state automatically healing failures and scaling resources. Helm
+charts template configuration enabling environment-specific customization while
+maintaining consistency. Observability stack provides metrics, logs, and traces
+enabling proactive incident response and performance optimization.
+
+## End-to-end testing with Playwright
+
+Playwright automates browser interactions validating complete user workflows
+from authentication through asset creation and trading. Tests execute against
+real backend services and blockchain networks ensuring integration correctness.
+
+### Test architecture
+
+**UI tests** (`kit/e2e/ui-tests/`) validate frontend interactions:
+
+- **Authentication flows**: Login with email/password, OAuth providers, Web3
+  wallets, multi-factor authentication
+- **Asset management**: Token creation wizard, compliance configuration,
+  metadata uploads, deployment verification
+- **Portfolio operations**: Balance displays, transaction history, transfer
+  initiation, approval workflows
+- **Compliance administration**: KYC review dashboard, document verification,
+  investor whitelisting, audit log exports
+
+**API tests** (`kit/e2e/api-tests/`) verify backend procedures:
+
+- **ORPC procedure calls**: Parameter validation, response structure, error
+  handling, authorization enforcement
+- **Database state**: Record creation, updates, foreign key constraints,
+  transaction atomicity
+- **Blockchain interactions**: Contract deployments, event emission, state
+  updates, revert conditions
+
+**Test utilities** (`kit/e2e/utils/`) provide shared infrastructure:
+
+- **Page object models**: Encapsulate page structure and interactions reducing
+  test fragility
+- **Test fixtures**: Seed consistent data state before tests run
+- **Helper functions**: Authentication flows, wait conditions, assertion
+  utilities
+- **Mock services**: Stub external dependencies like KYC providers and payment
+  gateways
+
+### Test execution workflow
+
+**Local development** runs subset of tests during feature development:
+
+```bash
+cd kit/e2e
+
+# Run specific test file
+bun run playwright test ui-tests/asset-creation.spec.ts
+
+# Run tests matching pattern
+bun run playwright test -g "KYC approval"
+
+# Run with UI mode for debugging
+bun run playwright test:ui
+```
+
+UI mode opens browser devtools allowing step-through execution and state
+inspection. Failed tests automatically capture screenshots and video recordings.
+
+**CI pipeline** executes full test suite on every commit:
+
+```yaml
+name: E2E Tests
+
+on: [push, pull_request]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: test
+      redis:
+        image: redis:7-alpine
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - name: Install dependencies
+        run: bun install
+      - name: Start services
+        run: bun run dev:up
+      - name: Run E2E tests
+        run: bun run test:e2e
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: kit/e2e/playwright-report/
+```
+
+Tests run in isolated Docker containers with fresh database and blockchain
+state. Parallel execution across multiple workers reduces total run time.
+
+### Page object pattern
+
+Page objects encapsulate page structure and interactions:
+
+```typescript
+export class AssetCreationPage {
+  constructor(private page: Page) {}
+
+  async navigate() {
+    await this.page.goto("/assets/create");
+  }
+
+  async fillBasicInfo(name: string, symbol: string, supply: number) {
+    await this.page.fill('input[name="name"]', name);
+    await this.page.fill('input[name="symbol"]', symbol);
+    await this.page.fill('input[name="totalSupply"]', supply.toString());
+  }
+
+  async selectAssetType(type: "bond" | "equity" | "fund") {
+    await this.page.click(`button[value="${type}"]`);
+  }
+
+  async addComplianceRule(ruleType: string, params: Record<string, unknown>) {
+    await this.page.click('button:has-text("Add Rule")');
+    await this.page.selectOption('select[name="ruleType"]', ruleType);
+
+    for (const [key, value] of Object.entries(params)) {
+      await this.page.fill(`input[name="${key}"]`, String(value));
+    }
+  }
+
+  async submit() {
+    await this.page.click('button[type="submit"]');
+  }
+
+  async waitForDeployment() {
+    await this.page.waitForSelector("text=Deployment successful", {
+      timeout: 30000,
+    });
+  }
+
+  async getDeployedAddress(): Promise<string> {
+    const addressElement = this.page.locator(
+      '[data-testid="contract-address"]'
+    );
+    return addressElement.textContent();
+  }
+}
+```
+
+Tests import page objects avoiding direct selectors:
+
+```typescript
+import { test, expect } from "@playwright/test";
+import { AssetCreationPage } from "./pages/asset-creation";
+
+test("create corporate bond", async ({ page }) => {
+  const assetPage = new AssetCreationPage(page);
+
+  await assetPage.navigate();
+  await assetPage.fillBasicInfo("Corporate Bond 2025", "BOND25", 1000000);
+  await assetPage.selectAssetType("bond");
+  await assetPage.addComplianceRule("CountryAllowList", {
+    countries: "US,UK,DE",
+  });
+  await assetPage.submit();
+  await assetPage.waitForDeployment();
+
+  const address = await assetPage.getDeployedAddress();
+  expect(address).toMatch(/^0x[a-fA-F0-9]{40}$/);
+});
+```
+
+Page objects isolate tests from UI implementation changes. Selector updates
+modify single location rather than every test.
+
+### Test data management
+
+**Fixtures** provide consistent starting state:
+
+```typescript
+import { test as base } from "@playwright/test";
+import { createUser, createAsset } from "./fixtures";
+
+type Fixtures = {
+  authenticatedUser: { email: string; password: string };
+  deployedAsset: { address: string; symbol: string };
+};
+
+export const test = base.extend<Fixtures>({
+  authenticatedUser: async ({}, use) => {
+    const user = await createUser({
+      email: "test@example.com",
+      password: "SecurePass123!",
+      role: "issuer",
+    });
+    await use(user);
+    // Cleanup after test
+  },
+
+  deployedAsset: async ({ authenticatedUser }, use) => {
+    const asset = await createAsset({
+      name: "Test Bond",
+      symbol: "TBON",
+      totalSupply: 100000,
+      owner: authenticatedUser.email,
+    });
+    await use(asset);
+    // Cleanup after test
+  },
+});
+```
+
+Tests declare fixture dependencies automatically provisioning prerequisites:
+
+```typescript
+test("transfer tokens between investors", async ({
+  page,
+  authenticatedUser,
+  deployedAsset,
+}) => {
+  // authenticatedUser and deployedAsset automatically available
+  await page.goto(`/assets/${deployedAsset.address}/transfer`);
+  // ...test logic
+});
+```
+
+Fixtures execute once per test maintaining isolation. Cleanup ensures no state
+leaks between tests.
+
+### Assertion strategies
+
+**Visual assertions** verify rendered content:
+
+```typescript
+await expect(page).toHaveTitle("Asset Tokenization Kit");
+await expect(page.locator("h1")).toContainText("Create Asset");
+await expect(page.locator('[data-testid="balance"]')).toContainText("1,000");
+```
+
+**Accessibility assertions** validate WCAG compliance:
+
+```typescript
+import { injectAxe, checkA11y } from "axe-playwright";
+
+test("asset creation page is accessible", async ({ page }) => {
+  await page.goto("/assets/create");
+  await injectAxe(page);
+  await checkA11y(page, null, {
+    detailedReport: true,
+    detailedReportOptions: { html: true },
+  });
+});
+```
+
+**Network assertions** verify API interactions:
+
+```typescript
+const responsePromise = page.waitForResponse(
+  (response) =>
+    response.url().includes("/api/assets") && response.status() === 200
+);
+
+await page.click('button[type="submit"]');
+const response = await responsePromise;
+const data = await response.json();
+
+expect(data.assetId).toBeDefined();
+expect(data.deploymentAddress).toMatch(/^0x[a-fA-F0-9]{40}$/);
+```
+
+**State assertions** validate database and blockchain:
+
+```typescript
+import { db } from "../utils/database";
+import { getContract } from "../utils/blockchain";
+
+test("asset creation updates database and blockchain", async ({
+  page,
+  authenticatedUser,
+}) => {
+  // Create asset via UI
+  await createAssetThroughUI(page, assetConfig);
+
+  // Verify database record
+  const dbRecord = await db
+    .select()
+    .from(assets)
+    .where(eq(assets.symbol, assetConfig.symbol))
+    .get();
+  expect(dbRecord).toBeDefined();
+  expect(dbRecord.owner).toBe(authenticatedUser.email);
+
+  // Verify blockchain state
+  const contract = await getContract(dbRecord.address);
+  const name = await contract.name();
+  expect(name).toBe(assetConfig.name);
+});
+```
+
+### Continuous integration
+
+**Parallel execution** distributes tests across workers:
+
+```bash
+# Run 4 workers in parallel
+bun run playwright test --workers=4
+```
+
+Playwright automatically shards tests across workers balancing load. Workers
+share fixtures but maintain isolated state.
+
+**Retry configuration** handles flaky tests:
+
+```typescript
+// playwright.config.ts
+export default defineConfig({
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 4 : 1,
+  use: {
+    trace: "retain-on-failure",
+    screenshot: "only-on-failure",
+  },
+});
+```
+
+Failed tests retry automatically in CI reducing false negatives from transient
+issues. Local development runs without retries for faster feedback.
+
+**Test reports** provide detailed failure analysis:
+
+```bash
+bun run playwright show-report
+```
+
+HTML reports display test results, screenshots, traces, and network activity.
+Traces replay failed tests step-by-step in browser devtools.
+
+## Kubernetes orchestration
+
+Kubernetes manages ATK components as declarative resources automatically healing
+failures and scaling capacity. All services deploy as containerized workloads
+with defined resource requirements and health checks.
+
+### Component architecture
+
+**Stateless services** scale horizontally without coordination:
+
+- **dApp frontend**: TanStack Start serving HTML and static assets
+- **API backend**: ORPC procedures processing business logic
+- **Portal gateway**: Blockchain RPC routing and transaction management
+- **Graph Node**: Event indexing and GraphQL query processing
+
+Horizontal pod autoscaling adds replicas based on CPU or custom metrics. Load
+balancers distribute requests across healthy pods.
+
+**Stateful services** maintain persistent data requiring careful orchestration:
+
+- **PostgreSQL**: Application database with persistent volumes and replication
+- **Redis**: Cache and session store with Redis Sentinel high availability
+- **MinIO**: Object storage with distributed clustering and erasure coding
+- **Blockchain network**: EVM consensus nodes with stable network identities
+
+StatefulSets manage stateful workloads ensuring stable network identities and
+ordered deployment. Persistent volume claims attach storage to pods surviving
+restarts.
+
+**Background workers** process asynchronous tasks:
+
+- **Subgraph sync**: Indexes blockchain events into queryable schema
+- **Rate refresher**: Updates exchange rates from external APIs
+- **Notification sender**: Delivers emails and push notifications
+- **Cleanup jobs**: Archives old sessions and expired cache entries
+
+CronJobs schedule periodic tasks. Jobs execute one-off workloads with
+success/failure tracking.
+
+### Resource management
+
+**Resource requests** guarantee minimum allocation:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atk-dapp
+spec:
+  replicas: 3
+  template:
+    spec:
+      containers:
+        - name: dapp
+          image: settlemint/atk-dapp:1.0.0
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "2000m"
+              memory: "4Gi"
+```
+
+Kubernetes scheduler places pods on nodes meeting resource requests. Limits
+prevent containers from consuming excessive resources impacting neighbors.
+
+**Autoscaling policies** adjust capacity dynamically:
+
+```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: atk-dapp-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: atk-dapp
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+```
+
+HPA adds replicas when average CPU exceeds 70% or memory exceeds 80%. Scales
+down when utilization drops below target maintaining efficiency.
+
+### Health checking
+
+**Readiness probes** determine when pods accept traffic:
+
+```yaml
+readinessProbe:
+  httpGet:
+    path: /health/ready
+    port: 3000
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 2
+  successThreshold: 1
+  failureThreshold: 3
+```
+
+Pods removed from service endpoints until readiness probe succeeds. Prevents
+routing requests to pods not fully initialized.
+
+**Liveness probes** detect hung processes requiring restart:
+
+```yaml
+livenessProbe:
+  httpGet:
+    path: /health/live
+    port: 3000
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+```
+
+Kubernetes restarts containers failing consecutive liveness checks. Recovers
+from deadlocks and memory leaks automatically.
+
+**Startup probes** allow slow-starting applications:
+
+```yaml
+startupProbe:
+  httpGet:
+    path: /health/startup
+    port: 3000
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 30
+```
+
+Delays liveness/readiness probes until startup succeeds. Prevents premature
+restarts during long initialization like database migrations.
+
+### Network configuration
+
+**Services** expose pods via stable endpoints:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: atk-dapp
+spec:
+  selector:
+    app: atk-dapp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: ClusterIP
+```
+
+ClusterIP services provide internal cluster DNS. LoadBalancer services provision
+external IPs for internet access. Headless services enable direct pod addressing
+for StatefulSets.
+
+**Ingress** routes external HTTP(S) traffic:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: atk-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  tls:
+    - hosts:
+        - app.example.com
+      secretName: atk-tls-cert
+  rules:
+    - host: app.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: atk-dapp
+                port:
+                  number: 80
+```
+
+Ingress controllers (NGINX, Traefik) implement routing rules. Cert-manager
+automates TLS certificate provisioning from Let's Encrypt.
+
+### Persistent storage
+
+**Persistent Volume Claims** request storage:
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: gp3
+  resources:
+    requests:
+      storage: 100Gi
+```
+
+StorageClass defines storage backend (AWS EBS, Azure Disk, Ceph). PVC binds to
+PersistentVolume satisfying requirements. Volumes survive pod restarts and
+rescheduling.
+
+**Volume snapshots** enable backups:
+
+```yaml
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+  name: postgres-backup-20250128
+spec:
+  volumeSnapshotClassName: csi-snapclass
+  source:
+    persistentVolumeClaimName: postgres-data
+```
+
+Snapshots capture point-in-time storage state. Restore creates new PVC from
+snapshot enabling recovery and cloning.
+
+### Configuration management
+
+**ConfigMaps** store non-sensitive configuration:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: atk-config
+data:
+  DATABASE_HOST: postgresql.atk.svc.cluster.local
+  REDIS_HOST: redis.atk.svc.cluster.local
+  CHAIN_ID: "1"
+  LOG_LEVEL: info
+```
+
+Pods mount ConfigMaps as files or environment variables. Updates require pod
+restart to reload configuration.
+
+**Secrets** encrypt sensitive data:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: atk-secrets
+type: Opaque
+data:
+  DATABASE_PASSWORD: <base64-encoded>
+  REDIS_PASSWORD: <base64-encoded>
+  JWT_SECRET: <base64-encoded>
+```
+
+Secrets stored encrypted at rest in etcd. External secret operators (AWS Secrets
+Manager, Vault) sync external secrets into Kubernetes.
+
+## Helm charts
+
+Helm packages Kubernetes manifests into versioned charts enabling templated
+deployments across environments. ATK provides comprehensive Helm chart with
+configurable values.
+
+### Chart structure
+
+```
+kit/charts/atk/
+├── Chart.yaml              # Chart metadata and version
+├── values.yaml             # Default configuration values
+├── values-production.yaml  # Production overrides
+├── values-staging.yaml     # Staging overrides
+├── templates/
+│   ├── deployment.yaml     # Deployment templates
+│   ├── service.yaml        # Service templates
+│   ├── ingress.yaml        # Ingress templates
+│   ├── configmap.yaml      # ConfigMap templates
+│   ├── secret.yaml         # Secret templates
+│   └── _helpers.tpl        # Template helpers
+└── charts/                 # Dependent charts
+    ├── postgresql/
+    ├── redis/
+    └── minio/
+```
+
+Chart templates use Go templating language substituting values from values
+files.
+
+### Template functions
+
+**Conditional rendering** includes resources based on values:
+
+```yaml
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "atk.fullname" . }}
+  annotations:
+    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+spec:
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "atk.fullname" . }}
+                port:
+                  number: {{ .Values.service.port }}
+{{- end }}
+```
+
+**Loops** generate repeated resources:
+
+```yaml
+{{- range .Values.workers }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .name }}
+spec:
+  schedule: {{ .schedule | quote }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: worker
+              image: {{ $.Values.image.repository }}:{{ $.Values.image.tag }}
+              command: {{ .command }}
+{{- end }}
+```
+
+**Helper functions** (`templates/_helpers.tpl`) reduce duplication:
+
+```yaml
+{{- define "atk.fullname" -}}
+{{- printf "%s-%s" .Release.Name .Chart.Name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{- define "atk.labels" -}}
+helm.sh/chart: {{ include "atk.chart" . }}
+app.kubernetes.io/name: {{ include "atk.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+```
+
+### Values configuration
+
+**Default values** (`values.yaml`) provide base configuration:
+
+```yaml
+replicaCount: 3
+
+image:
+  repository: settlemint/atk-dapp
+  pullPolicy: IfNotPresent
+  tag: "1.0.0"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  host: chart-example.local
+  tls:
+    enabled: false
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: 2000m
+    memory: 4Gi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+postgresql:
+  enabled: true
+  auth:
+    database: atk
+    username: atk
+
+redis:
+  enabled: true
+  auth:
+    enabled: true
+```
+
+**Environment overrides** customize deployments:
+
+```yaml
+# values-production.yaml
+replicaCount: 5
+
+image:
+  tag: "1.2.3"
+
+ingress:
+  enabled: true
+  host: app.example.com
+  tls:
+    enabled: true
+    secretName: atk-tls-cert
+
+resources:
+  requests:
+    cpu: 1000m
+    memory: 2Gi
+  limits:
+    cpu: 4000m
+    memory: 8Gi
+
+postgresql:
+  auth:
+    existingSecret: postgres-credentials
+  primary:
+    persistence:
+      size: 500Gi
+  readReplicas:
+    replicaCount: 2
+```
+
+### Deployment workflow
+
+**Install chart** with custom values:
+
+```bash
+helm install atk settlemint/atk \
+  --namespace atk-production \
+  --create-namespace \
+  --values values-production.yaml \
+  --wait \
+  --timeout 15m
+```
+
+**Upgrade release** with new version:
+
+```bash
+helm upgrade atk settlemint/atk \
+  --namespace atk-production \
+  --values values-production.yaml \
+  --wait \
+  --timeout 15m
+```
+
+Helm performs rolling updates replacing pods gradually. `--wait` flag blocks
+until deployment stabilizes or timeout expires.
+
+**Rollback failed upgrade**:
+
+```bash
+# View release history
+helm history atk -n atk-production
+
+# Rollback to previous revision
+helm rollback atk -n atk-production
+```
+
+Helm maintains release history enabling quick reversion to known-good states.
+
+**Uninstall release**:
+
+```bash
+helm uninstall atk -n atk-production
+```
+
+Deletes all resources created by chart. Persistent volumes retained unless
+explicitly deleted.
+
+### Dependency management
+
+**Chart dependencies** declared in `Chart.yaml`:
+
+```yaml
+dependencies:
+  - name: postgresql
+    version: "13.2.24"
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled
+  - name: redis
+    version: "18.4.0"
+    repository: https://charts.bitnami.com/bitnami
+    condition: redis.enabled
+  - name: minio
+    version: "12.10.0"
+    repository: https://charts.bitnami.com/bitnami
+    condition: minio.enabled
+```
+
+**Update dependencies**:
+
+```bash
+cd kit/charts/atk
+helm dependency update
+```
+
+Downloads dependency charts into `charts/` directory. Lock file (`Chart.lock`)
+records exact versions installed.
+
+**Override dependency values**:
+
+```yaml
+# values.yaml
+postgresql:
+  auth:
+    database: atk
+    username: atk
+  primary:
+    persistence:
+      enabled: true
+      size: 100Gi
+  metrics:
+    enabled: true
+```
+
+Parent chart values pass through to dependencies enabling unified configuration.
+
+## Production operations
+
+Operating ATK in production requires monitoring, logging, incident response, and
+capacity planning.
+
+### Observability stack
+
+**Metrics collection** via Prometheus:
+
+```yaml
+apiVersion: v1
+kind: ServiceMonitor
+metadata:
+  name: atk-dapp
+spec:
+  selector:
+    matchLabels:
+      app: atk-dapp
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+```
+
+ServiceMonitors discover targets exposing Prometheus metrics. Scrape intervals
+balance granularity with overhead.
+
+**Visualization** with Grafana dashboards:
+
+- **Application metrics**: Request rate, error rate, latency percentiles,
+  throughput
+- **Resource metrics**: CPU usage, memory usage, disk I/O, network bandwidth
+- **Business metrics**: Asset deployments, token transfers, KYC approvals,
+  active users
+
+**Alerting rules** notify on-call engineers:
+
+```yaml
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: atk-alerts
+spec:
+  groups:
+    - name: atk
+      interval: 30s
+      rules:
+        - alert: HighErrorRate
+          expr: |
+            rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: High error rate detected
+            description: Error rate is {{ $value }} per second
+```
+
+Alertmanager routes alerts to Slack, PagerDuty, or email based on severity and
+team assignments.
+
+### Logging aggregation
+
+**Structured logging** from applications:
+
+```typescript
+import pino from "pino";
+
+const logger = pino({
+  level: process.env.LOG_LEVEL || "info",
+  formatters: {
+    level: (label) => ({ level: label }),
+  },
+});
+
+logger.info({ userId, assetId }, "Asset created successfully");
+logger.error({ err, transactionHash }, "Transaction failed");
+```
+
+JSON-formatted logs enable structured querying in log aggregation systems.
+
+**Centralized collection** with Fluentd/Fluent Bit:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-config
+data:
+  fluent.conf: |
+    <source>
+      @type tail
+      path /var/log/containers/*.log
+      pos_file /var/log/fluentd-containers.log.pos
+      tag kubernetes.*
+      format json
+    </source>
+
+    <match kubernetes.**>
+      @type elasticsearch
+      host elasticsearch.logging.svc.cluster.local
+      port 9200
+      logstash_format true
+    </match>
+```
+
+DaemonSets deploy logging agents on every node collecting container logs. Logs
+forward to Elasticsearch or CloudWatch Logs for retention and analysis.
+
+### Disaster recovery
+
+**Backup procedures** protect against data loss:
+
+1. **Database backups**: Daily automated dumps with 30-day retention
+2. **Volume snapshots**: Hourly snapshots of persistent volumes
+3. **Configuration backups**: Git repository containing all Helm values and
+   manifests
+4. **Secret backups**: Encrypted export stored in secure vault
+
+**Recovery testing** validates procedures quarterly:
+
+1. Provision clean Kubernetes cluster
+2. Restore database from backup
+3. Restore persistent volumes from snapshots
+4. Deploy Helm charts with production values
+5. Verify application functionality
+6. Measure recovery time objective (RTO)
+
+**Failover strategy** maintains availability during outages:
+
+- **Multi-region deployment**: Active-passive setup with automated DNS failover
+- **Database replication**: Streaming replication to standby region
+- **Object storage**: Cross-region replication for MinIO buckets
+- **Runbook documentation**: Step-by-step procedures for common incidents
+
+### Capacity planning
+
+**Resource utilization monitoring** informs scaling decisions:
+
+- **Compute**: CPU and memory usage trends across pods
+- **Storage**: Disk usage growth rate and projected exhaustion
+- **Network**: Bandwidth consumption and latency distribution
+- **Database**: Connection pool saturation and query performance
+
+**Load testing** validates capacity limits:
+
+```bash
+# Simulate 1000 concurrent users
+k6 run --vus 1000 --duration 10m loadtest.js
+```
+
+Load tests identify bottlenecks before production traffic reaches limits.
+Results guide horizontal scaling and resource allocation.
+
+**Cost optimization**:
+
+- **Right-sizing**: Adjust resource requests/limits based on actual usage
+- **Spot instances**: Use preemptible nodes for fault-tolerant workloads
+- **Storage tiering**: Archive infrequently accessed data to cold storage
+- **Auto-scaling policies**: Scale down during off-peak hours reducing costs
+
+## See also
+
+- [Core components](./core-components) - Overview of all architectural layers
+- [Frontend layer](./frontend-layer) - TanStack Start application architecture
+- [API layer](./api-layer) - ORPC procedures and business logic
+- [Deployment operations](./integration-operations/deployment-operations) -
+  Detailed deployment guides

@@ -1,4 +1,9 @@
 {
   "title": "User guides",
-  "pages": ["onboarding", "asset-issuance", "operations"]
+  "pages": [
+    "getting-started",
+    "asset-issuance",
+    "operations",
+    "troubleshooting"
+  ]
 }

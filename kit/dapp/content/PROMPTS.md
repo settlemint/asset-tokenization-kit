@@ -59,7 +59,6 @@ and detailed plan for improvements.
 - When we are referencing code, make sure we have direct links to Github in
   <https://github.com/settlemint/asset-tokenization-kit> add this directive to
   kit/dapp/content/AGENTS.md as well
-- i feel the pages are all very long, split them up into multiple pages.
 - add a guide how to create your own custom asset type
 - use org mode to get info from slack
 - update agents with the good docs templates to use for what

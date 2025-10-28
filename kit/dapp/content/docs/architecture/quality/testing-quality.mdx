@@ -1,23 +1,25 @@
 ---
-title: Regulatory framework
+title: Testing & quality gates
 description:
-  Testing strategy, quality gates, and compliance validation ensuring regulatory
-  readiness and production reliability
-pageTitle: Quality assurance and regulatory compliance validation
-tags: [architecture, testing, quality, compliance, ci-cd, validation, concept]
+  Testing philosophy, pyramid structure, and CI quality gates ensuring code
+  correctness and production reliability
+pageTitle: Testing and quality gates
+tags: [architecture, testing, quality, ci-cd, validation, concept]
 ---
 
 Quality assurance in financial infrastructure is not negotiable. A compliance
 bug that allows non-verified investors to purchase securities destroys
 institutional trust. A performance regression that makes the platform unusable
-during market hours costs customers millions. A security vulnerability that
-exposes private keys ends the business.
+during market hours costs customers millions.
 
 ATK treats quality as a first-class architectural concern enforced through
 automated testing, continuous integration gates, and production monitoring.
 Every code change runs through a gauntlet of validation before reaching
-production. This page documents the testing strategy, quality gates, and
-compliance validation that enable ATK to operate in regulated markets.
+production.
+
+Related topics:
+[Security validation](/docs/architecture/quality/security-validation),
+[Compliance certification](/docs/architecture/quality/compliance-certification)
 
 ## Testing philosophy
 
@@ -221,132 +223,40 @@ The `ci` script executes the same checks that run in GitHub Actions. This
 prevents developers from pushing code that will fail CI, wasting time and
 pipeline resources.
 
-## Regulatory compliance validation
+## Test data management
 
-Financial regulations impose strict requirements on asset tokenization
-platforms. ATK validates compliance through automated testing and manual audits.
+Realistic test data is critical for catching bugs that only manifest with
+production-like data volumes and patterns.
 
-### Transfer restriction enforcement
+### Test data generation
 
-**ERC-3643 compliance tests** - Every asset type (bond, equity, fund,
-stablecoin, deposit) includes comprehensive transfer restriction tests:
+**Fixture factories** - Tests use factory functions to generate realistic test
+data: investors with verified identities, tokens with compliance rules,
+transactions with varying amounts and timestamps.
 
-- **Identity verification** - Non-verified addresses cannot receive tokens
-- **Country restrictions** - Transfers to blocked countries revert with a
-  descriptive error
-- **Investor limits** - Transfers exceeding investor caps revert before state
-  changes
-- **Lock-up periods** - Time-locked tokens cannot transfer until the unlock date
-- **Frozen addresses** - Compliance officers can freeze addresses; frozen
-  addresses cannot send or receive tokens
+**Parameterized testing** - Tests run against multiple data sets to validate
+behavior across different scenarios. Bond tests run with various maturity dates,
+coupon rates, and redemption schedules. Equity tests run with different voting
+configurations and dividend schedules.
 
-**Compliance module isolation** - Each compliance module tests independently and
-in combination. Tests verify that multiple restrictions compose correctly (e.g.,
-country restrictions AND investor limits both apply).
+**Edge case coverage** - Tests explicitly validate boundary conditions: zero
+amounts, maximum amounts, empty lists, single-item lists, very long lists
+(1,000+ items).
 
-**Negative testing** - Tests explicitly attempt to bypass restrictions using
-various attack vectors: direct contract calls, multicall batching, flash loans,
-re-entrancy. All attempts must fail with appropriate error messages.
+### Test isolation
 
-### Identity and KYC validation
+**Database cleanup** - Integration tests run against a fresh PostgreSQL
+database. Each test suite drops and recreates tables to ensure isolation. Tests
+cannot interfere with each other via shared state.
 
-**OnchainID integration tests** - Tests verify the complete identity
-verification flow:
+**Blockchain snapshots** - Contract tests use Foundry's snapshot and revert
+functionality. Each test starts from a known blockchain state, executes
+operations, validates results, then reverts to the snapshot. This keeps tests
+fast and isolated.
 
-1. Create identity contract for new investor
-2. Compliance officer adds KYC claim to identity
-3. Trusted issuer signs claim
-4. Identity registry validates claim signature and issuer trust
-5. Token transfer succeeds only after claim validation passes
-
-**Claim expiration handling** - Tests validate that expired claims trigger
-re-verification. An investor verified in January cannot transfer tokens in
-December if their KYC claim expired in June.
-
-**Claim revocation** - Compliance officers can revoke claims (e.g., investor
-moves to a sanctioned country). Tests verify that revoked claims immediately
-prevent transfers without requiring contract upgrades.
-
-### Audit trail completeness
-
-**Event emission tests** - Every state-changing operation emits events. Tests
-verify:
-
-- Mint operations emit `Transfer(address(0), recipient, amount)`
-- Burn operations emit `Transfer(account, address(0), amount)`
-- Compliance updates emit `ComplianceModuleUpdated` or similar events
-- Identity updates emit `IdentityRegistryUpdated` events
-
-**Event parameter accuracy** - Tests validate that events include all necessary
-data for audit reconstruction: token IDs, amounts, addresses, timestamps,
-transaction hashes.
-
-**Subgraph audit trail** - Integration tests verify that the subgraph correctly
-indexes all events and reconstructs the complete transaction history. Auditors
-can query the subgraph to generate compliance reports without accessing raw
-blockchain data.
-
-### Role-based access control
-
-**Permission boundary tests** - Each role (issuer, compliance officer,
-administrator, investor) has explicit permissions. Tests verify:
-
-- Investors can transfer tokens but cannot mint, burn, or freeze accounts
-- Compliance officers can freeze accounts but cannot mint or burn tokens
-- Issuers can mint and burn but cannot modify compliance rules
-- Administrators can modify compliance rules but follow governance timelock
-  delays
-
-**Permission escalation prevention** - Tests attempt to escalate privileges
-using various techniques: front-running, re-entrancy, signature replay. All
-attempts must fail.
-
-**Multi-signature enforcement** - Critical operations (contract upgrades,
-compliance rule changes) require multi-signature approval. Tests verify that
-operations revert until the required number of signatures accumulate.
-
-## Security validation
-
-Security testing happens continuously, not as a one-time audit before launch.
-
-### Automated security scanning
-
-**Secret scanning** - Gitleaks scans every commit for accidentally committed
-secrets (private keys, API tokens, database credentials). Commits containing
-secrets are rejected before reaching the repository.
-
-**Dependency scanning** - Trivy scans Docker images and npm dependencies for
-known vulnerabilities (CVEs). High and critical vulnerabilities block deployment
-until patched or mitigated.
-
-**Smart contract static analysis** - Slither analyzes Solidity contracts for
-common vulnerabilities: re-entrancy, unprotected self-destruct, missing access
-control, integer overflows. Findings are triaged and resolved before merging.
-
-### Manual security reviews
-
-**Code review process** - Every pull request requires approval from at least one
-senior engineer. Reviewers check for:
-
-- Correct use of cryptographic primitives
-- Proper input validation and sanitization
-- Safe handling of user funds and private data
-- Adherence to the principle of least privilege
-
-**Security-focused reviews** - Changes to smart contracts, authentication logic,
-or cryptographic operations trigger additional review by security-focused
-engineers.
-
-### Penetration testing
-
-**Periodic security audits** - External security firms conduct penetration tests
-quarterly. Auditors receive full access to the codebase and test environments.
-Findings are triaged by severity and remediated according to SLA (critical: 24
-hours, high: 7 days, medium: 30 days).
-
-**Bug bounty program** - A public bug bounty program incentivizes responsible
-disclosure. Rewards range from $500 (low severity) to $50,000 (critical
-vulnerabilities enabling theft of funds).
+**Parallel test execution** - Unit tests and integration tests run in parallel
+to maximize CI throughput. Tests are designed to avoid side effects that break
+parallelism (shared files, global state, external services).
 
 ## Performance validation
 
@@ -395,40 +305,40 @@ compares bundle sizes against the previous commit:
 Performance scores must stay above 90. Regressions trigger warnings but do not
 block merging (manual review required).
 
-## Test data management
+## Quality metrics and reporting
 
-Realistic test data is critical for catching bugs that only manifest with
-production-like data volumes and patterns.
+Quality is measured and reported continuously to maintain visibility into system
+health.
 
-### Test data generation
+### Key quality metrics
 
-**Fixture factories** - Tests use factory functions to generate realistic test
-data: investors with verified identities, tokens with compliance rules,
-transactions with varying amounts and timestamps.
+| Metric                           | Target       | Current | Trend |
+| -------------------------------- | ------------ | ------- | ----- |
+| **Unit test coverage**           | &gt;80%      | 87%     | ↑     |
+| **Integration test coverage**    | &gt;70%      | 74%     | →     |
+| **E2E test success rate**        | 100%         | 100%    | →     |
+| **CI pipeline success rate**     | &gt;95%      | 97%     | ↑     |
+| **Mean time to detect (MTTD)**   | &lt;5 min    | 3 min   | ↓     |
+| **Mean time to resolve (MTTR)**  | &lt;30 min   | 22 min  | ↓     |
+| **Production incident count**    | &lt;5/month  | 2/month | ↓     |
+| **Security vulnerability count** | 0 high/crit  | 0       | →     |
+| **Gas cost (mint operation)**    | &lt;150k gas | 142k    | ↓     |
+| **API response time P95**        | &lt;300ms    | 287ms   | →     |
+| **Frontend Lighthouse score**    | &gt;90       | 94      | ↑     |
 
-**Parameterized testing** - Tests run against multiple data sets to validate
-behavior across different scenarios. Bond tests run with various maturity dates,
-coupon rates, and redemption schedules. Equity tests run with different voting
-configurations and dividend schedules.
+### Continuous improvement
 
-**Edge case coverage** - Tests explicitly validate boundary conditions: zero
-amounts, maximum amounts, empty lists, single-item lists, very long lists
-(1,000+ items).
+**Monthly quality reviews** - Engineering teams review quality metrics monthly.
+Metrics trending in the wrong direction trigger investigation and corrective
+action.
 
-### Test isolation
+**Quarterly goal setting** - Quality goals are set quarterly as part of OKR
+planning. Example: "Increase unit test coverage from 85% to 90%" or "Reduce MTTR
+from 30 minutes to 20 minutes."
 
-**Database cleanup** - Integration tests run against a fresh PostgreSQL
-database. Each test suite drops and recreates tables to ensure isolation. Tests
-cannot interfere with each other via shared state.
-
-**Blockchain snapshots** - Contract tests use Foundry's snapshot and revert
-functionality. Each test starts from a known blockchain state, executes
-operations, validates results, then reverts to the snapshot. This keeps tests
-fast and isolated.
-
-**Parallel test execution** - Unit tests and integration tests run in parallel
-to maximize CI throughput. Tests are designed to avoid side effects that break
-parallelism (shared files, global state, external services).
+**Knowledge sharing** - Teams share quality improvements across the engineering
+organization: new testing patterns, useful tools, effective debugging
+techniques. This propagates best practices and raises baseline quality.
 
 ## Monitoring and observability
 
@@ -465,115 +375,18 @@ congestion.
 thresholds that make operations uneconomical. This enables proactive
 communication to users about increased transaction costs.
 
-## Incident response
-
-When production issues occur despite all preventive measures, a structured
-incident response process minimizes impact.
-
-### Incident detection
-
-**Automated alerts** - Prometheus alerts trigger when metrics exceed thresholds:
-error rate &gt;1%, response time P95 &gt;500ms, database connection pool
-saturation &gt;80%.
-
-**User reports** - A support channel captures user-reported issues. Triage teams
-prioritize reports by severity: funds at risk (P0), feature broken (P1),
-cosmetic issue (P2).
-
-### Incident resolution
-
-**Runbooks** - Common incidents have documented runbooks: database failover, API
-rollback, blockchain re-org handling. Runbooks specify step-by-step
-instructions, expected outcomes, and rollback procedures.
-
-**Blameless postmortems** - After incidents are resolved, teams conduct
-blameless postmortems. The goal is to understand why systems failed and
-implement preventive measures, not to assign blame to individuals.
-
-**Preventive measures** - Postmortem action items add new tests, improve
-monitoring, update documentation, or redesign systems to prevent recurrence.
-Action items are tracked and prioritized like feature work.
-
-## Quality metrics and reporting
-
-Quality is measured and reported continuously to maintain visibility into system
-health.
-
-### Key quality metrics
-
-| Metric                           | Target       | Current | Trend |
-| -------------------------------- | ------------ | ------- | ----- |
-| **Unit test coverage**           | &gt;80%      | 87%     | ↑     |
-| **Integration test coverage**    | &gt;70%      | 74%     | →     |
-| **E2E test success rate**        | 100%         | 100%    | →     |
-| **CI pipeline success rate**     | &gt;95%      | 97%     | ↑     |
-| **Mean time to detect (MTTD)**   | &lt;5 min    | 3 min   | ↓     |
-| **Mean time to resolve (MTTR)**  | &lt;30 min   | 22 min  | ↓     |
-| **Production incident count**    | &lt;5/month  | 2/month | ↓     |
-| **Security vulnerability count** | 0 high/crit  | 0       | →     |
-| **Gas cost (mint operation)**    | &lt;150k gas | 142k    | ↓     |
-| **API response time P95**        | &lt;300ms    | 287ms   | →     |
-| **Frontend Lighthouse score**    | &gt;90       | 94      | ↑     |
-
-### Continuous improvement
-
-**Monthly quality reviews** - Engineering teams review quality metrics monthly.
-Metrics trending in the wrong direction trigger investigation and corrective
-action.
-
-**Quarterly goal setting** - Quality goals are set quarterly as part of OKR
-planning. Example: "Increase unit test coverage from 85% to 90%" or "Reduce MTTR
-from 30 minutes to 20 minutes."
-
-**Knowledge sharing** - Teams share quality improvements across the engineering
-organization: new testing patterns, useful tools, effective debugging
-techniques. This propagates best practices and raises baseline quality.
-
-## Compliance certification readiness
-
-ATK is designed to facilitate regulatory audits and certifications.
-
-### SOC 2 Type II readiness
-
-**Access controls** - Role-based access control logs track who performed what
-operations when. Logs are immutable and retained for 7 years. Auditors can
-verify that only authorized personnel accessed sensitive systems.
-
-**Change management** - All code changes flow through pull requests with
-mandatory reviews and automated testing. The audit trail demonstrates that
-changes followed documented procedures and passed quality gates.
-
-**Monitoring and alerting** - Comprehensive monitoring demonstrates that the
-organization detects and responds to security and availability incidents
-promptly.
-
-### ISO 27001 alignment
-
-**Risk assessment** - Threat modeling identifies security risks to the platform.
-Mitigations are documented and tested. Residual risks are accepted by senior
-management.
-
-**Incident management** - The incident response process aligns with ISO 27001
-requirements: detection, classification, response, resolution, postmortem,
-preventive measures.
-
-**Continuous improvement** - Quality metrics, security scanning, and periodic
-audits demonstrate continuous improvement of security posture over time.
-
 ## Conclusion
 
 Quality assurance in ATK is not a phase that happens before launch—it is a
 continuous discipline embedded into every aspect of development. Automated
 testing validates correctness at multiple levels. CI gates enforce standards
 before code reaches production. Monitoring catches issues that escape testing.
-Incident response minimizes impact when things go wrong.
 
 This approach enables ATK to operate in regulated markets where failures have
-severe consequences. Compliance teams trust that transfer restrictions are
-enforced correctly. Security teams trust that vulnerabilities are detected and
-patched quickly. Operations teams trust that performance regressions are caught
-before users notice.
+severe consequences. The result is a platform that meets institutional standards
+for reliability, security, and regulatory compliance.
 
-The result is a platform that meets institutional standards for reliability,
-security, and regulatory compliance. Quality is not an accident—it is the
-product of deliberate, disciplined engineering.
+For security-specific validation, see
+[Security validation](/docs/architecture/quality/security-validation). For
+compliance certification requirements, see
+[Compliance certification](/docs/architecture/quality/compliance-certification).

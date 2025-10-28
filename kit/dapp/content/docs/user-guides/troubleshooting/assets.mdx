@@ -1,0 +1,456 @@
+---
+title: Asset operations
+description:
+  Solutions for subscriptions, bonds, dividends, redemptions, and governance
+  voting problems
+pageTitle: Asset-specific troubleshooting
+tags:
+  [
+    troubleshooting,
+    assets,
+    subscriptions,
+    bonds,
+    dividends,
+    redemptions,
+    voting,
+  ]
+---
+
+## Overview
+
+This guide covers troubleshooting for asset-specific operations including token
+subscriptions, bond payments, dividend distributions, redemptions, and
+governance voting. Learn how to resolve issues unique to each asset type.
+
+**Primary audience:** Investors, token holders **Related guides:**
+[Transaction Troubleshooting](/docs/user-guides/troubleshooting/transactions),
+[Compliance Troubleshooting](/docs/user-guides/troubleshooting/compliance),
+
+## How to use this guide
+
+1. **Identify asset type** - Determine if issue relates to subscriptions, bonds,
+   funds, or governance
+2. **Check eligibility** - Verify you meet requirements for the operation
+3. **Review asset status** - Check if asset is active, paused, or matured
+4. **Follow resolution steps** - Work through solutions for your scenario
+
+**Tip:** Always verify asset details and requirements before initiating
+operations.
+
+## Subscription issues
+
+### Cannot purchase tokens during subscription period
+
+**Symptoms:** Subscription button disabled, greyed out, or subscription
+transaction fails.
+
+**Solutions:**
+
+1. **Eligibility requirements:**
+   - Verify you have all required claims for asset
+   - Check eligibility matrix: **Account** &gt; **Eligible Assets**
+   - Common requirements:
+     - KYC verification
+     - Accredited investor status
+     - Jurisdiction eligibility
+   - Contact compliance to obtain missing claims
+
+2. **Subscription limits:**
+   - **Minimum not met:** Increase subscription amount above minimum
+   - **Maximum exceeded:** Reduce amount below per-investor limit
+   - **Offering oversubscribed:** Total offering may be fully subscribed
+   - Check subscription details page for limits
+
+3. **Payment issues:**
+   - Insufficient balance in payment token (USDC, USDT, etc.)
+   - Payment token not approved for platform spend
+   - Approve payment token: **Account** &gt; **Tokens** &gt; **Approve [Token]**
+   - Ensure approval amount covers subscription plus gas
+
+4. **Subscription timing:**
+   - Subscription period may have ended
+   - Check subscription start and end dates
+   - Early bird or tiers may have different timing
+
+**Verification:** Check token details page for subscription status, limits, and
+requirements.
+
+### Subscription transaction succeeded but tokens not received
+
+**Symptoms:** Payment deducted but security tokens not in wallet.
+
+**Solutions:**
+
+1. **Vesting period:**
+   - Tokens may be subject to vesting schedule
+   - Check subscription terms for vesting details
+   - Navigate to **Account** &gt; **Vesting** to see schedule
+
+2. **Distribution pending:**
+   - Issuer may distribute tokens after subscription closes
+   - Check subscription details for distribution date
+   - Wait for issuer to mint and distribute tokens
+
+3. **Compliance delay:**
+   - Final compliance checks may be in progress
+   - Issuer may be verifying all subscribers
+   - Contact issuer if delay &gt; expected distribution date
+
+**Verification:** Check transaction on blockchain explorer to confirm payment
+token transfer succeeded.
+
+## Bond and fixed income issues
+
+### Bond yield or coupon payment not received
+
+**Symptoms:** Expected payment not received on scheduled payment date.
+
+**Solutions:**
+
+1. **Eligibility check:**
+   - Verify you held tokens on **record date** (not payment date)
+   - Record date typically several days before payment date
+   - Check **Distribution History** for your eligibility status
+   - Tokens purchased after ex-date not eligible for current payment
+
+2. **Distribution timing:**
+   - Payment date does not mean instant payment
+   - Distribution may process later on payment date
+   - Check **Upcoming Distributions** for processing status
+   - Allow 24 hours from payment date
+
+3. **Distribution failed:**
+   - Check your address has verified OnchainID
+   - Ensure no compliance issues blocking transfer
+   - Verify issuer funded distribution wallet
+   - Check blockchain explorer for failed distribution transaction
+
+4. **Unclaimed distribution:**
+   - Some distributions require manual claim
+   - Navigate to **Account** &gt; **Unclaimed** and claim payment
+   - May have expiration period for claiming
+   - Claim promptly to avoid forfeiture
+
+**Verification:** Check blockchain explorer for distribution transaction to your
+address; verify payment token balance increased.
+
+### Cannot redeem bonds at maturity
+
+**Symptoms:** Redemption button disabled or redemption transaction fails.
+
+**Solutions:**
+
+1. **Maturity not reached:**
+   - Verify bond maturity date passed
+   - Check current date vs. maturity date on bond details
+   - Early redemption may not be allowed
+   - Check for early redemption penalties or restrictions
+
+2. **Redemption window:**
+   - Bonds may have specific redemption window after maturity
+   - Check bond prospectus for redemption terms
+   - Submit redemption request within allowed window
+   - Late redemption may have different process
+
+3. **Insufficient liquidity:**
+   - Bond issuer may lack reserves for redemption
+   - Redemption queued for processing when funds available
+   - Contact issuer for redemption timeline
+   - Check issuer announcements for liquidity updates
+
+4. **Compliance requirements:**
+   - Redemption requires same compliance as transfers
+   - Verify OnchainID verified and claims current
+   - Check no freeze or restrictions on account
+   - Ensure receiving address eligible
+
+**Note:** Redemption returns principal plus any final coupon payment; verify
+both amounts received.
+
+## Fund issues
+
+### Cannot redeem fund units
+
+**Symptoms:** Redemption button disabled, unavailable, or redemption request
+fails.
+
+**Solutions:**
+
+1. **Redemption schedule:**
+   - Funds typically have specific redemption windows (monthly, quarterly)
+   - Check fund prospectus for redemption schedule
+   - Submit redemption **request** during submission window
+   - Actual redemption executes later on redemption date
+
+2. **Redemption request vs. execution:**
+   - **Request window:** Period to submit redemption requests
+   - **Redemption date:** Date when redemption executes and payment made
+   - Note the difference; requests typically submitted days/weeks before
+     execution
+
+3. **Lock-up period:**
+   - Fund may have minimum holding period
+   - Check if you've held units for required duration
+   - Early redemption may incur penalties
+   - Verify lock-up period in fund terms
+
+4. **NAV calculation:**
+   - Redemption price based on Net Asset Value (NAV)
+   - NAV calculated on redemption date
+   - Price not known when submitting request
+   - Check fund details for NAV calculation frequency
+
+5. **Minimum holding requirement:**
+   - Some funds require minimum remaining balance
+   - Cannot redeem if it leaves balance below minimum
+   - Redeem all units instead of partial redemption
+   - Contact fund manager for exceptions
+
+**Tip:** Plan redemptions well in advance due to request windows and execution
+delays.
+
+### Fund NAV not updating or incorrect
+
+**Symptoms:** Net Asset Value shows stale or unexpected value.
+
+**Solutions:**
+
+1. **NAV calculation frequency:**
+   - NAV typically updated daily, weekly, or monthly
+   - Check fund details for calculation schedule
+   - Off-schedule days may show previous NAV
+   - Market closures affect calculation timing
+
+2. **Oracle delays:**
+   - NAV relies on price oracles for underlying assets
+   - Oracle updates may be delayed
+   - Wait for next scheduled update
+   - Check oracle status if persistent
+
+3. **Display issue:**
+   - Refresh page to get latest NAV
+   - Clear browser cache
+   - Verify on blockchain or fund manager site
+
+**Verification:** Compare platform NAV with fund manager's official NAV
+publication.
+
+## Governance and voting issues
+
+### Voting transaction fails or vote not counted
+
+**Symptoms:** Cannot submit vote on governance proposal or vote not reflected in
+tally.
+
+**Solutions:**
+
+1. **Voting eligibility:**
+   - Must hold tokens at **proposal creation block** (snapshot)
+   - Tokens acquired after proposal created have zero voting power
+   - Check **Voting Power** on proposal page
+   - Cannot retroactively gain voting power for active proposal
+
+2. **Already voted:**
+   - Can only vote once per proposal
+   - Cannot change vote after submission
+   - Check **Your Vote** section on proposal page
+   - Vote immutable once submitted
+
+3. **Proposal status:**
+   - Voting period may have ended
+   - Check proposal status: Active, Passed, Failed, Cancelled
+   - Cannot vote on closed proposals
+   - Verify proposal end time and current time
+
+4. **Voting power delegation:**
+   - If you delegated votes, you cannot vote directly
+   - Delegate votes on your behalf
+   - Check **Delegation** status on governance page
+   - Undelegate to vote yourself (only affects future proposals)
+
+**Note:** Delegation changes only apply to proposals created after delegation
+transaction.
+
+### Delegation not working or delegate cannot vote
+
+**Symptoms:** Delegated voting power not showing for delegate.
+
+**Solutions:**
+
+1. **Delegation timing:**
+   - Delegation only applies to proposals created after delegation transaction
+   - Existing proposals use snapshot before delegation
+   - Wait for new proposals to see delegation effect
+
+2. **Self-delegation:**
+   - By default, voting power self-delegated
+   - Explicit delegation to another address overrides this
+   - Verify delegation transaction confirmed
+
+3. **Delegate address:**
+   - Ensure correct delegate address used
+   - Typo in address delegates to wrong party
+   - Check delegation status on governance page
+
+4. **Undelegate process:**
+   - To vote yourself, undelegate (re-delegate to self)
+   - Submit undelegate transaction
+   - Wait for confirmation
+   - Only affects future proposals
+
+**Verification:** Check governance page for current delegation status and voting
+power distribution.
+
+## Dividend and distribution issues
+
+### Dividend not received or amount incorrect
+
+**Symptoms:** Expected dividend payment missing or lower than expected.
+
+**Solutions:**
+
+1. **Eligibility verification:**
+   - Check you held shares on **record date**
+   - Purchased after ex-dividend date not eligible
+   - Review **Distribution History** for eligibility
+   - Verify holding quantity on record date
+
+2. **Distribution calculation:**
+   - Dividend per share × shares held on record date
+   - Partial period ownership may result in proportional payment
+   - Check distribution announcement for per-share amount
+   - Verify your calculation matches
+
+3. **Tax withholding:**
+   - Some jurisdictions withhold taxes from dividends
+   - Net payment lower than gross dividend
+   - Check distribution details for withholding information
+   - Contact issuer for tax documentation
+
+4. **Claim requirement:**
+   - Some dividends require manual claim
+   - Check **Account** &gt; **Unclaimed Distributions**
+   - Claim within expiration period
+   - Unclaimed dividends may be forfeited after deadline
+
+**Verification:** Check blockchain explorer for dividend transaction; verify
+token increase in your wallet.
+
+## Error messages reference
+
+### "Subscription limit exceeded"
+
+**Meaning:** Attempting to subscribe for more than allowed per investor or total
+offering amount.
+
+**Solution:** Reduce subscription amount below limit or wait if offering not yet
+fully subscribed.
+
+### "Insufficient payment token balance"
+
+**Meaning:** Not enough payment token (USDC, USDT, etc.) to complete
+subscription.
+
+**Solution:** Add payment token to wallet and retry subscription.
+
+### "Redemption window closed"
+
+**Meaning:** Attempting to submit redemption request outside allowed window.
+
+**Solution:** Wait for next redemption window; check fund calendar for dates.
+
+### "Tokens locked"
+
+**Meaning:** Tokens subject to lock-up period and cannot be redeemed or
+transferred.
+
+**Solution:** Wait until lock-up period expires; check token details for unlock
+date.
+
+### "No voting power"
+
+**Meaning:** You held no tokens at proposal creation block.
+
+**Solution:** Cannot vote on this proposal; will have power for future proposals
+if holding tokens.
+
+### "Not eligible for distribution"
+
+**Meaning:** Did not hold tokens on record date for distribution.
+
+**Solution:** No action possible; must hold tokens on record date for future
+distributions.
+
+## Getting help
+
+If asset-specific issues persist:
+
+**Gather information:**
+
+- Asset/token name and contract address
+- Operation attempting (subscribe, redeem, vote, etc.)
+- Your wallet address and token balance
+- Transaction hash if transaction submitted
+- Relevant dates (record date, maturity, etc.)
+- Error messages received
+
+**Contact appropriate team:**
+
+- **Subscription issues:** Token issuer sales team
+- **Bond/dividend payments:** Issuer operations team
+- **Redemption issues:** Fund manager or issuer
+- **Voting issues:** Governance team or platform support
+
+**For payment issues:**
+
+- Check distribution announcements first
+- Verify your eligibility on record date
+- Wait 24 hours from payment date before contacting
+- Provide transaction hash of your token holding on record date
+
+**Response times:**
+
+- Subscription questions: 4-8 business hours
+- Payment inquiries: 1-2 business days
+- Redemption processing: Varies by asset (check prospectus)
+- Voting issues: 2-4 business hours during voting period
+
+## Preventive best practices
+
+**Subscription planning:**
+
+- Review eligibility requirements before subscription period
+- Obtain required claims early
+- Approve payment tokens before subscription opens
+- Submit subscriptions early to avoid oversubscription
+
+**Distribution tracking:**
+
+- Note record dates and ex-dates on calendar
+- Verify token holdings before record date
+- Check for unclaimed distributions regularly
+- Claim distributions promptly
+
+**Redemption planning:**
+
+- Understand redemption windows and schedules
+- Submit requests during submission windows
+- Plan for execution delays
+- Keep claims current for redemption
+
+**Governance participation:**
+
+- Hold tokens before proposal creation for voting power
+- Vote early in voting period
+- Understand delegation implications
+- Monitor governance calendar
+
+**Record keeping:**
+
+- Save subscription confirmations
+- Record distribution amounts and dates
+- Keep redemption requests and confirmations
+- Screenshot voting confirmations
+
+By planning ahead and understanding asset-specific requirements, you'll minimize
+issues and maximize successful operations.

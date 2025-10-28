@@ -1,0 +1,351 @@
+---
+title: Token entities
+description:
+  Security tokens, holder balances, and transfer events in the subgraph
+pageTitle: Token entity reference (Token, TokenBalance, Transfer)
+tags: [token, erc-3643, balance, transfer, subgraph]
+---
+
+Token entities represent ERC-3643 security tokens and their associated balances,
+transfers, and supply changes. All entities are indexed by TheGraph from
+blockchain events.
+
+**Schema location**:
+[`kit/subgraph/schema.graphql`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/subgraph/schema.graphql)
+
+## Token
+
+ERC-3643 security token contract with metadata, supply, and compliance
+configuration.
+
+### Fields
+
+```graphql
+type Token @entity {
+  id: Bytes! # Token contract address
+  name: String! # Token name
+  symbol: String! # Token symbol
+  decimals: Int! # Decimal places
+  tokenType: String! # 'bond' | 'equity' | 'fund' | 'stablecoin' | 'deposit'
+  totalSupply: BigDecimal! # Current total supply
+  cap: BigDecimal # Supply cap (if capped)
+  paused: Boolean! # Pause status
+  compliance: Compliance! # Compliance contract
+  identityRegistry: IdentityRegistry! # Identity registry
+  balances: [TokenBalance!]! # All holder balances
+  transfers: [Transfer!]! # Transfer history
+  mints: [Mint!]! # Mint events
+  burns: [Burn!]! # Burn events
+  complianceModules: [TokenComplianceModule!]!
+
+  # Bond-specific fields
+  maturityDate: BigInt # Unix timestamp
+  faceValue: BigDecimal # Per-unit face value
+  denominationAsset: Token # Denomination currency
+  isMatured: Boolean # Maturity status
+  # Statistics
+  holderCount: BigInt! # Number of unique holders
+  transferCount: BigInt! # Total transfers
+  mintCount: BigInt! # Total mints
+  burnCount: BigInt! # Total burns
+}
+```
+
+### Relationships
+
+- **One-to-one**:
+  - `compliance` → Compliance contract
+  - `identityRegistry` → Identity registry
+  - `denominationAsset` → Denomination token (bonds)
+- **One-to-many**:
+  - `balances` → All TokenBalance records
+  - `transfers` → All Transfer events
+  - `mints` → All Mint events
+  - `burns` → All Burn events
+  - `complianceModules` → Active compliance modules
+
+### Usage example
+
+```graphql
+query GetToken($id: Bytes!) {
+  token(id: $id) {
+    id
+    name
+    symbol
+    decimals
+    tokenType
+    totalSupply
+    holderCount
+    paused
+    compliance {
+      id
+      requiredClaimTopics
+    }
+    balances(first: 10, orderBy: balance, orderDirection: desc) {
+      account {
+        id
+      }
+      balance
+      frozenBalance
+    }
+  }
+}
+```
+
+### Token types
+
+- `bond` - Fixed-income securities with maturity dates
+- `equity` - Shares representing ownership
+- `fund` - Investment fund units
+- `stablecoin` - Pegged digital currencies
+- `deposit` - Tokenized deposits
+
+## TokenBalance
+
+Account's balance in a specific token, including frozen amounts and freeze
+status.
+
+### Fields
+
+```graphql
+type TokenBalance @entity {
+  id: Bytes! # token.id + account.id
+  token: Token! # Token reference
+  account: Account! # Holder reference
+  balance: BigDecimal! # Current balance
+  frozenBalance: BigDecimal! # Frozen amount
+  isFrozen: Boolean! # Full freeze status
+  lastUpdated: BigInt! # Last change timestamp
+}
+```
+
+### Composite ID
+
+The `id` field combines `token.id` and `account.id` to create a unique
+identifier for each token-holder pair. This enables fast lookups by either token
+or account.
+
+### Balance states
+
+- `balance` - Total owned tokens (frozen + liquid)
+- `frozenBalance` - Tokens temporarily locked
+- `isFrozen` - When true, entire balance is frozen
+
+### Usage example
+
+```graphql
+# Get account's portfolio
+query GetPortfolio($account: Bytes!) {
+  account(id: $account) {
+    balances(where: { balance_gt: "0" }) {
+      token {
+        id
+        name
+        symbol
+        decimals
+        tokenType
+      }
+      balance
+      frozenBalance
+      isFrozen
+      lastUpdated
+    }
+  }
+}
+
+# Get top token holders
+query GetTopHolders($token: Bytes!) {
+  token(id: $token) {
+    balances(
+      first: 100
+      orderBy: balance
+      orderDirection: desc
+      where: { balance_gt: "0" }
+    ) {
+      account {
+        id
+      }
+      balance
+      frozenBalance
+    }
+  }
+}
+```
+
+## Transfer
+
+Immutable record of token transfer events.
+
+### Fields
+
+```graphql
+type Transfer @entity(immutable: true) {
+  id: Bytes! # txHash + logIndex
+  token: Token! # Token transferred
+  from: Account! # Sender
+  to: Account! # Recipient
+  value: BigDecimal! # Amount transferred
+  blockNumber: BigInt! # Block height
+  blockTimestamp: BigInt! # Unix timestamp
+  transactionHash: Bytes! # Transaction hash
+}
+```
+
+### Immutability
+
+The `@entity(immutable: true)` directive ensures Transfer records are never
+updated after creation, maintaining an accurate historical ledger.
+
+### Special addresses
+
+- `from: 0x0000000000000000000000000000000000000000` - Mint event
+- `to: 0x0000000000000000000000000000000000000000` - Burn event
+
+### Usage example
+
+```graphql
+# Get recent transfers for a token
+query GetRecentTransfers($token: Bytes!) {
+  transfers(
+    where: { token: $token }
+    first: 20
+    orderBy: blockTimestamp
+    orderDirection: desc
+  ) {
+    id
+    from {
+      id
+    }
+    to {
+      id
+    }
+    value
+    blockTimestamp
+    transactionHash
+  }
+}
+
+# Get account's transfer history
+query GetAccountTransfers($account: Bytes!) {
+  transfers(
+    where: { or: [{ from: $account }, { to: $account }] }
+    orderBy: blockTimestamp
+    orderDirection: desc
+  ) {
+    id
+    token {
+      name
+      symbol
+    }
+    from {
+      id
+    }
+    to {
+      id
+    }
+    value
+    blockTimestamp
+  }
+}
+```
+
+## Mint
+
+Token minting event (supply increase).
+
+### Fields
+
+```graphql
+type Mint @entity(immutable: true) {
+  id: Bytes! # txHash + logIndex
+  token: Token! # Token minted
+  to: Account! # Recipient
+  value: BigDecimal! # Amount minted
+  blockNumber: BigInt! # Block height
+  blockTimestamp: BigInt! # Unix timestamp
+  transactionHash: Bytes! # Transaction hash
+}
+```
+
+### Usage example
+
+```graphql
+query GetMintHistory($token: Bytes!) {
+  mints(
+    where: { token: $token }
+    orderBy: blockTimestamp
+    orderDirection: desc
+  ) {
+    id
+    to {
+      id
+    }
+    value
+    blockTimestamp
+  }
+}
+```
+
+## Burn
+
+Token burning event (supply decrease).
+
+### Fields
+
+```graphql
+type Burn @entity(immutable: true) {
+  id: Bytes! # txHash + logIndex
+  token: Token! # Token burned
+  from: Account! # Burner
+  value: BigDecimal! # Amount burned
+  blockNumber: BigInt! # Block height
+  blockTimestamp: BigInt! # Unix timestamp
+  transactionHash: Bytes! # Transaction hash
+}
+```
+
+### Usage example
+
+```graphql
+query GetBurnHistory($token: Bytes!) {
+  burns(
+    where: { token: $token }
+    orderBy: blockTimestamp
+    orderDirection: desc
+  ) {
+    id
+    from {
+      id
+    }
+    value
+    blockTimestamp
+  }
+}
+```
+
+## Token statistics
+
+Token entities track key metrics automatically:
+
+- `holderCount` - Incremented on first balance, decremented when balance reaches
+  zero
+- `transferCount` - Incremented on every transfer
+- `mintCount` - Incremented on every mint
+- `burnCount` - Incremented on every burn
+- `totalSupply` - Updated on every mint/burn
+
+These statistics are maintained by subgraph mappings in
+[`kit/subgraph/src/token.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/subgraph/src/token.ts).
+
+## See also
+
+- **[Investor entities](/developer-guides/data-model/entity-investor)** - Link
+  token holders to user profiles
+- **[Compliance entities](/developer-guides/data-model/entity-compliance)** -
+  Understand token transfer restrictions
+- **[Corporate action entities](/developer-guides/data-model/entity-corporate-actions)** -
+  Dividends and voting for token holders
+- **[Data model overview](/developer-guides/data-model/)** - Complete data
+  architecture
+- **[Contract reference](/developer-guides/smart-contracts/contract-reference)** -
+  Token contract methods

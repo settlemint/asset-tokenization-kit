@@ -1,0 +1,426 @@
+---
+title: Investor entities
+description: User accounts, KYC profiles, and on-chain identities for investors
+pageTitle: Investor entity reference (User, KYC, Identity)
+tags: [user, investor, kyc, identity, erc-734, erc-735]
+---
+
+Investor entities span both off-chain (PostgreSQL) and on-chain (subgraph)
+layers, connecting authenticated users to their KYC profiles and blockchain
+identities.
+
+## Data layer overview
+
+```
+Off-Chain (PostgreSQL)          On-Chain (Subgraph)
+┌─────────────┐                 ┌─────────────┐
+│ User        │                 │ Account     │
+│  - email    │◄───wallet────►│  - address  │
+│  - wallet   │                 │  - balances │
+└──────┬──────┘                 └──────┬──────┘
+       │                               │
+       │1:1                            │1:N
+       │                               │
+┌──────▼──────┐                 ┌──────▼──────┐
+│ KYC Profile │                 │ Identity    │
+│  - name     │                 │  - contract │
+│  - country  │                 │  - claims   │
+└─────────────┘                 └─────────────┘
+```
+
+**Link**: `user.wallet === Account.id`
+
+## Off-chain entities (PostgreSQL)
+
+### User
+
+Core authentication and profile table.
+
+**Schema location**:
+[`kit/dapp/src/lib/db/schemas/auth.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/lib/db/schemas/auth.ts)
+
+#### Fields
+
+```typescript
+{
+  id: string; // Primary key (UUID)
+  name: string; // User display name
+  email: string; // Unique email address
+  emailVerified: boolean; // Email verification status
+  image: string | null; // Profile image URL
+  createdAt: Date; // Account creation timestamp
+  updatedAt: Date; // Last update timestamp
+  role: UserRole | null; // 'admin' | 'user'
+  banned: boolean | null; // Ban status
+  banReason: string | null; // Reason for ban
+  banExpires: Date | null; // Ban expiration date
+  wallet: Address | null; // Connected wallet address
+  lastLoginAt: Date | null; // Last login timestamp
+
+  // Multi-factor authentication
+  pincodeEnabled: boolean; // PIN code MFA enabled
+  pincodeVerificationId: string | null;
+  twoFactorEnabled: boolean; // TOTP 2FA enabled
+  twoFactorVerificationId: string | null;
+  secretCodesConfirmed: boolean; // Backup codes confirmed
+  secretCodeVerificationId: string | null;
+}
+```
+
+#### Indexes
+
+- Primary key: `id`
+- Unique: `email`
+
+#### Relationships
+
+- `sessions` (one-to-many) - Active login sessions
+- `accounts` (one-to-many) - OAuth provider links
+- `kycProfiles` (one-to-one) - KYC verification data
+- `apikeys` (one-to-many) - API access keys
+- `passkeys` (one-to-many) - WebAuthn credentials
+
+#### Usage example
+
+```typescript
+import { db } from "@/lib/db";
+import { user } from "@/lib/db/schemas";
+import { eq } from "drizzle-orm";
+
+// Get user with wallet
+const investor = await db
+  .select()
+  .from(user)
+  .where(eq(user.wallet, walletAddress))
+  .get();
+```
+
+### KYC Profile
+
+Identity verification data linked to users.
+
+**Schema location**:
+[`kit/dapp/src/lib/db/schemas/kyc.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/lib/db/schemas/kyc.ts)
+
+#### Fields
+
+```typescript
+{
+  id: string; // Primary key
+  userId: string; // FK to user.id (unique)
+  firstName: string; // Legal first name
+  lastName: string; // Legal last name
+  dob: Date; // Date of birth
+  country: string; // ISO country code
+  residencyStatus: ResidencyStatus; // 'citizen' | 'permanent_resident' | 'temporary_resident'
+  nationalId: string; // National ID number
+  createdAt: Date; // Profile creation timestamp
+  updatedAt: Date; // Last update timestamp
+}
+```
+
+#### Indexes
+
+- Primary key: `id`
+- Unique: `userId`
+- Index: `country`, `firstName`, `lastName`
+
+#### Foreign keys
+
+`userId` → `user.id` (cascade delete)
+
+#### Usage example
+
+```typescript
+import { db } from "@/lib/db";
+import { user, kycProfiles } from "@/lib/db/schemas";
+import { eq } from "drizzle-orm";
+
+// Get user with KYC profile
+const userWithKyc = await db
+  .select()
+  .from(user)
+  .leftJoin(kycProfiles, eq(kycProfiles.userId, user.id))
+  .where(eq(user.id, userId))
+  .get();
+```
+
+## On-chain entities (Subgraph)
+
+### Account
+
+Represents any Ethereum address (EOA or smart contract).
+
+**Schema location**:
+[`kit/subgraph/schema.graphql`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/subgraph/schema.graphql)
+
+#### Fields
+
+```graphql
+type Account @entity {
+  id: Bytes! # Ethereum address
+  isContract: Boolean! # Smart contract vs EOA
+  contractName: String # Name if known contract
+  balances: [TokenBalance!]! # Token holdings
+  stats: AccountStatsState # Aggregated metrics
+  systemStats: [AccountSystemStatsState!]!
+  tokenFactoryStats: [AccountTokenFactoryStatsState!]!
+  identities: [Identity!]! # Linked identities
+  registeredIdentities: [RegisteredIdentity!]!
+}
+```
+
+#### Relationships
+
+- **One-to-many**:
+  - `balances` → Token holdings (see
+    [Token entities](/developer-guides/data-model/entity-token))
+  - `identities` → Identity contracts owned
+  - `registeredIdentities` → Registry entries
+- **One-to-one**:
+  - `stats` → Account statistics
+
+#### Usage example
+
+```graphql
+query GetInvestorAccount($address: Bytes!) {
+  account(id: $address) {
+    id
+    isContract
+    balances(where: { balance_gt: "0" }) {
+      token {
+        name
+        symbol
+      }
+      balance
+    }
+    identities {
+      id
+      isVerified
+      country
+    }
+  }
+}
+```
+
+### Identity
+
+On-chain identity contract (ERC-734/735) with management keys and claims.
+
+#### Fields
+
+```graphql
+type Identity @entity {
+  id: Bytes! # Identity contract address
+  account: Account! # Linked account
+  keys: [IdentityKey!]! # Management keys
+  claims: [IdentityClaim!]! # Attached claims
+  isVerified: Boolean! # Verification status
+  country: Int # Country code (if registered)
+}
+```
+
+#### Relationships
+
+- **Many-to-one**:
+  - `account` → Owner account
+- **One-to-many**:
+  - `keys` → Management and action keys
+  - `claims` → Identity claims (see
+    [Compliance entities](/developer-guides/data-model/entity-compliance))
+
+#### Usage example
+
+```graphql
+query GetIdentity($address: Bytes!) {
+  identity(id: $address) {
+    id
+    isVerified
+    country
+    keys {
+      keyType
+      purposes
+    }
+    claims(where: { isActive: true }) {
+      topic
+      issuer {
+        id
+      }
+      data
+    }
+  }
+}
+```
+
+### RegisteredIdentity
+
+Identity registered in the system's identity registry.
+
+#### Fields
+
+```graphql
+type RegisteredIdentity @entity {
+  id: Bytes! # Registry address + account
+  account: Account! # Registered account
+  identity: Identity! # Linked identity contract
+  country: Int! # Country code
+  registeredAt: BigInt! # Registration timestamp
+  updatedAt: BigInt! # Last update
+  isVerified: Boolean! # Verification status
+}
+```
+
+#### Relationships
+
+- **Many-to-one**:
+  - `account` → Registered account
+  - `identity` → Identity contract
+
+#### Usage example
+
+```graphql
+query GetRegisteredInvestors($registry: Bytes!) {
+  registeredIdentities(where: { isVerified: true, id_starts_with: $registry }) {
+    account {
+      id
+    }
+    identity {
+      id
+      country
+    }
+    registeredAt
+  }
+}
+```
+
+### IdentityKey
+
+ERC-734 key for identity management.
+
+#### Fields
+
+```graphql
+type IdentityKey @entity {
+  id: Bytes! # identity.id + keyHash
+  identity: Identity! # Identity contract
+  key: Bytes! # Key hash
+  purposes: [BigInt!]! # Key purposes (1=MANAGEMENT, 2=ACTION, etc.)
+  keyType: BigInt! # Key type (1=ECDSA, 2=RSA, etc.)
+  addedAt: BigInt! # Addition timestamp
+  removedAt: BigInt # Removal timestamp
+  isActive: Boolean! # Currently valid
+}
+```
+
+#### Key purposes
+
+- `1` - MANAGEMENT (can add/remove keys)
+- `2` - ACTION (can execute actions)
+- `3` - CLAIM (can sign claims)
+- `4` - ENCRYPTION (can encrypt data)
+
+#### Usage example
+
+```graphql
+query GetIdentityKeys($identityAddress: Bytes!) {
+  identity(id: $identityAddress) {
+    keys(where: { isActive: true }) {
+      key
+      purposes
+      keyType
+      addedAt
+    }
+  }
+}
+```
+
+## Cross-system queries
+
+### Link user to blockchain holdings
+
+```typescript
+import { db } from "@/lib/db";
+import { user } from "@/lib/db/schemas";
+import { eq } from "drizzle-orm";
+import { graphqlClient } from "@/lib/graphql";
+
+// 1. Get user from database
+const dbUser = await db.select().from(user).where(eq(user.id, userId)).get();
+
+if (!dbUser?.wallet) {
+  throw new Error("User has no connected wallet");
+}
+
+// 2. Query subgraph for holdings
+const result = await graphqlClient.query({
+  query: gql`
+    query GetPortfolio($address: Bytes!) {
+      account(id: $address) {
+        balances(where: { balance_gt: "0" }) {
+          token {
+            name
+            symbol
+          }
+          balance
+        }
+      }
+    }
+  `,
+  variables: { address: dbUser.wallet.toLowerCase() },
+});
+```
+
+### Find users by country
+
+```typescript
+// PostgreSQL query
+const investorsInCountry = await db
+  .select()
+  .from(kycProfiles)
+  .where(eq(kycProfiles.country, "US"));
+
+// Get their blockchain identities
+const addresses = await db
+  .select({ wallet: user.wallet })
+  .from(user)
+  .innerJoin(kycProfiles, eq(kycProfiles.userId, user.id))
+  .where(eq(kycProfiles.country, "US"));
+
+// Query subgraph for on-chain data
+const onChainData = await graphqlClient.query({
+  query: gql`
+    query GetAccountsByCountry($addresses: [Bytes!]!) {
+      accounts(where: { id_in: $addresses }) {
+        id
+        balances {
+          token {
+            name
+          }
+          balance
+        }
+      }
+    }
+  `,
+  variables: { addresses: addresses.map((a) => a.wallet?.toLowerCase()) },
+});
+```
+
+## Authentication flow
+
+1. **User registers** → Creates `user` record
+2. **Email verification** → Sets `emailVerified: true`
+3. **Wallet connection** → Populates `user.wallet`
+4. **KYC submission** → Creates `kyc_profiles` record
+5. **KYC approval** → Backend triggers identity registration on-chain
+6. **Identity created** → Subgraph indexes `Identity` and `RegisteredIdentity`
+
+## See also
+
+- **[Token entities](/developer-guides/data-model/entity-token)** - Query
+  investor token holdings
+- **[Compliance entities](/developer-guides/data-model/entity-compliance)** -
+  Identity claims and access control
+- **[Data model overview](/developer-guides/data-model/)** - Complete data
+  architecture
+- **[Authentication guide](/developer-guides/api-integration/authentication)** -
+  User login and wallet connection

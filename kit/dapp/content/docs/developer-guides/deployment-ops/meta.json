@@ -1,4 +1,4 @@
 {
   "title": "Deployment & ops",
-  "pages": ["deployment-guide"]
+  "pages": ["installation-configuration", "production-operations"]
 }
