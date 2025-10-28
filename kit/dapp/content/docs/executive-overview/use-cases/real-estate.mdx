@@ -1,11 +1,27 @@
 ---
 title: Real estate
 pageTitle: Real estate fractionalization
-description: Fractionalized property ownership with rental income distribution
+description:
+  Tokenized property ownership with automated rental distributions and
+  governance
 tags: [use-case, real-estate, fractionalization, rental-income, property]
 ---
 
-## The scenario
+## Overview
+
+Real estate tokenization through ATK democratizes access to
+institutional-quality properties while automating rental income distributions
+and maintaining compliance controls. The platform handles fractionalized
+ownership, expense tracking, and property governance.
+
+**Who should read this:** Real estate sponsors, property managers, and asset
+managers exploring fractional ownership models.
+
+**Business value:** Lower minimum investment thresholds, automate monthly rental
+distributions, enable secondary liquidity, and provide real-time performance
+visibility to investors.
+
+## Business challenge
 
 Highland Properties owns a $25 million office building in a major market. They
 want to fractionalize ownership to enable smaller investors to participate while
@@ -45,50 +61,89 @@ flowchart TB
 `}
 />
 
-## How ATK handles it
+## How ATK solves it
 
-**Property tokenization as equity**: Highland creates 250,000 equity tokens,
-each representing $100 of building ownership. Token holders receive proportional
-rental income distributions and have voting rights on major property decisions.
+### Property tokenization as equity
 
-**Investor eligibility and documentation**: The platform enforces that only
-verified investors with appropriate accreditation levels can purchase tokens.
-Property documents—purchase agreements, operating agreements, building
-inspections, insurance policies—are hashed and linked to the token metadata for
-permanent transparency.
+Highland creates 250,000 equity tokens, each representing $100 of building
+ownership. Token holders receive proportional rental income distributions and
+can participate in governance decisions on major property matters.
 
-**Fractional ownership**: Investors can purchase as few as 10 tokens ($1,000
-investment) or as many as they want up to regulatory limits. The platform
-enforces maximum ownership percentages to maintain distributed ownership.
+### Investor eligibility and documentation
 
-**Rental income distributions**: Monthly rental income from tenants flows into
-Highland's treasury. After deducting property management fees and reserves, the
-platform distributes net income proportionally to all token holders.
-Distributions happen automatically on a preset schedule.
+The platform enforces that only verified investors with appropriate
+accreditation levels can purchase tokens. Property documents—purchase
+agreements, operating agreements, building inspections, insurance policies—are
+hashed and linked to the token metadata for permanent transparency.
 
-**Property expenses and reserves**: Major repairs or capital improvements
-require approval from token holders. Highland creates a governance proposal
-through the platform. Token holders vote with their holdings weighted
-proportionally. Approved expenses draw from reserves or trigger special
-assessments distributed fairly among holders.
+### Fractional ownership
 
-**Valuation updates**: Annual appraisals update the property's value in the
-platform, adjusting the implied token value. Holders see current valuations
-without requesting reports.
+Investors can purchase as few as 10 tokens ($1,000 investment) or as many as
+they want up to regulatory limits. The platform enforces maximum ownership
+percentages via compliance modules to maintain distributed ownership.
 
-**Compliance with securities and real estate law**: The platform enforces both
-securities regulations (accredited investor requirements) and any applicable
-real estate regulations (ownership transfer restrictions, FIRPTA withholding for
-foreign investors).
+### Rental income distributions
 
-**Exit mechanisms**: When Highland eventually sells the building, sale proceeds
-distribute automatically to all holders proportionally. Tokens are redeemed and
-the holding concludes with complete documentation of every income distribution,
-every expense, and every ownership change.
+Monthly rental income from tenants flows into Highland's treasury. After
+deducting property management fees and reserves, the platform distributes net
+income proportionally to all token holders. Distributions execute automatically
+on a preset schedule via configured payment adapters.
 
-## The outcomes
+### Property expenses and reserves
 
-### With ATK
+Major repairs or capital improvements require approval from token holders.
+Highland creates a governance proposal using the governance addon module. Token
+holders vote with their holdings weighted proportionally.
+
+Note: The current platform supports proposal creation and voting infrastructure.
+Property-specific UI workflows (proposal templates for repairs, capital
+improvements, special assessments) require custom dapp development or use of
+third-party governance tools integrated with the token contract.
+
+### Valuation updates
+
+Annual appraisals update the property's value through the admin portal,
+adjusting the implied token value. Holders see current valuations without
+requesting reports.
+
+### Compliance with securities and real estate law
+
+The platform enforces both securities regulations (accredited investor
+requirements) and applicable real estate regulations (ownership transfer
+restrictions, FIRPTA withholding for foreign investors via compliance modules).
+
+### Exit mechanisms
+
+When Highland eventually sells the building, sale proceeds distribute
+automatically to all holders proportionally. Tokens are redeemed and the holding
+concludes with complete documentation of every income distribution, every
+expense, and every ownership change.
+
+## Key capabilities
+
+| Capability                  | Traditional               | With ATK                            |
+| --------------------------- | ------------------------- | ----------------------------------- |
+| **Minimum investment**      | $25M (full ownership)     | $1,000 (10 tokens)                  |
+| **Distribution processing** | Days of manual wire work  | Automated monthly schedule          |
+| **Ownership visibility**    | Quarterly reports         | Real-time dashboard                 |
+| **Governance voting**       | Email/phone campaigns     | Token-weighted on-chain proposals   |
+| **Secondary transfers**     | Must sell entire property | Trade tokens with compliance checks |
+| **Expense tracking**        | Spreadsheets              | On-chain transaction records        |
+
+## Measurable outcomes
+
+**Democratized access** – Real estate institutional-quality investment becomes
+available to smaller investors who cannot deploy $25 million for full ownership.
+
+**Operational streamlining** – Distribution processing that used to take days of
+manual work now happens automatically each month via configured payment
+workflows.
+
+**Transparency** – Investors see property performance, expenses, and income in
+real time rather than waiting for quarterly reports.
+
+**Secondary market** – Token holders can sell positions to other qualified
+investors, creating liquidity in a traditionally illiquid asset class.
 
 <Mermaid
   chart={`
@@ -98,10 +153,10 @@ flowchart TB
     ACCESS[Fractional Ownership<br/>$1,000 Minimum]
     AUTO[Automated Platform]
     
-    DIST[Monthly Distributions<br/>Automatic & Instant]
+    DIST[Monthly Distributions<br/>Scheduled Automation]
     EXPENSE[Expense Tracking<br/>On-chain Records]
-    VOTE[Token-weighted Voting<br/>Programmatic]
-    LIQUID[Secondary Market<br/>Trade Anytime]
+    VOTE[Governance Proposals<br/>Token-weighted]
+    LIQUID[Secondary Market<br/>Compliant Trading]
     REALTIME[Real-time Visibility<br/>Performance Dashboard]
     
     PROPERTY --> TOKEN
@@ -125,14 +180,54 @@ flowchart TB
 `}
 />
 
-**Democratized access**: Real estate institutional-quality investment became
-available to smaller investors who couldn't deploy $25 million.
+The diagram above shows the ATK real estate lifecycle, from tokenization through
+automated servicing to secondary liquidity.
 
-**Operational streamlining**: Distribution processing that used to take days of
-manual work now happens automatically each month.
+## Compliance considerations
 
-**Transparency**: Investors see property performance, expenses, and income in
-real time rather than waiting for quarterly reports.
+Real estate tokens operate under both securities and property regulations:
 
-**Secondary market**: Token holders could sell positions to other qualified
-investors, creating liquidity in an traditionally illiquid asset class.
+- **Accredited investor verification** – Enforced via OnchainID claims
+- **Maximum ownership limits** – Configured via compliance modules to maintain
+  distributed ownership
+- **Transfer restrictions** – Lock-up periods, holding requirements
+- **FIRPTA withholding** – For foreign investor transactions (requires custom
+  tax module integration)
+- **State securities laws** – Multi-state registration compliance
+
+For detailed compliance architecture, see
+[Compliance & Security](/docs/executive-overview/compliance-security).
+
+## Implementation checklist
+
+1. Structure property ownership vehicle (LLC, Delaware Statutory Trust, etc.)
+2. Define token economics (total supply, price per token, minimum/maximum
+   holdings)
+3. Select compliance template (Reg D, Reg A+, or custom ruleset)
+4. Integrate KYC/AML provider for investor verification
+5. Configure rental distribution schedule and payment adapters
+6. Set up governance addon for proposal creation and voting
+7. Upload property documents (appraisals, insurance, operating agreements) and
+   link to metadata
+8. Deploy smart contract and conduct primary token sale
+9. Configure expense tracking and reserve management workflows
+
+## Limitations and considerations
+
+- **Governance UI** – Platform provides proposal registry and voting
+  infrastructure; property-specific workflows (repair proposals, capital
+  improvement templates) may require custom dapp development
+- **Rental data source** – Income and expense data entered manually via admin
+  portal; integration with property management systems requires custom API
+  development
+- **Regulatory complexity** – Multi-state securities registration and
+  property-specific regulations require legal counsel review
+
+## Next steps
+
+- Review [SMART Protocol architecture](/docs/architecture/smart-protocol) to
+  understand embedded compliance
+- Explore [Developer Documentation](/docs/developer-guides) for governance addon
+  customization
+- Contact your SettleMint representative to discuss a real estate tokenization
+  pilot

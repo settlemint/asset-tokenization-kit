@@ -1,11 +1,24 @@
 ---
 title: Deposit certificates
 pageTitle: Digital deposit certificates for retail banking
-description: Digital time deposits with FDIC compliance
+description:
+  Tokenized time deposits with automated interest accrual and FDIC compliance
 tags: [use-case, deposits, certificates, banking, FDIC]
 ---
 
-## The scenario
+## Overview
+
+Digital deposit certificates through ATK modernize time deposit products while
+maintaining FDIC insurance and regulatory compliance. The platform handles
+maturity enforcement, interest accrual tracking, and automated redemption.
+
+**Who should read this:** Retail banking product managers, compliance officers,
+and deposit operations teams exploring digital banking innovation.
+
+**Business value:** Attract tech-forward customers, automate maturity tracking,
+eliminate manual interest calculations, and maintain full FDIC compliance.
+
+## Business challenge
 
 Metropolitan Bank wants to offer time deposits (certificates of deposit) as
 digital tokens to tech-savvy retail customers while maintaining FDIC insurance
@@ -41,44 +54,87 @@ flowchart TB
 `}
 />
 
-## How ATK handles it
+## How ATK solves it
 
-**Deposit product configuration**: Metropolitan creates deposit tokens with
-specific terms: 6-month maturity, 4% APY, minimum $1,000 deposit, maximum
-$250,000 per customer to stay within FDIC coverage limits.
+### Deposit product configuration
 
-**Retail customer onboarding**: Customers complete standard KYC verification
-through Metropolitan's existing processes. Their verification status links to
-their OnchainID, enabling them to receive deposit tokens.
+Metropolitan creates deposit tokens with specific terms: 6-month maturity, 4%
+APY, minimum $1,000 deposit, maximum $250,000 per customer to stay within FDIC
+coverage limits.
 
-**Deposit and token issuance**: When a customer deposits $10,000 into a
-designated account, Metropolitan verifies the funds cleared and then mints
-10,000 deposit tokens to the customer's wallet. The tokens represent their claim
-on the principal plus accrued interest.
+### Retail customer onboarding
 
-**Time-lock enforcement**: The smart contract enforces the 6-month maturity.
-Customers cannot redeem early (or, if early redemption is allowed, the smart
-contract applies penalty calculations automatically).
+Customers complete standard KYC verification through Metropolitan's existing
+processes. Their verification status links to their OnchainID, enabling them to
+receive deposit tokens.
 
-**Interest accrual tracking**: The platform tracks interest accrued daily based
-on the APY. Customers see current value including accumulated interest in real
-time.
+### Deposit and token issuance
 
-**Maturity and redemption**: At six months, the tokens become redeemable.
-Customers initiate redemption through the portal. The platform burns tokens and
-transfers principal plus interest to their designated bank account.
+When a customer deposits $10,000 into a designated account, Metropolitan
+verifies the funds cleared and then mints 10,000 deposit tokens to the
+customer's wallet. The tokens represent their claim on the principal plus
+accrued interest.
 
-**FDIC compliance**: The platform enforces per-customer deposit limits and
+### Time-lock enforcement
+
+The smart contract enforces the 6-month maturity via time-lock compliance
+modules. Customers cannot redeem early unless early redemption with penalties is
+configured.
+
+Note: Early withdrawal penalty calculations require a configured penalty module
+or addon. The base time-lock implementation prevents transfer/redemption until
+maturity; penalty logic for partial redemptions is an optional configuration.
+
+### Interest accrual tracking
+
+The platform tracks interest accrued based on the APY. Customers see current
+value including accumulated interest through the dashboard. Daily accrual
+calculation can be implemented via off-chain indexing (subgraph) or periodic
+on-chain updates depending on product requirements.
+
+### Maturity and redemption
+
+At six months, the tokens become redeemable. Customers initiate redemption
+through the portal. The platform burns tokens and triggers transfer of principal
+plus interest to their designated bank account (via core banking integration).
+
+### FDIC compliance
+
+The platform enforces per-customer deposit limits via compliance modules and
 maintains records required for FDIC coverage. All documentation is automatically
 generated and archived.
 
-**Collateral management**: Metropolitan maintains liquid reserves or collateral
-backing the deposit tokens. The platform tracks reserve ratios and alerts
-operations if reserves fall below policy thresholds.
+### Collateral management
 
-## The outcomes
+Metropolitan maintains liquid reserves backing the deposit tokens. The platform
+tracks reserve ratios through admin dashboard monitoring and can trigger alerts
+if reserves fall below policy thresholds.
 
-### With ATK
+## Key capabilities
+
+| Capability                | Traditional                | With ATK                             |
+| ------------------------- | -------------------------- | ------------------------------------ |
+| **Certificate format**    | Paper or PDF               | Digital token in wallet              |
+| **Maturity tracking**     | Manual calendar systems    | Smart contract time-lock             |
+| **Interest visibility**   | Quarterly statements       | Real-time dashboard                  |
+| **Early withdrawal**      | Manual penalty calculation | Configured penalty module (optional) |
+| **Redemption processing** | Manual notification & wire | Automated burn and transfer          |
+| **FDIC compliance**       | Manual record-keeping      | Automated per-customer limits        |
+
+## Measurable outcomes
+
+**Customer engagement** – Tech-forward customers appreciate blockchain-based
+deposits as innovative while maintaining FDIC insurance and familiar banking
+relationships.
+
+**Operational efficiency** – Deposit lifecycle management is automated. No
+manual maturity tracking or redemption processing.
+
+**Transparency** – Customers see interest accrual in real time rather than
+waiting for statement dates.
+
+**Compliance confidence** – Regulatory filings and FDIC reporting requirements
+are satisfied through automated audit trails and data exports.
 
 <Mermaid
   chart={`
@@ -86,11 +142,11 @@ flowchart TB
     CUSTOMER[Customer Opens CD]
     TOKEN[Deposit Token<br/>Digital Certificate]
     TIMELOCK[Smart Contract<br/>Time-lock Enforcement]
-    INTEREST[Daily Interest Accrual<br/>Real-time Visible]
+    INTEREST[Interest Accrual<br/>Tracked On-chain]
     REALTIME[Real-time Dashboard<br/>Current Value]
-    PENALTY[Auto Penalty Calc<br/>If Early Withdrawal]
-    MATURE[Auto Maturity<br/>Redemption Available]
-    FDIC[FDIC Compliance<br/>Automated Records]
+    PENALTY[Penalty Module<br/>Optional Config]
+    MATURE[Maturity Trigger<br/>Redemption Enabled]
+    FDIC[FDIC Compliance<br/>Automated Limits]
     
     CUSTOMER --> TOKEN
     TOKEN --> TIMELOCK
@@ -111,15 +167,49 @@ flowchart TB
 `}
 />
 
-**Customer engagement**: Tech-forward customers appreciated blockchain-based
-deposits as innovative while maintaining FDIC insurance and familiar banking
-relationships.
+The diagram above shows the ATK deposit lifecycle, from issuance through
+maturity enforcement to automated redemption.
 
-**Operational efficiency**: Deposit lifecycle management automated completely.
-No manual maturity tracking or redemption processing.
+## Compliance considerations
 
-**Transparency**: Customers saw exact interest accrued daily rather than waiting
-for statement dates.
+Digital deposit certificates operate under banking regulations:
 
-**Compliance confidence**: Regulatory filings and FDIC reporting requirements
-were satisfied through automated audit trails and data exports.
+- **FDIC insurance** – Per-customer limits enforced via compliance modules
+- **Customer verification** – KYC requirements via OnchainID claims
+- **Interest rate disclosure** – Embedded in token metadata
+- **Early withdrawal penalties** – Configured via optional penalty module
+- **Record retention** – All transactions recorded on-chain for audit
+
+For detailed compliance architecture, see
+[Compliance & Security](/docs/executive-overview/compliance-security).
+
+## Implementation checklist
+
+1. Define deposit product terms (maturity, APY, minimum/maximum amounts)
+2. Configure FDIC limit enforcement via compliance modules
+3. Integrate KYC provider for customer verification
+4. Set up interest accrual tracking (on-chain or indexed via subgraph)
+5. Configure time-lock compliance module for maturity enforcement
+6. (Optional) Configure penalty module for early withdrawal calculations
+7. Integrate core banking system for deposit verification and redemption
+8. Deploy smart contract and conduct pilot with select customers
+9. Set up customer dashboard for real-time balance visibility
+
+## Limitations and considerations
+
+- **Early withdrawal penalties** – Penalty calculation requires configured
+  penalty module; base time-lock implementation prevents redemption until
+  maturity
+- **Interest accrual** – Daily accrual visibility requires indexing
+  infrastructure (subgraph) or periodic on-chain updates
+- **FDIC limits** – Per-customer aggregate limits across multiple deposit
+  products require coordination with core banking systems
+
+## Next steps
+
+- Review [SMART Protocol architecture](/docs/architecture/smart-protocol) to
+  understand embedded compliance
+- Explore [Developer Documentation](/docs/developer-guides) for core banking
+  integration guidance
+- Contact your SettleMint representative to discuss a digital deposit pilot
+  program

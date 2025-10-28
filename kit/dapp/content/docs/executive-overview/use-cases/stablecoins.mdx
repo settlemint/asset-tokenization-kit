@@ -1,11 +1,26 @@
 ---
 title: Stablecoins
 pageTitle: Bank-issued stablecoin for payment infrastructure
-description: Bank-issued payment infrastructure with reserve management
+description:
+  Enterprise payment rails with reserve-backed stablecoins and compliance
+  controls
 tags: [use-case, stablecoin, payments, banking, reserves]
 ---
 
-## The scenario
+## Overview
+
+Bank-issued stablecoins through ATK provide instant settlement infrastructure
+for B2B payments while maintaining reserve transparency and regulatory
+compliance. The platform handles minting, redemption, transaction monitoring,
+and reserve management.
+
+**Who should read this:** Treasury teams, payment operations, and financial
+institutions exploring blockchain-based payment rails.
+
+**Business value:** Enable instant cross-border settlement, eliminate wire fees,
+provide real-time reserve transparency, and maintain AML/sanctions compliance.
+
+## Business challenge
 
 Regional Bank wants to issue a USD-backed stablecoin for commercial clients to
 use in B2B payments, trade finance, and treasury management. They need
@@ -41,62 +56,102 @@ flowchart TB
 `}
 />
 
-## How ATK handles it
+## How ATK solves it
 
-**Stablecoin deployment with reserve management**: Regional Bank creates a
-stablecoin token pegged 1:1 to USD. Each token is backed by an actual dollar in
-a segregated reserve account. The platform tracks reserve balances and enforces
-that tokens cannot be minted without corresponding fiat deposits.
+### Stablecoin deployment with reserve management
 
-**Enterprise client onboarding**: Commercial clients complete corporate KYC/KYB
-verification. Their legal entities are registered with the platform, and
-authorized employees receive access to the treasury portal.
+Regional Bank creates a stablecoin token pegged 1:1 to USD. Each token is backed
+by an actual dollar in a segregated reserve account. The platform tracks reserve
+balances and enforces that tokens cannot be minted without corresponding fiat
+deposits.
 
-**Minting process**: When a client deposits $1 million into the reserve account,
-Regional Bank's operations team verifies the deposit through their core banking
-system. Once confirmed, the platform mints 1 million stablecoins to the client's
-designated wallet. The reserve ratio stays balanced by construction.
+### Enterprise client onboarding
 
-**B2B payments and settlements**: Clients use stablecoins for vendor payments,
-international transfers, and supply chain finance. Transactions settle instantly
-on-chain with atomic finality. Payment instructions include invoice references,
-purchase order numbers, and other business metadata.
+Commercial clients complete corporate KYC/KYB verification. Their legal entities
+are registered with the platform, and authorized employees receive access to the
+treasury portal.
 
-**Transparency and auditability**: The platform provides real-time visibility
-into total stablecoins issued, reserve balances, and reserve ratio. External
-auditors can verify reserves without disrupting operations. Regulators get
-read-only access to compliance dashboards.
+### Minting process
 
-**Redemption workflows**: When clients want to convert stablecoins back to fiat,
-they initiate a redemption request. The platform burns tokens and triggers a
-wire transfer from reserves to the client's bank account. The reserve ratio
-updates automatically.
+When a client deposits $1 million into the reserve account, Regional Bank's
+operations team verifies the deposit through their core banking system. Once
+confirmed, the platform mints 1 million stablecoins to the client's designated
+wallet. The reserve ratio stays balanced by construction.
 
-**Compliance controls**: Even though stablecoins are designed for broad use,
+### B2B payments and settlements
+
+Clients use stablecoins for vendor payments, international transfers, and supply
+chain finance. Transactions settle instantly on-chain with atomic finality.
+Payment instructions include invoice references, purchase order numbers, and
+other business metadata.
+
+### Transparency and auditability
+
+The platform provides real-time visibility into total stablecoins issued,
+reserve balances, and reserve ratio through the admin dashboard. External
+auditors can query on-chain data for reserve verification.
+
+Note: Read-only dashboard access for external regulators requires configuration
+of role-based permissions and potentially custom portal development for
+multi-tenant access patterns.
+
+### Redemption workflows
+
+When clients want to convert stablecoins back to fiat, they initiate a
+redemption request. The platform burns tokens and triggers a wire transfer from
+reserves to the client's bank account (via core banking integration). The
+reserve ratio updates automatically.
+
+### Compliance controls
+
 Regional Bank enforces transaction monitoring, AML screening, and sanctions list
-checks. Suspicious activity triggers alerts for investigation. Geographic
-restrictions prevent use in prohibited jurisdictions.
+checks through integrated compliance modules. Suspicious activity triggers
+alerts for investigation. Geographic restrictions prevent use in prohibited
+jurisdictions via country block lists.
 
-**Integration with existing systems**: The platform's APIs integrate with
-Regional Bank's core banking system, treasury management platform, and
-accounting systems. Stablecoin transactions appear alongside traditional banking
-transactions in client portals.
+### Integration with existing systems
 
-## The outcomes
+The platform's APIs integrate with Regional Bank's core banking system, treasury
+management platform, and accounting systems. Stablecoin transactions can appear
+alongside traditional banking transactions through custom portal development or
+API consumption by existing client interfaces.
 
-### With ATK
+## Key capabilities
+
+| Capability               | Traditional (SWIFT)           | With ATK                       |
+| ------------------------ | ----------------------------- | ------------------------------ |
+| **Settlement time**      | 3-5 days                      | Seconds with finality          |
+| **Transaction fees**     | $25-50 per wire               | Network gas fees (cents)       |
+| **Reconciliation**       | Days of manual work           | Real-time on-chain             |
+| **Reserve transparency** | Opaque, periodic attestations | Real-time dashboard visibility |
+| **Counterparty risk**    | Settlement lag exposure       | Atomic settlement, zero lag    |
+| **Compliance**           | Post-transaction monitoring   | Pre-transaction validation     |
+
+## Measurable outcomes
+
+**Payment speed** – Cross-border B2B payments that took 3-5 days now settle in
+seconds with atomic finality.
+
+**Cost reduction** – International wire fees are eliminated. Treasury operations
+costs drop because reconciliation is real-time and automated.
+
+**Transparency** – Clients see reserve backing in real time through dashboards,
+building confidence in the stablecoin's stability.
+
+**Regulatory acceptance** – Demonstrable compliance controls and transparent
+reserves help satisfy regulators during approval processes.
 
 <Mermaid
   chart={`
 flowchart TB
     PAYMENT[Cross-border Payment]
     STABLE[USD Stablecoin<br/>1:1 Reserve Backed]
-    INSTANT[Instant Settlement<br/>Seconds with Finality]
-    NOFEES[Minimal Fees<br/>Cents per Transaction]
-    AUTORECON[Auto Reconciliation<br/>Real-time]
-    TRANSPARENT[Full Transparency<br/>Reserve Dashboard]
+    INSTANT[Instant Settlement<br/>Atomic Finality]
+    NOFEES[Minimal Fees<br/>Gas Costs Only]
+    AUTORECON[Auto Reconciliation<br/>On-chain Records]
+    TRANSPARENT[Reserve Transparency<br/>Admin Dashboard]
     NORISK[No Counterparty Risk<br/>Atomic Settlement]
-    COMPLIANCE[Built-in Compliance<br/>AML/Sanctions Checks]
+    COMPLIANCE[Built-in Compliance<br/>AML/Sanctions]
     
     PAYMENT --> STABLE
     STABLE --> INSTANT
@@ -117,14 +172,50 @@ flowchart TB
 `}
 />
 
-**Payment speed**: Cross-border B2B payments that took 3-5 days now settle in
-seconds with finality.
+The diagram above shows the ATK stablecoin payment flow, from issuance through
+transaction settlement to compliance validation.
 
-**Cost reduction**: International wire fees disappeared. Treasury operations
-costs dropped because reconciliation is real-time.
+## Compliance considerations
 
-**Transparency**: Clients see reserve backing in real time, building confidence
-in the stablecoin's stability.
+Bank-issued stablecoins operate under banking and payment regulations:
 
-**Regulatory acceptance**: Demonstrable compliance controls and transparent
-reserves satisfied regulators. Regional Bank got approval to scale the program.
+- **AML/KYC verification** – Corporate entity verification via OnchainID
+- **Transaction monitoring** – Real-time screening against sanctions lists
+- **Geographic restrictions** – Country block lists via compliance modules
+- **Reserve requirements** – 1:1 backing enforced at mint/burn operations
+- **Audit trails** – Every mint, burn, transfer, and compliance check recorded
+  on-chain
+
+For detailed compliance architecture, see
+[Compliance & Security](/docs/executive-overview/compliance-security).
+
+## Implementation checklist
+
+1. Establish legal framework for stablecoin issuance (regulatory approval,
+   reserve custody)
+2. Define stablecoin parameters (pegged currency, reserve requirements, minting
+   policies)
+3. Integrate KYC/KYB provider for commercial client verification
+4. Configure reserve tracking and mint/burn workflows
+5. Set up transaction monitoring rules (AML, sanctions, geographic restrictions)
+6. Integrate core banking system for reserve account verification
+7. Configure redemption workflow and fiat settlement processes
+8. Deploy smart contract and conduct pilot with select commercial clients
+9. Set up admin dashboard for operations team and reserve monitoring
+
+## Limitations and considerations
+
+- **Regulatory approval** – Bank-issued stablecoins require regulatory
+  clearance; legal counsel should evaluate jurisdiction-specific requirements
+- **Reserve custody** – Off-chain reserve management requires integration with
+  core banking systems for automated verification
+- **Regulator dashboard access** – Multi-tenant read-only access for external
+  regulators may require custom portal development beyond base admin dashboard
+
+## Next steps
+
+- Review [SMART Protocol architecture](/docs/architecture/smart-protocol) to
+  understand embedded compliance
+- Explore [Developer Documentation](/docs/developer-guides) for core banking
+  integration guidance
+- Contact your SettleMint representative to discuss a stablecoin pilot program
