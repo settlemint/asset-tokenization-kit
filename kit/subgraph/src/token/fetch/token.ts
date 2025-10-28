@@ -4,6 +4,7 @@ import { Token as TokenTemplate } from "../../../generated/templates";
 import { Token as TokenContract } from "../../../generated/templates/Token/Token";
 import { fetchAccount } from "../../account/fetch/account";
 import { setAccountContractName } from "../../account/utils/account-contract-name";
+import { refreshIdentityClassificationForAccount } from "../../identity/utils/identity-classification";
 import { initializeTokenDistributionStats } from "../../stats/token-distribution-stats";
 import { setBigNumber } from "../../utils/bignumber";
 
@@ -37,6 +38,7 @@ export function fetchToken(address: Address): Token {
 
     // Update the associated account with a human-readable contract name
     setAccountContractName(address, token.name);
+    refreshIdentityClassificationForAccount(address);
     TokenTemplate.create(address);
 
     // Initialize distribution stats for new token

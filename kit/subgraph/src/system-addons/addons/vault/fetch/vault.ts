@@ -3,6 +3,7 @@ import { Vault } from "../../../../../generated/schema";
 import { fetchAccessControl } from "../../../../access-control/fetch/accesscontrol";
 import { fetchAccount } from "../../../../account/fetch/account";
 import { setAccountContractName } from "../../../../account/utils/account-contract-name";
+import { refreshIdentityClassificationForAccount } from "../../../../identity/utils/identity-classification";
 
 export function fetchVault(address: Address): Vault {
   let vault = Vault.load(address);
@@ -20,6 +21,7 @@ export function fetchVault(address: Address): Vault {
     vault.weightedSignaturesEnabled = false;
     vault.save();
     setAccountContractName(address, "Vault");
+    refreshIdentityClassificationForAccount(address);
   }
 
   return vault;

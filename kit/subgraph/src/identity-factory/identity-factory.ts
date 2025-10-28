@@ -6,7 +6,7 @@ import {
 import { fetchAccount } from "../account/fetch/account";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentity } from "../identity/fetch/identity";
-import { ensureIdentityClassification } from "../identity/identity";
+import { updateIdentityEntityType } from "../identity/utils/identity-classification";
 import { trackIdentityCreated } from "../stats/identity-stats";
 import { fetchIdentityFactory } from "./fetch/identity-factory";
 
@@ -18,8 +18,8 @@ export function handleIdentityCreated(event: IdentityCreated): void {
   identity.isContract = false;
   identity.identityFactory = event.address;
 
-  // Classify immediately so filters recognise freshly deployed contract identities.
-  ensureIdentityClassification(identity);
+  // Re-evaluate entityType so filters recognise freshly deployed identities.
+  updateIdentityEntityType(identity);
   identity.save();
 
   const identityFactory = fetchIdentityFactory(event.address);
@@ -43,8 +43,8 @@ export function handleContractIdentityCreated(
   identity.isContract = true;
   identity.identityFactory = event.address;
 
-  // Classify immediately so filters recognise freshly deployed contract identities.
-  ensureIdentityClassification(identity);
+  // Re-evaluate entityType so filters recognise freshly deployed identities.
+  updateIdentityEntityType(identity);
   identity.save();
 
   const identityFactory = fetchIdentityFactory(event.address);

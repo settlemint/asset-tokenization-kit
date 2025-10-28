@@ -7,7 +7,7 @@ import {
   log,
   store,
 } from "@graphprotocol/graph-ts";
-import { Account, Identity, Token, TopicScheme } from "../../generated/schema";
+import { Identity, Token, TopicScheme } from "../../generated/schema";
 import {
   Approved,
   ClaimAdded,
@@ -47,12 +47,12 @@ import { fetchIdentity } from "./fetch/identity";
 import { fetchIdentityClaim } from "./fetch/identity-claim";
 import { fetchIdentityKey } from "./fetch/identity-key";
 import { decodeClaimValues } from "./utils/decode-claim";
+import { updateIdentityEntityType } from "./utils/identity-classification";
 import {
   getIdentityKeyPurpose,
   getIdentityKeyType,
 } from "./utils/identity-key-utils";
 import { isBasePriceClaim } from "./utils/is-claim";
-import { updateIdentityEntityType } from "./utils/identity-classification";
 
 /**
  * Update account stats for all holders of a token when its base price changes
@@ -111,20 +111,6 @@ function updateAccountStatsForAllTokenHolders(
   }
 }
 
-/**
- * Mutates in-memory classification fields and signals whether persistence is required.
- */
-export function ensureIdentityClassification(identity: Identity): boolean {
-  let contractName: string | null = null;
-
-  if (identity.isContract) {
-    const accountEntity = Account.load(identity.account);
-    contractName = accountEntity ? accountEntity.contractName : null;
-  }
-
-  return updateIdentityEntityType(identity, contractName);
-}
-
 export function handleApproved(event: Approved): void {
   fetchEvent(event, "Approved");
 }
@@ -132,7 +118,7 @@ export function handleApproved(event: Approved): void {
 export function handleClaimAdded(event: ClaimAdded): void {
   fetchEvent(event, "ClaimAdded");
   const identity = fetchIdentity(event.address);
-  const classificationMutated = ensureIdentityClassification(identity);
+  const classificationMutated = updateIdentityEntityType(identity);
 
   // Decode claim data and create IdentityClaimValue entities
   const topicScheme = getTopicSchemeFromIdentity(event.params.topic, identity);
@@ -198,7 +184,7 @@ export function handleClaimAdded(event: ClaimAdded): void {
 export function handleClaimChanged(event: ClaimChanged): void {
   fetchEvent(event, "ClaimChanged");
   const identity = fetchIdentity(event.address);
-  const classificationMutated = ensureIdentityClassification(identity);
+  const classificationMutated = updateIdentityEntityType(identity);
 
   // Decode claim data and create IdentityClaimValue entities
   const topicScheme = getTopicSchemeFromIdentity(event.params.topic, identity);
@@ -259,7 +245,7 @@ export function handleClaimChanged(event: ClaimChanged): void {
 export function handleClaimRemoved(event: ClaimRemoved): void {
   fetchEvent(event, "ClaimRemoved");
   const identity = fetchIdentity(event.address);
-  const classificationMutated = ensureIdentityClassification(identity);
+  const classificationMutated = updateIdentityEntityType(identity);
   const identityClaim = fetchIdentityClaim(identity, event.params.claimId);
 
   const wasAlreadyRevoked = identityClaim.revoked;
@@ -332,7 +318,7 @@ export function handleExecutionRequested(event: ExecutionRequested): void {
 export function handleKeyAdded(event: KeyAdded): void {
   fetchEvent(event, "KeyAdded");
   const identity = fetchIdentity(event.address);
-  const classificationMutated = ensureIdentityClassification(identity);
+  const classificationMutated = updateIdentityEntityType(identity);
   const identityKey = fetchIdentityKey(identity, event.params.key);
   identityKey.identity = identity.id;
   identityKey.type = getIdentityKeyType(event.params.keyType);
@@ -347,7 +333,7 @@ export function handleKeyAdded(event: KeyAdded): void {
 export function handleKeyRemoved(event: KeyRemoved): void {
   fetchEvent(event, "KeyRemoved");
   const identity = fetchIdentity(event.address);
-  const classificationMutated = ensureIdentityClassification(identity);
+  const classificationMutated = updateIdentityEntityType(identity);
   const identityKey = fetchIdentityKey(identity, event.params.key);
   store.remove("IdentityKey", identityKey.id.toHexString());
 
@@ -359,7 +345,7 @@ export function handleKeyRemoved(event: KeyRemoved): void {
 export function handleClaimRevoked(event: ClaimRevoked): void {
   fetchEvent(event, "ClaimRevoked");
   const identity = fetchIdentity(event.address);
-  const classificationMutated = ensureIdentityClassification(identity);
+  const classificationMutated = updateIdentityEntityType(identity);
   const identityClaims = identity.claims.load();
   for (let i = 0; i < identityClaims.length; i++) {
     const identityClaim = identityClaims[i];
