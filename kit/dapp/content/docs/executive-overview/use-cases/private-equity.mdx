@@ -1,0 +1,155 @@
+---
+title: Private equity
+pageTitle: Private equity fund tokenization
+description: Fund tokenization with NAV tracking and LP servicing
+tags: [use-case, funds, private-equity, NAV, LP-management]
+---
+
+## The scenario
+
+Apex Capital runs a $200 million venture fund with 80 institutional LPs.
+Traditional fund administration is expensive, slow, and opaque. Quarterly
+valuations take weeks to calculate and distribute. Capital calls and
+distributions require manual processing. Secondary transfers between LPs are
+nearly impossible due to paperwork complexity.
+
+### Traditional approach
+
+<Mermaid
+  chart={`
+flowchart TB
+    FUND[Fund Launch]
+    ADMIN[Fund Administrator<br/>High Quarterly Fees]
+    NAV[NAV Calculation<br/>2-3 Weeks Delay]
+    DIST[Distribution Processing<br/>Wire to 80 Banks]
+    FEES[Fee Collection<br/>Manual Invoicing]
+    SECONDARY[Secondary Transfers<br/>90 Days + Legal Costs]
+    REPORT[LP Reporting<br/>Quarterly Statements]
+    ISSUES[Common Issues]
+    
+    ERROR[Calculation Errors]
+    DELAY[Payment Delays]
+    ILLIQUID[No Liquidity]
+    
+    FUND --> ADMIN
+    ADMIN --> NAV
+    ADMIN --> DIST
+    ADMIN --> FEES
+    ADMIN --> SECONDARY
+    ADMIN --> REPORT
+    NAV --> ISSUES
+    DIST --> ISSUES
+    SECONDARY --> ISSUES
+    ISSUES --> ERROR
+    ISSUES --> DELAY
+    ISSUES --> ILLIQUID
+    
+    style FUND fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style ADMIN fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style NAV fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style DIST fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style FEES fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style SECONDARY fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style REPORT fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style ISSUES fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style ERROR fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style DELAY fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style ILLIQUID fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+`}
+/>
+
+## How ATK handles it
+
+**Fund unit creation**: Apex tokenizes their fund structure as equity tokens
+representing limited partner units. Each token carries ownership rights, profit
+sharing, and governance participation. The fund's operating agreement is
+cryptographically linked to the token metadata.
+
+**LP onboarding**: Institutional investors complete accredited investor
+verification and qualified purchaser checks through the platform's identity
+system. Their verified status enables participation across multiple Apex funds
+without re-verification.
+
+**Subscription processing**: When LPs commit capital, Apex issues fund tokens
+representing their percentage ownership. The platform tracks committed versus
+called capital, maintaining complex waterfall calculations that traditional fund
+administrators charge quarterly fees to manage.
+
+**NAV updates and performance tracking**: Monthly or quarterly, Apex updates the
+net asset value in the platform. The NAV per token updates automatically for all
+holders. Performance metrics—IRR, MOIC, quartile rankings—calculate
+programmatically from on-chain transaction history.
+
+**Automated distributions**: When portfolio companies exit or pay dividends,
+Apex distributes proceeds proportionally to all token holders through automated
+workflows. What used to require wire instructions to 80 different banks now
+executes through programmable distribution with instant settlement.
+
+**Management fee collection**: The platform automatically calculates management
+fees based on committed capital or NAV according to the fund terms, deducts the
+appropriate amount, and handles the transfer to Apex's treasury. No manual
+invoicing or collection processes.
+
+**Secondary trading among LPs**: When an LP wants to exit early, the platform
+facilitates transfer to another qualified institutional investor. Compliance
+checks ensure the buyer meets requirements. Settlement happens atomically.
+Transfer restrictions in the fund documents are enforced programmatically, so
+limited transfer windows or ROFR rights execute automatically.
+
+## The outcomes
+
+### With ATK
+
+<Mermaid
+  chart={`
+flowchart TB
+    FUND[Fund Launch]
+    TOKEN[Tokenized Fund Units<br/>Smart Contract]
+    NAV[NAV Updates<br/>Automatic Calculation]
+    DIST[Automated Distributions<br/>Instant Settlement]
+    FEES[Fee Collection<br/>Programmatic]
+    SECONDARY[Secondary Trading<br/>Hours with Compliance]
+    REALTIME[Real-time Visibility<br/>LP Dashboard]
+    BENEFITS[Key Benefits]
+    
+    EFFICIENT[60% Cost Reduction]
+    INSTANT[Instant Distributions]
+    LIQUID[Secondary Liquidity]
+    
+    FUND --> TOKEN
+    TOKEN --> NAV
+    TOKEN --> DIST
+    TOKEN --> FEES
+    TOKEN --> SECONDARY
+    TOKEN --> REALTIME
+    NAV --> BENEFITS
+    DIST --> BENEFITS
+    SECONDARY --> BENEFITS
+    BENEFITS --> EFFICIENT
+    BENEFITS --> INSTANT
+    BENEFITS --> LIQUID
+    
+    style FUND fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style TOKEN fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style NAV fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style DIST fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style FEES fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style SECONDARY fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style REALTIME fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style BENEFITS fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style EFFICIENT fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style INSTANT fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style LIQUID fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+`}
+/>
+
+**Operational efficiency**: Fund administration costs dropped by 60% because NAV
+calculations, distributions, fee collection, and LP reporting are automated.
+
+**LP satisfaction**: Real-time holdings visibility and instant distributions
+improved investor experience. Support inquiries about "where's my distribution?"
+disappeared.
+
+**Secondary liquidity**: What used to take 90 days and significant legal costs
+now settles in hours with compliance built in. LPs value liquidity options, even
+if used rarely.

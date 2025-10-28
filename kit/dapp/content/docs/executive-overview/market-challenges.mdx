@@ -18,6 +18,52 @@ Walk into any tokenization project today and you'll see the same pattern: five
 or more vendors stitched together with integration code, manual handoffs, and
 crossed fingers.
 
+<Mermaid
+  chart={`
+flowchart TB
+    ORG[Your Organization]
+    
+    V1[Token Creation<br/>Platform]
+    V2[KYC/Onboarding<br/>Provider]
+    V3[Custody Wallet<br/>Service]
+    V4[Trading/Marketplace<br/>Platform]
+    V5[Settlement & Banking<br/>Integration]
+    V6[Reporting & Compliance<br/>Dashboard]
+    
+    ISSUES1[Integration<br/>Failures]
+    ISSUES2[Data<br/>Reconciliation]
+    ISSUES3[Vendor<br/>Coordination]
+    
+    ORG -.Manual Integration.-> V1
+    ORG -.Manual Integration.-> V2
+    ORG -.Manual Integration.-> V3
+    ORG -.Manual Integration.-> V4
+    ORG -.Manual Integration.-> V5
+    ORG -.Manual Integration.-> V6
+    
+    V1 -.API Calls.-> V2
+    V2 -.API Calls.-> V3
+    V3 -.API Calls.-> V4
+    V4 -.API Calls.-> V5
+    V5 -.API Calls.-> V6
+    
+    V1 --> ISSUES1
+    V3 --> ISSUES2
+    V5 --> ISSUES3
+    
+    style ORG fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style V1 fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style V2 fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style V3 fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style V4 fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style V5 fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style V6 fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style ISSUES1 fill:#dc2626,stroke:#991b1b,stroke-width:2px,color:#fff
+    style ISSUES2 fill:#dc2626,stroke:#991b1b,stroke-width:2px,color:#fff
+    style ISSUES3 fill:#dc2626,stroke:#991b1b,stroke-width:2px,color:#fff
+`}
+/>
+
 One vendor handles token creation. Another manages investor onboarding and KYC
 checks. A third provides custody wallets. A fourth runs the marketplace or
 trading platform. A fifth handles settlement and bank connectivity. Maybe

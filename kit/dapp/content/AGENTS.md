@@ -119,6 +119,21 @@ accuracy and clarity, optimized for both human readers and AI search indexing.
   must be accurate - base them on the architecture described (for instance,
   reuse structure from provided diagrams in the source docs to avoid inventing
   incorrect flows).
+  - **Mermaid Color Standards:** Use brand-aligned colors that work in both
+    light and dark themes:
+    - **Success/positive states**:
+      `fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff` (emerald green)
+    - **Error/warning/problematic states**:
+      `fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff` (amber/orange)
+    - **Neutral/informational elements**:
+      `fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff` (sky blue)
+    - **Secondary/supporting elements**:
+      `fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff` (violet)
+    - Always use white text (`color:#fff`) on colored backgrounds for contrast
+  - **Mermaid Layout:** Prefer vertical (`TB` or `TD`) layouts over horizontal
+    (`LR`) for better readability in documentation. Use `flowchart TB` instead
+    of `flowchart LR` to create taller, narrower diagrams that fit better in
+    content columns.
 - **Images/Screenshots:** Where actual UI screenshots become available, include
   them with appropriate figure captions. For now, plan for them (like
   "Screenshot: Asset creation form") so an AI can insert later when generating
@@ -140,15 +155,24 @@ accuracy and clarity, optimized for both human readers and AI search indexing.
   [API Reference](../api-reference) for full endpoint details." This improves
   navigation and also helps SEO/AI by connecting related content.
 - **Frontmatter Metadata:** Each page must start with its YAML frontmatter
-  containing at least: title: (the H1), description: (the one-line description
-  provided), navTitle: (short nav title), and tags: (list of tags). Possibly
-  also an author: or category: if the site requires (not specified, but Fumadocs
-  config might use frontmatter schema from source.config.ts - we should check if
-  any particular fields needed). But at minimum, include those asked: navigation
-  title, pretty title, description, tags. Ensure the description is concise
-  (<160 chars ideally) for SEO meta description, containing keywords for search.
-  Tags should be 3-6 keywords, all lowercase, that broadly cover the page topics
-  (to feed the site's search indexing and help AI find context).
+  containing:
+  - **title**: Short title for sidebar navigation (2-3 words, e.g., "Corporate
+    bonds")
+  - **pageTitle**: Full descriptive title for the page header and browser title
+    (e.g., "Corporate bond issuance for capital markets")
+  - **description**: One-line description (<160 chars ideally) for SEO meta
+    description, containing keywords for search
+  - **tags**: 3-6 keywords, all lowercase, that broadly cover the page topics
+    (to feed the site's search indexing and help AI find context)
+  - Example:
+    ```yaml
+    ---
+    title: Corporate bonds
+    pageTitle: Corporate bond issuance for capital markets
+    description: Automated bond lifecycle from issuance to redemption
+    tags: [use-case, bonds, debt, capital-markets, automation]
+    ---
+    ```
 - **SEO and AI Optimization:**
 - Include relevant keywords naturally in the content and headings. For example,
   the page about compliance should mention "KYC/AML", "regulatory compliance"
@@ -201,7 +225,7 @@ we propose the following plan for the AI (or documentation team):
   there.
 - **Follow the Outline Rigorously:** Use the structure above as a blueprint. For
   each page:
-- Start by filling in the frontmatter (title, description, navTitle, tags) as
+- Start by filling in the frontmatter (title, pageTitle, description, tags) as
   given.
 - Then draft the content following the provided **Content Outline**. The outline
   lists subsections and key points - use those as the H2/H3 headings and ensure

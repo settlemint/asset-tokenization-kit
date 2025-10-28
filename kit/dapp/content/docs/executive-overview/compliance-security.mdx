@@ -42,6 +42,41 @@ Every token transfer in ATK executes through compliance checks before state
 changes. This isn't a best practice recommendation; it's how the ERC-3643
 standard works at the protocol level.
 
+<Mermaid
+  chart={`
+flowchart TB
+    INIT[Alice Initiates<br/>Token Transfer to Bob]
+    CHECK1{Alice Has<br/>Verified Identity?}
+    CHECK2{Bob Has<br/>Verified Identity?}
+    CHECK3{Bob Meets<br/>Eligibility Requirements?}
+    CHECK4{Transfer Within<br/>Holding Limits?}
+    CHECK5{No Asset-Wide<br/>Restrictions?}
+    EXECUTE[Execute Transfer<br/>Update Blockchain State]
+    REVERT[Revert Transaction<br/>Return Reason Code]
+    
+    INIT --> CHECK1
+    CHECK1 -->|Yes| CHECK2
+    CHECK1 -->|No| REVERT
+    CHECK2 -->|Yes| CHECK3
+    CHECK2 -->|No| REVERT
+    CHECK3 -->|Yes| CHECK4
+    CHECK3 -->|No| REVERT
+    CHECK4 -->|Yes| CHECK5
+    CHECK4 -->|No| REVERT
+    CHECK5 -->|Yes| EXECUTE
+    CHECK5 -->|No| REVERT
+    
+    style INIT fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style CHECK1 fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style CHECK2 fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style CHECK3 fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style CHECK4 fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style CHECK5 fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style EXECUTE fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style REVERT fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+`}
+/>
+
 When Alice tries to transfer bond tokens to Bob, the smart contract first
 checks:
 
@@ -157,6 +192,44 @@ regulatory examination because it's cryptographically tamper-proof and complete.
 ATK integrates with professional KYC/AML providers who specialize in identity
 verification, sanctions screening, politically exposed person (PEP) checks, and
 adverse media monitoring.
+
+<Mermaid
+  chart={`
+flowchart TB
+    START[Investor Visits<br/>Onboarding Portal]
+    DOCS[Submit Personal Info<br/>& Documentation]
+    KYC[KYC Provider<br/>Verification]
+    CHECKS{Verification<br/>Checks}
+    REVIEW[Compliance Officer<br/>Review]
+    APPROVE{Approved?}
+    CLAIMS[Add Identity Claims<br/>to OnchainID]
+    REGISTER[Register Wallet<br/>in Identity Registry]
+    ACCESS[Access to<br/>Compliant Assets]
+    REJECT[Rejection Notice<br/>& Documentation]
+    
+    START --> DOCS
+    DOCS --> KYC
+    KYC --> CHECKS
+    CHECKS -->|Identity Verification| REVIEW
+    CHECKS -->|Sanctions Screening| REVIEW
+    CHECKS -->|PEP Checks| REVIEW
+    REVIEW --> APPROVE
+    APPROVE -->|Yes| CLAIMS
+    CLAIMS --> REGISTER
+    REGISTER --> ACCESS
+    APPROVE -->|No| REJECT
+    
+    style START fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style KYC fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style CHECKS fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style REVIEW fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style APPROVE fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style CLAIMS fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style REGISTER fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style ACCESS fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style REJECT fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+`}
+/>
 
 **Standard onboarding flow:**
 

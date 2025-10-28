@@ -1,7 +1,7 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 type RenderResult = {
   svg: string;
@@ -30,16 +30,16 @@ export function Mermaid({ chart }: { chart: string }) {
 }
 
 let mermaidPromise: Promise<unknown> | null = null;
-let mermaidInitialized = false;
+let lastInitializedTheme: string | null = null;
 
 function MermaidContent({ chart }: { chart: string }) {
+  const id = useId();
   const { resolvedTheme } = useTheme();
   const [svg, setSvg] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<string>("");
   const errorRef = useRef<string | null>(null);
-  const chartIdRef = useRef<string>("");
 
   useEffect(() => {
     // Update refs when state changes
@@ -53,11 +53,9 @@ function MermaidContent({ chart }: { chart: string }) {
       return;
     }
 
-    // Generate a stable ID based on chart content
-    const chartId = `mermaid-${chart.slice(0, 20).replaceAll(/[^a-z0-9]/gi, "-")}`;
-    chartIdRef.current = chartId;
-
+    // Generate a unique ID using React's useId and theme
     const theme = resolvedTheme === "dark" ? "dark" : "default";
+    const chartId = `mermaid-${id}-${theme}`.replace(/:/g, "-");
 
     let cancelled = false;
 
@@ -96,7 +94,8 @@ function MermaidContent({ chart }: { chart: string }) {
           return;
         }
 
-        if (!mermaidInitialized) {
+        // Reinitialize when theme changes
+        if (lastInitializedTheme !== theme) {
           lib.initialize({
             startOnLoad: false,
             securityLevel: "loose",
@@ -105,7 +104,7 @@ function MermaidContent({ chart }: { chart: string }) {
             theme,
             flowchart: { htmlLabels: true },
           });
-          mermaidInitialized = true;
+          lastInitializedTheme = theme;
         }
 
         // Use a temporary container attached to the DOM to ensure measurements work
@@ -148,7 +147,7 @@ function MermaidContent({ chart }: { chart: string }) {
       cancelled = true;
       clearTimeout(timeout);
     };
-  }, [chart, resolvedTheme]);
+  }, [chart, resolvedTheme, id]);
 
   if (error) {
     return (

@@ -228,6 +228,8 @@ In the fragmented approach, custody, settlement, and asset movement are separate
 operations with manual reconciliation. In a DALP, they're coordinated workflows
 where the platform ensures both legs complete or both revert.
 
+### Fragmented approach: integration complexity
+
 <Mermaid
   chart={`
 graph TB
@@ -252,6 +254,25 @@ graph TB
     note3[No Single<br/>Source of Truth]
     end
 
+    style A1 fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style A2 fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style A3 fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style A4 fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style A5 fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style A6 fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+
+`} />
+
+The fragmented approach creates multiple integration points, each requiring
+separate development, testing, and maintenance. Data synchronization happens
+through API calls, creating opportunities for drift and requiring constant
+reconciliation.
+
+### DALP approach: unified architecture
+
+<Mermaid
+  chart={`
+graph TB
     subgraph "DALP Approach (Unified Platform)"
     B1[Unified Lifecycle Core<br/>Single Registry]
     B2[Compliance Engine]
@@ -272,24 +293,18 @@ graph TB
     note6[Unified Truth]
     end
 
-    style A1 fill:#ffcccc
-    style A2 fill:#ffcccc
-    style A3 fill:#ffcccc
-    style A4 fill:#ffcccc
-    style A5 fill:#ffcccc
-    style A6 fill:#ffcccc
-
-    style B1 fill:#ccffcc
-    style B2 fill:#ccffcc
-    style B3 fill:#ccffcc
-    style B4 fill:#ccffcc
-    style B5 fill:#ccffcc
+    style B1 fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style B2 fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style B3 fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style B4 fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style B5 fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
 
 `} />
 
-The diagram illustrates the fundamental difference: fragmented systems require
-constant data synchronization and manual reconciliation. Unified platforms
-maintain consistency by design.
+The DALP approach eliminates integration complexity by providing a unified core
+where all lifecycle phases operate against a single source of truth. Components
+are architected together, ensuring atomic operations and consistent state across
+the entire platform.
 
 ## What this means for your next tokenization project
 
