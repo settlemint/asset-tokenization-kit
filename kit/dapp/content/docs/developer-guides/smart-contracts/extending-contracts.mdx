@@ -15,14 +15,17 @@ changes.
 
 The ATK smart contract layer is organized into four main categories:
 
-**System contracts** (`kit/contracts/contracts/system/`):
+**System contracts**
+([`kit/contracts/contracts/system/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/contracts/system)):
 
 - Core infrastructure for identity, compliance, and token management
-- `ATKSystemFactory.sol` deploys complete tokenization systems
+- [`ATKSystemFactory.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/system/ATKSystemFactory.sol)
+  deploys complete tokenization systems
 - Identity registry, compliance framework, and access management
 - Typically extended through configuration rather than code modification
 
-**Asset contracts** (`kit/contracts/contracts/assets/`):
+**Asset contracts**
+([`kit/contracts/contracts/assets/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/contracts/assets)):
 
 - Token implementations for bonds, equities, funds, stablecoins, and deposits
 - All inherit from `IATKToken` (which combines `ISMART` +
@@ -30,7 +33,8 @@ The ATK smart contract layer is organized into four main categories:
 - Follow factory-implementation-proxy pattern for upgradeability
 - Compose SMART extensions for features like burning, pausing, yield, etc.
 
-**SMART extensions** (`kit/contracts/contracts/smart/`):
+**SMART extensions**
+([`kit/contracts/contracts/smart/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/contracts/smart)):
 
 - Modular building blocks for security token functionality
 - Compliance modules enforce transfer rules (country lists, investor limits,
@@ -39,11 +43,14 @@ The ATK smart contract layer is organized into four main categories:
   etc.)
 - Based on ERC-3643 standard with upgradeable patterns
 
-**Addons** (`kit/contracts/contracts/addons/`):
+**Addons**
+([`kit/contracts/contracts/addons/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/contracts/addons)):
 
 - Optional modules for airdrops, vaults, settlements, and yield schedules
 - Deployed independently and interact with tokens via standard interfaces
-- See `/kit/contracts/contracts/addons/README.md` for comprehensive details
+- See
+  [`/kit/contracts/contracts/addons/README.md`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/README.md)
+  for comprehensive details
 
 ## Adding a new asset type
 
@@ -51,6 +58,8 @@ Custom asset types let you create domain-specific tokens beyond the built-in
 bonds, equities, funds, stablecoins, and deposits.
 
 <Steps>
+
+<Step>
 
 ### Design your asset requirements
 
@@ -65,9 +74,14 @@ Before writing code, identify what makes your asset unique:
 - **Access control**: What roles are needed (governance, supply management,
   custodian, emergency)?
 
+</Step>
+
+<Step>
+
 ### Create your implementation contract
 
-Create a new file in `kit/contracts/contracts/assets/&lt;your-asset&gt;/`:
+Create a new file in
+[`kit/contracts/contracts/assets/&lt;your-asset&gt;/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/contracts/assets):
 
 ```solidity
 // SPDX-License-Identifier: FSL-1.1-MIT
@@ -214,6 +228,10 @@ contract ATKCustomAssetImplementation is
 }
 ```
 
+</Step>
+
+<Step>
+
 ### Create the interface
 
 Define your asset's public interface in `IATKCustomAsset.sol`:
@@ -241,17 +259,27 @@ interface IATKCustomAsset is IATKToken {
 }
 ```
 
+</Step>
+
+<Step>
+
 ### Create factory and proxy contracts
 
 Follow the factory-implementation-proxy pattern used by other assets. Create
 `ATKCustomAssetFactoryImplementation.sol` and `ATKCustomAssetProxy.sol`
 following the patterns in
-`kit/contracts/contracts/assets/bond/ATKBondFactoryImplementation.sol:1-200` and
-`kit/contracts/contracts/assets/bond/ATKBondProxy.sol:1-50`.
+[`ATKBondFactoryImplementation.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/assets/bond/ATKBondFactoryImplementation.sol)
+and
+[`ATKBondProxy.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/assets/bond/ATKBondProxy.sol).
+
+</Step>
+
+<Step>
 
 ### Write comprehensive tests
 
-Create tests in `kit/contracts/test/assets/ATKCustomAsset.t.sol`:
+Create tests in
+[`kit/contracts/test/assets/ATKCustomAsset.t.sol`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/test/assets):
 
 ```solidity
 // SPDX-License-Identifier: FSL-1.1-MIT
@@ -293,15 +321,22 @@ cd kit/contracts
 bun run test:foundry
 ```
 
+</Step>
+
+<Step>
+
 ### Integrate with the dApp
 
 1. **Generate TypeScript types**: Run `bun run artifacts` to generate contract
    ABIs and TypeScript bindings
-2. **Add to asset designer**: Update `kit/dapp/src/lib/assets/asset-types.ts` to
-   include your new asset
+2. **Add to asset designer**: Update
+   [`kit/dapp/src/lib/assets/asset-types.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/lib/assets/asset-types.ts)
+   to include your new asset
 3. **Create form components**: Build UI for asset-specific parameters
 4. **Build UI components**: Use generated contract hooks with Viem and TanStack
    Query
+
+</Step>
 
 </Steps>
 
@@ -311,6 +346,8 @@ Compliance modules enforce transfer restrictions like country allowlists,
 investor caps, or time locks. They implement the `ISMARTComplianceModule`
 
 <Steps>
+
+<Step>
 
 ### Understand the module lifecycle
 
@@ -325,9 +362,14 @@ compliance contract during token operations:
 4. `destroyed(token, from, value, params)` - Optional hook called after burning
 5. `validateParameters(params)` - Validates module configuration during setup
 
+</Step>
+
+<Step>
+
 ### Extend the abstract base
 
-Create your module in `kit/contracts/contracts/smart/modules/`:
+Create your module in
+[`kit/contracts/contracts/smart/modules/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/contracts/smart/modules):
 
 ```solidity
 // SPDX-License-Identifier: FSL-1.1-MIT
@@ -393,10 +435,14 @@ contract DailyTransferLimitComplianceModule is AbstractComplianceModule {
 }
 ```
 
+</Step>
+
+<Step>
+
 ### Test your compliance module
 
 Create tests in
-`kit/contracts/test/smart/modules/DailyTransferLimitComplianceModule.t.sol`:
+[`kit/contracts/test/smart/modules/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/test/smart/modules):
 
 ```solidity
 // SPDX-License-Identifier: FSL-1.1-MIT
@@ -445,6 +491,10 @@ contract DailyTransferLimitComplianceModuleTest is AbstractComplianceModuleTest 
 }
 ```
 
+</Step>
+
+<Step>
+
 ### Register and use the module
 
 Compliance modules are registered globally and then added to individual tokens:
@@ -481,13 +531,15 @@ await viem.writeContract({
 });
 ```
 
+</Step>
+
 </Steps>
 
 ## Using addons
 
 Addons provide pre-built functionality for airdrops, vaults, settlements, and
 yield schedules. See the comprehensive addon documentation in
-`kit/contracts/contracts/addons/README.md:1-493`.
+[`kit/contracts/contracts/addons/README.md`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/README.md).
 
 ### Example: Deploy a time-bound airdrop
 
@@ -630,12 +682,17 @@ forge coverage
 forge test -vvvv
 ```
 
-Test utilities are in `kit/contracts/test/utils/`:
+Test utilities are in
+[`kit/contracts/test/utils/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/test/utils):
 
-- `SystemUtils.sol` - Deploy ATK systems and modules
-- `IdentityUtils.sol` - Create identities and claims
-- `TokenUtils.sol` - Token operations and compliance setup
-- `ClaimUtils.sol` - Generate Merkle proofs for airdrops
+- [`SystemUtils.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/test/utils/SystemUtils.sol) -
+  Deploy ATK systems and modules
+- [`IdentityUtils.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/test/utils/IdentityUtils.sol) -
+  Create identities and claims
+- [`TokenUtils.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/test/utils/TokenUtils.sol) -
+  Token operations and compliance setup
+- [`ClaimUtils.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/test/utils/ClaimUtils.sol) -
+  Generate Merkle proofs for airdrops
 
 ### Integration tests with Hardhat
 
@@ -654,8 +711,9 @@ bun run test:hardhat
 bun run deploy:local
 ```
 
-Deployment scripts are in `kit/contracts/ignition/modules/` and use Hardhat
-Ignition for deterministic deployments.
+Deployment scripts are in
+[`kit/contracts/ignition/modules/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/ignition/modules)
+and use Hardhat Ignition for deterministic deployments.
 
 ### Test organization
 
@@ -768,16 +826,20 @@ function _beforeTransfer(address from, address to, uint256 amount)
 
 ## Next steps
 
-- **Explore compliance modules**: See `kit/contracts/contracts/smart/modules/`
+- **Explore compliance modules**: See
+  [`kit/contracts/contracts/smart/modules/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/contracts/smart/modules)
   for built-in examples
-- **Review addon system**: Read `kit/contracts/contracts/addons/README.md` for
-  airdrop, vault, and settlement patterns
-- **Study tests**: Look at `kit/contracts/test/assets/ATKBond.t.sol` for
-  comprehensive asset test examples
-- **Check deployment**: Review `kit/contracts/ignition/modules/` for production
-  deployment patterns
+- **Review addon system**: Read
+  [`kit/contracts/contracts/addons/README.md`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/README.md)
+  for airdrop, vault, and settlement patterns
+- **Study tests**: Look at
+  [`ATKBond.t.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/test/assets/ATKBond.t.sol)
+  for comprehensive asset test examples
+- **Check deployment**: Review
+  [`kit/contracts/ignition/modules/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/ignition/modules)
+  for production deployment patterns
 - **Read SMART documentation**: Understand extension composition in
-  `kit/contracts/contracts/smart/README.md`
+  [`kit/contracts/contracts/smart/README.md`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/README.md)
 
 For API integration and frontend usage of your custom contracts, continue to
 [Using the API](/developer-guides/api-integration/using-api).

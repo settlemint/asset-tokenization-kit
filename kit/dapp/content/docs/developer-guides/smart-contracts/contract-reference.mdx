@@ -33,14 +33,16 @@ Asset-Specific Extensions
 └── ISMARTHistoricalBalances
 ```
 
-All contract source code is in `kit/contracts/contracts/`. Interface files
-follow the `I*.sol` naming convention.
+All contract source code is in
+[`kit/contracts/contracts/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/contracts).
+Interface files follow the `I*.sol` naming convention.
 
 ## Core token interfaces
 
 ### IATKToken
 
-**Location**: `kit/contracts/contracts/system/tokens/IATKToken.sol:1-30`
+**Location**:
+[`IATKToken.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/system/tokens/IATKToken.sol)
 
 Unified interface combining SMART token standard with access management. All ATK
 tokens implement this interface.
@@ -66,7 +68,8 @@ function checkBalance(IATKToken token, address holder) external view returns (ui
 
 ### ISMART
 
-**Location**: `kit/contracts/contracts/smart/interface/ISMART.sol:1-400`
+**Location**:
+[`ISMART.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/interface/ISMART.sol)
 
 Core ERC-3643 security token interface with compliance and identity integration.
 
@@ -137,7 +140,8 @@ error ZeroAddressNotAllowed();
 
 #### IATKBond
 
-**Location**: `kit/contracts/contracts/assets/bond/IATKBond.sol:1-150`
+**Location**:
+[`IATKBond.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/assets/bond/IATKBond.sol)
 
 Bond-specific interface extending IATKToken with maturity and redemption
 features.
@@ -210,7 +214,7 @@ error InvalidRedemptionAmount();
 ### ISMARTBurnable
 
 **Location**:
-`kit/contracts/contracts/smart/extensions/burnable/ISMARTBurnable.sol:1-51`
+[`ISMARTBurnable.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/extensions/burnable/ISMARTBurnable.sol)
 
 Token burning (destruction) operations.
 
@@ -232,7 +236,7 @@ event BurnCompleted(address indexed sender, address indexed from, uint256 indexe
 ### ISMARTPausable
 
 **Location**:
-`kit/contracts/contracts/smart/extensions/pausable/ISMARTPausable.sol:1-61`
+[`ISMARTPausable.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/extensions/pausable/ISMARTPausable.sol)
 
 Emergency pause functionality to halt token transfers.
 
@@ -263,7 +267,7 @@ error ExpectedPause();
 ### ISMARTCustodian
 
 **Location**:
-`kit/contracts/contracts/smart/extensions/custodian/ISMARTCustodian.sol:1-200`
+[`ISMARTCustodian.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/extensions/custodian/ISMARTCustodian.sol)
 
 Custodial operations including freezing, forced transfers, and wallet recovery.
 
@@ -409,7 +413,7 @@ function totalSupplyAt(uint256 blockNumber) external view returns (uint256);
 ### ISMARTComplianceModule
 
 **Location**:
-`kit/contracts/contracts/smart/interface/ISMARTComplianceModule.sol:1-150`
+[`ISMARTComplianceModule.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/interface/ISMARTComplianceModule.sol)
 
 Interface for all compliance modules that enforce transfer restrictions.
 
@@ -450,7 +454,8 @@ error ComplianceCheckFailed(string reason);
 error InvalidParameters(string reason);
 ```
 
-**Built-in modules** (in `kit/contracts/contracts/smart/modules/`):
+**Built-in modules** (in
+[`kit/contracts/contracts/smart/modules/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/contracts/smart/modules)):
 
 - `CountryAllowListComplianceModule` - Restrict to specific countries
 - `CountryBlockListComplianceModule` - Block specific countries
@@ -488,7 +493,8 @@ function isModuleBound(address module) external view returns (bool);
 
 ### Role definitions
 
-**Location**: `kit/contracts/contracts/assets/ATKAssetRoles.sol:1-29`
+**Location**:
+[`ATKAssetRoles.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/assets/ATKAssetRoles.sol)
 
 All token operations are protected by role-based access control using these
 roles:
@@ -622,7 +628,8 @@ function createToken(
 
 ### Asset factory implementations
 
-Each asset type has its own factory in `kit/contracts/contracts/assets/`:
+Each asset type has its own factory in
+[`kit/contracts/contracts/assets/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/contracts/assets):
 
 - `ATKBondFactoryImplementation` - Deploy bond tokens
 - `ATKEquityFactoryImplementation` - Deploy equity tokens
@@ -636,8 +643,10 @@ Contract ABIs are automatically generated during build and exported to
 
 **Access ABIs in TypeScript**:
 
-Generated TypeScript bindings are available in `kit/dapp/src/lib/contracts/`
-after running `bun run artifacts` in `kit/contracts/`.
+Generated TypeScript bindings are available in
+[`kit/dapp/src/lib/contracts/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/dapp/src/lib/contracts)
+after running `bun run artifacts` in
+[`kit/contracts/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts).
 
 ```typescript
 import { atkBondAbi } from "@/lib/contracts/ATKBondImplementation";
@@ -716,7 +725,8 @@ function mint(address to, uint256 amount) external {
 
 Interact with contracts in tests using Foundry or Hardhat:
 
-**Foundry example** (`kit/contracts/test/assets/ATKBond.t.sol`):
+**Foundry example**
+([`ATKBond.t.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/test/assets/ATKBond.t.sol)):
 
 ```solidity
 import { Test } from "forge-std/Test.sol";
@@ -782,7 +792,7 @@ describe("ATKBond", function () {
   [Extending Contracts](/developer-guides/smart-contracts/extending-contracts)
   for customization
 - **Explore implementations**: Review actual contract code in
-  `kit/contracts/contracts/`
+  [`kit/contracts/contracts/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/contracts)
 
 For API integration with these contracts, refer to
 [API Reference](/developer-guides/api-integration/api-reference).

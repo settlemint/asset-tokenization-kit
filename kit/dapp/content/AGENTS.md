@@ -320,6 +320,22 @@ accuracy and clarity, optimized for both human readers and AI search indexing.
   accessibility by being well-structured and using semantic markup (headings,
   lists, etc. which we are doing).
 
+### Code References
+
+- **GitHub Links:** When referencing code (functions, classes, contracts,
+  components), always include direct links to the source on GitHub:
+  - Format:
+    `[function_name](https://github.com/settlemint/asset-tokenization-kit/blob/main/path/to/file.ext#L123)`
+    where `#L123` points to the specific line
+  - Example:
+    `[validateTransfer](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/compliance/TransferRestrictions.sol#L45)`
+    function in compliance contracts
+  - For line ranges, use `#L10-L25` format
+  - Always use permalinks (commit SHA) for stability when possible, or `main`
+    branch for current version
+  - This applies to all documentation: guides, architecture docs, API
+    references, tutorials
+
 ### Content Development Process (Plan to Complete)
 
 To successfully produce this large volume of content with accuracy and quality,

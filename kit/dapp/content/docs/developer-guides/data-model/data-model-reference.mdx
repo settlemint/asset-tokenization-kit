@@ -38,12 +38,14 @@ On-Chain Data (TheGraph Subgraph)
 <Tabs items={["Database (PostgreSQL)", "Subgraph (TheGraph)"]}>
 <Tab value="Database (PostgreSQL)">
 
-All database schemas are defined in `kit/dapp/src/lib/db/schemas/` using Drizzle
-ORM.
+All database schemas are defined in
+[`kit/dapp/src/lib/db/schemas/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/dapp/src/lib/db/schemas)
+using Drizzle ORM.
 
 ### Authentication schema
 
-**Location**: `kit/dapp/src/lib/db/schemas/auth.ts:1-131`
+**Location**:
+[`auth.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/lib/db/schemas/auth.ts)
 
 #### `user` table
 
@@ -225,7 +227,8 @@ WebAuthn passkeys for passwordless authentication.
 
 ### KYC schema
 
-**Location**: `kit/dapp/src/lib/db/schemas/kyc.ts:1-56`
+**Location**:
+[`kyc.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/lib/db/schemas/kyc.ts)
 
 #### `kyc_profiles` table
 
@@ -263,7 +266,8 @@ User KYC/identity verification data.
 
 ### Exchange Rates schema
 
-**Location**: `kit/dapp/src/lib/db/schemas/exchange-rates.ts:1-304`
+**Location**:
+[`exchange-rates.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/lib/db/schemas/exchange-rates.ts)
 
 Dual-table design optimized for fast current rate access and historical
 analysis.
@@ -345,7 +349,8 @@ Current exchange rates cache for O(1) retrieval.
 
 ### Settings schema
 
-**Location**: `kit/dapp/src/lib/db/schemas/settings.ts:1-46`
+**Location**:
+[`settings.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/lib/db/schemas/settings.ts)
 
 #### `settings` table
 
@@ -372,7 +377,8 @@ Application-wide configuration key-value store.
 </Tab>
 <Tab value="Subgraph (TheGraph)">
 
-**Location**: `kit/subgraph/schema.graphql:1-1500`
+**Location**:
+[`schema.graphql`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/subgraph/schema.graphql)
 
 The subgraph indexes all blockchain events and maintains denormalized views for
 efficient querying.
@@ -852,7 +858,8 @@ query GetRecentTransfers($token: Bytes!) {
 
 ### Database migrations
 
-Managed by Drizzle Kit in `kit/dapp/drizzle.config.ts`.
+Managed by Drizzle Kit in
+[`kit/dapp/drizzle.config.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/drizzle.config.ts).
 
 **Generate migration**:
 
@@ -879,9 +886,11 @@ Subgraph schema changes require redeployment.
 
 **Update schema**:
 
-1. Edit `kit/subgraph/schema.graphql`
-2. Regenerate types: `bun run codegen`
-3. Update mappings in `kit/subgraph/src/`
+1. Edit
+   [`kit/subgraph/schema.graphql`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/subgraph/schema.graphql)
+2. Run `bun run subgraph:codegen`
+3. Update mappings in
+   [`kit/subgraph/src/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/subgraph/src)
 4. Redeploy: `bun run deploy`
 
 ## Next steps
@@ -895,8 +904,10 @@ Subgraph schema changes require redeployment.
 - **Contract interactions**: Check
   [Contract Reference](/developer-guides/smart-contracts/contract-reference) for
   on-chain operations
-- **Review code**: Explore implementations in `kit/dapp/src/lib/db/` and
-  `kit/subgraph/src/`
+- **Review code**: Explore implementations in
+  [`kit/dapp/src/lib/db/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/dapp/src/lib/db)
+  and
+  [`kit/subgraph/src/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/subgraph/src)
 
 For testing strategies that validate data integrity, continue to
 [Testing & QA](/developer-guides/quality-assurance/testing-qa).

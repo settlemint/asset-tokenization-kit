@@ -31,6 +31,8 @@ reserve and collateral configuration.
 
 <Steps>
 
+<Step>
+
 ## Step 1: Navigate to stablecoin creation
 
 From the main dashboard:
@@ -42,6 +44,10 @@ From the main dashboard:
 ![Stablecoin creation navigation](/images/screenshots/placeholder.svg)
 _Screenshot: Asset Management section showing Stablecoins category with existing
 stablecoins list and Create New Stablecoin button_
+
+</Step>
+
+<Step>
 
 ## Step 2: Configure stablecoin parameters
 
@@ -132,6 +138,10 @@ For each collateral type, configure:
 Reserve management showing reserve wallet address field and collateral assets
 table with asset, allocation, haircut, and maximum percentage columns_
 
+</Step>
+
+<Step>
+
 ## Step 3: Configure issuance and redemption
 
 Stablecoins require regulated mint/burn workflows for peg maintenance.
@@ -190,6 +200,10 @@ selector, and limit configuration fields_
 
 **Circuit breaker:** Configure automatic redemption pause if reserve ratio drops
 below threshold (e.g., 95%).
+
+</Step>
+
+<Step>
 
 ## Step 4: Set compliance rules
 
@@ -269,6 +283,10 @@ Enable public data feeds:
 Attestation settings showing frequency selector, attestor address input,
 publication method options, and transparency toggles_
 
+</Step>
+
+<Step>
+
 ## Step 5: Assign operational roles
 
 Grant permissions for stablecoin management:
@@ -327,6 +345,10 @@ permission lists, and multisig indicators_
 **Critical requirement:** Use multisig wallets for SUPPLY_MANAGEMENT_ROLE and
 EMERGENCY_ROLE to prevent single-point-of-failure.
 
+</Step>
+
+<Step>
+
 ## Step 6: Review and deploy
 
 ### Pre-deployment checklist
@@ -368,6 +390,10 @@ Total deployment time: 60-90 seconds
 ![Deployment progress](/images/screenshots/placeholder.svg) _Screenshot:
 Deployment progress modal showing step-by-step deployment status with checkmarks
 and timestamps_
+
+</Step>
+
+<Step>
 
 ## Step 7: Post-issuance actions
 
@@ -435,6 +461,10 @@ Activate stablecoin minting:
 5. Save changes
 
 Authorized issuers can now mint stablecoins against reserves.
+
+</Step>
+
+<Step>
 
 ## Step 8: Operate stablecoin lifecycle
 
@@ -563,31 +593,7 @@ chart, and recommended actions panel_
 **Arbitrage mechanism:** Price deviations create arbitrage opportunities that
 naturally restore peg through redemption/issuance activity.
 
-### Execute reserve attestations
-
-Publish transparency reports:
-
-**Automated attestation:**
-
-If configured, platform automatically:
-
-1. Triggers attestation service at scheduled frequency
-2. Attestor verifies reserve balances (on-chain and off-chain)
-3. Attestor publishes signed attestation report
-4. Platform posts attestation hash on-chain
-5. Updates **Attestation** tab with latest report
-
-**Manual attestation:**
-
-1. Receive attestation report from auditor
-2. Navigate to **Attestation** &gt; **Post Report**
-3. Upload attestation PDF
-4. Enter attestation date and report hash
-5. Click **Publish Attestation**
-6. Share report link with community
-
-**Transparency requirement:** Most stablecoin regulations require monthly or
-quarterly attestation publication.
+</Step>
 
 </Steps>
 

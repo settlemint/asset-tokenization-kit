@@ -43,6 +43,8 @@ Before starting, ensure you have the following installed:
 
 <Steps>
 
+<Step>
+
 ### Clone the repository
 
 Start by cloning the Asset Tokenization Kit repository:
@@ -63,6 +65,10 @@ kit/
 └── e2e/        # Playwright end-to-end tests
 ```
 
+</Step>
+
+<Step>
+
 ### Install dependencies
 
 Install all workspace dependencies using Bun:
@@ -79,6 +85,10 @@ This command:
 
 The installation should complete in 1-2 minutes. If you encounter errors, check
 that your Bun version matches `package.json` (1.2.19).
+
+</Step>
+
+<Step>
 
 ### Generate artifacts
 
@@ -121,6 +131,10 @@ This command runs:
 **Important:** Re-run `bun run artifacts` whenever you modify smart contracts in
 `kit/contracts/contracts/`, database schemas in `kit/dapp/src/lib/db/schemas/`,
 or subgraph mappings in `kit/subgraph/src/`.
+
+</Step>
+
+<Step>
 
 ### Configure environment variables
 
@@ -189,6 +203,10 @@ ports.
   **Important:** Never commit `.env.local` to version control. It's already in
   `.gitignore`.
 </Banner>
+
+</Step>
+
+<Step>
 
 ### Start Docker services
 
@@ -266,6 +284,8 @@ The dApp starts on **http://localhost:3000** with:
 1. Navigate to http://localhost:3000 in your browser
 2. Click "Sign In" to create a test account
 3. Follow the onboarding wizard to set up your wallet and identity
+
+</Step>
 
 </Steps>
 

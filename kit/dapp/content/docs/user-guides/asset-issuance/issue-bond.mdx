@@ -46,6 +46,8 @@ configuration
 
 <Steps>
 
+<Step>
+
 ### Navigate to bond creation
 
 From your dashboard:
@@ -57,6 +59,10 @@ From your dashboard:
 ![Bond creation navigation](/images/screenshots/placeholder.svg) _Screenshot:
 Asset Management section showing Bonds category with existing bonds list and
 Create New Bond Token button_
+
+</Step>
+
+<Step>
 
 ### Configure bond parameters
 
@@ -120,6 +126,10 @@ asset address field with validation_
 - Denomination asset: 0x...USDC (USDC stablecoin)
 - Result: Each bond token redeems for 1,000 USDC at maturity
 
+</Step>
+
+<Step>
+
 ### 3. Configure yield distribution (optional)
 
 You can enable automated interest/coupon payments through the yield add-on.
@@ -167,6 +177,10 @@ When a payment date arrives:
 
 **Funding requirement:** Ensure your designated yield wallet holds sufficient
 denomination assets before each payment date.
+
+</Step>
+
+<Step>
 
 ### 4. Set compliance rules
 
@@ -224,6 +238,10 @@ Configure additional limits:
 _Screenshot: Compliance modules showing Country Allow List, Identity
 Verification, and Time Lock modules with configuration panels_
 
+</Step>
+
+<Step>
+
 ### 5. Assign operational roles
 
 Grant permissions for bond management.
@@ -280,6 +298,10 @@ current assignments_
 separation of duties. Use multisig wallets for GOVERNANCE_ROLE and
 EMERGENCY_ROLE.
 
+</Step>
+
+<Step>
+
 ### 6. Review and deploy
 
 #### Pre-deployment checklist
@@ -320,6 +342,10 @@ Your deployment will:
 ![Deployment progress](/images/screenshots/placeholder.svg) _Screenshot:
 Deployment progress modal showing checklist of deployment steps with status
 indicators (pending/in progress/complete)_
+
+</Step>
+
+<Step>
 
 ### 7. Post-issuance actions
 
@@ -377,6 +403,10 @@ Link legal documentation to your token:
 5. The document hash is displayed for verification
 
 Your investors can verify document authenticity by comparing hashes.
+
+</Step>
+
+<Step>
 
 ### 8. Manage bond lifecycle
 
@@ -467,6 +497,8 @@ If an investor reports a compromised wallet (requires CUSTODIAN_ROLE):
    - Enter the frozen address and new recovery address
    - Execute forced transfer
 5. Unfreeze the new address
+
+</Step>
 
 </Steps>
 

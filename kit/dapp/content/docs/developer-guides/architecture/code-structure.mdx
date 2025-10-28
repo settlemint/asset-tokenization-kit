@@ -127,12 +127,16 @@ contracts/
 
 **Key files:**
 
-- `contracts/system/ATKSystemImplementation.sol` - Main system contract
-  coordinating all components
-- `contracts/assets/*/ATK*FactoryImplementation.sol` - Token factory patterns
-- `scripts/hardhat/main.ts` - Entry point for deployment scripts
-- `foundry.toml` - Foundry configuration (compiler version, optimizer settings)
-- `hardhat.config.ts` - Hardhat network and plugin configuration
+- [`contracts/system/ATKSystemImplementation.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/system/ATKSystemImplementation.sol) -
+  Main system contract coordinating all components
+- [`contracts/assets/*/ATK*FactoryImplementation.sol`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/contracts/assets) -
+  Token factory patterns
+- [`scripts/hardhat/main.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/scripts/hardhat/main.ts) -
+  Entry point for deployment scripts
+- [`foundry.toml`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/foundry.toml) -
+  Foundry configuration (compiler version, optimizer settings)
+- [`hardhat.config.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/hardhat.config.ts) -
+  Hardhat network and plugin configuration
 
 **Build outputs:**
 
@@ -213,12 +217,18 @@ dapp/
 
 **Key files:**
 
-- `src/routes/__root.tsx` - Root layout with theme provider, auth, query client
-- `src/orpc/routes/*/` - API implementation organized by domain
-- `src/lib/db/schemas/` - Database table schemas (Drizzle ORM)
-- `src/lib/auth/index.ts` - Authentication configuration (Better Auth)
-- `drizzle.config.ts` - Database connection and migration settings
-- `vitest.config.ts` - Test configuration with unit and integration projects
+- [`src/routes/__root.tsx`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/routes/__root.tsx) -
+  Root layout with theme provider, auth, query client
+- [`src/orpc/routes/*/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/dapp/src/orpc/routes) -
+  API implementation organized by domain
+- [`src/lib/db/schemas/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/dapp/src/lib/db/schemas) -
+  Database table schemas (Drizzle ORM)
+- [`src/lib/auth/index.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/lib/auth/index.ts) -
+  Authentication configuration (Better Auth)
+- [`drizzle.config.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/drizzle.config.ts) -
+  Database connection and migration settings
+- [`vitest.config.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/vitest.config.ts) -
+  Test configuration with unit and integration projects
 
 **Build outputs:**
 
