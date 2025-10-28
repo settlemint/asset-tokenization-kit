@@ -21,6 +21,67 @@ export default defineConfig({
     target: "es2023",
     sourcemap: true,
     rollupOptions: {
+      output: {
+        manualChunks: (id: string) => {
+          // Skip node_modules processing for non-vendor chunks
+          if (!id.includes("node_modules")) {
+            return;
+          }
+
+          // Chart libraries - lazy-loaded by chart components
+          if (id.includes("recharts")) {
+            return "vendor-charts";
+          }
+
+          // Documentation libraries - only loaded in /docs routes
+          if (id.includes("mermaid") || id.includes("katex")) {
+            return "vendor-docs";
+          }
+
+          // Table utilities - code-split for table-heavy routes
+          if (id.includes("@tanstack/react-table")) {
+            return "vendor-tables";
+          }
+
+          // Core UI libraries - used across many routes
+          if (id.includes("@radix-ui")) {
+            return "vendor-ui";
+          }
+
+          // Form libraries - code-split for form-heavy routes
+          if (id.includes("@tanstack/react-form")) {
+            return "vendor-forms";
+          }
+
+          // React core ecosystem - shared across all routes
+          if (
+            id.includes("react") ||
+            id.includes("react-dom") ||
+            id.includes("react/") ||
+            id.includes("scheduler")
+          ) {
+            return "vendor-react-core";
+          }
+
+          // TanStack Query & Router - used throughout app
+          if (
+            id.includes("@tanstack/react-query") ||
+            id.includes("@tanstack/query-") ||
+            id.includes("@tanstack/react-router") ||
+            id.includes("@tanstack/router-")
+          ) {
+            return "vendor-tanstack";
+          }
+
+          // Blockchain libraries - viem, etc
+          if (id.includes("viem") || id.includes("@noble")) {
+            return "vendor-blockchain";
+          }
+
+          // Everything else goes to vendor
+          return "vendor";
+        },
+      },
       onwarn(
         warning: MinimalRollupWarning,
         warn: (warning: MinimalRollupWarning) => void

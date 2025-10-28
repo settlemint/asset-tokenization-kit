@@ -4,7 +4,6 @@ import * as BannerComponents from "@/components/docs/components/banner";
 import * as CodeBlockComponents from "@/components/docs/components/codeblock";
 import { DocsBreadcrumb } from "@/components/docs/components/docs-breadcumb";
 import * as FilesComponents from "@/components/docs/components/files";
-import { Mermaid } from "@/components/docs/components/mermaid";
 import * as StepsComponents from "@/components/docs/components/steps";
 import * as TabsComponents from "@/components/docs/components/tabs";
 import { DocsLayout } from "@/components/docs/docs";
@@ -15,7 +14,27 @@ import { createServerFn } from "@tanstack/react-start";
 import type * as PageTree from "fumadocs-core/page-tree";
 import { createClientLoader } from "fumadocs-mdx/runtime/vite";
 import defaultMdxComponents from "fumadocs-ui/mdx";
-import { useMemo } from "react";
+import { lazy, Suspense, useMemo } from "react";
+
+const Mermaid = lazy(() =>
+  import("@/components/docs/components/mermaid").then((mod) => ({
+    default: mod.Mermaid,
+  }))
+);
+
+function MermaidWithSuspense(props: { chart: string }) {
+  return (
+    <Suspense
+      fallback={
+        <div className="h-32 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded p-4 text-center text-gray-400">
+          Loading diagram...
+        </div>
+      }
+    >
+      <Mermaid {...props} />
+    </Suspense>
+  );
+}
 
 export const Route = createFileRoute("/docs/$")({
   component: Page,
@@ -73,7 +92,7 @@ const clientLoader = createClientLoader(docs.doc, {
               ...CodeBlockComponents,
               ...FilesComponents,
               ...StepsComponents,
-              Mermaid,
+              Mermaid: MermaidWithSuspense,
             }}
           />
         </DocsBody>
