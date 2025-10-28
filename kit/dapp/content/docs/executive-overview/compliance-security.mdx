@@ -7,10 +7,28 @@ pageTitle: Compliance, security, and trust in ATK
 tags: [concept, compliance, security, trust, regulations]
 ---
 
+## Overview
+
+This page explains ATK's compliance and security architecture for executives
+evaluating regulatory requirements and risk management. You'll learn how
+compliance is embedded in transaction execution, how identity verification
+works, what security controls protect assets, and how the platform aligns with
+regulatory frameworks.
+
+## Key terms
+
+- **[ERC-3643](/docs/executive-overview/glossary#erc-3643)** – Token standard
+  embedding compliance checks in transfer execution
+- **[OnchainID](/docs/executive-overview/glossary#onchainid)** – Decentralized
+  identity protocol for portable investor credentials
+- **[HSM](/docs/executive-overview/glossary#hsm)** – Hardware Security Module
+  providing tamper-resistant key storage
+- **[Multi-signature](/docs/executive-overview/glossary#multi-signature-wallet)**
+  – Wallet requiring multiple approvals for transactions
+
 ## Why institutions need compliance-first architecture
 
-Risk committees don't approve blockchain projects because the technology is
-interesting. They approve platforms that demonstrate control, auditability, and
+Risk committees approve platforms that demonstrate control, auditability, and
 regulatory alignment from the ground up. ATK was architected with this reality
 as the foundational requirement.
 
@@ -20,14 +38,11 @@ enforce security controls before releasing assets, clearing houses guarantee
 settlement finality. These processes exist because regulators mandated them
 after costly failures.
 
-Blockchain technology promises to streamline these processes, but only if the
-platform implements controls at least as robust as what exists today. Replacing
-paper certificates with tokens while removing compliance controls isn't
-progress—it's a path to regulatory shutdown.
-
-ATK implements compliance as embedded infrastructure, not as an optional feature
-you enable through configuration. The architecture makes non-compliant
-operations impossible by design.
+Blockchain technology streamlines these processes when the platform implements
+controls at least as robust as what exists today. ATK implements compliance as
+embedded infrastructure, not as an optional configuration feature. The
+architecture prevents non-compliant transfers through smart contract
+enforcement.
 
 ## Regulatory compliance by design
 
@@ -126,24 +141,12 @@ verifiers who can respond to legal requests.
 
 Different jurisdictions have different rules. US Regulation D requires
 accredited investors for private placements. EU MiFID II has its own investor
-classification schemes. Singapore MAS has fit-and-proper requirements. Gulf
-Cooperation Council markets may have Shariah compliance considerations.
+classification schemes. Singapore MAS has fit-and-proper requirements.
 
 ATK's Compliance Engine implements these as configurable rule modules that
-compliance officers activate for specific assets.
-
-**The Rule Library includes pre-built templates:**
-
-- **US Regulation D**: Accredited investor requirements, integration with 506(b)
-  vs 506(c) advertising restrictions, blue sky law considerations
-- **US Regulation S**: Non-US person verification, offering restrictions,
-  seasoning periods
-- **EU MiCA**: Investor classification, passporting requirements, disclosure
-  obligations
-- **Singapore MAS**: Institutional vs retail investor gates, prospectus
-  requirements, corporate disclosure
-- **UK FCA**: Sophisticated investor tests, high-net-worth certifications,
-  appropriateness assessments
+compliance officers activate for specific assets. The Rule Library provides a
+framework for jurisdiction-specific compliance including US (Regulation D,
+Regulation S), EU (MiCA, MiFID II), Singapore (MAS), and UK (FCA) requirements.
 
 **Configurable compliance modules enforce:**
 
@@ -309,9 +312,9 @@ cannot change compliance rules.
 
 ### Hardware security modules and custody integration
 
-Private keys controlling substantial value require hardware protection. ATK
-supports integration with HSMs (Hardware Security Modules) that store keys in
-tamper-resistant hardware.
+Private keys controlling substantial value require hardware protection. ATK is
+architected to integrate with HSMs (Hardware Security Modules) that store keys
+in tamper-resistant hardware (integration roadmap).
 
 **HSM benefits:**
 
@@ -321,16 +324,10 @@ tamper-resistant hardware.
 - Audit logs track every use of every key
 - Cryptographic evidence proves which keys signed which transactions
 
-**For institutions that already use custodians**, ATK integrates with:
-
-- **Fireblocks**: MPC-based institutional custody with policy engine
-- **Coinbase Custody**: Regulated custodian with insurance and SOC 2 compliance
-- **Copper**: ClearLoop settlement with custodial security
-- **Metaco**: Harmonize platform for digital asset custody and orchestration
-
-Integration means you can keep your existing custody relationship while gaining
-ATK's lifecycle management capabilities. The platform doesn't force you to trust
-new custody providers.
+**For institutions that already use custodians**, ATK is designed to integrate
+with enterprise custodians like Fireblocks, Coinbase Custody, Copper, and Metaco
+(integration roadmap). The goal is to let institutions keep existing custody
+relationships while gaining ATK's lifecycle management capabilities.
 
 ### Network security and access controls
 
@@ -391,7 +388,8 @@ make mistakes. ATK includes procedures for recovery:
 ATK implements or aligns with:
 
 - **ERC-3643**: T-REX standard for permissioned token transfers
-- **ISO 20022**: Financial messaging standard for payment integration
+- **ISO 20022**: Financial messaging standard (architectural design target for
+  payment integration)
 - **OpenID Connect**: Standard for identity federation
 - **OAuth 2.0**: Authorization framework for API access
 - **FIDO2/WebAuthn**: Strong authentication standards
@@ -428,27 +426,25 @@ your deployment can pursue with ATK's architecture supporting the requirements.
 Risk committees approve platforms that demonstrate control. ATK provides:
 
 - **Compliance evidence** through audit trails showing every eligibility check
-- **Security controls** with multi-signature operations and HSM integration
+- **Security controls** with multi-signature operations and planned HSM
+  integration
 - **Regulatory alignment** via jurisdiction-specific rule templates
 - **Privacy protection** balancing transparency with data protection
   requirements
 - **Operational resilience** through high availability and disaster recovery
 
-Compliance isn't bolted on. Security isn't an afterthought. Privacy isn't in
-tension with transparency. These are architectural foundations that enable
-institutional adoption.
+Compliance is embedded from the start. Security is built into the architecture.
+Privacy coexists with transparency. These are architectural foundations that
+enable institutional adoption.
 
-When you present ATK to your risk committee, you're presenting a platform that
-was designed from inception for regulated financial instruments with proper
-institutional controls. That's the difference between blockchain experimentation
-and production infrastructure.
+When you present ATK to your risk committee, you're presenting a platform
+designed from inception for regulated financial instruments with proper
+institutional controls.
 
-The next sections dive deeper into architecture, explore technical capabilities
-for developers, and provide operational guides for administrators. But the
-executive takeaway is this: ATK is compliance-native, security-first
-infrastructure built for institutions that have real regulatory obligations and
-real fiduciary responsibilities.
+## Where to next
 
-That's not a marketing position. That's the architectural reality that makes
-deployment possible in regulated markets where compliance isn't optional and
-security gaps don't get second chances.
+- **[ATK overview](/docs/executive-overview/atk-overview)** – Platform features
+  and capabilities
+- **[Architecture](/docs/architecture)** – Technical details on system design
+  and components
+- **[Glossary](/docs/executive-overview/glossary)** – Key terms and definitions

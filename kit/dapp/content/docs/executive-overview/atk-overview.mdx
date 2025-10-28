@@ -7,26 +7,41 @@ pageTitle: Overview of the SettleMint asset tokenization kit
 tags: [concept, product-overview, features, value]
 ---
 
+## Overview
+
+This page explains the Asset Tokenization Kit (ATK) as SettleMint's
+implementation of DALP principles. You'll learn what ATK provides, which asset
+classes it supports, how compliance and security work in practice, and what
+outcomes institutions achieve.
+
+## Key terms
+
+- **[ATK](/docs/executive-overview/glossary#atk)** – Asset Tokenization Kit,
+  SettleMint's production DALP implementation
+- **[ERC-3643](/docs/executive-overview/glossary#erc-3643)** – Token standard
+  for permissioned securities with embedded compliance
+- **[SMART Protocol](/docs/executive-overview/glossary#smart-protocol)** –
+  SettleMint Adaptable Regulated Token protocol providing unified compliance
+- **[Multi-signature wallet](/docs/executive-overview/glossary#multi-signature-wallet)**
+  – Wallet requiring multiple approvals for transactions
+
 ## What the Asset Tokenization Kit is
 
-The SettleMint Asset Tokenization Kit (ATK) is our production-ready
-implementation of a Digital Asset Lifecycle Platform. It's not a prototype, not
-a collection of demos, not vaporware with impressive slide decks. It's working
-software that institutions can deploy today to manage the complete lifecycle of
-tokenized securities from issuance through redemption.
+The SettleMint Asset Tokenization Kit (ATK) is a production-ready implementation
+of a Digital Asset Lifecycle Platform. It's working software that institutions
+can deploy to manage the complete lifecycle of tokenized securities from
+issuance through redemption.
 
 ATK provides everything needed to create, manage, and service tokenized bonds,
 equities, funds, stablecoins, and deposit certificates in one integrated
 platform. The compliance engine, custody controls, settlement coordination, and
-operational tooling work together because they were architected together, not
-retrofitted through integration code.
+operational tooling work together because they were architected together.
 
-When we say "full-stack," we mean it literally. Smart contracts that implement
-compliance-aware tokens. A modern web application for issuers, administrators,
-and investors. Backend APIs and services for integration. Blockchain indexing
-for real-time ownership registries. Database schemas for off-chain data.
-Deployment infrastructure for production operations. Developer documentation and
-SDKs for customization. It's the complete stack, not just one layer.
+The full-stack includes smart contracts implementing compliance-aware tokens, a
+modern web application for issuers, administrators, and investors, backend APIs
+and services for integration, blockchain indexing for real-time ownership
+registries, database schemas for off-chain data, deployment infrastructure for
+production operations, and developer documentation and SDKs for customization.
 
 The platform is opinionated about architecture—unified lifecycle management with
 embedded compliance—but flexible about deployment. Run it on-premises, in your
@@ -87,11 +102,11 @@ requirements, whether the transfer violates holding limits or lockup periods,
 and whether jurisdictional rules permit the transaction. Non-compliant transfers
 revert with clear reason codes explaining why.
 
-The Rule Library provides jurisdiction-specific templates for major markets:
-Regulation D and Regulation S for US securities, MiFID II and MiCA for European
-instruments, MAS frameworks for Singapore, FCA requirements for UK, and
-extensible modules for other jurisdictions. Compliance officers configure rules
-through UI controls rather than writing smart contract code.
+The Rule Library provides a configurable framework for jurisdiction-specific
+compliance. The platform supports templates for Regulation D and Regulation S
+(US), MiFID II and MiCA (Europe), MAS frameworks (Singapore), and FCA
+requirements (UK). Compliance officers configure rules through UI controls
+rather than writing smart contract code.
 
 The Audit Trail captures every decision: which rules were evaluated, which
 identity claims were verified, which administrators approved exceptions, with
@@ -105,17 +120,19 @@ operations. No single person can move assets unilaterally. The platform enforces
 maker-checker workflows where one admin proposes a transaction and others
 approve before execution.
 
-HSM Integration supports hardware security modules for storing private keys in
-tamper-resistant devices. Keys never leave the HSM; signing happens inside the
-secure enclave. This meets bank-grade requirements for key management.
+HSM Integration is architected to support hardware security modules for storing
+private keys in tamper-resistant devices, meeting bank-grade key management
+requirements (integration roadmap). Keys would never leave the HSM; signing
+would happen inside the secure enclave.
 
 Role-Based Access Control (RBAC) defines who can perform which operations: token
 creation, compliance approval, treasury transactions, administrative settings.
 Permissions map to organizational hierarchies with proper segregation of duties.
 
-Integration APIs connect to enterprise custodians like Fireblocks, Coinbase
-Custody, Copper, or Metaco. Institutions that already trust a custodian can
-continue using them while gaining ATK's lifecycle management capabilities.
+The platform is designed to integrate with enterprise custodians like
+Fireblocks, Coinbase Custody, Copper, or Metaco (integration roadmap).
+Institutions that already trust a custodian could continue using them while
+gaining ATK's lifecycle management capabilities.
 
 The platform assumes keys will be stolen, employees will make mistakes, and
 external attacks will occur. Security is defense in depth: multiple layers that
@@ -173,23 +190,23 @@ Kubernetes environment: public cloud, private cloud, or on-premises.
 
 ### Banking and payment integration
 
-The Fiat Bridge connects tokenized assets to traditional banking rails. When an
-investor deposits fiat to purchase stablecoins, the platform detects the
-incoming wire, verifies it meets requirements, and mints corresponding tokens
-automatically. When they redeem, tokens burn and fiat transfer initiates through
-SWIFT or SEPA connectivity.
+The platform supports manual treasury workflows where operators verify fiat
+deposits, process stablecoin minting, and coordinate redemptions. Automation of
+banking rails integration through SWIFT or SEPA connectivity is a planned
+capability.
 
-ISO 20022 message translation ensures traditional treasury systems can process
-blockchain transactions without learning new formats. A token transfer generates
-standard MT messages that core banking platforms recognize.
+ISO 20022 message translation is an architectural design target to ensure
+traditional treasury systems can process blockchain transactions without
+learning new formats. The goal is for token transfers to generate standard
+messages that core banking platforms recognize.
 
 Multi-currency support handles assets denominated in different fiat currencies
-with proper FX tracking. The same platform manages USD bonds, EUR stablecoins,
-and SGD deposit certificates without requiring separate deployments.
+with proper tracking. The same platform manages USD bonds, EUR stablecoins, and
+SGD deposit certificates without requiring separate deployments.
 
 Payment versus Payment (PvP) settlement coordinates multi-leg transactions where
-one token exchanges for another token or fiat, with atomicity guarantees
-ensuring both legs complete or both revert.
+one token exchanges for another token, with atomicity guarantees ensuring both
+legs complete or both revert.
 
 ## How it works (simplified architecture)
 
@@ -258,50 +275,47 @@ flowchart TB
 `}
 />
 
-The architecture separates concerns cleanly: user interfaces for different
-personas, API layer for integration and business logic, blockchain layer for
-immutable truth and compliance enforcement, data layer for performance and
-querying, and external integrations for interoperability with existing systems.
-
-Data flows bidirectionally: user actions flow down through the API to smart
-contracts and databases; blockchain events flow up through indexers to update
-the API and user interfaces. The platform maintains consistency across all
-layers without manual reconciliation.
+The architecture separates concerns: user interfaces for different personas, API
+layer for integration and business logic, blockchain layer for immutable truth
+and compliance enforcement, data layer for performance and querying, and
+external integrations for interoperability with existing systems. Data flows
+bidirectionally—user actions flow down through the API to smart contracts and
+databases; blockchain events flow up through indexers to update the API and user
+interfaces.
 
 ## Benefits and tangible outcomes
 
 **Faster time to market**: Issuers go from term sheet to live token in days
 instead of months. Templates handle compliance structure, factory contracts
 deploy tokens automatically, and the platform eliminates most custom
-development. Early adopters report **4× faster smart contract delivery** and
-**8× faster frontend development** compared to building from scratch.
+development.
 
 **Reduced operational overhead**: Corporate actions that took teams of people
 and multiple days execute automatically. Dividend distributions, coupon
 payments, NAV updates, and redemptions happen programmatically without manual
 calculations or reconciliation.
 
-**Compliance confidence**: Zero non-compliant transactions because eligibility
-checks happen before execution. Regulators see a platform architected for
-control, not one where compliance was bolted on afterward. Risk committees
-approve deployments faster when the architecture demonstrates proper controls.
+**Compliance confidence**: Non-compliant transactions don't execute because
+eligibility checks happen before execution. Regulators see a platform
+architected for control. Risk committees approve deployments faster when the
+architecture demonstrates proper controls.
 
 **Better investor experience**: Real-time holdings visibility, instant
 settlement, automated distributions, and transparent audit trails replace
 quarterly statements and opaque processes. Investor support tickets drop because
 the platform provides self-service transparency.
 
-**Lower total cost of ownership**: One platform replacing five vendors means one
-contract to negotiate, one security review, one integration project, one support
-relationship. Procurement cycles shrink from months to weeks.
+**Lower total cost of ownership**: One platform replacing multiple vendors means
+one contract to negotiate, one security review, one integration project, one
+support relationship. Procurement cycles shrink from months to weeks.
 
 ## Who's using ATK and for what
 
-Production deployments span multiple use cases. Asset managers are tokenizing
-private fund units to automate administration and enable secondary trading.
-Banks are issuing deposit certificates as programmable tokens with automated
-maturity processing. Corporations are exploring tokenized bonds for
-direct-to-investor capital raising with embedded compliance.
+Production deployments span multiple use cases. Asset managers tokenize private
+fund units to automate administration and enable secondary trading. Banks issue
+deposit certificates as programmable tokens with automated maturity processing.
+Corporations explore tokenized bonds for direct-to-investor capital raising with
+embedded compliance.
 
 Geography matters less than regulatory clarity. European institutions leveraging
 MiCA frameworks, Singapore financial institutions under MAS oversight, and Gulf
@@ -311,8 +325,7 @@ frameworks solidify.
 
 Scale varies from pilot programs managing tens of millions to institutional
 deployments handling hundreds of millions in tokenized assets. The platform
-architecture supports both: same codebase, same operational model, different
-scale parameters.
+architecture supports both with the same codebase and operational model.
 
 ## What this means for your organization
 
@@ -321,22 +334,24 @@ forcing you to become a systems integrator. If you're already running a pilot on
 fragmented infrastructure, ATK offers a migration path to unified lifecycle
 management with embedded compliance.
 
-If you're a developer, ATK gives you modern APIs, comprehensive docs, and
-working reference implementations rather than vague blockchain tutorials. If
-you're an operator, ATK provides purpose-built tools for daily workflows rather
-than generic blockchain explorers.
+If you're a developer, ATK gives you modern APIs, comprehensive documentation,
+and working reference implementations. If you're an operator, ATK provides
+purpose-built tools for daily workflows rather than generic blockchain
+explorers.
 
 If you're a risk officer, ATK demonstrates defense-in-depth security with audit
 trails that regulatory frameworks require. If you're a compliance officer, ATK
-embeds policy into the enforcement path rather than hoping post-transaction
-checks catch violations.
+embeds policy into the enforcement path rather than relying on post-transaction
+checks to catch violations.
 
-The platform isn't trying to be everything for everyone. It's specifically
-architected for regulated financial instruments with institutional requirements.
-If you need casino tokens or loyalty points, there are simpler solutions. If
-you're tokenizing securities, funds, bonds, or deposits with real compliance
-obligations, ATK implements exactly what you need.
+The platform is specifically architected for regulated financial instruments
+with institutional requirements. If you're tokenizing securities, funds, bonds,
+or deposits with real compliance obligations, ATK implements what you need.
 
-The next sections explore specific use cases showing the platform in action, and
-dive deeper into the compliance and security architecture that makes
-institutional adoption possible.
+## Where to next
+
+- **[Use cases](/docs/executive-overview/use-cases)** – Real-world scenarios
+  across asset classes
+- **[Compliance & security](/docs/executive-overview/compliance-security)** –
+  Regulatory and security architecture details
+- **[Glossary](/docs/executive-overview/glossary)** – Key terms and definitions
