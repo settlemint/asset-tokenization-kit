@@ -7,8 +7,39 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import {
+  Tile,
+  TileContent,
+  TileFooter,
+  TileHeader,
+  TileSubtitle,
+  TileTitle,
+  TileFooterAction,
+} from "@/components/tile/tile";
+import { formatDate } from "@/lib/utils/date";
 import { getUserDisplayName } from "@/lib/utils/user-display-name";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+} from "react";
+import { UserRound } from "lucide-react";
+import type { UserReadOutput } from "@/orpc/routes/user/routes/user.read.schema";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -51,6 +82,7 @@ function RouteComponent() {
 
   return (
     <>
+      <BasicInfoTile user={user} displayName={displayName} />
       {/* Basic Information */}
       <DetailGrid>
         <DetailGridItem
@@ -149,6 +181,213 @@ function RouteComponent() {
           />
         </DetailGrid>
       )}
+    </>
+  );
+}
+
+interface BasicInfoTileProps {
+  user: UserReadOutput;
+  displayName: string | null;
+}
+
+interface BasicInfoFormState {
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+function BasicInfoTile({ user, displayName }: BasicInfoTileProps) {
+  const { t, i18n } = useTranslation(["user", "common"]);
+  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+
+  const infoItems = useMemo(
+    () => [
+      {
+        label: t("user:fields.fullName", { defaultValue: "Name" }),
+        value: displayName || "-",
+      },
+      {
+        label: t("user:fields.email", { defaultValue: "Email" }),
+        value: user.email ?? "-",
+      },
+      {
+        label: t("user:fields.accountCreated", { defaultValue: "Created" }),
+        value: user.createdAt
+          ? formatDate(user.createdAt, "yyyy-MM-dd", i18n.language)
+          : "-",
+      },
+      {
+        label: t("user:fields.lastLogin", { defaultValue: "Last Login" }),
+        value: user.lastLoginAt
+          ? formatDate(
+              user.lastLoginAt,
+              {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+                timeZoneName: "short",
+              },
+              i18n.language
+            )
+          : "-",
+      },
+    ],
+    [
+      displayName,
+      i18n.language,
+      t,
+      user.createdAt,
+      user.email,
+      user.lastLoginAt,
+    ]
+  );
+
+  const initialFormState = useMemo<BasicInfoFormState>(
+    () => ({
+      firstName: user.firstName ?? "",
+      lastName: user.lastName ?? "",
+      email: user.email ?? "",
+    }),
+    [user.email, user.firstName, user.lastName]
+  );
+
+  const [formState, setFormState] = useState(initialFormState);
+
+  useEffect(() => {
+    setFormState(initialFormState);
+  }, [initialFormState]);
+
+  const handleFieldChange = useCallback(
+    (field: keyof BasicInfoFormState) =>
+      (event: ChangeEvent<HTMLInputElement>) => {
+        setFormState((prev) => ({ ...prev, [field]: event.target.value }));
+      },
+    []
+  );
+
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      setIsEditSheetOpen(false);
+    },
+    [setIsEditSheetOpen]
+  );
+
+  return (
+    <>
+      <Tile
+        className="mb-6"
+        detailLabel={t("common:actions.edit", { defaultValue: "Edit" })}
+        onOpenDetail={() => setIsEditSheetOpen(true)}
+      >
+        <TileHeader>
+          <div className="flex items-center gap-3">
+            <span className="flex size-9 items-center justify-center rounded-full bg-muted text-muted-foreground">
+              <UserRound className="size-5" aria-hidden="true" />
+            </span>
+            <div className="space-y-1">
+              <TileTitle>
+                {t("user:details.basicInfo.title", {
+                  defaultValue: "Basic Info",
+                })}
+              </TileTitle>
+              <TileSubtitle>
+                {t("user:details.basicInfo.subtitle", {
+                  defaultValue: "Snapshot of the user's profile details.",
+                })}
+              </TileSubtitle>
+            </div>
+          </div>
+        </TileHeader>
+        <TileContent className="gap-4">
+          <dl className="space-y-3">
+            {infoItems.map((item) => (
+              <div key={item.label} className="flex flex-col gap-0.5">
+                <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {item.label}
+                </dt>
+                <dd className="text-sm font-medium text-foreground">
+                  {item.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </TileContent>
+        <TileFooter className="justify-center">
+          <TileFooterAction variant="outline" className="w-full justify-center">
+            {t("common:actions.edit", { defaultValue: "Edit" })}
+          </TileFooterAction>
+        </TileFooter>
+      </Tile>
+      <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
+        <SheetContent side="right" className="sm:max-w-md">
+          <SheetHeader className="p-6 pb-4">
+            <SheetTitle>
+              {t("user:details.basicInfo.editTitle", {
+                defaultValue: "Edit basic info",
+              })}
+            </SheetTitle>
+            <SheetDescription>
+              {t("user:details.basicInfo.editDescription", {
+                defaultValue: "Update the user's name and email address.",
+              })}
+            </SheetDescription>
+          </SheetHeader>
+          <form className="flex flex-1 flex-col" onSubmit={handleSubmit}>
+            <div className="space-y-4 px-6">
+              <div className="space-y-2">
+                <Label htmlFor="basic-info-first-name">
+                  {t("user:fields.firstName", { defaultValue: "First name" })}
+                </Label>
+                <Input
+                  id="basic-info-first-name"
+                  value={formState.firstName}
+                  onChange={handleFieldChange("firstName")}
+                  autoComplete="given-name"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="basic-info-last-name">
+                  {t("user:fields.lastName", { defaultValue: "Last name" })}
+                </Label>
+                <Input
+                  id="basic-info-last-name"
+                  value={formState.lastName}
+                  onChange={handleFieldChange("lastName")}
+                  autoComplete="family-name"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="basic-info-email">
+                  {t("user:fields.email", { defaultValue: "Email" })}
+                </Label>
+                <Input
+                  id="basic-info-email"
+                  type="email"
+                  value={formState.email}
+                  onChange={handleFieldChange("email")}
+                  autoComplete="email"
+                />
+              </div>
+            </div>
+            <SheetFooter className="gap-2 px-6 pb-6 pt-4 sm:flex-row sm:justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsEditSheetOpen(false)}
+              >
+                {t("common:actions.cancel", { defaultValue: "Cancel" })}
+              </Button>
+              <Button type="submit">
+                {t("common:actions.save", { defaultValue: "Save changes" })}
+              </Button>
+            </SheetFooter>
+          </form>
+        </SheetContent>
+      </Sheet>
     </>
   );
 }
