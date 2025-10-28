@@ -29,28 +29,11 @@
         "wallet": "EOA",
         "identity": "عنوان الهوية",
         "type": "النوع",
-        "verifications": "عمليات التحقق",
-        "status": "الحالة",
-        "lastActive": "آخر نشاط",
-        "created": "تاريخ الإنشاء",
-        "role": "الدور",
-        "actions": "إجراءات"
+        "status": "الحالة"
       },
       "status": {
         "registered": "مسجل",
-        "pending": "معلق",
-        "notConnected": "غير متصل",
-        "identityNeeded": "مطلوب هوية",
-        "notRegistered": "غير مسجل",
-        "pendingRegistration": "التسجيل قيد المعالجة",
-        "admin": "مسؤول",
-        "adminAriaLabel": "المستخدم لديه صلاحيات المسؤول",
-        "registeredAriaLabel": "المستخدم مسجل",
-        "notRegisteredAriaLabel": "المستخدم غير مسجل",
-        "pendingAriaLabel": "حالة المستخدم معلقة",
-        "notConnectedAriaLabel": "محفظة المستخدم غير متصلة",
-        "identityNeededAriaLabel": "المستخدم يحتاج إلى هوية",
-        "pendingRegistrationAriaLabel": "تسجيل المستخدم قيد المعالجة"
+        "pending": "معلق"
       },
       "type": {
         "admin": "مسؤول",
@@ -60,9 +43,6 @@
       "verifications": {
         "none": "لا تحقق"
       },
-      "identity": {
-        "none": "لا توجد هوية"
-      },
       "actions": {
         "viewDetails": "عرض التفاصيل",
         "menu": "القائمة",
@@ -71,7 +51,6 @@
       "search": {
         "placeholder": "البحث بالاسم أو البريد الإلكتروني أو المحفظة..."
       },
-      "noWallet": "لا توجد محفظة",
       "emptyState": {
         "title": "لم يتم العثور على مستخدمين",
         "description": "لم يتم تسجيل أي مستخدمين بعد.",
@@ -82,8 +61,8 @@
         "navigationFailed": "فشل في التنقل إلى تفاصيل المستخدم"
       },
       "fallback": {
-        "never": "أبداً",
-        "unknown": "غير معروف"
+        "unknown": "غير معروف",
+        "none": "لا شيء"
       }
     }
   },
@@ -98,7 +77,8 @@
     "table": {
       "columns": {
         "name": "الاسم",
-        "role": "الدور"
+        "role": "الدور",
+        "lastActive": "آخر نشاط"
       },
       "errors": {
         "navigationFailed": "فشل في التنقل إلى تفاصيل المستخدم",
