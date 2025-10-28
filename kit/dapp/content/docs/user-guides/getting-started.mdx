@@ -1,17 +1,353 @@
 ---
 title: User quick start
 description:
-  A tutorial-style walkthrough for a first-time user to set up and issue a token
+  A tutorial-style walkthrough for first-time users to set up and issue a token
   using the platform
 pageTitle: Getting started - Your first tokenization project
 tags: [tutorial, getting-started, user, issuance]
 ---
 
-## Steps (Planned)
+This guide walks you through your first asset tokenization project from initial
+login through token deployment. You'll set up your identity, configure system
+settings, and issue your first compliant security token.
 
-1. Log In and Setup
-2. Create a New Project/Asset
-3. Enter Asset Details
-4. Configure Compliance
-5. Review and Deploy
-6. Post-Deployment
+**Who should read this:** First-time platform users, asset issuers, and
+financial operations teams getting started with tokenization.
+
+**Time required:** 30-45 minutes for complete setup and first token issuance.
+
+**Prerequisites:**
+
+- Active platform account with access credentials
+- Basic understanding of your asset type (bond, equity, fund, stablecoin, or
+  deposit)
+- Compliance requirements for your jurisdiction
+
+## Step 1: Log in and access the platform
+
+Navigate to your platform instance URL (provided by your administrator) and sign
+in using your credentials.
+
+![Platform login screen](/images/screenshots/placeholder.svg) _Screenshot:
+Platform login screen showing email/password authentication with optional 2FA_
+
+After successful authentication, you'll land on the onboarding welcome screen if
+this is your first login.
+
+## Step 2: Complete onboarding workflow
+
+The platform guides you through a structured onboarding process to ensure proper
+system setup before asset issuance.
+
+### Wallet creation
+
+Your platform wallet manages cryptographic operations and holds your
+administrative permissions.
+
+1. Click **Create Wallet** on the welcome screen
+2. Review the security information about your wallet
+3. The platform generates your wallet automatically
+4. Store your recovery codes securely (download or print)
+
+![Wallet creation interface](/images/screenshots/placeholder.svg) _Screenshot:
+Wallet creation showing auto-generated address and recovery codes download
+option_
+
+**Security note:** Recovery codes are the only way to restore wallet access if
+you lose your session. Store them securely offline.
+
+### Wallet security setup
+
+Configure authentication method for sensitive operations:
+
+1. Choose between PIN code or OTP (one-time password) authentication
+2. **PIN code** - Set a 6-digit PIN for quick local authentication
+3. **OTP** - Scan QR code with authenticator app for enhanced security
+4. Verify your chosen method before proceeding
+
+![Security method selection](/images/screenshots/placeholder.svg) _Screenshot:
+Security method selection showing PIN and OTP options with descriptions_
+
+Most users choose PIN for convenience; choose OTP if regulatory requirements
+mandate two-factor authentication.
+
+### OnchainID creation
+
+Your OnchainID is your verifiable identity on the blockchain, required for
+compliance.
+
+1. Click **Create Identity** on the identity setup screen
+2. The platform deploys your OnchainID contract (takes ~30 seconds)
+3. Review your identity address once deployed
+4. Proceed to claim configuration
+
+![OnchainID creation progress](/images/screenshots/placeholder.svg) _Screenshot:
+OnchainID deployment showing transaction processing and resulting identity
+contract address_
+
+Your OnchainID is a smart contract that holds verifiable claims about your
+identity and compliance status.
+
+### System deployment
+
+The platform deploys core system contracts for your organization:
+
+1. **Identity Registry** - Manages participant identities
+2. **Compliance modules** - Enforces transfer rules
+3. **Claim Topics and Issuers** - Verification framework
+4. **Token Factories** - Asset deployment infrastructure
+
+This step is automated and takes 2-3 minutes. The platform displays progress for
+each contract deployment.
+
+![System deployment progress](/images/screenshots/placeholder.svg) _Screenshot:
+System deployment showing checklist of contracts with deployment status
+(pending/complete)_
+
+### Asset type selection
+
+Choose which asset types your organization will issue:
+
+- **Bonds** - Fixed-term debt instruments with maturity and yield
+- **Equity** - Tokenized shares with voting rights
+- **Funds** - Investment fund shares with management fees
+- **Stablecoins** - Fiat-pegged tokens with collateral backing
+- **Deposits** - Certificate of deposit tokens
+
+Select at least one asset type to proceed. You can enable additional types later
+through platform settings.
+
+![Asset type selection](/images/screenshots/placeholder.svg) _Screenshot: Asset
+type cards showing icons, descriptions, and checkboxes for Bond, Equity, Fund,
+Stablecoin, and Deposit_
+
+The platform deploys factory contracts for each selected asset type.
+
+### Addon module selection
+
+Choose optional functionality modules:
+
+- **Yield** - Interest and dividend distribution
+- **Collateral** - Backing requirements for stablecoins
+- **Redeemable** - Token redemption at maturity
+- **Historical Balances** - Snapshot capabilities
+
+Select addons based on your asset requirements. Bond tokens automatically
+include Yield and Redeemable modules.
+
+## Step 3: Navigate to asset creation
+
+After onboarding completes, access the main dashboard:
+
+1. Review your dashboard showing system overview
+2. Navigate to **Asset Management** in the left sidebar
+3. Select your desired asset type (e.g., **Bonds** for debt instruments)
+4. Click **Create New Token** to begin asset configuration
+
+![Dashboard overview](/images/screenshots/placeholder.svg) _Screenshot: Main
+dashboard showing asset management section with available asset types and create
+buttons_
+
+## Step 4: Configure asset details
+
+The asset designer guides you through token configuration specific to your asset
+type.
+
+### Basic information
+
+Required for all asset types:
+
+- **Token name** - Full legal name (e.g., "MidCorp 2027 Senior Notes")
+- **Token symbol** - Trading symbol (e.g., "MCORP27")
+- **Decimals** - Precision (typically 18 for divisibility, 0 for whole shares)
+- **Initial supply** - Number of tokens to mint at deployment (can be 0)
+
+![Asset basic information form](/images/screenshots/placeholder.svg)
+_Screenshot: Asset configuration form showing token name, symbol, decimals, and
+initial supply fields_
+
+### Asset-specific settings
+
+Each asset type requires additional configuration:
+
+**For bonds:**
+
+- Maturity date (timestamp when bond matures)
+- Face value (redemption amount per token)
+- Denomination asset (collateral token address)
+- Yield schedule (payment frequency and rate)
+
+**For equity:**
+
+- Voting rights configuration (enabled/disabled)
+- Shareholder class designation
+
+**For funds:**
+
+- Management fee (basis points)
+- Fund manager address
+
+**For stablecoins:**
+
+- Peg currency (USD, EUR, etc.)
+- Collateral requirements
+
+**For deposits:**
+
+- Certificate details
+- Maturity terms (if applicable)
+
+### Role assignment
+
+Assign operational roles to addresses:
+
+- **GOVERNANCE_ROLE** - Compliance configuration
+- **SUPPLY_MANAGEMENT_ROLE** - Mint and burn operations
+- **CUSTODIAN_ROLE** - Account freezing and recovery
+- **EMERGENCY_ROLE** - Pause functionality
+
+Assign your admin wallet to all roles initially; delegate to operational wallets
+later.
+
+![Role assignment interface](/images/screenshots/placeholder.svg) _Screenshot:
+Role assignment showing five roles with address input fields and descriptions_
+
+## Step 5: Configure compliance rules
+
+Set transfer restrictions and eligibility requirements:
+
+### Compliance modules
+
+Select from available compliance modules:
+
+- **Country Allow List** - Restrict transfers by jurisdiction
+- **Identity Verification** - Require verified OnchainID
+- **Time Lock** - Enforce holding periods
+- **Supply Limit** - Cap total token supply
+- **Transfer Limit** - Restrict transaction sizes
+
+Configure parameters for each enabled module.
+
+![Compliance module selection](/images/screenshots/placeholder.svg) _Screenshot:
+Compliance modules list showing available modules with toggle switches and
+configuration buttons_
+
+### Claim requirements
+
+Specify required OnchainID claims for token holders:
+
+- Accredited investor status
+- KYC/AML verification level
+- Jurisdiction of residence
+- Regulatory compliance attestations
+
+Only addresses with all required claims can receive tokens.
+
+## Step 6: Review and deploy
+
+Review your asset configuration:
+
+1. Verify all parameters in the summary view
+2. Check role assignments
+3. Confirm compliance settings
+4. Review gas cost estimate
+5. Click **Deploy Token**
+
+![Deployment summary](/images/screenshots/placeholder.svg) _Screenshot:
+Pre-deployment summary showing all configured parameters, roles, compliance
+settings, and estimated deployment cost_
+
+Authenticate the deployment transaction:
+
+1. Enter your PIN or OTP when prompted
+2. Review transaction details
+3. Confirm deployment
+
+Deployment takes 30-60 seconds. The platform displays progress as contracts
+deploy.
+
+## Step 7: Post-deployment actions
+
+After successful deployment:
+
+### View your token
+
+1. Navigate to **Asset Management** &gt; **Your Asset Type**
+2. Click your newly deployed token
+3. Review the token details page showing:
+   - Contract address
+   - Current supply
+   - Holder count
+   - Compliance status
+   - Recent events
+
+![Token details page](/images/screenshots/placeholder.svg) _Screenshot: Token
+details dashboard showing key metrics, contract address, supply information, and
+compliance status_
+
+### Mint initial supply (if needed)
+
+If you deployed with zero initial supply:
+
+1. Navigate to the **Actions** tab on your token page
+2. Click **Mint Tokens**
+3. Enter recipient address and amount
+4. Confirm transaction
+
+The recipient must have a verified OnchainID with required claims.
+
+### Configure yield schedule (bonds only)
+
+For bond tokens with yield distributions:
+
+1. Navigate to the **Yield** tab on your bond token page
+2. Click **Configure Schedule**
+3. Set payment frequency (quarterly, semi-annual, annual)
+4. Set yield rate (annual percentage)
+5. Specify yield token (denomination asset)
+6. Save configuration
+
+Yield distributions execute automatically based on your schedule.
+
+## Next steps
+
+Now that you've deployed your first token:
+
+- **Onboard investors** - See
+  [Manage investors](/docs/user-guides/manage-investors) to add participants
+- **Execute corporate actions** - Review
+  [Corporate actions](/docs/user-guides/corporate-actions) for lifecycle
+  management
+- **Configure payments** - Set up [Fiat bridge](/docs/user-guides/fiat-bridge)
+  for off-chain settlement
+- **Monitor compliance** - Use admin dashboard to track compliance status
+
+For detailed guides on each asset type:
+
+- [Issue a bond](/docs/user-guides/issue-bond)
+- [Issue equity](/docs/user-guides/issue-equity)
+- [Issue a fund](/docs/user-guides/issue-fund)
+- [Issue a stablecoin](/docs/user-guides/issue-stablecoin)
+- [Issue a deposit](/docs/user-guides/issue-deposit)
+
+## Troubleshooting
+
+**OnchainID deployment fails**
+
+- Check that your wallet has sufficient native token balance for gas
+- Verify network connectivity
+- Retry deployment after 30 seconds
+
+**Token deployment reverts**
+
+- Verify all required fields are filled
+- Check that role addresses are valid Ethereum addresses
+- Ensure denomination asset address (for bonds) is a deployed ERC20 contract
+
+**Cannot mint tokens**
+
+- Verify recipient has verified OnchainID
+- Check recipient OnchainID has all required claims
+- Ensure your wallet has SUPPLY_MANAGEMENT_ROLE
+
+For additional help, see [Troubleshooting](/docs/user-guides/troubleshooting).

@@ -1,17 +1,563 @@
 ---
 title: Issue equity
 description:
-  How-to guide for creating equity tokens and managing shareholder operations
-  like voting and dividends
+  Step-by-step guide to creating equity tokens with voting rights and
+  shareholder management
 pageTitle: How to issue an equity token (Company shares with voting)
 tags: [how-to, equity, shares, voting, dividends]
 ---
 
-## Steps (Planned)
+Equity tokens represent ownership shares in a company with optional voting
+rights, dividend distributions, and shareholder governance capabilities. This
+guide walks you through deploying compliant equity tokens from configuration
+through shareholder operations.
 
-1. Create Equity Asset
-2. Enter Company Details
-3. Configure Governance
-4. Set Compliance
-5. Deploy Equity Token
-6. Post-Deployment - Manage Shareholder Actions
+**Who should read this:** Corporate secretaries, CFOs, investor relations teams,
+and startup founders tokenizing company shares or fund units.
+
+**Time required:** 15-20 minutes for equity deployment; additional time for
+governance configuration.
+
+**Prerequisites:**
+
+- Completed [Getting started](/docs/user-guides/getting-started) onboarding
+- Equity system factory deployed during onboarding
+- Shareholder agreement and cap table prepared
+- Regulatory framework determined (Reg D, Reg S, Reg A, or custom)
+
+## Step 1: Navigate to equity creation
+
+From the main dashboard:
+
+1. Click **Asset Management** in the left sidebar
+2. Select **Equity** from the asset type list
+3. Click **Create New Equity Token** button
+
+![Equity creation navigation](/images/screenshots/placeholder.svg) _Screenshot:
+Asset Management section showing Equity category with existing equity tokens
+list and Create New Equity Token button_
+
+## Step 2: Configure token parameters
+
+### Basic token information
+
+Enter standard token details:
+
+- **Token name** - Full legal name (e.g., "TechStartup Inc. Series A Preferred")
+- **Token symbol** - Trading symbol (e.g., "TECH-A")
+- **Decimals** - Token divisibility (0 for whole shares, 18 for fractional
+  ownership)
+- **Initial supply** - Number of shares to mint at deployment (or 0 to mint
+  later)
+
+![Equity basic information](/images/screenshots/placeholder.svg) _Screenshot:
+Equity configuration form showing name, symbol, decimals, and initial supply
+fields with validation_
+
+**Naming guidance:** Use descriptive names that indicate share class (Common,
+Preferred, Series A/B/C) for cap table clarity.
+
+### Share class configuration
+
+Define equity class properties:
+
+**Share class type**
+
+Select class:
+
+- **Common Stock** - Standard ownership shares with voting rights
+- **Preferred Stock** - Priority shares with special rights
+- **Fund Units** - Investment fund ownership interests
+
+**Voting rights**
+
+Configure governance participation:
+
+1. **Enable voting** - Toggle voting capabilities on/off
+2. **Voting weight** - Set votes per share (typically 1:1)
+3. **Quorum requirements** - Minimum participation for valid votes (optional)
+
+![Share class configuration](/images/screenshots/placeholder.svg) _Screenshot:
+Share class settings showing class type dropdown, voting toggle, and voting
+weight input_
+
+**Common vs. Preferred:** Common stock typically has voting rights; preferred
+stock may have none or limited votes but includes liquidation preferences.
+
+### Cap table integration
+
+Link to existing cap table:
+
+- **Total authorized shares** - Maximum issuable shares (sets supply cap)
+- **Par value** - Nominal value per share (if applicable)
+- **Valuation reference** - Latest company valuation (for NAV tracking)
+
+The platform uses this data to enforce cap table limits and calculate ownership
+percentages.
+
+## Step 3: Configure compliance framework
+
+Equity tokens enforce transfer restrictions based on securities laws.
+
+### Regulatory framework selection
+
+Choose applicable regulatory framework:
+
+- **Regulation D (506b/506c)** - US private placement (accredited investors)
+- **Regulation S** - Offshore offering (non-US investors)
+- **Regulation A+** - Mini-IPO (broader investor base with disclosure)
+- **Regulation CF** - Crowdfunding (small investors, investment limits)
+- **Custom** - Define custom compliance for non-US jurisdictions
+
+![Compliance framework selection](/images/screenshots/placeholder.svg)
+_Screenshot: Regulatory framework cards showing Reg D, Reg S, Reg A+, Reg CF,
+and Custom options with descriptions and investor limits_
+
+### Configure compliance modules
+
+Based on selected framework, configure modules:
+
+**Investor eligibility**
+
+Set OnchainID claim requirements:
+
+- **Accredited investor** status (required for Reg D 506c)
+- **Qualified purchaser** status (for certain funds)
+- **Income/net worth verification** (for crowdfunding limits)
+- **KYC/AML verification** level
+
+**Transfer restrictions**
+
+Configure share transfer rules:
+
+- **Right of first refusal (ROFR)** - Company approval required for secondary
+  transfers
+- **Lock-up period** - Restrict sales for vesting schedule (e.g., 12-month
+  cliff)
+- **Shareholder approval** - Require board consent for transfers above threshold
+- **Maximum holders limit** - Cap total shareholder count (e.g., 499 for
+  avoiding SEC registration)
+
+![Compliance modules configuration](/images/screenshots/placeholder.svg)
+_Screenshot: Compliance modules showing Investor Eligibility, Transfer
+Restrictions, and Lock-up Period panels with configuration options_
+
+**Reg D special considerations:** 506(b) allows up to 35 non-accredited
+investors; 506(c) requires all investors be accredited with verification.
+
+### Geographic restrictions
+
+Limit share ownership by jurisdiction:
+
+1. Enable **Country Allow List** module
+2. Select permitted countries
+3. Or enable **Country Block List** for restricted jurisdictions
+
+Regulation S typically excludes US investors; Regulation D restricts to US only.
+
+## Step 4: Set up governance (if voting enabled)
+
+Configure on-chain voting for shareholder decisions.
+
+### Governance parameters
+
+Define voting mechanics:
+
+**Voting power calculation**
+
+- **One token = one vote** - Standard democratic voting
+- **Weighted voting** - Different classes have different vote multipliers
+- **Snapshot-based** - Voting power determined by holdings at proposal creation
+
+The platform uses ERC20Votes standard for checkpoint-based voting power
+tracking.
+
+**Proposal settings**
+
+Configure proposal lifecycle:
+
+- **Proposal threshold** - Minimum tokens required to create proposal
+- **Voting period** - Duration proposals remain open (e.g., 7 days)
+- **Execution delay** - Timelock before approved proposals execute
+- **Quorum** - Minimum participation required for validity
+
+![Governance configuration](/images/screenshots/placeholder.svg) _Screenshot:
+Governance settings showing voting power model, proposal threshold, voting
+period, and quorum inputs_
+
+**Best practice:** Set quorum at 20-40% of outstanding shares to balance
+engagement with practical governance.
+
+### Delegation support
+
+Enable vote delegation:
+
+1. Toggle **Allow delegation** on
+2. Shareholders can delegate voting power to representatives
+3. Delegation recorded on-chain with vote checkpoints
+4. Delegates vote with combined power
+
+Useful for shareholder representatives or proxy voting services.
+
+## Step 5: Assign operational roles
+
+Grant permissions for equity management:
+
+### Role assignments
+
+Assign addresses to equity-specific roles:
+
+**GOVERNANCE_ROLE**
+
+Manages compliance and corporate governance:
+
+- Configure compliance modules
+- Manage shareholder eligibility
+- Create governance proposals
+- Update share class parameters
+
+Typically assigned to: Corporate secretary or board representative wallet
+
+**SUPPLY_MANAGEMENT_ROLE**
+
+Controls share issuance and buybacks:
+
+- Mint new shares (authorized issuance)
+- Burn shares (buybacks, cancellations)
+- Batch operations for cap table updates
+
+Typically assigned to: CFO or treasury wallet
+
+**CUSTODIAN_ROLE**
+
+Handles shareholder account operations:
+
+- Freeze compromised accounts
+- Execute forced transfers (court orders)
+- Recover lost shares
+
+Typically assigned to: Transfer agent wallet
+
+**EMERGENCY_ROLE**
+
+Emergency interventions:
+
+- Pause all transfers
+- Unpause after incident resolution
+
+Typically assigned to: Security operations wallet
+
+![Role assignment interface](/images/screenshots/placeholder.svg) _Screenshot:
+Role assignment form showing four roles with address inputs, role descriptions,
+and permission lists_
+
+**Separation of duties:** Use different multisig wallets for each role to
+prevent single-point-of-failure.
+
+## Step 6: Review and deploy
+
+### Pre-deployment checklist
+
+Verify configuration:
+
+- [ ] Token name and symbol match cap table
+- [ ] Share class type correct (Common/Preferred)
+- [ ] Total authorized shares set correctly
+- [ ] Voting configuration matches shareholder agreement
+- [ ] Compliance framework aligns with regulatory filing
+- [ ] All operational roles assigned to secure wallets
+- [ ] Initial supply amount confirmed
+
+![Deployment summary review](/images/screenshots/placeholder.svg) _Screenshot:
+Pre-deployment summary showing token info, share class, compliance, governance,
+and roles in organized sections_
+
+### Deploy equity contract
+
+Execute deployment:
+
+1. Click **Deploy Equity Token**
+2. Review transaction details
+3. Enter your PIN or OTP for authentication
+4. Confirm transaction
+
+The platform:
+
+1. Deploys equity proxy contract (15-20 seconds)
+2. Initializes with your parameters (10 seconds)
+3. Configures voting checkpoints (if enabled) (5 seconds)
+4. Assigns roles to specified addresses (5 seconds per role)
+5. Registers with identity registry (10 seconds)
+
+Total deployment time: 60-90 seconds
+
+![Deployment progress](/images/screenshots/placeholder.svg) _Screenshot:
+Deployment progress modal showing step-by-step deployment status with checkmarks
+and timestamps_
+
+## Step 7: Post-issuance actions
+
+After successful deployment:
+
+### Verify deployment
+
+1. Note the contract address
+2. Click **View Equity Token** to navigate to details page
+3. Verify configuration:
+   - Token information correct
+   - Share class parameters match
+   - Voting enabled (if configured)
+   - Roles assigned correctly
+
+![Equity details overview](/images/screenshots/placeholder.svg) _Screenshot:
+Equity token details page showing key metrics, share class info, voting status,
+and shareholder distribution_
+
+### Issue initial allocation
+
+If you deployed with zero initial supply:
+
+1. Prepare founder and investor allocations
+2. Navigate to **Actions** tab
+3. Click **Mint Shares**
+4. Enter recipient addresses and amounts
+5. Click **Execute Batch Mint**
+
+**Vesting setup:** For shares with vesting schedules, mint to vesting contract
+addresses rather than directly to shareholders.
+
+### Configure vesting schedules (optional)
+
+For founder or employee shares with vesting:
+
+1. Navigate to **Addons** section
+2. Deploy **Vesting Airdrop** addon for each vesting schedule
+3. Configure:
+   - Vesting start date
+   - Cliff period (e.g., 12 months)
+   - Vesting duration (e.g., 48 months total)
+   - Linear vs. milestone vesting
+4. Mint shares to vesting contract
+5. Add beneficiaries with allocation amounts
+
+Shares release according to vesting schedule automatically.
+
+## Step 8: Manage shareholder operations
+
+### Track cap table
+
+Monitor ownership structure:
+
+1. Navigate to **Shareholders** tab
+2. Review current holders:
+   - Address and identity
+   - Share count
+   - Ownership percentage
+   - Voting power
+   - Acquisition date
+3. Export cap table as CSV for reporting
+
+![Shareholder cap table](/images/screenshots/placeholder.svg) _Screenshot:
+Shareholders tab showing table with columns for address, identity, shares held,
+percentage, voting power, and acquisition date_
+
+**Real-time accuracy:** Cap table updates instantly with each transfer; no
+reconciliation delays.
+
+### Process share transfers
+
+Handle secondary transfers with approval workflow:
+
+**For transfers requiring approval:**
+
+1. Shareholder initiates transfer via dApp
+2. Transfer enters pending state
+3. Navigate to **Pending Transfers** section
+4. Review transfer details:
+   - Sender and recipient
+   - Share amount
+   - Compliance status
+   - ROFR implications
+5. Click **Approve** or **Reject** with reason
+
+**Compliance automation:** Platform auto-rejects transfers where recipient lacks
+required claims or violates transfer restrictions.
+
+### Create governance proposals
+
+For equity with voting enabled:
+
+**Create new proposal:**
+
+1. Navigate to **Governance** tab
+2. Click **New Proposal**
+3. Enter proposal details:
+   - Title and description
+   - Proposed action (informational or on-chain execution)
+   - Voting options (For/Against/Abstain)
+   - Voting period
+4. Click **Submit Proposal**
+
+**Threshold check:** Your address must hold minimum proposal threshold in
+shares.
+
+**Cast votes:**
+
+Shareholders vote on proposals:
+
+1. Navigate to **Governance** &gt; **Active Proposals**
+2. Review proposal details
+3. Click **Vote**
+4. Select option (For/Against/Abstain)
+5. Optionally delegate votes
+6. Confirm vote transaction
+
+Voting power determined by shares held at proposal creation (checkpoint).
+
+![Governance voting interface](/images/screenshots/placeholder.svg) _Screenshot:
+Governance tab showing active proposal with title, description, voting options,
+current tally, and vote button_
+
+### Execute dividend distributions
+
+Distribute profits to shareholders:
+
+**For equity with yield addon:**
+
+1. Navigate to **Dividends** tab
+2. Click **Schedule Distribution**
+3. Configure:
+   - Distribution token (USDC, USDT, etc.)
+   - Amount per share
+   - Payment date
+   - Snapshot date (holder eligibility)
+4. Fund dividend wallet with total distribution amount
+5. Execute distribution on payment date
+
+Distribution happens proportionally based on snapshot holdings.
+
+**Without yield addon:**
+
+Use manual batch transfer or deploy dividend distribution contract.
+
+## Common workflows
+
+### Handle new investor onboarding
+
+Add new shareholder:
+
+1. Investor completes KYC through platform or integrated provider
+2. Investor's OnchainID receives required claims
+3. Verify investor appears in **Eligible Investors** list
+4. Navigate to **Actions** &gt; **Mint Shares**
+5. Enter investor address and allocation
+6. Execute mint (compliance checks run automatically)
+
+### Process employee share options exercise
+
+Convert options to shares:
+
+1. Employee exercises options (off-chain or via options contract)
+2. Navigate to **Actions** &gt; **Mint Shares**
+3. Enter employee address and exercised share count
+4. Optionally attach to vesting schedule
+5. Execute mint
+
+### Execute buyback program
+
+Repurchase shares from shareholders:
+
+1. Obtain shareholder consent for buyback
+2. Transfer buyback funds to company treasury
+3. Initiate share transfer from shareholder to company wallet
+4. Navigate to **Actions** &gt; **Burn Shares**
+5. Enter company wallet address and amount to burn
+6. Execute burn (reduces total supply)
+
+Record buyback in corporate resolutions.
+
+### Update shareholder eligibility
+
+Modify compliance requirements:
+
+1. Navigate to **Compliance** tab
+2. Select module to update (e.g., Country Allow List)
+3. Modify parameters (add/remove countries, change claim requirements)
+4. Click **Update Module**
+5. Requires GOVERNANCE_ROLE
+
+**Impact:** Existing holders grandfathered; new requirements apply to future
+transfers only.
+
+## Best practices
+
+**Before deployment:**
+
+- Coordinate with legal counsel to ensure compliance matches offering documents
+- Prepare complete cap table with all founder and investor allocations
+- Test voting mechanics with sample proposals
+- Set up vesting contracts before minting employee shares
+
+**During lifecycle:**
+
+- Maintain shareholder contact information off-chain for proxy materials
+- Review compliance module settings quarterly for regulatory updates
+- Monitor transfer approval queue daily for pending secondary sales
+- Keep governance proposals clear and actionable with specific terms
+
+**Governance operations:**
+
+- Announce proposals via email 48 hours before voting starts
+- Set realistic quorum thresholds based on historical participation
+- Maintain proposal history for corporate records and audit trails
+- Consider snapshot voting off-chain for non-binding advisory votes
+
+## Troubleshooting
+
+**Deployment fails with "Total supply exceeds authorized shares"**
+
+- Verify initial supply less than authorized shares cap
+- Check cap configuration includes adequate buffer for future issuance
+
+**Minting fails for investor**
+
+- Verify investor OnchainID registered
+- Check investor has all required claims (accredited status, jurisdiction, KYC
+  level)
+- Confirm investor country not on blocklist
+- Ensure total supply after mint does not exceed cap
+
+**Governance proposal creation fails**
+
+- Verify your address holds minimum proposal threshold
+- Check voting is enabled in equity configuration
+- Ensure proposal parameters within allowed ranges
+
+**Vote transaction reverts**
+
+- Confirm you hold shares at proposal creation checkpoint
+- Verify proposal still in voting period (not ended or executed)
+- Check you haven't already voted on this proposal
+
+**Dividend distribution fails**
+
+- Verify dividend wallet has sufficient distribution token balance
+- Check calculation: (total supply × amount per share) = required balance
+- Ensure all eligible holders have verified OnchainIDs
+
+For additional help, see [Troubleshooting](/docs/user-guides/troubleshooting) or
+contact platform support.
+
+## Next steps
+
+- **Set up vesting** - Deploy
+  [Vesting schedules](/docs/user-guides/corporate-actions#vesting-schedules) for
+  founders and employees
+- **Configure voting** - Review
+  [Governance operations](/docs/user-guides/corporate-actions#governance-proposals)
+  for shareholder voting
+- **Manage investors** - See
+  [Manage investors](/docs/user-guides/manage-investors) for onboarding
+  workflows
+- **Understand compliance** - Deep dive into
+  [Identity and compliance](/docs/architecture/smart-contracts/identity-compliance)

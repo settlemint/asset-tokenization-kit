@@ -8,7 +8,7 @@ Based on the following:
 
 Write out the content for the following section:
 
-- @kit/dapp/content/docs/architecture/quality-performance
+- @kit/dapp/content/docs/user-guides
 
 Guidelines:
 
@@ -17,6 +17,9 @@ Guidelines:
 - Verify that you are not hallucinating features, verify with packages in @kit
 - A higher level background story can be found in
   https://github.com/settlemint/book-of-dalp (investigate via octocode mcp)
+- Add clear placeholders for where screenshots should be included, do this by
+  creating and setting one placeholder image (put it in the repo) and describing
+  the content in the image caption
 
 # Reviewing
 
@@ -61,6 +64,11 @@ and detailed plan for improvements.
 - Review the page titles which are used in the sidebar for clarity, some are
   either too generic or too specific and make it hard to follow the flow
 - can we make the mermaid style be more like our shadcn look and feel?
+- We have several special components we can use to improve the look and feel of
+  the docs ...TabsComponents, AccordionComponents, BannerComponents,
+  CodeBlockComponents, FilesComponents,StepsComponents, and the default
+  components like cards. Use them where a) relevant and b) they enhance the
+  readers experience. Do not go overboard, readability is crucial
 
 # FAQ
 
@@ -81,9 +89,39 @@ What:
   and indivual important contents
 - It should cover most if not all the content of the other pages, optimised in a
   Q/A format
+- There can be some, but not too much overlap between the FAQ pages, but
+  language will be different as the sections have different writing styles and
+  target audidiences
 
 How:
 
 - there should be just 1 FAQ page per top level section
+- think on how the target audience of this section would ask LLM's for
+  information we want to provide.
+- it should use the Accordion components from
+  kit/dapp/src/components/docs/components/accordion.tsx
+
+# Glossary
+
+Review the folowing section:
+
+- @kit/dapp/content/docs/architecture
+
+In this section create a, or update the, Glossary page.
+
+Why:
+
+- The glossary page is a way to have a reference to concepts used in the docs.
+
+What:
+
+- It needs to contain all concepts used in this section
+- There can be some, but not too much overlap between the Glossary pages, but
+  language will be different as the sections have different writing styles and
+  target audidiences
+
+How:
+
+- there should be just 1 Glossary page per top level section
 - it should use the Accordion components from
   kit/dapp/src/components/docs/components/accordion.tsx
