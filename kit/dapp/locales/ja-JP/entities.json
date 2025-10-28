@@ -1,0 +1,45 @@
+{
+  "page": {
+    "description": "トークン、ボールト、カストディアン、契約などのログイン資格情報を持たない参加者を管理します。",
+    "loading": "エンティティを読み込み中..."
+  },
+  "accessDenied": {
+    "title": "アクセス制限",
+    "description": "エンティティを管理する権限がありません。追加のアクセスについては管理者に連絡してください。"
+  },
+  "status": {
+    "registered": "登録済み",
+    "pending": "登録待ち"
+  },
+  "entityTable": {
+    "columns": {
+      "name": "名前",
+      "address": "コントラクトアドレス",
+      "identityAddress": "アイデンティティアドレス",
+      "type": "種類",
+      "status": "ステータス"
+    },
+    "types": {
+      "token": "トークン",
+      "vault": "ボールト",
+      "contract": "コントラクト",
+      "wallet": "ウォレット"
+    },
+    "fallback": {
+      "noType": "種類なし",
+      "noName": "名前なし",
+      "noContractAddress": "コントラクトアドレスなし",
+      "noIdentity": "アイデンティティアドレスなし",
+      "unknown": "不明"
+    },
+    "emptyState": {
+      "title": "エンティティが見つかりません",
+      "description": "フィルターに一致するエンティティはまだありません。",
+      "loading": "エンティティを読み込み中..."
+    },
+    "errors": {
+      "loadFailed": "エンティティの読み込みに失敗しました。再試行してください。",
+      "navigationFailed": "エンティティの詳細を開けませんでした"
+    }
+  }
+}

@@ -16,7 +16,7 @@
   },
   "management": {
     "page": {
-      "description": "プラットフォームのユーザー、役割、権限を管理します。"
+      "description": "ログイン資格情報を持つ参加者を管理します。"
     },
     "accessDenied": {
       "title": "アクセス制限",
@@ -25,37 +25,37 @@
     "table": {
       "columns": {
         "name": "名前",
-        "email": "メール",
-        "wallet": "ウォレット",
-        "role": "役割",
-        "identity": "アイデンティティ",
-        "type": "タイプ",
+        "email": "メールアドレス",
+        "wallet": "EOA",
+        "identity": "アイデンティティアドレス",
+        "type": "種類",
         "verifications": "検証",
         "status": "ステータス",
+        "lastActive": "最終アクティビティ",
         "created": "作成日",
-        "lastActive": "最終アクティブ",
-        "actions": "アクション"
+        "role": "ロール",
+        "actions": "操作"
       },
       "status": {
         "registered": "登録済み",
-        "pending": "保留中",
+        "pending": "保留",
         "notConnected": "未接続",
         "identityNeeded": "アイデンティティが必要",
         "notRegistered": "未登録",
-        "pendingRegistration": "登録保留中",
+        "pendingRegistration": "登録処理中",
         "admin": "管理者",
-        "adminAriaLabel": "ユーザーはシステム内の管理者役割を持っています",
-        "registeredAriaLabel": "ユーザーはオンチェーンで登録および検証されています",
-        "notRegisteredAriaLabel": "ユーザーはオンチェーンで登録されていません",
-        "pendingAriaLabel": "ユーザーはウォレットを接続しましたが、まだオンチェーンで登録されていません",
-        "notConnectedAriaLabel": "ユーザーはウォレットを接続していません",
-        "identityNeededAriaLabel": "ユーザーはウォレットを持っていますが、登録されたアイデンティティがありません",
-        "pendingRegistrationAriaLabel": "ユーザーアイデンティティの登録が保留中です"
+        "adminAriaLabel": "ユーザーは管理者です",
+        "registeredAriaLabel": "ユーザーは登録済みです",
+        "notRegisteredAriaLabel": "ユーザーは未登録です",
+        "pendingAriaLabel": "ユーザーの状態は保留です",
+        "notConnectedAriaLabel": "ユーザーのウォレットは未接続です",
+        "identityNeededAriaLabel": "ユーザーにはアイデンティティが必要です",
+        "pendingRegistrationAriaLabel": "ユーザーの登録は処理中です"
       },
-      "userType": {
+      "type": {
         "admin": "管理者",
         "investor": "投資家",
-        "trustedIssuer": "信頼できる発行者"
+        "trustedIssuer": "信頼された発行者"
       },
       "verifications": {
         "none": "検証なし"
@@ -65,8 +65,8 @@
       },
       "actions": {
         "viewDetails": "詳細を表示",
-        "menu": "アクションメニュー",
-        "openMenu": "アクションメニューを開く"
+        "menu": "メニュー",
+        "openMenu": "メニューを開く"
       },
       "search": {
         "placeholder": "名前、メール、またはウォレットで検索..."
@@ -82,7 +82,7 @@
         "navigationFailed": "ユーザー詳細へのナビゲーションに失敗しました"
       },
       "fallback": {
-        "never": "なし",
+        "never": "未実行",
         "unknown": "不明"
       }
     }
@@ -98,7 +98,7 @@
     "table": {
       "columns": {
         "name": "名前",
-        "role": "役割"
+        "role": "ロール"
       },
       "errors": {
         "navigationFailed": "ユーザー詳細へのナビゲーションに失敗しました",
@@ -113,7 +113,7 @@
         "loading": "ユーザーを読み込み中..."
       },
       "actions": {
-        "changeRoles": "役割を変更"
+        "changeRoles": "ロールを変更"
       }
     }
   },

@@ -47,6 +47,7 @@ import enUSForm from "@/locales/en-US/form.json";
 import enUSFormats from "@/locales/en-US/formats.json";
 import enUSGeneral from "@/locales/en-US/general.json";
 import enUSIdentities from "@/locales/en-US/identities.json";
+import enUSEntities from "@/locales/en-US/entities.json";
 import enUSIssuerDashboard from "@/locales/en-US/issuer-dashboard.json";
 import enUSLanguage from "@/locales/en-US/language.json";
 import enUSNavigation from "@/locales/en-US/navigation.json";
@@ -98,6 +99,7 @@ export const namespaces = [
   "blockchain",
   "claim-topics-issuers",
   "identities",
+  "entities",
   "compliance-modules",
   "common",
   "country-multiselect",
@@ -153,6 +155,7 @@ const translationModules = {
     "claim-topics-issuers": () =>
       import("@/locales/de-DE/claim-topics-issuers.json"),
     identities: () => import("@/locales/de-DE/identities.json"),
+    entities: () => import("@/locales/de-DE/entities.json"),
     "compliance-modules": () =>
       import("@/locales/de-DE/compliance-modules.json"),
     common: () => import("@/locales/de-DE/common.json"),
@@ -198,6 +201,7 @@ const translationModules = {
     "claim-topics-issuers": () =>
       import("@/locales/ar-SA/claim-topics-issuers.json"),
     identities: () => import("@/locales/ar-SA/identities.json"),
+    entities: () => import("@/locales/ar-SA/entities.json"),
     "compliance-modules": () =>
       import("@/locales/ar-SA/compliance-modules.json"),
     common: () => import("@/locales/ar-SA/common.json"),
@@ -243,6 +247,7 @@ const translationModules = {
     "claim-topics-issuers": () =>
       import("@/locales/ja-JP/claim-topics-issuers.json"),
     identities: () => import("@/locales/ja-JP/identities.json"),
+    entities: () => import("@/locales/ja-JP/entities.json"),
     "compliance-modules": () =>
       import("@/locales/ja-JP/compliance-modules.json"),
     common: () => import("@/locales/ja-JP/common.json"),
@@ -297,6 +302,7 @@ async function loadResource(lng: SupportedLanguage, ns: Namespace) {
         blockchain: enUSBlockchain,
         "claim-topics-issuers": enUSClaimTopicsIssuers,
         identities: enUSIdentities,
+        entities: enUSEntities,
         "compliance-modules": enUSComplianceModules,
         common: enUSCommon,
         "country-multiselect": enUSCountryMultiselect,
@@ -409,6 +415,7 @@ void i18n.init({
       blockchain: enUSBlockchain,
       "claim-topics-issuers": enUSClaimTopicsIssuers,
       identities: enUSIdentities,
+      entities: enUSEntities,
       "compliance-modules": enUSComplianceModules,
       common: enUSCommon,
       "country-multiselect": enUSCountryMultiselect,

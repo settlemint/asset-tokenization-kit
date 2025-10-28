@@ -47,6 +47,7 @@ import { fetchIdentity } from "./fetch/identity";
 import { fetchIdentityClaim } from "./fetch/identity-claim";
 import { fetchIdentityKey } from "./fetch/identity-key";
 import { decodeClaimValues } from "./utils/decode-claim";
+import { updateIdentityEntityType } from "./utils/identity-classification";
 import {
   getIdentityKeyPurpose,
   getIdentityKeyType,
@@ -117,10 +118,14 @@ export function handleApproved(event: Approved): void {
 export function handleClaimAdded(event: ClaimAdded): void {
   fetchEvent(event, "ClaimAdded");
   const identity = fetchIdentity(event.address);
+  const classificationMutated = updateIdentityEntityType(identity);
 
   // Decode claim data and create IdentityClaimValue entities
   const topicScheme = getTopicSchemeFromIdentity(event.params.topic, identity);
   if (!topicScheme) {
+    if (classificationMutated) {
+      identity.save();
+    }
     return;
   }
 
@@ -170,15 +175,23 @@ export function handleClaimAdded(event: ClaimAdded): void {
       updateAccountStatsForAllTokenHolders(token, BigDecimal.zero(), newPrice);
     }
   }
+
+  if (classificationMutated) {
+    identity.save();
+  }
 }
 
 export function handleClaimChanged(event: ClaimChanged): void {
   fetchEvent(event, "ClaimChanged");
   const identity = fetchIdentity(event.address);
+  const classificationMutated = updateIdentityEntityType(identity);
 
   // Decode claim data and create IdentityClaimValue entities
   const topicScheme = getTopicSchemeFromIdentity(event.params.topic, identity);
   if (!topicScheme) {
+    if (classificationMutated) {
+      identity.save();
+    }
     return;
   }
   const identityClaim = fetchIdentityClaim(identity, event.params.claimId);
@@ -223,11 +236,16 @@ export function handleClaimChanged(event: ClaimChanged): void {
       updateAccountStatsForAllTokenHolders(token, oldPrice, newPrice);
     }
   }
+
+  if (classificationMutated) {
+    identity.save();
+  }
 }
 
 export function handleClaimRemoved(event: ClaimRemoved): void {
   fetchEvent(event, "ClaimRemoved");
   const identity = fetchIdentity(event.address);
+  const classificationMutated = updateIdentityEntityType(identity);
   const identityClaim = fetchIdentityClaim(identity, event.params.claimId);
 
   const wasAlreadyRevoked = identityClaim.revoked;
@@ -279,6 +297,10 @@ export function handleClaimRemoved(event: ClaimRemoved): void {
       );
     }
   }
+
+  if (classificationMutated) {
+    identity.save();
+  }
 }
 
 export function handleExecuted(event: Executed): void {
@@ -296,23 +318,34 @@ export function handleExecutionRequested(event: ExecutionRequested): void {
 export function handleKeyAdded(event: KeyAdded): void {
   fetchEvent(event, "KeyAdded");
   const identity = fetchIdentity(event.address);
+  const classificationMutated = updateIdentityEntityType(identity);
   const identityKey = fetchIdentityKey(identity, event.params.key);
   identityKey.identity = identity.id;
   identityKey.type = getIdentityKeyType(event.params.keyType);
   identityKey.purpose = getIdentityKeyPurpose(event.params.purpose);
   identityKey.save();
+
+  if (classificationMutated) {
+    identity.save();
+  }
 }
 
 export function handleKeyRemoved(event: KeyRemoved): void {
   fetchEvent(event, "KeyRemoved");
   const identity = fetchIdentity(event.address);
+  const classificationMutated = updateIdentityEntityType(identity);
   const identityKey = fetchIdentityKey(identity, event.params.key);
   store.remove("IdentityKey", identityKey.id.toHexString());
+
+  if (classificationMutated) {
+    identity.save();
+  }
 }
 
 export function handleClaimRevoked(event: ClaimRevoked): void {
   fetchEvent(event, "ClaimRevoked");
   const identity = fetchIdentity(event.address);
+  const classificationMutated = updateIdentityEntityType(identity);
   const identityClaims = identity.claims.load();
   for (let i = 0; i < identityClaims.length; i++) {
     const identityClaim = identityClaims[i];
@@ -370,6 +403,10 @@ export function handleClaimRevoked(event: ClaimRevoked): void {
       }
       break;
     }
+  }
+
+  if (classificationMutated) {
+    identity.save();
   }
 }
 

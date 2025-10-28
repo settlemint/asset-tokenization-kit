@@ -1,5 +1,6 @@
 import { BondCreated } from "../../../generated/templates/BondFactory/BondFactory";
 import { fetchAccount } from "../../account/fetch/account";
+import { setAccountContractName } from "../../account/utils/account-contract-name";
 import {
   ActionName,
   createAction,
@@ -20,11 +21,7 @@ export function handleBondCreated(event: BondCreated): void {
   token.decimals = event.params.decimals;
   token.save();
 
-  const account = fetchAccount(event.params.tokenAddress);
-  if (account.isContract) {
-    account.contractName = token.name;
-    account.save();
-  }
+  setAccountContractName(event.params.tokenAddress, token.name);
 
   const bond = fetchBond(event.params.tokenAddress);
   const denominationAsset = fetchToken(event.params.denominationAsset);
