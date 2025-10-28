@@ -95,7 +95,6 @@ function SearchToggle(props: ComponentProps<"button">) {
 
 function Sidebar() {
   const { root } = useTreeContext();
-
   const children = useMemo(() => {
     function renderItems(items: PageTree.Node[]) {
       return items.map((item) => (

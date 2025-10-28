@@ -24,8 +24,10 @@ export function LLMCopyButton({
    * A URL to fetch the raw Markdown/MDX content of page
    */
   markdownUrl,
+  className,
 }: {
   markdownUrl: string;
+  className?: string;
 }) {
   const [isLoading, setLoading] = useState(false);
   const [checked, onClick] = useCopyButton(async () => {
@@ -53,7 +55,8 @@ export function LLMCopyButton({
           color: "outline",
           size: "sm",
           className: "gap-2 [&_svg]:size-3.5 [&_svg]:text-fd-muted-foreground",
-        })
+        }),
+        className
       )}
       onClick={onClick}
     >
@@ -70,6 +73,7 @@ const optionVariants = cva(
 export function ViewOptions({
   markdownUrl,
   githubUrl,
+  className,
 }: {
   /**
    * A URL to the raw Markdown/MDX content of page
@@ -80,6 +84,7 @@ export function ViewOptions({
    * Source file URL on GitHub
    */
   githubUrl: string;
+  className?: string;
 }) {
   const items = useMemo(() => {
     const fullMarkdownUrl =
@@ -216,7 +221,8 @@ export function ViewOptions({
             color: "outline",
             size: "sm",
             className: "gap-2",
-          })
+          }),
+          className
         )}
       >
         Open

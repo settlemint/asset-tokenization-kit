@@ -238,7 +238,7 @@ graph TB
     A4[Trading<br/>Platform]
     A5[Settlement<br/>System]
     A6[Reporting Tool]
-    
+
     A1 -.Integration API.-> A2
     A2 -.Integration API.-> A3
     A3 -.Integration API.-> A4
@@ -246,46 +246,46 @@ graph TB
     A5 -.Integration API.-> A6
     A1 -.Integration API.-> A6
     A2 -.Integration API.-> A4
-    
+
     note1[Reconciliation<br/>Issues]
     note2[Data Drift]
     note3[No Single<br/>Source of Truth]
     end
-    
+
     subgraph "DALP Approach (Unified Platform)"
     B1[Unified Lifecycle Core<br/>Single Registry]
     B2[Compliance Engine]
     B3[Custody Layer]
     B4[Settlement Coordination]
     B5[Reporting & Audit]
-    
+
     B1 --> B2
     B1 --> B3
     B1 --> B4
     B1 --> B5
-    
+
     B2 --> B3
     B3 --> B4
-    
+
     note4[Atomic Operations]
     note5[Consistent State]
     note6[Unified Truth]
     end
-    
+
     style A1 fill:#ffcccc
     style A2 fill:#ffcccc
     style A3 fill:#ffcccc
     style A4 fill:#ffcccc
     style A5 fill:#ffcccc
     style A6 fill:#ffcccc
-    
+
     style B1 fill:#ccffcc
     style B2 fill:#ccffcc
     style B3 fill:#ccffcc
     style B4 fill:#ccffcc
     style B5 fill:#ccffcc
-`}
-/>
+
+`} />
 
 The diagram illustrates the fundamental difference: fragmented systems require
 constant data synchronization and manual reconciliation. Unified platforms
