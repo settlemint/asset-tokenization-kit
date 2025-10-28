@@ -186,19 +186,6 @@ The following table lists the configurable parameters of this chart and their de
 |config.projects[0].upstreams[0].failsafe[0].circuitBreaker.successThresholdCount|int|`3`|Number of successes needed to close circuit|
 |config.projects[0].upstreams[0].failsafe[0].matchMethod|string|`"*"`|RPC method pattern matching all methods|
 |config.projects[0].upstreams[0].id|string|`"besu-node-rpc-0"`|Unique identifier for this upstream|
-|config.projects[0].upstreams[1]|object|-|Second Besu RPC node upstream|
-|config.projects[0].upstreams[1].endpoint|string|`"http://besu-node-rpc-1.besu-node-rpc:8545"`|RPC endpoint URL for this upstream|
-|config.projects[0].upstreams[1].evm|object|-|EVM-specific configuration for this upstream|
-|config.projects[0].upstreams[1].failsafe|list|-|Failsafe policies for this upstream|
-|config.projects[0].upstreams[1].failsafe[0]|object|-|Circuit breaker policy for this upstream|
-|config.projects[0].upstreams[1].failsafe[0].circuitBreaker|object|-|Circuit breaker configuration|
-|config.projects[0].upstreams[1].failsafe[0].circuitBreaker.failureThresholdCapacity|int|`80`|Capacity of failure counter window|
-|config.projects[0].upstreams[1].failsafe[0].circuitBreaker.failureThresholdCount|int|`40`|Number of failures before opening circuit|
-|config.projects[0].upstreams[1].failsafe[0].circuitBreaker.halfOpenAfter|string|`"120s"`|Duration before attempting to close circuit|
-|config.projects[0].upstreams[1].failsafe[0].circuitBreaker.successThresholdCapacity|int|`10`|Capacity of success counter window|
-|config.projects[0].upstreams[1].failsafe[0].circuitBreaker.successThresholdCount|int|`3`|Number of successes needed to close circuit|
-|config.projects[0].upstreams[1].failsafe[0].matchMethod|string|`"*"`|RPC method pattern matching all methods|
-|config.projects[0].upstreams[1].id|string|`"besu-node-rpc-1"`|Unique identifier for this upstream|
 |config.server|object|-|HTTP server configuration|
 |config.server.httpHostV4|string|`"0.0.0.0"`|IPv4 address to bind HTTP server to|
 |config.server.httpPort|int|`4000`|HTTP server port|
