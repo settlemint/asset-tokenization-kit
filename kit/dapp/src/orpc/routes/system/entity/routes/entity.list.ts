@@ -220,11 +220,18 @@ export const entityList = systemRouter.system.entity.list
         context.system?.systemAccessManager?.accessControl,
     })
   )
-  .handler(async ({ input, context }) => {
+  .handler(async ({ input, context, errors }) => {
     // Validate and extract input parameters using Zod schema
     const parsedInput = EntityListInputSchema.parse(input);
     const { limit, offset, orderDirection, orderBy, filters } = parsedInput;
-    const { system } = context;
+    const { system, theGraphClient } = context;
+
+    if (!theGraphClient) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message:
+          "The Graph client is unavailable. Ensure theGraphMiddleware runs before entity list queries.",
+      });
+    }
 
     // Apply pagination defaults and resolve ordering parameters
     const first = limit ?? 50; // Default page size balances performance with usability
@@ -253,7 +260,7 @@ export const entityList = systemRouter.system.entity.list
     };
 
     // Execute The Graph query with type-safe response validation
-    const response = await context.theGraphClient?.query(ENTITY_LIST_QUERY, {
+    const response = await theGraphClient.query(ENTITY_LIST_QUERY, {
       input: variables,
       output: EntityListGraphSchema,
     });

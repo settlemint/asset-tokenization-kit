@@ -13,7 +13,6 @@ export function fetchIdentity(address: Address): Identity {
     identity.identityFactory = Address.zero();
     identity.account = Address.zero();
     identity.isContract = false;
-    identity.supportedInterfaces = new Array<Bytes>();
     identity.entityType = "wallet";
 
     identity.save();
@@ -26,11 +25,6 @@ export function fetchIdentity(address: Address): Identity {
   }
 
   let mutated = false;
-
-  if (identity.get("supportedInterfaces") == null) {
-    identity.supportedInterfaces = new Array<Bytes>();
-    mutated = true;
-  }
 
   if (identity.get("entityType") == null) {
     identity.entityType = identity.isContract ? "contract" : "wallet";

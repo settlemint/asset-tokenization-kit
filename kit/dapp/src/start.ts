@@ -12,7 +12,6 @@ import { redirect } from "@tanstack/react-router";
 import { createMiddleware, createStart } from "@tanstack/react-start";
 import { rewritePath } from "fumadocs-core/negotiation";
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
 const { rewrite: rewriteLLM } = rewritePath(
   "/docs{/*path}.mdx",
   "/llms.mdx{/*path}"

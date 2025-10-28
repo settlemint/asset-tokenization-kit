@@ -44,7 +44,7 @@ describe("Identity", () => {
     expect(accountIds.every((id) => !identityIds.includes(id))).toBe(true);
   });
 
-  it("wallet identities should remain wallets without supported interfaces", async () => {
+  it("wallet identities should remain wallets", async () => {
     const query = theGraphGraphql(
       `query {
         accounts(where: { isContract: false }) {
@@ -52,7 +52,6 @@ describe("Identity", () => {
           identities {
             id
             entityType
-            supportedInterfaces
           }
         }
       }`
@@ -66,15 +65,9 @@ describe("Identity", () => {
     expect(
       walletIdentities.every((identity) => identity.entityType === "wallet")
     ).toBe(true);
-    expect(
-      walletIdentities.every(
-        (identity) => identity.supportedInterfaces.length === 0
-      )
-    ).toBe(true);
   });
 
-  it("token contracts should expose SMART interfaces and token classification", async () => {
-    const SMART_INTERFACE_ID = "0x6b39c018";
+  it("token contracts should classify as token entities", async () => {
     const query = theGraphGraphql(
       `query {
         tokens {
@@ -84,14 +77,12 @@ describe("Identity", () => {
             identities {
               id
               entityType
-              supportedInterfaces
             }
           }
         }
       }`
     );
     const response = await theGraphClient.request(query);
-    const smartInterfaceHex = SMART_INTERFACE_ID.toLowerCase();
     const contractIdentities = response.tokens
       .filter((token) => token.account?.isContract)
       .flatMap((token) => token.account.identities);
@@ -99,18 +90,6 @@ describe("Identity", () => {
     expect(contractIdentities.length).toBeGreaterThan(0);
     expect(
       contractIdentities.every((identity) => identity.entityType === "token")
-    ).toBe(true);
-    expect(
-      contractIdentities.every((identity) =>
-        identity.supportedInterfaces.some(
-          (iface: string) => iface.toLowerCase() === smartInterfaceHex
-        )
-      )
-    ).toBe(true);
-    expect(
-      contractIdentities.every(
-        (identity) => identity.supportedInterfaces.length > 0
-      )
     ).toBe(true);
   });
 });
