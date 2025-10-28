@@ -108,16 +108,16 @@ used for each documentation page.
 
 | Template Type      | Count  | Percentage |
 | ------------------ | ------ | ---------- |
-| Concept            | 24     | 50%        |
-| How-to             | 11     | 23%        |
-| Reference          | 6      | 12.5%      |
-| Tutorial           | 3      | 6.25%      |
-| Troubleshooting    | 3      | 6.25%      |
-| API reference      | 1      | 2%         |
-| Installation guide | 1      | 2%         |
-| Release notes      | 1      | 2%         |
-| Glossary           | 1      | 2%         |
-| **Total**          | **48** | **100%**   |
+| Concept            | 20     | 42.55%     |
+| How-to             | 11     | 23.40%     |
+| Reference          | 6      | 12.77%     |
+| Tutorial           | 3      | 6.38%      |
+| Troubleshooting    | 3      | 6.38%      |
+| API reference      | 1      | 2.13%      |
+| Installation guide | 1      | 2.13%      |
+| Release notes      | 1      | 2.13%      |
+| Glossary           | 1      | 2.13%      |
+| **Total**          | **47** | **100%**   |
 
 ## Usage in MDX Files
 

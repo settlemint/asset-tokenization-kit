@@ -1,5 +1,6 @@
 "use client";
 
+import DOMPurify from "isomorphic-dompurify";
 import { useTheme } from "next-themes";
 import { useEffect, useId, useRef, useState } from "react";
 
@@ -166,5 +167,28 @@ function MermaidContent({ chart }: { chart: string }) {
     );
   }
 
-  return <div ref={containerRef} dangerouslySetInnerHTML={{ __html: svg }} />;
+  return (
+    <div
+      ref={containerRef}
+      dangerouslySetInnerHTML={{
+        __html: DOMPurify.sanitize(svg, {
+          ADD_TAGS: ["svg", "path", "g", "text", "rect", "circle", "line"],
+          ADD_ATTR: [
+            "viewBox",
+            "width",
+            "height",
+            "fill",
+            "stroke",
+            "d",
+            "x",
+            "y",
+            "cx",
+            "cy",
+            "r",
+            "transform",
+          ],
+        }),
+      }}
+    />
+  );
 }
