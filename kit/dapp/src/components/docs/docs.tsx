@@ -7,7 +7,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Separator } from "@/components/ui/separator";
 import {
   SidebarContent,
   SidebarGroup,
@@ -20,8 +19,6 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarProvider,
-  SidebarRail,
-  SidebarTrigger,
   Sidebar as SidebarUI,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/cn";
@@ -52,11 +49,6 @@ export function DocsLayout({ tree, children }: DocsLayoutProps) {
         <SidebarInset>
           <header className="sticky top-0 z-50 flex justify-between w-full h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 bg-sidebar">
             <div className="flex items-center gap-2 px-4">
-              <SidebarTrigger className="-ml-1" />
-              <Separator
-                orientation="vertical"
-                className="mr-2 data-[orientation=vertical]:h-4"
-              />
               <SearchToggle />
               <ThemeToggle />
             </div>
@@ -130,7 +122,6 @@ function Sidebar() {
           <SidebarMenu>{children}</SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarRail />
     </SidebarUI>
   );
 }
