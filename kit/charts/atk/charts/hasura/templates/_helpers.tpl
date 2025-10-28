@@ -219,12 +219,28 @@ Metadata database connection URL
 Redis cache URL
 */}}
 {{- define "hasura.redisCacheUrl" -}}
-{{- include "atk.redis.uriFor" (dict "context" . "chartKey" "hasura" "local" (default (dict) .Values.redis) "dbKey" "cacheDb" "queryKey" "cacheQuery") -}}
+{{- $ctx := . -}}
+{{- $redisLocal := default (dict) .Values.redis -}}
+{{- $redisConfig := ((include "atk.datastores.redis" (dict "context" $ctx "chartKey" "hasura" "local" $redisLocal)) | fromYaml) | default (dict) -}}
+{{- $redisExistingSecret := trim (default "" (index $redisConfig "existingSecret")) -}}
+{{- if ne $redisExistingSecret "" -}}
+{{- "" -}}
+{{- else -}}
+{{- include "atk.redis.uriFor" (dict "context" $ctx "chartKey" "hasura" "local" $redisLocal "dbKey" "cacheDb" "queryKey" "cacheQuery") -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
 Redis rate limit URL
 */}}
 {{- define "hasura.redisRateLimitUrl" -}}
-{{- include "atk.redis.uriFor" (dict "context" . "chartKey" "hasura" "local" (default (dict) .Values.redis) "dbKey" "rateLimitDb" "queryKey" "rateLimitQuery") -}}
+{{- $ctx := . -}}
+{{- $redisLocal := default (dict) .Values.redis -}}
+{{- $redisConfig := ((include "atk.datastores.redis" (dict "context" $ctx "chartKey" "hasura" "local" $redisLocal)) | fromYaml) | default (dict) -}}
+{{- $redisExistingSecret := trim (default "" (index $redisConfig "existingSecret")) -}}
+{{- if ne $redisExistingSecret "" -}}
+{{- "" -}}
+{{- else -}}
+{{- include "atk.redis.uriFor" (dict "context" $ctx "chartKey" "hasura" "local" $redisLocal "dbKey" "rateLimitDb" "queryKey" "rateLimitQuery") -}}
+{{- end -}}
 {{- end -}}

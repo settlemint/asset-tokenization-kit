@@ -113,7 +113,15 @@ spec:
           {{- $pgExistingSecret := trim (default "" (index $pgConfig "existingSecret")) }}
           {{- $pgSecretKeys := (index $pgConfig "existingSecretKeys") | default (dict) }}
           {{- $pgUrlKey := default "url" (index $pgSecretKeys "url") }}
-          {{- $renderEnv := or .Values.extraEnvVars (ne $pgExistingSecret "") }}
+          {{- $redisLocal := default (dict) .Values.config.redis }}
+          {{- $redisConfig := ((include "atk.datastores.redis" (dict "context" $ "chartKey" "portal" "local" $redisLocal)) | fromYaml) | default (dict) }}
+          {{- $redisExistingSecret := trim (default "" (index $redisConfig "existingSecret")) }}
+          {{- $redisSecretKeys := (index $redisConfig "existingSecretKeys") | default (dict) }}
+          {{- $redisHostKey := trim (printf "%v" (default "host" (index $redisSecretKeys "host"))) }}
+          {{- $redisPortKey := trim (printf "%v" (default "port" (index $redisSecretKeys "port"))) }}
+          {{- $redisUsernameKey := trim (printf "%v" (default "username" (index $redisSecretKeys "username"))) }}
+          {{- $redisPasswordKey := trim (printf "%v" (default "password" (index $redisSecretKeys "password"))) }}
+          {{- $renderEnv := or .Values.extraEnvVars (or (ne $pgExistingSecret "") (ne $redisExistingSecret "")) }}
           {{- if $renderEnv }}
           env:
             {{- if .Values.extraEnvVars }}
@@ -125,6 +133,34 @@ spec:
                 secretKeyRef:
                   name: {{ $pgExistingSecret | quote }}
                   key: {{ $pgUrlKey | quote }}
+            {{- end }}
+            {{- if and (ne $redisExistingSecret "") (ne $redisHostKey "") }}
+            - name: REDIS_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $redisExistingSecret | quote }}
+                  key: {{ $redisHostKey | quote }}
+            {{- end }}
+            {{- if and (ne $redisExistingSecret "") (ne $redisPortKey "") }}
+            - name: REDIS_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $redisExistingSecret | quote }}
+                  key: {{ $redisPortKey | quote }}
+            {{- end }}
+            {{- if and (ne $redisExistingSecret "") (ne $redisUsernameKey "") }}
+            - name: REDIS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $redisExistingSecret | quote }}
+                  key: {{ $redisUsernameKey | quote }}
+            {{- end }}
+            {{- if and (ne $redisExistingSecret "") (ne $redisPasswordKey "") }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $redisExistingSecret | quote }}
+                  key: {{ $redisPasswordKey | quote }}
             {{- end }}
           {{- end }}
           envFrom:
