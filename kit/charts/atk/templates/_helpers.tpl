@@ -314,6 +314,30 @@ Return the effective Redis datastore configuration with empty overrides pruned.
     {{- $_ := set $result $key $value -}}
   {{- end -}}
 {{- end -}}
+{{- $existingSecret := "" -}}
+{{- if hasKey $result "existingSecret" -}}
+  {{- $existingSecret = trim (printf "%v" (index $result "existingSecret")) -}}
+{{- end -}}
+{{- if ne $existingSecret "" -}}
+  {{- $namespace := "" -}}
+  {{- if and $ctx $ctx.Release $ctx.Release.Namespace -}}
+    {{- $namespace = $ctx.Release.Namespace -}}
+  {{- end -}}
+  {{- if ne $namespace "" -}}
+    {{- $secret := lookup "v1" "Secret" $namespace $existingSecret -}}
+    {{- if and $secret $secret.data -}}
+      {{- $secretData := $secret.data -}}
+      {{- $secretKeys := (index $result "existingSecretKeys") | default (dict) -}}
+      {{- range $configKey, $secretKey := $secretKeys -}}
+        {{- $secretKeyString := trim (printf "%v" $secretKey) -}}
+        {{- if and (ne $secretKeyString "") (hasKey $secretData $secretKeyString) -}}
+          {{- $decoded := (index $secretData $secretKeyString) | b64dec -}}
+          {{- $_ := set $result $configKey $decoded -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
 {{- toYaml $result -}}
 {{- end -}}
 

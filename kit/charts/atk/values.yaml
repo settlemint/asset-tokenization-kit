@@ -50,6 +50,22 @@ global:
         cacheDb: 0
         # -- (int) Redis database number for ERPC shared state storage
         sharedStateDb: 1
+        # -- (string) Name of an existing secret providing ERPC Redis settings (optional)
+        existingSecret: ""
+        # -- (object) Secret key mapping for ERPC Redis data
+        existingSecretKeys:
+          # - (object) Redis host value key
+          host: host
+          # - (object) Redis port value key
+          port: port
+          # - (object) Redis username value key
+          username: username
+          # - (object) Redis password value key
+          password: password
+          # - (object) Redis cache query parameters key (value like dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50)
+          cacheQuery: cacheQuery
+          # - (object) Redis shared state query parameters key (value like dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50)
+          sharedStateQuery: sharedStateQuery
     # -- (object) Portal-specific datastore configuration for identity and access management
     portal:
       # -- (object) PostgreSQL database for Portal service
@@ -70,6 +86,18 @@ global:
       redis:
         # -- (int) Redis database number for Portal data
         db: 4
+        # -- (string) Name of an existing secret providing Portal Redis settings (optional)
+        existingSecret: ""
+        # -- (object) Secret key mapping for Portal Redis data
+        existingSecretKeys:
+          # - (object) Redis host value key
+          host: host
+          # - (object) Redis port value key
+          port: port
+          # - (object) Redis username value key
+          username: username
+          # - (object) Redis password value key
+          password: password
     # -- (object) Transaction Signer specific datastore configuration
     txsigner:
       # -- (object) PostgreSQL database for transaction signing service
@@ -148,6 +176,14 @@ global:
         cacheDb: 2
         # -- (int) Redis database number for Hasura API rate limiting
         rateLimitDb: 3
+        # -- (string) Name of an existing secret providing Hasura Redis settings (optional)
+        existingSecret: ""
+        # -- (object) Secret key mapping for Hasura Redis data
+        existingSecretKeys:
+          # - (object) Redis cache URL value key
+          cacheUrl: cacheUrl
+          # - (object) Redis rate limit URL value key
+          rateLimitUrl: rateLimitUrl
 
 # -- (object) Blockchain network infrastructure configuration
 network:
