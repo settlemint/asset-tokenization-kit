@@ -9,6 +9,7 @@
     "dev": "bun --bun vite dev",
     "typecheck": "tsgo --noEmit",
     "posttypecheck": "bunx gql.tada check",
+    "postinstall": "fumadocs-mdx",
     "watch": "tsgo --noEmit --watch",
     "build": "bun --bun vite build",
     "start": "NODE_ENV=production bun run server.ts",
