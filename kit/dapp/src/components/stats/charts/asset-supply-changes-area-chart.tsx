@@ -1,4 +1,4 @@
-import { AreaChartComponent } from "@/components/charts/area-chart";
+import { ChartSkeleton } from "@/components/charts/chart-skeleton";
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
@@ -6,8 +6,14 @@ import { safeToNumber } from "@/lib/utils/format-value/safe-to-number";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { format } from "date-fns/format";
-import { useMemo } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+
+const AreaChartComponent = lazy(() =>
+  import("@/components/charts/area-chart").then((mod) => ({
+    default: mod.AreaChartComponent,
+  }))
+);
 
 export interface AssetSupplyChangesAreaChartProps {
   assetAddress: string;
@@ -68,29 +74,33 @@ export const AssetSupplyChangesAreaChart = withErrorBoundary(
     const dataKeys = ["totalMinted", "totalBurned"];
 
     return (
-      <AreaChartComponent
-        title={t("charts.supplyChanges.title")}
-        description={t("charts.supplyChanges.description", { days: timeRange })}
-        data={chartData}
-        config={chartConfig}
-        dataKeys={dataKeys}
-        nameKey="timestamp"
-        showLegend={true} // Show legend for minted/burned
-        stacked={false} // Don't stack, show as separate areas
-        yTickFormatter={(value: string) => {
-          // Format Y-axis ticks with compact notation and handle negative values
-          const numValue = Number(value);
-          const isNegative = numValue < 0;
-          const absValue = Math.abs(numValue);
+      <Suspense fallback={<ChartSkeleton />}>
+        <AreaChartComponent
+          title={t("charts.supplyChanges.title")}
+          description={t("charts.supplyChanges.description", {
+            days: timeRange,
+          })}
+          data={chartData}
+          config={chartConfig}
+          dataKeys={dataKeys}
+          nameKey="timestamp"
+          showLegend={true} // Show legend for minted/burned
+          stacked={false} // Don't stack, show as separate areas
+          yTickFormatter={(value: string) => {
+            // Format Y-axis ticks with compact notation and handle negative values
+            const numValue = Number(value);
+            const isNegative = numValue < 0;
+            const absValue = Math.abs(numValue);
 
-          const formatted = new Intl.NumberFormat("en-US", {
-            notation: "compact",
-            maximumFractionDigits: 1,
-          }).format(absValue);
+            const formatted = new Intl.NumberFormat("en-US", {
+              notation: "compact",
+              maximumFractionDigits: 1,
+            }).format(absValue);
 
-          return isNegative ? `-${formatted}` : formatted;
-        }}
-      />
+            return isNegative ? `-${formatted}` : formatted;
+          }}
+        />
+      </Suspense>
     );
   }
 );

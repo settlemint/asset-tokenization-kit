@@ -2,35 +2,40 @@ import { docs } from "@/.source";
 import * as AccordionComponents from "@/components/docs/components/accordion";
 import * as BannerComponents from "@/components/docs/components/banner";
 import * as CodeBlockComponents from "@/components/docs/components/codeblock";
+import { DocsBreadcrumb } from "@/components/docs/components/docs-breadcrumb";
 import * as FilesComponents from "@/components/docs/components/files";
 import * as StepsComponents from "@/components/docs/components/steps";
 import * as TabsComponents from "@/components/docs/components/tabs";
 import { DocsLayout } from "@/components/docs/docs";
-import { LLMCopyButton, ViewOptions } from "@/components/docs/open-in-dropdown";
 import { DocsBody, DocsPage } from "@/components/docs/page";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { source } from "@/lib/source";
-import {
-  createFileRoute,
-  Link,
-  notFound,
-  useLocation,
-} from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import DOMPurify from "isomorphic-dompurify";
-import { useBreadcrumb } from "fumadocs-core/breadcrumb";
 import type * as PageTree from "fumadocs-core/page-tree";
 import { createClientLoader } from "fumadocs-mdx/runtime/vite";
 import defaultMdxComponents from "fumadocs-ui/mdx";
-import { Home } from "lucide-react";
-import { Fragment, useMemo } from "react";
+import { lazy, Suspense, useMemo } from "react";
+
+const Mermaid = lazy(() =>
+  import("@/components/docs/components/mermaid").then((mod) => ({
+    default: mod.Mermaid,
+  }))
+);
+
+function MermaidWithSuspense(props: { chart: string }) {
+  return (
+    <Suspense
+      fallback={
+        <div className="h-32 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded p-4 text-center text-gray-400">
+          Loading diagram...
+        </div>
+      }
+    >
+      <Mermaid {...props} />
+    </Suspense>
+  );
+}
 
 export const Route = createFileRoute("/docs/$")({
   component: Page,
@@ -53,101 +58,27 @@ const loader = createServerFn({
     return {
       tree: source.pageTree as object,
       path: page.path,
-      slugs,
     };
   });
-
-function DocsBreadcrumb({ tree }: { tree: PageTree.Root }) {
-  const location = useLocation();
-  const docsItems = useBreadcrumb(location.pathname, tree);
-
-  const items = useMemo(() => {
-    const breadcrumbs = [
-      { name: "home", url: "/" },
-      { name: "Documentation", url: "/docs" },
-      ...docsItems,
-    ];
-    return breadcrumbs;
-  }, [docsItems]);
-
-  return (
-    <Breadcrumb>
-      <BreadcrumbList>
-        {items.map((item, index) => {
-          const isLast = index === items.length - 1;
-          return (
-            <Fragment key={index}>
-              <BreadcrumbItem className="text-xs">
-                {isLast ? (
-                  <BreadcrumbPage>
-                    {item.name === "home" ? (
-                      <Home className="h-3 w-3" />
-                    ) : (
-                      item.name
-                    )}
-                  </BreadcrumbPage>
-                ) : item.url ? (
-                  <BreadcrumbLink asChild className="text-xs">
-                    <Link
-                      to={item.url}
-                      aria-label={item.name === "home" ? "Home" : undefined}
-                    >
-                      {item.name === "home" ? (
-                        <Home className="h-3 w-3" />
-                      ) : (
-                        item.name
-                      )}
-                    </Link>
-                  </BreadcrumbLink>
-                ) : (
-                  <span className="text-muted-foreground text-xs">
-                    {item.name === "home" ? (
-                      <Home className="h-3 w-3" />
-                    ) : (
-                      item.name
-                    )}
-                  </span>
-                )}
-              </BreadcrumbItem>
-              {!isLast && <BreadcrumbSeparator />}
-            </Fragment>
-          );
-        })}
-      </BreadcrumbList>
-    </Breadcrumb>
-  );
-}
 
 const clientLoader = createClientLoader(docs.doc, {
   id: "docs",
   component({ toc, frontmatter, default: MDX }) {
     const data = Route.useLoaderData();
-    const tree = useMemo(
-      () => transformPageTree(data.tree as PageTree.Folder),
-      [data.tree]
-    );
-
     return (
-      <DocsPage toc={toc}>
+      <DocsPage toc={toc} path={data.path}>
         <div className="space-y-2">
-          <DocsBreadcrumb tree={tree} />
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <h1 className="text-3xl font-bold tracking-tight">
-                {frontmatter.title}
-                {frontmatter.description && (
-                  <div className="text-sm text-fd-muted-foreground font-light tracking-normal">
-                    {frontmatter.description}
-                  </div>
-                )}
+          <DocsBreadcrumb includeRoot={{ url: "/docs" }} includeSeparator />
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-3xl font-bold tracking-tight wrap-break-words">
+                {frontmatter.pageTitle ?? frontmatter.title}
               </h1>
-            </div>
-            <div className="flex items-center gap-2">
-              <LLMCopyButton markdownUrl={data.path} />
-              <ViewOptions
-                markdownUrl={`/docs/${data.path}`}
-                githubUrl={`https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/content/docs/${data.path}`}
-              />
+              {frontmatter.description && (
+                <p className="text-sm text-fd-muted-foreground font-light tracking-normal mt-2 wrap-break-words">
+                  {frontmatter.description}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -161,6 +92,7 @@ const clientLoader = createClientLoader(docs.doc, {
               ...CodeBlockComponents,
               ...FilesComponents,
               ...StepsComponents,
+              Mermaid: MermaidWithSuspense,
             }}
           />
         </DocsBody>
@@ -194,35 +126,23 @@ function transformPageTree(tree: PageTree.Folder): PageTree.Folder {
         <span
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(item.icon, {
-              ALLOWED_TAGS: [
-                "svg",
-                "path",
-                "g",
-                "circle",
-                "rect",
-                "line",
-                "polyline",
-                "polygon",
-              ],
+              ALLOWED_TAGS: ["svg", "path", "g", "circle", "rect", "line"],
               ALLOWED_ATTR: [
                 "viewBox",
+                "width",
+                "height",
                 "fill",
                 "stroke",
-                "stroke-width",
                 "d",
                 "cx",
                 "cy",
                 "r",
                 "x",
                 "y",
-                "width",
-                "height",
-                "points",
                 "x1",
                 "y1",
                 "x2",
                 "y2",
-                "class",
               ],
             }),
           }}

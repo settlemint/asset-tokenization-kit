@@ -1,0 +1,553 @@
+---
+title: Addon modules
+description:
+  Describes the optional add-on smart contracts and modules that provide extra
+  features
+pageTitle:
+  Add-on modules - Extending asset functionality (Airdrops, vaults, etc.)
+tags: [addons, extensions, modules, advanced-features]
+---
+
+ATK System Addons are modular extensions that provide additional functionality
+beyond core asset tokenization. These addons integrate with the ATK System
+infrastructure to offer specialized capabilities for token distribution,
+treasury management, cross-chain settlements, and yield strategies.
+
+## What are ATK system addons?
+
+Unlike assets (which are tokenized instruments), addons are operational tools
+that work alongside the tokenization infrastructure to provide enhanced
+functionality for ecosystem participants. They extend the ATK platform with
+specialized capabilities that address specific operational needs.
+
+### Design principles
+
+- **Modularity** - Independent addons that can be used individually or together
+- **Extensibility** - Factory patterns enable easy deployment of new instances
+- **Security** - Consistent security patterns across all addons
+- **Integration** - Direct integration with ATK System infrastructure
+- **Flexibility** - Configurable parameters for different use cases
+
+## Architecture overview
+
+ATK System Addons follow a modular architecture with specialized functionality
+organized into four main categories:
+
+<Mermaid chart={`
+graph TB
+    subgraph "Addon Categories"
+        Distribution[Distribution<br/>airdrop/]
+        Treasury[Treasury<br/>vault/]
+        Settlement[Settlement<br/>xvp/]
+        Yield[Yield<br/>yield/]
+    end
+
+    subgraph "Airdrop Types"
+        TimeBound[Time-Bound<br/>Airdrop]
+        Vesting[Vesting<br/>Airdrop]
+        Push[Push<br/>Airdrop]
+    end
+
+    subgraph "Supporting Infrastructure"
+        ClaimTracker[Claim Trackers<br/>Bitmap & Amount]
+        VestingStrategy[Vesting Strategies<br/>Linear & Custom]
+        MultiSig[Multi-Signature<br/>Wallet]
+        AtomicSwap[Atomic<br/>Settlements]
+    end
+
+    %% Addon type connections
+    Distribution --> TimeBound
+    Distribution --> Vesting
+    Distribution --> Push
+
+    %% Supporting infrastructure
+    TimeBound --> ClaimTracker
+    Vesting --> VestingStrategy
+    Vesting --> ClaimTracker
+    Push --> ClaimTracker
+
+    Treasury --> MultiSig
+    Settlement --> AtomicSwap
+
+    style Distribution fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style Treasury fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style Settlement fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style Yield fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+
+`} />
+
+## Airdrop system
+
+Token distribution system with multiple strategies and claim tracking.
+
+### Overview
+
+A comprehensive airdrop system built on Merkle proofs with flexible claim
+tracking and multiple distribution strategies. Supports partial claims,
+time-bound distributions, vesting schedules, and push-based airdrops.
+
+### Core features
+
+- Merkle proof-based eligibility verification
+- Pluggable claim tracking strategies
+- Meta-transaction support via ERC2771
+- Owner withdrawal of unclaimed tokens
+- Batch claim operations
+
+### Airdrop types
+
+**Time-bound airdrop**
+
+Airdrops with specific start and end times.
+
+**Key features:**
+
+- Configurable start and end timestamps
+- Automatic expiration handling
+- Owner withdrawal after expiration
+- Standard Merkle proof verification
+
+**Vesting airdrop**
+
+Airdrops with token vesting schedules.
+
+**Key features:**
+
+- Linear vesting strategy support
+- Configurable vesting periods and cliffs
+- Progressive token release
+- Vesting schedule management
+
+**Push airdrop**
+
+Admin-initiated token distribution.
+
+**Key features:**
+
+- Admin-controlled token pushing
+- Batch distribution capabilities
+- No user claiming required
+- Instant token delivery
+
+### Claim tracking
+
+**Bitmap claim tracker**
+
+Efficient tracking of claimed airdrops using bitmaps.
+
+**Features:**
+
+- Gas-efficient storage for large airdrop lists
+- Binary claim status (claimed/unclaimed)
+- Optimal for simple airdrop scenarios
+
+**Amount claim tracker**
+
+Tracking of partial claims and remaining amounts.
+
+**Features:**
+
+- Support for partial claims
+- Tracks claimed amounts per user
+- Suitable for progressive claiming
+
+### Merkle proof system
+
+- **Root verification** - Efficient verification of large recipient lists
+- **Proof generation** - Off-chain proof generation for gas efficiency
+- **Tamper resistance** - Cryptographic integrity of airdrop data
+
+### Flexible distribution
+
+- **Multiple strategies** - Support for different airdrop types
+- **Configurable parameters** - Customizable timing, amounts, and restrictions
+- **Batch operations** - Efficient multi-user operations
+
+### Use cases
+
+- Token launches and community rewards
+- Retroactive airdrops for existing users
+- Vested team and investor distributions
+- Marketing and engagement campaigns
+
+### Airdrop workflow
+
+<Mermaid chart={`
+sequenceDiagram
+    participant Admin
+    participant Airdrop
+    participant User
+    participant Token
+
+    Admin->>Airdrop: Create airdrop with Merkle root
+    Admin->>Token: Transfer tokens to airdrop
+
+    User->>Airdrop: claim(proof, amount)
+    Airdrop->>Airdrop: Verify Merkle proof
+    Airdrop->>Airdrop: Check claim tracker
+    Airdrop->>Token: Transfer tokens to user
+    Airdrop->>User: Tokens claimed
+
+`} />
+
+## Vault system
+
+Multi-signature treasury management system with role-based access control.
+
+### Overview
+
+A comprehensive multi-signature wallet system designed for treasury management,
+featuring role-based access control, transaction proposals, confirmations, and
+emergency procedures.
+
+### Core features
+
+- Multi-signature transaction approval
+- Role-based access control (Signers, Emergency, Governance)
+- Support for both ETH and ERC20 transactions
+- Pausable operations for emergency situations
+- Comprehensive audit trail
+
+### Multi-signature operations
+
+**Transaction proposals**
+
+- Signers can propose transactions
+- Required number of confirmations before execution
+- Revocation support for confirmations
+- Automatic execution option upon sufficient approvals
+
+### Role-based security
+
+**SIGNER_ROLE** - Can propose and confirm transactions
+
+**EMERGENCY_ROLE** - Can pause/unpause operations
+
+**GOVERNANCE_ROLE** - Can modify vault parameters
+
+**Access control** - Enumerable role management
+
+### Transaction types
+
+**ETH transfers** - Native currency transactions
+
+**ERC20 transfers** - Token transfers with approval mechanics
+
+**Contract interactions** - General contract function calls
+
+**Batch operations** - Multiple transactions in one proposal
+
+### Use cases
+
+- DAO treasury management
+- Multi-sig custody solutions
+- Corporate treasury operations
+- Project fund management
+
+### Vault workflow
+
+<Mermaid chart={`
+sequenceDiagram
+    participant Signer1
+    participant Signer2
+    participant Vault
+    participant Target
+
+    Signer1->>Vault: submitTransaction(to, value, data)
+    Vault->>Vault: Store transaction proposal
+
+    Signer2->>Vault: confirmTransaction(txIndex)
+    Vault->>Vault: Check if enough confirmations
+
+    alt Sufficient confirmations
+        Vault->>Target: Execute transaction
+        Vault->>Signer1: Transaction executed
+        Vault->>Signer2: Transaction executed
+    else Insufficient confirmations
+        Vault->>Signer2: Awaiting more confirmations
+    end
+
+`} />
+
+## XvP settlement system
+
+Cross-Value Proposition atomic settlement system for multi-party token
+exchanges.
+
+### Overview
+
+A sophisticated settlement system that enables atomic swaps between multiple
+parties with different tokens, ensuring all transfers happen together or none at
+all.
+
+### Core features
+
+- Multi-party atomic settlements
+- Support for any number of participants
+- Configurable expiration dates
+- Per-sender approval system for local senders only
+- Automatic execution options gated by HTLC coordination
+- Optional cross-chain hashlock enforcement
+
+### Atomic settlement engine
+
+**Multi-party support** - Any number of participants
+
+**Flow management** - Multiple token flows in single settlement
+
+**All-or-nothing** - Atomic execution guarantees
+
+**Expiration handling** - Time-based settlement expiry
+
+### Approval system
+
+**Per-sender approvals** - Each party approves the entire settlement
+
+**Approval tracking** - Comprehensive approval status monitoring
+
+**Cancellation rights** - Any sender can cancel before execution
+
+**Auto-execution** - Optional automatic execution when all approvals received
+
+### Settlement flows
+
+**Token flows** - ERC20 token transfers between parties
+
+**External references** - Each flow includes an `externalChainId`:
+
+- `0` designates a local transfer executed on the current chain
+- Non-zero values record an external leg (no local transfer is attempted)
+
+**Approval scope** - Only senders in local flows must provide ERC20 allowances
+and approvals
+
+**Validation** - Local flows are probed for ERC20 compliance; external flows
+skip token introspection
+
+### Hashlock coordination
+
+**Shared hashlock** - Required whenever any flow targets an external chain;
+optional for pure local settlements
+
+**Permissionless reveal** - Anyone may call `revealSecret(bytes secret)` once
+the external HTLC reveals the preimage
+
+**Execution gate** - Local transfers execute only after both all local approvals
+and the hashlock are satisfied
+
+**Auto-execution alignment** - Auto mode waits for approvals and a successful
+secret reveal before triggering transfers
+
+**Withholding protection** - Since `revealSecret` is open to all, counterparties
+cannot block completion once the secret is public
+
+### Hashlock lifecycle
+
+For external flows:
+
+1. Any flow with `externalChainId != 0` requires a non-zero `hashlock` during
+   creation
+2. External counterparties deploy HTLCs using the shared hashlock and eventually
+   reveal the secret on their chain
+3. Anyone can relay the revealed secret via `revealSecret(bytes secret)`
+4. Execution (manual or auto) proceeds only after both the secret is accepted
+   and all local approvals are present
+
+### Use cases
+
+- Cross-chain asset swaps
+- Multi-party token exchanges
+- Complex financial settlements
+- Atomic trade execution
+
+### XvP settlement workflow
+
+<Mermaid chart={`
+sequenceDiagram
+    participant PartyA
+    participant PartyB
+    participant Settlement
+    participant TokenA
+    participant TokenB
+
+    PartyA->>Settlement: Create settlement with flows
+    PartyA->>Settlement: approve()
+    PartyB->>Settlement: approve()
+
+    Settlement->>Settlement: Check all approvals received
+    Settlement->>TokenA: Transfer A → B
+    Settlement->>TokenB: Transfer B → A
+    Settlement->>PartyA: Settlement executed
+    Settlement->>PartyB: Settlement executed
+
+`} />
+
+## Yield management system
+
+Fixed yield schedule management system for token yield distribution.
+
+### Overview
+
+A factory system for creating and managing fixed yield schedules that can be
+attached to tokens for automatic yield distribution.
+
+### Core features
+
+- Fixed yield schedule creation
+- Factory pattern for deployment
+- Integration with token yield systems
+- Configurable yield parameters
+
+### Fixed yield schedules
+
+**Deterministic yields** - Pre-configured yield amounts and timing
+
+**Schedule management** - Creation and configuration of yield schedules
+
+**Token integration** - Direct integration with yield-bearing tokens
+
+**Factory deployment** - Standardized deployment via factory pattern
+
+### Schedule configuration
+
+**Yield amounts** - Fixed yield amounts per distribution
+
+**Distribution timing** - Configurable distribution schedules
+
+**Recipient management** - Automatic distribution to token holders
+
+**Parameter updates** - Admin-controlled schedule modifications
+
+### Use cases
+
+- Fixed-term bond yield distributions
+- Dividend payments for equity tokens
+- Reward distributions for staking
+- Scheduled token distributions
+
+## Access control and security
+
+All ATK System Addons implement consistent security patterns to ensure safe and
+secure operations.
+
+### Common security patterns
+
+**Role-based access control**
+
+- Granular permissions for different operations
+- Separation of duties between operational roles
+- Enumerable access for transparent role management
+- Emergency procedures with dedicated response roles
+
+**Meta-transaction support**
+
+- ERC2771 integration for gasless transaction support
+- Configurable trusted forwarders for sponsored transactions
+- Improved user experience through sponsored transactions
+
+**Reentrancy protection**
+
+- ReentrancyGuard protection against reentrancy attacks
+- Checks-effects-interactions pattern implementation
+- Proper state management during external calls
+
+### Addon-specific security
+
+**Airdrop security**
+
+- Merkle proofs for cryptographic verification of eligibility
+- Claim tracking to prevent double-spending and replay attacks
+- Owner controls for secure withdrawal of unclaimed tokens
+- Time bounds for automatic expiration and cleanup
+
+**Vault security**
+
+- Multi-signature for distributed control over treasury operations
+- Confirmation thresholds with configurable approval requirements
+- Emergency pause for immediate suspension of operations
+- Audit trail with comprehensive transaction logging
+
+**XvP security**
+
+- Atomic execution with all-or-nothing transaction guarantees
+- Approval verification with cryptographic approval verification
+- Expiration safety through automatic expiration of stale settlements
+- Flow validation with pre-execution validation of all transfers
+
+## Directory structure
+
+```
+addons/
+├── airdrop/                              # Token distribution system
+│   ├── ATKAirdrop.sol                    # Base airdrop contract
+│   ├── ATKAirdropErrors.sol              # Error definitions
+│   ├── IATKAirdrop.sol                   # Airdrop interface
+│   ├── claim-tracker/                    # Claim tracking strategies
+│   │   ├── ATKAmountClaimTracker.sol     # Amount-based tracking
+│   │   ├── ATKBitmapClaimTracker.sol     # Bitmap-based tracking
+│   │   └── IATKClaimTracker.sol          # Claim tracker interface
+│   ├── push-airdrop/                     # Admin-initiated distributions
+│   │   ├── ATKPushAirdropImplementation.sol
+│   │   ├── ATKPushAirdropFactoryImplementation.sol
+│   │   ├── ATKPushAirdropProxy.sol
+│   │   ├── IATKPushAirdrop.sol
+│   │   └── IATKPushAirdropFactory.sol
+│   ├── time-bound-airdrop/               # Time-constrained airdrops
+│   │   ├── ATKTimeBoundAirdropImplementation.sol
+│   │   ├── ATKTimeBoundAirdropFactoryImplementation.sol
+│   │   ├── ATKTimeBoundAirdropProxy.sol
+│   │   ├── IATKTimeBoundAirdrop.sol
+│   │   └── IATKTimeBoundAirdropFactory.sol
+│   └── vesting-airdrop/                  # Vesting-enabled airdrops
+│       ├── ATKLinearVestingStrategy.sol   # Linear vesting implementation
+│       ├── ATKVestingAirdropImplementation.sol
+│       ├── ATKVestingAirdropFactoryImplementation.sol
+│       ├── ATKVestingAirdropProxy.sol
+│       ├── IATKLinearVestingStrategy.sol
+│       ├── IATKVestingAirdrop.sol
+│       ├── IATKVestingAirdropFactory.sol
+│       └── IATKVestingStrategy.sol
+├── vault/                                # Multi-signature treasury
+│   ├── ATKVault.sol                      # Multi-sig vault implementation
+│   ├── ATKVaultFactoryImplementation.sol # Vault factory
+│   └── IATKVaultFactory.sol              # Factory interface
+├── xvp/                                  # Cross-value proposition settlements
+│   ├── ATKXvPSettlementImplementation.sol # Settlement logic
+│   ├── ATKXvPSettlementFactoryImplementation.sol
+│   ├── ATKXvPSettlementProxy.sol
+│   ├── IATKXvPSettlement.sol
+│   └── IATKXvPSettlementFactory.sol
+└── yield/                                # Yield schedule management
+    ├── ATKFixedYieldProxy.sol            # Yield schedule proxy
+    ├── ATKFixedYieldScheduleFactoryImplementation.sol
+    ├── ATKFixedYieldScheduleUpgradeable.sol
+    └── IATKFixedYieldScheduleFactory.sol
+```
+
+## Conclusion
+
+ATK System Addons provide operational tools that extend the core ATK Protocol
+with specialized functionality for:
+
+- **Token distribution** - Sophisticated airdrop systems with multiple
+  strategies
+- **Treasury management** - Multi-signature vaults with role-based access
+  control
+- **Atomic settlements** - Cross-value proposition settlements for complex
+  exchanges
+- **Yield management** - Fixed yield schedules for automated distributions
+
+### Key benefits
+
+The addon architecture provides:
+
+- **Modularity** - Independent addons that can be used individually or together
+- **Extensibility** - Factory patterns enable easy deployment of new instances
+- **Security** - Consistent security patterns across all addons
+- **Integration** - Direct integration with ATK System infrastructure
+- **Flexibility** - Configurable parameters for different use cases
+
+The addon system enables ecosystem participants to build sophisticated
+tokenization solutions that go beyond basic asset representation, providing the
+operational tools needed for real-world deployment and management of tokenized
+assets.

@@ -1,11 +1,11 @@
+// source.config.ts
 import {
   defineConfig,
   defineDocs,
-  frontmatterSchema,
+  frontmatterSchema
 } from "fumadocs-mdx/config";
 import { z } from "zod";
-
-export const docs = defineDocs({
+var docs = defineDocs({
   dir: "content/docs",
   docs: {
     schema: frontmatterSchema.extend({
@@ -15,22 +15,23 @@ export const docs = defineDocs({
        * @example "Business Value"
        */
       pageTitle: z.string().optional(),
-
       /**
        * Meta description for SEO.
        * Used in search engine results and social media previews.
        */
       description: z.string().optional(),
-
       /**
        * Additional keywords for SEO.
        */
-      keywords: z.array(z.string()).optional(),
+      keywords: z.array(z.string()).optional()
     }),
     postprocess: {
-      includeProcessedMarkdown: true,
-    },
-  },
+      includeProcessedMarkdown: true
+    }
+  }
 });
-
-export default defineConfig();
+var source_config_default = defineConfig();
+export {
+  source_config_default as default,
+  docs
+};
