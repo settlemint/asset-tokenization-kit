@@ -86,7 +86,6 @@ export function AddonsManagement() {
       });
     },
   });
-
   const { mutateAsync: createAddons, isPending: isDeploying } = useMutation(
     orpc.system.addon.create.mutationOptions({
       onSuccess: async () => {
