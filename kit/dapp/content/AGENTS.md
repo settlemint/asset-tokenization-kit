@@ -83,9 +83,17 @@ accuracy and clarity, optimized for both human readers and AI search indexing.
   use H2 for major sections, H3 for subsections, etc. Headings should be
   descriptive (informative) rather than
   generic[\[140\]](https://cookbook.openai.com/articles/what_makes_documentation_good#:~:text=Split%20content%20into%20sections%20with,focus%20in%20or%20move%20on).
-  For example, prefer "**Compliance by Design in SMART Contracts**" over just
+  For example, prefer "**Compliance by design in SMART contracts**" over just
   "**Compliance**". This helps readers (and AI search) know what's in that
   section at a glance.
+  - **Title Capitalization:** Use sentence case for all headings (capitalize
+    only the first word and proper nouns), not title case. Examples:
+    - ✅ Correct: "Frontend layer: Web application & mobile interface"
+    - ❌ Incorrect: "Frontend Layer: Web Application & Mobile Interface"
+    - ✅ Correct: "Why this architecture beats point tools"
+    - ❌ Incorrect: "Why This Architecture Beats Point Tools"
+    - Proper nouns are always capitalized: "SMART Protocol", "OnchainID",
+      "PostgreSQL", "Kubernetes"
 - **Paragraphs:** Keep paragraphs short (ideally 2-4 sentences
   each)[\[141\]](https://cookbook.openai.com/articles/what_makes_documentation_good#:~:text=Keep%20paragraphs%20short,Long%20paragraphs%20can%20bury%20information).
   One idea per paragraph. If a sentence is very important, it can stand as its
@@ -134,6 +142,15 @@ accuracy and clarity, optimized for both human readers and AI search indexing.
     (`LR`) for better readability in documentation. Use `flowchart TB` instead
     of `flowchart LR` to create taller, narrower diagrams that fit better in
     content columns.
+  - **Character Encoding in Mermaid:** Special characters in Mermaid diagrams
+    must be properly encoded to avoid MDX parsing errors:
+    - Use `&lt;` instead of `<` (less than symbol)
+    - Use `&gt;` instead of `>` (greater than symbol)
+    - Use `&amp;` instead of `&` (ampersand)
+    - Avoid starting node labels with numbers - prefix with text if needed
+    - Example: Write `Target: &lt;2s` instead of `Target: <2s`
+    - Example: Write `Cost: &lt;200,000 gas/tx` instead of
+      `Cost: <200,000 gas/tx`
 - **Images/Screenshots:** Where actual UI screenshots become available, include
   them with appropriate figure captions. For now, plan for them (like
   "Screenshot: Asset creation form") so an AI can insert later when generating

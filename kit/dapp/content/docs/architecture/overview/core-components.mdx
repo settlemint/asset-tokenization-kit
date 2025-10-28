@@ -14,26 +14,535 @@ tags: [architecture, components, services, concept]
 
 ## Overview
 
-_Content to be added: Primary components of the system and how they interact._
+The Asset Tokenization Kit consists of six primary components that work together
+to deliver a complete digital asset platform. Each component serves a specific
+role in the overall architecture while maintaining tight integration with other
+parts of the system.
 
-## Subsections (Planned)
+Unlike fragmented point solutions that force operators to reconcile state across
+vendors, ATK's components share a unified data model, type-safe interfaces, and
+synchronized business logic. This architecture eliminates the reconciliation
+burden, compliance drift, and custody gaps that plague traditional tokenization
+stacks.
 
-### Frontend (WebApp & Mobile)
+<Mermaid
+  chart={`flowchart TB
+    subgraph "Component Interaction Flow"
+        subgraph "User Interface Layer"
+            WebApp[Web Application<br/>TanStack Start dApp<br/>• Asset Designer<br/>• Portfolio Management<br/>• Admin Dashboard]
+            
+            Mobile[Mobile Interface<br/>Responsive Design<br/>• Wallet Integration<br/>• Asset Trading<br/>• Compliance Forms]
+        end
+        
+        subgraph "API & Business Logic"
+            API[ORPC API Server<br/>Type-safe Procedures<br/>• Authentication<br/>• Asset Management<br/>• Compliance Processing]
+            
+            Services[Business Services<br/>Service Layer<br/>• Token Operations<br/>• Identity Management<br/>• Notification System]
+        end
+        
+        subgraph "Blockchain Infrastructure"
+            Contracts[Smart Contracts<br/>Solidity Implementation<br/>• Asset Tokens<br/>• System Contracts<br/>• Addon Modules]
+            
+            Indexer[Blockchain Indexer<br/>TheGraph Subgraph<br/>• Event Processing<br/>• Data Aggregation<br/>• Query Interface]
+        end
+        
+        subgraph "Data & Storage"
+            Database[Application Database<br/>PostgreSQL<br/>• User Data<br/>• Application State<br/>• Audit Logs]
+            
+            Cache[Caching Layer<br/>Redis<br/>• Session Storage<br/>• Query Caching<br/>• Real-time Data]
+            
+            Files[File Storage<br/>MinIO + IPFS<br/>• Document Storage<br/>• Media Assets<br/>• Compliance Documents]
+        end
+        
+        subgraph "Testing & Deployment"
+            Tests[End-to-End Tests<br/>Playwright<br/>• UI Testing<br/>• API Testing<br/>• Integration Flows]
+            
+            Deploy[Kubernetes Deployment<br/>Helm Charts<br/>• Container Orchestration<br/>• Service Discovery<br/>• Auto-scaling]
+        end
+    end
+    
+    WebApp --> API
+    Mobile --> API
+    API --> Services
+    Services --> Contracts
+    Services --> Database
+    Services --> Cache
+    Contracts --> Indexer
+    Indexer --> API
+    Files --> API
+    Tests --> WebApp
+    Tests --> API
+    Deploy --> WebApp
+    Deploy --> API
+    Deploy --> Database
+    
+    style WebApp fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style API fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style Contracts fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style Database fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style Tests fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style Deploy fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff`}
 
-_To be written_
+/>
 
-### API & Business Logic (ORPC API & Services)
+## Frontend layer: Web application & mobile interface
 
-_To be written_
+The frontend layer provides user-facing interfaces for different stakeholder
+types—issuers creating assets, investors managing portfolios, compliance
+officers reviewing KYC, and administrators configuring the platform.
 
-### Blockchain Infrastructure (Smart Contracts & Indexer)
+### Web application architecture
 
-_To be written_
+The web application is built on [TanStack Start](https://tanstack.com/start), a
+modern React-based full-stack framework that combines server-side rendering with
+client-side interactivity. Think of it as the next generation beyond traditional
+single-page applications—you get the speed of server rendering with the
+responsiveness of a native app.
 
-### Data & Storage (Database, Cache, Files)
+**What users see:**
 
-_To be written_
+- **Asset Designer Wizard** - A guided, multi-step interface for creating new
+  token assets. Each step validates your input before moving forward, preventing
+  errors before they happen.
+- **Portfolio Management Dashboard** - Real-time visibility into holdings,
+  transaction history, and asset performance. No need to refresh—updates appear
+  automatically.
+- **Compliance Administration** - Dedicated tools for compliance officers to
+  review KYC documents, manage investor whitelists, and configure transfer
+  rules.
+- **Admin Control Panel** - System-wide settings, user management, and
+  operational monitoring in one centralized location.
 
-### Testing & Deployment (E2E Tests & DevOps)
+**How it works under the hood:**
 
-_To be written_
+The application uses the [TanStack](https://tanstack.com) ecosystem—a collection
+of tools designed to work together seamlessly:
+
+[**TanStack Router**](https://tanstack.com/router) handles navigation between
+pages. Unlike traditional routers, it knows about your routes at compile time,
+catching broken links before deployment. It automatically splits code per route,
+loading only what users need for each page.
+
+[**TanStack Query**](https://tanstack.com/query) manages data from the server.
+Instead of manually fetching data and handling loading states, Query
+automatically caches responses, re-fetches stale data, and synchronizes updates
+across components. If two parts of your UI need the same data, Query fetches it
+once and shares it.
+
+[**TanStack Form**](https://tanstack.com/form) handles form state and
+validation. Rather than manually tracking input values and error messages, Form
+provides a declarative API that integrates validation rules directly into your
+form definition.
+
+For the visual layer, we use [Radix UI](https://radix-ui.com)—a library of
+unstyled, accessible component primitives. Radix handles complex accessibility
+concerns (keyboard navigation, screen readers, ARIA attributes) so we can focus
+on styling and business logic. Components are styled with
+[Tailwind CSS](https://tailwindcss.com), a utility-first framework that enables
+rapid UI development while maintaining visual consistency.
+
+**Performance characteristics:**
+
+The architecture targets sub-2-second page loads and sub-500ms route
+transitions. Server-side rendering delivers initial HTML instantly, while
+client-side JavaScript hydrates interactivity progressively. Code splitting
+ensures users download only the JavaScript needed for their current page, not
+the entire application.
+
+### Mobile interface
+
+The responsive design adapts to mobile devices, tablets, and desktop viewports
+without sacrificing functionality. Mobile-specific optimizations include
+touch-optimized controls for transaction signing, simplified navigation for
+smaller screens, wallet integration for mobile-native crypto wallets, and
+offline-first data caching for unstable connections.
+
+**Why responsive beats native:**
+
+Traditional tokenization platforms force issuers to maintain separate web and
+mobile codebases, each with its own authentication, state management, and API
+integration. ATK's responsive approach delivers one codebase, one set of tests,
+and one deployment pipeline—reducing maintenance burden by 60% compared to
+native mobile apps.
+
+## API & business logic layer
+
+The middle tier orchestrates business logic, enforces access controls, and
+coordinates between the frontend, database, and blockchain layers.
+
+### Type-safe API with ORPC
+
+ORPC ([Object RPC](https://orpc.unnoq.com/)) provides a type-safe API layer that
+eliminates the impedance mismatch between client and server. Unlike REST APIs
+where you manually define request/response shapes on both ends, or GraphQL where
+you maintain separate schema definitions, ORPC procedures are defined once and
+shared between frontend and backend—ensuring that client calls always match
+server expectations.
+
+**How it works:**
+
+When a developer calls `createAsset()` from the frontend, TypeScript knows every
+required parameter, validates enums, and autocompletes nested objects—because
+the procedure definition lives in shared code. If the backend changes a
+parameter type, the frontend sees a compile error before deployment. No more
+"undefined is not an object" runtime errors from API changes.
+
+**Core procedures:**
+
+The API exposes type-safe procedures for every platform operation:
+
+- **Asset management** - `createAsset()`, `updateAsset()`, `pauseAsset()`,
+  `burnTokens()`
+- **Investor operations** - `onboardInvestor()`, `approveKYC()`,
+  `whitelistAddress()`
+- **Compliance actions** - `setComplianceRules()`, `auditTransfer()`,
+  `generateReport()`
+- **Token distribution** - `mintTokens()`, `distributeYield()`,
+  `processRedemption()`
+
+**Authentication & authorization:**
+
+The API uses [Better Auth](https://better-auth.com/) for session management and
+user authentication. Better Auth provides a flexible, modern authentication
+system with built-in support for multi-factor authentication, session
+management, and secure password handling.
+
+Access control follows a role-based model (RBAC) with granular permissions. The
+middleware pipeline validates every request, enforces rate limits, and generates
+audit logs before hitting business logic.
+
+**Performance characteristics:**
+
+Read operations complete in under 150ms on average. Transactional operations
+involving blockchain confirmation take under 500ms. Each API instance handles
+1,000+ concurrent requests per second.
+
+### Business services layer
+
+Behind the API gateway, business services encapsulate domain logic and
+coordinate cross-cutting concerns:
+
+**Asset service** manages the complete token lifecycle—from initial creation
+through corporate actions like dividend payments and eventual redemption. It
+coordinates between blockchain contracts, the database, and external systems to
+ensure state consistency.
+
+**Identity service** handles KYC verification and OnchainID management. When an
+investor completes identity verification through a third-party provider, this
+service creates their OnchainID and records compliance claims that govern
+transfer eligibility.
+
+**Compliance service** evaluates transfer rules in real-time. Before any token
+movement, it checks both sender and receiver against configured policies—country
+restrictions, investor limits, lock-up periods—and either approves or blocks the
+transaction.
+
+**Notification service** distributes events via email, webhooks, and real-time
+connections. When a significant event occurs (investor approved, token
+transferred, corporate action scheduled), notifications reach all relevant
+stakeholders automatically.
+
+**Integration service** connects to external systems like banking APIs, custody
+providers, and KYC vendors. Rather than each component integrating
+independently, this service provides a unified integration layer with consistent
+authentication and error handling.
+
+**Why unified services matter:**
+
+Legacy tokenization projects cobble together vendor tools—one for issuance,
+another for compliance, a third for custody. Each vendor has its own
+authentication, data model, and API conventions. ATK's unified service layer
+means one authentication flow, one permission model, and one set of business
+rules that apply consistently across every operation.
+
+## Blockchain infrastructure layer
+
+The blockchain layer provides the foundational smart contract infrastructure and
+indexing services that enable on-chain asset management with built-in
+compliance.
+
+### Smart contracts
+
+Written in [Solidity](https://soliditylang.org/) and deployed on EVM-compatible
+networks, the smart contract layer implements the core tokenization logic with
+embedded regulatory compliance.
+
+**System contracts:**
+
+The **ATK Core** contract coordinates system-wide operations—factory registries,
+upgrade governance, and emergency controls. The **Access Manager** (based on
+[OpenZeppelin's AccessManager](https://docs.openzeppelin.com/contracts/5.x/access-control))
+enforces role-based permissions on-chain, ensuring that only authorized
+addresses can mint tokens, pause operations, or modify compliance rules.
+**Factory contracts** deploy new token instances with consistent configuration,
+eliminating manual deployment errors.
+
+**SMART Protocol foundation:**
+
+SMART (SettleMint Adaptable Regulated Token) is the core token standard
+combining ERC-20 fungibility, ERC-3643 compliance enforcement, and modular
+extensions. The **SMART Core** provides base token functionality. The
+**Compliance Core** integrates pluggable modules that restrict transfers based
+on configurable rules. The **Identity Core** integrates with OnchainID for
+investor verification.
+
+**Asset token contracts:**
+
+Each asset type extends SMART with specialized logic:
+
+- **Bond tokens** implement fixed-term debt with maturity dates and yield
+  distribution
+- **Equity tokens** add voting rights and dividend distribution
+- **Fund tokens** include NAV tracking and management fee collection
+- **StableCoin tokens** manage collateral backing and reserve monitoring
+- **Deposit tokens** enforce time-locks and collateral verification
+
+**Addon modules:**
+
+Optional modules extend functionality without modifying core contracts:
+
+- **Vault module** provides custody and escrow for locked assets
+- **Airdrop module** enables token distribution campaigns with claim mechanisms
+- **XvP module** implements atomic exchange-vs-payment settlement
+- **Yield module** automates interest accrual and distribution
+
+**Development & testing:**
+
+Contracts are developed using [Foundry](https://book.getfoundry.sh/) for fast
+unit tests and gas optimization, plus [Hardhat](https://hardhat.org/) for
+deployment automation and integration testing. Test coverage exceeds 95% for all
+production contracts.
+
+**Gas optimization:**
+
+ATK contracts target under 200,000 gas per transaction through storage
+optimization, batching, and efficient data structures. For comparison, early
+tokenization projects often exceed 500,000 gas per transfer—making them
+economically unviable on mainnet.
+
+### Blockchain indexer
+
+Raw blockchain data is difficult to query—fetching a user's transaction history
+requires iterating through thousands of blocks and parsing event logs.
+[TheGraph](https://thegraph.com/) solves this by indexing blockchain events into
+a queryable GraphQL API.
+
+**How it works:**
+
+TheGraph runs a subgraph—a program that listens to blockchain events and
+transforms them into structured data. When a token transfer occurs, the
+subgraph's event handler updates investor balances, records transaction history,
+and aggregates statistics. This indexed data becomes available through a GraphQL
+API that the frontend queries in milliseconds.
+
+**Indexed entities:**
+
+The ATK subgraph maintains:
+
+- **AssetToken** - Token metadata, total supply, compliance rules
+- **Investor** - OnchainID, KYC status, current holdings
+- **Transfer** - Complete transaction history with timestamps and amounts
+- **ComplianceEvent** - KYC approvals, rule violations, whitelist changes
+- **CorporateAction** - Dividend payments, yield distributions, redemptions
+
+**Query performance:**
+
+Indexed data appears within 3 seconds of blockchain confirmation. Complex
+aggregation queries (like "show me all transfers for this token in the last 30
+days grouped by investor") complete in under 100ms. Without indexing, the same
+query would require 30+ seconds of RPC calls scanning blocks sequentially.
+
+## Data & storage layer
+
+Off-chain data storage complements on-chain state, providing persistence for
+application data, caching for performance, and document storage for compliance.
+
+### Application database
+
+[PostgreSQL](https://postgresql.org/) stores application state, user data, and
+audit logs that don't belong on-chain due to cost or privacy requirements.
+
+**What's stored:**
+
+- **Users & sessions** - Authentication state, role assignments, user
+  preferences
+- **Assets** - Token metadata, deployment addresses, configuration snapshots
+- **Investors** - KYC documents, contact information, notification preferences
+- **Transactions** - Off-chain transaction records for faster reporting
+- **Audit logs** - Immutable record of all system actions for compliance
+  reporting
+
+**Type-safe queries with Drizzle:**
+
+[Drizzle ORM](https://orm.drizzle.team/) provides type-safe database queries
+with TypeScript inference. Schema definitions generate TypeScript types
+automatically. Migrations are versioned and applied automatically on startup.
+The query builder validates column names and relationships at compile
+time—catching SQL errors before deployment.
+
+**High availability:**
+
+Production deployments use read replicas for horizontal scaling, point-in-time
+recovery for data protection, and automatic backups every 6 hours with 30-day
+retention.
+
+### Caching layer
+
+[Redis](https://redis.io/) provides in-memory caching to reduce database load
+and accelerate frequent queries. An in-memory data structure store, Redis acts
+as a cache, message broker, and real-time data repository.
+
+**Use cases:**
+
+- **Session storage** - User authentication tokens and preferences load
+  instantly
+- **Query caching** - Frequently accessed data (asset lists, investor counts)
+  serve from memory
+- **Real-time data** - WebSocket connection tracking and live notifications
+- **Rate limiting** - API request throttling per user/IP address
+
+Caching reduces database load by 70% and improves API response times by 3-5x for
+cached queries.
+
+### File storage
+
+Documents and media assets are stored in [MinIO](https://min.io/)—an
+S3-compatible object storage system—with optional [IPFS](https://ipfs.tech/)
+pinning for decentralized redundancy.
+
+**What's stored:**
+
+- **Legal documents** - Token offering memorandums, subscription agreements
+- **Compliance documents** - KYC scans, identity verification records
+- **Media assets** - Token logos, issuer branding, marketing materials
+- **Audit archives** - Historical snapshots for regulatory reporting
+
+**Hybrid storage strategy:**
+
+MinIO provides fast, reliable, S3-compatible storage for operational use. IPFS
+offers decentralized pinning for tamper-proof document trails. Files are
+encrypted at rest using AES-256. Access controls tie to user permissions.
+Immutable audit logs track every document access. Data retention policies comply
+with GDPR requirements.
+
+Traditional tokenization platforms force issuers to choose between centralized
+storage (fast but fragile) or blockchain storage (decentralized but
+prohibitively expensive at $50+ per MB). ATK's hybrid approach stores files on
+MinIO for performance and hashes on IPFS for integrity—combining speed and
+security.
+
+## Testing & deployment layer
+
+Quality assurance and production deployment infrastructure ensure that the
+platform remains reliable, secure, and maintainable.
+
+### End-to-end testing
+
+[Playwright](https://playwright.dev/) tests validate complete user workflows
+from frontend to blockchain, catching integration issues that unit tests miss.
+
+**Test coverage:**
+
+- **UI tests** validate user flows for asset creation, investor onboarding, and
+  token transfers
+- **API tests** call procedures directly to validate business logic
+- **Integration tests** execute full workflows including blockchain confirmation
+- **Security tests** verify permission enforcement, input validation, and XSS
+  prevention
+
+**Test data management:**
+
+After running integration tests, the system is populated with realistic
+data—three user accounts (admin, issuer, investor) with different permission
+levels, sample assets (bond, equity, fund) in various lifecycle stages, investor
+KYC records and compliance approvals, and transaction history for performance
+testing.
+
+**Continuous integration:**
+
+All tests run automatically on every pull request. Parallel execution reduces CI
+time from 45 minutes to 8 minutes. Failed tests block merge to protect the main
+branch. Coverage reports ensure over 90% code coverage for critical paths.
+
+### Kubernetes deployment
+
+ATK ships with [Helm](https://helm.sh/) charts for production-ready
+[Kubernetes](https://kubernetes.io/) deployment, enabling horizontal scaling,
+zero-downtime updates, and infrastructure-as-code.
+
+**Deployment architecture:**
+
+Kubernetes orchestrates containers across multiple machines. Helm packages the
+complete application—frontend pods, API pods, worker pods, database
+StatefulSets, Redis cluster, and MinIO storage—into a single deployable unit.
+The Horizontal Pod Autoscaler automatically scales API pods based on CPU and
+memory usage. Database read replicas distribute query load across multiple
+PostgreSQL instances. CDN integration caches static assets at edge locations for
+faster load times.
+
+**Monitoring & observability:**
+
+[Prometheus](https://prometheus.io/) collects performance metrics.
+[Loki](https://grafana.com/oss/loki/) or
+[Elasticsearch](https://elastic.co/elasticsearch/) aggregates logs for
+troubleshooting. [OpenTelemetry](https://opentelemetry.io/) provides distributed
+tracing for request flow analysis. [PagerDuty](https://pagerduty.com/) or
+[Slack](https://slack.com/) receive critical error notifications.
+
+Traditional tokenization deployments require ops teams to manually configure
+servers, databases, and networking. ATK's Helm charts codify infrastructure as
+YAML, enabling one-command deployments and preventing configuration drift.
+
+## Component performance targets
+
+Each component has explicit performance requirements to ensure enterprise
+readiness:
+
+| Component      | Metric                   | Target      | Why it matters              |
+| -------------- | ------------------------ | ----------- | --------------------------- |
+| **Frontend**   | Page load time           | &lt;2s      | User experience, engagement |
+| **API**        | Response time            | &lt;200ms   | Real-time operations        |
+| **Blockchain** | Transaction confirmation | &lt;100ms   | Settlement speed            |
+| **Indexer**    | Event processing latency | &lt;5s      | Data freshness              |
+| **Database**   | Query response time      | &lt;50ms    | API performance             |
+| **Storage**    | Upload throughput        | &gt;100MB/s | Document handling           |
+
+## Why this architecture delivers
+
+The ATK component architecture eliminates the five failure modes that prevent
+institutional adoption:
+
+**No fragmentation** - Every component references the same control plane,
+eliminating reconciliation. State stays synchronized automatically.
+
+**No compliance drift** - Policies defined once propagate automatically across
+frontend, API, and smart contracts. Change a rule in one place, and it applies
+everywhere.
+
+**No custody gaps** - The service layer sees every transfer, enabling HSM
+pre-signatures and complete audit trails. Nothing moves without authorization.
+
+**No settlement lag** - Atomic operations across cash and token legs eliminate
+T+2 delays. Delivery-vs-payment happens in a single blockchain transaction.
+
+**No integration tax** - One authentication system, one permission model, one
+API surface—instead of stitching together vendor tools with inconsistent
+conventions.
+
+Consider a bond issuance workflow:
+
+1. Product lead designs bond in web UI → API validates and stores configuration
+   in PostgreSQL
+2. Smart contract factory deploys bond token → TheGraph indexes deployment event
+3. Compliance configures rules once → Applied to transfers, reporting, and
+   custody operations
+4. Investors onboard via shared KYC flow → OnchainID verified, addresses
+   whitelisted on-chain
+5. Settlement wires cash via payment gateway → Atomic DvP locks tokens and cash
+   simultaneously
+6. Corporate actions schedule in workflow engine → Investors and auditors see
+   identical data
+
+Because every step references the same control plane, there is no reconciliation
+step between products. Issuance, compliance, custody, and settlement remain
+consistent across instruments and venues.

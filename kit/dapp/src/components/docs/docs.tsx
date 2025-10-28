@@ -139,7 +139,27 @@ function SidebarItem({
   depth?: number;
 }) {
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(depth === 0);
+
+  // Check if the current path is within this folder
+  const isActiveFolder = useMemo(() => {
+    if (item.type !== "folder") return false;
+
+    function checkFolder(folder: PageTree.Folder): boolean {
+      // Check if folder's index matches current path
+      if (folder.index?.url === pathname) return true;
+
+      // Check all children
+      for (const child of folder.children) {
+        if (child.type === "page" && child.url === pathname) return true;
+        if (child.type === "folder" && checkFolder(child)) return true;
+      }
+      return false;
+    }
+
+    return checkFolder(item);
+  }, [item, pathname]);
+
+  const [isOpen, setIsOpen] = useState(depth === 0 || isActiveFolder);
 
   if (item.type === "separator") {
     return (
