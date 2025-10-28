@@ -7,8 +7,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { MoreHorizontal } from "lucide-react";
+import { CircleAlert, MoreHorizontal } from "lucide-react";
 import type { ReactNode } from "react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -30,6 +35,8 @@ export interface ActionItem {
   href?: string;
   /** Whether the action should be disabled */
   disabled?: boolean;
+  /** Message to display when the action is disabled */
+  disabledMessage?: string;
   /** Position to show a separator relative to this item */
   separator?: "before" | "after";
 }
@@ -116,6 +123,7 @@ export function ActionsCell({
                     </span>
                   )}
                   {action.label}
+                  <DisabledTooltip action={action} />
                 </a>
               </DropdownMenuItem>
             ) : (
@@ -129,6 +137,7 @@ export function ActionsCell({
                   </span>
                 )}
                 {action.label}
+                <DisabledTooltip action={action} />
               </DropdownMenuItem>
             )}
             {action.separator === "after" && <DropdownMenuSeparator />}
@@ -138,3 +147,17 @@ export function ActionsCell({
     </DropdownMenu>
   );
 }
+
+const DisabledTooltip = ({ action }: { action: ActionItem }) => {
+  if (!action.disabled || !action.disabledMessage) {
+    return null;
+  }
+  return (
+    <Tooltip>
+      <TooltipTrigger className="pointer-events-auto">
+        <CircleAlert />
+      </TooltipTrigger>
+      <TooltipContent side="top">{action.disabledMessage}</TooltipContent>
+    </Tooltip>
+  );
+};

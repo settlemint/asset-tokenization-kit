@@ -51,14 +51,15 @@ type AssertValidContract =
 export const SYSTEM_PERMISSIONS = {
   accountSearch: { any: [] }, // No roles required
   addonCreate: "addonManager",
-  addonFactoryCreate: { any: ["addonManager", "systemManager"] },
+  addonFactoryCreate: { any: ["addonManager"] },
   claimCreate: { any: ["claimIssuer", "systemModule"] },
   claimList: { any: ["identityManager", "claimIssuer"] },
   claimRevoke: { any: ["claimIssuer", "systemModule"] },
-  complianceModuleCreate: { any: ["complianceManager", "systemManager"] },
+  complianceModuleCreate: { any: ["systemManager", "systemModule"] },
+  fixedYieldScheduleCreate: { any: ["addonManager"] },
   grantRole: { any: ["admin"] },
-  identityCreate: { any: ["identityManager", "systemManager"] },
-  identityRegister: { any: ["identityManager", "systemManager"] },
+  identityCreate: { any: ["identityManager"] },
+  identityRegister: { any: ["identityManager"] },
   identityRead: { any: ["identityManager", "systemManager", "claimIssuer"] },
   identitySearch: { any: ["identityManager", "systemManager", "claimIssuer"] },
   identityList: {

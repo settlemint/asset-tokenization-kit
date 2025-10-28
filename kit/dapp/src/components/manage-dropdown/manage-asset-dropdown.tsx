@@ -6,6 +6,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useSession } from "@/hooks/use-auth";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
@@ -116,14 +121,6 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     yieldScheduleBalance?.holder?.available?.[0] ?? 0n;
   const hasWithdrawableAmount = greaterThan(denominationAssetAvailable, 0n);
 
-  // Check if user has denomination assets to top up
-  const userDenominationAssetBalanceAvailable =
-    userDenominationAssetBalance?.holder?.available ?? 0n;
-  const hasTopUpableAmount = greaterThan(
-    userDenominationAssetBalanceAvailable,
-    0n
-  );
-
   const { data: userAssetBalanceResult } = useQuery(
     orpc.token.holder.queryOptions({
       input: {
@@ -164,12 +161,6 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     userHolderBalance,
   ]);
 
-  const canTransfer =
-    Boolean(asset.userPermissions?.actions?.transfer) &&
-    Boolean(userWallet) &&
-    !isPaused;
-  const hasTransferableAmount = (transferSheetAsset?.available?.[0] ?? 0n) > 0n;
-
   const actions = useMemo(() => {
     // Check if asset has pausable capability (handles both null and undefined)
     const hasPausableCapability = asset.pausable != null;
@@ -179,6 +170,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
       icon: ComponentType<{ className?: string }>;
       openAction: Action;
       disabled: boolean;
+      disabledMessage: string;
     }> = [];
 
     if (hasPausableCapability) {
@@ -192,50 +184,62 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         icon: isPaused ? Play : Pause,
         openAction: isPaused ? "unpause" : "pause",
         disabled: isPaused ? !canUnpause : !canPause,
+        disabledMessage: isPaused
+          ? t("tokens:actions.unpause.notAuthorized")
+          : t("tokens:actions.pause.notAuthorized"),
       });
     }
 
     // Mint only visible if user can mint and token is not paused
-    const canMint = asset.userPermissions?.actions?.mint && !isPaused;
-    if (canMint) {
-      arr.push({
-        id: "mint",
-        label: t("tokens:actions.mint.label"),
-        icon: Plus,
-        openAction: "mint",
-        disabled: false,
-      });
-    }
+    const canMint = asset.userPermissions?.actions?.mint;
+    arr.push({
+      id: "mint",
+      label: t("tokens:actions.mint.label"),
+      icon: Plus,
+      openAction: "mint",
+      disabled: isPaused || !canMint,
+      disabledMessage: canMint
+        ? t("tokens:actions.tokenPaused")
+        : t("tokens:actions.mint.notAuthorized"),
+    });
 
     // Freeze Tokens - only visible for tokens with custodian extension and permissions
     const hasCustodianCapability = asset.extensions.includes(
       AssetExtensionEnum.CUSTODIAN
     );
-    const canFreezePartial =
-      asset.userPermissions?.actions?.freezePartial && !isPaused;
-    if (hasCustodianCapability && canFreezePartial) {
+    const canFreezePartial = asset.userPermissions?.actions?.freezePartial;
+    if (hasCustodianCapability) {
       arr.push({
         id: "freezePartial",
         label: t("tokens:actions.freezePartial.label"),
         icon: Lock,
         openAction: "freezePartial",
-        disabled: false,
+        disabled: isPaused || !canMint,
+        disabledMessage: canFreezePartial
+          ? t("tokens:actions.tokenPaused")
+          : t("tokens:actions.freezePartial.notAuthorized"),
       });
     }
 
     // Unfreeze Tokens - only visible for tokens with custodian extension and permissions
-    const canUnfreezePartial =
-      asset.userPermissions?.actions?.unfreezePartial && !isPaused;
-    if (hasCustodianCapability && canUnfreezePartial) {
+    const canUnfreezePartial = asset.userPermissions?.actions?.unfreezePartial;
+    if (hasCustodianCapability) {
       arr.push({
         id: "unfreezePartial",
         label: t("tokens:actions.unfreezePartial.label"),
         icon: Unlock,
         openAction: "unfreezePartial",
-        disabled: false,
+        disabled: isPaused || !canUnfreezePartial,
+        disabledMessage: canUnfreezePartial
+          ? t("tokens:actions.tokenPaused")
+          : t("tokens:actions.unfreezePartial.notAuthorized"),
       });
     }
 
+    const canTransfer =
+      Boolean(asset.userPermissions?.actions?.transfer) && Boolean(userWallet);
+    const hasTransferableAmount =
+      (transferSheetAsset?.available?.[0] ?? 0n) > 0n;
     if (canTransfer) {
       arr.push({
         id: "transfer",
@@ -243,47 +247,67 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         icon: Send,
         openAction: "transfer",
         disabled: !hasTransferableAmount,
+        disabledMessage: t("tokens:actions.transfer.noBalance", {
+          symbol: asset.symbol,
+        }),
       });
     }
 
     // Set yield schedule only visible for bond tokens without existing schedule
-    const canSetYieldSchedule =
+    const hasYieldScheduleCapability =
       asset.extensions.includes(AssetExtensionEnum.YIELD) &&
-      !asset.yield?.schedule &&
-      asset.userPermissions?.actions?.setYieldSchedule &&
-      !isPaused;
-    if (canSetYieldSchedule) {
+      !asset.yield?.schedule;
+    const canSetYieldSchedule =
+      asset.userPermissions?.actions?.setYieldSchedule;
+    if (hasYieldScheduleCapability) {
       arr.push({
         id: "setYieldSchedule",
         label: t("tokens:actions.setYieldSchedule.label"),
         icon: TrendingUp,
         openAction: "setYieldSchedule",
-        disabled: false,
+        disabled: isPaused || !canSetYieldSchedule,
+        disabledMessage: canSetYieldSchedule
+          ? t("tokens:actions.tokenPaused")
+          : t("tokens:actions.setYieldSchedule.notAuthorized"),
       });
     }
 
     // Top up denomination asset option
-    if (hasTopUpableAmount) {
+    // Check if user has denomination assets to top up
+    const userDenominationAssetBalanceAvailable =
+      userDenominationAssetBalance?.holder?.available ?? 0n;
+    const hasTopUpableAmount = greaterThan(
+      userDenominationAssetBalanceAvailable,
+      0n
+    );
+    if (hasYieldScheduleCapability) {
       arr.push({
         id: "topUpDenominationAsset",
         label: t("tokens:actions.topUpDenominationAsset.label"),
         icon: TrendingUp,
         openAction: "topUpDenominationAsset",
-        disabled: false,
+        disabled: !hasTopUpableAmount,
+        disabledMessage: t("tokens:actions.topUpDenominationAsset.noBalance", {
+          symbol: asset.yield?.schedule?.denominationAsset?.symbol ?? "",
+        }),
       });
     }
 
     // Withdraw denomination asset option
     const canWithdrawDenominationAsset =
-      asset.userPermissions?.actions?.withdrawDenominationAsset &&
-      hasWithdrawableAmount;
+      asset.userPermissions?.actions?.withdrawDenominationAsset;
     if (canWithdrawDenominationAsset) {
       arr.push({
         id: "withdrawDenominationAsset",
         label: t("tokens:actions.withdrawDenominationAsset.label"),
         icon: Minus,
         openAction: "withdrawDenominationAsset",
-        disabled: !hasWithdrawableAmount,
+        disabled: !hasWithdrawableAmount || !canWithdrawDenominationAsset,
+        disabledMessage: canWithdrawDenominationAsset
+          ? t("tokens:actions.withdrawDenominationAsset.noBalance", {
+              symbol: yieldSchedule?.denominationAsset?.symbol ?? "",
+            })
+          : t("tokens:actions.withdrawDenominationAsset.notAuthorized"),
       });
     }
 
@@ -298,25 +322,28 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         icon: Shield,
         openAction: "collateral",
         disabled: !hasCollateralPermission,
+        disabledMessage: t("tokens:actions.collateral.notAuthorized"),
       });
     }
 
     // Mature bond only visible for bond tokens that can be matured
-    const canMatureBond =
-      asset.extensions.includes(AssetExtensionEnum.BOND) &&
-      asset.bond &&
-      !asset.bond.isMatured &&
-      asset.bond.maturityDate &&
-      isAfter(new Date(), asset.bond.maturityDate) &&
-      asset.userPermissions?.actions?.mature &&
-      !isPaused;
-    if (canMatureBond) {
+    const hasBondCapability =
+      asset.extensions.includes(AssetExtensionEnum.BOND) && asset.bond;
+    const isReadyToMature =
+      !asset.bond?.isMatured &&
+      asset.bond?.maturityDate &&
+      isAfter(new Date(), asset.bond.maturityDate);
+    const canMatureBond = asset.userPermissions?.actions?.mature;
+    if (hasBondCapability && isReadyToMature) {
       arr.push({
         id: "mature",
         label: t("tokens:actions.mature.label"),
         icon: CheckCircle,
         openAction: "mature",
-        disabled: false,
+        disabled: !canMatureBond || isPaused,
+        disabledMessage: canMatureBond
+          ? t("tokens:actions.tokenPaused")
+          : t("tokens:actions.mature.notAuthorized"),
       });
     }
 
@@ -331,9 +358,8 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     asset.bond,
     isPaused,
     hasWithdrawableAmount,
-    hasTopUpableAmount,
-    canTransfer,
-    hasTransferableAmount,
+    yieldSchedule,
+    userDenominationAssetBalance,
   ]);
 
   const onActionOpenChange = (open: boolean) => {
@@ -360,11 +386,27 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
               onSelect={() => {
                 setOpenAction(action.openAction);
               }}
-              disabled={action.disabled}
               className="cursor-pointer"
+              disabled={action.disabled}
             >
-              <action.icon className="h-4 w-4" />
-              {action.label}
+              {action.disabled ? (
+                <Tooltip>
+                  <TooltipTrigger>
+                    <div className="flex items-center gap-2 pointer-events-auto">
+                      <action.icon className="h-4 w-4" />
+                      {action.label}
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="left">
+                    {action.disabledMessage}
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <>
+                  <action.icon className="h-4 w-4" />
+                  {action.label}
+                </>
+              )}
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />

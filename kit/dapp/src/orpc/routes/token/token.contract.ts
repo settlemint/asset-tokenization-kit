@@ -116,4 +116,5 @@ export type TokenAccessManagedMutations =
   | "transfer"
   | "forcedTransfer"
   | "unpause"
-  | "withdrawDenominationAsset";
+  | "withdrawDenominationAsset"
+  | "topUpDenominationAsset";

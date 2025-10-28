@@ -1,10 +1,12 @@
 import { AddressSelectOrInputToggle } from "@/components/address/address-select-or-input-toggle";
+import { invalidateTokenActionQueries } from "@/components/manage-dropdown/core/invalidate-token-action-queries";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Web3Address } from "@/components/web3/web3-address";
 import { useAppForm } from "@/hooks/use-app-form";
 import { orpc } from "@/orpc/orpc-client";
 import { FixedYieldScheduleWithdrawInput } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.withdraw.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format, from, greaterThan, lessThanOrEqual, subtract } from "dnum";
 import { useEffect, useRef } from "react";
@@ -78,35 +80,18 @@ export function WithdrawDenominationAssetSheet({
   const { mutateAsync: withdraw, isPending } = useMutation(
     orpc.fixedYieldSchedule.withdraw.mutationOptions({
       onSuccess: async (_, variables) => {
-        // PERFORMANCE: Run all query invalidations in parallel
-        const invalidationPromises = [
-          // Refresh denomination asset data
-          qc.invalidateQueries({
-            queryKey: orpc.token.read.queryKey({
-              input: { tokenAddress: denominationAsset?.id ?? "" },
-            }),
-          }),
-          // Refresh yield schedule's balance
-          qc.invalidateQueries({
-            queryKey: orpc.token.holder.queryKey({
-              input: {
-                tokenAddress: denominationAsset?.id ?? "",
-                holderAddress: yieldSchedule?.id ?? "",
-              },
-            }),
-          }),
-          // Refresh recipient's balance using the specific recipient address
-          qc.invalidateQueries({
-            queryKey: orpc.token.holder.queryKey({
-              input: {
-                tokenAddress: denominationAsset?.id ?? "",
-                holderAddress: variables.to,
-              },
-            }),
-          }),
-        ];
-
-        await Promise.all(invalidationPromises);
+        await invalidateTokenActionQueries(qc, {
+          tokenAddress: asset.id,
+        });
+        if (denominationAsset?.id) {
+          await invalidateTokenActionQueries(qc, {
+            tokenAddress: denominationAsset.id,
+            holderAddresses: [
+              yieldSchedule?.id,
+              variables.to as EthereumAddress,
+            ].filter((a) => a !== undefined),
+          });
+        }
       },
     })
   );

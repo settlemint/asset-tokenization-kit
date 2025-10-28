@@ -101,7 +101,7 @@ export const TokenHoldersTable = withErrorBoundary(function TokenHoldersTable({
   const isPaused = token.pausable?.paused ?? false;
   // Burn operations require explicit permission AND token must not be paused
   // This dual-check prevents unauthorized token destruction and operations during emergency pauses
-  const canBurn = (token.userPermissions?.actions?.burn ?? false) && !isPaused;
+  const canBurn = token.userPermissions?.actions?.burn ?? false;
 
   // Burn target state manages the modal for burning tokens from specific holders
   // Stores both address and available balance to pre-populate the burn form
@@ -157,6 +157,8 @@ export const TokenHoldersTable = withErrorBoundary(function TokenHoldersTable({
                   available: row.original.available,
                 });
               },
+              disabled: isPaused,
+              disabledMessage: t("tokens:actions.tokenPaused"),
             } satisfies ActionItem,
           ]
         : []),

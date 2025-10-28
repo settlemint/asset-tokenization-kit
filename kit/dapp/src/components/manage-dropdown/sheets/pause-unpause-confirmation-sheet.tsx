@@ -1,3 +1,4 @@
+import { invalidateTokenActionQueries } from "@/components/manage-dropdown/core/invalidate-token-action-queries";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
@@ -41,19 +42,10 @@ export function PauseUnpauseConfirmationSheet({
   // Pause mutation
   const { mutateAsync: pauseAsset, isPending: isPausing } = useMutation(
     orpc.token.pause.mutationOptions({
-      onSuccess: async () => {
-        // Invalidate both single asset and list queries
-        await Promise.all([
-          queryClient.invalidateQueries({
-            queryKey: orpc.token.read.queryKey({
-              input: { tokenAddress: asset.id },
-            }),
-          }),
-          queryClient.invalidateQueries({
-            queryKey: orpc.token.list.key(),
-          }),
-        ]);
-      },
+      onSuccess: () =>
+        invalidateTokenActionQueries(queryClient, {
+          tokenAddress: asset.id,
+        }),
     })
   );
 

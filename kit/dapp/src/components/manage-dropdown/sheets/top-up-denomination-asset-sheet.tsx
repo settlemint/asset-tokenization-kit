@@ -1,3 +1,4 @@
+import { invalidateTokenActionQueries } from "@/components/manage-dropdown/core/invalidate-token-action-queries";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppForm } from "@/hooks/use-app-form";
 import { useSession } from "@/hooks/use-auth";
@@ -89,35 +90,17 @@ export function TopUpDenominationAssetSheet({
   const { mutateAsync: topUp, isPending } = useMutation(
     orpc.fixedYieldSchedule.topUp.mutationOptions({
       onSuccess: async () => {
-        // PERFORMANCE: Run all query invalidations in parallel
-        const invalidationPromises = [
-          // Refresh denomination asset data
-          qc.invalidateQueries({
-            queryKey: orpc.token.read.queryKey({
-              input: { tokenAddress: denominationAsset?.id ?? "" },
-            }),
-          }),
-          // Refresh user's denomination asset balance
-          qc.invalidateQueries({
-            queryKey: orpc.token.holder.queryKey({
-              input: {
-                tokenAddress: denominationAsset?.id ?? "",
-                holderAddress: userWallet ?? "",
-              },
-            }),
-          }),
-          // Refresh yield schedule's balance
-          qc.invalidateQueries({
-            queryKey: orpc.token.holder.queryKey({
-              input: {
-                tokenAddress: denominationAsset?.id ?? "",
-                holderAddress: yieldSchedule?.id ?? "",
-              },
-            }),
-          }),
-        ];
-
-        await Promise.all(invalidationPromises);
+        await invalidateTokenActionQueries(qc, {
+          tokenAddress: asset.id,
+        });
+        if (denominationAsset?.id) {
+          await invalidateTokenActionQueries(qc, {
+            tokenAddress: denominationAsset.id,
+            holderAddresses: [yieldSchedule?.id, userWallet].filter(
+              (a) => a !== undefined
+            ),
+          });
+        }
       },
     })
   );
