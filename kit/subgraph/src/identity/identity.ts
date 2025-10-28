@@ -52,7 +52,7 @@ import {
   getIdentityKeyType,
 } from "./utils/identity-key-utils";
 import { isBasePriceClaim } from "./utils/is-claim";
-import { deriveEntityType } from "./utils/supported-interfaces";
+import { updateIdentityEntityType } from "./utils/identity-classification";
 
 /**
  * Update account stats for all holders of a token when its base price changes
@@ -115,25 +115,14 @@ function updateAccountStatsForAllTokenHolders(
  * Mutates in-memory classification fields and signals whether persistence is required.
  */
 export function ensureIdentityClassification(identity: Identity): boolean {
-  let mutated = false;
+  let contractName: string | null = null;
 
-  if (!identity.isContract) {
-    if (identity.entityType != "wallet") {
-      identity.entityType = "wallet";
-      mutated = true;
-    }
-  } else {
+  if (identity.isContract) {
     const accountEntity = Account.load(identity.account);
-    const contractName = accountEntity ? accountEntity.contractName : null;
-
-    let nextType = deriveEntityType(contractName, "contract");
-    if (identity.entityType != nextType) {
-      identity.entityType = nextType;
-      mutated = true;
-    }
+    contractName = accountEntity ? accountEntity.contractName : null;
   }
 
-  return mutated;
+  return updateIdentityEntityType(identity, contractName);
 }
 
 export function handleApproved(event: Approved): void {
