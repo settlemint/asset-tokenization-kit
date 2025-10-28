@@ -54,7 +54,6 @@ import type enIssuerDashboardTranslations from "@/locales/en-US/issuer-dashboard
 import type enLanguageTranslations from "@/locales/en-US/language.json";
 import type enNavigationTranslations from "@/locales/en-US/navigation.json";
 import type enOnboardingTranslations from "@/locales/en-US/onboarding.json";
-import type enParticipantsTranslations from "@/locales/en-US/participants.json";
 import type enSeoTranslations from "@/locales/en-US/seo.json";
 import type enSettingsTranslations from "@/locales/en-US/settings.json";
 import type enStatsTranslations from "@/locales/en-US/stats.json";
@@ -121,7 +120,6 @@ declare module "i18next" {
       language: typeof enLanguageTranslations;
       navigation: typeof enNavigationTranslations;
       onboarding: typeof enOnboardingTranslations;
-      participants: typeof enParticipantsTranslations;
       seo: typeof enSeoTranslations;
       settings: typeof enSettingsTranslations;
       system: typeof enSystemTranslations;

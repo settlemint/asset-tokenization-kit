@@ -77,7 +77,8 @@
     "table": {
       "columns": {
         "name": "Name",
-        "role": "Role"
+        "role": "Role",
+        "lastActive": "Last active"
       },
       "errors": {
         "navigationFailed": "Failed to navigate to user details",

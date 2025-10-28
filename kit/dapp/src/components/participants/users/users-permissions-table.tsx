@@ -142,9 +142,9 @@ export const UsersPermissionsTable = withErrorBoundary(
             },
           }),
           columnHelper.accessor("lastLoginAt", {
-            header: t("management.table.columns.lastActive"),
+            header: t("permissions.table.columns.lastActive"),
             meta: {
-              displayName: t("management.table.columns.lastActive"),
+              displayName: t("permissions.table.columns.lastActive"),
               type: "date",
               dateOptions: {
                 relative: true,
