@@ -90,7 +90,7 @@ checks:
   emergency freezes)?
 
 If any check fails, the transfer reverts. The blockchain state doesn't change.
-No gas is consumed beyond the failed transaction attempt. There's no "undo"
+Gas is still consumed for the failed attempt, even though the blockchain state is reverted.
 process because nothing happened.
 
 This ex-ante control is what regulators want to see. Compliance isn't detected
