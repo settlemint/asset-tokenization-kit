@@ -55,7 +55,7 @@ function MermaidContent({ chart }: { chart: string }) {
 
     // Generate a unique ID using React's useId and theme
     const theme = resolvedTheme === "dark" ? "dark" : "default";
-    const chartId = `mermaid-${id}-${theme}`.replace(/:/g, "-");
+    const chartId = `mermaid-${id}-${theme}`.replaceAll(":", "-");
 
     let cancelled = false;
 
@@ -124,6 +124,7 @@ function MermaidContent({ chart }: { chart: string }) {
           if (!result) setError("Mermaid render returned no result");
           return;
         }
+        setError(null);
         setSvg(result.svg);
         if (containerRef.current && result.bindFunctions) {
           result.bindFunctions(containerRef.current);

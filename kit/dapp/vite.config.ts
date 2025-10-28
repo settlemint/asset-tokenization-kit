@@ -53,17 +53,7 @@ export default defineConfig({
             return "vendor-forms";
           }
 
-          // React core ecosystem - shared across all routes
-          if (
-            id.includes("react") ||
-            id.includes("react-dom") ||
-            id.includes("react/") ||
-            id.includes("scheduler")
-          ) {
-            return "vendor-react-core";
-          }
-
-          // TanStack Query & Router - used throughout app
+          // TanStack Query & Router - used throughout app (before react check to avoid misclassification)
           if (
             id.includes("@tanstack/react-query") ||
             id.includes("@tanstack/query-") ||
@@ -71,6 +61,19 @@ export default defineConfig({
             id.includes("@tanstack/router-")
           ) {
             return "vendor-tanstack";
+          }
+
+          // React core ecosystem - shared across all routes
+          // Match only actual react packages, not react-* third-party libs
+          if (
+            id.includes("/node_modules/react/") ||
+            id.includes("/node_modules/react-dom/") ||
+            id.includes("/node_modules/scheduler/") ||
+            id.endsWith("/node_modules/react") ||
+            id.endsWith("/node_modules/react-dom") ||
+            id.endsWith("/node_modules/scheduler")
+          ) {
+            return "vendor-react-core";
           }
 
           // Blockchain libraries - viem, etc

@@ -31,7 +31,13 @@ import type * as PageTree from "fumadocs-core/page-tree";
 import { useSearchContext } from "fumadocs-ui/contexts/search";
 import { TreeContextProvider, useTreeContext } from "fumadocs-ui/contexts/tree";
 import { ChevronRight, HomeIcon, SearchIcon } from "lucide-react";
-import { type ComponentProps, type ReactNode, useMemo, useState } from "react";
+import {
+  type ComponentProps,
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 export interface DocsLayoutProps {
   tree: PageTree.Root;
@@ -160,6 +166,12 @@ function SidebarItem({
   }, [item, pathname]);
 
   const [isOpen, setIsOpen] = useState(depth === 0 || isActiveFolder);
+
+  useEffect(() => {
+    if (isActiveFolder && !isOpen) {
+      setIsOpen(true);
+    }
+  }, [isActiveFolder, isOpen]);
 
   if (item.type === "separator") {
     return (

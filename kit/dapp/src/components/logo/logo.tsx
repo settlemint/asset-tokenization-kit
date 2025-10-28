@@ -58,6 +58,12 @@ export function Logo({
     if (!trimmed) {
       return fallbackSrc;
     }
+    if (/^(https:|data:|blob:)/i.test(trimmed)) {
+      return trimmed;
+    }
+    if (trimmed.startsWith("/")) {
+      return trimmed;
+    }
     return trimmed;
   };
 

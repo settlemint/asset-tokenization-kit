@@ -33,7 +33,7 @@ export function DocsPage({ toc = [], path, ...props }: DocsPageProps) {
         {toc.length > 0 && (
           <aside className="sticky top-0 w-[286px] xl:w-[320px] 2xl:w-[360px] shrink-0 h-[calc(100vh-64px)] pl-4 pr-6 xl:pr-8 pt-8 pb-4 overflow-y-auto max-xl:hidden">
             <div className="flex flex-row gap-2 mb-4">
-              <LLMCopyButton markdownUrl={path} className="w-full" />
+              <LLMCopyButton markdownUrl={`/docs/${path}`} className="w-full" />
               <ViewOptions
                 markdownUrl={`/docs/${path}`}
                 githubUrl={`https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/content/docs/${path}`}

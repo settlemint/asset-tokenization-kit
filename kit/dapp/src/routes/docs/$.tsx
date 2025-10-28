@@ -2,7 +2,7 @@ import { docs } from "@/.source";
 import * as AccordionComponents from "@/components/docs/components/accordion";
 import * as BannerComponents from "@/components/docs/components/banner";
 import * as CodeBlockComponents from "@/components/docs/components/codeblock";
-import { DocsBreadcrumb } from "@/components/docs/components/docs-breadcumb";
+import { DocsBreadcrumb } from "@/components/docs/components/docs-breadcrumb";
 import * as FilesComponents from "@/components/docs/components/files";
 import * as StepsComponents from "@/components/docs/components/steps";
 import * as TabsComponents from "@/components/docs/components/tabs";

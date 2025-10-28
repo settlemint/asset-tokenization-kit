@@ -202,16 +202,17 @@ const query = graphql(`
 // Fully typed via gql.tada
 ```
 
-**3. Direct blockchain calls** - Real-time on-chain reads:
+**3. ORPC backend procedures** - Type-safe RPC calls to backend:
 
 ```typescript
-import { useReadContract } from "wagmi";
+import { useQuery } from "@tanstack/react-query";
+import { orpc } from "@/lib/orpc/client";
 
-const { data: totalSupply } = useReadContract({
-  address: tokenAddress,
-  abi: bondABI,
-  functionName: "totalSupply",
-});
+// Fetch theme settings via ORPC procedure
+const { data: theme } = useQuery(
+  orpc.settings.theme.get.queryOptions({ input: {} })
+);
+// Fully typed end-to-end with Zod schemas
 ```
 
 ## Key application features
