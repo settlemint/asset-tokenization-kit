@@ -93,11 +93,11 @@ flowchart TB
     Onboarded --> Sidebar
     Sidebar --> Pages
 
-    style Root fill:#0ea5e9,stroke:#0369a1,color:#fff
-    style Private fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style Onboarded fill:#10b981,stroke:#047857,color:#fff
-    style Sidebar fill:#10b981,stroke:#047857,color:#fff
-    style Pages fill:#10b981,stroke:#047857,color:#fff
+    style Root fill:#6ba4d4,stroke:#4a7ba8,color:#fff
+    style Private fill:#8571d9,stroke:#654bad,color:#fff
+    style Onboarded fill:#5fc9bf,stroke:#3a9d96,color:#fff
+    style Sidebar fill:#5fc9bf,stroke:#3a9d96,color:#fff
+    style Pages fill:#5fc9bf,stroke:#3a9d96,color:#fff
 
 `} />
 
@@ -131,13 +131,13 @@ flowchart LR
     subgraph "Server State"
         Query["Query Cache
         (TanStack Query)"]
-        Optimistic["Optimistic Updates"]
+        Optimistic("Optimistic Updates")
     end
 
     subgraph "Remote Sources"
-        ORPC["ORPC API"]
-        GraphQL["TheGraph Subgraph"]
-        Chain["Blockchain (Viem)"]
+        ORPC("ORPC API")
+        GraphQL("TheGraph Subgraph")
+        Chain("Blockchain (Viem)")
     end
 
     UI --> Query
@@ -148,9 +148,9 @@ flowchart LR
     Query --> Chain
     Optimistic --> Query
 
-    style UI fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style Query fill:#10b981,stroke:#047857,color:#fff
-    style ORPC fill:#0ea5e9,stroke:#0369a1,color:#fff
+    style UI fill:#8571d9,stroke:#654bad,color:#fff
+    style Query fill:#5fc9bf,stroke:#3a9d96,color:#fff
+    style ORPC fill:#6ba4d4,stroke:#4a7ba8,color:#fff
 
 `} />
 
@@ -253,13 +253,13 @@ flowchart TB
     Review --> Deploy
     Deploy --> Complete
 
-    style Start fill:#0ea5e9,stroke:#0369a1,color:#fff
-    style Details fill:#0ea5e9,stroke:#0369a1,color:#fff
-    style Compliance fill:#d97706,stroke:#92400e,color:#fff
-    style Extensions fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style Review fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style Deploy fill:#d97706,stroke:#92400e,color:#fff
-    style Complete fill:#10b981,stroke:#047857,color:#fff
+    style Start fill:#6ba4d4,stroke:#4a7ba8,color:#fff
+    style Details fill:#6ba4d4,stroke:#4a7ba8,color:#fff
+    style Compliance fill:#b661d9,stroke:#8a3fb3,color:#fff
+    style Extensions fill:#8571d9,stroke:#654bad,color:#fff
+    style Review fill:#8571d9,stroke:#654bad,color:#fff
+    style Deploy fill:#b661d9,stroke:#8a3fb3,color:#fff
+    style Complete fill:#5fc9bf,stroke:#3a9d96,color:#fff
 
 `} />
 

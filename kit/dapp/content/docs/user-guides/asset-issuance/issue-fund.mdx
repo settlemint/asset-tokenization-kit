@@ -19,7 +19,7 @@ funds on-chain.
 
 <Mermaid
   chart={
-    "graph TB\n    A[Configure Fund<br/>Parameters] --> B[Set NAV<br/>Tracking]\n    B --> C[Configure Subscription<br/>Redemption]\n    C --> D[Set Compliance<br/>Rules]\n    D --> E[Assign Operational<br/>Roles]\n    E --> F[Deploy Fund<br/>Contract]\n    F --> G[Post Initial<br/>NAV]\n    G --> H[Enable<br/>Subscriptions]\n    H --> I[Process Subscription<br/>Requests]\n    I --> J[Update NAV<br/>Regularly]\n    J --> K[Process Redemption<br/>Requests]\n    K --> L[Collect Management<br/>Fees]\n    L --> M[Monitor Fund<br/>Operations]\n    M --> J\n    style A fill:#0EA5E9\n    style F fill:#0EA5E9\n    style G fill:#0EA5E9\n    style I fill:#10B981\n    style J fill:#10B981\n    style K fill:#10B981\n    style L fill:#6366F1"
+    "graph TB\n    A(Configure Fund<br/>Parameters) --> B(Set NAV<br/>Tracking)\n    B --> C(Configure Subscription<br/>Redemption)\n    C --> D(Set Compliance<br/>Rules)\n    D --> E(Assign Operational<br/>Roles)\n    E --> F(Deploy Fund<br/>Contract)\n    F --> G(Post Initial<br/>NAV)\n    G --> H(Enable<br/>Subscriptions)\n    H --> I(Process Subscription<br/>Requests)\n    I --> J(Update NAV<br/>Regularly)\n    J --> K(Process Redemption<br/>Requests)\n    K --> L(Collect Management<br/>Fees)\n    L --> M(Monitor Fund<br/>Operations)\n    M --> J\n    style A fill:#0EA5E9\n    style F fill:#0EA5E9\n    style G fill:#0EA5E9\n    style I fill:#10B981\n    style J fill:#10B981\n    style K fill:#10B981\n    style L fill:#6366F1"
   }
 />
 
@@ -44,6 +44,8 @@ and fee configuration
 - Fund administration operations
 
 ## Steps
+
+<Steps>
 
 ### 1. Navigate to fund creation
 
@@ -624,6 +626,8 @@ Enable dividend reinvestment:
 2. Investors opt into reinvestment via dApp
 3. Platform mints new units instead of transferring tokens
 4. Units minted at current NAV
+
+</Steps>
 
 ## Results
 

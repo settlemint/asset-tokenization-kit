@@ -17,26 +17,26 @@ Database schemas are modular and domain-focused:
 <Mermaid
   chart={`flowchart TB
     subgraph "Authentication Schema"
-        Users["users<br/>User accounts"]
-        Sessions["sessions<br/>Active sessions"]
-        Accounts["accounts<br/>OAuth providers"]
-        Verification["verification<br/>Email/phone codes"]
+        Users("users<br/>User accounts")
+        Sessions("sessions<br/>Active sessions")
+        Accounts("accounts<br/>OAuth providers")
+        Verification("verification<br/>Email/phone codes")
     end
     
     subgraph "KYC Schema"
-        KYCApp["kyc_applications<br/>Verification requests"]
-        KYCDocs["kyc_documents<br/>Uploaded files"]
-        KYCStatus["kyc_status_history<br/>Audit trail"]
+        KYCApp("kyc_applications<br/>Verification requests")
+        KYCDocs("kyc_documents<br/>Uploaded files")
+        KYCStatus("kyc_status_history<br/>Audit trail")
     end
     
     subgraph "Settings Schema"
-        UserSettings["user_settings<br/>Preferences"]
-        NotifSettings["notification_settings<br/>Alerts config"]
+        UserSettings("user_settings<br/>Preferences")
+        NotifSettings("notification_settings<br/>Alerts config")
     end
     
     subgraph "Exchange Rates Schema"
-        Rates["exchange_rates<br/>Currency conversions"]
-        RatesCache["rates_cache_metadata<br/>Update tracking"]
+        Rates("exchange_rates<br/>Currency conversions")
+        RatesCache("rates_cache_metadata<br/>Update tracking")
     end
     
     Users --> Sessions
@@ -50,9 +50,9 @@ Database schemas are modular and domain-focused:
     
     UserSettings --> NotifSettings
     
-    style Users fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style KYCApp fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style Rates fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style Users fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style KYCApp fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Rates fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
 `}
 />
 

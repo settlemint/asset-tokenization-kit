@@ -33,27 +33,29 @@ Make sure you have:
 
 <Mermaid
   chart={`flowchart TB
-  Start[Platform Login] --> Wallet[Create Wallet]
-  Wallet --> Security[Set PIN/OTP]
-  Security --> Identity[Deploy OnchainID]
-  Identity --> System[Deploy System Contracts]
-  System --> Assets[Select Asset Types]
-  Assets --> Addons[Choose Addon Modules]
-  Addons --> Complete[Onboarding Complete]
-  Complete --> Create[Create First Token]
-  Create --> Deploy[Deploy Token]
-  Deploy --> Mint[Mint Initial Supply]
-  Mint --> Done[Ready to Use]
+  Start(Platform Login) --> Wallet(Create Wallet)
+  Wallet --> Security(Set PIN/OTP)
+  Security --> Identity(Deploy OnchainID)
+  Identity --> System(Deploy System Contracts)
+  System --> Assets(Select Asset Types)
+  Assets --> Addons(Choose Addon Modules)
+  Addons --> Complete(Onboarding Complete)
+  Complete --> Create(Create First Token)
+  Create --> Deploy(Deploy Token)
+  Deploy --> Mint(Mint Initial Supply)
+  Mint --> Done(Ready to Use)
   
-  style Start fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-  style Complete fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-  style Done fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-  style Wallet fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-  style Identity fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-  style System fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff`}
+  style Start fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+  style Complete fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+  style Done fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+  style Wallet fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+  style Identity fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+  style System fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff`}
 />
 
-## Step 1: Log in and access the platform
+<Steps>
+
+### Log in and access the platform
 
 Navigate to your platform instance URL (provided by your administrator) and sign
 in using your credentials.
@@ -64,12 +66,12 @@ this is your first login.
 **Tip:** If you're having trouble logging in, check that JavaScript is enabled
 and try clearing your browser cache.
 
-## Step 2: Complete onboarding workflow
+### Complete onboarding workflow
 
 The platform guides you through a structured setup to ensure everything's
 configured before you start issuing assets.
 
-### Create your wallet
+#### Create your wallet
 
 Your platform wallet manages cryptographic operations and holds your
 administrative permissions.
@@ -83,7 +85,7 @@ administrative permissions.
 you lose your session. Store them securely offline—not in email or cloud
 storage.
 
-### Set up wallet security
+#### Set up wallet security
 
 Choose your authentication method for sensitive operations:
 
@@ -95,7 +97,7 @@ Choose your authentication method for sensitive operations:
 Most users choose PIN for convenience. Choose OTP if regulatory requirements
 mandate two-factor authentication.
 
-### Deploy your OnchainID
+#### Deploy your OnchainID
 
 Your OnchainID is your verifiable identity on the blockchain, required for
 compliance.
@@ -108,7 +110,7 @@ compliance.
 Your OnchainID is a smart contract that holds verifiable claims about your
 identity and compliance status.
 
-### Deploy system contracts
+#### Deploy system contracts
 
 The platform deploys core system contracts for your organization:
 
@@ -120,7 +122,7 @@ The platform deploys core system contracts for your organization:
 This step runs automatically and takes 2-3 minutes. The platform displays
 progress for each contract deployment.
 
-### Select asset types
+#### Select asset types
 
 Choose which asset types your organization will issue:
 
@@ -135,7 +137,7 @@ through platform settings.
 
 The platform deploys factory contracts for each selected asset type.
 
-### Choose addon modules
+#### Choose addon modules
 
 Select optional functionality modules:
 
@@ -144,7 +146,7 @@ Select optional functionality modules:
 
 **Note:** Additional addons can be deployed later from platform settings.
 
-## Step 3: Navigate to asset creation
+### Navigate to asset creation
 
 After onboarding completes, you're ready to create your first token.
 
@@ -153,12 +155,12 @@ After onboarding completes, you're ready to create your first token.
 3. Select your desired asset type (for example, **Bonds** for debt instruments)
 4. Click **Create New Token** to begin asset configuration
 
-## Step 4: Configure asset details
+### Configure asset details
 
 The asset designer guides you through token configuration specific to your asset
 type.
 
-### Basic information
+#### Basic information
 
 Required for all asset types:
 
@@ -167,38 +169,46 @@ Required for all asset types:
 - **Decimals** - Precision (typically 18 for divisibility, 0 for whole shares)
 - **Initial supply** - Number of tokens to mint at deployment (can be 0)
 
-### Asset-specific settings
+#### Asset-specific settings
 
 Each asset type requires additional configuration:
 
-**For bonds:**
+<Tabs items={["Bonds", "Equity", "Funds", "Stablecoins", "Deposits"]}>
+<Tab value="Bonds">
 
 - Maturity date (timestamp when bond matures)
 - Face value (redemption amount per token)
 - Denomination asset (collateral token address)
 - Yield schedule (payment frequency and rate)
 
-**For equity:**
+</Tab>
+<Tab value="Equity">
 
 - Voting rights configuration (enabled/disabled)
 - Shareholder class designation
 
-**For funds:**
+</Tab>
+<Tab value="Funds">
 
 - Management fee (basis points)
 - Fund manager address
 
-**For stablecoins:**
+</Tab>
+<Tab value="Stablecoins">
 
 - Peg currency (USD, EUR, etc.)
 - Collateral requirements
 
-**For deposits:**
+</Tab>
+<Tab value="Deposits">
 
 - Certificate details
 - Maturity terms (if applicable)
 
-### Assign operational roles
+</Tab>
+</Tabs>
+
+#### Assign operational roles
 
 Assign addresses to operational roles:
 
@@ -210,11 +220,11 @@ Assign addresses to operational roles:
 **Tip:** Assign your admin wallet to all roles initially. You can delegate to
 operational wallets later.
 
-## Step 5: Configure compliance rules
+### Configure compliance rules
 
 Set transfer restrictions and eligibility requirements:
 
-### Select compliance modules
+#### Select compliance modules
 
 Choose from available compliance modules:
 
@@ -226,7 +236,7 @@ Choose from available compliance modules:
 
 Configure parameters for each enabled module.
 
-### Set claim requirements
+#### Set claim requirements
 
 Specify required OnchainID claims for token holders:
 
@@ -237,7 +247,7 @@ Specify required OnchainID claims for token holders:
 
 Only addresses with all required claims can receive tokens.
 
-## Step 6: Review and deploy
+### Review and deploy
 
 Review your asset configuration:
 
@@ -256,11 +266,11 @@ Authenticate the deployment transaction:
 Deployment takes 30-60 seconds. The platform displays progress as contracts
 deploy.
 
-## Step 7: Post-deployment actions
+### Post-deployment actions
 
 After successful deployment, you're ready to use your token.
 
-### View your token
+#### View your token
 
 1. Navigate to **Asset Management** &gt; **Your Asset Type**
 2. Click your newly deployed token
@@ -271,7 +281,7 @@ After successful deployment, you're ready to use your token.
    - Compliance status
    - Recent events
 
-### Mint initial supply (if needed)
+#### Mint initial supply (if needed)
 
 If you deployed with zero initial supply:
 
@@ -282,7 +292,7 @@ If you deployed with zero initial supply:
 
 The recipient must have a verified OnchainID with required claims.
 
-### Configure yield schedule (bonds only)
+#### Configure yield schedule (bonds only)
 
 For bond tokens with yield distributions:
 
@@ -294,6 +304,8 @@ For bond tokens with yield distributions:
 6. Save configuration
 
 Yield distributions execute automatically based on your schedule.
+
+</Steps>
 
 ## What you accomplished
 

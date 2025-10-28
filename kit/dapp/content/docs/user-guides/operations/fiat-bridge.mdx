@@ -33,7 +33,7 @@ The fiat bridge supports two primary flows:
 
 <Mermaid
   chart={
-    "flowchart TB\n  A[Investor] -->|Wire Transfer| B[Issuer Bank Account]\n  B -->|Verify Deposit| C[Treasury Operations]\n  C -->|Mint Tokens| D[Platform]\n  D -->|Token Balance| A\n  A -->|Request Redemption| D\n  D -->|Burn Tokens| C\n  C -->|Wire Transfer| B\n  B -->|Fiat Payment| A\n  \n  style A fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff\n  style B fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff\n  style C fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff\n  style D fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff"
+    "flowchart TB\n  A(Investor) -->|Wire Transfer| B(Issuer Bank Account)\n  B -->|Verify Deposit| C(Treasury Operations)\n  C -->|Mint Tokens| D(Platform)\n  D -->|Token Balance| A\n  A -->|Request Redemption| D\n  D -->|Burn Tokens| C\n  C -->|Wire Transfer| B\n  B -->|Fiat Payment| A\n  \n  style A fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff\n  style B fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff\n  style C fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff\n  style D fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff"
   }
 />
 

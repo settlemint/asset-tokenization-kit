@@ -32,8 +32,8 @@ monitoring is continuous
 
 <Mermaid
   chart={`flowchart TB
-  Invite[Invite Investor] --> Register[Investor Self-Registration]
-  Register --> KYC[KYC/AML Verification]
+  Invite(Invite Investor) --> Register(Investor Self-Registration)
+  Register --> KYC(KYC/AML Verification)
   KYC --> Approve{Verification<br/>Result}
   Approve -->|Approved| DeployID[Deploy OnchainID]
   Approve -->|Rejected| Notify[Notify Investor]
@@ -44,11 +44,11 @@ monitoring is continuous
   Renew -->|Yes| IssueClaims
   Renew -->|No| Monitor
   
-  style Invite fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-  style Approve fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-  style DeployID fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-  style IssueClaims fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-  style Monitor fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff`}
+  style Invite fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+  style Approve fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+  style DeployID fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+  style IssueClaims fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+  style Monitor fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff`}
 />
 
 ## Step 1: Investor registration

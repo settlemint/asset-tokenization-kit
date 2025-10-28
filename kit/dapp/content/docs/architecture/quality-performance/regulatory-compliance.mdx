@@ -39,20 +39,20 @@ levels:
 <Mermaid chart={`
 flowchart TB
     subgraph "Testing Pyramid"
-        E2E["End-to-End Tests<br/>18+ scenarios<br/>Full user workflows"]
-        Integration["Integration Tests<br/>API + Database + Blockchain<br/>Multi-component interactions"]
-        Unit["Unit Tests<br/>1,000+ tests<br/>Component isolation"]
-        Static["Static Analysis<br/>TypeScript, Solhint, ESLint<br/>Code quality"]
+        E2E("End-to-End Tests<br/>18+ scenarios<br/>Full user workflows")
+        Integration("Integration Tests<br/>API + Database + Blockchain<br/>Multi-component interactions")
+        Unit("Unit Tests<br/>1,000+ tests<br/>Component isolation")
+        Static("Static Analysis<br/>TypeScript, Solhint, ESLint<br/>Code quality")
     end
 
     Unit --> Integration
     Integration --> E2E
     Static --> Unit
 
-    style E2E fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style Integration fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style Unit fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style Static fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style E2E fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Integration fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Unit fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Static fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
 
 `} />
 
@@ -142,21 +142,21 @@ when standards are not met.
 
 <Mermaid chart={`
 flowchart TB
-    Commit[Developer Commits Code] --> Format[Format Check]
-    Format --> Compile[TypeScript & Solidity Compilation]
-    Compile --> Codegen[Code Generation]
-    Codegen --> Lint[Linting]
-    Lint --> Typecheck[Type Checking]
-    Typecheck --> Build[Build All Packages]
-    Build --> UnitTests[Unit Tests]
-    UnitTests --> IntegrationTests[Integration Tests]
-    IntegrationTests --> E2ETests[E2E Tests]
-    E2ETests --> Coverage[Coverage Report]
-    Coverage --> Gas[Gas Benchmarks]
-    Gas --> Security[Security Scans]
-    Security --> Merge[Merge to Main]
+    Commit(Developer Commits Code) --> Format(Format Check)
+    Format --> Compile(TypeScript & Solidity Compilation)
+    Compile --> Codegen(Code Generation)
+    Codegen --> Lint(Linting)
+    Lint --> Typecheck(Type Checking)
+    Typecheck --> Build(Build All Packages)
+    Build --> UnitTests(Unit Tests)
+    UnitTests --> IntegrationTests(Integration Tests)
+    IntegrationTests --> E2ETests(E2E Tests)
+    E2ETests --> Coverage(Coverage Report)
+    Coverage --> Gas(Gas Benchmarks)
+    Gas --> Security(Security Scans)
+    Security --> Merge(Merge to Main)
 
-    Format -->|Fails| Block[Block Merge]
+    Format -->|Fails| Block(Block Merge)
     Compile -->|Fails| Block
     Codegen -->|Fails| Block
     Lint -->|Fails| Block
@@ -169,8 +169,8 @@ flowchart TB
     Gas -->|Regression &gt;5%| Block
     Security -->|High/Critical| Block
 
-    style Merge fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style Block fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style Merge fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Block fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
 
 `} />
 

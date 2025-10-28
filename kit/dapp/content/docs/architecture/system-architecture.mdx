@@ -52,42 +52,42 @@ maintaining tight integration between components:
 <Mermaid
   chart={`flowchart TB
     subgraph "Frontend Layer"
-        UI[TanStack Start dApp<br/>React, Router, Forms]
-        Mobile[Mobile Interface<br/>Responsive Design]
-        Admin[Admin Dashboard<br/>System Management]
+        UI(TanStack Start dApp<br/>React, Router, Forms)
+        Mobile(Mobile Interface<br/>Responsive Design)
+        Admin(Admin Dashboard<br/>System Management)
     end
 
     subgraph "API Layer"
-        ORPC[ORPC API Gateway<br/>Type-safe Procedures]
-        Auth[Better Auth<br/>Session Management]
-        Middleware[Request Middleware<br/>Validation & Security]
+        ORPC(ORPC API Gateway<br/>Type-safe Procedures)
+        Auth(Better Auth<br/>Session Management)
+        Middleware(Request Middleware<br/>Validation & Security)
     end
 
     subgraph "Business Logic Layer"
-        AssetMgmt[Asset Management<br/>Token Operations]
-        Compliance[Compliance Engine<br/>KYC/AML Processing]
-        Identity[Identity Management<br/>OnchainID Integration]
-        Addon[Addon System<br/>Extended Functionality]
+        AssetMgmt(Asset Management<br/>Token Operations)
+        Compliance(Compliance Engine<br/>KYC/AML Processing)
+        Identity(Identity Management<br/>OnchainID Integration)
+        Addon(Addon System<br/>Extended Functionality)
     end
 
     subgraph "Data Layer"
-        PostgreSQL[PostgreSQL<br/>Application Data]
-        Redis[Redis<br/>Session & Cache]
-        MinIO[MinIO<br/>File Storage]
-        Subgraph[TheGraph Subgraph<br/>Blockchain Indexing]
+        PostgreSQL(PostgreSQL<br/>Application Data)
+        Redis(Redis<br/>Session & Cache)
+        MinIO(MinIO<br/>File Storage)
+        Subgraph(TheGraph Subgraph<br/>Blockchain Indexing)
     end
 
     subgraph "Blockchain Layer"
-        ATKSystem[ATK System<br/>Core Infrastructure]
-        SMART[SMART Protocol<br/>Token Foundation]
-        Assets[Asset Contracts<br/>Bond, Equity, Fund, etc.]
-        Addons[Addon Contracts<br/>Vault, Airdrop, XvP]
+        ATKSystem(ATK System<br/>Core Infrastructure)
+        SMART(SMART Protocol<br/>Token Foundation)
+        Assets(Asset Contracts<br/>Bond, Equity, Fund, etc.)
+        Addons(Addon Contracts<br/>Vault, Airdrop, XvP)
     end
 
     subgraph "Infrastructure Layer"
-        Blockchain[Blockchain Network<br/>EVM Compatible]
-        IPFS[IPFS<br/>Decentralized Storage]
-        Portal[SettleMint Portal<br/>Blockchain Gateway]
+        Blockchain(Blockchain Network<br/>EVM Compatible)
+        IPFS(IPFS<br/>Decentralized Storage)
+        Portal(SettleMint Portal<br/>Blockchain Gateway)
     end
 
     UI --> ORPC
@@ -118,12 +118,12 @@ maintaining tight integration between components:
 
     MinIO --> IPFS
 
-    style UI fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style ORPC fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style AssetMgmt fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style ATKSystem fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style PostgreSQL fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style Blockchain fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff`}
+    style UI fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style ORPC fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style AssetMgmt fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style ATKSystem fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style PostgreSQL fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Blockchain fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff`}
 
 />
 
@@ -151,28 +151,28 @@ management, build optimization, and development workflows:
 <Mermaid
   chart={`flowchart TB
     subgraph "Root Level"
-        Root[asset-tokenization-kit/]
-        Config[Configuration Files<br/>package.json, turbo.json]
-        Tools[tools/<br/>Development Utilities]
-        Packages[packages/<br/>Shared Libraries]
+        Root(asset-tokenization-kit/)
+        Config(Configuration Files<br/>package.json, turbo.json)
+        Tools(tools/<br/>Development Utilities)
+        Packages(packages/<br/>Shared Libraries)
     end
 
     subgraph "Kit Directory"
-        Kit[kit/<br/>Core Application]
+        Kit(kit/<br/>Core Application)
 
         subgraph "Application Components"
-            Contracts[contracts/<br/>Smart Contracts]
-            DApp[dapp/<br/>Frontend Application]
-            Subgraph[subgraph/<br/>Blockchain Indexer]
-            E2E[e2e/<br/>End-to-End Tests]
-            Charts[charts/<br/>Kubernetes Deployment]
+            Contracts(contracts/<br/>Smart Contracts)
+            DApp(dapp/<br/>Frontend Application)
+            SubgraphNode(subgraph/<br/>Blockchain Indexer)
+            E2E(e2e/<br/>End-to-End Tests)
+            Charts(charts/<br/>Kubernetes Deployment)
         end
     end
 
     subgraph "Shared Packages"
-        ConfigPkg[config/<br/>ESLint Configuration]
-        ZodPkg[zod/<br/>Schema Validation]
-        TypeScript[typescript-config/<br/>TS Configuration]
+        ConfigPkg(config/<br/>ESLint Configuration)
+        ZodPkg(zod/<br/>Schema Validation)
+        TypeScript(typescript-config/<br/>TS Configuration)
     end
 
     Root --> Kit
@@ -181,7 +181,7 @@ management, build optimization, and development workflows:
 
     Kit --> Contracts
     Kit --> DApp
-    Kit --> Subgraph
+    Kit --> SubgraphNode
     Kit --> E2E
     Kit --> Charts
 
@@ -190,13 +190,13 @@ management, build optimization, and development workflows:
     Packages --> TypeScript
 
     DApp -.-> Contracts
-    Subgraph -.-> Contracts
+    SubgraphNode -.-> Contracts
     E2E -.-> DApp
 
-    style Root fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style Kit fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style Contracts fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style DApp fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff`}
+    style Root fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Kit fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Contracts fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style DApp fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff`}
 
 />
 
@@ -248,17 +248,17 @@ instruments:
 <Mermaid
   chart={`flowchart TB
     subgraph "Asset Ecosystem"
-        Bond[Bond Tokens<br/>Fixed-term debt<br/>• Maturity dates<br/>• Yield distribution<br/>• Redemption]
-        Equity[Equity Tokens<br/>Ownership rights<br/>• Governance voting<br/>• Dividend distribution<br/>• Shareholder privileges]
-        Fund[Fund Tokens<br/>Investment vehicles<br/>• Management fees<br/>• NAV calculation<br/>• Performance tracking]
-        Stable[StableCoin Tokens<br/>Fiat-pegged<br/>• Collateral backing<br/>• Price stability<br/>• Reserve management]
-        Deposit[Deposit Tokens<br/>Banking instruments<br/>• Collateral backed<br/>• Time-locked<br/>• Banking integration]
+        Bond(Bond Tokens<br/>Fixed-term debt<br/>• Maturity dates<br/>• Yield distribution<br/>• Redemption)
+        Equity(Equity Tokens<br/>Ownership rights<br/>• Governance voting<br/>• Dividend distribution<br/>• Shareholder privileges)
+        Fund(Fund Tokens<br/>Investment vehicles<br/>• Management fees<br/>• NAV calculation<br/>• Performance tracking)
+        Stable(StableCoin Tokens<br/>Fiat-pegged<br/>• Collateral backing<br/>• Price stability<br/>• Reserve management)
+        Deposit(Deposit Tokens<br/>Banking instruments<br/>• Collateral backed<br/>• Time-locked<br/>• Banking integration)
     end
 
     subgraph "Common Features"
-        Compliance[Regulatory Compliance<br/>ERC-3643 Standard<br/>• KYC/AML integration<br/>• Transfer restrictions<br/>• Identity verification]
-        Extensions[Modular Extensions<br/>SMART Protocol<br/>• Pausable operations<br/>• Custodian controls<br/>• Historical tracking]
-        Governance[Governance Systems<br/>Voting Mechanisms<br/>• Proposal creation<br/>• Vote delegation<br/>• Execution controls]
+        Compliance(Regulatory Compliance<br/>ERC-3643 Standard<br/>• KYC/AML integration<br/>• Transfer restrictions<br/>• Identity verification)
+        Extensions(Modular Extensions<br/>SMART Protocol<br/>• Pausable operations<br/>• Custodian controls<br/>• Historical tracking)
+        Governance(Governance Systems<br/>Voting Mechanisms<br/>• Proposal creation<br/>• Vote delegation<br/>• Execution controls)
     end
 
     Bond --> Compliance
@@ -276,11 +276,11 @@ instruments:
     Equity --> Governance
     Fund --> Governance
 
-    style Bond fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style Equity fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style Fund fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style Stable fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style Deposit fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff`}
+    style Bond fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Equity fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Fund fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Stable fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Deposit fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff`}
 
 />
 

@@ -53,27 +53,27 @@ production-grade integrations tailored to their client's requirements.
 <Mermaid
   chart={`flowchart TB
     subgraph "External Integration Points"
-        ATK[ATK Platform<br/>Core System]
+        ATK(ATK Platform<br/>Core System)
         
         subgraph "Identity & Compliance"
-            KYC[KYC/AML Providers<br/>• Identity verification<br/>• Document validation<br/>• Sanctions screening]
-            AccredCheck[Accreditation Services<br/>• Investor qualification<br/>• Regulatory status<br/>• Entity verification]
+            KYC(KYC/AML Providers<br/>• Identity verification<br/>• Document validation<br/>• Sanctions screening)
+            AccredCheck(Accreditation Services<br/>• Investor qualification<br/>• Regulatory status<br/>• Entity verification)
         end
         
         subgraph "Financial Services"
-            Banking[Banking Rails<br/>• Core banking systems<br/>• Payment gateways<br/>• SWIFT/ISO 20022]
-            ExchangeRate[Exchange Rate Feeds<br/>• FX rate providers<br/>• Price oracles<br/>• Market data]
-            Custody[Custody Providers<br/>• Wallet services<br/>• HSM integration<br/>• Key management]
+            Banking(Banking Rails<br/>• Core banking systems<br/>• Payment gateways<br/>• SWIFT/ISO 20022)
+            ExchangeRate(Exchange Rate Feeds<br/>• FX rate providers<br/>• Price oracles<br/>• Market data)
+            Custody(Custody Providers<br/>• Wallet services<br/>• HSM integration<br/>• Key management)
         end
         
         subgraph "Data & Storage"
-            FileStorage[File Storage<br/>• Document management<br/>• Media hosting<br/>• Compliance archives]
-            IPFS[Decentralized Storage<br/>• IPFS nodes<br/>• Arweave<br/>• Metadata hosting]
+            FileStorage(File Storage<br/>• Document management<br/>• Media hosting<br/>• Compliance archives)
+            IPFS(Decentralized Storage<br/>• IPFS nodes<br/>• Arweave<br/>• Metadata hosting)
         end
         
         subgraph "Monitoring & Operations"
-            Observability[Observability Stack<br/>• Logging aggregation<br/>• Metrics collection<br/>• Alert management]
-            SIEM[Security & Audit<br/>• SIEM integration<br/>• Audit log export<br/>• Compliance reporting]
+            Observability(Observability Stack<br/>• Logging aggregation<br/>• Metrics collection<br/>• Alert management)
+            SIEM(Security & Audit<br/>• SIEM integration<br/>• Audit log export<br/>• Compliance reporting)
         end
     end
     
@@ -87,11 +87,11 @@ production-grade integrations tailored to their client's requirements.
     ATK --> Observability
     ATK --> SIEM
     
-    style ATK fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style KYC fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style Banking fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style ExchangeRate fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style FileStorage fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff`}
+    style ATK fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style KYC fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Banking fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style ExchangeRate fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style FileStorage fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff`}
 />
 
 ## Identity and compliance integrations
@@ -197,13 +197,13 @@ partners integrate with:
 
 <Mermaid
   chart={`flowchart LR
-    Token[Token Contract<br/>Settlement Event]
+    Token(Token Contract<br/>Settlement Event)
     
-    Mediator[Mediation Service<br/>Event Processor]
+    Mediator(Mediation Service<br/>Event Processor)
     
-    Banking[Banking System<br/>Core Banking API]
+    Banking(Banking System<br/>Core Banking API)
     
-    Queue[Message Queue<br/>RabbitMQ/Kafka]
+    Queue(Message Queue<br/>RabbitMQ/Kafka)
     
     Token --> Queue
     Queue --> Mediator
@@ -211,9 +211,9 @@ partners integrate with:
     Banking -.Response.-> Mediator
     Mediator -.Update.-> Token
     
-    style Token fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style Mediator fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style Banking fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff`}
+    style Token fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Mediator fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Banking fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff`}
 />
 
 ### Exchange rate providers

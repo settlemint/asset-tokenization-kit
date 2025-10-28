@@ -41,7 +41,9 @@ Before starting, ensure you have the following installed:
 - **Memory**: At least 8 GB RAM (16 GB recommended for running all services)
 - **OS**: macOS, Linux, or WSL2 on Windows
 
-## Clone the repository
+<Steps>
+
+### Clone the repository
 
 Start by cloning the Asset Tokenization Kit repository:
 
@@ -61,7 +63,7 @@ kit/
 └── e2e/        # Playwright end-to-end tests
 ```
 
-## Install dependencies
+### Install dependencies
 
 Install all workspace dependencies using Bun:
 
@@ -78,7 +80,7 @@ This command:
 The installation should complete in 1-2 minutes. If you encounter errors, check
 that your Bun version matches `package.json` (1.2.19).
 
-## Generate artifacts
+### Generate artifacts
 
 The Kit requires pre-generated artifacts before starting services. These
 artifacts include:
@@ -116,19 +118,30 @@ This command runs:
 ✓ Subgraph hash: QmXyz...
 ```
 
-**Note:** Re-run `bun run artifacts` whenever you modify:
+**Important:** Re-run `bun run artifacts` whenever you modify smart contracts in
+`kit/contracts/contracts/`, database schemas in `kit/dapp/src/lib/db/schemas/`,
+or subgraph mappings in `kit/subgraph/src/`.
 
-- Smart contracts in `kit/contracts/contracts/`
-- Database schemas in `kit/dapp/src/lib/db/schemas/`
-- Subgraph mappings in `kit/subgraph/src/`
-
-## Configure environment variables
+### Configure environment variables
 
 The local development stack uses Docker Compose with default values suitable for
 development. No `.env` file is required for basic setup.
 
-**Optional:** Create a `.env.local` file in the project root to override
-defaults:
+<Tabs items={["Default (No .env)", "Development (.env.local)", "Custom Ports"]}>
+<Tab value="Default (No .env)">
+
+No `.env` file required for basic setup. Docker Compose uses these defaults:
+
+- **Chain ID**: 1337
+- **PostgreSQL**: Port 5432, user `postgres`, password `postgres`
+- **Redis**: Port 6379, password `shared`
+- **Anvil RPC**: Port 8545
+- **Hasura**: Port 8080, admin secret `hasura`
+
+</Tab>
+<Tab value="Development (.env.local)">
+
+Create `.env.local` in the project root to override defaults:
 
 ```bash
 # Blockchain
@@ -149,20 +162,35 @@ MINIO_ROOT_PASSWORD=miniominio
 
 # Hasura GraphQL
 HASURA_ADMIN_SECRET=hasura
-
-# Port mappings (optional)
-ANVIL_PORT=8545
-POSTGRES_PORT=5432
-HASURA_PORT=8080
-GRAPH_NODE_PORT=8000
-MINIO_CONSOLE_PORT=9001
-BLOCKSCOUT_FRONTEND_PORT=4001
 ```
 
-**Important:** Never commit `.env.local` to version control. It's already in
-`.gitignore`.
+</Tab>
+<Tab value="Custom Ports">
 
-## Start Docker services
+Override default ports if you have conflicts:
+
+```bash
+# Custom port mappings
+ANVIL_PORT=8546
+POSTGRES_PORT=5433
+HASURA_PORT=8081
+GRAPH_NODE_PORT=8001
+MINIO_CONSOLE_PORT=9002
+BLOCKSCOUT_FRONTEND_PORT=4002
+```
+
+Remember to update connection strings in your dApp configuration when changing
+ports.
+
+</Tab>
+</Tabs>
+
+<Banner type="info">
+  **Important:** Never commit `.env.local` to version control. It's already in
+  `.gitignore`.
+</Banner>
+
+### Start Docker services
 
 Launch the complete development stack:
 
@@ -202,14 +230,12 @@ docker compose ps
 All services should show `healthy` status. This may take 30-60 seconds on first
 run.
 
-**Troubleshooting:** If services fail to start:
+**Troubleshooting:** If services fail to start, check Docker has sufficient
+memory allocated (8+ GB in Docker Desktop settings), ensure ports are not
+already in use (`lsof -i :8545,5432,8080`), or view logs
+(`docker compose logs -f [service-name]`).
 
-- Check Docker has sufficient memory allocated (8+ GB in Docker Desktop
-  settings)
-- Ensure ports are not already in use: `lsof -i :8545,5432,8080`
-- View logs: `docker compose logs -f [service-name]`
-
-## Run the dApp
+### Run the dApp
 
 With services running, start the web application:
 
@@ -240,6 +266,8 @@ The dApp starts on **http://localhost:3000** with:
 1. Navigate to http://localhost:3000 in your browser
 2. Click "Sign In" to create a test account
 3. Follow the onboarding wizard to set up your wallet and identity
+
+</Steps>
 
 ## Verify the setup
 
@@ -372,11 +400,15 @@ Now that your environment is running:
 
 ## Common issues
 
-### Port conflicts
+<Accordions type="multiple">
+
+<Accordion title="Port conflicts">
 
 **Symptom:** Docker services fail with "port already allocated"
 
-**Solution:**
+**Solutions:**
+
+1. **Kill the conflicting process:**
 
 ```bash
 # Find process using port 8545
@@ -385,38 +417,44 @@ lsof -i :8545
 kill -9 [PID]
 ```
 
-Or change the port in `.env.local`:
+2. **Change the port in `.env.local`:**
 
 ```bash
 ANVIL_PORT=8546
 ```
 
-### Out of memory
+</Accordion>
+
+<Accordion title="Out of memory">
 
 **Symptom:** Services crash or become unresponsive
 
-**Solution:**
+**Solutions:**
 
 - Increase Docker Desktop memory limit to 8+ GB
 - Close other memory-intensive applications
 - Disable unused services in `docker-compose.yml`
 
-### Slow artifact generation
+</Accordion>
+
+<Accordion title="Slow artifact generation">
 
 **Symptom:** `bun run artifacts` takes &gt;5 minutes
 
-**Solution:**
+**Solutions:**
 
 - Enable Turborepo remote caching: `bun turbo link`
 - Upgrade to SSD storage if using HDD
 - Run artifact generation for specific packages:
   `turbo run artifacts --filter=contracts`
 
-### Subgraph not indexing
+</Accordion>
+
+<Accordion title="Subgraph not indexing">
 
 **Symptom:** GraphQL queries return stale data
 
-**Solution:**
+**Solutions:**
 
 ```bash
 # Check Graph Node logs
@@ -429,11 +467,13 @@ docker compose restart graph-node
 bun run dev:reset
 ```
 
-### TypeScript errors after pulling changes
+</Accordion>
+
+<Accordion title="TypeScript errors after pulling changes">
 
 **Symptom:** IDE shows type errors after `git pull`
 
-**Solution:**
+**Solutions:**
 
 ```bash
 # Reinstall dependencies
@@ -445,3 +485,7 @@ bun run artifacts
 # Restart TypeScript server in VS Code
 # Cmd+Shift+P → "TypeScript: Restart TS Server"
 ```
+
+</Accordion>
+
+</Accordions>

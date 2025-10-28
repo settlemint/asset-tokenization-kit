@@ -16,7 +16,7 @@ complete lifecycle from planning through settlement and holder notification.
 
 <Mermaid
   chart={
-    "graph TB\n    A[Plan Corporate<br/>Action] --> B[Set Key Dates<br/>Ex-div/Record/Payment]\n    B --> C{Action Type?}\n    C -->|Dividend| D[Fund Distribution<br/>Wallet]\n    C -->|Coupon| E[Fund Yield<br/>Wallet]\n    C -->|Split| F[Calculate Split<br/>Ratio]\n    C -->|Vote| G[Create Governance<br/>Proposal]\n    D --> H[Snapshot Holders<br/>at Record Date]\n    E --> H\n    F --> H\n    G --> I[Shareholders<br/>Vote]\n    H --> J[Execute Distribution<br/>on Payment Date]\n    I --> K[Tally Votes]\n    J --> L[Notify Holders]\n    K --> M[Execute Approved<br/>Proposal]\n    L --> N[Record Action]\n    M --> N\n    style A fill:#0EA5E9\n    style D fill:#10B981\n    style E fill:#10B981\n    style H fill:#10B981\n    style J fill:#6366F1\n    style K fill:#6366F1"
+    "graph TB\n    A(Plan Corporate<br/>Action) --> B(Set Key Dates<br/>Ex-div/Record/Payment)\n    B --> C{Action Type?}\n    C -->|Dividend| D(Fund Distribution<br/>Wallet)\n    C -->|Coupon| E(Fund Yield<br/>Wallet)\n    C -->|Split| F(Calculate Split<br/>Ratio)\n    C -->|Vote| G(Create Governance<br/>Proposal)\n    D --> H(Snapshot Holders<br/>at Record Date)\n    E --> H\n    F --> H\n    G --> I(Shareholders<br/>Vote)\n    H --> J(Execute Distribution<br/>on Payment Date)\n    I --> K(Tally Votes)\n    J --> L(Notify Holders)\n    K --> M(Execute Approved<br/>Proposal)\n    L --> N(Record Action)\n    M --> N\n    style A fill:#0EA5E9\n    style D fill:#10B981\n    style E fill:#10B981\n    style H fill:#10B981\n    style J fill:#6366F1\n    style K fill:#6366F1"
   }
 />
 

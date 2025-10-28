@@ -27,33 +27,33 @@ networking, and security policies.
   chart={`flowchart TB
     subgraph "ATK Deployment Architecture"
         subgraph "User-Facing Services"
-            DApp[dApp Frontend<br/>TanStack Start<br/>Port 3000]
-            API[ORPC API<br/>HTTP/WebSocket<br/>Port 3000]
+            DApp(dApp Frontend<br/>TanStack Start<br/>Port 3000)
+            API(ORPC API<br/>HTTP/WebSocket<br/>Port 3000)
         end
         
         subgraph "Blockchain Services"
-            Portal[SettleMint Portal<br/>Transaction Gateway<br/>Port 8080]
-            TxSigner[Transaction Signer<br/>Key Management<br/>Port 3000]
-            ERPC[ERPC Gateway<br/>RPC Load Balancer<br/>Port 4000]
-            Network[Blockchain Network<br/>EVM Node<br/>Ports 8545, 8546]
+            Portal(SettleMint Portal<br/>Transaction Gateway<br/>Port 8080)
+            TxSigner(Transaction Signer<br/>Key Management<br/>Port 3000)
+            ERPC(ERPC Gateway<br/>RPC Load Balancer<br/>Port 4000)
+            Network(Blockchain Network<br/>EVM Node<br/>Ports 8545, 8546)
         end
         
         subgraph "Data & Indexing"
-            GraphNode[TheGraph Node<br/>Blockchain Indexer<br/>Port 8000]
-            Hasura[Hasura GraphQL<br/>PostgreSQL API<br/>Port 8080]
+            GraphNode(TheGraph Node<br/>Blockchain Indexer<br/>Port 8000)
+            Hasura(Hasura GraphQL<br/>PostgreSQL API<br/>Port 8080)
             Subgraph[Deployed Subgraph<br/>Query Endpoint<br/>Port 8000/subgraphs/...]
         end
         
         subgraph "Storage Services"
-            PostgreSQL[(PostgreSQL<br/>Application Data<br/>Port 5432)]
-            Redis[(Redis<br/>Cache & Sessions<br/>Port 6379)]
-            MinIO[(MinIO<br/>S3-Compatible Storage<br/>Port 9000)]
-            IPFS[(IPFS Cluster<br/>Decentralized Storage<br/>Ports 4001, 5001)]
+            PostgreSQL((PostgreSQL<br/>Application Data<br/>Port 5432))
+            Redis((Redis<br/>Cache & Sessions<br/>Port 6379))
+            MinIO((MinIO<br/>S3-Compatible Storage<br/>Port 9000))
+            IPFS((IPFS Cluster<br/>Decentralized Storage<br/>Ports 4001, 5001))
         end
         
         subgraph "Monitoring"
-            Blockscout[Blockscout Explorer<br/>Block Explorer<br/>Port 4000]
-            Prometheus[Prometheus<br/>Metrics Collection<br/>Port 9090]
+            Blockscout(Blockscout Explorer<br/>Block Explorer<br/>Port 4000)
+            Prometheus(Prometheus<br/>Metrics Collection<br/>Port 9090)
         end
     end
     
@@ -77,10 +77,10 @@ networking, and security policies.
     Prometheus -.Monitors.-> API
     Prometheus -.Monitors.-> Network
     
-    style DApp fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style API fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style Network fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style PostgreSQL fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff`}
+    style DApp fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style API fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Network fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style PostgreSQL fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff`}
 />
 
 ### Component dependencies
@@ -138,23 +138,23 @@ The platform runs ATK on **Kubernetes clusters** in regulated cloud environments
 <Mermaid
   chart={`flowchart TB
     subgraph "SettleMint Platform"
-        Console[SettleMint Console<br/>Web Management UI]
+        Console(SettleMint Console<br/>Web Management UI)
         
         subgraph "Platform Services"
-            Gateway[API Gateway<br/>Load Balancer + WAF]
-            Monitoring[Observability Stack<br/>Logs, Metrics, Traces]
-            Backup[Backup Service<br/>Automated Snapshots]
+            Gateway(API Gateway<br/>Load Balancer + WAF)
+            Monitoring(Observability Stack<br/>Logs, Metrics, Traces)
+            Backup(Backup Service<br/>Automated Snapshots)
         end
         
         subgraph "Customer Namespace"
-            ATKHelm[ATK Helm Chart<br/>All Components]
-            CustomConfig[Custom Configuration<br/>Values Override]
+            ATKHelm(ATK Helm Chart<br/>All Components)
+            CustomConfig(Custom Configuration<br/>Values Override)
         end
         
         subgraph "Infrastructure"
-            K8s[Managed Kubernetes<br/>AWS EKS / Azure AKS / GKE]
-            Storage[Persistent Storage<br/>Block + Object Storage]
-            Network[Virtual Network<br/>Private Subnets + VPN]
+            K8s(Managed Kubernetes<br/>AWS EKS / Azure AKS / GKE)
+            Storage(Persistent Storage<br/>Block + Object Storage)
+            Network(Virtual Network<br/>Private Subnets + VPN)
         end
     end
     
@@ -169,9 +169,9 @@ The platform runs ATK on **Kubernetes clusters** in regulated cloud environments
     Monitoring -.Observes.-> ATKHelm
     Backup -.Snapshots.-> Storage
     
-    style Console fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style ATKHelm fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style K8s fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff`}
+    style Console fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style ATKHelm fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style K8s fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff`}
 />
 
 ### Deployment process
@@ -518,23 +518,23 @@ Typical deployment topology for production organizations:
 <Mermaid
   chart={`flowchart TB
     subgraph "Development Environment"
-        DevCluster[Single Node K8s<br/>Minikube/Kind<br/>Local or Cloud]
-        DevData[(Ephemeral Data<br/>Reset Frequently)]
+        DevCluster(Single Node K8s<br/>Minikube/Kind<br/>Local or Cloud)
+        DevData((Ephemeral Data<br/>Reset Frequently))
     end
     
     subgraph "Staging Environment"
-        StagingCluster[Multi-Node K8s<br/>Production-like Setup<br/>Separate Namespace]
-        StagingData[(Persistent Data<br/>Sanitized Production Copy)]
+        StagingCluster(Multi-Node K8s<br/>Production-like Setup<br/>Separate Namespace)
+        StagingData((Persistent Data<br/>Sanitized Production Copy))
     end
     
     subgraph "Production Environment"
-        ProdCluster[HA Kubernetes<br/>Multi-Zone Deployment<br/>Dedicated Cluster]
-        ProdData[(Production Data<br/>Encrypted + Backed Up)]
+        ProdCluster(HA Kubernetes<br/>Multi-Zone Deployment<br/>Dedicated Cluster)
+        ProdData((Production Data<br/>Encrypted + Backed Up))
     end
     
-    Dev[Developers] --> DevCluster
-    QA[QA Team] --> StagingCluster
-    Users[End Users] --> ProdCluster
+    Dev(Developers) --> DevCluster
+    QA(QA Team) --> StagingCluster
+    Users(End Users) --> ProdCluster
     
     DevCluster --> DevData
     StagingCluster --> StagingData
@@ -543,9 +543,9 @@ Typical deployment topology for production organizations:
     DevData -.Promote.-> StagingData
     StagingData -.Migrate.-> ProdData
     
-    style DevCluster fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style StagingCluster fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style ProdCluster fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff`}
+    style DevCluster fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style StagingCluster fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style ProdCluster fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff`}
 />
 
 ### Configuration management

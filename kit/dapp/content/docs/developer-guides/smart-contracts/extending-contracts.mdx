@@ -50,7 +50,9 @@ The ATK smart contract layer is organized into four main categories:
 Custom asset types let you create domain-specific tokens beyond the built-in
 bonds, equities, funds, stablecoins, and deposits.
 
-### Step 1: Design your asset requirements
+<Steps>
+
+### Design your asset requirements
 
 Before writing code, identify what makes your asset unique:
 
@@ -63,7 +65,7 @@ Before writing code, identify what makes your asset unique:
 - **Access control**: What roles are needed (governance, supply management,
   custodian, emergency)?
 
-### Step 2: Create your implementation contract
+### Create your implementation contract
 
 Create a new file in `kit/contracts/contracts/assets/&lt;your-asset&gt;/`:
 
@@ -212,7 +214,7 @@ contract ATKCustomAssetImplementation is
 }
 ```
 
-### Step 3: Create the interface
+### Create the interface
 
 Define your asset's public interface in `IATKCustomAsset.sol`:
 
@@ -239,7 +241,7 @@ interface IATKCustomAsset is IATKToken {
 }
 ```
 
-### Step 4: Create factory and proxy contracts
+### Create factory and proxy contracts
 
 Follow the factory-implementation-proxy pattern used by other assets. Create
 `ATKCustomAssetFactoryImplementation.sol` and `ATKCustomAssetProxy.sol`
@@ -247,7 +249,7 @@ following the patterns in
 `kit/contracts/contracts/assets/bond/ATKBondFactoryImplementation.sol:1-200` and
 `kit/contracts/contracts/assets/bond/ATKBondProxy.sol:1-50`.
 
-### Step 5: Write comprehensive tests
+### Write comprehensive tests
 
 Create tests in `kit/contracts/test/assets/ATKCustomAsset.t.sol`:
 
@@ -291,26 +293,26 @@ cd kit/contracts
 bun run test:foundry
 ```
 
-### Step 6: Integrate with the dApp
+### Integrate with the dApp
 
-Once contracts are deployed, integrate with the frontend:
-
-1. **Generate TypeScript types**: Artifacts are auto-generated when you run
-   `bun run artifacts` in `kit/contracts`
-2. **Access ABIs**: TypeScript definitions appear in
-   `kit/dapp/src/lib/contracts/`
-3. **Create ORPC routes**: Add API routes in `kit/dapp/src/orpc/routes/` for
-   factory interactions
+1. **Generate TypeScript types**: Run `bun run artifacts` to generate contract
+   ABIs and TypeScript bindings
+2. **Add to asset designer**: Update `kit/dapp/src/lib/assets/asset-types.ts` to
+   include your new asset
+3. **Create form components**: Build UI for asset-specific parameters
 4. **Build UI components**: Use generated contract hooks with Viem and TanStack
    Query
+
+</Steps>
 
 ## Adding a compliance module
 
 Compliance modules enforce transfer restrictions like country allowlists,
 investor caps, or time locks. They implement the `ISMARTComplianceModule`
-interface.
 
-### Step 1: Understand the module lifecycle
+<Steps>
+
+### Understand the module lifecycle
 
 Compliance modules are **stateless logic contracts** that get called by the
 compliance contract during token operations:
@@ -323,7 +325,7 @@ compliance contract during token operations:
 4. `destroyed(token, from, value, params)` - Optional hook called after burning
 5. `validateParameters(params)` - Validates module configuration during setup
 
-### Step 2: Extend the abstract base
+### Extend the abstract base
 
 Create your module in `kit/contracts/contracts/smart/modules/`:
 
@@ -391,7 +393,7 @@ contract DailyTransferLimitComplianceModule is AbstractComplianceModule {
 }
 ```
 
-### Step 3: Test your compliance module
+### Test your compliance module
 
 Create tests in
 `kit/contracts/test/smart/modules/DailyTransferLimitComplianceModule.t.sol`:
@@ -443,7 +445,7 @@ contract DailyTransferLimitComplianceModuleTest is AbstractComplianceModuleTest 
 }
 ```
 
-### Step 4: Register and use the module
+### Register and use the module
 
 Compliance modules are registered globally and then added to individual tokens:
 
@@ -478,6 +480,8 @@ await viem.writeContract({
   ],
 });
 ```
+
+</Steps>
 
 ## Using addons
 

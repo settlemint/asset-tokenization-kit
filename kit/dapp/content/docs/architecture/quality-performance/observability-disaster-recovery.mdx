@@ -91,33 +91,33 @@ operations:**
 <Mermaid
   chart={`flowchart TB
     subgraph "Application Layer"
-        DApp[dApp Frontend<br/>Browser metrics]
-        API[ORPC API<br/>Request metrics]
-        Portal[Portal Service<br/>Transaction metrics]
+        DApp(dApp Frontend<br/>Browser metrics)
+        API(ORPC API<br/>Request metrics)
+        Portal(Portal Service<br/>Transaction metrics)
     end
     
     subgraph "Data Layer"
-        Postgres[(PostgreSQL<br/>Query metrics)]
-        Redis[(Redis<br/>Cache hit rate)]
-        GraphNode[TheGraph Node<br/>Sync status]
+        Postgres((PostgreSQL<br/>Query metrics))
+        Redis((Redis<br/>Cache hit rate))
+        GraphNode(TheGraph Node<br/>Sync status)
     end
     
     subgraph "Blockchain Layer"
-        Network[Blockchain Network<br/>Block height, peers]
-        Contracts[Smart Contracts<br/>Gas usage, events]
+        Network(Blockchain Network<br/>Block height, peers)
+        Contracts(Smart Contracts<br/>Gas usage, events)
     end
     
     subgraph "Observability Stack"
-        Prometheus[Prometheus<br/>Metrics Collection]
-        Loki[Loki/ELK<br/>Log Aggregation]
-        Tempo[Tempo<br/>Distributed Tracing]
-        Grafana[Grafana<br/>Visualization Dashboards]
-        Alertmanager[Alertmanager<br/>Alert Routing]
+        Prometheus(Prometheus<br/>Metrics Collection)
+        Loki(Loki/ELK<br/>Log Aggregation)
+        Tempo(Tempo<br/>Distributed Tracing)
+        Grafana(Grafana<br/>Visualization Dashboards)
+        Alertmanager(Alertmanager<br/>Alert Routing)
     end
     
     subgraph "Incident Response"
-        PagerDuty[PagerDuty/Slack<br/>On-call Notifications]
-        Runbooks[Runbooks<br/>Recovery Procedures]
+        PagerDuty(PagerDuty/Slack<br/>On-call Notifications)
+        Runbooks(Runbooks<br/>Recovery Procedures)
     end
     
     DApp -->|Metrics| Prometheus
@@ -143,9 +143,9 @@ operations:**
     Alertmanager --> PagerDuty
     PagerDuty --> Runbooks
     
-    style Prometheus fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style Grafana fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style Alertmanager fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style Prometheus fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Grafana fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Alertmanager fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
 `}
 />
 
@@ -331,22 +331,22 @@ Alertmanager routes alerts based on severity and service:
 <Mermaid
   chart={`flowchart TB
     subgraph "Production Environment"
-        ProdData[(Production Data<br/>Live state)]
-        ProdBC[Blockchain<br/>Immutable ledger]
+        ProdData((Production Data<br/>Live state))
+        ProdBC(Blockchain<br/>Immutable ledger)
     end
     
     subgraph "Backup Storage"
-        DBBackup[(Database Backups<br/>Daily + WAL)]
-        FileBackup[(File Storage Backups<br/>MinIO snapshots)]
-        ConfigBackup[(Configuration Backups<br/>Git + Secrets)]
-        BCSnapshot[(Blockchain Snapshots<br/>Validator data)]
+        DBBackup((Database Backups<br/>Daily + WAL))
+        FileBackup((File Storage Backups<br/>MinIO snapshots))
+        ConfigBackup((Configuration Backups<br/>Git + Secrets))
+        BCSnapshot((Blockchain Snapshots<br/>Validator data))
     end
     
     subgraph "Recovery Procedures"
-        Runbook1[Database Restore<br/>RTO: 1 hour]
-        Runbook2[File Restore<br/>RTO: 30 minutes]
-        Runbook3[Blockchain Resync<br/>RTO: 4-24 hours]
-        Runbook4[Full System Restore<br/>RTO: 8 hours]
+        Runbook1(Database Restore<br/>RTO: 1 hour)
+        Runbook2(File Restore<br/>RTO: 30 minutes)
+        Runbook3(Blockchain Resync<br/>RTO: 4-24 hours)
+        Runbook4(Full System Restore<br/>RTO: 8 hours)
     end
     
     ProdData -->|Daily dump + continuous WAL| DBBackup
@@ -358,9 +358,9 @@ Alertmanager routes alerts based on severity and service:
     BCSnapshot --> Runbook3
     ConfigBackup --> Runbook4
     
-    style ProdData fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style DBBackup fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style Runbook4 fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style ProdData fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style DBBackup fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Runbook4 fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
 `}
 />
 
@@ -497,12 +497,12 @@ work as designed.
 
 <Mermaid
   chart={`flowchart LR
-    Alert[Alert Triggered]
-    Ack[Acknowledge Alert]
-    Investigate[Investigate Root Cause]
-    Mitigate[Apply Mitigation]
-    Verify[Verify Resolution]
-    Postmortem[Write Postmortem]
+    Alert(Alert Triggered)
+    Ack(Acknowledge Alert)
+    Investigate(Investigate Root Cause)
+    Mitigate(Apply Mitigation)
+    Verify(Verify Resolution)
+    Postmortem(Write Postmortem)
     
     Alert --> Ack
     Ack --> Investigate
@@ -513,8 +513,8 @@ work as designed.
     Investigate -.Escalate if needed.-> Ack
     Mitigate -.If unsuccessful.-> Investigate
     
-    style Alert fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style Verify fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style Alert fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Verify fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
 `}
 />
 

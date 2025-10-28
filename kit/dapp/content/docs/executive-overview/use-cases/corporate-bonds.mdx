@@ -31,17 +31,17 @@ communications.
 <Mermaid
   chart={`
 flowchart TB
-    START[Term Sheet]
-    LEGAL[Legal Review<br/>4-6 weeks]
-    ROADSHOW[Roadshow<br/>2-3 weeks]
-    BOOK[Book Building<br/>1-2 weeks]
-    SETTLE[Settlement<br/>T+2 to T+5]
-    MANUAL[Manual Processes]
+    START(Term Sheet)
+    LEGAL(Legal Review<br/>4-6 weeks)
+    ROADSHOW(Roadshow<br/>2-3 weeks)
+    BOOK(Book Building<br/>1-2 weeks)
+    SETTLE(Settlement<br/>T+2 to T+5)
+    MANUAL(Manual Processes)
     
-    COUPON[Quarterly Coupon<br/>Manual Calculation]
-    WIRE[Wire Instructions<br/>80+ Investors]
-    RECON[Reconciliation<br/>Days of Work]
-    AGENT[Transfer Agent<br/>Monthly Fees]
+    COUPON(Quarterly Coupon<br/>Manual Calculation)
+    WIRE(Wire Instructions<br/>80+ Investors)
+    RECON(Reconciliation<br/>Days of Work)
+    AGENT(Transfer Agent<br/>Monthly Fees)
     
     START --> LEGAL
     LEGAL --> ROADSHOW
@@ -53,16 +53,16 @@ flowchart TB
     MANUAL --> RECON
     MANUAL --> AGENT
     
-    style START fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style LEGAL fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style ROADSHOW fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style BOOK fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style SETTLE fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style MANUAL fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style COUPON fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style WIRE fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style RECON fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style AGENT fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style START fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style LEGAL fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style ROADSHOW fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style BOOK fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style SETTLE fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style MANUAL fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style COUPON fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style WIRE fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style RECON fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style AGENT fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
 `}
 />
 
@@ -196,16 +196,16 @@ smart contract level.
 <Mermaid
   chart={`
 flowchart TB
-    START[Term Sheet]
-    CONFIG[Asset Designer<br/>Configure Bond]
-    DEPLOY[Smart Contract<br/>Deploy to Chain]
-    DIST[Primary Distribution<br/>Instant Settlement]
-    AUTO[Automated Lifecycle]
+    START(Term Sheet)
+    CONFIG(Asset Designer<br/>Configure Bond)
+    DEPLOY(Smart Contract<br/>Deploy to Chain)
+    DIST(Primary Distribution<br/>Instant Settlement)
+    AUTO(Automated Lifecycle)
     
-    COUPON[Quarterly Coupon<br/>Scheduled Distribution]
-    REALTIME[Real-time Cap Table<br/>No Reconciliation]
-    COMPLIANCE[Transfer Validation<br/>Every Transaction]
-    REDEMPTION[Maturity Redemption<br/>Automated Burn]
+    COUPON(Quarterly Coupon<br/>Scheduled Distribution)
+    REALTIME(Real-time Cap Table<br/>No Reconciliation)
+    COMPLIANCE(Transfer Validation<br/>Every Transaction)
+    REDEMPTION(Maturity Redemption<br/>Automated Burn)
     
     START --> CONFIG
     CONFIG --> DEPLOY
@@ -216,15 +216,15 @@ flowchart TB
     AUTO --> COMPLIANCE
     AUTO --> REDEMPTION
     
-    style START fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style CONFIG fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style DEPLOY fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style DIST fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style AUTO fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style COUPON fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style REALTIME fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style COMPLIANCE fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style REDEMPTION fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style START fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style CONFIG fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style DEPLOY fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style DIST fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style AUTO fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style COUPON fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style REALTIME fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style COMPLIANCE fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style REDEMPTION fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
 `}
 />
 

@@ -246,12 +246,12 @@ workflows where the platform ensures both legs complete or both revert.
   chart={`
 graph TB
     subgraph "Fragmented Approach (Current Market)"
-    A1[Token Issuance<br/>Platform]
-    A2[KYC Provider]
-    A3[Custody Wallet]
-    A4[Trading<br/>Platform]
-    A5[Settlement<br/>System]
-    A6[Reporting Tool]
+    A1(Token Issuance<br/>Platform)
+    A2(KYC Provider)
+    A3(Custody Wallet)
+    A4(Trading<br/>Platform)
+    A5(Settlement<br/>System)
+    A6(Reporting Tool)
 
     A1 -.Integration API.-> A2
     A2 -.Integration API.-> A3
@@ -261,17 +261,17 @@ graph TB
     A1 -.Integration API.-> A6
     A2 -.Integration API.-> A4
 
-    note1[Reconciliation<br/>Issues]
-    note2[Data Drift]
-    note3[No Single<br/>Source of Truth]
+    note1(Reconciliation<br/>Issues)
+    note2(Data Drift)
+    note3(No Single<br/>Source of Truth)
     end
 
-    style A1 fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style A2 fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style A3 fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style A4 fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style A5 fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style A6 fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style A1 fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style A2 fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style A3 fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style A4 fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style A5 fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style A6 fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
 
 `} />
 
@@ -286,11 +286,11 @@ reconciliation.
   chart={`
 graph TB
     subgraph "DALP Approach (Unified Platform)"
-    B1[Unified Lifecycle Core<br/>Single Registry]
-    B2[Compliance Engine]
-    B3[Custody Layer]
-    B4[Settlement Coordination]
-    B5[Reporting & Audit]
+    B1(Unified Lifecycle Core<br/>Single Registry)
+    B2(Compliance Engine)
+    B3(Custody Layer)
+    B4(Settlement Coordination)
+    B5(Reporting & Audit)
 
     B1 --> B2
     B1 --> B3
@@ -300,16 +300,16 @@ graph TB
     B2 --> B3
     B3 --> B4
 
-    note4[Atomic Operations]
-    note5[Consistent State]
-    note6[Unified Truth]
+    note4(Atomic Operations)
+    note5(Consistent State)
+    note6(Unified Truth)
     end
 
-    style B1 fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style B2 fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style B3 fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style B4 fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style B5 fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style B1 fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style B2 fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style B3 fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style B4 fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style B5 fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
 
 `} />
 

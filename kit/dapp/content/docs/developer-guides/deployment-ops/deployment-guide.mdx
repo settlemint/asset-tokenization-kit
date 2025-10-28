@@ -24,36 +24,36 @@ The deployment architecture consists of:
   chart={`
 graph TB
     subgraph "Ingress Layer"
-        NGINX[NGINX Ingress]
+        NGINX(NGINX Ingress)
     end
 
     subgraph "Application Layer"
-        DAPP[DApp Frontend]
-        PORTAL[Portal IAM]
-        HASURA[Hasura GraphQL]
+        DAPP(DApp Frontend)
+        PORTAL(Portal IAM)
+        HASURA(Hasura GraphQL)
     end
 
     subgraph "Blockchain Layer"
-        ERPC[ERPC Gateway]
-        VALIDATORS[Besu Validators]
-        RPC[Besu RPC Nodes]
+        ERPC(ERPC Gateway)
+        VALIDATORS(Besu Validators)
+        RPC(Besu RPC Nodes)
     end
 
     subgraph "Indexing Layer"
-        GRAPH[TheGraph Node]
-        BLOCKSCOUT[Blockscout Explorer]
+        GRAPH(TheGraph Node)
+        BLOCKSCOUT(Blockscout Explorer)
     end
 
     subgraph "Data Layer"
-        PG[(PostgreSQL)]
-        REDIS[(Redis)]
-        MINIO[(MinIO)]
+        PG((PostgreSQL))
+        REDIS((Redis))
+        MINIO((MinIO))
     end
 
     subgraph "Observability"
-        GRAFANA[Grafana]
-        LOKI[Loki]
-        VM[VictoriaMetrics]
+        GRAFANA(Grafana)
+        LOKI(Loki)
+        VM(VictoriaMetrics)
     end
 
     NGINX --> DAPP
@@ -188,46 +188,104 @@ Edit `values-production.yaml` to match your environment:
 
 Replace all `.k8s.orb.local` hostnames with your domain:
 
+<Tabs items={["Development/Local", "Staging", "Production"]}>
+<Tab value="Development/Local">
+
 ```yaml
-# DApp frontend
+# Use .k8s.orb.local (default) or .localhost
+dapp:
+  ingress:
+    hosts:
+      - host: dapp.k8s.orb.local
+
+erpc:
+  ingress:
+    hostname: rpc.k8s.orb.local
+
+blockscout:
+  blockscout:
+    ingress:
+      hostname: explorer.k8s.orb.local
+```
+
+</Tab>
+<Tab value="Staging">
+
+```yaml
+# Staging environment with subdomain
+dapp:
+  ingress:
+    hosts:
+      - host: dapp-staging.example.com
+
+erpc:
+  ingress:
+    hostname: rpc-staging.example.com
+
+blockscout:
+  blockscout:
+    ingress:
+      hostname: explorer-staging.example.com
+
+graph-node:
+  ingress:
+    hostname: graph-staging.example.com
+
+hasura:
+  ingress:
+    hostName: hasura-staging.example.com
+
+portal:
+  ingress:
+    hostname: portal-staging.example.com
+
+observability:
+  grafana:
+    ingress:
+      hosts:
+        - grafana-staging.example.com
+```
+
+</Tab>
+<Tab value="Production">
+
+```yaml
+# Production with custom domain
 dapp:
   ingress:
     hosts:
       - host: dapp.example.com
 
-# RPC endpoint
 erpc:
   ingress:
     hostname: rpc.example.com
 
-# Blockchain explorer
 blockscout:
   blockscout:
     ingress:
       hostname: explorer.example.com
 
-# Graph Node
 graph-node:
   ingress:
     hostname: graph.example.com
 
-# Hasura GraphQL
 hasura:
   ingress:
     hostName: hasura.example.com
 
-# Portal IAM
 portal:
   ingress:
     hostname: portal.example.com
 
-# Observability (Grafana)
 observability:
   grafana:
     ingress:
       hosts:
         - grafana.example.com
 ```
+
+</Tab>
+</Tabs>
 
 #### Update authentication URLs
 
@@ -303,8 +361,11 @@ control.**
 
 Adjust resource requests and limits based on your cluster capacity:
 
+<Tabs items={["Development", "Staging", "Production"]}>
+<Tab value="Development">
+
 ```yaml
-# Example: Scale down for development
+# Minimal resources for local testing
 network:
   network-nodes:
     validatorReplicaCount: 1
@@ -317,7 +378,60 @@ network:
         cpu: "360m"
         memory: "1024Mi"
 
-# Example: Scale up for production
+dapp:
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "512Mi"
+    limits:
+      cpu: "500m"
+      memory: "1024Mi"
+```
+
+</Tab>
+<Tab value="Staging">
+
+```yaml
+# Moderate resources for testing
+network:
+  network-nodes:
+    validatorReplicaCount: 2
+    rpcReplicaCount: 2
+    resources:
+      requests:
+        cpu: "200m"
+        memory: "1024Mi"
+      limits:
+        cpu: "1000m"
+        memory: "2048Mi"
+
+dapp:
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "1024Mi"
+    limits:
+      cpu: "2000m"
+      memory: "2048Mi"
+```
+
+</Tab>
+<Tab value="Production">
+
+```yaml
+# Full resources for production workloads
+network:
+  network-nodes:
+    validatorReplicaCount: 4
+    rpcReplicaCount: 3
+    resources:
+      requests:
+        cpu: "500m"
+        memory: "2048Mi"
+      limits:
+        cpu: "2000m"
+        memory: "4096Mi"
+
 dapp:
   resources:
     requests:
@@ -327,6 +441,9 @@ dapp:
       cpu: "4000m"
       memory: "4096Mi"
 ```
+
+</Tab>
+</Tabs>
 
 See the [Resource summary](#resource-summary) section for default allocations.
 
@@ -897,7 +1014,7 @@ groups:
     interval: 1m
     rules:
       - alert: SlowBlockProduction
-        expr: rate(besu_block_height[5m]) < 0.067 # Less than 1 block per 15s
+        expr: rate(besu_block_height(5m)) < 0.067 # Less than 1 block per 15s
         for: 10m
         labels:
           severity: warning

@@ -33,7 +33,10 @@ On-Chain Data (TheGraph Subgraph)
 2. User actions → dApp → PostgreSQL → API responses
 3. Transaction metadata → Both systems for complete view
 
-## Database schemas (PostgreSQL)
+## Data schemas
+
+<Tabs items={["Database (PostgreSQL)", "Subgraph (TheGraph)"]}>
+<Tab value="Database (PostgreSQL)">
 
 All database schemas are defined in `kit/dapp/src/lib/db/schemas/` using Drizzle
 ORM.
@@ -366,7 +369,8 @@ Application-wide configuration key-value store.
 
 **Default values** defined in `DEFAULT_SETTINGS` constant.
 
-## Subgraph schema (TheGraph)
+</Tab>
+<Tab value="Subgraph (TheGraph)">
 
 **Location**: `kit/subgraph/schema.graphql:1-1500`
 
@@ -726,9 +730,13 @@ type TokenTypeStatsState @entity {
 }
 ```
 
+</Tab>
+</Tabs>
+
 ## Querying data
 
-### Database queries (Drizzle)
+<Tabs items={["Database (Drizzle)", "Subgraph (GraphQL)"]}>
+<Tab value="Database (Drizzle)">
 
 ```typescript
 import { db } from "@/lib/db";
@@ -759,7 +767,8 @@ const rate = await db
   .get();
 ```
 
-### Subgraph queries (GraphQL)
+</Tab>
+<Tab value="Subgraph (GraphQL)">
 
 ```graphql
 # Get token with holders
@@ -816,6 +825,9 @@ query GetRecentTransfers($token: Bytes!) {
   }
 }
 ```
+
+</Tab>
+</Tabs>
 
 ## Data relationships
 

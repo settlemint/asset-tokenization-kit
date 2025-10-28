@@ -59,18 +59,8 @@ and detailed plan for improvements.
 - When we are referencing code, make sure we have direct links to Github in
   <https://github.com/settlemint/asset-tokenization-kit> add this directive to
   kit/dapp/content/AGENTS.md as well
-- i feel the pages are all very long, split them up into multiple pages. If
-  needed, you can go up to 4 levels deep
+- i feel the pages are all very long, split them up into multiple pages.
 - add a guide how to create your own custom asset type
-
-- can we make the mermaid style be more like our shadcn look and feel? add this
-  directive to kit/dapp/content/AGENTS.md as well
-- We have several special components we can use to improve the look and feel of
-  the docs ...TabsComponents, AccordionComponents, BannerComponents,
-  CodeBlockComponents, FilesComponents,StepsComponents, and the default
-  components like cards. Use them where a) relevant and b) they enhance the
-  readers experience. Do not go overboard, readability is crucial. add this
-  directive to kit/dapp/content/AGENTS.md as well
 - use org mode to get info from slack
 - update agents with the good docs templates to use for what
 

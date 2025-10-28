@@ -60,23 +60,23 @@ organized into four main categories:
 <Mermaid chart={`
 graph TB
     subgraph "Addon Categories"
-        Distribution[Distribution<br/>airdrop/]
-        Treasury[Treasury<br/>vault/]
-        Settlement[Settlement<br/>xvp/]
-        Yield[Yield<br/>yield/]
+        Distribution(Distribution<br/>airdrop/)
+        Treasury(Treasury<br/>vault/)
+        Settlement(Settlement<br/>xvp/)
+        Yield(Yield<br/>yield/)
     end
 
     subgraph "Airdrop Types"
-        TimeBound[Time-Bound<br/>Airdrop]
-        Vesting[Vesting<br/>Airdrop]
-        Push[Push<br/>Airdrop]
+        TimeBound(Time-Bound<br/>Airdrop)
+        Vesting(Vesting<br/>Airdrop)
+        Push(Push<br/>Airdrop)
     end
 
     subgraph "Supporting Infrastructure"
-        ClaimTracker[Claim Trackers<br/>Bitmap & Amount]
-        VestingStrategy[Vesting Strategies<br/>Linear & Custom]
-        MultiSig[Multi-Signature<br/>Wallet]
-        AtomicSwap[Atomic<br/>Settlements]
+        ClaimTracker(Claim Trackers<br/>Bitmap & Amount)
+        VestingStrategy(Vesting Strategies<br/>Linear & Custom)
+        MultiSig(Multi-Signature<br/>Wallet)
+        AtomicSwap(Atomic<br/>Settlements)
     end
 
     %% Addon type connections
@@ -93,10 +93,10 @@ graph TB
     Treasury --> MultiSig
     Settlement --> AtomicSwap
 
-    style Distribution fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style Treasury fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style Settlement fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style Yield fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style Distribution fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Treasury fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Settlement fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Yield fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
 
 `} />
 

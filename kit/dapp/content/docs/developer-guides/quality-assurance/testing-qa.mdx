@@ -16,23 +16,23 @@ The kit employs a multi-layered testing strategy:
 <Mermaid
   chart={`
 graph TD
-    A[Test Strategy] --> B[Unit Tests]
-    A --> C[Contract Tests]
-    A --> D[E2E Tests]
-    A --> E[Linting & Formatting]
+    A(Test Strategy) --> B(Unit Tests)
+    A --> C(Contract Tests)
+    A --> D(E2E Tests)
+    A --> E(Linting & Formatting)
 
-    B --> B1[DApp - Vitest]
-    B --> B2[Subgraph - Matchstick]
+    B --> B1(DApp - Vitest)
+    B --> B2(Subgraph - Matchstick)
 
-    C --> C1[Foundry Tests]
-    C --> C2[Hardhat Tests]
+    C --> C1(Foundry Tests)
+    C --> C2(Hardhat Tests)
 
-    D --> D1[Playwright UI Tests]
-    D --> D2[API Tests]
+    D --> D1(Playwright UI Tests)
+    D --> D2(API Tests)
 
-    E --> E1[ESLint/Solhint]
-    E --> E2[Prettier]
-    E --> E3[TypeScript]
+    E --> E1(ESLint/Solhint)
+    E --> E2(Prettier)
+    E --> E3(TypeScript)
 
 `} />
 
@@ -53,7 +53,8 @@ kit/
 
 ## Running tests
 
-### All tests (full CI suite)
+<Tabs items={["Full CI Suite", "Unit Tests (DApp)", "Contract Tests", "Subgraph Tests", "E2E Tests"]}>
+<Tab value="Full CI Suite">
 
 Run the complete test suite across all packages:
 
@@ -79,21 +80,20 @@ For faster iteration during development:
 bun run ci:base
 ```
 
-### Unit tests (DApp)
+</Tab>
+<Tab value="Unit Tests (DApp)">
 
 The DApp uses **Vitest** for unit testing React components, utilities, and
 business logic.
 
-#### Run all unit tests
+**Run all unit tests:**
 
 ```bash
 cd kit/dapp
 bun run test:unit
 ```
 
-#### Run with UI mode
-
-Vitest UI provides an interactive test runner:
+**Run with UI mode:**
 
 ```bash
 bun run test:unit:ui
@@ -106,13 +106,13 @@ Opens browser at `http://localhost:51204/__vitest__/` with:
 - Coverage visualization
 - Source code viewer
 
-#### Run specific test file
+**Run specific test file:**
 
 ```bash
 bun run test:unit -- path/to/file.test.ts
 ```
 
-#### Watch mode
+**Watch mode:**
 
 Auto-rerun tests on file changes:
 
@@ -120,9 +120,7 @@ Auto-rerun tests on file changes:
 bun run test:unit:watch
 ```
 
-#### Coverage report
-
-Generate code coverage metrics:
+**Coverage report:**
 
 ```bash
 bun run test:unit:coverage
@@ -135,12 +133,13 @@ View coverage report at `kit/dapp/coverage/index.html`:
 - Function coverage
 - Uncovered lines highlighted
 
-### Smart contract tests
+</Tab>
+<Tab value="Contract Tests">
 
 The contracts package uses **Foundry** for Solidity testing with gas tracking
 and fuzzing.
 
-#### Run all contract tests
+**Run all contract tests:**
 
 ```bash
 cd kit/contracts
@@ -153,21 +152,19 @@ Or via Turbo from root:
 bunx turbo run test --filter=contracts
 ```
 
-#### Run specific test contract
+**Run specific test contract:**
 
 ```bash
 forge test --match-contract BondTokenTest
 ```
 
-#### Run specific test function
+**Run specific test function:**
 
 ```bash
 forge test --match-test test_IssueBond
 ```
 
-#### Gas report
-
-Generate gas usage report:
+**Gas report:**
 
 ```bash
 forge test --gas-report
@@ -182,18 +179,15 @@ Shows gas consumption per function call:
 | transfer        | 1234 | 23456 | 45678 | 24    |
 ```
 
-#### Coverage report
-
-Generate contract coverage:
+**Coverage report:**
 
 ```bash
 bun run test:ci
 ```
 
-Creates LCOV report at `kit/contracts/coverage/lcov.info`. View with coverage
-tools or upload to Coveralls.
+Creates LCOV report at `kit/contracts/coverage/lcov.info`.
 
-#### Fuzzing
+**Fuzzing:**
 
 Foundry automatically fuzzes test inputs. Customize fuzz runs:
 
@@ -213,37 +207,39 @@ runs = 256
 max_test_rejects = 65536
 ```
 
-### Subgraph tests
+</Tab>
+<Tab value="Subgraph Tests">
 
 The subgraph uses **Matchstick** (AssemblyScript testing framework).
 
-#### Run all subgraph tests
+**Run all subgraph tests:**
 
 ```bash
 cd kit/subgraph
 bun run test
 ```
 
-#### Run specific test file
+**Run specific test file:**
 
 ```bash
 graph test test/bond-token.test.ts
 ```
 
-#### Debug mode
+**Debug mode:**
 
 ```bash
 graph test --debug
 ```
 
-### End-to-end tests
+</Tab>
+<Tab value="E2E Tests">
 
 The E2E suite uses **Playwright** for full-stack integration testing across UI
 and API.
 
-#### Prerequisites
+**Prerequisites:**
 
-Start the full development environment before running E2E tests:
+Start the full development environment:
 
 ```bash
 # From repository root
@@ -259,26 +255,26 @@ Wait for all services to be healthy:
 - DApp (port 3000)
 - Hasura (port 8080)
 
-#### Run all UI tests
+**Run all UI tests:**
 
 ```bash
 cd kit/e2e
 bun run test:ui
 ```
 
-#### Run UI tests with browser visible
+**Run UI tests with browser visible:**
 
 ```bash
 bun run test:ui:headed
 ```
 
-#### Run specific test file
+**Run specific test file:**
 
 ```bash
 bun run test:ui -- ui-tests/bond-token.spec.ts
 ```
 
-#### Run API tests
+**Run API tests:**
 
 ```bash
 bun run test:api
@@ -287,7 +283,7 @@ bun run test:api
 API tests validate GraphQL endpoints, ORPC procedures, and backend logic without
 browser interaction.
 
-#### Debug mode
+**Debug mode:**
 
 ```bash
 bun run test:ui:debug
@@ -300,7 +296,7 @@ Opens Playwright Inspector for step-by-step debugging:
 - View network requests
 - Console logs
 
-#### Playwright UI mode
+**Playwright UI mode:**
 
 Interactive test runner:
 
@@ -335,6 +331,9 @@ Run specific project:
 ```bash
 bun run test:ui --project=bond-tests
 ```
+
+</Tab>
+</Tabs>
 
 ## Writing new tests
 

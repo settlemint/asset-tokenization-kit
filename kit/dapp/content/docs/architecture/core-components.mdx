@@ -51,35 +51,35 @@ through vault contracts, and automated distributions through yield schedules.
   chart={`flowchart TB
     subgraph "Component Interaction Flow"
         subgraph "User Interface Layer"
-            WebApp[Web Application<br/>TanStack Start dApp<br/>• Asset Designer<br/>• Portfolio Management<br/>• Admin Dashboard]
+            WebApp(Web Application<br/>TanStack Start dApp<br/>• Asset Designer<br/>• Portfolio Management<br/>• Admin Dashboard)
             
-            Mobile[Mobile Interface<br/>Responsive Design<br/>• Wallet Integration<br/>• Asset Trading<br/>• Compliance Forms]
+            Mobile(Mobile Interface<br/>Responsive Design<br/>• Wallet Integration<br/>• Asset Trading<br/>• Compliance Forms)
         end
         
         subgraph "API & Business Logic"
-            API[ORPC API Server<br/>Type-safe Procedures<br/>• Authentication<br/>• Asset Management<br/>• Compliance Processing]
+            API(ORPC API Server<br/>Type-safe Procedures<br/>• Authentication<br/>• Asset Management<br/>• Compliance Processing)
             
-            Services[Business Services<br/>Service Layer<br/>• Token Operations<br/>• Identity Management<br/>• Notification System]
+            Services(Business Services<br/>Service Layer<br/>• Token Operations<br/>• Identity Management<br/>• Notification System)
         end
         
         subgraph "Blockchain Infrastructure"
-            Contracts[Smart Contracts<br/>Solidity Implementation<br/>• Asset Tokens<br/>• System Contracts<br/>• Addon Modules]
+            Contracts(Smart Contracts<br/>Solidity Implementation<br/>• Asset Tokens<br/>• System Contracts<br/>• Addon Modules)
             
-            Indexer[Blockchain Indexer<br/>TheGraph Subgraph<br/>• Event Processing<br/>• Data Aggregation<br/>• Query Interface]
+            Indexer(Blockchain Indexer<br/>TheGraph Subgraph<br/>• Event Processing<br/>• Data Aggregation<br/>• Query Interface)
         end
         
         subgraph "Data & Storage"
-            Database[Application Database<br/>PostgreSQL<br/>• User Data<br/>• Application State<br/>• Audit Logs]
+            Database(Application Database<br/>PostgreSQL<br/>• User Data<br/>• Application State<br/>• Audit Logs)
             
-            Cache[Caching Layer<br/>Redis<br/>• Session Storage<br/>• Query Caching<br/>• Real-time Data]
+            Cache(Caching Layer<br/>Redis<br/>• Session Storage<br/>• Query Caching<br/>• Real-time Data)
             
-            Files[File Storage<br/>MinIO + IPFS<br/>• Document Storage<br/>• Media Assets<br/>• Compliance Documents]
+            Files(File Storage<br/>MinIO + IPFS<br/>• Document Storage<br/>• Media Assets<br/>• Compliance Documents)
         end
         
         subgraph "Testing & Deployment"
-            Tests[End-to-End Tests<br/>Playwright<br/>• UI Testing<br/>• API Testing<br/>• Integration Flows]
+            Tests(End-to-End Tests<br/>Playwright<br/>• UI Testing<br/>• API Testing<br/>• Integration Flows)
             
-            Deploy[Kubernetes Deployment<br/>Helm Charts<br/>• Container Orchestration<br/>• Service Discovery<br/>• Auto-scaling]
+            Deploy(Kubernetes Deployment<br/>Helm Charts<br/>• Container Orchestration<br/>• Service Discovery<br/>• Auto-scaling)
         end
     end
     
@@ -98,12 +98,12 @@ through vault contracts, and automated distributions through yield schedules.
     Deploy --> API
     Deploy --> Database
     
-    style WebApp fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style API fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style Contracts fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style Database fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style Tests fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style Deploy fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff`}
+    style WebApp fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style API fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Contracts fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Database fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Tests fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Deploy fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff`}
 
 />
 

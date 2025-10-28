@@ -56,32 +56,32 @@ ATK's identity and compliance control plane unifies these concerns through:
 <Mermaid
   chart={`flowchart TB
     subgraph "User Interaction"
-        User[Investor/Issuer]
-        DApp[dApp Interface<br/>KYC Forms & Token Transfers]
+        User(Investor/Issuer)
+        DApp(dApp Interface<br/>KYC Forms & Token Transfers)
     end
     
     subgraph "API Layer (ORPC)"
-        Procedures[ORPC Procedures<br/>Transfer, Mint, Approve KYC]
-        ComplianceCheck[Compliance Check<br/>Pre-flight Validation]
-        IdentityService[Identity Service<br/>Claim Management]
+        Procedures(ORPC Procedures<br/>Transfer, Mint, Approve KYC)
+        ComplianceCheck(Compliance Check<br/>Pre-flight Validation)
+        IdentityService(Identity Service<br/>Claim Management)
     end
     
     subgraph "Off-Chain Data"
-        KYCDatabase[(KYC Applications<br/>Documents & Status)]
-        UserDB[(User Accounts<br/>Wallet Associations)]
+        KYCDatabase((KYC Applications<br/>Documents & Status))
+        UserDB((User Accounts<br/>Wallet Associations))
     end
     
     subgraph "Smart Contract Layer"
-        IdentityRegistry[Identity Registry<br/>Address → Identity Mapping]
-        Identity[OnchainID Contract<br/>Verifiable Claims]
-        Compliance[Compliance Contract<br/>Module Orchestrator]
-        Token[Token Contract<br/>Transfer Logic]
+        IdentityRegistry(Identity Registry<br/>Address → Identity Mapping)
+        Identity(OnchainID Contract<br/>Verifiable Claims)
+        Compliance(Compliance Contract<br/>Module Orchestrator)
+        Token(Token Contract<br/>Transfer Logic)
     end
     
     subgraph "Compliance Modules"
-        CountryModule[Country Allow/Block List]
-        VerificationModule[Identity Verification Module]
-        LimitsModule[Transfer & Supply Limits]
+        CountryModule(Country Allow/Block List)
+        VerificationModule(Identity Verification Module)
+        LimitsModule(Transfer & Supply Limits)
     end
     
     User --> DApp
@@ -104,10 +104,10 @@ ATK's identity and compliance control plane unifies these concerns through:
     
     IdentityRegistry --> Identity
     
-    style User fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style Compliance fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style IdentityRegistry fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style Token fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style User fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Compliance fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style IdentityRegistry fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Token fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
 `}
 />
 
@@ -201,9 +201,9 @@ configured modules. If any module returns false, the transfer reverts.
 <Mermaid
   chart={`flowchart LR
     subgraph "Pre-flight Check (ORPC)"
-        A[User initiates transfer]
-        B[ORPC: token.transfer]
-        C[Query compliance.canTransfer]
+        A(User initiates transfer)
+        B(ORPC: token.transfer)
+        C(Query compliance.canTransfer)
         D{Rules pass?}
         E[Submit transaction]
         F[Return error to user]
@@ -230,10 +230,10 @@ configured modules. If any module returns false, the transfer reverts.
     J -->|Yes| K
     J -->|No| L
     
-    style D fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style J fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style K fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style L fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style D fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style J fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style K fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style L fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
 `}
 />
 
@@ -312,18 +312,18 @@ adapter pattern:
 <Mermaid
   chart={`flowchart LR
     subgraph "ATK Platform"
-        KYCService[KYC Service<br/>ORPC Procedures]
-        Adapter[Provider Adapter<br/>Sumsub/Jumio/Onfido]
+        KYCService(KYC Service<br/>ORPC Procedures)
+        Adapter(Provider Adapter<br/>Sumsub/Jumio/Onfido)
     end
     
     subgraph "External Provider"
-        API[KYC Provider API<br/>REST/Webhooks]
-        Dashboard[Provider Dashboard<br/>Manual Review]
+        API(KYC Provider API<br/>REST/Webhooks)
+        Dashboard(Provider Dashboard<br/>Manual Review)
     end
     
     subgraph "Smart Contracts"
-        ClaimIssuer[Claim Issuer Contract<br/>Signs Claims]
-        Identity[OnchainID<br/>Stores Claims]
+        ClaimIssuer(Claim Issuer Contract<br/>Signs Claims)
+        Identity(OnchainID<br/>Stores Claims)
     end
     
     KYCService --> Adapter
@@ -334,9 +334,9 @@ adapter pattern:
     KYCService -->|Issue claim| ClaimIssuer
     ClaimIssuer -->|addClaim| Identity
     
-    style Adapter fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style KYCService fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style ClaimIssuer fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style Adapter fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style KYCService fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style ClaimIssuer fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
 `}
 />
 

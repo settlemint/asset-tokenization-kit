@@ -55,7 +55,7 @@ standard works at the protocol level.
 <Mermaid
   chart={`
 flowchart TB
-    INIT[Alice Initiates<br/>Token Transfer to Bob]
+    INIT(Alice Initiates<br/>Token Transfer to Bob)
     CHECK1{Alice Has<br/>Verified Identity?}
     CHECK2{Bob Has<br/>Verified Identity?}
     CHECK3{Bob Meets<br/>Eligibility Requirements?}
@@ -76,14 +76,14 @@ flowchart TB
     CHECK5 -->|Yes| EXECUTE
     CHECK5 -->|No| REVERT
     
-    style INIT fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style CHECK1 fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style CHECK2 fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style CHECK3 fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style CHECK4 fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style CHECK5 fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style EXECUTE fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style REVERT fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style INIT fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style CHECK1 fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style CHECK2 fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style CHECK3 fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style CHECK4 fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style CHECK5 fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style EXECUTE fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style REVERT fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
 `}
 />
 
@@ -194,9 +194,9 @@ adverse media monitoring.
 <Mermaid
   chart={`
 flowchart TB
-    START[Investor Visits<br/>Onboarding Portal]
-    DOCS[Submit Personal Info<br/>& Documentation]
-    KYC[KYC Provider<br/>Verification]
+    START(Investor Visits<br/>Onboarding Portal)
+    DOCS(Submit Personal Info<br/>& Documentation)
+    KYC(KYC Provider<br/>Verification)
     CHECKS{Verification<br/>Checks}
     REVIEW[Compliance Officer<br/>Review]
     APPROVE{Approved?}
@@ -217,15 +217,15 @@ flowchart TB
     REGISTER --> ACCESS
     APPROVE -->|No| REJECT
     
-    style START fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style KYC fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style CHECKS fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style REVIEW fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style APPROVE fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style CLAIMS fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style REGISTER fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style ACCESS fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style REJECT fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style START fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style KYC fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style CHECKS fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style REVIEW fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style APPROVE fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style CLAIMS fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style REGISTER fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style ACCESS fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style REJECT fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
 `}
 />
 

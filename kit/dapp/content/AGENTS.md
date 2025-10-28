@@ -112,6 +112,22 @@ accuracy and clarity, optimized for both human readers and AI search indexing.
 
 ### Structure and Formatting
 
+- **Special Documentation Components:** Use these components to enhance reader
+  experience when relevant, but prioritize readability over visual flair:
+  - **TabsComponents** — For content variants (e.g., different code samples per
+    framework, configuration for different environments)
+  - **AccordionComponents** — For collapsible sections with optional content
+    (FAQs, troubleshooting steps)
+  - **BannerComponents** — For important notices, warnings, or tips
+  - **CodeBlockComponents** — For enhanced code blocks with syntax highlighting
+    and features
+  - **FilesComponents** — For showing file structures and directory trees
+  - **StepsComponents** — For sequential tutorial or setup steps
+  - **Cards** — For feature overviews, option comparisons, or navigation grids
+  - _Guidelines:_ Only use these components where they genuinely improve
+    comprehension or navigation. Don't overuse—default markdown formatting is
+    preferred for most content. Use components when the structure naturally fits
+    (e.g., steps for tutorials, tabs for platform-specific instructions).
 - **Headings:** Use a clear heading hierarchy to make content
   skimmable[\[139\]](https://cookbook.openai.com/articles/what_makes_documentation_good#:~:text=Make%20docs%20easy%20to%20skim).
   Each page should start with its H1 title (from the metadata). Inside pages,
@@ -177,17 +193,28 @@ accuracy and clarity, optimized for both human readers and AI search indexing.
     - Use single quotes for the prop if diagram contains backticks:
       `<Mermaid chart={'flowchart TB\n  A --> B'} />`
     - Always use self-closing tag `/>` at the end
-  - **Mermaid Color Standards:** Use brand-aligned colors that work in both
-    light and dark themes:
-    - **Success/positive states**:
-      `fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff` (emerald green)
-    - **Error/warning/problematic states**:
-      `fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff` (amber/orange)
-    - **Neutral/informational elements**:
-      `fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff` (sky blue)
-    - **Secondary/supporting elements**:
-      `fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff` (violet)
+  - **Mermaid Node Shapes:** Always use rounded rectangles for nodes to match
+    shadcn design language:
+    - ✅ Correct: `NodeID(Node Label)` - rounded rectangle
+    - ❌ Incorrect: `NodeID[Node Label]` - square rectangle
+    - Exception: Subgraph labels must use square brackets:
+      `subgraph ID["Label"]`
+    - This creates a consistent, modern appearance aligned with shadcn UI
+  - **Mermaid Color Standards:** Use brand-aligned shadcn colors that work in
+    both light and dark themes:
+    - **Primary elements (teal/cyan - sm-graphics-primary)**:
+      `fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff`
+    - **Secondary elements (blue - sm-graphics-secondary)**:
+      `fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff`
+    - **Tertiary elements (purple - sm-graphics-tertiary)**:
+      `fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff`
+    - **Quaternary elements (pink/magenta - sm-graphics-quaternary)**:
+      `fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff`
     - Always use white text (`color:#fff`) on colored backgrounds for contrast
+    - These colors map to the SettleMint brand palette defined in
+      `kit/dapp/src/styles/app.css`
+    - Use primary (teal) for main flows, secondary (blue) for data/info,
+      tertiary (purple) for processes, quaternary (pink) for special states
   - **Mermaid Layout:** Prefer vertical (`TB` or `TD`) layouts over horizontal
     (`LR`) for better readability in documentation. Use `flowchart TB` instead
     of `flowchart LR` to create taller, narrower diagrams that fit better in
