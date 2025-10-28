@@ -230,21 +230,21 @@ Configure secondary market rules:
 
 **Regulation D compliance** (if applicable):
 
-- **Maximum transfers** - Limit to 6 withdrawals/transfers per month
 - **Transfer approval** - Require bank approval for secondary transfers
 - **Assignability** - Deposits may be non-transferable until maturity
 
-**Deposit insurance limits:**
-
-- **Per-depositor limit** - Enforce FDIC insurance cap ($250,000)
-- **Aggregation** - Combine deposits across products for insurance calculation
+**Note:** Regulation D transfer limits (6 withdrawals/transfers per month) and
+FDIC insurance caps ($250,000 per depositor) must be monitored manually
+off-chain. The platform does not automatically enforce these limits. Automated
+enforcement features are planned for a future release.
 
 ![Compliance module configuration](/images/screenshots/placeholder.svg)
-_Screenshot: Compliance modules showing Depositor Eligibility requirements,
-Transfer Restrictions including Reg D limits, and insurance cap enforcement_
+_Screenshot: Compliance modules showing Depositor Eligibility requirements and
+Transfer Restrictions configuration_
 
 **Regulation D important:** Federal Reserve Regulation D historically limited
-convenient transfers from savings deposits to 6 per month.
+convenient transfers from savings deposits to 6 per month. You must monitor and
+enforce this limit through your deposit operations processes.
 
 ## Step 5: Assign operational roles
 

@@ -1,5 +1,5 @@
 ---
-title: User FAQ
+title: Troubleshooting
 description:
   Common issues and questions that users might encounter, with answers and
   solutions
@@ -7,12 +7,33 @@ pageTitle: User troubleshooting and FAQ
 tags: [FAQ, troubleshooting, help, support]
 ---
 
-This guide addresses common issues, questions, and solutions encountered by
-platform users. Find quick answers to frequent problems organized by topic area.
+## Overview
 
-## Getting started and onboarding
+Find quick solutions to common issues encountered when using the Asset
+Tokenization Kit. This guide covers problems organized by topic area with
+step-by-step troubleshooting instructions.
 
-### Cannot access platform or login fails
+**Primary audience:** All platform users (investors, issuers, administrators)
+**Secondary audience:** Support teams, compliance officers
+
+## How to use this guide
+
+1. **Identify your problem category** - Scan the section headers to find your
+   issue type
+2. **Follow the solutions** - Try each solution in order until resolved
+3. **Check error messages** - Use the Error Messages Reference section for
+   specific errors
+4. **Escalate if needed** - Contact support if solutions don't resolve your
+   issue
+
+**Tip:** Use your browser's search (Ctrl+F / Cmd+F) to quickly find keywords
+related to your issue.
+
+## Common issues by category
+
+#### Getting started and onboarding
+
+#### Cannot access platform or login fails
 
 **Symptoms:** Login page doesn't load, credentials rejected, or unable to
 authenticate.
@@ -41,9 +62,9 @@ authenticate.
    - Contact administrator to reset 2FA
 
 **Still not working?** Contact platform support with browser console error
-messages (F12 &gt; Console tab).
+messages (F12 > Console tab).
 
-### Wallet creation fails during onboarding
+#### Wallet creation fails during onboarding
 
 **Symptoms:** "Wallet creation failed" or wallet deployment transaction reverts.
 
@@ -66,7 +87,7 @@ messages (F12 &gt; Console tab).
 **Workaround:** Use existing wallet by selecting "Import Wallet" instead of
 "Create New".
 
-### OnchainID deployment stuck or fails
+#### OnchainID deployment stuck or fails
 
 **Symptoms:** OnchainID deployment pending forever or transaction fails.
 
@@ -89,7 +110,7 @@ messages (F12 &gt; Console tab).
 **Resolution:** Navigate to **Account** &gt; **OnchainID** and click **Retry
 Deployment** if status shows failed.
 
-### Cannot complete onboarding - stuck on system deployment step
+#### Cannot complete onboarding - stuck on system deployment step
 
 **Symptoms:** System deployment screen shows indefinite loading or some
 contracts fail to deploy.
@@ -116,7 +137,7 @@ from checkpoint.
 
 ## Wallet and account issues
 
-### Wallet not connecting or disconnecting frequently
+#### Wallet not connecting or disconnecting frequently
 
 **Symptoms:** Wallet connection fails, disconnects randomly, or shows wrong
 network.
@@ -143,7 +164,7 @@ network.
    - Select correct wallet in connection modal
    - Ensure only one wallet active at a time
 
-### Lost access to wallet or forgot recovery codes
+#### Lost access to wallet or forgot recovery codes
 
 **Symptoms:** Cannot access wallet, recovery codes lost or invalid.
 
@@ -167,7 +188,7 @@ network.
 **Prevention:** Always store recovery codes securely offline (not in email or
 cloud storage).
 
-### Cannot see wallet balance or transactions not showing
+#### Cannot see wallet balance or transactions not showing
 
 **Symptoms:** Token balance shows zero despite owning tokens, or recent
 transactions missing.
@@ -195,7 +216,7 @@ transactions missing.
 
 ## Token transactions and transfers
 
-### Token transfer fails or reverts
+#### Token transfer fails or reverts
 
 **Symptoms:** "Transfer failed" message, transaction reverts, or tokens not
 arriving at destination.
@@ -228,7 +249,7 @@ arriving at destination.
 **Diagnosis:** Check transaction on blockchain explorer for specific revert
 reason.
 
-### Cannot find recipient address or transfer form disabled
+#### Cannot find recipient address or transfer form disabled
 
 **Symptoms:** Transfer button greyed out or recipient address validation fails.
 
@@ -251,7 +272,7 @@ reason.
 **Workaround:** Use blockchain explorer to verify recipient address exists and
 can receive tokens.
 
-### Transfer succeeds but recipient balance not updated
+#### Transfer succeeds but recipient balance not updated
 
 **Symptoms:** Transaction confirmed but recipient doesn't see tokens.
 
@@ -277,7 +298,7 @@ truth.
 
 ## Identity and compliance
 
-### KYC verification rejected or stuck in pending
+#### KYC verification rejected or stuck in pending
 
 **Symptoms:** KYC status shows "Rejected" or remains "Pending" for extended
 time.
@@ -303,7 +324,7 @@ time.
    - Use supported formats: PDF, JPG, PNG
    - Try different browser if upload fails
 
-### Cannot issue or receive claims
+#### Cannot issue or receive claims
 
 **Symptoms:** "Claim issuance failed" or claims not appearing on OnchainID.
 
@@ -328,7 +349,7 @@ time.
    - Insufficient gas for claim issuance
    - Retry with higher gas limit
 
-### Claim expired and cannot transfer tokens
+#### Claim expired and cannot transfer tokens
 
 **Symptoms:** "Transfer blocked: missing required claims" despite previously
 having access.
@@ -356,7 +377,7 @@ having access.
 
 ## Asset-specific issues
 
-### Cannot purchase tokens during subscription period
+#### Cannot purchase tokens during subscription period
 
 **Symptoms:** Subscription button disabled or subscription transaction fails.
 
@@ -377,7 +398,7 @@ having access.
    - Payment token not approved for platform spend
    - Approve payment token: **Account** &gt; **Tokens** &gt; **Approve**
 
-### Bond yield or dividend not received
+#### Bond yield or dividend not received
 
 **Symptoms:** Expected payment not received on payment date.
 
@@ -405,7 +426,7 @@ having access.
 **Verification:** Check blockchain explorer for distribution transaction to your
 address.
 
-### Cannot redeem fund units or bonds at maturity
+#### Cannot redeem fund units or bonds at maturity
 
 **Symptoms:** Redemption button disabled or redemption transaction fails.
 
@@ -431,7 +452,7 @@ address.
    - Verify OnchainID verified and claims current
    - Check no freeze or restrictions on account
 
-### Voting transaction fails or vote not counted
+#### Voting transaction fails or vote not counted
 
 **Symptoms:** Cannot submit vote on governance proposal or vote not reflected in
 tally.
@@ -460,7 +481,7 @@ tally.
 
 ## Platform navigation and features
 
-### Cannot find specific token or asset
+#### Cannot find specific token or asset
 
 **Symptoms:** Token not appearing in asset list or search returns no results.
 
@@ -486,7 +507,7 @@ tally.
    - Refresh page and retry
    - Clear browser cache
 
-### Dashboard or pages loading slowly
+#### Dashboard or pages loading slowly
 
 **Symptoms:** Pages take long time to load or timeout.
 
@@ -513,7 +534,7 @@ tally.
    - Refresh page and reconnect wallet
    - Re-login if needed
 
-### Missing features or buttons not appearing
+#### Missing features or buttons not appearing
 
 **Symptoms:** Expected features or actions not visible on UI.
 
@@ -536,7 +557,7 @@ tally.
 
 ## Error messages reference
 
-### "Transaction would revert"
+#### "Transaction would revert"
 
 **Meaning:** Transaction simulation failed; execution would fail on-chain.
 
@@ -549,7 +570,7 @@ tally.
 
 **Solution:** Check specific error message in wallet for details.
 
-### "Insufficient allowance"
+#### "Insufficient allowance"
 
 **Meaning:** Contract not approved to spend your tokens.
 
@@ -560,7 +581,7 @@ tally.
 3. Set allowance amount
 4. Retry transaction
 
-### "Identity not verified"
+#### "Identity not verified"
 
 **Meaning:** Recipient or sender lacks verified OnchainID.
 
@@ -571,7 +592,7 @@ tally.
 3. Obtain required claims
 4. Retry transaction
 
-### "Transfer amount exceeds limit"
+#### "Transfer amount exceeds limit"
 
 **Meaning:** Transaction violates configured transfer limits.
 
@@ -581,7 +602,7 @@ tally.
 - Wait for limit period to reset
 - Contact issuer to increase limit
 
-### "Account frozen"
+#### "Account frozen"
 
 **Meaning:** Your account or address has been frozen by custodian.
 
@@ -591,7 +612,7 @@ tally.
 - Resolve compliance issue
 - Request account unfreeze
 
-### "Module check failed"
+#### "Module check failed"
 
 **Meaning:** Compliance module preventing transaction.
 

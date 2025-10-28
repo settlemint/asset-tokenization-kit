@@ -25,7 +25,7 @@ Guidelines:
 
 Review the folowing section:
 
-- @kit/dapp/content/docs/architecture
+- @kit/dapp/content/docs/user-guides
 
 Verify that:
 
@@ -53,22 +53,31 @@ and detailed plan for improvements.
 # TODO's
 
 - When we are referencing code, make sure we have direct links to Github in
-  https://github.com/settlemint/asset-tokenization-kit
+  https://github.com/settlemint/asset-tokenization-kit add this directive to
+  kit/dapp/content/AGENTS.md as well
 - the rendinging mermaid placeholder is very in your face, make it hidden while
   rendering
 - i feel the pages are all very long, split them up into multiple pages. If
   needed, you can go up to 4 levels deep
 - add a guide how to create your own custom asset type
 - The lifecycle part of DALP is a USP for ATK with DvP, Vaults, Yield
-  management, etc, make sure this is highlighted
+  management, etc, make sure this is highlighted. add this directive to
+  kit/dapp/content/AGENTS.md as well
 - Review the page titles which are used in the sidebar for clarity, some are
   either too generic or too specific and make it hard to follow the flow
-- can we make the mermaid style be more like our shadcn look and feel?
+- can we make the mermaid style be more like our shadcn look and feel? add this
+  directive to kit/dapp/content/AGENTS.md as well
 - We have several special components we can use to improve the look and feel of
   the docs ...TabsComponents, AccordionComponents, BannerComponents,
   CodeBlockComponents, FilesComponents,StepsComponents, and the default
   components like cards. Use them where a) relevant and b) they enhance the
-  readers experience. Do not go overboard, readability is crucial
+  readers experience. Do not go overboard, readability is crucial. add this
+  directive to kit/dapp/content/AGENTS.md as well
+- use org mode to get info from slack
+- update agents with the good docs templates to use for what
+- add to the top level agents file that for any action, the documentation in
+  kit/dapp/content/docs needs to be validated, updated, extended and improved
+  based on the changes in this changeset, pr, task. this is required!
 
 # FAQ
 
@@ -100,6 +109,7 @@ How:
   information we want to provide.
 - it should use the Accordion components from
   kit/dapp/src/components/docs/components/accordion.tsx
+- add this directive to kit/dapp/content/AGENTS.md as well
 
 # Glossary
 
@@ -125,3 +135,4 @@ How:
 - there should be just 1 Glossary page per top level section
 - it should use the Accordion components from
   kit/dapp/src/components/docs/components/accordion.tsx
+- add this directive to kit/dapp/content/AGENTS.md as well

@@ -5,26 +5,15 @@ pageTitle: How to use the fiat-token bridge
 tags: [how-to, fiat-bridge, stablecoin, redemption, banking]
 ---
 
-The fiat-token bridge enables conversion between traditional fiat currency and
-on-chain tokens, facilitating investor onboarding, payment processing, and token
-redemption. This guide covers bridge configuration, deposit processing, and
-redemption operations.
+## Overview
 
-**Who should read this:** Treasury operations staff, payment processors, banking
-integration teams, and customer service representatives handling fiat-crypto
-conversions.
+Configure and operate the fiat-token bridge to enable conversion between
+traditional fiat currency and on-chain tokens. Handle investor deposits, token
+minting, redemption requests, and fiat payouts through integrated banking rails.
 
-**Time required:** Initial setup 2-3 hours; ongoing operations are
-transaction-by-transaction.
-
-**Prerequisites:**
-
-- Platform stablecoin deployed or external stablecoin integrated
-- Banking relationship with wire transfer capabilities
-- Payment processor account (optional for automation)
-- AML/KYC procedures for deposit/redemption verification
-
-## Overview of fiat bridge operations
+**Primary audience:** Treasury operations staff, payment processors  
+**Secondary audience:** Banking integration teams, customer service
+representatives
 
 The fiat bridge supports two primary flows:
 
@@ -48,17 +37,37 @@ The fiat bridge supports two primary flows:
   }
 />
 
-## Step 1: Configure bridge settings
+## Before you start
 
-Set up fiat-token conversion parameters:
+**Prerequisites:**
 
-### Banking configuration
+- Platform stablecoin deployed or external stablecoin integrated
+- Banking relationship with wire transfer capabilities
+- Payment processor account (optional for automation)
+- AML/KYC procedures for deposit/redemption verification
 
-Navigate to **Platform Settings** &gt; **Fiat Bridge** &gt; **Banking**:
+**Time estimate:** Initial setup 2-3 hours; ongoing operations are
+transaction-by-transaction
+
+**Required knowledge:**
+
+- Treasury operations and wire transfer processing
+- AML/KYC compliance procedures
+- Basic blockchain wallet operations
+
+## Steps
+
+### 1. Configure bridge settings
+
+Set up your fiat-token conversion parameters:
+
+#### Banking configuration
+
+Navigate to **Platform Settings** > **Fiat Bridge** > **Banking**:
 
 **Bank account details:**
 
-Configure receiving bank account for fiat deposits:
+Configure your receiving bank account for fiat deposits:
 
 - **Bank name** - Name of financial institution
 - **Account holder** - Legal entity name
@@ -83,11 +92,11 @@ account numbers and SWIFT codes_
 **Segregated accounts:** Use dedicated bank accounts for fiat bridge operations
 separate from other business banking.
 
-### Stablecoin configuration
+#### Stablecoin configuration
 
-Configure which tokens support fiat conversion:
+Configure which tokens support fiat conversion.
 
-Navigate to **Platform Settings** &gt; **Fiat Bridge** &gt; **Stablecoins**:
+Navigate to **Platform Settings** > **Fiat Bridge** > **Stablecoins**:
 
 **Supported stablecoins:**
 
@@ -117,11 +126,11 @@ peg ratios, fees, and minimum amounts_
 **Fee structure:** Common setup is 0% deposit fee, 0-25 bps redemption fee to
 cover wire costs.
 
-### Operational parameters
+#### Operational parameters
 
-Set deposit/redemption processing rules:
+Set your deposit/redemption processing rules.
 
-Navigate to **Platform Settings** &gt; **Fiat Bridge** &gt; **Operations**:
+Navigate to **Platform Settings** > **Fiat Bridge** > **Operations**:
 
 **Processing times:**
 
@@ -147,11 +156,11 @@ Navigate to **Platform Settings** &gt; **Fiat Bridge** &gt; **Operations**:
 Operational parameters showing settlement times, transaction limits, business
 hours, and holiday calendar_
 
-## Step 2: Process fiat deposits
+### 2. Process fiat deposits
 
-Handle fiat-to-token conversions:
+Handle your fiat-to-token conversions.
 
-### Receive wire transfer
+#### Receive wire transfer
 
 Monitor incoming fiat deposits:
 
@@ -175,9 +184,9 @@ Navigate to **Fiat Bridge** &gt; **Deposit Instructions**:
    - Instructions to include reference in wire memo
 4. Share instructions via email or investor portal
 
-### Verify deposit receipt
+#### Verify deposit receipt
 
-Confirm fiat received in bank account:
+Confirm fiat received in your bank account:
 
 **Automated verification:**
 
@@ -214,7 +223,7 @@ reference, investor lookup, and verify button_
 **Reconciliation:** Perform daily reconciliation of bank account balance vs.
 platform recorded deposits.
 
-### Mint tokens
+#### Mint tokens
 
 Issue tokens for verified deposits:
 
@@ -252,13 +261,13 @@ with batch processing option_
 **Compliance check:** Platform automatically validates investor OnchainID and
 compliance before minting.
 
-## Step 3: Process redemption requests
+### 3. Process redemption requests
 
-Handle token-to-fiat conversions:
+Handle your token-to-fiat conversions.
 
-### Receive redemption request
+#### Receive redemption request
 
-Investor initiates redemption:
+Your investor initiates redemption:
 
 **Investor workflow:**
 
@@ -279,9 +288,9 @@ Investor initiates redemption:
 
 Redemption appears in **Fiat Bridge** &gt; **Redemption Requests**
 
-### Review redemption request
+#### Review redemption request
 
-Verify redemption details:
+Verify the redemption details:
 
 1. Navigate to **Fiat Bridge** &gt; **Redemption Requests**
 2. Select pending request
@@ -306,9 +315,9 @@ fees, net payout, and approve/reject buttons_
 **Fraud prevention:** Always verify banking details match investor KYC records
 before processing redemption.
 
-### Approve or reject redemption
+#### Approve or reject redemption
 
-Process redemption decision:
+Process your redemption decision:
 
 **Approve redemption:**
 
@@ -340,9 +349,9 @@ If issues found:
 **Rejection rate:** Monitor rejection rate; high rates indicate investor
 education needed.
 
-### Execute fiat payout
+#### Execute fiat payout
 
-Transfer fiat to investor:
+Transfer fiat to your investor:
 
 1. Navigate to **Fiat Bridge** &gt; **Pending Payouts**
 2. Review approved redemptions pending wire transfer
@@ -384,7 +393,7 @@ and execute payout buttons_
 **Settlement timing:** Honor stated settlement periods (T+1, T+2, etc.) for
 investor confidence.
 
-## Step 4: Monitor bridge operations
+### 4. Monitor bridge operations
 
 Track fiat bridge health and reconciliation:
 
@@ -560,55 +569,69 @@ If wire transfer delayed:
 - Screen all transactions against sanctions lists
 - Maintain secure storage of wire confirmation numbers
 
+## Results
+
+After completing these steps, you will have:
+
+- Configured fiat bridge with your banking details and stablecoin settings
+- Established operational parameters for deposits and redemptions
+- Processed fiat deposits and minted tokens to investor wallets
+- Handled redemption requests and executed fiat payouts
+- Implemented monitoring and reconciliation procedures
+
+Your fiat bridge is now operational and can handle investor fiat-to-token
+conversions and token-to-fiat redemptions. Daily operations involve verifying
+deposits, approving redemptions, processing payouts, and reconciling balances.
+
 ## Troubleshooting
 
-**Deposit not appearing in pending queue**
+**Deposit not appearing in pending queue:**
 
 - Verify wire transfer completed (check bank account)
 - Check reference code in wire memo matches format
 - Ensure deposit amount meets minimum threshold
 - Manually record deposit if automated matching failed
 
-**Cannot mint tokens for verified deposit**
+**Cannot mint tokens for verified deposit:**
 
-- Check investor has verified OnchainID
-- Verify investor not on blocklist or sanctions list
-- Ensure stablecoin contract has sufficient mint capacity
-- Confirm platform has SUPPLY_MANAGEMENT_ROLE on token
+- Check the investor has a verified OnchainID
+- Verify the investor is not on a blocklist or sanctions list
+- Ensure the stablecoin contract has sufficient mint capacity
+- Confirm the platform has SUPPLY_MANAGEMENT_ROLE on the token
 
-**Redemption request rejected by platform**
+**Redemption request rejected by platform:**
 
-- Verify investor holds sufficient token balance
-- Check investor banking details complete
-- Ensure token allows redemptions (not paused)
-- Verify investor meets minimum redemption amount
+- Verify the investor holds sufficient token balance
+- Check the investor's banking details are complete
+- Ensure the token allows redemptions (not paused)
+- Verify the investor meets minimum redemption amount
 
-**Wire transfer failed or returned**
+**Wire transfer failed or returned:**
 
-- Verify banking details accurate (IBAN, SWIFT, account number)
-- Check beneficiary name matches bank account
-- Ensure bank account accepts international wires
-- Contact investor for updated banking information
+- Verify banking details are accurate (IBAN, SWIFT, account number)
+- Check beneficiary name matches the bank account
+- Ensure the bank account accepts international wires
+- Contact the investor for updated banking information
 
-**Reconciliation shows discrepancy**
+**Reconciliation shows discrepancy:**
 
-- Review unmatched deposits in bank statement
-- Check for manual mints not recorded in bridge system
-- Verify all redemption payouts marked as complete
-- Look for duplicate entries in bridge database
+- Review unmatched deposits in your bank statement
+- Check for manual mints not recorded in the bridge system
+- Verify all redemption payouts are marked as complete
+- Look for duplicate entries in the bridge database
 
 For additional help, see [Troubleshooting](/docs/user-guides/troubleshooting) or
 contact platform support.
 
 ## Next steps
 
-- **Stablecoin management** - Review
-  [Issue a stablecoin](/docs/user-guides/issue-stablecoin) for reserve
-  management
-- **Investor onboarding** - Configure
-  [Manage investors](/docs/user-guides/manage-investors) for KYC workflows
-- **Compliance** - Understand
-  [Regulatory compliance](/docs/architecture/quality-performance/regulatory-compliance)
-  requirements
-- **Treasury operations** - Automate banking integration and reconciliation
-  processes
+- [Issue a stablecoin](/docs/user-guides/issue-stablecoin) - Deploy and manage
+  your own fiat-backed stablecoin for bridge operations
+- [Manage investors](/docs/user-guides/manage-investors) - Configure KYC
+  workflows and investor onboarding
+- [Admin settings](/docs/user-guides/admin-settings) - Configure operational
+  roles and permissions
+- [Regulatory compliance](/docs/architecture/quality-performance/regulatory-compliance) -
+  Understand compliance requirements for money transmission
+- [Troubleshooting](/docs/user-guides/troubleshooting) - Resolve common fiat
+  bridge issues

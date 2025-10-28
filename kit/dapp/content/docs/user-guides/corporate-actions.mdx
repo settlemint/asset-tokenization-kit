@@ -5,17 +5,22 @@ pageTitle: How to perform corporate actions
 tags: [how-to, corporate-actions, dividends, coupons, token-split]
 ---
 
-Corporate actions are events initiated by asset issuers that affect token
-holders, including dividend distributions, coupon payments, token splits, and
-governance votes. This guide walks issuers through executing common corporate
-actions from planning through settlement.
+## Overview
 
-**Who should read this:** Corporate treasurers, CFOs, investor relations teams,
-and asset managers responsible for executing corporate actions on tokenized
-assets.
+Execute corporate actions on your tokenized assets, including dividend
+distributions, coupon payments, token splits, and governance votes. Manage the
+complete lifecycle from planning through settlement and holder notification.
 
-**Time required:** Varies by action type; 30-60 minutes for dividend
-distribution, 15-30 minutes for governance proposals.
+**Primary audience:** Corporate treasurers, CFOs  
+**Secondary audience:** Investor relations teams, asset managers
+
+<Mermaid
+  chart={
+    "graph TB\n    A[Plan Corporate&lt;br/&gt;Action] --&gt; B[Set Key Dates&lt;br/&gt;Ex-div/Record/Payment]\n    B --&gt; C{Action Type?}\n    C --&gt;|Dividend| D[Fund Distribution&lt;br/&gt;Wallet]\n    C --&gt;|Coupon| E[Fund Yield&lt;br/&gt;Wallet]\n    C --&gt;|Split| F[Calculate Split&lt;br/&gt;Ratio]\n    C --&gt;|Vote| G[Create Governance&lt;br/&gt;Proposal]\n    D --&gt; H[Snapshot Holders&lt;br/&gt;at Record Date]\n    E --&gt; H\n    F --&gt; H\n    G --&gt; I[Shareholders&lt;br/&gt;Vote]\n    H --&gt; J[Execute Distribution&lt;br/&gt;on Payment Date]\n    I --&gt; K[Tally Votes]\n    J --&gt; L[Notify Holders]\n    K --&gt; M[Execute Approved&lt;br/&gt;Proposal]\n    L --&gt; N[Record Action]\n    M --&gt; N\n    style A fill:#0EA5E9\n    style D fill:#10B981\n    style E fill:#10B981\n    style H fill:#10B981\n    style J fill:#6366F1\n    style K fill:#6366F1"
+  }
+/>
+
+## Before you start
 
 **Prerequisites:**
 
@@ -24,9 +29,18 @@ distribution, 15-30 minutes for governance proposals.
 - Required reserves or distribution assets funded
 - Shareholder communication plan
 
-## Overview of corporate actions
+**Time estimate:** Varies by action type; 30-60 minutes for dividend
+distribution, 15-30 minutes for governance proposals
 
-Common corporate actions supported by the platform:
+**Required knowledge:**
+
+- Corporate finance and shareholder rights
+- Token holder communication procedures
+- Regulatory requirements for corporate actions
+
+## Common corporate actions
+
+The platform supports these corporate actions:
 
 **Equity actions:**
 
@@ -52,13 +66,15 @@ Common corporate actions supported by the platform:
 - Management fee collection
 - Share class conversions
 
-## Dividend distributions
+## Steps
 
-Pay cash or stock dividends to equity holders:
+### Dividend distributions
 
-### Plan dividend distribution
+Pay cash or stock dividends to your equity holders.
 
-Determine dividend parameters:
+#### Plan dividend distribution
+
+Determine your dividend parameters:
 
 1. Navigate to token details: **Asset Management** &gt; **Equity** &gt; [Token
    Name]
@@ -88,9 +104,9 @@ dates, and payment token selection_
 - Payment date: April 15
 - Shareholders owning stock April 3 receive dividend April 15
 
-### Fund dividend wallet
+#### Fund dividend wallet
 
-Prepare distribution tokens:
+Prepare your distribution tokens:
 
 For cash dividends:
 
@@ -160,7 +176,7 @@ For stock dividends (e.g., 10% stock dividend):
 **Dilution:** Stock dividends increase total shares; per-share value adjusts
 proportionally.
 
-## Coupon payments
+### Coupon payments
 
 Pay interest on bond tokens:
 
@@ -237,7 +253,7 @@ If manual execution required:
 Coupon payment history showing past payments with dates, amounts, recipients,
 and transaction hashes_
 
-## Token splits and consolidations
+### Token splits and consolidations
 
 Adjust token denomination:
 
@@ -291,7 +307,7 @@ For reverse splits (e.g., 1-for-10 reverse split):
 **Fractional shares:** Platform handles fractional shares; consider rounding
 rules for small holders.
 
-## Governance proposals and voting
+### Governance proposals and voting
 
 Execute shareholder voting:
 
@@ -373,7 +389,7 @@ and execute button_
 **Timelock:** Some governance configurations include execution delay (timelock)
 after vote passes.
 
-## Bond redemptions and calls
+### Bond redemptions and calls
 
 Handle bond maturity and early redemption:
 
@@ -422,7 +438,7 @@ For callable bonds:
    - Click **Execute Call**
    - Platform redeems bonds per call terms
 
-## Fund distributions
+### Fund distributions
 
 Distribute fund income to unit holders:
 
@@ -494,53 +510,70 @@ Allow automatic distribution reinvestment:
 - Verify tax reporting for distributions
 - Coordinate with transfer agent and legal counsel
 
+## Results
+
+After executing corporate actions, you will have:
+
+- Distributed dividends or coupon payments to your token holders
+- Executed token splits or consolidations with updated balances
+- Conducted governance votes and implemented approved proposals
+- Processed bond redemptions or callable bond exercises
+- Distributed fund income or capital gains to investors
+
+Your corporate action is recorded on-chain with complete holder snapshots and
+transaction history for audit and regulatory compliance.
+
 ## Troubleshooting
 
-**Distribution execution fails**
+**Distribution execution fails:**
 
 - Verify distribution wallet has sufficient balance
 - Check all holders have verified OnchainIDs
 - Ensure payment token is valid ERC20 contract
 - Confirm no compliance restrictions preventing transfers
 
-**Governance proposal creation reverts**
+**Governance proposal creation reverts:**
 
-- Check your address holds minimum proposal threshold
-- Verify voting enabled on equity token
-- Ensure quorum and threshold percentages valid (0-100%)
-- Confirm voting period within allowed range
+- Check your address holds the minimum proposal threshold
+- Verify voting is enabled on your equity token
+- Ensure quorum and threshold percentages are valid (0-100%)
+- Confirm the voting period is within the allowed range
 
-**Vote transaction fails**
+**Vote transaction fails:**
 
-- Verify you held shares at proposal creation block
-- Check proposal still in voting period
-- Ensure you haven't already voted on proposal
-- Confirm voting power &gt; 0
+- Verify you held shares at the proposal creation block
+- Check the proposal is still in the voting period
+- Ensure you haven't already voted on this proposal
+- Confirm your voting power > 0
 
-**Bond redemption not available**
+**Bond redemption not available:**
 
-- Verify bond has reached maturity date
-- Check bond matured status set correctly
-- Ensure redemption wallet funded
+- Verify the bond has reached maturity date
+- Check the bond matured status is set correctly
+- Ensure your redemption wallet is funded
 - Confirm you hold bond tokens
 
-**Yield payment failed**
+**Yield payment failed:**
 
-- Check yield wallet has sufficient yield tokens
-- Verify yield schedule configured correctly
+- Check your yield wallet has sufficient yield tokens
+- Verify the yield schedule is configured correctly
 - Ensure bondholders have verified OnchainIDs
-- Review yield module enabled on bond
+- Review that the yield module is enabled on your bond
 
 For additional help, see [Troubleshooting](/docs/user-guides/troubleshooting) or
 contact platform support.
 
 ## Next steps
 
-- **Asset-specific actions** - Review asset guides for specialized actions:
-  - [Issue a bond](/docs/user-guides/issue-bond) - Bond-specific actions
-  - [Issue equity](/docs/user-guides/issue-equity) - Equity governance
-  - [Issue a fund](/docs/user-guides/issue-fund) - NAV updates and distributions
-- **Investor communications** - Manage shareholder relations via
-  [Manage investors](/docs/user-guides/manage-investors)
-- **Compliance** - Understand distribution compliance in
-  [Regulatory compliance](/docs/architecture/quality-performance/regulatory-compliance)
+- [Issue a bond](/docs/user-guides/issue-bond) - Configure bond-specific actions
+  like coupon payments and redemptions
+- [Issue equity](/docs/user-guides/issue-equity) - Set up equity governance and
+  shareholder voting
+- [Issue a fund](/docs/user-guides/issue-fund) - Execute NAV updates and fund
+  income distributions
+- [Manage investors](/docs/user-guides/manage-investors) - Communicate with
+  shareholders about corporate actions
+- [Regulatory compliance](/docs/architecture/quality-performance/regulatory-compliance) -
+  Understand distribution compliance requirements
+- [Troubleshooting](/docs/user-guides/troubleshooting) - Resolve common
+  corporate action issues

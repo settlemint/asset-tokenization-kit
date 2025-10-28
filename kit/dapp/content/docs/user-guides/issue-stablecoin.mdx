@@ -85,18 +85,18 @@ Define token-to-fiat relationship:
 
 **Collateralization model**
 
-Choose backing structure:
+The platform requires full collateralization:
 
-- **Fully reserved** - 100% fiat backing (1:1 reserve ratio)
-- **Overcollateralized** - &gt;100% reserves for added security
-- **Fractional reserve** - &lt;100% reserves with additional risk management
+- **Fully reserved (required)** - 100% fiat backing (1:1 reserve ratio)
+- **Overcollateralized (optional)** - >100% reserves for added security margin
 
 ![Peg and collateral configuration](/images/screenshots/placeholder.svg)
 _Screenshot: Stablecoin parameters showing peg currency dropdown, peg ratio
-input, and collateralization model selector with ratio input_
+input, and collateralization ratio input (minimum 100%)_
 
-**Regulatory requirement:** Most e-money regulations require 100% or
-overcollateralized reserves.
+**Regulatory requirement:** E-money regulations require 100% or
+overcollateralized reserves. The platform does not support fractional reserve
+stablecoins.
 
 ### Reserve management
 
