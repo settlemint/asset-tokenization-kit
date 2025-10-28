@@ -160,8 +160,8 @@ function MermaidContent({ chart }: { chart: string }) {
 
   if (!svg) {
     return (
-      <div className="h-32 bg-gray-50 border border-gray-200 rounded p-4 text-center text-gray-400">
-        Rendering chart...
+      <div className="min-h-8 opacity-0">
+        <span className="sr-only">Rendering chart...</span>
       </div>
     );
   }

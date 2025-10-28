@@ -13,30 +13,28 @@ integration practices.
 
 The kit employs a multi-layered testing strategy:
 
-<Mermaid>
-{`
+<Mermaid
+  chart={`
 graph TD
-    A[Test Strategy] --&gt; B[Unit Tests]
-    A --&gt; C[Contract Tests]
-    A --&gt; D[E2E Tests]
-    A --&gt; E[Linting &amp; Formatting]
+    A[Test Strategy] --> B[Unit Tests]
+    A --> C[Contract Tests]
+    A --> D[E2E Tests]
+    A --> E[Linting & Formatting]
 
-    B --&gt; B1[DApp - Vitest]
-    B --&gt; B2[Subgraph - Matchstick]
+    B --> B1[DApp - Vitest]
+    B --> B2[Subgraph - Matchstick]
 
-    C --&gt; C1[Foundry Tests]
-    C --&gt; C2[Hardhat Tests]
+    C --> C1[Foundry Tests]
+    C --> C2[Hardhat Tests]
 
-    D --&gt; D1[Playwright UI Tests]
-    D --&gt; D2[API Tests]
+    D --> D1[Playwright UI Tests]
+    D --> D2[API Tests]
 
-    E --&gt; E1[ESLint/Solhint]
-    E --&gt; E2[Prettier]
-    E --&gt; E3[TypeScript]
+    E --> E1[ESLint/Solhint]
+    E --> E2[Prettier]
+    E --> E3[TypeScript]
 
-`}
-
-</Mermaid>
+`} />
 
 ### Test locations
 

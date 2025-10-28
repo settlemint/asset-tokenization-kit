@@ -1,5 +1,5 @@
 ---
-title: System components
+title: Core component overview
 description:
   Breakdown of the primary system components/modules and their roles in the
   platform
@@ -10,22 +10,33 @@ tags: [architecture, components, services, concept]
 ## Overview
 
 The Asset Tokenization Kit consists of six primary components that work together
-to deliver a complete digital asset platform. Each component serves a specific
-role in the overall architecture while maintaining tight integration with other
-parts of the system.
+to deliver a complete digital asset platform with **integrated lifecycle
+management**. Each component serves a specific role in the overall architecture
+while maintaining tight integration with other parts of the system.
+
+**ATK's architectural advantage**: While competitors cobble together separate
+vendors for token creation, custody, settlement, and distributions, ATK provides
+unified infrastructure where **DvP settlement, vault custody, and yield
+automation** are architected as core capabilities, not afterthought
+integrations.
 
 ### Problem
 
 Digital asset platforms typically integrate multiple third-party services—each
 with distinct APIs, data models, and authentication mechanisms. This
 fragmentation requires manual reconciliation, increases operational complexity,
-and creates consistency gaps across the platform lifecycle.
+and creates consistency gaps across the platform lifecycle. Critically, this
+fragmentation means atomic settlement is impossible, custody is disconnected
+from compliance, and yield distributions require manual processing.
 
 ### Solution
 
 ATK's components share a unified data model, type-safe interfaces, and
 synchronized business logic. This architecture reduces integration complexity
-and maintains consistency across the platform.
+and maintains consistency across the platform. **More importantly, it enables
+lifecycle management capabilities that fragmented architectures can't deliver**:
+atomic multi-party settlements through the XvP addon, multi-signature custody
+through vault contracts, and automated distributions through yield schedules.
 
 ### Key concepts
 

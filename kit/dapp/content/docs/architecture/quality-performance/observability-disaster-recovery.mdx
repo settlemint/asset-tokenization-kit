@@ -1,5 +1,5 @@
 ---
-title: Observability & recovery
+title: Monitoring & disaster recovery
 description:
   Production monitoring, incident response, and disaster recovery architecture
   for ATK deployments
@@ -18,8 +18,14 @@ tags:
 
 ## Overview
 
-Production ATK deployments require comprehensive observability to detect issues
-proactively and disaster recovery capabilities to restore service after
+**ATK includes a production-grade observability stack out of the box—a
+competitive differentiator that eliminates months of integration work.** While
+most blockchain platforms require you to assemble monitoring from multiple
+vendors, ATK ships with everything pre-configured: metrics, logs, traces,
+dashboards, and alerting.
+
+Production ATK deployments leverage this integrated observability to detect
+issues proactively and disaster recovery capabilities to restore service after
 failures. This architecture spans application metrics, blockchain monitoring,
 and data backup strategies.
 
@@ -35,20 +41,40 @@ Distributed blockchain applications introduce unique observability challenges:
   blockchain state, making real-time debugging difficult
 - **Complex recovery**: Restoring a tokenization platform requires coordinating
   blockchain state, database backups, and document storage
+- **Vendor fragmentation**: Assembling observability from multiple tools
+  requires complex integrations and increased operational overhead
 
-### Solution
+### Solution (Integrated Observability Stack)
 
-ATK's observability and recovery architecture provides:
+**ATK's included observability stack provides everything you need for production
+operations:**
 
-- **Unified metrics collection**: Prometheus aggregates metrics from all
-  components with consistent labeling
-- **Distributed tracing**: OpenTelemetry traces requests from frontend through
-  API to blockchain
-- **Proactive alerting**: Alert rules detect anomalies before they impact users
+- **VictoriaMetrics**: High-performance time-series database for metrics
+  collection with Prometheus compatibility
+- **Loki**: Centralized log aggregation with structured metadata support and
+  automatic log pattern detection
+- **Tempo**: Distributed tracing with OpenTelemetry compatibility for end-to-end
+  request flow visualization
+- **Grafana**: Pre-configured dashboards for every layer of the stack with
+  auto-loading from Helm charts
+- **Alloy**: Telemetry collection agent that auto-discovers instrumented
+  services
+- **Pre-built dashboards**: Production-ready dashboards for Besu, TheGraph,
+  ERPC, IPFS, PostgreSQL, Redis, Kubernetes, and infrastructure metrics
+- **Proactive alerting**: Alert rule templates for common failure scenarios with
+  notification channel integration
 - **Multi-tier backup**: Automated backups of databases, smart contract state,
   and off-chain documents
 - **Tested recovery procedures**: Documented runbooks with recovery time
   objectives (RTO) for each failure scenario
+
+**This integrated approach means:**
+
+- Zero observability integration work required
+- Consistent metrics and logging across all components
+- Correlated logs, metrics, and traces in one interface
+- Faster mean time to resolution (MTTR) for incidents
+- Lower total cost of ownership compared to SaaS observability platforms
 
 ### Key concepts
 

@@ -20,8 +20,8 @@ The deployment architecture consists of:
 - **Support services** (PostgreSQL, Redis, MinIO, NGINX Ingress)
 - **Observability stack** (Grafana, Loki, VictoriaMetrics, Tempo)
 
-<Mermaid>
-{`
+<Mermaid
+  chart={`
 graph TB
     subgraph "Ingress Layer"
         NGINX[NGINX Ingress]
@@ -56,38 +56,36 @@ graph TB
         VM[VictoriaMetrics]
     end
 
-    NGINX --&gt; DAPP
-    NGINX --&gt; PORTAL
-    NGINX --&gt; HASURA
-    NGINX --&gt; ERPC
-    NGINX --&gt; GRAPH
-    NGINX --&gt; BLOCKSCOUT
+    NGINX --> DAPP
+    NGINX --> PORTAL
+    NGINX --> HASURA
+    NGINX --> ERPC
+    NGINX --> GRAPH
+    NGINX --> BLOCKSCOUT
 
-    DAPP --&gt; HASURA
-    DAPP --&gt; PORTAL
-    DAPP --&gt; ERPC
+    DAPP --> HASURA
+    DAPP --> PORTAL
+    DAPP --> ERPC
 
-    ERPC --&gt; VALIDATORS
-    ERPC --&gt; RPC
+    ERPC --> VALIDATORS
+    ERPC --> RPC
 
-    GRAPH --&gt; ERPC
-    GRAPH --&gt; PG
-    BLOCKSCOUT --&gt; ERPC
-    BLOCKSCOUT --&gt; PG
+    GRAPH --> ERPC
+    GRAPH --> PG
+    BLOCKSCOUT --> ERPC
+    BLOCKSCOUT --> PG
 
-    HASURA --&gt; PG
-    HASURA --&gt; REDIS
-    PORTAL --&gt; PG
-    PORTAL --&gt; REDIS
+    HASURA --> PG
+    HASURA --> REDIS
+    PORTAL --> PG
+    PORTAL --> REDIS
 
-    DAPP --&gt; MINIO
+    DAPP --> MINIO
 
-    GRAFANA --&gt; VM
-    GRAFANA --&gt; LOKI
+    GRAFANA --> VM
+    GRAFANA --> LOKI
 
-`}
-
-</Mermaid>
+`} />
 
 ## Helm chart structure
 

@@ -1,5 +1,5 @@
 ---
-title: Issue equity
+title: Issue an equity
 description:
   Step-by-step guide to creating equity tokens with voting rights and
   shareholder management
@@ -18,7 +18,7 @@ on-chain with automated compliance and shareholder governance.
 
 <Mermaid
   chart={
-    "graph TB\n    A[Configure Token&lt;br/&gt;Parameters] --&gt; B[Set Compliance&lt;br/&gt;Framework]\n    B --&gt; C[Configure Voting&lt;br/&gt;if Enabled]\n    C --&gt; D[Assign Operational&lt;br/&gt;Roles]\n    D --&gt; E[Deploy Equity&lt;br/&gt;Contract]\n    E --&gt; F[Issue Initial&lt;br/&gt;Allocation]\n    F --&gt; G[Set Up Vesting&lt;br/&gt;if Needed]\n    G --&gt; H{Governance&lt;br/&gt;Enabled?}\n    H --&gt;|Yes| I[Create Proposals]\n    H --&gt;|No| J[Monitor Cap Table]\n    I --&gt; K[Shareholders Vote]\n    K --&gt; L[Execute Approved&lt;br/&gt;Proposals]\n    J --&gt; M[Process Secondary&lt;br/&gt;Transfers]\n    L --&gt; M\n    M --&gt; N[Manage Shareholder&lt;br/&gt;Lifecycle]\n    style A fill:#0EA5E9\n    style E fill:#0EA5E9\n    style F fill:#0EA5E9\n    style I fill:#10B981\n    style K fill:#10B981\n    style M fill:#6366F1"
+    "graph TB\n    A[Configure Token<br/>Parameters] --> B[Set Compliance<br/>Framework]\n    B --> C[Configure Voting<br/>if Enabled]\n    C --> D[Assign Operational<br/>Roles]\n    D --> E[Deploy Equity<br/>Contract]\n    E --> F[Issue Initial<br/>Allocation]\n    F --> G[Set Up Vesting<br/>if Needed]\n    G --> H{Governance<br/>Enabled?}\n    H -->|Yes| I[Create Proposals]\n    H -->|No| J[Monitor Cap Table]\n    I --> K[Shareholders Vote]\n    K --> L[Execute Approved<br/>Proposals]\n    J --> M[Process Secondary<br/>Transfers]\n    L --> M\n    M --> N[Manage Shareholder<br/>Lifecycle]\n    style A fill:#0EA5E9\n    style E fill:#0EA5E9\n    style F fill:#0EA5E9\n    style I fill:#10B981\n    style K fill:#10B981\n    style M fill:#6366F1"
   }
 />
 

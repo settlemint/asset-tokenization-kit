@@ -1,5 +1,5 @@
 ---
-title: DALP solution
+title: Lifecycle platform approach
 description:
   Presents the concept of a unified lifecycle platform (DALP) as the solution to
   the above challenges
@@ -86,24 +86,43 @@ through a unified policy engine. The rule engine is the single enforcement
 point. When regulations change, you update policy templates in the rule engine
 and every asset using that template automatically inherits the updated logic.
 
-### 3. Custody and settlement clarity
+### 3. Custody and settlement clarity (ATK differentiator)
 
-Bank-grade key management means HSM-backed storage, multi-signature approval
-workflows with configurable quorum rules, role-based access controls,
-transaction velocity limits, and formal recovery procedures. Losing a key
-triggers a documented recovery process with governance oversight rather than
-meaning asset loss.
+**This is where ATK's implementation of DALP separates from competitors.** Most
+tokenization platforms stop at token creation. ATK provides complete operational
+infrastructure for the entire asset lifecycle.
+
+**Vault-based custody**: Bank-grade key management with HSM-backed storage,
+multi-signature approval workflows with configurable quorum rules, role-based
+access controls, transaction velocity limits, and formal recovery procedures.
+ATK's vault system implements maker-checker workflows where proposals require
+multiple approvals before execution. Emergency pause capabilities protect
+against compromised accounts. Losing a key triggers a documented recovery
+process with governance oversight rather than meaning asset loss.
 
 Regulated custodian integration lets institutions delegate key management to
 specialists while maintaining visibility and control through the platform. The
 platform supports bring-your-own-custodian models rather than forcing
 institutions to trust platform custody.
 
-Atomic settlement means delivery versus payment (DvP) where both legs—asset and
-cash—execute together or both revert. No window exists where one party has
-received value and the other hasn't. This requires cash to be on-chain via
-tokenized deposits, regulated stablecoins, or Central Bank Digital Currency when
-available.
+**Atomic DvP settlement**: Delivery versus payment (DvP) where both legs—asset
+and cash—execute together or both revert. No window exists where one party has
+received value and the other hasn't. ATK's XvP settlement system extends this to
+multi-party exchanges where any number of participants can exchange tokens
+atomically. If any leg fails, the entire settlement reverts. This eliminates
+counterparty risk and the need for trusted intermediaries.
+
+This requires cash to be on-chain via tokenized deposits, regulated stablecoins,
+or Central Bank Digital Currency when available. ATK provides the settlement
+infrastructure that coordinates these atomic exchanges.
+
+**Automated yield distribution**: Fixed yield schedules eliminate manual
+processing of dividends, interest payments, and coupon distributions. Configure
+payment schedules once during issuance, and ATK handles distributions
+automatically on payment dates. Token holders claim their yields directly
+through smart contracts with cryptographic proof of entitlement. No
+spreadsheets, no reconciliation, no manual wire transfers to thousands of
+investors.
 
 Payment rail connectivity translates between blockchain transactions and
 traditional SWIFT, SEPA, or RTGS messages using ISO 20022 standards. Enterprise

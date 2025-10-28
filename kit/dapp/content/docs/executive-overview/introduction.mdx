@@ -67,18 +67,31 @@ exactly who holds what, where they're located, and whether they meet eligibility
 requirements. Auditors get machine-readable proof instead of reconciling
 multiple spreadsheets.
 
-### Operational automation
+### Operational automation through lifecycle management
 
 Corporate actions—dividends, coupon payments, voting rights,
 redemptions—typically involve manual processes with spreadsheets, email chains,
 and reconciliation work. With tokenization, these operations execute
 programmatically through smart contracts.
 
-A bond coupon payment? The smart contract automatically distributes proportional
-amounts to all token holders on the payment date. A shareholder vote? Token
-balances at a snapshot block determine voting power, and votes are tallied
-automatically on-chain. No manual lists, no missed notifications, no
-reconciliation errors.
+**ATK implements this through integrated lifecycle capabilities that competitors
+can't match:**
+
+- **Automated yield distributions**: Bond coupon payments, equity dividends, and
+  fund distributions happen automatically through fixed yield schedules.
+  Configure once; distribute on payment dates without manual processing.
+- **Atomic DvP settlement**: Delivery versus payment where asset and cash
+  transfer simultaneously or both revert. True T+0 finality without counterparty
+  risk.
+- **Multi-signature vault custody**: Treasury operations with maker-checker
+  workflows, configurable quorum requirements, and emergency controls.
+
+A bond coupon payment? The yield schedule contract automatically distributes
+proportional amounts to all token holders on the payment date. A shareholder
+vote? Token balances at a snapshot block determine voting power, and votes are
+tallied automatically on-chain. A secondary trade? The XvP settlement system
+ensures both asset and payment transfer together atomically. No manual lists, no
+missed notifications, no reconciliation errors.
 
 ### Built-in compliance
 

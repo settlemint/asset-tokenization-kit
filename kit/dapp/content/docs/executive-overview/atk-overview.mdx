@@ -1,5 +1,5 @@
 ---
-title: ATK overview
+title: Platform capabilities
 description:
   High-level overview of ATK as SettleMint's implementation of a DALP,
   highlighting features and capabilities
@@ -52,6 +52,39 @@ asset-specific requirements.
 
 ## Key features and capabilities
 
+### Complete lifecycle management (competitive differentiator)
+
+ATK's implementation of DALP principles delivers **integrated lifecycle
+management** that competitors can't match. These capabilities aren't add-ons or
+integrations—they're architected into the platform from the ground up:
+
+**Delivery versus Payment (DvP)**: Atomic settlement ensures asset and cash
+transfer simultaneously or both revert. No settlement risk. No reconciliation.
+True T+0 finality. The XvP settlement system coordinates multi-party exchanges
+where every leg executes together—if any party's transfer fails, the entire
+settlement reverts. This eliminates counterparty risk and the need for trusted
+intermediaries.
+
+**Secure Treasury Vaults**: Multi-signature custody with role-based access
+control. Configurable quorum requirements ensure no single person can move
+assets unilaterally. The vault system provides maker-checker workflows where one
+admin proposes transactions and others approve before execution. Emergency pause
+capabilities protect against compromised accounts. Full audit trails track every
+proposal, approval, and execution.
+
+**Automated Yield Management**: Fixed yield schedules automate dividend,
+interest, and coupon distributions without manual processing. Configure payment
+schedules once, and the platform handles distributions automatically on payment
+dates. Token holders claim their yields directly through smart contracts with
+cryptographic proof of entitlement. No spreadsheets, no reconciliation, no
+manual wire transfers.
+
+These three capabilities—**DvP settlement, vault custody, and yield
+automation**—form the operational backbone that separates institutional-grade
+lifecycle platforms from basic token issuance tools. While competitors offer
+pieces through multiple vendors requiring integration, ATK delivers unified
+lifecycle management where these capabilities work together seamlessly.
+
 ### Multi-asset support from day one
 
 Five asset classes ship as ready-to-deploy templates, not future roadmap
@@ -85,6 +118,14 @@ Each asset type implements the SMART Protocol (SettleMint Adaptable Regulated
 Token), which means they all share compliance infrastructure, custody controls,
 and operational tooling despite having different economic terms and lifecycle
 events.
+
+**Critically, every asset type gains access to ATK's lifecycle capabilities**:
+bonds use DvP for primary issuance and secondary trading, vaults for secure
+treasury management, and yield schedules for automated coupon payments; equities
+leverage vaults for corporate treasury and yield automation for dividend
+distributions; funds rely on DvP for subscription/redemption settlement and
+vaults for asset custody. The lifecycle management isn't separate—it's how these
+assets operate.
 
 ### Regulatory compliance embedded in the architecture
 
@@ -187,6 +228,23 @@ of thousands of holders.
 Kubernetes deployment via Helm charts enables cloud-native operations with
 autoscaling, rolling updates, health monitoring, and self-healing. Deploy to any
 Kubernetes environment: public cloud, private cloud, or on-premises.
+
+### Production-grade observability included
+
+**Unlike competitors that require separate observability tools, ATK ships with a
+complete monitoring stack pre-configured and integrated.** VictoriaMetrics
+collects metrics, Loki aggregates logs, Tempo traces requests, and Grafana
+provides dashboards—all included in the Helm deployment.
+
+Pre-built dashboards cover every component: Besu blockchain metrics, TheGraph
+indexing status, ERPC gateway performance, database queries, infrastructure
+health, and application-level KPIs. Troubleshoot issues by correlating logs,
+metrics, and traces in one interface. Configure alerting to catch problems
+before they impact users.
+
+This integrated observability means faster incident resolution, lower
+operational overhead, and elimination of separate SaaS monitoring contracts.
+Operations teams gain visibility from day one without integration projects.
 
 ### Banking and payment integration
 

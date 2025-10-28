@@ -29,7 +29,7 @@ Guidelines:
 
 Review the folowing section:
 
-- @kit/dapp/content/docs/user-guides
+- @kit/dapp/content/docs/developer-guides
 
 Verify that:
 
@@ -59,16 +59,10 @@ and detailed plan for improvements.
 - When we are referencing code, make sure we have direct links to Github in
   <https://github.com/settlemint/asset-tokenization-kit> add this directive to
   kit/dapp/content/AGENTS.md as well
-- the rendinging mermaid placeholder is very in your face, make it hidden while
-  rendering
 - i feel the pages are all very long, split them up into multiple pages. If
   needed, you can go up to 4 levels deep
 - add a guide how to create your own custom asset type
-- The lifecycle part of DALP is a USP for ATK with DvP, Vaults, Yield
-  management, etc, make sure this is highlighted. add this directive to
-  kit/dapp/content/AGENTS.md as well
-- Review the page titles which are used in the sidebar for clarity, some are
-  either too generic or too specific and make it hard to follow the flow
+
 - can we make the mermaid style be more like our shadcn look and feel? add this
   directive to kit/dapp/content/AGENTS.md as well
 - We have several special components we can use to improve the look and feel of
@@ -79,14 +73,6 @@ and detailed plan for improvements.
   directive to kit/dapp/content/AGENTS.md as well
 - use org mode to get info from slack
 - update agents with the good docs templates to use for what
-- add to the top level agents file that for any action, the documentation in
-  kit/dapp/content/docs needs to be validated, updated, extended and improved
-  based on the changes in this changeset, pr, task. this is required!
-- we have an extensive observability stack with dashboards in the helm charts,
-  we should use this as a selling point and leverage what it brings throughout
-  the docs, for troubleshooting, verification of correct operation, etc. There
-  will be many places where having this stack can offer benefits for the
-  readers. add this directive to kit/dapp/content/AGENTS.md as well
 
 # FAQ
 

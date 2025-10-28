@@ -5,6 +5,41 @@ the following **style guidelines** for any AI agent or writer generating the
 content. The goal is to combine _engaging, human-like writing_ with technical
 accuracy and clarity, optimized for both human readers and AI search indexing.
 
+### Product Positioning & Key Differentiators
+
+- **CRITICAL: Highlight DALP Lifecycle Features as USP**: The lifecycle
+  management capabilities of DALP are a unique selling proposition for ATK.
+  Always emphasize and prominently feature:
+  - **DvP (Delivery vs Payment)**: Atomic settlement mechanisms
+  - **Vaults**: Secure asset custody and management
+  - **Yield Management**: Automated distribution of dividends, interest, and
+    returns
+  - These features differentiate ATK from competitors and should be highlighted
+    in executive overviews, architecture discussions, and use case examples
+  - When discussing asset types (bonds, deposits, funds), always connect to
+    lifecycle capabilities where relevant
+
+- **CRITICAL: Leverage Observability Stack as Competitive Advantage**: ATK
+  includes an extensive observability stack with comprehensive dashboards
+  deployed via Helm charts. This is a selling point and operational advantage
+  that should be referenced throughout documentation:
+  - **Troubleshooting guides**: Reference specific dashboards and metrics for
+    diagnosing issues
+  - **Verification procedures**: Show how to confirm correct operation using
+    observability tools
+  - **Performance monitoring**: Explain how metrics validate system health and
+    scalability
+  - **Operational guides**: Demonstrate how dashboards support day-to-day
+    operations
+  - **Architecture discussions**: Highlight observability as
+    production-readiness differentiator
+  - **Developer workflows**: Show how metrics accelerate development and testing
+  - Whenever discussing deployment, operations, monitoring, debugging, or
+    production readiness, connect to the observability capabilities
+  - Use concrete examples: "Check the transaction latency dashboard to verify
+    settlement times" or "The compliance metrics panel shows real-time rule
+    evaluation statistics"
+
 ### Writing Tone and Voice
 
 - **Audience-Appropriate Tone:** Adjust tone based on the persona and section:

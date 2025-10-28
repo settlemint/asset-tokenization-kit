@@ -19,7 +19,7 @@ teams
 
 <Mermaid
   chart={
-    "graph TB\n    A[Configure Bond&lt;br/&gt;Parameters] --&gt; B[Set Compliance&lt;br/&gt;Rules]\n    B --&gt; C[Assign Operational&lt;br/&gt;Roles]\n    C --&gt; D[Deploy Bond&lt;br/&gt;Contract]\n    D --&gt; E[Mint Initial&lt;br/&gt;Allocation]\n    E --&gt; F{Yield Enabled?}\n    F --&gt;|Yes| G[Fund Yield&lt;br/&gt;Wallet]\n    F --&gt;|No| H[Monitor Lifecycle]\n    G --&gt; I[Process Coupon&lt;br/&gt;Payments]\n    I --&gt; J{Maturity Date&lt;br/&gt;Reached?}\n    J --&gt;|No| I\n    J --&gt;|Yes| K[Execute Maturation]\n    H --&gt; J\n    K --&gt; L[Handle Redemptions]\n    L --&gt; M[Bond Lifecycle&lt;br/&gt;Complete]\n    style A fill:#0EA5E9\n    style D fill:#0EA5E9\n    style E fill:#0EA5E9\n    style I fill:#10B981\n    style K fill:#10B981\n    style L fill:#10B981\n    style M fill:#6366F1"
+    "graph TB\n    A[Configure Bond<br/>Parameters] --> B[Set Compliance<br/>Rules]\n    B --> C[Assign Operational<br/>Roles]\n    C --> D[Deploy Bond<br/>Contract]\n    D --> E[Mint Initial<br/>Allocation]\n    E --> F{Yield Enabled?}\n    F -->|Yes| G[Fund Yield<br/>Wallet]\n    F -->|No| H[Monitor Lifecycle]\n    G --> I[Process Coupon<br/>Payments]\n    I --> J{Maturity Date<br/>Reached?}\n    J -->|No| I\n    J -->|Yes| K[Execute Maturation]\n    H --> J\n    K --> L[Handle Redemptions]\n    L --> M[Bond Lifecycle<br/>Complete]\n    style A fill:#0EA5E9\n    style D fill:#0EA5E9\n    style E fill:#0EA5E9\n    style I fill:#10B981\n    style K fill:#10B981\n    style L fill:#10B981\n    style M fill:#6366F1"
   }
 />
 

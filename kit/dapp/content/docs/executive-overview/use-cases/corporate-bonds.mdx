@@ -68,6 +68,13 @@ flowchart TB
 
 ## How ATK solves it
 
+**ATK's lifecycle management capabilities eliminate manual processes:**
+
+- **DvP settlement** for atomic primary distribution and secondary trading
+- **Vault custody** for secure treasury management with multi-signature controls
+- **Automated yield** for quarterly coupon distributions without manual
+  processing
+
 ### Configuration and deployment
 
 MidCorp's treasury team uses the Asset Designer to configure a bond token: $50
@@ -76,6 +83,10 @@ denomination. They select a Regulation D compliance template to limit the
 offering to accredited US investors.
 
 The platform generates the smart contract with compliance controls embedded.
+**Critically, ATK also deploys a fixed yield schedule contract that will
+automate quarterly coupon payments** and connects the bond to the XvP settlement
+system for atomic trading.
+
 MidCorp uploads their offering memorandum, which gets cryptographically hashed
 and linked to the token metadata. Legal documentation remains permanently
 associated with the asset.
@@ -88,35 +99,63 @@ accreditation claim. Only wallet addresses linked to verified, accredited
 identities can receive bond tokens. Non-accredited addresses cannot receive
 tokens; transfers revert automatically.
 
-### Primary distribution
+### Primary distribution with DvP settlement
 
-MidCorp allocates tokens to a subscriber list. The platform enforces that every
-recipient meets eligibility requirements, eliminating risk of non-compliant
-distribution.
+MidCorp allocates tokens to a subscriber list. **Using ATK's XvP settlement
+system, investors exchange cash (stablecoins or tokenized deposits) for bond
+tokens atomically.** If an investor's payment fails, they don't receive tokens.
+If token transfer fails (e.g., compliance violation), payment doesn't leave
+their wallet. Both legs execute together or both revert—true delivery versus
+payment.
 
-### Automated coupon payments
+The platform enforces that every recipient meets eligibility requirements,
+eliminating risk of non-compliant distribution. Settlement is instant with T+0
+finality. No reconciliation required.
 
-Every quarter, the coupon scheduler calculates interest owed to each holder
-based on proportional ownership. The platform triggers distributions through:
+### Automated coupon payments via yield schedules
 
-- **Tokenized cash settlement** – If investors hold stablecoins or tokenized
-  deposits
+**ATK's fixed yield schedule contract automates quarterly distributions without
+manual processing.** Every quarter, the yield system calculates interest owed to
+each holder based on proportional ownership at the snapshot block. Token holders
+claim their coupons directly through the smart contract with cryptographic proof
+of entitlement.
+
+The platform triggers distributions through:
+
+- **Tokenized cash settlement** – Automated distributions when investors hold
+  stablecoins or tokenized deposits
 - **Off-chain payment adapters** – Integration with treasury systems for
-  traditional wire/ACH settlement
+  traditional wire/ACH settlement (roadmap)
 - **Manual approval workflows** – For jurisdictions requiring human review
   before disbursement
 
-The coupon module ensures every holder receives their exact amount without
-manual calculations or wire transfer instructions. Note that fully automated
-end-to-end settlement requires either tokenized payment instruments or
-configured off-chain adapters.
+**This eliminates the nightmare of calculating payments for hundreds of
+investors, generating wire instructions, and reconciling settlements.** The
+yield schedule is configured once during issuance; distributions happen
+automatically on payment dates. No spreadsheets. No transfer agent. No manual
+wire transfers.
+
+### Vault custody for treasury operations
+
+**MidCorp's bond proceeds are held in ATK's multi-signature vault** with
+configurable approval requirements. Treasury operations require multiple
+signatures—no single person can move funds unilaterally. The vault provides:
+
+- **Maker-checker workflows** where one admin proposes and others approve
+- **Emergency pause** capabilities to freeze operations if accounts are
+  compromised
+- **Full audit trails** showing every proposal, approval, and execution
+- **Role-based access control** separating operational roles
+
+This provides bank-grade custody without requiring integration with external
+custodians.
 
 ### Real-time cap table visibility
 
 MidCorp's IR team sees current ownership in real time through the admin
 dashboard. No waiting for monthly reports from a transfer agent. When investors
-trade bonds on secondary markets (if permitted), the cap table updates
-immediately.
+trade bonds on secondary markets (if permitted through ATK's XvP settlement
+system with atomic DvP), the cap table updates immediately.
 
 ### Maturity and redemption
 
