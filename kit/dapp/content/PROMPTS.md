@@ -29,7 +29,7 @@ Guidelines:
 
 Review the folowing section:
 
-- @kit/dapp/content/docs/developer-guides
+- @kit/dapp/content/docs
 
 Verify that:
 

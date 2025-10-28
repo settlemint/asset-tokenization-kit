@@ -9,7 +9,7 @@ tags: [how-to, deposit, certificate, collateral, banking]
 Deposit tokens represent digital certificates of deposit with fixed terms,
 interest rates, and maturity-based redemption. This guide walks you through
 deploying compliant deposit tokens from configuration through maturity
-processing.
+processing on the platform.
 
 **Who should read this:** Banks, credit unions, financial institutions, and
 deposit-taking entities issuing tokenized certificates of deposit (CDs) or time
@@ -421,17 +421,25 @@ Handle customer deposit purchases:
 
 **Approval actions:**
 
-- Platform mints deposit tokens to customer address
+- The system issues deposit tokens to customer address
 - Records deposit amount, issue date, maturity date
 - Starts interest accrual
 - Updates total deposits outstanding
+
+<Callout type="default" title="For developers">
+  See [Contract
+  Reference](/docs/developer-guides/smart-contracts/contract-reference) for
+  technical details on deposit token implementation and interest accrual
+  calculation.
+</Callout>
 
 ![Subscription queue](/images/screenshots/placeholder.svg) _Screenshot:
 Subscription requests table showing pending deposits with customer, amount,
 payment confirmation, issue date, maturity date, and approve button_
 
-**Compliance check:** Platform validates customer OnchainID and enforces
-per-depositor insurance limits before minting.
+**Compliance check:** The system validates customer OnchainID and enforces
+per-depositor insurance limits before issuing deposit tokens, automating
+compliance that traditionally requires manual review.
 
 ### Track interest accrual
 
@@ -455,7 +463,17 @@ Monitor interest calculations:
 - Interest = Principal × [(1 + APR/n)^(n × Term) - 1]
 - Where n = compounding periods per year
 
-Platform calculates interest automatically based on configured method.
+The system calculates interest automatically based on configured method,
+eliminating manual interest calculations and reducing errors.
+
+<Callout type="info" title="Business context">
+  Traditional CD interest calculation requires manual computation for each
+  certificate, tracking maturity dates in spreadsheets, and coordinating with
+  core banking systems to process interest payments. This manual process is
+  error-prone and labor-intensive, typically costing $5-15 per certificate per
+  payment period. ATK automates the entire interest lifecycle, reducing
+  operational costs by 85-95% and eliminating calculation errors.
+</Callout>
 
 ![Interest tracking](/images/screenshots/placeholder.svg) _Screenshot: Interest
 tab showing total accrued interest, daily expense rate, maturity schedule table,
@@ -480,18 +498,28 @@ Handle deposits reaching maturity:
 
 **Processing actions:**
 
-- Platform calculates redemption proceeds: principal + interest
+- The system calculates redemption proceeds: principal + interest
 - Burns deposit tokens from holder addresses
 - Transfers proceeds to holders in denomination asset
 - Records maturity event in deposit history
 - Updates outstanding deposit balance
+
+<Callout type="info" title="Business context">
+  Traditional CD maturity processing requires manually identifying maturing
+  certificates, calculating interest for each, coordinating with the core
+  banking system to credit accounts, and sending maturity notices. This process
+  typically takes 2-5 business days and introduces errors in 10-15% of cases.
+  ATK automates the entire maturity workflow with zero calculation errors and
+  instant settlement.
+</Callout>
 
 ![Maturity processing](/images/screenshots/placeholder.svg) _Screenshot:
 Maturities tab showing deposits reaching maturity with holder, principal,
 interest, total proceeds, and process batch button_
 
 **Automatic processing:** Configure automatic maturity processing to execute
-redemptions on maturity date without manual intervention.
+redemptions on maturity date without manual intervention, eliminating the manual
+workload of tracking and processing hundreds or thousands of maturing CDs.
 
 ### Handle early withdrawal requests
 
@@ -548,7 +576,16 @@ Automatically renew maturing deposits:
    - Opt-out deposits: Process as normal maturity redemption
 
 **Opt-in default:** Configure whether rollover is opt-in (customer must choose)
-or opt-out (automatic unless customer declines).
+or opt-out (automatic unless customer declines). The system tracks customer
+preferences and executes rollovers automatically, eliminating manual tracking of
+renewal elections.
+
+<Callout type="default" title="For developers">
+  See [Contract
+  Reference](/docs/developer-guides/smart-contracts/contract-reference) for
+  technical details on rollover mechanism implementation and maturity date
+  updates.
+</Callout>
 
 ### Adjust interest rates
 

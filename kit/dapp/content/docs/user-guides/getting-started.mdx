@@ -367,6 +367,34 @@ For detailed guides on each asset type:
 - [Issue a stablecoin](/docs/user-guides/asset-issuance/issue-stablecoin)
 - [Issue a deposit](/docs/user-guides/asset-issuance/issue-deposit)
 
+## Verify your setup
+
+After completing these steps, confirm everything works correctly:
+
+**Check wallet and identity**
+
+1. Navigate to your profile page (top-right avatar menu)
+2. Verify your wallet address displays
+3. Confirm your OnchainID contract address is shown
+4. Check that "Identity Verified" badge appears
+
+**Check system deployment**
+
+1. Navigate to **Platform Settings** > **System Contracts**
+2. Verify all core contracts show "Deployed" status
+3. Note contract addresses for Identity Registry and Token Factories
+
+**Check your first token**
+
+1. Navigate to **Asset Management** and find your deployed token
+2. Click the token to view details
+3. Verify the contract address, supply, and compliance modules
+4. Check the **Events** tab shows deployment transaction
+
+**Expected result:** All components display correct addresses, statuses show
+"Deployed" or "Active", and your token appears in the asset list with accurate
+configuration.
+
 ## Troubleshooting
 
 **OnchainID deployment fails**
@@ -386,6 +414,19 @@ For detailed guides on each asset type:
 - Verify recipient has verified OnchainID
 - Check recipient OnchainID has all required claims
 - Ensure your wallet has SUPPLY_MANAGEMENT_ROLE
+
+**Onboarding wizard stuck or unresponsive**
+
+- Clear browser cache and cookies
+- Ensure JavaScript is enabled
+- Try a different browser (Chrome, Firefox, Safari recommended)
+- Check browser console for errors (F12 → Console tab)
+
+**System contracts deployment timeout**
+
+- Check that Docker services are running (`docker compose ps`)
+- Verify blockchain node is syncing (`curl http://localhost:8545`)
+- Restart Docker services (`bun run dev:reset`)
 
 For additional help, see
 [Troubleshooting](/docs/user-guides/onboarding/troubleshooting).

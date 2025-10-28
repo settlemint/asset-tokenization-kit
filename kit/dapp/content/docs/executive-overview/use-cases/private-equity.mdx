@@ -17,8 +17,8 @@ costs while enabling secondary liquidity for limited partners.
 relations teams managing institutional LP relationships.
 
 **Business value:** Cut fund administration costs by 60%, enable real-time
-performance visibility, automate distributions, and facilitate compliant
-secondary transfers.
+performance visibility, calculate distribution entitlements with on-demand
+claiming, and facilitate compliant secondary transfers.
 
 ## Business challenge
 
@@ -106,13 +106,14 @@ The NAV per token updates automatically for all holders. Performance
 metrics—IRR, MOIC, quartile rankings—can be calculated from on-chain transaction
 history via subgraph queries or dapp dashboards.
 
-### Automated distributions
+### Scheduled distributions
 
-When portfolio companies exit or pay dividends, Apex distributes proceeds
-proportionally to all token holders through automated workflows. What used to
-require wire instructions to 80 different banks now executes through
-programmable distribution with instant settlement (via tokenized cash) or
-configured payment adapters (for fiat settlement).
+When portfolio companies exit or pay dividends, Apex calculates entitlements
+proportionally for all token holders. Token holders claim their proceeds
+on-demand through the smart contract. What used to require wire instructions to
+80 different banks now executes through claim-based distribution with instant
+settlement (via tokenized cash) or configured payment adapters (for fiat
+settlement).
 
 ### Management fee collection
 
@@ -131,14 +132,14 @@ rights execute automatically via compliance modules.
 
 ## Key capabilities
 
-| Capability                  | Traditional                         | With ATK                            |
-| --------------------------- | ----------------------------------- | ----------------------------------- |
-| **Fund administration**     | Quarterly fees to third-party admin | On-chain tracking reduces overhead  |
-| **NAV distribution**        | 2-3 weeks delay                     | Real-time update to all LPs         |
-| **Distribution processing** | Wire to 80 banks, days of work      | Automated proportional distribution |
-| **Fee collection**          | Manual invoicing & payment          | Programmatic deduction and transfer |
-| **Secondary transfers**     | 90 days + legal costs               | Hours with embedded compliance      |
-| **LP reporting**            | Quarterly statements                | Real-time dashboard access          |
+| Capability                  | Traditional                         | With ATK                                    |
+| --------------------------- | ----------------------------------- | ------------------------------------------- |
+| **Fund administration**     | Quarterly fees to third-party admin | On-chain tracking reduces overhead          |
+| **NAV distribution**        | 2-3 weeks delay                     | Real-time update to all LPs                 |
+| **Distribution processing** | Wire to 80 banks, days of work      | Calculated entitlements, on-demand claiming |
+| **Fee collection**          | Manual invoicing & payment          | Programmatic deduction and transfer         |
+| **Secondary transfers**     | 90 days + legal costs               | Hours with embedded compliance              |
+| **LP reporting**            | Quarterly statements                | Real-time dashboard access                  |
 
 ## Measurable outcomes
 
@@ -146,9 +147,9 @@ rights execute automatically via compliance modules.
 because NAV calculations, distributions, fee collection, and LP reporting are
 automated or significantly streamlined.
 
-**LP satisfaction** – Real-time holdings visibility and instant distributions
-improve investor experience. Support inquiries about "where's my distribution?"
-are eliminated.
+**LP satisfaction** – Real-time holdings visibility and on-demand distribution
+claiming improve investor experience. Support inquiries about "where's my
+distribution?" are eliminated.
 
 **Secondary liquidity** – What used to take 90 days and significant legal costs
 now settles in hours with compliance built in. LPs value liquidity options, even
@@ -160,7 +161,7 @@ flowchart TB
     FUND(Fund Launch)
     TOKEN(Tokenized Fund Units<br/>Smart Contract)
     NAV(NAV Updates<br/>Admin Portal Entry)
-    DIST(Automated Distributions<br/>Pro-rata Settlement)
+    DIST(Scheduled Distributions<br/>Claim-based Settlement)
     FEES(Fee Collection<br/>Programmatic)
     SECONDARY(Secondary Trading<br/>Compliant Transfer)
     REALTIME(Real-time Visibility<br/>LP Dashboard)

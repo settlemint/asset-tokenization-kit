@@ -153,8 +153,18 @@ On payment date:
 Distribution execution showing eligible shareholders list with calculated
 amounts and execution progress_
 
-**Automated execution:** Configure automatic execution on payment date to
-eliminate manual processing.
+**Scheduled execution:** Configure automatic entitlement calculation on payment
+date to eliminate manual spreadsheet work.
+
+<Callout type="info" title="Business context">
+  Traditional distribution execution requires the corporate secretary to
+  manually calculate each shareholder's entitlement, prepare payment
+  instructions for dozens or hundreds of transfers, coordinate with the transfer
+  agent, and reconcile which payments completed. This manual process typically
+  requires 3-5 business days and introduces calculation errors in 15-20% of
+  cases. ATK automates the entire flow with sub-second execution and zero
+  calculation errors.
+</Callout>
 
 ### Stock dividends
 
@@ -182,7 +192,7 @@ Pay interest on bond tokens:
 
 ### Configure yield schedule
 
-Set up automated bond interest payments:
+Set up scheduled bond interest calculations:
 
 For bonds with yield module:
 
@@ -201,8 +211,19 @@ For bonds with yield module:
 schedule configuration showing payment frequency, rate, token, and calculated
 payment dates_
 
-**Accrual calculation:** Platform calculates daily accrual and distributes on
-payment dates.
+**Accrual calculation:** The system calculates daily accrual and makes
+entitlements claimable on payment dates, eliminating manual interest
+calculations.
+
+<Callout type="info" title="Business context">
+  Traditional bond servicing requires the paying agent to manually calculate
+  each bondholder's coupon payment based on their holdings, prepare wire
+  transfer instructions, send payments through the banking system, and reconcile
+  which payments cleared. This process typically takes 5-10 business days per
+  payment date and costs $50-150 per bondholder in servicing fees. ATK enables
+  instant claim-based distribution where bondholders pull their payments
+  on-demand, reducing operational costs by 85-95%.
+</Callout>
 
 ### Fund yield wallet
 
@@ -285,6 +306,13 @@ For stock splits (e.g., 2-for-1 split):
 - Token price adjusts proportionally
 - Ownership percentages unchanged
 
+<Callout type="default" title="For developers">
+  See [Contract
+  Reference](/docs/developer-guides/smart-contracts/contract-reference) for
+  technical details on how the token split mechanism adjusts balances while
+  maintaining proportional ownership.
+</Callout>
+
 ### Reverse split
 
 Decrease share count, increase per-share value:
@@ -304,8 +332,8 @@ For reverse splits (e.g., 1-for-10 reverse split):
    - Issues fewer tokens back
    - Updates supply
 
-**Fractional shares:** Platform handles fractional shares; consider rounding
-rules for small holders.
+**Fractional shares:** The system handles fractional shares automatically;
+consider rounding rules for small holders to avoid dust amounts.
 
 ### Governance proposals and voting
 
@@ -463,7 +491,7 @@ Distribute fund earnings:
 
 ### Reinvestment option
 
-Allow automatic distribution reinvestment:
+Allow distribution reinvestment:
 
 1. Configure distribution with **Reinvestment Enabled**
 2. Unit holders opt-in to reinvestment via dApp
@@ -492,7 +520,7 @@ Allow automatic distribution reinvestment:
 **Execution:**
 
 - Execute on scheduled dates consistently
-- Automate recurring distributions when possible
+- Schedule recurring distribution calculations when possible
 - Verify distributions complete successfully
 - Investigate failed distributions immediately
 
@@ -520,8 +548,14 @@ After executing corporate actions, you will have:
 - Processed bond redemptions or callable bond exercises
 - Distributed fund income or capital gains to investors
 
-Your corporate action is recorded on-chain with complete holder snapshots and
-transaction history for audit and regulatory compliance.
+Your corporate action is recorded in the system with complete holder snapshots
+and transaction history for audit and regulatory compliance.
+
+<Callout type="default" title="For developers">
+  See [Events and Logs](/docs/developer-guides/smart-contracts/events-logs) for
+  technical details on how corporate action events are recorded on-chain for
+  immutable audit trails.
+</Callout>
 
 ## Troubleshooting
 

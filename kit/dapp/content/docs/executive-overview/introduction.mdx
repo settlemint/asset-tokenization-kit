@@ -14,16 +14,22 @@ institutions are adopting it, and what's driving growth in this market. You'll
 understand the core value proposition and market dynamics that make this
 relevant for your organization.
 
-## Key terms
+## Key concepts
 
-Before continuing, familiarize yourself with these concepts:
+Before continuing, understand these business concepts:
 
-- **Token**: Digital representation of an asset on a blockchain
-- **Smart contract**: Self-executing code that enforces rules automatically
-- **Blockchain**: Distributed ledger providing immutable audit trails
-- **Compliance**: Regulatory requirements embedded in token transfer logic
+- **Digital token**: Electronic certificate representing asset ownership
+- **Automated compliance**: Rules enforced instantly without manual intervention
+- **Immutable record**: Transaction history that cannot be altered or deleted
+- **Instant settlement**: Ownership transfers completing in seconds, not days
 
-For detailed definitions, see the [Glossary](/docs/executive-overview/glossary).
+<Callout type="info" title="For technical readers">
+  Looking for implementation details? See the [Architecture
+  section](/docs/architecture) for technical specifications on ERC-3643 tokens,
+  smart contracts, and blockchain infrastructure.
+</Callout>
+
+For complete definitions, see the [Glossary](/docs/executive-overview/glossary).
 
 ## What asset tokenization means
 
@@ -37,10 +43,12 @@ instantly across networks. Settlement completes in seconds rather than days.
 Compliance rules execute automatically through code.
 
 This isn't experimental technology. The tokenized real-world asset market
-reached over $50 billion in 2024. Projections suggest it will exceed $500
-billion in 2025. Yet that remains a small fraction of the $230 trillion global
-asset pool. The gap exists because infrastructure hasn't caught up to
-institutional requirements.
+reached over $50 billion in 2024 (excluding stablecoins). Projections suggest it
+will exceed $500 billion in 2025.
+
+Yet that remains a small fraction of the $230 trillion global asset pool. The
+gap exists because infrastructure hasn't caught up to institutional
+requirements.
 
 ## Why businesses care
 
@@ -51,9 +59,11 @@ equity lockups stretch for years. Real estate requires finding buyers willing to
 purchase entire assets. Fund units trade quarterly at best.
 
 Tokenization fractionalizes ownership. A $10 million commercial property can
-have 10,000 token holders each owning $1,000 worth. Secondary markets become
-feasible because transaction costs drop and settlement happens instantly.
-Holders can exit positions without waiting for fund wind-down schedules.
+have 10,000 token holders each owning $1,000 worth.
+
+Secondary markets become feasible because transaction costs drop and settlement
+happens instantly. Holders can exit positions without waiting for fund wind-down
+schedules.
 
 ### Real-time transparency
 
@@ -62,47 +72,84 @@ an immutable audit trail of every transfer, every compliance check, every
 corporate action.
 
 No three-week wait for a quarterly statement that's already outdated when it
-arrives. Issuers gain real-time cap table visibility. Compliance officers see
-exactly who holds what, where they're located, and whether they meet eligibility
-requirements. Auditors get machine-readable proof instead of reconciling
-multiple spreadsheets.
+arrives.
+
+Benefits across stakeholders:
+
+- **Issuers**: Real-time cap table visibility
+- **Compliance officers**: Exact holder data—who, where, eligibility status
+- **Auditors**: Machine-readable proof instead of spreadsheet reconciliation
 
 ### Operational automation through lifecycle management
 
 Corporate actions—dividends, coupon payments, voting rights,
 redemptions—typically involve manual processes with spreadsheets, email chains,
-and reconciliation work. With tokenization, these operations execute
-programmatically through smart contracts.
+and reconciliation work. Tokenization eliminates this operational overhead by
+automating the entire lifecycle.
 
-**ATK implements this through integrated lifecycle capabilities that competitors
-can't match:**
+**ATK delivers operational capabilities that reduce costs and errors:**
 
-- **Automated yield distributions**: Bond coupon payments, equity dividends, and
-  fund distributions happen automatically through fixed yield schedules.
-  Configure once; distribute on payment dates without manual processing.
-- **Atomic DvP settlement**: Delivery versus payment where asset and cash
-  transfer simultaneously or both revert. True T+0 finality without counterparty
-  risk.
-- **Multi-signature vault custody**: Treasury operations with maker-checker
-  workflows, configurable quorum requirements, and emergency controls.
+- **Scheduled yield management**: Bond coupons, equity dividends, and fund
+  distributions calculate automatically. Configure once during issuance; the
+  system handles all future payments without manual intervention. Token holders
+  receive their distributions on-demand without waiting for wire transfers.
+- **Simultaneous settlement**: Asset and cash transfer together or not at all—
+  eliminating the settlement risk window where one party has paid but the other
+  hasn't delivered. Zero counterparty risk means no need for expensive
+  intermediaries.
+- **Secure treasury controls**: Treasury operations require multiple approvals
+  from designated signers. No single person can move assets unilaterally,
+  protecting against internal fraud and external compromise.
 
-A bond coupon payment? The yield schedule contract automatically distributes
-proportional amounts to all token holders on the payment date. A shareholder
-vote? Token balances at a snapshot block determine voting power, and votes are
-tallied automatically on-chain. A secondary trade? The XvP settlement system
-ensures both asset and payment transfer together atomically. No manual lists, no
-missed notifications, no reconciliation errors.
+<Callout type="info" title="Business impact">
+  Operations teams that spend 40+ hours per month on distributions,
+  reconciliation, and manual transfers reduce this to monitoring automated
+  processes. The cost savings from eliminating manual work typically cover
+  platform costs within the first year.
+</Callout>
+
+Examples in practice:
+
+- **Bond coupon payment**: System calculates what each holder is owed on payment
+  dates; holders claim their payments directly
+- **Shareholder vote**: System determines voting power automatically from
+  holdings; votes are tallied electronically without manual spreadsheets
+- **Secondary trade**: Asset and payment happen simultaneously—both parties
+  receive their value at the exact same moment
+
+No manual lists, no missed notifications, no reconciliation errors.
+
+<Callout type="default" title="For developers">
+  See [smart contract architecture](/docs/architecture/smart-contracts) for
+  technical details on yield schedule contracts, atomic settlement protocols,
+  and multi-signature vault implementations.
+</Callout>
 
 ### Built-in compliance
 
-Compliance rules live in the token itself through smart contract code. Before
-any transfer executes, the system checks whether the recipient is KYC-verified,
-whether they're in an approved jurisdiction, whether the transfer violates
-holding limits or lockup periods.
+Compliance rules are embedded directly into the transfer process. Before any
+ownership change executes, the system automatically verifies:
 
-If a rule is violated, the transfer simply doesn't happen. There's no
-after-the-fact scramble to reverse an illegal transaction. This ex-ante control
-is what regulators expect to see.
+- Recipient identity verification status
+- Jurisdiction eligibility
+- Holding limits and lockup periods
+
+If a rule is violated, the transfer is blocked instantly. There's no
+after-the-fact scramble to reverse an illegal transaction or costly regulatory
+violation. This preventative control architecture is what regulators expect and
+what risk committees require for approval.
+
+**Cost avoidance**: A single compliance violation in traditional securities can
+result in regulatory fines ranging from hundreds of thousands to millions of
+dollars, plus reputational damage. Automated preventative controls eliminate
+this risk category entirely.
+
+<Callout type="default" title="For technical architects">
+  Learn how ERC-3643 compliance modules, OnchainID identity protocols, and rule
+  engines implement these controls in the [Compliance
+  Architecture](/docs/architecture/quality/identity-compliance-control-plane)
+  documentation.
+</Callout>
 
 ## Market momentum
 
@@ -123,9 +170,13 @@ blockchain rails. Siemens issued a €60 million digital bond directly on-chain.
 Franklin Templeton runs an on-chain money market fund.
 
 These aren't experiments. They're production deployments managing real money for
-real clients. The infrastructure is maturing. Custody providers now offer
-institutional-grade key management with insurance and regulatory compliance.
-Settlement networks are building bridges to traditional payment rails.
+real clients.
+
+The infrastructure is maturing:
+
+- Custody providers offer institutional-grade key management with insurance and
+  regulatory compliance
+- Settlement networks build bridges to traditional payment rails
 
 The missing piece? A unified platform that handles the entire lifecycle from
 issuance through ongoing servicing without forcing institutions to integrate
@@ -157,10 +208,16 @@ closes to real-time reporting.
 
 ### Fragmentation
 
-Issuers need one vendor for token creation, another for KYC/AML, a third for
-custody, a fourth for settlement, and a fifth for reporting. Every integration
-point is a risk and a delay. When something breaks, five vendors point fingers
-at each other.
+Issuers need separate vendors for each function:
+
+- Token creation
+- KYC/AML
+- Custody
+- Settlement
+- Reporting
+
+Every integration point is a risk and a delay. When something breaks, five
+vendors point fingers at each other.
 
 ### Compliance gaps
 
@@ -182,18 +239,25 @@ counterparty risk and reconciliation work that eliminates most of the benefit.
 
 ### Enterprise requirements ignored
 
-Banks need on-premises deployment options, single sign-on integration,
-multi-factor authentication, detailed audit logs, and data residency guarantees.
+Banks need critical capabilities:
+
+- On-premises deployment options
+- Single sign-on integration
+- Multi-factor authentication
+- Detailed audit logs
+- Data residency guarantees
+
 Many blockchain platforms assume public chains and multi-tenant SaaS are
 sufficient. They're not.
 
 ## Why this moment matters
 
-The infrastructure pieces are finally aligning. Regulatory clarity is emerging
-across major jurisdictions. Institutional custody providers are live. Settlement
-networks are operational. Blockchain technology has matured past the
-"experiment" phase into production-ready systems capable of handling regulated
-financial instruments at scale.
+The infrastructure pieces are finally aligning:
+
+- Regulatory clarity emerging across major jurisdictions
+- Institutional custody providers live
+- Settlement networks operational
+- Blockchain technology matured past "experiment" phase
 
 Success requires integrated infrastructure that handles the entire lifecycle
 without forcing institutions to become blockchain experts or system integrators.

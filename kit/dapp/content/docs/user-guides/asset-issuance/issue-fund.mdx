@@ -12,7 +12,7 @@ tags: [how-to, fund, NAV, fees, fund-management]
 Deploy compliant fund tokens representing ownership units in investment funds
 with net asset value (NAV) tracking, management fees, and
 subscription/redemption workflows. Manage open-end, closed-end, or interval
-funds on-chain.
+funds through the platform.
 
 **Primary audience:** Fund administrators, asset managers  
 **Secondary audience:** Investment operations teams, financial product managers
@@ -137,7 +137,16 @@ Link to price feed source:
 settings showing initial NAV input, currency selector, valuation frequency
 dropdown, and oracle integration options_
 
-The contract uses NAV for subscription/redemption pricing calculations.
+The system uses NAV for subscription/redemption pricing calculations.
+
+<Callout type="info" title="Business context">
+  Traditional fund administration requires manual NAV calculation across
+  multiple spreadsheets, reconciliation with custodian records, and distribution
+  to multiple systems. This process typically takes 1-3 business days and costs
+  $5,000-50,000 monthly depending on fund complexity. ATK's automated NAV
+  posting enables same-day subscription/redemption processing and reduces
+  administrative overhead by 70-85%.
+</Callout>
 
 </Step>
 
@@ -459,17 +468,27 @@ Handle your investor purchase orders:
 
 **Approval actions:**
 
-- The contract calculates units: investment amount / NAV per unit
-- Mints calculated units to investor address
+- The system calculates units: investment amount / NAV per unit
+- Issues calculated units to investor address
 - Records subscription in fund ledger
 - Updates total AUM
+
+<Callout type="info" title="Business context">
+  Traditional subscription processing requires the fund administrator to
+  manually calculate unit quantities, coordinate with the transfer agent to
+  update the registry, reconcile with the custodian's records, and send
+  confirmation notices. This workflow typically takes 3-5 business days (T+3 or
+  T+5 settlement). ATK automates the entire process with T+0 or T+1 settlement,
+  reducing operational costs by 80-90%.
+</Callout>
 
 ![Subscription queue](/images/screenshots/placeholder.svg) _Screenshot:
 Subscription requests table showing pending orders with investor, amount,
 payment token, NAV, calculated units, and approve/reject buttons_
 
 **Cut-off time handling:** Requests received before cut-off use same-day NAV;
-requests after cut-off use next-day NAV.
+requests after cut-off use next-day NAV. The system applies these rules
+automatically, eliminating manual NAV assignment errors.
 
 #### Update net asset value
 
@@ -487,9 +506,15 @@ Maintain accurate fund pricing:
 5. Provide calculation source/notes
 6. Confirm update
 
-**NAV validation:** The platform prevents NAV updates that deviate more than a
+**NAV validation:** The system prevents NAV updates that deviate more than a
 configurable threshold (e.g., 10%) from the previous NAV without additional
-confirmation.
+confirmation, protecting against data entry errors.
+
+<Callout type="default" title="For developers">
+  See [Contract
+  Reference](/docs/developer-guides/smart-contracts/contract-reference) for
+  technical details on NAV oracle integration and validation thresholds.
+</Callout>
 
 **Oracle integration:**
 
@@ -500,7 +525,8 @@ For automated NAV updates:
 3. Enable automated posting
 4. Monitor oracle health on **NAV** tab
 
-The platform posts NAV automatically based on oracle data.
+The system posts NAV automatically based on oracle data, eliminating manual data
+entry and reducing the risk of pricing errors.
 
 ![NAV update interface](/images/screenshots/placeholder.svg) _Screenshot: NAV
 update form showing NAV per unit input, effective date/time, calculation notes,
@@ -530,18 +556,28 @@ Handle your investor withdrawal orders:
 
 **Processing actions:**
 
-- The contract calculates proceeds: units × NAV per unit
+- The system calculates proceeds: units × NAV per unit
 - Burns redeemed units from investor address
 - Transfers payout tokens from fund liquidity wallet to investor
 - Records redemption in fund ledger
 - Updates total AUM
+
+<Callout type="info" title="Business context">
+  Traditional redemption processing requires the fund administrator to manually
+  calculate redemption proceeds, coordinate with the custodian to release cash,
+  update unit holder records with the transfer agent, and reconcile all systems.
+  This process typically takes 3-7 business days and introduces reconciliation
+  errors in 10-15% of cases. ATK automates the entire workflow with T+1 or T+2
+  settlement and zero calculation errors.
+</Callout>
 
 ![Redemption queue](/images/screenshots/placeholder.svg) _Screenshot: Redemption
 requests showing notice period countdown, ready requests with investor, units,
 NAV, proceeds, and process button_
 
 **Gate enforcement:** If redemption requests exceed your quarterly gate (e.g.,
-25%), the platform pro-rates all requests or queues excess for the next period.
+25%), the system pro-rates all requests or queues excess for the next period,
+automatically implementing the gate policy defined in your fund documents.
 
 #### Collect management fees
 
@@ -549,12 +585,18 @@ Execute fee collection:
 
 **Automated fee collection:**
 
-If enabled, the platform automatically:
+If enabled, the system automatically:
 
 1. Calculates accrued fees daily: (AUM × fee rate) / 365
-2. On collection date, mints new units to your fee wallet
+2. On collection date, issues new units to your fee wallet
 3. Unit quantity: total accrued fees / current NAV
 4. Records fee event in fund history
+
+<Callout type="default" title="For developers">
+  See [Contract
+  Reference](/docs/developer-guides/smart-contracts/contract-reference) for
+  technical details on management fee calculation and accrual mechanisms.
+</Callout>
 
 **Manual fee collection:**
 

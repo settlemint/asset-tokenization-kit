@@ -92,13 +92,14 @@ and every asset using that template automatically inherits the updated logic.
 tokenization platforms stop at token creation. ATK provides complete operational
 infrastructure for the entire asset lifecycle.
 
-**Vault-based custody**: Bank-grade key management with HSM-backed storage,
-multi-signature approval workflows with configurable quorum rules, role-based
-access controls, transaction velocity limits, and formal recovery procedures.
-ATK's vault system implements maker-checker workflows where proposals require
-multiple approvals before execution. Emergency pause capabilities protect
-against compromised accounts. Losing a key triggers a documented recovery
-process with governance oversight rather than meaning asset loss.
+**Vault-based custody**: Multi-signature approval workflows with configurable
+quorum rules, role-based access controls, transaction velocity limits, and
+formal recovery procedures. Compatible with HSM-backed signers (enterprise
+custody providers can sign with HSM-protected keys). ATK's vault system
+implements maker-checker workflows where proposals require multiple approvals
+before execution. Emergency pause capabilities protect against compromised
+accounts. Losing a key triggers a documented recovery process with governance
+oversight rather than meaning asset loss.
 
 Regulated custodian integration lets institutions delegate key management to
 specialists while maintaining visibility and control through the platform. The
@@ -116,9 +117,9 @@ This requires cash to be on-chain via tokenized deposits, regulated stablecoins,
 or Central Bank Digital Currency when available. ATK provides the settlement
 infrastructure that coordinates these atomic exchanges.
 
-**Automated yield distribution**: Fixed yield schedules eliminate manual
-processing of dividends, interest payments, and coupon distributions. Configure
-payment schedules once during issuance, and ATK handles distributions
+**Scheduled yield management**: Fixed yield schedules eliminate manual
+calculation of dividends, interest payments, and coupon entitlements. Configure
+payment schedules once during issuance, and ATK calculates entitlements
 automatically on payment dates. Token holders claim their yields directly
 through smart contracts with cryptographic proof of entitlement. No
 spreadsheets, no reconciliation, no manual wire transfers to thousands of
@@ -318,6 +319,26 @@ where all lifecycle phases operate against a single source of truth. Components
 are architected together, ensuring atomic operations and consistent state across
 the entire platform.
 
+## When to use a DALP vs. point solutions
+
+**Choose a DALP when:**
+
+- Issuing regulated securities requiring audit trails and immutable compliance
+  evidence
+- Managing multiple asset types (bonds, equity, funds) on unified infrastructure
+- Requiring atomic settlement with delivery-versus-payment guarantees
+- Operating under strict enterprise security, audit, and deployment controls
+- Needing institutional-grade custody with recovery procedures and role
+  separation
+- Scaling beyond proof-of-concept to production transaction volumes
+
+**Point solutions may suffice when:**
+
+- Building experimental/pilot projects with no regulatory requirements
+- Tokenizing single asset types with simple transfer rules
+- Operating exclusively on public chains with no custody requirements
+- Accepting manual corporate action processes and off-chain reconciliation
+
 ## What this means for your next tokenization project
 
 When evaluating platforms, ask these questions:
@@ -352,6 +373,22 @@ requirements.
 SettleMint's Asset Tokenization Kit is a production implementation of DALP
 principles—a full-stack platform handling issuance, compliance, custody,
 settlement, and servicing as one coordinated system.
+
+## Key takeaways
+
+- **Unified architecture eliminates integration tax** - DALPs collapse five+
+  vendor relationships into one platform with a single source of truth
+- **Compliance-by-design prevents violations** - Ex-ante controls embedded in
+  transfer logic ensure rules execute before transactions settle
+- **Atomic settlement removes counterparty risk** - DvP settlement guarantees
+  both legs complete or both revert, eliminating reconciliation gaps
+- **Enterprise deployment flexibility** - On-premises, bring-your-own-cloud, or
+  dedicated SaaS options meet institutional control requirements
+- **Production-grade metrics matter** - Demand measurable outcomes (99%+ T+0
+  settlement, zero compliance breaches) rather than roadmap promises
+
+The six DALP laws provide a non-negotiable checklist: platforms missing any
+principle fall short of institutional requirements.
 
 ## Where to next
 

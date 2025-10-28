@@ -58,6 +58,37 @@ ATK's implementation of DALP principles delivers **integrated lifecycle
 management** that competitors can't match. These capabilities aren't add-ons or
 integrations—they're architected into the platform from the ground up:
 
+<Mermaid
+  chart={`flowchart TB
+    Issuance(Issuance<br/>Factory deployment<br/>Compliance setup)
+    Compliance(Compliance<br/>KYC/AML verification<br/>Transfer rules)
+    Custody(Custody<br/>Multi-sig vaults<br/>Role-based access)
+    Settlement(Settlement<br/>DvP atomic swaps<br/>XvP multi-party)
+    Servicing(Servicing<br/>Yield schedules<br/>Corporate actions)
+    
+    Issuance --> Compliance
+    Compliance --> Custody
+    Custody --> Settlement
+    Settlement --> Servicing
+    Servicing -.->|Ongoing| Compliance
+    
+    style Issuance fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Compliance fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Custody fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Settlement fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Servicing fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+`}
+/>
+
+**The asset lifecycle flows through five integrated phases**: Issuance creates
+the token with embedded compliance from deployment. Compliance enforces rules at
+every transfer, validating identity claims and regulatory requirements. Custody
+secures assets in multi-signature vaults with maker-checker workflows.
+Settlement executes atomic transfers where cash and tokens move together or both
+revert. Servicing automates yield calculations, dividend distributions, and
+redemptions. Each phase references the same control plane—no reconciliation
+between vendors.
+
 **Delivery versus Payment (DvP)**: Atomic settlement ensures asset and cash
 transfer simultaneously or both revert. No settlement risk. No reconciliation.
 True T+0 finality. The XvP settlement system coordinates multi-party exchanges
@@ -72,15 +103,15 @@ admin proposes transactions and others approve before execution. Emergency pause
 capabilities protect against compromised accounts. Full audit trails track every
 proposal, approval, and execution.
 
-**Automated Yield Management**: Fixed yield schedules automate dividend,
-interest, and coupon distributions without manual processing. Configure payment
-schedules once, and the platform handles distributions automatically on payment
-dates. Token holders claim their yields directly through smart contracts with
-cryptographic proof of entitlement. No spreadsheets, no reconciliation, no
+**Scheduled Yield Management**: Fixed yield schedules calculate dividend,
+interest, and coupon entitlements automatically without manual processing.
+Configure payment schedules once, and the platform calculates distributions on
+payment dates. Token holders claim their yields directly through smart contracts
+with cryptographic proof of entitlement. No spreadsheets, no reconciliation, no
 manual wire transfers.
 
-These three capabilities—**DvP settlement, vault custody, and yield
-automation**—form the operational backbone that separates institutional-grade
+These three capabilities—**DvP settlement, vault custody, and scheduled yield
+management**—form the operational backbone that separates institutional-grade
 lifecycle platforms from basic token issuance tools. While competitors offer
 pieces through multiple vendors requiring integration, ATK delivers unified
 lifecycle management where these capabilities work together seamlessly.
@@ -92,8 +123,8 @@ promises:
 
 **Bonds (Debt Instruments)**: Fixed or floating rate, with maturity dates,
 coupon payment schedules, redemption mechanics, and collateral tracking. The
-platform automates interest distributions on payment dates and handles
-redemption at maturity without manual reconciliation.
+platform calculates interest entitlements on payment dates for token holders to
+claim, and handles redemption at maturity without manual reconciliation.
 
 **Equities (Company Shares)**: Common or preferred shares with voting rights,
 dividend distributions, cap table management, and shareholder governance. Voting
@@ -121,11 +152,11 @@ events.
 
 **Critically, every asset type gains access to ATK's lifecycle capabilities**:
 bonds use DvP for primary issuance and secondary trading, vaults for secure
-treasury management, and yield schedules for automated coupon payments; equities
-leverage vaults for corporate treasury and yield automation for dividend
-distributions; funds rely on DvP for subscription/redemption settlement and
-vaults for asset custody. The lifecycle management isn't separate—it's how these
-assets operate.
+treasury management, and yield schedules for coupon calculations; equities
+leverage vaults for corporate treasury and yield schedules for dividend
+entitlement tracking; funds rely on DvP for subscription/redemption settlement
+and vaults for asset custody. The lifecycle management isn't separate—it's how
+these assets operate.
 
 ### Regulatory compliance embedded in the architecture
 
@@ -236,15 +267,27 @@ complete monitoring stack pre-configured and integrated.** VictoriaMetrics
 collects metrics, Loki aggregates logs, Tempo traces requests, and Grafana
 provides dashboards—all included in the Helm deployment.
 
-Pre-built dashboards cover every component: Besu blockchain metrics, TheGraph
-indexing status, ERPC gateway performance, database queries, infrastructure
-health, and application-level KPIs. Troubleshoot issues by correlating logs,
-metrics, and traces in one interface. Configure alerting to catch problems
-before they impact users.
+Pre-built dashboards show what operations teams need:
 
-This integrated observability means faster incident resolution, lower
-operational overhead, and elimination of separate SaaS monitoring contracts.
-Operations teams gain visibility from day one without integration projects.
+- Transaction throughput and success rates
+- Compliance check performance and failure reasons
+- System availability and response times
+- Asset-level activity and holder statistics
+
+Alert notifications warn your team before problems impact users. Troubleshoot
+issues by viewing correlated system behavior across all platform components in
+one interface.
+
+**Cost advantage**: Eliminating separate monitoring SaaS contracts saves
+$10,000-50,000+ annually depending on scale. Operations teams gain visibility
+from day one without vendor negotiations or integration work.
+
+<Callout type="default" title="For technical readers">
+  ATK's monitoring stack includes VictoriaMetrics, Loki, Tempo, and Grafana. See
+  [Observability
+  Architecture](/docs/architecture/quality/observability-disaster-recovery) for
+  deployment configuration and custom dashboard creation.
+</Callout>
 
 ### Banking and payment integration
 
@@ -266,80 +309,46 @@ Payment versus Payment (PvP) settlement coordinates multi-leg transactions where
 one token exchanges for another token, with atomicity guarantees ensuring both
 legs complete or both revert.
 
-## How it works (simplified architecture)
+## How ATK delivers value
 
-<Mermaid
-  chart={`
-flowchart TB
-    subgraph UX["User Experience Layer"]
-    UI1(Issuer Portal)
-    UI2(Investor Portal)
-    UI3(Admin Console)
-    UI4(Developer Portal)
-    end
-    
-    subgraph API["API & Business Logic"]
-    ORPC(ORPC API Server)
-    BL(Business Services)
-    end
-    
-    subgraph BC["Blockchain Layer"]
-    BC1(Smart Contracts<br/>ERC-3643 Tokens)
-    BC2(Compliance Modules)
-    BC3(Identity Registry)
-    BC4(Factory Contracts)
-    end
-    
-    subgraph DATA["Data Layer"]
-    DB((PostgreSQL))
-    CACHE((Redis Cache))
-    IDX(The Graph<br/>Indexer)
-    end
-    
-    subgraph EXT["External Integrations"]
-    EXT1(Banking Rails)
-    EXT2(KYC Providers)
-    EXT3(Custody Services)
-    EXT4(Document Storage)
-    end
-    
-    UX --> API
-    API --> BC
-    API --> DATA
-    API --> EXT
-    BC --> DATA
-    
-    style UI1 fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-    style UI2 fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-    style UI3 fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-    style UI4 fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-    
-    style ORPC fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
-    style BL fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
-    
-    style BC1 fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
-    style BC2 fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
-    style BC3 fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
-    style BC4 fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
-    
-    style DB fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
-    style CACHE fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
-    style IDX fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
-    
-    style EXT1 fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-    style EXT2 fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-    style EXT3 fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-    style EXT4 fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-`}
-/>
+ATK is organized around core business functions rather than technical
+components:
 
-The architecture separates concerns: user interfaces for different personas, API
-layer for integration and business logic, blockchain layer for immutable truth
-and compliance enforcement, data layer for performance and querying, and
-external integrations for interoperability with existing systems. Data flows
-bidirectionally—user actions flow down through the API to smart contracts and
-databases; blockchain events flow up through indexers to update the API and user
-interfaces.
+**User-facing applications** provide role-specific interfaces:
+
+- Issuer Portal for creating and managing tokenized assets
+- Investor Portal for viewing holdings and claiming distributions
+- Admin Console for compliance officers and operations teams
+- Developer Portal for technical integrations
+
+**Business logic layer** coordinates workflows:
+
+- Asset lifecycle orchestration from issuance through redemption
+- Compliance verification before every transaction
+- Integration with banking systems, KYC providers, and custody services
+
+**Record-keeping infrastructure** maintains authoritative data:
+
+- Immutable ownership ledger (blockchain-based)
+- Fast-access transaction history and reporting database
+- Real-time indexing for instant portfolio views
+
+**External system connections** enable end-to-end workflows:
+
+- Banking rails for fiat on/off ramps
+- KYC/AML providers for identity verification
+- Custody services for institutional-grade key management
+- Document storage for offering materials and legal files
+
+The platform is architected so every component contributes to one or more
+business outcomes: faster issuance, lower operational costs, regulatory
+compliance confidence, or better investor experience.
+
+<Callout type="default" title="For technical architects">
+  See the [System Architecture](/docs/architecture/system-architecture)
+  documentation for detailed component diagrams, API specifications, smart
+  contract interfaces, and deployment topology options.
+</Callout>
 
 ## Benefits and tangible outcomes
 
@@ -349,9 +358,10 @@ deploy tokens automatically, and the platform eliminates most custom
 development.
 
 **Reduced operational overhead**: Corporate actions that took teams of people
-and multiple days execute automatically. Dividend distributions, coupon
-payments, NAV updates, and redemptions happen programmatically without manual
-calculations or reconciliation.
+and multiple days execute with minimal manual work. Dividend entitlements,
+coupon calculations, NAV updates, and redemptions happen programmatically
+without manual spreadsheet work or reconciliation. Token holders claim their
+distributions on-demand.
 
 **Compliance confidence**: Non-compliant transactions don't execute because
 eligibility checks happen before execution. Regulators see a platform
@@ -359,7 +369,7 @@ architected for control. Risk committees approve deployments faster when the
 architecture demonstrates proper controls.
 
 **Better investor experience**: Real-time holdings visibility, instant
-settlement, automated distributions, and transparent audit trails replace
+settlement, on-demand yield claiming, and transparent audit trails replace
 quarterly statements and opaque processes. Investor support tickets drop because
 the platform provides self-service transparency.
 

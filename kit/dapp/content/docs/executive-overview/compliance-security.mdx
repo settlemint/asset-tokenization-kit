@@ -106,36 +106,48 @@ is reverted. There is no "undo" process because state changes are reverted.
 This ex-ante control is what regulators want to see. Compliance isn't detected
 and corrected after the fact; it's enforced before execution.
 
-### Identity registry and OnchainID integration
+### Identity registry and portable credentials
 
-ATK uses OnchainID, a decentralized identity protocol specifically designed for
-compliance-aware tokenized securities. Each investor gets a persistent, portable
-identity that travels across assets.
+ATK implements reusable digital identity for investors. Each investor completes
+verification once, and that credential works across all assets they're eligible
+to hold.
 
-When you complete KYC/AML verification for one bond issuance, that verification
-carries forward to other investments on the platform. You don't repeat identity
-checks for every asset; your OnchainID accumulates verified claims from trusted
-issuers.
+When an investor completes KYC/AML verification for one bond offering, that
+verification credential carries forward to other investments on the platform.
+Investors don't repeat identity checks for every asset purchase; their digital
+identity accumulates verified credentials from trusted verifiers.
 
-**Identity Claims** are attestations about your identity:
+**Identity credentials** are attestations about investor status:
 
 - "This person completed KYC verification to Level 2 standards on DATE"
 - "This entity is an accredited investor under Regulation D"
 - "This individual is a resident of JURISDICTION"
 - "This institution is a qualified institutional buyer"
 
-Claims are cryptographically signed by trusted verifiers (KYC providers, legal
-counsel, custodians) and attached to your OnchainID. They're revocable if
-circumstances change. They have expiration dates requiring periodic renewal.
+Credentials are digitally signed by trusted verifiers (KYC providers, legal
+counsel, regulatory custodians) and linked to investor identities. They're
+revocable if circumstances change (for example, sanctions list additions). They
+have expiration dates requiring periodic renewal (for example, annual
+accreditation refresh).
 
-The **Identity Registry** maintains the mapping between wallet addresses and
-OnchainID identities. Only registered, verified identities can interact with
-compliant assets. Anonymous wallet addresses get rejected automatically.
+The **Identity Registry** maintains the authoritative list of verified
+investors. Only registered, verified identities can hold compliant assets.
+Unknown wallet addresses get rejected automatically.
 
-This architecture provides reusable identity while respecting privacy. Your full
-identity information doesn't live on a public blockchain. Only cryptographic
-proofs of necessary claims exist on-chain, with detailed PII held by trusted
-verifiers who can respond to legal requests.
+**Privacy protection**: Investor identity information doesn't live on public
+ledgers. Only cryptographic proofs of necessary credentials exist on-chain, with
+detailed personally identifiable information held by trusted verifiers who can
+respond to legal requests. This architecture satisfies both securities
+regulators (who require identity verification) and privacy regulators (who
+restrict PII exposure).
+
+<Callout type="default" title="For technical architects">
+  ATK uses the OnchainID protocol for decentralized identity credentials. See
+  [Identity & Compliance
+  Architecture](/docs/architecture/smart-contracts/identity-compliance) for
+  technical implementation details on claim structures, verification flows, and
+  privacy-preserving designs.
+</Callout>
 
 ### Jurisdictional rule templates and policy engine
 
@@ -146,7 +158,9 @@ classification schemes. Singapore MAS has fit-and-proper requirements.
 ATK's Compliance Engine implements these as configurable rule modules that
 compliance officers activate for specific assets. The Rule Library provides a
 framework for jurisdiction-specific compliance including US (Regulation D,
-Regulation S), EU (MiCA, MiFID II), Singapore (MAS), and UK (FCA) requirements.
+Regulation S), EU (MiCA, MiFID II), Singapore MAS (Monetary Authority of
+Singapore) under the Payment Services Act and Securities and Futures Act, and UK
+(FCA) requirements.
 
 **Configurable compliance modules enforce:**
 
@@ -310,24 +324,37 @@ to help users but cannot approve transactions. Compliance officers can approve
 investors but cannot move assets. Treasury managers can distribute funds but
 cannot change compliance rules.
 
-### Hardware security modules and custody integration
+### Hardware security and institutional custody
 
-Private keys controlling substantial value require hardware protection. ATK is
-architected to integrate with HSMs (Hardware Security Modules) that store keys
-in tamper-resistant hardware (integration roadmap).
+Private keys controlling substantial value require institutional-grade
+protection. ATK is architected to integrate with hardware security modules
+(HSMs) that store keys in tamper-resistant devices meeting banking standards
+(integration roadmap).
 
-**HSM benefits:**
+**Hardware security advantages:**
 
-- Keys never leave the secure enclave
-- Signing operations happen inside tamper-proof hardware
-- Physical security controls protect against theft
-- Audit logs track every use of every key
-- Cryptographic evidence proves which keys signed which transactions
+- Private keys never leave secure hardware enclaves
+- Cryptographic operations happen inside tamper-proof devices
+- Physical security controls (locks, sensors, destruction mechanisms) protect
+  against theft
+- Audit logs track every use of every private key
+- Cryptographic evidence proves exactly which keys signed which transactions
 
-**For institutions that already use custodians**, ATK is designed to integrate
-with enterprise custodians like Fireblocks, Coinbase Custody, Copper, and Metaco
-(integration roadmap). The goal is to let institutions keep existing custody
-relationships while gaining ATK's lifecycle management capabilities.
+**For institutions with existing custody relationships**, ATK is designed to
+integrate with enterprise custodians including Fireblocks, Coinbase Custody,
+Copper, and Metaco (integration roadmap). The goal: let institutions keep
+existing, approved custody arrangements while gaining ATK's lifecycle management
+capabilities.
+
+**Risk mitigation**: Hardware security and enterprise custody reduce the primary
+digital asset risk—private key theft or loss—to levels acceptable for
+institutional balance sheet risk management.
+
+<Callout type="default" title="For technical teams">
+  See [Security Architecture](/docs/architecture/quality/security-validation)
+  for HSM integration specifications, custody provider API requirements, and key
+  ceremony procedures.
+</Callout>
 
 ### Network security and access controls
 

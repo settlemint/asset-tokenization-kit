@@ -155,7 +155,7 @@ Configuration adapts to selected asset type:
 **Equity features:**
 
 - Voting mechanism (on-chain governance integration)
-- Dividend policy (automatic distribution, claimable)
+- Dividend policy (scheduled calculation, claimable)
 - Share class (common, preferred, non-voting)
 - Anti-dilution protection
 
@@ -344,11 +344,11 @@ For assets with payment features:
 - Set payment date
 - Preview per-holder allocation (pro-rata calculation)
 
-**Automated distributions:**
+**Scheduled distributions:**
 
 - Configure recurring schedules (quarterly coupons)
-- Link to bank account for automatic funding
-- Set up notifications (email holders before payment)
+- Link yield wallet for claim-based funding
+- Set up notifications (email holders before payment date)
 
 #### Permissions tab (permissions.tsx)
 
@@ -526,9 +526,9 @@ Interface: Token dashboard → Actions tab
    - Transfer stablecoin to distribution contract
    - Or authorize payment from linked bank account
 7. Submit transaction:
-   - Execute distribution on-chain
-   - Each holder can claim their portion
-   - Or system pushes to holder wallets automatically
+   - Execute distribution schedule on-chain
+   - System calculates entitlements for each holder
+   - Holders claim their portion on-demand
 8. Confirm completion:
    - View distribution receipt
    - Export payment proof for accounting

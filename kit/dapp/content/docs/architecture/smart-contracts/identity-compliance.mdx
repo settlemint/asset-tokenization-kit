@@ -204,6 +204,53 @@ regulatory compliance across different jurisdictions and use cases. Each module
 implements specific compliance rules that can be configured per-token while
 sharing global infrastructure.
 
+### Compliance check sequence
+
+Before diving into module architecture, understand how compliance checks execute
+during a transfer:
+
+<Mermaid
+  chart={`sequenceDiagram
+    participant User
+    participant Token as Token Contract
+    participant Compliance as Compliance Engine
+    participant IR as Identity Registry
+    participant Module as Compliance Modules
+    
+    User->>Token: transfer(to, amount)
+    Token->>Compliance: canTransfer(from, to, amount)?
+    
+    Compliance->>IR: getIdentity(from)
+    IR-->>Compliance: fromIdentity
+    
+    Compliance->>IR: getIdentity(to)
+    IR-->>Compliance: toIdentity
+    
+    loop Each Configured Module
+        Compliance->>Module: canTransfer(token, from, to, amount)
+        alt Module Allows
+            Module-->>Compliance: true
+        else Module Blocks
+            Module-->>Compliance: false (reason)
+            Compliance-->>Token: ❌ Revert with reason
+            Token-->>User: ❌ Transfer blocked
+        end
+    end
+    
+    Compliance-->>Token: ✅ All checks passed
+    Token->>Token: executeTransfer()
+    Token-->>User: ✅ Transfer complete
+`}
+/>
+
+**Compliance enforcement is pre-transfer validation**: Every transfer request
+passes through the compliance engine before execution. The engine loads both
+sender and recipient identities from the registry, then evaluates each
+configured module sequentially. If any module returns false, the entire transfer
+reverts with a specific reason code. Only when all modules pass does the token
+contract execute the state change. This architecture ensures non-compliant
+transfers never execute, not even temporarily.
+
 ### Architecture overview
 
 <Mermaid chart={`

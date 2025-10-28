@@ -16,8 +16,8 @@ coupon payments, and redemption with embedded compliance controls.
 markets teams evaluating faster execution and reduced operational overhead.
 
 **Business value:** Cut issuance timelines by 80%, eliminate transfer agent
-fees, automate quarterly coupon distributions, and gain real-time cap table
-visibility.
+fees, calculate quarterly coupon entitlements with on-demand claiming, and gain
+real-time cap table visibility.
 
 ## Business challenge
 
@@ -72,8 +72,8 @@ flowchart TB
 
 - **DvP settlement** for atomic primary distribution and secondary trading
 - **Vault custody** for secure treasury management with multi-signature controls
-- **Automated yield** for quarterly coupon distributions without manual
-  processing
+- **Scheduled yield calculations** for quarterly coupon entitlements without
+  manual spreadsheet work
 
 ### Configuration and deployment
 
@@ -84,8 +84,8 @@ offering to accredited US investors.
 
 The platform generates the smart contract with compliance controls embedded.
 **Critically, ATK also deploys a fixed yield schedule contract that will
-automate quarterly coupon payments** and connects the bond to the XvP settlement
-system for atomic trading.
+calculate quarterly coupon entitlements for claim-based distribution** and
+connects the bond to the XvP settlement system for atomic trading.
 
 MidCorp uploads their offering memorandum, which gets cryptographically hashed
 and linked to the token metadata. Legal documentation remains permanently
@@ -112,18 +112,18 @@ The platform enforces that every recipient meets eligibility requirements,
 eliminating risk of non-compliant distribution. Settlement is instant with T+0
 finality. No reconciliation required.
 
-### Automated coupon payments via yield schedules
+### Scheduled coupon calculations via yield schedules
 
-**ATK's fixed yield schedule contract automates quarterly distributions without
-manual processing.** Every quarter, the yield system calculates interest owed to
-each holder based on proportional ownership at the snapshot block. Token holders
-claim their coupons directly through the smart contract with cryptographic proof
-of entitlement.
+**ATK's fixed yield schedule contract calculates quarterly entitlements without
+manual spreadsheet work.** Every quarter, the yield system calculates interest
+owed to each holder based on proportional ownership at the snapshot block. Token
+holders claim their coupons directly through the smart contract with
+cryptographic proof of entitlement.
 
-The platform triggers distributions through:
+The platform supports claims through:
 
-- **Tokenized cash settlement** – Automated distributions when investors hold
-  stablecoins or tokenized deposits
+- **Tokenized cash settlement** – Token holders claim their distributions when
+  stablecoins or tokenized deposits fund the yield wallet
 - **Off-chain payment adapters** – Integration with treasury systems for
   traditional wire/ACH settlement (roadmap)
 - **Manual approval workflows** – For jurisdictions requiring human review
@@ -131,9 +131,9 @@ The platform triggers distributions through:
 
 **This eliminates the nightmare of calculating payments for hundreds of
 investors, generating wire instructions, and reconciling settlements.** The
-yield schedule is configured once during issuance; distributions happen
-automatically on payment dates. No spreadsheets. No transfer agent. No manual
-wire transfers.
+yield schedule is configured once during issuance; entitlements are calculated
+automatically on payment dates, and investors claim their coupons on-demand. No
+spreadsheets. No transfer agent. No manual wire transfers.
 
 ### Vault custody for treasury operations
 
@@ -166,14 +166,14 @@ compliance check throughout the lifecycle.
 
 ## Key capabilities
 
-| Capability                 | Traditional                            | With ATK                                  |
-| -------------------------- | -------------------------------------- | ----------------------------------------- |
-| **Issuance timeline**      | 8-12 weeks                             | Days                                      |
-| **Settlement**             | T+2 to T+5                             | Instant atomic finality                   |
-| **Coupon processing**      | Manual calculation & wire instructions | Automated scheduler with payment adapters |
-| **Cap table updates**      | Monthly from transfer agent            | Real-time on-chain                        |
-| **Compliance enforcement** | Post-trade surveillance                | Pre-transfer validation                   |
-| **Transfer agent fees**    | Ongoing quarterly fees                 | Eliminated                                |
+| Capability                 | Traditional                            | With ATK                                       |
+| -------------------------- | -------------------------------------- | ---------------------------------------------- |
+| **Issuance timeline**      | 8-12 weeks                             | Days                                           |
+| **Settlement**             | T+2 to T+5                             | Instant atomic finality                        |
+| **Coupon processing**      | Manual calculation & wire instructions | Scheduled calculations with on-demand claiming |
+| **Cap table updates**      | Monthly from transfer agent            | Real-time on-chain                             |
+| **Compliance enforcement** | Post-trade surveillance                | Pre-transfer validation                        |
+| **Transfer agent fees**    | Ongoing quarterly fees                 | Eliminated                                     |
 
 ## Measurable outcomes
 

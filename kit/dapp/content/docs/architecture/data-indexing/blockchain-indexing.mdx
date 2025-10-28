@@ -12,6 +12,44 @@ subgraph indexes all smart contract state—tokens, balances, compliance rules,
 identities—enabling fast, complex queries that would be prohibitively expensive
 to execute directly against contracts.
 
+## Data pipeline architecture
+
+The complete data flow from blockchain events to frontend display follows a
+multi-stage pipeline:
+
+<Mermaid
+  chart={`flowchart LR
+    Contracts(Smart Contracts<br/>Emit events<br/>Store state)
+    Subgraph(TheGraph Subgraph<br/>Index events<br/>Build entities)
+    Database(PostgreSQL<br/>Application data<br/>User preferences)
+    ORPC(ORPC API<br/>Merge sources<br/>Enforce auth)
+    Frontend(React Frontend<br/>TanStack Query<br/>Display data)
+    
+    Contracts -->|Events: Transfer, Mint, Burn| Subgraph
+    Subgraph -->|GraphQL queries| ORPC
+    Database -->|SQL queries| ORPC
+    ORPC -->|Type-safe procedures| Frontend
+    
+    style Contracts fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Subgraph fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Database fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style ORPC fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Frontend fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+`}
+/>
+
+**The data pipeline enforces separation of concerns**: Smart contracts emit
+events whenever state changes (transfers, mints, compliance updates). TheGraph
+subgraph listens for these events, processes them through handler logic, and
+stores structured entities in a queryable GraphQL database. The ORPC API layer
+acts as the single data gateway—it queries TheGraph for blockchain state,
+PostgreSQL for application data (user preferences, off-chain metadata), merges
+both sources, and applies authentication. The frontend never touches TheGraph or
+PostgreSQL directly; it only calls typed ORPC procedures through TanStack Query.
+This architecture enables fast queries (subgraph pre-indexes everything),
+security (ORPC enforces auth), and flexibility (easy to add data sources without
+changing frontend code).
+
 ## Architecture: Frontend → ORPC → TheGraph
 
 **CRITICAL**: The frontend never queries TheGraph directly. All blockchain data
@@ -21,32 +59,32 @@ data enrichment before querying TheGraph:
 <Mermaid
   chart={`flowchart TB
     subgraph "Frontend Layer"
-        UI("React Components<br/>(TanStack Query)")
+        UI(React Components<br/>TanStack Query)
     end
     
-    subgraph "API Layer (ORPC)"
-        Procedures("ORPC Procedures<br/>(/api/rpc)")
-        Middleware("Middleware<br/>(Auth, validation)")
-        TheGraphClient("TheGraph Client<br/>(in procedure handlers)")
+    subgraph "API Layer - ORPC"
+        Procedures(ORPC Procedures<br/>/api/rpc)
+        Middleware(Middleware<br/>Auth, validation)
+        TheGraphClient(TheGraph Client<br/>in procedure handlers)
     end
     
     subgraph "Data Layer"
-        Subgraph("TheGraph Subgraph<br/>(GraphQL API)")
-        DB("PostgreSQL<br/>(Application Data)")
+        Subgraph(TheGraph Subgraph<br/>GraphQL API)
+        DB(PostgreSQL<br/>Application Data)
     end
     
     subgraph "Blockchain"
-        Contracts("Smart Contracts<br/>(State & Events)")
+        Contracts(Smart Contracts<br/>State &amp; Events)
     end
     
-    UI -->|"orpc.token.list.query()"| Procedures
+    UI -->|orpc.token.list.query()| Procedures
     Procedures --> Middleware
     Middleware --> TheGraphClient
     Middleware --> DB
-    TheGraphClient -->|"GraphQL query"| Subgraph
+    TheGraphClient -->|GraphQL query| Subgraph
     
-    Contracts -->|"Events emitted"| Subgraph
-    Subgraph -->|"Indexed data"| TheGraphClient
+    Contracts -->|Events emitted| Subgraph
+    Subgraph -->|Indexed data| TheGraphClient
     
     style UI fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
     style Procedures fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff

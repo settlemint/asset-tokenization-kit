@@ -18,10 +18,33 @@ bonds
 teams
 
 <Mermaid
-  chart={
-    "graph TB\n    A(Configure Bond<br/>Parameters) --> B(Set Compliance<br/>Rules)\n    B --> C(Assign Operational<br/>Roles)\n    C --> D(Deploy Bond<br/>Contract)\n    D --> E(Mint Initial<br/>Allocation)\n    E --> F{Yield Enabled?}\n    F -->|Yes| G(Fund Yield<br/>Wallet)\n    F -->|No| H(Monitor Lifecycle)\n    G --> I(Process Coupon<br/>Payments)\n    I --> J{Maturity Date<br/>Reached?}\n    J -->|No| I\n    J -->|Yes| K(Execute Maturation)\n    H --> J\n    K --> L(Handle Redemptions)\n    L --> M(Bond Lifecycle<br/>Complete)\n    style A fill:#0EA5E9\n    style D fill:#0EA5E9\n    style E fill:#0EA5E9\n    style I fill:#10B981\n    style K fill:#10B981\n    style L fill:#10B981\n    style M fill:#6366F1"
-  }
+  chart={`flowchart TB
+    Issued(Issued<br/>Tokens minted<br/>Compliance active)
+    Active(Active<br/>Trading enabled<br/>Yield accruing)
+    Matured(Matured<br/>Reached maturity date<br/>Redemption enabled)
+    Redeemed(Redeemed<br/>All tokens burned<br/>Lifecycle complete)
+    
+    Issued -->|Time passes| Active
+    Active -->|Maturity date reached| Matured
+    Matured -->|Holders redeem| Redeemed
+    
+    Active -.->|Coupon payments| Active
+    
+    style Issued fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Active fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Matured fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Redeemed fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+`}
 />
+
+**Bond tokens progress through four lifecycle states**: Issued state begins at
+deployment when initial tokens are minted and compliance rules become active.
+Active state covers the trading period where holders can transfer bonds (subject
+to compliance checks) and claim coupon payments if yield is enabled. Matured
+state triggers at the configured maturity date, enabling redemption but
+typically freezing secondary trading. Redeemed state marks the end when all
+tokens have been burned in exchange for denomination assets. The state machine
+enforces proper sequencing—bonds cannot skip states or move backward.
 
 ## Before you start
 
@@ -132,11 +155,11 @@ asset address field with validation_
 
 ### 3. Configure yield distribution (optional)
 
-You can enable automated interest/coupon payments through the yield add-on.
+You can enable scheduled interest/coupon calculations through the yield add-on.
 
 **Note:** The yield module is an optional add-on. You must explicitly enable it
-during bond creation. Bonds deployed without this add-on cannot distribute
-automated coupon payments.
+during bond creation. Bonds deployed without this add-on cannot support
+scheduled coupon calculations and claim-based distributions.
 
 #### Yield schedule setup
 
@@ -162,21 +185,33 @@ payment date picker, and yield rate input with basis points calculator_
 
 #### Payment mechanism
 
-The yield module calculates distributions based on:
+The yield module automates coupon distribution calculations based on:
 
-- **Yield basis** - Face value per token
-- **Yield token** - Denomination asset (USDC, USDT, etc.)
-- **Holder proportions** - Automatic pro-rata calculation
+- **Bond terms** - Face value and interest rate you configured
+- **Payment currency** - Denomination asset (USDC, USDT, stablecoins, etc.)
+- **Holder proportions** - Automatic pro-rata calculation across all bondholders
 
 When a payment date arrives:
 
-1. The contract snapshots current token holders
-2. Calculates yield owed: (tokens held × face value × rate × time elapsed)
-3. Transfers yield tokens from your designated yield wallet
-4. Distributes proportionally to all holders
+1. The system captures who holds bonds at that moment
+2. Calculates what each holder is owed based on their holdings
+3. Token holders claim their interest payments directly through the investor
+   portal
+4. Each holder receives the correct proportion based on their bond holdings
 
-**Funding requirement:** Ensure your designated yield wallet holds sufficient
-denomination assets before each payment date.
+**Funding requirement:** Ensure your designated payment wallet holds sufficient
+funds before each payment date so bondholders can claim their interest. The
+platform shows you exactly how much funding is required for upcoming payments.
+
+<Callout type="info" title="Business context">
+  Traditional bond administration requires collecting bondholder lists,
+  calculating interest manually, coordinating hundreds or thousands of wire
+  transfers, and reconciling which payments cleared. This process typically
+  takes 5-10 business days and costs $50-200 per bondholder depending on
+  transfer agent fees. ATK eliminates this operational overhead—bondholders
+  claim their interest on-demand, and the system tracks everything
+  automatically.
+</Callout>
 
 </Step>
 
@@ -412,15 +447,15 @@ Your investors can verify document authenticity by comparing hashes.
 
 #### Monitor yield distributions
 
-Track your automated coupon payments:
+Track scheduled coupon calculations and claims:
 
 1. Navigate to **Yield** tab on bond details page
 2. Review upcoming payment schedule
-3. Monitor past distributions:
+3. Monitor past claims:
    - Payment date
-   - Amount distributed
-   - Recipients count
-   - Transaction hash
+   - Amount claimed
+   - Claimants count
+   - Transaction hashes
 
 ![Yield distribution history](/images/screenshots/placeholder.svg) _Screenshot:
 Yield tab showing upcoming payments schedule and historical distributions table
@@ -510,12 +545,13 @@ After completing these steps, you will have:
 - Configured compliance rules matching your regulatory framework
 - Assigned operational roles to designated wallet addresses
 - Minted initial bond allocations to verified investors
-- (Optional) Funded yield wallet for automated coupon payments
+- (Optional) Funded yield wallet for scheduled coupon calculations
 - Linked offering documents with on-chain hash verification
 
 Your bond token is now live and can process transfers according to your
-compliance rules. If you enabled the yield add-on, coupon payments will
-distribute automatically on your configured schedule.
+compliance rules. If you enabled the yield add-on, coupon entitlements will be
+calculated automatically on your configured schedule, and token holders can
+claim their coupons on-demand.
 
 ## Troubleshooting
 
@@ -525,11 +561,11 @@ distribute automatically on your configured schedule.
 - Check the denomination asset has a `decimals()` function
 - Ensure the denomination asset is not a proxy without proper interface
 
-**Yield distribution reverts:**
+**Yield claiming reverts:**
 
 - Check your yield wallet has sufficient denomination asset balance
 - Verify the yield token address matches the denomination asset
-- Ensure all holders have verified OnchainIDs
+- Ensure the claimant has a verified OnchainID
 
 **Cannot mature bond:**
 
@@ -548,22 +584,57 @@ distribute automatically on your configured schedule.
 
 - The yield module must be enabled during bond creation
 - You cannot add the yield module to existing bonds
-- Redeploy with the yield add-on enabled if automated coupon payments are
+- Redeploy with the yield add-on enabled if scheduled coupon calculations are
   required
 
 For additional help, see
 [Troubleshooting](/docs/user-guides/onboarding/troubleshooting) or
 
-## Related resources
+## Next steps
 
-- [Corporate actions](/docs/user-guides/asset-issuance/corporate-actions) -
-  Execute dividends, splits, and other lifecycle events
-- [Manage investors](/docs/user-guides/operations/manage-investors) - Onboard
-  new bondholders and manage compliance
-- [Fiat bridge](/docs/user-guides/operations/fiat-bridge) - Configure
-  traditional payment rail integration
+After successfully issuing your bond token:
 
-Additional references:
+**Onboard investors**
 
+- Follow [Manage investors](/docs/user-guides/operations/manage-investors) to
+  verify and whitelist bondholders
+- Ensure each investor has required OnchainID claims before minting bonds
+
+**Execute corporate actions**
+
+- Review [Corporate actions](/docs/user-guides/asset-issuance/corporate-actions)
+  for dividend distributions and special events
+- Set up yield schedules for recurring coupon calculations and claim-based
+  distributions
+
+**Monitor compliance and operations**
+
+- Use the compliance dashboard to track transfer restrictions and violations
+- Configure alerts for low yield wallet balances before payment dates
+- Review holder reports and transaction history regularly
+
+**Integrate payment rails**
+
+- Set up [Fiat bridge](/docs/user-guides/operations/fiat-bridge) to connect
+  traditional banking for off-chain settlement
+- Configure SWIFT/SEPA messaging for institutional investors
+
+## See also
+
+**Related guides:**
+
+- [Issue equity](/docs/user-guides/asset-issuance/issue-equity) - Tokenize
+  shares with voting rights
+- [Issue a fund](/docs/user-guides/asset-issuance/issue-fund) - Create
+  investment fund tokens
+- [Getting started](/docs/user-guides/getting-started) - Complete platform setup
+  tutorial
+
+**Reference documentation:**
+
+- [Bond contract reference](/docs/developer-guides/smart-contracts/bond-contract) -
+  Technical implementation details
+- [Compliance modules](/docs/developer-guides/smart-contracts/compliance-modules) -
+  Available restriction rules
 - [Troubleshooting](/docs/user-guides/onboarding/troubleshooting) - Resolve
   common bond token issues

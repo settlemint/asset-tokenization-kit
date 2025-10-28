@@ -405,18 +405,52 @@ This command:
 **Warning:** This destroys all local data. Use when troubleshooting or starting
 a new feature.
 
+## Expected results
+
+After completing this setup guide, you should have:
+
+**Running services:**
+
+- Local Ethereum node (Anvil) producing blocks every 12 seconds
+- PostgreSQL database with initialized schema
+- TheGraph node indexing blockchain events
+- TanStack Start dApp serving on http://localhost:3000
+- Blockscout explorer showing genesis contracts
+
+**Working development loop:**
+
+- Smart contract changes trigger automatic recompilation and artifact generation
+- Frontend code changes hot-reload instantly without manual refresh
+- Database migrations apply successfully via Drizzle ORM
+- GraphQL queries return indexed blockchain data from subgraph
+
+**Verification checklist:**
+
+- [ ] dApp loads at http://localhost:3000 without errors
+- [ ] Network indicator shows "ATK (Chain ID: 1337)" with incrementing block
+      height
+- [ ] Database migrations complete successfully
+- [ ] Graph Node GraphQL playground responds at http://localhost:8000
+- [ ] Blockscout explorer displays genesis block and system contracts
+- [ ] Browser console shows no critical errors (some dev warnings OK)
+
+If any verification step fails, refer to the troubleshooting section below.
+
 ## Next steps
 
 Now that your environment is running:
 
 - **Deploy your first token**: Follow the
-  [Getting started](/user-guides/getting-started) tutorial
+  [Getting started](/docs/user-guides/getting-started) tutorial
 - **Explore the codebase**: See
   [Code structure](/docs/developer-guides/architecture)
 - **Extend smart contracts**: Read
-  [Extending contracts](/developer-guides/smart-contracts/extending-contracts)
+  [Extending contracts](/docs/developer-guides/smart-contracts/extending-contracts)
 - **Build API integrations**: Learn the
-  [API reference](/developer-guides/api-integration/api-reference)
+  [API reference](/docs/developer-guides/api-integration/api-reference)
+- **Run the test suite**: Execute `bun run test` to verify code quality
+- **Configure CI/CD**: Review
+  [Deployment guide](/docs/developer-guides/deployment) for production setup
 
 ## Common issues
 

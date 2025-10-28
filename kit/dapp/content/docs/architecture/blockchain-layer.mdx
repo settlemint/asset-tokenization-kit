@@ -60,12 +60,12 @@ enforces peg maintenance and reserves verification.
 **Extension modules** add optional functionality through composition.
 `SMARTBurnable` allows administrators to permanently destroy tokens for
 regulatory compliance. `SMARTRedeemable` enables investors to self-burn tokens
-triggering off-chain redemption workflows. `SMARTYield` automates dividend
-distributions calculating payments proportional to holdings. `SMARTPausable`
-provides emergency stop mechanism during security incidents. `SMARTCustodian`
-implements freeze and force transfer capabilities for legal orders.
-`SMARTHistoricalBalances` maintains balance snapshots for point-in-time queries
-supporting governance and reporting.
+triggering off-chain redemption workflows. `SMARTYield` schedules dividend
+entitlement calculations with payments claimable proportional to holdings.
+`SMARTPausable` provides emergency stop mechanism during security incidents.
+`SMARTCustodian` implements freeze and force transfer capabilities for legal
+orders. `SMARTHistoricalBalances` maintains balance snapshots for point-in-time
+queries supporting governance and reporting.
 
 **Factory pattern deployment** uses deterministic CREATE2 addresses. Factory
 contracts validate configuration parameters before deploying token instances.
