@@ -68,7 +68,7 @@ export function DocsLayout({ tree, children }: DocsLayoutProps) {
               </Button>
             </div>
           </header>
-          <div className="flex h-[calc(100vh-64px)] flex-row rounded-tl-xl bg-background">
+          <div className="flex h-[calc(100vh-64px)] px-8 py-2 flex-row rounded-tl-xl bg-background">
             {children}
           </div>
         </SidebarInset>
