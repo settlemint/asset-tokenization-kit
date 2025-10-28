@@ -14,7 +14,7 @@ var docs = defineDocs({
        * Falls back to `title` if not provided.
        * @example "Business Value"
        */
-      navTitle: z.string().optional(),
+      pageTitle: z.string().optional(),
       /**
        * Meta description for SEO.
        * Used in search engine results and social media previews.
