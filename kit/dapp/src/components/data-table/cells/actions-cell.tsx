@@ -13,7 +13,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { CircleAlert, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import type { ReactNode } from "react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -117,13 +117,7 @@ export function ActionsCell({
                   rel="noopener noreferrer"
                   className="flex items-center"
                 >
-                  {action.icon && (
-                    <span className="mr-2 [&>svg]:text-muted-foreground [&>svg]:transition-colors">
-                      {action.icon}
-                    </span>
-                  )}
-                  {action.label}
-                  <DisabledTooltip action={action} />
+                  <ActionContent action={action} />
                 </a>
               </DropdownMenuItem>
             ) : (
@@ -131,13 +125,7 @@ export function ActionsCell({
                 onClick={createItemClickHandler(action)}
                 disabled={action.disabled}
               >
-                {action.icon && (
-                  <span className="mr-2 [&>svg]:text-muted-foreground [&>svg]:transition-colors">
-                    {action.icon}
-                  </span>
-                )}
-                {action.label}
-                <DisabledTooltip action={action} />
+                <ActionContent action={action} />
               </DropdownMenuItem>
             )}
             {action.separator === "after" && <DropdownMenuSeparator />}
@@ -148,14 +136,24 @@ export function ActionsCell({
   );
 }
 
-const DisabledTooltip = ({ action }: { action: ActionItem }) => {
+const ActionContent = ({ action }: { action: ActionItem }) => {
+  const actionContent = (
+    <>
+      {action.icon && (
+        <span className="mr-2 [&>svg]:text-muted-foreground [&>svg]:transition-colors">
+          {action.icon}
+        </span>
+      )}
+      {action.label}
+    </>
+  );
   if (!action.disabled || !action.disabledMessage) {
-    return null;
+    return actionContent;
   }
   return (
     <Tooltip>
       <TooltipTrigger className="pointer-events-auto">
-        <CircleAlert />
+        {actionContent}
       </TooltipTrigger>
       <TooltipContent side="top">{action.disabledMessage}</TooltipContent>
     </Tooltip>

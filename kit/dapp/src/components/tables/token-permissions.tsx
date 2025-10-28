@@ -14,6 +14,11 @@ import { createStrictColumnHelper } from "@/components/data-table/utils/typed-co
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { ChangeTokenRolesSheet } from "@/components/manage-dropdown/sheets/change-role/change-token-roles-sheet";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { getAccessControlEntries } from "@/orpc/helpers/access-control-helpers";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import type { AccessControlRoles } from "@atk/zod/access-control-roles";
@@ -131,17 +136,27 @@ export const TokenPermissionsTable = withErrorBoundary(
             enableFilters: true,
             enableExport: true,
             enableViewOptions: true,
-            customActions: (
+            customActions: canGrant ? (
               <Button
                 size="sm"
                 onClick={() => {
                   setPresetAccount(undefined);
                   setOpenChangeRoles(true);
                 }}
-                disabled={!canGrant}
               >
                 {t("tokens:permissions.changeRoles.cta")}
               </Button>
+            ) : (
+              <Tooltip>
+                <TooltipTrigger className="pointer-events-auto">
+                  <Button size="sm" disabled={true}>
+                    {t("tokens:permissions.changeRoles.cta")}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="left">
+                  {t("tokens:permissions.changeRoles.notAuthorized")}
+                </TooltipContent>
+              </Tooltip>
             ),
             placeholder: t("tokens:permissions.searchPlaceholder"),
           }}
@@ -186,9 +201,10 @@ function RowActions({
     {
       label: t("tokens:permissions.changeRoles.cta"),
       onClick: () => {
-        onOpenChangeRoles(row.id as unknown as EthereumAddress);
+        onOpenChangeRoles(row.id as EthereumAddress);
       },
       disabled: !canChangeRoles,
+      disabledMessage: t("tokens:permissions.changeRoles.notAuthorized"),
     },
   ];
 

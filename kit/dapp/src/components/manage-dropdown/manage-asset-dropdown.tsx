@@ -81,7 +81,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   const userWallet = session?.user?.wallet;
 
   const hasTokenPermissions = Object.values(
-    system.userPermissions?.roles ?? {}
+    asset.userPermissions?.roles ?? {}
   ).some(Boolean);
 
   const isPaused = asset.pausable?.paused ?? false;
@@ -219,7 +219,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
           label: t("tokens:actions.freezePartial.label"),
           icon: Lock,
           openAction: "freezePartial",
-          disabled: isPaused || !canMint,
+          disabled: isPaused || !canFreezePartial,
           disabledMessage: canFreezePartial
             ? t("tokens:actions.tokenPaused")
             : t("tokens:actions.freezePartial.notAuthorized"),
@@ -262,12 +262,12 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
 
     if (hasTokenPermissions) {
       // Set yield schedule only visible for bond tokens without existing schedule
-      const hasYieldScheduleCapability =
-        asset.extensions.includes(AssetExtensionEnum.YIELD) &&
-        !asset.yield?.schedule;
+      const hasYieldScheduleCapability = asset.extensions.includes(
+        AssetExtensionEnum.YIELD
+      );
       const canSetYieldSchedule =
         asset.userPermissions?.actions?.setYieldSchedule;
-      if (hasYieldScheduleCapability) {
+      if (hasYieldScheduleCapability && !asset.yield?.schedule) {
         arr.push({
           id: "setYieldSchedule",
           label: t("tokens:actions.setYieldSchedule.label"),
@@ -307,7 +307,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
       // Withdraw denomination asset option
       const canWithdrawDenominationAsset =
         asset.userPermissions?.actions?.withdrawDenominationAsset;
-      if (canWithdrawDenominationAsset) {
+      if (hasYieldScheduleCapability) {
         arr.push({
           id: "withdrawDenominationAsset",
           label: t("tokens:actions.withdrawDenominationAsset.label"),
@@ -404,7 +404,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
             >
               {action.disabled ? (
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger asChild>
                     <div className="flex items-center gap-2 pointer-events-auto">
                       <action.icon className="h-4 w-4" />
                       {action.label}
