@@ -1,7 +1,8 @@
 {
   "title": "Architecture",
   "pages": [
-    "overview",
+    "core-components",
+    "system-architecture",
     "smart-contracts",
     "application",
     "data-indexing",

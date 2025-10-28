@@ -319,21 +319,21 @@ Because every step references the same control plane, there is no reconciliation
 step between products. Issuance, compliance, custody, and settlement remain
 consistent across instruments and venues.
 
-## Performance Targets
+## Performance targets
 
-Each component has explicit performance requirements to ensure enterprise
-readiness:
+Performance varies by deployment configuration and blockchain network
+characteristics. These design targets guide capacity planning:
 
-| Component           | Metric                   | Target             | Why It Matters              |
-| ------------------- | ------------------------ | ------------------ | --------------------------- |
-| **Frontend**        | Page load time           | &lt;2s             | User experience, engagement |
-| **API**             | Response time            | &lt;200ms          | Real-time operations        |
-| **Blockchain**      | Transaction confirmation | &lt;100ms          | Settlement speed            |
-| **Indexer**         | Event processing latency | &lt;5s             | Data freshness              |
-| **Database**        | Uptime                   | 99.9%              | Reliability                 |
-| **Smart Contracts** | Gas cost                 | &lt;200,000 gas/tx | Transaction economics       |
+| Component           | Metric                   | Design Target      | Why it matters                       |
+| ------------------- | ------------------------ | ------------------ | ------------------------------------ |
+| **Frontend**        | Initial page load        | &lt;3s             | User experience, engagement          |
+| **API**             | Response time (P95)      | &lt;500ms          | Real-time operations                 |
+| **Blockchain**      | Block confirmation       | 2-15s              | Settlement speed (network-dependent) |
+| **Indexer**         | Event processing latency | &lt;30s            | Data freshness                       |
+| **Database**        | Uptime                   | 99.9%              | Reliability                          |
+| **Smart Contracts** | Gas cost                 | &lt;200,000 gas/tx | Transaction economics                |
 
-## Security & Compliance First
+## Security & compliance first
 
 Security and compliance are architectural concerns, not bolt-ons:
 
@@ -345,7 +345,7 @@ Security and compliance are architectural concerns, not bolt-ons:
 - **Audit Trails**: Immutable event logs for regulatory reporting
 - **Multi-Signature Controls**: Bank-grade custody with approval workflows
 
-## Integration Points
+## Integration points
 
 ATK integrates with external systems while maintaining control:
 
@@ -359,7 +359,7 @@ ATK integrates with external systems while maintaining control:
 - **Monitoring**: OpenTelemetry integration for observability and SIEM
   integration
 
-## What Stakeholders Get
+## What stakeholders get
 
 - **Institutions**: One SLA and risk profile. Lifecycle policy changes propagate
   everywhere because the control plane owns them end-to-end.

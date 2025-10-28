@@ -1,0 +1,560 @@
+---
+title: Observability & recovery
+description:
+  Production monitoring, incident response, and disaster recovery architecture
+  for ATK deployments
+pageTitle: Observability & disaster recovery - Production resilience patterns
+tags:
+  [
+    architecture,
+    monitoring,
+    observability,
+    backup,
+    recovery,
+    operations,
+    concept,
+  ]
+---
+
+## Overview
+
+Production ATK deployments require comprehensive observability to detect issues
+proactively and disaster recovery capabilities to restore service after
+failures. This architecture spans application metrics, blockchain monitoring,
+and data backup strategies.
+
+### Problem
+
+Distributed blockchain applications introduce unique observability challenges:
+
+- **Multi-layer failures**: Issues can originate in smart contracts, indexers,
+  databases, or API layers with cascading effects
+- **Blockchain immutability**: Transaction failures leave permanent traces;
+  cannot be "rolled back" like database operations
+- **Synchronization lag**: Indexers and caches eventually consistent with
+  blockchain state, making real-time debugging difficult
+- **Complex recovery**: Restoring a tokenization platform requires coordinating
+  blockchain state, database backups, and document storage
+
+### Solution
+
+ATK's observability and recovery architecture provides:
+
+- **Unified metrics collection**: Prometheus aggregates metrics from all
+  components with consistent labeling
+- **Distributed tracing**: OpenTelemetry traces requests from frontend through
+  API to blockchain
+- **Proactive alerting**: Alert rules detect anomalies before they impact users
+- **Multi-tier backup**: Automated backups of databases, smart contract state,
+  and off-chain documents
+- **Tested recovery procedures**: Documented runbooks with recovery time
+  objectives (RTO) for each failure scenario
+
+### Key concepts
+
+- **Observability pillars**: Metrics (numeric measurements), logs (event
+  records), traces (request flows)
+- **Service-level indicators (SLIs)**: Measurable aspects of service quality
+  (latency, error rate, availability)
+- **Recovery time objective (RTO)**: Maximum acceptable downtime for a service
+- **Recovery point objective (RPO)**: Maximum acceptable data loss measured in
+  time
+
+## Observability architecture
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph "Application Layer"
+        DApp[dApp Frontend<br/>Browser metrics]
+        API[ORPC API<br/>Request metrics]
+        Portal[Portal Service<br/>Transaction metrics]
+    end
+    
+    subgraph "Data Layer"
+        Postgres[(PostgreSQL<br/>Query metrics)]
+        Redis[(Redis<br/>Cache hit rate)]
+        GraphNode[TheGraph Node<br/>Sync status]
+    end
+    
+    subgraph "Blockchain Layer"
+        Network[Blockchain Network<br/>Block height, peers]
+        Contracts[Smart Contracts<br/>Gas usage, events]
+    end
+    
+    subgraph "Observability Stack"
+        Prometheus[Prometheus<br/>Metrics Collection]
+        Loki[Loki/ELK<br/>Log Aggregation]
+        Tempo[Tempo<br/>Distributed Tracing]
+        Grafana[Grafana<br/>Visualization Dashboards]
+        Alertmanager[Alertmanager<br/>Alert Routing]
+    end
+    
+    subgraph "Incident Response"
+        PagerDuty[PagerDuty/Slack<br/>On-call Notifications]
+        Runbooks[Runbooks<br/>Recovery Procedures]
+    end
+    
+    DApp -->|Metrics| Prometheus
+    API -->|Metrics & Traces| Prometheus
+    API -->|Traces| Tempo
+    Portal -->|Metrics| Prometheus
+    
+    Postgres -->|Metrics| Prometheus
+    Redis -->|Metrics| Prometheus
+    GraphNode -->|Metrics| Prometheus
+    
+    Network -->|Metrics| Prometheus
+    Contracts -->|Event logs| Loki
+    
+    DApp -->|Logs| Loki
+    API -->|Logs| Loki
+    
+    Prometheus --> Grafana
+    Loki --> Grafana
+    Tempo --> Grafana
+    
+    Prometheus --> Alertmanager
+    Alertmanager --> PagerDuty
+    PagerDuty --> Runbooks
+    
+    style Prometheus fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style Grafana fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style Alertmanager fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+`}
+/>
+
+### Metrics collection
+
+**Application metrics** (collected via Prometheus exporters):
+
+| Component      | Metrics                                               | Collection Method                               |
+| -------------- | ----------------------------------------------------- | ----------------------------------------------- |
+| **dApp**       | Page load time, route transitions, API call latency   | Browser performance API, custom instrumentation |
+| **ORPC API**   | Request rate, response time (P50/P95/P99), error rate | Middleware instrumentation                      |
+| **PostgreSQL** | Query latency, connection pool usage, table sizes     | `postgres_exporter`                             |
+| **Redis**      | Hit rate, memory usage, eviction rate                 | `redis_exporter`                                |
+| **TheGraph**   | Sync lag, query latency, failed handlers              | Built-in metrics endpoint                       |
+| **Blockchain** | Block height, transaction pool size, peer count       | Node metrics endpoint                           |
+
+**Custom business metrics**:
+
+- Token transfers per hour (by token type)
+- KYC application approval rate
+- Average compliance check duration
+- Failed transaction rate by error code
+
+### Log aggregation
+
+Logs flow from all components into centralized storage (Loki or Elasticsearch):
+
+**Log structure** (JSON format):
+
+```json
+{
+  "timestamp": "2025-10-28T12:34:56.789Z",
+  "level": "error",
+  "service": "orpc-api",
+  "trace_id": "a1b2c3d4",
+  "user_id": "user_123",
+  "action": "token.transfer",
+  "error": "InsufficientBalance",
+  "details": {
+    "token": "0x...",
+    "from": "0x...",
+    "to": "0x...",
+    "amount": "1000000000000000000"
+  }
+}
+```
+
+**Structured logging benefits**:
+
+- Query logs by trace ID to follow request across services
+- Filter by user ID for support investigations
+- Group by error code to identify systemic issues
+- Parse JSON fields for metrics extraction
+
+### Distributed tracing
+
+OpenTelemetry traces follow requests from browser through multiple backend
+services:
+
+**Typical trace spans**:
+
+1. `frontend.transfer_initiated` - User clicks transfer button
+2. `orpc.token.transfer` - API procedure receives request
+3. `middleware.auth` - Authentication validation
+4. `middleware.compliance_check` - Pre-flight compliance validation
+5. `thegraph.query.token_balance` - Query current balance
+6. `portal.submit_transaction` - Submit to blockchain
+7. `blockchain.transaction_confirmed` - Transaction mined
+8. `thegraph.event.transfer_completed` - Indexer processes transfer event
+
+Each span includes duration, status (success/error), and contextual attributes
+(token address, amount).
+
+## Monitoring dashboards
+
+### System health dashboard
+
+**Purpose**: Real-time overview of platform health for operations teams
+
+**Key panels**:
+
+- Service uptime indicators (green/red status per component)
+- Request rate (requests/second) with rolling average
+- Error rate (errors/total requests) as percentage
+- API response time (P95 latency in milliseconds)
+- Database connection pool utilization
+- Redis memory usage
+- TheGraph sync lag (seconds behind chain head)
+
+### Business metrics dashboard
+
+**Purpose**: Track platform usage and business KPIs
+
+**Key panels**:
+
+- Active tokens (total deployed, by type)
+- Daily transfer volume (by token and asset class)
+- New investor onboarding rate
+- KYC application funnel (submitted → approved conversion)
+- Average time to KYC approval
+- Transaction success rate by token
+
+### Blockchain monitoring dashboard
+
+**Purpose**: Monitor blockchain network and smart contract health
+
+**Key panels**:
+
+- Network block height and block time
+- Pending transaction pool size
+- Gas prices (current and historical)
+- Smart contract transaction volume
+- Smart contract gas consumption by function
+- Failed transaction rate by revert reason
+- Subgraph indexing progress (current block vs chain head)
+
+## Alerting strategy
+
+### Alert severity levels
+
+| Severity     | Response Time      | Examples                                        | Escalation                                             |
+| ------------ | ------------------ | ----------------------------------------------- | ------------------------------------------------------ |
+| **Critical** | Immediate (15 min) | Service completely down, data loss occurring    | Page on-call engineer, escalate after 30 min           |
+| **High**     | &lt;1 hour         | Elevated error rate, performance degradation    | Slack notification, page if not acknowledged in 1 hour |
+| **Medium**   | &lt;4 hours        | Non-critical service degraded, capacity warning | Slack notification, ticket created                     |
+| **Low**      | Next business day  | Informational alerts, approaching thresholds    | Ticket created                                         |
+
+### Standard alert rules
+
+**API layer**:
+
+```yaml
+- alert: HighErrorRate
+  expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+  severity: high
+  description: "API error rate exceeds 5% over 5 minutes"
+
+- alert: SlowAPIResponses
+  expr: histogram_quantile(0.95, http_request_duration_seconds) > 1
+  severity: medium
+  description: "API P95 latency exceeds 1 second"
+```
+
+**Database layer**:
+
+```yaml
+- alert: DatabaseConnectionPoolExhausted
+  expr: pg_stat_database_numbackends / pg_settings_max_connections > 0.9
+  severity: critical
+  description: "PostgreSQL connection pool &gt;90% utilized"
+
+- alert: LongRunningQueries
+  expr: pg_stat_activity_max_tx_duration > 300
+  severity: high
+  description: "Query running longer than 5 minutes detected"
+```
+
+**Blockchain layer**:
+
+```yaml
+- alert: SubgraphSyncLag
+  expr: (ethereum_block_number - subgraph_current_block) > 100
+  severity: high
+  description: "Subgraph more than 100 blocks behind chain head"
+
+- alert: HighGasPrices
+  expr: ethereum_gas_price_gwei > 200
+  severity: medium
+  description: "Gas prices exceed 200 gwei"
+```
+
+### Alert routing
+
+Alertmanager routes alerts based on severity and service:
+
+- **Critical alerts**: Page on-call engineer via PagerDuty, send to #incidents
+  Slack channel
+- **High/Medium alerts**: Send to #alerts Slack channel, create Jira ticket
+- **Low alerts**: Email to operations team, create Jira ticket
+
+## Disaster recovery architecture
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph "Production Environment"
+        ProdData[(Production Data<br/>Live state)]
+        ProdBC[Blockchain<br/>Immutable ledger]
+    end
+    
+    subgraph "Backup Storage"
+        DBBackup[(Database Backups<br/>Daily + WAL)]
+        FileBackup[(File Storage Backups<br/>MinIO snapshots)]
+        ConfigBackup[(Configuration Backups<br/>Git + Secrets)]
+        BCSnapshot[(Blockchain Snapshots<br/>Validator data)]
+    end
+    
+    subgraph "Recovery Procedures"
+        Runbook1[Database Restore<br/>RTO: 1 hour]
+        Runbook2[File Restore<br/>RTO: 30 minutes]
+        Runbook3[Blockchain Resync<br/>RTO: 4-24 hours]
+        Runbook4[Full System Restore<br/>RTO: 8 hours]
+    end
+    
+    ProdData -->|Daily dump + continuous WAL| DBBackup
+    ProdData -->|Incremental snapshots| FileBackup
+    ProdBC -->|Weekly snapshot| BCSnapshot
+    
+    DBBackup --> Runbook1
+    FileBackup --> Runbook2
+    BCSnapshot --> Runbook3
+    ConfigBackup --> Runbook4
+    
+    style ProdData fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style DBBackup fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style Runbook4 fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+`}
+/>
+
+### Backup strategy
+
+**PostgreSQL database**:
+
+- **Full backup**: Daily at 02:00 UTC via `pg_dump`
+- **WAL archiving**: Continuous write-ahead log shipping to S3/MinIO
+- **Retention**: 30 daily backups, 12 monthly backups
+- **RPO**: 5 minutes (time between WAL archives)
+- **RTO**: 1 hour (restore time for typical database size)
+
+**MinIO object storage**:
+
+- **Snapshot**: Incremental snapshots every 6 hours
+- **Replication**: Asynchronous replication to secondary region
+- **Retention**: 7 days of incremental snapshots
+- **RPO**: 6 hours
+- **RTO**: 30 minutes (restore from snapshot)
+
+**Smart contract state**:
+
+- **Genesis file**: Version-controlled in Git
+- **Contract deployments**: Transaction hashes and addresses recorded in
+  deployment log
+- **Blockchain snapshots**: Weekly full node data directory backup (private
+  networks only)
+- **RPO**: N/A (public blockchain immutable)
+- **RTO**: 4-24 hours (full blockchain resync from genesis or snapshot)
+
+**Configuration and secrets**:
+
+- **Infrastructure as code**: Helm charts and Kubernetes manifests in Git
+- **Secrets**: Encrypted backups in AWS Secrets Manager / HashiCorp Vault
+- **Environment variables**: Documented in deployment runbooks
+- **RPO**: Real-time (Git commits)
+- **RTO**: 2 hours (redeploy from configuration)
+
+### Recovery procedures
+
+#### Scenario 1: Database corruption
+
+**Symptoms**: PostgreSQL crashes on startup, data consistency errors
+
+**Recovery steps**:
+
+1. Stop all services writing to database (API, indexers)
+2. Identify latest valid backup (usually previous day)
+3. Restore from full backup: `pg_restore -d atk backup_file.dump`
+4. Apply WAL logs from backup time to incident time
+5. Verify data integrity: run schema validation queries
+6. Restart services, monitor for errors
+7. **RTO**: 1-2 hours
+
+**Data loss**: Up to 5 minutes (last WAL archive interval)
+
+#### Scenario 2: Complete infrastructure failure
+
+**Symptoms**: Kubernetes cluster unrecoverable, all services down
+
+**Recovery steps**:
+
+1. Provision new Kubernetes cluster (same cloud provider or alternate)
+2. Restore secrets from Vault / Secrets Manager
+3. Deploy Helm charts with production values
+4. Restore PostgreSQL from latest backup + WAL logs
+5. Restore MinIO from latest snapshot
+6. Resync blockchain (if private network: restore from snapshot; if public: sync
+   from peers)
+7. Redeploy subgraph (will auto-sync from blockchain)
+8. Verify all services healthy, run smoke tests
+9. Update DNS to point to new cluster
+10. **RTO**: 8-12 hours
+
+**Data loss**: Up to 5 minutes (PostgreSQL), up to 6 hours (MinIO files)
+
+#### Scenario 3: Blockchain node failure
+
+**Symptoms**: TheGraph sync stops, transactions not confirming
+
+**Recovery for public networks**:
+
+1. Blockchain state recoverable from other network nodes
+2. Deploy new blockchain node, connect to public network
+3. Sync from genesis or fast-sync snapshot
+4. Update TheGraph and Portal to use new node URL
+5. **RTO**: 2-8 hours (depends on sync method)
+
+**Recovery for private networks**:
+
+1. Restore validator node data directory from weekly snapshot
+2. Resume blockchain from last finalized block
+3. If snapshot unavailable, resync from genesis (slower)
+4. Requires validator quorum to resume consensus
+5. **RTO**: 1 hour (from snapshot) or 24 hours (from genesis)
+
+## Testing recovery procedures
+
+### Regular drills
+
+**Quarterly disaster recovery drill**: Simulate complete infrastructure failure
+in staging environment
+
+1. Delete Kubernetes cluster, databases, storage
+2. Follow recovery runbook with timer
+3. Verify data integrity after restore
+4. Document issues, update runbook
+5. Measure actual RTO vs target
+
+**Monthly database restore test**: Restore backup to isolated database, verify
+data
+
+**Weekly backup verification**: Automated job attempts to restore latest backup
+to test database
+
+### Chaos engineering
+
+Intentionally inject failures into production (during low-traffic periods) to
+validate resilience:
+
+- Kill random pods (validate auto-restart)
+- Simulate network partitions between services
+- Inject API latency
+- Fail database queries randomly
+- Disconnect blockchain node
+
+Monitor metrics and alerts during chaos tests to ensure detection and recovery
+work as designed.
+
+## Operational runbooks
+
+### Incident response workflow
+
+<Mermaid
+  chart={`flowchart LR
+    Alert[Alert Triggered]
+    Ack[Acknowledge Alert]
+    Investigate[Investigate Root Cause]
+    Mitigate[Apply Mitigation]
+    Verify[Verify Resolution]
+    Postmortem[Write Postmortem]
+    
+    Alert --> Ack
+    Ack --> Investigate
+    Investigate --> Mitigate
+    Mitigate --> Verify
+    Verify --> Postmortem
+    
+    Investigate -.Escalate if needed.-> Ack
+    Mitigate -.If unsuccessful.-> Investigate
+    
+    style Alert fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style Verify fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+`}
+/>
+
+**Postmortem template** (completed within 48 hours of incident):
+
+- **Incident summary**: What happened, when, impact duration
+- **Timeline**: Key events from detection to resolution
+- **Root cause**: Technical reason for failure
+- **Mitigation**: Steps taken to restore service
+- **Action items**: Prevent recurrence (new alerts, code fixes, process changes)
+- **Lessons learned**: What went well, what could improve
+
+### Common troubleshooting commands
+
+```bash
+# Check pod health
+kubectl get pods -n atk-production
+kubectl describe pod <pod-name> -n atk-production
+kubectl logs <pod-name> -n atk-production --tail=100
+
+# Database status
+kubectl exec -it postgresql-0 -n atk-production -- psql -U postgres -c "SELECT * FROM pg_stat_activity;"
+
+# Blockchain sync status
+curl http://graph-node:8030/graphql -d '{"query": "{ indexingStatusForCurrentVersion(subgraphName: \"atk\") { chains { latestBlock { number } chainHeadBlock { number } } } }"}'
+
+# API health check
+curl https://api.yourcompany.com/health
+
+# Check persistent volume status
+kubectl get pv,pvc -n atk-production
+```
+
+## Limitations
+
+### Blockchain immutability
+
+Failed transactions cannot be "undone." Recovery procedures cannot reverse
+on-chain mistakes (sending tokens to wrong address, executing bad governance
+proposals).
+
+**Mitigation**: Multi-signature requirements for high-value operations,
+timelocks for governance changes.
+
+### Cross-service consistency
+
+During partial failures, database state and blockchain state may diverge
+temporarily. Example: Transaction succeeds on-chain but API fails to record it
+in database.
+
+**Mitigation**: Background reconciliation jobs detect and fix divergence, alert
+on inconsistencies.
+
+### Recovery time dependencies
+
+Full system recovery time depends on slowest component (usually blockchain
+sync). This creates pressure to maintain comprehensive blockchain snapshots at
+cost of storage.
+
+## See also
+
+- [Performance & scalability](./performance-scalability) - Capacity planning and
+  optimization techniques
+- [Deployment operations](../integration-operations/deployment-operations) -
+  Production deployment patterns and infrastructure
+- [Database model](../data-indexing/database-model) - Database backup and
+  migration procedures
+- [Blockchain indexing](../data-indexing/blockchain-indexing) - Subgraph
+  deployment and monitoring

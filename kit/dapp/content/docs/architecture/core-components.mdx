@@ -14,11 +14,27 @@ to deliver a complete digital asset platform. Each component serves a specific
 role in the overall architecture while maintaining tight integration with other
 parts of the system.
 
-Unlike fragmented point solutions that force operators to reconcile state across
-vendors, ATK's components share a unified data model, type-safe interfaces, and
-synchronized business logic. This architecture eliminates the reconciliation
-burden, compliance drift, and custody gaps that plague traditional tokenization
-stacks.
+### Problem
+
+Digital asset platforms typically integrate multiple third-party services—each
+with distinct APIs, data models, and authentication mechanisms. This
+fragmentation requires manual reconciliation, increases operational complexity,
+and creates consistency gaps across the platform lifecycle.
+
+### Solution
+
+ATK's components share a unified data model, type-safe interfaces, and
+synchronized business logic. This architecture reduces integration complexity
+and maintains consistency across the platform.
+
+### Key concepts
+
+- **Component modularity**: Each subsystem handles a distinct concern (UI, API,
+  blockchain, storage) with well-defined interfaces
+- **Type-safe integration**: Shared TypeScript types flow from backend to
+  frontend, catching integration errors at compile time
+- **Unified control plane**: All components reference shared configuration and
+  state rather than maintaining separate copies
 
 <Mermaid
   chart={`flowchart TB
@@ -80,7 +96,7 @@ stacks.
 
 />
 
-## Frontend layer: Web application & mobile interface
+## Frontend layer: web application & mobile interface
 
 The frontend layer provides user-facing interfaces for different stakeholder
 types—issuers creating assets, investors managing portfolios, compliance
@@ -90,9 +106,11 @@ officers reviewing KYC, and administrators configuring the platform.
 
 The web application is built on [TanStack Start](https://tanstack.com/start), a
 modern React-based full-stack framework that combines server-side rendering with
-client-side interactivity. Think of it as the next generation beyond traditional
-single-page applications—you get the speed of server rendering with the
-responsiveness of a native app.
+client-side interactivity.
+
+This approach delivers initial HTML quickly via server rendering while
+maintaining the responsiveness of client-side applications through progressive
+hydration.
 
 **What users see:**
 
@@ -111,38 +129,38 @@ responsiveness of a native app.
 **How it works under the hood:**
 
 The application uses the [TanStack](https://tanstack.com) ecosystem—a collection
-of tools designed to work together seamlessly:
+of tools designed to work together seamlessly.
 
 [**TanStack Router**](https://tanstack.com/router) handles navigation between
-pages. Unlike traditional routers, it knows about your routes at compile time,
-catching broken links before deployment. It automatically splits code per route,
-loading only what users need for each page.
+pages. It validates routes at compile time, catching broken links before
+deployment. Code splitting occurs automatically per route, loading only
+necessary JavaScript for each page.
 
-[**TanStack Query**](https://tanstack.com/query) manages data from the server.
-Instead of manually fetching data and handling loading states, Query
-automatically caches responses, re-fetches stale data, and synchronizes updates
-across components. If two parts of your UI need the same data, Query fetches it
-once and shares it.
+[**TanStack Query**](https://tanstack.com/query) manages server state with
+automatic caching, background refetching, and update synchronization across
+components. When multiple components request the same data, Query deduplicates
+the requests and shares the response.
 
-[**TanStack Form**](https://tanstack.com/form) handles form state and
-validation. Rather than manually tracking input values and error messages, Form
-provides a declarative API that integrates validation rules directly into your
-form definition.
+[**TanStack Form**](https://tanstack.com/form) handles form state and validation
+through a declarative API that integrates validation rules directly into form
+definitions, eliminating manual tracking of input values and error messages.
 
 For the visual layer, we use [Radix UI](https://radix-ui.com)—a library of
 unstyled, accessible component primitives. Radix handles complex accessibility
-concerns (keyboard navigation, screen readers, ARIA attributes) so we can focus
-on styling and business logic. Components are styled with
-[Tailwind CSS](https://tailwindcss.com), a utility-first framework that enables
-rapid UI development while maintaining visual consistency.
+concerns (keyboard navigation, screen readers, ARIA attributes), allowing focus
+on styling and business logic.
+
+Components are styled with [Tailwind CSS](https://tailwindcss.com), a
+utility-first framework that enables rapid UI development while maintaining
+visual consistency.
 
 **Performance characteristics:**
 
-The architecture targets sub-2-second page loads and sub-500ms route
-transitions. Server-side rendering delivers initial HTML instantly, while
-client-side JavaScript hydrates interactivity progressively. Code splitting
-ensures users download only the JavaScript needed for their current page, not
-the entire application.
+The architecture targets sub-3-second initial page loads and sub-500ms route
+transitions for subsequent navigation. Server-side rendering delivers initial
+HTML to the browser quickly, while client-side JavaScript hydrates interactivity
+progressively. Code splitting ensures users download only the JavaScript needed
+for their current page, not the entire application.
 
 ### Mobile interface
 
@@ -152,13 +170,11 @@ touch-optimized controls for transaction signing, simplified navigation for
 smaller screens, wallet integration for mobile-native crypto wallets, and
 offline-first data caching for unstable connections.
 
-**Why responsive beats native:**
+**Responsive design rationale:**
 
-Traditional tokenization platforms force issuers to maintain separate web and
-mobile codebases, each with its own authentication, state management, and API
-integration. ATK's responsive approach delivers one codebase, one set of tests,
-and one deployment pipeline—reducing maintenance burden by 60% compared to
-native mobile apps.
+A single responsive codebase consolidates authentication, state management, and
+API integration across devices. This approach reduces the maintenance overhead
+associated with separate web and native mobile applications.
 
 ## API & business logic layer
 
@@ -208,9 +224,10 @@ audit logs before hitting business logic.
 
 **Performance characteristics:**
 
-Read operations complete in under 150ms on average. Transactional operations
-involving blockchain confirmation take under 500ms. Each API instance handles
-1,000+ concurrent requests per second.
+Read operations typically complete in under 200ms for cached data. Transactional
+operations involving blockchain confirmation take 2-15 seconds depending on the
+network. Each API instance is designed to handle hundreds of concurrent requests
+per second under typical load.
 
 ### Business services layer
 
@@ -242,13 +259,12 @@ providers, and KYC vendors. Rather than each component integrating
 independently, this service provides a unified integration layer with consistent
 authentication and error handling.
 
-**Why unified services matter:**
+**Unified service architecture:**
 
-Legacy tokenization projects cobble together vendor tools—one for issuance,
-another for compliance, a third for custody. Each vendor has its own
-authentication, data model, and API conventions. ATK's unified service layer
-means one authentication flow, one permission model, and one set of business
-rules that apply consistently across every operation.
+The service layer provides a single authentication flow, permission model, and
+set of business rules that apply consistently across operations. This contrasts
+with architectures that integrate multiple vendor tools, each with distinct
+authentication, data models, and API conventions.
 
 ## Blockchain infrastructure layer
 
@@ -311,9 +327,8 @@ production contracts.
 **Gas optimization:**
 
 ATK contracts target under 200,000 gas per transaction through storage
-optimization, batching, and efficient data structures. For comparison, early
-tokenization projects often exceed 500,000 gas per transfer—making them
-economically unviable on mainnet.
+optimization, batching, and efficient data structures. Gas costs directly impact
+transaction economics on public networks.
 
 ### Blockchain indexer
 
@@ -420,11 +435,10 @@ encrypted at rest using AES-256. Access controls tie to user permissions.
 Immutable audit logs track every document access. Data retention policies comply
 with GDPR requirements.
 
-Traditional tokenization platforms force issuers to choose between centralized
-storage (fast but fragile) or blockchain storage (decentralized but
-prohibitively expensive at $50+ per MB). ATK's hybrid approach stores files on
-MinIO for performance and hashes on IPFS for integrity—combining speed and
-security.
+The hybrid storage approach stores files on MinIO for performance and hashes on
+IPFS for integrity verification. This balances operational speed with
+content-addressable storage benefits while avoiding the high cost of on-chain
+file storage.
 
 ## Testing & deployment layer
 
@@ -484,45 +498,42 @@ troubleshooting. [OpenTelemetry](https://opentelemetry.io/) provides distributed
 tracing for request flow analysis. [PagerDuty](https://pagerduty.com/) or
 [Slack](https://slack.com/) receive critical error notifications.
 
-Traditional tokenization deployments require ops teams to manually configure
-servers, databases, and networking. ATK's Helm charts codify infrastructure as
-YAML, enabling one-command deployments and preventing configuration drift.
+ATK's Helm charts codify infrastructure as YAML declarations, enabling automated
+deployments and reducing configuration drift compared to manual server setup.
 
 ## Component performance targets
 
-Each component has explicit performance requirements to ensure enterprise
-readiness:
+Each component has design targets for enterprise deployment. Actual performance
+varies by network conditions, load, and infrastructure:
 
-| Component      | Metric                   | Target      | Why it matters              |
-| -------------- | ------------------------ | ----------- | --------------------------- |
-| **Frontend**   | Page load time           | &lt;2s      | User experience, engagement |
-| **API**        | Response time            | &lt;200ms   | Real-time operations        |
-| **Blockchain** | Transaction confirmation | &lt;100ms   | Settlement speed            |
-| **Indexer**    | Event processing latency | &lt;5s      | Data freshness              |
-| **Database**   | Query response time      | &lt;50ms    | API performance             |
-| **Storage**    | Upload throughput        | &gt;100MB/s | Document handling           |
+| Component      | Metric                   | Design Target | Why it matters                       |
+| -------------- | ------------------------ | ------------- | ------------------------------------ |
+| **Frontend**   | Initial page load        | &lt;3s        | User experience, engagement          |
+| **API**        | Response time (P95)      | &lt;500ms     | Real-time operations                 |
+| **Blockchain** | Block confirmation       | 2-15s         | Settlement speed (network-dependent) |
+| **Indexer**    | Event processing latency | &lt;30s       | Data freshness                       |
+| **Database**   | Query response time      | &lt;100ms     | API performance                      |
+| **Storage**    | Upload throughput        | &gt;50MB/s    | Document handling                    |
 
-## Why this architecture delivers
+## Architecture benefits
 
-The ATK component architecture eliminates the five failure modes that prevent
-institutional adoption:
+The ATK component architecture provides:
 
-**No fragmentation** - Every component references the same control plane,
-eliminating reconciliation. State stays synchronized automatically.
+**Unified control plane** - Every component references shared state and
+configuration, reducing reconciliation requirements between systems.
 
-**No compliance drift** - Policies defined once propagate automatically across
-frontend, API, and smart contracts. Change a rule in one place, and it applies
-everywhere.
+**Policy consistency** - Compliance rules defined in one location propagate
+across frontend validation, API enforcement, and smart contract logic.
 
-**No custody gaps** - The service layer sees every transfer, enabling HSM
-pre-signatures and complete audit trails. Nothing moves without authorization.
+**Comprehensive audit trails** - The service layer observes all token movements,
+enabling complete transaction history and authorization tracking.
 
-**No settlement lag** - Atomic operations across cash and token legs eliminate
-T+2 delays. Delivery-vs-payment happens in a single blockchain transaction.
+**Atomic settlement** - Smart contracts support delivery-vs-payment patterns
+where asset and payment transfers succeed or fail together within a single
+transaction.
 
-**No integration tax** - One authentication system, one permission model, one
-API surface—instead of stitching together vendor tools with inconsistent
-conventions.
+**Simplified integration** - Shared authentication, permission models, and API
+conventions reduce the complexity of connecting multiple subsystems.
 
 Consider a bond issuance workflow:
 
@@ -541,3 +552,16 @@ Consider a bond issuance workflow:
 Because every step references the same control plane, there is no reconciliation
 step between products. Issuance, compliance, custody, and settlement remain
 consistent across instruments and venues.
+
+## See also
+
+- [System architecture](./system-architecture) - High-level layered architecture
+  and technology stack
+- [Smart contracts](./smart-contracts/smart-protocol) - SMART Protocol
+  foundation and compliance integration
+- [Frontend architecture](./application/frontend-architecture) - TanStack dApp
+  implementation details
+- [Backend API](./application/backend-api) - ORPC procedures and middleware
+  architecture
+- [Deployment operations](./integration-operations/deployment-operations) -
+  Production deployment patterns

@@ -459,12 +459,16 @@ Generates static assets with SSR support for faster initial loads.
 
 ## Integration points
 
-The frontend connects to multiple backend services:
+The frontend connects to backend services exclusively through the ORPC API
+layer:
 
-- **ORPC API** (`/api/rpc`) - Business logic and database queries
-- **TheGraph Subgraph** - Blockchain event indexing
-- **Hasura GraphQL** - Real-time database subscriptions
-- **SettleMint Portal** - Blockchain transaction submission
-- **MinIO** - Document storage (KYC docs, asset prospectuses)
+- **ORPC API** (`/api/rpc`) - All business logic, database queries, and
+  blockchain data access
+- **SettleMint Portal** - Blockchain transaction submission (wallet-initiated)
+- **MinIO** - Document storage access (via signed URLs from ORPC)
+
+The ORPC API layer internally coordinates with TheGraph subgraph, PostgreSQL,
+and other data sources. This architecture ensures consistent authentication,
+validation, and error handling across all data access patterns.
 
 See [Backend API architecture](./backend-api) for service integration details.

@@ -725,24 +725,20 @@ export const theGraphMiddleware = baseRouter.middleware(
 Frontend never sees or configures TheGraph - it's an internal backend data
 source.
 
-### React integration
+### Frontend integration (via ORPC)
 
-Query from components with TanStack Query:
+Frontend components query blockchain data through ORPC procedures, not directly:
 
 ```typescript
-import { useQuery } from "@tanstack/react-query";
-import { GetTokenDocument } from "@/lib/subgraph/queries/token.generated";
-import { subgraphClient } from "@/lib/subgraph/client";
+import { orpc } from "@/lib/orpc/client";
 
 export function useToken(tokenId: string) {
-  return useQuery({
-    queryKey: ["token", tokenId],
-    queryFn: async () => {
-      const result = await subgraphClient.query(GetTokenDocument, { tokenId });
-      return result.data.token;
-    },
-    staleTime: 30_000, // Cache for 30 seconds
+  // ORPC procedure internally queries TheGraph
+  return orpc.token.read.useQuery({
+    address: tokenId,
   });
+  // Response includes both blockchain data (from TheGraph)
+  // and application data (from database)
 }
 ```
 
