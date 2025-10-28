@@ -1,6 +1,6 @@
 import type { Locator } from "@playwright/test";
 import { expect } from "@playwright/test";
-import { confirmPinCode } from "../utils/form-utils";
+import { confirmPinCode, selectDropdownOption } from "../utils/form-utils";
 import { formatAmount, searchAndSelectFromDialog } from "../utils/page-utils";
 import { BasePage } from "./base-page";
 
@@ -583,37 +583,148 @@ export class AdminPage extends BasePage {
     await expect(formattedActual).toBe(formattedExpected);
   }
 
-  async mintAsset(options: { user: string; amount: string; pincode: string }) {
-    await this.page.reload();
-    await this.page
-      .getByRole("button", { name: "Manage", exact: true })
-      .click();
+  async mintAsset(options: {
+    assetName: string;
+    userName: string;
+    amount: string;
+    pincode: string;
+  }) {
+    const manageButton = this.page
+      .getByRole("button", { name: /Manage(?: Asset)?/, exact: false })
+      .first();
+    await expect(manageButton).toBeVisible({ timeout: 15000 });
+    await manageButton.click();
+
     const mintTokensOption = this.page.getByRole("menuitem", {
       name: "Mint",
     });
     await mintTokensOption.waitFor({ state: "visible" });
     await mintTokensOption.click();
-    await this.page.locator("#amount").fill(options.amount);
-    const nextButton = this.page.locator(
-      'button[data-slot="button"]:has-text("Next")'
+
+    const dialog = this.page.getByRole("dialog", {
+      name: "Mint tokens",
+    });
+    await expect(dialog).toBeVisible({ timeout: 10000 });
+    await this.waitForReactStateSettle();
+    const commandPaletteDialog = this.page
+      .getByRole("dialog")
+      .filter({ has: this.page.getByPlaceholder("Search addresses") })
+      .first();
+    const searchTerm = options.userName.split(/\s+/)[0] ?? options.userName;
+    const userTrigger = dialog.getByRole("combobox").first();
+
+    await this.selectFromRadixCommandPalette({
+      trigger: userTrigger,
+      dialog: commandPaletteDialog,
+      searchInput: this.page.getByPlaceholder("Search addresses"),
+      searchTerm,
+      optionLocator: commandPaletteDialog
+        .getByRole("option", {
+          name: new RegExp(
+            `^${options.userName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:\\s+.*)?$`,
+            "i"
+          ),
+        })
+        .first(),
+      expectedSelection: options.userName,
+      context: `mint tokens to '${options.userName}'`,
+      typingDelay: 60,
+    });
+
+    await expect(userTrigger).toContainText(options.userName, {
+      timeout: 10000,
+    });
+
+    const amountInput = dialog
+      .getByRole("textbox", { name: "Amount *" })
+      .first();
+    await expect(amountInput).toBeVisible({ timeout: 10000 });
+    await amountInput.fill(options.amount);
+
+    const continueButton = this.page.getByRole("button", { name: "Continue" });
+    await expect(continueButton).toBeEnabled({ timeout: 10000 });
+    await continueButton.click();
+
+    const confirmButton = this.page.getByRole("button", {
+      name: "Confirm mint",
+    });
+    await expect(confirmButton).toBeVisible({ timeout: 10000 });
+    await confirmButton.click();
+
+    await confirmPinCode(this.page, options.pincode, "Mint tokens");
+  }
+
+  async ensureIdentityRegisteredForUser(options: {
+    email: string;
+    country: string;
+    pincode: string;
+  }): Promise<void> {
+    await this.chooseSidebarMenuOption({
+      sidebarOption: "Users",
+      expectedUrlPattern: /\/participants\/users/,
+      expectedLocatorsToWaitFor: [this.getTableBodyLocator()],
+    });
+    await this.waitForReactStateSettle();
+
+    const pendingUserRow = this.page
+      .locator("tr")
+      .filter({ has: this.page.getByText(options.email, { exact: true }) })
+      .filter({ has: this.page.getByText(/Pending registration/i) })
+      .first();
+
+    if ((await pendingUserRow.count()) === 0) {
+      return;
+    }
+
+    await expect(pendingUserRow).toBeVisible({ timeout: 20000 });
+
+    const identityAddressCell = pendingUserRow.locator("td").nth(3);
+    const identityLink = identityAddressCell
+      .locator('a[href*="/participants/entities/"]')
+      .first();
+    await expect(identityLink).toBeVisible({ timeout: 15000 });
+    await identityLink.click();
+    await this.page.waitForURL(
+      /\/participants\/entities\/0x[a-fA-F0-9]{40}(?:\?.*)?$/,
+      { timeout: 20000 }
     );
-    await nextButton.focus();
-    await nextButton.click();
-    await this.page
-      .getByRole("button", { name: "Enter an address, name or email" })
-      .click();
-    await this.page.waitForSelector('[role="dialog"][data-state="open"]');
-    const searchInput = this.page.locator(
-      '[role="dialog"][data-state="open"] input'
-    );
-    await searchInput.waitFor({ state: "visible" });
-    await searchInput.fill(options.user);
-    await this.page
-      .locator(`[role="option"]`)
-      .filter({ hasText: options.user })
-      .first()
-      .click();
-    await nextButton.click();
+    await this.waitForReactStateSettle();
+
+    const pendingStatusBadge = this.page
+      .getByText(/Pending registration/i)
+      .first();
+    const isPendingRegistration = await pendingStatusBadge
+      .isVisible({ timeout: 2000 })
+      .catch(() => false);
+
+    if (!isPendingRegistration) {
+      return;
+    }
+
+    const manageButton = this.page
+      .getByRole("button", { name: /^Manage$/i })
+      .first();
+    await manageButton.click();
+
+    const registerMenuItem = this.page.getByRole("menuitem", {
+      name: "Register identity",
+    });
+    await registerMenuItem.waitFor({ state: "visible", timeout: 10000 });
+    await registerMenuItem.click();
+
+    await selectDropdownOption(this.page, {
+      label: "Country *",
+      value: options.country,
+    });
+
+    await this.page.getByRole("button", { name: "Continue" }).click();
+    await this.page.getByRole("button", { name: "Register identity" }).click();
+    await confirmPinCode(this.page, options.pincode, "Register identity");
+    await this.verifySuccessMessage("Identity registered successfully");
+
+    await expect(
+      this.page.getByText("Registered", { exact: true })
+    ).toBeVisible({ timeout: 15000 });
   }
 
   async unpauseAsset(options: { pincode: string }): Promise<void> {
@@ -737,18 +848,140 @@ export class AdminPage extends BasePage {
       .filter({ has: this.page.getByText(options.user, { exact: true }) });
     await expect(row).toBeVisible();
 
-    const badges = row.locator('[data-slot="badge"]');
-    await expect(badges).toHaveCount(4);
+    const rolesCell = row.locator("td").nth(1);
+    const roleBadges = rolesCell.locator('[data-slot="badge"]');
 
-    const expectedRoles = [
-      "Default Admin",
-      "Emergency",
-      "Governance",
-      "Supply Management",
-    ];
-    for (let i = 0; i < expectedRoles.length; i++) {
-      await expect(badges.nth(i)).toHaveText(expectedRoles[i]);
+    for (const permission of options.permissions) {
+      await expect(
+        roleBadges.filter({ hasText: permission }).first()
+      ).toBeVisible();
     }
+  }
+
+  async transferAsset(options: {
+    recipient: string;
+    amount: string;
+    pincode: string;
+  }) {
+    await this.page
+      .getByRole("button", { name: "Manage Asset", exact: true })
+      .click();
+    const mintTokensOption = this.page.getByRole("menuitem", {
+      name: "Transfer Tokens",
+    });
+    await mintTokensOption.waitFor({ state: "visible" });
+    await mintTokensOption.click();
+    const dialog = this.page.getByRole("dialog", {
+      name: "Transfer Tokens",
+    });
+    await expect(dialog).toBeVisible({ timeout: 10000 });
+    await this.waitForReactStateSettle();
+    const commandPaletteDialog = this.page
+      .getByRole("dialog")
+      .filter({ has: this.page.getByPlaceholder("Search addresses") })
+      .first();
+    const searchTerm = options.recipient.split(/\s+/)[0] ?? options.recipient;
+    const userTrigger = dialog.getByRole("combobox").first();
+
+    await this.selectFromRadixCommandPalette({
+      trigger: userTrigger,
+      dialog: commandPaletteDialog,
+      searchInput: this.page.getByPlaceholder("Search addresses"),
+      searchTerm,
+      optionLocator: commandPaletteDialog
+        .getByRole("option", {
+          name: new RegExp(
+            `^${options.recipient.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:\\s+.*)?$`,
+            "i"
+          ),
+        })
+        .first(),
+      expectedSelection: options.recipient,
+      context: `transfer tokens to '${options.recipient}'`,
+      typingDelay: 60,
+    });
+
+    await expect(userTrigger).toContainText(options.recipient, {
+      timeout: 10000,
+    });
+
+    const amountInput = dialog
+      .getByRole("textbox", { name: "Amount *" })
+      .first();
+    await expect(amountInput).toBeVisible({ timeout: 10000 });
+    await amountInput.fill(options.amount);
+
+    const continueButton = this.page.getByRole("button", { name: "Continue" });
+    await expect(continueButton).toBeEnabled({ timeout: 10000 });
+    await continueButton.click();
+    const confirmButton = this.page.getByRole("button", {
+      name: "Confirm Transfer",
+    });
+    await expect(confirmButton).toBeVisible({ timeout: 10000 });
+    await confirmButton.click();
+    await confirmPinCode(this.page, options.pincode, "Transfer Tokens");
+  }
+
+  async expectCurrentAvailableBalance(options: {
+    expectedAmount: string;
+  }): Promise<void> {
+    await this.page
+      .getByRole("button", { name: "Manage", exact: true })
+      .click();
+
+    const transferOption = this.page.getByRole("menuitem", {
+      name: "Transfer",
+    });
+    await transferOption.waitFor({ state: "visible", timeout: 15000 });
+    await transferOption.click();
+
+    const currentAvailableLabel = this.page
+      .getByText("Current Available")
+      .first();
+    await expect(currentAvailableLabel).toBeVisible({ timeout: 15000 });
+
+    const currentAvailableValue = currentAvailableLabel.locator(
+      "xpath=../following-sibling::*[1]"
+    );
+    await expect(currentAvailableValue).toBeVisible({ timeout: 15000 });
+
+    const valueText = (await currentAvailableValue.textContent()) ?? "";
+    if (!valueText) {
+      throw new Error("Current Available amount text is empty");
+    }
+
+    const numericValue = valueText.replace(/[^0-9.]/g, "");
+    if (numericValue !== options.expectedAmount) {
+      throw new Error(
+        `Expected Current Available to be ${options.expectedAmount} but got "${valueText}"`
+      );
+    }
+
+    await this.page.getByRole("button", { name: "Cancel" }).click();
+  }
+
+  async signOut(): Promise<void> {
+    await this.page.waitForLoadState("networkidle");
+    const userButton = this.page
+      .locator("button")
+      .filter({ hasText: /@.*\.com/ })
+      .first();
+
+    await expect(userButton).toBeVisible({ timeout: 5000 });
+    await userButton.click();
+
+    const logoutMenuItem = this.page.getByRole("menuitem", {
+      name: "Log out",
+    });
+    await expect(logoutMenuItem).toBeVisible({ timeout: 3000 });
+    await logoutMenuItem.click();
+  }
+
+  async expectSignOutSuccess(): Promise<void> {
+    await this.page.waitForURL(/auth\/sign-in/, { timeout: 10000 });
+    await expect(this.page.getByRole("button", { name: "Login" })).toBeVisible({
+      timeout: 5000,
+    });
   }
 
   async topUpAsset(options: {
@@ -788,19 +1021,24 @@ export class AdminPage extends BasePage {
   }
 
   async verifyTotalSupply(expectedAmount: string) {
-    const totalSupplyElement = this.page
-      .locator("div.space-y-1")
-      .filter({
-        has: this.page.locator(
-          "span.font-medium.text-muted-foreground.text-sm",
-          {
-            hasText: "Total supply",
-          }
-        ),
-      })
-      .locator("div.text-md");
+    const assetDetailsTab = this.page.getByRole("link", {
+      name: "Asset Details",
+    });
+    await expect(assetDetailsTab).toBeVisible({ timeout: 15000 });
+    await assetDetailsTab.click();
+    await this.waitForReactStateSettle();
 
-    await expect(totalSupplyElement).toBeVisible();
+    const totalSupplyLabel = this.page.getByText("Total Supply", {
+      exact: true,
+    });
+    const totalSupplyContainer = totalSupplyLabel.locator(
+      "xpath=ancestor::div[contains(@class,'space-y-1')]"
+    );
+    const totalSupplyElement = totalSupplyContainer
+      .locator("div.truncate.text-base")
+      .first();
+
+    await expect(totalSupplyElement).toBeVisible({ timeout: 15000 });
     await this.page
       .locator("body")
       .click({ position: { x: 1, y: 1 }, force: true });

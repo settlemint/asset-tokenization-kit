@@ -17,6 +17,7 @@ import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import {
+  Book,
   ChevronsUpDown,
   Fingerprint,
   LogOut,
@@ -139,6 +140,15 @@ export function UserDropdown() {
           <DropdownMenuSeparator />
           <LanguageSwitcher mode="menuItem" />
           <ThemeToggle mode="menuItem" />
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onSelect={() => {
+              void navigate({ to: "/docs/$" });
+            }}
+          >
+            <Book className="size-4" />
+            Documentation
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>

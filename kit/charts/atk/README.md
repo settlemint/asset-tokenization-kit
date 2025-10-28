@@ -78,6 +78,9 @@ The following table lists the configurable parameters of this chart and their de
 |dapp.secretEnv|object|-|Environment variables for DApp runtime configuration (stored as secrets)|
 |dapp.secretEnv.BETTER_AUTH_URL|string|`"https://dapp.k8s.orb.local"`|Base URL for authentication callbacks. Must match ingress hostname.|
 |dapp.secretEnv.SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT|string|`"https://blockscout.k8s.orb.local/"`|Blockscout explorer UI endpoint for blockchain browsing|
+|dapp.secretEnv.SETTLEMINT_MINIO_ACCESS_KEY|string|`"console"`|MinIO access key|
+|dapp.secretEnv.SETTLEMINT_MINIO_ENDPOINT|string|`"http://minio:9000"`|MinIO endpoint|
+|dapp.secretEnv.SETTLEMINT_MINIO_SECRET_KEY|string|`"console123"`|MinIO secret key|
 |erpc|object|-|ERPC Gateway configuration for RPC load balancing and caching|
 |erpc.enabled|bool|`true`|Enable deployment of ERPC gateway|
 |erpc.image|object|-|ERPC container image|
@@ -108,6 +111,8 @@ The following table lists the configurable parameters of this chart and their de
 |global.datastores.blockscout|object|-|Blockscout specific datastore configuration for blockchain explorer|
 |global.datastores.blockscout.postgresql|object|-|PostgreSQL database for Blockscout explorer data|
 |global.datastores.blockscout.postgresql.database|string|`"blockscout"`|Dedicated database name for blockchain explorer|
+|global.datastores.blockscout.postgresql.existingSecret|string|`""`|Name of an existing secret providing Blockscout PostgreSQL settings (optional)|
+|global.datastores.blockscout.postgresql.existingSecretKeys|object|-|Secret key mapping for Blockscout PostgreSQL data|
 |global.datastores.blockscout.postgresql.password|string|`"atk"`|Blockscout database password. Change for production deployments.|
 |global.datastores.blockscout.postgresql.username|string|`"blockscout"`|Database user for Blockscout|
 |global.datastores.default|object|-|Default datastore configuration for services that don't require specialized settings|
@@ -132,11 +137,15 @@ The following table lists the configurable parameters of this chart and their de
 |global.datastores.graphNode|object|-|The Graph Node specific datastore configuration for blockchain indexing|
 |global.datastores.graphNode.postgresql|object|-|PostgreSQL database for The Graph indexing data|
 |global.datastores.graphNode.postgresql.database|string|`"thegraph"`|Dedicated database name for subgraph data|
+|global.datastores.graphNode.postgresql.existingSecret|string|`""`|Name of an existing secret providing Graph Node PostgreSQL settings (optional)|
+|global.datastores.graphNode.postgresql.existingSecretKeys|object|-|Secret key mapping for Graph Node PostgreSQL data|
 |global.datastores.graphNode.postgresql.password|string|`"atk"`|The Graph database password. Change for production deployments.|
 |global.datastores.graphNode.postgresql.username|string|`"thegraph"`|Database user for The Graph node|
 |global.datastores.hasura|object|-|Hasura GraphQL Engine specific datastore configuration|
 |global.datastores.hasura.postgresql|object|-|PostgreSQL database for Hasura metadata and data|
 |global.datastores.hasura.postgresql.database|string|`"hasura"`|Dedicated database name for Hasura GraphQL engine|
+|global.datastores.hasura.postgresql.existingSecret|string|`""`|Name of an existing secret providing Hasura PostgreSQL settings (optional)|
+|global.datastores.hasura.postgresql.existingSecretKeys|object|-|Secret key mapping for Hasura PostgreSQL data|
 |global.datastores.hasura.postgresql.password|string|`"atk"`|Hasura database password. Change for production deployments.|
 |global.datastores.hasura.postgresql.username|string|`"hasura"`|Database user for Hasura|
 |global.datastores.hasura.redis|object|-|Redis databases for Hasura caching and rate limiting|
@@ -145,6 +154,8 @@ The following table lists the configurable parameters of this chart and their de
 |global.datastores.portal|object|-|Portal-specific datastore configuration for identity and access management|
 |global.datastores.portal.postgresql|object|-|PostgreSQL database for Portal service|
 |global.datastores.portal.postgresql.database|string|`"portal"`|Dedicated database name for Portal tables|
+|global.datastores.portal.postgresql.existingSecret|string|`""`|Name of an existing secret providing Portal PostgreSQL settings (optional)|
+|global.datastores.portal.postgresql.existingSecretKeys|object|-|Secret key mapping for Portal PostgreSQL data|
 |global.datastores.portal.postgresql.password|string|`"atk"`|Portal database password. Change for production deployments.|
 |global.datastores.portal.postgresql.username|string|`"portal"`|Database user for Portal with limited privileges|
 |global.datastores.portal.redis|object|-|Redis database for Portal session and caching|
@@ -152,6 +163,8 @@ The following table lists the configurable parameters of this chart and their de
 |global.datastores.txsigner|object|-|Transaction Signer specific datastore configuration|
 |global.datastores.txsigner.postgresql|object|-|PostgreSQL database for transaction signing service|
 |global.datastores.txsigner.postgresql.database|string|`"txsigner"`|Dedicated database name for transaction signer state|
+|global.datastores.txsigner.postgresql.existingSecret|string|`""`|Name of an existing secret providing TxSigner PostgreSQL settings (optional)|
+|global.datastores.txsigner.postgresql.existingSecretKeys|object|-|Secret key mapping for TxSigner PostgreSQL data|
 |global.datastores.txsigner.postgresql.password|string|`"atk"`|Transaction signer database password. Change for production deployments.|
 |global.datastores.txsigner.postgresql.username|string|`"txsigner"`|Database user for transaction signer|
 |global.labels|object|-|Global labels applied to all resources across all subcharts|
@@ -257,6 +270,7 @@ The following table lists the configurable parameters of this chart and their de
 |network.network-bootstrapper.resources.limits.memory|string|`"256Mi"`|Memory limit for bootstrapper pods|
 |network.network-bootstrapper.resources.requests.cpu|string|`"100m"`|CPU request for bootstrapper pods|
 |network.network-bootstrapper.resources.requests.memory|string|`"128Mi"`|Memory request for bootstrapper pods|
+|network.network-bootstrapper.settings.validators|int|`1`|Number of validator identities to generate (default 4).|
 |network.network-nodes|object|-|Blockchain node configuration (validators and RPC)|
 |network.network-nodes.compileGenesis.resources|object|-|Resource requests and limits for genesis compilation init container|
 |network.network-nodes.compileGenesis.resources.limits.cpu|string|`"600m"`|CPU limit for genesis compilation|

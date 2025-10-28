@@ -76,22 +76,9 @@ export const Roles = [
   new RoleConfig("CUSTODIAN_ROLE", "custodian"),
   new RoleConfig("EMERGENCY_ROLE", "emergency"),
 
-  // --- SMART Token Extension Roles ---
-  new RoleConfig("BURNER_ROLE", "burner"),
-  new RoleConfig("CAP_MANAGEMENT_ROLE", "capManagement"),
-  new RoleConfig("COMPLIANCE_ADMIN_ROLE", "complianceAdmin"),
-  new RoleConfig("FORCED_TRANSFER_ROLE", "forcedTransfer"),
-  new RoleConfig("FREEZER_ROLE", "freezer"),
-  new RoleConfig("MINTER_ROLE", "minter"),
-  new RoleConfig("PAUSER_ROLE", "pauser"),
-  new RoleConfig("RECOVERY_ROLE", "recovery"),
-  new RoleConfig("TOKEN_ADMIN_ROLE", "tokenAdmin"),
-  new RoleConfig("VERIFICATION_ADMIN_ROLE", "verificationAdmin"),
-
   // --- Addon-Specific Roles ---
   new RoleConfig("FUNDS_MANAGER_ROLE", "fundsManager"),
   new RoleConfig("SALE_ADMIN_ROLE", "saleAdmin"),
-  new RoleConfig("SIGNER_ROLE", "signer"),
 ];
 
 export function getRoleConfigFromBytes(bytes: Bytes): RoleConfig {

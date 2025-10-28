@@ -14,7 +14,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CLAIM_POLICY_MANAGER_ROLE } from "@/lib/constants/roles";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -52,9 +51,7 @@ function ClaimTopicsIssuersPage() {
   );
 
   const roles = system.userPermissions?.roles;
-  const canManageClaimTopicsIssuers = Boolean(
-    roles?.[CLAIM_POLICY_MANAGER_ROLE.fieldName]
-  );
+  const canManageClaimTopicsIssuers = Boolean(roles?.claimPolicyManager);
 
   return (
     <div className="container mx-auto p-6">

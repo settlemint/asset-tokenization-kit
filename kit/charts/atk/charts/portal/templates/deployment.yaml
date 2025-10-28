@@ -108,9 +108,24 @@ spec:
           {{- if .Values.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
-          {{- if .Values.extraEnvVars }}
+          {{- $pgLocal := default (dict) .Values.config.postgresql }}
+          {{- $pgConfig := ((include "atk.datastores.postgresql" (dict "context" $ "chartKey" "portal" "local" $pgLocal)) | fromYaml) | default (dict) }}
+          {{- $pgExistingSecret := trim (default "" (index $pgConfig "existingSecret")) }}
+          {{- $pgSecretKeys := (index $pgConfig "existingSecretKeys") | default (dict) }}
+          {{- $pgUrlKey := default "url" (index $pgSecretKeys "url") }}
+          {{- $renderEnv := or .Values.extraEnvVars (ne $pgExistingSecret "") }}
+          {{- if $renderEnv }}
           env:
+            {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+            {{- if ne $pgExistingSecret "" }}
+            - name: POSTGRES_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $pgExistingSecret | quote }}
+                  key: {{ $pgUrlKey | quote }}
+            {{- end }}
           {{- end }}
           envFrom:
             - secretRef:

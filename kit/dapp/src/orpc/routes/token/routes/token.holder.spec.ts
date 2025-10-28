@@ -37,13 +37,7 @@ describe("Token holder", () => {
         },
       },
       {
-        grantRole: [
-          "custodian",
-          "governance",
-          "supplyManagement",
-          "emergency",
-          "tokenManager",
-        ],
+        grantRole: ["custodian", "governance", "supplyManagement", "emergency"],
         unpause: true,
       }
     );

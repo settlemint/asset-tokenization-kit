@@ -1,6 +1,9 @@
 @import "tailwindcss" source("../");
 @import "tw-animate-css";
-@source "../../../../node_modules/@daveyplate/better-auth-ui";
+@import "fumadocs-ui/css/shadcn.css";
+@import "fumadocs-ui/css/preset.css";
+@import "fumadocs-openapi/css/preset.css";
+@import "@daveyplate/better-auth-ui/css";
 
 /* Scope dark utilities to the nearest theme container so light previews stay isolated */
 @custom-variant dark (

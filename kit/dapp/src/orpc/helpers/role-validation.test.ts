@@ -29,35 +29,24 @@ describe("role-validation", () => {
         addonRegistryModule: false,
         admin: false,
         auditor: false,
-        burner: false,
-        capManagement: false,
+        complianceManager: false,
         claimPolicyManager: false,
         claimIssuer: false,
-        complianceAdmin: false,
-        complianceManager: false,
         custodian: false,
         emergency: false,
-        forcedTransfer: false,
-        freezer: false,
         fundsManager: false,
         governance: false,
         identityManager: false,
         identityRegistryModule: false,
-        minter: false,
         organisationIdentityManager: false,
-        pauser: false,
-        recovery: false,
         saleAdmin: false,
-        signer: false,
         supplyManagement: false,
         systemManager: false,
         systemModule: false,
-        tokenAdmin: false,
         tokenFactoryModule: false,
         tokenFactoryRegistryModule: false,
         tokenManager: false,
         trustedIssuersMetaRegistryModule: false,
-        verificationAdmin: false,
       });
     });
 
@@ -65,25 +54,23 @@ describe("role-validation", () => {
       const accessControl = {
         id: "access-manager-address",
         admin: [{ id: mockWallet, isContract: false }],
-        minter: [{ id: anotherWallet, isContract: false }],
-        burner: [],
+        auditor: [{ id: anotherWallet, isContract: false }],
+        complianceManager: [],
         roleAdmins: [],
       } as unknown as AccessControl;
 
       const result = mapUserRoles(mockWallet, accessControl);
 
       expect(result.admin).toBe(true);
-      expect(result.minter).toBe(false);
-      expect(result.burner).toBe(false);
       // All other roles should be false
-      expect(result.pauser).toBe(false);
+      expect(result.addonManager).toBe(false);
     });
 
     test("should correctly identify user roles when user has multiple roles", () => {
       const accessControl = {
         id: "access-manager-address",
         admin: [{ id: mockWallet, isContract: false }],
-        minter: [
+        addonManager: [
           { id: mockWallet, isContract: false },
           { id: anotherWallet, isContract: false },
         ],
@@ -91,16 +78,16 @@ describe("role-validation", () => {
           { id: anotherWallet, isContract: false },
           { id: mockWallet, isContract: false },
         ],
-        pauser: [{ id: anotherWallet, isContract: false }],
+        auditor: [{ id: anotherWallet, isContract: false }],
         roleAdmins: [],
       } as unknown as AccessControl;
 
       const result = mapUserRoles(mockWallet, accessControl);
 
       expect(result.admin).toBe(true);
-      expect(result.minter).toBe(true);
+      expect(result.addonManager).toBe(true);
       expect(result.tokenManager).toBe(true);
-      expect(result.pauser).toBe(false);
+      expect(result.auditor).toBe(false);
     });
 
     test("should handle case-insensitive wallet address comparison", () => {
@@ -108,8 +95,8 @@ describe("role-validation", () => {
       const accessControl = {
         id: "access-manager-address",
         admin: [{ id: walletAddress.toLowerCase(), isContract: false }],
-        minter: [{ id: walletAddress.toUpperCase(), isContract: false }],
-        burner: [{ id: walletAddress, isContract: false }], // mixed case
+        auditor: [{ id: walletAddress.toUpperCase(), isContract: false }],
+        complianceManager: [{ id: walletAddress, isContract: false }], // mixed case
         roleAdmins: [],
       } as unknown as AccessControl;
 
@@ -119,8 +106,8 @@ describe("role-validation", () => {
         accessControl
       );
       expect(resultForLowercase.admin).toBe(true);
-      expect(resultForLowercase.minter).toBe(true);
-      expect(resultForLowercase.burner).toBe(true);
+      expect(resultForLowercase.auditor).toBe(true);
+      expect(resultForLowercase.complianceManager).toBe(true);
 
       // Test with uppercase wallet
       const resultForUppercase = mapUserRoles(
@@ -128,8 +115,8 @@ describe("role-validation", () => {
         accessControl
       );
       expect(resultForUppercase.admin).toBe(true);
-      expect(resultForUppercase.minter).toBe(true);
-      expect(resultForUppercase.burner).toBe(true);
+      expect(resultForUppercase.auditor).toBe(true);
+      expect(resultForUppercase.complianceManager).toBe(true);
 
       // Test with mixed-case wallet
       const resultForMixedCase = mapUserRoles(
@@ -137,8 +124,8 @@ describe("role-validation", () => {
         accessControl
       );
       expect(resultForMixedCase.admin).toBe(true);
-      expect(resultForMixedCase.minter).toBe(true);
-      expect(resultForMixedCase.burner).toBe(true);
+      expect(resultForMixedCase.auditor).toBe(true);
+      expect(resultForMixedCase.complianceManager).toBe(true);
     });
 
     test("should handle empty accessControl object", () => {
@@ -160,23 +147,23 @@ describe("role-validation", () => {
         __proto__: {},
         id: "access-manager-address",
         admin: [{ id: mockWallet, isContract: false }],
-        minter: [{ id: anotherWallet, isContract: false }],
+        auditor: [{ id: anotherWallet, isContract: false }],
         roleAdmins: [],
       } as unknown as AccessControl;
 
       const result = mapUserRoles(mockWallet, accessControl);
 
       expect(result.admin).toBe(true);
-      expect(result.minter).toBe(false);
+      expect(result.auditor).toBe(false);
     });
 
     test("should handle accessControl with invalid role values", () => {
       const accessControl = {
         id: "access-manager-address",
         admin: [{ id: mockWallet, isContract: false }],
-        minter: null, // Invalid value
-        burner: "invalid", // Invalid value
-        pauser: undefined, // Invalid value
+        auditor: null, // Invalid value
+        complianceManager: "invalid", // Invalid value
+        custodian: undefined, // Invalid value
         tokenManager: {}, // Invalid value
         roleAdmins: [],
       } as unknown as AccessControl;
@@ -186,9 +173,9 @@ describe("role-validation", () => {
       // Should still correctly identify valid roles
       expect(result.admin).toBe(true);
       // Invalid roles should be false
-      expect(result.minter).toBe(false);
-      expect(result.burner).toBe(false);
-      expect(result.pauser).toBe(false);
+      expect(result.auditor).toBe(false);
+      expect(result.complianceManager).toBe(false);
+      expect(result.custodian).toBe(false);
       expect(result.tokenManager).toBe(false);
     });
 
@@ -198,9 +185,9 @@ describe("role-validation", () => {
       const accessControl = {
         id: "access-manager-address",
         admin: [{ id: mockWallet, isContract: false }], // Valid
-        minter: null, // Will be filtered out
-        burner: undefined, // Will be filtered out
-        pauser: "not-an-array", // Will be filtered out
+        auditor: null, // Will be filtered out
+        complianceManager: undefined, // Will be filtered out
+        custodian: "not-an-array", // Will be filtered out
         tokenManager: {}, // Will be filtered out
         roleAdmins: [],
       } as unknown as AccessControl;
@@ -208,9 +195,9 @@ describe("role-validation", () => {
       const result = mapUserRoles(mockWallet, accessControl);
 
       expect(result.admin).toBe(true);
-      expect(result.minter).toBe(false);
-      expect(result.burner).toBe(false);
-      expect(result.pauser).toBe(false);
+      expect(result.auditor).toBe(false);
+      expect(result.complianceManager).toBe(false);
+      expect(result.custodian).toBe(false);
       expect(result.tokenManager).toBe(false);
     });
 
@@ -218,8 +205,8 @@ describe("role-validation", () => {
       const accessControl = {
         id: "access-manager-address",
         admin: [{ id: anotherWallet, isContract: false }],
-        minter: [{ id: anotherWallet, isContract: false }],
-        burner: [
+        auditor: [{ id: anotherWallet, isContract: false }],
+        complianceManager: [
           {
             id: "0x9999999999999999999999999999999999999999",
             isContract: false,
@@ -251,7 +238,7 @@ describe("role-validation", () => {
           { id: wallet2, isContract: false },
           { id: wallet3, isContract: false },
         ],
-        minter: [
+        auditor: [
           { id: wallet1, isContract: false },
           { id: wallet3, isContract: false },
         ],
@@ -263,13 +250,13 @@ describe("role-validation", () => {
       const result3 = mapUserRoles(wallet3, accessControl);
 
       expect(result1.admin).toBe(true);
-      expect(result1.minter).toBe(true);
+      expect(result1.auditor).toBe(true);
 
       expect(result2.admin).toBe(true);
-      expect(result2.minter).toBe(false);
+      expect(result2.auditor).toBe(false);
 
       expect(result3.admin).toBe(true);
-      expect(result3.minter).toBe(true);
+      expect(result3.auditor).toBe(true);
     });
 
     test("should handle all possible roles from AccessControlRoles type", () => {

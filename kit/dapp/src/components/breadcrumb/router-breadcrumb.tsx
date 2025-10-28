@@ -134,15 +134,16 @@ export function RouterBreadcrumb({
       return customSegments.map((seg) => ({ segment: seg }));
     }
 
-    const segmentsWithMeta: BreadcrumbSegmentWithMetadata[] = [];
+    const segmentsWithMeta: BreadcrumbSegmentWithMetadata[] = [
+      {
+        segment: {
+          title: "home", // Special marker for home icon
+          href: "/",
+        },
+      },
+    ];
 
     // Always start with home
-    segmentsWithMeta.push({
-      segment: {
-        title: "home", // Special marker for home icon
-        href: "/",
-      },
-    });
 
     // Find the deepest match with breadcrumb data
     let breadcrumbsFromLoader: BreadcrumbMetadata[] | undefined;
