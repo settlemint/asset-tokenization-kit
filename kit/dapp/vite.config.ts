@@ -156,7 +156,7 @@ export default defineConfig({
     tailwindcss(),
     tanstackStart({
       prerender: {
-        enabled: true,
+        enabled: false,
       },
     }),
     viteReact({
