@@ -29,8 +29,8 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@aws-sdk/client-ecr": "3.918.0",
-    "@aws-sdk/client-marketplace-catalog": "3.918.0",
+    "@aws-sdk/client-ecr": "3.919.0",
+    "@aws-sdk/client-marketplace-catalog": "3.919.0",
     "contracts": "workspace:*",
     "subgraph": "workspace:*",
     "@settlemint/sdk-utils": "2.6.2"
