@@ -1,13 +1,744 @@
 ---
 title: Backend API
-description: Documentation for backend-api
-pageTitle: Backend API
-tags: [architecture, backend-api]
+description:
+  Type-safe ORPC architecture with middleware-based authentication, validation,
+  and integration
+pageTitle: Backend API - ORPC architecture and middleware
+tags: [architecture, backend, api, orpc, middleware, rpc]
 ---
 
-<Callout type="info" title="Template guide">
-  This page follows The Good Docs Project
-  **[Concept](https://www.thegooddocsproject.dev/template/concept)** template.
-</Callout>
+The Asset Tokenization Kit backend exposes a type-safe RPC API built with ORPC
+(Object RPC), providing end-to-end type safety from server to client with
+automatic TypeScript inference. The architecture uses composable middleware to
+build specialized routers for different security and context requirements.
 
-_Content to be added_
+## ORPC architecture overview
+
+### Why ORPC over REST or GraphQL
+
+ORPC provides:
+
+- **End-to-end type safety** - Shared contracts between client and server
+- **Automatic serialization** - Handles dates, BigInts, and complex types
+- **Minimal boilerplate** - No manual API client generation
+- **TypeScript-first** - Full inference without code generation steps
+- **Middleware composition** - Layered security and context injection
+
+Unlike REST (requires OpenAPI codegen) or GraphQL (requires schema-first
+design), ORPC derives types directly from TypeScript implementation.
+
+### Request flow
+
+<Mermaid
+  chart={`
+flowchart TB
+    Client["Frontend Client
+    (Type-safe RPC call)"]
+
+    Route["/api/rpc endpoint
+    (TanStack Start handler)"]
+
+    Router["Module Router
+    (Domain-specific)"]
+
+    Middleware["Middleware Stack
+    (Auth, validation, context)"]
+
+    Handler["Procedure Handler
+    (Business logic)"]
+
+    Services["Service Layer
+    (DB, blockchain, external APIs)"]
+
+    Response["JSON Response
+    (Auto-serialized)"]
+
+    Client --> Route
+    Route --> Router
+    Router --> Middleware
+    Middleware --> Handler
+    Handler --> Services
+    Services --> Handler
+    Handler --> Response
+    Response --> Client
+
+    style Client fill:#8b5cf6,stroke:#6d28d9,color:#fff
+    style Route fill:#0ea5e9,stroke:#0369a1,color:#fff
+    style Middleware fill:#d97706,stroke:#92400e,color:#fff
+    style Handler fill:#10b981,stroke:#047857,color:#fff
+    style Services fill:#10b981,stroke:#047857,color:#fff
+
+`} />
+
+All requests hit `/api/rpc` and are routed to handlers based on the contract
+path (e.g., `token.list` → `src/orpc/routes/token/routes/token.list.ts`).
+
+## Router hierarchy
+
+### Base router stack
+
+Routers are layered with progressively stricter requirements:
+
+<Mermaid
+  chart={`
+flowchart TB
+    Base["Base Router
+    (No middleware)"]
+
+    Public["Public Router
+    (Error handling, i18n, optional session)"]
+
+    Auth["Auth Router
+    (Requires authentication)"]
+
+    Onboarded["Onboarded Router
+    (Requires wallet + system + claims)"]
+
+    Token["Token Router
+    (Token-specific permissions)"]
+
+    Base --> Public
+    Public --> Auth
+    Auth --> Onboarded
+    Auth --> Token
+
+    style Base fill:#8b5cf6,stroke:#6d28d9,color:#fff
+    style Public fill:#0ea5e9,stroke:#0369a1,color:#fff
+    style Auth fill:#d97706,stroke:#92400e,color:#fff
+    style Onboarded fill:#10b981,stroke:#047857,color:#fff
+    style Token fill:#10b981,stroke:#047857,color:#fff
+
+`} />
+
+### Router selection guide
+
+| Router        | Use when                        | Context provided                              |
+| ------------- | ------------------------------- | --------------------------------------------- |
+| **Base**      | Building custom middleware      | Raw context only                              |
+| **Public**    | Public endpoints, optional auth | `auth?`, `headers`, `i18n`                    |
+| **Auth**      | Requires login                  | `auth` (required), `session`                  |
+| **Onboarded** | Requires full setup             | `auth`, `wallet`, `system`, `userClaimTopics` |
+| **Token**     | Token-specific operations       | `auth`, `token`, `permissions`                |
+
+Example handler selection:
+
+```typescript
+// ❌ Wrong - using auth router for public data
+export const getPublicStats = authRouter.stats.public.handler(...)
+
+// ✅ Correct - using public router
+export const getPublicStats = publicRouter.stats.public.handler(...)
+
+// ❌ Wrong - manual auth check in public router
+export const createToken = publicRouter.token.create.handler(({ context }) => {
+  if (!context.auth) throw new Error('Unauthorized')
+  // ...
+})
+
+// ✅ Correct - using onboarded router
+export const createToken = onboardedRouter.token.create.handler(({ context }) => {
+  // context.auth is guaranteed to exist
+  // context.system has deployed contracts
+})
+```
+
+## Middleware stack
+
+### Core middleware layers
+
+**1. Error middleware** (`src/orpc/middlewares/error.middleware.ts`)
+
+Catches and formats errors consistently:
+
+```typescript
+{
+  error: {
+    code: 'UNAUTHORIZED' | 'FORBIDDEN' | 'NOT_FOUND' | 'BAD_REQUEST' | 'INTERNAL_ERROR',
+    message: 'Human-readable error',
+    details?: { field: 'validation error' }
+  }
+}
+```
+
+**2. i18n middleware** (`src/orpc/middlewares/i18n.middleware.ts`)
+
+Injects translation function based on `Accept-Language` header:
+
+```typescript
+context.t("token.created.success");
+```
+
+**3. Session middleware** (`src/orpc/middlewares/session.middleware.ts`)
+
+Loads session from HTTP-only cookie (optional in public router, required in auth
+router):
+
+```typescript
+context.auth = {
+  user: { id, email, name },
+  session: { id, expiresAt },
+};
+```
+
+**4. Auth middleware** (`src/orpc/middlewares/auth.middleware.ts`)
+
+Enforces authentication, throws `UNAUTHORIZED` if not logged in.
+
+**5. Wallet middleware** (`src/orpc/middlewares/wallet.middleware.ts`)
+
+Validates user has connected wallet and completed security setup:
+
+```typescript
+context.wallet = {
+  address: "0x...",
+  chainId: 1,
+  recoveryCodesVerified: true,
+};
+```
+
+**6. System middleware** (`src/orpc/middlewares/system.middleware.ts`)
+
+Loads deployed SMART system contracts:
+
+```typescript
+context.system = {
+  address: "0xSystemAddress",
+  tokenFactories: [
+    { address: "0xBondFactory", type: "bond" },
+    { address: "0xEquityFactory", type: "equity" },
+  ],
+  identityRegistry: "0xIdentityRegistry",
+  claimTopicsRegistry: "0xClaimTopicsRegistry",
+};
+```
+
+**7. User claims middleware** (`src/orpc/middlewares/user-claims.middleware.ts`)
+
+Fetches user's identity claims (KYC status, accreditation):
+
+```typescript
+context.userClaimTopics = ["COUNTRY", "KYC_VERIFIED", "ACCREDITED_INVESTOR"];
+```
+
+**8. Token middleware** (`src/orpc/middlewares/token.middleware.ts`)
+
+Loads token context from route parameters:
+
+```typescript
+context.token = {
+  address: "0xTokenAddress",
+  factoryAddress: "0xFactoryAddress",
+  type: "equity",
+  name: "Company Shares",
+  symbol: "COMP",
+};
+```
+
+**9. Token permission middleware**
+(`src/orpc/middlewares/token-permission.middleware.ts`)
+
+Validates user's roles on specific token:
+
+```typescript
+context.permissions = ["ADMIN", "COMPLIANCE_OFFICER", "AGENT"];
+```
+
+### Middleware composition examples
+
+**Public endpoint** (health check, public stats):
+
+```typescript
+export const publicStats = publicRouter.stats.public.handler(
+  async ({ context }) => {
+    // context.auth is optional
+    const stats = await getPublicStatistics();
+    return stats;
+  }
+);
+```
+
+**Authenticated endpoint** (user profile):
+
+```typescript
+export const getProfile = authRouter.user.me.handler(async ({ context }) => {
+  // context.auth is required
+  return getUserProfile(context.auth.user.id);
+});
+```
+
+**Onboarded endpoint** (create token):
+
+```typescript
+export const createToken = onboardedRouter.token.create.handler(
+  async ({ context, input }) => {
+    // context.auth, context.wallet, context.system all guaranteed
+    const factoryAddress = context.system.tokenFactories.find(
+      (f) => f.type === input.type
+    )?.address;
+
+    return deployToken(factoryAddress, input, context.wallet.address);
+  }
+);
+```
+
+**Token-specific endpoint** (mint tokens):
+
+```typescript
+export const mintTokens = tokenRouter.token.mint.handler(
+  async ({ context, input }) => {
+    // context.token and context.permissions guaranteed
+    if (!context.permissions.includes("ADMIN")) {
+      throw errors.FORBIDDEN("Only admins can mint");
+    }
+
+    return mint(context.token.address, input.to, input.amount);
+  }
+);
+```
+
+## Route organization
+
+### Domain-based structure
+
+Routes are organized by domain in `src/orpc/routes/`:
+
+```
+routes/
+├── account/          # Wallet and identity management
+├── actions/          # Time-bound executable tasks
+├── addons/           # System addon modules (vault, XvP, token sale)
+├── common/           # Shared schemas and utilities
+├── exchange-rates/   # Currency conversion rates
+├── settings/         # User preferences
+├── system/           # SMART system operations
+├── token/            # Token creation and management
+├── user/             # User profiles and KYC
+├── contract.ts       # Main contract aggregation
+└── router.ts         # Main router with lazy loading
+```
+
+### Route module anatomy
+
+Each domain follows a consistent structure:
+
+```
+token/
+├── routes/
+│   ├── token.create.ts           # Handler implementation
+│   ├── token.create.schema.ts    # Zod validation schemas
+│   ├── token.list.ts
+│   ├── token.list.schema.ts
+│   └── ...
+├── token.contract.ts             # ORPC contract definition
+└── token.router.ts               # Handler aggregation
+```
+
+**Contract** (`token.contract.ts`) - Defines API surface:
+
+```typescript
+import { oc } from "@orpc/contract";
+import { TokenCreateSchema, TokenSchema } from "./routes/token.create.schema";
+
+export const tokenContract = {
+  create: oc
+    .input(TokenCreateSchema)
+    .output(TokenSchema)
+    .metadata({
+      openapi: {
+        method: "POST",
+        path: "/token",
+        description: "Deploy new token contract",
+      },
+    }),
+
+  list: oc
+    .input(TokenListSchema)
+    .output(z.array(TokenSchema))
+    .metadata({
+      openapi: {
+        method: "GET",
+        path: "/token",
+        description: "List tokens with filters",
+      },
+    }),
+};
+```
+
+**Schema** (`token.create.schema.ts`) - Validation rules:
+
+```typescript
+import * as z from "zod";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
+
+export const TokenCreateSchema = z.object({
+  type: z.enum(["bond", "equity", "fund", "stableCoin"]),
+  name: z.string().min(1).max(100),
+  symbol: z.string().min(1).max(10).toUpperCase(),
+  initialSupply: z.bigint().positive(),
+  complianceRules: z.array(
+    z.object({
+      moduleAddress: ethereumAddress,
+      parameters: z.record(z.unknown()),
+    })
+  ),
+});
+
+export const TokenSchema = TokenCreateSchema.extend({
+  address: ethereumAddress,
+  factoryAddress: ethereumAddress,
+  deployedAt: z.date(),
+  status: z.enum(["pending", "deployed", "failed"]),
+});
+```
+
+**Handler** (`token.create.ts`) - Business logic:
+
+```typescript
+import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { TokenCreateSchema, TokenSchema } from "./token.create.schema";
+
+export const create = onboardedRouter.token.create
+  .use(portalMiddleware) // Add SettleMint Portal client
+  .handler(async ({ input, context }) => {
+    // 1. Validate user has permission
+    const canCreate = await checkTokenCreationPermission(context.auth.user.id);
+    if (!canCreate) {
+      throw errors.FORBIDDEN("User lacks token creation permission");
+    }
+
+    // 2. Get factory address
+    const factory = context.system.tokenFactories.find(
+      (f) => f.type === input.type
+    );
+    if (!factory) {
+      throw errors.NOT_FOUND(`No factory deployed for type ${input.type}`);
+    }
+
+    // 3. Submit transaction
+    const { transactionHash } = await context.portalClient.mutate({
+      mutation: CREATE_TOKEN_MUTATION,
+      variables: {
+        factoryAddress: factory.address,
+        tokenParams: input,
+      },
+    });
+
+    // 4. Save to database
+    await context.db.insert(tokens).values({
+      address: null, // Unknown until mined
+      transactionHash,
+      type: input.type,
+      status: "pending",
+      createdBy: context.auth.user.id,
+    });
+
+    // 5. Return tracking info
+    return {
+      transactionHash,
+      message: context.t("token.creation.initiated"),
+      estimatedTime: "~2 minutes",
+    };
+  });
+```
+
+**Router** (`token.router.ts`) - Handler aggregation:
+
+```typescript
+import { create } from "./routes/token.create";
+import { list } from "./routes/token.list";
+import { read } from "./routes/token.read";
+// ... other handlers
+
+const routes = {
+  create,
+  list,
+  read,
+  // ... more handlers
+};
+
+export default routes;
+```
+
+### Main router integration
+
+All domain routers are aggregated in `src/orpc/routes/router.ts` with lazy
+loading:
+
+```typescript
+import { baseRouter } from "@/orpc/procedures/base.router";
+import { contract } from "./contract";
+
+export const router = baseRouter.$implement(contract, {
+  token: async () => (await import("./token/token.router")).default,
+  user: async () => (await import("./user/user.router")).default,
+  system: async () => (await import("./system/system.router")).default,
+  // ... lazy-loaded domains
+});
+```
+
+This allows code-splitting at the route level, reducing initial bundle size.
+
+## Data integration patterns
+
+### Combining multiple sources
+
+Handlers often aggregate data from multiple services:
+
+```typescript
+export const read = authRouter.token.read
+  .use(theGraphMiddleware) // Blockchain indexer
+  .use(dbMiddleware) // PostgreSQL
+  .handler(async ({ input, context }) => {
+    // Fetch from blockchain
+    const blockchainData = await context.theGraphClient.query({
+      query: GET_TOKEN_QUERY,
+      variables: { id: input.address },
+      schema: TokenBlockchainSchema,
+    });
+
+    // Fetch from database
+    const dbData = await context.db
+      .select()
+      .from(tokenMetadata)
+      .where(eq(tokenMetadata.address, input.address))
+      .get();
+
+    // Combine sources
+    return {
+      ...blockchainData.token,
+      metadata: dbData,
+      isUserHolder: blockchainData.token.holders.some(
+        (h) => h.address === context.wallet.address
+      ),
+    };
+  });
+```
+
+### Pagination pattern
+
+Use shared pagination schema from
+`src/orpc/routes/common/schemas/list.schema.ts`:
+
+```typescript
+export const ListSchema = z.object({
+  page: z.number().int().positive().default(1),
+  pageSize: z.number().int().positive().max(100).default(20),
+  sortBy: z.string().optional(),
+  sortOrder: z.enum(["asc", "desc"]).default("desc"),
+});
+
+export const ListResponseSchema = <T>(itemSchema: z.ZodType<T>) =>
+  z.object({
+    items: z.array(itemSchema),
+    pagination: z.object({
+      page: z.number(),
+      pageSize: z.number(),
+      totalItems: z.number(),
+      totalPages: z.number(),
+      hasNextPage: z.boolean(),
+      hasPreviousPage: z.boolean(),
+    }),
+  });
+```
+
+### Transaction submission pattern
+
+All blockchain mutations follow a consistent flow:
+
+```typescript
+export const transfer = tokenRouter.token.transfer
+  .use(portalMiddleware)
+  .handler(async ({ input, context }) => {
+    // 1. Validate compliance
+    const canTransfer = await validateTransfer(
+      context.token.address,
+      input.from,
+      input.to,
+      input.amount
+    );
+    if (!canTransfer.allowed) {
+      throw errors.FORBIDDEN(`Transfer blocked: ${canTransfer.reason}`);
+    }
+
+    // 2. Submit transaction
+    const { transactionHash } = await context.portalClient.mutate({
+      mutation: TRANSFER_MUTATION,
+      variables: {
+        tokenAddress: context.token.address,
+        to: input.to,
+        amount: input.amount,
+      },
+    });
+
+    // 3. Log action
+    await context.db.insert(tokenTransfers).values({
+      tokenAddress: context.token.address,
+      from: input.from,
+      to: input.to,
+      amount: input.amount,
+      transactionHash,
+      status: "pending",
+      initiatedBy: context.auth.user.id,
+    });
+
+    // 4. Return tracking info
+    return {
+      transactionHash,
+      message: context.t("transfer.initiated"),
+      explorer: `https://explorer.example.com/tx/${transactionHash}`,
+    };
+  });
+```
+
+## Error handling
+
+### Standardized error codes
+
+All errors use consistent codes:
+
+```typescript
+errors.BAD_REQUEST("Invalid input"); // 400
+errors.UNAUTHORIZED("Login required"); // 401
+errors.FORBIDDEN("Insufficient permissions"); // 403
+errors.NOT_FOUND("Resource not found"); // 404
+errors.CONFLICT("Resource already exists"); // 409
+errors.INTERNAL_ERROR("Server error"); // 500
+```
+
+### Error context
+
+Errors can include structured details:
+
+```typescript
+throw errors.BAD_REQUEST("Validation failed", {
+  details: {
+    name: "Name must be at least 3 characters",
+    symbol: "Symbol must be uppercase",
+  },
+});
+```
+
+### Client-side error handling
+
+Frontend automatically receives typed errors:
+
+```typescript
+const mutation = orpc.token.create.useMutation({
+  onError: (error) => {
+    if (error.code === "FORBIDDEN") {
+      toast.error(error.message);
+    } else if (error.code === "BAD_REQUEST" && error.details) {
+      // Show field-specific errors
+      Object.entries(error.details).forEach(([field, message]) => {
+        form.setError(field, { message });
+      });
+    }
+  },
+});
+```
+
+## Testing procedures
+
+### Handler unit tests
+
+Test handlers in isolation with mock context:
+
+```typescript
+import { describe, it, expect, vi } from "vitest";
+import { create } from "./token.create";
+
+describe("token.create", () => {
+  it("deploys token via factory", async () => {
+    const mockContext = {
+      auth: { user: { id: "user123" } },
+      system: {
+        tokenFactories: [{ address: "0xFactory", type: "equity" }],
+      },
+      portalClient: {
+        mutate: vi.fn().mockResolvedValue({
+          transactionHash: "0xTx123",
+        }),
+      },
+      db: {
+        insert: vi.fn().mockReturnValue({
+          values: vi.fn().mockResolvedValue(undefined),
+        }),
+      },
+    };
+
+    const result = await create({
+      input: {
+        type: "equity",
+        name: "Test Token",
+        symbol: "TEST",
+        initialSupply: 1000000n,
+      },
+      context: mockContext,
+    });
+
+    expect(result.transactionHash).toBe("0xTx123");
+    expect(mockContext.portalClient.mutate).toHaveBeenCalled();
+  });
+});
+```
+
+### Integration tests
+
+Test full middleware stack:
+
+```typescript
+import { testClient } from '@/test/orpc-route-helpers'
+
+describe('token API integration', () => {
+  it('creates token with authenticated user', async () => {
+    const client = testClient({ userId: 'user123' })
+
+    const result = await client.token.create.mutate({
+      type: 'equity',
+      name: 'Test',
+      symbol: 'TST',
+      initialSupply: 1000000n
+    })
+
+    expect(result.transactionHash).toMatch(/^0x[a-fA-F0-9]{64}$/)
+  })
+
+  it('rejects unauthenticated requests', async () => {
+    const client = testClient()  // No user
+
+    await expect(
+      client.token.create.mutate({ ... })
+    ).rejects.toThrow('UNAUTHORIZED')
+  })
+})
+```
+
+## Performance considerations
+
+### Request deduplication
+
+ORPC automatically deduplicates identical requests within a time window,
+reducing database load.
+
+### Caching strategies
+
+- **Immutable data** (deployed tokens) - Cache indefinitely
+- **Frequently changing** (token balances) - Short TTL (30s)
+- **User-specific** (permissions) - Cache per session
+
+### Query optimization
+
+- Use database indexes on frequently queried fields
+- Batch related queries with `Promise.all`
+- Use subgraph for complex blockchain queries instead of direct contract calls
+
+### Monitoring
+
+All procedures are instrumented with:
+
+- **Duration tracking** - Log slow queries (&gt;1s)
+- **Error rates** - Alert on elevated error rates
+- **Usage metrics** - Track most-called endpoints
+
+See [Performance & scalability](../quality-performance/performance-scalability)
+for detailed optimization strategies.

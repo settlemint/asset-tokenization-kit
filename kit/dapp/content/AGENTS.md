@@ -107,6 +107,14 @@ accuracy and clarity, optimized for both human readers and AI search indexing.
   (all start with a verb, for instance, if they are steps). Use **tables** when
   comparing things (like the feature matrix for asset types, or listing data
   fields vs description in reference pages) to improve skimmability.
+  - **Table Formatting Rules:**
+    - Always place tables on their own lines, not inline after text
+    - Separate the table header from preceding content with a blank line
+    - ✅ Correct: `**Header:**\n\n| Col1 | Col2 |\n|------|------|\n| A | B |`
+    - ❌ Incorrect: `**Header:** | Col1 | Col2 |\n|------|------|\n| A | B |`
+    - Each row must be on its own line
+    - Use consistent spacing in separator row (e.g.,
+      `|------|------| not |--|--|`)
 - **Emphasis:** Use **bold** to highlight key terms or the first instance of
   important concepts (the OpenAI doc suggests bolding important text to help
   find
@@ -127,6 +135,13 @@ accuracy and clarity, optimized for both human readers and AI search indexing.
   must be accurate - base them on the architecture described (for instance,
   reuse structure from provided diagrams in the source docs to avoid inventing
   incorrect flows).
+  - **CRITICAL: Use `<Mermaid>` component, NOT markdown code blocks:**
+    - ✅ Correct: `<Mermaid chart={\`flowchart TB\n A --> B\`} />`
+    - ❌ Incorrect: ` ```mermaid\nflowchart TB\n  A --> B\n``` `
+    - The `chart` prop contains the Mermaid diagram code as a template string
+    - Use single quotes for the prop if diagram contains backticks:
+      `<Mermaid chart={'flowchart TB\n  A --> B'} />`
+    - Always use self-closing tag `/>` at the end
   - **Mermaid Color Standards:** Use brand-aligned colors that work in both
     light and dark themes:
     - **Success/positive states**:
@@ -142,15 +157,33 @@ accuracy and clarity, optimized for both human readers and AI search indexing.
     (`LR`) for better readability in documentation. Use `flowchart TB` instead
     of `flowchart LR` to create taller, narrower diagrams that fit better in
     content columns.
-  - **Character Encoding in Mermaid:** Special characters in Mermaid diagrams
-    must be properly encoded to avoid MDX parsing errors:
-    - Use `&lt;` instead of `<` (less than symbol)
-    - Use `&gt;` instead of `>` (greater than symbol)
+  - **Character Encoding in Mermaid AND Regular Text:** Special characters must
+    be properly encoded to avoid MDX parsing errors:
+    - **CRITICAL: Use `&lt;` instead of `<` everywhere** (less than symbol)
+    - **CRITICAL: Use `&gt;` instead of `>` everywhere** (greater than symbol)
     - Use `&amp;` instead of `&` (ampersand)
-    - Avoid starting node labels with numbers - prefix with text if needed
+    - **This applies to ALL content, not just Mermaid diagrams**
+    - MDX can interpret `<` as JSX tag opening, even in regular text
+    - **CRITICAL: Node IDs cannot start with numbers** - always prefix with text
+    - Node IDs must start with a letter, `$`, or `_`
+    - **CRITICAL: Multi-line node labels cannot start second line with a
+      number**
+    - Example: Write `Step1` not `1Step` or `1`
     - Example: Write `Target: &lt;2s` instead of `Target: <2s`
     - Example: Write `Cost: &lt;200,000 gas/tx` instead of
       `Cost: <200,000 gas/tx`
+    - Example: Write `Config["1. Configure"]` not `1["Configure"]`
+    - ✅ Correct: `Supply["Total Supply: 1M tokens"]` (single line with number)
+    - ❌ Incorrect: `Supply["Total Supply\n1,000,000 tokens"]` (number starts
+      second line)
+    - ✅ Correct: `Mobile (&lt;768px)` in regular text
+    - ❌ Incorrect: `Mobile (<768px)` in regular text
+  - **Version Numbers in Content:** When mentioning library versions in text
+    (not in Mermaid diagrams), MDX parsers may interpret `v` followed by numbers
+    as problematic syntax. Use "version X.Y" instead of "vX.Y":
+    - ✅ Correct: `(version 1.133)` or `(version 5.90)`
+    - ❌ Incorrect: `(v1.133)` or `(v5.90)`
+    - This applies to all content, not just Mermaid diagrams
 - **Images/Screenshots:** Where actual UI screenshots become available, include
   them with appropriate figure captions. For now, plan for them (like
   "Screenshot: Asset creation form") so an AI can insert later when generating
