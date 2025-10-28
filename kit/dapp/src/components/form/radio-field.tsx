@@ -21,9 +21,6 @@ interface RadioOption {
   className?: string;
   disabled?: boolean;
   disabledLabel?: string;
-  isRequired?: boolean;
-  isSelected?: boolean;
-  onToggle?: (selected: boolean) => void;
 }
 
 export function RadioField({
@@ -58,42 +55,26 @@ export function RadioField({
 
   const currentValue = useStore(field.store, (s) => s.value);
 
-  const activeValue =
-    options.find((option) => option.isSelected)?.value ?? currentValue ?? "";
+  // Field store is the authoritative selection state.
+  const activeValue = currentValue ?? "";
 
   // Allow callers to override selection behaviour (e.g. toggle cards) while keeping default radio semantics intact.
-  const handleOptionSelect = (option: RadioOption, nextSelected?: boolean) => {
+  const handleOptionSelect = (option: RadioOption, nextSelected = true) => {
     const isDisabled = option.disabled ?? false;
     if (isDisabled) {
       return;
     }
 
-    const isRequired = option.isRequired ?? false;
-    // Required options stay interactive; validation enforces the requirement rather than disabling the control.
-    const isCurrentlySelected =
-      option.isSelected ?? activeValue === option.value;
-    const proposedSelected =
-      nextSelected ?? (option.onToggle ? !isCurrentlySelected : true);
-    if (isRequired && isCurrentlySelected && !proposedSelected) {
-      return;
-    }
-    const shouldSelect = proposedSelected;
-
-    if (option.onToggle) {
-      option.onToggle(shouldSelect);
-      field.handleChange(shouldSelect ? option.value : "");
-      onSelect?.(shouldSelect ? option.value : "");
-      return;
-    }
-
-    if (!shouldSelect) {
+    if (!nextSelected) {
       field.handleChange("");
       onSelect?.("");
       return;
     }
 
-    field.handleChange(option.value);
-    onSelect?.(option.value);
+    if (activeValue !== option.value) {
+      field.handleChange(option.value);
+      onSelect?.(option.value);
+    }
   };
 
   const renderCardRadio = () => (
@@ -110,9 +91,8 @@ export function RadioField({
     >
       {options.map((option) => {
         const isDisabled = option.disabled ?? false;
-        const isRequired = option.isRequired ?? false;
         const showDisabledMessage = isDisabled && option.disabledLabel;
-        const isSelected = option.isSelected ?? activeValue === option.value;
+        const isSelected = activeValue === option.value;
 
         return (
           <div key={option.value} className="relative h-full">
@@ -138,7 +118,6 @@ export function RadioField({
               // Required options must remain keyboard-focusable; only explicit disables exit the tab order.
               tabIndex={isDisabled ? -1 : 0}
               aria-disabled={isDisabled}
-              aria-required={isRequired || undefined}
               className={cn(
                 "flex select-none rounded-lg border border-input bg-background transition-all h-full",
                 isDisabled
@@ -194,7 +173,6 @@ export function RadioField({
     >
       {options.map((option) => {
         const isDisabled = option.disabled ?? false;
-        const isRequired = option.isRequired ?? false;
 
         return (
           <div key={option.value} className="flex items-center space-x-2">
@@ -208,7 +186,6 @@ export function RadioField({
               className={cn(
                 isDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"
               )}
-              aria-required={isRequired || undefined}
             >
               {option.label}
             </Label>

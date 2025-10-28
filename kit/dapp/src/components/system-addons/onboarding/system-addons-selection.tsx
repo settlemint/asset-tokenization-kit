@@ -1,5 +1,6 @@
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
+import { AddonTypeCard } from "@/components/system-addons/components/addon-type-card";
 import { getAddonIcon } from "@/components/system-addons/components/addon-icons";
 import { getAddonTypeFromTypeId } from "@/components/system-addons/components/addon-types-mapping";
 import { Button } from "@/components/ui/button";
@@ -99,9 +100,6 @@ export function SystemAddonsSelection() {
     },
   });
 
-  // Cast to full AppField API so UI-only addon toggles can live outside schema
-  const appForm = form as unknown as ReturnType<typeof useAppForm>;
-
   const { mutateAsync: createAddons, isPending: isAddonsCreating } =
     useMutation(
       orpc.system.addon.create.mutationOptions({
@@ -129,22 +127,6 @@ export function SystemAddonsSelection() {
   const { mutateAsync: updateSetting } = useMutation(
     orpc.settings.upsert.mutationOptions()
   );
-
-  const handleAddAddon = (addon: SystemAddonConfig) => {
-    const alreadyIncluded = form.state.values.addons.some(
-      (a) => a.type === addon.type
-    );
-    if (alreadyIncluded) {
-      return;
-    }
-    form.setFieldValue("addons", [...form.state.values.addons, addon]);
-  };
-  const handleRemoveAddon = (addon: SystemAddonConfig) => {
-    form.setFieldValue(
-      "addons",
-      form.state.values.addons.filter((a) => a.type !== addon.type)
-    );
-  };
 
   const addons = useStore(form.store, (state) => state.values.addons);
 
@@ -277,7 +259,8 @@ export function SystemAddonsSelection() {
                                 return;
                               }
 
-                              const addonConfig = {
+                              const currentAddons = field.state.value ?? [];
+                              const addonConfig: SystemAddonConfig = {
                                 type: addon,
                                 name: t(
                                   `system-addons.addon-selection.addon-types.${addon}.title`
@@ -285,51 +268,46 @@ export function SystemAddonsSelection() {
                               };
 
                               if (checked) {
-                                handleAddAddon(addonConfig);
+                                const alreadySelected = currentAddons.some(
+                                  (existingAddon) =>
+                                    existingAddon.type === addon
+                                );
+                                if (alreadySelected) {
+                                  return;
+                                }
+
+                                field.handleChange([
+                                  ...currentAddons,
+                                  addonConfig,
+                                ]);
                               } else {
-                                handleRemoveAddon(addonConfig);
+                                const nextAddons = currentAddons.filter(
+                                  (existingAddon) =>
+                                    existingAddon.type !== addon
+                                );
+                                field.handleChange(nextAddons);
                               }
                             };
 
-                            const options = [
-                              {
-                                value: "selected",
-                                label: t(
-                                  `system-addons.addon-selection.addon-types.${addon}.title`
-                                ),
-                                description: t(
-                                  `system-addons.addon-selection.addon-types.${addon}.description`
-                                ),
-                                icon: Icon,
-                                isSelected: isChecked,
-                                disabled: isDisabled,
-                                disabledLabel: isYieldRequiredForBond
-                                  ? t(
-                                      "system-addons.addon-selection.required-for-bonds"
-                                    )
-                                  : isAlreadyDeployed
-                                    ? t("assets.deployed-label")
-                                    : undefined,
-                                isRequired: isYieldRequiredForBond,
-                                onToggle: (selected: boolean) => {
-                                  handleToggle(selected);
-                                },
-                              },
-                            ];
-
                             return (
-                              <appForm.AppField
+                              <AddonTypeCard
                                 key={addon}
-                                name={`ui.addon-type.${addon}`}
-                                defaultValue={isChecked ? "selected" : ""}
-                              >
-                                {(addonField) => (
-                                  <addonField.RadioField
-                                    options={options}
-                                    variant="card"
-                                  />
-                                )}
-                              </appForm.AppField>
+                                addonType={addon}
+                                icon={Icon}
+                                isChecked={isChecked}
+                                isDisabled={isDisabled}
+                                isRequired={isYieldRequiredForBond}
+                                disabledLabel={
+                                  isYieldRequiredForBond
+                                    ? t(
+                                        "system-addons.addon-selection.required-for-bonds"
+                                      )
+                                    : isAlreadyDeployed
+                                      ? t("assets.deployed-label")
+                                      : undefined
+                                }
+                                onToggle={handleToggle}
+                              />
                             );
                           })}
                         </div>
