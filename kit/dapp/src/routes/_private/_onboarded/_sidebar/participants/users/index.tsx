@@ -1,10 +1,6 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
-import { UsersTable } from "@/components/users/users-table";
-import {
-  CLAIM_ISSUER_ROLE,
-  IDENTITY_MANAGER_ROLE,
-} from "@/lib/constants/roles";
+import { UsersTable } from "@/components/participants/users/users-table";
 import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
@@ -20,10 +16,7 @@ export const Route = createFileRoute(
     );
 
     const roles = system.userPermissions?.roles;
-    const canViewUsers = Boolean(
-      roles?.[IDENTITY_MANAGER_ROLE.fieldName] ||
-        roles?.[CLAIM_ISSUER_ROLE.fieldName]
-    );
+    const canViewUsers = Boolean(roles?.identityManager || roles?.claimIssuer);
 
     return {
       breadcrumb: [

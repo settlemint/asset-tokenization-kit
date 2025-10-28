@@ -1,0 +1,130 @@
+---
+title: Stablecoins
+pageTitle: Bank-issued stablecoin for payment infrastructure
+description: Bank-issued payment infrastructure with reserve management
+tags: [use-case, stablecoin, payments, banking, reserves]
+---
+
+## The scenario
+
+Regional Bank wants to issue a USD-backed stablecoin for commercial clients to
+use in B2B payments, trade finance, and treasury management. They need
+regulatory compliance, transparent reserves, and enterprise-grade controls.
+
+### Traditional approach
+
+<Mermaid
+  chart={`
+flowchart TB
+    PAYMENT[Cross-border Payment]
+    SWIFT[SWIFT Network<br/>3-5 Days]
+    FEES[High Wire Fees<br/>$25-50 per Transfer]
+    RECON[Manual Reconciliation<br/>Days of Work]
+    DELAY[Settlement Delays<br/>T+2 to T+5]
+    OPAQUE[Limited Visibility<br/>Where is My Payment?]
+    RISK[Counterparty Risk<br/>During Settlement]
+    
+    PAYMENT --> SWIFT
+    SWIFT --> FEES
+    SWIFT --> RECON
+    SWIFT --> DELAY
+    SWIFT --> OPAQUE
+    SWIFT --> RISK
+    
+    style PAYMENT fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style SWIFT fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style FEES fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style RECON fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style DELAY fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style OPAQUE fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style RISK fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+`}
+/>
+
+## How ATK handles it
+
+**Stablecoin deployment with reserve management**: Regional Bank creates a
+stablecoin token pegged 1:1 to USD. Each token is backed by an actual dollar in
+a segregated reserve account. The platform tracks reserve balances and enforces
+that tokens cannot be minted without corresponding fiat deposits.
+
+**Enterprise client onboarding**: Commercial clients complete corporate KYC/KYB
+verification. Their legal entities are registered with the platform, and
+authorized employees receive access to the treasury portal.
+
+**Minting process**: When a client deposits $1 million into the reserve account,
+Regional Bank's operations team verifies the deposit through their core banking
+system. Once confirmed, the platform mints 1 million stablecoins to the client's
+designated wallet. The reserve ratio stays balanced by construction.
+
+**B2B payments and settlements**: Clients use stablecoins for vendor payments,
+international transfers, and supply chain finance. Transactions settle instantly
+on-chain with atomic finality. Payment instructions include invoice references,
+purchase order numbers, and other business metadata.
+
+**Transparency and auditability**: The platform provides real-time visibility
+into total stablecoins issued, reserve balances, and reserve ratio. External
+auditors can verify reserves without disrupting operations. Regulators get
+read-only access to compliance dashboards.
+
+**Redemption workflows**: When clients want to convert stablecoins back to fiat,
+they initiate a redemption request. The platform burns tokens and triggers a
+wire transfer from reserves to the client's bank account. The reserve ratio
+updates automatically.
+
+**Compliance controls**: Even though stablecoins are designed for broad use,
+Regional Bank enforces transaction monitoring, AML screening, and sanctions list
+checks. Suspicious activity triggers alerts for investigation. Geographic
+restrictions prevent use in prohibited jurisdictions.
+
+**Integration with existing systems**: The platform's APIs integrate with
+Regional Bank's core banking system, treasury management platform, and
+accounting systems. Stablecoin transactions appear alongside traditional banking
+transactions in client portals.
+
+## The outcomes
+
+### With ATK
+
+<Mermaid
+  chart={`
+flowchart TB
+    PAYMENT[Cross-border Payment]
+    STABLE[USD Stablecoin<br/>1:1 Reserve Backed]
+    INSTANT[Instant Settlement<br/>Seconds with Finality]
+    NOFEES[Minimal Fees<br/>Cents per Transaction]
+    AUTORECON[Auto Reconciliation<br/>Real-time]
+    TRANSPARENT[Full Transparency<br/>Reserve Dashboard]
+    NORISK[No Counterparty Risk<br/>Atomic Settlement]
+    COMPLIANCE[Built-in Compliance<br/>AML/Sanctions Checks]
+    
+    PAYMENT --> STABLE
+    STABLE --> INSTANT
+    STABLE --> NOFEES
+    STABLE --> AUTORECON
+    STABLE --> TRANSPARENT
+    STABLE --> NORISK
+    STABLE --> COMPLIANCE
+    
+    style PAYMENT fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style STABLE fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style INSTANT fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style NOFEES fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style AUTORECON fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style TRANSPARENT fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style NORISK fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style COMPLIANCE fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+`}
+/>
+
+**Payment speed**: Cross-border B2B payments that took 3-5 days now settle in
+seconds with finality.
+
+**Cost reduction**: International wire fees disappeared. Treasury operations
+costs dropped because reconciliation is real-time.
+
+**Transparency**: Clients see reserve backing in real time, building confidence
+in the stablecoin's stability.
+
+**Regulatory acceptance**: Demonstrable compliance controls and transparent
+reserves satisfied regulators. Regional Bank got approval to scale the program.

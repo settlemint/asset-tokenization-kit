@@ -1,7 +1,7 @@
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
-import { getAddonIcon } from "@/components/system-addons/components/addon-icons";
 import { AddonTypeCard } from "@/components/system-addons/components/addon-type-card";
+import { getAddonIcon } from "@/components/system-addons/components/addon-icons";
 import { getAddonTypeFromTypeId } from "@/components/system-addons/components/addon-types-mapping";
 import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
@@ -46,10 +46,15 @@ export function SystemAddonsSelection() {
   );
 
   // Create a set of already deployed addons for easy lookup
-  const deployedAddons = useMemo(() => {
-    const addons = systemDetails?.systemAddonRegistry.systemAddons ?? [];
-    return new Set(addons.map((addon) => getAddonTypeFromTypeId(addon.typeId)));
-  }, [systemDetails?.systemAddonRegistry.systemAddons]);
+  const deployedAddons = useMemo(
+    () =>
+      new Set(
+        (systemDetails?.systemAddonRegistry.systemAddons ?? []).map((addon) =>
+          getAddonTypeFromTypeId(addon.typeId)
+        )
+      ),
+    [systemDetails?.systemAddonRegistry.systemAddons]
+  );
 
   const deployedAddonsConfig = useMemo(() => {
     return [...deployedAddons].map((addon) => ({
@@ -75,7 +80,16 @@ export function SystemAddonsSelection() {
         toast.error(t("system-addons.addon-selection.no-system"));
         return;
       }
-      const parsedValues = SystemAddonCreateSchema.parse(value);
+      const sanitizedValue = Object.entries(
+        value as Record<string, unknown>
+      ).reduce<Record<string, unknown>>((acc, [key, fieldValue]) => {
+        if (key === "ui" || key.startsWith("ui.")) {
+          return acc;
+        }
+        acc[key] = fieldValue;
+        return acc;
+      }, {});
+      const parsedValues = SystemAddonCreateSchema.parse(sanitizedValue);
 
       toast.promise(createAddons(parsedValues), {
         loading: t("system-addons.addon-selection.deploying-toast"),
@@ -113,22 +127,6 @@ export function SystemAddonsSelection() {
   const { mutateAsync: updateSetting } = useMutation(
     orpc.settings.upsert.mutationOptions()
   );
-
-  const handleAddAddon = (addon: SystemAddonConfig) => {
-    const alreadyIncluded = form.state.values.addons.some(
-      (a) => a.type === addon.type
-    );
-    if (alreadyIncluded) {
-      return;
-    }
-    form.setFieldValue("addons", [...form.state.values.addons, addon]);
-  };
-  const handleRemoveAddon = (addon: SystemAddonConfig) => {
-    form.setFieldValue(
-      "addons",
-      form.state.values.addons.filter((a) => a.type !== addon.type)
-    );
-  };
 
   const addons = useStore(form.store, (state) => state.values.addons);
 
@@ -261,7 +259,8 @@ export function SystemAddonsSelection() {
                                 return;
                               }
 
-                              const addonConfig = {
+                              const currentAddons = field.state.value ?? [];
+                              const addonConfig: SystemAddonConfig = {
                                 type: addon,
                                 name: t(
                                   `system-addons.addon-selection.addon-types.${addon}.title`
@@ -269,9 +268,24 @@ export function SystemAddonsSelection() {
                               };
 
                               if (checked) {
-                                handleAddAddon(addonConfig);
+                                const alreadySelected = currentAddons.some(
+                                  (existingAddon) =>
+                                    existingAddon.type === addon
+                                );
+                                if (alreadySelected) {
+                                  return;
+                                }
+
+                                field.handleChange([
+                                  ...currentAddons,
+                                  addonConfig,
+                                ]);
                               } else {
-                                handleRemoveAddon(addonConfig);
+                                const nextAddons = currentAddons.filter(
+                                  (existingAddon) =>
+                                    existingAddon.type !== addon
+                                );
+                                field.handleChange(nextAddons);
                               }
                             };
 
@@ -282,6 +296,7 @@ export function SystemAddonsSelection() {
                                 icon={Icon}
                                 isChecked={isChecked}
                                 isDisabled={isDisabled}
+                                isRequired={isYieldRequiredForBond}
                                 disabledLabel={
                                   isYieldRequiredForBond
                                     ? t(

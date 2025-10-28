@@ -131,35 +131,11 @@ type AccessControl @entity(immutable: false) {
   # Emergency actions (pause, freeze)
   emergency: [Account!]!
 
-  # SMART Token Extension Roles - ERC-3643 specific permissions
-  # Can burn tokens to reduce supply
-  burner: [Account!]!
-  # Manages token supply caps and limits
-  capManagement: [Account!]!
-  # Administers compliance rules and requirements
-  complianceAdmin: [Account!]!
-  # Can force transfers between accounts (regulatory)
-  forcedTransfer: [Account!]!
-  # Can freeze/unfreeze token balances
-  freezer: [Account!]!
-  # Can mint new tokens to increase supply
-  minter: [Account!]!
-  # Can pause/unpause all token operations
-  pauser: [Account!]!
-  # Can recover lost tokens or accounts
-  recovery: [Account!]!
-  # General token administration
-  tokenAdmin: [Account!]!
-  # Manages identity verification requirements
-  verificationAdmin: [Account!]!
-
   # Addon-Specific Roles - Extension module permissions
-  # Manages fund operations (distributions, allocations)
+  # Token Sale: Manages fund operations (distributions, allocations)
   fundsManager: [Account!]!
-  # Administers token sales and offerings
+  # Token Sale: Administers token sales and offerings
   saleAdmin: [Account!]!
-  # Authorized signers for multi-sig operations
-  signer: [Account!]!
 }
 
 # Represents the admin hierarchy for role management
@@ -427,6 +403,8 @@ type Identity @entity(immutable: false) {
   identityFactory: IdentityFactory!
   # Account associated with this identity
   account: Account!
+  # High-level classification derived from supported interfaces
+  entityType: String!
   # Transaction hash where this was deployed
   deployedInTransaction: Bytes!
   # List of claims associated with this identity

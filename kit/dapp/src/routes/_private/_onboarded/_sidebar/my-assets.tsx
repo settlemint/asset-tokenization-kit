@@ -1,5 +1,5 @@
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { UserAssetsTable } from "@/components/users/user-assets";
+import { UserAssetsTable } from "@/components/participants/users/user-assets";
 import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";

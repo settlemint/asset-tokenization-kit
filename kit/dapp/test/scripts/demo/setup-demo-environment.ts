@@ -126,13 +126,7 @@ for (const depositToCreate of DEPOSITS) {
     },
     {
       useExactName: true,
-      grantRole: [
-        "custodian",
-        "emergency",
-        "governance",
-        "supplyManagement",
-        "tokenManager",
-      ],
+      grantRole: ["custodian", "emergency", "governance", "supplyManagement"],
       unpause: true,
     }
   );
@@ -167,13 +161,7 @@ for (const bondToCreate of BONDS) {
     },
     {
       useExactName: true,
-      grantRole: [
-        "custodian",
-        "emergency",
-        "governance",
-        "supplyManagement",
-        "tokenManager",
-      ],
+      grantRole: ["custodian", "emergency", "governance", "supplyManagement"],
       unpause: true,
     }
   );
@@ -263,13 +251,7 @@ for (const stableCoinToCreate of STABLECOINS) {
     },
     {
       useExactName: true,
-      grantRole: [
-        "custodian",
-        "emergency",
-        "governance",
-        "supplyManagement",
-        "tokenManager",
-      ],
+      grantRole: ["custodian", "emergency", "governance", "supplyManagement"],
       unpause: true,
     }
   );

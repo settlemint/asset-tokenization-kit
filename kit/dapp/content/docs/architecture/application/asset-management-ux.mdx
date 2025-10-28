@@ -1,0 +1,760 @@
+---
+title: Asset management
+description:
+  User-facing workflows for creating, managing, and operating tokenized assets
+pageTitle: Asset management interface - User workflows and screens
+tags: [architecture, ux, workflows, asset-management, interface]
+---
+
+The asset management interface provides intuitive workflows for issuing,
+operating, and monitoring tokenized financial instruments. Designed for both
+financial professionals and compliance officers, the interface abstracts
+blockchain complexity while maintaining full control and transparency.
+
+## Core user workflows
+
+### Token creation journey
+
+The asset designer wizard guides users through token deployment in structured
+steps:
+
+<Mermaid
+  chart={`
+flowchart TB
+    subgraph "Step 1: Asset Type Selection"
+        TypeSelect["Choose Asset Class
+        • Bond (debt instrument)
+        • Equity (company shares)
+        • Fund (investment units)
+        • StableCoin (fiat-backed)"]
+    end
+
+    subgraph "Step 2: Basic Configuration"
+        BasicInfo["Enter Token Details
+        • Name & symbol
+        • Total supply
+        • Decimals
+        • Optional: ISIN/ticker"]
+    end
+
+    subgraph "Step 3: Compliance Rules"
+        Compliance["Configure Transfer Rules
+        • Identity requirements
+        • Country restrictions
+        • Investor caps
+        • Time locks"]
+    end
+
+    subgraph "Step 4: Asset-Specific Features"
+        Features["Enable Extensions
+        Bond: maturity, yield schedule
+        Equity: voting, dividends
+        Fund: NAV, management fees
+        StableCoin: reserve backing"]
+    end
+
+    subgraph "Step 5: Review & Deploy"
+        Review["Review Configuration
+        • Gas estimation
+        • Contract preview
+        • Compliance summary"]
+        Deploy["Submit Transaction
+        • Wallet confirmation
+        • Progress monitoring"]
+    end
+
+    subgraph "Step 6: Post-Deployment"
+        Success["Asset Live
+        • Token address
+        • View dashboard
+        • Distribute to holders"]
+    end
+
+    TypeSelect --> BasicInfo
+    BasicInfo --> Compliance
+    Compliance --> Features
+    Features --> Review
+    Review --> Deploy
+    Deploy --> Success
+
+    style TypeSelect fill:#0ea5e9,stroke:#0369a1,color:#fff
+    style BasicInfo fill:#0ea5e9,stroke:#0369a1,color:#fff
+    style Compliance fill:#d97706,stroke:#92400e,color:#fff
+    style Features fill:#8b5cf6,stroke:#6d28d9,color:#fff
+    style Review fill:#8b5cf6,stroke:#6d28d9,color:#fff
+    style Deploy fill:#d97706,stroke:#92400e,color:#fff
+    style Success fill:#10b981,stroke:#047857,color:#fff
+
+`} />
+
+#### Step 1: Asset type selection
+
+Interface: `src/routes/_private/_onboarded/_sidebar/addon-designer.tsx`
+
+Users select from five asset classes with contextual descriptions:
+
+- **Bond** - Fixed-income securities with maturity dates and yield distributions
+- **Equity** - Company shares with voting rights and dividend capabilities
+- **Fund** - Investment fund units with NAV tracking and management fees
+- **StableCoin** - Fiat-pegged tokens with reserve management
+- **Deposit** - Collateralized deposit certificates with time locks
+
+Each option displays key features, typical use cases, and compliance
+requirements.
+
+#### Step 2: Basic token configuration
+
+Form validation ensures:
+
+- **Name** - 3-100 characters, human-readable
+- **Symbol** - 1-10 uppercase characters, unique within system
+- **Supply** - Positive integer, supports decimals (default 18)
+- **Optional identifiers** - ISIN (International Securities Identification
+  Number), LEI (Legal Entity Identifier)
+
+Real-time validation prevents common mistakes (duplicate symbols, invalid ISIN
+format).
+
+#### Step 3: Compliance rule builder
+
+Visual interface for assembling compliance logic:
+
+**Identity requirements:**
+
+- Minimum KYC level (Level 1: basic info, Level 2: document verification, Level
+  3: enhanced due diligence)
+- Required claim topics (accredited investor, institutional investor)
+- Trusted claim issuers (authorized KYC providers)
+
+**Geographic restrictions:**
+
+- Country allow list (investors from these countries only)
+- Country block list (explicitly blocked jurisdictions)
+- OFAC sanctions screening integration
+
+**Investor caps:**
+
+- Maximum holder count (e.g., 99 investors for Reg D compliance)
+- Maximum individual allocation (ownership concentration limits)
+- Minimum holding period (time locks for vesting)
+
+Each rule displays regulatory context (e.g., "Required for SEC Regulation D
+offerings") and validation warnings.
+
+#### Step 4: Asset-specific extensions
+
+Configuration adapts to selected asset type:
+
+**Bond features:**
+
+- Maturity date and redemption terms
+- Yield schedule (fixed coupon, variable rate, zero-coupon)
+- Early redemption options (callable, puttable)
+- Collateral tracking (secured vs unsecured)
+
+**Equity features:**
+
+- Voting mechanism (on-chain governance integration)
+- Dividend policy (automatic distribution, claimable)
+- Share class (common, preferred, non-voting)
+- Anti-dilution protection
+
+**Fund features:**
+
+- NAV calculation frequency (daily, weekly, monthly)
+- Management fee structure (flat rate, performance-based)
+- Subscription/redemption terms (open-ended, closed-end)
+- High-water mark tracking
+
+**StableCoin features:**
+
+- Peg currency (USD, EUR, GBP)
+- Reserve account integration (bank API connection)
+- Mint/burn controls (role-based permissions)
+- Attestation frequency (reserve proof publication)
+
+#### Step 5: Review and deployment
+
+Pre-deployment checklist:
+
+- **Configuration summary** - All parameters in human-readable format
+- **Gas estimation** - Transaction cost prediction (current network conditions)
+- **Compliance audit** - Automated checks for common misconfigurations
+- **Contract preview** - Show which factory and extensions will be deployed
+
+Wallet confirmation modal displays:
+
+- Estimated gas fee
+- Factory contract address
+- Expected token address (deterministic deployment)
+- Transaction risks and irreversibility warning
+
+#### Step 6: Transaction monitoring
+
+Post-submission interface shows:
+
+- **Transaction hash** - Link to block explorer
+- **Confirmation status** - Block depth (0/12 confirmations)
+- **Estimated time** - Based on current network speed
+- **Error handling** - If transaction fails, explain why and offer retry
+
+Once confirmed, redirect to token dashboard with congratulations message and
+next steps (invite investors, configure cap table).
+
+### Token dashboard
+
+Interface:
+`src/routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/`
+
+After deployment, each token has a dedicated management dashboard.
+
+#### Overview tab (index.tsx)
+
+At-a-glance metrics:
+
+<Mermaid
+  chart={`
+flowchart LR
+    subgraph "Key Metrics"
+        Supply["Total Supply: 1M tokens"]
+        Holders["Holder Count: 47 investors"]
+        Value["Market Cap: $5.2M"]
+        Compliance["Compliance Status: ✓ All transfers allowed"]
+    end
+
+    subgraph "Quick Actions"
+        Mint["Mint Tokens"]
+        Transfer["Distribute"]
+        Pause["Emergency Pause"]
+        Settings["Configure"]
+    end
+
+    Supply --> Mint
+    Holders --> Transfer
+    Value --> Settings
+    Compliance --> Pause
+
+    style Supply fill:#0ea5e9,stroke:#0369a1,color:#fff
+    style Holders fill:#0ea5e9,stroke:#0369a1,color:#fff
+    style Value fill:#10b981,stroke:#047857,color:#fff
+    style Compliance fill:#10b981,stroke:#047857,color:#fff
+
+`} />
+
+**Recent activity feed:**
+
+- Last 10 transactions (mints, transfers, burns)
+- Compliance events (identity approvals, transfer rejections)
+- Administrative actions (permission changes, rule updates)
+
+**Performance charts** (for yield-bearing assets):
+
+- Yield distribution history
+- NAV evolution (funds)
+- Trading volume (if secondary market exists)
+
+#### Holders tab (holders.tsx)
+
+Cap table management:
+
+| Address  | Balance | % Ownership | Country | KYC Status | Claims        |
+| -------- | ------- | ----------- | ------- | ---------- | ------------- |
+| 0x123... | 50,000  | 5.0%        | US      | ✓ Verified | Accredited    |
+| 0x456... | 25,000  | 2.5%        | UK      | ✓ Verified | Institutional |
+| 0x789... | 10,000  | 1.0%        | SG      | ✓ Verified | Retail        |
+
+**Holder actions:**
+
+- Export cap table (CSV, Excel)
+- View holder transaction history
+- Filter by ownership threshold or country
+- Send bulk communications (via off-chain email system)
+
+**Concentration chart:** Pie chart showing ownership distribution by bracket:
+
+- Top 10 holders
+- 11-50 holders
+- Small holders (&lt;0.1%)
+
+#### Events tab (events.tsx)
+
+Comprehensive transaction log:
+
+**Filter options:**
+
+- Event type (Transfer, Mint, Burn, Pause, ComplianceUpdate)
+- Date range
+- Involved addresses (from, to)
+- Transaction status (pending, confirmed, failed)
+
+**Event details:** Each row expands to show:
+
+- Full transaction parameters
+- Gas used and fee paid
+- Block number and timestamp
+- Compliance checks performed
+- Role-based actor identification
+
+**Export options:**
+
+- Audit report (PDF with regulatory commentary)
+- CSV export (all fields)
+- JSON export (machine-readable)
+
+#### Compliance tab (compliance.tsx)
+
+Identity and rule management:
+
+**Identity registry:**
+
+- List of approved investors (linked OnchainIDs)
+- Pending approval queue (awaiting compliance officer review)
+- Rejected identities (with rejection reason)
+
+**Compliance modules:** Active rules with configuration:
+
+- Country restrictions (current allow/block lists)
+- Investor cap status (current: 47/99 investors)
+- Transfer restrictions (time locks, approval requirements)
+
+**Modify rules:**
+
+- Add/remove countries from lists
+- Adjust investor caps
+- Enable/disable specific modules
+- Test compliance scenarios (simulate transfers to check if allowed)
+
+#### Yield/Distributions tab (yield.tsx)
+
+For assets with payment features:
+
+**Distribution history:**
+
+| Date       | Type     | Amount  | Recipients | Status     |
+| ---------- | -------- | ------- | ---------- | ---------- |
+| 2024-03-01 | Coupon   | $50,000 | 47 holders | ✓ Complete |
+| 2024-02-01 | Coupon   | $50,000 | 45 holders | ✓ Complete |
+| 2024-01-01 | Dividend | $25,000 | 43 holders | ✓ Complete |
+
+**Schedule distribution:**
+
+- Select distribution type (coupon, dividend, redemption)
+- Enter total amount (in stablecoin or native token)
+- Choose record date (snapshot date for eligibility)
+- Set payment date
+- Preview per-holder allocation (pro-rata calculation)
+
+**Automated distributions:**
+
+- Configure recurring schedules (quarterly coupons)
+- Link to bank account for automatic funding
+- Set up notifications (email holders before payment)
+
+#### Permissions tab (permissions.tsx)
+
+Role-based access control:
+
+**System roles:**
+
+- **Admin** - Full control (mint, burn, compliance, permissions)
+- **Compliance Officer** - Identity approval, rule configuration
+- **Agent** - Distribution management, holder communication
+- **Auditor** - Read-only access to all data
+
+**Current assignments:** List of addresses with assigned roles and grant date.
+
+**Add role:**
+
+1. Enter Ethereum address or select existing user
+2. Choose role(s) to grant
+3. Set optional expiration date
+4. Require multi-signature approval (if enabled)
+
+**Revoke role:** Immediately removes permissions. Warns if revoking own admin
+role.
+
+### Investor onboarding workflow
+
+Interface: `src/routes/_private/_onboarded/_sidebar/participants/users/`
+
+Compliance officers manage investor onboarding:
+
+<Mermaid
+  chart={`
+flowchart TB
+    Application["Investor Applies
+    • Submits personal info
+    • Uploads KYC documents
+    • Connects wallet"]
+
+    Queue["Review Queue
+    • Compliance officer notified
+    • Document verification
+    • Background checks"]
+
+    Decision{"Approve or Reject?"}
+
+    Approve["Approve Identity
+    • Create OnchainID
+    • Issue claim topics
+    • Add to token whitelist"]
+
+    Reject["Reject Application
+    • Provide rejection reason
+    • Notify investor
+    • Log compliance decision"]
+
+    Identity["OnchainID Created
+    • Blockchain identity registered
+    • Claims cryptographically signed
+    • Linked to wallet"]
+
+    Eligible["Eligible for Trading
+    • Can receive tokens
+    • Compliance checks pass
+    • Participate in distributions"]
+
+    Application --> Queue
+    Queue --> Decision
+    Decision -->|Yes| Approve
+    Decision -->|No| Reject
+    Approve --> Identity
+    Identity --> Eligible
+
+    style Application fill:#0ea5e9,stroke:#0369a1,color:#fff
+    style Queue fill:#8b5cf6,stroke:#6d28d9,color:#fff
+    style Approve fill:#10b981,stroke:#047857,color:#fff
+    style Reject fill:#d97706,stroke:#92400e,color:#fff
+    style Identity fill:#10b981,stroke:#047857,color:#fff
+    style Eligible fill:#10b981,stroke:#047857,color:#fff
+
+`} />
+
+#### Investor profile view
+
+For each applicant:
+
+**Personal information:**
+
+- Full name, date of birth
+- Residential address, nationality
+- Tax identification number
+- Contact information (email, phone)
+
+**KYC documents:**
+
+- Government-issued ID (passport, driver's license)
+- Proof of address (utility bill, bank statement)
+- Accreditation proof (for qualified investors)
+
+**Document verification tools:**
+
+- Zoom/pan/rotate uploaded images
+- Mark specific fields (verify expiration date)
+- Request additional documentation
+- External verification service integration (Onfido, Jumio)
+
+**Compliance checks:**
+
+- Sanctions screening (OFAC, EU sanctions lists)
+- PEP (Politically Exposed Person) screening
+- Adverse media search
+- Duplicate account detection
+
+#### Approval process
+
+**Issue claim topics:**
+
+- Country of residence
+- KYC level achieved
+- Investor classification (retail, accredited, institutional)
+- Custom claim topics (project-specific requirements)
+
+**Create OnchainID:** System automatically:
+
+1. Deploys OnchainID contract for investor
+2. Links to investor's wallet address
+3. Issues signed claims from trusted issuer registry
+4. Records identity on-chain (gas paid by platform)
+
+**Add to token whitelists:** Optionally add approved investor to specific token
+eligibility lists immediately.
+
+#### Rejection handling
+
+**Rejection reasons:**
+
+- Incomplete documentation
+- Failed sanctions screening
+- Jurisdiction restrictions
+- Risk assessment failure
+
+**Investor notification:** Automated email with rejection reason and remediation
+steps (if applicable).
+
+**Audit trail:** All decisions logged with:
+
+- Reviewing officer
+- Decision timestamp
+- Supporting documentation
+- Compliance notes
+
+### Corporate actions workflow
+
+Interface: Token dashboard → Actions tab
+
+#### Executing a coupon payment
+
+**Scenario:** Quarterly interest payment on bond token.
+
+**Workflow:**
+
+1. Navigate to token yield tab
+2. Click "Schedule Distribution"
+3. Select distribution type: "Coupon Payment"
+4. Enter details:
+   - Coupon rate: 5% annual (1.25% quarterly)
+   - Principal: $1,000,000 total issuance
+   - Payment amount: $12,500
+   - Record date: End of quarter
+   - Payment date: 5 business days after record date
+5. Preview allocation:
+   - System calculates pro-rata distribution to each holder
+   - Shows per-holder amounts
+   - Flags any holders with compliance issues
+6. Fund payment:
+   - Transfer stablecoin to distribution contract
+   - Or authorize payment from linked bank account
+7. Submit transaction:
+   - Execute distribution on-chain
+   - Each holder can claim their portion
+   - Or system pushes to holder wallets automatically
+8. Confirm completion:
+   - View distribution receipt
+   - Export payment proof for accounting
+   - Update holder communications
+
+#### Initiating shareholder vote
+
+**Scenario:** Equity token holders vote on board election.
+
+**Workflow:**
+
+1. Navigate to token governance section (if voting module enabled)
+2. Create proposal:
+   - Proposal title: "Board Election Q4 2025"
+   - Description: Detailed information, candidate bios
+   - Voting options: Candidate A, Candidate B, Abstain
+   - Voting period: 7 days
+   - Quorum requirement: 50% of outstanding shares
+3. Submit proposal on-chain:
+   - Proposal stored in governance contract
+   - Snapshot of current holdings taken (vote weight = token balance at
+     snapshot)
+4. Notify holders:
+   - Automated email/notification to all holders
+   - Link to voting interface
+5. Monitor vote:
+   - Real-time vote count dashboard
+   - Participation rate tracking
+   - Quorum countdown
+6. Close vote:
+   - Automatically closes after voting period
+   - Tally results on-chain
+   - Execute outcome (if binding vote)
+7. Announce results:
+   - Publish results to all holders
+   - Update governance records
+
+### Addon management
+
+Interface: `src/routes/_private/_onboarded/_sidebar/addon/$addonAddress.tsx`
+
+Users deploy optional addon modules (vault, token sale, XvP settlement) after
+initial token deployment.
+
+#### Deploying a token sale
+
+**Use case:** Primary issuance via smart contract sale.
+
+**Configuration:**
+
+- Sale price (in stablecoin or native currency)
+- Hard cap (maximum raise amount)
+- Soft cap (minimum viable raise)
+- Start and end dates
+- Whitelist (eligible purchasers)
+- Vesting schedule (optional token lock-up)
+
+**Sale management:**
+
+- Dashboard shows:
+  - Total raised
+  - Tokens sold
+  - Unique contributors
+  - Time remaining
+- Manual close (if target reached early)
+- Refund mechanism (if soft cap not met)
+
+#### Configuring vault
+
+**Use case:** Custodial holding for institutional clients.
+
+**Setup:**
+
+- Create vault contract
+- Set withdrawal permissions (multi-signature)
+- Define authorized operators
+- Enable withdrawal limits and time delays
+
+**Operations:**
+
+- Deposit tokens to vault (from issuer or investors)
+- Request withdrawal (initiates approval flow)
+- View vault holdings and history
+- Export custody reports
+
+## Design principles
+
+### Progressive disclosure
+
+Interfaces reveal complexity gradually:
+
+**Default view:**
+
+- Essential information only (token name, balance, compliance status)
+- Common actions prominently displayed (transfer, mint)
+
+**Advanced controls:**
+
+- Hidden behind "Advanced" accordion or separate tabs
+- Raw contract data, detailed events, low-level configuration
+
+**Expert mode:**
+
+- Developer tools (contract ABI, ethers.js snippets)
+- Direct contract interaction (for power users)
+
+### Contextual help
+
+Every form and action includes:
+
+**Inline tooltips:** Hover over field labels for explanations (e.g., "ISIN:
+12-character alphanumeric code identifying securities")
+
+**Documentation links:** "Learn more about compliance modules" → opens relevant
+docs section
+
+**Example values:** Placeholder text shows valid format (e.g., "ACME Corp" for
+token name)
+
+**Validation feedback:** Real-time error messages with specific guidance
+("Symbol must be 2-10 uppercase letters without spaces")
+
+### Error prevention
+
+System prevents common mistakes:
+
+**Confirmation dialogs:** High-risk actions (pause token, revoke admin role)
+require explicit confirmation with typed phrase (e.g., type "PAUSE" to confirm).
+
+**Irreversibility warnings:** Clearly state actions that cannot be undone ("Once
+deployed, token supply cannot be changed").
+
+**Dry-run mode:** Test compliance scenarios without executing transactions
+("Will transfer be allowed?" → Yes/No with reason).
+
+**Undo capabilities:** Where possible, provide undo (e.g., revoke recently
+granted permissions within 5 minutes).
+
+### Responsive feedback
+
+Every user action provides immediate feedback:
+
+**Optimistic updates:** UI updates immediately (e.g., balance changes before
+blockchain confirmation).
+
+**Progress indicators:**
+
+- Spinner for quick actions (&lt;3s expected)
+- Progress bar for multi-step workflows
+- Block confirmation counter (1/12 confirmations)
+
+**Success confirmation:**
+
+- Toast notification with success icon
+- Confetti animation for major milestones (token deployed)
+- Redirect to next logical screen
+
+**Error handling:**
+
+- Clear error messages (avoid technical jargon)
+- Actionable suggestions ("Transaction failed: Insufficient funds. Please top up
+  your wallet.")
+- Retry button (for transient failures)
+
+### Accessibility compliance
+
+All interfaces meet WCAG 2.1 AA standards:
+
+**Keyboard navigation:**
+
+- Tab order follows logical flow
+- Escape key closes modals
+- Arrow keys navigate lists and tables
+- Enter/Space activates buttons
+
+**Screen reader support:**
+
+- Semantic HTML (nav, main, article)
+- ARIA labels on icons and controls
+- Descriptive link text (no "click here")
+- Form field labels properly associated
+
+**Visual accessibility:**
+
+- 4.5:1 contrast ratio for text
+- Focus indicators visible on all interactive elements
+- No color-only information encoding
+- Font size adjustable without breaking layout
+
+## Integration with backend
+
+Asset management UI calls backend via ORPC:
+
+**Token creation:**
+
+```typescript
+const createToken = orpc.token.create.useMutation();
+await createToken.mutateAsync({
+  type: "equity",
+  name: formData.name,
+  symbol: formData.symbol,
+  initialSupply: BigInt(formData.supply),
+});
+```
+
+**Fetching token data:**
+
+```typescript
+const { data: token } = orpc.token.read.useQuery({
+  address: tokenAddress,
+});
+```
+
+**Distribution execution:**
+
+```typescript
+const distribute = orpc.token.yield.distribute.useMutation();
+await distribute.mutateAsync({
+  tokenAddress,
+  amount: distributionAmount,
+  recordDate: new Date(),
+});
+```
+
+All mutations trigger TanStack Query cache invalidation, automatically
+refreshing dependent UI components. Optimistic updates provide instant feedback
+before blockchain confirmation.
+
+See [Backend API architecture](./backend-api) for complete procedure reference.

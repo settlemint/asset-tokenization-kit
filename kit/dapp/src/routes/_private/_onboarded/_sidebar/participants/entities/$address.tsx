@@ -6,10 +6,6 @@ import { ManageIdentityDropdown } from "@/components/manage-dropdown/manage-iden
 import { getIdentityTabConfiguration } from "@/components/tab-navigation/identity-tab-configuration";
 import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
 import { Web3Address } from "@/components/web3/web3-address";
-import {
-  CLAIM_ISSUER_ROLE,
-  IDENTITY_MANAGER_ROLE,
-} from "@/lib/constants/roles";
 import { client } from "@/orpc/orpc-client";
 import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
@@ -62,8 +58,7 @@ export const Route = createFileRoute(
     const roles = system.userPermissions?.roles;
 
     const canViewEntities = Boolean(
-      roles?.[IDENTITY_MANAGER_ROLE.fieldName] ||
-        roles?.[CLAIM_ISSUER_ROLE.fieldName]
+      roles?.identityManager || roles?.claimIssuer
     );
 
     if (!canViewEntities) {

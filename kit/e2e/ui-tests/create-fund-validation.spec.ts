@@ -12,7 +12,7 @@ test.describe.serial("Fund Creation Validation", () => {
   let adminPage: Page;
 
   test.beforeAll(async ({ browser }) => {
-    const setupUser = getSetupUser();
+    const setupUser = getSetupUser("admin");
     adminContext = await browser.newContext();
     adminPage = await adminContext.newPage();
     adminPages = Pages(adminPage);
@@ -185,22 +185,21 @@ test.describe.serial("Fund Creation Validation", () => {
   });
   test.describe.serial("Create Fund asset", () => {
     const testData = {
-      name: "",
-      symbol: "",
-      decimals: "",
-      timestamp: new Date().toISOString(),
+      name: fundData.name,
+      symbol: fundData.symbol,
+      decimals: fundData.decimals,
     };
 
     test("Create Fund asset", async () => {
-      const setupUser = getSetupUser();
+      const setupUser = getSetupUser("admin");
       await adminPage.goto("/");
       await createAssetForm.openAssetDesigner();
       await createAssetForm.selectAssetClass("Flexible Income");
       await createAssetForm.selectAssetTypeFromDialog("Fund");
       await createAssetForm.fillAssetDetails({
-        name: fundData.name,
-        symbol: fundData.symbol,
-        decimals: fundData.decimals,
+        name: testData.name,
+        symbol: testData.symbol,
+        decimals: testData.decimals,
         isin: fundData.isin,
         country: fundData.country,
         basePrice: fundData.basePrice,
@@ -210,10 +209,6 @@ test.describe.serial("Fund Creation Validation", () => {
         fundCategory: fundData.fundCategory,
         managementFeeBps: fundData.managementFeeBps,
       });
-
-      testData.name = fundData.name;
-      testData.symbol = fundData.symbol;
-      testData.decimals = fundData.decimals;
 
       await createAssetForm.completeAssetCreation(setupUser.pincode, "fund");
 
@@ -232,6 +227,59 @@ test.describe.serial("Fund Creation Validation", () => {
       await adminPages.adminPage.unpauseAsset({
         pincode: setupUser.pincode,
       });
+
+      const transferUser = getSetupUser("transfer-primary");
+      const adminRecipient = setupUser.name ?? setupUser.email;
+
+      await adminPages.adminPage.mintAsset({
+        assetName: testData.name,
+        userName: adminRecipient,
+        amount: "1000",
+        pincode: setupUser.pincode,
+      });
+
+      await adminPages.adminPage.verifySuccessMessage("Changes saved");
+      await adminPages.adminPage.verifyTotalSupply("1000");
+
+      const transferRecipient = transferUser.name ?? transferUser.email;
+
+      await adminPages.adminPage.transferAsset({
+        amount: "300",
+        recipient: transferRecipient,
+        pincode: setupUser.pincode,
+      });
+
+      await adminPages.adminPage.verifySuccessMessage("Changes saved");
+      await adminPages.adminPage.expectCurrentAvailableBalance({
+        expectedAmount: "700",
+      });
+
+      await adminPages.portfolioPage.signOut();
+      await adminPages.portfolioPage.expectSignOutSuccess();
+
+      const transferContext = await adminContext.browser()?.newContext();
+      if (!transferContext) {
+        throw new Error("Unable to create transfer user browser context");
+      }
+
+      const transferPage = await transferContext.newPage();
+      const transferPages = Pages(transferPage);
+
+      try {
+        await transferPages.signInPage.goto();
+        await transferPages.signInPage.fillSignInForm(
+          transferUser.email,
+          transferUser.password
+        );
+        await transferPages.signInPage.submitSignInForm();
+        await transferPages.signInPage.expectSuccessfulSignIn();
+
+        await transferPages.portfolioPage.goto();
+        await transferPages.portfolioPage.verifyAssetBalance("0", "300");
+      } finally {
+        await transferPages.portfolioPage.signOut().catch(() => {});
+        await transferContext.close();
+      }
     });
   });
 });

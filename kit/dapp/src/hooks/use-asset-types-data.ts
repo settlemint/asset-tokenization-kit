@@ -20,12 +20,15 @@ export function useAssetTypesData() {
     systemDetails?.userPermissions?.actions.tokenFactoryCreate ?? false;
 
   // Create a set of already deployed asset types for easy lookup
-  const deployedAssetTypes = useMemo(() => {
-    const factories = systemDetails?.tokenFactoryRegistry.tokenFactories ?? [];
-    return new Set(
-      factories.map((factory) => getAssetTypeFromFactoryTypeId(factory.typeId))
-    );
-  }, [systemDetails?.tokenFactoryRegistry.tokenFactories]);
+  const deployedAssetTypes = useMemo(
+    () =>
+      new Set(
+        systemDetails?.tokenFactoryRegistry.tokenFactories.map((factory) =>
+          getAssetTypeFromFactoryTypeId(factory.typeId)
+        )
+      ),
+    [systemDetails?.tokenFactoryRegistry.tokenFactories]
+  );
 
   return {
     systemDetails,

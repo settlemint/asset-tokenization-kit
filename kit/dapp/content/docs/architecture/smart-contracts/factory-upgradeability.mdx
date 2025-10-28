@@ -1,0 +1,649 @@
+---
+title: Factory and proxies
+description: Documentation for factory-upgradeability
+pageTitle: Factory pattern and upgradeable architecture
+tags: [architecture, factory, upgradeability, proxy, deployment]
+---
+
+The ATK Protocol uses factory patterns and upgradeable proxy architecture to
+enable standardized deployment, consistent configuration, and safe upgrades of
+tokenized assets. This infrastructure provides the foundation for scalable,
+maintainable asset tokenization at enterprise scale.
+
+## Factory pattern overview
+
+Factory contracts provide standardized deployment mechanisms for creating new
+token instances with consistent configuration and security guarantees.
+
+### Benefits of factories
+
+**Standardized deployment** - Ensures all tokens follow the same initialization
+pattern
+
+**Security guarantees** - Factory-deployed tokens inherit verified
+implementations
+
+**Discovery mechanism** - Deployed tokens can be tracked and enumerated
+
+**Access control integration** - Automatic role assignment during deployment
+
+**Cost efficiency** - Shared implementation contracts reduce deployment costs
+
+## ATK system architecture
+
+The ATK system follows a layered architecture where each level builds upon the
+previous one:
+
+<Mermaid chart={`
+graph TB
+    Addons[ADDONS<br/>Operational Tools]
+    Assets[ASSETS<br/>Financial Instruments]
+    System[SYSTEM<br/>Infrastructure]
+    Smart[SMART<br/>Protocol Foundation]
+
+    Addons --> Assets
+    Assets --> System
+    System --> Smart
+
+    style Addons fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style Assets fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style System fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style Smart fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+
+`} />
+
+### Architecture layers
+
+**1. SMART - Protocol foundation**
+
+The foundational layer implementing the SMART Protocol (SettleMint Adaptable
+Regulated Token). Provides the core tokenization framework based on ERC-3643
+standards with modular extensions.
+
+**Why first**: Everything else builds on this foundation. It provides the basic
+token functionality, compliance framework, and extension system that all other
+layers depend on.
+
+**2. System - ATK infrastructure implementation**
+
+The infrastructure layer that manages the entire ATK ecosystem. This represents
+ATK's specific implementation choices for how to manage the SMART Protocol in
+production.
+
+**Why second**: The system layer manages the infrastructure that assets need to
+operate. It provides the identity management, compliance orchestration, and
+factory systems that assets use.
+
+**3. Assets - ATK asset implementations**
+
+Tokenized financial instruments built on the SMART Protocol using ATK's
+implementation patterns.
+
+**Why third**: Assets are built on top of the SMART Protocol foundation and use
+the system infrastructure. They represent the actual tokenized financial
+instruments that users interact with.
+
+**4. Addons - ATK operational tools**
+
+Additional functionality that extends the ATK platform with operational
+capabilities.
+
+**Why fourth**: Addons are operational tools that work with the existing assets
+and infrastructure. They provide additional functionality for managing and
+operating tokenized assets.
+
+**5. Vendor - Third-party dependencies**
+
+External contracts and libraries that the ATK Protocol depends on, including
+OpenZeppelin upgradeable contracts, ERC standards implementations, and other
+audited dependencies.
+
+### Role-based access control
+
+The ATK system uses a dual-category role system that separates human operator
+permissions from automated contract permissions. This structure ensures clear
+separation between administrative actions and system automation.
+
+#### People roles
+
+These roles are assigned to human operators (EOAs) who manage and operate the
+system:
+
+**SYSTEM_MANAGER_ROLE** - Bootstrap system, manage upgrades, register factories
+and modules
+
+**IDENTITY_MANAGER_ROLE** - Register and recover identities, manage user
+onboarding
+
+**TOKEN_MANAGER_ROLE** - Deploy and configure tokens
+
+**COMPLIANCE_MANAGER_ROLE** - Register compliance modules, configure bypass
+lists
+
+**ADDON_MANAGER_ROLE** - Manage system addons and extensions
+
+**CLAIM_POLICY_MANAGER_ROLE** - Manage trusted issuers and claim topics
+
+**AUDITOR_ROLE** - View-only access for compliance and monitoring
+
+#### System roles
+
+These roles are assigned to smart contracts for automated operations:
+
+**SYSTEM_MODULE_ROLE** - Core system modules that manage infrastructure
+
+**IDENTITY_REGISTRY_MODULE_ROLE** - Identity registry contract permissions
+
+**TOKEN_FACTORY_REGISTRY_MODULE_ROLE** - Token factory registry permissions
+
+**TOKEN_FACTORY_MODULE_ROLE** - Individual token factory permissions
+
+**ADDON_FACTORY_REGISTRY_MODULE_ROLE** - Addon registry permissions
+
+**ADDON_FACTORY_MODULE_ROLE** - Individual addon factory permissions
+
+See
+[Asset Contracts - Role definitions](/docs/architecture/smart-contracts/asset-contracts#role-definitions)
+for detailed role capabilities on individual tokens.
+
+## Token factory registry
+
+The Token Factory Registry serves as a centralized discovery mechanism for all
+token factories in the ATK system.
+
+### Registry capabilities
+
+**Factory registration** - Register new factories for different asset types
+
+**Factory discovery** - Look up factory addresses by asset type
+
+**Type-based routing** - Route deployment requests to appropriate factories
+
+**Access control** - Only authorized addresses can register factories
+
+### Registry usage
+
+```solidity
+// Register a new bond token factory
+IATKTokenFactoryRegistry registry = IATKTokenFactoryRegistry(registryAddress);
+registry.registerFactory(
+    "BOND",
+    bondFactoryAddress,
+    bondImplementationAddress
+);
+
+// Discover factory for equity tokens
+address equityFactory = registry.getFactory("EQUITY");
+
+// Deploy new equity token through discovered factory
+IATKEquityFactory(equityFactory).createEquity(params);
+```
+
+## Proxy architecture
+
+ATK uses upgradeable proxies to enable contract upgrades while preserving state
+and addresses.
+
+### Proxy pattern
+
+**ATKTypedImplementationProxy** - Base proxy for all ATK contracts
+
+**Features:**
+
+- Delegatecall-based execution
+- Immutable proxy addresses
+- Upgradeable implementation logic
+- Type identifiers for implementation discovery
+
+### Upgradeable vs non-upgradeable
+
+**Upgradeable tokens (UUPS pattern)**
+
+- Implementation can be upgraded
+- Proxy maintains state and address
+- Admin-controlled upgrade mechanism
+- Suitable for evolving requirements
+
+**Non-upgradeable tokens**
+
+- Fixed implementation
+- No upgrade capability
+- Lower complexity
+- Suitable for immutable requirements
+
+### Upgrade flow
+
+<Mermaid chart={`
+sequenceDiagram
+    participant Admin
+    participant Proxy
+    participant OldImpl
+    participant NewImpl
+
+    Admin->>Proxy: upgradeToAndCall(newImpl)
+    Proxy->>OldImpl: Check upgrade authorization
+    OldImpl-->>Proxy: Authorized
+    Proxy->>Proxy: Update implementation pointer
+    Proxy->>NewImpl: Initialize new features (if needed)
+    Proxy-->>Admin: Upgrade complete
+
+`} />
+
+### Access control for upgrades
+
+**System-level control** - ATK System manages all implementation upgrades
+
+**Role-based authorization** - Only authorized roles can upgrade
+
+**Centralized management** - Single point of upgrade control
+
+**Audit trail** - All upgrades logged and traceable
+
+## ATK system lifecycle
+
+The ATK System follows a structured lifecycle from creation through operational
+use.
+
+### System creation phase
+
+The ATK System starts with the SystemFactory that creates new system instances:
+
+<Mermaid chart={`
+sequenceDiagram
+    participant Admin
+    participant SystemFactory
+    participant AccessManager
+    participant ATKSystem
+
+    Admin->>SystemFactory: createSystem(params)
+    SystemFactory->>AccessManager: Deploy Access Manager
+    SystemFactory->>ATKSystem: Deploy System Instance
+    SystemFactory->>ATKSystem: Initialize with Access Manager
+    SystemFactory->>AccessManager: Grant Admin Role
+    SystemFactory->>Admin: System + Access Manager Created
+
+    Note over Admin,ATKSystem: System exists with centralized access control<br/>but infrastructure not yet bootstrapped
+
+`} />
+
+### Bootstrap phase
+
+Each created ATK System must be bootstrapped to set up the core infrastructure:
+
+<Mermaid chart={`
+sequenceDiagram
+    participant Admin
+    participant ATKSystem
+    participant Infrastructure
+    participant Registries
+
+    Admin->>ATKSystem: bootstrap()
+    ATKSystem->>Infrastructure: Deploy All Core Proxies
+    Note over Infrastructure: Identity Registry, Compliance,<br/>Trusted Issuers, Topic Scheme,<br/>Identity Factory, Access Manager
+
+    ATKSystem->>Registries: Deploy Registry Proxies
+    Note over Registries: Token Factory Registry,<br/>Compliance Module Registry,<br/>System Addon Registry
+
+    ATKSystem->>Infrastructure: Configure Core Components
+    ATKSystem->>Registries: Register Identity Verification Module
+    Note over Registries: Essential module pre-registered
+
+    ATKSystem->>Admin: System Ready for Configuration
+
+`} />
+
+### Post-bootstrap configuration
+
+After bootstrap, the system is ready for use but requires configuration:
+
+<Mermaid chart={`
+sequenceDiagram
+    participant Admin
+    participant TFRegistry
+    participant CMRegistry
+    participant SAR
+
+    Note over Admin: After Bootstrap
+
+    Admin->>TFRegistry: registerTokenFactory(BondFactory)
+    Admin->>TFRegistry: registerTokenFactory(EquityFactory)
+    Admin->>TFRegistry: registerTokenFactory(FundFactory)
+    Note over TFRegistry: Register all needed token types
+
+    Admin->>CMRegistry: registerComplianceModule(CountryAllow)
+    Admin->>CMRegistry: registerComplianceModule(AddressBlock)
+    Admin->>CMRegistry: registerComplianceModule(CustomModule)
+    Note over CMRegistry: Register compliance modules
+
+    Admin->>SAR: registerAddon(VaultSystem)
+    Admin->>SAR: registerAddon(XVPBridge)
+    Admin->>SAR: registerAddon(CustomInfrastructure)
+    Note over SAR: Register system addons
+
+    SAR-->>Admin: System Fully Configured
+
+`} />
+
+### Token creation flow
+
+Once the system is configured, tokens can be deployed through registered
+factories:
+
+<Mermaid chart={`
+sequenceDiagram
+    participant User
+    participant TFRegistry
+    participant Factory
+    participant Token
+    participant Identity
+
+    User->>TFRegistry: getTokenFactory(tokenType)
+    TFRegistry-->>User: Factory Address
+
+    User->>Factory: createToken(params)
+    Factory->>Factory: Deploy Token via CREATE2
+    Factory->>Identity: Create Contract Identity
+    Note over Identity: Token gets its own OnchainID
+    Factory->>Token: Initialize with Identity
+    Factory->>User: Token Created
+
+`} />
+
+### Transfer compliance flow
+
+During token transfers, the compliance system validates transactions:
+
+<Mermaid chart={`
+sequenceDiagram
+    participant User
+    participant Token
+    participant Compliance
+    participant Module
+    participant Identity
+
+    User->>Token: transfer(to, amount)
+    Token->>Compliance: canTransfer(from, to, amount)
+
+    Note over Token,Compliance: Token has pre-configured modules
+
+    loop For each configured module
+        Compliance->>Module: checkCompliance(from, to, amount)
+        Module->>Identity: verifyIdentity(to)
+        Identity-->>Module: verified
+        Module-->>Compliance: compliant
+    end
+
+    Compliance-->>Token: allowed
+    Token->>Token: _transfer(from, to, amount)
+
+`} />
+
+## Token sale module
+
+The Token Sale module provides a comprehensive solution for conducting compliant
+token sales with advanced features.
+
+### Module architecture
+
+The token sale module consists of four main components:
+
+**1. IATKTokenSale.sol** - Interface defining all functions, events, and errors
+
+**2. ATKTokenSale.sol** - Main implementation contract handling:
+
+- Compliance integration with ATK identity registry
+- Vesting with configurable cliff periods
+- Multiple payment methods (native + ERC20)
+- Flexible pricing with configurable ratios
+- Admin controls with role-based access
+- Upgradeable contract pattern
+
+**3. ATKTokenSaleProxy.sol** - Transparent upgradeable proxy for contract
+upgrades while preserving state
+
+**4. ATKTokenSaleFactory.sol** - Factory contract for deploying new token sale
+instances with deterministic addresses using CREATE2
+
+### Key features
+
+**Compliance and security**
+
+- Identity verification through ATK identity registry
+- Role-based access with separate roles for administration and funds management
+- Reentrancy protection against attacks
+- Pausable operations for emergencies
+
+**Flexible payment options**
+
+- Native currency direct payments
+- Multiple ERC20 token support
+- Dynamic pricing with configurable ratios
+- Real-time price calculation
+
+**Vesting and time controls**
+
+- Linear vesting with cliff periods
+- Immediate distribution option
+- Time-based sale enforcement
+- Secure withdrawal management
+
+**Factory deployment**
+
+- CREATE2 deployment for predictable addresses
+- Automated setup with role assignment
+- Batch deployment efficiency
+
+### Sale lifecycle
+
+**1. Setup phase (SaleStatus.SETUP)**
+
+- Configure sale parameters (timing, pricing, limits)
+- Add accepted payment currencies
+- Configure vesting (if applicable)
+- Set purchase limits
+
+**2. Active phase (SaleStatus.ACTIVE)**
+
+- Accept token purchases from eligible buyers
+- Enforce purchase limits and hard cap
+- Process payments and token distributions
+
+**3. Paused phase (SaleStatus.PAUSED)**
+
+- Temporarily halt purchases while maintaining configuration
+- Can be resumed to active state
+
+**4. Ended phase (SaleStatus.ENDED)**
+
+- Permanently concluded sale
+- Allow withdrawal of remaining tokens (if vesting enabled)
+- Enable funds withdrawal by administrators
+
+### Usage examples
+
+**Deploying a token sale:**
+
+```solidity
+// Using the factory
+address saleAddress = factory.deployTokenSale(
+    tokenAddress,     // ATK token address
+    adminAddress,     // Sale administrator
+    startTime,        // Unix timestamp
+    86400,           // 24 hours duration
+    1000000e18,      // 1M tokens hard cap
+    1e15,            // 0.001 ETH per token
+    nonce            // Deployment nonce
+);
+```
+
+**Configuring vesting:**
+
+```solidity
+// 1 year vesting with 3 month cliff
+sale.configureVesting(
+    block.timestamp + 86400,  // Start vesting tomorrow
+    365 days,                 // 1 year vesting duration
+    90 days                   // 3 month cliff
+);
+```
+
+**Adding payment currencies:**
+
+```solidity
+// Add USDC with 1:1000 ratio (1 USDC = 1000 tokens)
+sale.addPaymentCurrency(
+    usdcAddress,
+    1000 * 1e18  // Price ratio scaled by 1e18
+);
+```
+
+**Purchasing tokens:**
+
+```solidity
+// With native currency
+uint256 tokenAmount = sale.buyTokens{value: 1 ether}();
+
+// With ERC20 token
+IERC20(usdcToken).approve(saleAddress, 1000e6);
+uint256 tokenAmount = sale.buyTokensWithERC20(usdcToken, 1000e6);
+```
+
+### Security considerations
+
+**Access control**
+
+- `DEFAULT_ADMIN_ROLE` - Full administrative access
+- `SALE_ADMIN_ROLE` - Sale configuration and management
+- `FUNDS_MANAGER_ROLE` - Withdrawal of sale proceeds
+
+**Input validation**
+
+- All timestamps and amounts validated
+- Address zero checks for all parameters
+- Arithmetic overflow protection (Solidity 0.8+)
+
+**Compliance integration**
+
+- Automatic buyer eligibility verification
+- Integration with ATK identity registry
+- Respect for token compliance rules
+
+### Deployment checklist
+
+1. ✅ Deploy implementation contract
+2. ✅ Deploy factory with implementation address
+3. ✅ Set up proper access controls
+4. ✅ Configure trusted forwarder (if using meta-transactions)
+5. ✅ Verify all contracts on block explorer
+6. ✅ Test with small amounts before production use
+
+## Upgradeability patterns
+
+The ATK system uses centralized implementation management for consistent and
+secure upgrades.
+
+### Centralized upgrade mechanism
+
+**System-managed upgrades** - ATK System manages all implementation addresses
+
+**Consistent updates** - All components upgrade through the same mechanism
+
+**Version control** - Track implementation versions across the system
+
+**Rollback capability** - System can revert to previous implementations if
+needed
+
+### Upgrade safety features
+
+**Access control** - Only authorized roles can upgrade implementations
+
+**Initialization protection** - Prevent re-initialization attacks
+
+**Storage layout preservation** - Upgrades maintain state compatibility
+
+**Event logging** - All upgrades logged for audit trail
+
+### Upgrade vs registration
+
+**Implementation upgrades** - Updating existing contract logic
+
+- Managed by ATK System
+- Affects all existing instances
+- Requires careful migration planning
+
+**Factory/module registration** - Adding new capabilities
+
+- Add new token types through factory registry
+- Add new compliance modules through module registry
+- Add new system addons through addon registry
+- Immediately available system-wide
+
+## Production considerations
+
+### Deployment strategy
+
+**1. Create system** - Use SystemFactory to create new system instances
+
+**2. Bootstrap once** - Single bootstrap call sets up entire infrastructure per
+system
+
+**3. Register components** - Add token factories, compliance modules, and system
+addons through registries
+
+**4. Permission management** - Assign roles based on operational needs
+
+**5. Monitoring** - Track all system events for operational visibility
+
+### Operational security
+
+**Multi-sig admin** - Use multi-signature wallets for admin roles
+
+**Time-locked upgrades** - Implement time delays for critical changes
+
+**Emergency procedures** - Define emergency pause and recovery procedures
+
+**Audit trail** - Maintain comprehensive logs of all operations
+
+### Best practices
+
+**Factory usage**
+
+- Always deploy through registered factories
+- Verify factory addresses before deployment
+- Monitor factory events for tracking
+
+**Upgrade planning**
+
+- Test upgrades thoroughly on testnets
+- Plan migration strategy for state changes
+- Communicate upgrades to stakeholders
+- Have rollback plan ready
+
+**Access management**
+
+- Use principle of least privilege
+- Regular access review and rotation
+- Separate duties across roles
+- Monitor privileged operations
+
+## Conclusion
+
+The factory and proxy architecture provides the foundation for asset
+tokenization:
+
+**Key benefits:**
+
+- **Standardization** - Consistent deployment patterns across all assets
+- **Upgradeability** - Safe upgrades while preserving state and addresses
+- **Scalability** - Efficient deployment with shared implementations
+- **Security** - Centralized access control and upgrade management
+- **Flexibility** - Support for both upgradeable and immutable deployments
+
+The centralized implementation management approach differentiates ATK from
+traditional per-contract upgrade patterns, providing a single point of control
+for system-wide upgrades while maintaining the flexibility to add new
+capabilities through registry-based discovery.
+
+This architecture enables organizations to deploy, manage, and evolve compliant
+tokenization solutions while maintaining the security and auditability required
+for regulated financial instruments.

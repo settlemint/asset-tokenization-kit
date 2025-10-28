@@ -34,35 +34,24 @@ describe("accessControlRoles", () => {
         addonRegistryModule: false,
         admin: false,
         auditor: false,
-        burner: false,
-        capManagement: false,
         claimPolicyManager: false,
         claimIssuer: false,
-        complianceAdmin: false,
         complianceManager: false,
         custodian: false,
         emergency: false,
-        forcedTransfer: false,
-        freezer: false,
         fundsManager: false,
         governance: false,
         identityManager: false,
         identityRegistryModule: false,
-        minter: false,
         organisationIdentityManager: false,
-        pauser: false,
-        recovery: false,
         saleAdmin: false,
-        signer: false,
         supplyManagement: false,
         systemManager: false,
         systemModule: false,
-        tokenAdmin: false,
         tokenFactoryModule: false,
         tokenFactoryRegistryModule: false,
         tokenManager: false,
         trustedIssuersMetaRegistryModule: false,
-        verificationAdmin: false,
       };
 
       const result = accessControlRoles.parse(validRoles);
@@ -78,35 +67,24 @@ describe("accessControlRoles", () => {
         addonRegistryModule: true,
         admin: true,
         auditor: false,
-        burner: true,
-        capManagement: false,
         claimPolicyManager: true,
         claimIssuer: true,
-        complianceAdmin: false,
         complianceManager: true,
         custodian: false,
         emergency: true,
-        forcedTransfer: false,
-        freezer: true,
         fundsManager: false,
         governance: false,
         identityManager: true,
         identityRegistryModule: false,
-        minter: true,
         organisationIdentityManager: false,
-        pauser: false,
-        recovery: true,
         saleAdmin: false,
-        signer: true,
         supplyManagement: false,
         systemManager: true,
         systemModule: false,
-        tokenAdmin: true,
         tokenFactoryModule: false,
         tokenFactoryRegistryModule: true,
         tokenManager: false,
         trustedIssuersMetaRegistryModule: false,
-        verificationAdmin: true,
       };
 
       const result = accessControlRoles.parse(validRoles);
@@ -132,34 +110,23 @@ describe("accessControlRoles", () => {
       expect(result.addonModule).toBe(false);
       expect(result.addonRegistryModule).toBe(false);
       expect(result.auditor).toBe(false);
-      expect(result.burner).toBe(false);
-      expect(result.capManagement).toBe(false);
       expect(result.claimPolicyManager).toBe(false);
       expect(result.claimIssuer).toBe(false);
-      expect(result.complianceAdmin).toBe(false);
       expect(result.complianceManager).toBe(false);
       expect(result.custodian).toBe(false);
       expect(result.emergency).toBe(false);
-      expect(result.forcedTransfer).toBe(false);
-      expect(result.freezer).toBe(false);
       expect(result.fundsManager).toBe(false);
       expect(result.governance).toBe(false);
       expect(result.identityManager).toBe(false);
       expect(result.identityRegistryModule).toBe(false);
-      expect(result.minter).toBe(false);
       expect(result.organisationIdentityManager).toBe(false);
-      expect(result.pauser).toBe(false);
-      expect(result.recovery).toBe(false);
       expect(result.saleAdmin).toBe(false);
-      expect(result.signer).toBe(false);
       expect(result.supplyManagement).toBe(false);
       expect(result.systemManager).toBe(false);
       expect(result.systemModule).toBe(false);
-      expect(result.tokenAdmin).toBe(false);
       expect(result.tokenFactoryModule).toBe(false);
       expect(result.tokenFactoryRegistryModule).toBe(false);
       expect(result.trustedIssuersMetaRegistryModule).toBe(false);
-      expect(result.verificationAdmin).toBe(false);
     });
 
     it("should parse empty object with all defaults", () => {
@@ -261,35 +228,24 @@ describe("accessControlRoles", () => {
         "addonRegistryModule",
         "admin",
         "auditor",
-        "burner",
-        "capManagement",
         "claimPolicyManager",
         "claimIssuer",
-        "complianceAdmin",
         "complianceManager",
         "custodian",
         "emergency",
-        "forcedTransfer",
-        "freezer",
         "fundsManager",
         "governance",
         "identityManager",
         "identityRegistryModule",
-        "minter",
         "organisationIdentityManager",
-        "pauser",
-        "recovery",
         "saleAdmin",
-        "signer",
         "supplyManagement",
         "systemManager",
         "systemModule",
-        "tokenAdmin",
         "tokenFactoryModule",
         "tokenFactoryRegistryModule",
         "tokenManager",
         "trustedIssuersMetaRegistryModule",
-        "verificationAdmin",
       ];
 
       // VERIFICATION: Schema contains exactly the expected roles (no more, no less)

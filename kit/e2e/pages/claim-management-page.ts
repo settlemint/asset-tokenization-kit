@@ -30,20 +30,22 @@ export class ClaimManagementPage extends BasePage {
     await expect(dialog).toBeVisible({ timeout: 10000 });
     await this.waitForReactStateSettle();
 
+    const commandPaletteDialog = this.page
+      .getByRole("dialog")
+      .filter({ has: this.page.getByPlaceholder("Search addresses") })
+      .first();
+
     const searchTerm = userName.split(/\s+/)[0] ?? userName;
     const userTrigger = dialog.getByRole("combobox").first();
 
     await this.selectFromRadixCommandPalette({
       trigger: userTrigger,
-      dialog: this.page
-        .getByRole("dialog")
-        .filter({ has: this.page.getByPlaceholder("Search addresses") })
-        .first(),
+      dialog: commandPaletteDialog,
       searchInput: this.page.getByPlaceholder("Search addresses"),
       searchTerm,
-      optionLocator: this.page
+      optionLocator: commandPaletteDialog
         .getByRole("option", {
-          name: new RegExp(`^${this.escapeRegex(userName)}$`, "i"),
+          name: new RegExp(`^${this.escapeRegex(userName)}(?:\\s+.*)?$`, "i"),
         })
         .first(),
       expectedSelection: userName,
@@ -51,7 +53,7 @@ export class ClaimManagementPage extends BasePage {
       typingDelay: 60,
     });
 
-    await expect(userTrigger).toHaveText(userName, { timeout: 10000 });
+    await expect(userTrigger).toContainText(userName, { timeout: 10000 });
 
     const topicsInput = dialog.getByPlaceholder("Select topics...");
     await expect(topicsInput).toBeVisible({ timeout: 15000 });

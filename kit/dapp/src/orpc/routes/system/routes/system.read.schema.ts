@@ -1,7 +1,7 @@
 import type { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import {
-  accessControlRoles,
   accessControlSchema,
+  systemAccessControlRolesSchema,
 } from "@atk/zod/access-control-roles";
 import { addonFactoryTypeId } from "@atk/zod/addon-types";
 import { assetFactoryTypeId } from "@atk/zod/asset-types";
@@ -145,7 +145,7 @@ export const SystemSchema = z.object({
       /**
        * The roles of the user for the system
        */
-      roles: accessControlRoles.describe(
+      roles: systemAccessControlRolesSchema.describe(
         "The roles of the user for the system"
       ),
 
@@ -195,6 +195,9 @@ export const SystemSchema = z.object({
               identityList: z
                 .boolean()
                 .describe("Whether the user can read identities"),
+              entityList: z
+                .boolean()
+                .describe("Whether the user can list business entities"),
               identityRegister: z
                 .boolean()
                 .describe("Whether the user can register identities"),

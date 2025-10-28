@@ -5,7 +5,7 @@ import { adminUser, signInTestData } from "../test-data/user-data";
 import { validationTestData } from "../test-data/validation-data";
 import { getSetupUser } from "../utils/setup-user";
 
-test.describe("Sign-in Tests", () => {
+test.describe.serial("Sign-in Tests", () => {
   let pages: ReturnType<typeof Pages>;
 
   test.beforeEach(async ({ page }) => {

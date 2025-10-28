@@ -1,8 +1,8 @@
 import { Address, Bytes } from "@graphprotocol/graph-ts";
 import { ComplianceModuleRegistered as ComplianceModuleRegisteredEvent } from "../../generated/templates/ComplianceModuleRegistry/ComplianceModuleRegistry";
-import { fetchAccount } from "../account/fetch/account";
 import { fetchEvent } from "../event/fetch/event";
 import { getDecodedTypeId } from "../type-identifier/type-identifier";
+import { setAccountContractName } from "../account/utils/account-contract-name";
 import { fetchComplianceModule } from "./fetch/compliance-module";
 import { fetchComplianceModuleRegistry } from "./fetch/compliance-module-registry";
 
@@ -27,9 +27,5 @@ export function handleComplianceModuleRegistered(
   complianceModule.save();
 
   // Persist a human-readable name on the underlying account
-  const account = fetchAccount(event.params.moduleAddress);
-  if (account.isContract) {
-    account.contractName = complianceModule.name;
-    account.save();
-  }
+  setAccountContractName(event.params.moduleAddress, complianceModule.name);
 }

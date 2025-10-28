@@ -1,0 +1,425 @@
+---
+title: SMART protocol
+description:
+  Deep dive into the SMART Protocol, the base smart contract architecture
+  enabling compliance (ERC-3643 standard) and modular extensions
+pageTitle: SMART protocol - Regulatory token foundation (ERC-3643)
+tags: [smart-contracts, ERC-3643, compliance, extensions, concept]
+---
+
+The SMART (SettleMint Adaptable Regulated Token) Protocol is an advanced,
+modular smart contract framework designed for creating regulatory-compliant
+security tokens and tokenizing real-world assets. Built as a derivation of
+ERC-3643 with ERC-20 foundations using OpenZeppelin, it provides a complete
+infrastructure for regulated financial instruments.
+
+## What is SMART protocol?
+
+**SMART Protocol** is the foundational protocol specification—think of it like
+HTTP or TCP/IP for tokenization. It defines the token standards, compliance
+modules, and identity management interfaces that enable regulatory-compliant
+asset tokenization.
+
+**ATK (Asset Tokenization Kit)** is SettleMint's production implementation of
+the SMART Protocol with specific assumptions and optimizations for asset
+tokenization. ATK is one possible implementation of SMART, designed with
+particular choices around access control, proxy patterns, and infrastructure
+management.
+
+### Key capabilities
+
+SMART Protocol enables:
+
+- **Security token issuance** - ERC-3643 derived and ERC-20 compliant tokens for
+  regulated financial instruments
+- **Asset tokenization** - Bonds, equity shares, deposits, funds, and
+  stablecoins
+- **Advanced identity management** - On-chain KYC/AML compliance with
+  ERC-734/735 identities and logical expressions for complex verification rules
+- **Regulatory compliance** - Modular compliance rules for different
+  jurisdictions
+- **DeFi integration** - Full ERC-20 compatibility for ecosystem integration
+
+### Protocol highlights
+
+- **ERC20 compliance** - Fully implements `ERC20` and `ERC20Upgradeable`,
+  ensuring compatibility with Ethereum tooling and DeFi ecosystems
+- **Externally modular architecture** - SMART uses composable extensions (e.g.,
+  `SMARTBurnable`, `SMARTCollateral`) in a plug-and-play model
+- **Token-configurable compliance** - SMART tokens can be configured to use
+  specific modular rules and parameters without needing custom compliance
+  contracts
+- **Token-agnostic identity verification** - Identity registry remains reusable
+  across tokens and use cases—tokens dynamically pass required claim topics into
+  the verification logic
+- **Authorization agnostic** - SMART is compatible with any authorization logic
+  via hooks (e.g., OpenZeppelin `AccessControl`)
+- **ERC-2771 meta-transaction support** - Compatible with trusted forwarders for
+  gasless transactions and improved UX
+- **Upgradeable and non-upgradeable support** - SMART supports both upgradeable
+  (proxy-based) and fixed (non-upgradeable) token deployments
+- **KYC is optional** - SMART supports both regulated and unregulated assets.
+  Tokens can opt into identity verification (KYC/AML) or operate
+  permissionlessly
+- **Built-in ERC-165 interface detection** - Every SMART token implements
+  ERC-165, allowing external systems to query which capabilities a token
+  supports
+- **Two-step identity recovery flow** - Secure recovery with identity registry
+  manager handling recovery followed by user token reclaim
+
+## Architecture overview
+
+SMART Protocol consists of three main layers that work together to provide
+comprehensive compliance and functionality:
+
+### Layer 1: Token layer
+
+Smart contract tokens with configurable compliance settings. Each token can be
+configured with specific compliance requirements and modular extensions.
+
+### Layer 2: Compliance layer
+
+Orchestration engine with modular rules. The compliance contract acts as an
+orchestration engine, executing different modules based on each token's
+configuration.
+
+### Layer 3: Identity layer
+
+On-chain identity management and verification using ERC-734/735 standards with
+OnchainID integration.
+
+<Mermaid chart={`
+graph TB
+    %% Main Token
+    Token[SMART Token]
+
+    %% Core Systems
+    IR[Identity Registry]
+    CC[Compliance Contract]
+    TIR[Trusted Issuers Registry]
+    TSR[Topic Scheme Registry]
+
+    %% Identity Layer
+    ID1[Identity Contract 1]
+    ID2[Identity Contract 2]
+    IDN[Identity Contract N]
+
+    %% Compliance Modules
+    CM1[Country Allow List]
+    CM2[Identity Verification Module]
+    CM3[Address Block List]
+    CMN[Custom Module N]
+
+    %% Claims
+    C1[Claim Issuer 1]
+    C2[Claim Issuer 2]
+    CN[Claim Issuer N]
+
+    %% Relationships
+    Token -->|validates via| CC
+
+    IR -->|stores| ID1
+    IR -->|stores| ID2
+    IR -->|stores| IDN
+
+    CC -->|uses| CM1
+    CC -->|uses| CM2
+    CC -->|uses| CM3
+    CC -->|uses| CMN
+
+    %% Identity verification flow
+    CM2 -->|calls isVerified| IR
+    IR -->|verifies against| TIR
+    IR -->|validates topics| TSR
+    IR -->|checks claims| ID1
+    IR -->|checks claims| ID2
+    IR -->|checks claims| IDN
+
+    ID1 -->|has claims from| C1
+    ID2 -->|has claims from| C2
+    IDN -->|has claims from| CN
+
+    TIR -->|trusts| C1
+    TIR -->|trusts| C2
+    TIR -->|trusts| CN
+
+    style Token fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style IR fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style CC fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style TIR fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style TSR fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style CM2 fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+
+`} />
+
+The compliance contract acts as an orchestration engine, executing different
+modules based on each token's configuration. This allows multiple tokens to
+share the same compliance infrastructure while having completely different
+compliance requirements.
+
+## ERC standards implemented
+
+SMART Protocol implements multiple Ethereum standards to provide comprehensive
+functionality:
+
+### ERC-20: Fungible token standard
+
+- **Full compatibility** - Complete ERC-20 and ERC-20 Metadata implementation
+- **DeFi ready** - Compatible with DEXs, lending protocols, and wallets
+- **Extensions** - Transfer hooks, pausable transfers, burnable tokens
+- **Upgradeability** - UUPS proxy pattern support for contract upgrades
+
+### ERC-3643: T-REX security token standard
+
+- **Regulatory compliance** - Built-in KYC/AML and jurisdiction-specific rules
+- **Transfer restrictions** - Conditional transfers based on investor
+  eligibility
+- **Identity verification** - Integration with trusted identity providers
+- **Compliance modules** - Pluggable rules for different regulatory requirements
+- **Components**:
+  - Identity Registry for investor management
+  - Compliance validation engine
+  - Trusted issuers registry for claim verification
+  - Claim topics for required documentation types
+
+### ERC-734: Key holder standard
+
+- **On-chain identity** - Self-sovereign identity management
+- **Multi-purpose keys** - Management, action, claim signing, and encryption
+  keys
+- **Execution framework** - Multi-signature execution with key-based approval
+- **Key management** - Add, remove, and replace keys with proper authorization
+
+### ERC-735: Claim holder standard
+
+- **Verifiable claims** - On-chain attestations about identity attributes
+- **Trusted issuers** - Claims validated by authorized third parties
+- **Topic-based organization** - Claims categorized by topics (KYC, nationality,
+  etc.)
+- **Revocation support** - Ability to revoke outdated or invalid claims
+
+### ERC-2771: Meta-transaction standard
+
+- **Gasless transactions** - Users can transact without holding ETH
+- **Improved UX** - Third-party relayers can sponsor transaction costs
+- **Trusted forwarders** - Secure delegation of transaction execution
+- **Native integration** - Built into all SMART Protocol contracts
+
+## Token extensions
+
+SMART Protocol provides modular extensions that add specific functionality
+through well-defined interfaces:
+
+<Mermaid chart={`
+graph TD
+    Core[SMART Core] --> Burnable[Burnable]
+    Core --> Pausable[Pausable]
+    Core --> Custodian[Custodian]
+    Core --> Redeemable[Redeemable]
+    Core --> Yield[Yield]
+    Core --> Historical[Historical Balances]
+    Core --> Capped[Capped Supply]
+    Core --> Collateral[Collateral]
+
+    Burnable --> |Admin can| Burn[Burn tokens]
+    Pausable --> |Emergency| Pause[Pause transfers]
+    Custodian --> |Compliance| Freeze[Freeze & Force transfers]
+    Redeemable --> |User can| Redeem[Self-burn tokens]
+    Yield --> |Distribute| Dividends[Pay dividends]
+    Historical --> |Query| Snapshots[Historical balances]
+    Capped --> |Limit| Supply[Maximum supply]
+    Collateral --> |Require| Backing[Collateral backing]
+
+    style Core fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+
+`} />
+
+### Administrative extensions
+
+**Burnable extension** - Allows designated administrators to burn tokens from
+any account for regulatory compliance, token destruction, and supply management.
+
+**Pausable extension** - Emergency pause functionality for all token transfers
+during security incidents, regulatory orders, or system maintenance.
+
+**Custodian extension** - Freeze addresses and force transfers for compliance
+with legal orders, sanctions compliance, and dispute resolution.
+
+### User-facing extensions
+
+**Redeemable extension** - Users can burn their own tokens (self-redemption) for
+token buybacks, voluntary redemptions, and exit mechanisms.
+
+**Yield extension** - Distribute dividends or yield to token holders for
+dividend payments, profit sharing, and interest distribution.
+
+### Data and analytics extensions
+
+**Historical balances extension** - Query historical balance data at specific
+blocks for snapshot governance, historical reporting, and audit trails.
+
+### Supply management extensions
+
+**Capped extension** - Enforce maximum token supply limits for fixed supply
+tokens, inflation control, and tokenomics.
+
+**Collateral extension** - Require collateral backing for token issuance in
+asset-backed tokens, stablecoins, and secured instruments.
+
+## Compliance modules
+
+The compliance layer provides a flexible system of modular rules that can be
+configured per-token. See the
+[compliance modules documentation](/docs/architecture/smart-contracts/identity-compliance#compliance-modules)
+for detailed information on:
+
+- Country-based restrictions (allow/block lists)
+- Identity-based restrictions (allow/block lists, verification)
+- Transfer and supply limits (caps, investor counts)
+- Time-based restrictions (lock-up periods)
+
+## Identity and OnchainID integration
+
+SMART Protocol integrates with OnchainID for decentralized identity management:
+
+### Identity registry
+
+Central registry mapping wallet addresses to identity contracts with features
+including:
+
+- Identity contract address storage for each wallet
+- Identity verification status management
+- Wallet recovery mechanisms
+- Identity transfer support
+
+### Trusted issuers registry
+
+Manages trusted entities that can issue identity claims:
+
+- Trusted issuer address storage
+- Topic-to-issuer mapping for attestation authority
+- Support for multiple issuers per topic
+
+### Topic scheme registry
+
+Defines the claim topics available for compliance:
+
+- Valid claim topics listing globally
+- Topic-to-verification requirement mapping
+- Shared registry across all tokens
+
+## ERC-3643 vs SMART protocol
+
+| **Aspect**                               | **ERC-3643**                                | **SMART Protocol**                                                          | **Notes**                                                              |
+| ---------------------------------------- | ------------------------------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **ERC20 compatibility**                  | Partial / constrained                       | Fully `ERC20` and `ERC20Upgradeable` compliant                              | Ensures full compatibility with DeFi and wallets                       |
+| **Upgradeability**                       | Centralized via Implementation Authority    | Supported via UUPS; system-agnostic                                         | SMART provides the option but doesn't enforce a pattern                |
+| **Modularity**                           | Partially modular                           | Modular by default (OpenZeppelin extension pattern)                         | SMARTBurnable, SMARTRedeemable, SMARTPausable, etc.                    |
+| **Identity / compliance contract reuse** | Typically one-off per token                 | Reusable across all tokens                                                  | Efficient architecture, simplifies ecosystem-wide compliance           |
+| **Compliance model**                     | Single compliance contract, may be modular  | Fully modular compliance rules; also supports monolithic if desired         | Flexible based on project use case                                     |
+| **Compliance configuration**             | No token-specific configuration             | Rule-specific parameters configurable per token                             | Enables rule reuse with different behaviors                            |
+| **Claim topics storage**                 | External Claim Topics Registry              | Defined and stored per token                                                | Improves clarity and portability of tokens                             |
+| **Identity verification**                | Simple AND-only logic for required topics   | **Advanced logical expressions** with AND/OR/NOT                            | Enables complex rules like "CONTRACT OR (KYC AND AML)"                 |
+| **KYC optional**                         | Implied as required                         | **Optional** per token, part of the modular compliance                      | Allows issuing cryptocurrencies or unrestricted tokens                 |
+| **Authorization**                        | Agent-based role system                     | Access-control agnostic                                                     | Supports OpenZeppelin `AccessControl`, custom roles, or hybrid models  |
+| **Burning logic**                        | Owner-initiated only (`burn(user, amount)`) | `SMARTBurnable` (admin burn) + `SMARTRedeemable` (self-burn)                | Enables more flexible redemption logic (e.g. for bonds)                |
+| **Meta-transaction support**             | Not specified                               | Fully ERC-2771 compatible (trusted forwarders)                              | Enables gasless transactions and better UX                             |
+| **Immutability**                         | Name and symbol mutable                     | Immutable following ERC20 standard                                          | Avoids confusion and aligns with token standards                       |
+| **Interface detection (ERC-165)**        | Not part of standard                        | **Built-in ERC-165 support**                                                | Enables introspection: e.g., query if token supports Burnable, etc.    |
+| **Token recovery flow**                  | Custodian-based recovery                    | Two-step: identity registry manager handles recovery + user reclaims tokens | SMART separates identity and asset recovery for better security and UX |
+
+## Complete system flow
+
+Here's how all three layers work together during a token transfer:
+
+<Mermaid chart={`
+sequenceDiagram
+    participant User
+    participant Token
+    participant Compliance
+    participant IdentityModule
+    participant IdentityRegistry
+    participant Identity
+    participant TrustedIssuers
+    participant TopicScheme
+    participant Module1
+    participant ModuleN
+
+    User->>Token: transfer(to, amount)
+
+    %% Compliance Check (including identity verification)
+    Token->>Compliance: canTransfer(from, to, amount)
+
+    loop For each module
+        Compliance->>IdentityModule: canTransfer(token, from, to, amount, params)
+
+        %% Identity verification within module (only checks recipient)
+        IdentityModule->>IdentityRegistry: isVerified(to, logicalExpression)
+        IdentityRegistry->>TopicScheme: hasTopicScheme(topic)
+        TopicScheme-->>IdentityRegistry: topic valid
+        IdentityRegistry->>TrustedIssuers: getTrustedIssuersForClaimTopic(topic)
+        TrustedIssuers-->>IdentityRegistry: trusted issuers list
+        IdentityRegistry->>Identity: getClaim(claimId)
+        Identity-->>IdentityRegistry: claim data
+        IdentityRegistry->>TrustedIssuers: isClaimValid(identity, topic, signature, data)
+        TrustedIssuers-->>IdentityRegistry: claim validity
+        IdentityRegistry-->>IdentityModule: verification result
+
+        IdentityModule-->>Compliance: true/false
+
+        Compliance->>Module1: canTransfer(token, from, to, amount, params)
+        Module1-->>Compliance: true/false
+        Compliance->>ModuleN: canTransfer(token, from, to, amount, params)
+        ModuleN-->>Compliance: true/false
+    end
+
+    Compliance-->>Token: compliance result
+
+    alt Transfer Allowed
+        Token->>Token: _transfer(from, to, amount)
+        Token->>Compliance: transferred(from, to, amount)
+
+        loop Update each module
+            Compliance->>IdentityModule: transferred(from, to, amount)
+            Compliance->>Module1: transferred(from, to, amount)
+            Compliance->>ModuleN: transferred(from, to, amount)
+        end
+
+        Token-->>User: Transfer Success
+    else Transfer Blocked
+        Token-->>User: Revert with reason
+    end
+
+`} />
+
+### Transfer validation steps
+
+1. **Identity verification** - Verify receiver has valid identity contract and
+   required claims. Sender verification is assumed (already owns tokens, so was
+   previously verified)
+
+2. **Compliance validation** - Compliance engine runs through modules configured
+   on the specific token. Each configured module performs its specific checks.
+   All configured modules must approve for transfer to proceed
+
+3. **Balance updates** - Execute standard ERC-20 transfer, update compliance
+   module states, emit transfer events
+
+## Common use cases
+
+| **Use Case**               | **Asset Type**  | **Key Extensions**             | **Compliance Requirements**           |
+| -------------------------- | --------------- | ------------------------------ | ------------------------------------- |
+| **Corporate bonds**        | SMARTBond       | Yield, Redeemable, Pausable    | Accredited investor, KYC              |
+| **Real estate shares**     | SMARTEquity     | Custodian, Historical Balances | KYC, Jurisdiction restrictions        |
+| **Tokenized deposits**     | SMARTDeposit    | Yield, Capped                  | Bank verification, deposit insurance  |
+| **Investment funds**       | SMARTFund       | Yield, Custodian, Burnable     | Fund prospectus, investor suitability |
+| **Regulatory stablecoins** | SMARTStableCoin | Pausable, Custodian            | Money transmitter license             |
+
+## Conclusion
+
+SMART Protocol rethinks the ERC-3643 architecture by moving modularity,
+configuration, and verification closer to the token layer. This creates a more
+flexible, reusable, and standards-compliant framework for compliant token
+issuance in dynamic regulatory environments. By decoupling identity and
+compliance logic from any single token, SMART improves scalability and opens
+doors for broader cross-application identity use.

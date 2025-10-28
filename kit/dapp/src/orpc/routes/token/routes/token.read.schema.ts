@@ -1,8 +1,8 @@
 import { IdentitySchema } from "@/orpc/routes/system/identity/routes/identity.read.schema";
 import type { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import {
-  accessControlRoles,
   accessControlSchema,
+  assetAccessControlRolesSchema,
 } from "@atk/zod/access-control-roles";
 import { assetExtensionArray } from "@atk/zod/asset-extensions";
 import { assetSymbol } from "@atk/zod/asset-symbol";
@@ -31,12 +31,6 @@ import * as z from "zod";
  * @property {Object} [userPermissions] - Optional permissions object for the current user
  * @property {Object} userPermissions.roles - Boolean flags for each role the user has
  * @property {boolean} userPermissions.isAllowed - Whether the user can interact with the token
- * @remarks
- * - The userPermissions field is optional and will only be present when the
- *   API is called with authentication
- * - The roles object dynamically includes all roles defined in the ROLES array
- * - Compliance and allowance checks are performed against the token's specific
- *   requirements and the user's identity claims
  */
 /**
  * Schema for the raw token data from GraphQL
@@ -153,7 +147,9 @@ export const RawTokenSchema = z.object({
     .describe("Enabled compliance modules for this token"),
   userPermissions: z
     .object({
-      roles: accessControlRoles.describe("The roles of the user for the token"),
+      roles: assetAccessControlRolesSchema.describe(
+        "The roles of the user for the token"
+      ),
       isAllowed: z
         .boolean()
         .describe("Whether the user is allowed to interact with the token"),

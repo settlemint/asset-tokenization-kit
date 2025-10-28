@@ -191,11 +191,17 @@ Database connection URL
   {{- if and .Values.global.datastores.hasura .Values.global.datastores.hasura.postgresql -}}
     {{- $sslMode = $sslMode | default .Values.global.datastores.hasura.postgresql.sslMode -}}
   {{- end -}}
-  {{- if and .Values.global.datastores.default .Values.global.datastores.default.postgresql -}}
-    {{- $sslMode = $sslMode | default .Values.global.datastores.default.postgresql.sslMode -}}
-  {{- end -}}
+{{- if and .Values.global.datastores.default .Values.global.datastores.default.postgresql -}}
+  {{- $sslMode = $sslMode | default .Values.global.datastores.default.postgresql.sslMode -}}
 {{- end -}}
+{{- end -}}
+{{- $mergedConfig := ((include "atk.datastores.postgresql.config" (dict "context" . "chartKey" "hasura" "local" (default (dict) .Values.database))) | fromYaml) | default (dict) -}}
+{{- $existingSecret := trim (default "" (index $mergedConfig "existingSecret")) -}}
+{{- if ne $existingSecret "" -}}
+{{- "" -}}
+{{- else -}}
 {{- include "atk.datastores.postgresql.url" (dict "context" . "chartKey" "hasura" "local" (default (dict) .Values.database)) -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -213,12 +219,28 @@ Metadata database connection URL
 Redis cache URL
 */}}
 {{- define "hasura.redisCacheUrl" -}}
-{{- include "atk.redis.uriFor" (dict "context" . "chartKey" "hasura" "local" (default (dict) .Values.redis) "dbKey" "cacheDb" "queryKey" "cacheQuery") -}}
+{{- $ctx := . -}}
+{{- $redisLocal := default (dict) .Values.redis -}}
+{{- $redisConfig := ((include "atk.datastores.redis" (dict "context" $ctx "chartKey" "hasura" "local" $redisLocal)) | fromYaml) | default (dict) -}}
+{{- $redisExistingSecret := trim (default "" (index $redisConfig "existingSecret")) -}}
+{{- if ne $redisExistingSecret "" -}}
+{{- "" -}}
+{{- else -}}
+{{- include "atk.redis.uriFor" (dict "context" $ctx "chartKey" "hasura" "local" $redisLocal "dbKey" "cacheDb" "queryKey" "cacheQuery") -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
 Redis rate limit URL
 */}}
 {{- define "hasura.redisRateLimitUrl" -}}
-{{- include "atk.redis.uriFor" (dict "context" . "chartKey" "hasura" "local" (default (dict) .Values.redis) "dbKey" "rateLimitDb" "queryKey" "rateLimitQuery") -}}
+{{- $ctx := . -}}
+{{- $redisLocal := default (dict) .Values.redis -}}
+{{- $redisConfig := ((include "atk.datastores.redis" (dict "context" $ctx "chartKey" "hasura" "local" $redisLocal)) | fromYaml) | default (dict) -}}
+{{- $redisExistingSecret := trim (default "" (index $redisConfig "existingSecret")) -}}
+{{- if ne $redisExistingSecret "" -}}
+{{- "" -}}
+{{- else -}}
+{{- include "atk.redis.uriFor" (dict "context" $ctx "chartKey" "hasura" "local" $redisLocal "dbKey" "rateLimitDb" "queryKey" "rateLimitQuery") -}}
+{{- end -}}
 {{- end -}}

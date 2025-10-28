@@ -1,9 +1,9 @@
 import { useThemeAssets } from "@/components/theme/hooks/use-theme-assets";
-import { cn } from "@/lib/utils";
+import { DEFAULT_THEME } from "@/components/theme/lib/schema";
 import { useMounted } from "@/hooks/use-mounted";
+import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import type { PropsWithChildren } from "react";
-import { DEFAULT_THEME } from "@/components/theme/lib/schema";
 
 type LogoVariant = "horizontal" | "vertical" | "icon";
 
@@ -66,9 +66,6 @@ export function Logo({
       return trimmed;
     }
     if (trimmed.startsWith("/")) {
-      if (globalThis.window !== undefined && globalThis.location?.origin) {
-        return new URL(trimmed, globalThis.location.origin).toString();
-      }
       return trimmed;
     }
     return trimmed;

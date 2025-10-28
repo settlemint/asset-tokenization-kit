@@ -2,7 +2,7 @@ import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { getAssetIcon } from "@/components/system-assets/components/asset-icons";
-import { AssetTypeCard } from "@/components/system-assets/components/asset-type-card";
+import { AssetTypeCard } from "@/components/onboarding/assets/asset-type-card";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { WarningAlert } from "@/components/ui/warning-alert";
 import { useAppForm } from "@/hooks/use-app-form";
@@ -10,7 +10,6 @@ import { orpc } from "@/orpc/orpc-client";
 import {
   type FactoryCreateInput,
   FactoryCreateSchema,
-  type SingleFactory,
   TokenTypeEnum,
 } from "@/orpc/routes/system/token-factory/routes/factory.create.schema";
 import { getAssetTypeFromFactoryTypeId } from "@atk/zod/asset-types";
@@ -75,29 +74,16 @@ export function AssetTypeSelection() {
   const availableAssets = TokenTypeEnum.options;
 
   // Create a set of already deployed asset types for easy lookup
-  const deployedAssetTypes = useMemo(() => {
-    const factories = systemDetails?.tokenFactoryRegistry.tokenFactories ?? [];
-    return new Set(
-      factories.map((factory) => getAssetTypeFromFactoryTypeId(factory.typeId))
-    );
-  }, [systemDetails?.tokenFactoryRegistry.tokenFactories]);
+  const deployedAssetTypes = useMemo(
+    () =>
+      new Set(
+        (systemDetails?.tokenFactoryRegistry.tokenFactories ?? []).map(
+          (factory) => getAssetTypeFromFactoryTypeId(factory.typeId)
+        )
+      ),
+    [systemDetails?.tokenFactoryRegistry.tokenFactories]
+  );
 
-  const handleAddFactory = (factory: SingleFactory) => {
-    const alreadyIncluded = form.state.values.factories.some(
-      (f) => f.type === factory.type
-    );
-    if (alreadyIncluded) {
-      return;
-    }
-    form.setFieldValue("factories", [...form.state.values.factories, factory]);
-  };
-
-  const handleRemoveFactory = (factory: SingleFactory) => {
-    form.setFieldValue(
-      "factories",
-      form.state.values.factories.filter((f) => f.type !== factory.type)
-    );
-  };
   const factories = useStore(form.store, (state) => state.values.factories);
 
   if (systemError) {
@@ -191,20 +177,31 @@ export function AssetTypeSelection() {
                               return;
                             }
 
+                            const currentFactories = field.state.value ?? [];
+
                             if (checked) {
-                              handleAddFactory({
-                                type: assetType,
-                                name: t(`asset-types.${assetType}`, {
-                                  ns: "tokens",
-                                }),
-                              });
+                              const alreadySelected = currentFactories.some(
+                                (factory) => factory.type === assetType
+                              );
+                              if (alreadySelected) {
+                                return;
+                              }
+
+                              const nextFactories = [
+                                ...currentFactories,
+                                {
+                                  type: assetType,
+                                  name: t(`asset-types.${assetType}`, {
+                                    ns: "tokens",
+                                  }),
+                                },
+                              ];
+                              field.handleChange(nextFactories);
                             } else {
-                              handleRemoveFactory({
-                                type: assetType,
-                                name: t(`asset-types.${assetType}`, {
-                                  ns: "tokens",
-                                }),
-                              });
+                              const nextFactories = currentFactories.filter(
+                                (factory) => factory.type !== assetType
+                              );
+                              field.handleChange(nextFactories);
                             }
                           };
 
@@ -215,6 +212,11 @@ export function AssetTypeSelection() {
                               icon={Icon}
                               isChecked={isChecked}
                               isDisabled={isDisabled}
+                              disabledLabel={
+                                isDisabled
+                                  ? t("assets.deployed-label")
+                                  : undefined
+                              }
                               onToggle={handleToggle}
                             />
                           );

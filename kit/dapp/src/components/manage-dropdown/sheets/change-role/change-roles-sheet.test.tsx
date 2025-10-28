@@ -444,7 +444,7 @@ describe("ChangeRolesSheet", () => {
         roleAdmins: [
           {
             roleFieldName: "custodian",
-            adminFieldName: "tokenAdmin",
+            adminFieldName: "tokenManager",
           },
         ],
       } as unknown as AccessControl;
@@ -472,14 +472,14 @@ describe("ChangeRolesSheet", () => {
         "0xcccccccccccccccccccccccccccccccccccccccc" as `0x${string}`;
       setSessionWallet(wallet);
       vi.mocked(getAccessControlEntries).mockReturnValue([
-        ["tokenAdmin", [{ id: wallet, isContract: false }]],
+        ["tokenManager", [{ id: wallet, isContract: false }]],
       ]);
 
       const accessControlWithAdmins = {
         roleAdmins: [
           {
             roleFieldName: "custodian",
-            adminFieldName: "tokenAdmin",
+            adminFieldName: "tokenManager",
           },
         ],
       } as unknown as AccessControl;
@@ -511,7 +511,7 @@ describe("ChangeRolesSheet", () => {
         roleAdmins: [
           {
             roleFieldName: "custodian",
-            adminFieldName: "tokenAdmin",
+            adminFieldName: "tokenManager",
           },
         ],
       } as unknown as AccessControl;
