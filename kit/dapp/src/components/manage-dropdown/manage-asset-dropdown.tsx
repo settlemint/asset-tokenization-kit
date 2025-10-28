@@ -80,6 +80,10 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   const { data: session } = useSession();
   const userWallet = session?.user?.wallet;
 
+  const hasTokenPermissions = Object.values(
+    system.userPermissions?.roles ?? {}
+  ).some(Boolean);
+
   const isPaused = asset.pausable?.paused ?? false;
   const yieldScheduleId = asset.yield?.schedule?.id;
 
@@ -162,8 +166,6 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   ]);
 
   const actions = useMemo(() => {
-    // Check if asset has pausable capability (handles both null and undefined)
-    const hasPausableCapability = asset.pausable != null;
     const arr: Array<{
       id: string;
       label: string;
@@ -173,67 +175,72 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
       disabledMessage: string;
     }> = [];
 
-    if (hasPausableCapability) {
-      const canUnpause = asset.userPermissions?.actions?.unpause ?? false;
-      const canPause = asset.userPermissions?.actions?.pause ?? false;
-      arr.push({
-        id: isPaused ? "unpause" : "pause",
-        label: isPaused
-          ? t("tokens:actions.unpause.label")
-          : t("tokens:actions.pause.label"),
-        icon: isPaused ? Play : Pause,
-        openAction: isPaused ? "unpause" : "pause",
-        disabled: isPaused ? !canUnpause : !canPause,
-        disabledMessage: isPaused
-          ? t("tokens:actions.unpause.notAuthorized")
-          : t("tokens:actions.pause.notAuthorized"),
-      });
-    }
+    if (hasTokenPermissions) {
+      // Check if asset has pausable capability (handles both null and undefined)
+      const hasPausableCapability = asset.pausable != null;
+      if (hasPausableCapability) {
+        const canUnpause = asset.userPermissions?.actions?.unpause ?? false;
+        const canPause = asset.userPermissions?.actions?.pause ?? false;
+        arr.push({
+          id: isPaused ? "unpause" : "pause",
+          label: isPaused
+            ? t("tokens:actions.unpause.label")
+            : t("tokens:actions.pause.label"),
+          icon: isPaused ? Play : Pause,
+          openAction: isPaused ? "unpause" : "pause",
+          disabled: isPaused ? !canUnpause : !canPause,
+          disabledMessage: isPaused
+            ? t("tokens:actions.unpause.notAuthorized")
+            : t("tokens:actions.pause.notAuthorized"),
+        });
+      }
 
-    // Mint only visible if user can mint and token is not paused
-    const canMint = asset.userPermissions?.actions?.mint;
-    arr.push({
-      id: "mint",
-      label: t("tokens:actions.mint.label"),
-      icon: Plus,
-      openAction: "mint",
-      disabled: isPaused || !canMint,
-      disabledMessage: canMint
-        ? t("tokens:actions.tokenPaused")
-        : t("tokens:actions.mint.notAuthorized"),
-    });
-
-    // Freeze Tokens - only visible for tokens with custodian extension and permissions
-    const hasCustodianCapability = asset.extensions.includes(
-      AssetExtensionEnum.CUSTODIAN
-    );
-    const canFreezePartial = asset.userPermissions?.actions?.freezePartial;
-    if (hasCustodianCapability) {
+      // Mint only visible if user can mint and token is not paused
+      const canMint = asset.userPermissions?.actions?.mint;
       arr.push({
-        id: "freezePartial",
-        label: t("tokens:actions.freezePartial.label"),
-        icon: Lock,
-        openAction: "freezePartial",
+        id: "mint",
+        label: t("tokens:actions.mint.label"),
+        icon: Plus,
+        openAction: "mint",
         disabled: isPaused || !canMint,
-        disabledMessage: canFreezePartial
+        disabledMessage: canMint
           ? t("tokens:actions.tokenPaused")
-          : t("tokens:actions.freezePartial.notAuthorized"),
+          : t("tokens:actions.mint.notAuthorized"),
       });
-    }
 
-    // Unfreeze Tokens - only visible for tokens with custodian extension and permissions
-    const canUnfreezePartial = asset.userPermissions?.actions?.unfreezePartial;
-    if (hasCustodianCapability) {
-      arr.push({
-        id: "unfreezePartial",
-        label: t("tokens:actions.unfreezePartial.label"),
-        icon: Unlock,
-        openAction: "unfreezePartial",
-        disabled: isPaused || !canUnfreezePartial,
-        disabledMessage: canUnfreezePartial
-          ? t("tokens:actions.tokenPaused")
-          : t("tokens:actions.unfreezePartial.notAuthorized"),
-      });
+      // Freeze Tokens - only visible for tokens with custodian extension and permissions
+      const hasCustodianCapability = asset.extensions.includes(
+        AssetExtensionEnum.CUSTODIAN
+      );
+      const canFreezePartial = asset.userPermissions?.actions?.freezePartial;
+      if (hasCustodianCapability) {
+        arr.push({
+          id: "freezePartial",
+          label: t("tokens:actions.freezePartial.label"),
+          icon: Lock,
+          openAction: "freezePartial",
+          disabled: isPaused || !canMint,
+          disabledMessage: canFreezePartial
+            ? t("tokens:actions.tokenPaused")
+            : t("tokens:actions.freezePartial.notAuthorized"),
+        });
+      }
+
+      // Unfreeze Tokens - only visible for tokens with custodian extension and permissions
+      const canUnfreezePartial =
+        asset.userPermissions?.actions?.unfreezePartial;
+      if (hasCustodianCapability) {
+        arr.push({
+          id: "unfreezePartial",
+          label: t("tokens:actions.unfreezePartial.label"),
+          icon: Unlock,
+          openAction: "unfreezePartial",
+          disabled: isPaused || !canUnfreezePartial,
+          disabledMessage: canUnfreezePartial
+            ? t("tokens:actions.tokenPaused")
+            : t("tokens:actions.unfreezePartial.notAuthorized"),
+        });
+      }
     }
 
     const canTransfer =
@@ -253,103 +260,109 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
       });
     }
 
-    // Set yield schedule only visible for bond tokens without existing schedule
-    const hasYieldScheduleCapability =
-      asset.extensions.includes(AssetExtensionEnum.YIELD) &&
-      !asset.yield?.schedule;
-    const canSetYieldSchedule =
-      asset.userPermissions?.actions?.setYieldSchedule;
-    if (hasYieldScheduleCapability) {
-      arr.push({
-        id: "setYieldSchedule",
-        label: t("tokens:actions.setYieldSchedule.label"),
-        icon: TrendingUp,
-        openAction: "setYieldSchedule",
-        disabled: isPaused || !canSetYieldSchedule,
-        disabledMessage: canSetYieldSchedule
-          ? t("tokens:actions.tokenPaused")
-          : t("tokens:actions.setYieldSchedule.notAuthorized"),
-      });
-    }
+    if (hasTokenPermissions) {
+      // Set yield schedule only visible for bond tokens without existing schedule
+      const hasYieldScheduleCapability =
+        asset.extensions.includes(AssetExtensionEnum.YIELD) &&
+        !asset.yield?.schedule;
+      const canSetYieldSchedule =
+        asset.userPermissions?.actions?.setYieldSchedule;
+      if (hasYieldScheduleCapability) {
+        arr.push({
+          id: "setYieldSchedule",
+          label: t("tokens:actions.setYieldSchedule.label"),
+          icon: TrendingUp,
+          openAction: "setYieldSchedule",
+          disabled: isPaused || !canSetYieldSchedule,
+          disabledMessage: canSetYieldSchedule
+            ? t("tokens:actions.tokenPaused")
+            : t("tokens:actions.setYieldSchedule.notAuthorized"),
+        });
+      }
 
-    // Top up denomination asset option
-    // Check if user has denomination assets to top up
-    const userDenominationAssetBalanceAvailable =
-      userDenominationAssetBalance?.holder?.available ?? 0n;
-    const hasTopUpableAmount = greaterThan(
-      userDenominationAssetBalanceAvailable,
-      0n
-    );
-    if (hasYieldScheduleCapability) {
-      arr.push({
-        id: "topUpDenominationAsset",
-        label: t("tokens:actions.topUpDenominationAsset.label"),
-        icon: TrendingUp,
-        openAction: "topUpDenominationAsset",
-        disabled: !hasTopUpableAmount,
-        disabledMessage: t("tokens:actions.topUpDenominationAsset.noBalance", {
-          symbol: asset.yield?.schedule?.denominationAsset?.symbol ?? "",
-        }),
-      });
-    }
+      // Top up denomination asset option
+      // Check if user has denomination assets to top up
+      const userDenominationAssetBalanceAvailable =
+        userDenominationAssetBalance?.holder?.available ?? 0n;
+      const hasTopUpableAmount = greaterThan(
+        userDenominationAssetBalanceAvailable,
+        0n
+      );
+      if (hasYieldScheduleCapability) {
+        arr.push({
+          id: "topUpDenominationAsset",
+          label: t("tokens:actions.topUpDenominationAsset.label"),
+          icon: TrendingUp,
+          openAction: "topUpDenominationAsset",
+          disabled: !hasTopUpableAmount,
+          disabledMessage: t(
+            "tokens:actions.topUpDenominationAsset.noBalance",
+            {
+              symbol: asset.yield?.schedule?.denominationAsset?.symbol ?? "",
+            }
+          ),
+        });
+      }
 
-    // Withdraw denomination asset option
-    const canWithdrawDenominationAsset =
-      asset.userPermissions?.actions?.withdrawDenominationAsset;
-    if (canWithdrawDenominationAsset) {
-      arr.push({
-        id: "withdrawDenominationAsset",
-        label: t("tokens:actions.withdrawDenominationAsset.label"),
-        icon: Minus,
-        openAction: "withdrawDenominationAsset",
-        disabled: !hasWithdrawableAmount || !canWithdrawDenominationAsset,
-        disabledMessage: canWithdrawDenominationAsset
-          ? t("tokens:actions.withdrawDenominationAsset.noBalance", {
-              symbol: yieldSchedule?.denominationAsset?.symbol ?? "",
-            })
-          : t("tokens:actions.withdrawDenominationAsset.notAuthorized"),
-      });
-    }
+      // Withdraw denomination asset option
+      const canWithdrawDenominationAsset =
+        asset.userPermissions?.actions?.withdrawDenominationAsset;
+      if (canWithdrawDenominationAsset) {
+        arr.push({
+          id: "withdrawDenominationAsset",
+          label: t("tokens:actions.withdrawDenominationAsset.label"),
+          icon: Minus,
+          openAction: "withdrawDenominationAsset",
+          disabled: !hasWithdrawableAmount || !canWithdrawDenominationAsset,
+          disabledMessage: canWithdrawDenominationAsset
+            ? t("tokens:actions.withdrawDenominationAsset.noBalance", {
+                symbol: yieldSchedule?.denominationAsset?.symbol ?? "",
+              })
+            : t("tokens:actions.withdrawDenominationAsset.notAuthorized"),
+        });
+      }
 
-    // Collateral management
-    const hasCollateralCapability = asset.collateral != null;
-    const hasCollateralPermission =
-      asset.userPermissions?.actions?.updateCollateral === true;
-    if (hasCollateralCapability) {
-      arr.push({
-        id: "collateral",
-        label: t("tokens:actions.collateral.label"),
-        icon: Shield,
-        openAction: "collateral",
-        disabled: !hasCollateralPermission,
-        disabledMessage: t("tokens:actions.collateral.notAuthorized"),
-      });
-    }
+      // Collateral management
+      const hasCollateralCapability = asset.collateral != null;
+      const hasCollateralPermission =
+        asset.userPermissions?.actions?.updateCollateral === true;
+      if (hasCollateralCapability) {
+        arr.push({
+          id: "collateral",
+          label: t("tokens:actions.collateral.label"),
+          icon: Shield,
+          openAction: "collateral",
+          disabled: !hasCollateralPermission,
+          disabledMessage: t("tokens:actions.collateral.notAuthorized"),
+        });
+      }
 
-    // Mature bond only visible for bond tokens that can be matured
-    const hasBondCapability =
-      asset.extensions.includes(AssetExtensionEnum.BOND) && asset.bond;
-    const isReadyToMature =
-      !asset.bond?.isMatured &&
-      asset.bond?.maturityDate &&
-      isAfter(new Date(), asset.bond.maturityDate);
-    const canMatureBond = asset.userPermissions?.actions?.mature;
-    if (hasBondCapability && isReadyToMature) {
-      arr.push({
-        id: "mature",
-        label: t("tokens:actions.mature.label"),
-        icon: CheckCircle,
-        openAction: "mature",
-        disabled: !canMatureBond || isPaused,
-        disabledMessage: canMatureBond
-          ? t("tokens:actions.tokenPaused")
-          : t("tokens:actions.mature.notAuthorized"),
-      });
+      // Mature bond only visible for bond tokens that can be matured
+      const hasBondCapability =
+        asset.extensions.includes(AssetExtensionEnum.BOND) && asset.bond;
+      const isReadyToMature =
+        !asset.bond?.isMatured &&
+        asset.bond?.maturityDate &&
+        isAfter(new Date(), asset.bond.maturityDate);
+      const canMatureBond = asset.userPermissions?.actions?.mature;
+      if (hasBondCapability && isReadyToMature) {
+        arr.push({
+          id: "mature",
+          label: t("tokens:actions.mature.label"),
+          icon: CheckCircle,
+          openAction: "mature",
+          disabled: !canMatureBond || isPaused,
+          disabledMessage: canMatureBond
+            ? t("tokens:actions.tokenPaused")
+            : t("tokens:actions.mature.notAuthorized"),
+        });
+      }
     }
 
     return arr;
   }, [
     t,
+    hasTokenPermissions,
     asset.pausable,
     asset.extensions,
     asset.yield?.schedule,

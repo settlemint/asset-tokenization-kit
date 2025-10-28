@@ -92,6 +92,10 @@ export const TokenHoldersTable = withErrorBoundary(function TokenHoldersTable({
     })
   );
 
+  const hasTokenPermissions = Object.values(
+    token.userPermissions?.roles ?? {}
+  ).some(Boolean);
+
   // Extract holders data with defensive null checking to prevent runtime errors
   // The API may return partial data during loading states or network issues
   const holders = holdersResponse.token?.balances ?? [];
@@ -146,7 +150,7 @@ export const TokenHoldersTable = withErrorBoundary(function TokenHoldersTable({
       // Burn action only appears when user has permission, token isn't paused,
       // and holder has available (non-frozen) tokens to burn
       // This prevents UI clutter and invalid burn attempts
-      ...(canBurn && row.original.available[0] > 0n
+      ...(hasTokenPermissions && row.original.available[0] > 0n
         ? [
             {
               label: t("tokens:holders.actions.burn"),
@@ -157,8 +161,10 @@ export const TokenHoldersTable = withErrorBoundary(function TokenHoldersTable({
                   available: row.original.available,
                 });
               },
-              disabled: isPaused,
-              disabledMessage: t("tokens:actions.tokenPaused"),
+              disabled: isPaused || !canBurn,
+              disabledMessage: canBurn
+                ? t("tokens:actions.tokenPaused")
+                : t("tokens:actions.burn.notAuthorized"),
             } satisfies ActionItem,
           ]
         : []),
