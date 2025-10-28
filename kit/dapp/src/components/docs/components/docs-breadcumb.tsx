@@ -73,7 +73,7 @@ export function DocsBreadcrumb({
                   </span>
                 )}
               </BreadcrumbItem>
-              {!isLast && <BreadcrumbSeparator />}
+              {!isLast && includeSeparator && <BreadcrumbSeparator />}
             </Fragment>
           );
         })}
